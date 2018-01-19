@@ -78,6 +78,8 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
+using GL_IdVector = std::vector<std::pair<int, int>>;
+
 namespace {
   MPI_Datatype cgns_mpi_type()
   {
@@ -94,6 +96,67 @@ namespace {
     for (ssize_t i = 0; i < count; i++) {
       data[i] = global_implicit_map[data[i] - 1];
     }
+  }
+
+  GL_IdVector gather_nodes_to_proc0(Ioss::Map &global_id_map, int processor, int64_t offset,
+                                    const Ioss::ParallelUtils &util, size_t min_id,
+                                    size_t max_id = std::numeric_limits<size_t>::max())
+  {
+    GL_IdVector I_nodes;
+    GL_IdVector I_nodes_recv;
+    for (size_t i = 0; i < global_id_map.size(); i++) {
+      auto global_id = global_id_map.map()[i + 1];
+      if (global_id >= min_id && global_id <= max_id) {
+        I_nodes.emplace_back((int)global_id, (int)i + 1 + offset);
+      }
+    }
+
+    std::vector<int> recv_count;
+    util.gather(2 * (int)I_nodes.size(), recv_count);
+    std::vector<int> recv_off(recv_count);
+
+    auto count = std::accumulate(recv_count.begin(), recv_count.end(), 0);
+    if (processor == 0) {
+      I_nodes_recv.resize(count / 2);
+      Ioss::Utils::generate_index(recv_off);
+    }
+
+    MPI_Gatherv(I_nodes.data(), (int)I_nodes.size() * 2, MPI_INT, I_nodes_recv.data(),
+                recv_count.data(), recv_off.data(), MPI_INT, 0, util.communicator());
+
+    if (processor == 0) {
+      std::sort(I_nodes_recv.begin(), I_nodes_recv.end());
+    }
+    return I_nodes_recv;
+  }
+
+  GL_IdVector intersect(const GL_IdVector &I, const GL_IdVector &J)
+  {
+    // Find all common global_ids (entry.first) between 'I' and 'J'.
+    // When found, store the proc-zone-local position (entry.second)
+    // in 'common'
+    // PRECONDITION: 'I' and 'J' are sorted.
+
+    auto        min_size = std::min(I.size(), J.size());
+    GL_IdVector common;
+    common.reserve(min_size);
+
+    auto II = I.begin();
+    auto JJ = J.begin();
+    while (II != I.end() && JJ != J.end()) {
+      if ((*II).first < (*JJ).first) {
+        ++II;
+      }
+      else {
+        if (!((*JJ).first < (*II).first)) {
+          common.emplace_back((*II).second, (*JJ).second);
+          ++II;
+        }
+        ++JJ;
+      }
+    }
+    common.shrink_to_fit();
+    return common;
   }
 } // namespace
 
@@ -627,43 +690,27 @@ namespace Iocgns {
   void ParallelDatabaseIO::write_adjacency_data()
   {
     // Determine adjacency information between unstructured blocks.
-    // Could save this information from the input mesh, but then
-    // could not read an exodus mesh and write a cgns mesh.
-    // However, in long run may still want to read/save input adjacency
-    // data if doing cgns -> cgns...  For now, try generating information.
-
     // If block I is adjacent to block J, then they will share at
     // least 1 "side" (face 3D or edge 2D).
     // Currently, assuming they are adjacent if they share at least one node...
 
-    // There is a "global" node id in which all nodes have a unique id
-    // and if a node is contiguous between two or more zones, it will
-    // have the same "global" id on each zone.
-    //
-    // There is also a "zone-global" id which is 1-based and is
-    // basically a count of all nodes (shared or not) in the model.
-    // Zone 1 will have ids 1..node_count_zone1,
-    // Zone 2 will have ids node_count_zone1+1..node_count_zone1+node_count_zone2,
-
-    // global ids are always resolved such that the id in the
-    // lower-numbered zone wins.  Therefore, the global ids in zone 1
-    // will match the zone-global ids.
-    // A node in zone 2 can only potentially match a node in zone 1 if
-    // its id is less than node_count_zone1.
-    // ... to be continued
+    // TODO: All calculations are done on processor 0 instead of being distributed.
+    //       this will not scale well...
 
     const auto &blocks = get_region()->get_element_blocks();
     if (blocks.size() <= 1) {
       return; // No adjacent blocks if only one block...
     }
 
-#if 1
-    // NEW VERSION...
+    // =================
+    // Determine the minimum and maximum global node id for each zone.
+    // This will be used When determining whether 2 zones are
+    // connected by checking whether the global id node ranges overlap
     std::vector<int64_t> zone_min_id(blocks.size() + 1, std::numeric_limits<int64_t>::max());
     std::vector<int64_t> zone_max_id(blocks.size() + 1, std::numeric_limits<int64_t>::min());
 
-    for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
-      int zone = (*I)->get_property("zone").get_int();
+    for (const auto &block : blocks) {
+      int zone = block->get_property("zone").get_int();
       assert(zone < blocks.size() + 1);
 
       const auto &I_map = m_globalToBlockLocalNodeMap[zone];
@@ -679,39 +726,23 @@ namespace Iocgns {
     // Get min/max over all processors for each zone...
     util().global_array_minmax(zone_min_id, Ioss::ParallelUtils::DO_MIN);
     util().global_array_minmax(zone_max_id, Ioss::ParallelUtils::DO_MAX);
+    // =================
+
+    auto node_offset = get_processor_zone_node_offset();
 
     // Now iterate the blocks again.  If the node ranges overlap, then
     // there is a possibility that there are contiguous nodes; if the
     // ranges don't overlap, then no possibility...
-    for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
+    for (auto I = blocks.cbegin(); I != std::prev(blocks.cend()); I++) {
+      int base = (*I)->get_property("base").get_int();
       int zone = (*I)->get_property("zone").get_int();
 
       // See how many zone I nodes Proc x has that can potentially
       // overlap with the zones I+1 to end.  This will be all nodes
       // with id > min(zone_min_id[I+1..])
-      auto min_I = std::min_element(&zone_min_id[zone + 1], &zone_min_id[blocks.size()]);
-
-      const auto &                     I_map = m_globalToBlockLocalNodeMap[zone];
-      std::vector<std::pair<int, int>> I_nodes;
-      for (size_t i = 0; i < I_map->size(); i++) {
-        auto global_id = I_map->map()[i + 1];
-        if (global_id >= *min_I) {
-          I_nodes.emplace_back((int)global_id, (int)i + 1);
-        }
-      }
-
-      std::vector<int> recv_count;
-      util().gather(2 * (int)I_nodes.size(), recv_count);
-      std::vector<int> recv_off(recv_count);
-
-      auto count = std::accumulate(recv_count.begin(), recv_count.end(), 0);
-      if (myProcessor == 0) {
-        I_nodes.resize(count / 2);
-        Ioss::Utils::generate_index(recv_off);
-      }
-
-      MPI_Gatherv(I_nodes.data(), (int)I_nodes.size() * 2, MPI_INT, I_nodes.data(),
-                  recv_count.data(), recv_off.data(), MPI_INT, 0, util().communicator());
+      auto min_I   = std::min_element(&zone_min_id[zone + 1], &zone_min_id[blocks.size()]);
+      auto I_nodes = gather_nodes_to_proc0(*m_globalToBlockLocalNodeMap[zone], myProcessor,
+                                           node_offset[zone - 1], util(), *min_I);
 
       for (auto J = I + 1; J != blocks.end(); J++) {
         cgsize_t dzone = (*J)->get_property("zone").get_int();
@@ -719,88 +750,73 @@ namespace Iocgns {
         if (zone_min_id[dzone] <= zone_max_id[zone] && zone_max_id[dzone] >= zone_min_id[zone]) {
           // Now gather all zone J nodes that can potentially overlap
           // with zone I to processor 0...
-          const auto &                     J_map = m_globalToBlockLocalNodeMap[dzone];
-          std::vector<std::pair<int, int>> J_nodes;
-          for (size_t i = 0; i < J_map->size(); i++) {
-            auto global_id = J_map->map()[i + 1];
-            if (global_id >= zone_min_id[zone] && global_id <= zone_max_id[zone]) {
-              J_nodes.emplace_back((int)global_id, (int)i + 1);
-            }
-          }
-
-          util().gather(2 * (int)J_nodes.size(), recv_count);
-          recv_off = recv_count;
-          count    = std::accumulate(recv_count.begin(), recv_count.end(), 0);
+          auto J_nodes = gather_nodes_to_proc0(*m_globalToBlockLocalNodeMap[dzone], myProcessor,
+                                               node_offset[dzone - 1], util(), zone_min_id[zone],
+                                               zone_max_id[zone]);
+          GL_IdVector common;
           if (myProcessor == 0) {
-            J_nodes.resize(count / 2);
-            Ioss::Utils::generate_index(recv_off);
-          }
+            common = intersect(I_nodes, J_nodes);
 
-          MPI_Gatherv(J_nodes.data(), (int)J_nodes.size() * 2, MPI_INT, J_nodes.data(),
-                      recv_count.data(), recv_off.data(), MPI_INT, 0, util().communicator());
-
-          std::cout << "J_nodes\n";
-          // Now match up I_nodes with J_nodes...
-        }
-      }
-    }
-#else
-    // OLD CODE...
-    for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
-      int base = (*I)->get_property("base").get_int();
-      int zone = (*I)->get_property("zone").get_int();
-
-      const auto &I_map = m_globalToBlockLocalNodeMap[zone];
-
-      // Flag all nodes used by this block...
-      std::vector<size_t> I_nodes(node_count);
-      for (size_t i = 0; i < I_map->size(); i++) {
-        auto global     = I_map->map()[i + 1] - 1;
-        I_nodes[global] = i + 1;
-      }
-      for (auto J = I + 1; J != blocks.end(); J++) {
-        cgsize_t      dzone = (*J)->get_property("zone").get_int();
-        const auto &  J_map = m_globalToBlockLocalNodeMap[dzone];
-        CGNSIntVector point_list;
-        CGNSIntVector point_list_donor;
-        for (size_t i = 0; i < J_map->size(); i++) {
-          auto global = J_map->map()[i + 1] - 1;
-          if (I_nodes[global] > 0) {
-            // Have a match between nodes used by two different blocks,
-            // They are adjacent...
-            point_list.push_back(I_nodes[global]);
-            point_list_donor.push_back(i + 1);
-          }
-        }
-
-        // If point_list non_empty, then output this adjacency node...
-        int non_empty = point_list.empty() ? 0 : 1;
-        MPI_Allreduce(MPI_IN_PLACE, &non_empty, 1, Ioss::mpi_type(non_empty), MPI_SUM,
-                      util().communicator());
-        if (non_empty > 0) {
-          int         gc_idx = 0;
-          std::string name   = (*I)->name();
-          name += "_to_";
-          name += (*J)->name();
-          const auto &d1_name = (*J)->name();
-          CGCHECK(cg_conn_write(cgnsFilePtr, base, zone, name.c_str(), CG_Vertex, CG_Abutting1to1,
-                                CG_PointList, point_list.size(), point_list.data(), d1_name.c_str(),
-                                CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
-                                point_list_donor.size(), point_list_donor.data(), &gc_idx));
-
-          name = (*J)->name();
-          name += "_to_";
-          name += (*I)->name();
-          const auto &d2_name = (*I)->name();
-
-          CGCHECK(cg_conn_write(cgnsFilePtr, base, dzone, name.c_str(), CG_Vertex, CG_Abutting1to1,
-                                CG_PointList, point_list_donor.size(), point_list_donor.data(),
-                                d2_name.c_str(), CG_Unstructured, CG_PointListDonor,
-                                CG_DataTypeNull, point_list.size(), point_list.data(), &gc_idx));
-        }
-      }
-    }
+#if IOSS_DEBUG_OUTPUT
+            std::cout << "Zone " << zone << ": " << I_nodes.size() << ", Donor Zone " << dzone
+                      << ": " << J_nodes.size() << " Common: " << common.size() << "\n\t";
+            for (const auto &p : common) {
+              std::cout << p.first << ", ";
+            }
+            std::cout << "\n\t";
+            for (const auto &p : common) {
+              std::cout << p.second << ", ";
+            }
+            std::cout << "\n";
 #endif
+          }
+
+          int size = (int)common.size();
+          MPI_Bcast(&size, 1, MPI_INT, 0, util().communicator());
+
+          if (size > 0) {
+            // This 'cg_conn_write' should probably be a parallel
+            // function.  Since one does not exist, we output the same
+            // data on all processors.  Seems to work, but is klugy.
+
+            common.resize(size);
+            MPI_Bcast(common.data(), 2 * size, MPI_INT, 0, util().communicator());
+
+            std::vector<cgsize_t> point_list;
+            std::vector<cgsize_t> point_list_donor;
+            point_list.reserve(common.size());
+            point_list_donor.reserve(common.size());
+
+            for (auto pnt : common) {
+              point_list.push_back(pnt.first);
+              point_list_donor.push_back(pnt.second);
+            }
+
+            int         gc_idx = 0;
+            std::string name   = (*I)->name();
+            name += "_to_";
+            name += (*J)->name();
+            const auto &d1_name = (*J)->name();
+
+            CGCHECK(cg_conn_write(cgnsFilePtr, base, zone, name.c_str(), CG_Vertex, CG_Abutting1to1,
+                                  CG_PointList, point_list.size(), point_list.data(),
+                                  d1_name.c_str(), CG_Unstructured, CG_PointListDonor,
+                                  CG_DataTypeNull, point_list_donor.size(), point_list_donor.data(),
+                                  &gc_idx));
+
+            name = (*J)->name();
+            name += "_to_";
+            name += (*I)->name();
+            const auto &d2_name = (*I)->name();
+
+            CGCHECK(cg_conn_write(
+                cgnsFilePtr, base, dzone, name.c_str(), CG_Vertex, CG_Abutting1to1, CG_PointList,
+                point_list_donor.size(), point_list_donor.data(), d2_name.c_str(), CG_Unstructured,
+                CG_PointListDonor, CG_DataTypeNull, point_list.size(), point_list.data(), &gc_idx));
+          }
+        }
+      }
+    }
   }
 
   bool ParallelDatabaseIO::begin__(Ioss::State state)
@@ -1452,17 +1468,7 @@ namespace Iocgns {
                field.get_name() == "mesh_model_coordinates_z") {
         double *rdata = static_cast<double *>(data);
 
-        size_t               num_zones = m_globalToBlockLocalNodeMap.size();
-        std::vector<int64_t> node_count(num_zones);
-        std::vector<int64_t> node_offset(num_zones);
-
-        for (const auto &block : m_globalToBlockLocalNodeMap) {
-          auto        zone      = block.first;
-          const auto &block_map = block.second;
-          node_count[zone - 1]  = block_map->size();
-        }
-        MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
-                   MPI_SUM, util().communicator());
+        std::vector<int64_t> node_offset = get_processor_zone_node_offset();
 
         if (field.get_name() == "mesh_model_coordinates") {
           int spatial_dim = nb->get_property("component_degree").get_int();
@@ -1499,22 +1505,22 @@ namespace Iocgns {
             CGCHECK(
                 cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx));
             cgsize_t start  = node_offset[zone - 1] + 1;
-            cgsize_t finish = start + node_count[zone - 1] - 1;
+            cgsize_t finish = start + block_map->size() - 1;
 
-            auto xx = node_count[zone - 1] > 0 ? TOPTR(x) : nullptr;
+            auto xx = block_map->size() > 0 ? TOPTR(x) : nullptr;
             CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx));
 
             if (spatial_dim > 1) {
               CGCHECK(
                   cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx));
-              auto yy = node_count[zone - 1] > 0 ? TOPTR(y) : nullptr;
+              auto yy = block_map->size() > 0 ? TOPTR(y) : nullptr;
               CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, yy));
             }
 
             if (spatial_dim > 2) {
               CGCHECK(
                   cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx));
-              auto zz = node_count[zone - 1] > 0 ? TOPTR(z) : nullptr;
+              auto zz = block_map->size() > 0 ? TOPTR(z) : nullptr;
               CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, zz));
             }
           }
@@ -1551,8 +1557,8 @@ namespace Iocgns {
             CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, cgns_name.c_str(),
                                     &crd_idx));
             cgsize_t start  = node_offset[zone - 1] + 1;
-            cgsize_t finish = start + node_count[zone - 1] - 1;
-            auto     xx     = node_count[zone - 1] > 0 ? TOPTR(xyz) : nullptr;
+            cgsize_t finish = start + block_map->size() - 1;
+            auto     xx     = block_map->size() > 0 ? TOPTR(xyz) : nullptr;
             CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx));
           }
         }
@@ -1568,17 +1574,7 @@ namespace Iocgns {
       // This map is built during the output of block connectivity,
       // so for cgns unstructured mesh, we need to output ElementBlock connectivity
       // prior to outputting nodal coordinates.
-      size_t               num_zones = m_globalToBlockLocalNodeMap.size();
-      std::vector<int64_t> node_count(num_zones);
-      std::vector<int64_t> node_offset(num_zones);
-
-      for (const auto &block : m_globalToBlockLocalNodeMap) {
-        auto        zone      = block.first;
-        const auto &block_map = block.second;
-        node_count[zone - 1]  = block_map->size();
-      }
-      MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
-                 MPI_SUM, util().communicator());
+      std::vector<int64_t> node_offset = get_processor_zone_node_offset();
 
       const Ioss::VariableType *var_type   = field.raw_storage();
       size_t                    comp_count = var_type->component_count();
@@ -1594,7 +1590,7 @@ namespace Iocgns {
         std::vector<double> blk_data(block_map->size());
 
         cgsize_t range_min[1] = {(cgsize_t)node_offset[zone - 1] + 1};
-        cgsize_t range_max[1] = {range_min[0] + (cgsize_t)node_count[zone - 1] - 1};
+        cgsize_t range_max[1] = {range_min[0] + (cgsize_t)block_map->size() - 1};
 
         char field_suffix_separator = get_field_separator();
 
@@ -2112,27 +2108,7 @@ namespace Iocgns {
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
                                                  void *data, size_t data_size) const
   {
-    Ioss::Field::RoleType role       = field.get_role();
-    size_t                num_to_get = field.verify(data_size);
-
-    if (role == Ioss::Field::COMMUNICATION) {
-      if (field.get_name() == "entity_processor") {
-        m_sharedNodes.reserve(num_to_get);
-        if (int_byte_size_api() == 8) {
-          int64_t *idata = static_cast<int64_t *>(data);
-          for (size_t i = 0; i < num_to_get; i++) {
-            m_sharedNodes.emplace_back(idata[2 * i], idata[2 * i + 1]);
-          }
-        }
-        else {
-          int *idata = static_cast<int *>(data);
-          for (size_t i = 0; i < num_to_get; i++) {
-            m_sharedNodes.emplace_back(idata[2 * i], idata[2 * i + 1]);
-          }
-        }
-      }
-    }
-    return num_to_get;
+    return -1;
   }
 
   void ParallelDatabaseIO::write_results_meta_data() {}
@@ -2201,4 +2177,26 @@ namespace Iocgns {
     }
     return num_to_get;
   }
+
+  std::vector<int64_t> ParallelDatabaseIO::get_processor_zone_node_offset() const
+  {
+    size_t               num_zones = m_globalToBlockLocalNodeMap.size();
+    std::vector<int64_t> node_count(num_zones);
+    std::vector<int64_t> node_offset(num_zones);
+
+    for (const auto &block : m_globalToBlockLocalNodeMap) {
+      auto        zone      = block.first;
+      const auto &block_map = block.second;
+      node_count[zone - 1]  = block_map->size();
+    }
+    MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
+               MPI_SUM, util().communicator());
+
+    for (size_t i = 0; i < node_count.size(); i++) {
+      std::cerr << "P[" << myProcessor << "] zone, count, offset: " << i + 1 << " " << node_count[i]
+                << " " << node_offset[i] << "\n";
+    }
+    return node_offset;
+  }
+
 } // namespace Iocgns
