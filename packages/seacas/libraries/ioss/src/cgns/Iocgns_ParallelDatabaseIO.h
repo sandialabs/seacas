@@ -98,7 +98,7 @@ namespace Iocgns {
     void closeDatabase__() const override;
     bool node_major() const override { return false; }
 
-    bool needs_shared_node_information() const override { return true; }
+    bool needs_shared_node_information() const override { return false; }
 
     // This isn't quite true since a CGNS library with cgsize_t == 64-bits can read
     // a file with 32-bit ints. However,...
@@ -190,6 +190,8 @@ namespace Iocgns {
     void resolve_zone_shared_nodes(const CGNSIntVector &nodes, CGNSIntVector &connectivity_map,
                                    size_t &owned_node_count, size_t &owned_node_offset) const;
 
+    std::vector<int64_t> get_processor_zone_node_offset() const;
+
     mutable int   cgnsFilePtr{-1};
     CG_ZoneType_t m_zoneType{CG_ZoneTypeNull};
 
@@ -200,15 +202,11 @@ namespace Iocgns {
 
     mutable std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
 
-    // Of the cells/elements in this zone, this proc handles those starting at m_zoneProcOffset+1 to
-    // m_zoneProcOffset+num_entity.
-    mutable std::vector<size_t> m_zoneProcOffset;
     mutable std::vector<size_t>
                                        m_bcOffset; // The BC Section element offsets in unstructured output.
     mutable std::vector<double>        m_timesteps; // Should be able to get this from region?
     std::map<std::string, int>         m_zoneNameMap;
     mutable std::map<int, Ioss::Map *> m_globalToBlockLocalNodeMap;
-    mutable std::vector<std::pair<int64_t, int>> m_sharedNodes;
     mutable CGNSIntVector
         m_elemGlobalImplicitMap; // Position of this element in the global-implicit ordering
   };
