@@ -116,6 +116,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a65686647761a8ee32e4a4d4e866d196f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f3b2d6a6ac736d341fee8db95c6fc4b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a4f3b2d6a6ac736d341fee8db95c6fc4b">power_2</a> (int count)</td></tr>
 <tr class="separator:a4f3b2d6a6ac736d341fee8db95c6fc4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dc73348c31bc226725b3e62cdbf3dac"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a5dc73348c31bc226725b3e62cdbf3dac"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a5dc73348c31bc226725b3e62cdbf3dac">check_block_order</a> (const std::vector&lt; T *&gt; &amp;blocks)</td></tr>
+<tr class="separator:a5dc73348c31bc226725b3e62cdbf3dac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78ab83fa66bd69d336118e0e72a84241"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a78ab83fa66bd69d336118e0e72a84241">log_power_2</a> (uint64_t value)</td></tr>
 <tr class="separator:a78ab83fa66bd69d336118e0e72a84241"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af25be5c9b86bb94f9c0dcb39bf255250"><td class="memItemLeft" align="right" valign="top">static char **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#af25be5c9b86bb94f9c0dcb39bf255250">get_name_array</a> (size_t count, int size)</td></tr>
@@ -152,6 +155,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a48106bb99507951b4655783fe6ceb0f8"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a48106bb99507951b4655783fe6ceb0f8">lowercase</a> (std::string name)</td></tr>
 <tr class="memdesc:a48106bb99507951b4655783fe6ceb0f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a string to lower case.  <a href="#a48106bb99507951b4655783fe6ceb0f8">More...</a><br /></td></tr>
 <tr class="separator:a48106bb99507951b4655783fe6ceb0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cdb54933afe453c3a00a20308c338da"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a3cdb54933afe453c3a00a20308c338da">check_non_null</a> (void *ptr, const char *type, const std::string &amp;name, const std::string &amp;func)</td></tr>
+<tr class="separator:a3cdb54933afe453c3a00a20308c338da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4345fe52d79d612a6d4779e260e0006b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a4345fe52d79d612a6d4779e260e0006b">case_strcmp</a> (const std::string &amp;s1, const std::string &amp;s2)</td></tr>
 <tr class="memdesc:a4345fe52d79d612a6d4779e260e0006b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case-insensitive string comparison.  <a href="#a4345fe52d79d612a6d4779e260e0006b">More...</a><br /></td></tr>
 <tr class="separator:a4345fe52d79d612a6d4779e260e0006b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -420,6 +425,34 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a5dc73348c31bc226725b3e62cdbf3dac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dc73348c31bc226725b3e62cdbf3dac">&#9670;&nbsp;</a></span>check_block_order()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool Ioss::Utils::check_block_order </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T *&gt; &amp;&#160;</td>
+          <td class="paramname"><em>blocks</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a7f09e4d2470eab1b903ca420d96e6748"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7f09e4d2470eab1b903ca420d96e6748">&#9670;&nbsp;</a></span>check_dynamic_cast()</h2>
 
@@ -440,6 +473,54 @@ Static Public Member Functions</h2></td></tr>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3cdb54933afe453c3a00a20308c338da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cdb54933afe453c3a00a20308c338da">&#9670;&nbsp;</a></span>check_non_null()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::Utils::check_non_null </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>func</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

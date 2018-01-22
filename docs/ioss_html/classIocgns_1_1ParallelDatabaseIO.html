@@ -120,6 +120,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a461a816513692d456089de4f72040600"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51305aa15abb2768b43390b41925e811"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a51305aa15abb2768b43390b41925e811">node_major</a> () const override</td></tr>
 <tr class="separator:a51305aa15abb2768b43390b41925e811"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ef264028e3c96819cf3dc6d9a6621ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a7ef264028e3c96819cf3dc6d9a6621ea">needs_shared_node_information</a> () const override</td></tr>
+<tr class="memdesc:a7ef264028e3c96819cf3dc6d9a6621ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the database needs information about proces ownership of nodes.  <a href="#a7ef264028e3c96819cf3dc6d9a6621ea">More...</a><br /></td></tr>
+<tr class="separator:a7ef264028e3c96819cf3dc6d9a6621ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49e4ab82e5a60f2f2b09f194b18b429f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a49e4ab82e5a60f2f2b09f194b18b429f">int_byte_size_db</a> () const override</td></tr>
 <tr class="separator:a49e4ab82e5a60f2f2b09f194b18b429f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2b8a640abe6f40a0874b0cb9022392c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#af2b8a640abe6f40a0874b0cb9022392c">begin__</a> (<a class="el" href="namespaceIoss.html#a02dbd3bfbd7f633e636c8c0c385c4a34">Ioss::State</a> state) override</td></tr>
@@ -160,9 +163,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a057729fb7cf18d9dd49042e1166976bc inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#a4ec41517502e82a7291184cd7b68b34f">Ioss::DatabaseUsage</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a057729fb7cf18d9dd49042e1166976bc">usage</a> () const</td></tr>
 <tr class="memdesc:a057729fb7cf18d9dd49042e1166976bc inherit pub_methods_classIoss_1_1DatabaseIO"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <a class="el" href="namespaceIoss.html#a4ec41517502e82a7291184cd7b68b34f" title="Specifies how an Ioss::DatabaseIO object will be used. ">Ioss::DatabaseUsage</a> type of the database.  <a href="classIoss_1_1DatabaseIO.html#a057729fb7cf18d9dd49042e1166976bc">More...</a><br /></td></tr>
 <tr class="separator:a057729fb7cf18d9dd49042e1166976bc inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31dbf4c27fae8fd9160e99a2c318f4a9 inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a31dbf4c27fae8fd9160e99a2c318f4a9">needs_shared_node_information</a> () const</td></tr>
-<tr class="memdesc:a31dbf4c27fae8fd9160e99a2c318f4a9 inherit pub_methods_classIoss_1_1DatabaseIO"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the database needs information about proces ownership of nodes.  <a href="classIoss_1_1DatabaseIO.html#a31dbf4c27fae8fd9160e99a2c318f4a9">More...</a><br /></td></tr>
-<tr class="separator:a31dbf4c27fae8fd9160e99a2c318f4a9 inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a110ec1217f40eade5bf71e0e490a602b inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#ae1de565aa8b642bb5a50be439906c74d">Ioss::IfDatabaseExistsBehavior</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a110ec1217f40eade5bf71e0e490a602b">open_create_behavior</a> () const</td></tr>
 <tr class="separator:a110ec1217f40eade5bf71e0e490a602b inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8699adfe7e31b56a149321e7c6d9e82b inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a8699adfe7e31b56a149321e7c6d9e82b">create_path</a> (const std::string &amp;filename) const</td></tr>
@@ -364,22 +364,16 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a30f1d30426f7779c7dcc7511fe63b247"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76a23ce6c827706c14cf9c1bc50ef5c2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a76a23ce6c827706c14cf9c1bc50ef5c2">get_map</a> (<a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> &amp;entity_map, int64_t entityCount, int64_t file_offset, int64_t file_count, <a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a4247fb1abcd19c826bbf276ac466cea9">entity_type</a> type) const</td></tr>
 <tr class="separator:a76a23ce6c827706c14cf9c1bc50ef5c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6ed6ab0c75ae47c47d9576615678ab1"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#ac6ed6ab0c75ae47c47d9576615678ab1">handle_element_ids</a> (const <a class="el" href="classIoss_1_1ElementBlock.html">Ioss::ElementBlock</a> *eb, void *ids, size_t num_to_get, size_t offset, size_t count) const</td></tr>
+<tr class="separator:ac6ed6ab0c75ae47c47d9576615678ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabb54ffc03ceb8ac1e66cd3c79eac82f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#aabb54ffc03ceb8ac1e66cd3c79eac82f">resolve_zone_shared_nodes</a> (const <a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">CGNSIntVector</a> &amp;nodes, <a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">CGNSIntVector</a> &amp;connectivity_map, size_t &amp;owned_node_count, size_t &amp;owned_node_offset) const</td></tr>
 <tr class="separator:aabb54ffc03ceb8ac1e66cd3c79eac82f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:ac164f53c78f28d5c3d3ed00f14aa1d01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Map.html">Ioss::Map</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#ac164f53c78f28d5c3d3ed00f14aa1d01">nodeMap</a></td></tr>
-<tr class="separator:ac164f53c78f28d5c3d3ed00f14aa1d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b91f27c3e2cf828c63ff6f346ce760a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Map.html">Ioss::Map</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a1b91f27c3e2cf828c63ff6f346ce760a">elemMap</a></td></tr>
-<tr class="separator:a1b91f27c3e2cf828c63ff6f346ce760a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab90ab4d22f0d490bf46e6f3d9ce32e1f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#ab90ab4d22f0d490bf46e6f3d9ce32e1f">cgnsFilePtr</a></td></tr>
+<tr class="memitem:ab90ab4d22f0d490bf46e6f3d9ce32e1f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#ab90ab4d22f0d490bf46e6f3d9ce32e1f">cgnsFilePtr</a> {-1}</td></tr>
 <tr class="separator:ab90ab4d22f0d490bf46e6f3d9ce32e1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d20ab51886edf139f4dfdb6605e170b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a5d20ab51886edf139f4dfdb6605e170b">nodeCount</a></td></tr>
-<tr class="separator:a5d20ab51886edf139f4dfdb6605e170b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8eb7233e7efbe9b179a540b33f8b71ed"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a8eb7233e7efbe9b179a540b33f8b71ed">elementCount</a></td></tr>
-<tr class="separator:a8eb7233e7efbe9b179a540b33f8b71ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a006dd78660b6f0fd8d6b39564b622543"><td class="memItemLeft" align="right" valign="top">CG_ZoneType_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a006dd78660b6f0fd8d6b39564b622543">m_zoneType</a></td></tr>
+<tr class="memitem:a006dd78660b6f0fd8d6b39564b622543"><td class="memItemLeft" align="right" valign="top">CG_ZoneType_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a006dd78660b6f0fd8d6b39564b622543">m_zoneType</a> {CG_ZoneTypeNull}</td></tr>
 <tr class="separator:a006dd78660b6f0fd8d6b39564b622543"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79b280acd4bdf71ffea61a670ed5d52a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classIocgns_1_1DecompositionDataBase.html">DecompositionDataBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a79b280acd4bdf71ffea61a670ed5d52a">decomp</a></td></tr>
 <tr class="separator:a79b280acd4bdf71ffea61a670ed5d52a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -395,12 +389,14 @@ Private Attributes</h2></td></tr>
 <tr class="separator:af1ae3c200fb1a93c114f45904da0a6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af376a0705537e820b5bdf11f0c5d367a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#af376a0705537e820b5bdf11f0c5d367a">m_timesteps</a></td></tr>
 <tr class="separator:af376a0705537e820b5bdf11f0c5d367a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a858b96665d52528c89a3a5118db6f8f7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">CGNSIntVector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a858b96665d52528c89a3a5118db6f8f7">m_blockLocalNodeMap</a></td></tr>
-<tr class="separator:a858b96665d52528c89a3a5118db6f8f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adeebce2d5533613a8184732aa8398cff"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#adeebce2d5533613a8184732aa8398cff">m_zoneNameMap</a></td></tr>
 <tr class="separator:adeebce2d5533613a8184732aa8398cff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea0de732859adf04aa0e4cb3d27cb88e"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, <a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#aea0de732859adf04aa0e4cb3d27cb88e">m_globalToBlockLocalNodeMap</a></td></tr>
 <tr class="separator:aea0de732859adf04aa0e4cb3d27cb88e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62afd05175be26b2d86d829ce99d6b41"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; int64_t, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a62afd05175be26b2d86d829ce99d6b41">m_sharedNodes</a></td></tr>
+<tr class="separator:a62afd05175be26b2d86d829ce99d6b41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd5fb56a7a82aa2cecf989e781e90084"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">CGNSIntVector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#abd5fb56a7a82aa2cecf989e781e90084">m_elemGlobalImplicitMap</a></td></tr>
+<tr class="separator:abd5fb56a7a82aa2cecf989e781e90084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -434,6 +430,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a1c53cb32bfb7940d689ead8c42deab8f inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a1c53cb32bfb7940d689ead8c42deab8f">myProcessor</a></td></tr>
 <tr class="memdesc:a1c53cb32bfb7940d689ead8c42deab8f inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of processor this database is for  <a href="classIoss_1_1DatabaseIO.html#a1c53cb32bfb7940d689ead8c42deab8f">More...</a><br /></td></tr>
 <tr class="separator:a1c53cb32bfb7940d689ead8c42deab8f inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae53a675e757ae1c5c6176a313e0ccade inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ae53a675e757ae1c5c6176a313e0ccade">nodeCount</a> {0}</td></tr>
+<tr class="separator:ae53a675e757ae1c5c6176a313e0ccade inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d52c092b77da863212ce66c18d96bf1 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a2d52c092b77da863212ce66c18d96bf1">elementCount</a> {0}</td></tr>
+<tr class="separator:a2d52c092b77da863212ce66c18d96bf1 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47d138d2dbbd0e6f5091a4a2380ca1d4 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#ad5754042c620d77906bdcf51cd9d13e3">TopoContainer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a47d138d2dbbd0e6f5091a4a2380ca1d4">sideTopology</a></td></tr>
 <tr class="memdesc:a47d138d2dbbd0e6f5091a4a2380ca1d4 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to speed up faceblock/edgeblock calculations.  <a href="classIoss_1_1DatabaseIO.html#a47d138d2dbbd0e6f5091a4a2380ca1d4">More...</a><br /></td></tr>
 <tr class="separator:a47d138d2dbbd0e6f5091a4a2380ca1d4 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -459,6 +459,16 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a07ae9f3f52be98b33b1af2ac084e8c7e inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abaf1032632e81a483325df150aaaffaa inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#abaf1032632e81a483325df150aaaffaa">qaRecords</a></td></tr>
 <tr class="separator:abaf1032632e81a483325df150aaaffaa inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d9f58f4670a4a98009661f3cf964e2c inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Map.html">Ioss::Map</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a4d9f58f4670a4a98009661f3cf964e2c">nodeMap</a> {&quot;node&quot;, DBFilename, <a class="el" href="classIoss_1_1DatabaseIO.html#a1c53cb32bfb7940d689ead8c42deab8f">myProcessor</a>}</td></tr>
+<tr class="separator:a4d9f58f4670a4a98009661f3cf964e2c inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c21a1a17be230f700b07a7c4097f4f6 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Map.html">Ioss::Map</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a8c21a1a17be230f700b07a7c4097f4f6">edgeMap</a> {&quot;edge&quot;, DBFilename, <a class="el" href="classIoss_1_1DatabaseIO.html#a1c53cb32bfb7940d689ead8c42deab8f">myProcessor</a>}</td></tr>
+<tr class="separator:a8c21a1a17be230f700b07a7c4097f4f6 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae75a4987018efc0b12cf0937a865ab7 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Map.html">Ioss::Map</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#aae75a4987018efc0b12cf0937a865ab7">faceMap</a> {&quot;face&quot;, DBFilename, <a class="el" href="classIoss_1_1DatabaseIO.html#a1c53cb32bfb7940d689ead8c42deab8f">myProcessor</a>}</td></tr>
+<tr class="separator:aae75a4987018efc0b12cf0937a865ab7 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bcb3390ec67606fc0151181d7c2dc22 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Map.html">Ioss::Map</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a3bcb3390ec67606fc0151181d7c2dc22">elemMap</a> {&quot;element&quot;, DBFilename, <a class="el" href="classIoss_1_1DatabaseIO.html#a1c53cb32bfb7940d689ead8c42deab8f">myProcessor</a>}</td></tr>
+<tr class="separator:a3bcb3390ec67606fc0151181d7c2dc22 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe17eae189de84c0382635eed06c90f4 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; bool &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#afe17eae189de84c0382635eed06c90f4">blockAdjacency</a></td></tr>
+<tr class="separator:afe17eae189de84c0382635eed06c90f4 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a4247fb1abcd19c826bbf276ac466cea9"></a>
@@ -675,7 +685,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classIoss_1_1DatabaseIO.html#a62a6dde8b641e12c8c4821f3084b06ca">Ioss::DatabaseIO</a>.</p>
+<p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#aaeb53d638a78885f4bdcb08f86fdcb65">Ioss::DatabaseIO</a>.</p>
 
 </div>
 </div>
@@ -1587,6 +1597,60 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="ac6ed6ab0c75ae47c47d9576615678ab1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6ed6ab0c75ae47c47d9576615678ab1">&#9670;&nbsp;</a></span>handle_element_ids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t Iocgns::ParallelDatabaseIO::handle_element_ids </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classIoss_1_1ElementBlock.html">Ioss::ElementBlock</a> *&#160;</td>
+          <td class="paramname"><em>eb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>ids</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>num_to_get</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ae51f101cc3cf61762ef4b268281255c6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae51f101cc3cf61762ef4b268281255c6">&#9670;&nbsp;</a></span>handle_node_ids()</h2>
 
@@ -1711,6 +1775,36 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a7ef264028e3c96819cf3dc6d9a6621ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ef264028e3c96819cf3dc6d9a6621ea">&#9670;&nbsp;</a></span>needs_shared_node_information()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Iocgns::ParallelDatabaseIO::needs_shared_node_information </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Determine whether the database needs information about proces ownership of nodes. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if database needs information about process ownership of nodes. </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#a31dbf4c27fae8fd9160e99a2c318f4a9">Ioss::DatabaseIO</a>.</p>
+
+</div>
+</div>
 <a id="ada61a387605f9e662678fa3e71767c5a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ada61a387605f9e662678fa3e71767c5a">&#9670;&nbsp;</a></span>node_global_to_local__()</h2>
 
@@ -1745,7 +1839,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classIoss_1_1DatabaseIO.html#a58f91d30537c4084748bd28de4025be7">Ioss::DatabaseIO</a>.</p>
+<p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#a9aee6ca9b63ac01505ea97b4c966b8a2">Ioss::DatabaseIO</a>.</p>
 
 </div>
 </div>
@@ -2626,7 +2720,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int Iocgns::ParallelDatabaseIO::cgnsFilePtr</td>
+          <td class="memname">int Iocgns::ParallelDatabaseIO::cgnsFilePtr {-1}</td>
         </tr>
       </table>
   </td>
@@ -2660,50 +2754,6 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a8eb7233e7efbe9b179a540b33f8b71ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8eb7233e7efbe9b179a540b33f8b71ed">&#9670;&nbsp;</a></span>elementCount</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t Iocgns::ParallelDatabaseIO::elementCount</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a1b91f27c3e2cf828c63ff6f346ce760a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b91f27c3e2cf828c63ff6f346ce760a">&#9670;&nbsp;</a></span>elemMap</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> Iocgns::ParallelDatabaseIO::elemMap</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="af1ae3c200fb1a93c114f45904da0a6ee"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af1ae3c200fb1a93c114f45904da0a6ee">&#9670;&nbsp;</a></span>m_bcOffset</h2>
 
@@ -2720,28 +2770,6 @@ Additional Inherited Members</h2></td></tr>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a858b96665d52528c89a3a5118db6f8f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a858b96665d52528c89a3a5118db6f8f7">&#9670;&nbsp;</a></span>m_blockLocalNodeMap</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">CGNSIntVector</a>&gt; Iocgns::ParallelDatabaseIO::m_blockLocalNodeMap</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -2792,6 +2820,28 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="abd5fb56a7a82aa2cecf989e781e90084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd5fb56a7a82aa2cecf989e781e90084">&#9670;&nbsp;</a></span>m_elemGlobalImplicitMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">CGNSIntVector</a> Iocgns::ParallelDatabaseIO::m_elemGlobalImplicitMap</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aea0de732859adf04aa0e4cb3d27cb88e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aea0de732859adf04aa0e4cb3d27cb88e">&#9670;&nbsp;</a></span>m_globalToBlockLocalNodeMap</h2>
 
@@ -2803,6 +2853,28 @@ Additional Inherited Members</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::map&lt;int, <a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> *&gt; Iocgns::ParallelDatabaseIO::m_globalToBlockLocalNodeMap</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a62afd05175be26b2d86d829ce99d6b41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62afd05175be26b2d86d829ce99d6b41">&#9670;&nbsp;</a></span>m_sharedNodes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::pair&lt;int64_t,int&gt; &gt; Iocgns::ParallelDatabaseIO::m_sharedNodes</td>
         </tr>
       </table>
   </td>
@@ -2912,56 +2984,12 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">CG_ZoneType_t Iocgns::ParallelDatabaseIO::m_zoneType</td>
+          <td class="memname">CG_ZoneType_t Iocgns::ParallelDatabaseIO::m_zoneType {CG_ZoneTypeNull}</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a5d20ab51886edf139f4dfdb6605e170b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d20ab51886edf139f4dfdb6605e170b">&#9670;&nbsp;</a></span>nodeCount</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t Iocgns::ParallelDatabaseIO::nodeCount</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac164f53c78f28d5c3d3ed00f14aa1d01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac164f53c78f28d5c3d3ed00f14aa1d01">&#9670;&nbsp;</a></span>nodeMap</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> Iocgns::ParallelDatabaseIO::nodeMap</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

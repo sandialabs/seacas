@@ -45,6 +45,7 @@ var searchData=
   ['cstr_5f',['cstr_',['../classJson_1_1Value_1_1CZString.html#a5b4d28349294034d7f779c3c95d0306c',1,'Json::Value::CZString']]],
   ['current_5f',['current_',['../classJson_1_1ValueIteratorBase.html#ab3138ce8af8301cca3b041ea55cb922a',1,'Json::ValueIteratorBase::current_()'],['../classJson_1_1Reader.html#a2f2feb5201a26da7aa133d2f7434479b',1,'Json::Reader::current_()']]],
   ['currentstate',['currentState',['../classIoss_1_1Region.html#a5477c55cb002422eb5e890857c690c6e',1,'Ioss::Region']]],
+  ['currenttime',['currentTime',['../classIogn_1_1DatabaseIO.html#a19d614da1fc52bedc1a9d60e7d0fc69a',1,'Iogn::DatabaseIO']]],
   ['customfieldtypes',['customFieldTypes',['../classIoss_1_1ETRegistry.html#a75c721e5cb4ead3e0b332e690b855948',1,'Ioss::ETRegistry::customFieldTypes()'],['../classIoss_1_1Registry.html#a4e20ca416acc8a2c3a9f69e16512e227',1,'Ioss::Registry::customFieldTypes()']]],
   ['cyclecount',['cycleCount',['../classIoss_1_1DatabaseIO.html#a57b5b83cf120cf5e313f696f7720f1cb',1,'Ioss::DatabaseIO']]]
 ];

@@ -55,8 +55,6 @@ var classIocgns_1_1DatabaseIO =
     [ "write_meta_data", "classIocgns_1_1DatabaseIO.html#afba3d4e19c998e014bbe93b49a5e70c2", null ],
     [ "write_results_meta_data", "classIocgns_1_1DatabaseIO.html#a14fbd12c503187d354983274ca2a1513", null ],
     [ "cgnsFilePtr", "classIocgns_1_1DatabaseIO.html#a3678da290a50bae7cfc1047ea16c9c30", null ],
-    [ "elementCount", "classIocgns_1_1DatabaseIO.html#a8105e32c449908db76f86917d8ad34ec", null ],
-    [ "elemMap", "classIocgns_1_1DatabaseIO.html#a29799f341c08feb497b2ae701ae2b152", null ],
     [ "m_bcOffset", "classIocgns_1_1DatabaseIO.html#ae7db22966ac29e0a34a0e934327e35b9", null ],
     [ "m_blockLocalNodeMap", "classIocgns_1_1DatabaseIO.html#adedb4986879c8c97a195042834a3a909", null ],
     [ "m_currentCellCenterSolutionIndex", "classIocgns_1_1DatabaseIO.html#ac1ac6e876dcc16fb6527472555a5e89f", null ],
@@ -64,7 +62,5 @@ var classIocgns_1_1DatabaseIO =
     [ "m_globalToBlockLocalNodeMap", "classIocgns_1_1DatabaseIO.html#ad65ebf85d94dd5114a7901b1253a45ac", null ],
     [ "m_timesteps", "classIocgns_1_1DatabaseIO.html#ac7d0a0c98d1e9488d416ed71b6381022", null ],
     [ "m_zoneNameMap", "classIocgns_1_1DatabaseIO.html#abe075daeca9992cad5694f959aa795a5", null ],
-    [ "m_zoneOffset", "classIocgns_1_1DatabaseIO.html#a847189744d722e2f4d9b758fd6dec02b", null ],
-    [ "nodeCount", "classIocgns_1_1DatabaseIO.html#a29fbabb36d1b3f3a938e2967cd074815", null ],
-    [ "nodeMap", "classIocgns_1_1DatabaseIO.html#a8ddb298cca0a4df1f6b6a56514fe234c", null ]
+    [ "m_zoneOffset", "classIocgns_1_1DatabaseIO.html#a847189744d722e2f4d9b758fd6dec02b", null ]
 ];
