@@ -720,7 +720,7 @@ namespace Ioxf {
     assert(num_to_get == nodeCount);
     nodeMap.set_size(nodeCount);
 
-    bool    in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
+    bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
     nodeMap.set_map(ids, num_to_get, 0, in_define);
 
     if (in_define) {
@@ -798,7 +798,6 @@ namespace Ioxf {
     // 'eb_offset+offset' and ending at
     // 'eb_offset+offset+num_to_get'. If the entire block is being
     // processed, this reduces to the range 'eb_offset..eb_offset+element_count'
-
 
     bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
     int  eb_offset = eb->get_offset();

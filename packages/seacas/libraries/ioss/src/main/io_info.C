@@ -156,8 +156,8 @@ namespace {
     //========================================================================
     Ioss::PropertyManager properties = set_properties(interface);
 
-    Ioss::DatabaseIO *dbi =
-      Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
+    Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART,
+                                                    (MPI_Comm)MPI_COMM_WORLD, properties);
 
     Ioss::io_info_set_db_properties(interface, dbi);
 

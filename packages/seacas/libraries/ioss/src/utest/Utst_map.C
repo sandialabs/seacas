@@ -19,8 +19,7 @@ void verify_global_to_local(const Ioss::Map &my_map, const std::vector<INT> &ini
   }
 }
 
-template <typename INT>
-void test_reorder(Ioss::Map &my_map, std::vector<INT> &init, size_t offset)
+template <typename INT> void test_reorder(Ioss::Map &my_map, std::vector<INT> &init, size_t offset)
 {
   // The map coming in has already been defined using 'init' and is
   // sequential from 'offset+1' to 'offset+count+1'
@@ -77,7 +76,7 @@ TEST_CASE("test sequential map with offset", "[sequential offset]")
   Ioss::Map my_map;
   my_map.set_size(count);
 
-  std::vector<int64_t>         init(count);
+  std::vector<int64_t>     init(count);
   std::vector<size_t>      offsets{0, 123, 8589934592};
   std::vector<std::string> sections{"offset0", "offset123", "offsetBIG"};
 
