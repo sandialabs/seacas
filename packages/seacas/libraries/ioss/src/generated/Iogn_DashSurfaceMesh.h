@@ -103,8 +103,7 @@ namespace Iogn {
           globalNumberOfElementsInBlock(globalNumOfElemsInBlock),
           localNumberOfElementsInBlock(localNumOfElemsInBlock), blockTopologicalData(blockTopoData),
           globalNumberOfNodes(globalNumNodes), globalIdsOfLocalElements(globalIdsOfLocalElems),
-          globalIdsOfLocalNodes(globalIdsLocalNodes),
-          sidesetConnectivity(std::move(sidesetConn)),
+          globalIdsOfLocalNodes(globalIdsLocalNodes), sidesetConnectivity(std::move(sidesetConn)),
           sidesetTouchingBlocks(std::move(sidesetBlocks))
     {
     }

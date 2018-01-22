@@ -39,10 +39,7 @@
 #include <iostream> // for operator<<, basic_ostream, etc
 #include <string>   // for char_traits, string
 
-Info::Interface::Interface()
-{
-  enroll_options();
-}
+Info::Interface::Interface() { enroll_options(); }
 
 Info::Interface::~Interface() = default;
 

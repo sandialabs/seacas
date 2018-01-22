@@ -1528,7 +1528,7 @@ const Ioss::Map &DatabaseIO::get_node_map() const
     nodeMap.set_size(nodeCount);
 
     if (is_input()) {
-      std::vector<int> node_map(nodeMap.map().size()-1);
+      std::vector<int> node_map(nodeMap.map().size() - 1);
       int              error = im_ex_get_node_num_map(get_file_pointer(), node_map.data());
       if (error < 0) {
         // Clear out the vector...
@@ -1552,7 +1552,7 @@ const Ioss::Map &DatabaseIO::get_element_map() const
     elemMap.set_size(elementCount);
 
     if (is_input()) {
-      std::vector<int> elem_map(elemMap.map().size()-1);
+      std::vector<int> elem_map(elemMap.map().size() - 1);
       int              error = im_ex_get_elem_num_map(get_file_pointer(), elem_map.data());
       if (error < 0) {
         // Clear out the vector...

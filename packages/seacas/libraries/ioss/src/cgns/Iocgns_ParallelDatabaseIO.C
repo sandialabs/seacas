@@ -63,18 +63,17 @@
 #include "Ioss_ElementBlock.h"
 #include "Ioss_ElementTopology.h"
 #include "Ioss_EntityType.h"
-#include "Ioss_NodeBlock.h"
-#include "Ioss_SideBlock.h"
-#include "Ioss_SideSet.h"
-#include "Ioss_StructuredBlock.h"
-#include "Ioss_TerminalColor.h"
-
 #include "Ioss_Field.h"
 #include "Ioss_IOFactory.h"
+#include "Ioss_NodeBlock.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
 #include "Ioss_State.h"
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_TerminalColor.h"
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
@@ -2192,10 +2191,12 @@ namespace Iocgns {
     MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
                MPI_SUM, util().communicator());
 
+#if IOSS_DEBUG_OUTPUT
     for (size_t i = 0; i < node_count.size(); i++) {
       std::cerr << "P[" << myProcessor << "] zone, count, offset: " << i + 1 << " " << node_count[i]
                 << " " << node_offset[i] << "\n";
     }
+#endif
     return node_offset;
   }
 

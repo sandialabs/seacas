@@ -194,8 +194,8 @@ namespace Iogn {
     GeneratedMesh *          m_generatedMesh{nullptr};
     std::vector<std::string> m_sideset_names;
 
-    double  currentTime{0.0};
-    int     spatialDimension{3};
+    double currentTime{0.0};
+    int    spatialDimension{3};
 
     int elementBlockCount{0};
     int nodesetCount{0};

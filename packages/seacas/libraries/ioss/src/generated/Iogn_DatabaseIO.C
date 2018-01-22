@@ -109,8 +109,8 @@ namespace {
     const Ioss::Field &ids = entity->get_fieldref("ids");
     if (ids.is_type(Ioss::Field::INTEGER)) {
       fill_transient_data(entity, field.raw_storage()->component_count(),
-                          reinterpret_cast<double *>(data), reinterpret_cast<int *>(id_data),
-                          count, offset);
+                          reinterpret_cast<double *>(data), reinterpret_cast<int *>(id_data), count,
+                          offset);
     }
     else {
       fill_transient_data(entity, field.raw_storage()->component_count(),
