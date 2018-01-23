@@ -624,8 +624,15 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
       CGCHECKNP(cg_fambc_read(cgnsFilePtr, base, family, 1, name, &bocotype));
 
       auto *ss = new Ioss::SideSet(db, ss_name);
-      ss->property_add(Ioss::Property("id", family));
-      ss->property_add(Ioss::Property("guid", db->util().generate_guid(family)));
+      int   id = Ioss::Utils::extract_id(ss_name);
+      if (id != 0) {
+        ss->property_add(Ioss::Property("id", id));
+        ss->property_add(Ioss::Property("guid", db->util().generate_guid(id)));
+      }
+      else {
+        ss->property_add(Ioss::Property("id", family));
+        ss->property_add(Ioss::Property("guid", db->util().generate_guid(family)));
+      }
       ss->property_add(Ioss::Property("bc_type", bocotype));
       db->get_region()->add(ss);
     }

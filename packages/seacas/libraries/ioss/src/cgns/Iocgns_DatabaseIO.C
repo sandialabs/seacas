@@ -424,6 +424,16 @@ namespace Iocgns {
 #endif
           std::string parent_topo = eblock == nullptr ? "unknown" : eblock->topology()->name();
           auto sblk = new Ioss::SideBlock(this, block_name, face_topo, parent_topo, num_entity);
+          // IF name is of form "surface_" + "#", then extract # and use as id...
+          int id = Ioss::Utils::extract_id(block_name);
+          if (id != 0) {
+            sblk->property_add(Ioss::Property("id", id));
+            sblk->property_add(Ioss::Property("guid", id));
+          }
+          else {
+            sblk->property_add(Ioss::Property("id", zone));
+            sblk->property_add(Ioss::Property("guid", zone));
+          }
           sblk->property_add(Ioss::Property("base", base));
           sblk->property_add(Ioss::Property("zone", zone));
           sblk->property_add(Ioss::Property("section", is));

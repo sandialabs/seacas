@@ -100,10 +100,10 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus64
   )
 
 TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32_pnetcdf
-   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${PJOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
+   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${PJOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64p.g
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
-   TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
+   TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64p.g
   COMM mpi serial
   )
 
@@ -228,16 +228,6 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_unstructured_cgns
    TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld 8-block32.cgns
      OUTPUT_FILE exodus32_to_unstructured_cgns.out
    TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus32_to_unstructured_cgns.out 
-  COMM mpi serial
-  )
-
-TRIBITS_ADD_ADVANCED_TEST(exodus64_to_unstructured_cgns
-   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} --64 --out_type cgns ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.cgns
-     NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS 1
-   TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld 8-block64.cgns
-     OUTPUT_FILE exodus64_to_unstructured_cgns.out
-   TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus64_to_unstructured_cgns.out 
   COMM mpi serial
   )
 endif()

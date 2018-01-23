@@ -304,26 +304,23 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   return decoded_filename;
 }
 
-int Ioss::Utils::decode_entity_name(const std::string &entity_name)
+int64_t Ioss::Utils::extract_id(const std::string &name_id)
 {
-  // ExodusII stores block, nodeset, and sideset ids as integers
-  // Sierra   stores these as std::strings. The string is created by
-  // concatenating the type, the character '_' and the id.
-  // This function reverses the process and returns the original id.
+  std::vector<std::string> tokens = Ioss::tokenize(name_id, "_");
 
-  const char *name = entity_name.c_str();
-  while (*name != '_') {
-    name++;
+  if (tokens.size() == 1) {
+    return 0;
   }
-  // Increment one more time to get past '_'
-  assert(*name == '_');
-  name++;
 
-  // name now points to beginning of id portion of string
-  assert(*name >= '0' && *name <= '9');
-  int id = std::atoi(name);
+  // Check whether last token is an integer...
+  std::string str_id = tokens.back();
+  std::size_t found  = str_id.find_first_not_of("0123456789");
+  if (found == std::string::npos) {
+    // All digits...
+    return std::atoi(str_id.c_str());
+  }
 
-  return id;
+  return 0;
 }
 
 std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int64_t id)
