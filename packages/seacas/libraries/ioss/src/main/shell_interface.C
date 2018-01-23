@@ -32,6 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "Ioss_CodeTypes.h"
+#include "Ioss_FileInfo.h"
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Utils.h"      // for Utils
 #include "shell_interface.h"
@@ -44,6 +45,27 @@
 #include <vector>   // for vector
 
 #define NPOS std::string::npos
+
+namespace {
+  std::string get_type_from_file(const std::string &filename)
+  {
+    Ioss::FileInfo file(filename);
+    auto           extension = file.extension();
+    if (extension == "e" || extension == "g" || extension == "gen" || extension == "exo") {
+      return "exodus";
+    }
+    else if (extension == "cgns") {
+      return "cgns";
+    }
+    else if (extension == "xdmf") {
+      return "xdmf";
+    }
+    else {
+      // "exodus" is default...
+      return "exodus";
+    }
+  }
+} // namespace
 
 IOShell::Interface::Interface() { enroll_options(); }
 
@@ -59,10 +81,10 @@ void IOShell::Interface::enroll_options()
 
   options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue,
                   "Database type for input file: pamgen|generated|exodus. exodus is the default.",
-                  "exodus");
+                  "unknown");
 
   options_.enroll("out_type", Ioss::GetLongOption::MandatoryValue,
-                  "Database type for output file: exodus. exodus is the default.", "exodus");
+                  "Database type for output file: exodus. exodus is the default.", "unknown");
 
   options_.enroll("extract_group", Ioss::GetLongOption::MandatoryValue,
                   "Write the data from the specified group to the output file.\n", nullptr);
@@ -575,6 +597,14 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   else {
     std::cerr << "\nERROR: input and output filename not specified\n\n";
     return false;
+  }
+
+  // If inFileType and/or outFileType not specified, see if can infer from file suffix type...
+  if (inFiletype == "unknown") {
+    inFiletype = get_type_from_file(inputFile[0]);
+  }
+  if (outFiletype == "unknown") {
+    outFiletype = get_type_from_file(outputFile);
   }
   return true;
 }

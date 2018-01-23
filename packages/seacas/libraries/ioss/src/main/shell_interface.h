@@ -59,8 +59,8 @@ namespace IOShell {
 
     std::vector<std::string> inputFile;
     std::string              outputFile;
-    std::string              inFiletype;
-    std::string              outFiletype;
+    std::string              inFiletype{"unknown"};
+    std::string              outFiletype{"unknown"};
     std::string              groupName;
     std::string              decomp_method;
     std::string              compose_output{"none"};
