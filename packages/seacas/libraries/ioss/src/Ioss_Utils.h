@@ -220,7 +220,7 @@ namespace Ioss {
 
     static std::string decode_filename(const std::string &filename, int processor,
                                        int num_processors);
-    static int         decode_entity_name(const std::string &entity_name);
+    static int64_t     extract_id(const std::string &name_id);
     static std::string encode_entity_name(const std::string &entity_type, int64_t id);
 
     // Convert 'name' to lowercase and convert spaces to '_'
