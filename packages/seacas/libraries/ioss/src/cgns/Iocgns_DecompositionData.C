@@ -32,7 +32,9 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ParallelUtils.h>
+#include <Ioss_SmartAssert.h>
 #include <Ioss_StructuredBlock.h>
+#include <Ioss_TerminalColor.h>
 #include <Ioss_Utils.h>
 #include <cgns/Iocgns_DecompositionData.h>
 #include <cgns/Iocgns_Utils.h>
@@ -40,8 +42,6 @@
 
 #include <cgnsconfig.h>
 #include <pcgnslib.h>
-
-#include <Ioss_TerminalColor.h>
 
 #include <algorithm>
 #include <cassert>
@@ -139,9 +139,9 @@ namespace {
       CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
       zone_name_map[zone_name] = zone;
 
-      assert(size[0] - 1 == size[3]);
-      assert(size[1] - 1 == size[4]);
-      assert(size[2] - 1 == size[5]);
+      SMART_ASSERT(size[0] - 1 == size[3])(size[0])(size[3]);
+      SMART_ASSERT(size[1] - 1 == size[4])(size[1])(size[4]);
+      SMART_ASSERT(size[2] - 1 == size[5])(size[2])(size[5]);
 
       assert(size[6] == 0);
       assert(size[7] == 0);
@@ -725,7 +725,7 @@ namespace Iocgns {
     // * Potentially large number of shared nodes; practically small(?)
 
     // * Maintain hash map from old id to new (if any)
-    // * TODO: Determine whether the node is used on this processor...
+    // * TODO: Make more scalable
 
     int base = 1; // Only single base supported so far.
 
@@ -779,8 +779,10 @@ namespace Iocgns {
 
         if (dz != zone) {
 #if IOSS_DEBUG_OUTPUT
-          std::cerr << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
-                    << "\n";
+	  if (m_decomposition.m_processor == 0) {
+	    std::cerr << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
+		      << "\n";
+	  }
 #endif
           // The 'ids' in 'points' and 'donors' will be zone-local 1-based.
           std::vector<cgsize_t> points(npnts);
@@ -792,20 +794,32 @@ namespace Iocgns {
           for (int j = 0; j < npnts; j++) {
             // Convert to 0-based global id by subtracting 1 and adding zone.m_nodeOffset
             cgsize_t point = points[j] - 1 + m_zones[zone].m_nodeOffset;
-            // If node is potentially on this processor...
-            if (point >= min_node && point <= max_node) {
-              cgsize_t donor = donors[j] - 1 + m_zones[dz].m_nodeOffset;
+	    cgsize_t donor = donors[j] - 1 + m_zones[dz].m_nodeOffset;
 
-              // See if 'donor' is mapped to a different node already
-              auto donor_map = m_zoneSharedMap.find(donor);
-              if (donor_map != m_zoneSharedMap.end()) {
-                donor = (*donor_map).second;
-              }
-              assert(m_zoneSharedMap.find(point) == m_zoneSharedMap.end());
-              m_zoneSharedMap.insert({point, donor});
-            }
+	    // See if 'donor' is mapped to a different node already
+	    auto donor_map = m_zoneSharedMap.find(donor);
+	    if (donor_map != m_zoneSharedMap.end()) {
+	      donor = (*donor_map).second;
+	    }
+	    m_zoneSharedMap.insert({point, donor});
+#if IOSS_DEBUG_OUTPUT
+	    if (m_decomposition.m_processor == 0) {
+	      std::cout << "Inserted " << point << " to " << donor << "\n";
+	    }
+#endif
           }
         }
+      }
+    }
+    // Filter m_zoneSharedMap down to nodes on this processor...
+    // This processor contains global zone ids from `min_node` to `max_node`
+    // global zone ids are the first entry in m_zoneShardedMap.
+    for (auto it = m_zoneSharedMap.cbegin(); it != m_zoneSharedMap.cend(); /* no increment */) {
+      if ((*it).first < min_node || (*it).first > max_node) {
+	it = m_zoneSharedMap.erase(it);
+      }
+      else {
+	++it;
       }
     }
   }
@@ -1030,7 +1044,7 @@ namespace Iocgns {
           elemlist[offset++] = parent[i] + zone_element_id_offset;
         }
       }
-      assert(offset == elemlist_size);
+      SMART_ASSERT(offset == elemlist_size)(offset)(elemlist_size);
 
       // Each processor now has a complete list of all elems in all
       // sidesets.
