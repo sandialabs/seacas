@@ -250,7 +250,7 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_to_exodus
    TEST_1 EXEC ${CMAKE_CURRENT_BINARY_DIR}/io_shell ARGS ${JOIN_ARG} --in_type cgns 8-block.cgns 8-block.g
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
-   TEST_2 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block.g
+   TEST_2 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic -map -dumpmap ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block.g
   COMM mpi serial
   )
 
