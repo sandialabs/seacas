@@ -32,12 +32,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "Ioss_CodeTypes.h"
+#include "Ioss_FileInfo.h"
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "info_interface.h"
 #include <cstddef>  // for nullptr
 #include <cstdlib>  // for exit, EXIT_SUCCESS, getenv
 #include <iostream> // for operator<<, basic_ostream, etc
 #include <string>   // for char_traits, string
+
+namespace {
+  std::string get_type_from_file(const std::string &filename)
+  {
+    Ioss::FileInfo file(filename);
+    auto           extension = file.extension();
+    if (extension == "e" || extension == "g" || extension == "gen" || extension == "exo") {
+      return "exodus";
+    }
+    else if (extension == "cgns") {
+      return "cgns";
+    }
+    else if (extension == "xdmf") {
+      return "xdmf";
+    }
+    else {
+      // "exodus" is default...
+      return "exodus";
+    }
+  }
+} // namespace
 
 Info::Interface::Interface() { enroll_options(); }
 
@@ -72,7 +94,7 @@ void Info::Interface::enroll_options()
                   "_");
 
   options_.enroll("db_type", Ioss::GetLongOption::MandatoryValue,
-                  "Database Type: exodus, generated", "exodusii");
+                  "Database Type: exodus, generated", "unknown");
 
   options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue,
                   "Database Type: exodus, generated (alias for db_type)", nullptr);
@@ -311,5 +333,10 @@ bool Info::Interface::parse_options(int argc, char **argv)
     std::cerr << "\nERROR: filename not specified\n\n";
     return false;
   }
+
+  if (filetype_ == "unknown") {
+    filetype_ = get_type_from_file(filename_);
+  }
+
   return true;
 }
