@@ -281,7 +281,7 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::read_meta_data__()
   {
-    openDatabase();
+    openDatabase__();
 
     // Determine the number of bases in the grid.
     // Currently only handle 1.
@@ -988,30 +988,38 @@ namespace Iocgns {
           int64_t *idata = static_cast<int64_t *>(data);
           std::fill(idata, idata + nodeCount, myProcessor);
 
-          std::vector<int64_t> ent_proc;
-          css->get_field_data("entity_processor_raw", ent_proc);
-          for (size_t i = 0; i < ent_proc.size(); i += 2) {
-            int64_t node = ent_proc[i + 0];
-            int64_t proc = ent_proc[i + 1];
-            if (proc < idata[node - 1]) {
-              idata[node - 1] = proc;
-            }
-          }
-        }
-        else {
+	  // Cannot call: 
+	  //    `css->get_field_data("entity_processor_raw", ent_proc);`
+	  // directly since it will cause a deadlock (in threaded code),
+	  // expand out into corresponding `get_field_internal` call.
+	  Ioss::Field field = css->get_field("entity_processor_raw");
+	  std::vector<int64_t> ent_proc(field.raw_count() * field.raw_storage()->component_count());
+	  size_t data_size = ent_proc.size() * sizeof(int64_t);
+	  get_field_internal(css, field, ent_proc.data(), data_size);
+	  for (size_t i = 0; i < ent_proc.size(); i += 2) {
+	    int64_t node = ent_proc[i + 0];
+	    int64_t proc = ent_proc[i + 1];
+	    if (proc < idata[node - 1]) {
+	      idata[node - 1] = proc;
+	    }
+	  }
+	}
+	else {
           int *idata = static_cast<int *>(data);
           std::fill(idata, idata + nodeCount, myProcessor);
 
-          std::vector<int> ent_proc;
-          css->get_field_data("entity_processor_raw", ent_proc);
-          for (size_t i = 0; i < ent_proc.size(); i += 2) {
-            int node = ent_proc[i + 0];
-            int proc = ent_proc[i + 1];
-            if (proc < idata[node - 1]) {
-              idata[node - 1] = proc;
-            }
-          }
-        }
+	  Ioss::Field field = css->get_field("entity_processor_raw");
+	  std::vector<int> ent_proc(field.raw_count() * field.raw_storage()->component_count());
+	  size_t data_size = ent_proc.size() * sizeof(int);
+	  get_field_internal(css, field, ent_proc.data(), data_size);
+	  for (size_t i = 0; i < ent_proc.size(); i += 2) {
+	    int node = ent_proc[i + 0];
+	    int proc = ent_proc[i + 1];
+	    if (proc < idata[node - 1]) {
+	      idata[node - 1] = proc;
+	    }
+	  }
+	}
       }
       else {
         num_to_get = Ioss::Utils::field_warning(nb, field, "input");

@@ -2155,8 +2155,10 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
                 idata[i] = myProcessor;
               }
 
-              std::vector<int64_t> ent_proc;
-              css->get_field_data("entity_processor_raw", ent_proc);
+	      Ioss::Field field = css->get_field("entity_processor_raw");
+	      std::vector<int64_t> ent_proc(field.raw_count() * field.raw_storage()->component_count());
+	      size_t data_size = ent_proc.size() * sizeof(int64_t);
+	      get_field_internal(css, field, ent_proc.data(), data_size);
               for (size_t i = 0; i < ent_proc.size(); i += 2) {
                 int64_t node = ent_proc[i + 0];
                 int64_t proc = ent_proc[i + 1];
@@ -2171,8 +2173,10 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
                 idata[i] = myProcessor;
               }
 
-              std::vector<int> ent_proc;
-              css->get_field_data("entity_processor_raw", ent_proc);
+	      Ioss::Field field = css->get_field("entity_processor_raw");
+	      std::vector<int> ent_proc(field.raw_count() * field.raw_storage()->component_count());
+	      size_t data_size = ent_proc.size() * sizeof(int);
+	      get_field_internal(css, field, ent_proc.data(), data_size);
               for (size_t i = 0; i < ent_proc.size(); i += 2) {
                 int node = ent_proc[i + 0];
                 int proc = ent_proc[i + 1];
