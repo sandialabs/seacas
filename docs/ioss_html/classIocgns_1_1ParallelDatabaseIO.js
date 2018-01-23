@@ -30,6 +30,7 @@ var classIocgns_1_1ParallelDatabaseIO =
     [ "get_field_internal", "classIocgns_1_1ParallelDatabaseIO.html#a7158de3503d170e8959eaac91661ad35", null ],
     [ "get_map", "classIocgns_1_1ParallelDatabaseIO.html#a30f1d30426f7779c7dcc7511fe63b247", null ],
     [ "get_map", "classIocgns_1_1ParallelDatabaseIO.html#a76a23ce6c827706c14cf9c1bc50ef5c2", null ],
+    [ "get_processor_zone_node_offset", "classIocgns_1_1ParallelDatabaseIO.html#ae3818355d8b764b2bc65804b4fbc081c", null ],
     [ "get_step_times__", "classIocgns_1_1ParallelDatabaseIO.html#adf531df5b0359d97018b17dee7714cff", null ],
     [ "handle_element_ids", "classIocgns_1_1ParallelDatabaseIO.html#ac6ed6ab0c75ae47c47d9576615678ab1", null ],
     [ "handle_node_ids", "classIocgns_1_1ParallelDatabaseIO.html#ae51f101cc3cf61762ef4b268281255c6", null ],
@@ -66,10 +67,8 @@ var classIocgns_1_1ParallelDatabaseIO =
     [ "m_currentVertexSolutionIndex", "classIocgns_1_1ParallelDatabaseIO.html#ae9e4c0d4546e2b2770925b3230805bcb", null ],
     [ "m_elemGlobalImplicitMap", "classIocgns_1_1ParallelDatabaseIO.html#abd5fb56a7a82aa2cecf989e781e90084", null ],
     [ "m_globalToBlockLocalNodeMap", "classIocgns_1_1ParallelDatabaseIO.html#aea0de732859adf04aa0e4cb3d27cb88e", null ],
-    [ "m_sharedNodes", "classIocgns_1_1ParallelDatabaseIO.html#a62afd05175be26b2d86d829ce99d6b41", null ],
     [ "m_timesteps", "classIocgns_1_1ParallelDatabaseIO.html#af376a0705537e820b5bdf11f0c5d367a", null ],
     [ "m_zoneNameMap", "classIocgns_1_1ParallelDatabaseIO.html#adeebce2d5533613a8184732aa8398cff", null ],
     [ "m_zoneOffset", "classIocgns_1_1ParallelDatabaseIO.html#a686565819afb0ab621555b3ae366fb92", null ],
-    [ "m_zoneProcOffset", "classIocgns_1_1ParallelDatabaseIO.html#a807a0c59170d1bd102e6f3f740c769cb", null ],
     [ "m_zoneType", "classIocgns_1_1ParallelDatabaseIO.html#a006dd78660b6f0fd8d6b39564b622543", null ]
 ];

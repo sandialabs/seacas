@@ -7,7 +7,6 @@ var searchData=
   ['datawarehouse_5ferror',['datawarehouse_error',['../namespaceanonymous__namespace_02Iodw__DatabaseIO_8C_03.html#ad9c7cdd42a6b25ff66973bd110e839d0',1,'anonymous_namespace{Iodw_DatabaseIO.C}']]],
   ['db_5fname_5fstr',['db_name_str',['../namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a904fc679995d885fd3a334d5ae09fab4',1,'anonymous_namespace{Ioss_Region.C}']]],
   ['debug',['debug',['../structAssert.html#aa23f61afd463b41cd3fc581a17e37ad3',1,'Assert']]],
-  ['decode_5fentity_5fname',['decode_entity_name',['../classIoss_1_1Utils.html#a11e583e671af191738ed6507d6aa9d70',1,'Ioss::Utils']]],
   ['decode_5ffilename',['decode_filename',['../classIoss_1_1ParallelUtils.html#a847a94880409904693640054d98325df',1,'Ioss::ParallelUtils::decode_filename()'],['../classIoss_1_1Utils.html#a72d3b4a8659178159d33d50eef9843cc',1,'Ioss::Utils::decode_filename()']]],
   ['decode_5fproc_5ffilename',['decode_proc_filename',['../classIoxf_1_1DatabaseIO.html#a72eab71bb03f464d007e73d16160a518',1,'Ioxf::DatabaseIO']]],
   ['decode_5fsurface_5fname',['decode_surface_name',['../namespaceIoex.html#a41e58490b4273d52830e63aa52ec98a6',1,'Ioex']]],
