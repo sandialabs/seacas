@@ -4029,12 +4029,16 @@ C
         INTEGER*4 I4 (1)
         POINTER (PI4, I4)
         INTEGER MALLOC
-        INTEGER NB
+        INTEGER*4 NB
 
         PI4 = 0
         IF (N .EQ. 0) RETURN
         NB = N * 4
+#if defined(__XLF__)
+        PI4 = MALLOC (%val(NB))
+#else
         PI4 = MALLOC (NB)
+#endif
         if (PI4 .EQ. 0) then
           write (*,*)
      *      'ERROR: Unable to allocate array of size ',N,' in I4ALLOC'

@@ -131,7 +131,6 @@ namespace Ioxf {
         nodesetCount(0), sidesetCount(0), nodeCmapIds(nullptr), nodeCmapNodeCnts(nullptr),
         elemCmapIds(nullptr), elemCmapElemCnts(nullptr), commsetNodeCount(0), commsetElemCount(0),
         elementTruthTable(nullptr), nodesetTruthTable(nullptr), sidesetTruthTable(nullptr),
-        nodeMap("node", filename, myProcessor), elemMap("elem", filename, myProcessor),
         fileExists(false)
   {
     // A history file is only written on processor 0...
@@ -721,7 +720,7 @@ namespace Ioxf {
     assert(num_to_get == nodeCount);
     nodeMap.set_size(nodeCount);
 
-    bool    in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
+    bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
     nodeMap.set_map(ids, num_to_get, 0, in_define);
 
     if (in_define) {
@@ -799,7 +798,6 @@ namespace Ioxf {
     // 'eb_offset+offset' and ending at
     // 'eb_offset+offset+num_to_get'. If the entire block is being
     // processed, this reduces to the range 'eb_offset..eb_offset+element_count'
-
 
     bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
     int  eb_offset = eb->get_offset();

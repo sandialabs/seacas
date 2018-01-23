@@ -256,7 +256,6 @@ namespace Iopx {
 
     std::vector<ex_block> ebs(block_count);
     std::vector<INT>      ids(block_count);
-    assert(sizeof(INT) == Ioex::exodus_byte_size_api(filePtr));
     ex_get_ids(filePtr, EX_ELEM_BLOCK, TOPTR(ids));
 
     size_t sum    = 0; // Size of adjacency vector.
@@ -396,8 +395,6 @@ namespace Iopx {
     int root = 0; // Root processor that reads all nodeset bulk data (nodelists)
 
     node_sets.resize(set_count);
-
-    assert(sizeof(INT) == Ioex::exodus_byte_size_api(filePtr));
 
     std::vector<std::vector<INT>> set_nodelists(set_count);
     std::vector<ex_set>           sets(set_count);
@@ -539,8 +536,6 @@ namespace Iopx {
     m_decomposition.show_progress(__func__);
     // Issues:
     // 0. See 'get_nodeset_data' for most issues.
-
-    assert(sizeof(INT) == Ioex::exodus_byte_size_api(filePtr));
 
     int root = 0; // Root processor that reads all sideset bulk data (nodelists)
 
@@ -853,7 +848,6 @@ namespace Iopx {
     size_t count  = get_block_element_count(blk_seq);
     size_t offset = get_block_element_offset(blk_seq);
 
-    assert(sizeof(INT) == Ioex::exodus_byte_size_api(filePtr));
     std::vector<INT> file_conn(count * nnpe);
     m_decomposition.show_progress("\tex_get_partial_conn");
     ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, TOPTR(file_conn), nullptr,

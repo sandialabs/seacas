@@ -182,7 +182,6 @@ namespace Iofx {
     int64_t read_nodal_coordinates();
     void    read_elements(const Ioss::ElementBlock &block);
 
-    void compute_block_adjacencies() const override;
     void compute_node_status() const;
 
     // Metadata-related functions.
@@ -237,16 +236,6 @@ namespace Iofx {
     const Ioss::Map &get_map(ex_entity_type type) const;
     const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount, ex_entity_type entity_type,
                              ex_inquiry inquiry_type) const;
-
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
-    {
-      return nodeMap.global_to_local(global, must_exist);
-    }
-
-    int64_t element_global_to_local__(int64_t global) const override
-    {
-      return elemMap.global_to_local(global);
-    }
 
     // Internal data handling
     int64_t handle_node_ids(void *ids, int64_t num_to_get) const;

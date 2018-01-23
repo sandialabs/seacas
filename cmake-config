@@ -34,6 +34,7 @@ then
   fi
 fi
 
+SHARED="${SHARED:-ON}"
 ### Switch for Debug or Release build:
 BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
 
@@ -48,6 +49,8 @@ HAVE_X11=ON
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-OFF}
+
+FORTRAN=${FORTRAN:-ON}
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
@@ -127,6 +130,7 @@ then
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
     
+OS=`uname -s`
 if [ "$OS" == "Darwin" ] ; then
   DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include"
 else
@@ -145,7 +149,7 @@ cmake  \
 -D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
--D BUILD_SHARED_LIBS:BOOL=OFF \
+-D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
 -D SEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
 -D SEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
@@ -155,6 +159,7 @@ cmake  \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 \
+-D SEACASProj_ENABLE_Fortran=${FORTRAN} \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \

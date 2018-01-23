@@ -112,11 +112,8 @@ namespace Ioex {
                          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), exodusFilePtr(-1),
         exodusMode(EX_CLOBBER), dbRealWordSize(8), maximumNameLength(32), spatialDimension(0),
-        nodeCount(0), edgeCount(0), faceCount(0), elementCount(0), commsetNodeCount(0),
-        commsetElemCount(0), nodeMap("node", filename, myProcessor),
-        edgeMap("edge", filename, myProcessor), faceMap("face", filename, myProcessor),
-        elemMap("element", filename, myProcessor), timeLastFlush(0), fileExists(false),
-        minimizeOpenFiles(false), blockAdjacenciesCalculated(false),
+        edgeCount(0), faceCount(0), commsetNodeCount(0), commsetElemCount(0), timeLastFlush(0),
+        fileExists(false), minimizeOpenFiles(false), blockAdjacenciesCalculated(false),
         nodeConnectivityStatusCalculated(false)
   {
     m_groupCount[EX_GLOBAL]     = 1; // To make some common code work more cleanly.
@@ -257,15 +254,6 @@ namespace Ioex {
     }
     catch (...) {
     }
-  }
-
-  // common
-  void DatabaseIO::release_memory__()
-  {
-    nodeMap.release_memory();
-    edgeMap.release_memory();
-    faceMap.release_memory();
-    elemMap.release_memory();
   }
 
   // common
@@ -518,30 +506,6 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::get_block_adjacencies__(const Ioss::ElementBlock *eb,
-                                           std::vector<std::string> &block_adjacency) const
-  {
-    if (!blockAdjacenciesCalculated) {
-      compute_block_adjacencies();
-    }
-
-    // Extract the computed block adjacency information for this
-    // element block:
-    // Debug print...
-    int blk_position = eb->get_property("original_block_order").get_int();
-
-    Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
-    assert(check_block_order(element_blocks));
-    for (const auto &leb : element_blocks) {
-      int lblk_position = leb->get_property("original_block_order").get_int();
-
-      if (blk_position != lblk_position &&
-          static_cast<int>(blockAdjacency[blk_position][lblk_position]) == 1) {
-        block_adjacency.push_back(leb->name());
-      }
-    }
-  }
-
   // common
   size_t DatabaseIO::handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
                                       Ioss::Map &entity_map, void *ids, size_t num_to_get,
@@ -664,7 +628,7 @@ namespace Ioex {
     }
 
     Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
-    assert(check_block_order(element_blocks));
+    assert(Ioss::Utils::check_block_order(element_blocks));
 
     for (int i = 0; i < m_groupCount[EX_ELEM_BLOCK]; i++) {
       if (block_ids[i] == 1) {

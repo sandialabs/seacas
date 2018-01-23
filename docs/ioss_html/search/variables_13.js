@@ -15,7 +15,7 @@ var searchData=
   ['separator_5f',['separator_',['../classIohb_1_1DatabaseIO.html#a6295069bf27f1fba8787abe863aebe32',1,'Iohb::DatabaseIO::separator_()'],['../classIohb_1_1Layout.html#a193e36c297502e28fe14d1d827dfc078',1,'Iohb::Layout::separator_()']]],
   ['serialize_5fio_5fsize',['serialize_io_size',['../classIOShell_1_1Interface.html#af0560116a65c386339b750984552dde3',1,'IOShell::Interface']]],
   ['settings_5f',['settings_',['../classJson_1_1CharReaderBuilder.html#ac69b7911ad64c171c51ebaf2ea26d958',1,'Json::CharReaderBuilder::settings_()'],['../classJson_1_1StreamWriterBuilder.html#a79bdf2e639a52f4e758c0b95bd1d3423',1,'Json::StreamWriterBuilder::settings_()']]],
-  ['sharednodes',['sharedNodes',['../structIogn_1_1ExodusData.html#a3121c2a9d09056fd00ccd19963bc2185',1,'Iogn::ExodusData::sharedNodes()'],['../structIogn_1_1DashSurfaceData.html#a3505b1420dc5a3053e657c526c8b1d1f',1,'Iogn::DashSurfaceData::sharedNodes()']]],
+  ['sharednodes',['sharedNodes',['../structIogn_1_1ExodusData.html#a1e00c93b859a22e52f51b50e586bcdff',1,'Iogn::ExodusData::sharedNodes()'],['../structIogn_1_1DashSurfaceData.html#aa6fd391b4bfcc9ff36328e03ea08a8a0',1,'Iogn::DashSurfaceData::sharedNodes()']]],
   ['sharedwithproc_5f',['sharedWithProc_',['../classIoss_1_1Face.html#afa997f7ad6a87e3d599bd830fb3319ba',1,'Ioss::Face']]],
   ['shellblocks',['shellBlocks',['../classIogn_1_1GeneratedMesh.html#a4356d7dc3c22525095b7154db26af75d',1,'Iogn::GeneratedMesh']]],
   ['shift',['SHIFT',['../structIoss_1_1trmclr_1_1Attribute.html#a7e69cd5822737780a280f7a31c46fc64',1,'Ioss::trmclr::Attribute::SHIFT()'],['../structIoss_1_1trmclr_1_1Foreground.html#a0742c11051d422ff2166c770da435183',1,'Ioss::trmclr::Foreground::SHIFT()'],['../structIoss_1_1trmclr_1_1Background.html#ae91638ca6514cb5567f576874594eaf2',1,'Ioss::trmclr::Background::SHIFT()']]],
@@ -28,7 +28,7 @@ var searchData=
   ['sidesetconnectivity',['sidesetConnectivity',['../structIogn_1_1ExodusData.html#a3d3302a917d5acf85777004d12189ff2',1,'Iogn::ExodusData']]],
   ['sidesetcount',['sidesetCount',['../classIodw_1_1DatabaseIO.html#ac3e76cc0f9f08abf1b530851a92781a9',1,'Iodw::DatabaseIO::sidesetCount()'],['../classIogn_1_1DatabaseIO.html#a26c83e665ede8bed60bbd5d4be617f8c',1,'Iogn::DatabaseIO::sidesetCount()'],['../classIopg_1_1DatabaseIO.html#a1b54a4dfb110cac0fd14fc36417e517d',1,'Iopg::DatabaseIO::sidesetCount()'],['../classIoxf_1_1DatabaseIO.html#acd7b1898e8d4d2777c2d38eb60717434',1,'Ioxf::DatabaseIO::sidesetCount()']]],
   ['sidesetindexnames',['SideSetIndexNames',['../classIoxf_1_1DatabaseIO.html#a7c598c06c4d3ddc222b7858dd4f9f1c1',1,'Ioxf::DatabaseIO']]],
-  ['sidesets',['sideSets',['../classIoss_1_1Region.html#af4a4657c3a893c2543058b8f3378c92a',1,'Ioss::Region::sideSets()'],['../classIoex_1_1Mesh.html#a6b510569cf78bcbb2a6322857ba66a37',1,'Ioex::Mesh::sidesets()'],['../classIogn_1_1GeneratedMesh.html#a9917d28a15baa87231b8cc22929601f3',1,'Iogn::GeneratedMesh::sidesets()']]],
+  ['sidesets',['sidesets',['../classIoex_1_1Mesh.html#a6b510569cf78bcbb2a6322857ba66a37',1,'Ioex::Mesh::sidesets()'],['../classIogn_1_1GeneratedMesh.html#a9917d28a15baa87231b8cc22929601f3',1,'Iogn::GeneratedMesh::sidesets()'],['../classIoss_1_1Region.html#af4a4657c3a893c2543058b8f3378c92a',1,'Ioss::Region::sideSets()']]],
   ['sidesettouchingblocks',['sidesetTouchingBlocks',['../structIogn_1_1ExodusData.html#ac9250d64d6f7a36ba00e39374ea33c5b',1,'Iogn::ExodusData']]],
   ['sidesettruthtable',['sidesetTruthTable',['../classIoxf_1_1DatabaseIO.html#a86eaf8c1f0f979688ce767d852fc77bb',1,'Ioxf::DatabaseIO']]],
   ['sidesetvariables',['sidesetVariables',['../classIoxf_1_1DatabaseIO.html#a819c84e4ec04921b01445079ccd5ec49',1,'Ioxf::DatabaseIO']]],
@@ -60,8 +60,8 @@ var searchData=
   ['suffixlist',['suffixList',['../classIoss_1_1NamedSuffixVariableType.html#ae89154e165f8931734d27810db97314a',1,'Ioss::NamedSuffixVariableType']]],
   ['summary_5f',['summary_',['../classInfo_1_1Interface.html#a75eafd8179c0a1d2c6fa99862fe48691',1,'Info::Interface']]],
   ['surface_5fsplit_5ftype',['surface_split_type',['../classIOShell_1_1Interface.html#a6f2736a290e6c99b4a17b5ec8940b1f0',1,'IOShell::Interface']]],
-  ['surfaceaconnectivity',['surfaceAConnectivity',['../structIogn_1_1DashSurfaceData.html#a333b36307d71900d6fd2d64f55e27cb3',1,'Iogn::DashSurfaceData']]],
-  ['surfacebconnectivity',['surfaceBConnectivity',['../structIogn_1_1DashSurfaceData.html#a40f0227b8bbe3c936c52436abc99e57f',1,'Iogn::DashSurfaceData']]],
+  ['surfaceaconnectivity',['surfaceAConnectivity',['../structIogn_1_1DashSurfaceData.html#aaaf8d80b588b1eb9974961c3e3ac1092',1,'Iogn::DashSurfaceData']]],
+  ['surfacebconnectivity',['surfaceBConnectivity',['../structIogn_1_1DashSurfaceData.html#aa4e6ec5be94153cf626f27df92c9d264',1,'Iogn::DashSurfaceData']]],
   ['surfacesplitscheme_5f',['surfaceSplitScheme_',['../classInfo_1_1Interface.html#a7b956ff3df5431577f3a77fd891293df',1,'Info::Interface']]],
   ['sval',['sval',['../unionIoss_1_1Property_1_1Data.html#ad3d46e12608e692192ff0112f00e1f9f',1,'Ioss::Property::Data']]]
 ];

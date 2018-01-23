@@ -106,6 +106,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aebc0031c61351949dce12318225fecc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb06d5b955371e06cfaa5cb0f3e2ea7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#aeb06d5b955371e06cfaa5cb0f3e2ea7f">set_size</a> (size_t entity_count)</td></tr>
 <tr class="separator:aeb06d5b955371e06cfaa5cb0f3e2ea7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3912e675a8b5e995478e70d239289f80"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a3912e675a8b5e995478e70d239289f80">size</a> () const</td></tr>
+<tr class="separator:a3912e675a8b5e995478e70d239289f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a971600089854c1c40ed4293745978958"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a971600089854c1c40ed4293745978958">set_is_sequential</a> (bool yesno)</td></tr>
+<tr class="separator:a971600089854c1c40ed4293745978958"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade017633891fb2155441fdd29aa76bd5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#ade017633891fb2155441fdd29aa76bd5">is_sequential</a> (bool check_all=false) const</td></tr>
 <tr class="separator:ade017633891fb2155441fdd29aa76bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5b9f9efc6c50d676989ae6660bff073"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#ab5b9f9efc6c50d676989ae6660bff073">global_to_local</a> (int64_t global, bool must_exist=true) const</td></tr>
@@ -117,12 +121,23 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abfaa5f83928a9d0c3691387e86050275"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b69ebb0e2961bc505b871da01af8971"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a5b69ebb0e2961bc505b871da01af8971">build_reverse_map</a> ()</td></tr>
 <tr class="separator:a5b69ebb0e2961bc505b871da01af8971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d0ce49e4904fea91fa775fbc1f6c99c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a7d0ce49e4904fea91fa775fbc1f6c99c">build_reverse_map_no_lock</a> ()</td></tr>
+<tr class="separator:a7d0ce49e4904fea91fa775fbc1f6c99c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d87aa40f3e8701e9976a07e2785d9bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a6d87aa40f3e8701e9976a07e2785d9bb">build_reverse_map</a> (int64_t num_to_get, int64_t offset)</td></tr>
 <tr class="separator:a6d87aa40f3e8701e9976a07e2785d9bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4620c2cbe27be00361eda198387e66da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a4620c2cbe27be00361eda198387e66da">release_memory</a> ()</td></tr>
 <tr class="separator:a4620c2cbe27be00361eda198387e66da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb85ac649e5e757f97f770a572c6ac81"><td class="memTemplParams" colspan="2">template&lt;typename INT &gt; </td></tr>
+<tr class="memitem:abb85ac649e5e757f97f770a572c6ac81"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#abb85ac649e5e757f97f770a572c6ac81">reverse_map_data</a> (<a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> *data, size_t count) const</td></tr>
+<tr class="memdesc:abb85ac649e5e757f97f770a572c6ac81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release memory for all maps.  <a href="#abb85ac649e5e757f97f770a572c6ac81">More...</a><br /></td></tr>
+<tr class="separator:abb85ac649e5e757f97f770a572c6ac81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ca8dab50743f46ae4a02d6d23d7a99e"><td class="memTemplParams" colspan="2">template&lt;typename INT &gt; </td></tr>
+<tr class="memitem:a1ca8dab50743f46ae4a02d6d23d7a99e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a1ca8dab50743f46ae4a02d6d23d7a99e">map_data</a> (<a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> *data, size_t count) const</td></tr>
+<tr class="separator:a1ca8dab50743f46ae4a02d6d23d7a99e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1ad6013c22431a227b9845ef1cdfa98"><td class="memTemplParams" colspan="2">template&lt;typename INT &gt; </td></tr>
+<tr class="memitem:af1ad6013c22431a227b9845ef1cdfa98"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#af1ad6013c22431a227b9845ef1cdfa98">map_implicit_data</a> (<a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> *data, size_t count, size_t offset) const</td></tr>
+<tr class="separator:af1ad6013c22431a227b9845ef1cdfa98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e757e282fd3350ffaea92ca57080c77"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a4e757e282fd3350ffaea92ca57080c77">reverse_map_data</a> (void *data, const <a class="el" href="classIoss_1_1Field.html">Ioss::Field</a> &amp;field, size_t count) const</td></tr>
-<tr class="memdesc:a4e757e282fd3350ffaea92ca57080c77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release memory for all maps.  <a href="#a4e757e282fd3350ffaea92ca57080c77">More...</a><br /></td></tr>
 <tr class="separator:a4e757e282fd3350ffaea92ca57080c77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e97183368705d386f3c317829ba5e9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a1e97183368705d386f3c317829ba5e9c">map_data</a> (void *data, const <a class="el" href="classIoss_1_1Field.html">Ioss::Field</a> &amp;field, size_t count) const</td></tr>
 <tr class="separator:a1e97183368705d386f3c317829ba5e9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -163,8 +178,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:ae5c3b41636f056a08dc7ecba0a0fc3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d4e799d4c1c50944d325a41b1a8e0f8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a6d4e799d4c1c50944d325a41b1a8e0f8">m_filename</a> {&quot;undefined&quot;}</td></tr>
 <tr class="separator:a6d4e799d4c1c50944d325a41b1a8e0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac86d88449543c085095949af9134fd48"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#ac86d88449543c085095949af9134fd48">m_offset</a> {0}</td></tr>
-<tr class="separator:ac86d88449543c085095949af9134fd48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac22f923088644cd5428f685d09605301"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#ac22f923088644cd5428f685d09605301">m_offset</a> {-1}</td></tr>
+<tr class="separator:ac22f923088644cd5428f685d09605301"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63182a82bee2ce298a020be4875f9492"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a63182a82bee2ce298a020be4875f9492">m_myProcessor</a> {0}</td></tr>
 <tr class="separator:a63182a82bee2ce298a020be4875f9492"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a118e717576ca2d18ac89addbe7d2fe4e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Map.html#a118e717576ca2d18ac89addbe7d2fe4e">m_defined</a> {false}</td></tr>
@@ -407,6 +422,23 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a7d0ce49e4904fea91fa775fbc1f6c99c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d0ce49e4904fea91fa775fbc1f6c99c">&#9670;&nbsp;</a></span>build_reverse_map_no_lock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::Map::build_reverse_map_no_lock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="af0a2324198a81d4ca115d11495aaa987"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af0a2324198a81d4ca115d11495aaa987">&#9670;&nbsp;</a></span>defined()</h2>
 
@@ -564,8 +596,38 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a1ca8dab50743f46ae4a02d6d23d7a99e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ca8dab50743f46ae4a02d6d23d7a99e">&#9670;&nbsp;</a></span>map_data() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename INT &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::Map::map_data </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a1e97183368705d386f3c317829ba5e9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1e97183368705d386f3c317829ba5e9c">&#9670;&nbsp;</a></span>map_data()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e97183368705d386f3c317829ba5e9c">&#9670;&nbsp;</a></span>map_data() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -652,8 +714,44 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="af1ad6013c22431a227b9845ef1cdfa98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1ad6013c22431a227b9845ef1cdfa98">&#9670;&nbsp;</a></span>map_implicit_data() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename INT &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::Map::map_implicit_data </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>offset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ae73021d9e20d26adb2af9e9e87c951f5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae73021d9e20d26adb2af9e9e87c951f5">&#9670;&nbsp;</a></span>map_implicit_data()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae73021d9e20d26adb2af9e9e87c951f5">&#9670;&nbsp;</a></span>map_implicit_data() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -735,8 +833,40 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="abb85ac649e5e757f97f770a572c6ac81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb85ac649e5e757f97f770a572c6ac81">&#9670;&nbsp;</a></span>reverse_map_data() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename INT &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::Map::reverse_map_data </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Release memory for all maps. </p>
+
+</div>
+</div>
 <a id="a4e757e282fd3350ffaea92ca57080c77"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4e757e282fd3350ffaea92ca57080c77">&#9670;&nbsp;</a></span>reverse_map_data()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e757e282fd3350ffaea92ca57080c77">&#9670;&nbsp;</a></span>reverse_map_data() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -766,8 +896,6 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Release memory for all maps. </p>
 
 </div>
 </div>
@@ -813,6 +941,32 @@ template&lt;typename T &gt; </div>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>yes_no</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a971600089854c1c40ed4293745978958"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a971600089854c1c40ed4293745978958">&#9670;&nbsp;</a></span>set_is_sequential()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::Map::set_is_sequential </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>yesno</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -872,9 +1026,6 @@ template&lt;typename INT &gt; </div>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void Ioss::Map::set_size </td>
@@ -882,6 +1033,26 @@ template&lt;typename INT &gt; </div>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>entity_count</em></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3912e675a8b5e995478e70d239289f80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3912e675a8b5e995478e70d239289f80">&#9670;&nbsp;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Ioss::Map::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -1030,8 +1201,8 @@ template&lt;typename INT &gt; </div>
 
 </div>
 </div>
-<a id="ac86d88449543c085095949af9134fd48"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac86d88449543c085095949af9134fd48">&#9670;&nbsp;</a></span>m_offset</h2>
+<a id="ac22f923088644cd5428f685d09605301"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac22f923088644cd5428f685d09605301">&#9670;&nbsp;</a></span>m_offset</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1040,7 +1211,7 @@ template&lt;typename INT &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t Ioss::Map::m_offset {0}</td>
+          <td class="memname">int64_t Ioss::Map::m_offset {-1}</td>
         </tr>
       </table>
   </td>

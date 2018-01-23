@@ -35,9 +35,10 @@
 
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
-#include <Ioss_DBUsage.h>         // for DatabaseUsage, etc
-#include <Ioss_DataSize.h>        // for DataSize
-#include <Ioss_EntityType.h>      // for EntityType
+#include <Ioss_DBUsage.h>    // for DatabaseUsage, etc
+#include <Ioss_DataSize.h>   // for DataSize
+#include <Ioss_EntityType.h> // for EntityType
+#include <Ioss_Map.h>
 #include <Ioss_ParallelUtils.h>   // for ParallelUtils
 #include <Ioss_PropertyManager.h> // for PropertyManager
 #include <Ioss_State.h>           // for State, State::STATE_INVALID
@@ -537,6 +538,9 @@ namespace Ioss {
     bool isParallel;  //!< true if running in parallel
     int  myProcessor; //!< number of processor this database is for
 
+    int64_t nodeCount{0};
+    int64_t elementCount{0};
+
     /*!
      * Check the topology of all face/element pairs in the model and
      * fill the "TopoContainer faceTopology" variable with the
@@ -587,6 +591,15 @@ namespace Ioss {
     std::vector<std::string> informationRecords;
     std::vector<std::string> qaRecords;
 
+    //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
+    //               application side.   global = nodeMap[local]
+    mutable Ioss::Map nodeMap{"node", DBFilename, myProcessor};
+    mutable Ioss::Map edgeMap{"edge", DBFilename, myProcessor};
+    mutable Ioss::Map faceMap{"face", DBFilename, myProcessor};
+    mutable Ioss::Map elemMap{"element", DBFilename, myProcessor};
+
+    mutable std::vector<std::vector<bool>> blockAdjacency;
+
   private:
     virtual bool ok__(bool write_message, std::string *error_message, int *bad_count) const
     {
@@ -596,10 +609,24 @@ namespace Ioss {
       return dbState != Ioss::STATE_INVALID;
     }
 
-    virtual int64_t node_global_to_local__(int64_t global, bool must_exist) const = 0;
-    virtual int64_t element_global_to_local__(int64_t global) const               = 0;
+    virtual int64_t node_global_to_local__(int64_t global, bool must_exist) const
+    {
+      return nodeMap.global_to_local(global, must_exist);
+    }
 
-    virtual void release_memory__() {}
+    virtual int64_t element_global_to_local__(int64_t global) const
+    {
+      return elemMap.global_to_local(global);
+    }
+
+    virtual void release_memory__()
+    {
+      nodeMap.release_memory();
+      edgeMap.release_memory();
+      faceMap.release_memory();
+      elemMap.release_memory();
+    }
+
     virtual void openDatabase__() const {}
     virtual void closeDatabase__() const {}
     virtual void flush_database__() const {}
@@ -615,14 +642,15 @@ namespace Ioss {
     virtual bool begin_state__(Region *region, int state, double time);
     virtual bool end_state__(Region *region, int state, double time);
 
-    virtual void get_block_adjacencies__(const Ioss::ElementBlock *eb,
-                                         std::vector<std::string> &block_adjacency) const
-    {
-    }
+    void get_block_adjacencies__(const Ioss::ElementBlock *eb,
+                                 std::vector<std::string> &block_adjacency) const;
+
     virtual void compute_block_membership__(Ioss::SideBlock *         efblock,
                                             std::vector<std::string> &block_membership) const
     {
     }
+
+    void compute_block_adjacencies() const;
 
     void verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const;
 
@@ -714,6 +742,8 @@ namespace Ioss {
     // given on the mesh file e.g. "fireset".  Both names are still aliases.
     bool ignoreDatabaseNames; // True if "block_{id}" used as canonical name; ignore any names on
                               // database.
+    mutable bool blockAdjacenciesCalculated{false}; // True if the lazy creation of
+    // block adjacencies has been calculated.
   };
 } // namespace Ioss
 #endif

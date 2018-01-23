@@ -119,6 +119,7 @@ alias install-targets
     Utst_superelement
     Utst_database_io
     Utst_sort
+    Utst_map
     $(seacas-root)/scripts/decomp
     /tpl/netcdf//nc_test
     /tpl/netcdf//ncdump
@@ -179,6 +180,7 @@ alias install-targets
     Utst_superelement
     Utst_database_io
     Utst_sort
+    Utst_map
     $(seacas-root)/scripts/blot
     $(seacas-root)/scripts/decomp
     $(seacas-root)/scripts/fastq
@@ -1908,6 +1910,14 @@ exe Utst_ioel
 exe Utst_sort
   :
     $(seacas-root)/libraries/ioss/src/utest/Utst_sort.C
+    ioss
+    /mpi//mpi
+  : <tag>@sierra-exec-tag
+  ;
+
+exe Utst_map
+  :
+    $(seacas-root)/libraries/ioss/src/utest/Utst_map.C
     ioss
     /mpi//mpi
   : <tag>@sierra-exec-tag

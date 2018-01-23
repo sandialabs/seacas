@@ -66,18 +66,17 @@
 #include "Ioss_EntityType.h"
 #include "Ioss_FaceBlock.h"
 #include "Ioss_FaceSet.h"
-#include "Ioss_NodeBlock.h"
-#include "Ioss_NodeSet.h"
-#include "Ioss_SideBlock.h"
-#include "Ioss_SideSet.h"
-#include "Ioss_StructuredBlock.h"
-
 #include "Ioss_Field.h"
 #include "Ioss_IOFactory.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
 #include "Ioss_State.h"
+#include "Ioss_StructuredBlock.h"
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
@@ -88,8 +87,7 @@ namespace Iocgns {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), cgnsFilePtr(-1),
-        nodeCount(0), elementCount(0)
+      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props)
   {
     dbState = Ioss::STATE_UNKNOWN;
 
@@ -503,6 +501,7 @@ namespace Iocgns {
     Ioss::NodeBlock *nblock = new Ioss::NodeBlock(this, "nodeblock_1", num_node, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
+    nodeCount = num_node;
 
     Utils::add_transient_variables(cgnsFilePtr, m_timesteps, get_region(), myProcessor);
   }
@@ -514,7 +513,7 @@ namespace Iocgns {
     m_bcOffset.resize(num_zones + 1);   // use 1-based zones...
     m_zoneOffset.resize(num_zones + 1); // use 1-based zones...
 
-    Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
+    elementCount = Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset, false);
   }
 
   void DatabaseIO::get_step_times__()
@@ -859,20 +858,21 @@ namespace Iocgns {
             }
           }
 
-          if (field.get_name() == "connectivity") {
-            // Now need to map block-local node connectivity to global nodes...
-            const auto &block_map = m_blockLocalNodeMap[zone];
-            if (field.get_type() == Ioss::Field::INT32) {
-              int *idata = static_cast<int *>(data);
-              for (size_t i = 0; i < element_nodes * num_to_get; i++) {
-                idata[i] = block_map[idata[i] - 1] + 1;
-              }
+          // Now need to map block-local node connectivity to global nodes...
+          // This is done for both connectivity and connectivity_raw
+          // since the "global id" is the same as the "local id"
+          // The connectivities we currently have are "block local"
+          const auto &block_map = m_blockLocalNodeMap[zone];
+          if (field.get_type() == Ioss::Field::INT32) {
+            int *idata = static_cast<int *>(data);
+            for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+              idata[i] = block_map[idata[i] - 1] + 1;
             }
-            else {
-              int64_t *idata = static_cast<int64_t *>(data);
-              for (size_t i = 0; i < element_nodes * num_to_get; i++) {
-                idata[i] = block_map[idata[i] - 1] + 1;
-              }
+          }
+          else {
+            int64_t *idata = static_cast<int64_t *>(data);
+            for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+              idata[i] = block_map[idata[i] - 1] + 1;
             }
           }
         }
@@ -1382,7 +1382,7 @@ namespace Iocgns {
           m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];
           m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
           m_globalToBlockLocalNodeMap[zone]->map().swap(nodes);
-          m_globalToBlockLocalNodeMap[zone]->build_reverse_map();
+          m_globalToBlockLocalNodeMap[zone]->build_reverse_map_no_lock();
 
           // Need to map global nodes to block-local node connectivity
           const auto &block_map = m_globalToBlockLocalNodeMap[zone];

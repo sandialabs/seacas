@@ -2,7 +2,6 @@ var Ioex__Utils_8C =
 [
     [ "add_coordinate_frames", "Ioex__Utils_8C.html#a9fda3202405f64b7dd22121e77cbedf0", null ],
     [ "add_map_fields", "Ioex__Utils_8C.html#a831b92f5ced06b2f4f1e98f5ce6e8b95", null ],
-    [ "check_non_null", "Ioex__Utils_8C.html#a6feeb784e0779678c3fa43542ed75432", null ],
     [ "check_processor_info", "Ioex__Utils_8C.html#abf3f04de406da6dea14a72db3b2a0a73", null ],
     [ "decode_surface_name", "Ioex__Utils_8C.html#a41e58490b4273d52830e63aa52ec98a6", null ],
     [ "exodus_error", "Ioex__Utils_8C.html#ae674c963847563118ee3da63beada506", null ],

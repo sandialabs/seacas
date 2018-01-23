@@ -182,8 +182,6 @@ Functions</h2></td></tr>
 <tr class="separator:a3f40e01591efe5f45d40d7e6b078ea96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae674c963847563118ee3da63beada506"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#ae674c963847563118ee3da63beada506">exodus_error</a> (int exoid, int lineno, const char *function, const char *filename)</td></tr>
 <tr class="separator:ae674c963847563118ee3da63beada506"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6feeb784e0779678c3fa43542ed75432"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a6feeb784e0779678c3fa43542ed75432">check_non_null</a> (void *ptr, const char *type, const std::string &amp;name)</td></tr>
-<tr class="separator:a6feeb784e0779678c3fa43542ed75432"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a831b92f5ced06b2f4f1e98f5ce6e8b95"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a831b92f5ced06b2f4f1e98f5ce6e8b95">add_map_fields</a> (int exoid, <a class="el" href="classIoss_1_1ElementBlock.html">Ioss::ElementBlock</a> *block, int64_t my_element_count, size_t name_length)</td></tr>
 <tr class="separator:a831b92f5ced06b2f4f1e98f5ce6e8b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e5e78a4d3d70c85f261208700b25fbc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a2e5e78a4d3d70c85f261208700b25fbc">write_coordinate_frames</a> (int exoid, const <a class="el" href="namespaceIoss.html#abf77dade63ce8a4c5cc7af4edea743e9">Ioss::CoordinateFrameContainer</a> &amp;frames)</td></tr>
@@ -196,11 +194,6 @@ Functions</h2></td></tr>
 <tr class="separator:a971038a7f4069ad89af4a2df7346136d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e441062139555c370269f0550e06ee4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a0e441062139555c370269f0550e06ee4">separate_surface_element_sides</a> (<a class="el" href="namespaceIoss.html#a715acbaf3ca8e2e82d0d3a0f81ff5f1b">Ioss::Int64Vector</a> &amp;element, <a class="el" href="namespaceIoss.html#a715acbaf3ca8e2e82d0d3a0f81ff5f1b">Ioss::Int64Vector</a> &amp;sides, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, <a class="el" href="namespaceIoex.html#a0f8c852510f839929e8bd9e9a40b9f36">Ioex::TopologyMap</a> &amp;topo_map, <a class="el" href="namespaceIoex.html#a0f8c852510f839929e8bd9e9a40b9f36">Ioex::TopologyMap</a> &amp;side_map, <a class="el" href="namespaceIoss.html#aac97d071c77181adce98f1569c36d222">Ioss::SurfaceSplitType</a> split_type, const std::string &amp;surface_name)</td></tr>
 <tr class="separator:a0e441062139555c370269f0550e06ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49ef84cb33c317b807d4ebc8c14c90f9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a49ef84cb33c317b807d4ebc8c14c90f9">exodus_byte_size_api</a> (int exoid)</td></tr>
-<tr class="separator:a49ef84cb33c317b807d4ebc8c14c90f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d66f6b0297bdc7314fc8449954d72bf"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a7d66f6b0297bdc7314fc8449954d72bf"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a7d66f6b0297bdc7314fc8449954d72bf">check_block_order</a> (const std::vector&lt; T *&gt; &amp;blocks)</td></tr>
-<tr class="separator:a7d66f6b0297bdc7314fc8449954d72bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a976d472a06fe6dc9a4e8dceda7a4104d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a976d472a06fe6dc9a4e8dceda7a4104d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a976d472a06fe6dc9a4e8dceda7a4104d">filter_node_list</a> (T *data, std::vector&lt; T &gt; &amp;dbvals, const std::vector&lt; int64_t &gt; &amp;active_node_index)</td></tr>
 <tr class="separator:a976d472a06fe6dc9a4e8dceda7a4104d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -404,60 +397,6 @@ ne_put_cmap_params(), </li>
 
 </div>
 </div>
-<a id="a7d66f6b0297bdc7314fc8449954d72bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d66f6b0297bdc7314fc8449954d72bf">&#9670;&nbsp;</a></span>check_block_order()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Ioex::check_block_order </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; T *&gt; &amp;&#160;</td>
-          <td class="paramname"><em>blocks</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a6feeb784e0779678c3fa43542ed75432"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6feeb784e0779678c3fa43542ed75432">&#9670;&nbsp;</a></span>check_non_null()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Ioex::check_non_null </td>
-          <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>ptr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="abf3f04de406da6dea14a72db3b2a0a73"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abf3f04de406da6dea14a72db3b2a0a73">&#9670;&nbsp;</a></span>check_processor_info()</h2>
 
@@ -522,32 +461,6 @@ template&lt;typename T &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a49ef84cb33c317b807d4ebc8c14c90f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a49ef84cb33c317b807d4ebc8c14c90f9">&#9670;&nbsp;</a></span>exodus_byte_size_api()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Ioex::exodus_byte_size_api </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>exoid</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>

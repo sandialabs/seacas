@@ -120,8 +120,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a89a83fe3324b0f3ba44dd884afdd065e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d2c7780a5a9c5db798419ecb8462e3a"><td class="memItemLeft" align="right" valign="top">static CG_ZoneType_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a2d2c7780a5a9c5db798419ecb8462e3a">check_zone_type</a> (int cgnsFilePtr)</td></tr>
 <tr class="separator:a2d2c7780a5a9c5db798419ecb8462e3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0584f200ae50081a61cf12363d447508"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a0584f200ae50081a61cf12363d447508">common_write_meta_data</a> (int file_ptr, const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, std::vector&lt; size_t &gt; &amp;zone_offset)</td></tr>
-<tr class="separator:a0584f200ae50081a61cf12363d447508"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4436c119a691be04b8407f0f69185161"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a4436c119a691be04b8407f0f69185161">common_write_meta_data</a> (int file_ptr, const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, std::vector&lt; size_t &gt; &amp;zone_offset, bool is_parallel)</td></tr>
+<tr class="separator:a4436c119a691be04b8407f0f69185161"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1e99c795265c92bbbb4a240591623d1"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ac1e99c795265c92bbbb4a240591623d1">resolve_nodes</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, int my_processor, bool is_parallel)</td></tr>
 <tr class="separator:ac1e99c795265c92bbbb4a240591623d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bb2d1bf899830b23f3aebde4cfdd299"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a5bb2d1bf899830b23f3aebde4cfdd299">resolve_shared_nodes</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, int my_processor)</td></tr>
@@ -400,8 +400,8 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a0584f200ae50081a61cf12363d447508"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0584f200ae50081a61cf12363d447508">&#9670;&nbsp;</a></span>common_write_meta_data()</h2>
+<a id="a4436c119a691be04b8407f0f69185161"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4436c119a691be04b8407f0f69185161">&#9670;&nbsp;</a></span>common_write_meta_data()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -410,7 +410,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Iocgns::Utils::common_write_meta_data </td>
+          <td class="memname">size_t Iocgns::Utils::common_write_meta_data </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>file_ptr</em>, </td>
@@ -425,7 +425,13 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::vector&lt; size_t &gt; &amp;&#160;</td>
-          <td class="paramname"><em>zone_offset</em>&#160;</td>
+          <td class="paramname"><em>zone_offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_parallel</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

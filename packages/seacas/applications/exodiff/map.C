@@ -384,7 +384,7 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
   size_t num_nodes1 = file1.Num_Nodes();
   size_t num_elmts1 = file1.Num_Elmts();
 
-  // size_t num_nodes2 = file2.Num_Nodes();
+  size_t num_nodes2 = file2.Num_Nodes();
   size_t num_elmts2 = file2.Num_Elmts();
   int    dim        = file1.Dimension();
   SMART_ASSERT(dim == file2.Dimension());
@@ -642,7 +642,7 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
     std::cout << "\nPartial Map selected -- " << unmatched << " elements unmatched\n";
   }
   else {
-    if (num_elmts1 == num_elmts2) {
+    if (num_elmts1 == num_elmts2 && num_nodes1 == num_nodes2) {
       std::cout
           << "exodiff: INFO .. Partial Map was specfied, but not needed.  All elements matched.\n";
     }
@@ -1199,22 +1199,24 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
   size_t warn_count = 0;
 
   if (node_map != nullptr) {
-    // There is a map between file1 and file2, but all nodes are
-    // used in both files.
-    for (size_t i = 0; i < num_nodes1; i++) {
-      if (node_id_map1[i] != node_id_map2[node_map[i]]) {
-        if (!(node_id_map2[node_map[i]] == 0 &&
-              partial_flag)) { // Don't output diff if non-matched and partial
-          std::cerr << "exodiff: WARNING .. The local node " << i + 1 << " with global id "
-                    << node_id_map1[i] << " in file1 has the global id "
-                    << node_id_map2[node_map[i]] << " in file2.\n";
-          diff = true;
-          warn_count++;
-          if (warn_count > 100) {
-            std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
-            break;
-          }
-        }
+    if (!interface.dump_mapping) {
+      // There is a map between file1 and file2, but all nodes are
+      // used in both files.
+      for (size_t i = 0; i < num_nodes1; i++) {
+	if (node_id_map1[i] != node_id_map2[node_map[i]]) {
+	  if (!(node_id_map2[node_map[i]] == 0 &&
+		partial_flag)) { // Don't output diff if non-matched and partial
+	    std::cerr << "exodiff: WARNING .. The local node " << i + 1 << " with global id "
+		      << node_id_map1[i] << " in file1 has the global id "
+		      << node_id_map2[node_map[i]] << " in file2.\n";
+	    diff = true;
+	    warn_count++;
+	    if (warn_count > 100) {
+	      std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
+	      break;
+	    }
+	  }
+	}
       }
     }
   }
@@ -1240,22 +1242,24 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
 
   warn_count = 0;
   if (elmt_map != nullptr) {
-    // There is a map between file1 and file2, but all elements are
-    // used in both files.
-    for (size_t i = 0; i < num_elmts1; i++) {
-      if (elem_id_map1[i] != elem_id_map2[elmt_map[i]]) {
-        if (!(elem_id_map2[elmt_map[i]] == 0 &&
-              partial_flag)) { // Don't output diff if non-matched and partial
-          std::cerr << "exodiff: WARNING .. The local element " << i + 1 << " with global id "
-                    << elem_id_map1[i] << " in file1 has the global id "
-                    << elem_id_map2[elmt_map[i]] << " in file2.\n";
-          diff = true;
-          warn_count++;
-          if (warn_count > 100) {
-            std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
-            break;
-          }
-        }
+    if (!interface.dump_mapping) {
+      // There is a map between file1 and file2, but all elements are
+      // used in both files.
+      for (size_t i = 0; i < num_elmts1; i++) {
+	if (elem_id_map1[i] != elem_id_map2[elmt_map[i]]) {
+	  if (!(elem_id_map2[elmt_map[i]] == 0 &&
+		partial_flag)) { // Don't output diff if non-matched and partial
+	    std::cerr << "exodiff: WARNING .. The local element " << i + 1 << " with global id "
+		      << elem_id_map1[i] << " in file1 has the global id "
+		      << elem_id_map2[elmt_map[i]] << " in file2.\n";
+	    diff = true;
+	    warn_count++;
+	    if (warn_count > 100) {
+	      std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
+	      break;
+	    }
+	  }
+	}
       }
     }
   }

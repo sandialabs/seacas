@@ -118,10 +118,6 @@ namespace Ioex {
     bool ok__(bool write_message = false, std::string *error_message = nullptr,
               int *bad_count = nullptr) const override = 0;
 
-    // Eliminate as much memory as possible, but still retain meta data information
-    // Typically, eliminate the maps...
-    void release_memory__() override;
-
     bool open_group__(const std::string &group_name) override;
     bool create_subgroup__(const std::string &group_name) override;
 
@@ -142,9 +138,6 @@ namespace Ioex {
         maximumNameLength = requested_symbol_size;
       }
     }
-
-    void get_block_adjacencies__(const Ioss::ElementBlock *eb,
-                                 std::vector<std::string> &block_adjacency) const override;
 
     size_t handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
                             Ioss::Map &entity_map, void *ids, size_t num_to_get, size_t offset,
@@ -229,8 +222,6 @@ namespace Ioex {
     void put_qa();
     void put_info();
 
-    virtual void compute_block_adjacencies() const = 0;
-
     template <typename T>
     void internal_write_results_metadata(ex_entity_type type, std::vector<T *> entities,
                                          int &glob_index);
@@ -284,10 +275,8 @@ namespace Ioex {
     mutable int maximumNameLength;
     int         spatialDimension;
 
-    int64_t nodeCount;
     int64_t edgeCount;
     int64_t faceCount;
-    int64_t elementCount;
 
     mutable std::map<ex_entity_type, int> m_groupCount;
 
@@ -298,18 +287,6 @@ namespace Ioex {
     Ioss::Int64Vector elemCmapElemCnts;
     int64_t           commsetNodeCount;
     int64_t           commsetElemCount;
-
-    // Bulk Data
-
-    // MAPS -- Used to convert from local exodusII ids/names to Sierra
-    // database global ids/names
-
-    //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
-    //               sierra side.   global = nodeMap[local]
-    mutable Ioss::Map nodeMap;
-    mutable Ioss::Map edgeMap;
-    mutable Ioss::Map faceMap;
-    mutable Ioss::Map elemMap;
 
     // --- Nodal/Element/Attribute Variable Names -- Maps from sierra
     // field names to index of nodal/element/attribute variable in
@@ -324,8 +301,7 @@ namespace Ioex {
 
     mutable ValueContainer globalValues;
 
-    mutable std::vector<std::vector<bool>> blockAdjacency;
-    mutable std::vector<unsigned char>     nodeConnectivityStatus;
+    mutable std::vector<unsigned char> nodeConnectivityStatus;
 
     // For a database with omitted blocks, this map contains the indices of the
     // active nodes for each nodeset.  If the nodeset is not reduced in size,

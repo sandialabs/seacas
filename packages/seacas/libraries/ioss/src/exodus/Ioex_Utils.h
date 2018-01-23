@@ -88,46 +88,11 @@ namespace Ioex {
 
   void exodus_error(int exoid, int lineno, const char *function, const char *filename);
 
-  void check_non_null(void *ptr, const char *type, const std::string &name);
-
   int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
                      size_t name_length);
 
   void add_coordinate_frames(int exoid, Ioss::Region *region);
   void write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames);
-
-  inline int exodus_byte_size_api(int exoid)
-  {
-    // Check byte-size of integers stored on the database...
-    int mode = ex_int64_status(exoid) & EX_ALL_INT64_API;
-    if (mode != 0) {
-      return 8;
-    }
-
-    return 4;
-  }
-
-  template <typename T> bool check_block_order(const std::vector<T *> &blocks)
-  {
-#ifndef NDEBUG
-    // Verify that element blocks are defined in sorted offset order...
-    typename std::vector<T *>::const_iterator I;
-
-    int64_t eb_offset = -1;
-    for (I = blocks.begin(); I != blocks.end(); ++I) {
-      int64_t this_off = (*I)->get_offset();
-      if (this_off < eb_offset) {
-        {
-          {
-            return false;
-          }
-        }
-      }
-      eb_offset = this_off;
-    }
-#endif
-    return true;
-  }
 
   bool find_displacement_field(Ioss::NameList &fields, const Ioss::GroupingEntity *block, int ndim,
                                std::string *disp_name);

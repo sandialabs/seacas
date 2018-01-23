@@ -109,8 +109,6 @@ namespace Iopx {
 
     void get_step_times__() override;
 
-    void compute_block_adjacencies() const override;
-
     bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
                          bool abort_if_error) const;
     bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
@@ -242,16 +240,6 @@ namespace Iopx {
     const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount, int64_t file_offset,
                              int64_t file_count, ex_entity_type entity_type,
                              ex_inquiry inquiry_type) const;
-
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
-    {
-      return nodeMap.global_to_local(global, must_exist);
-    }
-
-    int64_t element_global_to_local__(int64_t global) const override
-    {
-      return elemMap.global_to_local(global);
-    }
 
     // Internal data handling
     int64_t handle_node_ids(void *ids, int64_t num_to_get, size_t offset, size_t count) const;

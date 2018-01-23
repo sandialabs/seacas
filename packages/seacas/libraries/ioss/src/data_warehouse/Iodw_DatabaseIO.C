@@ -99,9 +99,7 @@ namespace Iodw {
                          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), spatialDimension(3),
         nodeCount(0), elementCount(0), nodeBlockCount(0), elementBlockCount(0), nodesetCount(0),
-        sidesetCount(0), commsetNodeCount(0), commsetElemCount(0),
-        nodeMap("node", filename, myProcessor), elemMap("edge", filename, myProcessor),
-        blockAdjacenciesCalculated(false)
+        sidesetCount(0), commsetNodeCount(0), commsetElemCount(0)
   {
     if (is_input()) {
       dbState = Ioss::STATE_UNKNOWN;
@@ -114,12 +112,6 @@ namespace Iodw {
   }
 
   DatabaseIO::~DatabaseIO() {}
-
-  void DatabaseIO::release_memory__()
-  {
-    nodeMap.release_memory();
-    elemMap.release_memory();
-  }
 
   void DatabaseIO::read_meta_data__()
   {

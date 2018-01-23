@@ -6,7 +6,7 @@ var searchData=
   ['face_5fsets',['face_sets',['../structIodw_1_1Utils_1_1RegionKeys.html#afa628ffc2d3184a06f58cd70954f3b44',1,'Iodw::Utils::RegionKeys']]],
   ['faceblocks',['faceblocks',['../classIoex_1_1Mesh.html#a23d8c53e1199226b58d5376fa9fd3048',1,'Ioex::Mesh::faceblocks()'],['../classIoss_1_1Region.html#a90738ab90fcac37308c950f48a33a98b',1,'Ioss::Region::faceBlocks()']]],
   ['facecount',['faceCount',['../classIoex_1_1DatabaseIO.html#a9c15783695edae895d035254db031c52',1,'Ioex::DatabaseIO']]],
-  ['facemap',['faceMap',['../classIoex_1_1DatabaseIO.html#a9dad766b23505d22b804eb3833b35e4e',1,'Ioex::DatabaseIO']]],
+  ['facemap',['faceMap',['../classIoss_1_1DatabaseIO.html#aae75a4987018efc0b12cf0937a865ab7',1,'Ioss::DatabaseIO']]],
   ['faces_5f',['faces_',['../classIoss_1_1FaceGenerator.html#ac831df7bed6e14f33c1825d33fadbe7f',1,'Ioss::FaceGenerator']]],
   ['facesets',['facesets',['../classIoex_1_1Mesh.html#af4205e2324434b8904ace5a9273b77ec',1,'Ioex::Mesh::facesets()'],['../classIoss_1_1Region.html#ae44727c344a0bdb441165976f48c6bf7',1,'Ioss::Region::faceSets()']]],
   ['facesperentity',['facesPerEntity',['../structIoex_1_1ElemBlock.html#a499b756c945d68de7f4b25101a79baee',1,'Ioex::ElemBlock']]],
