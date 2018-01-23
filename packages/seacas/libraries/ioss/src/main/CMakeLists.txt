@@ -107,17 +107,6 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32_pnetcdf
   COMM mpi serial
   )
 
-TRIBITS_ADD_ADVANCED_TEST(exodus64_to_unstructured_cgns
-   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} --64 --out_type cgns ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.cgns
-     NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS 1
-   TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld 8-block64.cgns
-     OUTPUT_FILE exodus64_to_unstructured_cgns.out
-   TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus64_to_unstructured_cgns.out
-  COMM mpi serial
-  )
-
-
 IF (SEACASIoss_ENABLE_THREADSAFE)
   TRIBITS_ADD_EXECUTABLE(
     io_shell_ts
@@ -202,6 +191,16 @@ endif()
 	     
 
 if ( CGNS_CGNSLIST_BINARY )
+TRIBITS_ADD_ADVANCED_TEST(exodus64_to_unstructured_cgns
+   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} --64 --out_type cgns ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.cgns
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS 1
+   TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld 8-block64.cgns
+     OUTPUT_FILE exodus64_to_unstructured_cgns.out
+   TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus64_to_unstructured_cgns.out
+  COMM mpi serial
+  )
+
 TRIBITS_ADD_ADVANCED_TEST(generated32_to_unstructured_cgns
    TEST_0 EXEC io_shell ARGS --in_type generated --out_type cgns 2x2x8+times:2+variables:nodal,2,element,3 generated32.cgns
      NOEXEPREFIX NOEXESUFFIX
