@@ -274,6 +274,11 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 
   CGERR(cg_goto(file_ptr, base, "end"));
   CGERR(cg_descriptor_write("Information", "IOSS: CGNS Writer version -1"));
+  CGERR(cg_goto(file_ptr, base, "end"));
+  CGERR(cg_dataclass_write(CGNS_ENUMV(Dimensional)));
+  CGERR(cg_units_write(CGNS_ENUMV(MassUnitsUserDefined), CGNS_ENUMV(LengthUnitsUserDefined),
+                       CGNS_ENUMV(TimeUnitsUserDefined), CGNS_ENUMV(TemperatureUnitsUserDefined),
+                       CGNS_ENUMV(AngleUnitsUserDefined)))
 
   // Output the sidesets as Family_t nodes
   const auto &sidesets = region.get_sidesets();
