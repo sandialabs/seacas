@@ -2094,6 +2094,9 @@ namespace Iocgns {
         cg_end   = cg_start + local_face_count - 1;
 
         auto xx = num_to_get > 0 ? parent.data() : nullptr;
+	if (num_to_get == 0) {
+	  cg_start = cg_end = 0;
+	}
         CGCHECK(cgp_parent_data_write(cgnsFilePtr, base, zone, sect, cg_start, cg_end, xx));
         m_bcOffset[zone] += size;
       }
@@ -2199,12 +2202,6 @@ namespace Iocgns {
     MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
                MPI_SUM, util().communicator());
 
-#if IOSS_DEBUG_OUTPUT
-    for (size_t i = 0; i < node_count.size(); i++) {
-      std::cerr << "P[" << myProcessor << "] zone, count, offset: " << i + 1 << " " << node_count[i]
-                << " " << node_offset[i] << "\n";
-    }
-#endif
     return node_offset;
   }
 
