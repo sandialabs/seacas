@@ -208,7 +208,7 @@ TRIBITS_ADD_ADVANCED_TEST(generated32_to_unstructured_cgns
    TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld generated32.cgns
      OUTPUT_FILE generated32_to_unstructured_cgns.out
    TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/generated_to_unstructured_cgns.gold generated32_to_unstructured_cgns.out 
-  COMM serial
+  COMM mpi serial
   )
 
 TRIBITS_ADD_ADVANCED_TEST(generated64_to_unstructured_cgns
@@ -218,7 +218,7 @@ TRIBITS_ADD_ADVANCED_TEST(generated64_to_unstructured_cgns
    TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld generated64.cgns
      OUTPUT_FILE generated64_to_unstructured_cgns.out
    TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/generated_to_unstructured_cgns.gold generated64_to_unstructured_cgns.out 
-  COMM serial
+  COMM mpi serial
   )
 
 TRIBITS_ADD_ADVANCED_TEST(exodus32_to_unstructured_cgns
