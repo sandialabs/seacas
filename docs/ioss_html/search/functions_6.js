@@ -184,6 +184,7 @@ var searchData=
   ['get_5fstructured_5fblocks',['get_structured_blocks',['../classIoss_1_1Region.html#a5a26433379cf3beaf59906c4b2f5e406',1,'Ioss::Region']]],
   ['get_5fsurface_5fsplit_5ftype',['get_surface_split_type',['../classIoss_1_1DatabaseIO.html#a52c4059853eb44042d91f894d08850cb',1,'Ioss::DatabaseIO']]],
   ['get_5ftype',['get_type',['../classIoss_1_1Field.html#a8abb33dcfa0630f6422e7541b36694b4',1,'Ioss::Field::get_type()'],['../classIoss_1_1Property.html#a90c992cd11af736282e63e1c34b1c076',1,'Ioss::Property::get_type()'],['../namespaceanonymous__namespace_02Ioex__Internals_8C_03.html#a584658147dc76be7d85c531a8ef9e6e4',1,'anonymous_namespace{Ioex_Internals.C}::get_type()']]],
+  ['get_5ftype_5ffrom_5ffile',['get_type_from_file',['../namespaceanonymous__namespace_02info__interface_8C_03.html#a1c5d3b4308934427a3e71620d8af9068',1,'anonymous_namespace{info_interface.C}::get_type_from_file()'],['../namespaceanonymous__namespace_02shell__interface_8C_03.html#a1b8031ed6616016a0063825afb8efe1e',1,'anonymous_namespace{shell_interface.C}::get_type_from_file()']]],
   ['get_5ftypeof_5flevel',['get_typeof_level',['../namespaceSmartAssert.html#ab9c77e2bf430b103a8ac59d852297f6a',1,'SmartAssert']]],
   ['get_5funique_5fid',['get_unique_id',['../classIoss_1_1ElementTopology.html#ab7e73e6abc7346914d86da30fc5395b8',1,'Ioss::ElementTopology']]],
   ['get_5fuse_5fgeneric_5fcanonical_5fname',['get_use_generic_canonical_name',['../classIoss_1_1DatabaseIO.html#a10b4e39c00fbfa842be7a0e6521774d6',1,'Ioss::DatabaseIO']]],
