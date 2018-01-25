@@ -194,7 +194,7 @@ if ( CGNS_CGNSLIST_BINARY )
 TRIBITS_ADD_ADVANCED_TEST(exodus64_to_unstructured_cgns
    TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} --64 ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.cgns
      NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS 1
+     NUM_MPI_PROCS 1-4
    TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld 8-block64.cgns
      OUTPUT_FILE exodus64_to_unstructured_cgns.out
    TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus64_to_unstructured_cgns.out
@@ -224,7 +224,7 @@ TRIBITS_ADD_ADVANCED_TEST(generated64_to_unstructured_cgns
 TRIBITS_ADD_ADVANCED_TEST(exodus32_to_unstructured_cgns
    TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block32.cgns
      NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS 1
+     NUM_MPI_PROCS 1-4
    TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld 8-block32.cgns
      OUTPUT_FILE exodus32_to_unstructured_cgns.out
    TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus32_to_unstructured_cgns.out 
@@ -268,7 +268,7 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_to_exodus_double_block
 TRIBITS_ADD_ADVANCED_TEST(unstructured_cgns_to_exodus
    TEST_0 EXEC io_shell ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/generated.cgns exodus_generated.e
      NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS 1
+     NUM_MPI_PROCS 1-4
    TEST_1 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_generated.gold exodus_generated.e
   COMM mpi serial
   )
@@ -276,7 +276,7 @@ TRIBITS_ADD_ADVANCED_TEST(unstructured_cgns_to_exodus
 TRIBITS_ADD_ADVANCED_TEST(structured_cgns_to_unstructured
    TEST_0 EXEC struc_to_unstruc ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/sparc1.cgns exodus_struc.e
      NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS 1
+     NUM_MPI_PROCS 1-4
    TEST_1 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_struc.gold exodus_struc.e
   COMM mpi serial
   )
@@ -284,10 +284,10 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_to_unstructured
 if ( CGNS_CGNSDIFF_BINARY )
 TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip
    TEST_0 EXEC io_shell ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/sparc1.cgns sparc1.cgns
-     NUM_MPI_PROCS 1
+     NUM_MPI_PROCS 1-4
      NOEXEPREFIX NOEXESUFFIX
    TEST_1 EXEC io_shell ARGS sparc1.cgns sparc2.cgns
-     NUM_MPI_PROCS 1
+     NUM_MPI_PROCS 1-4
      NOEXEPREFIX NOEXESUFFIX
    TEST_2 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/test/sparc1.cgns sparc2.cgns
      NUM_MPI_PROCS 1
@@ -296,10 +296,10 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip
 
 TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_bump
    TEST_0 EXEC io_shell ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/bump_str.cgns tmp.cgns
-     NUM_MPI_PROCS 1
+     NUM_MPI_PROCS 1-4
      NOEXEPREFIX NOEXESUFFIX
    TEST_1 EXEC io_shell ARGS tmp.cgns bump_str_out.cgns
-     NUM_MPI_PROCS 1
+     NUM_MPI_PROCS 1-4
      NOEXEPREFIX NOEXESUFFIX
    TEST_2 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/test/bump_str.cgns bump_str_out.cgns
      NUM_MPI_PROCS 1
