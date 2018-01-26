@@ -191,9 +191,11 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
   errmsg << ". Please report to gdsjaar@sandia.gov if you need help.";
   if (cgnsid > 0) {
 #if CG_BUILD_PARALLEL
+  // This can cause a hang if not all processors call this routine
+  // and then the error is not output...
   //    cgp_close(cgnsid);
 #else
-  //    cg_close(cgnsid);
+    cg_close(cgnsid);
 #endif
   }
   IOSS_ERROR(errmsg);
@@ -202,7 +204,7 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
 CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
 {
   // ========================================================================
-  // Get the number of zones (element blocks) in the mesh...
+  // Get the number of zones (element/structured blocks) in the mesh...
   int base      = 1;
   int num_zones = 0;
   CGCHECKNP(cg_nzones(cgnsFilePtr, base, &num_zones));
