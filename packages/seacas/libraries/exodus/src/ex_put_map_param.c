@@ -275,12 +275,10 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
         invalid_ids[i] = EX_INVALID_ID;
       }
       if (num_node_maps > 0) {
-        status = nc_put_var_int(exoid, var_nm_id, invalid_ids);
-        assert(status == NC_NOERR);
+        nc_put_var_int(exoid, var_nm_id, invalid_ids);
       }
       if (num_elem_maps > 0) {
-        status = nc_put_var_int(exoid, var_em_id, invalid_ids);
-        assert(status == NC_NOERR);
+        nc_put_var_int(exoid, var_em_id, invalid_ids);
       }
       free(invalid_ids);
     }

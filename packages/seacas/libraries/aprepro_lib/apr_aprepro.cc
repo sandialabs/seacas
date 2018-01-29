@@ -282,6 +282,7 @@ namespace SEAMS {
     if (pointer == nullptr || pointer->bad() || !pointer->good()) {
       std::string err = "Can't open " + file;
       error(err, false);
+      delete pointer;
       if (!stringInteractive) {
         throw std::runtime_error(err);
       }
@@ -305,6 +306,7 @@ namespace SEAMS {
       std::string file_path(ap_options.include_path);
       file_path += "/";
       file_path += file;
+      delete pointer;
       pointer = new std::fstream(file_path.c_str(), smode);
     }
     return pointer;

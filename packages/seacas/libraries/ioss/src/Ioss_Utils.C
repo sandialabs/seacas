@@ -1269,7 +1269,6 @@ bool Ioss::Utils::check_set_bool_property(const Ioss::PropertyManager &propertie
         prop_value = false;
       }
       else {
-        found_property = false;
         std::ostringstream errmsg;
         errmsg << "ERROR: Unrecognized value found IOSS_PROPERTIES environment variable\n"
                << "       for " << prop_name << ". Found '" << yesno
