@@ -493,7 +493,6 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
    * to an output netCDF file.
    */
 
-  char errmsg[MAX_ERR_LENGTH];
   int  status;
   int *dim_in_id  = NULL;
   int *dim_out_id = NULL;
@@ -559,13 +558,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
     ex_compress_variable(out_id, var_out_id, 2);
   }
   else {
-    if ((status = nc_def_var(out_id, var_nm, var_type, nbr_dim, dim_out_id, &var_out_id)) !=
-        NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s variable in file id %d", var_nm,
-               out_id);
-      ex_err(__func__, errmsg, status);
-      return (EX_FATAL);
-    }
+    EXCHECKF(nc_def_var(out_id, var_nm, var_type, nbr_dim, dim_out_id, &var_out_id));
     ex_compress_variable(out_id, var_out_id, 1);
   }
 

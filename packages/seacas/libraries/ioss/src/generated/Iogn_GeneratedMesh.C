@@ -653,17 +653,15 @@ namespace Iogn {
     }
   }
 
-  int64_t GeneratedMesh::build_node_map(Ioss::Int64Vector &map, std::vector<int> &proc,
-                                        int64_t slab, size_t slabOffset, size_t adjacentProc,
-                                        int64_t startIndex)
+  void GeneratedMesh::build_node_map(Ioss::Int64Vector &map, std::vector<int> &proc, int64_t slab,
+                                     size_t slabOffset, size_t adjacentProc)
   {
-    int64_t index  = startIndex;
+    int64_t index  = 0;
     int64_t offset = (myStartZ + slabOffset) * (numX + 1) * (numY + 1);
     for (int64_t i = 0; i < slab; i++) {
       map[index]    = offset + i + 1;
       proc[index++] = static_cast<int>(adjacentProc);
     }
-    return index;
   }
 
   void GeneratedMesh::node_communication_map(Ioss::Int64Vector &map, std::vector<int> &proc)
@@ -679,12 +677,11 @@ namespace Iogn {
     map.resize(count);
     proc.resize(count);
 
-    int64_t j = 0;
     if (!isFirstProc) {
-      j = build_node_map(map, proc, slab, 0, myProcessor - 1, j);
+      build_node_map(map, proc, slab, 0, myProcessor - 1);
     }
     if (!isLastProc) {
-      j = build_node_map(map, proc, slab, myNumZ, myProcessor + 1, j);
+      build_node_map(map, proc, slab, myNumZ, myProcessor + 1);
     }
   }
 

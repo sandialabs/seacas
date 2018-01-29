@@ -368,7 +368,6 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 
     region.get_database()->util().global_array_minmax(bc_range, Ioss::ParallelUtils::DO_MAX);
 
-    idx = 0;
     for (idx = 0; idx < bc_range.size(); idx += 6) {
       bc_range[idx + 0] = -bc_range[idx + 0];
       bc_range[idx + 1] = -bc_range[idx + 1];

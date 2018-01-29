@@ -1245,9 +1245,9 @@ namespace {
     int  namestrdim = 0;
     char errmsg[MAX_ERR_LENGTH];
 
-    int status = nc_inq_dimid(exoid, DIM_STR_NAME, &namestrdim);
+    nc_inq_dimid(exoid, DIM_STR_NAME, &namestrdim);
 
-    status = nc_def_dim(exoid, dim_num, count, &dimid);
+    int status = nc_def_dim(exoid, dim_num, count, &dimid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg, "Error: failed to define number of %ss in file id %d", type, exoid);

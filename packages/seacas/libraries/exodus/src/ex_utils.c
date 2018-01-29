@@ -226,6 +226,7 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
 
   if (found_name) {
     if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
+      free(int_names);
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
                ex_name_of_object(obj_type), exoid);
       ex_err(__func__, errmsg, status);
