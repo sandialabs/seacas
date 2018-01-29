@@ -39,6 +39,7 @@ rm -f config.cache
 
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DBUILD_SHARED_LIBS:BOOL=ON \
+	 -DBUILD_TESTING:BOOL=OFF \
          -DCMAKE_INSTALL_PREFIX=${ACCESS} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
          -DENABLE_NETCDF_4:BOOL=ON \
