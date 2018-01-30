@@ -528,8 +528,7 @@ namespace Iopg {
     // maps into. An particular element block contains all elements in
     // the range:
     //     offset < file_descriptor <= offset+number_elements_per_block
-    int offset      = 0;
-    int used_blocks = 0;
+    int offset = 0;
 
     for (iblk = 0; iblk < elementBlockCount; iblk++) {
       int         id           = element_block_ids[iblk];
