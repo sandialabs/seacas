@@ -105,7 +105,7 @@ namespace {
     GL_IdVector I_nodes_recv;
     for (size_t i = 0; i < global_id_map.size(); i++) {
       auto global_id = global_id_map.map()[i + 1];
-      if (global_id >= (int64_t)min_id && global_id <= (int64_t)max_id) {
+      if ((size_t)global_id >= min_id && (size_t)global_id <= max_id) {
         I_nodes.emplace_back((int)global_id, (int)i + 1 + offset);
       }
     }
@@ -710,7 +710,7 @@ namespace Iocgns {
 
     for (const auto &block : blocks) {
       int zone = block->get_property("zone").get_int();
-      assert(zone < blocks.size() + 1);
+      assert((size_t)zone < blocks.size() + 1);
 
       const auto &I_map = m_globalToBlockLocalNodeMap[zone];
 
