@@ -131,9 +131,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1b90f7f313d6794aef867b1dc44fd2a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28f5b47509e7f07f9e0fe021d3be54fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a28f5b47509e7f07f9e0fe021d3be54fd">is_alias</a> (const std::string &amp;my_name) const</td></tr>
 <tr class="separator:a28f5b47509e7f07f9e0fe021d3be54fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0ac0895532e969424faa3d93b80b3a6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#af0ac0895532e969424faa3d93b80b3a6">block_membership</a> (std::vector&lt; std::string &gt; &amp;)</td></tr>
-<tr class="memdesc:af0ac0895532e969424faa3d93b80b3a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of blocks that the entities in this <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ...">GroupingEntity</a> "touch".  <a href="#af0ac0895532e969424faa3d93b80b3a6">More...</a><br /></td></tr>
-<tr class="separator:af0ac0895532e969424faa3d93b80b3a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acec0ed23829f1cbf334ae1d435a90c70"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#acec0ed23829f1cbf334ae1d435a90c70">block_membership</a> (std::vector&lt; std::string &gt; &amp;block_members)</td></tr>
+<tr class="memdesc:acec0ed23829f1cbf334ae1d435a90c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of blocks that the entities in this <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ...">GroupingEntity</a> "touch".  <a href="#acec0ed23829f1cbf334ae1d435a90c70">More...</a><br /></td></tr>
+<tr class="separator:acec0ed23829f1cbf334ae1d435a90c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad31a2cd6eb0c239f0fbbce30eee4302e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#ad31a2cd6eb0c239f0fbbce30eee4302e">get_filename</a> () const</td></tr>
 <tr class="memdesc:ad31a2cd6eb0c239f0fbbce30eee4302e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the file name associated with the database containing this entity.  <a href="#ad31a2cd6eb0c239f0fbbce30eee4302e">More...</a><br /></td></tr>
 <tr class="separator:ad31a2cd6eb0c239f0fbbce30eee4302e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -344,7 +344,7 @@ Friends</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">io_database</td><td>The database associated with the entity. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">my_name</td><td>The entity name. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">entity_count</td><td>The number of subentities in the entity. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">entity_cnt</td><td>The number of subentities in the entity. </td></tr>
   </table>
   </dd>
 </dl>
@@ -403,8 +403,8 @@ Friends</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="af0ac0895532e969424faa3d93b80b3a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af0ac0895532e969424faa3d93b80b3a6">&#9670;&nbsp;</a></span>block_membership()</h2>
+<a id="acec0ed23829f1cbf334ae1d435a90c70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acec0ed23829f1cbf334ae1d435a90c70">&#9670;&nbsp;</a></span>block_membership()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -416,7 +416,7 @@ Friends</h2></td></tr>
           <td class="memname">virtual void Ioss::GroupingEntity::block_membership </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; std::string &gt; &amp;&#160;</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramname"><em>block_members</em></td><td>)</td>
           <td></td>
         </tr>
       </table>

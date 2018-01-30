@@ -189,7 +189,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a09ea6149fab28337add8ee8e2e214c8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a comm set to the region.  <a href="#a09ea6149fab28337add8ee8e2e214c8f">More...</a><br /></td></tr>
 <tr class="separator:a09ea6149fab28337add8ee8e2e214c8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae806c321adbbff17490f0d39eb537dbd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#ae806c321adbbff17490f0d39eb537dbd">add</a> (<a class="el" href="classIoss_1_1StructuredBlock.html">StructuredBlock</a> *structured_block)</td></tr>
-<tr class="memdesc:ae806c321adbbff17490f0d39eb537dbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a node block to the region.  <a href="#ae806c321adbbff17490f0d39eb537dbd">More...</a><br /></td></tr>
+<tr class="memdesc:ae806c321adbbff17490f0d39eb537dbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a structured block to the region.  <a href="#ae806c321adbbff17490f0d39eb537dbd">More...</a><br /></td></tr>
 <tr class="separator:ae806c321adbbff17490f0d39eb537dbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dcc34c2d620b2749c843a93b70a35ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#a9dcc34c2d620b2749c843a93b70a35ae">add</a> (const <a class="el" href="classIoss_1_1CoordinateFrame.html">CoordinateFrame</a> &amp;frame)</td></tr>
 <tr class="memdesc:a9dcc34c2d620b2749c843a93b70a35ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a coordinate frame to the region.  <a href="#a9dcc34c2d620b2749c843a93b70a35ae">More...</a><br /></td></tr>
@@ -273,7 +273,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:af7088a51cf1b79bab79e7646c53caa5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the structured block with the given name.  <a href="#af7088a51cf1b79bab79e7646c53caa5b">More...</a><br /></td></tr>
 <tr class="separator:af7088a51cf1b79bab79e7646c53caa5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c5d00e83634c28e2ea923059523ddee"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classIoss_1_1CoordinateFrame.html">CoordinateFrame</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#a7c5d00e83634c28e2ea923059523ddee">get_coordinate_frame</a> (int64_t id) const</td></tr>
-<tr class="memdesc:a7c5d00e83634c28e2ea923059523ddee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the coordinate frame with the given name.  <a href="#a7c5d00e83634c28e2ea923059523ddee">More...</a><br /></td></tr>
+<tr class="memdesc:a7c5d00e83634c28e2ea923059523ddee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the coordinate frame with the given id.  <a href="#a7c5d00e83634c28e2ea923059523ddee">More...</a><br /></td></tr>
 <tr class="separator:a7c5d00e83634c28e2ea923059523ddee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaac1955dc17f419d78ef4f4cd7d44244"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#aaac1955dc17f419d78ef4f4cd7d44244">add_alias</a> (const std::string &amp;db_name, const std::string &amp;alias)</td></tr>
 <tr class="memdesc:aaac1955dc17f419d78ef4f4cd7d44244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an alias for a name in a region.  <a href="#aaac1955dc17f419d78ef4f4cd7d44244">More...</a><br /></td></tr>
@@ -355,9 +355,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1b90f7f313d6794aef867b1dc44fd2a4 inherit pub_methods_classIoss_1_1GroupingEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28f5b47509e7f07f9e0fe021d3be54fd inherit pub_methods_classIoss_1_1GroupingEntity"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a28f5b47509e7f07f9e0fe021d3be54fd">is_alias</a> (const std::string &amp;my_name) const</td></tr>
 <tr class="separator:a28f5b47509e7f07f9e0fe021d3be54fd inherit pub_methods_classIoss_1_1GroupingEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0ac0895532e969424faa3d93b80b3a6 inherit pub_methods_classIoss_1_1GroupingEntity"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#af0ac0895532e969424faa3d93b80b3a6">block_membership</a> (std::vector&lt; std::string &gt; &amp;)</td></tr>
-<tr class="memdesc:af0ac0895532e969424faa3d93b80b3a6 inherit pub_methods_classIoss_1_1GroupingEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of blocks that the entities in this <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ...">GroupingEntity</a> "touch".  <a href="classIoss_1_1GroupingEntity.html#af0ac0895532e969424faa3d93b80b3a6">More...</a><br /></td></tr>
-<tr class="separator:af0ac0895532e969424faa3d93b80b3a6 inherit pub_methods_classIoss_1_1GroupingEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acec0ed23829f1cbf334ae1d435a90c70 inherit pub_methods_classIoss_1_1GroupingEntity"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#acec0ed23829f1cbf334ae1d435a90c70">block_membership</a> (std::vector&lt; std::string &gt; &amp;block_members)</td></tr>
+<tr class="memdesc:acec0ed23829f1cbf334ae1d435a90c70 inherit pub_methods_classIoss_1_1GroupingEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of blocks that the entities in this <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ...">GroupingEntity</a> "touch".  <a href="classIoss_1_1GroupingEntity.html#acec0ed23829f1cbf334ae1d435a90c70">More...</a><br /></td></tr>
+<tr class="separator:acec0ed23829f1cbf334ae1d435a90c70 inherit pub_methods_classIoss_1_1GroupingEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad31a2cd6eb0c239f0fbbce30eee4302e inherit pub_methods_classIoss_1_1GroupingEntity"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#ad31a2cd6eb0c239f0fbbce30eee4302e">get_filename</a> () const</td></tr>
 <tr class="memdesc:ad31a2cd6eb0c239f0fbbce30eee4302e inherit pub_methods_classIoss_1_1GroupingEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the file name associated with the database containing this entity.  <a href="classIoss_1_1GroupingEntity.html#ad31a2cd6eb0c239f0fbbce30eee4302e">More...</a><br /></td></tr>
 <tr class="separator:ad31a2cd6eb0c239f0fbbce30eee4302e inherit pub_methods_classIoss_1_1GroupingEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -554,7 +554,7 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">iodatabase</td><td>The name of the database associated with the <a class="el" href="classIoss_1_1Region.html" title="A grouping entity that contains other grouping entities. ">Region</a>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">myname</td><td>The name of the <a class="el" href="classIoss_1_1Region.html" title="A grouping entity that contains other grouping entities. ">Region</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">my_name</td><td>The name of the <a class="el" href="classIoss_1_1Region.html" title="A grouping entity that contains other grouping entities. ">Region</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -873,10 +873,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Add a node block to the region. </p>
+<p>Add a structured block to the region. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">node_block</td><td>The node block to add </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">structured_block</td><td>The structured block to add </td></tr>
   </table>
   </dd>
 </dl>
@@ -1195,7 +1195,7 @@ Additional Inherited Members</h2></td></tr>
 <p>The states in the region will be 1-based.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">The</td><td>time at the new state. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">time</td><td>The time at the new state. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1558,10 +1558,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get the coordinate frame with the given name. </p>
+<p>Get the coordinate frame with the given id. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">my_name</td><td>The name of the coordinate frame to get. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">id</td><td>The id of the coordinate frame to get. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2810,7 +2810,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Transfer all relevant aliases from this region to another region. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">The</td><td>region to which the aliases are to be transferred. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">to</td><td>The region to which the aliases are to be transferred. </td></tr>
   </table>
   </dd>
 </dl>
