@@ -283,10 +283,15 @@ namespace Iopg {
     char dbtitle[max_line_length + 1];
     std::memset(dbtitle, 0, max_line_length + 1);
 
-    int error = im_ex_get_init(get_file_pointer(), dbtitle, &spatialDimension, &nodeCount,
-                               &elementCount, &elementBlockCount, &nodesetCount, &sidesetCount);
+    int node_count = 0;
+    int elem_count = 0;
+    int error      = im_ex_get_init(get_file_pointer(), dbtitle, &spatialDimension, &node_count,
+                               &elem_count, &elementBlockCount, &nodesetCount, &sidesetCount);
     if (error < 0)
       pamgen_error(get_file_pointer(), __LINE__, myProcessor);
+
+    nodeCount    = node_count;
+    elementCount = elem_count;
 
     nodeBlockCount = 1;
 
