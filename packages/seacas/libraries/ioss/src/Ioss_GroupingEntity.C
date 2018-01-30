@@ -53,7 +53,7 @@
  *
  *  \param[in] io_database The database associated with the entity.
  *  \param[in] my_name The entity name.
- *  \param[in] entity_count The number of subentities in the entity.
+ *  \param[in] entity_cnt The number of subentities in the entity.
  *
  */
 Ioss::GroupingEntity::GroupingEntity(Ioss::DatabaseIO *io_database, const std::string &my_name,
