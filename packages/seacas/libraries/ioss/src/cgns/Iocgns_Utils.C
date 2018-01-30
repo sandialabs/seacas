@@ -861,7 +861,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
     if (bocotype == CG_FamilySpecified) {
       // Need to get boconame from cg_famname_read
-      CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc+1, "end"));
+      CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
       CGCHECKNP(cg_famname_read(boconame));
     }
 
