@@ -1095,14 +1095,14 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &            face_is_
  *  And yet another idiosyncracy of sidesets...
  *  The side of an element (especially shells) can be
  *  either a face or an edge in the same sideset.  The
- *  ordinal of an edge is (local_edge_number+#faces) on the
+ *  ordinal of an edge is (local_edge_number+numfaces) on the
  *  database, but needs to be (local_edge_number) for Sierra...
  *
  *  If the sideblock has a "parent_element_topology" and a
  *  "topology", then we can determine whether to offset the
  *  side ordinals...
  *
- *  \param[in] Compute the offset for element sides in this SideBlock
+ *  \param[in] sb Compute the offset for element sides in this SideBlock
  *  \returns The offset.
  */
 int64_t Ioss::Utils::get_side_offset(const Ioss::SideBlock *sb)
@@ -1284,7 +1284,7 @@ bool Ioss::Utils::check_set_bool_property(const Ioss::PropertyManager &propertie
  *
  *  The conversion is performed in place.
  *
- *  \param[in,out] On input, the string to convert. On output, the converted string.
+ *  \param[in,out] name On input, the string to convert. On output, the converted string.
  *
  */
 void Ioss::Utils::fixup_name(char *name)
@@ -1304,7 +1304,7 @@ void Ioss::Utils::fixup_name(char *name)
  *
  *  The conversion is performed in place.
  *
- *  \param[in,out] On input, the string to convert. On output, the converted string.
+ *  \param[in,out] name On input, the string to convert. On output, the converted string.
  *
  */
 void Ioss::Utils::fixup_name(std::string &name)
@@ -1483,7 +1483,7 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name, size_t com
  *  "mesh" even though a history file is just a collection of global variables
  *  with no real mesh. This routine will add the mesh portion to a history file.
  *
- *  \param[in,out] The region on which the nominal mesh is to be defined.
+ *  \param[in,out] region The region on which the nominal mesh is to be defined.
  */
 void Ioss::Utils::generate_history_mesh(Ioss::Region *region)
 {
