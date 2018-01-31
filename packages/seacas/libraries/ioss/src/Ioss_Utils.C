@@ -304,26 +304,23 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   return decoded_filename;
 }
 
-int Ioss::Utils::decode_entity_name(const std::string &entity_name)
+int64_t Ioss::Utils::extract_id(const std::string &name_id)
 {
-  // ExodusII stores block, nodeset, and sideset ids as integers
-  // Sierra   stores these as std::strings. The string is created by
-  // concatenating the type, the character '_' and the id.
-  // This function reverses the process and returns the original id.
+  std::vector<std::string> tokens = Ioss::tokenize(name_id, "_");
 
-  const char *name = entity_name.c_str();
-  while (*name != '_') {
-    name++;
+  if (tokens.size() == 1) {
+    return 0;
   }
-  // Increment one more time to get past '_'
-  assert(*name == '_');
-  name++;
 
-  // name now points to beginning of id portion of string
-  assert(*name >= '0' && *name <= '9');
-  int id = std::atoi(name);
+  // Check whether last token is an integer...
+  std::string str_id = tokens.back();
+  std::size_t found  = str_id.find_first_not_of("0123456789");
+  if (found == std::string::npos) {
+    // All digits...
+    return std::atoi(str_id.c_str());
+  }
 
-  return id;
+  return 0;
 }
 
 std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int64_t id)
@@ -1098,14 +1095,14 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &            face_is_
  *  And yet another idiosyncracy of sidesets...
  *  The side of an element (especially shells) can be
  *  either a face or an edge in the same sideset.  The
- *  ordinal of an edge is (local_edge_number+#faces) on the
+ *  ordinal of an edge is (local_edge_number+numfaces) on the
  *  database, but needs to be (local_edge_number) for Sierra...
  *
  *  If the sideblock has a "parent_element_topology" and a
  *  "topology", then we can determine whether to offset the
  *  side ordinals...
  *
- *  \param[in] Compute the offset for element sides in this SideBlock
+ *  \param[in] sb Compute the offset for element sides in this SideBlock
  *  \returns The offset.
  */
 int64_t Ioss::Utils::get_side_offset(const Ioss::SideBlock *sb)
@@ -1272,7 +1269,6 @@ bool Ioss::Utils::check_set_bool_property(const Ioss::PropertyManager &propertie
         prop_value = false;
       }
       else {
-        found_property = false;
         std::ostringstream errmsg;
         errmsg << "ERROR: Unrecognized value found IOSS_PROPERTIES environment variable\n"
                << "       for " << prop_name << ". Found '" << yesno
@@ -1288,7 +1284,7 @@ bool Ioss::Utils::check_set_bool_property(const Ioss::PropertyManager &propertie
  *
  *  The conversion is performed in place.
  *
- *  \param[in,out] On input, the string to convert. On output, the converted string.
+ *  \param[in,out] name On input, the string to convert. On output, the converted string.
  *
  */
 void Ioss::Utils::fixup_name(char *name)
@@ -1308,7 +1304,7 @@ void Ioss::Utils::fixup_name(char *name)
  *
  *  The conversion is performed in place.
  *
- *  \param[in,out] On input, the string to convert. On output, the converted string.
+ *  \param[in,out] name On input, the string to convert. On output, the converted string.
  *
  */
 void Ioss::Utils::fixup_name(std::string &name)
@@ -1487,7 +1483,7 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name, size_t com
  *  "mesh" even though a history file is just a collection of global variables
  *  with no real mesh. This routine will add the mesh portion to a history file.
  *
- *  \param[in,out] The region on which the nominal mesh is to be defined.
+ *  \param[in,out] region The region on which the nominal mesh is to be defined.
  */
 void Ioss::Utils::generate_history_mesh(Ioss::Region *region)
 {

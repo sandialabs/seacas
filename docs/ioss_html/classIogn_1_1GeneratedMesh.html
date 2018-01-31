@@ -167,8 +167,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a48aeb94ab3d67cb0b9d9ab050fdbe1f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8c57a72f98f9a3c31f33a79836cdf51"><td class="memItemLeft" align="right" valign="top">virtual std::pair&lt; std::string, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIogn_1_1GeneratedMesh.html#ae8c57a72f98f9a3c31f33a79836cdf51">topology_type</a> (int64_t block_number) const</td></tr>
 <tr class="separator:ae8c57a72f98f9a3c31f33a79836cdf51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa79480f29286ba894936d3953f117356"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIogn_1_1GeneratedMesh.html#aa79480f29286ba894936d3953f117356">build_node_map</a> (<a class="el" href="namespaceIoss.html#a715acbaf3ca8e2e82d0d3a0f81ff5f1b">Ioss::Int64Vector</a> &amp;map, std::vector&lt; int &gt; &amp;proc, int64_t slab, size_t slabOffset, size_t adjacentProc, int64_t startIndex)</td></tr>
-<tr class="separator:aa79480f29286ba894936d3953f117356"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa5d7cc3eb54bf6b350d56676169912c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIogn_1_1GeneratedMesh.html#aaa5d7cc3eb54bf6b350d56676169912c">build_node_map</a> (<a class="el" href="namespaceIoss.html#a715acbaf3ca8e2e82d0d3a0f81ff5f1b">Ioss::Int64Vector</a> &amp;map, std::vector&lt; int &gt; &amp;proc, int64_t slab, size_t slabOffset, size_t adjacentProc, size_t index)</td></tr>
+<tr class="separator:aaa5d7cc3eb54bf6b350d56676169912c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ef6c65fbbec4f57ed6afde59a0d8bd9"><td class="memItemLeft" align="right" valign="top">virtual int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIogn_1_1GeneratedMesh.html#a1ef6c65fbbec4f57ed6afde59a0d8bd9">communication_node_count_proc</a> () const</td></tr>
 <tr class="separator:a1ef6c65fbbec4f57ed6afde59a0d8bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6153d3269cadb8a0074083ae42ec732d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIogn_1_1GeneratedMesh.html#a6153d3269cadb8a0074083ae42ec732d">node_communication_map</a> (<a class="el" href="namespaceIogn.html#ab8cec8a4ecca4ec30840c270713967a1">MapVector</a> &amp;map, std::vector&lt; int &gt; &amp;proc)</td></tr>
@@ -599,14 +599,14 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aa79480f29286ba894936d3953f117356"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa79480f29286ba894936d3953f117356">&#9670;&nbsp;</a></span>build_node_map()</h2>
+<a id="aaa5d7cc3eb54bf6b350d56676169912c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa5d7cc3eb54bf6b350d56676169912c">&#9670;&nbsp;</a></span>build_node_map()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int64_t Iogn::GeneratedMesh::build_node_map </td>
+          <td class="memname">void Iogn::GeneratedMesh::build_node_map </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespaceIoss.html#a715acbaf3ca8e2e82d0d3a0f81ff5f1b">Ioss::Int64Vector</a> &amp;&#160;</td>
           <td class="paramname"><em>map</em>, </td>
@@ -638,8 +638,8 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>startIndex</em>&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

@@ -105,7 +105,7 @@ namespace {
     GL_IdVector I_nodes_recv;
     for (size_t i = 0; i < global_id_map.size(); i++) {
       auto global_id = global_id_map.map()[i + 1];
-      if (global_id >= min_id && global_id <= max_id) {
+      if ((size_t)global_id >= min_id && (size_t)global_id <= max_id) {
         I_nodes.emplace_back((int)global_id, (int)i + 1 + offset);
       }
     }
@@ -281,7 +281,7 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::read_meta_data__()
   {
-    openDatabase();
+    openDatabase__();
 
     // Determine the number of bases in the grid.
     // Currently only handle 1.
@@ -710,7 +710,7 @@ namespace Iocgns {
 
     for (const auto &block : blocks) {
       int zone = block->get_property("zone").get_int();
-      assert(zone < blocks.size() + 1);
+      assert((size_t)zone < blocks.size() + 1);
 
       const auto &I_map = m_globalToBlockLocalNodeMap[zone];
 
@@ -988,8 +988,15 @@ namespace Iocgns {
           int64_t *idata = static_cast<int64_t *>(data);
           std::fill(idata, idata + nodeCount, myProcessor);
 
-          std::vector<int64_t> ent_proc;
-          css->get_field_data("entity_processor_raw", ent_proc);
+          // Cannot call:
+          //    `css->get_field_data("entity_processor_raw", ent_proc);`
+          // directly since it will cause a deadlock (in threaded code),
+          // expand out into corresponding `get_field_internal` call.
+          Ioss::Field          ep_field = css->get_field("entity_processor_raw");
+          std::vector<int64_t> ent_proc(ep_field.raw_count() *
+                                        ep_field.raw_storage()->component_count());
+          size_t               ep_data_size = ent_proc.size() * sizeof(int64_t);
+          get_field_internal(css, ep_field, ent_proc.data(), ep_data_size);
           for (size_t i = 0; i < ent_proc.size(); i += 2) {
             int64_t node = ent_proc[i + 0];
             int64_t proc = ent_proc[i + 1];
@@ -1002,8 +1009,11 @@ namespace Iocgns {
           int *idata = static_cast<int *>(data);
           std::fill(idata, idata + nodeCount, myProcessor);
 
-          std::vector<int> ent_proc;
-          css->get_field_data("entity_processor_raw", ent_proc);
+          Ioss::Field      ep_field = css->get_field("entity_processor_raw");
+          std::vector<int> ent_proc(ep_field.raw_count() *
+                                    ep_field.raw_storage()->component_count());
+          size_t           ep_data_size = ent_proc.size() * sizeof(int);
+          get_field_internal(css, ep_field, ent_proc.data(), ep_data_size);
           for (size_t i = 0; i < ent_proc.size(); i += 2) {
             int node = ent_proc[i + 0];
             int proc = ent_proc[i + 1];
@@ -2086,6 +2096,9 @@ namespace Iocgns {
         cg_end   = cg_start + local_face_count - 1;
 
         auto xx = num_to_get > 0 ? parent.data() : nullptr;
+        if (num_to_get == 0) {
+          cg_start = cg_end = 0;
+        }
         CGCHECK(cgp_parent_data_write(cgnsFilePtr, base, zone, sect, cg_start, cg_end, xx));
         m_bcOffset[zone] += size;
       }
@@ -2191,12 +2204,6 @@ namespace Iocgns {
     MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
                MPI_SUM, util().communicator());
 
-#if IOSS_DEBUG_OUTPUT
-    for (size_t i = 0; i < node_count.size(); i++) {
-      std::cerr << "P[" << myProcessor << "] zone, count, offset: " << i + 1 << " " << node_count[i]
-                << " " << node_offset[i] << "\n";
-    }
-#endif
     return node_offset;
   }
 

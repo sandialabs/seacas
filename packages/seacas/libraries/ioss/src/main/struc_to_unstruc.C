@@ -162,7 +162,12 @@ namespace {
     //========================================================================
     // OUTPUT ...
     //========================================================================
-    //    properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
+#if 0
+    // This does not work...
+    if (dbi->util().parallel_size() > 1) {
+      properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
+    }
+#endif
     Ioss::DatabaseIO *dbo =
         Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
@@ -236,10 +241,11 @@ namespace {
 
   void transfer_nodal(const Ioss::Region &region, Ioss::Region &output_region)
   {
+    size_t num_nodes = region.get_node_blocks()[0]->entity_count();
     auto   nb         = output_region.get_node_blocks()[0];
-    size_t node_count = region.get_node_blocks()[0]->entity_count();
-    {
-      std::vector<int> ids(node_count); // To hold the global node id map.
+
+    if (!output_region.get_database()->needs_shared_node_information()) {
+      std::vector<int> ids(num_nodes); // To hold the global node id map.
       auto &           blocks = region.get_structured_blocks();
       for (auto &block : blocks) {
         std::vector<int> cell_id;
@@ -247,7 +253,7 @@ namespace {
 
         for (size_t i = 0; i < cell_id.size(); i++) {
           size_t idx = block->m_blockLocalNodeIndex[i];
-          assert(idx < node_count);
+          assert(idx < num_nodes);
           if (ids[idx] == 0) {
             ids[idx] = cell_id[i];
           }
@@ -256,10 +262,10 @@ namespace {
       assert(nb != nullptr);
       nb->put_field_data("ids", ids);
     }
-
-    std::vector<double> coordinate_x(node_count);
-    std::vector<double> coordinate_y(node_count);
-    std::vector<double> coordinate_z(node_count);
+    
+    std::vector<double> coordinate_x(num_nodes);
+    std::vector<double> coordinate_y(num_nodes);
+    std::vector<double> coordinate_z(num_nodes);
 
     size_t offset = 0; // Used only until parallel shared nodes figured out.
     auto & blocks = region.get_structured_blocks();
@@ -436,22 +442,40 @@ namespace {
     auto nb = new Ioss::NodeBlock(output_region.get_database(), nbs[0]->name(), num_nodes, degree);
     output_region.add(nb);
 
-#if 0
     if (output_region.get_database()->needs_shared_node_information()) {
-      // If the "owning_processor" field exists on the input
-      // nodeblock, transfer it and the "ids" field to the output
-      // nodeblock at this time since it is used to determine
-      // per-processor sizes of nodeblocks and nodesets.
-      if (nbs[0]->field_exists("owning_processor")) {
-        std::vector<int> data;
-        nbs[0]->get_field_data("ids", data);
-        nb->put_field_data("ids", data);
+      std::vector<int> ids(num_nodes); // To hold the global node id map.
+      auto &           blocks = region.get_structured_blocks();
+      for (auto &block : blocks) {
+        std::vector<int> cell_id;
+        block->get_field_data("cell_node_ids", cell_id);
 
-        nbs[0]->get_field_data("owning_processor", data);
-        nb->put_field_data("owning_processor", data);
+        for (size_t i = 0; i < cell_id.size(); i++) {
+          size_t idx = block->m_blockLocalNodeIndex[i];
+          assert(idx < num_nodes);
+          if (ids[idx] == 0) {
+            ids[idx] = cell_id[i];
+          }
+        }
       }
+      assert(nb != nullptr);
+      nb->put_field_data("ids", ids);
+
+      // Each structured block on the incoming mesh has a list of the nodes it shares with
+      // other blocks.  Use this to construct the "node owning
+      // processor" information.  Assume that if a node is shared with
+      // a lower-numbered processor, then that processor owns the
+      // node...
+      int myProcessor = output_region.get_database()->util().parallel_rank();
+      std::vector<int> owning_processor(num_nodes, myProcessor);
+      for (auto &block : blocks) {
+	for (const auto &shared : block->m_sharedNode) {
+	  if (owning_processor[shared.first] > shared.second) {
+	    owning_processor[shared.first] = shared.second;
+	  }
+	}
+      }
+      nb->put_field_data("owning_processor", owning_processor);
     }
-#endif
 
     std::cout << "P[" << rank << "] Number of coordinates per node =" << std::setw(12) << degree
               << "\n";
@@ -521,7 +545,7 @@ namespace {
                           Ioss::Field::RoleType role)
   {
     auto   nb         = output_region.get_node_blocks()[0];
-    size_t node_count = region.get_node_blocks()[0]->entity_count();
+    size_t num_nodes = region.get_node_blocks()[0]->entity_count();
     auto & blocks     = region.get_structured_blocks();
     for (auto &block : blocks) {
       Ioss::NameList fields;
@@ -539,7 +563,7 @@ namespace {
         }
         else {
           if (!nb->field_exists(field_name)) {
-            field.reset_count(node_count);
+            field.reset_count(num_nodes);
             nb->field_add(field);
           }
         }
@@ -552,8 +576,8 @@ namespace {
   {
     {
       auto                nb         = output_region.get_node_blocks()[0];
-      size_t              node_count = region.get_node_blocks()[0]->entity_count();
-      std::vector<double> node_data(node_count);
+      size_t              num_nodes = region.get_node_blocks()[0]->entity_count();
+      std::vector<double> node_data(num_nodes);
       std::vector<double> data;
 
       // Handle nodal fields first...

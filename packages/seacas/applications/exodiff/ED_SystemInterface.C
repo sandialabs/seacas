@@ -253,31 +253,7 @@ namespace {
   }
 } // namespace
 
-SystemInterface::SystemInterface()
-    : quiet_flag(false), show_all_diffs(false), output_type(ABSOLUTE), map_flag(USE_FILE_IDS),
-      nsmap_flag(true), ssmap_flag(true), short_block_check(true), nocase_var_names(true),
-      summary_flag(false), ignore_maps(false), ignore_nans(false), ignore_dups(false),
-      ignore_attributes(false), ignore_sideset_df(false), ints_64_bits(false), coord_sep(false),
-      exit_status_switch(true), dump_mapping(false), show_unmatched(false),
-      noSymmetricNameCheck(false), allowNameMismatch(false), doL1Norm(false), doL2Norm(false),
-      pedantic(false), interpolating(false), by_name(false), coord_tol(ABSOLUTE, 1.0e-6, 0.0),
-      time_tol(RELATIVE, 1.0e-6, 1.0e-15), final_time_tol(RELATIVE, 0.0, 0.0), time_step_offset(0),
-      time_step_start(1), time_step_stop(-1), time_step_increment(1),
-      max_number_of_names(DEFAULT_MAX_NUMBER_OF_NAMES), default_tol(RELATIVE, 1.0e-6, 0.0),
-      glob_var_do_all_flag(false), node_var_do_all_flag(false), elmt_var_do_all_flag(false),
-      elmt_att_do_all_flag(false), ns_var_do_all_flag(false), ss_var_do_all_flag(false),
-      command_file("")
-{
-  glob_var_default = default_tol;
-  node_var_default = default_tol;
-  elmt_var_default = default_tol;
-  elmt_att_default = default_tol;
-  ns_var_default   = default_tol;
-  ss_var_default   = default_tol;
-  ss_df_tol        = default_tol;
-
-  enroll_options();
-}
+SystemInterface::SystemInterface() { enroll_options(); }
 
 SystemInterface::~SystemInterface() = default;
 

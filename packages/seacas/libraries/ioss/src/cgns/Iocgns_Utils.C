@@ -191,9 +191,11 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
   errmsg << ". Please report to gdsjaar@sandia.gov if you need help.";
   if (cgnsid > 0) {
 #if CG_BUILD_PARALLEL
+  // This can cause a hang if not all processors call this routine
+  // and then the error is not output...
   //    cgp_close(cgnsid);
 #else
-  //    cg_close(cgnsid);
+    cg_close(cgnsid);
 #endif
   }
   IOSS_ERROR(errmsg);
@@ -202,7 +204,7 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
 CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
 {
   // ========================================================================
-  // Get the number of zones (element blocks) in the mesh...
+  // Get the number of zones (element/structured blocks) in the mesh...
   int base      = 1;
   int num_zones = 0;
   CGCHECKNP(cg_nzones(cgnsFilePtr, base, &num_zones));
@@ -274,6 +276,11 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 
   CGERR(cg_goto(file_ptr, base, "end"));
   CGERR(cg_descriptor_write("Information", "IOSS: CGNS Writer version -1"));
+  CGERR(cg_goto(file_ptr, base, "end"));
+  CGERR(cg_dataclass_write(CGNS_ENUMV(Dimensional)));
+  CGERR(cg_units_write(CGNS_ENUMV(MassUnitsUserDefined), CGNS_ENUMV(LengthUnitsUserDefined),
+                       CGNS_ENUMV(TimeUnitsUserDefined), CGNS_ENUMV(TemperatureUnitsUserDefined),
+                       CGNS_ENUMV(AngleUnitsUserDefined)))
 
   // Output the sidesets as Family_t nodes
   const auto &sidesets = region.get_sidesets();
@@ -361,7 +368,6 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 
     region.get_database()->util().global_array_minmax(bc_range, Ioss::ParallelUtils::DO_MAX);
 
-    idx = 0;
     for (idx = 0; idx < bc_range.size(); idx += 6) {
       bc_range[idx + 0] = -bc_range[idx + 0];
       bc_range[idx + 1] = -bc_range[idx + 1];
@@ -624,8 +630,15 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
       CGCHECKNP(cg_fambc_read(cgnsFilePtr, base, family, 1, name, &bocotype));
 
       auto *ss = new Ioss::SideSet(db, ss_name);
-      ss->property_add(Ioss::Property("id", family));
-      ss->property_add(Ioss::Property("guid", db->util().generate_guid(family)));
+      int   id = Ioss::Utils::extract_id(ss_name);
+      if (id != 0) {
+        ss->property_add(Ioss::Property("id", id));
+        ss->property_add(Ioss::Property("guid", db->util().generate_guid(id)));
+      }
+      else {
+        ss->property_add(Ioss::Property("id", family));
+        ss->property_add(Ioss::Property("guid", db->util().generate_guid(family)));
+      }
       ss->property_add(Ioss::Property("bc_type", bocotype));
       db->get_region()->add(ss);
     }
@@ -845,6 +858,12 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     // All we really want from this is 'boconame'
     CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type,
                            &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+
+    if (bocotype == CG_FamilySpecified) {
+      // Need to get boconame from cg_famname_read
+      CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
+      CGCHECKNP(cg_famname_read(boconame));
+    }
 
     CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
 

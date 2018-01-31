@@ -284,7 +284,7 @@ namespace Ioss {
    *  also added to the Region's property manager.
    *
    *  \param[in] iodatabase The name of the database associated with the Region.
-   *  \param[in] myname The name of the Region.
+   *  \param[in] my_name The name of the Region.
    *
    */
   Region::Region(DatabaseIO *iodatabase, const std::string &my_name)
@@ -688,7 +688,7 @@ namespace Ioss {
    *
    *  The states in the region will be 1-based.
    *
-   *  \param[in] The time at the new state.
+   *  \param[in] time The time at the new state.
    *  \returns The state index (1-based).
    */
   int Region::add_state(double time)
@@ -933,9 +933,9 @@ namespace Ioss {
     return time;
   }
 
-  /** \brief Add a node block to the region.
+  /** \brief Add a structured block to the region.
    *
-   *  \param[in] node_block The node block to add
+   *  \param[in] structured_block The structured block to add
    *  \returns True if successful.
    */
   bool Region::add(StructuredBlock *structured_block)
@@ -1811,9 +1811,9 @@ namespace Ioss {
     return ge;
   }
 
-  /** \brief Get the coordinate frame with the given name.
+  /** \brief Get the coordinate frame with the given id
    *
-   *  \param[in] my_name The name of the coordinate frame to get.
+   *  \param[in] id The id of the coordinate frame to get.
    *  \returns The coordinate frame, or nullptr if not found.
    */
   const CoordinateFrame &Region::get_coordinate_frame(int64_t id) const
@@ -2095,7 +2095,7 @@ namespace Ioss {
 
   /** \brief Transfer all relevant aliases from this region to another region
    *
-   *  \param[in] The region to which the aliases are to be transferred.
+   *  \param[in] to The region to which the aliases are to be transferred.
    */
   void Region::transfer_mesh_aliases(Region *to) const
   {

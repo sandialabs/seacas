@@ -128,8 +128,8 @@ namespace Iopg {
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), spatialDimension(3),
-        nodeCount(0), elementCount(0), nodeBlockCount(0), elementBlockCount(0), nodesetCount(0),
-        sidesetCount(0), commsetNodeCount(0), commsetElemCount(0)
+        nodeBlockCount(0), elementBlockCount(0), nodesetCount(0), sidesetCount(0),
+        commsetNodeCount(0), commsetElemCount(0)
   {
     if (is_input()) {
       dbState = Ioss::STATE_UNKNOWN;
@@ -283,10 +283,15 @@ namespace Iopg {
     char dbtitle[max_line_length + 1];
     std::memset(dbtitle, 0, max_line_length + 1);
 
-    int error = im_ex_get_init(get_file_pointer(), dbtitle, &spatialDimension, &nodeCount,
-                               &elementCount, &elementBlockCount, &nodesetCount, &sidesetCount);
+    int node_count = 0;
+    int elem_count = 0;
+    int error      = im_ex_get_init(get_file_pointer(), dbtitle, &spatialDimension, &node_count,
+                               &elem_count, &elementBlockCount, &nodesetCount, &sidesetCount);
     if (error < 0)
       pamgen_error(get_file_pointer(), __LINE__, myProcessor);
+
+    nodeCount    = node_count;
+    elementCount = elem_count;
 
     nodeBlockCount = 1;
 
@@ -523,8 +528,7 @@ namespace Iopg {
     // maps into. An particular element block contains all elements in
     // the range:
     //     offset < file_descriptor <= offset+number_elements_per_block
-    int offset      = 0;
-    int used_blocks = 0;
+    int offset = 0;
 
     for (iblk = 0; iblk < elementBlockCount; iblk++) {
       int         id           = element_block_ids[iblk];

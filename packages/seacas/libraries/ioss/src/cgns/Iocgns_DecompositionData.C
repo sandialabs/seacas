@@ -779,10 +779,10 @@ namespace Iocgns {
 
         if (dz != zone) {
 #if IOSS_DEBUG_OUTPUT
-	  if (m_decomposition.m_processor == 0) {
-	    std::cerr << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
-		      << "\n";
-	  }
+          if (m_decomposition.m_processor == 0) {
+            std::cerr << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
+                      << "\n";
+          }
 #endif
           // The 'ids' in 'points' and 'donors' will be zone-local 1-based.
           std::vector<cgsize_t> points(npnts);
@@ -794,18 +794,18 @@ namespace Iocgns {
           for (int j = 0; j < npnts; j++) {
             // Convert to 0-based global id by subtracting 1 and adding zone.m_nodeOffset
             cgsize_t point = points[j] - 1 + m_zones[zone].m_nodeOffset;
-	    cgsize_t donor = donors[j] - 1 + m_zones[dz].m_nodeOffset;
+            cgsize_t donor = donors[j] - 1 + m_zones[dz].m_nodeOffset;
 
-	    // See if 'donor' is mapped to a different node already
-	    auto donor_map = m_zoneSharedMap.find(donor);
-	    if (donor_map != m_zoneSharedMap.end()) {
-	      donor = (*donor_map).second;
-	    }
-	    m_zoneSharedMap.insert({point, donor});
+            // See if 'donor' is mapped to a different node already
+            auto donor_map = m_zoneSharedMap.find(donor);
+            if (donor_map != m_zoneSharedMap.end()) {
+              donor = (*donor_map).second;
+            }
+            m_zoneSharedMap.insert({point, donor});
 #if IOSS_DEBUG_OUTPUT
-	    if (m_decomposition.m_processor == 0) {
-	      std::cout << "Inserted " << point << " to " << donor << "\n";
-	    }
+            if (m_decomposition.m_processor == 0) {
+              std::cout << "Inserted " << point << " to " << donor << "\n";
+            }
 #endif
           }
         }
@@ -816,10 +816,10 @@ namespace Iocgns {
     // global zone ids are the first entry in m_zoneShardedMap.
     for (auto it = m_zoneSharedMap.cbegin(); it != m_zoneSharedMap.cend(); /* no increment */) {
       if ((*it).first < min_node || (*it).first > max_node) {
-	it = m_zoneSharedMap.erase(it);
+        it = m_zoneSharedMap.erase(it);
       }
       else {
-	++it;
+        ++it;
       }
     }
   }

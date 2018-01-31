@@ -269,7 +269,7 @@ namespace Ioss {
 
   /** \brief Set the number of bytes used to represent an integer.
    *
-   *  \param[in] The number of bytes. This is 4 for INT32 or 8 for INT64.
+   *  \param[in] size The number of bytes. This is 4 for INT32 or 8 for INT64.
    */
   void DatabaseIO::set_int_byte_size_api(DataSize size) const
   {

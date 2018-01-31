@@ -368,6 +368,8 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:ac6ed6ab0c75ae47c47d9576615678ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabb54ffc03ceb8ac1e66cd3c79eac82f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#aabb54ffc03ceb8ac1e66cd3c79eac82f">resolve_zone_shared_nodes</a> (const <a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">CGNSIntVector</a> &amp;nodes, <a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">CGNSIntVector</a> &amp;connectivity_map, size_t &amp;owned_node_count, size_t &amp;owned_node_offset) const</td></tr>
 <tr class="separator:aabb54ffc03ceb8ac1e66cd3c79eac82f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3818355d8b764b2bc65804b4fbc081c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#ae3818355d8b764b2bc65804b4fbc081c">get_processor_zone_node_offset</a> () const</td></tr>
+<tr class="separator:ae3818355d8b764b2bc65804b4fbc081c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -383,8 +385,6 @@ Private Attributes</h2></td></tr>
 <tr class="separator:aaf55546e6d7eebc24ca90bd7abeff545"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a686565819afb0ab621555b3ae366fb92"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a686565819afb0ab621555b3ae366fb92">m_zoneOffset</a></td></tr>
 <tr class="separator:a686565819afb0ab621555b3ae366fb92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a807a0c59170d1bd102e6f3f740c769cb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a807a0c59170d1bd102e6f3f740c769cb">m_zoneProcOffset</a></td></tr>
-<tr class="separator:a807a0c59170d1bd102e6f3f740c769cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1ae3c200fb1a93c114f45904da0a6ee"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#af1ae3c200fb1a93c114f45904da0a6ee">m_bcOffset</a></td></tr>
 <tr class="separator:af1ae3c200fb1a93c114f45904da0a6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af376a0705537e820b5bdf11f0c5d367a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#af376a0705537e820b5bdf11f0c5d367a">m_timesteps</a></td></tr>
@@ -393,8 +393,6 @@ Private Attributes</h2></td></tr>
 <tr class="separator:adeebce2d5533613a8184732aa8398cff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea0de732859adf04aa0e4cb3d27cb88e"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, <a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#aea0de732859adf04aa0e4cb3d27cb88e">m_globalToBlockLocalNodeMap</a></td></tr>
 <tr class="separator:aea0de732859adf04aa0e4cb3d27cb88e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62afd05175be26b2d86d829ce99d6b41"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; int64_t, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a62afd05175be26b2d86d829ce99d6b41">m_sharedNodes</a></td></tr>
-<tr class="separator:a62afd05175be26b2d86d829ce99d6b41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd5fb56a7a82aa2cecf989e781e90084"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">CGNSIntVector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#abd5fb56a7a82aa2cecf989e781e90084">m_elemGlobalImplicitMap</a></td></tr>
 <tr class="separator:abd5fb56a7a82aa2cecf989e781e90084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -1559,6 +1557,31 @@ Additional Inherited Members</h2></td></tr>
           <td></td>
           <td>)</td>
           <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae3818355d8b764b2bc65804b4fbc081c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3818355d8b764b2bc65804b4fbc081c">&#9670;&nbsp;</a></span>get_processor_zone_node_offset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int64_t &gt; Iocgns::ParallelDatabaseIO::get_processor_zone_node_offset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -2864,28 +2887,6 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a62afd05175be26b2d86d829ce99d6b41"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a62afd05175be26b2d86d829ce99d6b41">&#9670;&nbsp;</a></span>m_sharedNodes</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::pair&lt;int64_t,int&gt; &gt; Iocgns::ParallelDatabaseIO::m_sharedNodes</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="af376a0705537e820b5bdf11f0c5d367a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af376a0705537e820b5bdf11f0c5d367a">&#9670;&nbsp;</a></span>m_timesteps</h2>
 
@@ -2941,28 +2942,6 @@ Additional Inherited Members</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt;size_t&gt; Iocgns::ParallelDatabaseIO::m_zoneOffset</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a807a0c59170d1bd102e6f3f740c769cb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a807a0c59170d1bd102e6f3f740c769cb">&#9670;&nbsp;</a></span>m_zoneProcOffset</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;size_t&gt; Iocgns::ParallelDatabaseIO::m_zoneProcOffset</td>
         </tr>
       </table>
   </td>
