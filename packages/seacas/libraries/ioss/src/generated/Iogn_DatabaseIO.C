@@ -530,7 +530,7 @@ namespace Iogn {
   int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
-    size_t num_to_get = field.verify(data_size);
+    size_t num_to_get   = field.verify(data_size);
     size_t entity_count = cs->entity_count();
     assert(num_to_get == entity_count);
 
@@ -552,7 +552,7 @@ namespace Iogn {
 
           size_t j = 0;
           for (size_t i = 0; i < entity_count; i++) {
-	    assert(entities[i] > 0);
+            assert(entities[i] > 0);
             entity_proc[j++] = entities[i];
             entity_proc[j++] = procs[i];
           }
@@ -566,7 +566,7 @@ namespace Iogn {
 
           size_t j = 0;
           for (size_t i = 0; i < entity_count; i++) {
-	    assert(entities[i] > 0);
+            assert(entities[i] > 0);
             entity_proc[j++] = entities[i];
             entity_proc[j++] = procs[i];
           }
