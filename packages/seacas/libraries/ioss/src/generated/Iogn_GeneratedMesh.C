@@ -654,9 +654,8 @@ namespace Iogn {
   }
 
   void GeneratedMesh::build_node_map(Ioss::Int64Vector &map, std::vector<int> &proc, int64_t slab,
-                                     size_t slabOffset, size_t adjacentProc)
+                                     size_t slabOffset, size_t adjacentProc, size_t index)
   {
-    int64_t index  = 0;
     int64_t offset = (myStartZ + slabOffset) * (numX + 1) * (numY + 1);
     for (int64_t i = 0; i < slab; i++) {
       map[index]    = offset + i + 1;
@@ -677,11 +676,13 @@ namespace Iogn {
     map.resize(count);
     proc.resize(count);
 
+    size_t offset = 0;
     if (!isFirstProc) {
-      build_node_map(map, proc, slab, 0, myProcessor - 1);
+      build_node_map(map, proc, slab, 0, myProcessor - 1, offset);
+      offset += slab;
     }
     if (!isLastProc) {
-      build_node_map(map, proc, slab, myNumZ, myProcessor + 1);
+      build_node_map(map, proc, slab, myNumZ, myProcessor + 1, offset);
     }
   }
 
