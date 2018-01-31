@@ -362,7 +362,7 @@ namespace Iogn {
     virtual std::pair<std::string, int> topology_type(int64_t block_number) const;
 
     void            build_node_map(Ioss::Int64Vector &map, std::vector<int> &proc, int64_t slab,
-                                   size_t slabOffset, size_t adjacentProc);
+                                   size_t slabOffset, size_t adjacentProc, size_t index);
     virtual int64_t communication_node_count_proc() const;
     virtual void    node_communication_map(MapVector &map, std::vector<int> &proc);
     virtual void    owning_processor(int *owner, int64_t num_node);
