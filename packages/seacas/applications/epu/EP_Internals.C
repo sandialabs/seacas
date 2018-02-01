@@ -1245,9 +1245,15 @@ namespace {
     int  namestrdim = 0;
     char errmsg[MAX_ERR_LENGTH];
 
-    nc_inq_dimid(exoid, DIM_STR_NAME, &namestrdim);
+    int status = nc_inq_dimid(exoid, DIM_STR_NAME, &namestrdim);
+    if (status != NC_NOERR) {
+      ex_opts(EX_VERBOSE);
+      sprintf(errmsg, "Error: failed to get string name dimension in file id %d", exoid);
+      ex_err(__func__, errmsg, status);
+      return (EX_FATAL);
+    }
 
-    int status = nc_def_dim(exoid, dim_num, count, &dimid);
+    status = nc_def_dim(exoid, dim_num, count, &dimid);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg, "Error: failed to define number of %ss in file id %d", type, exoid);
