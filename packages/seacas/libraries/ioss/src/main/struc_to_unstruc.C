@@ -242,7 +242,7 @@ namespace {
   void transfer_nodal(const Ioss::Region &region, Ioss::Region &output_region)
   {
     size_t num_nodes = region.get_node_blocks()[0]->entity_count();
-    auto   nb         = output_region.get_node_blocks()[0];
+    auto   nb        = output_region.get_node_blocks()[0];
 
     if (!output_region.get_database()->needs_shared_node_information()) {
       std::vector<int> ids(num_nodes); // To hold the global node id map.
@@ -262,7 +262,7 @@ namespace {
       assert(nb != nullptr);
       nb->put_field_data("ids", ids);
     }
-    
+
     std::vector<double> coordinate_x(num_nodes);
     std::vector<double> coordinate_y(num_nodes);
     std::vector<double> coordinate_z(num_nodes);
@@ -406,7 +406,9 @@ namespace {
                 }
               }
 
+#if IOSS_DEBUG_OUTPUT
               std::cerr << bc << "\n";
+#endif
               auto parent_face = face_map[bc.which_parent_face() + 3];
               elem_side.reserve(bc.get_face_count() * 2);
               for (auto k = range_beg[2]; k <= cell_range_end[2]; k++) {
@@ -460,7 +462,7 @@ namespace {
       // processor" information.  Assume that if a node is shared with
       // a lower-numbered processor, then that processor owns the
       // node...
-      int myProcessor = output_region.get_database()->util().parallel_rank();
+      int              myProcessor = output_region.get_database()->util().parallel_rank();
       std::vector<int> owning_processor(num_nodes, myProcessor);
       for (auto &block : blocks) {
 	for (const auto &shared : block->m_sharedNode) {
@@ -489,8 +491,10 @@ namespace {
       size_t             count = iblock->get_property("cell_count").get_int();
       auto block = new Ioss::ElementBlock(output_region.get_database(), name, type, count);
       output_region.add(block);
-      std::cout << "P[" << rank << "] Created Element Block '" << name << "' with " << count
+#if IOSS_DEBUG_OUTPUT
+      std::cerr << "P[" << rank << "] Created Element Block '" << name << "' with " << count
                 << " elements.\n";
+#endif
       total_entities += count;
     }
     std::cout << "P[" << rank << "] Number of Element Blocks       =" << std::setw(12)
@@ -540,9 +544,9 @@ namespace {
   void transfer_sb_fields(const Ioss::Region &region, Ioss::Region &output_region,
                           Ioss::Field::RoleType role)
   {
-    auto   nb         = output_region.get_node_blocks()[0];
+    auto   nb        = output_region.get_node_blocks()[0];
     size_t num_nodes = region.get_node_blocks()[0]->entity_count();
-    auto & blocks     = region.get_structured_blocks();
+    auto & blocks    = region.get_structured_blocks();
     for (auto &block : blocks) {
       Ioss::NameList fields;
       block->field_describe(role, &fields);
@@ -571,7 +575,7 @@ namespace {
                               Ioss::Field::RoleType role)
   {
     {
-      auto                nb         = output_region.get_node_blocks()[0];
+      auto                nb        = output_region.get_node_blocks()[0];
       size_t              num_nodes = region.get_node_blocks()[0]->entity_count();
       std::vector<double> node_data(num_nodes);
       std::vector<double> data;
