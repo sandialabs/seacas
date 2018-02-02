@@ -87,21 +87,14 @@ namespace {
   void transfer_sb_field_data(const Ioss::Region &region, Ioss::Region &output_region,
                               Ioss::Field::RoleType role);
 
-  size_t transfer_coord(std::vector<double> &to, std::vector<double> &from,
-                        std::vector<size_t> &node_id_list, size_t offset)
+  void transfer_coord(std::vector<double> &to, std::vector<double> &from,
+                        std::vector<size_t> &node_id_list)
   {
-    if (!node_id_list.empty()) {
-      for (size_t i = 0; i < node_id_list.size(); i++) {
-        size_t node = node_id_list[i];
-        to[node]    = from[i];
-      }
+    assert(from.empty() || !node_id_list.empty());
+    for (size_t i = 0; i < from.size(); i++) {
+      size_t idx = node_id_list[i];
+      to[idx]    = from[i];
     }
-    else {
-      for (auto x : from) {
-        to[offset++] = x;
-      }
-    }
-    return offset;
   }
 } // namespace
 // ========================================================================
@@ -159,15 +152,22 @@ namespace {
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");
 
+    if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
+      int myProcessor = region.get_database()->util().parallel_rank();
+      if (myProcessor == 0) {
+	std::cerr
+	  << "\nERROR: The input mesh is not of type STRUCTURED.\n";
+      }
+      return;
+    }
+
     //========================================================================
     // OUTPUT ...
     //========================================================================
-#if 0
-    // This does not work...
     if (dbi->util().parallel_size() > 1) {
       properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
     }
-#endif
+
     Ioss::DatabaseIO *dbo =
         Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
@@ -194,8 +194,8 @@ namespace {
     // Model defined, now fill in the model data...
     output_region.begin_mode(Ioss::STATE_MODEL);
 
-    transfer_nodal(region, output_region);
     transfer_connectivity(region, output_region);
+    transfer_nodal(region, output_region);
     output_sidesets(region, output_region);
     output_region.end_mode(Ioss::STATE_MODEL);
 
@@ -267,19 +267,19 @@ namespace {
     std::vector<double> coordinate_y(num_nodes);
     std::vector<double> coordinate_z(num_nodes);
 
-    size_t offset = 0; // Used only until parallel shared nodes figured out.
     auto & blocks = region.get_structured_blocks();
     for (auto &block : blocks) {
       std::vector<double> coord_tmp;
       block->get_field_data("mesh_model_coordinates_x", coord_tmp);
-      transfer_coord(coordinate_x, coord_tmp, block->m_blockLocalNodeIndex, offset);
+      transfer_coord(coordinate_x, coord_tmp, block->m_blockLocalNodeIndex);
 
       block->get_field_data("mesh_model_coordinates_y", coord_tmp);
-      transfer_coord(coordinate_y, coord_tmp, block->m_blockLocalNodeIndex, offset);
+      transfer_coord(coordinate_y, coord_tmp, block->m_blockLocalNodeIndex);
 
       block->get_field_data("mesh_model_coordinates_z", coord_tmp);
-      offset = transfer_coord(coordinate_z, coord_tmp, block->m_blockLocalNodeIndex, offset);
+      transfer_coord(coordinate_z, coord_tmp, block->m_blockLocalNodeIndex);
     }
+
     nb->put_field_data("mesh_model_coordinates_x", coordinate_x);
     nb->put_field_data("mesh_model_coordinates_y", coordinate_y);
     nb->put_field_data("mesh_model_coordinates_z", coordinate_z);
@@ -330,16 +330,11 @@ namespace {
         // 'connect' contains 0-based block-local node ids at this point
         // Now, map them to processor-global values...
         // NOTE: "processor-global" is 1..num_node_on_processor
-        const auto &gnil = block->m_blockLocalNodeIndex;
-        if (!gnil.empty()) {
+	if (!connect.empty()) {
+	  const auto &gnil = block->m_blockLocalNodeIndex;
+	  assert(!gnil.empty());
           for (int &i : connect) {
             i = gnil[i] + 1;
-          }
-        }
-        else {
-          size_t node_offset = block->get_node_offset();
-          for (int &i : connect) {
-            i = i + node_offset + 1;
           }
         }
 
@@ -469,8 +464,9 @@ namespace {
       std::vector<int> owning_processor(num_nodes, myProcessor);
       for (auto &block : blocks) {
 	for (const auto &shared : block->m_sharedNode) {
-	  if (owning_processor[shared.first] > shared.second) {
-	    owning_processor[shared.first] = shared.second;
+          size_t idx = block->m_blockLocalNodeIndex[shared.first];
+	  if (owning_processor[idx] > (int)shared.second) {
+	    owning_processor[idx] = shared.second;
 	  }
 	}
       }
