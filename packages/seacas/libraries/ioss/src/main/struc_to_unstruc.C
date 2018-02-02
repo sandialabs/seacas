@@ -88,7 +88,7 @@ namespace {
                               Ioss::Field::RoleType role);
 
   void transfer_coord(std::vector<double> &to, std::vector<double> &from,
-                        std::vector<size_t> &node_id_list)
+                      std::vector<size_t> &node_id_list)
   {
     assert(from.empty() || !node_id_list.empty());
     for (size_t i = 0; i < from.size(); i++) {
@@ -155,8 +155,7 @@ namespace {
     if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
       int myProcessor = region.get_database()->util().parallel_rank();
       if (myProcessor == 0) {
-	std::cerr
-	  << "\nERROR: The input mesh is not of type STRUCTURED.\n";
+        std::cerr << "\nERROR: The input mesh is not of type STRUCTURED.\n";
       }
       return;
     }
@@ -267,7 +266,7 @@ namespace {
     std::vector<double> coordinate_y(num_nodes);
     std::vector<double> coordinate_z(num_nodes);
 
-    auto & blocks = region.get_structured_blocks();
+    auto &blocks = region.get_structured_blocks();
     for (auto &block : blocks) {
       std::vector<double> coord_tmp;
       block->get_field_data("mesh_model_coordinates_x", coord_tmp);
@@ -330,9 +329,9 @@ namespace {
         // 'connect' contains 0-based block-local node ids at this point
         // Now, map them to processor-global values...
         // NOTE: "processor-global" is 1..num_node_on_processor
-	if (!connect.empty()) {
-	  const auto &gnil = block->m_blockLocalNodeIndex;
-	  assert(!gnil.empty());
+        if (!connect.empty()) {
+          const auto &gnil = block->m_blockLocalNodeIndex;
+          assert(!gnil.empty());
           for (int &i : connect) {
             i = gnil[i] + 1;
           }
@@ -465,12 +464,12 @@ namespace {
       int              myProcessor = output_region.get_database()->util().parallel_rank();
       std::vector<int> owning_processor(num_nodes, myProcessor);
       for (auto &block : blocks) {
-	for (const auto &shared : block->m_sharedNode) {
+        for (const auto &shared : block->m_sharedNode) {
           size_t idx = block->m_blockLocalNodeIndex[shared.first];
-	  if (owning_processor[idx] > (int)shared.second) {
-	    owning_processor[idx] = shared.second;
-	  }
-	}
+          if (owning_processor[idx] > (int)shared.second) {
+            owning_processor[idx] = shared.second;
+          }
+        }
       }
       nb->put_field_data("owning_processor", owning_processor);
     }
