@@ -308,7 +308,7 @@ ACCESS=@ACCESSDIR@
 # If not, then assume we are running in the cmake build directory
 # and update the paths to nem_slice and nem_spread accordingly...
 pushd $(dirname "${0}") > /dev/null
-basedir=$(pwd -L)
+basedir=$(pwd -P)
 # Use "pwd -P" for the path without links. man bash for more info.
 popd > /dev/null
 
