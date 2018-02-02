@@ -278,8 +278,7 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_to_unstructured
    TEST_0 EXEC struc_to_unstruc ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/sparc1.cgns exodus_struc.e
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
-   TEST_1 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/epu/epu ARGS -auto exodus_struc.e.4.0
-   TEST_2 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_struc.gold exodus_struc.e
+   TEST_1 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_struc.gold exodus_struc.e
   COMM mpi 
   )
 ELSE()
