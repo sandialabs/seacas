@@ -764,7 +764,8 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
   return index;
 }
 
-void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
+std::vector<std::vector<std::pair<size_t, size_t>>>
+				   Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_processor)
 {
   // Determine which nodes are shared across processor boundaries.
   // Only need to check on block boundaries..
@@ -773,23 +774,12 @@ void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
   // which nodes are shared between processors. For all shared nodes, the node in the lowest
   // numbered zone is considered the "owner" and all other nodes are shared.
 
-  // Create a vector of size which is the sum of the on-processor cell_nodes size for each block
-  size_t num_total_cell_nodes = 0;
-  auto & blocks               = region.get_structured_blocks();
-  for (auto &block : blocks) {
-    size_t node_count = block->get_property("node_count").get_int();
-    num_total_cell_nodes += node_count;
-  }
+  auto & blocks = region.get_structured_blocks();
 
-  ssize_t              ss_max = std::numeric_limits<ssize_t>::max();
-  std::vector<ssize_t> cell_node_map(num_total_cell_nodes, ss_max);
+  std::vector<std::vector<std::pair<size_t, size_t>>> shared_nodes(blocks.size()+1);
 
-  // Each cell_node location in the cell_node_map is currently
-  // initialized to ss_max.  Iterate each block and then each blocks
-  // intra-block (i.e., due to proc decomps) zgc instances and
-  // update cell_node_map such that for each shared node, it points to
-  // the owner nodes location.
   for (auto &owner_block : blocks) {
+    int owner_zone = owner_block->get_property("zone").get_int();
     auto owner_ids = owner_block->get_cell_node_ids(true);
     for (const auto &zgc : owner_block->m_zoneConnectivity) {
       if (zgc.m_isActive &&
@@ -800,6 +790,7 @@ void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
         // don't store or access any "bulk" data on it.
         auto donor_block = region.get_structured_block(zgc.m_donorName);
         assert(donor_block != nullptr);
+	int donor_zone = donor_block->get_property("zone").get_int();
 
         auto donor_ids = donor_block->get_cell_node_ids(true);
 
@@ -818,23 +809,24 @@ void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
               if (my_processor == zgc.m_ownerProcessor) {
                 ssize_t owner_offset =
                     owner_block->get_block_local_node_offset(index[0], index[1], index[2]);
-                owner_block->m_sharedNode.emplace_back(owner_offset, zgc.m_donorProcessor);
+                shared_nodes[owner_zone].emplace_back(owner_offset, zgc.m_donorProcessor);
               }
               else if (my_processor == zgc.m_donorProcessor) {
                 ssize_t donor_offset =
                     donor_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
-                donor_block->m_sharedNode.emplace_back(donor_offset, zgc.m_ownerProcessor);
+                shared_nodes[donor_zone].emplace_back(donor_offset, zgc.m_ownerProcessor);
               }
             }
           }
         }
       }
     }
-#if 0 && IOSS_DEBUG_OUTPUT
+#if 1 && IOSS_DEBUG_OUTPUT
     std::cerr << "P" << my_processor << ", Block " << owner_block->name()
-              << " Shared Nodes: " << owner_block->m_sharedNode.size() << "\n";
+              << " Shared Nodes: " << shared_nodes[owner_zone].size() << "\n";
 #endif
   }
+  return shared_nodes;
 }
 
 void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,

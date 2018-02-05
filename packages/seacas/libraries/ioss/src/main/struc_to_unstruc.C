@@ -463,10 +463,14 @@ namespace {
       // processor" information.  Assume that if a node is shared with
       // a lower-numbered processor, then that processor owns the
       // node...
+
+      auto shared_nodes = Iocgns::Utils::resolve_processor_shared_nodes(region, region.get_database()->util().parallel_rank());
+      
       int              myProcessor = output_region.get_database()->util().parallel_rank();
       std::vector<int> owning_processor(num_nodes, myProcessor);
       for (auto &block : blocks) {
-        for (const auto &shared : block->m_sharedNode) {
+	int zone = block->get_property("zone").get_int();
+        for (const auto &shared : shared_nodes[zone]) {
           size_t idx = block->m_blockLocalNodeIndex[shared.first];
           if (owning_processor[idx] > (int)shared.second) {
             owning_processor[idx] = shared.second;
