@@ -174,7 +174,8 @@ namespace Iocgns {
     static size_t        common_write_meta_data(int file_ptr, const Ioss::Region &region,
                                                 std::vector<size_t> &zone_offset, bool is_parallel);
     static size_t        resolve_nodes(Ioss::Region &region, int my_processor, bool is_parallel);
-    static void          resolve_shared_nodes(Ioss::Region &region, int my_processor);
+    static std::vector<std::vector<std::pair<size_t, size_t>>>
+      resolve_processor_shared_nodes(Ioss::Region &region, int my_processor);
 
     static CG_ElementType_t map_topology_to_cgns(const std::string &name);
     static std::string      map_cgns_to_topology_type(CG_ElementType_t type);

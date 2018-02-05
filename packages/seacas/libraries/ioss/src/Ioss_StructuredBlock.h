@@ -365,7 +365,6 @@ namespace Ioss {
     std::vector<BoundaryCondition>         m_boundaryConditions;
     std::vector<size_t>                    m_blockLocalNodeIndex;
     std::vector<std::pair<size_t, size_t>> m_globalIdMap;
-    std::vector<std::pair<size_t, size_t>> m_sharedNode;
   };
 } // namespace Ioss
 #endif

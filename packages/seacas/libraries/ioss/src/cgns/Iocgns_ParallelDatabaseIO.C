@@ -404,7 +404,6 @@ namespace Iocgns {
     get_region()->add(commset);
   }
 
-  // TODO: See if code can be used for parallel node resolution...
   size_t ParallelDatabaseIO::finalize_structured_blocks()
   {
     // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
@@ -425,9 +424,6 @@ namespace Iocgns {
     }
 
     size_t num_nodes = Utils::resolve_nodes(*get_region(), myProcessor, true);
-
-    Utils::resolve_shared_nodes(*get_region(), myProcessor);
-
     return num_nodes;
   }
 
