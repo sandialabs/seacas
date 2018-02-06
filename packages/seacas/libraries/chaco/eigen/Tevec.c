@@ -84,7 +84,7 @@ double Tevec(double *alpha, /* vector of Lanczos scalars */
   double        hurdle;             /* hurdle for local maximum in recurrence */
   double        prev_resid;         /* stores residual from previous computation */
 
-  int     tinvit_(); /* eispack's tinvit for evecs of symmetric T */
+  int     tinvit(); /* eispack's tinvit for evecs of symmetric T */
   double *mkvec();   /* allocates double vectors */
   void    frvec();   /* frees double vectors */
   double  bidir();   /* bidirectional recurrence for evec of T */
@@ -120,7 +120,7 @@ double Tevec(double *alpha, /* vector of Lanczos scalars */
     cpvec(&(work[6 * j]), 1, j, s);
     prev_resid = residual;
 
-    tinvit_(&long_j, &long_j, &(alpha[1]), &(beta[1]), &(work[1]), &nevals, &(w[1]), &(index[1]),
+    tinvit(&long_j, &long_j, &(alpha[1]), &(beta[1]), &(work[1]), &nevals, &(w[1]), &(index[1]),
             &(s[1]), &ierr, &(work[j + 1]), &(work[(2 * j) + 1]), &(work[(3 * j) + 1]),
             &(work[(4 * j) + 1]), &(work[(5 * j) + 1]));
 
