@@ -31,7 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: rdelb.f,v 1.4 2007/10/17 18:47:22 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE RDELB (NTXT, IELB, IDELB, NUMELB, NUMLNK, NUMATR,
      &   NAMELB, A, KLINK, KATRIB, *)
@@ -62,7 +61,7 @@ C   --upon entry; upon exit at end of element block information.
       include 'exodusII.inc'
       DIMENSION A(*)
       CHARACTER*(MXSTLN) NAMELB
-      CHARACTER*5 STRA
+      CHARACTER*32 STRA
 
       NAMELB = ' '
       READ (NTXT, *, END=110, ERR=110)
