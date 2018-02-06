@@ -39,7 +39,7 @@
 
 #include "f2c.h"
 
-doublereal pythag_(doublereal *a, doublereal *b)
+doublereal pythag(doublereal *a, doublereal *b)
 {
   /* System generated locals */
   doublereal ret_val, d__1, d__2, d__3;
@@ -75,4 +75,4 @@ L10:
 L20:
   ret_val = p;
   return ret_val;
-} /* pythag_ */
+} /* pythag */

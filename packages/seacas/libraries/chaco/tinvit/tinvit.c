@@ -58,7 +58,7 @@ int tinvit_(integer *nm, integer *n, doublereal *d, doublereal *e, doublereal *e
   static doublereal x0, x1;
   static integer    ii, jj, ip;
   static doublereal uk, xu;
-  extern doublereal pythag_(), epslon_();
+  extern doublereal pythag(), epslon_();
   static integer    tag, its;
   static doublereal eps2, eps3, eps4;
 
@@ -380,7 +380,7 @@ L140:
     i__2 = q;
     for (i = p; i <= i__2; ++i) {
       /* L860: */
-      u = pythag_(&u, &rv6[i]);
+      u = pythag(&u, &rv6[i]);
     }
 
     xu = 1. / u;
