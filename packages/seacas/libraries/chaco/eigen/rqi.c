@@ -95,7 +95,7 @@ void rqi(struct vtx_data **A,     /* matrix/graph being analyzed */
   int        i;                     /* loop index */
 
   double dot(), ch_norm();
-  int    symmlq_();
+  int    symmlq();
   void   splarax(), scadd(), vecscale(), doubleout(), assign(), x2y(), strout();
 
   if (DEBUG_TRACE > 0) {
@@ -161,7 +161,7 @@ void rqi(struct vtx_data **A,     /* matrix/graph being analyzed */
       shift = initshift;
     }
 
-    symmlq_(&long_n, &u[1], &r1[1], &r2[1], &v[1], &w[1], &x[1], &y[1], work, &checka, &goodb,
+    symmlq(&long_n, &u[1], &r1[1], &r2[1], &v[1], &w[1], &x[1], &y[1], work, &checka, &goodb,
             &precon, &shift, &nout, &intlim, &rtol, &istop, &itn, &anorm, &acond, &rnorm, &ynorm,
             (double *)A, vwsqrt, (double *)orthlist, &macheps, &normxlim, &itnmin);
     symmlqitns += itn;

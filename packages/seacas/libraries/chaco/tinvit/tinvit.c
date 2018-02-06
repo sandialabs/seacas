@@ -33,34 +33,29 @@
  *
  */
 /* tinvit.f -- translated by f2c (version of 16 May 1991  13:06:06).
-   You must link the resulting object file with the libraries:
-        -link <S|C|M|L>f2c.lib   (in that order)
 */
 
 #include <float.h>
 #include <math.h>
-#include "f2c.h"
 
-int tinvit_(integer *nm, integer *n, double *d, double *e, double *e2, integer *m,
-            double *w, integer *ind, double *z, integer *ierr, double *rv1,
+
+int tinvit(long int *nm, long int *n, double *d, double *e, double *e2, long int *m,
+            double *w, long int *ind, double *z, long int *ierr, double *rv1,
             double *rv2, double *rv3, double *rv4, double *rv6)
 {
   /* System generated locals */
-  integer    z_dim1, z_offset, i__1, i__2, i__3;
+  long int    z_dim1, z_offset, i__1, i__2, i__3;
   double d__1, d__2, d__3, d__4;
-
-  /* Builtin functions */
-  double sqrt();
 
   /* Local variables */
   static double norm;
-  static integer    i, j, p, q, r, s;
+  static long int    i, j, p, q, r, s;
   static double u, v, order;
-  static integer    group;
+  static long int    group;
   static double x0, x1;
-  static integer    ii, jj, ip;
+  static long int    ii, jj, ip;
   static double uk, xu;
-  static integer    tag, its;
+  static long int    tag, its;
   static double eps2, eps3, eps4;
 
   /*     this subroutine is a translation of the inverse iteration tech- */
@@ -190,15 +185,15 @@ L140:
     rv6[p] = 1.;
     goto L870;
   L490:
-    norm = (d__1 = d[p], abs(d__1));
+    norm = (d__1 = d[p], fabs(d__1));
     ip   = p + 1;
 
     i__2 = q;
     for (i = ip; i <= i__2; ++i) {
       /* L500: */
       /* Computing MAX */
-      d__3 = norm, d__4 = (d__1 = d[i], abs(d__1)) + (d__2 = e[i], abs(d__2));
-      norm = max(d__3, d__4);
+      d__3 = norm, d__4 = (d__1 = d[i], fabs(d__1)) + (d__2 = e[i], fabs(d__2));
+      norm = d__3 > d__4 ? d__3 : d__4;
     }
     /*     .......... eps2 is the criterion for grouping, */
     /*                eps3 replaces zero pivots and equal */
@@ -216,7 +211,7 @@ L140:
     goto L520;
   /*     .......... look for close or coincident roots .......... */
   L510:
-    if ((d__1 = x1 - x0, abs(d__1)) >= eps2) {
+    if ((d__1 = x1 - x0, fabs(d__1)) >= eps2) {
       goto L505;
     }
     ++group;
@@ -234,7 +229,7 @@ L140:
       if (i == p) {
         goto L560;
       }
-      if ((d__1 = e[i], abs(d__1)) < abs(u)) {
+      if ((d__1 = e[i], fabs(d__1)) < fabs(u)) {
         goto L540;
       }
       /*     .......... warning -- a divide check may occur here if */
@@ -319,7 +314,7 @@ L140:
     i__2 = q;
     for (i = p; i <= i__2; ++i) {
       /* L720: */
-      norm += (d__1 = rv6[i], abs(d__1));
+      norm += (d__1 = rv6[i], fabs(d__1));
     }
 
     if (norm >= 1.) {
