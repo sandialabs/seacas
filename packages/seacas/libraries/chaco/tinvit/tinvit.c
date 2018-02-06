@@ -37,30 +37,31 @@
         -link <S|C|M|L>f2c.lib   (in that order)
 */
 
+#include <float.h>
+#include <math.h>
 #include "f2c.h"
 
-int tinvit_(integer *nm, integer *n, doublereal *d, doublereal *e, doublereal *e2, integer *m,
-            doublereal *w, integer *ind, doublereal *z, integer *ierr, doublereal *rv1,
-            doublereal *rv2, doublereal *rv3, doublereal *rv4, doublereal *rv6)
+int tinvit_(integer *nm, integer *n, double *d, double *e, double *e2, integer *m,
+            double *w, integer *ind, double *z, integer *ierr, double *rv1,
+            double *rv2, double *rv3, double *rv4, double *rv6)
 {
   /* System generated locals */
   integer    z_dim1, z_offset, i__1, i__2, i__3;
-  doublereal d__1, d__2, d__3, d__4;
+  double d__1, d__2, d__3, d__4;
 
   /* Builtin functions */
   double sqrt();
 
   /* Local variables */
-  static doublereal norm;
+  static double norm;
   static integer    i, j, p, q, r, s;
-  static doublereal u, v, order;
+  static double u, v, order;
   static integer    group;
-  static doublereal x0, x1;
+  static double x0, x1;
   static integer    ii, jj, ip;
-  static doublereal uk, xu;
-  extern doublereal pythag(), epslon_();
+  static double uk, xu;
   static integer    tag, its;
-  static doublereal eps2, eps3, eps4;
+  static double eps2, eps3, eps4;
 
   /*     this subroutine is a translation of the inverse iteration tech- */
   /*     nique in the algol procedure tristurm by peters and wilkinson. */
@@ -118,7 +119,7 @@ int tinvit_(integer *nm, integer *n, doublereal *d, doublereal *e, doublereal *e
 
   /*        rv1, rv2, rv3, rv4, and rv6 are temporary storage arrays. */
 
-  /*     calls pythag for  dsqrt(a*a + b*b) . */
+  /*     calls hypot for  dsqrt(a*a + b*b) . */
 
   /*     questions and comments should be directed to burton s. garbow, */
   /*     mathematics and computer science div, argonne national laboratory
@@ -205,8 +206,8 @@ L140:
     /*                eps4 is taken very small to avoid overflow .........
     . */
     eps2 = norm * .001;
-    eps3 = epslon_(&norm);
-    uk   = (doublereal)(q - p + 1);
+    eps3 = DBL_EPSILON * fabs(norm);
+    uk   = (double)(q - p + 1);
     eps4 = uk * eps3;
     uk   = eps4 / sqrt(uk);
     s    = p;
@@ -380,7 +381,7 @@ L140:
     i__2 = q;
     for (i = p; i <= i__2; ++i) {
       /* L860: */
-      u = pythag(&u, &rv6[i]);
+      u = hypot(u, rv6[i]);
     }
 
     xu = 1. / u;
