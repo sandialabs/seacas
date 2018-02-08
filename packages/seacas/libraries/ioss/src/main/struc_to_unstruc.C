@@ -163,10 +163,12 @@ namespace {
     //========================================================================
     // OUTPUT ...
     //========================================================================
+#if 0
     if (dbi->util().parallel_size() > 1) {
       properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
     }
-
+#endif
+    
     Ioss::DatabaseIO *dbo =
         Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {

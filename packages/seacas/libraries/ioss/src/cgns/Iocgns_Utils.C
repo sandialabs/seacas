@@ -389,7 +389,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     // Transfer Zone Grid Connectivity...
     std::set<std::string> defined; // Will have entry if the zgc already output.
     for (const auto &zgc : sb->m_zoneConnectivity) {
-      if (zgc.m_intraBlock) {
+      if (zgc.is_intra_block()) {
         continue;
       }
       // In parallel decomposition, can have multiple copies of a zgc; only output the first
@@ -673,7 +673,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
   // location.
   for (auto &block : blocks) {
     for (const auto &zgc : block->m_zoneConnectivity) {
-      if (!zgc.m_intraBlock && zgc.m_isActive) { // Not due to processor decomposition.
+      if (!zgc.is_intra_block() && zgc.m_isActive) { // Not due to processor decomposition.
         // NOTE: In parallel, the owner block should exist, but may not have
         // any cells on this processor.  We can access its global i,j,k, but
         // don't store or access any "bulk" data on it.
