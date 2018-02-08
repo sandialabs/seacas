@@ -655,6 +655,12 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
   // which nodes are shared between blocks. For all shared nodes, the node in the lowest
   // numbered zone is considered the "owner" and all other nodes are shared.
 
+  // At the end of the routine, each block knows where its nodes fit
+  // into the implicit ordering of nodes on this processor. This is
+  // given by:
+  // implicit_location = block->m_blockLocalNodeIndex[i] (0 <= i < #nodes_in_block)
+  // Where 0 <= implicit_location < #nodes_on_processor
+
   // Create a vector of size which is the sum of the on-processor cell_nodes size for each block
   size_t num_total_cell_nodes = 0;
   auto & blocks               = region.get_structured_blocks();
@@ -667,18 +673,18 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
   std::vector<ssize_t> cell_node_map(num_total_cell_nodes, ss_max);
 
   // Each cell_node location in the cell_node_map is currently initialized to ss_max.
-  // Iterate each block and then each blocks intra-block (i.e., not
+  // Iterate each block and then each blocks non-intra-block (i.e., not
   // due to proc decomps) zgc instances and update cell_node_map
   // such that for each shared node, it points to the owner nodes
   // location.
-  for (auto &block : blocks) {
-    for (const auto &zgc : block->m_zoneConnectivity) {
+  for (auto &owner_block : blocks) {
+    for (const auto &zgc : owner_block->m_zoneConnectivity) {
       if (!zgc.is_intra_block() && zgc.m_isActive) { // Not due to processor decomposition.
         // NOTE: In parallel, the owner block should exist, but may not have
         // any cells on this processor.  We can access its global i,j,k, but
         // don't store or access any "bulk" data on it.
-        auto owner_block = region.get_structured_block(zgc.m_donorName);
-        assert(owner_block != nullptr);
+        auto donor_block = region.get_structured_block(zgc.m_donorName);
+        assert(donor_block != nullptr);
 
         std::vector<int> i_range = zgc.get_range(1);
         std::vector<int> j_range = zgc.get_range(2);
@@ -686,41 +692,29 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
         for (auto &k : k_range) {
           for (auto &j : j_range) {
             for (auto &i : i_range) {
-              Ioss::IJK_t index{{i, j, k}};
-              Ioss::IJK_t owner = zgc.transform(index);
+              Ioss::IJK_t owner_index{{i, j, k}};
+              Ioss::IJK_t donor_index = zgc.transform(owner_index);
 
               // The nodes as 'index' and 'owner' are contiguous and
               // should refer to the same node. 'owner' should be
               // the owner (unless it is already owned by another
               // block)
 
-              ssize_t global_offset = block->get_global_node_offset(index[0], index[1], index[2]);
-              ssize_t owner_global_offset =
-                  owner_block->get_global_node_offset(owner[0], owner[1], owner[2]);
+              ssize_t owner_global_offset = owner_block->get_global_node_offset(owner_index);
+              ssize_t donor_global_offset = donor_block->get_global_node_offset(donor_index);
 
-              if (global_offset > owner_global_offset) {
+              if (owner_global_offset > donor_global_offset) {
                 if (is_parallel && (zgc.m_donorProcessor != my_processor)) {
-                  size_t block_local_offset =
-                      block->get_block_local_node_offset(index[0], index[1], index[2]);
-                  block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset + 1);
+                  size_t owner_block_local_offset = owner_block->get_block_local_node_offset(owner_index);
+                  owner_block->m_globalIdMap.emplace_back(owner_block_local_offset, donor_global_offset + 1);
                 }
                 else if (!is_parallel || (zgc.m_ownerProcessor != my_processor)) {
-                  size_t  local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
-                  ssize_t owner_local_offset =
-                      owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
+                  size_t  owner_local_offset = owner_block->get_local_node_offset(owner_index);
+                  ssize_t donor_local_offset = donor_block->get_local_node_offset(donor_index);
 
-                  if (cell_node_map[local_offset] == ss_max) {
-                    cell_node_map[local_offset] = owner_local_offset;
+                  if (cell_node_map[owner_local_offset] == ss_max) {
+                    cell_node_map[owner_local_offset] = donor_local_offset;
                   }
-#if IOSS_DEBUG_OUTPUT
-                  else {
-                    if (cell_node_map[local_offset] != owner_local_offset) {
-                      std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset
-                                << " " << cell_node_map[local_offset] << " " << global_offset << " "
-                                << owner_global_offset << "\n";
-                    }
-                  }
-#endif
                 }
               }
             }
@@ -737,7 +731,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
   // nodes index.
   size_t index = 0;
   for (auto &node : cell_node_map) {
-    if (node == ss_max || node < 0) {
+    if (node == ss_max) {
       node = index++;
     }
     else {
@@ -782,9 +776,12 @@ std::vector<std::vector<std::pair<size_t, size_t>>>
     int owner_zone = owner_block->get_property("zone").get_int();
     auto owner_ids = owner_block->get_cell_node_ids(true);
     for (const auto &zgc : owner_block->m_zoneConnectivity) {
+      assert(zgc.m_donorProcessor >= 0);
+      assert(zgc.m_ownerProcessor >= 0);
+
       if (zgc.m_isActive &&
           (zgc.m_donorProcessor != my_processor ||
-           zgc.m_ownerProcessor != my_processor)) { // Due to processor decomposition.
+           zgc.m_ownerProcessor != my_processor)) { 
         // NOTE: In parallel, the donor block should exist, but may not have
         // any cells on this processor.  We can access its global i,j,k, but
         // don't store or access any "bulk" data on it.
@@ -800,20 +797,18 @@ std::vector<std::vector<std::pair<size_t, size_t>>>
         for (auto &k : k_range) {
           for (auto &j : j_range) {
             for (auto &i : i_range) {
-              Ioss::IJK_t index{{i, j, k}};
-              Ioss::IJK_t owner = zgc.transform(index);
+              Ioss::IJK_t owner_index{{i, j, k}};
+              Ioss::IJK_t donor_index = zgc.transform(owner_index);
 
               // The nodes as 'index' and 'owner' are contiguous and
               // should refer to the same node.
 
               if (my_processor == zgc.m_ownerProcessor) {
-                ssize_t owner_offset =
-                    owner_block->get_block_local_node_offset(index[0], index[1], index[2]);
+                ssize_t owner_offset = owner_block->get_block_local_node_offset(owner_index);
                 shared_nodes[owner_zone].emplace_back(owner_offset, zgc.m_donorProcessor);
               }
               else if (my_processor == zgc.m_donorProcessor) {
-                ssize_t donor_offset =
-                    donor_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
+                ssize_t donor_offset = donor_block->get_block_local_node_offset(donor_index);
                 shared_nodes[donor_zone].emplace_back(donor_offset, zgc.m_ownerProcessor);
               }
             }
