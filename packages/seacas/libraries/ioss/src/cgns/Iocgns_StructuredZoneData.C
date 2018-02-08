@@ -193,6 +193,7 @@ namespace {
       if (!zgc.is_intra_block() || zgc_overlaps(child, zgc)) {
         // Modify source and donor range to subset it to new block ranges.
         zgc_subset_ranges(child, zgc);
+	zgc.m_ownerZone = child->m_zone;
         child->m_zoneConnectivity.push_back(zgc);
         if (rank == 0) {
 #if 0 && IOSS_DEBUG_OUTPUT
@@ -410,8 +411,10 @@ namespace Iocgns {
   {
     for (auto &zgc : m_zoneConnectivity) {
       auto &donor_zone     = zones[zgc.m_donorZone - 1];
+      assert(donor_zone->m_proc >= 0);
       zgc.m_donorProcessor = donor_zone->m_proc;
       auto &owner_zone     = zones[zgc.m_ownerZone - 1];
+      assert(owner_zone->m_proc >= 0);
       zgc.m_ownerProcessor = owner_zone->m_proc;
     }
   }
