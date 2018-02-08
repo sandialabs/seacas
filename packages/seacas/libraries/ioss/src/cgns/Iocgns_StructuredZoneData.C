@@ -190,7 +190,7 @@ namespace {
 #endif
     }
     for (auto zgc : parent->m_zoneConnectivity) {
-      if (!zgc.m_intraBlock || zgc_overlaps(child, zgc)) {
+      if (!zgc.is_intra_block() || zgc_overlaps(child, zgc)) {
         // Modify source and donor range to subset it to new block ranges.
         zgc_subset_ranges(child, zgc);
         child->m_zoneConnectivity.push_back(zgc);
@@ -239,7 +239,7 @@ namespace {
     const auto &adam_name = parent->m_adam->m_name;
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
-                                        donor_range_end, c1->m_zone < c2->m_zone, true);
+                                        donor_range_end);
     auto &zgc1         = c1->m_zoneConnectivity.back();
     zgc1.m_sameRange   = true;
     zgc1.m_ownerOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
@@ -250,7 +250,7 @@ namespace {
 
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
-                                        range_end, c2->m_zone < c1->m_zone, true);
+                                        range_end);
     auto &zgc2         = c2->m_zoneConnectivity.back();
     zgc2.m_sameRange   = true;
     zgc2.m_ownerOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};

@@ -183,10 +183,9 @@ namespace {
         OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname
                << "\n";
 #endif
-        bool owns_nodes = zone < donor_zone || donor_zone == -1;
         zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
                                                    transform, range_beg, range_end, donor_beg,
-                                                   donor_end, owns_nodes);
+                                                   donor_end);
       }
     }
 
