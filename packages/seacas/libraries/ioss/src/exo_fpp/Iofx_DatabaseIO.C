@@ -4484,7 +4484,10 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
       }
 
       if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+	std::ostringstream extra_info;
+	extra_info << "Outputting component " << i << " of field " << field_name << " at step " << step << " on "
+		   << ge->type_string() << " " << ge->name() << ".";
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
       }
     }
   }
