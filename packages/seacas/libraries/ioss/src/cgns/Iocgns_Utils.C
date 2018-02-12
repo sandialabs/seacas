@@ -52,6 +52,8 @@
 #include <Ioss_Wedge15.h>
 #include <Ioss_Wedge18.h>
 #include <Ioss_Wedge6.h>
+
+#include <numeric>
 #include <set>
 
 #include <cgns/Iocgns_Utils.h>
@@ -154,6 +156,23 @@ namespace {
       bc.m_rangeBeg = {{0, 0, 0}};
       bc.m_rangeEnd = {{0, 0, 0}};
     }
+  }
+
+  void union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j)
+  {
+    zgc_i.m_ownerRangeBeg[0] = std::min(zgc_i.m_ownerRangeBeg[0], zgc_j.m_ownerRangeBeg[0]);
+    zgc_i.m_ownerRangeBeg[1] = std::min(zgc_i.m_ownerRangeBeg[1], zgc_j.m_ownerRangeBeg[1]);
+    zgc_i.m_ownerRangeBeg[2] = std::min(zgc_i.m_ownerRangeBeg[2], zgc_j.m_ownerRangeBeg[2]);
+    zgc_i.m_ownerRangeEnd[0] = std::max(zgc_i.m_ownerRangeEnd[0], zgc_j.m_ownerRangeEnd[0]);
+    zgc_i.m_ownerRangeEnd[1] = std::max(zgc_i.m_ownerRangeEnd[1], zgc_j.m_ownerRangeEnd[1]);
+    zgc_i.m_ownerRangeEnd[2] = std::max(zgc_i.m_ownerRangeEnd[2], zgc_j.m_ownerRangeEnd[2]);
+
+    zgc_i.m_donorRangeBeg[0] = std::min(zgc_i.m_donorRangeBeg[0], zgc_j.m_donorRangeBeg[0]);
+    zgc_i.m_donorRangeBeg[1] = std::min(zgc_i.m_donorRangeBeg[1], zgc_j.m_donorRangeBeg[1]);
+    zgc_i.m_donorRangeBeg[2] = std::min(zgc_i.m_donorRangeBeg[2], zgc_j.m_donorRangeBeg[2]);
+    zgc_i.m_donorRangeEnd[0] = std::max(zgc_i.m_donorRangeEnd[0], zgc_j.m_donorRangeEnd[0]);
+    zgc_i.m_donorRangeEnd[1] = std::max(zgc_i.m_donorRangeEnd[1], zgc_j.m_donorRangeEnd[1]);
+    zgc_i.m_donorRangeEnd[2] = std::max(zgc_i.m_donorRangeEnd[2], zgc_j.m_donorRangeEnd[2]);
   }
 
   int extract_trailing_int(char *name)
@@ -327,6 +346,189 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     element_count += (size_t)local_count;
   }
 
+  // In parallel, the zgc are not necessarily consistent across processors...
+  // and the owner/donor ranges are processor specific.
+  // Need to make sure all processors have a consistent list of zgc and the
+  // owner/donor ranges contain the union of the ranges on each
+  // processor.
+  // ...Could do this on a per sb basis, but better to do all at once...
+  // Data:
+  // 32 - connectionName -- 32 char max
+  // 1 - int zone
+  // 1 - int donor_zone -- get by mapping donorName to zone
+  // 6 cgsize_t[6] ownerRange (can probably use 32-bit int...)
+  // 6 cgsize_t[6] donorRange (can probably use 32-bit int...)
+  // 3 int[3] transform; (values range from -3 to +3 (could store as single int)
+  // 32 characters + 17 ints / connection.
+
+  if (is_parallel) {
+    std::cerr << "Consolidating zgc instances\n";
+    // Gather all to processor 0, consolidate, and then scatter back...
+    int         count             = 0;
+    const auto &structured_blocks = region.get_structured_blocks();
+    for (const auto &sb : structured_blocks) {
+      count += sb->m_zoneConnectivity.size();
+    }
+    std::vector<int> rcv_data_cnt;
+    region.get_database()->util().gather(count, rcv_data_cnt);
+    std::vector<char> rcv_zgc_name;
+    std::vector<char> snd_zgc_name(count * 32);
+    std::vector<int>  rcv_zgc_data;
+    std::vector<int>  snd_zgc_data(count * 17);
+    std::vector<int>  rcv_name_cnt(rcv_data_cnt);
+
+    count = std::accumulate(rcv_data_cnt.begin(), rcv_data_cnt.end(), 0);
+    std::transform(rcv_data_cnt.begin(), rcv_data_cnt.end(), rcv_data_cnt.begin(),
+		   [](int i) -> int { return i * 17; });
+    std::transform(rcv_name_cnt.begin(), rcv_name_cnt.end(), rcv_name_cnt.begin(),
+		   [](int i) -> int { return i * 32; });
+    std::vector<int>  rcv_name_off(rcv_name_cnt);
+    std::vector<int>  rcv_data_off(rcv_data_cnt);
+    if (region.get_database()->util().parallel_rank() == 0) {
+      Ioss::Utils::generate_index(rcv_data_off);
+      Ioss::Utils::generate_index(rcv_name_off);
+    
+      rcv_zgc_name.resize(count * 32);
+      rcv_zgc_data.resize(count * 17);
+    }
+
+    size_t off_name = 0;
+    size_t off_data = 0;
+    for (const auto &sb : structured_blocks) {
+      for (const auto &zgc : sb->m_zoneConnectivity) {
+        strncpy(&snd_zgc_name[off_name], zgc.m_connectionName.c_str(), 32);
+        off_name += 32;
+
+        snd_zgc_data[off_data++] = zgc.m_ownerZone;
+        snd_zgc_data[off_data++] = zgc.m_donorZone;
+        for (int i = 0; i < 6; i++) {
+          snd_zgc_data[off_data++] = zgc.m_ownerRange[i];
+        }
+        for (int i = 0; i < 6; i++) {
+          snd_zgc_data[off_data++] = zgc.m_donorRange[i];
+        }
+        snd_zgc_data[off_data++] = zgc.m_transform[0];
+        snd_zgc_data[off_data++] = zgc.m_transform[1];
+        snd_zgc_data[off_data++] = zgc.m_transform[2];
+      }
+    }
+
+    MPI_Gatherv(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, rcv_zgc_name.data(),
+                rcv_name_cnt.data(), rcv_name_off.data(), MPI_BYTE, 0,
+                region.get_database()->util().communicator());
+    MPI_Gatherv(snd_zgc_data.data(), (int)snd_zgc_data.size(), MPI_INT, rcv_zgc_data.data(),
+                rcv_data_cnt.data(), rcv_data_off.data(), MPI_INT, 0,
+                region.get_database()->util().communicator());
+
+    // Processor 0 now has all the zgc instances from all blocks on all processors.
+    // Consolidate down to the minimum set that has the union of all ranges.
+    std::vector<Ioss::ZoneConnectivity> zgc;
+    if (region.get_database()->util().parallel_rank() == 0) {
+      zgc.reserve(count);
+      off_data = 0;
+      off_name = 0;
+      for (int i=0; i < count; i++) {
+	std::string name{&rcv_zgc_name[off_name], 32};
+	off_name += 32;
+	int zone = rcv_zgc_data[off_data++];
+	int donor = rcv_zgc_data[off_data++];
+	Ioss::IJK_t range_beg{{rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
+	Ioss::IJK_t range_end{{rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
+	Ioss::IJK_t donor_beg{{rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
+	Ioss::IJK_t donor_end{{rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
+	Ioss::IJK_t transform{{rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
+	zgc.emplace_back(name, zone, "", donor, transform, range_beg, range_end, donor_beg, donor_end);
+	std::cerr << "Consolidate ZGC: " << name << " " << zone << " " << donor << "\n";
+      }
+      for (size_t i=0; i < zgc.size(); i++) {
+	if (zgc[i].m_ownerZone > 0 && zgc[i].m_donorZone > 0) {
+	  auto owner_zone = zgc[i].m_ownerZone;
+	  auto donor_zone = zgc[i].m_donorZone;
+
+	  for (size_t j=i+1; j < zgc.size(); j++) {
+	    if (zgc[j].m_connectionName == zgc[i].m_connectionName &&
+		zgc[j].m_ownerZone == owner_zone &&
+		zgc[j].m_donorZone == donor_zone) {
+	      // Found another instance of the "same" zgc...  Union the ranges
+	      union_zgc_range(zgc[i], zgc[j]);
+
+	      //Flag the 'j' instance so it is processed only this time.
+	      zgc[j].m_ownerZone = -1;
+	      zgc[j].m_donorZone = -1;
+	    }
+	  }
+	}
+      }
+
+      // Cull out all 'non-active' zgc instances (owner and donor zone <= 0)
+      zgc.erase(std::remove_if(zgc.begin(), zgc.end(),
+				   [](Ioss::ZoneConnectivity &z){return z.m_ownerZone == -1 && z.m_donorZone == -1;}),
+		    zgc.end());
+
+      count = (int)zgc.size();
+      snd_zgc_name.resize(count * 32);
+      snd_zgc_data.resize(count * 17);
+      // Now have a unique set of zgc over all processors with a union
+      // of the ranges on each individual processor.  Pack the data
+      // and broadcast back to all processors so all processors can
+      // output the same data for Zone Connectivity.
+      off_name = 0;
+      off_data = 0;
+      for (const auto &z : zgc) {
+        strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), 32);
+        off_name += 32;
+
+        snd_zgc_data[off_data++] = z.m_ownerZone;
+        snd_zgc_data[off_data++] = z.m_donorZone;
+        for (int i = 0; i < 6; i++) {
+          snd_zgc_data[off_data++] = z.m_ownerRange[i];
+        }
+        for (int i = 0; i < 6; i++) {
+          snd_zgc_data[off_data++] = z.m_donorRange[i];
+        }
+        snd_zgc_data[off_data++] = z.m_transform[0];
+        snd_zgc_data[off_data++] = z.m_transform[1];
+        snd_zgc_data[off_data++] = z.m_transform[2];
+      }
+      assert(off_data % count == 0 && off_data / count == 17);
+      assert(off_name % count == 0 && off_name / count == 32);
+    } // End of processor 0 only processing...
+
+    MPI_Bcast(&count, 1, MPI_INT, 0, region.get_database()->util().communicator());
+    snd_zgc_name.resize(count * 32);
+    snd_zgc_data.resize(count * 17);
+    MPI_Bcast(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, 0, region.get_database()->util().communicator());
+    MPI_Bcast(snd_zgc_data.data(), (int)snd_zgc_data.size(), MPI_INT,  0, region.get_database()->util().communicator());
+
+    // Now clean out existing ZGC lists for all blocks and add on the consolidated instances.
+    // Also create a vector for mapping from zone to sb name.
+    std::vector<std::string> sb_names(structured_blocks.size()+1);
+    for (auto &sb : structured_blocks) {
+      sb->m_zoneConnectivity.clear();
+      sb_names[sb->get_property("zone").get_int()] = sb->name();
+    }
+
+    off_data = 0;
+    off_name = 0;
+    for (int i=0; i < count; i++) {
+      std::string name{&snd_zgc_name[off_name], 32};
+      off_name += 32;
+      int zone = snd_zgc_data[off_data++];
+      int donor = snd_zgc_data[off_data++];
+      Ioss::IJK_t range_beg{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
+      Ioss::IJK_t range_end{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
+      Ioss::IJK_t donor_beg{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
+      Ioss::IJK_t donor_end{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
+      Ioss::IJK_t transform{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
+
+      auto sb = region.get_structured_block(sb_names[zone]);
+      assert(sb != nullptr);
+      sb->m_zoneConnectivity.emplace_back(name, zone, sb_names[donor], donor,
+					  transform, range_beg, range_end, donor_beg, donor_end);
+    }
+  }
+
+
   const auto &structured_blocks = region.get_structured_blocks();
   for (const auto &sb : structured_blocks) {
     int      zone    = 0;
@@ -387,19 +589,11 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     }
 
     // Transfer Zone Grid Connectivity...
-    std::set<std::string> defined; // Will have entry if the zgc already output.
     for (const auto &zgc : sb->m_zoneConnectivity) {
-      if (zgc.is_intra_block()) {
-        continue;
-      }
-      // In parallel decomposition, can have multiple copies of a zgc; only output the first
-      // instance
-      if (defined.insert(zgc.m_connectionName).second) {
-        int zgc_idx = 0;
-        CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
-                            zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
-                            &zgc.m_transform[0], &zgc_idx));
-      }
+      int zgc_idx = 0;
+      CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
+			  zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
+			  &zgc.m_transform[0], &zgc_idx));
     }
   }
   return element_count;
