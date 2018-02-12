@@ -176,39 +176,6 @@ namespace Ioss {
     size_t get_node_global_offset() const { return m_nodeGlobalOffset; }
     size_t get_cell_global_offset() const { return m_cellGlobalOffset; }
 
-    // Get the local (relative to this block on this processor) node
-    // id at the specified i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
-    size_t get_block_local_node_id(int ii, int jj, int kk) const
-    {
-      auto i = ii - m_offsetI;
-      auto j = jj - m_offsetJ;
-      auto k = kk - m_offsetK;
-      assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
-      return static_cast<size_t>(k - 1) * (m_ni + 1) * (m_nj + 1) +
-             static_cast<size_t>(j - 1) * (m_ni + 1) + i;
-    }
-
-    size_t get_block_local_node_id(IJK_t index) const
-    {
-      return get_block_local_node_id(index[0], index[1], index[2]);
-    }
-
-    // Get the local (relative to this block on this processor) cell
-    // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
-    size_t get_block_local_cell_id(int ii, int jj, int kk) const
-    {
-      auto i = ii - m_offsetI;
-      auto j = jj - m_offsetJ;
-      auto k = kk - m_offsetK;
-      assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
-      return static_cast<size_t>(k - 1) * m_ni * m_nj + static_cast<size_t>(j - 1) * m_ni + i;
-    }
-
-    size_t get_block_local_cell_id(IJK_t index) const
-    {
-      return get_block_local_cell_id(index[0], index[1], index[2]);
-    }
-
     // Get the global (over all processors) cell
     // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
     size_t get_global_cell_id(int i, int j, int k) const
@@ -262,19 +229,7 @@ namespace Ioss {
 
     size_t get_local_node_offset(IJK_t index) const
     {
-      return get_block_local_node_offset(index[0], index[1], index[2]) + m_nodeOffset;
-    }
-
-    // Get the global node id at the specified
-    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
-    size_t get_global_node_id(int i, int j, int k) const
-    {
-      return get_global_node_offset(i, j, k) + 1;
-    }
-
-    size_t get_global_node_id(IJK_t index) const
-    {
-      return get_global_node_offset(index[0], index[1], index[2]) + 1;
+      return get_local_node_offset(index[0], index[1], index[2]);
     }
 
     std::vector<INT> get_cell_node_ids(bool add_offset) const
