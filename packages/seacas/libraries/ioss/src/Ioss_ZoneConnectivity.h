@@ -61,23 +61,7 @@ namespace Ioss {
           m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
           m_ownerRangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
-    {
-      if (!is_intra_block()) {
-        m_ownerRange[0] = m_ownerRangeBeg[0];
-        m_ownerRange[1] = m_ownerRangeBeg[1];
-        m_ownerRange[2] = m_ownerRangeBeg[2];
-        m_ownerRange[3] = m_ownerRangeEnd[0];
-        m_ownerRange[4] = m_ownerRangeEnd[1];
-        m_ownerRange[5] = m_ownerRangeEnd[2];
-
-        m_donorRange[0] = m_donorRangeBeg[0];
-        m_donorRange[1] = m_donorRangeBeg[1];
-        m_donorRange[2] = m_donorRangeBeg[2];
-        m_donorRange[3] = m_donorRangeEnd[0];
-        m_donorRange[4] = m_donorRangeEnd[1];
-        m_donorRange[5] = m_donorRangeEnd[2];
-      }
-    }
+    {}
 
     ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
 
@@ -99,12 +83,6 @@ namespace Ioss {
     friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
     bool is_intra_block() const { return m_ownerZone == m_donorZone; }
-
-    // The "original" owner and donor range -- that is, they have not been subsetted
-    // due to block decompositions in a parallel run.  These should be the same on
-    // all processors...  Primarily used to make parallel collective output easier...
-    std::array<INT, 6> m_ownerRange{};
-    std::array<INT, 6> m_donorRange{};
 
     std::string m_connectionName; // Name of the connection; either generated or from file
     std::string m_donorName; // Name of the zone (m_donorZone) to which this zone is connected via
