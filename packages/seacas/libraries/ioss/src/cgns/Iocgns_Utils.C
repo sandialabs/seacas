@@ -330,12 +330,21 @@ namespace {
 	
         snd_zgc_data[off_data++] = z.m_ownerZone;
         snd_zgc_data[off_data++] = z.m_donorZone;
-        for (int i = 0; i < 6; i++) {
-          snd_zgc_data[off_data++] = z.m_ownerRange[i];
-        }
-        for (int i = 0; i < 6; i++) {
-          snd_zgc_data[off_data++] = z.m_donorRange[i];
-        }
+
+	snd_zgc_data[off_data++] = z.m_ownerRangeBeg[0];
+	snd_zgc_data[off_data++] = z.m_ownerRangeBeg[1];
+	snd_zgc_data[off_data++] = z.m_ownerRangeBeg[2];
+	snd_zgc_data[off_data++] = z.m_ownerRangeEnd[0];
+	snd_zgc_data[off_data++] = z.m_ownerRangeEnd[1];
+	snd_zgc_data[off_data++] = z.m_ownerRangeEnd[2];
+
+	snd_zgc_data[off_data++] = z.m_donorRangeBeg[0];
+	snd_zgc_data[off_data++] = z.m_donorRangeBeg[1];
+	snd_zgc_data[off_data++] = z.m_donorRangeBeg[2];
+	snd_zgc_data[off_data++] = z.m_donorRangeEnd[0];
+	snd_zgc_data[off_data++] = z.m_donorRangeEnd[1];
+	snd_zgc_data[off_data++] = z.m_donorRangeEnd[2];
+
         snd_zgc_data[off_data++] = z.m_transform[0];
         snd_zgc_data[off_data++] = z.m_transform[1];
         snd_zgc_data[off_data++] = z.m_transform[2];
@@ -603,9 +612,13 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     // Transfer Zone Grid Connectivity...
     for (const auto &zgc : sb->m_zoneConnectivity) {
       int zgc_idx = 0;
+      std::array<INT, 6> owner_range{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1], zgc.m_ownerRangeBeg[2],
+	  zgc.m_ownerRangeEnd[0], zgc.m_ownerRangeEnd[1], zgc.m_ownerRangeEnd[2]};
+      std::array<INT, 6> donor_range{zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1], zgc.m_donorRangeBeg[2],
+	  zgc.m_donorRangeEnd[0], zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]};
       CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
-			  zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
-			  &zgc.m_transform[0], &zgc_idx));
+			  zgc.m_donorName.c_str(), owner_range.data(), donor_range.data(),
+			  zgc.m_transform.data(), &zgc_idx));
     }
   }
   return element_count;
