@@ -304,6 +304,18 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip
   COMM mpi serial
   )
 
+TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_zgc
+   TEST_0 EXEC io_shell ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/5blocks-struc.cgns 5blocks.cgns
+     NUM_MPI_PROCS 1-4
+     NOEXEPREFIX NOEXESUFFIX
+   TEST_1 EXEC io_shell ARGS 5blocks.cgns 5blocks2.cgns
+     NUM_MPI_PROCS 1-4
+     NOEXEPREFIX NOEXESUFFIX
+   TEST_2 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/test/5blocks-struc.cgns 5blocks2.cgns
+     NUM_MPI_PROCS 1
+  COMM mpi serial
+  )
+
 TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_bump
    TEST_0 EXEC io_shell ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/bump_str.cgns tmp.cgns
      NUM_MPI_PROCS 1-4
