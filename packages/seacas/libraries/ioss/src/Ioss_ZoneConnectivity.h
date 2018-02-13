@@ -61,7 +61,8 @@ namespace Ioss {
           m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
           m_ownerRangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
-    {}
+    {
+    }
 
     ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
 

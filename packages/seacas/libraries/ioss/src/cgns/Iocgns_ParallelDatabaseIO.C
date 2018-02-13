@@ -478,14 +478,14 @@ namespace Iocgns {
                                             zone->m_adam->m_ordinal);
           for (auto zgc : zone->m_zoneConnectivity) {
             zgc.m_isActive = false;
-	    // Update donor_zone to point to adam zone instead of child.
-	    auto dz = zones[zgc.m_donorZone - 1];
-	    assert(dz->m_zone == zgc.m_donorZone);
-	    auto oz = zones[zgc.m_ownerZone - 1];
-	    assert(oz->m_zone == zgc.m_ownerZone);
-	    zgc.m_donorZone = dz->m_adam->m_zone;
-	    zgc.m_ownerZone = oz->m_adam->m_zone;
-	    block->m_zoneConnectivity.push_back(zgc);
+            // Update donor_zone to point to adam zone instead of child.
+            auto dz = zones[zgc.m_donorZone - 1];
+            assert(dz->m_zone == zgc.m_donorZone);
+            auto oz = zones[zgc.m_ownerZone - 1];
+            assert(oz->m_zone == zgc.m_ownerZone);
+            zgc.m_donorZone = dz->m_adam->m_zone;
+            zgc.m_ownerZone = oz->m_adam->m_zone;
+            block->m_zoneConnectivity.push_back(zgc);
           }
         }
         assert(block != nullptr);

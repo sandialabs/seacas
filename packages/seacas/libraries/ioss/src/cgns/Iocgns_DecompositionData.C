@@ -542,11 +542,11 @@ namespace Iocgns {
       if (zone->is_active()) {
         zone->update_zgc_processor(m_structuredZones);
 #if IOSS_DEBUG_OUTPUT
-	auto zone_node_count = (zone->m_ordinal[0]+1) * (zone->m_ordinal[1]+1) * (zone->m_ordinal[2]+1);
+        auto zone_node_count =
+            (zone->m_ordinal[0] + 1) * (zone->m_ordinal[1] + 1) * (zone->m_ordinal[2] + 1);
         OUTPUT << "Zone " << zone->m_name << "(" << zone->m_zone << ") assigned to processor "
                << zone->m_proc << ", Adam zone = " << zone->m_adam->m_zone
-	       << ", Cells = " << zone->work() << ", Nodes = " << zone_node_count
-	       << "\n";
+               << ", Cells = " << zone->work() << ", Nodes = " << zone_node_count << "\n";
         auto zgcs = zone->m_zoneConnectivity;
         for (auto &zgc : zgcs) {
           OUTPUT << zgc << "\n";

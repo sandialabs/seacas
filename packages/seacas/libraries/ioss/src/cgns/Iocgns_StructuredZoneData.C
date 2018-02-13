@@ -188,7 +188,7 @@ namespace {
       if (!zgc.is_intra_block() || zgc_overlaps(child, zgc)) {
         // Modify source and donor range to subset it to new block ranges.
         zgc_subset_ranges(child, zgc);
-	zgc.m_ownerZone = child->m_zone;
+        zgc.m_ownerZone = child->m_zone;
         child->m_zoneConnectivity.push_back(zgc);
       }
     }
@@ -197,7 +197,7 @@ namespace {
   // Add the zgc corresponding to the new communication path between
   // two child zones arising from a parent split along ordinal 'ordinal'
   void add_proc_split_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *c1,
-                     Iocgns::StructuredZoneData *c2, int ordinal)
+                          Iocgns::StructuredZoneData *c2, int ordinal)
   {
     Ioss::IJK_t transform{{1, 2, 3}};
 
@@ -385,7 +385,7 @@ namespace Iocgns {
   void StructuredZoneData::update_zgc_processor(std::vector<Iocgns::StructuredZoneData *> &zones)
   {
     for (auto &zgc : m_zoneConnectivity) {
-      auto &donor_zone     = zones[zgc.m_donorZone - 1];
+      auto &donor_zone = zones[zgc.m_donorZone - 1];
       assert(donor_zone->m_proc >= 0);
       zgc.m_donorProcessor = donor_zone->m_proc;
       auto &owner_zone     = zones[zgc.m_ownerZone - 1];
