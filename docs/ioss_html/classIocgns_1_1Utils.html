@@ -124,8 +124,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a4436c119a691be04b8407f0f69185161"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1e99c795265c92bbbb4a240591623d1"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ac1e99c795265c92bbbb4a240591623d1">resolve_nodes</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, int my_processor, bool is_parallel)</td></tr>
 <tr class="separator:ac1e99c795265c92bbbb4a240591623d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5bb2d1bf899830b23f3aebde4cfdd299"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a5bb2d1bf899830b23f3aebde4cfdd299">resolve_shared_nodes</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, int my_processor)</td></tr>
-<tr class="separator:a5bb2d1bf899830b23f3aebde4cfdd299"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a703a9f8e127ab053e74143ae965a6196"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a703a9f8e127ab053e74143ae965a6196">resolve_processor_shared_nodes</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, int my_processor)</td></tr>
+<tr class="separator:a703a9f8e127ab053e74143ae965a6196"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95361f41dead54976b62fbe915bc7da3"><td class="memItemLeft" align="right" valign="top">static CG_ElementType_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a95361f41dead54976b62fbe915bc7da3">map_topology_to_cgns</a> (const std::string &amp;name)</td></tr>
 <tr class="separator:a95361f41dead54976b62fbe915bc7da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38aad5f42ea2883fd7e420bf426776cb"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a38aad5f42ea2883fd7e420bf426776cb">map_cgns_to_topology_type</a> (CG_ElementType_t type)</td></tr>
@@ -836,8 +836,8 @@ template&lt;typename INT &gt; </div>
 
 </div>
 </div>
-<a id="a5bb2d1bf899830b23f3aebde4cfdd299"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5bb2d1bf899830b23f3aebde4cfdd299">&#9670;&nbsp;</a></span>resolve_shared_nodes()</h2>
+<a id="a703a9f8e127ab053e74143ae965a6196"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a703a9f8e127ab053e74143ae965a6196">&#9670;&nbsp;</a></span>resolve_processor_shared_nodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -846,7 +846,7 @@ template&lt;typename INT &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Iocgns::Utils::resolve_shared_nodes </td>
+          <td class="memname">std::vector&lt; std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &gt; Iocgns::Utils::resolve_processor_shared_nodes </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;&#160;</td>
           <td class="paramname"><em>region</em>, </td>
