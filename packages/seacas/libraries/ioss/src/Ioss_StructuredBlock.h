@@ -201,8 +201,8 @@ namespace Ioss {
     size_t get_global_node_offset(IJK_t index) const
     {
       return get_global_node_offset(index[0], index[1], index[2]);
-    }      
-      
+    }
+
     // Get the local (relative to this block on this processor) node id at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
     size_t get_block_local_node_offset(int ii, int jj, int kk) const
