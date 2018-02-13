@@ -483,8 +483,8 @@ namespace {
       Ioss::IJK_t transform{
           {snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
 
-      auto sb = region.get_structured_block(sb_names[zone]);
-      assert(sb != nullptr);
+      auto sb = structured_blocks[zone-1];
+      assert(sb->get_property("zone").get_int() == zone);
       sb->m_zoneConnectivity.emplace_back(name, zone, sb_names[donor], donor, transform, range_beg,
                                           range_end, donor_beg, donor_end);
     }
