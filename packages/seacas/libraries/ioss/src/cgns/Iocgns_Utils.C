@@ -158,23 +158,6 @@ namespace {
     }
   }
 
-  void union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j)
-  {
-    assert(zgc_i.m_transform == zgc_j.m_transform);
-    for (int i=0; i < 3; i++) {
-      if (zgc_i.m_transform[i] > 0) {
-	zgc_i.m_ownerRangeBeg[i] = std::min(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
-	zgc_i.m_ownerRangeEnd[i] = std::max(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
-      }
-      else {
-	zgc_i.m_ownerRangeBeg[i] = std::max(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
-	zgc_i.m_ownerRangeEnd[i] = std::min(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
-      }
-      zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
-      zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
-    }
-  }
-
   int extract_trailing_int(char *name)
   {
     // 'name' consists of an arbitray number of characters followed by
@@ -279,31 +262,53 @@ bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
 }
 
 namespace {
+#ifdef SEACAS_HAVE_MPI
+  void union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j)
+  {
+    assert(zgc_i.m_transform == zgc_j.m_transform);
+    for (int i = 0; i < 3; i++) {
+      if (zgc_i.m_transform[i] > 0) {
+        zgc_i.m_ownerRangeBeg[i] = std::min(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
+        zgc_i.m_ownerRangeEnd[i] = std::max(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
+      }
+      else {
+        zgc_i.m_ownerRangeBeg[i] = std::max(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
+        zgc_i.m_ownerRangeEnd[i] = std::min(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
+      }
+      zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+      zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+    }
+  }
+#endif
+
   void consolidate_zgc(const Ioss::Region &region)
   {
+#ifdef SEACAS_HAVE_MPI
     // Gather all to processor 0, consolidate, and then scatter back...
-    int         my_count             = 0;
+    int         my_count          = 0;
     const auto &structured_blocks = region.get_structured_blocks();
     for (const auto &sb : structured_blocks) {
-      my_count += std::count_if(sb->m_zoneConnectivity.begin(), sb->m_zoneConnectivity.end(),
-				[](const Ioss::ZoneConnectivity &z){return !z.is_intra_block() && z.is_active();});
+      my_count += std::count_if(
+          sb->m_zoneConnectivity.begin(), sb->m_zoneConnectivity.end(),
+          [](const Ioss::ZoneConnectivity &z) { return !z.is_intra_block() && z.is_active(); });
     }
 
     std::vector<int> rcv_data_cnt;
-    region.get_database()->util().all_gather(my_count, rcv_data_cnt);  // Allgather instead of gather so can bail if count=0
+    region.get_database()->util().all_gather(
+        my_count, rcv_data_cnt); // Allgather instead of gather so can bail if count=0
     int count = std::accumulate(rcv_data_cnt.begin(), rcv_data_cnt.end(), 0);
     if (count == 0) {
       for (auto &sb : structured_blocks) {
-	sb->m_zoneConnectivity.clear();
+        sb->m_zoneConnectivity.clear();
       }
       return;
     }
 
-    std::vector<int>  rcv_name_cnt(rcv_data_cnt);
+    std::vector<int> rcv_name_cnt(rcv_data_cnt);
     std::transform(rcv_data_cnt.begin(), rcv_data_cnt.end(), rcv_data_cnt.begin(),
-		   [](int i) -> int { return i * 17; });
+                   [](int i) -> int { return i * 17; });
     std::transform(rcv_name_cnt.begin(), rcv_name_cnt.end(), rcv_name_cnt.begin(),
-		   [](int i) -> int { return i * 32; });
+                   [](int i) -> int { return i * 32; });
 
     std::vector<char> rcv_zgc_name;
     std::vector<int>  rcv_zgc_data;
@@ -323,35 +328,36 @@ namespace {
     size_t off_data = 0;
 
     // ========================================================================
-    auto pack_lambda = [&off_data, &off_name, &snd_zgc_data, &snd_zgc_name](const std::vector<Ioss::ZoneConnectivity> &zgc) {
-      for (const auto &z: zgc) {
-	if (!z.is_intra_block() && z.is_active()) {
-	  strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), 32);
-	  off_name += 32;
-	
-	  snd_zgc_data[off_data++] = z.m_ownerZone;
-	  snd_zgc_data[off_data++] = z.m_donorZone;
+    auto pack_lambda = [&off_data, &off_name, &snd_zgc_data,
+                        &snd_zgc_name](const std::vector<Ioss::ZoneConnectivity> &zgc) {
+      for (const auto &z : zgc) {
+        if (!z.is_intra_block() && z.is_active()) {
+          strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), 32);
+          off_name += 32;
 
-	  snd_zgc_data[off_data++] = z.m_ownerRangeBeg[0];
-	  snd_zgc_data[off_data++] = z.m_ownerRangeBeg[1];
-	  snd_zgc_data[off_data++] = z.m_ownerRangeBeg[2];
-	  snd_zgc_data[off_data++] = z.m_ownerRangeEnd[0];
-	  snd_zgc_data[off_data++] = z.m_ownerRangeEnd[1];
-	  snd_zgc_data[off_data++] = z.m_ownerRangeEnd[2];
+          snd_zgc_data[off_data++] = z.m_ownerZone;
+          snd_zgc_data[off_data++] = z.m_donorZone;
 
-	  snd_zgc_data[off_data++] = z.m_donorRangeBeg[0];
-	  snd_zgc_data[off_data++] = z.m_donorRangeBeg[1];
-	  snd_zgc_data[off_data++] = z.m_donorRangeBeg[2];
-	  snd_zgc_data[off_data++] = z.m_donorRangeEnd[0];
-	  snd_zgc_data[off_data++] = z.m_donorRangeEnd[1];
-	  snd_zgc_data[off_data++] = z.m_donorRangeEnd[2];
+          snd_zgc_data[off_data++] = z.m_ownerRangeBeg[0];
+          snd_zgc_data[off_data++] = z.m_ownerRangeBeg[1];
+          snd_zgc_data[off_data++] = z.m_ownerRangeBeg[2];
+          snd_zgc_data[off_data++] = z.m_ownerRangeEnd[0];
+          snd_zgc_data[off_data++] = z.m_ownerRangeEnd[1];
+          snd_zgc_data[off_data++] = z.m_ownerRangeEnd[2];
 
-	  snd_zgc_data[off_data++] = z.m_transform[0];
-	  snd_zgc_data[off_data++] = z.m_transform[1];
-	  snd_zgc_data[off_data++] = z.m_transform[2];
-	}
+          snd_zgc_data[off_data++] = z.m_donorRangeBeg[0];
+          snd_zgc_data[off_data++] = z.m_donorRangeBeg[1];
+          snd_zgc_data[off_data++] = z.m_donorRangeBeg[2];
+          snd_zgc_data[off_data++] = z.m_donorRangeEnd[0];
+          snd_zgc_data[off_data++] = z.m_donorRangeEnd[1];
+          snd_zgc_data[off_data++] = z.m_donorRangeEnd[2];
+
+          snd_zgc_data[off_data++] = z.m_transform[0];
+          snd_zgc_data[off_data++] = z.m_transform[1];
+          snd_zgc_data[off_data++] = z.m_transform[2];
+        }
       }
-    };      
+    };
     // ========================================================================
 
     for (const auto &sb : structured_blocks) {
@@ -359,7 +365,7 @@ namespace {
     }
     assert(my_count == 0 || (off_data % my_count == 0 && off_data / my_count == 17));
     assert(my_count == 0 || (off_name % my_count == 0 && off_name / my_count == 32));
-    
+
     MPI_Gatherv(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, rcv_zgc_name.data(),
                 rcv_name_cnt.data(), rcv_name_off.data(), MPI_BYTE, 0,
                 region.get_database()->util().communicator());
@@ -375,44 +381,51 @@ namespace {
       // Unpack data...
       off_data = 0;
       off_name = 0;
-      for (int i=0; i < count; i++) {
-	std::string name{&rcv_zgc_name[off_name], 32};
-	off_name += 32;
-	int zone = rcv_zgc_data[off_data++];
-	int donor = rcv_zgc_data[off_data++];
-	Ioss::IJK_t range_beg{{rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
-	Ioss::IJK_t range_end{{rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
-	Ioss::IJK_t donor_beg{{rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
-	Ioss::IJK_t donor_end{{rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
-	Ioss::IJK_t transform{{rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
-	zgc.emplace_back(name, zone, "", donor, transform, range_beg, range_end, donor_beg, donor_end);
+      for (int i = 0; i < count; i++) {
+        std::string name{&rcv_zgc_name[off_name], 32};
+        off_name += 32;
+        int         zone  = rcv_zgc_data[off_data++];
+        int         donor = rcv_zgc_data[off_data++];
+        Ioss::IJK_t range_beg{
+            {rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
+        Ioss::IJK_t range_end{
+            {rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
+        Ioss::IJK_t donor_beg{
+            {rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
+        Ioss::IJK_t donor_end{
+            {rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
+        Ioss::IJK_t transform{
+            {rcv_zgc_data[off_data++], rcv_zgc_data[off_data++], rcv_zgc_data[off_data++]}};
+        zgc.emplace_back(name, zone, "", donor, transform, range_beg, range_end, donor_beg,
+                         donor_end);
       }
 
       // Consolidate down to the minimum set that has the union of all ranges.
-      for (size_t i=0; i < zgc.size(); i++) {
-	if (zgc[i].m_ownerZone > 0 && zgc[i].m_donorZone > 0) {
-	  auto owner_zone = zgc[i].m_ownerZone;
-	  auto donor_zone = zgc[i].m_donorZone;
+      for (size_t i = 0; i < zgc.size(); i++) {
+        if (zgc[i].m_ownerZone > 0 && zgc[i].m_donorZone > 0) {
+          auto owner_zone = zgc[i].m_ownerZone;
+          auto donor_zone = zgc[i].m_donorZone;
 
-	  for (size_t j=i+1; j < zgc.size(); j++) {
-	    if (zgc[j].m_connectionName == zgc[i].m_connectionName &&
-		zgc[j].m_ownerZone == owner_zone &&
-		zgc[j].m_donorZone == donor_zone) {
-	      // Found another instance of the "same" zgc...  Union the ranges
-	      union_zgc_range(zgc[i], zgc[j]);
+          for (size_t j = i + 1; j < zgc.size(); j++) {
+            if (zgc[j].m_connectionName == zgc[i].m_connectionName &&
+                zgc[j].m_ownerZone == owner_zone && zgc[j].m_donorZone == donor_zone) {
+              // Found another instance of the "same" zgc...  Union the ranges
+              union_zgc_range(zgc[i], zgc[j]);
 
-	      //Flag the 'j' instance so it is processed only this time.
-	      zgc[j].m_ownerZone = -1;
-	      zgc[j].m_donorZone = -1;
-	    }
-	  }
-	}
+              // Flag the 'j' instance so it is processed only this time.
+              zgc[j].m_ownerZone = -1;
+              zgc[j].m_donorZone = -1;
+            }
+          }
+        }
       }
 
       // Cull out all 'non-active' zgc instances (owner and donor zone <= 0)
       zgc.erase(std::remove_if(zgc.begin(), zgc.end(),
-			       [](Ioss::ZoneConnectivity &z){return z.m_ownerZone == -1 && z.m_donorZone == -1;}),
-		zgc.end());
+                               [](Ioss::ZoneConnectivity &z) {
+                                 return z.m_ownerZone == -1 && z.m_donorZone == -1;
+                               }),
+                zgc.end());
 
       count = (int)zgc.size();
       snd_zgc_name.resize(count * 32);
@@ -434,12 +447,14 @@ namespace {
     MPI_Bcast(&count, 1, MPI_INT, 0, region.get_database()->util().communicator());
     snd_zgc_name.resize(count * 32);
     snd_zgc_data.resize(count * 17);
-    MPI_Bcast(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, 0, region.get_database()->util().communicator());
-    MPI_Bcast(snd_zgc_data.data(), (int)snd_zgc_data.size(), MPI_INT,  0, region.get_database()->util().communicator());
+    MPI_Bcast(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, 0,
+              region.get_database()->util().communicator());
+    MPI_Bcast(snd_zgc_data.data(), (int)snd_zgc_data.size(), MPI_INT, 0,
+              region.get_database()->util().communicator());
 
     // Now clean out existing ZGC lists for all blocks and add on the consolidated instances.
     // Also create a vector for mapping from zone to sb name.
-    std::vector<std::string> sb_names(structured_blocks.size()+1);
+    std::vector<std::string> sb_names(structured_blocks.size() + 1);
     for (auto &sb : structured_blocks) {
       sb->m_zoneConnectivity.clear();
       auto zone = sb->get_property("zone").get_int();
@@ -450,24 +465,30 @@ namespace {
     // Unpack data and apply to the correct structured block.
     off_data = 0;
     off_name = 0;
-    for (int i=0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
       std::string name{&snd_zgc_name[off_name], 32};
       off_name += 32;
       int zone = snd_zgc_data[off_data++];
       assert(zone < (int)sb_names.size());
       int donor = snd_zgc_data[off_data++];
       assert(donor < (int)sb_names.size());
-      Ioss::IJK_t range_beg{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
-      Ioss::IJK_t range_end{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
-      Ioss::IJK_t donor_beg{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
-      Ioss::IJK_t donor_end{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
-      Ioss::IJK_t transform{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
+      Ioss::IJK_t range_beg{
+          {snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
+      Ioss::IJK_t range_end{
+          {snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
+      Ioss::IJK_t donor_beg{
+          {snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
+      Ioss::IJK_t donor_end{
+          {snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
+      Ioss::IJK_t transform{
+          {snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
 
       auto sb = region.get_structured_block(sb_names[zone]);
       assert(sb != nullptr);
-      sb->m_zoneConnectivity.emplace_back(name, zone, sb_names[donor], donor,
-					  transform, range_beg, range_end, donor_beg, donor_end);
+      sb->m_zoneConnectivity.emplace_back(name, zone, sb_names[donor], donor, transform, range_beg,
+                                          range_end, donor_beg, donor_end);
     }
+#endif
   }
 }
 
@@ -619,14 +640,16 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 
     // Transfer Zone Grid Connectivity...
     for (const auto &zgc : sb->m_zoneConnectivity) {
-      int zgc_idx = 0;
-      std::array<INT, 6> owner_range{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1], zgc.m_ownerRangeBeg[2],
-	  zgc.m_ownerRangeEnd[0], zgc.m_ownerRangeEnd[1], zgc.m_ownerRangeEnd[2]};
-      std::array<INT, 6> donor_range{zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1], zgc.m_donorRangeBeg[2],
-	  zgc.m_donorRangeEnd[0], zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]};
+      int                zgc_idx = 0;
+      std::array<INT, 6> owner_range{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1],
+                                     zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[0],
+                                     zgc.m_ownerRangeEnd[1], zgc.m_ownerRangeEnd[2]};
+      std::array<INT, 6> donor_range{zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1],
+                                     zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[0],
+                                     zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]};
       CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
-			  zgc.m_donorName.c_str(), owner_range.data(), donor_range.data(),
-			  zgc.m_transform.data(), &zgc_idx));
+                          zgc.m_donorName.c_str(), owner_range.data(), donor_range.data(),
+                          zgc.m_transform.data(), &zgc_idx));
     }
   }
   return element_count;
@@ -906,7 +929,8 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
   // location.
   for (auto &owner_block : blocks) {
     for (const auto &zgc : owner_block->m_zoneConnectivity) {
-      if (!zgc.is_intra_block() && zgc.is_active()) { // Not due to processor decomposition and has faces.
+      if (!zgc.is_intra_block() &&
+          zgc.is_active()) { // Not due to processor decomposition and has faces.
         // NOTE: In parallel, the owner block should exist, but may not have
         // any cells on this processor.  We can access its global i,j,k, but
         // don't store or access any "bulk" data on it.
@@ -932,8 +956,10 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
 
               if (owner_global_offset > donor_global_offset) {
                 if (is_parallel && (zgc.m_donorProcessor != my_processor)) {
-                  size_t owner_block_local_offset = owner_block->get_block_local_node_offset(owner_index);
-                  owner_block->m_globalIdMap.emplace_back(owner_block_local_offset, donor_global_offset + 1);
+                  size_t owner_block_local_offset =
+                      owner_block->get_block_local_node_offset(owner_index);
+                  owner_block->m_globalIdMap.emplace_back(owner_block_local_offset,
+                                                          donor_global_offset + 1);
                 }
                 else if (!is_parallel || (zgc.m_ownerProcessor != my_processor)) {
                   size_t  owner_local_offset = owner_block->get_local_node_offset(owner_index);
@@ -986,7 +1012,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
 }
 
 std::vector<std::vector<std::pair<size_t, size_t>>>
-				   Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_processor)
+Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_processor)
 {
   // Determine which nodes are shared across processor boundaries.
   // Only need to check on block boundaries..
@@ -995,26 +1021,25 @@ std::vector<std::vector<std::pair<size_t, size_t>>>
   // which nodes are shared between processors. For all shared nodes, the node in the lowest
   // numbered zone is considered the "owner" and all other nodes are shared.
 
-  auto & blocks = region.get_structured_blocks();
+  auto &blocks = region.get_structured_blocks();
 
-  std::vector<std::vector<std::pair<size_t, size_t>>> shared_nodes(blocks.size()+1);
+  std::vector<std::vector<std::pair<size_t, size_t>>> shared_nodes(blocks.size() + 1);
 
   for (auto &owner_block : blocks) {
-    int owner_zone = owner_block->get_property("zone").get_int();
-    auto owner_ids = owner_block->get_cell_node_ids(true);
+    int  owner_zone = owner_block->get_property("zone").get_int();
+    auto owner_ids  = owner_block->get_cell_node_ids(true);
     for (const auto &zgc : owner_block->m_zoneConnectivity) {
       assert(zgc.m_donorProcessor >= 0);
       assert(zgc.m_ownerProcessor >= 0);
 
       if (zgc.is_active() &&
-          (zgc.m_donorProcessor != my_processor ||
-           zgc.m_ownerProcessor != my_processor)) { 
+          (zgc.m_donorProcessor != my_processor || zgc.m_ownerProcessor != my_processor)) {
         // NOTE: In parallel, the donor block should exist, but may not have
         // any cells on this processor.  We can access its global i,j,k, but
         // don't store or access any "bulk" data on it.
         auto donor_block = region.get_structured_block(zgc.m_donorName);
         assert(donor_block != nullptr);
-	int donor_zone = donor_block->get_property("zone").get_int();
+        int donor_zone = donor_block->get_property("zone").get_int();
 
         auto donor_ids = donor_block->get_cell_node_ids(true);
 
