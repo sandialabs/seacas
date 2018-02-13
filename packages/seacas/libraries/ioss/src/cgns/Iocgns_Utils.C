@@ -560,25 +560,6 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     element_count += (size_t)local_count;
   }
 
-  // In parallel, the zgc are not necessarily consistent across processors...
-  // and the owner/donor ranges are processor specific.
-  // Need to make sure all processors have a consistent list of zgc and the
-  // owner/donor ranges contain the union of the ranges on each
-  // processor.
-  // ...Could do this on a per sb basis, but better to do all at once...
-  // Data:
-  // 32 - connectionName -- 32 char max
-  // 1 - int zone
-  // 1 - int donor_zone -- get by mapping donorName to zone
-  // 6 cgsize_t[6] ownerRange (can probably use 32-bit int...)
-  // 6 cgsize_t[6] donorRange (can probably use 32-bit int...)
-  // 3 int[3] transform; (values range from -3 to +3 (could store as single int)
-  // 32 characters + 17 ints / connection.
-
-  if (is_parallel) {
-    consolidate_zgc(region);
-  }
-
   const auto &structured_blocks = region.get_structured_blocks();
   for (const auto &sb : structured_blocks) {
     int      zone    = 0;
@@ -601,9 +582,51 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     // Add GridCoordinates Node...
     int grid_idx = 0;
     CGERR(cg_grid_write(file_ptr, base, zone, "GridCoordinates", &grid_idx));
+  }
+  
+  {
+    // Create a vector for mapping from sb_name to zone -- used to update zgc instances
+    std::map<std::string, int> sb_zone;
+    for (const auto &sb : structured_blocks) {
+      auto zone = sb->get_property("zone").get_int();
+      sb_zone[sb->name()] = zone;
+    }
+
+    // Update zgc instances to make sure the ownerZone and donorZone are
+    // consistent with the zones on the output database (from cg_zone_write call)
+    for (const auto &sb : structured_blocks) {
+      int owner_zone = sb->get_property("zone").get_int();
+      for (auto &zgc : sb->m_zoneConnectivity) {
+	int donor_zone = sb_zone[zgc.m_donorName];
+	zgc.m_ownerZone = owner_zone;
+	zgc.m_donorZone = donor_zone;
+      }
+    }
+  }
+
+  // In parallel, the zgc are not necessarily consistent across processors...
+  // and the owner/donor ranges are processor specific.
+  // Need to make sure all processors have a consistent list of zgc and the
+  // owner/donor ranges contain the union of the ranges on each
+  // processor.
+  // ...Could do this on a per sb basis, but better to do all at once...
+  // Data:
+  // 32 - connectionName -- 32 char max
+  // 1 - int zone
+  // 1 - int donor_zone -- get by mapping donorName to zone
+  // 6 cgsize_t[6] ownerRange (can probably use 32-bit int...)
+  // 6 cgsize_t[6] donorRange (can probably use 32-bit int...)
+  // 3 int[3] transform; (values range from -3 to +3 (could store as single int)
+  // 32 characters + 17 ints / connection.
+
+  if (is_parallel) {
+    consolidate_zgc(region);
+  }
+
+  for (const auto &sb : structured_blocks) {
+    int zone = sb->get_property("zone").get_int();
 
     // Transfer boundary condition nodes...
-
     // The bc.m_ownerRange argument needs to be the union of the size on all processors
     // Instead of requiring that of the caller, do the union in this routine.
     // TODO: Calculate it outside of the loop...
