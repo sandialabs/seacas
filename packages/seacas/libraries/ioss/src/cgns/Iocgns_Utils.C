@@ -160,19 +160,19 @@ namespace {
 
   void union_zgc_range(Ioss::ZoneConnectivity &zgc_i, const Ioss::ZoneConnectivity &zgc_j)
   {
-    zgc_i.m_ownerRangeBeg[0] = std::min(zgc_i.m_ownerRangeBeg[0], zgc_j.m_ownerRangeBeg[0]);
-    zgc_i.m_ownerRangeBeg[1] = std::min(zgc_i.m_ownerRangeBeg[1], zgc_j.m_ownerRangeBeg[1]);
-    zgc_i.m_ownerRangeBeg[2] = std::min(zgc_i.m_ownerRangeBeg[2], zgc_j.m_ownerRangeBeg[2]);
-    zgc_i.m_ownerRangeEnd[0] = std::max(zgc_i.m_ownerRangeEnd[0], zgc_j.m_ownerRangeEnd[0]);
-    zgc_i.m_ownerRangeEnd[1] = std::max(zgc_i.m_ownerRangeEnd[1], zgc_j.m_ownerRangeEnd[1]);
-    zgc_i.m_ownerRangeEnd[2] = std::max(zgc_i.m_ownerRangeEnd[2], zgc_j.m_ownerRangeEnd[2]);
-
-    zgc_i.m_donorRangeBeg[0] = std::min(zgc_i.m_donorRangeBeg[0], zgc_j.m_donorRangeBeg[0]);
-    zgc_i.m_donorRangeBeg[1] = std::min(zgc_i.m_donorRangeBeg[1], zgc_j.m_donorRangeBeg[1]);
-    zgc_i.m_donorRangeBeg[2] = std::min(zgc_i.m_donorRangeBeg[2], zgc_j.m_donorRangeBeg[2]);
-    zgc_i.m_donorRangeEnd[0] = std::max(zgc_i.m_donorRangeEnd[0], zgc_j.m_donorRangeEnd[0]);
-    zgc_i.m_donorRangeEnd[1] = std::max(zgc_i.m_donorRangeEnd[1], zgc_j.m_donorRangeEnd[1]);
-    zgc_i.m_donorRangeEnd[2] = std::max(zgc_i.m_donorRangeEnd[2], zgc_j.m_donorRangeEnd[2]);
+    assert(zgc_i.m_transform == zgc_j.m_transform);
+    for (int i=0; i < 3; i++) {
+      if (zgc_i.m_transform[i] > 0) {
+	zgc_i.m_ownerRangeBeg[i] = std::min(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
+	zgc_i.m_ownerRangeEnd[i] = std::max(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
+      }
+      else {
+	zgc_i.m_ownerRangeBeg[i] = std::max(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
+	zgc_i.m_ownerRangeEnd[i] = std::min(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
+      }
+      zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+      zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+    }
   }
 
   int extract_trailing_int(char *name)
@@ -286,7 +286,7 @@ namespace {
     const auto &structured_blocks = region.get_structured_blocks();
     for (const auto &sb : structured_blocks) {
       my_count += std::count_if(sb->m_zoneConnectivity.begin(), sb->m_zoneConnectivity.end(),
-			     [](const Ioss::ZoneConnectivity &z){return !z.is_intra_block();});
+				[](const Ioss::ZoneConnectivity &z){return !z.is_intra_block() && z.is_active();});
     }
 
     std::vector<int> rcv_data_cnt;
@@ -306,14 +306,14 @@ namespace {
 		   [](int i) -> int { return i * 32; });
 
     std::vector<char> rcv_zgc_name;
-    std::vector<char> snd_zgc_name(my_count * 32);
     std::vector<int>  rcv_zgc_data;
+    std::vector<char> snd_zgc_name(my_count * 32);
     std::vector<int>  snd_zgc_data(my_count * 17);
     std::vector<int>  rcv_name_off(rcv_name_cnt);
     std::vector<int>  rcv_data_off(rcv_data_cnt);
     if (region.get_database()->util().parallel_rank() == 0) {
-      Ioss::Utils::generate_index(rcv_data_off);
       Ioss::Utils::generate_index(rcv_name_off);
+      Ioss::Utils::generate_index(rcv_data_off);
       rcv_zgc_name.resize(count * 32);
       rcv_zgc_data.resize(count * 17);
     }
@@ -323,31 +323,33 @@ namespace {
     size_t off_data = 0;
 
     // ========================================================================
-    auto pack_lambda = [=, &off_data, &off_name, &snd_zgc_data, &snd_zgc_name](const std::vector<Ioss::ZoneConnectivity> &zgc) {
+    auto pack_lambda = [&off_data, &off_name, &snd_zgc_data, &snd_zgc_name](const std::vector<Ioss::ZoneConnectivity> &zgc) {
       for (const auto &z: zgc) {
-        strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), 32);
-        off_name += 32;
+	if (!z.is_intra_block() && z.is_active()) {
+	  strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), 32);
+	  off_name += 32;
 	
-        snd_zgc_data[off_data++] = z.m_ownerZone;
-        snd_zgc_data[off_data++] = z.m_donorZone;
+	  snd_zgc_data[off_data++] = z.m_ownerZone;
+	  snd_zgc_data[off_data++] = z.m_donorZone;
 
-	snd_zgc_data[off_data++] = z.m_ownerRangeBeg[0];
-	snd_zgc_data[off_data++] = z.m_ownerRangeBeg[1];
-	snd_zgc_data[off_data++] = z.m_ownerRangeBeg[2];
-	snd_zgc_data[off_data++] = z.m_ownerRangeEnd[0];
-	snd_zgc_data[off_data++] = z.m_ownerRangeEnd[1];
-	snd_zgc_data[off_data++] = z.m_ownerRangeEnd[2];
+	  snd_zgc_data[off_data++] = z.m_ownerRangeBeg[0];
+	  snd_zgc_data[off_data++] = z.m_ownerRangeBeg[1];
+	  snd_zgc_data[off_data++] = z.m_ownerRangeBeg[2];
+	  snd_zgc_data[off_data++] = z.m_ownerRangeEnd[0];
+	  snd_zgc_data[off_data++] = z.m_ownerRangeEnd[1];
+	  snd_zgc_data[off_data++] = z.m_ownerRangeEnd[2];
 
-	snd_zgc_data[off_data++] = z.m_donorRangeBeg[0];
-	snd_zgc_data[off_data++] = z.m_donorRangeBeg[1];
-	snd_zgc_data[off_data++] = z.m_donorRangeBeg[2];
-	snd_zgc_data[off_data++] = z.m_donorRangeEnd[0];
-	snd_zgc_data[off_data++] = z.m_donorRangeEnd[1];
-	snd_zgc_data[off_data++] = z.m_donorRangeEnd[2];
+	  snd_zgc_data[off_data++] = z.m_donorRangeBeg[0];
+	  snd_zgc_data[off_data++] = z.m_donorRangeBeg[1];
+	  snd_zgc_data[off_data++] = z.m_donorRangeBeg[2];
+	  snd_zgc_data[off_data++] = z.m_donorRangeEnd[0];
+	  snd_zgc_data[off_data++] = z.m_donorRangeEnd[1];
+	  snd_zgc_data[off_data++] = z.m_donorRangeEnd[2];
 
-        snd_zgc_data[off_data++] = z.m_transform[0];
-        snd_zgc_data[off_data++] = z.m_transform[1];
-        snd_zgc_data[off_data++] = z.m_transform[2];
+	  snd_zgc_data[off_data++] = z.m_transform[0];
+	  snd_zgc_data[off_data++] = z.m_transform[1];
+	  snd_zgc_data[off_data++] = z.m_transform[2];
+	}
       }
     };      
     // ========================================================================
@@ -355,7 +357,9 @@ namespace {
     for (const auto &sb : structured_blocks) {
       pack_lambda(sb->m_zoneConnectivity);
     }
-
+    assert(my_count == 0 || (off_data % my_count == 0 && off_data / my_count == 17));
+    assert(my_count == 0 || (off_name % my_count == 0 && off_name / my_count == 32));
+    
     MPI_Gatherv(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, rcv_zgc_name.data(),
                 rcv_name_cnt.data(), rcv_name_off.data(), MPI_BYTE, 0,
                 region.get_database()->util().communicator());
@@ -438,7 +442,9 @@ namespace {
     std::vector<std::string> sb_names(structured_blocks.size()+1);
     for (auto &sb : structured_blocks) {
       sb->m_zoneConnectivity.clear();
-      sb_names[sb->get_property("zone").get_int()] = sb->name();
+      auto zone = sb->get_property("zone").get_int();
+      assert(zone < (int)sb_names.size());
+      sb_names[zone] = sb->name();
     }
 
     // Unpack data and apply to the correct structured block.
@@ -448,7 +454,9 @@ namespace {
       std::string name{&snd_zgc_name[off_name], 32};
       off_name += 32;
       int zone = snd_zgc_data[off_data++];
+      assert(zone < (int)sb_names.size());
       int donor = snd_zgc_data[off_data++];
+      assert(donor < (int)sb_names.size());
       Ioss::IJK_t range_beg{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
       Ioss::IJK_t range_end{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
       Ioss::IJK_t donor_beg{{snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
@@ -898,7 +906,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
   // location.
   for (auto &owner_block : blocks) {
     for (const auto &zgc : owner_block->m_zoneConnectivity) {
-      if (!zgc.is_intra_block() && zgc.m_isActive) { // Not due to processor decomposition.
+      if (!zgc.is_intra_block() && zgc.is_active()) { // Not due to processor decomposition and has faces.
         // NOTE: In parallel, the owner block should exist, but may not have
         // any cells on this processor.  We can access its global i,j,k, but
         // don't store or access any "bulk" data on it.
@@ -998,7 +1006,7 @@ std::vector<std::vector<std::pair<size_t, size_t>>>
       assert(zgc.m_donorProcessor >= 0);
       assert(zgc.m_ownerProcessor >= 0);
 
-      if (zgc.m_isActive &&
+      if (zgc.is_active() &&
           (zgc.m_donorProcessor != my_processor ||
            zgc.m_ownerProcessor != my_processor)) { 
         // NOTE: In parallel, the donor block should exist, but may not have

@@ -83,6 +83,7 @@ namespace Ioss {
     friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
     bool is_intra_block() const { return m_ownerZone == m_donorZone; }
+    bool is_active() const { return m_isActive; }
 
     std::string m_connectionName; // Name of the connection; either generated or from file
     std::string m_donorName; // Name of the zone (m_donorZone) to which this zone is connected via
