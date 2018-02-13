@@ -184,39 +184,19 @@ namespace {
   void propogate_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *child,
                      int ordinal, int rank)
   {
-    if (rank == 0) {
-#if 0 && IOSS_DEBUG_OUTPUT
-    OUTPUT << "\t\tPropogating ZGC from " << parent->m_name << " to " << child->m_name << "\n";
-#endif
-    }
     for (auto zgc : parent->m_zoneConnectivity) {
       if (!zgc.is_intra_block() || zgc_overlaps(child, zgc)) {
         // Modify source and donor range to subset it to new block ranges.
         zgc_subset_ranges(child, zgc);
 	zgc.m_ownerZone = child->m_zone;
         child->m_zoneConnectivity.push_back(zgc);
-        if (rank == 0) {
-#if 0 && IOSS_DEBUG_OUTPUT
-        OUTPUT << "\t\tAdding: Donor Zone " << zgc.m_donorName << ":\tConnection Name '" << zgc.m_connectionName
-               << "\n";
-#endif
-        }
-      }
-      else {
-        if (rank == 0) {
-#if 0 && IOSS_DEBUG_OUTPUT
-        OUTPUT << "\t\tDonor Zone " << zgc.m_donorName << ":\tConnection Name '" << zgc.m_connectionName
-               << " does not overlap."
-               << "\n";
-#endif
-        }
       }
     }
   }
 
   // Add the zgc corresponding to the new communication path between
   // two child zones arising from a parent split along ordinal 'ordinal'
-  void add_split_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *c1,
+  void add_proc_split_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *c1,
                      Iocgns::StructuredZoneData *c2, int ordinal)
   {
     Ioss::IJK_t transform{{1, 2, 3}};
@@ -246,9 +226,6 @@ namespace {
     zgc1.m_ownerOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
     zgc1.m_donorOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
 
-    // OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
-    // OUTPUT << c1->m_zoneConnectivity.back() << "\n";
-
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
                                         range_end);
@@ -256,8 +233,6 @@ namespace {
     zgc2.m_sameRange   = true;
     zgc2.m_ownerOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
     zgc2.m_donorOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
-    // OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
-    // OUTPUT << c2->m_zoneConnectivity.back() << "\n";
   }
 } // namespace
 
@@ -347,7 +322,7 @@ namespace Iocgns {
     }
 
     // Add ZoneGridConnectivity instance to account for split...
-    add_split_zgc(this, m_child1, m_child2, ordinal);
+    add_proc_split_zgc(this, m_child1, m_child2, ordinal);
 
     // Propogate parent ZoneGridConnectivities to appropriate children.
     // Split if needed...
