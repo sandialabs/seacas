@@ -667,6 +667,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 
     // Transfer Zone Grid Connectivity...
     for (const auto &zgc : sb->m_zoneConnectivity) {
+      assert(zgc.is_valid() && zgc.is_active());
       int                zgc_idx = 0;
       std::array<INT, 6> owner_range{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1],
                                      zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[0],
