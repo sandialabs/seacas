@@ -283,7 +283,24 @@ namespace {
 
   void consolidate_zgc(const Ioss::Region &region)
   {
+  // In parallel, the zgc are not necessarily consistent across processors...
+  // and the owner/donor ranges are processor specific.
+  // Need to make sure all processors have a consistent list of zgc and the
+  // owner/donor ranges contain the union of the ranges on each
+  // processor.
+  // ...Could do this on a per sb basis, but better to do all at once...
+  // Data:
+  // 32 - connectionName -- 32 char max
+  // 1 - int zone
+  // 1 - int donor_zone -- get by mapping donorName to zone
+  // 6 cgsize_t[6] ownerRange (can probably use 32-bit int...)
+  // 6 cgsize_t[6] donorRange (can probably use 32-bit int...)
+  // 3 int[3] transform; (values range from -3 to +3 (could store as single int)
+  // 32 characters + 17 ints / connection.
+
 #ifdef SEACAS_HAVE_MPI
+    const int BYTE_PER_NAME = 32;
+    const int INT_PER_ZGC = 17;
     // Gather all to processor 0, consolidate, and then scatter back...
     int         my_count          = 0;
     const auto &structured_blocks = region.get_structured_blocks();
@@ -306,21 +323,21 @@ namespace {
 
     std::vector<int> rcv_name_cnt(rcv_data_cnt);
     std::transform(rcv_data_cnt.begin(), rcv_data_cnt.end(), rcv_data_cnt.begin(),
-                   [](int i) -> int { return i * 17; });
+                   [](int i) -> int { return i * INT_PER_ZGC; });
     std::transform(rcv_name_cnt.begin(), rcv_name_cnt.end(), rcv_name_cnt.begin(),
-                   [](int i) -> int { return i * 32; });
+                   [](int i) -> int { return i * BYTE_PER_NAME; });
 
     std::vector<char> rcv_zgc_name;
     std::vector<int>  rcv_zgc_data;
-    std::vector<char> snd_zgc_name(my_count * 32);
-    std::vector<int>  snd_zgc_data(my_count * 17);
+    std::vector<char> snd_zgc_name(my_count * BYTE_PER_NAME);
+    std::vector<int>  snd_zgc_data(my_count * INT_PER_ZGC);
     std::vector<int>  rcv_name_off(rcv_name_cnt);
     std::vector<int>  rcv_data_off(rcv_data_cnt);
     if (region.get_database()->util().parallel_rank() == 0) {
       Ioss::Utils::generate_index(rcv_name_off);
       Ioss::Utils::generate_index(rcv_data_off);
-      rcv_zgc_name.resize(count * 32);
-      rcv_zgc_data.resize(count * 17);
+      rcv_zgc_name.resize(count * BYTE_PER_NAME);
+      rcv_zgc_data.resize(count * INT_PER_ZGC);
     }
 
     // Pack data for gathering to processor 0...
@@ -332,8 +349,8 @@ namespace {
                         &snd_zgc_name](const std::vector<Ioss::ZoneConnectivity> &zgc) {
       for (const auto &z : zgc) {
         if (!z.is_intra_block() && z.is_active()) {
-          strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), 32);
-          off_name += 32;
+          strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), BYTE_PER_NAME);
+          off_name += BYTE_PER_NAME;
 
           snd_zgc_data[off_data++] = z.m_ownerZone;
           snd_zgc_data[off_data++] = z.m_donorZone;
@@ -363,8 +380,8 @@ namespace {
     for (const auto &sb : structured_blocks) {
       pack_lambda(sb->m_zoneConnectivity);
     }
-    assert(my_count == 0 || (off_data % my_count == 0 && off_data / my_count == 17));
-    assert(my_count == 0 || (off_name % my_count == 0 && off_name / my_count == 32));
+    assert(my_count == 0 || (off_data % my_count == 0 && off_data / my_count == INT_PER_ZGC));
+    assert(my_count == 0 || (off_name % my_count == 0 && off_name / my_count == BYTE_PER_NAME));
 
     MPI_Gatherv(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, rcv_zgc_name.data(),
                 rcv_name_cnt.data(), rcv_name_off.data(), MPI_BYTE, 0,
@@ -382,8 +399,8 @@ namespace {
       off_data = 0;
       off_name = 0;
       for (int i = 0; i < count; i++) {
-        std::string name{&rcv_zgc_name[off_name], 32};
-        off_name += 32;
+        std::string name{&rcv_zgc_name[off_name], BYTE_PER_NAME};
+        off_name += BYTE_PER_NAME;
         int         zone  = rcv_zgc_data[off_data++];
         int         donor = rcv_zgc_data[off_data++];
         Ioss::IJK_t range_beg{
@@ -399,6 +416,8 @@ namespace {
         zgc.emplace_back(name, zone, "", donor, transform, range_beg, range_end, donor_beg,
                          donor_end);
       }
+      assert(off_data % count == 0 && off_data / count == INT_PER_ZGC);
+      assert(off_name % count == 0 && off_name / count == BYTE_PER_NAME);
 
       // Consolidate down to the minimum set that has the union of all ranges.
       for (size_t i = 0; i < zgc.size(); i++) {
@@ -428,8 +447,8 @@ namespace {
                 zgc.end());
 
       count = (int)zgc.size();
-      snd_zgc_name.resize(count * 32);
-      snd_zgc_data.resize(count * 17);
+      snd_zgc_name.resize(count * BYTE_PER_NAME);
+      snd_zgc_data.resize(count * INT_PER_ZGC);
       // Now have a unique set of zgc over all processors with a union
       // of the ranges on each individual processor.  Pack the data
       // and broadcast back to all processors so all processors can
@@ -439,14 +458,14 @@ namespace {
 
       pack_lambda(zgc);
 
-      assert(off_data % count == 0 && off_data / count == 17);
-      assert(off_name % count == 0 && off_name / count == 32);
+      assert(off_data % count == 0 && off_data / count == INT_PER_ZGC);
+      assert(off_name % count == 0 && off_name / count == BYTE_PER_NAME);
     } // End of processor 0 only processing...
 
     // Send the list of unique zgc instances to all processors so they can all output.
     MPI_Bcast(&count, 1, MPI_INT, 0, region.get_database()->util().communicator());
-    snd_zgc_name.resize(count * 32);
-    snd_zgc_data.resize(count * 17);
+    snd_zgc_name.resize(count * BYTE_PER_NAME);
+    snd_zgc_data.resize(count * INT_PER_ZGC);
     MPI_Bcast(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, 0,
               region.get_database()->util().communicator());
     MPI_Bcast(snd_zgc_data.data(), (int)snd_zgc_data.size(), MPI_INT, 0,
@@ -466,8 +485,8 @@ namespace {
     off_data = 0;
     off_name = 0;
     for (int i = 0; i < count; i++) {
-      std::string name{&snd_zgc_name[off_name], 32};
-      off_name += 32;
+      std::string name{&snd_zgc_name[off_name], BYTE_PER_NAME};
+      off_name += BYTE_PER_NAME;
       int zone = snd_zgc_data[off_data++];
       assert(zone < (int)sb_names.size());
       int donor = snd_zgc_data[off_data++];
@@ -603,21 +622,6 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       }
     }
   }
-
-  // In parallel, the zgc are not necessarily consistent across processors...
-  // and the owner/donor ranges are processor specific.
-  // Need to make sure all processors have a consistent list of zgc and the
-  // owner/donor ranges contain the union of the ranges on each
-  // processor.
-  // ...Could do this on a per sb basis, but better to do all at once...
-  // Data:
-  // 32 - connectionName -- 32 char max
-  // 1 - int zone
-  // 1 - int donor_zone -- get by mapping donorName to zone
-  // 6 cgsize_t[6] ownerRange (can probably use 32-bit int...)
-  // 6 cgsize_t[6] donorRange (can probably use 32-bit int...)
-  // 3 int[3] transform; (values range from -3 to +3 (could store as single int)
-  // 32 characters + 17 ints / connection.
 
   if (is_parallel) {
     consolidate_zgc(region);
