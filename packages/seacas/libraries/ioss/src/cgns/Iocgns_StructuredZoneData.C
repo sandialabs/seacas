@@ -126,6 +126,7 @@ namespace {
         zgc.m_ownerRangeEnd = range_end;
       }
       zgc.m_ownerOffset = {{zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]}};
+      assert(zgc.is_valid());
     }
     else {
       // This zgc does not overlap on this zone, so set all ranges to 0.
@@ -179,6 +180,7 @@ namespace {
       zgc.m_donorRangeEnd = d_range_end;
     }
     zgc.m_donorOffset = {{don_zone->m_offset[0], don_zone->m_offset[1], don_zone->m_offset[2]}};
+    assert(zgc.is_valid());
   }
 
   void propogate_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *child,
