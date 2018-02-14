@@ -62,6 +62,7 @@ namespace Ioss {
           m_ownerRangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
     {
+      assert(is_valid());
     }
 
     ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
@@ -76,6 +77,10 @@ namespace Ioss {
       return snc;
     }
 
+    // Validate zgc -- if is_active(), then must have non-zero entries for all ranges.
+    // transform must have valid entries.
+    bool is_valid() const;
+    
     std::array<INT, 9> transform_matrix() const;
     Ioss::IJK_t        transform(const Ioss::IJK_t &index_1) const;
     Ioss::IJK_t        inverse_transform(const Ioss::IJK_t &index_1) const;
