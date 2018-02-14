@@ -96,12 +96,8 @@ struct NodeInfo
 
   bool operator==(const NodeInfo &other) const
   {
-#if 0
-    return (!(*this < other) && !(other < *this));
-#else
     return id == other.id && approx_equal(x, other.x) && approx_equal(y, other.y) &&
            approx_equal(z, other.z);
-#endif
   }
 
   bool operator!=(const NodeInfo &other) const { return !(*this == other); }
@@ -261,6 +257,10 @@ namespace {
                               size_t part_count, GlobalMap &global_node_map);
 
   template <typename INT>
+  void build_reverse_node_map(std::vector<Excn::Mesh<INT>> &local_mesh, Excn::Mesh<INT> *global,
+                              size_t part_count, std::vector<INT> &global_node_map);
+
+  template <typename INT>
   void build_reverse_element_map(std::vector<Excn::Mesh<INT>> &         local_mesh,
                                  std::vector<std::vector<Excn::Block>> &blocks,
                                  std::vector<Excn::Block> &glob_blocks, Excn::Mesh<INT> *global,
@@ -347,7 +347,7 @@ namespace {
     return pos;
   }
 
-  template <typename T> void uniqify(std::vector<T> &vec)
+  template <typename T> void uniquify(std::vector<T> &vec)
   {
     std::sort(vec.begin(), vec.end());
     vec.resize(unique(vec));
@@ -549,8 +549,18 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
   {
     // Now, build the reverse global node map which permits access of the
     // local id given the global id.
-    GlobalMap global_node_map;
-    build_reverse_node_map(local_mesh, &global, part_count, global_node_map);
+    std::vector<INT> global_node_map;
+    if (interface.ignore_coordinates()) {
+      build_reverse_node_map(local_mesh, &global, part_count, global_node_map);
+    }
+    else {
+      GlobalMap global_node_coord_map;
+      build_reverse_node_map(local_mesh, &global, part_count, global_node_coord_map);
+      global_node_map.reserve(global_node_coord_map.size());
+      for (const auto &ni : global_node_coord_map) {
+	global_node_map.push_back(ni.id);
+      }
+    }
 
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
@@ -617,13 +627,8 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
     }
-    {
-      std::vector<INT> global_map(global.count(Excn::NODE));
-      for (size_t i = 0; i < global.count(Excn::NODE); i++) {
-        global_map[i] = global_node_map[i].id;
-      }
-      error = ex_put_id_map(Excn::ExodusFile::output(), EX_NODE_MAP, &global_map[0]);
-    }
+
+    error = ex_put_id_map(Excn::ExodusFile::output(), EX_NODE_MAP, global_node_map.data());
 
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
@@ -1409,10 +1414,10 @@ namespace {
     // We iterate through each element block a part at a time to
     // determine which elements are in each block. Note that an
     // element will possibly exist in multiple parts, so we need to do
-    // the sort/uniqify/shrink on each element block.  The operations
+    // the sort/uniquify/shrink on each element block.  The operations
     // for each element block will be:
     // 1. get elements for the block for each part into a vector.
-    // 2. sort/uniqify/shrink that vector and copy into the
+    // 2. sort/uniquify/shrink that vector and copy into the
     // 'global_element_map' in the positions following the previous block.
     //
     // This is similar to what was done above in a global sense,
@@ -1498,9 +1503,9 @@ namespace {
         poffset += element_count;
       }
 
-      // Sort, uniqify, shrink 'block_element_map' and the result
+      // Sort, uniquify, shrink 'block_element_map' and the result
       // then contains the list of elements in this block...
-      uniqify(block_element_map);
+      uniquify(block_element_map);
 
       size_t block_total_num_elements = block_element_map.size();
       glob_block.elementCount         = block_total_num_elements;
@@ -1599,7 +1604,6 @@ namespace {
   void build_reverse_node_map(std::vector<Excn::Mesh<INT>> &local_mesh, Excn::Mesh<INT> *global,
                               size_t part_count, GlobalMap &global_node_map)
   {
-    // Instead of using <set> and <map>, consider using a sorted vector...
     // Append all local node maps to the global node map.
     // Sort the global node map
     // Remove duplicates.
@@ -1617,7 +1621,6 @@ namespace {
     global_node_map.resize(tot_size);
 
     size_t offset = 0;
-    int    error  = 0;
     for (size_t p = 0; p < part_count; p++) {
       std::vector<double> x(local_mesh[p].count(Excn::NODE));
       std::vector<double> y(local_mesh[p].count(Excn::NODE));
@@ -1625,17 +1628,16 @@ namespace {
       std::vector<INT>    nid(local_mesh[p].count(Excn::NODE));
 
       Excn::ExodusFile id(p);
-      error += ex_get_id_map(id, EX_NODE_MAP, &nid[0]);
-      error += ex_get_coord(id, &x[0], &y[0], &z[0]);
+      ex_get_id_map(id, EX_NODE_MAP, &nid[0]);
+      ex_get_coord(id, &x[0], &y[0], &z[0]);
       for (size_t i = 0; i < local_mesh[p].count(Excn::NODE); i++) {
         global_nodes[p][i] = NodeInfo(nid[i], x[i], y[i], z[i]);
       }
       std::copy(global_nodes[p].begin(), global_nodes[p].end(), &global_node_map[offset]);
       offset += local_mesh[p].count(Excn::NODE);
     }
-
     // Now, sort the global_node_map array and remove duplicates...
-    uniqify(global_node_map);
+    uniquify(global_node_map);
 
     global->nodeCount = global_node_map.size();
 
@@ -1652,31 +1654,43 @@ namespace {
     // 'global id' and then 'global id' to global position. The
     // mapping is now a direct lookup instead of a lookup followed by
     // a reverse map.
-    auto cur_pos = global_node_map.begin();
-    for (size_t p = 0; p < part_count; p++) {
-      size_t node_count = local_mesh[p].count(Excn::NODE);
-      for (size_t i = 0; i < node_count; i++) {
-        NodeInfo global_node = global_nodes[p][i];
+    if (is_contiguous) {
+      for (size_t p = 0; p < part_count; p++) {
+	size_t node_count = local_mesh[p].count(Excn::NODE);
+	for (size_t i = 0; i < node_count; i++) {
+	  const NodeInfo &global_node = global_nodes[p][i];
+	  local_mesh[p].localNodeToGlobal[i] = global_node.id-1;
+	}
+      }
+    }
+    else {
+      auto cur_pos = global_node_map.begin();
+      for (size_t p = 0; p < part_count; p++) {
+	size_t node_count = local_mesh[p].count(Excn::NODE);
+	for (size_t i = 0; i < node_count; i++) {
+	  NodeInfo global_node = global_nodes[p][i];
 
-        if (cur_pos == global_node_map.end() || *cur_pos != global_node) {
-          auto iter = std::lower_bound(global_node_map.begin(), global_node_map.end(), global_node);
-          if (iter == global_node_map.end()) {
-            NodeInfo n = global_node;
-            std::cerr << "Bad Node in build_reverse_node_map: " << n.id << "\tat location: " << n.x
-                      << "\t" << n.y << "\t" << n.z << "\n";
-            exit(EXIT_FAILURE);
-          }
-          cur_pos = iter;
-        }
-        size_t nodal_value                 = cur_pos - global_node_map.begin();
-        local_mesh[p].localNodeToGlobal[i] = nodal_value;
-        ++cur_pos;
+	  if (cur_pos == global_node_map.end() || *cur_pos != global_node) {
+	    auto iter = std::lower_bound(global_node_map.begin(), global_node_map.end(), global_node);
+	    if (iter == global_node_map.end()) {
+	      NodeInfo n = global_node;
+	      std::cerr << "Bad Node in build_reverse_node_map: " << n.id << "\tat location: " << n.x
+			<< "\t" << n.y << "\t" << n.z << "\n";
+	      exit(EXIT_FAILURE);
+	    }
+	    cur_pos = iter;
+	  }
+	  size_t nodal_value                 = cur_pos - global_node_map.begin();
+	  local_mesh[p].localNodeToGlobal[i] = nodal_value;
+	  ++cur_pos;
+	}
       }
     }
 
     // Update the nodal ids to give a unique, non-repeating set.  If contiguous, then
     // there is nothing to do.  If not contiguous, then need to determine if there are any
     // repeats (id reuse) and if so, generate a new id for the repeated uses.
+    // A duplicate id would have the same id, but different x y z position.
     if (!is_contiguous) {
       bool   repeat_found = false;
       size_t id_last      = global_node_map[0].id;
@@ -1691,7 +1705,86 @@ namespace {
       }
       if (repeat_found) {
         std::cerr << "Duplicate node ids were found. Their ids have been renumbered to remove "
-                     "duplicates.\n";
+                     "duplicates. If the part meshes should be identical, maybe use the --ignore_coordinate option.\n";
+      }
+    }
+  }
+
+  template <typename INT>
+  void build_reverse_node_map(std::vector<Excn::Mesh<INT>> &local_mesh, Excn::Mesh<INT> *global,
+                              size_t part_count, std::vector<INT> &global_node_map)
+  {
+    // Append all local node maps to the global node map.
+    // Sort the global node map
+    // Remove duplicates.
+    // Position within map is now the map...
+    // When building the local-part node to global id, use binary_search...
+
+    // Global node map and count.
+    std::vector<std::vector<INT>> global_nodes(part_count);
+
+    size_t tot_size = 0;
+    for (size_t p = 0; p < part_count; p++) {
+      tot_size += local_mesh[p].count(Excn::NODE);
+      global_nodes[p].resize(local_mesh[p].count(Excn::NODE));
+    }
+    global_node_map.resize(tot_size);
+
+    size_t offset = 0;
+    for (size_t p = 0; p < part_count; p++) {
+      Excn::ExodusFile id(p);
+      ex_get_id_map(id, EX_NODE_MAP, global_nodes[p].data());
+      std::copy(global_nodes[p].begin(), global_nodes[p].end(), &global_node_map[offset]);
+      offset += local_mesh[p].count(Excn::NODE);
+    }
+
+    // Now, sort the global_node_map array and remove duplicates...
+    uniquify(global_node_map);
+
+    global->nodeCount = global_node_map.size();
+
+    // See whether the node numbers are contiguous.  If so, we can map
+    // the nodes back to their original location. Since the nodes are
+    // sorted and there are no duplicates, we just need to see if the id
+    // at global_node_map.size() == global_node_map.size();
+    INT  max_id        = global_node_map[global->nodeCount - 1];
+    bool is_contiguous = (int64_t)max_id == static_cast<int64_t>(global_node_map.size());
+    std::cerr << "Node map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
+
+    // Create the map that maps from a local part node to the
+    // global map. This combines the mapping local part node to
+    // 'global id' and then 'global id' to global position. The
+    // mapping is now a direct lookup instead of a lookup followed by
+    // a reverse map.
+    if (is_contiguous) {
+      for (size_t p = 0; p < part_count; p++) {
+	size_t node_count = local_mesh[p].count(Excn::NODE);
+	for (size_t i = 0; i < node_count; i++) {
+	  INT global_node = global_nodes[p][i];
+	  local_mesh[p].localNodeToGlobal[i] = global_node-1;
+	}
+      }
+    }
+    else {
+      auto cur_pos = global_node_map.begin();
+      for (size_t p = 0; p < part_count; p++) {
+	size_t node_count = local_mesh[p].count(Excn::NODE);
+	for (size_t i = 0; i < node_count; i++) {
+	  INT global_node = global_nodes[p][i];
+	  
+	  if (cur_pos == global_node_map.end() || *cur_pos != global_node) {
+	    auto iter = std::lower_bound(global_node_map.begin(), global_node_map.end(), global_node);
+	    if (iter == global_node_map.end()) {
+	      INT n = global_node;
+	      std::cerr << "Bad Node in build_reverse_node_map: " << n << "\n";
+	      exit(EXIT_FAILURE);
+	    }
+	    cur_pos = iter;
+	  }
+	  size_t nodal_value                 = cur_pos - global_node_map.begin();
+	  local_mesh[p].localNodeToGlobal[i] = nodal_value;
+	  ++cur_pos;
+	}
       }
     }
   }
@@ -2285,7 +2378,7 @@ namespace {
           offset += sets[p][lss].sideCount;
         }
 
-        uniqify(elem_side);
+        uniquify(elem_side);
 
         // Set the output sideset definition...
         glob_ssets[ss].sideCount = elem_side.size();
