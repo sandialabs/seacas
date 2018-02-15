@@ -300,7 +300,7 @@ namespace {
 
 #ifdef SEACAS_HAVE_MPI
     const int BYTE_PER_NAME = 32;
-    const int INT_PER_ZGC = 17;
+    const int INT_PER_ZGC   = 17;
     // Gather all to processor 0, consolidate, and then scatter back...
     int         my_count          = 0;
     const auto &structured_blocks = region.get_structured_blocks();
@@ -502,7 +502,7 @@ namespace {
       Ioss::IJK_t transform{
           {snd_zgc_data[off_data++], snd_zgc_data[off_data++], snd_zgc_data[off_data++]}};
 
-      auto sb = structured_blocks[zone-1];
+      auto sb = structured_blocks[zone - 1];
       assert(sb->get_property("zone").get_int() == zone);
       sb->m_zoneConnectivity.emplace_back(name, zone, sb_names[donor], donor, transform, range_beg,
                                           range_end, donor_beg, donor_end);
@@ -602,12 +602,12 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     int grid_idx = 0;
     CGERR(cg_grid_write(file_ptr, base, zone, "GridCoordinates", &grid_idx));
   }
-  
+
   {
     // Create a vector for mapping from sb_name to zone -- used to update zgc instances
     std::map<std::string, int> sb_zone;
     for (const auto &sb : structured_blocks) {
-      auto zone = sb->get_property("zone").get_int();
+      auto zone           = sb->get_property("zone").get_int();
       sb_zone[sb->name()] = zone;
     }
 
@@ -616,9 +616,9 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     for (const auto &sb : structured_blocks) {
       int owner_zone = sb->get_property("zone").get_int();
       for (auto &zgc : sb->m_zoneConnectivity) {
-	int donor_zone = sb_zone[zgc.m_donorName];
-	zgc.m_ownerZone = owner_zone;
-	zgc.m_donorZone = donor_zone;
+        int donor_zone  = sb_zone[zgc.m_donorName];
+        zgc.m_ownerZone = owner_zone;
+        zgc.m_donorZone = donor_zone;
       }
     }
   }
@@ -669,12 +669,12 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     for (const auto &zgc : sb->m_zoneConnectivity) {
       assert(zgc.is_valid() && zgc.is_active());
       int                zgc_idx = 0;
-      std::array<INT, 6> owner_range{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1],
-                                     zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[0],
-                                     zgc.m_ownerRangeEnd[1], zgc.m_ownerRangeEnd[2]};
-      std::array<INT, 6> donor_range{zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1],
-                                     zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[0],
-                                     zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]};
+      std::array<INT, 6> owner_range{{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1],
+                                      zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[0],
+                                      zgc.m_ownerRangeEnd[1], zgc.m_ownerRangeEnd[2]}};
+      std::array<INT, 6> donor_range{{zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1],
+                                      zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[0],
+                                      zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]}};
       CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
                           zgc.m_donorName.c_str(), owner_range.data(), donor_range.data(),
                           zgc.m_transform.data(), &zgc_idx));
