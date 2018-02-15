@@ -33,7 +33,6 @@
 #include <iomanip>
 #include <iostream>
 #include <iterator>
-#include <map>
 #include <numeric>
 #include <set>
 #include <stdexcept>
@@ -552,7 +551,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
       build_reverse_node_map(local_mesh, &global, part_count, global_node_coord_map);
       global_node_map.reserve(global_node_coord_map.size());
       for (const auto &ni : global_node_coord_map) {
-	global_node_map.push_back(ni.id);
+        global_node_map.push_back(ni.id);
       }
     }
 
@@ -1375,8 +1374,8 @@ namespace {
       int id_out = Excn::ExodusFile::output(); // output file identifier
 
       if (!block_linkage.empty()) {
-        error += ex_put_conn(id_out, EX_ELEM_BLOCK, glob_blocks[b].id, block_linkage.data(), nullptr,
-                             nullptr);
+        error += ex_put_conn(id_out, EX_ELEM_BLOCK, glob_blocks[b].id, block_linkage.data(),
+                             nullptr, nullptr);
       }
 
       // Write out attributes list if it exists
@@ -1649,34 +1648,35 @@ namespace {
     // a reverse map.
     if (is_contiguous) {
       for (size_t p = 0; p < part_count; p++) {
-	size_t node_count = local_mesh[p].count(Excn::NODE);
-	for (size_t i = 0; i < node_count; i++) {
-	  const NodeInfo &global_node = global_nodes[p][i];
-	  local_mesh[p].localNodeToGlobal[i] = global_node.id-1;
-	}
+        size_t node_count = local_mesh[p].count(Excn::NODE);
+        for (size_t i = 0; i < node_count; i++) {
+          const NodeInfo &global_node        = global_nodes[p][i];
+          local_mesh[p].localNodeToGlobal[i] = global_node.id - 1;
+        }
       }
     }
     else {
       auto cur_pos = global_node_map.begin();
       for (size_t p = 0; p < part_count; p++) {
-	size_t node_count = local_mesh[p].count(Excn::NODE);
-	for (size_t i = 0; i < node_count; i++) {
-	  NodeInfo global_node = global_nodes[p][i];
+        size_t node_count = local_mesh[p].count(Excn::NODE);
+        for (size_t i = 0; i < node_count; i++) {
+          NodeInfo global_node = global_nodes[p][i];
 
-	  if (cur_pos == global_node_map.end() || *cur_pos != global_node) {
-	    auto iter = std::lower_bound(global_node_map.begin(), global_node_map.end(), global_node);
-	    if (iter == global_node_map.end()) {
-	      NodeInfo n = global_node;
-	      std::cerr << "Bad Node in build_reverse_node_map: " << n.id << "\tat location: " << n.x
-			<< "\t" << n.y << "\t" << n.z << "\n";
-	      exit(EXIT_FAILURE);
-	    }
-	    cur_pos = iter;
-	  }
-	  size_t nodal_value                 = cur_pos - global_node_map.begin();
-	  local_mesh[p].localNodeToGlobal[i] = nodal_value;
-	  ++cur_pos;
-	}
+          if (cur_pos == global_node_map.end() || *cur_pos != global_node) {
+            auto iter =
+                std::lower_bound(global_node_map.begin(), global_node_map.end(), global_node);
+            if (iter == global_node_map.end()) {
+              NodeInfo n = global_node;
+              std::cerr << "Bad Node in build_reverse_node_map: " << n.id
+                        << "\tat location: " << n.x << "\t" << n.y << "\t" << n.z << "\n";
+              exit(EXIT_FAILURE);
+            }
+            cur_pos = iter;
+          }
+          size_t nodal_value                 = cur_pos - global_node_map.begin();
+          local_mesh[p].localNodeToGlobal[i] = nodal_value;
+          ++cur_pos;
+        }
       }
     }
 
@@ -1698,7 +1698,8 @@ namespace {
       }
       if (repeat_found) {
         std::cerr << "Duplicate node ids were found. Their ids have been renumbered to remove "
-                     "duplicates. If the part meshes should be identical, maybe use the --ignore_coordinate option.\n";
+                     "duplicates. If the part meshes should be identical, maybe use the "
+                     "--ignore_coordinate option.\n";
       }
     }
   }
@@ -1751,33 +1752,34 @@ namespace {
     // a reverse map.
     if (is_contiguous) {
       for (size_t p = 0; p < part_count; p++) {
-	size_t node_count = local_mesh[p].count(Excn::NODE);
-	for (size_t i = 0; i < node_count; i++) {
-	  INT global_node = global_nodes[p][i];
-	  local_mesh[p].localNodeToGlobal[i] = global_node-1;
-	}
+        size_t node_count = local_mesh[p].count(Excn::NODE);
+        for (size_t i = 0; i < node_count; i++) {
+          INT global_node                    = global_nodes[p][i];
+          local_mesh[p].localNodeToGlobal[i] = global_node - 1;
+        }
       }
     }
     else {
       auto cur_pos = global_node_map.begin();
       for (size_t p = 0; p < part_count; p++) {
-	size_t node_count = local_mesh[p].count(Excn::NODE);
-	for (size_t i = 0; i < node_count; i++) {
-	  INT global_node = global_nodes[p][i];
-	  
-	  if (cur_pos == global_node_map.end() || *cur_pos != global_node) {
-	    auto iter = std::lower_bound(global_node_map.begin(), global_node_map.end(), global_node);
-	    if (iter == global_node_map.end()) {
-	      INT n = global_node;
-	      std::cerr << "Bad Node in build_reverse_node_map: " << n << "\n";
-	      exit(EXIT_FAILURE);
-	    }
-	    cur_pos = iter;
-	  }
-	  size_t nodal_value                 = cur_pos - global_node_map.begin();
-	  local_mesh[p].localNodeToGlobal[i] = nodal_value;
-	  ++cur_pos;
-	}
+        size_t node_count = local_mesh[p].count(Excn::NODE);
+        for (size_t i = 0; i < node_count; i++) {
+          INT global_node = global_nodes[p][i];
+
+          if (cur_pos == global_node_map.end() || *cur_pos != global_node) {
+            auto iter =
+                std::lower_bound(global_node_map.begin(), global_node_map.end(), global_node);
+            if (iter == global_node_map.end()) {
+              INT n = global_node;
+              std::cerr << "Bad Node in build_reverse_node_map: " << n << "\n";
+              exit(EXIT_FAILURE);
+            }
+            cur_pos = iter;
+          }
+          size_t nodal_value                 = cur_pos - global_node_map.begin();
+          local_mesh[p].localNodeToGlobal[i] = nodal_value;
+          ++cur_pos;
+        }
       }
     }
   }
