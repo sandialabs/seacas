@@ -226,24 +226,21 @@ namespace {
     // Verify that element blocks match in the two files...
     for (int b = 0; b < file1.Num_Elmt_Blocks(); ++b) {
       Exo_Block<INT> *block1 = file1.Get_Elmt_Block_by_Index(b);
-      Exo_Block<INT> *block2 = file2.Get_Elmt_Block_by_Index(b);
+      Exo_Block<INT> *block2 = nullptr;
       if (interface.map_flag != DISTANCE && interface.map_flag != PARTIAL) {
         if (block1 != nullptr) {
-          if (block2 == nullptr || block1->Id() != block2->Id()) {
-            if (interface.by_name) {
-              block2 = file2.Get_Elmt_Block_by_Name(block1->Name());
-            }
-            else {
-              block2 = file2.Get_Elmt_Block_by_Id(block1->Id());
-            }
-
-            if (block2 == nullptr) {
-              ERROR(".. Block id " << block1->Id() << " exists in first "
-                                   << "file but not the second.\n");
-              is_same = false;
-            }
-          }
-          if (block2 != nullptr) {
+	  if (interface.by_name) {
+	    block2 = file2.Get_Elmt_Block_by_Name(block1->Name());
+	  }
+	  else {
+	    block2 = file2.Get_Elmt_Block_by_Index(b);
+	  }
+	  if (block2 == nullptr) {
+	    ERROR(".. Block id " << block1->Id() << " exists in first "
+		  << "file but not the second.\n");
+	    is_same = false;
+	  }
+	  else {
             if (!Check_Elmt_Block_Params(block1, block2)) {
               is_same = false;
             }
