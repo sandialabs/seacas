@@ -63,6 +63,21 @@ namespace Ioss {
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
     {
       assert(is_valid());
+      m_intraBlock      = m_ownerZone == m_donorZone;
+      m_ownsSharedNodes = m_ownerZone < m_donorZone;
+    }
+
+    ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
+                     int donor_zone, const Ioss::IJK_t p_transform, const Ioss::IJK_t range_beg,
+                     const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
+                     const Ioss::IJK_t donor_end, bool owns_nodes, bool intra_block = false)
+        : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
+          m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
+          m_ownerRangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
+          m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
+          m_ownsSharedNodes(owns_nodes), m_intraBlock(intra_block)
+    {
+      assert(is_valid());
     }
 
     ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
@@ -80,7 +95,7 @@ namespace Ioss {
     // Validate zgc -- if is_active(), then must have non-zero entries for all ranges.
     // transform must have valid entries.
     bool is_valid() const;
-    
+
     std::array<INT, 9> transform_matrix() const;
     Ioss::IJK_t        transform(const Ioss::IJK_t &index_1) const;
     Ioss::IJK_t        inverse_transform(const Ioss::IJK_t &index_1) const;
@@ -120,6 +135,12 @@ namespace Ioss {
     bool   m_sameRange{
         false}; // True if owner and donor range should always match...(special use during
                   // decomp)
+    // True if it is the "lower" zone id in the connection. Uses adam unless both have same adam.
+    bool m_ownsSharedNodes{false}; // Deprecate soon
+
+    // True if this zc is created due to processor decompositions in a parallel run
+    bool m_intraBlock{false}; // Deprecate use soon...
+
     bool m_isActive{true}; // True if non-zero range. That is, it has at least one face
   };
 } // namespace Ioss
