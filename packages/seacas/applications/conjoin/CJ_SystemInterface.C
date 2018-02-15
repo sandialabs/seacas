@@ -14,10 +14,7 @@ namespace {
   void parse_variable_names(const char *tokens, StringIdVector *variable_list);
 } // namespace
 
-Excn::SystemInterface::SystemInterface()
-{
-  enroll_options();
-}
+Excn::SystemInterface::SystemInterface() { enroll_options(); }
 
 Excn::SystemInterface::~SystemInterface() = default;
 
@@ -58,8 +55,10 @@ void Excn::SystemInterface::enroll_options()
                   "True if forcing the use of 64-bit integers for the output file", nullptr);
 
   options_.enroll("ignore_coordinate_check", GetLongOption::NoValue,
-                  "Do not use nodal coordinates to determine if node in part 1 same as node in other parts; use ids only.\n"
-		  "\t\tUse only if you know that the ids are consistent for all parts", nullptr);
+                  "Do not use nodal coordinates to determine if node in part 1 same as node in "
+                  "other parts; use ids only.\n"
+                  "\t\tUse only if you know that the ids are consistent for all parts",
+                  nullptr);
 
   options_.enroll("omit_nodesets", GetLongOption::NoValue,
                   "Don't transfer nodesets to output file.", nullptr);
