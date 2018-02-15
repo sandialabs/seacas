@@ -7,6 +7,7 @@ var structIoss_1_1ZoneConnectivity =
     [ "inverse_transform", "structIoss_1_1ZoneConnectivity.html#add4d3bbf265f6801644e9ee6a5fb2eb4", null ],
     [ "is_active", "structIoss_1_1ZoneConnectivity.html#ac2558d8a65d4dcd2871bb00632a2d0ed", null ],
     [ "is_intra_block", "structIoss_1_1ZoneConnectivity.html#abbbb981e6f83e7601f20ce4b4c849672", null ],
+    [ "is_valid", "structIoss_1_1ZoneConnectivity.html#ab35a8f3c0aa1cb7d0dac884ac844b190", null ],
     [ "transform", "structIoss_1_1ZoneConnectivity.html#a9df1e293d1477cffb01844dfe59d0565", null ],
     [ "transform_matrix", "structIoss_1_1ZoneConnectivity.html#aaac247ab4518817bfd64deb1e5e4873e", null ],
     [ "operator<<", "structIoss_1_1ZoneConnectivity.html#a67fc847f8cc48413e8206ce8a16d4909", null ],
