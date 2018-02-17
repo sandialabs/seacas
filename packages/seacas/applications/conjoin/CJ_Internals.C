@@ -1145,7 +1145,7 @@ namespace {
       return (EX_FATAL);
     }
 
-    status = nc_put_var_int(exoid, var_id, &array[0]);
+    status = nc_put_var_int(exoid, var_id, array.data());
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg, "Error: failed to write %s array in file id %d", var_type, exoid);
@@ -1171,13 +1171,13 @@ namespace {
     int id_type = get_type(exoid, EX_IDS_INT64_API);
 
     if (id_type == NC_INT64) {
-      status = nc_put_var_longlong(exoid, var_id, (long long int *)&ids[0]);
+      status = nc_put_var_longlong(exoid, var_id, (long long int *)ids.data());
     }
     else {
       // Have entity_id (long long), need ints...
       std::vector<int> int_ids(ids.size());
       int_ids.assign(ids.begin(), ids.end());
-      status = nc_put_var_int(exoid, var_id, &int_ids[0]);
+      status = nc_put_var_int(exoid, var_id, int_ids.data());
     }
 
     if (status != NC_NOERR) {

@@ -1102,10 +1102,9 @@ namespace {
       }
 
       for (size_t i = 0; i < num_nodes; i++) {
-
         // The following WILL overwrite x[node],y[node],z[node] if node is the
         // same for different parts
-        int node = local_node_to_global[i];
+        INT node = local_node_to_global[i];
         x[node]  = local_x[i];
         y[node]  = local_y[i];
         z[node]  = local_z[i];
@@ -1131,14 +1130,13 @@ namespace {
           }
         }
       }
-      for (size_t i = 0; i < num_nodes; i++) {
 
+      for (size_t i = 0; i < num_nodes; i++) {
         // The following WILL overwrite x[node],y[node] if node is the same for
         // different parts
         INT node = local_node_to_global[i];
-
-        x[node] = local_x[i];
-        y[node] = local_y[i];
+        x[node]  = local_x[i];
+        y[node]  = local_y[i];
       }
     }
     return error;
