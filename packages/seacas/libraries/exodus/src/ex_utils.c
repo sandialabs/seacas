@@ -203,7 +203,7 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
   int_names = calloc(num_entity * name_length, 1);
 
   for (i = 0; i < num_entity; i++) {
-    if (*names[i] != '\0') {
+    if (names != NULL && *names != NULL && *names[i] != '\0') {
       found_name = 1;
       strncpy(&int_names[idx], names[i], name_length - 1);
       int_names[idx + name_length - 1] = '\0';
@@ -224,15 +224,15 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
     idx += name_length;
   }
 
-  if (found_name) {
-    if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
-      free(int_names);
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
-               ex_name_of_object(obj_type), exoid);
-      ex_err(__func__, errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
+  if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
+    free(int_names);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
+	     ex_name_of_object(obj_type), exoid);
+    ex_err(__func__, errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
 
+  if (found_name) {
     /* Update the maximum_name_length attribute on the file. */
     ex_update_max_name_length(exoid, max_name_len - 1);
   }
@@ -254,7 +254,7 @@ int ex_put_name_internal(int exoid, int varid, size_t index, const char *name,
   /* inquire previously defined dimensions  */
   name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
-  if (*name != '\0') {
+  if (name != NULL && *name != '\0') {
     int too_long = 0;
     start[0]     = index;
     start[1]     = 0;
