@@ -233,7 +233,7 @@ namespace {
 	    block2 = file2.Get_Elmt_Block_by_Name(block1->Name());
 	  }
 	  else {
-	    block2 = file2.Get_Elmt_Block_by_Index(b);
+	    block2 = file2.Get_Elmt_Block_by_Id(block1->Id());
 	  }
 	  if (block2 == nullptr) {
 	    ERROR(".. Block id " << block1->Id() << " exists in first "
