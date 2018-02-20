@@ -1051,6 +1051,7 @@ namespace Iopx {
           io_block = eblock;
           io_block->property_add(Ioss::Property("id", id));
           io_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
+          io_block->property_add(Ioss::Property("iblk", iblk)); // Sequence in decomp.
 
           if (db_has_name) {
             std::string *db_name = &block_name;
@@ -1187,7 +1188,7 @@ namespace Iopx {
       int64_t id               = block->get_property("id").get_int();
       int     element_nodes    = block->get_property("topology_node_count").get_int();
       int64_t my_element_count = block->entity_count();
-      int     order            = block->get_property("original_block_order").get_int();
+      int     order            = block->get_property("iblk").get_int();
       if (int_byte_size_api() == 8) {
         std::vector<int64_t> conn(my_element_count * element_nodes);
         decomp->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
@@ -1855,7 +1856,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
       int element_nodes = eb->get_property("topology_node_count").get_int();
       assert(field.raw_storage()->component_count() == element_nodes);
 
-      int order = eb->get_property("original_block_order").get_int();
+      int order = eb->get_property("iblk").get_int();
       // The connectivity is stored in a 1D array.
       // The element_node index varies fastet
 
