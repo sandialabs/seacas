@@ -1490,7 +1490,7 @@ namespace Iocgns {
           for (const auto &block : m_globalToBlockLocalNodeMap) {
             auto zone = block.first;
             // NOTE: 'block_map' has one more entry than node_count.  First entry is for something
-            // else.
+            // else.  But, ->size() returns correct size (ignoring first entry)
             //       'block_map' is 1-based.
             const auto &        block_map = block.second;
             std::vector<double> x(block_map->size());
@@ -1601,8 +1601,8 @@ namespace Iocgns {
         const auto &        block_map = block.second;
         std::vector<double> blk_data(block_map->size());
 
-        cgsize_t range_min[1] = {(cgsize_t)node_offset[zone - 1] + 1};
-        cgsize_t range_max[1] = {range_min[0] + (cgsize_t)block_map->size() - 1};
+	cgsize_t start  = node_offset[zone - 1] + 1;
+	cgsize_t finish = start + block_map->size() - 1;
 
         char field_suffix_separator = get_field_separator();
 
@@ -1621,7 +1621,7 @@ namespace Iocgns {
                                   CG_RealDouble, var_name.c_str(), &cgns_field));
 
           CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
-                                       cgns_field, range_min, range_max, blk_data.data()));
+                                       cgns_field, &start, &finish, blk_data.data()));
           if (i == 0)
             Utils::set_field_index(field, cgns_field, CG_Vertex);
         }
@@ -1979,7 +1979,7 @@ namespace Iocgns {
           }
 
           CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, sol_index, cgns_field, rmin, rmax,
-                                       rdata));
+                                       cgns_data.data()));
         }
       }
     }
