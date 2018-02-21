@@ -153,7 +153,7 @@ namespace {
     for (const auto &eb : ebs) {
       const Ioss::ElementTopology *topology = eb->topology();
       const Ioss::ElementTopology *boundary = topology->boundary_type(0);
-      if (boundary != NULL) {
+      if (boundary != nullptr) {
         common_nodes = std::min(common_nodes, boundary->number_boundaries());
       }
       else {
@@ -161,7 +161,7 @@ namespace {
         size_t nb = topology->number_boundaries();
         for (size_t bb = 1; bb <= nb; bb++) {
           boundary = topology->boundary_type(bb);
-          if (boundary != NULL) {
+          if (boundary != nullptr) {
             common_nodes = std::min(common_nodes, boundary->number_boundaries());
           }
         }
@@ -400,8 +400,8 @@ namespace {
 
         OUTPUT << "\tCalling METIS Decomposition routine.\n";
 
-        METIS_PartMeshDual(&elem_count, &node_count, &pointer[0], &adjacency[0], NULL, NULL,
-                           &common, &proc_count, NULL, &options[0], &obj_val, &elem_partition[0],
+        METIS_PartMeshDual(&elem_count, &node_count, &pointer[0], &adjacency[0], nullptr, nullptr,
+                           &common, &proc_count, nullptr, &options[0], &obj_val, &elem_partition[0],
                            &node_partition[0]);
 
         Ioss::Utils::clear(node_partition);
@@ -1051,8 +1051,8 @@ namespace {
           count = node_count - beg + 1;
         }
 
-        ex_get_partial_coord(exoid, beg, count, TOPTR(glob_coord_x), TOPTR(glob_coord_y),
-                             TOPTR(glob_coord_z));
+        ex_get_partial_coord(exoid, beg, count, glob_coord_x.data(), glob_coord_y.data(),
+                             glob_coord_z.data());
         progress("\tpartial_coord: " + std::to_string(beg) + " " + std::to_string(count));
 
         for (size_t i = 0; i < count; i++) {
@@ -1148,7 +1148,7 @@ namespace {
             count = element_count - beg + 1;
           }
 
-          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, TOPTR(glob_conn), nullptr,
+          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, glob_conn.data(), nullptr,
                               nullptr);
           progress("\tpartial_conn: " + std::to_string(beg) + " " + std::to_string(count));
 
