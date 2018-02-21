@@ -1601,8 +1601,8 @@ namespace Iocgns {
         const auto &        block_map = block.second;
         std::vector<double> blk_data(block_map->size());
 
-	cgsize_t start  = node_offset[zone - 1] + 1;
-	cgsize_t finish = start + block_map->size() - 1;
+        cgsize_t start  = node_offset[zone - 1] + 1;
+        cgsize_t finish = start + block_map->size() - 1;
 
         char field_suffix_separator = get_field_separator();
 

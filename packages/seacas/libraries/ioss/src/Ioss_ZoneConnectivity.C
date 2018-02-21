@@ -95,43 +95,43 @@ namespace Ioss {
     if (m_isActive) {
       // Validate transform -- values between -3 and 3 (but not 0) and must have |1| |2| |3|
       Ioss::IJK_t trans_test{};
-      for (int i=0; i < 3; i++) {
-	if (m_transform[i] < -3 || m_transform[i] > 3 || m_transform[i] == 0) {
-	  valid = false;
-	}
-	else {
-	  trans_test[std::abs(m_transform[i])-1]++;
-	}
+      for (int i = 0; i < 3; i++) {
+        if (m_transform[i] < -3 || m_transform[i] > 3 || m_transform[i] == 0) {
+          valid = false;
+        }
+        else {
+          trans_test[std::abs(m_transform[i]) - 1]++;
+        }
       }
-      for (int i=0; i < 3; i++) {
-	if (trans_test[i] != 1) {
-	  valid = false;
-	}
+      for (int i = 0; i < 3; i++) {
+        if (trans_test[i] != 1) {
+          valid = false;
+        }
       }
 
       // Validate Ranges... All values > 0
-      for (int i=0; i < 3; i++) {
-	int owner = m_ownerRangeEnd[i] - m_ownerRangeBeg[i];
-	int j = std::abs(m_transform[i]) - 1;
-	int donor = m_donorRangeEnd[j] - m_donorRangeBeg[j];
-	if (owner != sign(m_transform[i]) * donor) {
-	  valid = false;
-	}
-	if (!valid_range(m_ownerRangeBeg[i], m_ownerRangeEnd[i], m_ownerOffset[i])) {
-	  valid = false;
-	}
-	if (!valid_range(m_donorRangeBeg[i], m_donorRangeEnd[i], m_donorOffset[i])) {
-	  valid = false;
-	}
+      for (int i = 0; i < 3; i++) {
+        int owner = m_ownerRangeEnd[i] - m_ownerRangeBeg[i];
+        int j     = std::abs(m_transform[i]) - 1;
+        int donor = m_donorRangeEnd[j] - m_donorRangeBeg[j];
+        if (owner != sign(m_transform[i]) * donor) {
+          valid = false;
+        }
+        if (!valid_range(m_ownerRangeBeg[i], m_ownerRangeEnd[i], m_ownerOffset[i])) {
+          valid = false;
+        }
+        if (!valid_range(m_donorRangeBeg[i], m_donorRangeEnd[i], m_donorOffset[i])) {
+          valid = false;
+        }
       }
 
       IJK_t test_donor_end = transform(m_ownerRangeEnd);
       if (test_donor_end != m_donorRangeEnd) {
-	valid = false;
+        valid = false;
       }
       IJK_t test_owner_end = inverse_transform(m_donorRangeEnd);
       if (test_owner_end != m_ownerRangeEnd) {
-	valid = false;
+        valid = false;
       }
     }
     return valid;
