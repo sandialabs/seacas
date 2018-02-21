@@ -253,17 +253,17 @@ namespace Iocgns {
 
     // Find ordinal with largest value... Split along that ordinal
     int ordinal = 0;
-    if (m_preferentialOrdinal == ordinal) {
+    if (m_lineOrdinal == ordinal) {
       ordinal = 1;
     }
-    if (m_ordinal[1] > m_ordinal[ordinal] && m_preferentialOrdinal != 1) {
+    if (m_ordinal[1] > m_ordinal[ordinal] && m_lineOrdinal != 1) {
       ordinal = 1;
     }
-    if (m_ordinal[2] > m_ordinal[ordinal] && m_preferentialOrdinal != 2) {
+    if (m_ordinal[2] > m_ordinal[ordinal] && m_lineOrdinal != 2) {
       ordinal = 2;
     }
 
-    assert(ordinal != m_preferentialOrdinal);
+    assert(ordinal != m_lineOrdinal);
 
     if (m_ordinal[ordinal] <= 1) {
       return std::make_pair(nullptr, nullptr);
@@ -280,7 +280,7 @@ namespace Iocgns {
     }
     m_child1->m_offset = m_offset; // Child1 offsets the same as parent;
 
-    m_child1->m_preferentialOrdinal = m_preferentialOrdinal;
+    m_child1->m_lineOrdinal = m_lineOrdinal;
     m_child1->m_zone                = zone_id++;
     m_child1->m_adam                = m_adam;
     m_child1->m_parent              = this;
@@ -294,7 +294,7 @@ namespace Iocgns {
     m_child2->m_offset = m_offset;
     m_child2->m_offset[ordinal] += m_child1->m_ordinal[ordinal];
 
-    m_child2->m_preferentialOrdinal = m_preferentialOrdinal;
+    m_child2->m_lineOrdinal = m_lineOrdinal;
     m_child2->m_zone                = zone_id++;
     m_child2->m_adam                = m_adam;
     m_child2->m_parent              = this;
