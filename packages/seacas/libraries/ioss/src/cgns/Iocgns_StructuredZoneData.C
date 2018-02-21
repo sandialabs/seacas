@@ -280,12 +280,12 @@ namespace Iocgns {
     }
     m_child1->m_offset = m_offset; // Child1 offsets the same as parent;
 
-    m_child1->m_lineOrdinal = m_lineOrdinal;
-    m_child1->m_zone                = zone_id++;
-    m_child1->m_adam                = m_adam;
-    m_child1->m_parent              = this;
-    m_child1->m_splitOrdinal        = ordinal;
-    m_child1->m_sibling             = m_child2;
+    m_child1->m_lineOrdinal  = m_lineOrdinal;
+    m_child1->m_zone         = zone_id++;
+    m_child1->m_adam         = m_adam;
+    m_child1->m_parent       = this;
+    m_child1->m_splitOrdinal = ordinal;
+    m_child1->m_sibling      = m_child2;
 
     m_child2->m_name             = m_name + "_c2";
     m_child2->m_ordinal          = m_ordinal;
@@ -294,12 +294,12 @@ namespace Iocgns {
     m_child2->m_offset = m_offset;
     m_child2->m_offset[ordinal] += m_child1->m_ordinal[ordinal];
 
-    m_child2->m_lineOrdinal = m_lineOrdinal;
-    m_child2->m_zone                = zone_id++;
-    m_child2->m_adam                = m_adam;
-    m_child2->m_parent              = this;
-    m_child2->m_splitOrdinal        = ordinal;
-    m_child2->m_sibling             = m_child1;
+    m_child2->m_lineOrdinal  = m_lineOrdinal;
+    m_child2->m_zone         = zone_id++;
+    m_child2->m_adam         = m_adam;
+    m_child2->m_parent       = this;
+    m_child2->m_splitOrdinal = ordinal;
+    m_child2->m_sibling      = m_child1;
 
     if (rank == 0) {
 #if IOSS_DEBUG_OUTPUT

@@ -203,9 +203,8 @@ namespace {
     }
   }
 
-  void set_line_decomposition(int cgnsFilePtr,
-			      const std::string &                        line_decomposition,
-			      std::vector<Iocgns::StructuredZoneData *> &zones)
+  void set_line_decomposition(int cgnsFilePtr, const std::string &line_decomposition,
+                              std::vector<Iocgns::StructuredZoneData *> &zones)
   {
     // The "line_decomposition" string is a list of 0 or more BC
     // (Family) names.  For all structured zones which this BC
@@ -214,8 +213,8 @@ namespace {
     // ordinal.  For example, if the BC "wall1" has the definition
     // [1->1, 1->5, 1->8], then it is on the constant 'i' face of the
     // zone and therefore, the zone will *not* be split along the 'i'
-    // ordinal. 
-    
+    // ordinal.
+
     // Slit into fields using the commas as delimiters
     auto bcs = Ioss::tokenize(line_decomposition, ",");
     for (auto &bc : bcs) {
@@ -227,59 +226,60 @@ namespace {
       // the BCs in 'bcs' list.  If so, determine the face the BC is
       // applied to and set the m_lineOrdinal to the ordinal
       // perpendicular to this face.
-      int base = 1;
+      int base  = 1;
       int izone = zone->m_zone;
       int num_bcs;
       CGCHECKNP(cg_nbocos(cgnsFilePtr, base, izone, &num_bcs));
 
       for (int ibc = 0; ibc < num_bcs; ibc++) {
-	char              boconame[33];
-	CG_BCType_t       bocotype;
-	CG_PointSetType_t ptset_type;
-	cgsize_t          npnts;
-	cgsize_t          NormalListSize;
-	CG_DataType_t     NormalDataType;
-	int               ndataset;
+        char              boconame[33];
+        CG_BCType_t       bocotype;
+        CG_PointSetType_t ptset_type;
+        cgsize_t          npnts;
+        cgsize_t          NormalListSize;
+        CG_DataType_t     NormalDataType;
+        int               ndataset;
 
-	// All we really want from this is 'boconame'
-	CGCHECKNP(cg_boco_info(cgnsFilePtr, base, izone, ibc + 1, boconame, &bocotype, &ptset_type,
-			       &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+        // All we really want from this is 'boconame'
+        CGCHECKNP(cg_boco_info(cgnsFilePtr, base, izone, ibc + 1, boconame, &bocotype, &ptset_type,
+                               &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
 
-	if (bocotype == CG_FamilySpecified) {
-	  // Need to get boconame from cg_famname_read
-	  CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", izone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
-	  CGCHECKNP(cg_famname_read(boconame));
-	}
+        if (bocotype == CG_FamilySpecified) {
+          // Need to get boconame from cg_famname_read
+          CGCHECKNP(
+              cg_goto(cgnsFilePtr, base, "Zone_t", izone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
+          CGCHECKNP(cg_famname_read(boconame));
+        }
 
-	Ioss::Utils::fixup_name(boconame);
-	if (std::find(bcs.begin(), bcs.end(), boconame) != bcs.end()) {
-	  cgsize_t range[6];
-	  CGCHECKNP(cg_boco_read(cgnsFilePtr, base, izone, ibc + 1, range, nullptr));
+        Ioss::Utils::fixup_name(boconame);
+        if (std::find(bcs.begin(), bcs.end(), boconame) != bcs.end()) {
+          cgsize_t range[6];
+          CGCHECKNP(cg_boco_read(cgnsFilePtr, base, izone, ibc + 1, range, nullptr));
 
-	  // There are some BC that are applied on an edge or a vertex;
-	  // Don't want those, so filter them out at this time...
-	  bool i = range[0] == range[3];
-	  bool j = range[1] == range[4];
-	  bool k = range[2] == range[5];
+          // There are some BC that are applied on an edge or a vertex;
+          // Don't want those, so filter them out at this time...
+          bool i = range[0] == range[3];
+          bool j = range[1] == range[4];
+          bool k = range[2] == range[5];
 
-	  int sum = (i ? 1 : 0) + (j ? 1 : 0) + (k ? 1 : 0);
-	  // Only set m_lineOrdinal if only a single ordinal selected.
-	  if (sum == 1) {
-	    if (i) {
-	      zone->m_lineOrdinal = 0;
-	    }
-	    else if (j) {
-	      zone->m_lineOrdinal = 1;
-	    }
-	    else if (k) {
-	      zone->m_lineOrdinal = 2;
-	    }
+          int sum = (i ? 1 : 0) + (j ? 1 : 0) + (k ? 1 : 0);
+          // Only set m_lineOrdinal if only a single ordinal selected.
+          if (sum == 1) {
+            if (i) {
+              zone->m_lineOrdinal = 0;
+            }
+            else if (j) {
+              zone->m_lineOrdinal = 1;
+            }
+            else if (k) {
+              zone->m_lineOrdinal = 2;
+            }
 #if IOSS_DEBUG_OUTPUT
-	    OUTPUT << "Setting line ordinal to " << zone->m_lineOrdinal << " on " << zone->m_name
-		   << " for surface: " << boconame << "\n";
+            OUTPUT << "Setting line ordinal to " << zone->m_lineOrdinal << " on " << zone->m_name
+                   << " for surface: " << boconame << "\n";
 #endif
-	  }
-	}
+          }
+        }
       }
     }
   }

@@ -64,7 +64,7 @@ namespace Ioss {
     {
       assert(is_valid());
       m_intraBlock      = m_ownerZone == m_donorZone;
-      m_ownsSharedNodes = m_ownerZone < m_donorZone;
+      m_ownsSharedNodes = m_ownerZone < m_donorZone || m_donorZone == -1;
     }
 
     ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,

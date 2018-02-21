@@ -52,11 +52,11 @@ namespace Iocgns {
     }
 
     std::string m_name{};
-    Ioss::IJK_t m_ordinal{{0,0,0}};
+    Ioss::IJK_t m_ordinal{{0, 0, 0}};
 
     // Offset of this block relative to its
     // adam block. ijk_adam = ijk_me + m_offset[ijk];
-    Ioss::IJK_t m_offset{{0,0,0}};
+    Ioss::IJK_t m_offset{{0, 0, 0}};
 
     // If value is 0, 1, or 2, then do not split along that ordinal
     int m_lineOrdinal{-1};
