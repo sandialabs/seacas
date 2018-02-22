@@ -292,19 +292,29 @@ namespace {
           int sum = (i ? 1 : 0) + (j ? 1 : 0) + (k ? 1 : 0);
           // Only set m_lineOrdinal if only a single ordinal selected.
           if (sum == 1) {
+	    int ordinal = -1;
             if (i) {
-              zone->m_lineOrdinal = 0;
+	      ordinal = 0;
             }
             else if (j) {
-              zone->m_lineOrdinal = 1;
+              ordinal = 1;
             }
             else if (k) {
-              zone->m_lineOrdinal = 2;
+              ordinal = 2;
             }
+	    if (zone->m_lineOrdinal == -1) {
+	      zone->m_lineOrdinal = ordinal;
 #if IOSS_DEBUG_OUTPUT
             OUTPUT << "Setting line ordinal to " << zone->m_lineOrdinal << " on " << zone->m_name
                    << " for surface: " << boconame << "\n";
 #endif
+	    }
+	    else if (zone->m_lineOrdinal != ordinal && rank == 0) {
+	      IOSS_WARNING << "CGNS: Zone " << izone << " named " << zone->m_name 
+			   << " has multiple line decomposition ordinal specifications. Both ordinal "
+			   << ordinal << " and " << zone->m_lineOrdinal << " have been specified.  Keeping "
+			   << zone->m_lineOrdinal << "\n";
+	    }
           }
         }
       }
