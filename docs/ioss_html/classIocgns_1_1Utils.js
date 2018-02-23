@@ -18,7 +18,7 @@ var classIocgns_1_1Utils =
     [ "map_ioss_face_to_cgns", "classIocgns_1_1Utils.html#a12c1aefe782b155aefa999e5bb235c3d", null ],
     [ "map_topology_to_cgns", "classIocgns_1_1Utils.html#a95361f41dead54976b62fbe915bc7da3", null ],
     [ "resolve_nodes", "classIocgns_1_1Utils.html#ac1e99c795265c92bbbb4a240591623d1", null ],
-    [ "resolve_shared_nodes", "classIocgns_1_1Utils.html#a5bb2d1bf899830b23f3aebde4cfdd299", null ],
+    [ "resolve_processor_shared_nodes", "classIocgns_1_1Utils.html#a703a9f8e127ab053e74143ae965a6196", null ],
     [ "set_field_index", "classIocgns_1_1Utils.html#ad9c598aeee7b2aa7a9c8f210616239a2", null ],
     [ "write_flow_solution_metadata", "classIocgns_1_1Utils.html#ad12eb4ac3ae2456260c8a5f50c90291e", null ],
     [ "CG_CELL_CENTER_FIELD_ID", "classIocgns_1_1Utils.html#a9402e65b938d9acd7db253d843c3cfd4", null ],

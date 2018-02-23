@@ -175,7 +175,7 @@ void lanczos_FO(struct vtx_data **A,      /* graph data structure */
   double           Tevec();        /* calc evec of T by linear recurrence */
   struct scanlink *mkscanlist();   /* make scan list for min ritz vecs */
   double           lanc_seconds(); /* current clock timer */
-  int              symmlq_(), get_ritzvals();
+  int              symmlq(), get_ritzvals();
   void             setvec(), vecscale(), update(), vecran(), strout();
   void             splarax(), scanmin(), scanmax(), frvec(), orthogonalize();
   void             orthog1(), orthogvec(), bail(), warnings(), mkeigvecs();
@@ -309,7 +309,7 @@ void lanczos_FO(struct vtx_data **A,      /* graph data structure */
       splarax(Aq, A, n, q[j], vwsqrt, workn);
     }
     else if (version == 2) {
-      symmlq_(&long_n, &(q[j][1]), &wv1[1], &wv2[1], &wv3[1], &wv4[1], &Aq[1], &wv5[1], &wv6[1],
+      symmlq(&long_n, &(q[j][1]), &wv1[1], &wv2[1], &wv3[1], &wv4[1], &Aq[1], &wv5[1], &wv6[1],
               &checka, &goodb, &precon, &shift, &nout, &intlim, &rtol, &istop, &itn, &anorm, &acond,
               &rnorm, &ynorm, (double *)A, vwsqrt, (double *)orthlist2, &macheps, &normxlim,
               &itnmin);

@@ -14,12 +14,7 @@ namespace {
   void parse_variable_names(const char *tokens, StringIdVector *variable_list);
 } // namespace
 
-Excn::SystemInterface::SystemInterface()
-    : outputName_(), debugLevel_(0), screenWidth_(0), omitNodesets_(false), omitSidesets_(false),
-      ints64Bit_(false), aliveValue_(-1.0), interpartMinimumTimeDelta_(0.0)
-{
-  enroll_options();
-}
+Excn::SystemInterface::SystemInterface() { enroll_options(); }
 
 Excn::SystemInterface::~SystemInterface() = default;
 
@@ -58,6 +53,12 @@ void Excn::SystemInterface::enroll_options()
 
   options_.enroll("64-bit", GetLongOption::NoValue,
                   "True if forcing the use of 64-bit integers for the output file", nullptr);
+
+  options_.enroll("ignore_coordinate_check", GetLongOption::NoValue,
+                  "Do not use nodal coordinates to determine if node in part 1 same as node in "
+                  "other parts; use ids only.\n"
+                  "\t\tUse only if you know that the ids are consistent for all parts",
+                  nullptr);
 
   options_.enroll("omit_nodesets", GetLongOption::NoValue,
                   "Don't transfer nodesets to output file.", nullptr);
@@ -238,6 +239,10 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("64-bit") != nullptr) {
     ints64Bit_ = true;
+  }
+
+  if (options_.retrieve("ignore_coordinate_check") != nullptr) {
+    ignoreCoordinates_ = true;
   }
 
   if (options_.retrieve("omit_nodesets") != nullptr) {

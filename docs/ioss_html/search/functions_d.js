@@ -58,6 +58,5 @@ var searchData=
   ['output_5ftype',['output_type',['../classSkinner_1_1Interface.html#af58a2b89b2dc6c73631945811611a4d3',1,'Skinner::Interface']]],
   ['overlaps',['overlaps',['../namespaceanonymous__namespace_02Iocgns__StructuredZoneData_8C_03.html#a283239da311b91306f5c9eb73cc3c9e2',1,'anonymous_namespace{Iocgns_StructuredZoneData.C}::overlaps()'],['../namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a94857b49d46525263574fa357a76a037',1,'anonymous_namespace{Iocgns_Utils.C}::overlaps()']]],
   ['owner',['owner',['../classIoss_1_1SideBlock.html#a2f54996f729cd36ed9fddb7974d6fc7b',1,'Ioss::SideBlock']]],
-  ['owning_5fprocessor',['owning_processor',['../classIogn_1_1GeneratedMesh.html#a854d1a47c083dda94d1d062715abbd99',1,'Iogn::GeneratedMesh']]],
-  ['owns_5fshared_5fnodes',['owns_shared_nodes',['../structIoss_1_1ZoneConnectivity.html#a7a9839eff01187e4cde72e124cd0588e',1,'Ioss::ZoneConnectivity']]]
+  ['owning_5fprocessor',['owning_processor',['../classIogn_1_1GeneratedMesh.html#a854d1a47c083dda94d1d062715abbd99',1,'Iogn::GeneratedMesh']]]
 ];

@@ -404,7 +404,6 @@ namespace Iocgns {
     get_region()->add(commset);
   }
 
-  // TODO: See if code can be used for parallel node resolution...
   size_t ParallelDatabaseIO::finalize_structured_blocks()
   {
     // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
@@ -425,9 +424,6 @@ namespace Iocgns {
     }
 
     size_t num_nodes = Utils::resolve_nodes(*get_region(), myProcessor, true);
-
-    Utils::resolve_shared_nodes(*get_region(), myProcessor);
-
     return num_nodes;
   }
 
@@ -482,6 +478,13 @@ namespace Iocgns {
                                             zone->m_adam->m_ordinal);
           for (auto zgc : zone->m_zoneConnectivity) {
             zgc.m_isActive = false;
+            // Update donor_zone to point to adam zone instead of child.
+            auto dz = zones[zgc.m_donorZone - 1];
+            assert(dz->m_zone == zgc.m_donorZone);
+            auto oz = zones[zgc.m_ownerZone - 1];
+            assert(oz->m_zone == zgc.m_ownerZone);
+            zgc.m_donorZone = dz->m_adam->m_zone;
+            zgc.m_ownerZone = oz->m_adam->m_zone;
             block->m_zoneConnectivity.push_back(zgc);
           }
         }
@@ -1487,7 +1490,7 @@ namespace Iocgns {
           for (const auto &block : m_globalToBlockLocalNodeMap) {
             auto zone = block.first;
             // NOTE: 'block_map' has one more entry than node_count.  First entry is for something
-            // else.
+            // else.  But, ->size() returns correct size (ignoring first entry)
             //       'block_map' is 1-based.
             const auto &        block_map = block.second;
             std::vector<double> x(block_map->size());
@@ -1598,8 +1601,8 @@ namespace Iocgns {
         const auto &        block_map = block.second;
         std::vector<double> blk_data(block_map->size());
 
-        cgsize_t range_min[1] = {(cgsize_t)node_offset[zone - 1] + 1};
-        cgsize_t range_max[1] = {range_min[0] + (cgsize_t)block_map->size() - 1};
+        cgsize_t start  = node_offset[zone - 1] + 1;
+        cgsize_t finish = start + block_map->size() - 1;
 
         char field_suffix_separator = get_field_separator();
 
@@ -1618,7 +1621,7 @@ namespace Iocgns {
                                   CG_RealDouble, var_name.c_str(), &cgns_field));
 
           CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
-                                       cgns_field, range_min, range_max, blk_data.data()));
+                                       cgns_field, &start, &finish, blk_data.data()));
           if (i == 0)
             Utils::set_field_index(field, cgns_field, CG_Vertex);
         }
@@ -1976,7 +1979,7 @@ namespace Iocgns {
           }
 
           CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, sol_index, cgns_field, rmin, rmax,
-                                       rdata));
+                                       cgns_data.data()));
         }
       }
     }

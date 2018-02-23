@@ -87,6 +87,5 @@ var searchData=
   ['owner',['owner',['../classIoss_1_1SideBlock.html#a2f54996f729cd36ed9fddb7974d6fc7b',1,'Ioss::SideBlock']]],
   ['owner_5f',['owner_',['../classIoss_1_1SideBlock.html#a9ed6d586886b09378ef3f648b7843c3f',1,'Ioss::SideBlock']]],
   ['owning_5fprocessor',['owning_processor',['../classIogn_1_1GeneratedMesh.html#a854d1a47c083dda94d1d062715abbd99',1,'Iogn::GeneratedMesh']]],
-  ['owns_5f',['owns_',['../structanonymous__namespace_02Ioss__SmartAssert_8C_03_1_1stream__holder.html#a40f28138b9894c54a15353fe3cf347c4',1,'anonymous_namespace{Ioss_SmartAssert.C}::stream_holder']]],
-  ['owns_5fshared_5fnodes',['owns_shared_nodes',['../structIoss_1_1ZoneConnectivity.html#a7a9839eff01187e4cde72e124cd0588e',1,'Ioss::ZoneConnectivity']]]
+  ['owns_5f',['owns_',['../structanonymous__namespace_02Ioss__SmartAssert_8C_03_1_1stream__holder.html#a40f28138b9894c54a15353fe3cf347c4',1,'anonymous_namespace{Ioss_SmartAssert.C}::stream_holder']]]
 ];

@@ -180,8 +180,8 @@ Functions</h2></td></tr>
 <tr class="separator:a708730b563f7f8b975a0237783c794c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f40e01591efe5f45d40d7e6b078ea96"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a3f40e01591efe5f45d40d7e6b078ea96">get_entity_name</a> (int exoid, ex_entity_type type, int64_t id, const std::string &amp;basename, int length, bool &amp;db_has_name)</td></tr>
 <tr class="separator:a3f40e01591efe5f45d40d7e6b078ea96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae674c963847563118ee3da63beada506"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#ae674c963847563118ee3da63beada506">exodus_error</a> (int exoid, int lineno, const char *function, const char *filename)</td></tr>
-<tr class="separator:ae674c963847563118ee3da63beada506"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7697aeff911a70745bd170f5259fd686"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a7697aeff911a70745bd170f5259fd686">exodus_error</a> (int exoid, int lineno, const char *function, const char *filename, const std::string &amp;extra)</td></tr>
+<tr class="separator:a7697aeff911a70745bd170f5259fd686"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a831b92f5ced06b2f4f1e98f5ce6e8b95"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a831b92f5ced06b2f4f1e98f5ce6e8b95">add_map_fields</a> (int exoid, <a class="el" href="classIoss_1_1ElementBlock.html">Ioss::ElementBlock</a> *block, int64_t my_element_count, size_t name_length)</td></tr>
 <tr class="separator:a831b92f5ced06b2f4f1e98f5ce6e8b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e5e78a4d3d70c85f261208700b25fbc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a2e5e78a4d3d70c85f261208700b25fbc">write_coordinate_frames</a> (int exoid, const <a class="el" href="namespaceIoss.html#abf77dade63ce8a4c5cc7af4edea743e9">Ioss::CoordinateFrameContainer</a> &amp;frames)</td></tr>
@@ -465,8 +465,8 @@ ne_put_cmap_params(), </li>
 
 </div>
 </div>
-<a id="ae674c963847563118ee3da63beada506"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae674c963847563118ee3da63beada506">&#9670;&nbsp;</a></span>exodus_error()</h2>
+<a id="a7697aeff911a70745bd170f5259fd686"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7697aeff911a70745bd170f5259fd686">&#9670;&nbsp;</a></span>exodus_error()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -493,7 +493,13 @@ ne_put_cmap_params(), </li>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>filename</em>&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>extra</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

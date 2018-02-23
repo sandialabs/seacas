@@ -1,5 +1,7 @@
 var NAVTREEINDEX20 =
 {
+"classIoxf_1_1DatabaseIO.html#a26abec790c9414348e264254453c9df3":[4,0,72,3,29],
+"classIoxf_1_1DatabaseIO.html#a2a1bcc271a95bf7fe805a3060ad039ad":[4,0,72,3,120],
 "classIoxf_1_1DatabaseIO.html#a2ea8c6b1acc846e33e8751496e951cee":[4,0,72,3,1],
 "classIoxf_1_1DatabaseIO.html#a34c5bc96f40d9ec3120d94c7cd1deb40":[4,0,72,3,96],
 "classIoxf_1_1DatabaseIO.html#a36158603897f0c28fc7383928f140740":[4,0,72,3,98],
@@ -247,7 +249,5 @@ var NAVTREEINDEX20 =
 "classJson_1_1Reader_1_1Token.html":[4,0,73,6,2],
 "classJson_1_1Reader_1_1Token.html#a7d3bc0fa40097f435d184be4b1fd5ae1":[4,0,73,6,2,0],
 "classJson_1_1Reader_1_1Token.html#aa0f06d0105ec3d8cb42427c66b991bad":[4,0,73,6,2,2],
-"classJson_1_1Reader_1_1Token.html#aff87d677b9ac4b52542a00b0d6673249":[4,0,73,6,2,1],
-"classJson_1_1StaticString.html":[4,0,73,7],
-"classJson_1_1StaticString.html#a256a6cc0c630aef670848a0f11707b62":[4,0,73,7,2]
+"classJson_1_1Reader_1_1Token.html#aff87d677b9ac4b52542a00b0d6673249":[4,0,73,6,2,1]
 };

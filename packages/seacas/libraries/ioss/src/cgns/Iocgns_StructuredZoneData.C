@@ -126,6 +126,7 @@ namespace {
         zgc.m_ownerRangeEnd = range_end;
       }
       zgc.m_ownerOffset = {{zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]}};
+      assert(zgc.is_valid());
     }
     else {
       // This zgc does not overlap on this zone, so set all ranges to 0.
@@ -179,44 +180,26 @@ namespace {
       zgc.m_donorRangeEnd = d_range_end;
     }
     zgc.m_donorOffset = {{don_zone->m_offset[0], don_zone->m_offset[1], don_zone->m_offset[2]}};
+    assert(zgc.is_valid());
   }
 
   void propogate_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *child,
                      int ordinal, int rank)
   {
-    if (rank == 0) {
-#if 0 && IOSS_DEBUG_OUTPUT
-    OUTPUT << "\t\tPropogating ZGC from " << parent->m_name << " to " << child->m_name << "\n";
-#endif
-    }
     for (auto zgc : parent->m_zoneConnectivity) {
-      if (!zgc.m_intraBlock || zgc_overlaps(child, zgc)) {
+      if (!zgc.is_intra_block() || zgc_overlaps(child, zgc)) {
         // Modify source and donor range to subset it to new block ranges.
         zgc_subset_ranges(child, zgc);
+        zgc.m_ownerZone = child->m_zone;
         child->m_zoneConnectivity.push_back(zgc);
-        if (rank == 0) {
-#if 0 && IOSS_DEBUG_OUTPUT
-        OUTPUT << "\t\tAdding: Donor Zone " << zgc.m_donorName << ":\tConnection Name '" << zgc.m_connectionName
-               << "\n";
-#endif
-        }
-      }
-      else {
-        if (rank == 0) {
-#if 0 && IOSS_DEBUG_OUTPUT
-        OUTPUT << "\t\tDonor Zone " << zgc.m_donorName << ":\tConnection Name '" << zgc.m_connectionName
-               << " does not overlap."
-               << "\n";
-#endif
-        }
       }
     }
   }
 
   // Add the zgc corresponding to the new communication path between
   // two child zones arising from a parent split along ordinal 'ordinal'
-  void add_split_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *c1,
-                     Iocgns::StructuredZoneData *c2, int ordinal)
+  void add_proc_split_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *c1,
+                          Iocgns::StructuredZoneData *c2, int ordinal)
   {
     Ioss::IJK_t transform{{1, 2, 3}};
 
@@ -239,24 +222,19 @@ namespace {
     const auto &adam_name = parent->m_adam->m_name;
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
-                                        donor_range_end, c1->m_zone < c2->m_zone, true);
+                                        donor_range_end);
     auto &zgc1         = c1->m_zoneConnectivity.back();
     zgc1.m_sameRange   = true;
     zgc1.m_ownerOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
     zgc1.m_donorOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
 
-    // OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
-    // OUTPUT << c1->m_zoneConnectivity.back() << "\n";
-
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
-                                        range_end, c2->m_zone < c1->m_zone, true);
+                                        range_end);
     auto &zgc2         = c2->m_zoneConnectivity.back();
     zgc2.m_sameRange   = true;
     zgc2.m_ownerOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
     zgc2.m_donorOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
-    // OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
-    // OUTPUT << c2->m_zoneConnectivity.back() << "\n";
   }
 } // namespace
 
@@ -275,17 +253,17 @@ namespace Iocgns {
 
     // Find ordinal with largest value... Split along that ordinal
     int ordinal = 0;
-    if (m_preferentialOrdinal == ordinal) {
+    if (m_lineOrdinal == ordinal) {
       ordinal = 1;
     }
-    if (m_ordinal[1] > m_ordinal[ordinal] && m_preferentialOrdinal != 1) {
+    if (m_ordinal[1] > m_ordinal[ordinal] && m_lineOrdinal != 1) {
       ordinal = 1;
     }
-    if (m_ordinal[2] > m_ordinal[ordinal] && m_preferentialOrdinal != 2) {
+    if (m_ordinal[2] > m_ordinal[ordinal] && m_lineOrdinal != 2) {
       ordinal = 2;
     }
 
-    assert(ordinal != m_preferentialOrdinal);
+    assert(ordinal != m_lineOrdinal);
 
     if (m_ordinal[ordinal] <= 1) {
       return std::make_pair(nullptr, nullptr);
@@ -302,12 +280,12 @@ namespace Iocgns {
     }
     m_child1->m_offset = m_offset; // Child1 offsets the same as parent;
 
-    m_child1->m_preferentialOrdinal = m_preferentialOrdinal;
-    m_child1->m_zone                = zone_id++;
-    m_child1->m_adam                = m_adam;
-    m_child1->m_parent              = this;
-    m_child1->m_splitOrdinal        = ordinal;
-    m_child1->m_sibling             = m_child2;
+    m_child1->m_lineOrdinal  = m_lineOrdinal;
+    m_child1->m_zone         = zone_id++;
+    m_child1->m_adam         = m_adam;
+    m_child1->m_parent       = this;
+    m_child1->m_splitOrdinal = ordinal;
+    m_child1->m_sibling      = m_child2;
 
     m_child2->m_name             = m_name + "_c2";
     m_child2->m_ordinal          = m_ordinal;
@@ -316,12 +294,12 @@ namespace Iocgns {
     m_child2->m_offset = m_offset;
     m_child2->m_offset[ordinal] += m_child1->m_ordinal[ordinal];
 
-    m_child2->m_preferentialOrdinal = m_preferentialOrdinal;
-    m_child2->m_zone                = zone_id++;
-    m_child2->m_adam                = m_adam;
-    m_child2->m_parent              = this;
-    m_child2->m_splitOrdinal        = ordinal;
-    m_child2->m_sibling             = m_child1;
+    m_child2->m_lineOrdinal  = m_lineOrdinal;
+    m_child2->m_zone         = zone_id++;
+    m_child2->m_adam         = m_adam;
+    m_child2->m_parent       = this;
+    m_child2->m_splitOrdinal = ordinal;
+    m_child2->m_sibling      = m_child1;
 
     if (rank == 0) {
 #if IOSS_DEBUG_OUTPUT
@@ -346,7 +324,7 @@ namespace Iocgns {
     }
 
     // Add ZoneGridConnectivity instance to account for split...
-    add_split_zgc(this, m_child1, m_child2, ordinal);
+    add_proc_split_zgc(this, m_child1, m_child2, ordinal);
 
     // Propogate parent ZoneGridConnectivities to appropriate children.
     // Split if needed...
@@ -409,9 +387,11 @@ namespace Iocgns {
   void StructuredZoneData::update_zgc_processor(std::vector<Iocgns::StructuredZoneData *> &zones)
   {
     for (auto &zgc : m_zoneConnectivity) {
-      auto &donor_zone     = zones[zgc.m_donorZone - 1];
+      auto &donor_zone = zones[zgc.m_donorZone - 1];
+      assert(donor_zone->m_proc >= 0);
       zgc.m_donorProcessor = donor_zone->m_proc;
       auto &owner_zone     = zones[zgc.m_ownerZone - 1];
+      assert(owner_zone->m_proc >= 0);
       zgc.m_ownerProcessor = owner_zone->m_proc;
     }
   }

@@ -56,6 +56,20 @@ namespace Ioss {
     ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
                      int donor_zone, const Ioss::IJK_t p_transform, const Ioss::IJK_t range_beg,
                      const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
+                     const Ioss::IJK_t donor_end)
+        : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
+          m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
+          m_ownerRangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
+          m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
+    {
+      assert(is_valid());
+      m_intraBlock      = m_ownerZone == m_donorZone;
+      m_ownsSharedNodes = m_ownerZone < m_donorZone || m_donorZone == -1;
+    }
+
+    ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
+                     int donor_zone, const Ioss::IJK_t p_transform, const Ioss::IJK_t range_beg,
+                     const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
                      const Ioss::IJK_t donor_end, bool owns_nodes, bool intra_block = false)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
@@ -63,21 +77,7 @@ namespace Ioss {
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
           m_ownsSharedNodes(owns_nodes), m_intraBlock(intra_block)
     {
-      if (!m_intraBlock) {
-        m_ownerRange[0] = m_ownerRangeBeg[0];
-        m_ownerRange[1] = m_ownerRangeBeg[1];
-        m_ownerRange[2] = m_ownerRangeBeg[2];
-        m_ownerRange[3] = m_ownerRangeEnd[0];
-        m_ownerRange[4] = m_ownerRangeEnd[1];
-        m_ownerRange[5] = m_ownerRangeEnd[2];
-
-        m_donorRange[0] = m_donorRangeBeg[0];
-        m_donorRange[1] = m_donorRangeBeg[1];
-        m_donorRange[2] = m_donorRangeBeg[2];
-        m_donorRange[3] = m_donorRangeEnd[0];
-        m_donorRange[4] = m_donorRangeEnd[1];
-        m_donorRange[5] = m_donorRangeEnd[2];
-      }
+      assert(is_valid());
     }
 
     ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
@@ -92,7 +92,9 @@ namespace Ioss {
       return snc;
     }
 
-    bool owns_shared_nodes() const { return m_ownsSharedNodes; }
+    // Validate zgc -- if is_active(), then must have non-zero entries for all ranges.
+    // transform must have valid entries.
+    bool is_valid() const;
 
     std::array<INT, 9> transform_matrix() const;
     Ioss::IJK_t        transform(const Ioss::IJK_t &index_1) const;
@@ -101,11 +103,8 @@ namespace Ioss {
     std::vector<int>     get_range(int ordinal) const;
     friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
-    // The "original" owner and donor range -- that is, they have not been subsetted
-    // due to block decompositions in a parallel run.  These should be the same on
-    // all processors...  Primarily used to make parallel collective output easier...
-    std::array<INT, 6> m_ownerRange{};
-    std::array<INT, 6> m_donorRange{};
+    bool is_intra_block() const { return m_ownerZone == m_donorZone; }
+    bool is_active() const { return m_isActive; }
 
     std::string m_connectionName; // Name of the connection; either generated or from file
     std::string m_donorName; // Name of the zone (m_donorZone) to which this zone is connected via
@@ -136,12 +135,12 @@ namespace Ioss {
     bool   m_sameRange{
         false}; // True if owner and donor range should always match...(special use during
                   // decomp)
-    bool m_ownsSharedNodes{
-        false}; // True if it is the "lower" zone id in the connection. Uses adam unless
-                // both have same adam.
-    bool m_intraBlock{
-        false}; // True if this zc is created due to processor decompositions in a parallel
-                // run.
+    // True if it is the "lower" zone id in the connection. Uses adam unless both have same adam.
+    bool m_ownsSharedNodes{false}; // Deprecate soon
+
+    // True if this zc is created due to processor decompositions in a parallel run
+    bool m_intraBlock{false}; // Deprecate use soon...
+
     bool m_isActive{true}; // True if non-zero range. That is, it has at least one face
   };
 } // namespace Ioss

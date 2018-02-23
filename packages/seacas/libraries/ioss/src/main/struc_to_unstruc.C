@@ -87,21 +87,14 @@ namespace {
   void transfer_sb_field_data(const Ioss::Region &region, Ioss::Region &output_region,
                               Ioss::Field::RoleType role);
 
-  size_t transfer_coord(std::vector<double> &to, std::vector<double> &from,
-                        std::vector<size_t> &node_id_list, size_t offset)
+  void transfer_coord(std::vector<double> &to, std::vector<double> &from,
+                      std::vector<size_t> &node_id_list)
   {
-    if (!node_id_list.empty()) {
-      for (size_t i = 0; i < node_id_list.size(); i++) {
-        size_t node = node_id_list[i];
-        to[node]    = from[i];
-      }
+    assert(from.empty() || !node_id_list.empty());
+    for (size_t i = 0; i < from.size(); i++) {
+      size_t idx = node_id_list[i];
+      to[idx]    = from[i];
     }
-    else {
-      for (auto x : from) {
-        to[offset++] = x;
-      }
-    }
-    return offset;
   }
 } // namespace
 // ========================================================================
@@ -159,15 +152,23 @@ namespace {
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");
 
+    if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
+      int myProcessor = region.get_database()->util().parallel_rank();
+      if (myProcessor == 0) {
+        std::cerr << "\nERROR: The input mesh is not of type STRUCTURED.\n";
+      }
+      return;
+    }
+
     //========================================================================
     // OUTPUT ...
     //========================================================================
 #if 0
-    // This does not work...
     if (dbi->util().parallel_size() > 1) {
       properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
     }
 #endif
+    
     Ioss::DatabaseIO *dbo =
         Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
@@ -194,8 +195,8 @@ namespace {
     // Model defined, now fill in the model data...
     output_region.begin_mode(Ioss::STATE_MODEL);
 
-    transfer_nodal(region, output_region);
     transfer_connectivity(region, output_region);
+    transfer_nodal(region, output_region);
     output_sidesets(region, output_region);
     output_region.end_mode(Ioss::STATE_MODEL);
 
@@ -242,7 +243,7 @@ namespace {
   void transfer_nodal(const Ioss::Region &region, Ioss::Region &output_region)
   {
     size_t num_nodes = region.get_node_blocks()[0]->entity_count();
-    auto   nb         = output_region.get_node_blocks()[0];
+    auto   nb        = output_region.get_node_blocks()[0];
 
     if (!output_region.get_database()->needs_shared_node_information()) {
       std::vector<int> ids(num_nodes); // To hold the global node id map.
@@ -262,24 +263,24 @@ namespace {
       assert(nb != nullptr);
       nb->put_field_data("ids", ids);
     }
-    
+
     std::vector<double> coordinate_x(num_nodes);
     std::vector<double> coordinate_y(num_nodes);
     std::vector<double> coordinate_z(num_nodes);
 
-    size_t offset = 0; // Used only until parallel shared nodes figured out.
-    auto & blocks = region.get_structured_blocks();
+    auto &blocks = region.get_structured_blocks();
     for (auto &block : blocks) {
       std::vector<double> coord_tmp;
       block->get_field_data("mesh_model_coordinates_x", coord_tmp);
-      transfer_coord(coordinate_x, coord_tmp, block->m_blockLocalNodeIndex, offset);
+      transfer_coord(coordinate_x, coord_tmp, block->m_blockLocalNodeIndex);
 
       block->get_field_data("mesh_model_coordinates_y", coord_tmp);
-      transfer_coord(coordinate_y, coord_tmp, block->m_blockLocalNodeIndex, offset);
+      transfer_coord(coordinate_y, coord_tmp, block->m_blockLocalNodeIndex);
 
       block->get_field_data("mesh_model_coordinates_z", coord_tmp);
-      offset = transfer_coord(coordinate_z, coord_tmp, block->m_blockLocalNodeIndex, offset);
+      transfer_coord(coordinate_z, coord_tmp, block->m_blockLocalNodeIndex);
     }
+
     nb->put_field_data("mesh_model_coordinates_x", coordinate_x);
     nb->put_field_data("mesh_model_coordinates_y", coordinate_y);
     nb->put_field_data("mesh_model_coordinates_z", coordinate_z);
@@ -330,16 +331,11 @@ namespace {
         // 'connect' contains 0-based block-local node ids at this point
         // Now, map them to processor-global values...
         // NOTE: "processor-global" is 1..num_node_on_processor
-        const auto &gnil = block->m_blockLocalNodeIndex;
-        if (!gnil.empty()) {
+        if (!connect.empty()) {
+          const auto &gnil = block->m_blockLocalNodeIndex;
+          assert(!gnil.empty());
           for (int &i : connect) {
             i = gnil[i] + 1;
-          }
-        }
-        else {
-          size_t node_offset = block->get_node_offset();
-          for (int &i : connect) {
-            i = i + node_offset + 1;
           }
         }
 
@@ -411,7 +407,9 @@ namespace {
                 }
               }
 
+#if IOSS_DEBUG_OUTPUT
               std::cerr << bc << "\n";
+#endif
               auto parent_face = face_map[bc.which_parent_face() + 3];
               elem_side.reserve(bc.get_face_count() * 2);
               for (auto k = range_beg[2]; k <= cell_range_end[2]; k++) {
@@ -465,14 +463,19 @@ namespace {
       // processor" information.  Assume that if a node is shared with
       // a lower-numbered processor, then that processor owns the
       // node...
-      int myProcessor = output_region.get_database()->util().parallel_rank();
+
+      auto shared_nodes = Iocgns::Utils::resolve_processor_shared_nodes(region, region.get_database()->util().parallel_rank());
+      
+      int              myProcessor = output_region.get_database()->util().parallel_rank();
       std::vector<int> owning_processor(num_nodes, myProcessor);
       for (auto &block : blocks) {
-	for (const auto &shared : block->m_sharedNode) {
-	  if (owning_processor[shared.first] > shared.second) {
-	    owning_processor[shared.first] = shared.second;
-	  }
-	}
+	int zone = block->get_property("zone").get_int();
+        for (const auto &shared : shared_nodes[zone]) {
+          size_t idx = block->m_blockLocalNodeIndex[shared.first];
+          if (owning_processor[idx] > (int)shared.second) {
+            owning_processor[idx] = shared.second;
+          }
+        }
       }
       nb->put_field_data("owning_processor", owning_processor);
     }
@@ -493,8 +496,10 @@ namespace {
       size_t             count = iblock->get_property("cell_count").get_int();
       auto block = new Ioss::ElementBlock(output_region.get_database(), name, type, count);
       output_region.add(block);
-      std::cout << "P[" << rank << "] Created Element Block '" << name << "' with " << count
+#if IOSS_DEBUG_OUTPUT
+      std::cerr << "P[" << rank << "] Created Element Block '" << name << "' with " << count
                 << " elements.\n";
+#endif
       total_entities += count;
     }
     std::cout << "P[" << rank << "] Number of Element Blocks       =" << std::setw(12)
@@ -544,9 +549,9 @@ namespace {
   void transfer_sb_fields(const Ioss::Region &region, Ioss::Region &output_region,
                           Ioss::Field::RoleType role)
   {
-    auto   nb         = output_region.get_node_blocks()[0];
+    auto   nb        = output_region.get_node_blocks()[0];
     size_t num_nodes = region.get_node_blocks()[0]->entity_count();
-    auto & blocks     = region.get_structured_blocks();
+    auto & blocks    = region.get_structured_blocks();
     for (auto &block : blocks) {
       Ioss::NameList fields;
       block->field_describe(role, &fields);
@@ -575,7 +580,7 @@ namespace {
                               Ioss::Field::RoleType role)
   {
     {
-      auto                nb         = output_region.get_node_blocks()[0];
+      auto                nb        = output_region.get_node_blocks()[0];
       size_t              num_nodes = region.get_node_blocks()[0]->entity_count();
       std::vector<double> node_data(num_nodes);
       std::vector<double> data;

@@ -36,7 +36,7 @@
 #include "structs.h"
 #include <stdio.h> // for NULL
 
-int aprod_(long *lnvtxs, double *x, double *y, double *dA, double *vwsqrt, double *work,
+int aprod(long *lnvtxs, double *x, double *y, double *dA, double *vwsqrt, double *work,
            double *dorthlist /* vectors to orthogonalize against */
 )
 {

@@ -1271,6 +1271,7 @@ namespace Iofx {
 
       block->property_add(Ioss::Property("global_entity_count", global_X_count[iblk]));
 
+      used_blocks++;
       offset += local_X_count[iblk];
 
       // See if this block is "omitted" by the calling code.
@@ -4484,7 +4485,10 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
       }
 
       if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+        std::ostringstream extra_info;
+        extra_info << "Outputting component " << i << " of field " << field_name << " at step "
+                   << step << " on " << ge->type_string() << " " << ge->name() << ".";
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
       }
     }
   }

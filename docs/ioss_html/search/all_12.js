@@ -65,7 +65,7 @@ var searchData=
   ['resolve',['resolve',['../classJson_1_1Path.html#a3008d26b00e4322cd56dfc5d84ef2cfa',1,'Json::Path::resolve(const Value &amp;root) const'],['../classJson_1_1Path.html#ab65ab001ccdbc6f8b5f123da58b92539',1,'Json::Path::resolve(const Value &amp;root, const Value &amp;defaultValue) const']]],
   ['resolve_5fnodes',['resolve_nodes',['../classIocgns_1_1Utils.html#ac1e99c795265c92bbbb4a240591623d1',1,'Iocgns::Utils']]],
   ['resolve_5fparallel_5ffaces',['resolve_parallel_faces',['../namespaceanonymous__namespace_02Ioss__FaceGenerator_8C_03.html#a95e85281e055a9945826f8f20e3af20a',1,'anonymous_namespace{Ioss_FaceGenerator.C}']]],
-  ['resolve_5fshared_5fnodes',['resolve_shared_nodes',['../classIocgns_1_1Utils.html#a5bb2d1bf899830b23f3aebde4cfdd299',1,'Iocgns::Utils']]],
+  ['resolve_5fprocessor_5fshared_5fnodes',['resolve_processor_shared_nodes',['../classIocgns_1_1Utils.html#a703a9f8e127ab053e74143ae965a6196',1,'Iocgns::Utils']]],
   ['resolve_5fzgc_5fsplit_5fdonor',['resolve_zgc_split_donor',['../classIocgns_1_1StructuredZoneData.html#a88527c5e557cd385b45e7741e1c1b658',1,'Iocgns::StructuredZoneData']]],
   ['resolve_5fzone_5fshared_5fnodes',['resolve_zone_shared_nodes',['../classIocgns_1_1ParallelDatabaseIO.html#aabb54ffc03ceb8ac1e66cd3c79eac82f',1,'Iocgns::ParallelDatabaseIO']]],
   ['resolvereference',['resolveReference',['../classJson_1_1Value.html#a78817583bdc3cf28e0b8edfe74031a98',1,'Json::Value::resolveReference(const char *key)'],['../classJson_1_1Value.html#a121c76136ac3255ad3de088b50652acb',1,'Json::Value::resolveReference(const char *key, const char *end)']]],

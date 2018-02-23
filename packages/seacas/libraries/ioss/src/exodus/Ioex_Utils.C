@@ -466,7 +466,7 @@ namespace Ioex {
     return Ioss::Utils::encode_entity_name(basename, id);
   }
 
-  void exodus_error(int exoid, int lineno, const char *function, const char *filename)
+  void exodus_error(int exoid, int lineno, const char *function, const char *filename, const std::string &extra)
   {
     std::ostringstream errmsg;
     // Create errmsg here so that the exerrval doesn't get cleared by
@@ -474,8 +474,12 @@ namespace Ioex {
     int status;
     ex_get_err(nullptr, nullptr, &status);
     errmsg << "Exodus error (" << status << ") " << ex_strerror(status) << " at line " << lineno
-           << " of file '" << filename << "' in function '" << function
-           << "' Please report to gdsjaar@sandia.gov if you need help.";
+           << " of file '" << filename << "' in function '" << function << "'.";
+
+    if (!extra.empty()) {
+      errmsg << " " << extra;
+    }
+    errmsg << " Please report to gdsjaar@sandia.gov if you need help.";
 
     ex_err(nullptr, nullptr, EX_PRTLASTMSG);
     if (exoid > 0) {

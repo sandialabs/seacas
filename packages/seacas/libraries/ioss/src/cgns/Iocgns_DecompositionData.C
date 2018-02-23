@@ -183,10 +183,9 @@ namespace {
         OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname
                << "\n";
 #endif
-        bool owns_nodes = zone < donor_zone || donor_zone == -1;
         zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
                                                    transform, range_beg, range_end, donor_beg,
-                                                   donor_end, owns_nodes);
+                                                   donor_end);
       }
     }
 
@@ -204,80 +203,120 @@ namespace {
     }
   }
 
-  void set_preferential_ordinals(const std::string &                        preferential_ordinals,
-                                 std::vector<Iocgns::StructuredZoneData *> &zones)
+  void set_line_decomposition(int cgnsFilePtr, const std::string &line_decomposition,
+                              std::vector<Iocgns::StructuredZoneData *> &zones)
   {
-    // The "preferential_ordinals" string is of the form:
-    //   z#o,z#o,z#o
-    // where 'z#' is a 1-based zone number and 'o' is I, i, J, j, K, or k
-    // 'z#' can also be a range specified as beg-end-step
-    //: The defined formats for the count attribute are:<br>
-    //:  <ul>
-    //:    <li>"X"                  -- X <= count <= X  (just zone X)</li>
-    //:    <li>"X-Y"                -- zones X to Y by 1</li>
-    //:    <li>"X-Y-Z"              -- zones X to Y by Z</li>
-    //:    <li>"X-"                 -- zones X to oo by 1</li>
-    //:    <li>"-Y"                 -- zones 1 to Y by 1</li>
-    //:    <li>"--Z"                -- zones 1 to oo by Z</li>
-    //:  </ul>
-    // The ordinal specifies which direction the zone will *not* be split along.
-
+    // The "line_decomposition" string is a list of 0 or more BC
+    // (Family) names.  For all structured zones which this BC
+    // touches, the ordinal of the face (i,j,k) will be set such that
+    // a parallel decomposition will not split the zone along this
+    // ordinal.  For example, if the BC "wall1" has the definition
+    // [1->1, 1->5, 1->8], then it is on the constant 'i' face of the
+    // zone and therefore, the zone will *not* be split along the 'i'
+    // ordinal. 
+    
+    // Get names of all valid 'bcs' on the mesh
+    int base         = 1;
+    int num_families = 0;
+    CGCHECKNP(cg_nfamilies(cgnsFilePtr, base, &num_families));
+    
+    std::vector<std::string> families;
+    families.reserve(num_families);
+    for (int family = 1; family <= num_families; family++) {
+      char        name[33];
+      int         num_bc  = 0;
+      int         num_geo = 0;
+      CGCHECKNP(cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo));
+      if (num_bc > 0) {
+	Ioss::Utils::fixup_name(name);
+	families.push_back(name);
+      }
+    }
+    
     // Slit into fields using the commas as delimiters
-    std::vector<std::string> fields = Ioss::tokenize(preferential_ordinals, ",");
+    auto bcs = Ioss::tokenize(line_decomposition, ",");
+    for (auto &bc : bcs) {
+      Ioss::Utils::fixup_name(bc);
+      if (std::find(families.begin(), families.end(), bc) == families.end()) {
+	std::ostringstream errmsg;
+	errmsg << "ERROR: CGNS: The family/bc name '" << bc
+	       << "' specified as a line decomposition surface does not exist on this CGNS file.\n";
+	errmsg << "             Valid names are: ";
+	for (const auto &fam : families) {
+	  errmsg << "'" << fam << "', ";
+	}
+	IOSS_ERROR(errmsg);
+      }
+    }
 
-    // Iterate fields and strip off zone# and ordinal direction...
-    for (auto field : fields) {
-      // Strip of the last character as the ordinal...
-      char ordinal_c = field.back();
-      field.pop_back();
+    for (auto zone : zones) {
+      // Read BCs applied to this zone and see if they match any of
+      // the BCs in 'bcs' list.  If so, determine the face the BC is
+      // applied to and set the m_lineOrdinal to the ordinal
+      // perpendicular to this face.
+      int izone = zone->m_zone;
+      int num_bcs;
+      CGCHECKNP(cg_nbocos(cgnsFilePtr, base, izone, &num_bcs));
 
-      // Convert ordinal to integer 0,1,2
-      int ordinal = -1;
-      if (ordinal_c == 'I' || ordinal_c == 'i') {
-        ordinal = 0;
-      }
-      else if (ordinal_c == 'J' || ordinal_c == 'j') {
-        ordinal = 1;
-      }
-      else if (ordinal_c == 'K' || ordinal_c == 'k') {
-        ordinal = 2;
-      }
-      else {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: The preferential ordinals string specifies an illegal ordinal "
-                  "direction: '"
-               << ordinal_c << "'.  Valid values are I, J, or K.";
-        IOSS_ERROR(errmsg);
-      }
+      for (int ibc = 0; ibc < num_bcs; ibc++) {
+        char              boconame[33];
+        CG_BCType_t       bocotype;
+        CG_PointSetType_t ptset_type;
+        cgsize_t          npnts;
+        cgsize_t          NormalListSize;
+        CG_DataType_t     NormalDataType;
+        int               ndataset;
 
-      // Convert remaining characters of 'field' to integer...
-      auto beg_end_step = Ioss::tokenize(field, "-");
-      int  beg          = 1;
-      int  end          = (int)zones.size();
-      int  step         = 1;
+        // All we really want from this is 'boconame'
+        CGCHECKNP(cg_boco_info(cgnsFilePtr, base, izone, ibc + 1, boconame, &bocotype, &ptset_type,
+                               &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
 
-      if (beg_end_step.size() >= 1) {
-        beg = strtol(beg_end_step[0].c_str(), nullptr, 0);
-      }
-      if (beg_end_step.size() >= 2) {
-        end = strtol(beg_end_step[1].c_str(), nullptr, 0);
-      }
-      if (beg_end_step.size() == 3) {
-        step = strtol(beg_end_step[2].c_str(), nullptr, 0);
-      }
+        if (bocotype == CG_FamilySpecified) {
+          // Need to get boconame from cg_famname_read
+          CGCHECKNP(
+              cg_goto(cgnsFilePtr, base, "Zone_t", izone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
+          CGCHECKNP(cg_famname_read(boconame));
+        }
 
-      if (beg <= 0 || beg > (int)zones.size() || end <= 0 || end > (int)zones.size() || beg > end ||
-          step <= 0) {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: The preferential ordinals string specifies an illegal zone range: "
-                  "begin = "
-               << beg << ", end = " << end << ", step = " << step
-               << ". Valid values are in the range 1 to " << zones.size() << ".";
-        IOSS_ERROR(errmsg);
-      }
+        Ioss::Utils::fixup_name(boconame);
+        if (std::find(bcs.begin(), bcs.end(), boconame) != bcs.end()) {
+          cgsize_t range[6];
+          CGCHECKNP(cg_boco_read(cgnsFilePtr, base, izone, ibc + 1, range, nullptr));
 
-      for (auto zone = beg; zone <= end; zone += step) {
-        zones[zone - 1]->m_preferentialOrdinal = ordinal;
+          // There are some BC that are applied on an edge or a vertex;
+          // Don't want those, so filter them out at this time...
+          bool i = range[0] == range[3];
+          bool j = range[1] == range[4];
+          bool k = range[2] == range[5];
+
+          int sum = (i ? 1 : 0) + (j ? 1 : 0) + (k ? 1 : 0);
+          // Only set m_lineOrdinal if only a single ordinal selected.
+          if (sum == 1) {
+	    int ordinal = -1;
+            if (i) {
+	      ordinal = 0;
+            }
+            else if (j) {
+              ordinal = 1;
+            }
+            else if (k) {
+              ordinal = 2;
+            }
+	    if (zone->m_lineOrdinal == -1) {
+	      zone->m_lineOrdinal = ordinal;
+#if IOSS_DEBUG_OUTPUT
+            OUTPUT << "Setting line ordinal to " << zone->m_lineOrdinal << " on " << zone->m_name
+                   << " for surface: " << boconame << "\n";
+#endif
+	    }
+	    else if (zone->m_lineOrdinal != ordinal && rank == 0) {
+	      IOSS_WARNING << "CGNS: Zone " << izone << " named " << zone->m_name 
+			   << " has multiple line decomposition ordinal specifications. Both ordinal "
+			   << ordinal << " and " << zone->m_lineOrdinal << " have been specified.  Keeping "
+			   << zone->m_lineOrdinal << "\n";
+	    }
+          }
+        }
       }
     }
   }
@@ -322,8 +361,8 @@ namespace Iocgns {
         m_loadBalanceThreshold = props.get("LOAD_BALANCE_THRESHOLD").get_real();
       }
     }
-    if (props.exists("PREFERENTIAL_ORDINALS")) {
-      m_preferentialOrdinals = props.get("PREFERENTIAL_ORDINALS").get_string();
+    if (props.exists("LINE_DECOMPOSITION")) {
+      m_lineDecomposition = props.get("LINE_DECOMPOSITION").get_string();
     }
   }
 
@@ -352,11 +391,11 @@ namespace Iocgns {
       return;
     }
 
-    // Determine whether user has specified "preferential ordinals" for any of the zones.
-    // The preferential ordinal is an ordinal which will not be split during the
+    // Determine whether user has specified "line decompositions" for any of the zones.
+    // The line decomposition is an ordinal which will not be split during the
     // decomposition.
-    if (!m_preferentialOrdinals.empty()) {
-      set_preferential_ordinals(m_preferentialOrdinals, m_structuredZones);
+    if (!m_lineDecomposition.empty()) {
+      set_line_decomposition(filePtr, m_lineDecomposition, m_structuredZones);
     }
 
     size_t work = 0;
@@ -543,8 +582,11 @@ namespace Iocgns {
       if (zone->is_active()) {
         zone->update_zgc_processor(m_structuredZones);
 #if IOSS_DEBUG_OUTPUT
+        auto zone_node_count =
+            (zone->m_ordinal[0] + 1) * (zone->m_ordinal[1] + 1) * (zone->m_ordinal[2] + 1);
         OUTPUT << "Zone " << zone->m_name << "(" << zone->m_zone << ") assigned to processor "
-               << zone->m_proc << ", Adam zone = " << zone->m_adam->m_zone << "\n";
+               << zone->m_proc << ", Adam zone = " << zone->m_adam->m_zone
+               << ", Cells = " << zone->work() << ", Nodes = " << zone_node_count << "\n";
         auto zgcs = zone->m_zoneConnectivity;
         for (auto &zgc : zgcs) {
           OUTPUT << zgc << "\n";
