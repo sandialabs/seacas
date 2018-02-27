@@ -682,26 +682,6 @@ lib iotr
     ]
   ;
 
-lib ioxf
-  :
-    [ ifdevbuild
-    # Any parameters within this 'ifdevbuild' block apply to development
-    # builds only and will not be present for user builds.
-        [ glob $(seacas-root)/libraries/ioss/src/xdmf/*.C ]
-    ]
-    ioss
-    /tpl/libxml2//xml
-    /tpl/xdmf//xdmf
-    /mpi//mpi
-  : 
-    [ ifuserbuild
-    # Any parameters within this 'ifuserbuild' block apply to user
-    # builds only and will not be present for developer builds.
-        <file>$(seacas-root)/lib/libioxf.a
-    ]
-  ;
-
-
 lib iovs
   :
     [ ifdevbuild
