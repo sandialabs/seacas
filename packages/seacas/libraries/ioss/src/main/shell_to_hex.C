@@ -59,10 +59,6 @@
 #include "Ioss_Utils.h"
 #include "vector3d.h"
 
-#ifndef NO_XDMF_SUPPORT
-#include <xdmf/Ioxf_Initializer.h>
-#endif
-
 // ========================================================================
 
 namespace {
@@ -135,9 +131,6 @@ int main(int argc, char *argv[])
   }
 
   Ioss::Init::Initializer io;
-#ifndef NO_XDMF_SUPPORT
-  Ioxf::Initializer ioxf;
-#endif
 
   globals.debug = false;
 

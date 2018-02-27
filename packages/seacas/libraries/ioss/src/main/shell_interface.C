@@ -57,9 +57,6 @@ namespace {
     else if (extension == "cgns") {
       return "cgns";
     }
-    else if (extension == "xdmf") {
-      return "xdmf";
-    }
     else {
       // "exodus" is default...
       return "exodus";
