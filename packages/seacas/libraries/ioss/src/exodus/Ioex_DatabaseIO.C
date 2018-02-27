@@ -629,7 +629,7 @@ namespace Ioex {
 
     Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
-    assert(m_groupCount[EX_ELEM_BLOCK] == element_blocks.size());
+    assert(m_groupCount[EX_ELEM_BLOCK] == (int)element_blocks.size());
 
     for (int i = 0; i < m_groupCount[EX_ELEM_BLOCK]; i++) {
       if (block_ids[i] == 1) {
