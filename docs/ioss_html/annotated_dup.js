@@ -72,7 +72,6 @@ var annotated_dup =
     [ "Ioss", "namespaceIoss.html", "namespaceIoss" ],
     [ "Iotr", "namespaceIotr.html", "namespaceIotr" ],
     [ "Iovs", "namespaceIovs.html", "namespaceIovs" ],
-    [ "Ioxf", "namespaceIoxf.html", "namespaceIoxf" ],
     [ "Json", "namespaceJson.html", "namespaceJson" ],
     [ "Private", "namespacePrivate.html", "namespacePrivate" ],
     [ "Skinner", "namespaceSkinner.html", "namespaceSkinner" ],

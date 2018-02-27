@@ -277,13 +277,5 @@ var searchData=
   ['iovs_5fdatabaseio_2ec',['Iovs_DatabaseIO.C',['../Iovs__DatabaseIO_8C.html',1,'']]],
   ['iovs_5fdatabaseio_2eh',['Iovs_DatabaseIO.h',['../Iovs__DatabaseIO_8h.html',1,'']]],
   ['iovs_5fiofactory_2ec',['Iovs_IOFactory.C',['../Iovs__IOFactory_8C.html',1,'']]],
-  ['iovs_5fiofactory_2eh',['Iovs_IOFactory.h',['../Iovs__IOFactory_8h.html',1,'']]],
-  ['ioxf_5fdatabaseio_2ec',['Ioxf_DatabaseIO.C',['../Ioxf__DatabaseIO_8C.html',1,'']]],
-  ['ioxf_5fdatabaseio_2eh',['Ioxf_DatabaseIO.h',['../Ioxf__DatabaseIO_8h.html',1,'']]],
-  ['ioxf_5finitializer_2ec',['Ioxf_Initializer.C',['../Ioxf__Initializer_8C.html',1,'']]],
-  ['ioxf_5finitializer_2eh',['Ioxf_Initializer.h',['../Ioxf__Initializer_8h.html',1,'']]],
-  ['ioxf_5finternals_2ec',['Ioxf_Internals.C',['../Ioxf__Internals_8C.html',1,'']]],
-  ['ioxf_5finternals_2eh',['Ioxf_Internals.h',['../Ioxf__Internals_8h.html',1,'']]],
-  ['ioxf_5fiofactory_2ec',['Ioxf_IOFactory.C',['../Ioxf__IOFactory_8C.html',1,'']]],
-  ['ioxf_5fiofactory_2eh',['Ioxf_IOFactory.h',['../Ioxf__IOFactory_8h.html',1,'']]]
+  ['iovs_5fiofactory_2eh',['Iovs_IOFactory.h',['../Iovs__IOFactory_8h.html',1,'']]]
 ];

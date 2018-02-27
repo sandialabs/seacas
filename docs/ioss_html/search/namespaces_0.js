@@ -89,7 +89,6 @@ var searchData=
   ['anonymous_5fnamespace_7bioss_5fwedge6_2ec_7d',['anonymous_namespace{Ioss_Wedge6.C}',['../namespaceanonymous__namespace_02Ioss__Wedge6_8C_03.html',1,'']]],
   ['anonymous_5fnamespace_7bioss_5fzoneconnectivity_2ec_7d',['anonymous_namespace{Ioss_ZoneConnectivity.C}',['../namespaceanonymous__namespace_02Ioss__ZoneConnectivity_8C_03.html',1,'']]],
   ['anonymous_5fnamespace_7biovs_5fdatabaseio_2ec_7d',['anonymous_namespace{Iovs_DatabaseIO.C}',['../namespaceanonymous__namespace_02Iovs__DatabaseIO_8C_03.html',1,'']]],
-  ['anonymous_5fnamespace_7bioxf_5fdatabaseio_2ec_7d',['anonymous_namespace{Ioxf_DatabaseIO.C}',['../namespaceanonymous__namespace_02Ioxf__DatabaseIO_8C_03.html',1,'']]],
   ['anonymous_5fnamespace_7bshell_5finterface_2ec_7d',['anonymous_namespace{shell_interface.C}',['../namespaceanonymous__namespace_02shell__interface_8C_03.html',1,'']]],
   ['anonymous_5fnamespace_7bshell_5fto_5fhex_2ec_7d',['anonymous_namespace{shell_to_hex.C}',['../namespaceanonymous__namespace_02shell__to__hex_8C_03.html',1,'']]],
   ['anonymous_5fnamespace_7bskinner_2ec_7d',['anonymous_namespace{skinner.C}',['../namespaceanonymous__namespace_02skinner_8C_03.html',1,'']]],

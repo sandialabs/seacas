@@ -40,6 +40,6 @@ var classIocgns_1_1DecompositionData =
     [ "node_global_to_local", "classIocgns_1_1DecompositionData.html#a03baba432360e0cc3c39000fd90d2619", null ],
     [ "spatial_dimension", "classIocgns_1_1DecompositionData.html#aee43fecca9d9b446a15c5e16e1c8ae2b", null ],
     [ "m_decomposition", "classIocgns_1_1DecompositionData.html#a0f83ecfadabae08b15e6db755b262072", null ],
-    [ "m_loadBalanceThreshold", "classIocgns_1_1DecompositionData.html#a019400df70b4bf8115e8bbaade24d636", null ],
-    [ "m_preferentialOrdinals", "classIocgns_1_1DecompositionData.html#ad4dae0028e5e15163c610294b755f048", null ]
+    [ "m_lineDecomposition", "classIocgns_1_1DecompositionData.html#a166ca7573dfcc11bba732e6c0f49f1bf", null ],
+    [ "m_loadBalanceThreshold", "classIocgns_1_1DecompositionData.html#a019400df70b4bf8115e8bbaade24d636", null ]
 ];
