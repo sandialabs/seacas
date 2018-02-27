@@ -306,21 +306,15 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
 
 int64_t Ioss::Utils::extract_id(const std::string &name_id)
 {
+  int64_t id = 0;
+
   std::vector<std::string> tokens = Ioss::tokenize(name_id, "_");
-
-  if (tokens.size() == 1) {
-    return 0;
+  if (tokens.size() > 1) {
+    // Check whether last token is an integer...
+    std::string str_id = tokens.back();
+    id = get_number(str_id);
   }
-
-  // Check whether last token is an integer...
-  std::string str_id = tokens.back();
-  std::size_t found  = str_id.find_first_not_of("0123456789");
-  if (found == std::string::npos) {
-    // All digits...
-    return std::atoi(str_id.c_str());
-  }
-
-  return 0;
+  return id;
 }
 
 std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int64_t id)
