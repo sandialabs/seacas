@@ -2005,6 +2005,9 @@ namespace {
         total_entities += count;
 
         auto block = new T(output_region.get_database(), name, type, count);
+        if (iblock->property_exists("original_block_order")) {
+	  block->property_add(iblock->get_property("original_block_order"));
+        }
         output_region.add(block);
         transfer_properties(iblock, block);
         transfer_fields(iblock, block, Ioss::Field::MESH);
