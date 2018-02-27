@@ -1265,13 +1265,15 @@ namespace Iofx {
         }
       }
 
+      // Maintain block order on output database...
+      block->property_add(Ioss::Property("original_block_order", used_blocks++));
+
       if (save_type != "null" && save_type != "") {
         block->property_update("original_topology_type", save_type);
       }
 
       block->property_add(Ioss::Property("global_entity_count", global_X_count[iblk]));
 
-      used_blocks++;
       offset += local_X_count[iblk];
 
       // See if this block is "omitted" by the calling code.

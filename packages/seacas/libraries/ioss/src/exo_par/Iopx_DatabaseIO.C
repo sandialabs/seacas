@@ -1115,6 +1115,9 @@ namespace Iopx {
         }
 #endif
 
+	// Maintain block order on output database...
+	io_block->property_add(Ioss::Property("original_block_order", iblk));
+
         if (save_type != "null" && save_type != "") {
           io_block->property_update("original_topology_type", save_type);
         }
