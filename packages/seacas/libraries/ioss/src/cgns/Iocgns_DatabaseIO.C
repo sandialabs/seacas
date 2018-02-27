@@ -398,6 +398,7 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("guid", zone));
         eblock->property_add(Ioss::Property("section", is));
         eblock->property_add(Ioss::Property("node_count", (int64_t)total_block_nodes));
+        eblock->property_add(Ioss::Property("original_block_order", zone));
 
         assert(is == 1); // For now, assume each zone has only a single element block.
         bool added = get_region()->add(eblock);
