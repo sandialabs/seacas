@@ -297,7 +297,6 @@ install install-user-lib
     ioinit
     ioss
     iotr
-    ioxf
     iovs
   : <target-os>bgq <location>$(install-root)/seacas/lib
   ;
@@ -328,7 +327,6 @@ install install-user-lib
     ioinit
     ioss
     iotr
-    ioxf
     iovs
   : <location>$(install-root)/seacas/lib
   ;
@@ -536,7 +534,6 @@ lib io_info_lib
     ioinit
     ioss
     iotr
-    ioxf
     iocgns
     /mpi//mpi
   : <define>USE_CGNS
@@ -1825,7 +1822,6 @@ exe io_shell
     ioinit
     ioss
     iotr
-    ioxf
     /mpi//mpi
   : <define>USE_CGNS
     <tag>@sierra-exec-tag
@@ -1838,7 +1834,6 @@ exe io_info
     ioinit
     ioss
     iotr
-    ioxf
     /mpi//mpi
   : <define>USE_CGNS
     <tag>@sierra-exec-tag
@@ -1851,7 +1846,6 @@ exe shell_to_hex
     ioinit
     ioss
     iotr
-    ioxf
     /mpi//mpi
   : <tag>@sierra-exec-tag
   ;
@@ -1863,7 +1857,6 @@ exe cth_pressure_map
     ioinit
     ioss
     iotr
-    ioxf
     /mpi//mpi
   : <tag>@sierra-exec-tag
   ;
@@ -1874,7 +1867,6 @@ exe struc_to_unstruc
     ioinit
     ioss
     iotr
-    ioxf
     /mpi//mpi
   : <tag>@sierra-exec-tag
   ;
