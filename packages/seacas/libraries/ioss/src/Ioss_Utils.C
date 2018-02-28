@@ -312,7 +312,7 @@ int64_t Ioss::Utils::extract_id(const std::string &name_id)
   if (tokens.size() > 1) {
     // Check whether last token is an integer...
     std::string str_id = tokens.back();
-    id = get_number(str_id);
+    id                 = get_number(str_id);
   }
   return id;
 }
@@ -2006,7 +2006,7 @@ namespace {
 
         auto block = new T(output_region.get_database(), name, type, count);
         if (iblock->property_exists("original_block_order")) {
-	  block->property_add(iblock->get_property("original_block_order"));
+          block->property_add(iblock->get_property("original_block_order"));
         }
         output_region.add(block);
         transfer_properties(iblock, block);

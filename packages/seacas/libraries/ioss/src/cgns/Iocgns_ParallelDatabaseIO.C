@@ -340,7 +340,7 @@ namespace Iocgns {
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
     int base = 1;
-    int i = 0;
+    int i    = 0;
     for (auto &block : decomp->m_elementBlocks) {
       std::string element_topo = block.topologyType;
       auto *eblock = new Ioss::ElementBlock(this, block.name(), element_topo, block.ioss_count());
