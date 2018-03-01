@@ -66,7 +66,7 @@ Excn::ExodusFile::ExodusFile(size_t which) : myLocation_(which)
     int   cpu_word_size = cpuWordSize_;
     int   io_wrd_size   = ioWordSize_;
     SMART_ASSERT(fileids_[which] == -1)(which)(fileids_[which]);
-    fileids_[which]     = ex_open(filenames_[which].c_str(), EX_READ | exodusMode_, &cpu_word_size,
+    fileids_[which] = ex_open(filenames_[which].c_str(), EX_READ | exodusMode_, &cpu_word_size,
                               &io_wrd_size, &version);
     if (fileids_[which] < 0) {
       std::cerr << "Cannot open file '" << filenames_[which] << "' - exiting" << '\n';
@@ -130,7 +130,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
     keepOpen_ = false;
     std::cout << "Single file mode... (Max open = " << max_files << ")\n\n";
   }
-  
+
   float version = 0.0;
 
   // create exo names
