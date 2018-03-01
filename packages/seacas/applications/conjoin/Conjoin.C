@@ -238,7 +238,7 @@ namespace {
                                std::vector<U> &              global_sets,
                                std::vector<Excn::Mesh<INT>> &local_mesh,
                                std::vector<std::vector<U>> &local_sets, std::vector<T> &values,
-                               size_t p, int time_step, int time_step_out);
+                               size_t p, Excn::ExodusFile &id, int time_step, int time_step_out);
 
   void get_variable_params(int id, Excn::Variables &vars, const StringIdVector &variable_list);
 
@@ -487,10 +487,12 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
   T t_min = FLT_MAX;
   for (size_t p = part_count; p > 0; p--) {
+
+    Excn::ExodusFile id(p - 1);
     bool           used = false;
-    int            nts  = ex_inquire_int(Excn::ExodusFile(p - 1), EX_INQ_TIME);
+    int            nts  = ex_inquire_int(id, EX_INQ_TIME);
     std::vector<T> times(nts);
-    ex_get_all_times(Excn::ExodusFile(p - 1), times.data());
+    ex_get_all_times(id, times.data());
 
     // A database will include all times from step 0 up to the
     // last time that is less than t_min on the following database.
@@ -862,7 +864,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
       std::cerr << time_stamp(tsFormat) << "Element Variables...\n";
     }
     if (element_vars.count(Excn::IN) > 0) {
-      read_write_master_values(element_vars, global, glob_blocks, local_mesh, blocks, values, p,
+      read_write_master_values(element_vars, global, glob_blocks, local_mesh, blocks, values, p, id,
                                global_times[time_step].localStepNumber, time_step_out);
     }
 
@@ -881,7 +883,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
       std::cerr << time_stamp(tsFormat) << "Sideset Variables...\n";
     }
     if (sideset_vars.count(Excn::IN) > 0) {
-      read_write_master_values(sideset_vars, global, glob_ssets, local_mesh, sidesets, values, p,
+      read_write_master_values(sideset_vars, global, glob_ssets, local_mesh, sidesets, values, p, id, 
                                global_times[time_step].localStepNumber, time_step_out);
     }
 
@@ -891,7 +893,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
       std::cerr << time_stamp(tsFormat) << "Nodeset Variables...\n";
     }
     if (nodeset_vars.count(Excn::IN) > 0) {
-      read_write_master_values(nodeset_vars, global, glob_nsets, local_mesh, nodesets, values, p,
+      read_write_master_values(nodeset_vars, global, glob_nsets, local_mesh, nodesets, values, p, id, 
                                global_times[time_step].localStepNumber, time_step_out);
     }
 
@@ -2901,11 +2903,9 @@ namespace {
                                std::vector<U> &              global_sets,
                                std::vector<Excn::Mesh<INT>> &local_mesh,
                                std::vector<std::vector<U>> &local_sets, std::vector<T> &values,
-                               size_t p, int time_step, int time_step_out)
+                               size_t p, Excn::ExodusFile &id, int time_step, int time_step_out)
   {
     int error = 0;
-
-    Excn::ExodusFile id(p);
     int              id_out = Excn::ExodusFile::output(); // output file identifier
 
     size_t max_size = 0;
