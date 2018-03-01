@@ -489,9 +489,9 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
   for (size_t p = part_count; p > 0; p--) {
 
     Excn::ExodusFile id(p - 1);
-    bool           used = false;
-    int            nts  = ex_inquire_int(id, EX_INQ_TIME);
-    std::vector<T> times(nts);
+    bool             used = false;
+    int              nts  = ex_inquire_int(id, EX_INQ_TIME);
+    std::vector<T>   times(nts);
     ex_get_all_times(id, times.data());
 
     // A database will include all times from step 0 up to the
@@ -883,8 +883,8 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
       std::cerr << time_stamp(tsFormat) << "Sideset Variables...\n";
     }
     if (sideset_vars.count(Excn::IN) > 0) {
-      read_write_master_values(sideset_vars, global, glob_ssets, local_mesh, sidesets, values, p, id, 
-                               global_times[time_step].localStepNumber, time_step_out);
+      read_write_master_values(sideset_vars, global, glob_ssets, local_mesh, sidesets, values, p,
+                               id, global_times[time_step].localStepNumber, time_step_out);
     }
 
     // ========================================================================
@@ -893,8 +893,8 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
       std::cerr << time_stamp(tsFormat) << "Nodeset Variables...\n";
     }
     if (nodeset_vars.count(Excn::IN) > 0) {
-      read_write_master_values(nodeset_vars, global, glob_nsets, local_mesh, nodesets, values, p, id, 
-                               global_times[time_step].localStepNumber, time_step_out);
+      read_write_master_values(nodeset_vars, global, glob_nsets, local_mesh, nodesets, values, p,
+                               id, global_times[time_step].localStepNumber, time_step_out);
     }
 
     // ========================================================================
@@ -2905,8 +2905,8 @@ namespace {
                                std::vector<std::vector<U>> &local_sets, std::vector<T> &values,
                                size_t p, Excn::ExodusFile &id, int time_step, int time_step_out)
   {
-    int error = 0;
-    int              id_out = Excn::ExodusFile::output(); // output file identifier
+    int error  = 0;
+    int id_out = Excn::ExodusFile::output(); // output file identifier
 
     size_t max_size = 0;
     for (size_t b = 0; b < global.count(vars.objectType); b++) {
