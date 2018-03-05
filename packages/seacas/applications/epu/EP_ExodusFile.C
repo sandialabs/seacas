@@ -262,7 +262,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
     }
 
     if (((si.debug() & 64) != 0) || p == 0 || p == partCount_ - 1) {
-      std::cout << "[" << cycle << "] Input(" << p << "): '" << name.c_str() << "'" << '\n';
+      std::cout << "[" << cycle << "] Input(" << p << "): '" << name << "'" << '\n';
       if (((si.debug() & 64) == 0) && p == 0) {
         std::cout << "..." << '\n';
       }

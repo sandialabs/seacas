@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     }
   }
   else {
-    std::fstream infile(input_files[0].c_str());
+    std::fstream infile(input_files[0]);
     if (!infile.good()) {
       std::cerr << "APREPRO: ERROR: Could not open file: " << input_files[0] << '\n';
       return 0;
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
       if (result) {
         if (input_files.size() > 1) {
-          std::ofstream ofile(input_files[1].c_str());
+          std::ofstream ofile(input_files[1]);
           if (!quiet) {
             auto comment = aprepro.getsym("_C_")->value.svar;
             ofile << comment << " Algebraic Preprocessor (Aprepro) version " << aprepro.version()

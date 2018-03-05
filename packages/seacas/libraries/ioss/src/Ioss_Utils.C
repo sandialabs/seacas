@@ -1168,7 +1168,7 @@ void Ioss::Utils::input_file(const std::string &file_name, std::vector<std::stri
   if (file_name.length() != 0) {
     // Open the file and read into the vector...
     std::string   input_line;
-    std::ifstream infile(file_name.c_str());
+    std::ifstream infile(file_name);
     lines->push_back(file_name.substr(0, max_line_length));
     while (!std::getline(infile, input_line).fail()) {
       if (max_line_length == 0 || input_line.length() <= max_line_length) {
