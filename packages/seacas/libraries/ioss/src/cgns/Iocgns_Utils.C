@@ -660,7 +660,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
                           CG_PointRange, 2, &bc_range[idx], &bc_idx));
       CGERR(cg_goto(file_ptr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0,
                     "end"));
-      CGERR(cg_famname_write(bc.m_bcName.c_str()));
+      CGERR(cg_famname_write(bc.m_famName.c_str()));
       CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
       idx += 6;
     }
@@ -1114,7 +1114,8 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
   cgsize_t range[6];
   for (int ibc = 0; ibc < num_bcs; ibc++) {
-    char              boconame[33];
+    char              boco_name[33];
+    char              fam_name[33];
     CG_BCType_t       bocotype;
     CG_PointSetType_t ptset_type;
     cgsize_t          npnts;
@@ -1122,14 +1123,17 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     CG_DataType_t     NormalDataType;
     int               ndataset;
 
-    // All we really want from this is 'boconame'
-    CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type,
+    // All we really want from this is 'boco_name'
+    CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
                            &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
 
     if (bocotype == CG_FamilySpecified) {
-      // Need to get boconame from cg_famname_read
+      // Get family name associated with this boco_name
       CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
-      CGCHECKNP(cg_famname_read(boconame));
+      CGCHECKNP(cg_famname_read(fam_name));
+    }
+    else {
+      strncpy(fam_name, boco_name, 33);
     }
 
     CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
@@ -1139,20 +1143,20 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
                      (range[2] == range[5] ? 1 : 0);
     if (same_count != 1) {
-      std::cerr << "WARNING: CGNS: Skipping Boundary Condition '" << boconame << "' on block '"
+      std::cerr << "WARNING: CGNS: Skipping Boundary Condition '" << boco_name << "' on block '"
                 << block->name() << "'. It is applied to "
                 << (same_count == 2 ? "an edge" : "a vertex")
                 << ". This code only supports surfaces.\n";
       continue;
     }
-    Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(boconame);
+    Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
     if (sset == nullptr) {
       // Need to create a new sideset since didn't see this earlier.
       auto *db = block->get_database();
-      sset     = new Ioss::SideSet(db, boconame);
+      sset     = new Ioss::SideSet(db, fam_name);
       if (sset == nullptr) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Could not create sideset named '" << boconame << "' on block '"
+        errmsg << "ERROR: CGNS: Could not create sideset named '" << fam_name << "' on block '"
                << block->name() << "'.\n";
         IOSS_ERROR(errmsg);
       }
@@ -1171,8 +1175,8 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       // Determine overlap of surface with block (in parallel, a block may
       // be split among multiple processors and the block face this is applied
       // to may not exist on this decomposed block)
-      auto        bc   = Ioss::BoundaryCondition(boconame, range_beg, range_end);
-      std::string name = std::string(boconame) + "/" + block->name();
+      auto        bc   = Ioss::BoundaryCondition(boco_name, fam_name, range_beg, range_end);
+      std::string name = std::string(boco_name) + "/" + block->name();
 
       bc_subset_range(block, bc);
       block->m_boundaryConditions.push_back(bc);
@@ -1207,7 +1211,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     else {
       std::ostringstream errmsg;
       errmsg << "ERROR: CGNS: StructuredBlock '" << block->name()
-             << "' Did not find matching sideset with name '" << boconame << "'";
+             << "' Did not find matching sideset with name '" << boco_name << "'";
       IOSS_ERROR(errmsg);
     }
   }
