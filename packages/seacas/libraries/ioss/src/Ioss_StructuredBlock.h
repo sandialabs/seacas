@@ -58,9 +58,9 @@ namespace Ioss {
 
   struct BoundaryCondition
   {
-    BoundaryCondition(const std::string name, const Ioss::IJK_t range_beg,
+    BoundaryCondition(const std::string name, const std::string fam_name, const Ioss::IJK_t range_beg,
                       const Ioss::IJK_t range_end)
-        : m_bcName(std::move(name)), m_rangeBeg(std::move(range_beg)),
+        : m_bcName(std::move(name)), m_famName(std::move(fam_name)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end))
     {
 #ifndef NDEBUG
@@ -99,7 +99,8 @@ namespace Ioss {
     }
 
     std::string m_bcName;
-
+    std::string m_famName;
+    
     // These are potentially subsetted due to parallel decompositions...
     Ioss::IJK_t m_rangeBeg;
     Ioss::IJK_t m_rangeEnd;
