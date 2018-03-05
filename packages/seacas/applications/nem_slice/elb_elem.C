@@ -907,8 +907,6 @@ template <typename INT>
 int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT side_nodes[],
                 const int skip_check, const int partial_adj)
 {
-  const char *func_name = "get_side_id";
-
   int dup, location[9];
   int count;
   /*  min_match for hex elements means that min_match+1 nodes
@@ -1043,10 +1041,16 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
       return 0;
     }
 
-    /* SIDE 1 */
+    /* SIDE 1, 3, or 4 */
     if ((num = in_list(connect[0], nsnodes, side_nodes)) >= 0) {
       if (side_nodes[(1 + num) % 3] == connect[1] && side_nodes[(2 + num) % 3] == connect[3]) {
         return 1;
+      }
+      if (side_nodes[(1 + num) % 3] == connect[3] && side_nodes[(2 + num) % 3] == connect[2]) {
+        return 3;
+      }
+      if (side_nodes[(1 + num) % 3] == connect[2] && side_nodes[(2 + num) % 3] == connect[1]) {
+        return 4;
       }
     }
 
@@ -1054,20 +1058,6 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
     if ((num = in_list(connect[1], nsnodes, side_nodes)) >= 0) {
       if (side_nodes[(1 + num) % 3] == connect[2] && side_nodes[(2 + num) % 3] == connect[3]) {
         return 2;
-      }
-    }
-
-    /* SIDE 3 */
-    if ((num = in_list(connect[0], nsnodes, side_nodes)) >= 0) {
-      if (side_nodes[(1 + num) % 3] == connect[3] && side_nodes[(2 + num) % 3] == connect[2]) {
-        return 3;
-      }
-    }
-
-    /* SIDE 4 */
-    if ((num = in_list(connect[0], nsnodes, side_nodes)) >= 0) {
-      if (side_nodes[(1 + num) % 3] == connect[2] && side_nodes[(2 + num) % 3] == connect[1]) {
-        return 4;
       }
     }
 
@@ -1283,10 +1273,6 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
             side_nodes[(3 + num) % 4] == connect[3]) {
           return 1;
         }
-      }
-
-      /* SIDE 2 */
-      if ((num = in_list(connect[0], nsnodes, side_nodes)) >= 0) {
         if (side_nodes[(1 + num) % 4] == connect[3] && side_nodes[(2 + num) % 4] == connect[2] &&
             side_nodes[(3 + num) % 4] == connect[1]) {
           return 2;
@@ -1305,41 +1291,33 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
 
     /* quad sides */
     if (nsnodes == 4 || nsnodes == 8 || nsnodes == 9) {
-      /* SIDE 1 */
       if ((num = in_list(connect[0], nsnodes, side_nodes)) >= 0) {
         if (side_nodes[(1 + num) % 4] == connect[1] && side_nodes[(2 + num) % 4] == connect[4] &&
             side_nodes[(3 + num) % 4] == connect[3]) {
           return 1;
         }
+        if (side_nodes[(1 + num) % 4] == connect[3] && side_nodes[(2 + num) % 4] == connect[5] &&
+            side_nodes[(3 + num) % 4] == connect[2]) {
+          return 3;
+        }
       }
 
-      /* SIDE 2 */
       if ((num = in_list(connect[1], nsnodes, side_nodes)) >= 0) {
         if (side_nodes[(1 + num) % 4] == connect[2] && side_nodes[(2 + num) % 4] == connect[5] &&
             side_nodes[(3 + num) % 4] == connect[4]) {
           return 2;
         }
       }
-
-      /* SIDE 3 */
-      if ((num = in_list(connect[0], nsnodes, side_nodes)) >= 0) {
-        if (side_nodes[(1 + num) % 4] == connect[3] && side_nodes[(2 + num) % 4] == connect[5] &&
-            side_nodes[(3 + num) % 4] == connect[2]) {
-          return 3;
-        }
-      }
     }
 
     /* triangle sides */
     else if (nsnodes == 3 || nsnodes == 6 || nsnodes == 7) {
-      /* SIDE 4 */
       if ((num = in_list(connect[0], nsnodes, side_nodes)) >= 0) {
         if (side_nodes[(1 + num) % 3] == connect[2] && side_nodes[(2 + num) % 3] == connect[1]) {
           return 4;
         }
       }
 
-      /* SIDE 5 */
       if ((num = in_list(connect[3], nsnodes, side_nodes)) >= 0) {
         if (side_nodes[(1 + num) % 3] == connect[4] && side_nodes[(2 + num) % 3] == connect[5]) {
           return 5;
@@ -1374,16 +1352,10 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
 
     /* 3D faces */
     else if (nsnodes == 3 || nsnodes == 4 || nsnodes == 6 || nsnodes == 7) {
-
-      /* SIDE 1 */
       if ((num = in_list(connect[0], nsnodes, side_nodes)) >= 0) {
         if (side_nodes[(1 + num) % 3] == connect[1] && side_nodes[(2 + num) % 3] == connect[2]) {
           return 1;
         }
-      }
-
-      /* SIDE 2 */
-      if ((num = in_list(connect[0], nsnodes, side_nodes)) >= 0) {
         if (side_nodes[(1 + num) % 3] == connect[2] && side_nodes[(2 + num) % 3] == connect[1]) {
           return 2;
         }
@@ -1404,6 +1376,9 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
         if (side_nodes[(1 + num) % 3] == connect[1] && side_nodes[(2 + num) % 3] == connect[4]) {
           return 1;
         }
+        if (side_nodes[(1 + num) % 3] == connect[4] && side_nodes[(2 + num) % 3] == connect[3]) {
+          return 4;
+        }
       }
 
       /* SIDE 2 */
@@ -1417,13 +1392,6 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
       if ((num = in_list(connect[2], nsnodes, side_nodes)) >= 0) {
         if (side_nodes[(1 + num) % 3] == connect[3] && side_nodes[(2 + num) % 3] == connect[4]) {
           return 3;
-        }
-      }
-
-      /* SIDE 4 */
-      if ((num = in_list(connect[0], nsnodes, side_nodes)) >= 0) {
-        if (side_nodes[(1 + num) % 3] == connect[4] && side_nodes[(2 + num) % 3] == connect[3]) {
-          return 4;
         }
       }
     }
@@ -1445,7 +1413,7 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
   default: {
     char err_buff[300];
     sprintf(err_buff, "fatal: unknown element type %d in function %s", static_cast<int>(etype),
-            func_name);
+            __func__);
     Gen_Error(0, err_buff);
     error_report();
     exit(1);
@@ -1477,8 +1445,6 @@ int get_side_id_hex_tet(const E_Type etype,     /* The element type */
                         int          nsnodes,   /* The number of side nodes */
                         const INT    side_nodes[]) /* The list of side node IDs */
 {
-  const char *func_name = "get_side_id_hex";
-
   int              nnodes, lcnt, i1, i2;
   std::vector<int> loc_node_ids(MAX_SIDE_NODES);
 
@@ -1504,150 +1470,74 @@ int get_side_id_hex_tet(const E_Type etype,     /* The element type */
   case TET8:
   case TET14:
   case TET15:
-    /* SIDE 1 */
-    if (in_list(1, lcnt, TOPTR(loc_node_ids)) >= 0 && in_list(2, lcnt, TOPTR(loc_node_ids)) >= 0 &&
-        in_list(4, lcnt, TOPTR(loc_node_ids)) >= 0) {
+    {
+    auto il1 = in_list(1, lcnt, TOPTR(loc_node_ids)) >= 0;
+    auto il2 = in_list(2, lcnt, TOPTR(loc_node_ids)) >= 0;
+    auto il3 = in_list(3, lcnt, TOPTR(loc_node_ids)) >= 0;
+    auto il4 = in_list(4, lcnt, TOPTR(loc_node_ids)) >= 0;
+    
+    if (il1 && il2 && il4) {
       return 1;
     }
 
-    /* SIDE 2 */
-    if (in_list(2, lcnt, TOPTR(loc_node_ids)) >= 0 && in_list(3, lcnt, TOPTR(loc_node_ids)) >= 0 &&
-        in_list(4, lcnt, TOPTR(loc_node_ids)) >= 0) {
+    if (il2 && il3 && il4) {
       return 2;
     }
 
-    /* SIDE 3 */
-    if (in_list(1, lcnt, TOPTR(loc_node_ids)) >= 0 && in_list(3, lcnt, TOPTR(loc_node_ids)) >= 0 &&
-        in_list(4, lcnt, TOPTR(loc_node_ids)) >= 0) {
+    if (il1 && il3 && il4) {
       return 3;
     }
 
-    /* SIDE 4 */
-    if (in_list(1, lcnt, TOPTR(loc_node_ids)) >= 0 && in_list(2, lcnt, TOPTR(loc_node_ids)) >= 0 &&
-        in_list(3, lcnt, TOPTR(loc_node_ids)) >= 0) {
+    if (il1 && il2 && il3) {
       return 4;
     }
-
+    }
     break;
 
   case HEX8:
   case HEX16:
   case HEX20:
   case HEX27:
-    /* SIDE 1 */
-    nnodes = 0;
-    if (in_list(1, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(2, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(5, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(6, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (nnodes > 2) {
+    {
+    auto il1 = in_list(1, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
+    auto il2 = in_list(2, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
+    auto il3 = in_list(3, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
+    auto il4 = in_list(4, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
+    auto il5 = in_list(5, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
+    auto il6 = in_list(6, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
+    auto il7 = in_list(7, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
+    auto il8 = in_list(8, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
+
+    if (il1 + il2 + il5 + il6 > 2) {
       return 1;
     }
 
-    /* SIDE 2 */
-    nnodes = 0;
-    if (in_list(2, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(3, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(6, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(7, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (nnodes > 2) {
+    if (il2 + il3 + il6 + il7 > 2) {
       return 2;
     }
 
-    /* SIDE 3 */
-    nnodes = 0;
-    if (in_list(3, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(4, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(7, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(8, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (nnodes > 2) {
+    if (il3 + il4 + il7 + il8 > 2) {
       return 3;
     }
 
-    /* SIDE 4 */
-    nnodes = 0;
-    if (in_list(1, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(4, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(5, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(8, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (nnodes > 2) {
+    if (il1 + il4 + il5 + il8 > 2) {
       return 4;
     }
 
-    /* SIDE 5 */
-    nnodes = 0;
-    if (in_list(1, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(2, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(3, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(4, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (nnodes > 2) {
+    if (il1 + il2 + il3 + il4 > 2) {
       return 5;
     }
 
-    /* SIDE 6 */
-    nnodes = 0;
-    if (in_list(5, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(6, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(7, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (in_list(8, lcnt, TOPTR(loc_node_ids)) >= 0) {
-      nnodes++;
-    }
-    if (nnodes > 2) {
+    if (il5 + il6 + il7 + il8 > 2) {
       return 6;
     }
-
+    }
     break;
 
   default: {
     char err_buff[300];
     sprintf(err_buff, "fatal: unknown element type %d in function %s", static_cast<int>(etype),
-            func_name);
+            __func__);
     Gen_Error(0, err_buff);
     error_report();
     exit(1);

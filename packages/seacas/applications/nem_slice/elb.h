@@ -42,7 +42,7 @@
 #include <string>
 #include <vector>
 
-#define ELB_VERSION "4.16"
+#define ELB_VERSION "4.17"
 #define UTIL_NAME "nem_slice"
 #define ELB_FALSE 0
 #define ELB_TRUE 1
