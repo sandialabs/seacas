@@ -47,12 +47,6 @@
 #define ELB_FALSE 0
 #define ELB_TRUE 1
 
-#if __cplusplus > 199711L
-#define TOPTR(x) x.data()
-#else
-#define TOPTR(x) (x.empty() ? nullptr : &x[0])
-#endif
-
 /* Macro for maximum value */
 #ifndef MAX
 #define MAX(x, y) ((x > y) ? x : y)

@@ -1743,7 +1743,7 @@ int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
   if ((weight->type & EL_BLK) && (weight->ow_read)) {
     if (weight->elemblk.size() > 1) {
       /* start by sorting the two arrays by the element block number */
-      sort2(weight->elemblk.size(), TOPTR(weight->elemblk), TOPTR(weight->elemblk_wgt));
+      sort2(weight->elemblk.size(), weight->elemblk.data(), weight->elemblk_wgt.data());
 
       /* now loop through, and make sure that we don't have multiple values */
       for (cnt = 1; cnt < (int)weight->elemblk.size(); cnt++) {
