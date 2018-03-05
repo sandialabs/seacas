@@ -463,7 +463,7 @@ namespace {
         exit(EXIT_FAILURE);
       }
 
-      std::ifstream decomp_file(filename.c_str(), std::ios::in);
+      std::ifstream decomp_file(filename, std::ios::in);
       if (!decomp_file.good()) {
         OUTPUT << "\nERROR: Element decomposition file '" << filename
                << "' does not exist or could not be opened.\n";

@@ -1999,7 +1999,7 @@ namespace {
   {
     // Write out Mesh info
 
-    std::cout << " Title: " << mesh.title.c_str() << "\n\n";
+    std::cout << " Title: " << mesh.title << "\n\n";
     std::cout << " Number of coordinates per node       =" << std::setw(9) << mesh.count(Excn::DIM)
               << "\n";
     std::cout << " Number of nodes                      =" << std::setw(9) << mesh.count(Excn::NODE)

@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
       bool result                    = aprepro.parse_stream(std::cin, "standard input");
       if (result) {
         if (!output_file.empty()) {
-          std::ofstream ofile(output_file.c_str());
+          std::ofstream ofile(output_file);
           ofile << aprepro.parsing_results().str();
         }
         else {
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
       bool result = aprepro.parse_stream(infile, argv[ai]);
       if (result) {
         if (!output_file.empty()) {
-          std::ofstream ofile(output_file.c_str());
+          std::ofstream ofile(output_file);
           ofile << aprepro.parsing_results().str();
         }
         else {

@@ -184,7 +184,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
       SMART_ASSERT(ioWordSize_ == io_wrd_size)(ioWordSize_)(io_wrd_size);
     }
 
-    std::cout << "Part " << p + 1 << ": '" << name.c_str() << "'" << '\n';
+    std::cout << "Part " << p + 1 << ": '" << name << "'" << '\n';
   }
 
   maximumNameLength_ = overall_max_name_length;

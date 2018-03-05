@@ -2395,7 +2395,7 @@ namespace {
     // Write out Global info
 
     if (rank == 0) {
-      std::cout << " Title: " << global.title.c_str() << "\n\n";
+      std::cout << " Title: " << global.title << "\n\n";
       std::cout << " Number of coordinates per node       =" << std::setw(12)
                 << global.dimensionality << "\n";
       std::cout << " Number of nodes                      =" << std::setw(12) << global.nodeCount
@@ -3160,7 +3160,7 @@ namespace {
       str << osvi.szCSDVersion;
       DWORD build = osvi.dwBuildNumber & 0xFFFF;
       str << " (Build " << build << ")";
-      os += str.str().c_str();
+      os += str.str();
     }
     info += os;
     const char *sinfo = info.c_str();
