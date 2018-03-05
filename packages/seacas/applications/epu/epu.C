@@ -860,7 +860,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       // c.2.  Write Global Node Number Map
       if (global.needNodeMap) {
         LOG("Writing global node number map...\n");
-        error = ex_put_id_map(ExodusFile::output(), EX_NODE_MAP, TOPTR(global_node_map));
+        error = ex_put_id_map(ExodusFile::output(), EX_NODE_MAP, global_node_map.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -869,7 +869,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       if (global.needElementMap) {
         LOG("Writing out master global elements information...\n");
         if (!global_element_map.empty()) {
-          error = ex_put_id_map(ExodusFile::output(), EX_ELEM_MAP, TOPTR(global_element_map));
+          error = ex_put_id_map(ExodusFile::output(), EX_ELEM_MAP, global_element_map.data());
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -957,8 +957,8 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     if (!interface.append()) {
       error = ex_put_all_var_param(
           ExodusFile::output(), global_vars.count(OUT), nodal_vars.count(OUT),
-          element_vars.count(OUT), TOPTR(elem_truth_table), nodeset_vars.count(OUT),
-          TOPTR(global.truthTable[NSET]), sideset_vars.count(OUT), TOPTR(global.truthTable[SSET]));
+          element_vars.count(OUT), elem_truth_table.data(), nodeset_vars.count(OUT),
+          global.truthTable[NSET].data(), sideset_vars.count(OUT), global.truthTable[SSET].data());
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -1161,7 +1161,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
           }
         }
         error = ex_get_var(id, time_step + 1, EX_GLOBAL, 0, 0, global_vars.count(),
-                           TOPTR(global_values));
+                           global_values.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -1173,7 +1173,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
           }
         }
         error = ex_put_var(ExodusFile::output(), time_step_out, EX_GLOBAL, 1, 0,
-                           global_vars.count(OUT), TOPTR(output_global_values));
+                           global_vars.count(OUT), output_global_values.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -1184,7 +1184,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
           for (p = 1; p < part_count; p++) {
             ExodusFile idp(p);
             error = ex_get_var(idp, time_step + 1, EX_GLOBAL, 0, 0, global_vars.count(IN),
-                               TOPTR(proc_global_values));
+                               proc_global_values.data());
             if (error < 0) {
               exodus_error(__LINE__);
             }
@@ -1228,7 +1228,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         size_t node_count = local_mesh[p].nodeCount;
         for (int i = 0; i < nodal_vars.count(IN); i++) {
           if (nodal_vars.index_[i] > 0) {
-            error = ex_get_var(id, time_step + 1, EX_NODAL, i + 1, 0, node_count, TOPTR(values));
+            error = ex_get_var(id, time_step + 1, EX_NODAL, i + 1, 0, node_count, values.data());
             if (error < 0) {
               exodus_error(__LINE__);
             }
@@ -1247,7 +1247,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
               }
             }
 
-            T *local_nodal_values  = TOPTR(values);
+            T *local_nodal_values  = values.data();
             T *global_nodal_values = &master_nodal_values[i_out][0];
             if (interface.sum_shared_nodes()) {
               // sum values into master nodal value information. Note
@@ -1414,14 +1414,14 @@ namespace {
     std::vector<char> tags(num_frames);
 
     int error =
-        ex_get_coordinate_frames(id, &num_frames, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
+      ex_get_coordinate_frames(id, &num_frames, ids.data(), coordinates.data(), tags.data());
     if (error < 0) {
       exodus_error(__LINE__);
     }
 
     // Now output to the combined file...
     error =
-        ex_put_coordinate_frames(id_out, num_frames, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
+      ex_put_coordinate_frames(id_out, num_frames, ids.data(), coordinates.data(), tags.data());
     if (error < 0) {
       exodus_error(__LINE__);
     }
@@ -1542,7 +1542,7 @@ namespace {
     get_put_coordinate_names(ExodusFile(0), ExodusFile::output(), global.dimensionality);
 
     // Write out coordinate information
-    error = ex_put_coord(ExodusFile::output(), TOPTR(x), TOPTR(y), TOPTR(z));
+    error = ex_put_coord(ExodusFile::output(), x.data(), y.data(), z.data());
     if (error < 0) {
       exodus_error(__LINE__);
     }
@@ -1577,7 +1577,7 @@ namespace {
     std::vector<T> local_y(num_nodes);
     std::vector<T> local_z(num_nodes);
 
-    error = ex_get_coord(id, TOPTR(local_x), TOPTR(local_y), TOPTR(local_z));
+    error = ex_get_coord(id, local_x.data(), local_y.data(), local_z.data());
     if (error < 0) {
       exodus_error(__LINE__);
     }
@@ -1690,7 +1690,7 @@ namespace {
     for (int p = 0; p < part_count; p++) {
       ExodusFile id(p);
 
-      error = ex_get_ids(id, EX_ELEM_BLOCK, TOPTR(block_id));
+      error = ex_get_ids(id, EX_ELEM_BLOCK, block_id.data());
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -1730,7 +1730,7 @@ namespace {
         }
 
         std::vector<char> name(Excn::ExodusFile::max_name_length() + 1);
-        error = ex_get_name(id, EX_ELEM_BLOCK, block_id[b], TOPTR(name));
+        error = ex_get_name(id, EX_ELEM_BLOCK, block_id[b], name.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -1859,7 +1859,7 @@ namespace {
           std::vector<INT> local_linkage(maximum_nodes);
 
           ex_entity_id bid = blocks[p][b].id;
-          error = ex_get_conn(id, EX_ELEM_BLOCK, bid, TOPTR(local_linkage), nullptr, nullptr);
+          error = ex_get_conn(id, EX_ELEM_BLOCK, bid, local_linkage.data(), nullptr, nullptr);
           if (error < 0) {
             std::cerr << "ERROR: (EPU) Cannot get element block connectivity for block " << bid
                       << " on part " << p + start_part << ".\n";
@@ -1888,7 +1888,7 @@ namespace {
             size_t         max_attr = blocks[p][b].entity_count() * blocks[p][b].attributeCount;
             std::vector<T> local_attr(max_attr);
 
-            error = ex_get_attr(id, EX_ELEM_BLOCK, blocks[p][b].id, TOPTR(local_attr));
+            error = ex_get_attr(id, EX_ELEM_BLOCK, blocks[p][b].id, local_attr.data());
             if (error < 0) {
               exodus_error(__LINE__);
             }
@@ -1962,7 +1962,7 @@ namespace {
       size_t offset = 0;
       for (int p = 0; p < part_count; p++) {
         ExodusFile id(p);
-        error = ex_get_id_map(id, EX_ELEM_MAP, TOPTR(global_element_numbers[p]));
+        error = ex_get_id_map(id, EX_ELEM_MAP, global_element_numbers[p].data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -2047,7 +2047,7 @@ namespace {
       for (int p = 0; p < part_count; p++) {
         size_t element_count = local_mesh[p].elementCount;
         element_map.resize(element_count);
-        int error = ex_get_id_map(ExodusFile(p), EX_ELEM_MAP, TOPTR(element_map));
+        int error = ex_get_id_map(ExodusFile(p), EX_ELEM_MAP, element_map.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -2144,7 +2144,7 @@ namespace {
     int    error  = 0;
     for (int p = 0; p < part_count; p++) {
       ExodusFile id(p);
-      error = ex_get_id_map(id, EX_NODE_MAP, TOPTR(global_node_numbers[p]));
+      error = ex_get_id_map(id, EX_NODE_MAP, global_node_numbers[p].data());
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -2430,7 +2430,7 @@ namespace {
 
       // Get the ids for these
       ids.resize(ns_count);
-      int error = ex_get_ids(id, EX_NODE_SET, TOPTR(ids));
+      int error = ex_get_ids(id, EX_NODE_SET, ids.data());
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -2464,7 +2464,7 @@ namespace {
       auto IE = set_ids.end();
 
       // Get the ids again so we can map current order back to file order...
-      int error = ex_get_ids(id, EX_NODE_SET, TOPTR(ids));
+      int error = ex_get_ids(id, EX_NODE_SET, ids.data());
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -2480,7 +2480,7 @@ namespace {
         i++;
       }
 
-      error = ex_get_sets(id, set_ids.size(), TOPTR(sets));
+      error = ex_get_sets(id, set_ids.size(), sets.data());
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -2491,7 +2491,7 @@ namespace {
         nodesets[p][iset].dfCount   = sets[iset].num_distribution_factor;
 
         std::vector<char> name(Excn::ExodusFile::max_name_length() + 1);
-        error = ex_get_name(id, EX_NODE_SET, nodesets[p][iset].id, TOPTR(name));
+        error = ex_get_name(id, EX_NODE_SET, nodesets[p][iset].id, name.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -2559,12 +2559,12 @@ namespace {
             ns_nodes.resize(size);
             ns_df.resize(size);
 
-            int error = ex_get_set(id, EX_NODE_SET, nodesets[p][ns].id, TOPTR(ns_nodes), nullptr);
+            int error = ex_get_set(id, EX_NODE_SET, nodesets[p][ns].id, ns_nodes.data(), nullptr);
             if (error < 0) {
               exodus_error(__LINE__);
             }
             if (nodesets[p][ns].dfCount > 0) {
-              ex_get_set_dist_fact(id, EX_NODE_SET, nodesets[p][ns].id, TOPTR(ns_df));
+              ex_get_set_dist_fact(id, EX_NODE_SET, nodesets[p][ns].id, ns_df.data());
             }
             else {
               std::fill(ns_df.begin(), ns_df.end(), 1.0);
@@ -2620,7 +2620,7 @@ namespace {
             NodeSet<INT> &nset   = nodesets[p][ns];
             size_t        nnodes = nset.entity_count();
             nset.nodeOrderMap.resize(nnodes);
-            int error = ex_get_set(id, EX_NODE_SET, nset.id, TOPTR(nset.nodeOrderMap), nullptr);
+            int error = ex_get_set(id, EX_NODE_SET, nset.id, nset.nodeOrderMap.data(), nullptr);
             if (error < 0) {
               exodus_error(__LINE__);
             }
@@ -2650,12 +2650,12 @@ namespace {
     }
     for (auto &glob_set : glob_sets) {
       int error =
-          ex_put_set(exoid, EX_NODE_SET, glob_set.id, TOPTR(glob_set.nodeSetNodes), nullptr);
+	ex_put_set(exoid, EX_NODE_SET, glob_set.id, glob_set.nodeSetNodes.data(), nullptr);
       if (error < 0) {
         exodus_error(__LINE__);
       }
       if (glob_set.dfCount > 0) {
-        error = ex_put_set_dist_fact(exoid, EX_NODE_SET, glob_set.id, TOPTR(glob_set.distFactors));
+        error = ex_put_set_dist_fact(exoid, EX_NODE_SET, glob_set.id, glob_set.distFactors.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -2687,7 +2687,7 @@ namespace {
 
         // Get the ids for these
         ids.resize(ss_count);
-        int error = ex_get_ids(id, EX_SIDE_SET, TOPTR(ids));
+        int error = ex_get_ids(id, EX_SIDE_SET, ids.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -2724,7 +2724,7 @@ namespace {
         auto IE = set_ids.end();
 
         // Get the ids again so we can map current order back to file order...
-        int error = ex_get_ids(id, EX_SIDE_SET, TOPTR(ids));
+        int error = ex_get_ids(id, EX_SIDE_SET, ids.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -2740,7 +2740,7 @@ namespace {
           j++;
         }
 
-        error = ex_get_sets(id, set_ids.size(), TOPTR(exosets));
+        error = ex_get_sets(id, set_ids.size(), exosets.data());
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -2918,7 +2918,7 @@ namespace {
         }
       }
       int error = ex_put_var(id_out, step, EX_ELEM_BLOCK, variable, glob_blocks[b].id,
-                             glob_blocks[b].entity_count(), TOPTR(proc));
+                             glob_blocks[b].entity_count(), proc.data());
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -3066,7 +3066,7 @@ namespace {
           // is the only variable...
           local[p].truthTable[object_type].resize(input_truth_table_length);
           int error = ex_get_truth_table(id, vars.type(), global.count(object_type), vars.count(IN),
-                                         TOPTR(local[p].truthTable[object_type]));
+                                         local[p].truthTable[object_type].data());
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -3406,7 +3406,7 @@ namespace {
 
               if (local_mesh[p].truthTable[vars.objectType][input_truth_table_loc] > 0) {
                 error = ex_get_var(id, time_step + 1, exodus_object_type(vars.objectType), i + 1,
-                                   local_sets[p][b].id, entity_count, TOPTR(values));
+                                   local_sets[p][b].id, entity_count, values.data());
                 if (error < 0) {
                   exodus_error(__LINE__);
                 }

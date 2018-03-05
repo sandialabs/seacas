@@ -42,12 +42,6 @@
 #include <cstring>    // for strncasecmp
 #include <vector>     // for vector
 
-#if __cplusplus > 199711L
-#define TOPTR(x) x.data()
-#else
-#define TOPTR(x) (x.empty() ? nullptr : &x[0])
-#endif
-
 /*****************************************************************************/
 /*****************************************************************************/
 namespace {
@@ -1471,10 +1465,10 @@ int get_side_id_hex_tet(const E_Type etype,     /* The element type */
   case TET14:
   case TET15:
     {
-    auto il1 = in_list(1, lcnt, TOPTR(loc_node_ids)) >= 0;
-    auto il2 = in_list(2, lcnt, TOPTR(loc_node_ids)) >= 0;
-    auto il3 = in_list(3, lcnt, TOPTR(loc_node_ids)) >= 0;
-    auto il4 = in_list(4, lcnt, TOPTR(loc_node_ids)) >= 0;
+    auto il1 = in_list(1, lcnt, loc_node_ids.data()) >= 0;
+    auto il2 = in_list(2, lcnt, loc_node_ids.data()) >= 0;
+    auto il3 = in_list(3, lcnt, loc_node_ids.data()) >= 0;
+    auto il4 = in_list(4, lcnt, loc_node_ids.data()) >= 0;
     
     if (il1 && il2 && il4) {
       return 1;
@@ -1499,14 +1493,14 @@ int get_side_id_hex_tet(const E_Type etype,     /* The element type */
   case HEX20:
   case HEX27:
     {
-    auto il1 = in_list(1, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
-    auto il2 = in_list(2, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
-    auto il3 = in_list(3, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
-    auto il4 = in_list(4, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
-    auto il5 = in_list(5, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
-    auto il6 = in_list(6, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
-    auto il7 = in_list(7, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
-    auto il8 = in_list(8, lcnt, TOPTR(loc_node_ids)) >= 0 ? 1 : 0;
+    auto il1 = in_list(1, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
+    auto il2 = in_list(2, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
+    auto il3 = in_list(3, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
+    auto il4 = in_list(4, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
+    auto il5 = in_list(5, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
+    auto il6 = in_list(6, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
+    auto il7 = in_list(7, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
+    auto il8 = in_list(8, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
 
     if (il1 + il2 + il5 + il6 > 2) {
       return 1;

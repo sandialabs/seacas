@@ -56,12 +56,6 @@
 #include <vector>              // for vector
 template <typename T, typename INT> class Globals;
 
-#if __cplusplus > 199711L
-#define TOPTR(x) x.data()
-#else
-#define TOPTR(x) (x.empty() ? nullptr : &x[0])
-#endif
-
 #ifndef TRUE
 #define TRUE 1
 #define FALSE 0
@@ -2176,13 +2170,13 @@ void NemSpread<T, INT>::read_node_sets(int exoid, INT *num_nodes_in_node_set, IN
 
         /* Read in the part of the node set that will fit in the message */
         check_exodus_error(ex_get_partial_set(exoid, EX_NODE_SET, Node_Set_Ids[i], (istart_ns + 1),
-                                              num_node_per_message, TOPTR(node_set), nullptr),
+                                              num_node_per_message, node_set.data(), nullptr),
                            "ex_get_partial_set");
 
         if (num_df_in_nsets[i] > 0) {
           check_exodus_error(ex_get_partial_set_dist_fact(exoid, EX_NODE_SET, Node_Set_Ids[i],
                                                           (istart_ns + 1), num_node_per_message,
-                                                          TOPTR(node_set_df)),
+                                                          node_set_df.data()),
                              "ex_get_partial_node_set_df");
         }
 
@@ -2577,8 +2571,8 @@ void NemSpread<T, INT>::read_side_sets(int exoid, INT *num_elem_in_ssets, INT *n
         /* Read in the part of the side set that will fit in the message. */
 
         check_exodus_error(ex_get_partial_set(exoid, EX_SIDE_SET, Side_Set_Ids[i], (istart_ss + 1),
-                                              num_elem_per_message, TOPTR(ss_elem_list),
-                                              TOPTR(ss_side_list)),
+                                              num_elem_per_message, ss_elem_list.data(),
+                                              ss_side_list.data()),
                            "ex_get_partial_set");
 
         /* Fill in the distribution factor pointer vector */
@@ -2754,7 +2748,7 @@ void NemSpread<T, INT>::read_side_sets(int exoid, INT *num_elem_in_ssets, INT *n
           /* Read in the part of the side set df's that will fit in the msg. */
           check_exodus_error(ex_get_partial_set_dist_fact(exoid, EX_SIDE_SET, Side_Set_Ids[i],
                                                           (istart_ss + 1), num_elem_per_message,
-                                                          TOPTR(ss_dist_fact)),
+                                                          ss_dist_fact.data()),
                              "ex_get_partial_set_dist_fact");
 
           /*

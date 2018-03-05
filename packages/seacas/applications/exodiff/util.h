@@ -37,12 +37,6 @@
 
 #include "terminal_color.h"
 
-#if __cplusplus > 199711L
-#define TOPTR(x) x.data()
-#else
-#define TOPTR(x) (x.empty() ? nullptr : &x[0])
-#endif
-
 char **get_name_array(int size, int length);
 void   free_name_array(char **names, int size);
 
