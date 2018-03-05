@@ -58,9 +58,23 @@ namespace Ioss {
 
   struct BoundaryCondition
   {
-    BoundaryCondition(const std::string name, const std::string fam_name, const Ioss::IJK_t range_beg,
+    BoundaryCondition(const std::string name, const std::string fam_name,
+                      const Ioss::IJK_t range_beg, const Ioss::IJK_t range_end)
+        : m_bcName(std::move(name)), m_famName(std::move(fam_name)),
+          m_rangeBeg(std::move(range_beg)), m_rangeEnd(std::move(range_end))
+    {
+#ifndef NDEBUG
+      int same_count = (m_rangeBeg[0] == m_rangeEnd[0] ? 1 : 0) +
+                       (m_rangeBeg[1] == m_rangeEnd[1] ? 1 : 0) +
+                       (m_rangeBeg[2] == m_rangeEnd[2] ? 1 : 0);
+      assert(same_count == 1 || (same_count == 3 && m_rangeBeg[0] == 0));
+#endif
+    }
+
+    // Deprecated... Use the constructor above with both name and fam_name
+    BoundaryCondition(const std::string name, const Ioss::IJK_t range_beg,
                       const Ioss::IJK_t range_end)
-        : m_bcName(std::move(name)), m_famName(std::move(fam_name)), m_rangeBeg(std::move(range_beg)),
+        : m_bcName(name), m_famName(std::move(name)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end))
     {
 #ifndef NDEBUG
@@ -100,7 +114,7 @@ namespace Ioss {
 
     std::string m_bcName;
     std::string m_famName;
-    
+
     // These are potentially subsetted due to parallel decompositions...
     Ioss::IJK_t m_rangeBeg;
     Ioss::IJK_t m_rangeEnd;
