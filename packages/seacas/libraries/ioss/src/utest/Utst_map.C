@@ -1,4 +1,5 @@
 #define CATCH_CONFIG_MAIN
+#include <Ioss_ConcreteVariableType.h>
 #include <Ioss_Field.h>
 #include <Ioss_Map.h>
 #include <algorithm>
@@ -270,19 +271,22 @@ TEST_CASE("test map_data sequential", "[map_data_seq]")
       REQUIRE(my_map.is_sequential(true));
       REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 
+      Ioss::StorageInitializer();
+      Ioss::Field int_field("int_field", Ioss::Field::INTEGER, "invalid", Ioss::Field::MESH, count);
+
       SECTION("explicit map")
       {
         // Now try 'map_data' call which is basically a bulk local-global.
         // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
         std::vector<int> local(count);
         std::iota(local.begin(), local.end(), 1);
-        my_map.map_data(local.data(), count);
+        my_map.map_data(local.data(), int_field, count);
         REQUIRE(init == local);
 
         SECTION("reverse_map")
         {
           // If now reverse 'local', should get the original 1..count back
-          my_map.reverse_map_data(local.data(), count);
+          my_map.reverse_map_data(local.data(), int_field, count);
           std::vector<int> seq(count);
           std::iota(seq.begin(), seq.end(), 1);
           REQUIRE(local == seq);
@@ -294,7 +298,7 @@ TEST_CASE("test map_data sequential", "[map_data_seq]")
         // Now try 'map_data' call which is basically a bulk local-global.
         // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
         std::vector<int> local(count);
-        my_map.map_implicit_data(local.data(), count, 0);
+        my_map.map_implicit_data(local.data(), int_field, count, 0);
         REQUIRE(init == local);
       }
     }
@@ -320,19 +324,22 @@ TEST_CASE("test map_data random", "[map_data_ran]")
   REQUIRE(!my_map.is_sequential(true));
   REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 
+  Ioss::StorageInitializer();
+  Ioss::Field int_field("int_field", Ioss::Field::INTEGER, "invalid", Ioss::Field::MESH, count);
+
   SECTION("explicit map")
   {
     // Now try 'map_data' call which is basically a bulk local-global.
     // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
     std::vector<int> local(count);
     std::iota(local.begin(), local.end(), 1);
-    my_map.map_data(local.data(), count);
+    my_map.map_data(local.data(), int_field, count);
     REQUIRE(init == local);
 
     SECTION("reverse_map")
     {
       // If now reverse 'local', should get the original 1..count back
-      my_map.reverse_map_data(local.data(), count);
+      my_map.reverse_map_data(local.data(), int_field, count);
       std::vector<int> seq(count);
       std::iota(seq.begin(), seq.end(), 1);
       REQUIRE(local == seq);
@@ -344,7 +351,7 @@ TEST_CASE("test map_data random", "[map_data_ran]")
     // Now try 'map_data' call which is basically a bulk local-global.
     // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
     std::vector<int> local(count);
-    my_map.map_implicit_data(local.data(), count, 0);
+    my_map.map_implicit_data(local.data(), int_field, count, 0);
     REQUIRE(init == local);
   }
 }

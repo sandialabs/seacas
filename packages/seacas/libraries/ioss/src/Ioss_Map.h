@@ -83,12 +83,6 @@ namespace Ioss {
 
     void release_memory(); //! Release memory for all maps.
 
-    template <typename INT> void reverse_map_data(INT *data, size_t count) const;
-
-    template <typename INT> void map_data(INT *data, size_t count) const;
-
-    template <typename INT> void map_implicit_data(INT *data, size_t count, size_t offset) const;
-
     void reverse_map_data(void *data, const Ioss::Field &field, size_t count) const;
     void map_data(void *data, const Ioss::Field &field, size_t count) const;
     void map_implicit_data(void *data, const Ioss::Field &field, size_t count, size_t offset) const;
@@ -105,6 +99,10 @@ namespace Ioss {
     void set_defined(bool yes_no) { m_defined = yes_no; }
 
   private:
+    template <typename INT> void reverse_map_data(INT *data, size_t count) const;
+    template <typename INT> void map_data(INT *data, size_t count) const;
+    template <typename INT> void map_implicit_data(INT *data, size_t count, size_t offset) const;
+
     int64_t global_to_local__(int64_t global, bool must_exist = true) const;
     void    build_reorder_map__(int64_t start, int64_t count);
     void    build_reverse_map__(int64_t num_to_get, int64_t offset);
