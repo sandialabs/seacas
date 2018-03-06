@@ -1395,12 +1395,7 @@ namespace Iocgns {
 
           // Need to map global nodes to block-local node connectivity
           const auto &block_map = m_globalToBlockLocalNodeMap[zone];
-          if (field.get_type() == Ioss::Field::INT32) {
-            block_map->reverse_map_data((int *)data, field, num_to_get * element_nodes);
-          }
-          else {
-            block_map->reverse_map_data((int64_t *)data, field, num_to_get * element_nodes);
-          }
+          block_map->reverse_map_data(data, field, num_to_get * element_nodes);
 
           if (eb->entity_count() > 0) {
             CG_ElementType_t type            = Utils::map_topology_to_cgns(eb->topology()->name());
