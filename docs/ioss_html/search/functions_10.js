@@ -54,5 +54,5 @@ var searchData=
   ['resolvereference',['resolveReference',['../classJson_1_1Value.html#a78817583bdc3cf28e0b8edfe74031a98',1,'Json::Value::resolveReference(const char *key)'],['../classJson_1_1Value.html#a121c76136ac3255ad3de088b50652acb',1,'Json::Value::resolveReference(const char *key, const char *end)']]],
   ['retrieve',['retrieve',['../classIoss_1_1GetLongOption.html#ae63bc8e3bcc4cb7425d3a0c577265fbf',1,'Ioss::GetLongOption']]],
   ['reverse',['reverse',['../classvector3d.html#ab06beef76f82be26ef7bbb74aa4eb9bf',1,'vector3d']]],
-  ['reverse_5fmap_5fdata',['reverse_map_data',['../classIoss_1_1Map.html#abb85ac649e5e757f97f770a572c6ac81',1,'Ioss::Map::reverse_map_data(INT *data, size_t count) const'],['../classIoss_1_1Map.html#a4e757e282fd3350ffaea92ca57080c77',1,'Ioss::Map::reverse_map_data(void *data, const Ioss::Field &amp;field, size_t count) const']]]
+  ['reverse_5fmap_5fdata',['reverse_map_data',['../classIoss_1_1Map.html#a4e757e282fd3350ffaea92ca57080c77',1,'Ioss::Map::reverse_map_data(void *data, const Ioss::Field &amp;field, size_t count) const'],['../classIoss_1_1Map.html#abb85ac649e5e757f97f770a572c6ac81',1,'Ioss::Map::reverse_map_data(INT *data, size_t count) const']]]
 ];
