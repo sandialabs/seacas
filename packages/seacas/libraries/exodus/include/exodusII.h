@@ -425,6 +425,7 @@ typedef struct ex_var_params
 EXODUS_EXPORT int ex_close(int exoid);
 
 EXODUS_EXPORT int ex_copy(int in_exoid, int out_exoid);
+EXODUS_EXPORT int ex_copy_transient(int in_exoid, int out_exoid);
 
 #define ex_create(path, mode, comp_ws, io_ws)                                                      \
   ex_create_int(path, mode, comp_ws, io_ws, EX_API_VERS_NODOT)
