@@ -101,7 +101,6 @@ static int    cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm,
 static int    cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large);
 static void   update_structs(int out_exoid);
 static void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct list_item **ctr_list);
-/*! \endcond */
 
 static int is_non_mesh_variable(const char *var_name)
 {
@@ -129,6 +128,7 @@ static int is_non_mesh_variable(const char *var_name)
          (strncmp(var_name, "vals_face_var", 13) == 0) ||
          (strncmp(var_name, "vals_elem_var", 13) == 0);
 }
+/*! \endcond */
 
 /*!
   \undoc
