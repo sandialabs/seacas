@@ -124,6 +124,13 @@ using ExodusIdVector = std::vector<ex_entity_id>;
 
 extern double seacas_timer();
 namespace {
+  struct my_numpunct : std::numpunct<char>
+  {
+  protected:
+    char        do_thousands_sep() const override { return ','; }
+    std::string do_grouping() const override { return "\3"; }
+  };
+
   unsigned int debug_level = 0;
   const float  FILL_VALUE  = FLT_MAX;
   int          rank        = 0;
@@ -1414,14 +1421,14 @@ namespace {
     std::vector<char> tags(num_frames);
 
     int error =
-      ex_get_coordinate_frames(id, &num_frames, ids.data(), coordinates.data(), tags.data());
+        ex_get_coordinate_frames(id, &num_frames, ids.data(), coordinates.data(), tags.data());
     if (error < 0) {
       exodus_error(__LINE__);
     }
 
     // Now output to the combined file...
     error =
-      ex_put_coordinate_frames(id_out, num_frames, ids.data(), coordinates.data(), tags.data());
+        ex_put_coordinate_frames(id_out, num_frames, ids.data(), coordinates.data(), tags.data());
     if (error < 0) {
       exodus_error(__LINE__);
     }
@@ -2395,18 +2402,19 @@ namespace {
     // Write out Global info
 
     if (rank == 0) {
+      std::cout.imbue(std::locale(std::locale(), new my_numpunct));
       std::cout << " Title: " << global.title << "\n\n";
-      std::cout << " Number of coordinates per node       =" << std::setw(12)
+      std::cout << " Number of coordinates per node       =" << std::setw(15)
                 << global.dimensionality << "\n";
-      std::cout << " Number of nodes                      =" << std::setw(12) << global.nodeCount
+      std::cout << " Number of nodes                      =" << std::setw(15) << global.nodeCount
                 << "\n";
-      std::cout << " Number of elements                   =" << std::setw(12) << global.elementCount
+      std::cout << " Number of elements                   =" << std::setw(15) << global.elementCount
                 << "\n";
-      std::cout << " Number of element blocks             =" << std::setw(12) << global.count(EBLK)
+      std::cout << " Number of element blocks             =" << std::setw(15) << global.count(EBLK)
                 << "\n\n";
-      std::cout << " Number of nodal point sets           =" << std::setw(12) << global.count(NSET)
+      std::cout << " Number of nodal point sets           =" << std::setw(15) << global.count(NSET)
                 << "\n";
-      std::cout << " Number of element side sets          =" << std::setw(12) << global.count(SSET)
+      std::cout << " Number of element side sets          =" << std::setw(15) << global.count(SSET)
                 << "\n\n";
     }
     int id_out = ExodusFile::output();
@@ -2650,7 +2658,7 @@ namespace {
     }
     for (auto &glob_set : glob_sets) {
       int error =
-	ex_put_set(exoid, EX_NODE_SET, glob_set.id, glob_set.nodeSetNodes.data(), nullptr);
+          ex_put_set(exoid, EX_NODE_SET, glob_set.id, glob_set.nodeSetNodes.data(), nullptr);
       if (error < 0) {
         exodus_error(__LINE__);
       }
