@@ -898,7 +898,7 @@ namespace {
               Die_TS(time_step1);
             }
             else {
-              std::cout << " (FAILED) \n";
+              DIFF_OUT(" (FAILED) \n");
             }
           }
           else if (!interface.quiet_flag) {
