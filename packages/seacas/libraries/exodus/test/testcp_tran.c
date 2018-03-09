@@ -91,10 +91,8 @@ int main(int argc, char **argv)
   ex_inquire(exoid, EX_INQ_API_VERS, &idum, &version, cdum);
   printf("EXODUSII API; version %4.2f\n", version);
 
-  CPU_word_size = 8; /* this really shouldn't matter for
-                        the copy but tests the conversion
-                        routines */
-  IO_word_size = 4;
+  CPU_word_size = 4;
+  IO_word_size  = 4;
 
   exoid1 = ex_create("testcp.exo",   /* filename */
                      EX_CLOBBER,     /* OK to overwrite */
@@ -134,13 +132,31 @@ int main(int argc, char **argv)
   printf("\nafter ex_copy_transient, error = %3d\n", error);
 
   if (num_nod_vars > 0) {
+    float node_vars[33]; /* Know that there are 33 nodes */
     error = ex_put_variable_name(exoid1, EX_NODE_BLOCK, num_nod_vars, "GregNode");
     printf("\nafter ex_put_variable_name, error = %3d\n", error);
+    for (int i = 0; i < 10; i++) {
+      for (int j = 0; j < 33; j++) {
+        node_vars[j] = 3 + (float)(j + 1) * ((float)(i + 1) / 100.0);
+      }
+      error = ex_put_var(exoid1, i + 1, EX_NODE_BLOCK, num_nod_vars, 1, 33, node_vars);
+      printf("\nafter ex_put_var, step %d, error = %3d\n", i + 1, error);
+    }
   }
 
   if (num_ele_vars > 0) {
     error = ex_put_variable_name(exoid1, EX_ELEM_BLOCK, num_ele_vars, "GregElem");
     printf("\nafter ex_put_variable_name, error = %3d\n", error);
+
+    /* Add the element variable to a single block.  1 element per block */
+    float ele_vars[1];
+    for (int i = 0; i < 10; i++) { /* timesteps */
+      for (int j = 0; j < 1; j++) {
+        ele_vars[j] = num_ele_vars + (float)(j + 1) * ((float)(i + 1) / 100.0);
+      }
+      error = ex_put_var(exoid1, i + 1, EX_ELEM_BLOCK, num_ele_vars, 10, 1, ele_vars);
+      printf("\nafter ex_put_var, step %d, error = %3d\n", i + 1, error);
+    }
   }
   error = ex_close(exoid);
   printf("\nafter ex_close, error = %3d\n", error);
