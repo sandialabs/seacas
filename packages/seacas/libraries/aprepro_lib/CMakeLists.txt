@@ -56,7 +56,7 @@ if(GENERATE_FLEX_FILES)
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/apr_scanner.cc
                      COMMAND ${FLEX_EXE}
-                     ARGS -o apr_scanner.cc
+                     ARGS -o apr_scanner.cc --noline
 		        ${CMAKE_CURRENT_SOURCE_DIR}/aprepro.ll
                      MAIN_DEPENDENCY aprepro.ll
                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
