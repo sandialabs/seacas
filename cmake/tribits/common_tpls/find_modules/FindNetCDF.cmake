@@ -165,18 +165,33 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 
     # Large dimension and parallel check here
     if ( NetCDF_INCLUDE_DIR ) 
+       
+        set(netcdf_h "${NetCDF_INCLUDE_DIR}/netcdf.h" )
+        message(STATUS "NetCDF include file ${netcdf_h} will be searched for define values")
 
+        file(STRINGS "${netcdf_h}" netcdf_max_dims_string REGEX "^#define NC_MAX_DIMS")
+        string(REGEX REPLACE "[^0-9]" "" netcdf_max_dims "${netcdf_max_dims_string}")
+
+        file(STRINGS "${netcdf_h}" netcdf_max_vars_string REGEX "^#define NC_MAX_VARS")
+        string(REGEX REPLACE "[^0-9]" "" netcdf_max_vars "${netcdf_max_vars_string}")
+
+        if ( 
+             ( (netcdf_max_dims EQUAL 65536)  OR (netcdf_max_dims GREATER 65536) ) AND
+             ( (netcdf_max_vars EQUAL 524288) OR (netcdf_max_vars GREATER 524288) )
+            )
+            set(NetCDF_LARGE_DIMS TRUE)
+        else()
+            message(WARNING "WARNING: The NetCDF found in ${NetCDF_ROOT} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
+                             "It may not be compatible with Exodus. See NetCDF-Mapping.md for details\n" )
+            set(NetCDF_LARGE_DIMS FALSE)
+        endif()
+
+	set(NetCDF_PARALLEL False)
         find_path(meta_path
 	          NAMES "netcdf_meta.h"
                   HINTS ${NetCDF_INCLUDE_DIR}
                   NO_DEFAULT_PATH)
-
-	set(NetCDF_PARALLEL False)
         if(meta_path)
-	   # Search meta for NetCDF Version...
-	   file(STRINGS "${meta_path}/netcdf_meta.h" netcdf_ver_string REGEX "NC_VERSION ")
-	   string(REGEX REPLACE "[^0-9\.]" "" netcdf_version "${netcdf_ver_string}")
-
 	   # Search meta for NC_HAS_PARALLEL setting...
 	   file(STRINGS "${meta_path}/netcdf_meta.h" netcdf_par_string REGEX "NC_HAS_PARALLEL")
 	   string(REGEX REPLACE "[^0-9]" "" netcdf_par_val "${netcdf_par_string}")
@@ -186,30 +201,6 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 	      set(NetCDF_PARALLEL True)
            endif()    
         endif()
-
-	if (netcdf_version VERSION_GREATER 4.5.0)
-	   set(NetCDF_LARGE_DIMS True)
-	else()
-           set(netcdf_h "${NetCDF_INCLUDE_DIR}/netcdf.h" )
-           message(STATUS "NetCDF include file ${netcdf_h} will be searched for define values")
-
-           file(STRINGS "${netcdf_h}" netcdf_max_dims_string REGEX "^#define NC_MAX_DIMS")
-           string(REGEX REPLACE "[^0-9]" "" netcdf_max_dims "${netcdf_max_dims_string}")
-
-           file(STRINGS "${netcdf_h}" netcdf_max_vars_string REGEX "^#define NC_MAX_VARS")
-           string(REGEX REPLACE "[^0-9]" "" netcdf_max_vars "${netcdf_max_vars_string}")
-
-           if ( 
-                ( (netcdf_max_dims EQUAL 65536)  OR (netcdf_max_dims GREATER 65536) ) AND
-                ( (netcdf_max_vars EQUAL 524288) OR (netcdf_max_vars GREATER 524288) )
-               )
-               set(NetCDF_LARGE_DIMS True)
-           else()
-               message(WARNING "WARNING: The NetCDF found in ${NetCDF_ROOT} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
-                                "It may not be compatible with Exodus. See NetCDF-Mapping.md for details\n" )
-               set(NetCDF_LARGE_DIMS False)
-           endif()
-	endif()
 
     endif()    
 
@@ -456,7 +447,6 @@ if ( NOT NetCDF_FIND_QUIETLY )
   message(STATUS "\tNetCDF_NEEDS_HDF5        = ${NetCDF_NEEDS_HDF5}")
   message(STATUS "\tNetCDF_NEEDS_PNetCDF     = ${NetCDF_NEEDS_PNetCDF}")
   message(STATUS "\tNetCDF_PARALLEL          = ${NetCDF_PARALLEL}")
-  message(STATUS "\tNetCDF_LARGE_DIMS        = ${NetCDF_LARGE_DIMS}")
   message(STATUS "\tNetCDF_INCLUDE_DIRS      = ${NetCDF_INCLUDE_DIRS}")
   message(STATUS "\tNetCDF_LIBRARIES         = ${NetCDF_LIBRARIES}")
   message(STATUS "\tNetCDF_BINARIES          = ${NETCDF_TOOLS_FOUND}")
