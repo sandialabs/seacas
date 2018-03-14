@@ -57,6 +57,16 @@ void SystemInterface::enroll_options()
   options_.enroll("output", GetLongOption::MandatoryValue, "Name of output file to create",
                   "ejoin-out.e");
 
+  options_.enroll(
+      "extract_blocks", GetLongOption::MandatoryValue,
+      "Use only the specified part/block pairs. The specification is\n"
+      "\t\tp#:block_id1:block_id2,p#:block_id1. For example, to\n"
+      "\t\tExtract block ids 1,3,4 from part 1; blocks 2 3 4 from part 2;\n"
+      "\t\tand block 8 from part5, specify\n"
+      "\t\t\t '-extract_blocks p1:1:3:4,p2:2:3:4,p5:8'\n"
+      "\t\tIf an extract is specified, then only that id(s) will be used for that part.",
+      nullptr);
+
   options_.enroll("omit_blocks", GetLongOption::MandatoryValue,
                   "Omit the specified part/block pairs. The specification is\n"
                   "\t\tp#:block_id1:block_id2,p#:block_id1. For example, to\n"
@@ -247,6 +257,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   size_t part_count = inputFiles_.size();
   blockOmissions_.resize(part_count);
+  blockInclusions_.resize(part_count);
   nsetOmissions_.resize(part_count);
   ssetOmissions_.resize(part_count);
 
@@ -307,6 +318,13 @@ bool SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("omit_blocks");
     if (temp != nullptr) {
       parse_omissions(temp, &blockOmissions_, "block", true);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("extract_blocks");
+    if (temp != nullptr) {
+      parse_omissions(temp, &blockInclusions_, "block", true);
     }
   }
 

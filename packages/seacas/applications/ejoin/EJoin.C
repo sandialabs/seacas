@@ -109,6 +109,25 @@ namespace {
   void process_nset_omissions(RegionVector &part_mesh, const Omissions &omit);
   void process_sset_omissions(RegionVector &part_mesh, const Omissions &omit);
 
+  int process_inclusions(Ioss::Region *region, const std::vector<std::string> &inclusions)
+  {
+    auto blocks  = region->get_element_blocks();
+    int  omitted = (int)blocks.size();
+    for (auto &block : blocks) {
+      block->property_add(Ioss::Property(std::string("omitted"), 1));
+    }
+
+    // Now, erase the property on any blocks in the inclusion list...
+    for (const auto &name : inclusions) {
+      auto block = region->get_element_block(name);
+      if (block != nullptr) {
+        block->property_erase("omitted");
+        omitted--;
+      }
+    }
+    return omitted;
+  }
+
   template <typename T> bool approx_equal(T v1, T v2, T offset)
   {
 #if 1
@@ -211,7 +230,8 @@ int main(int argc, char *argv[])
       int_byte_size = 8;
     }
 
-    const Omissions &               omissions = interface.block_omissions();
+    const Omissions &               omissions  = interface.block_omissions();
+    const Omissions &               inclusions = interface.block_inclusions();
     std::vector<Ioss::Region *>     part_mesh(interface.inputFiles_.size());
     std::vector<Ioss::DatabaseIO *> dbi(interface.inputFiles_.size());
     for (size_t p = 0; p < interface.inputFiles_.size(); p++) {
@@ -245,8 +265,14 @@ int main(int argc, char *argv[])
       std::string name = "p" + std::to_string(p + 1);
       // NOTE: region owns database pointer at this time...
       part_mesh[p] = new Ioss::Region(dbi[p], name);
-      part_mesh[p]->property_add(
-          Ioss::Property("block_omission_count", static_cast<int>(omissions[p].size())));
+
+      int omission_count = static_cast<int>(omissions[p].size());
+      // Process any block inclusion specification...
+      if (!inclusions[p].empty()) {
+        omission_count = process_inclusions(part_mesh[p], inclusions[p]);
+      }
+
+      part_mesh[p]->property_add(Ioss::Property("block_omission_count", omission_count));
 
       vector3d offset = interface.offset();
       if (p > 0 && (offset.x != 0.0 || offset.y != 0.0 || offset.z != 0.0)) {
@@ -370,18 +396,9 @@ double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh,
   else if (interface.match_node_xyz()) {
     match_node_xyz(part_mesh, interface.tolerance(), global_node_map, local_node_map);
   }
-  else if (!interface.block_omissions().empty()) {
-    // At least 1 element block has been omitted in at least 1 part.
-    // Eliminate all nodes that were only connected to the omitted element blocks.
-    eliminate_omitted_nodes(part_mesh, global_node_map, local_node_map);
-  }
-  else {
-    global_node_map.resize(local_node_map.size());
-    for (size_t i = 0; i < local_node_map.size(); i++) {
-      local_node_map[i]  = i;
-      global_node_map[i] = i + 1;
-    }
-  }
+
+  // Eliminate all nodes that were only connected to the omitted element blocks (if any).
+  eliminate_omitted_nodes(part_mesh, global_node_map, local_node_map);
 
   node_count    = global_node_map.size();
   size_t merged = local_node_map.size() - global_node_map.size();
