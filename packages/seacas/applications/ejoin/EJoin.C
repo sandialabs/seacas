@@ -897,6 +897,9 @@ namespace {
       size_t                      node_offset = part_mesh[p]->get_property("node_offset").get_int();
 
       for (auto ieb : iebs) {
+        if (entity_is_omitted(ieb)) {
+          continue;
+        }
         std::string         name = part_mesh[p]->name() + "_" + ieb->name();
         Ioss::ElementBlock *oeb  = output_region.get_element_block(name);
         if (oeb == nullptr) {
