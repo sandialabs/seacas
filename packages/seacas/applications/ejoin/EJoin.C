@@ -396,9 +396,10 @@ double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh,
   else if (interface.match_node_xyz()) {
     match_node_xyz(part_mesh, interface.tolerance(), global_node_map, local_node_map);
   }
-
-  // Eliminate all nodes that were only connected to the omitted element blocks (if any).
-  eliminate_omitted_nodes(part_mesh, global_node_map, local_node_map);
+  else {
+    // Eliminate all nodes that were only connected to the omitted element blocks (if any).
+    eliminate_omitted_nodes(part_mesh, global_node_map, local_node_map);
+  }
 
   node_count    = global_node_map.size();
   size_t merged = local_node_map.size() - global_node_map.size();
