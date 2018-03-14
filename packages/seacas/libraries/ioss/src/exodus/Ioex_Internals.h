@@ -439,7 +439,7 @@ namespace Ioex {
   class Internals
   {
   public:
-    Internals(int exoid, int maximum_name_length, const Ioss::ParallelUtils &util);
+    Internals(int exoid, const Ioss::ParallelUtils &util);
     Internals(const Internals &from) = delete;
     Internals &operator=(const Internals &from) = delete;
 
@@ -490,9 +490,9 @@ namespace Ioex {
     int                 exodusFilePtr;
     int                 nodeMapVarID[3];
     int                 elementMapVarID[2];
-    int                 commIndexVar;
-    int                 elemCommIndexVar;
-    int                 maximumNameLength;
+    int                 commIndexVar{0};
+    int                 elemCommIndexVar{0};
+    int                 maximumNameLength{32};
     Ioss::ParallelUtils parallelUtil;
   };
 } // namespace Ioex
