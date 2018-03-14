@@ -479,9 +479,8 @@ bool CommunicationMap::operator==(const CommunicationMap &other) const
   return id == other.id && entityCount == other.entityCount && type == other.type;
 }
 
-Internals::Internals(int exoid, int maximum_name_length, const Ioss::ParallelUtils &util)
-    : exodusFilePtr(exoid), nodeMapVarID(), elementMapVarID(), commIndexVar(0), elemCommIndexVar(0),
-      maximumNameLength(maximum_name_length), parallelUtil(util)
+Internals::Internals(int exoid, const Ioss::ParallelUtils &util)
+    : exodusFilePtr(exoid), nodeMapVarID(), elementMapVarID(), parallelUtil(util)
 {
 }
 
@@ -494,6 +493,16 @@ int Internals::write_meta_data(Mesh &mesh)
     if (!mesh.file_per_processor) {
       get_global_counts(mesh);
     }
+
+    // Determine length of longest name... Reduces calls to put_att
+    maximumNameLength = get_max_name_length(mesh.edgeblocks, maximumNameLength);
+    maximumNameLength = get_max_name_length(mesh.faceblocks, maximumNameLength);
+    maximumNameLength = get_max_name_length(mesh.elemblocks, maximumNameLength);
+    maximumNameLength = get_max_name_length(mesh.nodesets, maximumNameLength);
+    maximumNameLength = get_max_name_length(mesh.edgesets, maximumNameLength);
+    maximumNameLength = get_max_name_length(mesh.facesets, maximumNameLength);
+    maximumNameLength = get_max_name_length(mesh.elemsets, maximumNameLength);
+    maximumNameLength = get_max_name_length(mesh.sidesets, maximumNameLength);
 
     Redefine the_database(exodusFilePtr);
 
@@ -596,18 +605,6 @@ int Internals::write_meta_data(Mesh &mesh)
   if (ierr != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
-
-  // Determine length of longest name... Reduces calls to put_att
-  size_t lname = 0;
-  lname        = get_max_name_length(mesh.edgeblocks, lname);
-  lname        = get_max_name_length(mesh.faceblocks, lname);
-  lname        = get_max_name_length(mesh.elemblocks, lname);
-  lname        = get_max_name_length(mesh.nodesets, lname);
-  lname        = get_max_name_length(mesh.edgesets, lname);
-  lname        = get_max_name_length(mesh.facesets, lname);
-  lname        = get_max_name_length(mesh.elemsets, lname);
-  lname        = get_max_name_length(mesh.sidesets, lname);
-  ex_set_max_name_length(exodusFilePtr, lname);
 
   // For now, put entity names using the ExodusII api...
   output_names(mesh.edgeblocks, exodusFilePtr, EX_EDGE_BLOCK);
