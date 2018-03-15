@@ -109,7 +109,7 @@ namespace {
   void process_nset_omissions(RegionVector &part_mesh, const Omissions &omit);
   void process_sset_omissions(RegionVector &part_mesh, const Omissions &omit);
 
-  int process_inclusions(Ioss::Region *region, const std::vector<std::string> &inclusions)
+  int process_inclusions(Ioss::Region *region, const StringVector &inclusions)
   {
     auto blocks  = region->get_element_blocks();
     int  omitted = (int)blocks.size();
@@ -199,9 +199,6 @@ int main(int argc, char *argv[])
   std::cout.imbue(std::locale(std::locale(), new my_numpunct));
   std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
 
-#if defined(__LIBCATAMOUNT__)
-  setlinebuf(stderr);
-#endif
   try {
     SystemInterface::show_version();
     Ioss::Init::Initializer io;
@@ -451,13 +448,13 @@ double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh,
     if (info_parts[0] == 0) {
       // Transfer info records from all parts...
       for (auto &pm : part_mesh) {
-        const std::vector<std::string> &info = pm->get_information_records();
+        const StringVector &info = pm->get_information_records();
         output_region.add_information_records(info);
       }
     }
     else {
       for (int info_part : info_parts) {
-        const std::vector<std::string> &info = part_mesh[info_part - 1]->get_information_records();
+        const StringVector &info = part_mesh[info_part - 1]->get_information_records();
         output_region.add_information_records(info);
       }
     }
