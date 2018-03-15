@@ -161,7 +161,7 @@ c
 c
 c        declarations
 c
-      character*132 filnam       
+      character*2048 filnam       
 c           filename associated with unit
       integer lname              
 c           length of string filnam (less trailing blanks)
