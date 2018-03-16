@@ -213,39 +213,39 @@ namespace {
     // ordinal.  For example, if the BC "wall1" has the definition
     // [1->1, 1->5, 1->8], then it is on the constant 'i' face of the
     // zone and therefore, the zone will *not* be split along the 'i'
-    // ordinal. 
-    
+    // ordinal.
+
     // Get names of all valid 'bcs' on the mesh
     int base         = 1;
     int num_families = 0;
     CGCHECKNP(cg_nfamilies(cgnsFilePtr, base, &num_families));
-    
+
     std::vector<std::string> families;
     families.reserve(num_families);
     for (int family = 1; family <= num_families; family++) {
-      char        name[33];
-      int         num_bc  = 0;
-      int         num_geo = 0;
+      char name[33];
+      int  num_bc  = 0;
+      int  num_geo = 0;
       CGCHECKNP(cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo));
       if (num_bc > 0) {
-	Ioss::Utils::fixup_name(name);
-	families.push_back(name);
+        Ioss::Utils::fixup_name(name);
+        families.push_back(name);
       }
     }
-    
+
     // Slit into fields using the commas as delimiters
     auto bcs = Ioss::tokenize(line_decomposition, ",");
     for (auto &bc : bcs) {
       Ioss::Utils::fixup_name(bc);
       if (std::find(families.begin(), families.end(), bc) == families.end()) {
-	std::ostringstream errmsg;
-	errmsg << "ERROR: CGNS: The family/bc name '" << bc
-	       << "' specified as a line decomposition surface does not exist on this CGNS file.\n";
-	errmsg << "             Valid names are: ";
-	for (const auto &fam : families) {
-	  errmsg << "'" << fam << "', ";
-	}
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: The family/bc name '" << bc
+               << "' specified as a line decomposition surface does not exist on this CGNS file.\n";
+        errmsg << "             Valid names are: ";
+        for (const auto &fam : families) {
+          errmsg << "'" << fam << "', ";
+        }
+        IOSS_ERROR(errmsg);
       }
     }
 
@@ -292,9 +292,9 @@ namespace {
           int sum = (i ? 1 : 0) + (j ? 1 : 0) + (k ? 1 : 0);
           // Only set m_lineOrdinal if only a single ordinal selected.
           if (sum == 1) {
-	    int ordinal = -1;
+            int ordinal = -1;
             if (i) {
-	      ordinal = 0;
+              ordinal = 0;
             }
             else if (j) {
               ordinal = 1;
@@ -302,19 +302,20 @@ namespace {
             else if (k) {
               ordinal = 2;
             }
-	    if (zone->m_lineOrdinal == -1) {
-	      zone->m_lineOrdinal = ordinal;
+            if (zone->m_lineOrdinal == -1) {
+              zone->m_lineOrdinal = ordinal;
 #if IOSS_DEBUG_OUTPUT
-            OUTPUT << "Setting line ordinal to " << zone->m_lineOrdinal << " on " << zone->m_name
-                   << " for surface: " << boconame << "\n";
+              OUTPUT << "Setting line ordinal to " << zone->m_lineOrdinal << " on " << zone->m_name
+                     << " for surface: " << boconame << "\n";
 #endif
-	    }
-	    else if (zone->m_lineOrdinal != ordinal && rank == 0) {
-	      IOSS_WARNING << "CGNS: Zone " << izone << " named " << zone->m_name 
-			   << " has multiple line decomposition ordinal specifications. Both ordinal "
-			   << ordinal << " and " << zone->m_lineOrdinal << " have been specified.  Keeping "
-			   << zone->m_lineOrdinal << "\n";
-	    }
+            }
+            else if (zone->m_lineOrdinal != ordinal && rank == 0) {
+              IOSS_WARNING
+                  << "CGNS: Zone " << izone << " named " << zone->m_name
+                  << " has multiple line decomposition ordinal specifications. Both ordinal "
+                  << ordinal << " and " << zone->m_lineOrdinal << " have been specified.  Keeping "
+                  << zone->m_lineOrdinal << "\n";
+            }
           }
         }
       }

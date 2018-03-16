@@ -285,9 +285,9 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       } /* End "for (cnt=0; cnt < mesh->num_elem; cnt++)" */
 
       /* and use different pointers for Chaco */
-      x_ptr = TOPTR(x_elem_ptr);
-      y_ptr = TOPTR(y_elem_ptr);
-      z_ptr = TOPTR(z_elem_ptr);
+      x_ptr = x_elem_ptr.data();
+      y_ptr = y_elem_ptr.data();
+      z_ptr = z_elem_ptr.data();
 
     } /* End "if (problem->num_vertices > 0)" */
   }   /* End "if ((problem->type == ELEMENTAL) &&
@@ -376,8 +376,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
     nprocg.resize(problem->num_groups);
     nelemg.resize(problem->num_groups);
 
-    if (!get_group_info(machine, problem, mesh, graph, lb->vertex2proc, TOPTR(nprocg),
-                        TOPTR(nelemg), &max_vtx, &max_adj)) {
+    if (!get_group_info(machine, problem, mesh, graph, lb->vertex2proc, nprocg.data(),
+                        nelemg.data(), &max_vtx, &max_adj)) {
       Gen_Error(0, "fatal: Error obtaining group information.");
       goto cleanup;
     }
@@ -416,8 +416,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       exit(-1);
     }
     else {
-      flag = interface(problem->num_vertices, (int *)TOPTR(graph->start), (int *)TOPTR(graph->adj),
-                       TOPTR(weight->vertices), TOPTR(weight->edges), x_ptr, y_ptr, z_ptr,
+      flag = interface(problem->num_vertices, (int *)graph->start.data(), (int *)graph->adj.data(),
+                       weight->vertices.data(), weight->edges.data(), x_ptr, y_ptr, z_ptr,
                        const_cast<char *>(assignfile), (char *)nullptr, lb->vertex2proc, tmp_arch,
                        tmp_lev, dim, goal, glob_method, refine, solve->rqi_flag, solve->vmax,
                        lb->num_sects, solve->tolerance, seed);
@@ -1106,7 +1106,7 @@ namespace {
         }
 
         size_t components =
-            extract_connected_lists(nrow, TOPTR(columns), TOPTR(rows), TOPTR(list), list_ptr);
+	  extract_connected_lists(nrow, columns.data(), rows.data(), list.data(), list_ptr);
 
         if (components) {
           printf("There are " ST_ZU " connected components.\n", components);
@@ -1199,7 +1199,7 @@ namespace {
             }
 
             int components =
-                extract_connected_lists(nrow, TOPTR(columns), TOPTR(rows), TOPTR(list), list_ptr);
+	      extract_connected_lists(nrow, columns.data(), rows.data(), list.data(), list_ptr);
 
             if (components > 0) {
               printf("For Processor %d there are %d connected components.\n", pcnt, components);
@@ -1325,18 +1325,18 @@ namespace {
 
                       ss_to_node_list(etype2, mesh->connect[el2], (cnt + 1), side_nodes2);
 
-                      nhold2 = find_inter(TOPTR(graph->sur_elem[side_nodes2[0]]),
-                                          TOPTR(graph->sur_elem[side_nodes2[1]]),
+                      nhold2 = find_inter(graph->sur_elem[side_nodes2[0]].data(),
+                                          graph->sur_elem[side_nodes2[1]].data(),
                                           graph->sur_elem[side_nodes2[0]].size(),
-                                          graph->sur_elem[side_nodes2[1]].size(), TOPTR(pt_list));
+                                          graph->sur_elem[side_nodes2[1]].size(), pt_list.data());
 
                       for (int i = 0; i < nhold2; i++) {
                         hold_elem[i] = graph->sur_elem[side_nodes2[0]][pt_list[i]];
                       }
 
-                      nelem = find_inter(TOPTR(hold_elem), TOPTR(graph->sur_elem[side_nodes2[2]]),
+                      nelem = find_inter(hold_elem.data(), graph->sur_elem[side_nodes2[2]].data(),
                                          nhold2, graph->sur_elem[side_nodes2[2]].size(),
-                                         TOPTR(pt_list));
+                                         pt_list.data());
 
                       if (nelem >= 1) {
                         count++;
@@ -1600,8 +1600,8 @@ namespace {
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connnected to both node '0' and node 'ncnt+1' */
               nelem =
-                  find_inter(TOPTR(hold_elem), TOPTR(graph->sur_elem[side_nodes[(ncnt + 1)]]),
-                             nhold, graph->sur_elem[side_nodes[(ncnt + 1)]].size(), TOPTR(pt_list));
+		find_inter(hold_elem.data(), graph->sur_elem[side_nodes[(ncnt + 1)]].data(),
+			   nhold, graph->sur_elem[side_nodes[(ncnt + 1)]].size(), pt_list.data());
 
               if (nelem < 2) {
                 break;
@@ -1664,10 +1664,10 @@ namespace {
             size_t nhold = 0;
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
               /* Find elements connnected to both node 'inode' and node 'node' */
-              nelem = find_inter(TOPTR(graph->sur_elem[side_nodes[inode]]),
-                                 TOPTR(graph->sur_elem[side_nodes[node]]),
+              nelem = find_inter(graph->sur_elem[side_nodes[inode]].data(),
+                                 graph->sur_elem[side_nodes[node]].data(),
                                  graph->sur_elem[side_nodes[inode]].size(),
-                                 graph->sur_elem[side_nodes[node]].size(), TOPTR(pt_list));
+                                 graph->sur_elem[side_nodes[node]].size(), pt_list.data());
 
               if (nelem > 1) {
                 if (ncnt == 0) {

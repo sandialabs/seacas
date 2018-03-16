@@ -398,6 +398,7 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("guid", zone));
         eblock->property_add(Ioss::Property("section", is));
         eblock->property_add(Ioss::Property("node_count", (int64_t)total_block_nodes));
+        eblock->property_add(Ioss::Property("original_block_order", zone));
 
         assert(is == 1); // For now, assume each zone has only a single element block.
         bool added = get_region()->add(eblock);
@@ -1394,12 +1395,7 @@ namespace Iocgns {
 
           // Need to map global nodes to block-local node connectivity
           const auto &block_map = m_globalToBlockLocalNodeMap[zone];
-          if (field.get_type() == Ioss::Field::INT32) {
-            block_map->reverse_map_data((int *)data, field, num_to_get * element_nodes);
-          }
-          else {
-            block_map->reverse_map_data((int64_t *)data, field, num_to_get * element_nodes);
-          }
+          block_map->reverse_map_data(data, field, num_to_get * element_nodes);
 
           if (eb->entity_count() > 0) {
             CG_ElementType_t type            = Utils::map_topology_to_cgns(eb->topology()->name());

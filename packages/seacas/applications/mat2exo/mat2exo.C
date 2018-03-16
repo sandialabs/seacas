@@ -75,12 +75,6 @@
 #endif
 
 /**********************************************************************/
-#if __cplusplus > 199711L
-#define TOPTR(x) x.data()
-#else
-#define TOPTR(x) (x.empty() ? nullptr : &x[0])
-#endif
-
 mat_t *mat_file = nullptr; /* file for binary .mat input */
 
 /**********************************************************************/
@@ -198,7 +192,7 @@ int main(int argc, char *argv[])
     if (num_axes > 2) {
       matGetDbl("z0", num_nodes, 1, z);
     }
-    ex_put_coord(exo_file, TOPTR(x), TOPTR(y), TOPTR(z));
+    ex_put_coord(exo_file, x.data(), y.data(), z.data());
   }
 
   /* side sets */
@@ -224,12 +218,12 @@ int main(int argc, char *argv[])
 
       sprintf(name, "ssside%02d", i + 1);
       matGetInt(name, num_sideset_sides[i], 1, side_list);
-      ex_put_set(exo_file, EX_SIDE_SET, ids[i], TOPTR(elem_list), TOPTR(side_list));
+      ex_put_set(exo_file, EX_SIDE_SET, ids[i], elem_list.data(), side_list.data());
 
       if (nssdfac[i] > 0) {
         sprintf(name, "ssfac%02d", i + 1);
         matGetDbl(name, nssdfac[i], 1, dist_fact);
-        ex_put_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], TOPTR(dist_fact));
+        ex_put_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], dist_fact.data());
       }
     }
 
@@ -255,12 +249,12 @@ int main(int argc, char *argv[])
 
       sprintf(name, "nsnod%02d", i + 1);
       matGetInt(name, num_nodeset_nodes[i], 1, node_list);
-      ex_put_set(exo_file, EX_NODE_SET, ids[i], TOPTR(node_list), nullptr);
+      ex_put_set(exo_file, EX_NODE_SET, ids[i], node_list.data(), nullptr);
 
       if (ndfac[i] > 0) {
         sprintf(name, "nsfac%02d", i + 1);
         matGetDbl(name, ndfac[i], 1, dist_fact);
-        ex_put_set_dist_fact(exo_file, EX_NODE_SET, ids[i], TOPTR(dist_fact));
+        ex_put_set_dist_fact(exo_file, EX_NODE_SET, ids[i], dist_fact.data());
       }
     }
 
@@ -289,7 +283,7 @@ int main(int argc, char *argv[])
       int num_attr_per_elem = matGetInt(name);
       ex_put_block(exo_file, EX_ELEM_BLOCK, ids[i], block_names[i].c_str(), num_elem_in_block[i],
                    num_node_per_elem, 0, 0, num_attr_per_elem);
-      ex_put_conn(exo_file, EX_ELEM_BLOCK, ids[i], TOPTR(connect), nullptr, nullptr);
+      ex_put_conn(exo_file, EX_ELEM_BLOCK, ids[i], connect.data(), nullptr, nullptr);
 
       if (num_attr_per_elem > 0) {
         get_put_attr_names(exo_file, i + 1, ids[i], num_attr_per_elem);
@@ -378,14 +372,14 @@ int main(int argc, char *argv[])
   {
     std::vector<int> ids;
     if (matGetInt("node_num_map", num_nodes, 1, ids) == 0) {
-      ex_put_id_map(exo_file, EX_NODE_MAP, TOPTR(ids));
+      ex_put_id_map(exo_file, EX_NODE_MAP, ids.data());
     }
   }
 
   {
     std::vector<int> ids;
     if (matGetInt("elem_num_map", num_elements, 1, ids) == 0) {
-      ex_put_id_map(exo_file, EX_ELEM_MAP, TOPTR(ids));
+      ex_put_id_map(exo_file, EX_ELEM_MAP, ids.data());
     }
   }
 

@@ -306,21 +306,15 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
 
 int64_t Ioss::Utils::extract_id(const std::string &name_id)
 {
+  int64_t id = 0;
+
   std::vector<std::string> tokens = Ioss::tokenize(name_id, "_");
-
-  if (tokens.size() == 1) {
-    return 0;
+  if (tokens.size() > 1) {
+    // Check whether last token is an integer...
+    std::string str_id = tokens.back();
+    id                 = get_number(str_id);
   }
-
-  // Check whether last token is an integer...
-  std::string str_id = tokens.back();
-  std::size_t found  = str_id.find_first_not_of("0123456789");
-  if (found == std::string::npos) {
-    // All digits...
-    return std::atoi(str_id.c_str());
-  }
-
-  return 0;
+  return id;
 }
 
 std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int64_t id)
@@ -1174,7 +1168,7 @@ void Ioss::Utils::input_file(const std::string &file_name, std::vector<std::stri
   if (file_name.length() != 0) {
     // Open the file and read into the vector...
     std::string   input_line;
-    std::ifstream infile(file_name.c_str());
+    std::ifstream infile(file_name);
     lines->push_back(file_name.substr(0, max_line_length));
     while (!std::getline(infile, input_line).fail()) {
       if (max_line_length == 0 || input_line.length() <= max_line_length) {
@@ -2011,6 +2005,9 @@ namespace {
         total_entities += count;
 
         auto block = new T(output_region.get_database(), name, type, count);
+        if (iblock->property_exists("original_block_order")) {
+          block->property_add(iblock->get_property("original_block_order"));
+        }
         output_region.add(block);
         transfer_properties(iblock, block);
         transfer_fields(iblock, block, Ioss::Field::MESH);

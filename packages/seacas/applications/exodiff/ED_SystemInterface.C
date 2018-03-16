@@ -70,7 +70,7 @@ namespace {
     if (fname.empty()) {
       return 0;
     }
-    std::ifstream file_check(fname.c_str(), std::ios::in);
+    std::ifstream file_check(fname, std::ios::in);
     if (file_check.fail()) {
       return 0;
     }
@@ -924,7 +924,7 @@ void SystemInterface::Parse_Command_File()
 {
   int default_tol_specified = 0;
 
-  std::ifstream cmd_file(command_file.c_str(), std::ios::in);
+  std::ifstream cmd_file(command_file, std::ios::in);
   SMART_ASSERT(cmd_file.good());
 
   char        line[256];

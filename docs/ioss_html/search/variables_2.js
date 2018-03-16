@@ -5,16 +5,8 @@ var searchData=
   ['bid',['bid',['../classVe2mSideSetInfo.html#ab61d3d37f77d9fb67d08e01662697db9',1,'Ve2mSideSetInfo']]],
   ['blockadjacenciescalculated',['blockAdjacenciesCalculated',['../classIoex_1_1DatabaseIO.html#ab9c45d254a0db843298dd81a4b5e47c1',1,'Ioex::DatabaseIO::blockAdjacenciesCalculated()'],['../classIoss_1_1DatabaseIO.html#aec6a8e90c689b4c065e617310136419d',1,'Ioss::DatabaseIO::blockAdjacenciesCalculated()']]],
   ['blockadjacency',['blockAdjacency',['../classIoss_1_1DatabaseIO.html#afe17eae189de84c0382635eed06c90f4',1,'Ioss::DatabaseIO']]],
-  ['blockelementvarxmls',['BlockElementVarXmls',['../classIoxf_1_1DatabaseIO.html#acbfbf23aaee33e95f32e544eab741d01',1,'Ioxf::DatabaseIO']]],
-  ['blockextraattributexmls',['BlockExtraAttributeXmls',['../classIoxf_1_1DatabaseIO.html#af5b83904c347edb3217833f347710f54',1,'Ioxf::DatabaseIO']]],
-  ['blockfinishxmls',['BlockFinishXmls',['../classIoxf_1_1DatabaseIO.html#a98d3d34f9de3881b76d523ce94fb26e4',1,'Ioxf::DatabaseIO']]],
-  ['blockgridxmls',['BlockGridXmls',['../classIoxf_1_1DatabaseIO.html#a21646a5b4de6db8e019d987f96926a67',1,'Ioxf::DatabaseIO']]],
-  ['blockindexnames',['BlockIndexNames',['../classIoxf_1_1DatabaseIO.html#a57ab2d6d5fcede797a51ddda7a2012ec',1,'Ioxf::DatabaseIO']]],
   ['blockmembership',['blockMembership',['../classIoss_1_1SideBlock.html#a33796cc4d9ea082a510a881c6d801ff4',1,'Ioss::SideBlock::blockMembership()'],['../classIoss_1_1SideSet.html#a343b74a4420c315316edd45cbc49b746',1,'Ioss::SideSet::blockMembership()']]],
-  ['blocknodevarxmls',['BlockNodeVarXmls',['../classIoxf_1_1DatabaseIO.html#a9a998f10501dc4fe85325c39b13b3ae9',1,'Ioxf::DatabaseIO']]],
   ['blockomissions',['blockOmissions',['../classIoss_1_1DatabaseIO.html#a03bfe3176de49d5a03876ba5f848c647',1,'Ioss::DatabaseIO']]],
-  ['blockparameterxmls',['BlockParameterXmls',['../classIoxf_1_1DatabaseIO.html#adc178456df0342241cd5d4d6855bdc85',1,'Ioxf::DatabaseIO']]],
   ['blocktopologicaldata',['blockTopologicalData',['../structIogn_1_1ExodusData.html#aaf968ac6e36fdc550236c07d6954568d',1,'Iogn::ExodusData']]],
-  ['blockxmls',['BlockXmls',['../classIoxf_1_1DatabaseIO.html#a0fb8147b30bd5af8a425c72de247e64c',1,'Ioxf::DatabaseIO']]],
   ['bool_5f',['bool_',['../unionJson_1_1Value_1_1ValueHolder.html#a92edab1861dadbfefd8be5fd4285eefe',1,'Json::Value::ValueHolder']]]
 ];

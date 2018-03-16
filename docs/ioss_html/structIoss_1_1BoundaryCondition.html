@@ -94,6 +94,8 @@ $(document).ready(function(){initNavTree('structIoss_1_1BoundaryCondition.html',
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ac7739dc9c67214d01183e3e082b4f96a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#ac7739dc9c67214d01183e3e082b4f96a">BoundaryCondition</a> (const std::string name, const std::string fam_name, const <a class="el" href="namespaceIoss.html#a530b4479c2b2ba7c8a59596d24e78709">Ioss::IJK_t</a> range_beg, const <a class="el" href="namespaceIoss.html#a530b4479c2b2ba7c8a59596d24e78709">Ioss::IJK_t</a> range_end)</td></tr>
+<tr class="separator:ac7739dc9c67214d01183e3e082b4f96a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d656c5d470b45b26383b25ac905574e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#a3d656c5d470b45b26383b25ac905574e">BoundaryCondition</a> (const std::string name, const <a class="el" href="namespaceIoss.html#a530b4479c2b2ba7c8a59596d24e78709">Ioss::IJK_t</a> range_beg, const <a class="el" href="namespaceIoss.html#a530b4479c2b2ba7c8a59596d24e78709">Ioss::IJK_t</a> range_end)</td></tr>
 <tr class="separator:a3d656c5d470b45b26383b25ac905574e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9240c7c4dd8f49097ec9ad5f88784bd9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#a9240c7c4dd8f49097ec9ad5f88784bd9">BoundaryCondition</a> (const <a class="el" href="structIoss_1_1BoundaryCondition.html">BoundaryCondition</a> &amp;copy_from)=default</td></tr>
@@ -109,6 +111,8 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:aaa6ec5505e8f843f41c19f88e06cc4af"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#aaa6ec5505e8f843f41c19f88e06cc4af">m_bcName</a></td></tr>
 <tr class="separator:aaa6ec5505e8f843f41c19f88e06cc4af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d2d349700b396b2cd2ea59300036979"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#a2d2d349700b396b2cd2ea59300036979">m_famName</a></td></tr>
+<tr class="separator:a2d2d349700b396b2cd2ea59300036979"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ed7927a6c29ca7f727d1a303ec5f4fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#a530b4479c2b2ba7c8a59596d24e78709">Ioss::IJK_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#a6ed7927a6c29ca7f727d1a303ec5f4fd">m_rangeBeg</a></td></tr>
 <tr class="separator:a6ed7927a6c29ca7f727d1a303ec5f4fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d6cf81a46926a51a2ad43da06828af4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#a530b4479c2b2ba7c8a59596d24e78709">Ioss::IJK_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#a8d6cf81a46926a51a2ad43da06828af4">m_rangeEnd</a></td></tr>
@@ -120,8 +124,56 @@ Friends</h2></td></tr>
 <tr class="separator:ad8686485c862bfd97ede1e24a6b95e58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ac7739dc9c67214d01183e3e082b4f96a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7739dc9c67214d01183e3e082b4f96a">&#9670;&nbsp;</a></span>BoundaryCondition() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Ioss::BoundaryCondition::BoundaryCondition </td>
+          <td>(</td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>fam_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceIoss.html#a530b4479c2b2ba7c8a59596d24e78709">Ioss::IJK_t</a>&#160;</td>
+          <td class="paramname"><em>range_beg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceIoss.html#a530b4479c2b2ba7c8a59596d24e78709">Ioss::IJK_t</a>&#160;</td>
+          <td class="paramname"><em>range_end</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a3d656c5d470b45b26383b25ac905574e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d656c5d470b45b26383b25ac905574e">&#9670;&nbsp;</a></span>BoundaryCondition() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d656c5d470b45b26383b25ac905574e">&#9670;&nbsp;</a></span>BoundaryCondition() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -163,7 +215,7 @@ Friends</h2></td></tr>
 </div>
 </div>
 <a id="a9240c7c4dd8f49097ec9ad5f88784bd9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9240c7c4dd8f49097ec9ad5f88784bd9">&#9670;&nbsp;</a></span>BoundaryCondition() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a9240c7c4dd8f49097ec9ad5f88784bd9">&#9670;&nbsp;</a></span>BoundaryCondition() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -302,6 +354,20 @@ Friends</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::string Ioss::BoundaryCondition::m_bcName</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2d2d349700b396b2cd2ea59300036979"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d2d349700b396b2cd2ea59300036979">&#9670;&nbsp;</a></span>m_famName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::BoundaryCondition::m_famName</td>
         </tr>
       </table>
 </div><div class="memdoc">

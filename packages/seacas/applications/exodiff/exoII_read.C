@@ -1167,7 +1167,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
     SMART_ASSERT(eblocks != nullptr);
     std::vector<INT> ids(num_elmt_blocks);
 
-    err = ex_get_ids(file_id, EX_ELEM_BLOCK, TOPTR(ids));
+    err = ex_get_ids(file_id, EX_ELEM_BLOCK, ids.data());
 
     if (err < 0) {
       ERROR("Failed to get element"
@@ -1216,7 +1216,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
     SMART_ASSERT(nsets != nullptr);
     std::vector<INT> ids(num_node_sets);
 
-    err = ex_get_ids(file_id, EX_NODE_SET, TOPTR(ids));
+    err = ex_get_ids(file_id, EX_NODE_SET, ids.data());
 
     if (err < 0) {
       ERROR("Failed to get nodeset ids!  Aborting...\n");
@@ -1243,7 +1243,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
     SMART_ASSERT(ssets != nullptr);
     std::vector<INT> ids(num_side_sets);
 
-    err = ex_get_ids(file_id, EX_SIDE_SET, TOPTR(ids));
+    err = ex_get_ids(file_id, EX_SIDE_SET, ids.data());
 
     if (err < 0) {
       ERROR("Failed to get sideset ids!  Aborting...\n");

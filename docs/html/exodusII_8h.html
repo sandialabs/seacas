@@ -119,9 +119,9 @@ Data Structures</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:af5aeb509bb9ac704f563622a00d0c11e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#af5aeb509bb9ac704f563622a00d0c11e">NC_HAVE_META_H</a></td></tr>
 <tr class="separator:af5aeb509bb9ac704f563622a00d0c11e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa18e08d59faa100114b77fe55900ec49"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a>&#160;&#160;&#160;7.10f</td></tr>
+<tr class="memitem:aa18e08d59faa100114b77fe55900ec49"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a>&#160;&#160;&#160;7.11f</td></tr>
 <tr class="separator:aa18e08d59faa100114b77fe55900ec49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54e92e59ab8df2901302fd50bc103fbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>&#160;&#160;&#160;710</td></tr>
+<tr class="memitem:a54e92e59ab8df2901302fd50bc103fbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>&#160;&#160;&#160;711</td></tr>
 <tr class="separator:a54e92e59ab8df2901302fd50bc103fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d5e98bf5604721ad61b71685b68ef7e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a2d5e98bf5604721ad61b71685b68ef7e">EX_VERS</a>&#160;&#160;&#160;<a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a></td></tr>
 <tr class="separator:a2d5e98bf5604721ad61b71685b68ef7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -396,6 +396,8 @@ Functions</h2></td></tr>
 <tr class="separator:abccf733ba6ef7e8a51595eb34c4f94ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4f66d79971313449a2522ab6df73acc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#ae4f66d79971313449a2522ab6df73acc">ex_copy</a> (int in_exoid, int out_exoid)</td></tr>
 <tr class="separator:ae4f66d79971313449a2522ab6df73acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c18291e0af54b68dd8de44480dc79c1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a4c18291e0af54b68dd8de44480dc79c1">ex_copy_transient</a> (int in_exoid, int out_exoid)</td></tr>
+<tr class="separator:a4c18291e0af54b68dd8de44480dc79c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaea5bc36c6f151eacbe5fb9d23eb22a5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int</a> (const char *path, int cmode, int *comp_ws, int *io_ws, int run_version)</td></tr>
 <tr class="separator:aaea5bc36c6f151eacbe5fb9d23eb22a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ec5c53a8b305d10a09be9617e872543"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a3ec5c53a8b305d10a09be9617e872543">ex_create_group</a> (int parent_id, const char *group_name)</td></tr>
@@ -950,7 +952,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define EX_API_VERS&#160;&#160;&#160;7.10f</td>
+          <td class="memname">#define EX_API_VERS&#160;&#160;&#160;7.11f</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -964,7 +966,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define EX_API_VERS_NODOT&#160;&#160;&#160;710</td>
+          <td class="memname">#define EX_API_VERS_NODOT&#160;&#160;&#160;711</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1622,6 +1624,34 @@ Variables</h2></td></tr>
 </dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="_2test_2testcp_8c-example.html#a10">/test/testcp.c</a>, <a class="el" href="_2test_2testcp_nl_8c-example.html#a11">/test/testcp_nl.c</a>, and <a class="el" href="_2test_2testcpd_8c-example.html#a10">/test/testcpd.c</a>.</dd>
 </dl>
+</div>
+</div>
+<a id="a4c18291e0af54b68dd8de44480dc79c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c18291e0af54b68dd8de44480dc79c1">&#9670;&nbsp;</a></span>ex_copy_transient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_copy_transient </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>in_exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>out_exoid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 </div>
 </div>
 <a id="a3ec5c53a8b305d10a09be9617e872543"></a>

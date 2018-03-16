@@ -42,16 +42,10 @@
 #include <string>
 #include <vector>
 
-#define ELB_VERSION "4.16"
+#define ELB_VERSION "4.17"
 #define UTIL_NAME "nem_slice"
 #define ELB_FALSE 0
 #define ELB_TRUE 1
-
-#if __cplusplus > 199711L
-#define TOPTR(x) x.data()
-#else
-#define TOPTR(x) (x.empty() ? nullptr : &x[0])
-#endif
 
 /* Macro for maximum value */
 #ifndef MAX

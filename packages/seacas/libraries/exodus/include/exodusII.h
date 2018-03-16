@@ -69,8 +69,8 @@
 #endif
 
 /* EXODUS version number */
-#define EX_API_VERS 7.10f
-#define EX_API_VERS_NODOT 710
+#define EX_API_VERS 7.11f
+#define EX_API_VERS_NODOT 711
 #define EX_VERS EX_API_VERS
 #define NEMESIS_API_VERSION EX_API_VERS
 #define NEMESIS_API_VERSION_NODOT EX_API_VERS_NODOT
@@ -425,6 +425,7 @@ typedef struct ex_var_params
 EXODUS_EXPORT int ex_close(int exoid);
 
 EXODUS_EXPORT int ex_copy(int in_exoid, int out_exoid);
+EXODUS_EXPORT int ex_copy_transient(int in_exoid, int out_exoid);
 
 #define ex_create(path, mode, comp_ws, io_ws)                                                      \
   ex_create_int(path, mode, comp_ws, io_ws, EX_API_VERS_NODOT)

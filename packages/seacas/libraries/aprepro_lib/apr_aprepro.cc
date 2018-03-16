@@ -124,7 +124,7 @@ namespace SEAMS {
 
   bool Aprepro::parse_file(const std::string &filename)
   {
-    std::ifstream in(filename.c_str());
+    std::ifstream in(filename);
     if (!in.good()) {
       return false;
     }
@@ -268,7 +268,7 @@ namespace SEAMS {
     }
 
     /* See if file exists in current directory (or as specified) */
-    auto pointer = new std::fstream(file.c_str(), smode);
+    auto pointer = new std::fstream(file, smode);
     if ((pointer == nullptr || pointer->bad() || !pointer->good()) &&
         !ap_options.include_path.empty()) {
       /* If there is an include path specified, try opening file there */
@@ -276,7 +276,7 @@ namespace SEAMS {
       file_path += "/";
       file_path += file;
       delete pointer;
-      pointer = new std::fstream(file_path.c_str(), smode);
+      pointer = new std::fstream(file_path, smode);
     }
 
     /* If pointer still null, print error message */
@@ -300,7 +300,7 @@ namespace SEAMS {
       smode = std::ios::out;
     }
 
-    auto pointer = new std::fstream(file.c_str(), smode);
+    auto pointer = new std::fstream(file, smode);
 
     if ((pointer == nullptr || pointer->bad() || !pointer->good()) &&
         !ap_options.include_path.empty()) {
@@ -309,7 +309,7 @@ namespace SEAMS {
       file_path += "/";
       file_path += file;
       delete pointer;
-      pointer = new std::fstream(file_path.c_str(), smode);
+      pointer = new std::fstream(file_path, smode);
     }
     return pointer;
   }

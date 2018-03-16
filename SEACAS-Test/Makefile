@@ -9,6 +9,7 @@ GJOIN	=	$(BIN)/gjoin
 GEN3D	=	$(BIN)/gen3d
 GENSHELL=	$(BIN)/genshell
 GREPOS	=	$(BIN)/grepos
+IO_SHELL = 	$(BIN)/io_shell
 EXOTXT  =       $(BIN)/exotxt
 TXTEXO  =       $(BIN)/txtexo
 EPU     =       $(BIN)/epu
@@ -16,6 +17,7 @@ EXODIFF =       $(BIN)/exodiff
 DECOMP  =       $(BIN)/decomp
 EXO2MAT =       $(BIN)/exo2mat
 MAT2EXO =       $(BIN)/mat2exo
+CONJOIN =       $(BIN)/conjoin
 RM	=	rm -f
 
 .SUFFIXES: .g .fsq .g3
@@ -24,7 +26,7 @@ RM	=	rm -f
 	$(RM) $@
 	$(FASTQ) -aprepro -mesh=$*.g $*.fsq
 
-test:	baseline.g3 new_tape.g3 new_shell.g3 slice conv_text matlab python
+test:	baseline.g3 new_tape.g3 new_shell.g3 slice conv_text matlab python conjoin
 
 base_o.g3: base_o.g base_o.g3i 
 	$(APREPRO) base_o.g3i |	$(GEN3D) base_o.g base_o.g3
@@ -100,6 +102,12 @@ python: baseline.g
 	$(EXODIFF) -stat -pedantic baseline.g baseline_numpy_copy.e
 	$(EXODIFF) -stat -pedantic baseline.g baseline_ctype_copy.e
 
+conjoin:
+	$(IO_SHELL) --in_type generated --split_times 1 10x10x10+times:2000+variables:nodal,3,element,6 conjoin/output.g
+	$(CONJOIN) --element_status NONE --nodal_status NONE conjoin/output.g_*
+	$(IO_SHELL) --in_type generated 10x10x10+times:2000+variables:nodal,3,element,6 gold.g
+	$(EXODIFF) -stat -pedantic conjoin-out.e gold.g
+
 ############################# Default Rules#####################
 # Dependencies:
 base_o.g: common.h
@@ -107,7 +115,8 @@ base.g: common.h
 
 clean:
 	$(RM) *.g3 *.g *.e *.gt *.t *~ core*
-	$(RM) -rf mesh/ tmp.g3d
+	$(RM) -r mesh/ tmp.g3d
 	$(RM) *.decomp.out *.nem *.pex
 	$(RM) *.mat *.exo
 	$(RM) baseline_*_copy.e
+	$(RM) -r conjoin

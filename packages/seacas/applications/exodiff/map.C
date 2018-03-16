@@ -1203,20 +1203,20 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
       // There is a map between file1 and file2, but all nodes are
       // used in both files.
       for (size_t i = 0; i < num_nodes1; i++) {
-	if (node_id_map1[i] != node_id_map2[node_map[i]]) {
-	  if (!(node_id_map2[node_map[i]] == 0 &&
-		partial_flag)) { // Don't output diff if non-matched and partial
-	    std::cerr << "exodiff: WARNING .. The local node " << i + 1 << " with global id "
-		      << node_id_map1[i] << " in file1 has the global id "
-		      << node_id_map2[node_map[i]] << " in file2.\n";
-	    diff = true;
-	    warn_count++;
-	    if (warn_count > 100) {
-	      std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
-	      break;
-	    }
-	  }
-	}
+        if (node_id_map1[i] != node_id_map2[node_map[i]]) {
+          if (!(node_id_map2[node_map[i]] == 0 &&
+                partial_flag)) { // Don't output diff if non-matched and partial
+            std::cerr << "exodiff: WARNING .. The local node " << i + 1 << " with global id "
+                      << node_id_map1[i] << " in file1 has the global id "
+                      << node_id_map2[node_map[i]] << " in file2.\n";
+            diff = true;
+            warn_count++;
+            if (warn_count > 100) {
+              std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
+              break;
+            }
+          }
+        }
       }
     }
   }
@@ -1246,20 +1246,20 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
       // There is a map between file1 and file2, but all elements are
       // used in both files.
       for (size_t i = 0; i < num_elmts1; i++) {
-	if (elem_id_map1[i] != elem_id_map2[elmt_map[i]]) {
-	  if (!(elem_id_map2[elmt_map[i]] == 0 &&
-		partial_flag)) { // Don't output diff if non-matched and partial
-	    std::cerr << "exodiff: WARNING .. The local element " << i + 1 << " with global id "
-		      << elem_id_map1[i] << " in file1 has the global id "
-		      << elem_id_map2[elmt_map[i]] << " in file2.\n";
-	    diff = true;
-	    warn_count++;
-	    if (warn_count > 100) {
-	      std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
-	      break;
-	    }
-	  }
-	}
+        if (elem_id_map1[i] != elem_id_map2[elmt_map[i]]) {
+          if (!(elem_id_map2[elmt_map[i]] == 0 &&
+                partial_flag)) { // Don't output diff if non-matched and partial
+            std::cerr << "exodiff: WARNING .. The local element " << i + 1 << " with global id "
+                      << elem_id_map1[i] << " in file1 has the global id "
+                      << elem_id_map2[elmt_map[i]] << " in file2.\n";
+            diff = true;
+            warn_count++;
+            if (warn_count > 100) {
+              std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
+              break;
+            }
+          }
+        }
       }
     }
   }

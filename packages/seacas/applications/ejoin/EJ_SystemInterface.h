@@ -74,6 +74,7 @@ public:
   const StringIdVector &  nset_var_names() const { return nsetVarNames_; }
   const StringIdVector &  sset_var_names() const { return ssetVarNames_; }
 
+  const Omissions &block_inclusions() const { return blockInclusions_; }
   const Omissions &block_omissions() const { return blockOmissions_; }
   const Omissions &nset_omissions() const { return nsetOmissions_; }
   const Omissions &sset_omissions() const { return ssetOmissions_; }
@@ -124,6 +125,7 @@ private:
   vector3d offset_;
   double   tolerance_{0.0};
 
+  Omissions blockInclusions_;
   Omissions blockOmissions_;
   Omissions nsetOmissions_;
   Omissions ssetOmissions_;

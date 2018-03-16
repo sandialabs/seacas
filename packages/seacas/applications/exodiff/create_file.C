@@ -37,7 +37,7 @@
 #include "exodusII.h"
 #include "smart_assert.h" // for SMART_ASSERT
 #include "stringx.h"      // for find_string, etc
-#include "util.h"         // for TOPTR
+#include "util.h"
 #include <cstddef>        // for size_t
 #include <cstdio>         // for sprintf, nullptr
 #include <iostream>       // for operator<<, basic_ostream, etc
@@ -250,8 +250,8 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
   if (out_file_id >= 0) {
     ex_put_all_var_param(out_file_id, interface.glob_var_names.size(),
                          interface.node_var_names.size(), interface.elmt_var_names.size(),
-                         TOPTR(truth_tab), interface.ns_var_names.size(), TOPTR(ns_truth_tab),
-                         interface.ss_var_names.size(), TOPTR(ss_truth_tab));
+                         truth_tab.data(), interface.ns_var_names.size(), ns_truth_tab.data(),
+                         interface.ss_var_names.size(), ss_truth_tab.data());
 
     output_exodus_names(out_file_id, EX_GLOBAL, interface.glob_var_names);
     output_exodus_names(out_file_id, EX_NODAL, interface.node_var_names);
@@ -271,7 +271,7 @@ namespace {
         vars[i] = const_cast<char *>(names[i].c_str());
         SMART_ASSERT(vars[i] != nullptr);
       }
-      ex_put_variable_names(file_id, type, names.size(), TOPTR(vars));
+      ex_put_variable_names(file_id, type, names.size(), vars.data());
     }
   }
 
