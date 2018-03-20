@@ -38,12 +38,12 @@
 #include <Ioss_Utils.h> // for Utils
 #include <cstddef>      // for size_t
 #include <functional>   // for binary_function
-#include <map>          // for map, map<>::value_compare
+#include <unordered_map>
 #include <string>       // for string
 #include <vector>       // for vector
 
 namespace Ioss {
-  using FieldMapType   = std::map<std::string, Field>;
+  using FieldMapType   = std::unordered_map<std::string, Field>;
   using FieldValuePair = FieldMapType::value_type;
 
   /** \brief A collection of Ioss::Field objects.
