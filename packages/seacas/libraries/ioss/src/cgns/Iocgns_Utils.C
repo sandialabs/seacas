@@ -1114,8 +1114,8 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
   cgsize_t range[6];
   for (int ibc = 0; ibc < num_bcs; ibc++) {
-    char              boco_name[33];
-    char              fam_name[33];
+    char              boco_name[32 + 1];
+    char              fam_name[32 + 1];
     CG_BCType_t       bocotype;
     CG_PointSetType_t ptset_type;
     cgsize_t          npnts;
@@ -1133,7 +1133,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       CGCHECKNP(cg_famname_read(fam_name));
     }
     else {
-      strncpy(fam_name, boco_name, 33);
+      strncpy(fam_name, boco_name, 32);
     }
 
     CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
