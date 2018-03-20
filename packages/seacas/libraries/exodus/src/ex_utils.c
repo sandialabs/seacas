@@ -1375,7 +1375,8 @@ int ex_large_model(int exoid)
 
   /* See if the ATT_FILESIZE attribute is defined in the file */
   int file_size = 0;
-  if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FILESIZE, &file_size) != NC_NOERR) {
+  int rootid    = exoid & EX_FILE_ID_MASK;
+  if (nc_get_att_int(rootid, NC_GLOBAL, ATT_FILESIZE, &file_size) != NC_NOERR) {
     /* Variable not found; default is 0 */
     file_size = 0;
   }
