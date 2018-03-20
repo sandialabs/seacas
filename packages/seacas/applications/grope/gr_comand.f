@@ -448,7 +448,7 @@ C *** GENESIS Print Commands ***
      *      FFMATC (IFLD, INTYP, CFIELD, 'SIDESET', 7)) THEN
             CALL RIXID (DUMLIN, IFLD, INTYP, CFIELD, IFIELD,
      &        'side set ID',
-     &        NUMESS, IDESS, LISESS(0), LISESS(1), *210)
+     &        NUMESS, IDESS, LISESS(0), LISESS(1), *270)
             if (lisess(0) .gt. 0) then
               call selset(IA(KLEL), IA(KLEL+1),
      *          numess, lisess, lessel,
@@ -457,9 +457,8 @@ C *** GENESIS Print Commands ***
           else
             CALL RMIXINT (DUMLIN, IFLD, INTYP, CFIELD, IFIELD,
      &        'element number', NUMEL, IA(KLEL), IA(KLEL+1), MAPEL,
-     *        *210)
+     *        *270)
           end if
- 210      CONTINUE
 
           CALL DBSBEL (NELBLK, NUMEL, LENE, A(KLEL), NLISEL, LISEL)
 
