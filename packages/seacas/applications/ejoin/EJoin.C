@@ -109,20 +109,13 @@ namespace {
   void process_nset_omissions(RegionVector &part_mesh, const Omissions &omit);
   void process_sset_omissions(RegionVector &part_mesh, const Omissions &omit);
 
-  int process_inclusions(Ioss::Region *region, const StringVector &inclusions)
+  int count_omissions(Ioss::Region *region)
   {
+    int omitted = 0;
     auto blocks  = region->get_element_blocks();
-    int  omitted = (int)blocks.size();
     for (auto &block : blocks) {
-      block->property_add(Ioss::Property(std::string("omitted"), 1));
-    }
-
-    // Now, erase the property on any blocks in the inclusion list...
-    for (const auto &name : inclusions) {
-      auto block = region->get_element_block(name);
-      if (block != nullptr) {
-        block->property_erase("omitted");
-        omitted--;
+      if (block->property_exists(std::string("omitted"))) {
+	omitted++;
       }
     }
     return omitted;
@@ -254,8 +247,8 @@ int main(int argc, char *argv[])
         dbi[p]->set_field_separator(1);
       }
 
-      if (!omissions[p].empty()) {
-        dbi[p]->set_block_omissions(omissions[p]);
+      if (!omissions[p].empty() || !inclusions[p].empty()) {
+        dbi[p]->set_block_omissions(omissions[p], inclusions[p]);
       }
 
       // Generate a name for the region based on the part number...
@@ -263,12 +256,7 @@ int main(int argc, char *argv[])
       // NOTE: region owns database pointer at this time...
       part_mesh[p] = new Ioss::Region(dbi[p], name);
 
-      int omission_count = static_cast<int>(omissions[p].size());
-      // Process any block inclusion specification...
-      if (!inclusions[p].empty()) {
-        omission_count = process_inclusions(part_mesh[p], inclusions[p]);
-      }
-
+      int omission_count = count_omissions(part_mesh[p]);
       part_mesh[p]->property_add(Ioss::Property("block_omission_count", omission_count));
 
       vector3d offset = interface.offset();
