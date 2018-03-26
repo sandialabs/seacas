@@ -907,8 +907,26 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
 
       CGCHECKNP(cg_fambc_read(cgnsFilePtr, base, family, 1, name, &bocotype));
 
+      CGCHECKNP(cg_goto(cgnsFilePtr, base, "Family_t", family, "end"));
+      int ndescriptors = 0;
+      int id = 0;
+      CGCHECKNP(cg_ndescriptors(&ndescriptors));
+      if (ndescriptors > 0) {
+	for (int ndesc = 1; ndesc <= ndescriptors; ndesc++) {
+	  char dname[33];
+	  char *dtext;
+	  CGCHECKNP(cg_descriptor_read(ndesc, dname, &dtext));
+	  if (strcmp(dname, "FamBC_UserId") == 0) {
+	    // Convert text in `dtext` to integer...
+	    id = Ioss::Utils::get_number(dtext);
+	    break;
+	  }
+	}
+      }
       auto *ss = new Ioss::SideSet(db, ss_name);
-      int   id = Ioss::Utils::extract_id(ss_name);
+      if (id == 0) {
+	id = Ioss::Utils::extract_id(ss_name);
+      }
       if (id != 0) {
         ss->property_add(Ioss::Property("id", id));
         ss->property_add(Ioss::Property("guid", db->util().generate_guid(id)));
