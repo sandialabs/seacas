@@ -221,15 +221,6 @@ namespace {
     }
   }
 
-  size_t get_number(const std::string &suffix)
-  {
-    int  N       = 0;
-    bool all_dig = suffix.find_first_not_of("0123456789") == std::string::npos;
-    if (all_dig) {
-      N = std::strtol(suffix.c_str(), nullptr, 10);
-    }
-    return N;
-  }
 } // namespace
 
 /** \brief Get formatted time and date strings.
@@ -302,6 +293,16 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
 
   decoded_filename += cur_proc;
   return decoded_filename;
+}
+
+size_t Ioss::Utils::get_number(const std::string &suffix)
+{
+  int  N       = 0;
+  bool all_dig = suffix.find_first_not_of("0123456789") == std::string::npos;
+  if (all_dig) {
+    N = std::strtol(suffix.c_str(), nullptr, 10);
+  }
+  return N;
 }
 
 int64_t Ioss::Utils::extract_id(const std::string &name_id)
@@ -496,7 +497,7 @@ namespace {
     assert(tokens.size() > 2);
 
     // Check that suffix is a number -- all digits
-    size_t N = get_number(tokens[tokens.size() - 1]);
+    size_t N = Ioss::Utils::get_number(tokens[tokens.size() - 1]);
 
     if (N == 0) {
       return nullptr;
