@@ -569,10 +569,17 @@ namespace Ioss {
     qaRecords.push_back(time);
   }
 
-  void DatabaseIO::set_block_omissions(const std::vector<std::string> &omissions)
+  void DatabaseIO::set_block_omissions(const std::vector<std::string> &omissions,
+				       const std::vector<std::string> &inclusions)
   {
-    blockOmissions.assign(omissions.cbegin(), omissions.cend());
-    std::sort(blockOmissions.begin(), blockOmissions.end());
+    if (!omissions.empty()) {
+      blockOmissions.assign(omissions.cbegin(), omissions.cend());
+      std::sort(blockOmissions.begin(), blockOmissions.end());
+    }
+    if (!inclusions.empty()) {
+      blockInclusions.assign(inclusions.cbegin(), inclusions.cend());
+      std::sort(blockInclusions.begin(), blockInclusions.end());
+    }
   }
 
   // Check topology of all sides (face/edges) in model...
