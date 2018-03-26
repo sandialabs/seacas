@@ -392,7 +392,7 @@ namespace Ioss {
     void set_surface_split_type(Ioss::SurfaceSplitType split_type) { splitType = split_type; }
     Ioss::SurfaceSplitType get_surface_split_type() const { return splitType; }
 
-    void set_block_omissions(const std::vector<std::string> &omissions);
+    void set_block_omissions(const std::vector<std::string> &omissions, const std::vector<std::string> &inclusions={});
 
     void get_block_adjacencies(const Ioss::ElementBlock *eb,
                                std::vector<std::string> &block_adjacency) const
@@ -580,13 +580,15 @@ namespace Ioss {
     mutable bool           lowerCaseVariableNames;
     bool                   usingParallelIO;
 
-    // List of element blocks that should be omitted from this model.
-    // Surfaces will take this into account while splitting;
-    // however, node and nodesets will not be filtered
-    // (perhaps this will be done at a later time...)
-    // NOTE: All local element ids and offsets are still calculated
-    //       assuming that the blocks exist in the model...
+    // List of element blocks that should be omitted or included from
+    // this model.  Surfaces will take this into account while
+    // splitting; however, node and nodesets will not be filtered
+    // (perhaps this will be done at a later time...)  NOTE: All local
+    // element ids and offsets are still calculated assuming that the
+    // blocks exist in the model...
+    // Only one of these can have values and the other must be empty.
     std::vector<std::string> blockOmissions;
+    std::vector<std::string> blockInclusions;
 
     std::vector<std::string> informationRecords;
     std::vector<std::string> qaRecords;

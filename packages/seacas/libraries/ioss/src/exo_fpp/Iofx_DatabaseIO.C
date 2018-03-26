@@ -1276,23 +1276,6 @@ namespace Iofx {
 
       offset += local_X_count[iblk];
 
-      // See if this block is "omitted" by the calling code.
-      // This only affects the generation of surfaces...
-      if (!blockOmissions.empty()) {
-        std::vector<std::string>::const_iterator I =
-            std::find(blockOmissions.cbegin(), blockOmissions.cend(), block_name);
-        if (I != blockOmissions.end()) {
-          block->property_add(Ioss::Property(std::string("omitted"), 1));
-        }
-        else {
-          // Try again with the alias...
-          I = std::find(blockOmissions.cbegin(), blockOmissions.cend(), alias);
-          if (I != blockOmissions.end()) {
-            block->property_add(Ioss::Property(std::string("omitted"), 1));
-          }
-        }
-      }
-
       get_region()->add_alias(block_name, alias);
 
       // Check for additional variables.
@@ -1312,6 +1295,36 @@ namespace Iofx {
       }
     }
     m_groupCount[entity_type] = used_blocks;
+
+    if (entity_type == EX_ELEM_BLOCK) {
+      assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
+      
+      // Handle all block omissions or inclusions...
+      // This only affects the generation of surfaces...
+      if (!blockOmissions.empty()) {
+	for (const auto &name : blockOmissions) {
+	  auto block = get_region()->get_element_block(name);
+	  if (block) {
+	    block->property_add(Ioss::Property(std::string("omitted"), 1));
+	  }
+	}
+      }	
+
+      if (!blockInclusions.empty()) {
+	auto blocks  = get_region()->get_element_blocks();
+	for (auto &block : blocks) {
+	  block->property_add(Ioss::Property(std::string("omitted"), 1));
+	}
+
+	// Now, erase the property on any blocks in the inclusion list...
+	for (const auto &name : blockInclusions) {
+	  auto block = get_region()->get_element_block(name);
+	  if (block != nullptr) {
+	    block->property_erase("omitted");
+	  }
+	}
+      }
+    }
   }
 
   void DatabaseIO::compute_node_status() const
@@ -1537,7 +1550,7 @@ namespace Iofx {
             }
           }
 
-          if (!blockOmissions.empty()) {
+          if (!blockOmissions.empty() || !blockInclusions.empty()) {
             Ioex::filter_element_list(get_region(), element, sides, true);
             number_sides = element.size();
             assert(element.size() == sides.size());
@@ -1871,7 +1884,7 @@ void DatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string 
         bool              filtered          = false;
         int64_t           original_set_size = set_params[ins].num_entry;
         Ioss::Int64Vector active_node_index;
-        if (!blockOmissions.empty() && type == EX_NODE_SET) {
+        if ((!blockOmissions.empty() || !blockInclusions.empty()) && type == EX_NODE_SET) {
           active_node_index.resize(set_params[ins].num_entry);
           set_params[ins].entry_list = TOPTR(active_node_index);
 

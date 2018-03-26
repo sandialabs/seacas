@@ -1125,22 +1125,6 @@ namespace Iopx {
         io_block->property_add(Ioss::Property(
             "global_entity_count", static_cast<int64_t>(decomp->el_blocks[iblk].ioss_count())));
 
-        // See if this block is "omitted" by the calling code.
-        // This only affects the generation of surfaces...
-        if (!blockOmissions.empty()) {
-          std::vector<std::string>::const_iterator I =
-              std::find(blockOmissions.cbegin(), blockOmissions.cend(), block_name);
-          if (I != blockOmissions.end()) {
-            io_block->property_add(Ioss::Property(std::string("omitted"), 1));
-          }
-          else {
-            // Try again with the alias...
-            I = std::find(blockOmissions.cbegin(), blockOmissions.cend(), alias);
-            if (I != blockOmissions.end()) {
-              io_block->property_add(Ioss::Property(std::string("omitted"), 1));
-            }
-          }
-        }
         if (block_name != alias) {
           get_region()->add_alias(block_name, alias);
         }
@@ -1157,7 +1141,34 @@ namespace Iopx {
                                         dynamic_cast<Ioss::ElementBlock *>(io_block),
                                         decomp->el_blocks[iblk].ioss_count(), maximumNameLength);
           }
-        }
+	  assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
+
+	  // Handle all block omissions or inclusions...
+	  // This only affects the generation of surfaces...
+	  if (!blockOmissions.empty()) {
+	    for (const auto &name : blockOmissions) {
+	      auto block = get_region()->get_element_block(name);
+	      if (block) {
+		block->property_add(Ioss::Property(std::string("omitted"), 1));
+	      }
+	    }
+	  }
+
+	  if (!blockInclusions.empty()) {
+	    auto blocks  = get_region()->get_element_blocks();
+	    for (auto &block : blocks) {
+	      block->property_add(Ioss::Property(std::string("omitted"), 1));
+	    }
+
+	    // Now, erase the property on any blocks in the inclusion list...
+	    for (const auto &name : blockInclusions) {
+	      auto block = get_region()->get_element_block(name);
+	      if (block != nullptr) {
+		block->property_erase("omitted");
+	      }
+	    }
+	  }
+	}
       }
     }
   }
@@ -1359,7 +1370,7 @@ namespace Iopx {
                                      TOPTR(element));
           }
 
-          if (!blockOmissions.empty()) {
+          if (!blockOmissions.empty() || !blockInclusions.empty()) {
             Ioex::filter_element_list(get_region(), element, sides, true);
             number_sides = element.size();
             assert(element.size() == sides.size());
