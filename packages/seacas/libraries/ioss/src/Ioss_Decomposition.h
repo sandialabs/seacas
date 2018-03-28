@@ -40,6 +40,7 @@
 #include <Ioss_PropertyManager.h>
 #include <algorithm>
 #include <assert.h>
+#include <map>
 #include <string>
 #include <vector>
 
