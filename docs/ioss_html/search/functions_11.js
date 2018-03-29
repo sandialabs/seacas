@@ -12,7 +12,7 @@ var searchData=
   ['serializeio',['SerializeIO',['../classIoss_1_1SerializeIO.html#ae1d58115cd0b1c71bff49bd9808695e2',1,'Ioss::SerializeIO::SerializeIO(const DatabaseIO *database_io, int manual_owner_processor=-1)'],['../classIoss_1_1SerializeIO.html#a951fb89f5276dfbf2014ba2bdc7ee746',1,'Ioss::SerializeIO::SerializeIO(const SerializeIO &amp;from)=delete']]],
   ['set',['set',['../classvector3d.html#a0e54310bd3515c46231e13cc6c60575c',1,'vector3d::set(double X, double Y, double Z)'],['../classvector3d.html#a40aeb0c77d513bc47de18833192077c2',1,'vector3d::set(double location[3])']]],
   ['set_5fbbox',['set_bbox',['../classIogn_1_1GeneratedMesh.html#acd84560dcba7bffdbcdbe4c12318450f',1,'Iogn::GeneratedMesh']]],
-  ['set_5fblock_5fomissions',['set_block_omissions',['../classIoss_1_1DatabaseIO.html#a01670edbe9586429a2b5b4181994c56f',1,'Ioss::DatabaseIO']]],
+  ['set_5fblock_5fomissions',['set_block_omissions',['../classIoss_1_1DatabaseIO.html#a360f770cd53aaffb9e6de122cf8879e0',1,'Ioss::DatabaseIO']]],
   ['set_5fcell_5fglobal_5foffset',['set_cell_global_offset',['../classIoss_1_1StructuredBlock.html#aaace0ae89c136bda6ce43d7d3a5e3fc9',1,'Ioss::StructuredBlock']]],
   ['set_5fcell_5foffset',['set_cell_offset',['../classIoss_1_1StructuredBlock.html#a41a525d54dbf413575b1b586ab4a92d0',1,'Ioss::StructuredBlock']]],
   ['set_5fcommon_5fside_5ftopology',['set_common_side_topology',['../classIoss_1_1DatabaseIO.html#a8f7ffe6187feb373a5b37ea874228c6a',1,'Ioss::DatabaseIO']]],

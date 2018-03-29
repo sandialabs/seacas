@@ -3,7 +3,6 @@ var Ioss__Utils_8C =
     [ "define_field", "Ioss__Utils_8C.html#af221385fb78d9efeb911ee7caa72a854", null ],
     [ "field_tokenize", "Ioss__Utils_8C.html#aacef5984425e3cbd3a5fc1d5f76c2b34", null ],
     [ "get_next_field", "Ioss__Utils_8C.html#adbfb40a9ca2bba6eaeaf028b447e5a3c", null ],
-    [ "get_number", "Ioss__Utils_8C.html#ad02d86fd9c7fe8f4013931f5ad11153b", null ],
     [ "is_separator", "Ioss__Utils_8C.html#a0e5a53a272b52cbf814f8956fb9b97c8", null ],
     [ "match", "Ioss__Utils_8C.html#aa93bd21290aa0e8e6aa48257c121f35c", null ],
     [ "match_composite_field", "Ioss__Utils_8C.html#afd4496219bca708ffc5eacc17f33694e", null ],

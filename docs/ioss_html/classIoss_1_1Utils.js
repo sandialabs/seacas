@@ -27,6 +27,7 @@ var classIoss_1_1Utils =
     [ "get_hwm_memory_info", "classIoss_1_1Utils.html#abb44fc3fded3b090db47018f7511192d", null ],
     [ "get_memory_info", "classIoss_1_1Utils.html#af780d50a6bc0c7b6d3fa8579343e4abf", null ],
     [ "get_name_array", "classIoss_1_1Utils.html#af25be5c9b86bb94f9c0dcb39bf255250", null ],
+    [ "get_number", "classIoss_1_1Utils.html#a181920cd962fcdcaf1f7820df65ddf84", null ],
     [ "get_side_offset", "classIoss_1_1Utils.html#a87d560f7862b2add9fa486ae44f4ab92", null ],
     [ "hash", "classIoss_1_1Utils.html#a1ec73edea0e845665ac385f605f4aa99", null ],
     [ "input_file", "classIoss_1_1Utils.html#ad7ddb962200b3859fde2ec4e394b3b4f", null ],
