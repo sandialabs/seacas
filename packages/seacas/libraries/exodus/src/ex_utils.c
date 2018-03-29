@@ -224,15 +224,15 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
     idx += name_length;
   }
 
-  if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
-    free(int_names);
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
-	     ex_name_of_object(obj_type), exoid);
-    ex_err(__func__, errmsg, status);
-    EX_FUNC_LEAVE(EX_FATAL);
-  }
-
   if (found_name) {
+    if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
+      free(int_names);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
+               ex_name_of_object(obj_type), exoid);
+      ex_err(__func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+
     /* Update the maximum_name_length attribute on the file. */
     ex_update_max_name_length(exoid, max_name_len - 1);
   }
@@ -545,11 +545,12 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   char *   id_dim;
   char *   stat_table;
   int      varid, dimid;
-  size_t   dim_len, i;
+  size_t   dim_len, i, j;
   int64_t *id_vals   = NULL;
   int *    stat_vals = NULL;
 
-  static int        filled = EX_FALSE;
+  static int        filled     = EX_FALSE;
+  static int        sequential = EX_FALSE;
   struct obj_stats *tmp_stats;
   int               status;
   char              errmsg[MAX_ERR_LENGTH];
@@ -707,31 +708,42 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     }
 
     /* check if values in stored arrays are filled with non-zeroes */
-    filled = EX_TRUE;
+    filled     = EX_TRUE;
+    sequential = EX_TRUE;
     for (i = 0; i < dim_len; i++) {
+      if (id_vals[i] != i + 1) {
+        sequential = EX_FALSE;
+      }
       if (id_vals[i] == EX_INVALID_ID || id_vals[i] == NC_FILL_INT) {
-        filled = EX_FALSE;
+        filled     = EX_FALSE;
+        sequential = EX_FALSE;
         break; /* id array hasn't been completely filled with valid ids yet */
       }
     }
 
     if (filled) {
-      tmp_stats->valid_ids = EX_TRUE;
-      tmp_stats->num       = dim_len;
-      tmp_stats->id_vals   = id_vals;
+      tmp_stats->valid_ids  = EX_TRUE;
+      tmp_stats->sequential = sequential;
+      tmp_stats->num        = dim_len;
+      tmp_stats->id_vals    = id_vals;
     }
   }
   else {
-    id_vals = tmp_stats->id_vals;
-    dim_len = tmp_stats->num;
+    id_vals    = tmp_stats->id_vals;
+    dim_len    = tmp_stats->num;
+    sequential = tmp_stats->sequential;
   }
 
-  /* Do a linear search through the id array to find the array value
-     corresponding to the passed index number */
-
-  for (i = 0; i < dim_len; i++) {
-    if (id_vals[i] == num) {
-      break; /* found the id requested */
+  if (sequential && num < dim_len) {
+    i = num - 1;
+  }
+  else {
+    /* Do a linear search through the id array to find the array value
+       corresponding to the passed index number */
+    for (i = 0; i < dim_len; i++) {
+      if (id_vals[i] == num) {
+        break; /* found the id requested */
+      }
     }
   }
   if (i >= dim_len) /* failed to find id number */
@@ -746,24 +758,22 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   }
 
   /* Now check status array to see if object is null */
+  if ((tmp_stats->stat_vals == NULL) || (!(tmp_stats->valid_stat))) {
 
-  /* get variable id of status array */
-  if (nc_inq_varid(exoid, stat_table, &varid) == NC_NOERR) {
-    /* if status array exists, use it, otherwise assume object exists
-       to be backward compatible */
+    /* allocate space for new status array */
+    if (!(stat_vals = malloc(dim_len * sizeof(int)))) {
+      free(id_vals);
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to allocate memory for %s array for file id %d", id_table, exoid);
+      ex_err(__func__, errmsg, EX_MEMFAIL);
+      return (EX_FATAL);
+    }
 
-    if ((tmp_stats->stat_vals == NULL) || (!(tmp_stats->valid_stat))) {
-      /* first time thru or status arrays haven't been filled yet */
-
-      /* allocate space for new status array */
-
-      if (!(stat_vals = malloc(dim_len * sizeof(int)))) {
-        free(id_vals);
-        snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to allocate memory for %s array for file id %d", id_table, exoid);
-        ex_err(__func__, errmsg, EX_MEMFAIL);
-        return (EX_FATAL);
-      }
+    /* first time thru or status arrays haven't been filled yet */
+    if (nc_inq_varid(exoid, stat_table, &varid) == NC_NOERR) {
+      /* get variable id of status array */
+      /* if status array exists, use it, otherwise assume object exists
+         to be backward compatible */
 
       if ((status = nc_get_var_int(exoid, varid, stat_vals)) != NC_NOERR) {
         free(id_vals);
@@ -773,27 +783,32 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
         ex_err(__func__, errmsg, status);
         return (EX_FATAL);
       }
-
-      if (tmp_stats->valid_ids) {
-        /* status array is valid only if ids are valid */
-        tmp_stats->valid_stat = EX_TRUE;
-        tmp_stats->stat_vals  = stat_vals;
-      }
     }
     else {
-      stat_vals = tmp_stats->stat_vals;
+      for (j = 0; j < dim_len; j++) {
+        stat_vals[j] = 1;
+      }
     }
 
-    if (stat_vals[i] == 0) /* is this object null? */ {
-      ex_err(__func__, "", EX_NULLENTITY);
-      if (!(tmp_stats->valid_stat)) {
-        free(stat_vals);
-      }
-      if (!(tmp_stats->valid_ids)) {
-        free(id_vals);
-      }
-      return (-((int)i + 1)); /* return index into id array (1-based) */
+    if (tmp_stats->valid_ids) {
+      /* status array is valid only if ids are valid */
+      tmp_stats->valid_stat = EX_TRUE;
+      tmp_stats->stat_vals  = stat_vals;
     }
+  }
+  else {
+    stat_vals = tmp_stats->stat_vals;
+  }
+
+  if (stat_vals[i] == 0) /* is this object null? */ {
+    ex_err(__func__, "", EX_NULLENTITY);
+    if (!(tmp_stats->valid_stat)) {
+      free(stat_vals);
+    }
+    if (!(tmp_stats->valid_ids)) {
+      free(id_vals);
+    }
+    return (-((int)i + 1)); /* return index into id array (1-based) */
   }
   if (!(tmp_stats->valid_ids)) {
     free(id_vals);
