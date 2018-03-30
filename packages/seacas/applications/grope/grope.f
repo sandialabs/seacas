@@ -86,6 +86,7 @@ C      --EXODUS - true iff EXODUS file versus GENESIS file
       LOGICAL MAPND, MAPEL
 
       LOGICAL ISEOF
+      LOGICAL CHECK
       CHARACTER*1 cdum
 
       include 'gr_qainfo.blk'
@@ -137,7 +138,8 @@ C ... By default, ultimately map both nodes and elements
 C     HOWEVER, in the transition time do not map either unless requested...
       mapel = .false.
       mapnd = .false.
-
+      check = .false.
+      
       if (narg .gt. 1) then
         do i=1, narg-1, 2
           CALL get_argument(i+0,option, lo)
@@ -162,6 +164,9 @@ C     HOWEVER, in the transition time do not map either unless requested...
               mapnd = .true.
               mapel = .true.
             end if
+          else if (option(:lo) .eq. '-check' .or.
+     *      option(:lo) .eq. '--check') then
+            check = .TRUE.
           end if
         end do
       end if
@@ -417,7 +422,7 @@ C   --Process commands
      &     C(KVNAMO+NAMLEN*(IXEV-1)), C(KVNAMO+NAMLEN*(IXNS-1)),
      $     C(KVNAMO+NAMLEN*(IXSS-1)), A(KCORD),
      *     IA(KMAPEL), IA(KDBMAPEL), IA(KMAPNO), IA(KDBMAPNO),
-     *     mapnd, mapel,
+     *     mapnd, mapel, check,
      &     A(KIDELB), A(KNELB), A(KLENE), A(KNLNK), A(KNATR),
      &     A(KLINK), A(KATRIB),
      &     A(KIDNS), A(KNNNS), A(KNDNPS), A(KIXNNS), A(KIXDNS),
