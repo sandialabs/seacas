@@ -1408,7 +1408,9 @@ namespace Ioex {
   void DatabaseIO::flush_database__() const
   {
     if (!is_input()) {
-      ex_update(get_file_pointer());
+      if (isParallel || myProcessor == 0) {
+        ex_update(get_file_pointer());
+      }
     }
   }
 
