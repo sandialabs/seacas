@@ -487,6 +487,7 @@ namespace SEAMS {
           << "                       : If P is path, then optionally prepended to all include "
              "filenames\n"
           << "                       : If P is file, then processed before processing input file\n"
+          << "                       : variables defined in P will be immutable.\n"
           << "        --exit_on or -e: End when 'Exit|EXIT|exit' entered       \n"
           << "           --help or -h: Print this list                         \n"
           << "        --message or -M: Print INFO messages                     \n"
