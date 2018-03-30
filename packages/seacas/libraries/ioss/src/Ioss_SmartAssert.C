@@ -37,8 +37,6 @@
 #include <sstream>
 #include <stdexcept>
 
-void break_into_debugger() { std::cerr << "Not Implemented.\n"; }
-
 namespace {
   // in case we're logging using the default logger...
   struct stream_holder
@@ -61,7 +59,7 @@ namespace {
   // initializes the SMART_ASSERT library
   struct assert_initializer
   {
-    assert_initializer() { Private::init_assert(); }
+    assert_initializer() { Ioss::Private::init_assert(); }
   } init;
 } // anonymous namespace
 
@@ -193,12 +191,6 @@ namespace SmartAssert {
         ignore_all = true;
         break;
 
-      case 'd':
-      case 'D':
-        // break
-        break_into_debugger();
-        break;
-
       case 'b':
       case 'B': abort(); break;
 
@@ -225,30 +217,32 @@ namespace SmartAssert {
 
 } // namespace SmartAssert
 
-namespace Private {
+namespace Ioss {
+  namespace Private {
 
-  void init_assert()
-  {
-    Assert::set_log(&::SmartAssert::default_logger);
-    Assert::set_handler(lvl_warn, &::SmartAssert::default_warn_handler);
-    Assert::set_handler(lvl_debug, &::SmartAssert::default_debug_handler);
-    Assert::set_handler(lvl_error, &::SmartAssert::default_error_handler);
-    Assert::set_handler(lvl_fatal, &::SmartAssert::default_fatal_handler);
-  }
+    void init_assert()
+    {
+      Assert::set_log(&::SmartAssert::default_logger);
+      Assert::set_handler(lvl_warn, &::SmartAssert::default_warn_handler);
+      Assert::set_handler(lvl_debug, &::SmartAssert::default_debug_handler);
+      Assert::set_handler(lvl_error, &::SmartAssert::default_error_handler);
+      Assert::set_handler(lvl_fatal, &::SmartAssert::default_fatal_handler);
+    }
 
-  // sets the default logger to write to this stream
-  void set_default_log_stream(std::ostream &out)
-  {
-    default_logger_info.out_  = &out;
-    default_logger_info.owns_ = false;
-  }
+    // sets the default logger to write to this stream
+    void set_default_log_stream(std::ostream &out)
+    {
+      default_logger_info.out_  = &out;
+      default_logger_info.owns_ = false;
+    }
 
-  // sets the default logger to write to this file
-  void set_default_log_name(const char *str)
-  {
-    default_logger_info.owns_ = false;
-    default_logger_info.out_  = new std::ofstream(str);
-    default_logger_info.owns_ = true;
-  }
+    // sets the default logger to write to this file
+    void set_default_log_name(const char *str)
+    {
+      default_logger_info.owns_ = false;
+      default_logger_info.out_  = new std::ofstream(str);
+      default_logger_info.owns_ = true;
+    }
 
-} // namespace Private
+  } // namespace Private
+} // namespace Ioss

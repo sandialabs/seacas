@@ -53,11 +53,11 @@
 #include <sys/utsname.h>
 
 #include "add_to_log.h"
-#include "smart_assert.h"
 
 #include <exodusII.h>
 
 #include <Ionit_Initializer.h>
+#include <Ioss_SmartAssert.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_Transform.h>
 
@@ -111,11 +111,11 @@ namespace {
 
   int count_omissions(Ioss::Region *region)
   {
-    int omitted = 0;
+    int  omitted = 0;
     auto blocks  = region->get_element_blocks();
     for (auto &block : blocks) {
       if (block->property_exists(std::string("omitted"))) {
-	omitted++;
+        omitted++;
       }
     }
     return omitted;
