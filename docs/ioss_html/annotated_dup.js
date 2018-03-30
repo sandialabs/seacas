@@ -73,7 +73,6 @@ var annotated_dup =
     [ "Iotr", "namespaceIotr.html", "namespaceIotr" ],
     [ "Iovs", "namespaceIovs.html", "namespaceIovs" ],
     [ "Json", "namespaceJson.html", "namespaceJson" ],
-    [ "Private", "namespacePrivate.html", "namespacePrivate" ],
     [ "Skinner", "namespaceSkinner.html", "namespaceSkinner" ],
     [ "Assert", "structAssert.html", "structAssert" ],
     [ "assert_context", "classassert__context.html", "classassert__context" ],

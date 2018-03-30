@@ -111,7 +111,6 @@ var namespaces =
     [ "Iotr", "namespaceIotr.html", null ],
     [ "Iovs", "namespaceIovs.html", null ],
     [ "Json", "namespaceJson.html", null ],
-    [ "Private", "namespacePrivate.html", null ],
     [ "Skinner", "namespaceSkinner.html", null ],
     [ "SmartAssert", "namespaceSmartAssert.html", null ],
     [ "std", "namespacestd.html", null ]
