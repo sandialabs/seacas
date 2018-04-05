@@ -102,7 +102,7 @@ namespace SEAMS {
 
   extern SEAMS::Aprepro *aprepro;
 
-#if defined(VMS) || defined(_hpux_) || defined(sun) || defined(__linux__)
+#if defined(VMS) || defined(_hpux_) || defined(sun) || defined(__linux__) || defined(__APPLE__)
 #define HYPOT(x, y) hypot(x, y)
 #else
 #define HYPOT(x, y) do_hypot(x, y)
@@ -116,7 +116,7 @@ namespace SEAMS {
 #define min(x, y) (x) < (y) ? (x) : (y)
 #endif
 
-#if defined(sun) || defined(__linux__)
+#if defined(sun) || defined(__linux__) || defined(__APPLE__)
 #define LOG1P(x) log1p(x)
 #else
 #define LOG1P(x) std::log(1.0 + (x))
@@ -417,6 +417,18 @@ namespace SEAMS {
   {
     reset_error();
     double temp = exp(x);
+    SEAMS::math_error("exp");
+    return (temp);
+  }
+
+  double do_expm1(double x)
+  {
+    reset_error();
+#if defined(__linux__) || defined(__APPLE__)
+    double temp = expm1(x);
+#else
+    double temp = exp(x) - 1.0;
+#endif
     SEAMS::math_error("exp");
     return (temp);
   }
