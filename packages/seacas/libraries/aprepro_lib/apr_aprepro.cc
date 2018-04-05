@@ -51,6 +51,10 @@ namespace {
   const unsigned int HASHSIZE       = 5939;
   const char *       version_string = "5.06 (2018/04/05)";
 
+  void output_copyright();
+} // namespace
+
+namespace SEAMS {
   unsigned hash_symbol(const char *symbol)
   {
     unsigned hashval;
@@ -59,10 +63,7 @@ namespace {
     }
     return (hashval % HASHSIZE);
   }
-  void output_copyright();
-} // namespace
 
-namespace SEAMS {
   Aprepro *aprepro; // A global for use in the library.  Clean this up...
   bool     echo = true;
 
