@@ -5,28 +5,36 @@
    Node Count = {ex_node_count}
 Element Count = {ex_element_count}
 
+{ifdef(ex_block_count)}
 Element Block Info:
         Count = {ex_block_count}
         Names = {ex_block_names}
      Topology = {ex_block_topology}
           Ids = {print_array(transpose(ex_block_ids))}
 {print_array(ex_block_info)}
+{endif}
 
+{ifdef(ex_nodeset_count)}
 Nodeset Info:
         Count = {ex_nodeset_count}
         Names = {ex_nodeset_names}
           Ids = {print_array(transpose(ex_nodeset_ids))}
 {print_array(ex_nodeset_info)}
+{endif}
 
+{ifdef(ex_sideset_count)}
 Sideset Info:
         Count = {ex_sideset_count}
         Names = {ex_sideset_names}
           Ids = {print_array(transpose(ex_sideset_ids))}
 {print_array(ex_sideset_info)}
+{endif}
 
+{ifdef(ex_timestep_count)}
 Timestep Info:
         Count = {ex_timestep_count}
         Times = {print_array(transpose(ex_timestep_times))}
+{endif}
 
 NOTE: Array index are 0-based by default; get_word is 1-based...
 {loop(ex_block_count)}
