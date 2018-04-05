@@ -65,6 +65,7 @@ namespace SEAMS {
       {"cosh", do_cosh, "cosh(x)", "Hyperbolic cosine of x."},
       {"d2r", do_d2r, "d2r(x)", "Degrees to radians."},
       {"exp", do_exp, "exp(x)", "Exponential: e^x"},
+      {"expm1", do_expm1, "expm1(x)", "Exponential: Accurate version of e^x - 1.0 for small x"},
       {"floor", do_floor, "floor(x)", "Largest integer not greater than x."},
       {"int", do_int, "int(x), [x]", "Integer part of x truncated toward 0."},
       {"lgamma", do_lgamma, "lgamma(x)", "log(Gamma(x))."},
