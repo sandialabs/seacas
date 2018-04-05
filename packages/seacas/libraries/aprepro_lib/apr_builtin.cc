@@ -43,6 +43,9 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <unordered_map>
+#include <utility>
+
 #include <sys/stat.h>
 #ifdef _WIN32
 #include <io.h>
@@ -64,6 +67,18 @@
 #endif
 
 namespace {
+  std::unordered_map<std::string, std::vector<std::string>> tokenized_strings;
+  std::vector<std::string> &get_tokenized_strings(const char *string, const char *delm)
+  {
+    std::string key = std::string(string) + std::string(delm);
+    if (tokenized_strings.find(key) == tokenized_strings.end()) {
+      std::string temp       = string;
+      auto        tokens     = SEAMS::tokenize(temp, delm);
+      tokenized_strings[key] = tokens;
+    }
+    return tokenized_strings[key];
+  }
+
   std::random_device rd;
   std::mt19937_64    rng(rd());
 
@@ -690,16 +705,13 @@ namespace SEAMS {
 
   double do_word_count(char *string, char *delm)
   {
-    std::string temp   = string;
-    auto        tokens = tokenize(temp, delm);
-    return static_cast<double>(tokens.size());
+    return static_cast<double>(get_tokenized_strings(string, delm).size());
   }
 
   double do_find_word(char *word, char *string, char *delm)
   {
+    auto &      tokens = get_tokenized_strings(string, delm);
     std::string sword{word};
-    std::string temp{string};
-    auto        tokens = tokenize(temp, delm);
     for (size_t i = 0; i < tokens.size(); i++) {
       if (tokens[i] == sword) {
         return i + 1;
@@ -710,10 +722,9 @@ namespace SEAMS {
 
   const char *do_get_word(double n, char *string, char *delm)
   {
-    size_t      in     = static_cast<size_t>(n);
-    std::string temp   = string;
-    auto        tokens = tokenize(temp, delm);
+    auto &tokens = get_tokenized_strings(string, delm);
 
+    size_t in = static_cast<size_t>(n);
     if (tokens.size() >= in) {
       char *word = nullptr;
       new_string(tokens[in - 1], &word);
