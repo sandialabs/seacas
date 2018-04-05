@@ -66,11 +66,16 @@
 #define PI 3.141592653589793238462643
 #endif
 
+namespace SEAMS {
+  unsigned hash_symbol(const char *symbol);
+}
+
 namespace {
-  std::unordered_map<std::string, std::vector<std::string>> tokenized_strings;
+  std::unordered_map<size_t, std::vector<std::string>> tokenized_strings;
   std::vector<std::string> &get_tokenized_strings(const char *string, const char *delm)
   {
-    std::string key = std::string(string) + std::string(delm);
+    // key is address of string + hash of delimiter
+    size_t key = *string + SEAMS::hash_symbol(delm);
     if (tokenized_strings.find(key) == tokenized_strings.end()) {
       std::string temp       = string;
       auto        tokens     = SEAMS::tokenize(temp, delm);
