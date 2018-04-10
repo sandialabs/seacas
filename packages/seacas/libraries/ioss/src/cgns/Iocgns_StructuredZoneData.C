@@ -244,25 +244,48 @@ namespace Iocgns {
   // Split this StructuredZone along the largest ordinal
   // into two children and return the created zones.
   std::pair<StructuredZoneData *, StructuredZoneData *>
-  StructuredZoneData::split(int zone_id, double ratio, int rank)
+  StructuredZoneData::split(int zone_id, double avg_work, double balance, int rank)
   {
     assert(is_active());
+    double ratio = avg_work / work();
     if (ratio > 1.0) {
       ratio = 1.0 / ratio;
     }
 
-    // Find ordinal with largest value... Split along that ordinal
-    int ordinal = 0;
-    if (m_lineOrdinal == ordinal) {
-      ordinal = 1;
+    int ord0 = int((double)m_ordinal[0] * ratio + 0.5);
+    ord0     = ord0 == 0 ? 1 : ord0;
+    int ord1 = int((double)m_ordinal[1] * ratio + 0.5);
+    ord1     = ord1 == 0 ? 1 : ord1;
+    int ord2 = int((double)m_ordinal[2] * ratio + 0.5);
+    ord2     = ord2 == 0 ? 1 : ord2;
+
+    double work0 = ord0 * m_ordinal[1] * m_ordinal[2];
+    double work1 = ord1 * m_ordinal[0] * m_ordinal[2];
+    double work2 = ord2 * m_ordinal[0] * m_ordinal[1];
+
+    if (m_lineOrdinal == 0)
+      work0 = 0.0;
+    if (m_lineOrdinal == 1)
+      work1 = 0.0;
+    if (m_lineOrdinal == 2)
+      work2 = 0.0;
+
+    auto delta0 = std::make_pair(fabs(work0 - avg_work), -(int)m_ordinal[0]);
+    auto delta1 = std::make_pair(fabs(work1 - avg_work), -(int)m_ordinal[1]);
+    auto delta2 = std::make_pair(fabs(work2 - avg_work), -(int)m_ordinal[2]);
+
+    auto min_ordinal = 0;
+    auto min_delta   = delta0;
+    if (delta1 < min_delta) {
+      min_ordinal = 1;
+      min_delta   = delta1;
     }
-    if (m_ordinal[1] > m_ordinal[ordinal] && m_lineOrdinal != 1) {
-      ordinal = 1;
-    }
-    if (m_ordinal[2] > m_ordinal[ordinal] && m_lineOrdinal != 2) {
-      ordinal = 2;
+    if (delta2 < min_delta) {
+      min_ordinal = 2;
+      min_delta   = delta2;
     }
 
+    int ordinal = min_ordinal;
     assert(ordinal != m_lineOrdinal);
 
     if (m_ordinal[ordinal] <= 1) {
