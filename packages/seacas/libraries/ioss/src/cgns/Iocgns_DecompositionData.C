@@ -471,9 +471,9 @@ namespace Iocgns {
     size_t px         = 0;
     size_t num_split  = 0;
     double avg_work   = (double)work / m_decomposition.m_processorCount;
-    auto   num_active = m_structuredZones.size();
 
 #if IOSS_DEBUG_OUTPUT
+    auto num_active = m_structuredZones.size();
     OUTPUT << "Decomposing structured mesh with " << num_active << " zones for "
            << m_decomposition.m_processorCount << " processors.\nAverage workload is " << avg_work
            << ", Load Balance Threshold is " << m_loadBalanceThreshold << ", Work range "
