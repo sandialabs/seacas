@@ -123,6 +123,69 @@ namespace {
   }
 #endif
 
+  size_t pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
+                   double load_balance, int proc_rank, int proc_count)
+  {
+    auto   new_zones(zones);
+    size_t new_zone_id = zones.size() + 1;
+
+    // See if can split each zone over a set of procs...
+    int  procs        = proc_count;
+    bool adaptive_avg = false;
+    for (auto zone : zones) {
+      double work   = zone->work();
+      int    splits = int(work / avg_work + 0.5);
+      procs -= splits;
+    }
+    if (procs == 0) {
+      adaptive_avg = true;
+    }
+
+    for (auto zone : zones) {
+      int  num_active = 0;
+      bool split      = false;
+
+      auto work_average = avg_work;
+      int  splits       = 0;
+      if (adaptive_avg) {
+        double work  = zone->work();
+        splits       = int(work / avg_work + 0.5);
+        work_average = work / (double)splits;
+#if IOSS_DEBUG_OUTPUT
+        OUTPUT << "Setting average work from " << avg_work << " to " << work_average << " for zone "
+               << zone->m_name << "\n";
+#endif
+      }
+      do {
+        split = false;
+        if (zone->is_active() && zone->work() > work_average * load_balance) {
+          auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
+
+          if (children.first != nullptr && children.second != nullptr) {
+            split = true;
+            new_zone_id += 2;
+            zone =
+                children.first->work() > children.second->work() ? children.first : children.second;
+            new_zones.push_back(children.first);
+            new_zones.push_back(children.second);
+            if (adaptive_avg) {
+              splits--;
+              double work  = zone->work();
+              work_average = work / (double)splits;
+            }
+          }
+          num_active++; // Add 2 children; parent goes inactive
+          if (num_active >= proc_count) {
+            split = false;
+            break;
+          }
+        }
+      } while (split);
+    }
+    std::swap(new_zones, zones);
+    return new_zone_id;
+  }
+
   // These are used for structured parallel decomposition...
   void create_zone_data(int cgnsFilePtr, std::vector<Iocgns::StructuredZoneData *> &zones)
   {
@@ -405,12 +468,10 @@ namespace Iocgns {
       assert(z->is_active());
     }
 
-    size_t new_zone_id = m_structuredZones.size() + 1;
-    size_t px          = 0;
-    size_t num_split   = 0;
-    bool   split       = false;
-    double avg_work    = (double)work / m_decomposition.m_processorCount;
-    auto   num_active  = m_structuredZones.size();
+    size_t px         = 0;
+    size_t num_split  = 0;
+    double avg_work   = (double)work / m_decomposition.m_processorCount;
+    auto   num_active = m_structuredZones.size();
 
 #if IOSS_DEBUG_OUTPUT
     OUTPUT << "Decomposing structured mesh with " << num_active << " zones for "
@@ -431,43 +492,10 @@ namespace Iocgns {
     OUTPUT << "Pre-Splitting:\n";
 #endif
     // Split all blocks where block->work() > avg_work * m_loadBalanceThreshold
-    bool single_zone = m_structuredZones.size() == 1;
-    do {
-      auto zone_new(m_structuredZones);
-      split = false;
-      for (auto zone : m_structuredZones) {
-        if (zone->is_active() && zone->work() > avg_work * m_loadBalanceThreshold) {
-          // The ratio seems to be a good idea, but it needs some more intelligence
-          // at times.  For example, if splitting a 4x4x1 across 4 processors, it will
-          // correctly split it into 1x4x1 and 3x4x1 the first split, but then the
-          // next split will split ordinal 1 into 3x1x1 and 3x3x1.
-          // Would be good to be able to do subsequent splits along same ordinal as
-          // first split if it made sense, ...
-          // For now, if only single zone in model, use equal splits; else use ratio splits.
-          // TODO: Add control via property?
-          //
+    size_t new_zone_id = pre_split(m_structuredZones, avg_work, m_loadBalanceThreshold, rank,
+                                   m_decomposition.m_processorCount);
 
-          double ratio = zone->work() / avg_work;
-          if (single_zone) {
-            ratio = 0.5;
-          }
-          auto children = zone->split(new_zone_id, ratio, rank);
-
-          if (children.first != nullptr && children.second != nullptr) {
-            zone_new.push_back(children.first);
-            zone_new.push_back(children.second);
-            split = true;
-            new_zone_id += 2;
-          }
-          num_active++; // Add 2 children; parent goes inactive
-          if (single_zone && num_active >= (size_t)m_decomposition.m_processorCount) {
-            split = false;
-            break;
-          }
-        }
-      }
-      std::swap(zone_new, m_structuredZones);
-    } while (split);
+    // At this point, there should be no zone with block->work() > avg_work * m_loadBalanceThreshold
 #if IOSS_DEBUG_OUTPUT
     OUTPUT << "========================================================================\n";
 #endif
@@ -516,8 +544,8 @@ namespace Iocgns {
       for (size_t i = 0; i < work_vector.size(); i++) {
         double workload_ratio = double(work_vector[i]) / double(avg_work);
 #if IOSS_DEBUG_OUTPUT
-        OUTPUT << "Processor " << i << " work: " << work_vector[i]
-               << ", workload ratio: " << workload_ratio << "\n";
+        OUTPUT << "\nProcessor " << i << " work: " << work_vector[i]
+               << ", workload ratio: " << workload_ratio;
 #endif
         if (workload_ratio > m_loadBalanceThreshold) {
           exceeds[i] = true;
@@ -525,8 +553,9 @@ namespace Iocgns {
         }
       }
 #if IOSS_DEBUG_OUTPUT
-      OUTPUT << "\nWorkload threshold exceeded on " << px << " processors.\n";
+      OUTPUT << "\n\nWorkload threshold exceeded on " << px << " processors.\n";
 #endif
+      bool single_zone = m_structuredZones.size() == 1;
       if (single_zone) {
         auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
                                     [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
@@ -543,7 +572,8 @@ namespace Iocgns {
             // is on a proc where the threshold was exceeded.
             // if so, split the block and set exceeds[proc] to false;
             // Exit the loop when num_split >= px.
-            auto children = zone->split(new_zone_id, 0.5, rank);
+            auto children =
+                zone->split(new_zone_id, zone->work() / 2.0, m_loadBalanceThreshold, rank);
             if (children.first != nullptr && children.second != nullptr) {
               zone_new.push_back(children.first);
               zone_new.push_back(children.second);
