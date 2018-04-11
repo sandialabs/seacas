@@ -1459,6 +1459,7 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
               return a->work() > b->work();
             });
 
+#if 1
   for (auto &zone : zones) {
     zone->m_proc = -1;
     if (zone->is_active()) {
@@ -1476,11 +1477,49 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
           }
         }
       }
-
       zone->m_proc = proc;
       work_vector[proc] += zone->work();
     }
   }
+#else
+  // Assign zone to first processor that has "capacity".
+  // Determine average_work per processor...
+  double work = 0.0;
+  int num_zones = 0;
+  for (auto &zone : zones) {
+    zone->m_proc = -1;
+    if (zone->is_active()) {
+      work += zone->work();
+      num_zones++;
+    }
+  }
+
+  double avg_work = work / work_vector.size();
+
+  int zones_placed = 0;
+  do {
+    zones_placed = 0;
+    for (size_t proc = 0; proc < work_vector.size(); proc++) {
+      work_vector[proc] = 0;
+    }
+    for (auto &zone : zones) {
+      if (zone->is_active()) {
+        // Find first processor that has capacity...
+        double my_work = zone->work();
+        for (size_t proc = 0; proc < work_vector.size(); proc++) {
+          if (work_vector[proc] + my_work <= avg_work) {
+            zone->m_proc = proc;
+            work_vector[proc] += zone->work();
+            zones_placed++;
+            break;
+          }
+        }
+      }
+    }
+    avg_work *= 1.2; // Allow 20% overage
+  } while (zones_placed != num_zones);
+
+#endif
 }
 
 size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
@@ -1523,8 +1562,8 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
       work_average = work / (double)splits;
 #if IOSS_DEBUG_OUTPUT
       if (proc_rank == 0) {
-	std::cerr << "Setting average work from " << avg_work << " to " << work_average << " for zone "
-		  << zone->m_name << "\n";
+        std::cerr << "Setting average work from " << avg_work << " to " << work_average
+                  << " for zone " << zone->m_name << "\n";
       }
 #endif
     }
