@@ -44,11 +44,12 @@ namespace Iocgns {
   class StructuredZoneData
   {
   public:
-    StructuredZoneData() {}
+    StructuredZoneData() { m_adam = this; }
 
     StructuredZoneData(std::string name, int zone, int ni, int nj, int nk)
         : m_name(std::move(name)), m_ordinal{{ni, nj, nk}}, m_zone(zone)
     {
+      m_adam = this;
     }
 
     std::string m_name{};
