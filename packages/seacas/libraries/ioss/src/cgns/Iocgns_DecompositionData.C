@@ -151,7 +151,6 @@ namespace {
       CGCHECK(cg_index_dim(cgnsFilePtr, base, zone, &index_dim));
 
       auto *zone_data = new Iocgns::StructuredZoneData(zone_name, zone, size[3], size[4], size[5]);
-      zone_data->m_adam = zone_data;
       zones.push_back(zone_data);
 
       // Handle zone-grid-connectivity...
