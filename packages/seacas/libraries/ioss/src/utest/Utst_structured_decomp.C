@@ -21,6 +21,20 @@ TEST_CASE("test single block", "[single_block]")
   Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
 }
 
+TEST_CASE("test single block line", "[single_block_line]")
+{
+  std::vector<Iocgns::StructuredZoneData *> zones;
+  auto *zone          = new Iocgns::StructuredZoneData("zone1", 1, 4, 4, 1);
+  zone->m_lineOrdinal = 0;
+  zones.push_back(zone);
+
+  int    proc_count             = 4;
+  double avg_work               = zone->work() / (double)proc_count;
+  double load_balance_tolerance = 1.05;
+
+  Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+}
+
 TEST_CASE("test prime sides", "[prime_sides]")
 {
   std::vector<Iocgns::StructuredZoneData *> zones;
