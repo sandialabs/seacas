@@ -39,15 +39,14 @@ then
 fi
 
 # =================== INSTALL HDF5 ===============
-hdf_version="1.8.20"
-#hdf_version="1.10.1"
+hdf_version="1.10.2"
 
 cd $ACCESS
 cd TPL/hdf5
 if [ "$DOWNLOAD" == "YES" ]
 then
     rm -f hdf5-${hdf_version}.tar.bz2
-    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-${hdf_version}.tar.bz2
+    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
 fi
 
 if [ "$INSTALL" == "YES" ]
