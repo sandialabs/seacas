@@ -392,7 +392,8 @@ namespace Ioss {
     void set_surface_split_type(Ioss::SurfaceSplitType split_type) { splitType = split_type; }
     Ioss::SurfaceSplitType get_surface_split_type() const { return splitType; }
 
-    void set_block_omissions(const std::vector<std::string> &omissions, const std::vector<std::string> &inclusions={});
+    void set_block_omissions(const std::vector<std::string> &omissions,
+                             const std::vector<std::string> &inclusions = {});
 
     void get_block_adjacencies(const Ioss::ElementBlock *eb,
                                std::vector<std::string> &block_adjacency) const

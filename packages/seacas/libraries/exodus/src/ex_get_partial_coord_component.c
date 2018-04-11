@@ -63,12 +63,11 @@ int ex_get_partial_coord_component(int exoid, int64_t start_node_num, int64_t nu
   int status;
   int coordid;
 
-  int    numnoddim, ndimdim;
-  size_t num_nod;
-  size_t num_dim, start[2], count[2];
-  char   errmsg[MAX_ERR_LENGTH];
+  int         numnoddim, ndimdim;
+  size_t      num_nod;
+  size_t      num_dim, start[2], count[2];
+  char        errmsg[MAX_ERR_LENGTH];
   const char *which = "XYZ";
-
 
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid, __func__);
@@ -138,8 +137,8 @@ int ex_get_partial_coord_component(int exoid, int64_t start_node_num, int64_t nu
       }
 
       if (status != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %c coord array in file id %d", which[component],
-                 exoid);
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %c coord array in file id %d",
+                 which[component], exoid);
         ex_err(__func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
@@ -148,16 +147,17 @@ int ex_get_partial_coord_component(int exoid, int64_t start_node_num, int64_t nu
   else {
     /* read the coordinates  */
     {
-      char *comp[]  = {VAR_COORD_X, VAR_COORD_Y, VAR_COORD_Z};
-      start[0] = start_node_num;
-      count[0] = num_nodes;
+      char *comp[] = {VAR_COORD_X, VAR_COORD_Y, VAR_COORD_Z};
+      start[0]     = start_node_num;
+      count[0]     = num_nodes;
       if (count[0] == 0) {
         start[0] = 0;
       }
 
       if ((status = nc_inq_varid(exoid, comp[component], &coordid)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to locate %c nodal coordinates in file id %d", which[component], exoid);
+                 "ERROR: failed to locate %c nodal coordinates in file id %d", which[component],
+                 exoid);
         ex_err(__func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
@@ -170,8 +170,8 @@ int ex_get_partial_coord_component(int exoid, int64_t start_node_num, int64_t nu
       }
 
       if (status != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %c coord array in file id %d", which[component],
-                 exoid);
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %c coord array in file id %d",
+                 which[component], exoid);
         ex_err(__func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }

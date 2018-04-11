@@ -570,7 +570,7 @@ namespace Ioss {
   }
 
   void DatabaseIO::set_block_omissions(const std::vector<std::string> &omissions,
-				       const std::vector<std::string> &inclusions)
+                                       const std::vector<std::string> &inclusions)
   {
     if (!omissions.empty()) {
       blockOmissions.assign(omissions.cbegin(), omissions.cend());

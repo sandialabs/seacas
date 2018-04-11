@@ -799,13 +799,6 @@ namespace Iofx {
 
   void DatabaseIO::read_communication_metadata()
   {
-    // Sierra does not use/need the element communication map data,
-    // but the Nemesis api call to get the nodal communication map
-    // data also gets the element communication data. So,...,we need to
-    // do some redundant reads to get back the element comm data
-    // and also some extra memory allocations to give them a place
-    // to go.
-
     // Check that file is nemesis.
     int  num_proc;         // Number of processors file was decomposed for
     int  num_proc_in_file; // Number of processors this file has info for
@@ -1298,31 +1291,31 @@ namespace Iofx {
 
     if (entity_type == EX_ELEM_BLOCK) {
       assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
-      
+
       // Handle all block omissions or inclusions...
       // This only affects the generation of surfaces...
       if (!blockOmissions.empty()) {
-	for (const auto &name : blockOmissions) {
-	  auto block = get_region()->get_element_block(name);
-	  if (block) {
-	    block->property_add(Ioss::Property(std::string("omitted"), 1));
-	  }
-	}
-      }	
+        for (const auto &name : blockOmissions) {
+          auto block = get_region()->get_element_block(name);
+          if (block) {
+            block->property_add(Ioss::Property(std::string("omitted"), 1));
+          }
+        }
+      }
 
       if (!blockInclusions.empty()) {
-	auto blocks  = get_region()->get_element_blocks();
-	for (auto &block : blocks) {
-	  block->property_add(Ioss::Property(std::string("omitted"), 1));
-	}
+        auto blocks = get_region()->get_element_blocks();
+        for (auto &block : blocks) {
+          block->property_add(Ioss::Property(std::string("omitted"), 1));
+        }
 
-	// Now, erase the property on any blocks in the inclusion list...
-	for (const auto &name : blockInclusions) {
-	  auto block = get_region()->get_element_block(name);
-	  if (block != nullptr) {
-	    block->property_erase("omitted");
-	  }
-	}
+        // Now, erase the property on any blocks in the inclusion list...
+        for (const auto &name : blockInclusions) {
+          auto block = get_region()->get_element_block(name);
+          if (block != nullptr) {
+            block->property_erase("omitted");
+          }
+        }
       }
     }
   }
@@ -5001,7 +4994,7 @@ void DatabaseIO::write_meta_data()
     std::strncpy(the_title, title_str.c_str(), max_line_length);
   }
   else {
-    std::strncpy(the_title, "Sierra Output Default Title", max_line_length);
+    std::strncpy(the_title, "IOSS Default Output Title", max_line_length);
   }
   the_title[max_line_length] = '\0';
 

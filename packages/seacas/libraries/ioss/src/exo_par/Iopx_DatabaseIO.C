@@ -1115,8 +1115,8 @@ namespace Iopx {
         }
 #endif
 
-	// Maintain block order on output database...
-	io_block->property_add(Ioss::Property("original_block_order", iblk));
+        // Maintain block order on output database...
+        io_block->property_add(Ioss::Property("original_block_order", iblk));
 
         if (save_type != "null" && save_type != "") {
           io_block->property_update("original_topology_type", save_type);
@@ -1141,34 +1141,34 @@ namespace Iopx {
                                         dynamic_cast<Ioss::ElementBlock *>(io_block),
                                         decomp->el_blocks[iblk].ioss_count(), maximumNameLength);
           }
-	  assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
+          assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
 
-	  // Handle all block omissions or inclusions...
-	  // This only affects the generation of surfaces...
-	  if (!blockOmissions.empty()) {
-	    for (const auto &name : blockOmissions) {
-	      auto block = get_region()->get_element_block(name);
-	      if (block) {
-		block->property_add(Ioss::Property(std::string("omitted"), 1));
-	      }
-	    }
-	  }
+          // Handle all block omissions or inclusions...
+          // This only affects the generation of surfaces...
+          if (!blockOmissions.empty()) {
+            for (const auto &name : blockOmissions) {
+              auto block = get_region()->get_element_block(name);
+              if (block) {
+                block->property_add(Ioss::Property(std::string("omitted"), 1));
+              }
+            }
+          }
 
-	  if (!blockInclusions.empty()) {
-	    auto blocks  = get_region()->get_element_blocks();
-	    for (auto &block : blocks) {
-	      block->property_add(Ioss::Property(std::string("omitted"), 1));
-	    }
+          if (!blockInclusions.empty()) {
+            auto blocks = get_region()->get_element_blocks();
+            for (auto &block : blocks) {
+              block->property_add(Ioss::Property(std::string("omitted"), 1));
+            }
 
-	    // Now, erase the property on any blocks in the inclusion list...
-	    for (const auto &name : blockInclusions) {
-	      auto block = get_region()->get_element_block(name);
-	      if (block != nullptr) {
-		block->property_erase("omitted");
-	      }
-	    }
-	  }
-	}
+            // Now, erase the property on any blocks in the inclusion list...
+            for (const auto &name : blockInclusions) {
+              auto block = get_region()->get_element_block(name);
+              if (block != nullptr) {
+                block->property_erase("omitted");
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -3925,9 +3925,9 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
       }
 
       if (ierr < 0) {
-	std::ostringstream extra_info;
-	extra_info << "Outputting component " << i << " of field " << field_name << " at step " << step << " on "
-		   << ge->type_string() << " " << ge->name() << ".";
+        std::ostringstream extra_info;
+        extra_info << "Outputting component " << i << " of field " << field_name << " at step "
+                   << step << " on " << ge->type_string() << " " << ge->name() << ".";
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
       }
     }

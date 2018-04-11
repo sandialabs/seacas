@@ -466,7 +466,8 @@ namespace Ioex {
     return Ioss::Utils::encode_entity_name(basename, id);
   }
 
-  void exodus_error(int exoid, int lineno, const char *function, const char *filename, const std::string &extra)
+  void exodus_error(int exoid, int lineno, const char *function, const char *filename,
+                    const std::string &extra)
   {
     std::ostringstream errmsg;
     // Create errmsg here so that the exerrval doesn't get cleared by

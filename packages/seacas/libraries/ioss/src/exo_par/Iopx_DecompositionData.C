@@ -299,12 +299,14 @@ namespace Iopx {
     // can cause hard to track down problems...
     if (decomposition.m_globalElementCount != decomposition.m_fileBlockIndex[block_count]) {
       if (m_processor == 0) {
-	std::ostringstream errmsg;
-	errmsg << "ERROR: The sum of the element counts in each element block gives a total of "
-	       << decomposition.m_fileBlockIndex[block_count] << " elements.\n       This does not match the total element count of "
-	       << decomposition.m_globalElementCount << " which indicates a corrupt mesh description.\n"
-	       << "       Contact gdsjaar@sandia.gov for more details.\n";
-	std::cerr << errmsg.str();
+        std::ostringstream errmsg;
+        errmsg << "ERROR: The sum of the element counts in each element block gives a total of "
+               << decomposition.m_fileBlockIndex[block_count]
+               << " elements.\n       This does not match the total element count of "
+               << decomposition.m_globalElementCount
+               << " which indicates a corrupt mesh description.\n"
+               << "       Contact gdsjaar@sandia.gov for more details.\n";
+        std::cerr << errmsg.str();
       }
       exit(EXIT_FAILURE);
     }
