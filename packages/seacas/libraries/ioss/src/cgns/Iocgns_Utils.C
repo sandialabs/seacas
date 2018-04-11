@@ -56,6 +56,7 @@
 #include <numeric>
 #include <set>
 
+#include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>
 
 #include <cgnsconfig.h>
@@ -178,6 +179,22 @@ namespace {
       }
     }
     return nstep;
+  }
+
+  ssize_t proc_with_minimum_work(const std::vector<size_t> &work, ssize_t exclude_proc = -1)
+  {
+    size_t  min_work = std::numeric_limits<size_t>::max();
+    ssize_t min_proc = -1;
+    for (ssize_t i = 0; i < (ssize_t)work.size(); i++) {
+      if (work[i] < min_work && i != exclude_proc) {
+        min_work = work[i];
+        min_proc = i;
+        if (min_work == 0) {
+          break;
+        }
+      }
+    }
+    return min_proc;
   }
 } // namespace
 
@@ -1425,4 +1442,124 @@ int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timestep
     timesteps.push_back(times[i]);
   }
   return num_timesteps;
+}
+
+void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &zones,
+                                          std::vector<size_t> &                      work_vector)
+{
+  // Sort zones based on work.  Most work first..
+  // TODO: Possibly filter 'zones' down to only active zones to
+  // reduce sort and iteration time.
+  std::sort(zones.begin(), zones.end(),
+            [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
+              return a->work() > b->work();
+            });
+
+  for (auto &zone : zones) {
+    zone->m_proc = -1;
+    if (zone->is_active()) {
+      // Assign zone to processor with minimum work...
+      ssize_t proc = proc_with_minimum_work(work_vector);
+
+      // See if any other zone on this processor has the same adam zone...
+      // TODO: Currently only do one "re-search".  Need to do something
+      // better to make sure; or be able to handle this condition correctly.
+      for (auto &pzone : zones) {
+        if (pzone->is_active() && pzone->m_proc == proc) {
+          if (pzone->m_adam == zone->m_adam) {
+            proc = proc_with_minimum_work(work_vector, proc);
+            break;
+          }
+        }
+      }
+
+      zone->m_proc = proc;
+      work_vector[proc] += zone->work();
+#if IOSS_DEBUG_OUTPUT
+      OUTPUT << "Assigning " << zone->m_name << " (Z" << zone->m_zone << ") with work "
+             << zone->work() << " to processor " << proc << "\n";
+#endif
+    }
+  }
+}
+
+size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
+                                double load_balance, int proc_rank, int proc_count)
+{
+  auto   new_zones(zones);
+  size_t new_zone_id = zones.size() + 1;
+
+  // See if can split each zone over a set of procs...
+  int    procs        = proc_count;
+  bool   adaptive_avg = false;
+  double min_avg      = avg_work / load_balance;
+  double max_avg      = avg_work * load_balance;
+  double total_work   = 0.0;
+  for (auto zone : zones) {
+    double work = zone->work();
+    total_work += work;
+    int splits      = int(std::round(work / avg_work));
+    splits          = splits == 0 ? 1 : splits;
+    double zone_avg = work / (double)splits;
+    if ((splits > 1 && zone_avg < min_avg) || zone_avg > max_avg) {
+      procs = 0;
+    }
+    procs -= splits;
+  }
+
+  adaptive_avg = (procs == 0);
+  procs        = proc_count;
+
+  for (auto zone : zones) {
+    int  num_active = 0;
+    bool split      = false;
+
+    auto work_average = avg_work;
+    int  splits       = 0;
+    if (adaptive_avg) {
+      double work  = zone->work();
+      splits       = int(std::round(work / avg_work));
+      splits       = splits == 0 ? 1 : splits;
+      work_average = work / (double)splits;
+#if IOSS_DEBUG_OUTPUT
+      OUTPUT << "Setting average work from " << avg_work << " to " << work_average << " for zone "
+             << zone->m_name << "\n";
+#endif
+    }
+    do {
+      split = false;
+      if (zone->is_active() && zone->work() > work_average * load_balance) {
+        auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
+
+        if (children.first != nullptr && children.second != nullptr) {
+          split = true;
+          new_zone_id += 2;
+          zone = children.second;
+          new_zones.push_back(children.first);
+          new_zones.push_back(children.second);
+          if (adaptive_avg) {
+            splits--;
+            double work  = zone->work();
+            work_average = work / (double)splits;
+          }
+          else {
+          // Do something here to adjust since probably didn't do exactly perfect split...
+          // Decrement proc count by 1 and total_work by
+#if 1
+            total_work -= children.first->work();
+            procs--;
+            work_average = total_work / (double)procs;
+#endif
+          }
+        }
+        num_active++; // Add 2 children; parent goes inactive
+        if (num_active >= proc_count) {
+          split = false;
+          break;
+        }
+      }
+    } while (split);
+  }
+  std::swap(new_zones, zones);
+  return new_zone_id;
 }

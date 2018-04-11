@@ -254,9 +254,5 @@ namespace Iocgns {
     Ioss::Decomposition<INT> m_decomposition;
   };
 
-  // Exposed so can test...
-  size_t pre_split(std::vector<Iocgns::StructuredZoneData*> &zones, double avg_work, double load_balance, int proc_rank, int proc_count);
-  void assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData*> &zones, std::vector<size_t> &work_vector);
-
 } // namespace Iocgns
 #endif
