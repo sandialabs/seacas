@@ -11,44 +11,72 @@
 TEST_CASE("test single block", "[single_block]")
 {
   std::vector<Iocgns::StructuredZoneData *> zones;
-  auto *zone = new Iocgns::StructuredZoneData("zone1", 1, 4, 4, 1);
-  zones.push_back(zone);
+  zones.push_back(new Iocgns::StructuredZoneData("zone1", 1, 4, 4, 1));
 
-  int    proc_count             = 2;
-  double avg_work               = zone->work() / (double)proc_count;
+  int    proc_count = 2;
+  double total_work =
+      std::accumulate(zones.begin(), zones.end(), 0.0,
+                      [](double a, Iocgns::StructuredZoneData *b) { return a + b->work(); });
+  double avg_work               = total_work / (double)proc_count;
   double load_balance_tolerance = 1.2;
 
   Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+
+  double max_work = avg_work * load_balance_tolerance;
+  for (const auto zone : zones) {
+    if (zone->is_active()) {
+      CHECK(zone->work() <= max_work);
+    }
+  }
 }
 
 TEST_CASE("test single block line", "[single_block_line]")
 {
   std::vector<Iocgns::StructuredZoneData *> zones;
-  auto *zone          = new Iocgns::StructuredZoneData("zone1", 1, 4, 4, 1);
-  zone->m_lineOrdinal = 0;
-  zones.push_back(zone);
+  zones.push_back(new Iocgns::StructuredZoneData("zone1", 1, 4, 4, 1));
+  zones.back()->m_lineOrdinal = 0;
 
-  int    proc_count             = 4;
-  double avg_work               = zone->work() / (double)proc_count;
+  int    proc_count = 4;
+  double total_work =
+      std::accumulate(zones.begin(), zones.end(), 0.0,
+                      [](double a, Iocgns::StructuredZoneData *b) { return a + b->work(); });
+  double avg_work               = total_work / (double)proc_count;
   double load_balance_tolerance = 1.05;
 
   Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+
+  double max_work = avg_work * load_balance_tolerance;
+  for (const auto zone : zones) {
+    if (zone->is_active()) {
+      CHECK(zone->work() <= max_work);
+    }
+  }
 }
 
 TEST_CASE("test prime sides", "[prime_sides]")
 {
   std::vector<Iocgns::StructuredZoneData *> zones;
-  auto *zone = new Iocgns::StructuredZoneData("zone1", 1, 3, 5, 7);
-  zones.push_back(zone);
+  zones.push_back(new Iocgns::StructuredZoneData("zone1", 1, 3, 5, 7));
+
+  double total_work =
+      std::accumulate(zones.begin(), zones.end(), 0.0,
+                      [](double a, Iocgns::StructuredZoneData *b) { return a + b->work(); });
 
   double load_balance_tolerance = 1.1;
   for (size_t proc_count = 2; proc_count < 8; proc_count++) {
     std::string name = "Prime_ProcCount_" + std::to_string(proc_count);
     SECTION(name)
     {
-      double avg_work = zone->work() / (double)proc_count;
+      double avg_work = total_work / (double)proc_count;
 
       Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+
+      double max_work = avg_work * load_balance_tolerance;
+      for (const auto zone : zones) {
+        if (zone->is_active()) {
+          CHECK(zone->work() <= max_work);
+        }
+      }
     }
   }
 }
