@@ -64,12 +64,15 @@ TEST_CASE("test farmer plenum", "[farmer_plenum]")
   zones.push_back(zone2);
 
   double load_balance_tolerance = 1.1;
+  double total_work =
+      std::accumulate(zones.begin(), zones.end(), 0.0,
+                      [](double a, Iocgns::StructuredZoneData *b) { return a + b->work(); });
 
   for (size_t proc_count = 2; proc_count < 20; proc_count++) {
     std::string name = "Plenum_ProcCount_" + std::to_string(proc_count);
     SECTION(name)
     {
-      double avg_work = (zone1->work() + zone2->work()) / (double)proc_count;
+      double avg_work = total_work / (double)proc_count;
 
       SECTION("split_zones")
       {
@@ -79,7 +82,7 @@ TEST_CASE("test farmer plenum", "[farmer_plenum]")
         double max_work = avg_work * load_balance_tolerance;
         for (const auto zone : zones) {
           if (zone->is_active()) {
-            REQUIRE(zone->work() <= max_work);
+            CHECK(zone->work() <= max_work);
           }
         }
 
@@ -91,14 +94,14 @@ TEST_CASE("test farmer plenum", "[farmer_plenum]")
           // Each active zone must be on a processor
           for (const auto zone : zones) {
             if (zone->is_active()) {
-              REQUIRE(zone->m_proc >= 0);
+              CHECK(zone->m_proc >= 0);
             }
           }
 
           // Work must be min_work <= work <= max_work
           for (auto work : work_vector) {
-            // REQUIRE(work >= min_work);
-            REQUIRE(work <= max_work);
+            // CHECK(work >= min_work);
+            CHECK(work <= max_work);
           }
 
           // A processor cannot have more than one zone with the same adam zone
@@ -107,7 +110,7 @@ TEST_CASE("test farmer plenum", "[farmer_plenum]")
             if (zones[i]->is_active()) {
               auto success =
                   proc_adam_map.insert(std::make_pair(zones[i]->m_adam->m_zone, zones[i]->m_proc));
-              REQUIRE(success.second);
+              CHECK(success.second);
             }
           }
         }
@@ -158,7 +161,7 @@ TEST_CASE("test grv", "[grv]")
         double max_work = avg_work * load_balance_tolerance;
         for (const auto zone : zones) {
           if (zone->is_active()) {
-            REQUIRE(zone->work() <= max_work);
+            CHECK(zone->work() <= max_work);
           }
         }
 
@@ -176,15 +179,15 @@ TEST_CASE("test grv", "[grv]")
           // Each active zone must be on a processor
           for (const auto zone : zones) {
             if (zone->is_active()) {
-              REQUIRE(zone->m_proc >= 0);
+              CHECK(zone->m_proc >= 0);
             }
           }
 
           // Work must be min_work <= work <= max_work
           max_work *= 1.2; // Modify range until we get full splitting working in test.
           for (auto work : work_vector) {
-            // REQUIRE(work >= min_work);
-            REQUIRE(work <= max_work);
+            // CHECK(work >= min_work);
+            CHECK(work <= max_work);
           }
 
           // A processor cannot have more than one zone with the same adam zone
@@ -193,7 +196,7 @@ TEST_CASE("test grv", "[grv]")
             if (zone->is_active()) {
               auto success =
                   proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
-              REQUIRE(success.second);
+              CHECK(success.second);
             }
           }
         }
@@ -269,7 +272,7 @@ TEST_CASE("test mk21", "[mk21]")
         double max_work = avg_work * load_balance_tolerance;
         for (const auto zone : zones) {
           if (zone->is_active()) {
-            REQUIRE(zone->work() <= max_work);
+            CHECK(zone->work() <= max_work);
           }
         }
 
@@ -287,15 +290,15 @@ TEST_CASE("test mk21", "[mk21]")
           // Each active zone must be on a processor
           for (const auto zone : zones) {
             if (zone->is_active()) {
-              REQUIRE(zone->m_proc >= 0);
+              CHECK(zone->m_proc >= 0);
             }
           }
 
           // Work must be min_work <= work <= max_work
-          max_work *= 1.2; // Modify range until we get full splitting working in test.
+          max_work *= 1.1; // Modify range until we get full splitting working in test.
           for (auto work : work_vector) {
-            // REQUIRE(work >= min_work);
-            REQUIRE(work <= max_work);
+            // CHECK(work >= min_work);
+            CHECK(work <= max_work);
           }
 
           // A processor cannot have more than one zone with the same adam zone
@@ -304,7 +307,7 @@ TEST_CASE("test mk21", "[mk21]")
             if (zone->is_active()) {
               auto success =
                   proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
-              REQUIRE(success.second);
+              CHECK(success.second);
             }
           }
         }
