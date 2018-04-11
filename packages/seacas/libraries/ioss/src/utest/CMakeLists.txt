@@ -32,6 +32,7 @@ TRIBITS_ADD_TEST(
 	NUM_MPI_PROCS 1
 )
 
+IF (TPL_ENABLE_CGNS)
 TRIBITS_ADD_EXECUTABLE(
  Utst_structured_decomp
  SOURCES Utst_structured_decomp.C
@@ -42,6 +43,7 @@ TRIBITS_ADD_TEST(
 	NAME Utst_structured_decomp
 	NUM_MPI_PROCS 1
 )
+ENDIF()
 
 IF (${PACKAGE_NAME}_ENABLE_SEACASExodus)
 TRIBITS_ADD_EXECUTABLE(
