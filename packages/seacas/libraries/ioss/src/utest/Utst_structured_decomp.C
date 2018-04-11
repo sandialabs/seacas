@@ -18,7 +18,7 @@ TEST_CASE("test single block", "[single_block]")
   double avg_work               = zone->work() / (double)proc_count;
   double load_balance_tolerance = 1.2;
 
-  int new_zones = Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+  Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
 }
 
 TEST_CASE("test prime sides", "[prime_sides]")
@@ -35,8 +35,7 @@ TEST_CASE("test prime sides", "[prime_sides]")
     {
       double avg_work = zone->work() / (double)proc_count;
 
-      int new_zones =
-          Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+      Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
     }
   }
 }
@@ -63,10 +62,9 @@ TEST_CASE("test farmer plenum", "[farmer_plenum]")
 
       SECTION("split_zones")
       {
-        int new_zones =
-            Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+        Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
 
-        double min_work = avg_work / load_balance_tolerance;
+        // double min_work = avg_work / load_balance_tolerance;
         double max_work = avg_work * load_balance_tolerance;
         for (const auto zone : zones) {
           if (zone->is_active()) {
