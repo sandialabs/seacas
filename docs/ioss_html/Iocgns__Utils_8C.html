@@ -113,6 +113,7 @@ $(document).ready(function(){initNavTree('Iocgns__Utils_8C.html','');});
 <code>#include &lt;<a class="el" href="Ioss__Wedge6_8h_source.html">Ioss_Wedge6.h</a>&gt;</code><br />
 <code>#include &lt;numeric&gt;</code><br />
 <code>#include &lt;set&gt;</code><br />
+<code>#include &lt;<a class="el" href="Iocgns__StructuredZoneData_8h_source.html">cgns/Iocgns_StructuredZoneData.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Iocgns__Utils_8h_source.html">cgns/Iocgns_Utils.h</a>&gt;</code><br />
 <code>#include &lt;cgnsconfig.h&gt;</code><br />
 <code>#include &lt;cgnslib.h&gt;</code><br />
@@ -144,6 +145,10 @@ Functions</h2></td></tr>
 <tr class="separator:ab655cb4bf7fe82089505620b49823dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91ce0e4544810d79a476945400ae8945"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a91ce0e4544810d79a476945400ae8945">anonymous_namespace{Iocgns_Utils.C}::extract_trailing_int</a> (char *name)</td></tr>
 <tr class="separator:a91ce0e4544810d79a476945400ae8945"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad51afb85b289f105d1041bde7bc754fe"><td class="memItemLeft" align="right" valign="top">ssize_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#ad51afb85b289f105d1041bde7bc754fe">anonymous_namespace{Iocgns_Utils.C}::proc_with_minimum_work</a> (const std::vector&lt; size_t &gt; &amp;work, ssize_t exclude_proc=-1)</td></tr>
+<tr class="separator:ad51afb85b289f105d1041bde7bc754fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90d8fbce505c2946989029aa90749f47"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a90d8fbce505c2946989029aa90749f47">anonymous_namespace{Iocgns_Utils.C}::validate_blocks</a> (const <a class="el" href="namespaceIoss.html#ac6d9b5dfaf7eb587cbd2b6b32262cbe3">Ioss::StructuredBlockContainer</a> &amp;structured_blocks)</td></tr>
+<tr class="separator:a90d8fbce505c2946989029aa90749f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a397d516e435535ef9fae83c788a399db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a397d516e435535ef9fae83c788a399db">anonymous_namespace{Iocgns_Utils.C}::consolidate_zgc</a> (const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region)</td></tr>
 <tr class="separator:a397d516e435535ef9fae83c788a399db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -163,7 +168,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != CG_OK) {                                                                        <a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">\</a></div><div class="line"><a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">    Iocgns::Utils::cgns_error</a>(file_ptr, __FILE__, __func__, __LINE__, -1);                         \</div><div class="line">  }</div><div class="ttc" id="classIocgns_1_1Utils_html_a34010e9b0618c248e1df20ff38800bda"><div class="ttname"><a href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">Iocgns::Utils::cgns_error</a></div><div class="ttdeci">static void cgns_error(int cgnsid, const char *file, const char *function, int lineno, int processor)</div><div class="ttdef"><b>Definition:</b> Iocgns_Utils.C:184</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != CG_OK) {                                                                        <a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">\</a></div><div class="line"><a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">    Iocgns::Utils::cgns_error</a>(file_ptr, __FILE__, __func__, __LINE__, -1);                         \</div><div class="line">  }</div><div class="ttc" id="classIocgns_1_1Utils_html_a34010e9b0618c248e1df20ff38800bda"><div class="ttname"><a href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">Iocgns::Utils::cgns_error</a></div><div class="ttdeci">static void cgns_error(int cgnsid, const char *file, const char *function, int lineno, int processor)</div><div class="ttdef"><b>Definition:</b> Iocgns_Utils.C:203</div></div>
 </div><!-- fragment -->
 </div>
 </div>
