@@ -5,12 +5,7 @@ var dir_f371e9dd6e225bf8e20e121e59bab5bd =
       [ "DatabaseIO", "classIocgns_1_1DatabaseIO.html", "classIocgns_1_1DatabaseIO" ]
     ] ],
     [ "Iocgns_DecompositionData.C", "Iocgns__DecompositionData_8C.html", "Iocgns__DecompositionData_8C" ],
-    [ "Iocgns_DecompositionData.h", "Iocgns__DecompositionData_8h.html", [
-      [ "Decomposition", "classIoss_1_1Decomposition.html", "classIoss_1_1Decomposition" ],
-      [ "ZoneData", "classIocgns_1_1ZoneData.html", "classIocgns_1_1ZoneData" ],
-      [ "DecompositionDataBase", "classIocgns_1_1DecompositionDataBase.html", "classIocgns_1_1DecompositionDataBase" ],
-      [ "DecompositionData", "classIocgns_1_1DecompositionData.html", "classIocgns_1_1DecompositionData" ]
-    ] ],
+    [ "Iocgns_DecompositionData.h", "Iocgns__DecompositionData_8h.html", "Iocgns__DecompositionData_8h" ],
     [ "Iocgns_Initializer.C", "Iocgns__Initializer_8C.html", null ],
     [ "Iocgns_Initializer.h", "Iocgns__Initializer_8h.html", [
       [ "Initializer", "classIocgns_1_1Initializer.html", "classIocgns_1_1Initializer" ]

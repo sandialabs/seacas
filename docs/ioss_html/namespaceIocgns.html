@@ -82,7 +82,8 @@ $(document).ready(function(){initNavTree('namespaceIocgns.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Iocgns Namespace Reference</div>  </div>
 </div><!--header-->
@@ -116,6 +117,13 @@ Classes</h2></td></tr>
 Typedefs</h2></td></tr>
 <tr class="memitem:a675183bf31adf0972eb836068be9f595"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">CGNSIntVector</a> = std::vector&lt; cgsize_t &gt;</td></tr>
 <tr class="separator:a675183bf31adf0972eb836068be9f595"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a6624a6e59b8eb05bc4ebf69c09284db7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIocgns.html#a6624a6e59b8eb05bc4ebf69c09284db7">assign_zones_to_procs</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> *&gt; &amp;zones, std::vector&lt; size_t &gt; &amp;work_vector)</td></tr>
+<tr class="separator:a6624a6e59b8eb05bc4ebf69c09284db7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89ddd79b9cbba9447cb9acdfd2671e4a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIocgns.html#a89ddd79b9cbba9447cb9acdfd2671e4a">pre_split</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> *&gt; &amp;zones, double avg_work, double load_balance, int proc_rank, int proc_count)</td></tr>
+<tr class="separator:a89ddd79b9cbba9447cb9acdfd2671e4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A namespace for the CGNS database format. </p>
@@ -128,6 +136,81 @@ Typedefs</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespaceIocgns.html#a675183bf31adf0972eb836068be9f595">Iocgns::CGNSIntVector</a> = typedef std::vector&lt;cgsize_t&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a6624a6e59b8eb05bc4ebf69c09284db7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6624a6e59b8eb05bc4ebf69c09284db7">&#9670;&nbsp;</a></span>assign_zones_to_procs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::assign_zones_to_procs </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> *&gt; &amp;&#160;</td>
+          <td class="paramname"><em>zones</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; size_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>work_vector</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a89ddd79b9cbba9447cb9acdfd2671e4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89ddd79b9cbba9447cb9acdfd2671e4a">&#9670;&nbsp;</a></span>pre_split()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Iocgns::pre_split </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> *&gt; &amp;&#160;</td>
+          <td class="paramname"><em>zones</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>avg_work</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>load_balance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>proc_rank</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>proc_count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
