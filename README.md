@@ -96,10 +96,10 @@ The most recent released version is recommended. For use with Exodus, some local
 
  * Download the latest netcdf-c release from <http://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
  * `cd TPL/netcdf`
- * `tar zxvf netcdf-4.5.0.tar.gz`
+ * `tar zxvf netcdf-4.6.1.tar.gz`
  * If the version is *prior* to 4.5.1, then you need to modify the
    following defines in
-   seacas/TPL/netcdf/netcdf-4.5.0/include/netcdf.h.  Versions *4.5.1 or
+   seacas/TPL/netcdf/netcdf-4.6.1/include/netcdf.h.  Versions *4.5.1 or
    later* do not check these limits and can be run unmodified.
 
     ```
@@ -108,7 +108,7 @@ The most recent released version is recommended. For use with Exodus, some local
     ```
 
  * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF_4` to `OFF`
- * `cd netcdf-4.5.0` and enter the command:
+ * `cd netcdf-4.6.1` and enter the command:
 
     ```
     mkdir build
