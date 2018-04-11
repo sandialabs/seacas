@@ -38,9 +38,9 @@
 #include <Ioss_Utils.h> // for Utils
 #include <cstddef>      // for size_t
 #include <functional>   // for binary_function
-#include <unordered_map>
 #include <string>       // for string
-#include <vector>       // for vector
+#include <unordered_map>
+#include <vector> // for vector
 
 namespace Ioss {
   using FieldMapType   = std::unordered_map<std::string, Field>;

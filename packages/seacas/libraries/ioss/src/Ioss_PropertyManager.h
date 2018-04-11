@@ -36,9 +36,9 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Property.h> // for Property
 #include <cstddef>         // for size_t
-#include <unordered_map>
 #include <string>          // for string, operator<
-#include <vector>          // for vector
+#include <unordered_map>
+#include <vector> // for vector
 
 namespace Ioss {
   using PropMapType = std::unordered_map<std::string, Property>;

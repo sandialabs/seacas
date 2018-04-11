@@ -160,15 +160,15 @@ namespace {
       return;
     }
 
-    //========================================================================
-    // OUTPUT ...
-    //========================================================================
+      //========================================================================
+      // OUTPUT ...
+      //========================================================================
 #if 0
     if (dbi->util().parallel_size() > 1) {
       properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
     }
 #endif
-    
+
     Ioss::DatabaseIO *dbo =
         Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
@@ -464,12 +464,13 @@ namespace {
       // a lower-numbered processor, then that processor owns the
       // node...
 
-      auto shared_nodes = Iocgns::Utils::resolve_processor_shared_nodes(region, region.get_database()->util().parallel_rank());
-      
+      auto shared_nodes = Iocgns::Utils::resolve_processor_shared_nodes(
+          region, region.get_database()->util().parallel_rank());
+
       int              myProcessor = output_region.get_database()->util().parallel_rank();
       std::vector<int> owning_processor(num_nodes, myProcessor);
       for (auto &block : blocks) {
-	int zone = block->get_property("zone").get_int();
+        int zone = block->get_property("zone").get_int();
         for (const auto &shared : shared_nodes[zone]) {
           size_t idx = block->m_blockLocalNodeIndex[shared.first];
           if (owning_processor[idx] > (int)shared.second) {
