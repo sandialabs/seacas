@@ -414,7 +414,7 @@ namespace Iocgns {
     OUTPUT << "Pre-Splitting:\n";
 #endif
     // Split all blocks where block->work() > avg_work * m_loadBalanceThreshold
-    size_t new_zone_id = pre_split(m_structuredZones, avg_work, m_loadBalanceThreshold, rank,
+    size_t new_zone_id = Utils::pre_split(m_structuredZones, avg_work, m_loadBalanceThreshold, rank,
                                    m_decomposition.m_processorCount);
 
     // At this point, there should be no zone with block->work() > avg_work * m_loadBalanceThreshold
@@ -423,7 +423,7 @@ namespace Iocgns {
 #endif
     do {
       std::vector<size_t> work_vector(m_decomposition.m_processorCount);
-      assign_zones_to_procs(m_structuredZones, work_vector);
+      Utils::assign_zones_to_procs(m_structuredZones, work_vector);
 
       // Calculate workload ratio for each processor...
       px = 0; // Number of processors where workload ratio exceeds threshold.

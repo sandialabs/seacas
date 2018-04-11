@@ -196,6 +196,8 @@ namespace {
     }
     return min_proc;
   }
+  void validate_blocks(const Ioss::StructuredBlockContainer &structured_blocks) {}
+
 } // namespace
 
 void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *function, int lineno,
@@ -597,6 +599,8 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   }
 
   const auto &structured_blocks = region.get_structured_blocks();
+  validate_blocks(structured_blocks);
+
   for (const auto &sb : structured_blocks) {
     int      zone    = 0;
     cgsize_t size[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -1475,10 +1479,6 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
 
       zone->m_proc = proc;
       work_vector[proc] += zone->work();
-#if IOSS_DEBUG_OUTPUT
-      OUTPUT << "Assigning " << zone->m_name << " (Z" << zone->m_zone << ") with work "
-             << zone->work() << " to processor " << proc << "\n";
-#endif
     }
   }
 }
@@ -1522,8 +1522,10 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
       splits       = splits == 0 ? 1 : splits;
       work_average = work / (double)splits;
 #if IOSS_DEBUG_OUTPUT
-      OUTPUT << "Setting average work from " << avg_work << " to " << work_average << " for zone "
-             << zone->m_name << "\n";
+      if (proc_rank == 0) {
+	std::cerr << "Setting average work from " << avg_work << " to " << work_average << " for zone "
+		  << zone->m_name << "\n";
+      }
 #endif
     }
     do {
