@@ -997,70 +997,70 @@ namespace Iopx {
     assert(entity_type == EX_ELEM_BLOCK);
 
     Ioss::Int64Vector X_block_ids(m_groupCount[entity_type]);
+    int               used_blocks = 0;
 
     int error;
-    {
-      if ((ex_int64_status(get_file_pointer()) & EX_IDS_INT64_API) != 0) {
-        error = ex_get_ids(get_file_pointer(), entity_type, TOPTR(X_block_ids));
+    if ((ex_int64_status(get_file_pointer()) & EX_IDS_INT64_API) != 0) {
+      error = ex_get_ids(get_file_pointer(), entity_type, TOPTR(X_block_ids));
+    }
+    else {
+      Ioss::IntVector tmp_set_ids(X_block_ids.size());
+      error = ex_get_ids(get_file_pointer(), entity_type, TOPTR(tmp_set_ids));
+      if (error >= 0) {
+        std::copy(tmp_set_ids.begin(), tmp_set_ids.end(), X_block_ids.begin());
+      }
+    }
+    if (error < 0) {
+      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+    }
+
+    int nvar = std::numeric_limits<int>::max(); // Number of 'block' vars on database. Used to
+                                                // skip querying if none.
+    int nmap = std::numeric_limits<int>::max(); // Number of 'block' maps on database. Used to
+                                                // skip querying if none.
+    for (int iblk = 0; iblk < m_groupCount[entity_type]; iblk++) {
+      if (decomp->el_blocks[iblk].global_count() == 0) {
+        continue;
+      }
+
+      int64_t id = decomp->el_blocks[iblk].id();
+
+      bool        db_has_name = false;
+      std::string alias       = Ioss::Utils::encode_entity_name(basename, id);
+      std::string block_name;
+      if (ignore_database_names()) {
+        block_name = alias;
       }
       else {
-        Ioss::IntVector tmp_set_ids(X_block_ids.size());
-        error = ex_get_ids(get_file_pointer(), entity_type, TOPTR(tmp_set_ids));
-        if (error >= 0) {
-          std::copy(tmp_set_ids.begin(), tmp_set_ids.end(), X_block_ids.begin());
-        }
+        block_name = Ioex::get_entity_name(get_file_pointer(), entity_type, id, basename,
+                                           maximumNameLength, db_has_name);
       }
-      if (error < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      if (get_use_generic_canonical_name()) {
+        std::swap(block_name, alias);
       }
 
-      int nvar = std::numeric_limits<int>::max(); // Number of 'block' vars on database. Used to
-                                                  // skip querying if none.
-      int nmap = std::numeric_limits<int>::max(); // Number of 'block' maps on database. Used to
-                                                  // skip querying if none.
-      for (int iblk = 0; iblk < m_groupCount[entity_type]; iblk++) {
-        if (decomp->el_blocks[iblk].global_count() == 0) {
-          continue;
-        }
+      std::string save_type = decomp->el_blocks[iblk].topologyType;
+      std::string type      = Ioss::Utils::fixup_type(decomp->el_blocks[iblk].topologyType,
+                                                 decomp->el_blocks[iblk].nodesPerEntity,
+                                                 spatialDimension - rank_offset);
 
-        int64_t id = decomp->el_blocks[iblk].id();
+      Ioss::EntityBlock *io_block = nullptr;
+      if (entity_type == EX_ELEM_BLOCK) {
+        auto *eblock =
+            new Ioss::ElementBlock(this, block_name, type, decomp->el_blocks[iblk].ioss_count());
+        io_block = eblock;
+        io_block->property_add(Ioss::Property("id", id));
+        io_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
+        io_block->property_add(Ioss::Property("iblk", iblk)); // Sequence in decomp.
 
-        bool        db_has_name = false;
-        std::string alias       = Ioss::Utils::encode_entity_name(basename, id);
-        std::string block_name;
-        if (ignore_database_names()) {
-          block_name = alias;
-        }
-        else {
-          block_name = Ioex::get_entity_name(get_file_pointer(), entity_type, id, basename,
-                                             maximumNameLength, db_has_name);
-        }
-        if (get_use_generic_canonical_name()) {
-          std::swap(block_name, alias);
-        }
-
-        std::string save_type = decomp->el_blocks[iblk].topologyType;
-        std::string type      = Ioss::Utils::fixup_type(decomp->el_blocks[iblk].topologyType,
-                                                   decomp->el_blocks[iblk].nodesPerEntity,
-                                                   spatialDimension - rank_offset);
-
-        Ioss::EntityBlock *io_block = nullptr;
-        if (entity_type == EX_ELEM_BLOCK) {
-          auto *eblock =
-              new Ioss::ElementBlock(this, block_name, type, decomp->el_blocks[iblk].ioss_count());
-          io_block = eblock;
-          io_block->property_add(Ioss::Property("id", id));
-          io_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
-          io_block->property_add(Ioss::Property("iblk", iblk)); // Sequence in decomp.
-
-          if (db_has_name) {
-            std::string *db_name = &block_name;
-            if (get_use_generic_canonical_name()) {
-              db_name = &alias;
-            }
-            io_block->property_add(Ioss::Property("db_name", *db_name));
+        if (db_has_name) {
+          std::string *db_name = &block_name;
+          if (get_use_generic_canonical_name()) {
+            db_name = &alias;
           }
-          get_region()->add(eblock);
+          io_block->property_add(Ioss::Property("db_name", *db_name));
+        }
+        get_region()->add(eblock);
 #if 0
         } else if (entity_type == EX_FACE_BLOCK) {
           Ioss::FaceBlock *fblock = new Ioss::FaceBlock(this, block_name, type, block.num_entry);
@@ -1089,12 +1089,12 @@ namespace Iopx {
           }
           get_region()->add(eblock);
 #endif
-        }
-        else {
-          std::ostringstream errmsg;
-          errmsg << "ERROR: Invalid type in get_blocks()";
-          IOSS_ERROR(errmsg);
-        }
+      }
+      else {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: Invalid type in get_blocks()";
+        IOSS_ERROR(errmsg);
+      }
 
 #if 0
         // See which connectivity options were defined for this block.
@@ -1115,57 +1115,56 @@ namespace Iopx {
         }
 #endif
 
-        // Maintain block order on output database...
-        io_block->property_add(Ioss::Property("original_block_order", iblk));
+      // Maintain block order on output database...
+      io_block->property_add(Ioss::Property("original_block_order", used_blocks++));
 
-        if (save_type != "null" && save_type != "") {
-          io_block->property_update("original_topology_type", save_type);
+      if (save_type != "null" && save_type != "") {
+        io_block->property_update("original_topology_type", save_type);
+      }
+
+      io_block->property_add(Ioss::Property(
+          "global_entity_count", static_cast<int64_t>(decomp->el_blocks[iblk].ioss_count())));
+
+      if (block_name != alias) {
+        get_region()->add_alias(block_name, alias);
+      }
+
+      // Check for additional variables.
+      add_attribute_fields(entity_type, io_block, decomp->el_blocks[iblk].attributeCount, type);
+      if (nvar > 0) {
+        nvar = add_results_fields(entity_type, io_block, iblk);
+      }
+
+      if (entity_type == EX_ELEM_BLOCK) {
+        if (nmap > 0) {
+          nmap =
+              Ioex::add_map_fields(get_file_pointer(), dynamic_cast<Ioss::ElementBlock *>(io_block),
+                                   decomp->el_blocks[iblk].ioss_count(), maximumNameLength);
         }
+        assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
 
-        io_block->property_add(Ioss::Property(
-            "global_entity_count", static_cast<int64_t>(decomp->el_blocks[iblk].ioss_count())));
-
-        if (block_name != alias) {
-          get_region()->add_alias(block_name, alias);
-        }
-
-        // Check for additional variables.
-        add_attribute_fields(entity_type, io_block, decomp->el_blocks[iblk].attributeCount, type);
-        if (nvar > 0) {
-          nvar = add_results_fields(entity_type, io_block, iblk);
-        }
-
-        if (entity_type == EX_ELEM_BLOCK) {
-          if (nmap > 0) {
-            nmap = Ioex::add_map_fields(get_file_pointer(),
-                                        dynamic_cast<Ioss::ElementBlock *>(io_block),
-                                        decomp->el_blocks[iblk].ioss_count(), maximumNameLength);
-          }
-          assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
-
-          // Handle all block omissions or inclusions...
-          // This only affects the generation of surfaces...
-          if (!blockOmissions.empty()) {
-            for (const auto &name : blockOmissions) {
-              auto block = get_region()->get_element_block(name);
-              if (block) {
-                block->property_add(Ioss::Property(std::string("omitted"), 1));
-              }
-            }
-          }
-
-          if (!blockInclusions.empty()) {
-            auto blocks = get_region()->get_element_blocks();
-            for (auto &block : blocks) {
+        // Handle all block omissions or inclusions...
+        // This only affects the generation of surfaces...
+        if (!blockOmissions.empty()) {
+          for (const auto &name : blockOmissions) {
+            auto block = get_region()->get_element_block(name);
+            if (block) {
               block->property_add(Ioss::Property(std::string("omitted"), 1));
             }
+          }
+        }
 
-            // Now, erase the property on any blocks in the inclusion list...
-            for (const auto &name : blockInclusions) {
-              auto block = get_region()->get_element_block(name);
-              if (block != nullptr) {
-                block->property_erase("omitted");
-              }
+        if (!blockInclusions.empty()) {
+          auto blocks = get_region()->get_element_blocks();
+          for (auto &block : blocks) {
+            block->property_add(Ioss::Property(std::string("omitted"), 1));
+          }
+
+          // Now, erase the property on any blocks in the inclusion list...
+          for (const auto &name : blockInclusions) {
+            auto block = get_region()->get_element_block(name);
+            if (block != nullptr) {
+              block->property_erase("omitted");
             }
           }
         }
