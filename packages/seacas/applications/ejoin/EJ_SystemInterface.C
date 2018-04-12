@@ -167,7 +167,7 @@ void SystemInterface::enroll_options()
   options_.enroll("netcdf4", GetLongOption::NoValue,
                   "Create output database using the HDF5-based "
                   "netcdf which allows for up to 2.1 GB "
-                  "nodes/elements",
+                  "nodes and elements",
                   nullptr);
 
   options_.enroll("64-bit", GetLongOption::NoValue,

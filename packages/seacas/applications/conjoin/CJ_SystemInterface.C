@@ -51,8 +51,19 @@ void Excn::SystemInterface::enroll_options()
                   "\t\tIf NONE, then not created. Default = node_status",
                   "node_status");
 
+  options_.enroll("netcdf4", GetLongOption::NoValue,
+                  "Create output database using the HDF5-based "
+                  "netcdf which allows for up to 2.1 GB "
+                  "nodes and elements",
+                  nullptr);
+
   options_.enroll("64-bit", GetLongOption::NoValue,
                   "True if forcing the use of 64-bit integers for the output file", nullptr);
+
+  options_.enroll(
+      "compress", GetLongOption::MandatoryValue,
+      "Specify the hdf5 (netcdf4) compression level [0..9] to be used on the output file.",
+      nullptr);
 
   options_.enroll("ignore_coordinate_check", GetLongOption::NoValue,
                   "Do not use nodal coordinates to determine if node in part 1 same as node in "
@@ -237,8 +248,19 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
+  if (options_.retrieve("netcdf4") != nullptr) {
+    useNetcdf4_ = true;
+  }
+
   if (options_.retrieve("64-bit") != nullptr) {
     ints64Bit_ = true;
+  }
+
+  {
+    const char *temp = options_.retrieve("compress");
+    if (temp != nullptr) {
+      compressionLevel_ = std::strtol(temp, nullptr, 10);
+    }
   }
 
   if (options_.retrieve("ignore_coordinate_check") != nullptr) {
