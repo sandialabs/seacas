@@ -209,12 +209,22 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si)
     mode |= EX_ALL_INT64_DB;
   }
 
+  if (si.compress_data() > 0 || si.use_netcdf4()) {
+    mode |= EX_NETCDF4;
+  }
+
   std::cout << "Output:   '" << outputFilename_ << "'" << '\n';
   outputId_ = ex_create(outputFilename_.c_str(), mode, &cpuWordSize_, &ioWordSize_);
   if (outputId_ < 0) {
     std::cerr << "Cannot open file '" << outputFilename_ << "'" << '\n';
     return false;
   }
+
+  if (si.compress_data() > 0) {
+    ex_set_option(outputId_, EX_OPT_COMPRESSION_LEVEL, si.compress_data());
+    ex_set_option(outputId_, EX_OPT_COMPRESSION_SHUFFLE, 1);
+  }
+
   std::cout << "IO Word size is " << ioWordSize_ << " bytes.\n";
   ex_set_max_name_length(outputId_, maximumNameLength_);
   return true;
