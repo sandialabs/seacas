@@ -592,8 +592,11 @@ namespace Ioex {
   void DatabaseIO::compute_block_membership__(Ioss::SideBlock *         efblock,
                                               std::vector<std::string> &block_membership) const
   {
-    Ioss::Int64Vector block_ids(m_groupCount[EX_ELEM_BLOCK]);
-    if (m_groupCount[EX_ELEM_BLOCK] == 1) {
+    Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
+    assert(Ioss::Utils::check_block_order(element_blocks));
+
+    Ioss::Int64Vector block_ids(element_blocks.size());
+    if (block_ids.size() == 1) {
       block_ids[0] = 1;
     }
     else {
@@ -616,7 +619,8 @@ namespace Ioex {
         if (block == nullptr || !block->contains(elem_id)) {
           block = get_region()->get_element_block(elem_id);
           assert(block != nullptr);
-          int block_order        = block->get_property("original_block_order").get_int();
+          int block_order = block->get_property("original_block_order").get_int();
+          assert(block_order < block_ids.size());
           block_ids[block_order] = 1;
         }
       }
@@ -627,13 +631,10 @@ namespace Ioex {
       util().global_array_minmax(block_ids, Ioss::ParallelUtils::DO_MAX);
     }
 
-    Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
-    assert(Ioss::Utils::check_block_order(element_blocks));
-    assert(m_groupCount[EX_ELEM_BLOCK] == (int)element_blocks.size());
-
-    for (int i = 0; i < m_groupCount[EX_ELEM_BLOCK]; i++) {
-      if (block_ids[i] == 1) {
-        Ioss::ElementBlock *block = element_blocks[i];
+    for (const auto block : element_blocks) {
+      int block_order = block->get_property("original_block_order").get_int();
+      assert(block_order < block_ids.size());
+      if (block_ids[block_order] == 1) {
         if (!Ioss::Utils::block_is_omitted(block)) {
           block_membership.push_back(block->name());
         }
