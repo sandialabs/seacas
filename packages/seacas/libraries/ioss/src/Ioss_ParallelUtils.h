@@ -62,6 +62,14 @@ namespace Ioss {
     bool get_environment(const std::string &name, std::string &value, bool sync_parallel) const;
 
     /*!
+     * See if any external properties specified via the
+     * IOSS_PROPERTIES environment variable.  If any found, add to
+     * `properties`. If `do_print` then output to cerr which
+     * properties were set
+     */
+    void add_environment_properties(Ioss::PropertyManager &properties, bool do_print);
+
+    /*!
      * Returns 'true' if 'name' is defined in the environment.
      * The value of the environment variable is converted to an
      * integer via the atoi library call and returned in 'value'.
