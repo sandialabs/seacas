@@ -113,11 +113,11 @@ namespace Iocgns {
         strcpy(hdf5_access, "PARALLEL");
       }
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
-      int ierr = cg_open(get_filename().c_str(), mode, &cgnsFilePtr);
+      int ierr = cg_open(decoded_filename().c_str(), mode, &cgnsFilePtr);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
         std::ostringstream errmsg;
-        errmsg << "ERROR: Problem opening file '" << get_filename() << "' for "
+        errmsg << "ERROR: Problem opening file '" << decoded_filename() << "' for "
                << (is_input() ? "read" : "write") << " access. "
                << "CGNS Error: '" << cg_get_error() << "'";
         IOSS_ERROR(errmsg);
