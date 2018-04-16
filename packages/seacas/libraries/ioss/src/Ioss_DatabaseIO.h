@@ -151,6 +151,12 @@ namespace Ioss {
      */
     std::string get_filename() const { return DBFilename; }
 
+    /** \brief Get a file-per-processor filename associated with the database.
+     *
+     * \ returns The file-per-processor name for a file on this processor.
+     */
+    const std::string &decoded_filename() const;
+
     /** \brief Determine whether the database is an input database.
      *
      *  \returns True if the database is an input database. False otherwise.
@@ -532,7 +538,8 @@ namespace Ioss {
      * run since the passed in filename is just the basename, not the
      * processor-specific filename.
      */
-    std::string DBFilename;
+    std::string         DBFilename;
+    mutable std::string decodedFilename;
 
     mutable Ioss::State dbState;
 

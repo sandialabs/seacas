@@ -361,6 +361,24 @@ namespace Ioss {
     }
   }
 
+  const std::string &DatabaseIO::decoded_filename() const
+  {
+    if (decodedFilename.empty()) {
+      if (isParallel) {
+        decodedFilename = util().decode_filename(get_filename(), isParallel);
+      }
+      else if (properties.exists("processor_count") && properties.exists("my_processor")) {
+        int proc_count  = properties.get("processor_count").get_int();
+        int my_proc     = properties.get("my_processor").get_int();
+        decodedFilename = Ioss::Utils::decode_filename(get_filename(), my_proc, proc_count);
+      }
+      else {
+        decodedFilename = get_filename();
+      }
+    }
+    return decodedFilename;
+  }
+
   void DatabaseIO::verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const
   {
     if (ge != nullptr) {
