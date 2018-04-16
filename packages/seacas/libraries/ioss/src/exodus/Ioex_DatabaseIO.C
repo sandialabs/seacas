@@ -619,7 +619,7 @@ namespace Ioex {
         if (block == nullptr || !block->contains(elem_id)) {
           block = get_region()->get_element_block(elem_id);
           assert(block != nullptr);
-          int block_order = block->get_property("original_block_order").get_int();
+          size_t block_order = block->get_property("original_block_order").get_int();
           assert(block_order < block_ids.size());
           block_ids[block_order] = 1;
         }
@@ -632,7 +632,7 @@ namespace Ioex {
     }
 
     for (const auto block : element_blocks) {
-      int block_order = block->get_property("original_block_order").get_int();
+      size_t block_order = block->get_property("original_block_order").get_int();
       assert(block_order < block_ids.size());
       if (block_ids[block_order] == 1) {
         if (!Ioss::Utils::block_is_omitted(block)) {
