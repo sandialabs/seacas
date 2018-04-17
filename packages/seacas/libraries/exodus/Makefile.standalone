@@ -34,7 +34,7 @@
 #========================================================================
 # NOTE: This is unsupported and should only be used as a last resort
 #       if the CMake build does not work on your platform. Does not 
-#       build the Fortran API; Also does not build deprecated API.
+#       build the Fortran API.
 #
 # A platform must define:
 #
