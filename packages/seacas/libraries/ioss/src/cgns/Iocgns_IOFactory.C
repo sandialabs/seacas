@@ -45,7 +45,7 @@ namespace Ioss {
   class PropertyManager;
 }
 
-#if defined(SEACAS_HAVE_MPI) && !defined(NO_DOF_EXODUS_SUPPORT)
+#if defined(SEACAS_HAVE_MPI)
 namespace {
   std::string check_decomposition_property(MPI_Comm comm, const Ioss::PropertyManager &properties,
                                            Ioss::DatabaseUsage db_usage);
@@ -84,7 +84,7 @@ namespace Iocgns {
       MPI_Comm_size(communicator, &proc_count);
     }
 
-    bool decompose = false; 
+    bool decompose = false;
 
     if (proc_count > 1) {
       decompose = true; // Default to decompose instead of file-per-processor if parallel.
@@ -107,6 +107,7 @@ namespace Iocgns {
   }
 } // namespace Iocgns
 
+#if defined(SEACAS_HAVE_MPI)
 namespace {
   std::string check_decomposition_property(MPI_Comm comm, const Ioss::PropertyManager &properties,
                                            Ioss::DatabaseUsage db_usage)
@@ -149,4 +150,5 @@ namespace {
     Ioss::Utils::check_set_bool_property(properties, compose_property, compose);
     return compose;
   }
-}
+} // namespace
+#endif
