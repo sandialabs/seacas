@@ -51,46 +51,47 @@
 
 Ioss::ParallelUtils::ParallelUtils(MPI_Comm the_communicator) : communicator_(the_communicator) {}
 
-void Ioss::ParallelUtils::add_environment_properties(Ioss::PropertyManager &properties, bool do_print)
+void Ioss::ParallelUtils::add_environment_properties(Ioss::PropertyManager &properties,
+                                                     bool                   do_print)
 {
   std::string env_props;
   if (get_environment("IOSS_PROPERTIES", env_props, parallel_size() > 1)) {
-      // env_props string should be of the form
-      // "PROP1=VALUE1:PROP2=VALUE2:..."
-      std::vector<std::string> prop_val = tokenize(env_props, ":");
+    // env_props string should be of the form
+    // "PROP1=VALUE1:PROP2=VALUE2:..."
+    std::vector<std::string> prop_val = tokenize(env_props, ":");
 
-      for (auto &elem : prop_val) {
-        std::vector<std::string> property = tokenize(elem, "=");
-        if (property.size() != 2) {
-          std::ostringstream errmsg;
-          errmsg << "ERROR: Invalid property specification found in "
-                    "IOSS_PROPERTIES environment variable\n"
-                 << "       Found '" << elem << "' which is not of the correct PROPERTY=VALUE form";
-          IOSS_ERROR(errmsg);
-        }
-        std::string prop      = Utils::uppercase(property[0]);
-        std::string value     = property[1];
-        std::string up_value  = Utils::uppercase(value);
-        bool        all_digit = value.find_first_not_of("0123456789") == std::string::npos;
+    for (auto &elem : prop_val) {
+      std::vector<std::string> property = tokenize(elem, "=");
+      if (property.size() != 2) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: Invalid property specification found in "
+                  "IOSS_PROPERTIES environment variable\n"
+               << "       Found '" << elem << "' which is not of the correct PROPERTY=VALUE form";
+        IOSS_ERROR(errmsg);
+      }
+      std::string prop      = Utils::uppercase(property[0]);
+      std::string value     = property[1];
+      std::string up_value  = Utils::uppercase(value);
+      bool        all_digit = value.find_first_not_of("0123456789") == std::string::npos;
 
-        if (do_print) {
-          std::cerr << "IOSS: Adding property '" << prop << "' with value '" << value << "'\n";
-        }
-        if (all_digit) {
-          int int_value = std::strtol(value.c_str(), nullptr, 10);
-          properties.add(Property(prop, int_value));
-        }
-        else if (up_value == "TRUE" || up_value == "YES") {
-          properties.add(Property(prop, 1));
-        }
-        else if (up_value == "FALSE" || up_value == "NO") {
-          properties.add(Property(prop, 0));
-        }
-        else {
-          properties.add(Property(prop, value));
-        }
+      if (do_print) {
+        std::cerr << "IOSS: Adding property '" << prop << "' with value '" << value << "'\n";
+      }
+      if (all_digit) {
+        int int_value = std::strtol(value.c_str(), nullptr, 10);
+        properties.add(Property(prop, int_value));
+      }
+      else if (up_value == "TRUE" || up_value == "YES") {
+        properties.add(Property(prop, 1));
+      }
+      else if (up_value == "FALSE" || up_value == "NO") {
+        properties.add(Property(prop, 0));
+      }
+      else {
+        properties.add(Property(prop, value));
       }
     }
+  }
 }
 
 bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &value,

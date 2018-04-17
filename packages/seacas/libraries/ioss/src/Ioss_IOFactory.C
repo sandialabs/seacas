@@ -112,7 +112,7 @@ Ioss::DatabaseIO *Ioss::IOFactory::create(const std::string &type, const std::st
     }
   }
   else {
-    auto my_props(properties);
+    auto                my_props(properties);
     Ioss::ParallelUtils pu(communicator);
     pu.add_environment_properties(my_props, false);
     Ioss::IOFactory *factory = (*iter).second;
