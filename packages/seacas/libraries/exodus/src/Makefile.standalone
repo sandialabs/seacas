@@ -193,16 +193,136 @@ SRCS =	\
 
 OBJS = ${SRCS:.c=.o}
 
+DEP_SRCS = \
+	 deprecated/ex_get_concat_node_sets.c \
+	 deprecated/ex_get_concat_side_sets.c \
+	 deprecated/ex_get_elem_attr.c \
+	 deprecated/ex_get_elem_attr_names.c \
+	 deprecated/ex_get_elem_blk_ids.c \
+	 deprecated/ex_get_elem_block.c \
+	 deprecated/ex_get_elem_conn.c \
+	 deprecated/ex_get_elem_map.c \
+	 deprecated/ex_get_elem_num_map.c \
+	 deprecated/ex_get_elem_var.c \
+	 deprecated/ex_get_elem_var_tab.c \
+	 deprecated/ex_get_elem_var_time.c \
+	 deprecated/ex_get_glob_var_time.c \
+	 deprecated/ex_get_glob_vars.c \
+	 deprecated/ex_get_n_attr.c \
+	 deprecated/ex_get_n_conn.c \
+	 deprecated/ex_get_n_coord.c \
+	 deprecated/ex_get_n_elem_attr.c \
+	 deprecated/ex_get_n_elem_conn.c \
+	 deprecated/ex_get_n_elem_num_map.c \
+	 deprecated/ex_get_n_elem_var.c \
+	 deprecated/ex_get_n_nodal_var.c \
+	 deprecated/ex_get_n_node_num_map.c \
+	 deprecated/ex_get_n_node_set.c \
+	 deprecated/ex_get_n_node_set_df.c \
+	 deprecated/ex_get_n_one_attr.c \
+	 deprecated/ex_get_n_side_set.c \
+	 deprecated/ex_get_n_side_set_df.c \
+	 deprecated/ex_get_n_var.c \
+	 deprecated/ex_get_nodal_var.c \
+	 deprecated/ex_get_nodal_var_time.c \
+	 deprecated/ex_get_node_map.c \
+	 deprecated/ex_get_node_num_map.c \
+	 deprecated/ex_get_node_set.c \
+	 deprecated/ex_get_node_set_dist_fact.c \
+	 deprecated/ex_get_node_set_ids.c \
+	 deprecated/ex_get_node_set_param.c \
+	 deprecated/ex_get_nset_var.c \
+	 deprecated/ex_get_nset_var_tab.c \
+	 deprecated/ex_get_one_elem_attr.c \
+	 deprecated/ex_get_partial_elem_attr.c \
+	 deprecated/ex_get_partial_elem_conn.c \
+	 deprecated/ex_get_partial_elem_map.c \
+	 deprecated/ex_get_partial_elem_num_map.c \
+	 deprecated/ex_get_partial_elem_var.c \
+	 deprecated/ex_get_partial_nodal_var.c \
+	 deprecated/ex_get_partial_node_num_map.c \
+	 deprecated/ex_get_partial_node_set.c \
+	 deprecated/ex_get_partial_node_set_df.c \
+	 deprecated/ex_get_partial_side_set.c \
+	 deprecated/ex_get_partial_side_set_df.c \
+	 deprecated/ex_get_side_set.c \
+	 deprecated/ex_get_side_set_dist_fact.c \
+	 deprecated/ex_get_side_set_ids.c \
+	 deprecated/ex_get_side_set_param.c \
+	 deprecated/ex_get_sset_var.c \
+	 deprecated/ex_get_sset_var_tab.c \
+	 deprecated/ex_get_var_name.c \
+	 deprecated/ex_get_var_names.c \
+	 deprecated/ex_get_var_param.c \
+	 deprecated/ex_get_var_tab.c \
+	 deprecated/ex_put_concat_node_sets.c \
+	 deprecated/ex_put_concat_side_sets.c \
+	 deprecated/ex_put_concat_var_param.c \
+	 deprecated/ex_put_elem_attr.c \
+	 deprecated/ex_put_elem_attr_names.c \
+	 deprecated/ex_put_elem_block.c \
+	 deprecated/ex_put_elem_conn.c \
+	 deprecated/ex_put_elem_map.c \
+	 deprecated/ex_put_elem_num_map.c \
+	 deprecated/ex_put_elem_var.c \
+	 deprecated/ex_put_elem_var_slab.c \
+	 deprecated/ex_put_elem_var_tab.c \
+	 deprecated/ex_put_glob_vars.c \
+	 deprecated/ex_put_n_attr.c \
+	 deprecated/ex_put_n_coord.c \
+	 deprecated/ex_put_n_elem_attr.c \
+	 deprecated/ex_put_n_elem_conn.c \
+	 deprecated/ex_put_n_elem_num_map.c \
+	 deprecated/ex_put_n_nodal_var.c \
+	 deprecated/ex_put_n_node_num_map.c \
+	 deprecated/ex_put_n_node_set.c \
+	 deprecated/ex_put_n_node_set_df.c \
+	 deprecated/ex_put_n_one_attr.c \
+	 deprecated/ex_put_n_side_set.c \
+	 deprecated/ex_put_n_side_set_df.c \
+	 deprecated/ex_put_n_var.c \
+	 deprecated/ex_put_nodal_var_slab.c \
+	 deprecated/ex_put_node_map.c \
+	 deprecated/ex_put_node_num_map.c \
+	 deprecated/ex_put_node_set.c \
+	 deprecated/ex_put_node_set_dist_fact.c \
+	 deprecated/ex_put_node_set_param.c \
+	 deprecated/ex_put_nset_var.c \
+	 deprecated/ex_put_nset_var_tab.c \
+	 deprecated/ex_put_one_elem_attr.c \
+	 deprecated/ex_put_partial_elem_attr.c \
+	 deprecated/ex_put_partial_elem_conn.c \
+	 deprecated/ex_put_partial_elem_map.c \
+	 deprecated/ex_put_partial_elem_num_map.c \
+	 deprecated/ex_put_partial_nodal_var.c \
+	 deprecated/ex_put_partial_node_num_map.c \
+	 deprecated/ex_put_partial_node_set.c \
+	 deprecated/ex_put_partial_node_set_df.c \
+	 deprecated/ex_put_partial_side_set.c \
+	 deprecated/ex_put_partial_side_set_df.c \
+	 deprecated/ex_put_side_set.c \
+	 deprecated/ex_put_side_set_dist_fact.c \
+	 deprecated/ex_put_side_set_param.c \
+	 deprecated/ex_put_sset_var.c \
+	 deprecated/ex_put_sset_var_tab.c \
+	 deprecated/ex_put_var_name.c \
+	 deprecated/ex_put_var_names.c \
+	 deprecated/ex_put_var_param.c \
+	 deprecated/ex_put_var_tab.c
+
+DEP_OBJS = ${DEP_SRCS:.c=.o}
+
 all:: libexodus.a
-libexodus.a: $(OBJS)
+libexodus.a: $(OBJS) $(DEP_OBJS)
+	echo "Deprecated API Not built $(DEP_OBJS)"
 	$(AR) $@ $?
 	$(RANLIB) $@
 	cp libexodus.a ..
 
 clean::
-	rm -f *.CKP *.ln *.BAK *.bak *.o *.M *.mod core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut   "#"*
+	rm -f *.CKP *.ln *.BAK *.bak *.o deprectated/*.o core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut   "#"*
 
 .SUFFIXES: .c
 .c.o:
-	$(CC) -c $(CFLAGS) $*.c
+	$(CC) -c $(CFLAGS) -o $*.o $*.c
 
