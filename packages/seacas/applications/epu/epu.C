@@ -801,9 +801,8 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       fourBill <<= 32;
       // Check whether output mesh requires 64-bit integers...
       if (global.nodeCount >= twoBill || global.elementCount >= twoBill) {
-        std::cerr
-            << "\nINFO: Output file requires 64-bit integers. Setting this automatically.\n\n";
-        interface.set_int64();
+        throw std::runtime_error("\n\nERROR: (EPU) Output file requires 64-bit integers. You must "
+                                 "rerun epu with the -64 option.\n\n");
       }
 
       if (!interface.use_netcdf4()) {
