@@ -5,7 +5,6 @@ var classIofx_1_1DatabaseIO =
     [ "~DatabaseIO", "classIofx_1_1DatabaseIO.html#a712720a034311981df62c77c8840654b", null ],
     [ "check_valid_file_ptr", "classIofx_1_1DatabaseIO.html#a1c76ab6f580b73c7fb860dc0e28f778c", null ],
     [ "compute_node_status", "classIofx_1_1DatabaseIO.html#ad75e4caa91245e475085bd6f5b2e632f", null ],
-    [ "decoded_filename", "classIofx_1_1DatabaseIO.html#a8b58f3d84d1c77fb66735c8c03e2be87", null ],
     [ "gather_communication_metadata", "classIofx_1_1DatabaseIO.html#a9431d774e8dfc0f85eb641cbf0a316af", null ],
     [ "get_blocks", "classIofx_1_1DatabaseIO.html#a78baca50e8ed293624236a1b497f69b3", null ],
     [ "get_commsets", "classIofx_1_1DatabaseIO.html#aa1e189833aa94edbd7e6660c510c832a", null ],
@@ -75,6 +74,5 @@ var classIofx_1_1DatabaseIO =
     [ "write_entity_transient_field", "classIofx_1_1DatabaseIO.html#a1746997a058b3088ef7c35cfdfc94cb3", null ],
     [ "write_meta_data", "classIofx_1_1DatabaseIO.html#a470d58e04b304ab812b02b76d4336dec", null ],
     [ "write_nodal_transient_field", "classIofx_1_1DatabaseIO.html#ab8286eed2d4d359d5b0997a5118f9987", null ],
-    [ "decodedFilename", "classIofx_1_1DatabaseIO.html#a1919395250159d1e6b7cdd5c3accf634", null ],
     [ "isSerialParallel", "classIofx_1_1DatabaseIO.html#a8a46e03d86419ca963a3d8cd8020abaa", null ]
 ];

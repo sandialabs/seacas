@@ -135,6 +135,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1c9ad01905e9773cd69b452a8551cbba inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba">get_filename</a> () const</td></tr>
 <tr class="memdesc:a1c9ad01905e9773cd69b452a8551cbba inherit pub_methods_classIoss_1_1DatabaseIO"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the file name associated with the database.  <a href="classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba">More...</a><br /></td></tr>
 <tr class="separator:a1c9ad01905e9773cd69b452a8551cbba inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2086f8e605c31f9eb2af5fac410a46b2 inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a2086f8e605c31f9eb2af5fac410a46b2">decoded_filename</a> () const</td></tr>
+<tr class="memdesc:a2086f8e605c31f9eb2af5fac410a46b2 inherit pub_methods_classIoss_1_1DatabaseIO"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a file-per-processor filename associated with the database.  <a href="classIoss_1_1DatabaseIO.html#a2086f8e605c31f9eb2af5fac410a46b2">More...</a><br /></td></tr>
+<tr class="separator:a2086f8e605c31f9eb2af5fac410a46b2 inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afaf8598b13b44b8f262b3eec8398cb06 inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06">is_input</a> () const</td></tr>
 <tr class="memdesc:afaf8598b13b44b8f262b3eec8398cb06 inherit pub_methods_classIoss_1_1DatabaseIO"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the database is an input database.  <a href="classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06">More...</a><br /></td></tr>
 <tr class="separator:afaf8598b13b44b8f262b3eec8398cb06 inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -267,8 +270,6 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a8b58f3d84d1c77fb66735c8c03e2be87"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIofx_1_1DatabaseIO.html#a8b58f3d84d1c77fb66735c8c03e2be87">decoded_filename</a> () const</td></tr>
-<tr class="separator:a8b58f3d84d1c77fb66735c8c03e2be87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5378742e6c225e7c1781bba3981110bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIofx_1_1DatabaseIO.html#a5378742e6c225e7c1781bba3981110bd">ok__</a> (bool write_message=false, std::string *error_msg=nullptr, int *bad_count=nullptr) const override</td></tr>
 <tr class="separator:a5378742e6c225e7c1781bba3981110bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acebef2478ca255c80b3cce8f5ac9e2fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIofx_1_1DatabaseIO.html#acebef2478ca255c80b3cce8f5ac9e2fd">get_step_times__</a> () override</td></tr>
@@ -412,10 +413,8 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a1919395250159d1e6b7cdd5c3accf634"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIofx_1_1DatabaseIO.html#a1919395250159d1e6b7cdd5c3accf634">decodedFilename</a></td></tr>
-<tr class="separator:a1919395250159d1e6b7cdd5c3accf634"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a46e03d86419ca963a3d8cd8020abaa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIofx_1_1DatabaseIO.html#a8a46e03d86419ca963a3d8cd8020abaa">isSerialParallel</a></td></tr>
-<tr class="memdesc:a8a46e03d86419ca963a3d8cd8020abaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">The actual processor-specific filename.  <a href="#a8a46e03d86419ca963a3d8cd8020abaa">More...</a><br /></td></tr>
+<tr class="memdesc:a8a46e03d86419ca963a3d8cd8020abaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">true if application code is controlling the processor id.  <a href="#a8a46e03d86419ca963a3d8cd8020abaa">More...</a><br /></td></tr>
 <tr class="separator:a8a46e03d86419ca963a3d8cd8020abaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
@@ -571,6 +570,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:aad6e4beaf165e23232fe1eae44a6347d inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a1ef206190cabc4ed3b65fe6eaab941 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a1a1ef206190cabc4ed3b65fe6eaab941">DBFilename</a></td></tr>
 <tr class="separator:a1a1ef206190cabc4ed3b65fe6eaab941 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a125a43dbbce651b46ea38fe095a5dbf1 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a125a43dbbce651b46ea38fe095a5dbf1">decodedFilename</a></td></tr>
+<tr class="separator:a125a43dbbce651b46ea38fe095a5dbf1 inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab05041fc11bc180a05636fd9e340af3a inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#a02dbd3bfbd7f633e636c8c0c385c4a34">Ioss::State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ab05041fc11bc180a05636fd9e340af3a">dbState</a></td></tr>
 <tr class="separator:ab05041fc11bc180a05636fd9e340af3a inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea8f55d83b4ae9599f443ba49f0a219a inherit pro_attribs_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#aea8f55d83b4ae9599f443ba49f0a219a">isParallel</a></td></tr>
@@ -793,31 +794,6 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>Get working for parallel... </dd></dl>
-
-</div>
-</div>
-<a id="a8b58f3d84d1c77fb66735c8c03e2be87"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b58f3d84d1c77fb66735c8c03e2be87">&#9670;&nbsp;</a></span>decoded_filename()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::string &amp; Iofx::DatabaseIO::decoded_filename </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>
@@ -3767,28 +3743,6 @@ template&lt;typename INT &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a1919395250159d1e6b7cdd5c3accf634"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1919395250159d1e6b7cdd5c3accf634">&#9670;&nbsp;</a></span>decodedFilename</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string Iofx::DatabaseIO::decodedFilename</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a8a46e03d86419ca963a3d8cd8020abaa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8a46e03d86419ca963a3d8cd8020abaa">&#9670;&nbsp;</a></span>isSerialParallel</h2>
 
@@ -3809,7 +3763,6 @@ template&lt;typename INT &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>The actual processor-specific filename. </p>
 <p>true if application code is controlling the processor id. </p>
 
 </div>

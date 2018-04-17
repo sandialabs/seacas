@@ -108,6 +108,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a50e51cbf4c649f4105f3769ad53080bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a144a1eb255de9380148f84db69586514"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a144a1eb255de9380148f84db69586514">get_environment</a> (const std::string &amp;name, std::string &amp;value, bool sync_parallel) const</td></tr>
 <tr class="separator:a144a1eb255de9380148f84db69586514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3440f0dcbbc50140499b13022a45335f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a3440f0dcbbc50140499b13022a45335f">add_environment_properties</a> (<a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;properties, bool do_print)</td></tr>
+<tr class="separator:a3440f0dcbbc50140499b13022a45335f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d43d77ac84e4fced0019ed266f853eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a0d43d77ac84e4fced0019ed266f853eb">get_environment</a> (const std::string &amp;name, int &amp;value, bool sync_parallel) const</td></tr>
 <tr class="separator:a0d43d77ac84e4fced0019ed266f853eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06c886198859ab9df710fcc4c14c8362"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a06c886198859ab9df710fcc4c14c8362">get_environment</a> (const std::string &amp;name, bool sync_parallel) const</td></tr>
@@ -231,6 +233,35 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a3440f0dcbbc50140499b13022a45335f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3440f0dcbbc50140499b13022a45335f">&#9670;&nbsp;</a></span>add_environment_properties()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::ParallelUtils::add_environment_properties </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;&#160;</td>
+          <td class="paramname"><em>properties</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>do_print</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>See if any external properties specified via the IOSS_PROPERTIES environment variable. If any found, add to <code>properties</code>. If <code>do_print</code> then output to cerr which properties were set </p>
+
+</div>
+</div>
 <a id="a6dc17211b6215cdf25671205024b3f08"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6dc17211b6215cdf25671205024b3f08">&#9670;&nbsp;</a></span>all_gather()</h2>
 
