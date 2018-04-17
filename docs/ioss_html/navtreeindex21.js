@@ -1,7 +1,5 @@
 var NAVTREEINDEX21 =
 {
-"classJson_1_1Value.html#ab16f2ea2a117a1b3b576acab8b6a700d":[4,0,72,12,34],
-"classJson_1_1Value.html#ab1cdc3d9a4d4cc03fa01439d43ceb1b5":[4,0,72,12,17],
 "classJson_1_1Value.html#ab1f02651cb89d0f18b63a036959391ba":[4,0,72,12,60],
 "classJson_1_1Value.html#ab6366e35f5e258eee556615e1b6b310d":[4,0,72,12,68],
 "classJson_1_1Value.html#ab6798954f6e80281cf22708ef45198a7":[4,0,72,12,65],
@@ -249,5 +247,7 @@ var NAVTREEINDEX21 =
 "classvector3d.html":[4,0,80],
 "classvector3d.html#a0927da36b18d3e2488dcdc87d436ce33":[4,0,80,13],
 "classvector3d.html#a0e54310bd3515c46231e13cc6c60575c":[4,0,80,17],
-"classvector3d.html#a16cdf191e57adf2110eb7f9c824a7676":[4,0,80,9]
+"classvector3d.html#a16cdf191e57adf2110eb7f9c824a7676":[4,0,80,9],
+"classvector3d.html#a2255661ec6496f7f8dbba7ac406aa668":[4,0,80,6],
+"classvector3d.html#a30cf53e8b0ca4463eb9eeece5630f195":[4,0,80,20]
 };

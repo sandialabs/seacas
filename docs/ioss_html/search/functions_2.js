@@ -13,8 +13,6 @@ var searchData=
   ['charreaderbuilder',['CharReaderBuilder',['../classJson_1_1CharReaderBuilder.html#a6e197b69a2ede3d87b03b9c5c78ba46a',1,'Json::CharReaderBuilder::CharReaderBuilder()'],['../json-forwards_8h.html#a9e879e9bb3a4f78f33f1ac4cfbfd7b69',1,'CharReaderBuilder():&#160;json-forwards.h']]],
   ['check_5fattribute_5findex_5forder',['check_attribute_index_order',['../namespaceanonymous__namespace_02Ioex__DatabaseIO_8C_03.html#a9a39a5e9379a4a90041c1e408f4f95cd',1,'anonymous_namespace{Ioex_DatabaseIO.C}']]],
   ['check_5fblock_5forder',['check_block_order',['../classIoss_1_1Utils.html#a5dc73348c31bc226725b3e62cdbf3dac',1,'Ioss::Utils']]],
-  ['check_5fcomposition_5fproperty',['check_composition_property',['../namespaceanonymous__namespace_02Iocgns__IOFactory_8C_03.html#a09170179f35654c9e6a54113e8adcc9e',1,'anonymous_namespace{Iocgns_IOFactory.C}']]],
-  ['check_5fdecomposition_5fproperty',['check_decomposition_property',['../namespaceanonymous__namespace_02Iocgns__IOFactory_8C_03.html#a9e84b7c069b529f85759ffbfc6ceb885',1,'anonymous_namespace{Iocgns_IOFactory.C}']]],
   ['check_5fdynamic_5fcast',['check_dynamic_cast',['../classIoss_1_1Utils.html#a7f09e4d2470eab1b903ca420d96e6748',1,'Ioss::Utils']]],
   ['check_5ffor_5fduplicate_5fnames',['check_for_duplicate_names',['../namespaceanonymous__namespace_02Ioss__Region_8C_03.html#ab86bae2d3a1a39742b09e2f68fa0772c',1,'anonymous_namespace{Ioss_Region.C}']]],
   ['check_5fhashes',['check_hashes',['../namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a475364de00ddda5e28b3450235941499',1,'anonymous_namespace{Ioss_Region.C}']]],

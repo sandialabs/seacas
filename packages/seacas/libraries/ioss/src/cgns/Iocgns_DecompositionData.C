@@ -414,7 +414,7 @@ namespace Iocgns {
 #endif
     // Split all blocks where block->work() > avg_work * m_loadBalanceThreshold
     size_t new_zone_id = Utils::pre_split(m_structuredZones, avg_work, m_loadBalanceThreshold, rank,
-                                   m_decomposition.m_processorCount);
+                                          m_decomposition.m_processorCount);
 
     // At this point, there should be no zone with block->work() > avg_work * m_loadBalanceThreshold
 #if IOSS_DEBUG_OUTPUT

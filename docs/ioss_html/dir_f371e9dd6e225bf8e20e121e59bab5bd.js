@@ -15,7 +15,7 @@ var dir_f371e9dd6e225bf8e20e121e59bab5bd =
     [ "Iocgns_Initializer.h", "Iocgns__Initializer_8h.html", [
       [ "Initializer", "classIocgns_1_1Initializer.html", "classIocgns_1_1Initializer" ]
     ] ],
-    [ "Iocgns_IOFactory.C", "Iocgns__IOFactory_8C.html", "Iocgns__IOFactory_8C" ],
+    [ "Iocgns_IOFactory.C", "Iocgns__IOFactory_8C.html", null ],
     [ "Iocgns_IOFactory.h", "Iocgns__IOFactory_8h.html", [
       [ "IOFactory", "classIocgns_1_1IOFactory.html", "classIocgns_1_1IOFactory" ]
     ] ],
