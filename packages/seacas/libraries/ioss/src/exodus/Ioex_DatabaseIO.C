@@ -1555,7 +1555,7 @@ namespace Ioex {
         for (int i = 0; i < attribute_count; i++) {
           fix_bad_name(names[i]);
           Ioss::Utils::fixup_name(names[i]);
-          if (names[i][0] == '\0' || names[i][0] == ' ' || (std::isalnum(names[i][0]) == 0)) {
+          if (names[i][0] == '\0' || (!(std::isalnum(names[i][0]) || names[i][0] == '_'))) {
             attributes_named = false;
           }
         }
