@@ -188,7 +188,8 @@ namespace Iocgns {
     static int get_step_times(int cgnsFilePtr, std::vector<double> &timesteps, Ioss::Region *region,
                               double timeScaleFactor, int myProcessor);
     static void add_transient_variables(int cgnsFilePtr, const std::vector<double> &timesteps,
-                                        Ioss::Region *region, int myProcessor);
+                                        Ioss::Region *region, bool enable_field_recognition,
+                                        char suffix_separator, int myProcessor);
 
     static size_t pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
                             double load_balance, int proc_rank, int proc_count);

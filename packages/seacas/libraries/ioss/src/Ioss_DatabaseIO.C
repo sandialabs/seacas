@@ -165,6 +165,8 @@ namespace Ioss {
     // the contents and add to the 'properties' map.
     util_.add_environment_properties(properties, myProcessor == 0);
 
+    Utils::check_set_bool_property(properties, "ENABLE_FIELD_RECOGNITION", enableFieldRecognition);
+
     if (properties.exists("FIELD_SUFFIX_SEPARATOR")) {
       std::string tmp = properties.get("FIELD_SUFFIX_SEPARATOR").get_string();
       fieldSeparator  = tmp[0];

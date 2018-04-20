@@ -688,6 +688,7 @@ namespace Ioss {
 
     dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_scheme()));
     dbi->set_field_separator(interface.field_suffix_separator());
+    dbi->set_field_recognition(!interface.disable_field_recognition());
     if (interface.ints_64_bit()) {
       dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
     }
