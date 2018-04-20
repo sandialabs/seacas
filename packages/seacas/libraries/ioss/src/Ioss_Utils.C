@@ -755,12 +755,22 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
                              char ** names,        // Raw list of field names from exodus
                              size_t  num_names,    // Number of names in list
                              Ioss::Field::RoleType fld_role, // Role of field
-                             const char            suffix_separator,
-                             int *                 local_truth, // Truth table for this entity;
+                             bool enable_field_recognition, const char suffix_separator,
+                             int *local_truth, // Truth table for this entity;
                              // null if not applicable.
                              std::vector<Ioss::Field> &fields) // The fields that were found.
 {
-  if (suffix_separator != 0) {
+  if (!enable_field_recognition) {
+    // Create a separate field for each name.
+    for (size_t i = 0; i < num_names; i++) {
+      if (local_truth == nullptr || local_truth[i] == 1) {
+        Ioss::Field field(names[i], Ioss::Field::REAL, IOSS_SCALAR(), fld_role, entity_count);
+        fields.push_back(field);
+        names[i][0] = '\0';
+      }
+    }
+  }
+  else if (suffix_separator != 0) {
     while (true) {
       // NOTE: 'get_next_field' determines storage type (vector, tensor,...)
       Ioss::Field field =

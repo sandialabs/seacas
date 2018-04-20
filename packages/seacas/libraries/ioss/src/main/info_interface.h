@@ -57,10 +57,10 @@ namespace Info {
     bool ints_64_bit() const { return ints64Bit_; }
     bool list_groups() const { return listGroups_; }
 
-    int  surface_split_scheme() const { return surfaceSplitScheme_; }
-    char field_suffix_separator() const { return fieldSuffixSeparator_; }
-    bool use_generic_names() const { return useGenericNames_; }
-
+    int         surface_split_scheme() const { return surfaceSplitScheme_; }
+    char        field_suffix_separator() const { return fieldSuffixSeparator_; }
+    bool        use_generic_names() const { return useGenericNames_; }
+    bool        disable_field_recognition() const { return disableFieldRecognition_; }
     std::string decomp_method() const { return decompMethod_; }
     std::string filename() const { return filename_; }
     std::string type() const { return filetype_; }
@@ -84,6 +84,7 @@ namespace Info {
     bool computeBBox_{false};
     bool listGroups_{false};
     bool useGenericNames_{false};
+    bool disableFieldRecognition_{false};
     char fieldSuffixSeparator_{'_'};
 
     int summary_{0};

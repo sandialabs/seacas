@@ -102,6 +102,7 @@ namespace IOShell {
     bool lower_case_variable_names{true};
     bool delete_timesteps{false};
     bool minimize_open_files{false};
+    bool disable_field_recognition{false};
     char fieldSuffixSeparator{'_'};
   };
 } // namespace IOShell

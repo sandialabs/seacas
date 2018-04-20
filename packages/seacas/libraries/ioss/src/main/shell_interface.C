@@ -223,6 +223,11 @@ void IOShell::Interface::enroll_options()
                   "\t\t when recognizing vector, tensor fields. Enter '0' for no separator",
                   "_");
 
+  options_.enroll("disable_field_recognition", Ioss::GetLongOption::NoValue,
+                  "Do not combine fields into vector, tensor fields based on basename and suffix.\n"
+                  "\t\tKeep all fields on database as scalars",
+                  nullptr);
+
   options_.enroll("surface_split_scheme", Ioss::GetLongOption::MandatoryValue,
                   "Method used to split sidesets into homogenous blocks\n"
                   "\t\tOptions are: TOPOLOGY, BLOCK, NO_SPLIT",
@@ -463,6 +468,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     if (temp != nullptr) {
       fieldSuffixSeparator = temp[0];
     }
+  }
+
+  if (options_.retrieve("disable_field_recognition") != nullptr) {
+    disable_field_recognition = true;
   }
 
   {

@@ -85,6 +85,11 @@ void Info::Interface::enroll_options()
   options_.enroll("list_groups", Ioss::GetLongOption::NoValue,
                   "Print a list of the names of all groups in this file and then exit.", nullptr);
 
+  options_.enroll("disable_field_recognition", Ioss::GetLongOption::NoValue,
+                  "Do not combine fields into vector, tensor fields based on basename and suffix.\n"
+                  "\t\tKeep all fields on database as scalars",
+                  nullptr);
+
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
                   "Character used to separate a field suffix from the field basename\n"
                   "\t\t when recognizing vector, tensor fields. Enter '0' for no separaor",
@@ -244,6 +249,10 @@ bool Info::Interface::parse_options(int argc, char **argv)
     if (temp != nullptr) {
       groupname_ = temp;
     }
+  }
+
+  if (options_.retrieve("disable_field_recognition") != nullptr) {
+    disableFieldRecognition_ = true;
   }
 
   {

@@ -1335,7 +1335,8 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
 }
 
 void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<double> &timesteps,
-                                            Ioss::Region *region, int myProcessor)
+                                            Ioss::Region *region, bool enable_field_recognition,
+                                            char suffix_separator, int myProcessor)
 {
   // ==========================================
   // Add transient variables (if any) to all zones...
@@ -1373,8 +1374,8 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
       std::vector<Ioss::Field> fields;
       if (grid_loc == CG_CellCenter) {
         size_t entity_count = block->entity_count();
-        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
-                                nullptr, fields);
+        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
+                                enable_field_recognition, suffix_separator, nullptr, fields);
         size_t index = 1;
         for (const auto &field : fields) {
           Utils::set_field_index(field, index, grid_loc);
@@ -1390,8 +1391,8 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
                 : region->get_node_blocks()[0];
         Ioss::NodeBlock *nb           = const_cast<Ioss::NodeBlock *>(cnb);
         size_t           entity_count = nb->entity_count();
-        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
-                                nullptr, fields);
+        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
+                                enable_field_recognition, suffix_separator, nullptr, fields);
         size_t index = 1;
         for (const auto &field : fields) {
           Utils::set_field_index(field, index, grid_loc);

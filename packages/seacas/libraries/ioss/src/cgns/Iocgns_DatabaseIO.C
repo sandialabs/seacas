@@ -512,7 +512,8 @@ namespace Iocgns {
     get_region()->add(nblock);
     nodeCount = num_node;
 
-    Utils::add_transient_variables(cgnsFilePtr, m_timesteps, get_region(), myProcessor);
+    Utils::add_transient_variables(cgnsFilePtr, m_timesteps, get_region(), get_field_recognition(),
+                                   get_field_separator(), myProcessor);
   }
 
   void DatabaseIO::write_meta_data()
