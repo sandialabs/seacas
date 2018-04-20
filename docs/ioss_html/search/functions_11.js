@@ -25,6 +25,7 @@ var searchData=
   ['set_5fdefined',['set_defined',['../classIoss_1_1Map.html#a1f454b21053cbe3708f224fd707b0d29',1,'Ioss::Map']]],
   ['set_5fexpr',['set_expr',['../classassert__context.html#af623d2a3dfc2f4f88be1f58b5663632c',1,'assert_context']]],
   ['set_5ffield_5findex',['set_field_index',['../classIocgns_1_1Utils.html#ad9c598aeee7b2aa7a9c8f210616239a2',1,'Iocgns::Utils']]],
+  ['set_5ffield_5frecognition',['set_field_recognition',['../classIoss_1_1DatabaseIO.html#ac078e6793326cd029bc0412d342fb626',1,'Ioss::DatabaseIO']]],
   ['set_5ffield_5fseparator',['set_field_separator',['../classIoss_1_1DatabaseIO.html#abfe3242a9864a794a758870288a499af',1,'Ioss::DatabaseIO']]],
   ['set_5ffile_5fline',['set_file_line',['../classassert__context.html#a3301e5057a3f782e6f09c6209c6c49d6',1,'assert_context']]],
   ['set_5ffilename',['set_filename',['../classIoss_1_1FileInfo.html#aaac181b0e933f3fb09af130003fc7d23',1,'Ioss::FileInfo::set_filename(const std::string &amp;name)'],['../classIoss_1_1FileInfo.html#a6b9da81c9b6f9f904059534f8da808a2',1,'Ioss::FileInfo::set_filename(const char *name)']]],

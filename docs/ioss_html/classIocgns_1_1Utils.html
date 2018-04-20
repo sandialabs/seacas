@@ -138,8 +138,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a31a49ff6c43e030fe6735dd1bf114653"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada733053c60201753363c5bf2637af89"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ada733053c60201753363c5bf2637af89">get_step_times</a> (int cgnsFilePtr, std::vector&lt; double &gt; &amp;timesteps, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, double timeScaleFactor, int myProcessor)</td></tr>
 <tr class="separator:ada733053c60201753363c5bf2637af89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afba4eaa0892ab1944b789a5128f5d4e1"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#afba4eaa0892ab1944b789a5128f5d4e1">add_transient_variables</a> (int cgnsFilePtr, const std::vector&lt; double &gt; &amp;timesteps, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, int myProcessor)</td></tr>
-<tr class="separator:afba4eaa0892ab1944b789a5128f5d4e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74351236018d1887504e14bd0d5fffa0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a74351236018d1887504e14bd0d5fffa0">add_transient_variables</a> (int cgnsFilePtr, const std::vector&lt; double &gt; &amp;timesteps, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, bool enable_field_recognition, char suffix_separator, int myProcessor)</td></tr>
+<tr class="separator:a74351236018d1887504e14bd0d5fffa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e67bb322bea1c4dfbaf6ce55d699fb6"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a5e67bb322bea1c4dfbaf6ce55d699fb6">pre_split</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> *&gt; &amp;zones, double avg_work, double load_balance, int proc_rank, int proc_count)</td></tr>
 <tr class="separator:a5e67bb322bea1c4dfbaf6ce55d699fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c4edee8fc781353cb4fc58588f579c0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a3c4edee8fc781353cb4fc58588f579c0">assign_zones_to_procs</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> *&gt; &amp;zones, std::vector&lt; size_t &gt; &amp;work_vector)</td></tr>
@@ -276,8 +276,8 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="afba4eaa0892ab1944b789a5128f5d4e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afba4eaa0892ab1944b789a5128f5d4e1">&#9670;&nbsp;</a></span>add_transient_variables()</h2>
+<a id="a74351236018d1887504e14bd0d5fffa0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74351236018d1887504e14bd0d5fffa0">&#9670;&nbsp;</a></span>add_transient_variables()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -302,6 +302,18 @@ Static Public Attributes</h2></td></tr>
           <td></td>
           <td class="paramtype"><a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *&#160;</td>
           <td class="paramname"><em>region</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable_field_recognition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>suffix_separator</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

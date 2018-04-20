@@ -75,6 +75,7 @@ var searchData=
   ['elemsets',['elemsets',['../classIoex_1_1Mesh.html#a7068fbf17dc949daf2b227b4572a4bd6',1,'Ioex::Mesh']]],
   ['eltype',['elType',['../structIoex_1_1EdgeBlock.html#a6a72e58f35d512b3642feef7a768e604',1,'Ioex::EdgeBlock::elType()'],['../structIoex_1_1FaceBlock.html#aaa52ebb4c0894d0590ef9fece6dc214f',1,'Ioex::FaceBlock::elType()'],['../structIoex_1_1ElemBlock.html#a3e81e5c767d8045af838545eb79b4f0e',1,'Ioex::ElemBlock::elType()']]],
   ['empty',['empty',['../classJson_1_1Value.html#a0519a551e37ee6665d74742b3f96bab3',1,'Json::Value']]],
+  ['enablefieldrecognition',['enableFieldRecognition',['../classIoss_1_1DatabaseIO.html#a578fe057681e4aab858717122f6d37bf',1,'Ioss::DatabaseIO']]],
   ['enablelogging',['enableLogging',['../classIovs_1_1DatabaseIO.html#aa8c8889f6ed02b0d2e853469230cd65c',1,'Iovs::DatabaseIO']]],
   ['enableyamlcompatibility',['enableYAMLCompatibility',['../classJson_1_1FastWriter.html#a78d98e9f76d33660ad6e6a1abe287d45',1,'Json::FastWriter']]],
   ['encode_5fentity_5fname',['encode_entity_name',['../classIoss_1_1Utils.html#af632d3e14662920c8af2584277e71c02',1,'Ioss::Utils']]],
