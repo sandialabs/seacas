@@ -4495,7 +4495,7 @@ void DatabaseIO::write_meta_data()
     }
 
     // Write the metadata to the exodusII file...
-    Ioex::Internals data(get_file_pointer(), util());
+    Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
     mesh.comm.outputNemesis = false;
 
     int ierr = data.write_meta_data(mesh);

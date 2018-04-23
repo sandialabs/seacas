@@ -479,8 +479,9 @@ bool CommunicationMap::operator==(const CommunicationMap &other) const
   return id == other.id && entityCount == other.entityCount && type == other.type;
 }
 
-Internals::Internals(int exoid, const Ioss::ParallelUtils &util)
-    : exodusFilePtr(exoid), nodeMapVarID(), elementMapVarID(), parallelUtil(util)
+Internals::Internals(int exoid, int maximum_name_length, const Ioss::ParallelUtils &util)
+    : exodusFilePtr(exoid), nodeMapVarID(), elementMapVarID(),
+      maximumNameLength(maximum_name_length), parallelUtil(util)
 {
 }
 

@@ -224,14 +224,15 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
     idx += name_length;
   }
 
+  if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
+    free(int_names);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
+             ex_name_of_object(obj_type), exoid);
+    ex_err(__func__, errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
   if (found_name) {
-    if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
-      free(int_names);
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
-               ex_name_of_object(obj_type), exoid);
-      ex_err(__func__, errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
 
     /* Update the maximum_name_length attribute on the file. */
     ex_update_max_name_length(exoid, max_name_len - 1);
