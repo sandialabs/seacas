@@ -281,7 +281,11 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
 #endif
     }
 
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s of type %d read only", path, type);
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to open %s of type %d for reading. Either the "
+             "file does not exist, or there is a permission or file format "
+             "issue.",
+             path, type);
     ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
