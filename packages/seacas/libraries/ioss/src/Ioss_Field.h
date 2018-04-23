@@ -64,7 +64,9 @@ namespace Ioss {
     static Ioss::Field::BasicType get_field_type(char /*dummy*/) { return CHARACTER; }
     static Ioss::Field::BasicType get_field_type(double /*dummy*/) { return DOUBLE; }
     static Ioss::Field::BasicType get_field_type(int /*dummy*/) { return INTEGER; }
+    static Ioss::Field::BasicType get_field_type(unsigned int /*dummy*/) { return INTEGER; }
     static Ioss::Field::BasicType get_field_type(int64_t /*dummy*/) { return INT64; }
+    static Ioss::Field::BasicType get_field_type(uint64_t /*dummy*/) { return INT64; }
     static Ioss::Field::BasicType get_field_type(Complex /*dummy*/) { return COMPLEX; }
     static Ioss::Field::BasicType get_field_type(std::string /*dummy*/) { return STRING; }
 

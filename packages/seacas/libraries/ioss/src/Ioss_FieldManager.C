@@ -123,11 +123,13 @@ void Ioss::FieldManager::erase(const std::string &field_name)
 int Ioss::FieldManager::describe(NameList *names) const
 {
   IOSS_FUNC_ENTER(m_);
-  int                          the_count = 0;
-  FieldMapType::const_iterator I;
-  for (I = fields.begin(); I != fields.end(); ++I) {
+  int the_count = 0;
+  for (auto I = fields.cbegin(); I != fields.cend(); ++I) {
     names->push_back((*I).second.get_name());
     the_count++;
+  }
+  if (the_count > 0) {
+    std::sort(names->begin(), names->end());
   }
   return the_count;
 }
@@ -142,13 +144,15 @@ int Ioss::FieldManager::describe(NameList *names) const
 int Ioss::FieldManager::describe(Ioss::Field::RoleType role, NameList *names) const
 {
   IOSS_FUNC_ENTER(m_);
-  int                          the_count = 0;
-  FieldMapType::const_iterator I;
-  for (I = fields.begin(); I != fields.end(); ++I) {
+  int the_count = 0;
+  for (auto I = fields.cbegin(); I != fields.cend(); ++I) {
     if ((*I).second.get_role() == role) {
       names->push_back((*I).second.get_name());
       the_count++;
     }
+  }
+  if (the_count > 0) {
+    std::sort(names->begin(), names->end());
   }
   return the_count;
 }
