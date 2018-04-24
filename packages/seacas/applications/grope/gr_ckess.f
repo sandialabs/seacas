@@ -85,7 +85,7 @@ C   --Check for unique identifier
       DO 100 IESS = 1, NUMESS
          IF (LOCINT (IDESS(IESS), IESS-1, IDESS) .GT. 0) THEN
             CALL INTSTR (1, 0, IDESS(IESS), STRA, LSTRA)
-            CALL PRTERR ('CMDSPEC', 'Element side set ID '
+            CALL PRTERR ('WARNING', 'Element side set ID '
      &         // STRA(:LSTRA) // ' is not unique')
          END IF
   100 CONTINUE
@@ -98,7 +98,7 @@ C   --Check number of elements in element side sets
   110 CONTINUE
 
       IF (NESS .NE. LESSEL) THEN
-         CALL PRTERR ('CMDSPEC', 'Maximum element index'
+         CALL PRTERR ('WARNING', 'Maximum element index'
      &      // ' in all element side sets does not match total')
       END IF
 
@@ -106,11 +106,11 @@ C   --Check all elements in element side sets are within element range
 
       CALL CHKRNG (LTEESS, LESSEL, NUMEL, NZERO, NERR)
       IF (NERR .GT. 0) THEN
-         CALL PRTERR ('CMDSPEC',
+         CALL PRTERR ('FATAL',
      &      'Element side set element ids are out of range')
       END IF
       IF (NZERO .GT. 0) THEN
-         CALL PRTERR ('CMDSPEC',
+         CALL PRTERR ('FATAL',
      &      'Element side set element ids are zero')
       END IF
 
@@ -120,11 +120,11 @@ C     the number of faces for each element, we assume that the maximum
 C     number of faces is 4 for 2D and 6 for 3D      
       CALL CHKRNG (LTSESS, LESSEL, 2*NDIM, NZERO, NERR)
       IF (NERR .GT. 0) THEN
-        CALL PRTERR ('CMDSPEC',
+        CALL PRTERR ('FATAL',
      &    'Element side set faces are out of range')
       END IF
       IF (NZERO .GT. 0) THEN
-        CALL PRTERR ('CMDSPEC',
+        CALL PRTERR ('FATAL',
      &    'Element side set faces are zero')
       END IF
       
@@ -142,7 +142,7 @@ C     problems with some analysis codes
 10000       FORMAT('SIDESET ERROR: The element face pair ',I10,'.',I1,
      $        ' is duplicated in sideset ', I10,'.')
             call sqzstr(stra, lstra)
-            CALL PRTERR ('CMDSPEC', STRA(:lstra))
+            CALL PRTERR ('WARNING', STRA(:lstra))
           else
             icheck(iel) = ibset(icheck(iel), ifa)
           end if
@@ -159,7 +159,7 @@ C     in the sideset...
      *          ' the number of distribution factors (', I10,
      *          ') does not match the sideset node count (', I10, ')')
            call sqzstr(stra, lstra)
-           CALL PRTERR ('CMDSPEC', STRA(:lstra))
+           CALL PRTERR ('WARNING', STRA(:lstra))
         end if
         if (ndfss .gt. 0) then
            call exgssc(ndb, idess(iess), nscr, ierr)
@@ -174,7 +174,7 @@ C     in the sideset...
      *             ') does not match the computed sideset node count (',
      *             I10, ')')
               call sqzstr(stra, lstra)
-              CALL PRTERR ('CMDSPEC', STRA(:lstra))
+              CALL PRTERR ('WARNING', STRA(:lstra))
            endif
         end if
       end do

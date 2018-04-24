@@ -31,6 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
 
@@ -92,9 +93,10 @@ int main(int argc, char *argv[])
     }
   }
   else {
-    std::fstream infile(input_files[0]);
+    std::fstream infile(input_files[0], std::fstream::in);
     if (!infile.good()) {
-      std::cerr << "APREPRO: ERROR: Could not open file: " << input_files[0] << '\n';
+      std::cerr << "APREPRO: ERROR: Could not open file: " << input_files[0] << '\n'
+                << "                Error Code: " << strerror(errno) << '\n';
       return 0;
     }
 

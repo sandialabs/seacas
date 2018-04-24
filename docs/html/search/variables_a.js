@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['sequential',['sequential',['../structobj__stats.html#a867842e852e1802f20d07124cc5f35e4',1,'obj_stats']]],
   ['sets_5fdist_5ffact',['sets_dist_fact',['../structex__set__specs.html#a885624dab2047d1cb53eac5e125d7791',1,'ex_set_specs']]],
   ['sets_5fdist_5findex',['sets_dist_index',['../structex__set__specs.html#a01768e58fd47a77b4c54eb75ff8fc1b9',1,'ex_set_specs']]],
   ['sets_5fentry_5findex',['sets_entry_index',['../structex__set__specs.html#af7dc8db54bf8d7ec697a81b4a651c3ca',1,'ex_set_specs']]],

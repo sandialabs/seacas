@@ -224,6 +224,29 @@ namespace Ioss {
     return get_database()->get_bounding_box(this);
   }
 
+  size_t BoundaryCondition::get_face_count() const
+  {
+    if (m_rangeBeg[0] == 0 || m_rangeEnd[0] == 0 || m_rangeBeg[1] == 0 || m_rangeEnd[1] == 0 ||
+        m_rangeBeg[2] == 0 || m_rangeEnd[2] == 0) {
+      return 0;
+    }
+
+    auto diff0 = std::abs(m_rangeEnd[0] - m_rangeBeg[0]);
+    auto diff1 = std::abs(m_rangeEnd[1] - m_rangeBeg[1]);
+    auto diff2 = std::abs(m_rangeEnd[2] - m_rangeBeg[2]);
+
+    int same_count = (diff0 == 0 ? 1 : 0) + (diff1 == 0 ? 1 : 0) + (diff2 == 0 ? 1 : 0);
+
+    if (same_count > 1) {
+      return 0;
+    }
+    diff0 = std::max(diff0, 1);
+    diff1 = std::max(diff1, 1);
+    diff2 = std::max(diff2, 1);
+
+    return diff0 * diff1 * diff2;
+  }
+
   int BoundaryCondition::which_parent_face() const
   {
     // Determine which "face" of the parent block this BC is applied to.

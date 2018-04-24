@@ -253,5 +253,6 @@ namespace Iocgns {
   public:
     Ioss::Decomposition<INT> m_decomposition;
   };
+
 } // namespace Iocgns
 #endif

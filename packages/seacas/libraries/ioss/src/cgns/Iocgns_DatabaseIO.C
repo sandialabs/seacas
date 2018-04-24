@@ -113,11 +113,11 @@ namespace Iocgns {
         strcpy(hdf5_access, "PARALLEL");
       }
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
-      int ierr = cg_open(get_filename().c_str(), mode, &cgnsFilePtr);
+      int ierr = cg_open(decoded_filename().c_str(), mode, &cgnsFilePtr);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
         std::ostringstream errmsg;
-        errmsg << "ERROR: Problem opening file '" << get_filename() << "' for "
+        errmsg << "ERROR: Problem opening file '" << decoded_filename() << "' for "
                << (is_input() ? "read" : "write") << " access. "
                << "CGNS Error: '" << cg_get_error() << "'";
         IOSS_ERROR(errmsg);
@@ -512,7 +512,8 @@ namespace Iocgns {
     get_region()->add(nblock);
     nodeCount = num_node;
 
-    Utils::add_transient_variables(cgnsFilePtr, m_timesteps, get_region(), myProcessor);
+    Utils::add_transient_variables(cgnsFilePtr, m_timesteps, get_region(), get_field_recognition(),
+                                   get_field_separator(), myProcessor);
   }
 
   void DatabaseIO::write_meta_data()

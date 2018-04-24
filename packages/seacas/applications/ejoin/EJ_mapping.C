@@ -36,12 +36,12 @@
 #include "Ioss_NodeBlock.h"      // for NodeBlock
 #include "Ioss_Property.h"       // for Property
 #include "Ioss_Region.h"         // for Region, etc
-#include <algorithm>             // for sort, unique
-#include <cstddef>               // for size_t
-#include <iostream>              // for operator<<, basic_ostream, etc
+#include "Ioss_SmartAssert.h"
+#include <algorithm> // for sort, unique
+#include <cstddef>   // for size_t
+#include <iostream>  // for operator<<, basic_ostream, etc
 #include <numeric>
-#include <smart_assert.h> // for SMART_ASSERT
-#include <utility>        // for make_pair, pair
+#include <utility> // for make_pair, pair
 
 namespace {
   bool entity_is_omitted(Ioss::GroupingEntity *block)

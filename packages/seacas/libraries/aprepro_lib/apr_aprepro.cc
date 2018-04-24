@@ -49,8 +49,12 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.03 (2017/11/14)";
+  const char *       version_string = "5.06 (2018/04/05)";
 
+  void output_copyright();
+} // namespace
+
+namespace SEAMS {
   unsigned hash_symbol(const char *symbol)
   {
     unsigned hashval;
@@ -59,10 +63,7 @@ namespace {
     }
     return (hashval % HASHSIZE);
   }
-  void output_copyright();
-} // namespace
 
-namespace SEAMS {
   Aprepro *aprepro; // A global for use in the library.  Clean this up...
   bool     echo = true;
 
@@ -487,6 +488,7 @@ namespace SEAMS {
           << "                       : If P is path, then optionally prepended to all include "
              "filenames\n"
           << "                       : If P is file, then processed before processing input file\n"
+          << "                       : variables defined in P will be immutable.\n"
           << "        --exit_on or -e: End when 'Exit|EXIT|exit' entered       \n"
           << "           --help or -h: Print this list                         \n"
           << "        --message or -M: Print INFO messages                     \n"

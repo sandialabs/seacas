@@ -163,45 +163,9 @@ namespace Ioss {
 
     // Check environment variable IOSS_PROPERTIES. If it exists, parse
     // the contents and add to the 'properties' map.
+    util_.add_environment_properties(properties, myProcessor == 0);
 
-    std::string env_props;
-    if (util_.get_environment("IOSS_PROPERTIES", env_props, isParallel)) {
-      // env_props string should be of the form
-      // "PROP1=VALUE1:PROP2=VALUE2:..."
-      std::vector<std::string> prop_val = tokenize(env_props, ":");
-
-      for (auto &elem : prop_val) {
-        std::vector<std::string> property = tokenize(elem, "=");
-        if (property.size() != 2) {
-          std::ostringstream errmsg;
-          errmsg << "ERROR: Invalid property specification found in "
-                    "IOSS_PROPERTIES environment variable\n"
-                 << "       Found '" << elem << "' which is not of the correct PROPERTY=VALUE form";
-          IOSS_ERROR(errmsg);
-        }
-        std::string prop      = Utils::uppercase(property[0]);
-        std::string value     = property[1];
-        std::string up_value  = Utils::uppercase(value);
-        bool        all_digit = value.find_first_not_of("0123456789") == std::string::npos;
-
-        if (myProcessor == 0) {
-          std::cerr << "IOSS: Adding property '" << prop << "' with value '" << value << "'\n";
-        }
-        if (all_digit) {
-          int int_value = std::strtol(value.c_str(), nullptr, 10);
-          properties.add(Property(prop, int_value));
-        }
-        else if (up_value == "TRUE" || up_value == "YES") {
-          properties.add(Property(prop, 1));
-        }
-        else if (up_value == "FALSE" || up_value == "NO") {
-          properties.add(Property(prop, 0));
-        }
-        else {
-          properties.add(Property(prop, value));
-        }
-      }
-    }
+    Utils::check_set_bool_property(properties, "ENABLE_FIELD_RECOGNITION", enableFieldRecognition);
 
     if (properties.exists("FIELD_SUFFIX_SEPARATOR")) {
       std::string tmp = properties.get("FIELD_SUFFIX_SEPARATOR").get_string();
@@ -359,6 +323,24 @@ namespace Ioss {
     if (error_found) {
       IOSS_ERROR(errmsg);
     }
+  }
+
+  const std::string &DatabaseIO::decoded_filename() const
+  {
+    if (decodedFilename.empty()) {
+      if (isParallel) {
+        decodedFilename = util().decode_filename(get_filename(), isParallel);
+      }
+      else if (properties.exists("processor_count") && properties.exists("my_processor")) {
+        int proc_count  = properties.get("processor_count").get_int();
+        int my_proc     = properties.get("my_processor").get_int();
+        decodedFilename = Ioss::Utils::decode_filename(get_filename(), my_proc, proc_count);
+      }
+      else {
+        decodedFilename = get_filename();
+      }
+    }
+    return decodedFilename;
   }
 
   void DatabaseIO::verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const
@@ -569,10 +551,17 @@ namespace Ioss {
     qaRecords.push_back(time);
   }
 
-  void DatabaseIO::set_block_omissions(const std::vector<std::string> &omissions)
+  void DatabaseIO::set_block_omissions(const std::vector<std::string> &omissions,
+                                       const std::vector<std::string> &inclusions)
   {
-    blockOmissions.assign(omissions.cbegin(), omissions.cend());
-    std::sort(blockOmissions.begin(), blockOmissions.end());
+    if (!omissions.empty()) {
+      blockOmissions.assign(omissions.cbegin(), omissions.cend());
+      std::sort(blockOmissions.begin(), blockOmissions.end());
+    }
+    if (!inclusions.empty()) {
+      blockInclusions.assign(inclusions.cbegin(), inclusions.cend());
+      std::sort(blockInclusions.begin(), blockInclusions.end());
+    }
   }
 
   // Check topology of all sides (face/edges) in model...

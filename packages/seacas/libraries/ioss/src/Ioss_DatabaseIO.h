@@ -151,6 +151,12 @@ namespace Ioss {
      */
     std::string get_filename() const { return DBFilename; }
 
+    /** \brief Get a file-per-processor filename associated with the database.
+     *
+     * \ returns The file-per-processor name for a file on this processor.
+     */
+    const std::string &decoded_filename() const;
+
     /** \brief Determine whether the database is an input database.
      *
      *  \returns True if the database is an input database. False otherwise.
@@ -377,8 +383,10 @@ namespace Ioss {
     } // Default does nothing...
 
     char get_field_separator() const { return fieldSeparator; }
-
+    bool get_field_recognition() const { return enableFieldRecognition; }
     void set_field_separator(char separator);
+    void set_field_recognition(bool yes_no) { enableFieldRecognition = yes_no; }
+
     void set_lower_case_variable_names(bool true_false) const
     {
       lowerCaseVariableNames = true_false;
@@ -392,7 +400,8 @@ namespace Ioss {
     void set_surface_split_type(Ioss::SurfaceSplitType split_type) { splitType = split_type; }
     Ioss::SurfaceSplitType get_surface_split_type() const { return splitType; }
 
-    void set_block_omissions(const std::vector<std::string> &omissions);
+    void set_block_omissions(const std::vector<std::string> &omissions,
+                             const std::vector<std::string> &inclusions = {});
 
     void get_block_adjacencies(const Ioss::ElementBlock *eb,
                                std::vector<std::string> &block_adjacency) const
@@ -531,7 +540,8 @@ namespace Ioss {
      * run since the passed in filename is just the basename, not the
      * processor-specific filename.
      */
-    std::string DBFilename;
+    std::string         DBFilename;
+    mutable std::string decodedFilename;
 
     mutable Ioss::State dbState;
 
@@ -580,13 +590,15 @@ namespace Ioss {
     mutable bool           lowerCaseVariableNames;
     bool                   usingParallelIO;
 
-    // List of element blocks that should be omitted from this model.
-    // Surfaces will take this into account while splitting;
-    // however, node and nodesets will not be filtered
-    // (perhaps this will be done at a later time...)
-    // NOTE: All local element ids and offsets are still calculated
-    //       assuming that the blocks exist in the model...
+    // List of element blocks that should be omitted or included from
+    // this model.  Surfaces will take this into account while
+    // splitting; however, node and nodesets will not be filtered
+    // (perhaps this will be done at a later time...)  NOTE: All local
+    // element ids and offsets are still calculated assuming that the
+    // blocks exist in the model...
+    // Only one of these can have values and the other must be empty.
     std::vector<std::string> blockOmissions;
+    std::vector<std::string> blockInclusions;
 
     std::vector<std::string> informationRecords;
     std::vector<std::string> qaRecords;
@@ -729,6 +741,7 @@ namespace Ioss {
 #endif
     Region *region_;
     char    fieldSeparator{'_'};
+    bool    enableFieldRecognition{true};
     bool    isInput;
     bool    isParallelConsistent; // True if application will make field data get/put calls parallel
                                   // consistently.

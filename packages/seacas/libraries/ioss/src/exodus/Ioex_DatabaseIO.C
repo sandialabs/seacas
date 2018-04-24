@@ -592,8 +592,11 @@ namespace Ioex {
   void DatabaseIO::compute_block_membership__(Ioss::SideBlock *         efblock,
                                               std::vector<std::string> &block_membership) const
   {
-    Ioss::Int64Vector block_ids(m_groupCount[EX_ELEM_BLOCK]);
-    if (m_groupCount[EX_ELEM_BLOCK] == 1) {
+    Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
+    assert(Ioss::Utils::check_block_order(element_blocks));
+
+    Ioss::Int64Vector block_ids(element_blocks.size());
+    if (block_ids.size() == 1) {
       block_ids[0] = 1;
     }
     else {
@@ -616,7 +619,8 @@ namespace Ioex {
         if (block == nullptr || !block->contains(elem_id)) {
           block = get_region()->get_element_block(elem_id);
           assert(block != nullptr);
-          int block_order        = block->get_property("original_block_order").get_int();
+          size_t block_order = block->get_property("original_block_order").get_int();
+          assert(block_order < block_ids.size());
           block_ids[block_order] = 1;
         }
       }
@@ -627,13 +631,10 @@ namespace Ioex {
       util().global_array_minmax(block_ids, Ioss::ParallelUtils::DO_MAX);
     }
 
-    Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
-    assert(Ioss::Utils::check_block_order(element_blocks));
-    assert(m_groupCount[EX_ELEM_BLOCK] == (int)element_blocks.size());
-
-    for (int i = 0; i < m_groupCount[EX_ELEM_BLOCK]; i++) {
-      if (block_ids[i] == 1) {
-        Ioss::ElementBlock *block = element_blocks[i];
+    for (const auto block : element_blocks) {
+      size_t block_order = block->get_property("original_block_order").get_int();
+      assert(block_order < block_ids.size());
+      if (block_ids[block_order] == 1) {
         if (!Ioss::Utils::block_is_omitted(block)) {
           block_membership.push_back(block->name());
         }
@@ -1076,8 +1077,8 @@ namespace Ioex {
 
         std::vector<Ioss::Field> fields;
         int64_t                  count = entity->entity_count();
-        Ioss::Utils::get_fields(count, names, nvar, Ioss::Field::TRANSIENT, get_field_separator(),
-                                local_truth, fields);
+        Ioss::Utils::get_fields(count, names, nvar, Ioss::Field::TRANSIENT, get_field_recognition(),
+                                get_field_separator(), local_truth, fields);
 
         for (const auto &field : fields) {
           entity->field_add(field);
@@ -1408,7 +1409,9 @@ namespace Ioex {
   void DatabaseIO::flush_database__() const
   {
     if (!is_input()) {
-      ex_update(get_file_pointer());
+      if (isParallel || myProcessor == 0) {
+        ex_update(get_file_pointer());
+      }
     }
   }
 
@@ -1552,7 +1555,7 @@ namespace Ioex {
         for (int i = 0; i < attribute_count; i++) {
           fix_bad_name(names[i]);
           Ioss::Utils::fixup_name(names[i]);
-          if (names[i][0] == '\0' || names[i][0] == ' ' || (std::isalnum(names[i][0]) == 0)) {
+          if (names[i][0] == '\0' || (!(std::isalnum(names[i][0]) || names[i][0] == '_'))) {
             attributes_named = false;
           }
         }
@@ -1561,7 +1564,8 @@ namespace Ioex {
       if (attributes_named) {
         std::vector<Ioss::Field> attributes;
         Ioss::Utils::get_fields(my_element_count, names, attribute_count, Ioss::Field::ATTRIBUTE,
-                                field_suffix_separator, nullptr, attributes);
+                                get_field_recognition(), field_suffix_separator, nullptr,
+                                attributes);
         int offset = 1;
         for (const auto &field : attributes) {
           if (block->field_exists(field.get_name())) {

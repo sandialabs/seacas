@@ -668,8 +668,8 @@ int Ioss::GroupingEntity::put_field_data(const std::string &          field_name
 
   Ioss::Field field = get_field(field_name);
 
-  int    view_size_left  = data.dimension_0();
-  int    view_size_right = data.dimension_1();
+  int    view_size_left  = data.extent(0);
+  int    view_size_right = data.extent(1);
   size_t data_size       = field.raw_count() * field.raw_storage()->component_count() * sizeof(T);
 
   if (view_size_left * view_size_right * sizeof(T) != data_size) {

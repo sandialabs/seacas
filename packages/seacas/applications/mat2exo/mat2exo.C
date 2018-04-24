@@ -67,8 +67,9 @@
 #include <exodusII.h>      // for ex_put_variable_param, etc
 #include <iostream>        // for operator<<, basic_ostream, etc
 #include <numeric>         // for accumulate
-#include <string>          // for char_traits, string
-#include <vector>          // for vector
+#include <smart_assert.h>
+#include <string> // for char_traits, string
+#include <vector> // for vector
 
 #if MATIO_VERSION < 151
 #error "MatIO Version 1.5.1 or greater is required"
@@ -80,8 +81,8 @@ mat_t *mat_file = nullptr; /* file for binary .mat input */
 /**********************************************************************/
 static const char *qainfo[] = {
     "mat2exo",
-    "2017/09/25",
-    "4.02",
+    "2018/04/20",
+    "4.03",
 };
 
 /**********************************************************************/
@@ -269,7 +270,7 @@ int main(int argc, char *argv[])
 
     /* get elem block types */
     auto block_names = matGetStr("blknames");
-    assert(block_names.size() == (size_t)num_blocks);
+    SMART_ASSERT(block_names.size() == (size_t)num_blocks);
     std::vector<int> connect;
     for (int i = 0; i < num_blocks; i++) {
       char name[32];
@@ -404,7 +405,17 @@ std::vector<std::string> matGetStr(const char *name)
     printf("Error: Multiline string copy attempted\n");
   }
 
-  std::string mat_names(reinterpret_cast<char *>(matvar->data), matvar->nbytes);
+  size_t bytes = matvar->nbytes;
+  if (matvar->data_size == 2 && matvar->data_type == MAT_T_UINT16) {
+    // Data stored as 16bit, but we want 8bit (This is due to some UTF
+    // strangeness in matio)
+    char *data = reinterpret_cast<char *>(matvar->data);
+    for (size_t i = 0, j = 0; i < matvar->nbytes; i += 2, j++) {
+      data[j] = data[i];
+    }
+    bytes /= 2;
+  }
+  std::string mat_names(reinterpret_cast<char *>(matvar->data), bytes);
   auto        names = SLIB::tokenize(mat_names, "\n", true);
   Mat_VarFree(matvar);
 
@@ -419,8 +430,8 @@ int matGetDbl(const char *name, size_t n1, size_t n2, std::vector<double> &data)
     return -1;
   }
 
-  assert(matvar->dims[0] == n1);
-  assert(matvar->dims[1] == n2);
+  SMART_ASSERT(matvar->dims[0] == n1);
+  SMART_ASSERT(matvar->dims[1] == n2);
 
   data.resize(n1 * n2);
   memcpy(data.data(), static_cast<int *>(matvar->data), n1 * n2 * sizeof(double));
@@ -437,8 +448,8 @@ int matGetInt(const char *name, size_t n1, size_t n2, std::vector<int> &data)
     return -1;
   }
 
-  assert(matvar->dims[0] == n1);
-  assert(matvar->dims[1] == n2);
+  SMART_ASSERT(matvar->dims[0] == n1);
+  SMART_ASSERT(matvar->dims[1] == n2);
 
   data.resize(n1 * n2);
   memcpy(data.data(), static_cast<int *>(matvar->data), n1 * n2 * sizeof(int));
@@ -455,8 +466,8 @@ int matGetInt(const char *name)
     return -1;
   }
 
-  assert(matvar->dims[0] == 1);
-  assert(matvar->dims[1] == 1);
+  SMART_ASSERT(matvar->dims[0] == 1);
+  SMART_ASSERT(matvar->dims[1] == 1);
 
   int data = static_cast<int *>(matvar->data)[0];
 
@@ -504,7 +515,7 @@ void del_arg(int *argc, char *argv[], int j)
 void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std::string &name)
 {
   auto names = matGetStr(name.c_str());
-  assert(names.size() == (size_t)num_vars);
+  SMART_ASSERT(names.size() == (size_t)num_vars);
   const char **str2 = reinterpret_cast<const char **>(calloc(num_vars, sizeof(char *)));
   for (int i = 0; i < num_vars; i++) {
     str2[i] = names[i].c_str();
@@ -516,7 +527,7 @@ void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std:
 void get_put_user_names(int exo_file, ex_entity_type entity, int num_entity, const char *mname)
 {
   auto names = matGetStr(mname);
-  assert(names.size() == (size_t)num_entity);
+  SMART_ASSERT(names.size() == (size_t)num_entity)(names.size())(num_entity);
   const char **str2 = reinterpret_cast<const char **>(calloc(num_entity, sizeof(char *)));
   for (int i = 0; i < num_entity; i++) {
     str2[i] = names[i].c_str();
@@ -531,7 +542,7 @@ void get_put_attr_names(int exo_file, int seq, int id, int num_attr)
   sprintf(str, "blk%02d_attrnames", seq);
 
   auto names = matGetStr(str);
-  assert(names.size() == (size_t)num_attr);
+  SMART_ASSERT(names.size() == (size_t)num_attr);
   const char **str2 = reinterpret_cast<const char **>(calloc(num_attr, sizeof(char *)));
   for (int i = 0; i < num_attr; i++) {
     str2[i] = names[i].c_str();

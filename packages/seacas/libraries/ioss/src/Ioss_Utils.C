@@ -221,15 +221,6 @@ namespace {
     }
   }
 
-  size_t get_number(const std::string &suffix)
-  {
-    int  N       = 0;
-    bool all_dig = suffix.find_first_not_of("0123456789") == std::string::npos;
-    if (all_dig) {
-      N = std::strtol(suffix.c_str(), nullptr, 10);
-    }
-    return N;
-  }
 } // namespace
 
 /** \brief Get formatted time and date strings.
@@ -302,6 +293,16 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
 
   decoded_filename += cur_proc;
   return decoded_filename;
+}
+
+size_t Ioss::Utils::get_number(const std::string &suffix)
+{
+  int  N       = 0;
+  bool all_dig = suffix.find_first_not_of("0123456789") == std::string::npos;
+  if (all_dig) {
+    N = std::strtol(suffix.c_str(), nullptr, 10);
+  }
+  return N;
 }
 
 int64_t Ioss::Utils::extract_id(const std::string &name_id)
@@ -496,7 +497,7 @@ namespace {
     assert(tokens.size() > 2);
 
     // Check that suffix is a number -- all digits
-    size_t N = get_number(tokens[tokens.size() - 1]);
+    size_t N = Ioss::Utils::get_number(tokens[tokens.size() - 1]);
 
     if (N == 0) {
       return nullptr;
@@ -754,12 +755,22 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
                              char ** names,        // Raw list of field names from exodus
                              size_t  num_names,    // Number of names in list
                              Ioss::Field::RoleType fld_role, // Role of field
-                             const char            suffix_separator,
-                             int *                 local_truth, // Truth table for this entity;
+                             bool enable_field_recognition, const char suffix_separator,
+                             int *local_truth, // Truth table for this entity;
                              // null if not applicable.
                              std::vector<Ioss::Field> &fields) // The fields that were found.
 {
-  if (suffix_separator != 0) {
+  if (!enable_field_recognition) {
+    // Create a separate field for each name.
+    for (size_t i = 0; i < num_names; i++) {
+      if (local_truth == nullptr || local_truth[i] == 1) {
+        Ioss::Field field(names[i], Ioss::Field::REAL, IOSS_SCALAR(), fld_role, entity_count);
+        fields.push_back(field);
+        names[i][0] = '\0';
+      }
+    }
+  }
+  else if (suffix_separator != 0) {
     while (true) {
       // NOTE: 'get_next_field' determines storage type (vector, tensor,...)
       Ioss::Field field =
@@ -1264,8 +1275,7 @@ bool Ioss::Utils::check_set_bool_property(const Ioss::PropertyManager &propertie
       }
       else {
         std::ostringstream errmsg;
-        errmsg << "ERROR: Unrecognized value found IOSS_PROPERTIES environment variable\n"
-               << "       for " << prop_name << ". Found '" << yesno
+        errmsg << "ERROR: Unrecognized value found for " << prop_name << ". Found '" << yesno
                << "' which is not one of TRUE|FALSE|YES|NO|ON|OFF";
         IOSS_ERROR(errmsg);
       }

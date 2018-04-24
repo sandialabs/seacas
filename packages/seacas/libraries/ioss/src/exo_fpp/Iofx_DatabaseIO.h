@@ -89,8 +89,6 @@ namespace Iofx {
     ~DatabaseIO() override{};
 
   private:
-    const std::string &decoded_filename() const;
-
     // Check to see if database state is ok...
     // If 'write_message' true, then output a warning message indicating the problem.
     // If 'error_message' non-null, then put the warning message into the string and return it.
@@ -256,7 +254,6 @@ namespace Iofx {
     int64_t put_side_field(const Ioss::SideBlock *fb, const Ioss::Field &field, void *data,
                            size_t data_size) const;
 
-    mutable std::string decodedFilename; /// The actual processor-specific filename.
     mutable bool isSerialParallel; //!< true if application code is controlling the processor id.
   };
 } // namespace Iofx

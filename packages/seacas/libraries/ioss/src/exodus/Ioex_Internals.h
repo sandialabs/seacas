@@ -439,7 +439,7 @@ namespace Ioex {
   class Internals
   {
   public:
-    Internals(int exoid, const Ioss::ParallelUtils &util);
+    Internals(int exoid, int maximum_name_length, const Ioss::ParallelUtils &util);
     Internals(const Internals &from) = delete;
     Internals &operator=(const Internals &from) = delete;
 

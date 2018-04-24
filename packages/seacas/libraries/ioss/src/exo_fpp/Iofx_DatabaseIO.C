@@ -186,24 +186,6 @@ namespace Iofx {
     }
   }
 
-  const std::string &DatabaseIO::decoded_filename() const
-  {
-    if (decodedFilename.empty()) {
-      if (isParallel) {
-        decodedFilename = util().decode_filename(get_filename(), isParallel);
-      }
-      else if (properties.exists("processor_count") && properties.exists("my_processor")) {
-        int proc_count  = properties.get("processor_count").get_int();
-        int my_proc     = properties.get("my_processor").get_int();
-        decodedFilename = Ioss::Utils::decode_filename(get_filename(), my_proc, proc_count);
-      }
-      else {
-        decodedFilename = get_filename();
-      }
-    }
-    return decodedFilename;
-  }
-
   bool DatabaseIO::check_valid_file_ptr(bool write_message, std::string *error_msg, int *bad_count,
                                         bool abort_if_error) const
   {
@@ -799,13 +781,6 @@ namespace Iofx {
 
   void DatabaseIO::read_communication_metadata()
   {
-    // Sierra does not use/need the element communication map data,
-    // but the Nemesis api call to get the nodal communication map
-    // data also gets the element communication data. So,...,we need to
-    // do some redundant reads to get back the element comm data
-    // and also some extra memory allocations to give them a place
-    // to go.
-
     // Check that file is nemesis.
     int  num_proc;         // Number of processors file was decomposed for
     int  num_proc_in_file; // Number of processors this file has info for
@@ -1276,23 +1251,6 @@ namespace Iofx {
 
       offset += local_X_count[iblk];
 
-      // See if this block is "omitted" by the calling code.
-      // This only affects the generation of surfaces...
-      if (!blockOmissions.empty()) {
-        std::vector<std::string>::const_iterator I =
-            std::find(blockOmissions.cbegin(), blockOmissions.cend(), block_name);
-        if (I != blockOmissions.end()) {
-          block->property_add(Ioss::Property(std::string("omitted"), 1));
-        }
-        else {
-          // Try again with the alias...
-          I = std::find(blockOmissions.cbegin(), blockOmissions.cend(), alias);
-          if (I != blockOmissions.end()) {
-            block->property_add(Ioss::Property(std::string("omitted"), 1));
-          }
-        }
-      }
-
       get_region()->add_alias(block_name, alias);
 
       // Check for additional variables.
@@ -1312,6 +1270,36 @@ namespace Iofx {
       }
     }
     m_groupCount[entity_type] = used_blocks;
+
+    if (entity_type == EX_ELEM_BLOCK) {
+      assert(blockOmissions.empty() || blockInclusions.empty()); // Only one can be non-empty
+
+      // Handle all block omissions or inclusions...
+      // This only affects the generation of surfaces...
+      if (!blockOmissions.empty()) {
+        for (const auto &name : blockOmissions) {
+          auto block = get_region()->get_element_block(name);
+          if (block) {
+            block->property_add(Ioss::Property(std::string("omitted"), 1));
+          }
+        }
+      }
+
+      if (!blockInclusions.empty()) {
+        auto blocks = get_region()->get_element_blocks();
+        for (auto &block : blocks) {
+          block->property_add(Ioss::Property(std::string("omitted"), 1));
+        }
+
+        // Now, erase the property on any blocks in the inclusion list...
+        for (const auto &name : blockInclusions) {
+          auto block = get_region()->get_element_block(name);
+          if (block != nullptr) {
+            block->property_erase("omitted");
+          }
+        }
+      }
+    }
   }
 
   void DatabaseIO::compute_node_status() const
@@ -1537,7 +1525,7 @@ namespace Iofx {
             }
           }
 
-          if (!blockOmissions.empty()) {
+          if (!blockOmissions.empty() || !blockInclusions.empty()) {
             Ioex::filter_element_list(get_region(), element, sides, true);
             number_sides = element.size();
             assert(element.size() == sides.size());
@@ -1871,7 +1859,7 @@ void DatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string 
         bool              filtered          = false;
         int64_t           original_set_size = set_params[ins].num_entry;
         Ioss::Int64Vector active_node_index;
-        if (!blockOmissions.empty() && type == EX_NODE_SET) {
+        if ((!blockOmissions.empty() || !blockInclusions.empty()) && type == EX_NODE_SET) {
           active_node_index.resize(set_params[ins].num_entry);
           set_params[ins].entry_list = TOPTR(active_node_index);
 
@@ -4988,7 +4976,7 @@ void DatabaseIO::write_meta_data()
     std::strncpy(the_title, title_str.c_str(), max_line_length);
   }
   else {
-    std::strncpy(the_title, "Sierra Output Default Title", max_line_length);
+    std::strncpy(the_title, "IOSS Default Output Title", max_line_length);
   }
   the_title[max_line_length] = '\0';
 
@@ -5173,7 +5161,7 @@ void DatabaseIO::write_meta_data()
     }
 
     // Write the metadata to the exodus file...
-    Ioex::Internals data(get_file_pointer(), util());
+    Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
     int             ierr = data.write_meta_data(mesh);
 
     if (ierr < 0) {

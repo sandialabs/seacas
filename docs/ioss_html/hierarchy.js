@@ -242,9 +242,9 @@ var hierarchy =
       [ "Iovs::IOFactory", "classIovs_1_1IOFactory.html", null ]
     ] ],
     [ "Iodw::Utils::IossToDW", "classIodw_1_1Utils_1_1IossToDW.html", null ],
-    [ "Private::is_null_finder< T >", "structPrivate_1_1is__null__finder.html", null ],
-    [ "Private::is_null_finder< char * >", "structPrivate_1_1is__null__finder_3_01char_01_5_01_4.html", null ],
-    [ "Private::is_null_finder< const char * >", "structPrivate_1_1is__null__finder_3_01const_01char_01_5_01_4.html", null ],
+    [ "Ioss::Private::is_null_finder< T >", "structIoss_1_1Private_1_1is__null__finder.html", null ],
+    [ "Ioss::Private::is_null_finder< char * >", "structIoss_1_1Private_1_1is__null__finder_3_01char_01_5_01_4.html", null ],
+    [ "Ioss::Private::is_null_finder< const char * >", "structIoss_1_1Private_1_1is__null__finder_3_01const_01char_01_5_01_4.html", null ],
     [ "Iohb::Layout", "classIohb_1_1Layout.html", null ],
     [ "Ioss::Map", "classIoss_1_1Map.html", null ],
     [ "Ioex::Mesh", "classIoex_1_1Mesh.html", null ],

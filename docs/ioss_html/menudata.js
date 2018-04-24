@@ -254,7 +254,6 @@ var menudata={children:[
 {text:"z",url:"globals.html#index_z"},
 {text:"~",url:"globals.html#index_0x7e"}]},
 {text:"Functions",url:"globals_func.html",children:[
-{text:"b",url:"globals_func.html#index_b"},
 {text:"c",url:"globals_func.html#index_c"},
 {text:"h",url:"globals_func.html#index_h"},
 {text:"i",url:"globals_func.html#index_i"},

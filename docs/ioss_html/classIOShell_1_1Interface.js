@@ -12,6 +12,7 @@ var classIOShell_1_1Interface =
     [ "debug", "classIOShell_1_1Interface.html#aca48d73739f4fc9c6fc6524784e773d2", null ],
     [ "decomp_method", "classIOShell_1_1Interface.html#a814d5360635bb26392a21c0a99a6c4df", null ],
     [ "delete_timesteps", "classIOShell_1_1Interface.html#a14b0660c39361257f0c2c80d9fc07b71", null ],
+    [ "disable_field_recognition", "classIOShell_1_1Interface.html#aee414edb0a06902e5662b923a30b0a42", null ],
     [ "do_transform_fields", "classIOShell_1_1Interface.html#a9cf155c21c5f3c3edeca035474b5ad1f", null ],
     [ "fieldSuffixSeparator", "classIOShell_1_1Interface.html#a0dd20bf7388c5c19368fafd741d10f86", null ],
     [ "groupName", "classIOShell_1_1Interface.html#a46c43fa5a8c60d30bc46374b9c1f46ff", null ],

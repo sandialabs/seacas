@@ -122,6 +122,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1c9ad01905e9773cd69b452a8551cbba"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba">get_filename</a> () const</td></tr>
 <tr class="memdesc:a1c9ad01905e9773cd69b452a8551cbba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the file name associated with the database.  <a href="#a1c9ad01905e9773cd69b452a8551cbba">More...</a><br /></td></tr>
 <tr class="separator:a1c9ad01905e9773cd69b452a8551cbba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2086f8e605c31f9eb2af5fac410a46b2"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a2086f8e605c31f9eb2af5fac410a46b2">decoded_filename</a> () const</td></tr>
+<tr class="memdesc:a2086f8e605c31f9eb2af5fac410a46b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a file-per-processor filename associated with the database.  <a href="#a2086f8e605c31f9eb2af5fac410a46b2">More...</a><br /></td></tr>
+<tr class="separator:a2086f8e605c31f9eb2af5fac410a46b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afaf8598b13b44b8f262b3eec8398cb06"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06">is_input</a> () const</td></tr>
 <tr class="memdesc:afaf8598b13b44b8f262b3eec8398cb06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the database is an input database.  <a href="#afaf8598b13b44b8f262b3eec8398cb06">More...</a><br /></td></tr>
 <tr class="separator:afaf8598b13b44b8f262b3eec8398cb06"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,17 +215,21 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8e90aa4a206695f60cc2d55f785e8c43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac344d090f98ae0082547ea7d8e0db7e"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#aac344d090f98ae0082547ea7d8e0db7e">get_field_separator</a> () const</td></tr>
 <tr class="separator:aac344d090f98ae0082547ea7d8e0db7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af616ab4ee470f8a994d2ef35eb1fa100"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#af616ab4ee470f8a994d2ef35eb1fa100">get_field_recognition</a> () const</td></tr>
+<tr class="separator:af616ab4ee470f8a994d2ef35eb1fa100"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfe3242a9864a794a758870288a499af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#abfe3242a9864a794a758870288a499af">set_field_separator</a> (char separator)</td></tr>
 <tr class="memdesc:abfe3242a9864a794a758870288a499af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the character used to separate a field suffix from the field basename when recognizing vector, tensor fields.  <a href="#abfe3242a9864a794a758870288a499af">More...</a><br /></td></tr>
 <tr class="separator:abfe3242a9864a794a758870288a499af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac078e6793326cd029bc0412d342fb626"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ac078e6793326cd029bc0412d342fb626">set_field_recognition</a> (bool yes_no)</td></tr>
+<tr class="separator:ac078e6793326cd029bc0412d342fb626"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d6ffe8a955335ceb105c2d0a1fee0c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a4d6ffe8a955335ceb105c2d0a1fee0c0">set_lower_case_variable_names</a> (bool true_false) const</td></tr>
 <tr class="separator:a4d6ffe8a955335ceb105c2d0a1fee0c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab90f66226b7460db282b835ca60e8a61"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ab90f66226b7460db282b835ca60e8a61">set_surface_split_type</a> (<a class="el" href="namespaceIoss.html#aac97d071c77181adce98f1569c36d222">Ioss::SurfaceSplitType</a> split_type)</td></tr>
 <tr class="separator:ab90f66226b7460db282b835ca60e8a61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52c4059853eb44042d91f894d08850cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#aac97d071c77181adce98f1569c36d222">Ioss::SurfaceSplitType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a52c4059853eb44042d91f894d08850cb">get_surface_split_type</a> () const</td></tr>
 <tr class="separator:a52c4059853eb44042d91f894d08850cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01670edbe9586429a2b5b4181994c56f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a01670edbe9586429a2b5b4181994c56f">set_block_omissions</a> (const std::vector&lt; std::string &gt; &amp;omissions)</td></tr>
-<tr class="separator:a01670edbe9586429a2b5b4181994c56f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a360f770cd53aaffb9e6de122cf8879e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a360f770cd53aaffb9e6de122cf8879e0">set_block_omissions</a> (const std::vector&lt; std::string &gt; &amp;omissions, const std::vector&lt; std::string &gt; &amp;inclusions={})</td></tr>
+<tr class="separator:a360f770cd53aaffb9e6de122cf8879e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aced27ca42bbc7db5e4d8b059b00fd8cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#aced27ca42bbc7db5e4d8b059b00fd8cb">get_block_adjacencies</a> (const <a class="el" href="classIoss_1_1ElementBlock.html">Ioss::ElementBlock</a> *eb, std::vector&lt; std::string &gt; &amp;block_adjacency) const</td></tr>
 <tr class="separator:aced27ca42bbc7db5e4d8b059b00fd8cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d50707a93638511b7c223ecccb119b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a2d50707a93638511b7c223ecccb119b2">compute_block_membership</a> (<a class="el" href="classIoss_1_1SideBlock.html">Ioss::SideBlock</a> *efblock, std::vector&lt; std::string &gt; &amp;block_membership) const</td></tr>
@@ -287,6 +294,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:aad6e4beaf165e23232fe1eae44a6347d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a1ef206190cabc4ed3b65fe6eaab941"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a1a1ef206190cabc4ed3b65fe6eaab941">DBFilename</a></td></tr>
 <tr class="separator:a1a1ef206190cabc4ed3b65fe6eaab941"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a125a43dbbce651b46ea38fe095a5dbf1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a125a43dbbce651b46ea38fe095a5dbf1">decodedFilename</a></td></tr>
+<tr class="separator:a125a43dbbce651b46ea38fe095a5dbf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab05041fc11bc180a05636fd9e340af3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#a02dbd3bfbd7f633e636c8c0c385c4a34">Ioss::State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ab05041fc11bc180a05636fd9e340af3a">dbState</a></td></tr>
 <tr class="separator:ab05041fc11bc180a05636fd9e340af3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea8f55d83b4ae9599f443ba49f0a219a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#aea8f55d83b4ae9599f443ba49f0a219a">isParallel</a></td></tr>
@@ -320,6 +329,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a7981897eaa5bc4fddb206c6f16be4ddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03bfe3176de49d5a03876ba5f848c647"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a03bfe3176de49d5a03876ba5f848c647">blockOmissions</a></td></tr>
 <tr class="separator:a03bfe3176de49d5a03876ba5f848c647"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7214d81bafcaeb09cf765f2f693f35bd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a7214d81bafcaeb09cf765f2f693f35bd">blockInclusions</a></td></tr>
+<tr class="separator:a7214d81bafcaeb09cf765f2f693f35bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07ae9f3f52be98b33b1af2ac084e8c7e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a07ae9f3f52be98b33b1af2ac084e8c7e">informationRecords</a></td></tr>
 <tr class="separator:a07ae9f3f52be98b33b1af2ac084e8c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abaf1032632e81a483325df150aaaffaa"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#abaf1032632e81a483325df150aaaffaa">qaRecords</a></td></tr>
@@ -444,6 +455,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:aace533dc367c0178ef8a9a700b945ae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4f19171301f0540415efdbe86d6b873"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#af4f19171301f0540415efdbe86d6b873">fieldSeparator</a> {'_'}</td></tr>
 <tr class="separator:af4f19171301f0540415efdbe86d6b873"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a578fe057681e4aab858717122f6d37bf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a578fe057681e4aab858717122f6d37bf">enableFieldRecognition</a> {true}</td></tr>
+<tr class="separator:a578fe057681e4aab858717122f6d37bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f2e5d1bd1d892afd3f0d65209274061"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a4f2e5d1bd1d892afd3f0d65209274061">isInput</a></td></tr>
 <tr class="separator:a4f2e5d1bd1d892afd3f0d65209274061"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4119cb674590e0162b5c6da79f22eebe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a4119cb674590e0162b5c6da79f22eebe">isParallelConsistent</a></td></tr>
@@ -1250,6 +1263,26 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Reimplemented in <a class="el" href="classIoex_1_1DatabaseIO.html#a5ec5b04518141cace44155b3e72480c6">Ioex::DatabaseIO</a>.</p>
+
+</div>
+</div>
+<a id="a2086f8e605c31f9eb2af5fac410a46b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2086f8e605c31f9eb2af5fac410a46b2">&#9670;&nbsp;</a></span>decoded_filename()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; Ioss::DatabaseIO::decoded_filename </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get a file-per-processor filename associated with the database. </p>
+<p>\ returns The file-per-processor name for a file on this processor. </p>
 
 </div>
 </div>
@@ -2368,6 +2401,31 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Reimplemented in <a class="el" href="classIopg_1_1DatabaseIO.html#a97f5b3121f4c900b267dd3cbcd74b0db">Iopg::DatabaseIO</a>, <a class="el" href="classIodw_1_1DatabaseIO.html#a204ce175c396a20af763a5ddc165f438">Iodw::DatabaseIO</a>, <a class="el" href="classIoex_1_1DatabaseIO.html#a67ea9bd7776e9feaac52b649f071a3bb">Ioex::DatabaseIO</a>, <a class="el" href="classIovs_1_1DatabaseIO.html#ab097984d7835d5641b9568369fc4bc62">Iovs::DatabaseIO</a>, <a class="el" href="classIogn_1_1DatabaseIO.html#a68969af20be800a8379c5940638d837b">Iogn::DatabaseIO</a>, <a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a51d5034b04db8f0d3bf70e321c8e6d2a">Iocgns::ParallelDatabaseIO</a>, <a class="el" href="classIohb_1_1DatabaseIO.html#ac2ce5a3711300a43f9b9381e472bd625">Iohb::DatabaseIO</a>, <a class="el" href="classIocgns_1_1DatabaseIO.html#aa6539ba4d1a407cd9fd2b2627109c9bf">Iocgns::DatabaseIO</a>, <a class="el" href="classIopx_1_1DatabaseIO.html#a2e07ca70f10661c838d7db548c24c021">Iopx::DatabaseIO</a>, and <a class="el" href="classIofx_1_1DatabaseIO.html#aa0e8ec99c2e0438915011ae0289ab591">Iofx::DatabaseIO</a>.</p>
+
+</div>
+</div>
+<a id="af616ab4ee470f8a994d2ef35eb1fa100"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af616ab4ee470f8a994d2ef35eb1fa100">&#9670;&nbsp;</a></span>get_field_recognition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ioss::DatabaseIO::get_field_recognition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -4203,8 +4261,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a01670edbe9586429a2b5b4181994c56f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a01670edbe9586429a2b5b4181994c56f">&#9670;&nbsp;</a></span>set_block_omissions()</h2>
+<a id="a360f770cd53aaffb9e6de122cf8879e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a360f770cd53aaffb9e6de122cf8879e0">&#9670;&nbsp;</a></span>set_block_omissions()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -4213,8 +4271,18 @@ template&lt;typename T &gt; </div>
           <td class="memname">void Ioss::DatabaseIO::set_block_omissions </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
-          <td class="paramname"><em>omissions</em></td><td>)</td>
+          <td class="paramname"><em>omissions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>inclusions</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -4278,6 +4346,32 @@ template&lt;typename T &gt; </div>
 <p>The cycle count and overlay count can both be used at the same time also. The basic formula is: </p><pre class="fragment">   db_step = (((output_step - 1) / overlay) % cycle) + 1
 </pre><p>where "output_step" is the step that this would have been on the database in a normal write (1,2,3,....) and "db_step" is the step number that this will be written to.</p>
 <p>If you only want the last step available on the database, use set_cycle_count(1) </p>
+
+</div>
+</div>
+<a id="ac078e6793326cd029bc0412d342fb626"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac078e6793326cd029bc0412d342fb626">&#9670;&nbsp;</a></span>set_field_recognition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::DatabaseIO::set_field_recognition </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>yes_no</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -4745,6 +4839,28 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a7214d81bafcaeb09cf765f2f693f35bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7214d81bafcaeb09cf765f2f693f35bd">&#9670;&nbsp;</a></span>blockInclusions</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; Ioss::DatabaseIO::blockInclusions</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a03bfe3176de49d5a03876ba5f848c647"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a03bfe3176de49d5a03876ba5f848c647">&#9670;&nbsp;</a></span>blockOmissions</h2>
 
@@ -4901,6 +5017,28 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a125a43dbbce651b46ea38fe095a5dbf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a125a43dbbce651b46ea38fe095a5dbf1">&#9670;&nbsp;</a></span>decodedFilename</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::DatabaseIO::decodedFilename</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a364e1592a80c9227429bb0be6866b98e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a364e1592a80c9227429bb0be6866b98e">&#9670;&nbsp;</a></span>doLogging</h2>
 
@@ -5005,6 +5143,28 @@ template&lt;typename T &gt; </div>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a578fe057681e4aab858717122f6d37bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a578fe057681e4aab858717122f6d37bf">&#9670;&nbsp;</a></span>enableFieldRecognition</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ioss::DatabaseIO::enableFieldRecognition {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

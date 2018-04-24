@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2018 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -56,6 +56,7 @@
 #include <numeric>
 #include <set>
 
+#include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>
 
 #include <cgnsconfig.h>
@@ -179,6 +180,24 @@ namespace {
     }
     return nstep;
   }
+
+  ssize_t proc_with_minimum_work(const std::vector<size_t> &work, ssize_t exclude_proc = -1)
+  {
+    size_t  min_work = std::numeric_limits<size_t>::max();
+    ssize_t min_proc = -1;
+    for (ssize_t i = 0; i < (ssize_t)work.size(); i++) {
+      if (work[i] < min_work && i != exclude_proc) {
+        min_work = work[i];
+        min_proc = i;
+        if (min_work == 0) {
+          break;
+        }
+      }
+    }
+    return min_proc;
+  }
+  void validate_blocks(const Ioss::StructuredBlockContainer &structured_blocks) {}
+
 } // namespace
 
 void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *function, int lineno,
@@ -580,6 +599,8 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   }
 
   const auto &structured_blocks = region.get_structured_blocks();
+  validate_blocks(structured_blocks);
+
   for (const auto &sb : structured_blocks) {
     int      zone    = 0;
     cgsize_t size[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -907,8 +928,26 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
 
       CGCHECKNP(cg_fambc_read(cgnsFilePtr, base, family, 1, name, &bocotype));
 
+      CGCHECKNP(cg_goto(cgnsFilePtr, base, "Family_t", family, "end"));
+      int ndescriptors = 0;
+      int id           = 0;
+      CGCHECKNP(cg_ndescriptors(&ndescriptors));
+      if (ndescriptors > 0) {
+        for (int ndesc = 1; ndesc <= ndescriptors; ndesc++) {
+          char  dname[33];
+          char *dtext;
+          CGCHECKNP(cg_descriptor_read(ndesc, dname, &dtext));
+          if (strcmp(dname, "FamBC_UserId") == 0) {
+            // Convert text in `dtext` to integer...
+            id = Ioss::Utils::get_number(dtext);
+            break;
+          }
+        }
+      }
       auto *ss = new Ioss::SideSet(db, ss_name);
-      int   id = Ioss::Utils::extract_id(ss_name);
+      if (id == 0) {
+        id = Ioss::Utils::extract_id(ss_name);
+      }
       if (id != 0) {
         ss->property_add(Ioss::Property("id", id));
         ss->property_add(Ioss::Property("guid", db->util().generate_guid(id)));
@@ -1296,7 +1335,8 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
 }
 
 void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<double> &timesteps,
-                                            Ioss::Region *region, int myProcessor)
+                                            Ioss::Region *region, bool enable_field_recognition,
+                                            char suffix_separator, int myProcessor)
 {
   // ==========================================
   // Add transient variables (if any) to all zones...
@@ -1334,8 +1374,8 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
       std::vector<Ioss::Field> fields;
       if (grid_loc == CG_CellCenter) {
         size_t entity_count = block->entity_count();
-        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
-                                nullptr, fields);
+        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
+                                enable_field_recognition, suffix_separator, nullptr, fields);
         size_t index = 1;
         for (const auto &field : fields) {
           Utils::set_field_index(field, index, grid_loc);
@@ -1351,8 +1391,8 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
                 : region->get_node_blocks()[0];
         Ioss::NodeBlock *nb           = const_cast<Ioss::NodeBlock *>(cnb);
         size_t           entity_count = nb->entity_count();
-        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
-                                nullptr, fields);
+        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
+                                enable_field_recognition, suffix_separator, nullptr, fields);
         size_t index = 1;
         for (const auto &field : fields) {
           Utils::set_field_index(field, index, grid_loc);
@@ -1407,4 +1447,161 @@ int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timestep
     timesteps.push_back(times[i]);
   }
   return num_timesteps;
+}
+
+void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &zones,
+                                          std::vector<size_t> &                      work_vector)
+{
+  // Sort zones based on work.  Most work first..
+  // TODO: Possibly filter 'zones' down to only active zones to
+  // reduce sort and iteration time.
+  std::sort(zones.begin(), zones.end(),
+            [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
+              return a->work() > b->work();
+            });
+
+#if 1
+  for (auto &zone : zones) {
+    zone->m_proc = -1;
+    if (zone->is_active()) {
+      // Assign zone to processor with minimum work...
+      ssize_t proc = proc_with_minimum_work(work_vector);
+
+      // See if any other zone on this processor has the same adam zone...
+      // TODO: Currently only do one "re-search".  Need to do something
+      // better to make sure; or be able to handle this condition correctly.
+      for (auto &pzone : zones) {
+        if (pzone->is_active() && pzone->m_proc == proc) {
+          if (pzone->m_adam == zone->m_adam) {
+            proc = proc_with_minimum_work(work_vector, proc);
+            break;
+          }
+        }
+      }
+      zone->m_proc = proc;
+      work_vector[proc] += zone->work();
+    }
+  }
+#else
+  // Assign zone to first processor that has "capacity".
+  // Determine average_work per processor...
+  double work = 0.0;
+  int num_zones = 0;
+  for (auto &zone : zones) {
+    zone->m_proc = -1;
+    if (zone->is_active()) {
+      work += zone->work();
+      num_zones++;
+    }
+  }
+
+  double avg_work = work / work_vector.size();
+
+  int zones_placed = 0;
+  do {
+    zones_placed = 0;
+    for (size_t proc = 0; proc < work_vector.size(); proc++) {
+      work_vector[proc] = 0;
+    }
+    for (auto &zone : zones) {
+      if (zone->is_active()) {
+        // Find first processor that has capacity...
+        double my_work = zone->work();
+        for (size_t proc = 0; proc < work_vector.size(); proc++) {
+          if (work_vector[proc] + my_work <= avg_work) {
+            zone->m_proc = proc;
+            work_vector[proc] += zone->work();
+            zones_placed++;
+            break;
+          }
+        }
+      }
+    }
+    avg_work *= 1.2; // Allow 20% overage
+  } while (zones_placed != num_zones);
+
+#endif
+}
+
+size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
+                                double load_balance, int proc_rank, int proc_count)
+{
+  auto   new_zones(zones);
+  size_t new_zone_id = zones.size() + 1;
+
+  // See if can split each zone over a set of procs...
+  int    procs        = proc_count;
+  bool   adaptive_avg = false;
+  double min_avg      = avg_work / load_balance;
+  double max_avg      = avg_work * load_balance;
+  double total_work   = 0.0;
+  for (auto zone : zones) {
+    double work = zone->work();
+    total_work += work;
+    int splits      = int(std::round(work / avg_work));
+    splits          = splits == 0 ? 1 : splits;
+    double zone_avg = work / (double)splits;
+    if ((splits > 1 && zone_avg < min_avg) || zone_avg > max_avg) {
+      procs = 0;
+    }
+    procs -= splits;
+  }
+
+  adaptive_avg = (procs == 0);
+  procs        = proc_count;
+
+  for (auto zone : zones) {
+    int  num_active = 0;
+    bool split      = false;
+
+    auto work_average = avg_work;
+    int  splits       = 0;
+    if (adaptive_avg) {
+      double work  = zone->work();
+      splits       = int(std::round(work / avg_work));
+      splits       = splits == 0 ? 1 : splits;
+      work_average = work / (double)splits;
+#if IOSS_DEBUG_OUTPUT
+      if (proc_rank == 0) {
+        std::cerr << "Setting average work from " << avg_work << " to " << work_average
+                  << " for zone " << zone->m_name << "\n";
+      }
+#endif
+    }
+    do {
+      split = false;
+      if (zone->is_active() && zone->work() > work_average * load_balance) {
+        auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
+
+        if (children.first != nullptr && children.second != nullptr) {
+          split = true;
+          new_zone_id += 2;
+          zone = children.second;
+          new_zones.push_back(children.first);
+          new_zones.push_back(children.second);
+          if (adaptive_avg) {
+            splits--;
+            double work  = zone->work();
+            work_average = work / (double)splits;
+          }
+          else {
+          // Do something here to adjust since probably didn't do exactly perfect split...
+          // Decrement proc count by 1 and total_work by
+#if 1
+            total_work -= children.first->work();
+            procs--;
+            work_average = total_work / (double)procs;
+#endif
+          }
+        }
+        num_active++; // Add 2 children; parent goes inactive
+        if (num_active >= proc_count) {
+          split = false;
+          break;
+        }
+      }
+    } while (split);
+  }
+  std::swap(new_zones, zones);
+  return new_zone_id;
 }
