@@ -82,6 +82,8 @@
 
 extern char hdf5_access[64];
 
+extern int pcg_mpi_initialized;
+
 namespace Iocgns {
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
@@ -113,6 +115,10 @@ namespace Iocgns {
         strcpy(hdf5_access, "PARALLEL");
       }
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
+      CGCHECK(cg_set_file_type(CG_FILE_HDF5));
+
+      // Kluge to get fpp and dof CGNS working at same time.
+      pcg_mpi_initialized = 0;
       int ierr = cg_open(decoded_filename().c_str(), mode, &cgnsFilePtr);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
@@ -1232,6 +1238,11 @@ namespace Iocgns {
     int                   zone = sb->get_property("zone").get_int();
 
     cgsize_t num_to_get = field.verify(data_size);
+
+    // In this routine, if isParallel, then writing file-per-processor; not parallel io to single file.
+    if (isParallel && num_to_get == 0) {
+      return 0;
+    }
 
     if (role == Ioss::Field::MESH) {
       bool cell_field = Utils::is_cell_field(field);
