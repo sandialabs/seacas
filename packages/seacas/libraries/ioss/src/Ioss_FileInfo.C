@@ -52,17 +52,15 @@ namespace {
 
 namespace Ioss {
 
-  FileInfo::FileInfo() : filename_(""), exists_(false), readable_(false) {}
+  FileInfo::FileInfo() = default;
 
-  FileInfo::FileInfo(std::string my_filename)
-      : filename_(std::move(my_filename)), exists_(false), readable_(false)
+  FileInfo::FileInfo(std::string my_filename) : filename_(std::move(my_filename))
   {
     readable_ = internal_access(filename_, R_OK);
     exists_   = readable_ || internal_access(filename_, F_OK);
   }
 
-  FileInfo::FileInfo(const char *my_filename)
-      : filename_(std::string(my_filename)), exists_(false), readable_(false)
+  FileInfo::FileInfo(const char *my_filename) : filename_(std::string(my_filename))
   {
     readable_ = internal_access(filename_, R_OK);
     exists_   = readable_ || internal_access(filename_, F_OK);
@@ -70,7 +68,7 @@ namespace Ioss {
 
   FileInfo::FileInfo(const FileInfo &copy_from) = default;
 
-  FileInfo::FileInfo(const std::string &dirpath, const std::string &my_filename) : filename_("")
+  FileInfo::FileInfo(const std::string &dirpath, const std::string &my_filename)
   {
     static std::string SLASH("/");
 

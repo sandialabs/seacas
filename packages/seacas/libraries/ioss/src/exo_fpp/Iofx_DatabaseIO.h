@@ -254,7 +254,8 @@ namespace Iofx {
     int64_t put_side_field(const Ioss::SideBlock *fb, const Ioss::Field &field, void *data,
                            size_t data_size) const;
 
-    mutable bool isSerialParallel; //!< true if application code is controlling the processor id.
+    mutable bool isSerialParallel{
+        false}; //!< true if application code is controlling the processor id.
   };
 } // namespace Iofx
 #endif

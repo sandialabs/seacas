@@ -250,8 +250,7 @@ namespace Iopx {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-      : Ioex::DatabaseIO(region, filename, db_usage, communicator, props), decomp(nullptr),
-        metaDataWritten(false)
+      : Ioex::DatabaseIO(region, filename, db_usage, communicator, props)
   {
     usingParallelIO = true;
     if (!is_parallel_consistent()) {

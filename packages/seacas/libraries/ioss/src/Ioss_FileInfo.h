@@ -116,9 +116,9 @@ namespace Ioss {
     bool remove_file();
 
   private:
-    std::string filename_;
-    bool        exists_{};   ///< this is used frequently, check on creation
-    bool        readable_{}; ///< this is used frequently, check on creation
+    std::string filename_{};
+    bool        exists_{false};   ///< this is used frequently, check on creation
+    bool        readable_{false}; ///< this is used frequently, check on creation
   };
 } // namespace Ioss
 #endif // IOSS_Ioss_FileInfo_h
