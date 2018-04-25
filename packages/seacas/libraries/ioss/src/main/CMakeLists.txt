@@ -73,9 +73,11 @@ TRIBITS_ADD_EXECUTABLE(
   )
 
 if (TPL_ENABLE_MPI)
+  IF (TPL_Netcdf_PARALLEL)
   set(DECOMP_ARG "--rcb")
   set(JOIN_ARG   "--compose=mpiio")
   set(PJOIN_ARG   "--compose=pnetcdf")
+  endif()
 endif()
 
 TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32
@@ -148,8 +150,10 @@ install_executable(skinner)
 IF (TPL_ENABLE_CGNS)
 
 if (TPL_ENABLE_MPI)
+  IF (TPL_Netcdf_PARALLEL)
   set(DECOMP_ARG "--rcb")
   set(JOIN_ARG   "--compose=mpiio")
+  endif()
 endif()
 
 if ( CGNS_CGNSLIST_BINARY )
