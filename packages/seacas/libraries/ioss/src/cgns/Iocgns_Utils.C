@@ -1470,16 +1470,18 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
       // See if any other zone on this processor has the same adam zone...
       // TODO: Currently only do one "re-search".  Need to do something
       // better to make sure; or be able to handle this condition correctly.
-      for (auto &pzone : zones) {
-        if (pzone->is_active() && pzone->m_proc == proc) {
-          if (pzone->m_adam == zone->m_adam) {
-            proc = proc_with_minimum_work(work_vector, proc);
-            break;
+      if (proc >= 0) {
+        for (auto &pzone : zones) {
+          if (pzone->is_active() && pzone->m_proc == proc) {
+            if (pzone->m_adam == zone->m_adam) {
+              proc = proc_with_minimum_work(work_vector, proc);
+              break;
+            }
           }
         }
+        zone->m_proc = proc;
+        work_vector[proc] += zone->work();
       }
-      zone->m_proc = proc;
-      work_vector[proc] += zone->work();
     }
   }
 #else
@@ -1581,8 +1583,13 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
           new_zones.push_back(children.second);
           if (adaptive_avg) {
             splits--;
-            double work  = zone->work();
-            work_average = work / (double)splits;
+            double work = zone->work();
+            if (splits > 0) {
+              work_average = work / (double)splits;
+            }
+            else {
+              work_average = work;
+            }
           }
           else {
           // Do something here to adjust since probably didn't do exactly perfect split...
