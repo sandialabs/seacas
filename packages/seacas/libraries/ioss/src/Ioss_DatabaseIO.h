@@ -520,7 +520,7 @@ namespace Ioss {
      * individually.
      */
     void             set_common_side_topology() const;
-    ElementTopology *commonSideTopology;
+    ElementTopology *commonSideTopology{nullptr};
 
     template <typename T>
     void create_groups(const std::string &property_name, EntityType type,
@@ -543,10 +543,10 @@ namespace Ioss {
     std::string         DBFilename;
     mutable std::string decodedFilename;
 
-    mutable Ioss::State dbState;
+    mutable Ioss::State dbState{STATE_INVALID};
 
-    bool isParallel;  //!< true if running in parallel
-    int  myProcessor; //!< number of processor this database is for
+    bool isParallel{false}; //!< true if running in parallel
+    int  myProcessor{0};    //!< number of processor this database is for
 
     int64_t nodeCount{0};
     int64_t elementCount{0};
@@ -570,9 +570,9 @@ namespace Ioss {
      * the convention that times be monotonically increasing on an exodusII file.
      * Used by derived classes if they support this capability...
      */
-    mutable int cycleCount;
+    mutable int cycleCount{0};
 
-    mutable int overlayCount;
+    mutable int overlayCount{0};
 
     /*! Scale the time read/written from/to the file by the specified
       scaleFactor.  If the datbase times are 0.1, 0.2, 0.3 and the
@@ -582,13 +582,13 @@ namespace Ioss {
       If specified for an output database, then the analysis time
       is divided by the scaleFactor time prior to output.
     */
-    double timeScaleFactor;
+    double timeScaleFactor{1.0};
 
-    Ioss::SurfaceSplitType splitType;
+    Ioss::SurfaceSplitType splitType{SPLIT_BY_TOPOLOGIES};
     Ioss::DatabaseUsage    dbUsage;
-    mutable Ioss::DataSize dbIntSizeAPI;
-    mutable bool           lowerCaseVariableNames;
-    bool                   usingParallelIO;
+    mutable Ioss::DataSize dbIntSizeAPI{USE_INT32_API};
+    mutable bool           lowerCaseVariableNames{true};
+    bool                   usingParallelIO{false};
 
     // List of element blocks that should be omitted or included from
     // this model.  Surfaces will take this into account while
@@ -739,22 +739,24 @@ namespace Ioss {
 
   private:
 #endif
-    Region *region_;
+    Region *region_{nullptr};
     char    fieldSeparator{'_'};
     bool    enableFieldRecognition{true};
     bool    isInput;
-    bool    isParallelConsistent; // True if application will make field data get/put calls parallel
-                                  // consistently.
-                                  // True is default and required for parallel-io databases.
+    bool    isParallelConsistent{
+        true}; // True if application will make field data get/put calls parallel
+                  // consistently.
+                  // True is default and required for parallel-io databases.
     // Even if false, metadata operations must be called by all processors
 
-    bool singleProcOnly; // True if history or heartbeat which is only written from proc 0...
-    bool doLogging;      // True if logging field input/output
-    bool
-        useGenericCanonicalName; // True if "block_id" is used as canonical name instead of the name
+    bool singleProcOnly;   // True if history or heartbeat which is only written from proc 0...
+    bool doLogging{false}; // True if logging field input/output
+    bool useGenericCanonicalName{
+        false}; // True if "block_id" is used as canonical name instead of the name
     // given on the mesh file e.g. "fireset".  Both names are still aliases.
-    bool ignoreDatabaseNames; // True if "block_{id}" used as canonical name; ignore any names on
-                              // database.
+    bool ignoreDatabaseNames{
+        false}; // True if "block_{id}" used as canonical name; ignore any names on
+                // database.
     mutable bool blockAdjacenciesCalculated{false}; // True if the lazy creation of
     // block adjacencies has been calculated.
   };

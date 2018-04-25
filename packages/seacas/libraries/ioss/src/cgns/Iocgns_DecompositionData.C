@@ -332,8 +332,7 @@ namespace Iocgns {
   template <typename INT>
   DecompositionData<INT>::DecompositionData(const Ioss::PropertyManager &props,
                                             MPI_Comm                     communicator)
-      : DecompositionDataBase(communicator), m_loadBalanceThreshold(1.4),
-        m_decomposition(props, communicator)
+      : DecompositionDataBase(communicator), m_decomposition(props, communicator)
   {
     rank = m_decomposition.m_processor;
 

@@ -247,8 +247,8 @@ namespace Iocgns {
     void get_file_node_coordinates(int filePtr, int direction, double *ioss_data) const;
     void get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const;
 
-    double      m_loadBalanceThreshold;
-    std::string m_lineDecomposition;
+    double      m_loadBalanceThreshold{1.4};
+    std::string m_lineDecomposition{};
 
   public:
     Ioss::Decomposition<INT> m_decomposition;

@@ -148,15 +148,10 @@ namespace {
 namespace Ioss {
   DatabaseIO::DatabaseIO(Region *region, std::string filename, DatabaseUsage db_usage,
                          MPI_Comm communicator, const PropertyManager &props)
-      : properties(props), commonSideTopology(nullptr), DBFilename(std::move(filename)),
-        dbState(STATE_INVALID), isParallel(false), myProcessor(0), cycleCount(0), overlayCount(0),
-        timeScaleFactor(1.0), splitType(SPLIT_BY_TOPOLOGIES), dbUsage(db_usage),
-        dbIntSizeAPI(USE_INT32_API), lowerCaseVariableNames(true), usingParallelIO(false),
-        util_(communicator), region_(region), isInput(is_input_event(db_usage)),
-        isParallelConsistent(true),
+      : properties(props), DBFilename(std::move(filename)), dbUsage(db_usage), util_(communicator),
+        region_(region), isInput(is_input_event(db_usage)),
         singleProcOnly(db_usage == WRITE_HISTORY || db_usage == WRITE_HEARTBEAT ||
-                       SerializeIO::isEnabled()),
-        doLogging(false), useGenericCanonicalName(false), ignoreDatabaseNames(false)
+                       SerializeIO::isEnabled())
   {
     isParallel  = util_.parallel_size() > 1;
     myProcessor = util_.parallel_rank();

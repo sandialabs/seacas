@@ -264,19 +264,19 @@ namespace Ioex {
 
     // Private member data...
   protected:
-    mutable int         exodusFilePtr;
+    mutable int         exodusFilePtr{-1};
     mutable std::string m_groupName;
 
     mutable EntityIdSet ids_;
 
-    mutable int exodusMode;
-    mutable int dbRealWordSize;
+    mutable int exodusMode{EX_CLOBBER};
+    mutable int dbRealWordSize{8};
 
-    mutable int maximumNameLength;
-    int         spatialDimension;
+    mutable int maximumNameLength{32};
+    int         spatialDimension{0};
 
-    int64_t edgeCount;
-    int64_t faceCount;
+    int64_t edgeCount{0};
+    int64_t faceCount{0};
 
     mutable std::map<ex_entity_type, int> m_groupCount;
 
@@ -285,8 +285,8 @@ namespace Ioex {
     Ioss::Int64Vector nodeCmapNodeCnts;
     Ioss::Int64Vector elemCmapIds;
     Ioss::Int64Vector elemCmapElemCnts;
-    int64_t           commsetNodeCount;
-    int64_t           commsetElemCount;
+    int64_t           commsetNodeCount{0};
+    int64_t           commsetElemCount{0};
 
     // --- Nodal/Element/Attribute Variable Names -- Maps from sierra
     // field names to index of nodal/element/attribute variable in
@@ -309,15 +309,16 @@ namespace Ioex {
     // empty, then some nodes on that nodeset are only connected to omitted elements.
     mutable std::map<std::string, Ioss::Int64Vector> activeNodesetNodesIndex;
 
-    time_t timeLastFlush;
+    time_t timeLastFlush{0};
 
-    mutable bool fileExists; // False if file has never been opened/created
-    mutable bool minimizeOpenFiles;
+    mutable bool fileExists{false}; // False if file has never been opened/created
+    mutable bool minimizeOpenFiles{false};
 
-    mutable bool blockAdjacenciesCalculated; // True if the lazy creation of
+    mutable bool blockAdjacenciesCalculated{false}; // True if the lazy creation of
     // block adjacencies has been calculated.
-    mutable bool nodeConnectivityStatusCalculated; // True if the lazy creation of
-                                                   // nodeConnectivityStatus has been calculated.
+    mutable bool nodeConnectivityStatusCalculated{
+        false}; // True if the lazy creation of
+                // nodeConnectivityStatus has been calculated.
   };
 } // namespace Ioex
 #endif
