@@ -259,7 +259,7 @@ namespace Iopx {
                            size_t data_size) const;
 
     // Private member data...
-    mutable std::unique_ptr<DecompositionDataBase> decomp{nullptr};
+    mutable std::unique_ptr<DecompositionDataBase> decomp;
 
     mutable Ioss::IntVector nodeOwningProcessor; // Processor that owns each node on this processor
     mutable Ioss::Int64Vector
