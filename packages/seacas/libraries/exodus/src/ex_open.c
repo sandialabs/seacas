@@ -58,6 +58,9 @@
 #include <stdio.h>
 /*!
 
+\note The ex_open_int() is an internal function called by
+ex_open(). The user should call ex_open() and not ex_open_int().
+
 The function ex_open() opens an existing exodus file and returns
 an ID that can subsequently be used to refer to the file, the word
 size of the floating point values stored in the file, and the version
@@ -125,6 +128,11 @@ exoid = ex_open ("test.exo",     \co{filename path}
 
 static int warning_output = 0;
 
+/* NOTE: Do *not* call `ex_open_int()` directly.  The public API
+ *       function name is `ex_open()` which is a wrapper that calls
+ *       `ex_open_int` with an additional argument to make sure
+ *       library and include file are consistent
+ */
 int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *version,
                 int run_version)
 {
