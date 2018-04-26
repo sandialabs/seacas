@@ -726,8 +726,11 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 	      zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]}};
 
 	std::string donor_name = zgc.m_donorName;
-	
+	std::string connect_name = zgc.m_connectionName;
 	if (is_parallel && !is_parallel_io) {
+	  if (zgc.is_intra_block()) {
+	    connect_name = std::to_string(zgc.m_ownerGUID) + "--" + std::to_string(zgc.m_donorGUID);
+	  }
 	  donor_name += "_proc-";
 	  donor_name += std::to_string(zgc.m_donorProcessor);
 	  owner_range[0] -= zgc.m_ownerOffset[0];
@@ -744,7 +747,10 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 	  donor_range[4] -= zgc.m_donorOffset[1];
 	  donor_range[5] -= zgc.m_donorOffset[2];
 	}
-	CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
+#if IOSS_DEBUG_OUTPUT
+	std::cerr << "P[" << rank << "]: " << connect_name << "\n"; 
+#endif
+	CGERR(cg_1to1_write(file_ptr, base, zone, connect_name.c_str(),
 			    donor_name.c_str(), owner_range.data(), donor_range.data(),
 			    zgc.m_transform.data(), &zgc_idx));
       }
