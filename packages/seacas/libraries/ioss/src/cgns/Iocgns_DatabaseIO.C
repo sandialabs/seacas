@@ -82,7 +82,9 @@
 
 extern char hdf5_access[64];
 
+#ifdef SEACAS_HAVE_MPI
 extern int pcg_mpi_initialized;
+#endif
 
 namespace Iocgns {
 
@@ -117,8 +119,10 @@ namespace Iocgns {
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
       CGCHECK(cg_set_file_type(CG_FILE_HDF5));
 
+#ifdef SEACAS_HAVE_MPI
       // Kluge to get fpp and dof CGNS working at same time.
       pcg_mpi_initialized = 0;
+#endif
       int ierr = cg_open(decoded_filename().c_str(), mode, &cgnsFilePtr);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
@@ -1239,7 +1243,8 @@ namespace Iocgns {
 
     cgsize_t num_to_get = field.verify(data_size);
 
-    // In this routine, if isParallel, then writing file-per-processor; not parallel io to single file.
+    // In this routine, if isParallel, then writing file-per-processor; not parallel io to single
+    // file.
     if (isParallel && num_to_get == 0) {
       return 0;
     }
