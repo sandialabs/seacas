@@ -154,6 +154,11 @@ exoid = ex_create ("test.exo"       \comment{filename path}
 
 static int warning_output = 0;
 
+/* NOTE: Do *not* call `ex_create_int()` directly.  The public API
+ *       function name is `ex_create()` which is a wrapper that calls
+ *       `ex_create_int` with an additional argument to make sure
+ *       library and include file are consistent
+ */
 int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run_version)
 {
   int   exoid;
