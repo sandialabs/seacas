@@ -198,6 +198,7 @@ namespace Iocgns {
       cgp_mpi_comm(util().communicator());
 #endif
       CGCHECK(cgp_pio_mode(CGP_COLLECTIVE));
+      CGCHECK(cg_set_file_type(CG_FILE_HDF5));
       int ierr = cgp_open(get_filename().c_str(), mode, &cgnsFilePtr);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
