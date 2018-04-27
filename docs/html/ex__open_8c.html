@@ -175,6 +175,7 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<dl class="section note"><dt>Note</dt><dd>The <a class="el" href="ex__open_8c.html#a6595a688ca002de77217c2bb7c271147">ex_open_int()</a> is an internal function called by <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. The user should call <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> and not <a class="el" href="ex__open_8c.html#a6595a688ca002de77217c2bb7c271147">ex_open_int()</a>.</dd></dl>
 <p>The function <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> opens an existing exodus file and returns an ID that can subsequently be used to refer to the file, the word size of the floating point values stored in the file, and the version of the exodus database (returned as a <code>float'', regardless of the compute or I/O word size). Multiple files may be</code>open'' simultaneously.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> returns a negative number. Possible causes of errors include:<ul>
 <li>The specified file does not exist.</li>

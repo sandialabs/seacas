@@ -173,12 +173,12 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:ae59897cc4f85e8abd3d86ad6d9f05da7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FileInfo.html#ae59897cc4f85e8abd3d86ad6d9f05da7">filename_</a></td></tr>
+<tr class="memitem:ae59897cc4f85e8abd3d86ad6d9f05da7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FileInfo.html#ae59897cc4f85e8abd3d86ad6d9f05da7">filename_</a> {}</td></tr>
 <tr class="separator:ae59897cc4f85e8abd3d86ad6d9f05da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d40a0ba199199bfdcc61829aeb09823"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FileInfo.html#a8d40a0ba199199bfdcc61829aeb09823">exists_</a> {}</td></tr>
+<tr class="memitem:a8d40a0ba199199bfdcc61829aeb09823"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FileInfo.html#a8d40a0ba199199bfdcc61829aeb09823">exists_</a> {false}</td></tr>
 <tr class="memdesc:a8d40a0ba199199bfdcc61829aeb09823"><td class="mdescLeft">&#160;</td><td class="mdescRight">this is used frequently, check on creation  <a href="#a8d40a0ba199199bfdcc61829aeb09823">More...</a><br /></td></tr>
 <tr class="separator:a8d40a0ba199199bfdcc61829aeb09823"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ad2313dfeb7ca88db3535fb20e8d156"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FileInfo.html#a6ad2313dfeb7ca88db3535fb20e8d156">readable_</a> {}</td></tr>
+<tr class="memitem:a6ad2313dfeb7ca88db3535fb20e8d156"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FileInfo.html#a6ad2313dfeb7ca88db3535fb20e8d156">readable_</a> {false}</td></tr>
 <tr class="memdesc:a6ad2313dfeb7ca88db3535fb20e8d156"><td class="mdescLeft">&#160;</td><td class="mdescRight">this is used frequently, check on creation  <a href="#a6ad2313dfeb7ca88db3535fb20e8d156">More...</a><br /></td></tr>
 <tr class="separator:a6ad2313dfeb7ca88db3535fb20e8d156"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -191,6 +191,9 @@ Private Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">Ioss::FileInfo::FileInfo </td>
@@ -199,6 +202,11 @@ Private Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Empty class referring to no file. </p>
@@ -807,7 +815,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool Ioss::FileInfo::exists_ {}</td>
+          <td class="memname">bool Ioss::FileInfo::exists_ {false}</td>
         </tr>
       </table>
   </td>
@@ -831,7 +839,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string Ioss::FileInfo::filename_</td>
+          <td class="memname">std::string Ioss::FileInfo::filename_ {}</td>
         </tr>
       </table>
   </td>
@@ -853,7 +861,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool Ioss::FileInfo::readable_ {}</td>
+          <td class="memname">bool Ioss::FileInfo::readable_ {false}</td>
         </tr>
       </table>
   </td>
