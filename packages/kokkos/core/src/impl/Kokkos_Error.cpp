@@ -35,7 +35,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Questions? Contact  H. Carter Edwards (hcedwar@sandia.gov)
+// Questions? Contact Christian R. Trott (crtrott@sandia.gov)
 //
 // ************************************************************************
 //@HEADER
@@ -110,7 +110,7 @@ std::string human_memory_size(size_t arg_bytes)
  */
 
 /* Print call stack into an error stream,
- * so one knows in which function the error occurred.
+ * so one knows in which function the error occured.
  *
  * Code copied from:
  *   http://stupefydeveloper.blogspot.com/2008/10/cc-call-stack.html
