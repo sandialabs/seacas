@@ -225,16 +225,10 @@ namespace SEAMS {
        "Handles the if statements. x can be any valid expression; nonzero is true"},
       {"Elseif", do_str_elseif, "Elseif(x)",
        "Handles the if statements. x can be any valid expression; nonzero is true"},
-      {"ifdef", do_str_if, "ifdef(x)",
+      {"_ifdef", do_str_if, "ifdef(x)",
        "Handles the if statements. x can be any valid expression; "
        "nonzero is true (deprecated, use if)"},
-      {"Ifdef", do_str_if, "Ifdef(x)",
-       "Handles the if statements. x can be any valid expression; "
-       "nonzero is true (deprecated, use if)"},
-      {"ifndef", do_str_notif, "ifndef(x)",
-       "Handles the if statements. x can be any valid "
-       "expression; nonzero is true (deprecated, use if)"},
-      {"Ifndef", do_str_notif, "Ifndef(x)",
+      {"_ifndef", do_str_notif, "ifndef(x)",
        "Handles the if statements. x can be any valid "
        "expression; nonzero is true (deprecated, use if)"},
 #if defined(EXODUS_SUPPORT)

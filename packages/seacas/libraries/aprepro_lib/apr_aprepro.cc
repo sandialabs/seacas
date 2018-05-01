@@ -49,7 +49,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.06 (2018/04/05)";
+  const char *       version_string = "5.07 (2018/04/30)";
 
   void output_copyright();
 } // namespace
