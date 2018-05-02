@@ -1588,43 +1588,68 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
   size_t new_zone_id = zones.size() + 1;
 
   // See if can split each zone over a set of procs...
-  int    procs        = proc_count;
-  bool   adaptive_avg = false;
-  double min_avg      = avg_work / load_balance;
-  double max_avg      = avg_work * load_balance;
   double total_work   = 0.0;
-  for (auto zone : zones) {
+  std::vector<int> splits(zones.size());
+
+  for (size_t i=0; i < zones.size(); i++) {
+    auto zone = zones[i];
     double work = zone->work();
     total_work += work;
-    int splits      = int(std::round(work / avg_work));
-    splits          = splits == 0 ? 1 : splits;
-    double zone_avg = work / (double)splits;
-    if ((splits > 1 && zone_avg < min_avg) || zone_avg > max_avg) {
-      procs = 0;
-    }
-    procs -= splits;
+    splits[i]      = int(std::round(work / avg_work));
+    splits[i]      = splits[i] == 0 ? 1 : splits[i];
   }
 
-  adaptive_avg = (procs == 0);
-  procs        = proc_count;
+  int num_splits = std::accumulate(splits.begin(), splits.end(), 0);
+  int diff = proc_count - num_splits;
+  
+  while (diff != 0) {
+    // Adjust splits so sum is equal to proc_count.
+    // Adjust the largest split count(s)
+    int step = diff < 0 ? -1 : 1;
+    size_t min_z = 0;
+    double min_delta = 1.0e27;
+    for (size_t i=0; i < zones.size(); i++) {
+      auto zone = zones[i];
+      double work = zone->work();
+      double zone_avg = work / (double)splits[i];
+      double delta = std::abs(zone_avg - work / (double)(splits[i] + step));
+      if (delta < min_delta) {
+	min_delta = delta;
+	min_z = i;
+      }
+    }
+    splits[min_z] += step;
+    diff -= step;
+  }
+    
+  assert(diff == 0);
+  assert(std::accumulate(splits.begin(), splits.end(), 0) == proc_count);
 
-  for (auto zone : zones) {
+  // See if splits result in avg_work for all zones in range...
+  double min_avg      = avg_work / load_balance;
+  double max_avg      = avg_work * load_balance;
+  bool adaptive_avg = true;
+  for (size_t i=0; i < zones.size(); i++) {
+    auto zone = zones[i];
+    double work = zone->work();
+    double zone_avg = work / (double)splits[i];
+    if (zone_avg < min_avg || zone_avg > max_avg) {
+      adaptive_avg = false;
+      break;
+    }
+  }
+
+  int    procs        = proc_count;
+  for (size_t i=0; i < zones.size(); i++) {
+    auto zone = zones[i];
     int  num_active = 0;
     bool split      = false;
 
     auto work_average = avg_work;
-    int  splits       = 0;
+    int  split_cnt    = 0;
     if (adaptive_avg) {
-      double work  = zone->work();
-      splits       = int(std::round(work / avg_work));
-      splits       = splits == 0 ? 1 : splits;
-      work_average = work / (double)splits;
-#if IOSS_DEBUG_OUTPUT
-      if (proc_rank == 0) {
-        std::cerr << "Setting average work from " << avg_work << " to " << work_average
-                  << " for zone " << zone->m_name << "\n";
-      }
-#endif
+      split_cnt = splits[i];
+      work_average = zone->work() / (double)split_cnt;
     }
     do {
       split = false;
@@ -1638,10 +1663,10 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
           new_zones.push_back(children.first);
           new_zones.push_back(children.second);
           if (adaptive_avg) {
-            splits--;
+            split_cnt--;
             double work = zone->work();
-            if (splits > 0) {
-              work_average = work / (double)splits;
+            if (split_cnt > 0) {
+              work_average = work / (double)split_cnt;
             }
             else {
               work_average = work;
