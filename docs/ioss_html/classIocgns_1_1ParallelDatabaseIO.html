@@ -121,7 +121,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a51305aa15abb2768b43390b41925e811"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a51305aa15abb2768b43390b41925e811">node_major</a> () const override</td></tr>
 <tr class="separator:a51305aa15abb2768b43390b41925e811"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ef264028e3c96819cf3dc6d9a6621ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a7ef264028e3c96819cf3dc6d9a6621ea">needs_shared_node_information</a> () const override</td></tr>
-<tr class="memdesc:a7ef264028e3c96819cf3dc6d9a6621ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the database needs information about proces ownership of nodes.  <a href="#a7ef264028e3c96819cf3dc6d9a6621ea">More...</a><br /></td></tr>
+<tr class="memdesc:a7ef264028e3c96819cf3dc6d9a6621ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the database needs information about process ownership of nodes.  <a href="#a7ef264028e3c96819cf3dc6d9a6621ea">More...</a><br /></td></tr>
 <tr class="separator:a7ef264028e3c96819cf3dc6d9a6621ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49e4ab82e5a60f2f2b09f194b18b429f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a49e4ab82e5a60f2f2b09f194b18b429f">int_byte_size_db</a> () const override</td></tr>
 <tr class="separator:a49e4ab82e5a60f2f2b09f194b18b429f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1728,7 +1728,7 @@ Additional Inherited Members</h2></td></tr>
 <p>To determine which map to update on a call to this function, we use the following hueristics: &ndash; If the database state is 'STATE_MODEL:', then update the 'nodeMap.reverse' and 'nodeMap.map'</p>
 <p>&ndash; If the database state is not STATE_MODEL, then leave the 'nodeMap.reverse' and 'nodeMap.map' alone since they correspond to the information already written to the database. [May want to add a STATE_REDEFINE_MODEL]</p>
 <p>&ndash; In both cases, update the nodeMap.reorder</p>
-<p>NOTE: The mapping is done on TRANSIENT fields only; MODEL fields should be in the orginal order...</p>
+<p>NOTE: The mapping is done on TRANSIENT fields only; MODEL fields should be in the original order...</p>
 
 </div>
 </div>
@@ -1832,7 +1832,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Determine whether the database needs information about proces ownership of nodes. </p>
+<p>Determine whether the database needs information about process ownership of nodes. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if database needs information about process ownership of nodes. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#a31dbf4c27fae8fd9160e99a2c318f4a9">Ioss::DatabaseIO</a>.</p>

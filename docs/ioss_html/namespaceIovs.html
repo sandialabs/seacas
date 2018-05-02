@@ -235,7 +235,7 @@ Variables</h2></td></tr>
 <p>But, this assumes 1..numel elements are being output at the same time; we are actually outputting a blocks worth of elements at a time, so we need to consider the block offsets. So... local-in-block position 'i' is index 'eb_offset+i' in 'elementMap' and the 'local_position' within the element blocks data arrays is 'local_position-eb_offset'. With this, the position within the data array of this element block is:</p>
 <p>int eb_position = reverseElementMap[elementMap[eb_offset+i+1]]-eb_offset-1</p>
 <p>To determine which map to update on a call to this function, we use the following hueristics: &ndash; If the database state is '<a class="el" href="namespaceIoss.html#a02dbd3bfbd7f633e636c8c0c385c4a34aaeed43f1d972e32272a554f2a8ff682d">Ioss::STATE_MODEL</a>:', then update the 'reverseElementMap'. &ndash; If the database state is not <a class="el" href="namespaceIoss.html#a02dbd3bfbd7f633e636c8c0c385c4a34aaeed43f1d972e32272a554f2a8ff682d">Ioss::STATE_MODEL</a>, then leave the 'reverseElementMap' alone since it corresponds to the information already written to the database. [May want to add a Ioss::STATE_REDEFINE_MODEL] &ndash; Always update elementMap to match the passed in 'ids' array.</p>
-<p>NOTE: the maps are built an element block at a time... NOTE: The mapping is done on TRANSIENT fields only; MODEL fields should be in the orginal order...</p>
+<p>NOTE: the maps are built an element block at a time... NOTE: The mapping is done on TRANSIENT fields only; MODEL fields should be in the original order...</p>
 
 </div>
 </div>

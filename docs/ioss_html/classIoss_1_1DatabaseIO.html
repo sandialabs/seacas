@@ -132,7 +132,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a057729fb7cf18d9dd49042e1166976bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <a class="el" href="namespaceIoss.html#a4ec41517502e82a7291184cd7b68b34f" title="Specifies how an Ioss::DatabaseIO object will be used. ">Ioss::DatabaseUsage</a> type of the database.  <a href="#a057729fb7cf18d9dd49042e1166976bc">More...</a><br /></td></tr>
 <tr class="separator:a057729fb7cf18d9dd49042e1166976bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31dbf4c27fae8fd9160e99a2c318f4a9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a31dbf4c27fae8fd9160e99a2c318f4a9">needs_shared_node_information</a> () const</td></tr>
-<tr class="memdesc:a31dbf4c27fae8fd9160e99a2c318f4a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the database needs information about proces ownership of nodes.  <a href="#a31dbf4c27fae8fd9160e99a2c318f4a9">More...</a><br /></td></tr>
+<tr class="memdesc:a31dbf4c27fae8fd9160e99a2c318f4a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the database needs information about process ownership of nodes.  <a href="#a31dbf4c27fae8fd9160e99a2c318f4a9">More...</a><br /></td></tr>
 <tr class="separator:a31dbf4c27fae8fd9160e99a2c318f4a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a110ec1217f40eade5bf71e0e490a602b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#ae1de565aa8b642bb5a50be439906c74d">Ioss::IfDatabaseExistsBehavior</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a110ec1217f40eade5bf71e0e490a602b">open_create_behavior</a> () const</td></tr>
 <tr class="separator:a110ec1217f40eade5bf71e0e490a602b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2584,7 +2584,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Get all QA records, each of which consists of 4 strings, from the database. </p>
-<p>The 4 strings that make up a databse QA record are:</p>
+<p>The 4 strings that make up a database QA record are:</p>
 <ol type="1">
 <li>A descriptive code name, such as the application that modified the database.</li>
 <li>A descriptive string, such as the version of the application that modified the database.</li>
@@ -3029,7 +3029,7 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Determine whether the database needs information about proces ownership of nodes. </p>
+<p>Determine whether the database needs information about process ownership of nodes. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if database needs information about process ownership of nodes. </dd></dl>
 
 <p>Reimplemented in <a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a7ef264028e3c96819cf3dc6d9a6621ea">Iocgns::ParallelDatabaseIO</a>, and <a class="el" href="classIopx_1_1DatabaseIO.html#a707b2d8db6a36c153a21cbf6003f1d6c">Iopx::DatabaseIO</a>.</p>
@@ -4338,7 +4338,7 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>The overlay_count specifies the number of restart outputs which will be overlayed on top of the currently written step before advancing to the next step on the restart database.</p>
+<p>The overlay_count specifies the number of restart outputs which will be overlaid on top of the currently written step before advancing to the next step on the restart database.</p>
 <p>For example, if restarts are being output every 0.1 seconds and the overlay count is specified as 2, then restart will write time 0.1 to step 1 of the database. It will then write 0.2 and 0.3 also to step 1. It will then increment the database step and write 0.4 to step 2; overlay 0.5 and 0.6 on step 2... At the end of the analysis, assuming it runs to completion, the database would have times 0.3, 0.6, 0.9, ... However, if there were a problem during the analysis, the last step on the database would contain an intermediate step.</p>
 <p>The cycle_count specifies the number of restart steps which will be written to the restart database before previously written steps are overwritten.</p>
 <p>For example, if the cycle count is 5 and restart is written every 0.1 seconds, the restart system will write data at times 0.1, 0.2, 0.3, 0.4, 0.5 to the database.</p>
