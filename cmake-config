@@ -32,6 +32,14 @@ then
       CC=clang-mp-4.0
       FC=gfortran-mp-4.9
   fi
+
+  if [ "$COMPILER" == "intel" ]
+  then
+      CXX=icpc
+      CC=icc
+      FC=ifort
+  fi
+
 fi
 
 # If using an XLF compiler on an IBM system, may need to add the following:
@@ -97,7 +105,15 @@ CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
 ### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
 CUDA=${CUDA:-OFF}
 
-if [ "${MPI}" == "ON" ]
+# BUG needs to work with cray too.
+if [ "${MPI}" == "ON" ] && [ "${CRAY}" == "ON" ]
+then
+   MPI_EXEC=`which mpiexec`
+   CXX=CC
+   CC=cc
+   FC=ftn
+   MPI_BIN=`dirname \`which ${CC}\``
+elif [ "${MPI}" == "ON" ]
 then
    MPI_EXEC=`which mpiexec`
    MPI_BIN=`dirname "${MPI_EXEC}"`
