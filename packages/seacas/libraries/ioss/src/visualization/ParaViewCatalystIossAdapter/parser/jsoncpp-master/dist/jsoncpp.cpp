@@ -136,7 +136,7 @@ namespace Json {
   typedef char UIntToStringBuffer[uintToStringBufferSize];
 
   /** Converts an unsigned integer to string.
-   * @param value Unsigned interger to convert to string
+   * @param value Unsigned integer to convert to string
    * @param current Input/Output string buffer.
    *        Must have at least uintToStringBufferSize chars free.
    */
@@ -164,22 +164,22 @@ namespace Json {
     }
   }
 
-} // namespace Json {
+} // namespace Json
 
 #endif // LIB_JSONCPP_JSON_TOOL_H_INCLUDED
 
-// //////////////////////////////////////////////////////////////////////
-// End of content of file: src/lib_json/json_tool.h
-// //////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////
+  // End of content of file: src/lib_json/json_tool.h
+  // //////////////////////////////////////////////////////////////////////
 
-// //////////////////////////////////////////////////////////////////////
-// Beginning of content of file: src/lib_json/json_reader.cpp
-// //////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////
+  // Beginning of content of file: src/lib_json/json_reader.cpp
+  // //////////////////////////////////////////////////////////////////////
 
-// Copyright 2007-2011 Baptiste Lepilleur
-// Distributed under MIT license, or public domain if desired and
-// recognized in your jurisdiction.
-// See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
+  // Copyright 2007-2011 Baptiste Lepilleur
+  // Distributed under MIT license, or public domain if desired and
+  // recognized in your jurisdiction.
+  // See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
 
 #if !defined(JSON_IS_AMALGAMATION)
 #include "json_tool.h"
@@ -458,12 +458,12 @@ namespace Json {
       break;
     case ',': token.type_ = tokenArraySeparator; break;
     case ':': token.type_ = tokenMemberSeparator; break;
-    case 0: token.type_   = tokenEndOfStream; break;
-    default: ok           = false; break;
+    case 0: token.type_ = tokenEndOfStream; break;
+    default: ok = false; break;
     }
     if (!ok)
       token.type_ = tokenError;
-    token.end_    = current_;
+    token.end_ = current_;
     return true;
   }
 
@@ -1097,7 +1097,7 @@ namespace Json {
     bool parse(const char *beginDoc, const char *endDoc, Value &root, bool collectComments = true);
     std::string                  getFormattedErrorMessages() const;
     std::vector<StructuredError> getStructuredErrors() const;
-    bool pushError(const Value &value, const std::string &message);
+    bool                         pushError(const Value &value, const std::string &message);
     bool pushError(const Value &value, const std::string &message, const Value &extra);
     bool good() const;
 
@@ -1140,38 +1140,38 @@ namespace Json {
 
     typedef std::deque<ErrorInfo> Errors;
 
-    bool readToken(Token &token);
-    void skipSpaces();
-    bool match(Location pattern, int patternLength);
-    bool readComment();
-    bool readCStyleComment();
-    bool readCppStyleComment();
-    bool readString();
-    bool readStringSingleQuote();
-    void readNumber();
-    bool readValue();
-    bool readObject(Token &token);
-    bool readArray(Token &token);
-    bool decodeNumber(Token &token);
-    bool decodeNumber(Token &token, Value &decoded);
-    bool decodeString(Token &token);
-    bool decodeString(Token &token, std::string &decoded);
-    bool decodeDouble(Token &token);
-    bool decodeDouble(Token &token, Value &decoded);
-    bool decodeUnicodeCodePoint(Token &token, Location &current, Location end,
-                                unsigned int &unicode);
-    bool decodeUnicodeEscapeSequence(Token &token, Location &current, Location end,
-                                     unsigned int &unicode);
-    bool addError(const std::string &message, Token &token, Location extra = 0);
-    bool recoverFromError(TokenType skipUntilToken);
-    bool addErrorAndRecover(const std::string &message, Token &token, TokenType skipUntilToken);
+    bool   readToken(Token &token);
+    void   skipSpaces();
+    bool   match(Location pattern, int patternLength);
+    bool   readComment();
+    bool   readCStyleComment();
+    bool   readCppStyleComment();
+    bool   readString();
+    bool   readStringSingleQuote();
+    void   readNumber();
+    bool   readValue();
+    bool   readObject(Token &token);
+    bool   readArray(Token &token);
+    bool   decodeNumber(Token &token);
+    bool   decodeNumber(Token &token, Value &decoded);
+    bool   decodeString(Token &token);
+    bool   decodeString(Token &token, std::string &decoded);
+    bool   decodeDouble(Token &token);
+    bool   decodeDouble(Token &token, Value &decoded);
+    bool   decodeUnicodeCodePoint(Token &token, Location &current, Location end,
+                                  unsigned int &unicode);
+    bool   decodeUnicodeEscapeSequence(Token &token, Location &current, Location end,
+                                       unsigned int &unicode);
+    bool   addError(const std::string &message, Token &token, Location extra = 0);
+    bool   recoverFromError(TokenType skipUntilToken);
+    bool   addErrorAndRecover(const std::string &message, Token &token, TokenType skipUntilToken);
     void   skipUntilSpace();
     Value &currentValue();
     Char   getNextChar();
-    void getLocationLineAndColumn(Location location, int &line, int &column) const;
+    void   getLocationLineAndColumn(Location location, int &line, int &column) const;
     std::string getLocationLineAndColumn(Location location) const;
-    void addComment(Location begin, Location end, CommentPlacement placement);
-    void skipCommentTokens(Token &token);
+    void        addComment(Location begin, Location end, CommentPlacement placement);
+    void        skipCommentTokens(Token &token);
 
     typedef std::stack<Value *> Nodes;
     Nodes                       nodes_;
@@ -1377,12 +1377,12 @@ namespace Json {
       break;
     case ',': token.type_ = tokenArraySeparator; break;
     case ':': token.type_ = tokenMemberSeparator; break;
-    case 0: token.type_   = tokenEndOfStream; break;
-    default: ok           = false; break;
+    case 0: token.type_ = tokenEndOfStream; break;
+    default: ok = false; break;
     }
     if (!ok)
       token.type_ = tokenError;
-    token.end_    = current_;
+    token.end_ = current_;
     return true;
   }
 
@@ -2016,7 +2016,7 @@ namespace Json {
   {
     Json::Value my_invalid;
     if (!invalid)
-      invalid                 = &my_invalid; // so we do not need to test for NULL
+      invalid = &my_invalid; // so we do not need to test for NULL
     Json::Value &         inv = *invalid;
     std::set<std::string> valid_keys;
     getValidReaderKeys(&valid_keys);
@@ -2264,18 +2264,18 @@ namespace Json {
 
 } // namespace Json
 
-// //////////////////////////////////////////////////////////////////////
-// End of content of file: src/lib_json/json_valueiterator.inl
-// //////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////
+  // End of content of file: src/lib_json/json_valueiterator.inl
+  // //////////////////////////////////////////////////////////////////////
 
-// //////////////////////////////////////////////////////////////////////
-// Beginning of content of file: src/lib_json/json_value.cpp
-// //////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////
+  // Beginning of content of file: src/lib_json/json_value.cpp
+  // //////////////////////////////////////////////////////////////////////
 
-// Copyright 2011 Baptiste Lepilleur
-// Distributed under MIT license, or public domain if desired and
-// recognized in your jurisdiction.
-// See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
+  // Copyright 2011 Baptiste Lepilleur
+  // Distributed under MIT license, or public domain if desired and
+  // recognized in your jurisdiction.
+  // See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
 
 #if !defined(JSON_IS_AMALGAMATION)
 #include <json/assertions.h>
@@ -2589,11 +2589,11 @@ namespace Json {
     switch (type) {
     case nullValue: break;
     case intValue:
-    case uintValue: value_.int_      = 0; break;
-    case realValue: value_.real_     = 0.0; break;
+    case uintValue: value_.int_ = 0; break;
+    case realValue: value_.real_ = 0.0; break;
     case stringValue: value_.string_ = 0; break;
     case arrayValue:
-    case objectValue: value_.map_   = new ObjectValues(); break;
+    case objectValue: value_.map_ = new ObjectValues(); break;
     case booleanValue: value_.bool_ = false; break;
     default: JSON_ASSERT_UNREACHABLE;
     }
@@ -3126,7 +3126,7 @@ namespace Json {
     JSON_ASSERT_MESSAGE(type_ == nullValue || type_ == arrayValue,
                         "in Json::Value::resize(): requires arrayValue");
     if (type_ == nullValue)
-      *this            = Value(arrayValue);
+      *this = Value(arrayValue);
     ArrayIndex oldSize = size();
     if (newSize == 0)
       clear();
@@ -3766,18 +3766,18 @@ namespace Json {
 
 } // namespace Json
 
-// //////////////////////////////////////////////////////////////////////
-// End of content of file: src/lib_json/json_value.cpp
-// //////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////
+  // End of content of file: src/lib_json/json_value.cpp
+  // //////////////////////////////////////////////////////////////////////
 
-// //////////////////////////////////////////////////////////////////////
-// Beginning of content of file: src/lib_json/json_writer.cpp
-// //////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////
+  // Beginning of content of file: src/lib_json/json_writer.cpp
+  // //////////////////////////////////////////////////////////////////////
 
-// Copyright 2011 Baptiste Lepilleur
-// Distributed under MIT license, or public domain if desired and
-// recognized in your jurisdiction.
-// See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
+  // Copyright 2011 Baptiste Lepilleur
+  // Distributed under MIT license, or public domain if desired and
+  // recognized in your jurisdiction.
+  // See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
 
 #if !defined(JSON_IS_AMALGAMATION)
 #include "json_tool.h"
@@ -3881,7 +3881,7 @@ namespace Json {
     int  len = -1;
 
 // Print into the buffer. We need not request the alternative representation
-// that always has a decimal point because JSON doesn't distingish the
+// that always has a decimal point because JSON doesn't distinguish the
 // concepts of reals and integers.
 #if defined(_MSC_VER) && defined(__STDC_SECURE_LIB__) // Use secure version with
                                                       // visual studio 2005 to
@@ -4559,16 +4559,16 @@ namespace Json {
     virtual int write(Value const &root, std::ostream *sout);
 
   private:
-    void writeValue(Value const &value);
-    void writeArrayValue(Value const &value);
-    bool isMultineArray(Value const &value);
-    void pushValue(std::string const &value);
-    void writeIndent();
-    void writeWithIndent(std::string const &value);
-    void indent();
-    void unindent();
-    void writeCommentBeforeValue(Value const &root);
-    void writeCommentAfterValueOnSameLine(Value const &root);
+    void        writeValue(Value const &value);
+    void        writeArrayValue(Value const &value);
+    bool        isMultineArray(Value const &value);
+    void        pushValue(std::string const &value);
+    void        writeIndent();
+    void        writeWithIndent(std::string const &value);
+    void        indent();
+    void        unindent();
+    void        writeCommentBeforeValue(Value const &root);
+    void        writeCommentAfterValueOnSameLine(Value const &root);
     static bool hasCommentForValue(const Value &value);
 
     typedef std::vector<std::string> ChildValues;
@@ -4868,7 +4868,7 @@ namespace Json {
   {
     Json::Value my_invalid;
     if (!invalid)
-      invalid                 = &my_invalid; // so we do not need to test for NULL
+      invalid = &my_invalid; // so we do not need to test for NULL
     Json::Value &         inv = *invalid;
     std::set<std::string> valid_keys;
     getValidWriterKeys(&valid_keys);

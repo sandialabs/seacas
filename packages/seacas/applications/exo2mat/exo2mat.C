@@ -1091,7 +1091,7 @@ int main(int argc, char *argv[])
   /* print */
   std::cout << "\ttranslating " << argv[1] << " to " << filename << "...\n";
 
-  /* read database paramters */
+  /* read database parameters */
   char *line = reinterpret_cast<char *>(calloc((MAX_LINE_LENGTH + 1), sizeof(char)));
   ex_get_init(exo_file, line, &num_axes, &num_nodes, &num_elements, &num_blocks, &num_node_sets,
               &num_side_sets);
@@ -1103,7 +1103,7 @@ int main(int argc, char *argv[])
   ex_get_variable_param(exo_file, EX_NODE_SET, &num_nodeset_vars);
   ex_get_variable_param(exo_file, EX_SIDE_SET, &num_sideset_vars);
 
-  /* export paramters */
+  /* export parameters */
   PutInt("naxes", num_axes);
   PutInt("nnodes", num_nodes);
   PutInt("nelems", num_elements);

@@ -627,7 +627,7 @@ namespace SEAMS {
       // Handle the case where the variable we want to delete is somewhere
       // in the middle or at the end of the linked list.
       else {
-        // Find the preceeding ptr (singly linked list).
+        // Find the preceding ptr (singly linked list).
         // NOTE: We don't have a check for nullptr here because the fact that
         // ptr != hash_ptr tells us that we must have more than one item in our
         // linked list, in which case hash_ptr->next will not be nullptr until we

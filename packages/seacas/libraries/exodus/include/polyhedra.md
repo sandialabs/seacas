@@ -4,7 +4,7 @@
 The 3D polyhedra elements are represented as elements with a variable
 number of faces in their connectivity.  The faces can either be
 regular faces such as quadrilateral or triangles; or they can be
-topologically two-dimensional arbitary polyhedra themselves.
+topologically two-dimensional arbitrary polyhedra themselves.
 
 An arbitrary polyhedra 3D element block will have an element type of
 "nfaced" or "NFACED".  

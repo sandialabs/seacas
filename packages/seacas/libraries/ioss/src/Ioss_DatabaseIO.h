@@ -169,7 +169,7 @@ namespace Ioss {
      */
     Ioss::DatabaseUsage usage() const { return dbUsage; }
 
-    /** \brief Determine whether the database needs information about proces ownership of nodes.
+    /** \brief Determine whether the database needs information about process ownership of nodes.
      *
      *  \returns True if database needs information about process ownership of nodes.
      */
@@ -311,7 +311,7 @@ namespace Ioss {
 
     /** \brief Get all QA records, each of which consists of 4 strings, from the database
      *
-     *  The 4 strings that make up a databse QA record are:
+     *  The 4 strings that make up a database QA record are:
      *
      *  1. A descriptive code name, such as the application that modified the database.
      *
@@ -430,7 +430,7 @@ namespace Ioss {
 
     /*!
      *     The overlay_count specifies the number of restart outputs
-     *     which will be overlayed on top of the currently written
+     *     which will be overlaid on top of the currently written
      *     step before advancing to the next step on the restart
      *     database.
      *

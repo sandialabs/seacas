@@ -112,7 +112,7 @@ namespace Ioss {
     Ioss::IJK_t m_transform; // The transform.  In the same form as defined by CGNS
 
     // The following are all subsetted down to the portion that is actually on this zone
-    // This can be different thant m_ownerRange and m_donorRange in a parallel run if the
+    // This can be different than m_ownerRange and m_donorRange in a parallel run if the
     // decomposition splits the connection.  In a serial run, they are the same.
     //
     // 1 of ijk should be the same for rangeBeg and rangeEnd defining a surface.

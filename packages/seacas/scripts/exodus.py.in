@@ -1045,7 +1045,7 @@ class exodus:
       -> **DEPRECATED** use: exo.get_elem_id_map()
 
         get mapping of exodus element index to user- or application-
-        defined element id; elem_id_map is orderd by the element
+        defined element id; elem_id_map is ordered by the element
         *INDEX* ordering, a 1-based system going from 1 to
         exo.num_elems(), used by exodus for storage and input/output
         of array data stored on the elements; a user or application

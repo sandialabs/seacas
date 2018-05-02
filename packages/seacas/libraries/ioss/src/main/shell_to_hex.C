@@ -509,7 +509,7 @@ namespace {
     }
 
     // The output created nodes of the new hexes are simply the input nodes
-    // translated along the nodal vector the specfied distance.  The node id is
+    // translated along the nodal vector the specified distance.  The node id is
     // simply the input node id + number_of_input_nodes.
     std::vector<double> output_coord(2 * num_nodes * 3);
     for (int i = 0; i < num_nodes; i++) {

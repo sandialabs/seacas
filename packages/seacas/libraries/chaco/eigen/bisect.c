@@ -70,7 +70,7 @@ int bisect(double *alpha,        /* vector of Lanczos scalars */
   int           sturmcnt();   /* counts the Sturm sequence */
   double        diff;         /* debugging register */
   int           ii;           /* debugging loop counter */
-  void          cksturmcnt(); /* checks the Sturm sequence count agains ql */
+  void          cksturmcnt(); /* checks the Sturm sequence count against ql */
 
   /* If space has been allocated for a copy of the ritz values, assume
      we are to check the Sturm sequence counts directly using ql(). */

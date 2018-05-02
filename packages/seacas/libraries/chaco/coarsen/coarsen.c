@@ -54,7 +54,7 @@ void coarsen(
     int               ndims,       /* number of eigenvectors to calculate */
     int               solver_flag, /* which eigensolver to use */
     int               vmax,        /* largest subgraph to stop coarsening */
-    double            eigtol,      /* tolerence in eigen calculation */
+    double            eigtol,      /* tolerance in eigen calculation */
     int               nstep,       /* number of coarsenings between RQI steps */
     int               step,        /* current step number */
     int               give_up      /* has coarsening bogged down? */

@@ -285,7 +285,7 @@ namespace Ioss {
                                                const void *sides, int64_t number_sides,
                                                const Region *region);
 
-    // And yet another idiosyncracy of sidesets...
+    // And yet another idiosyncrasy of sidesets...
     // The side of an element (especially shells) can be
     // either a face or an edge in the same sideset.  The
     // ordinal of an edge is (local_edge_number+#faces) on the

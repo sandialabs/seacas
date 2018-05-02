@@ -38,11 +38,11 @@
 #include "smart_assert.h" // for SMART_ASSERT
 #include "stringx.h"      // for find_string, etc
 #include "util.h"
-#include <cstddef>        // for size_t
-#include <cstdio>         // for sprintf, nullptr
-#include <iostream>       // for operator<<, basic_ostream, etc
-#include <string>         // for string, char_traits, etc
-#include <vector>         // for vector
+#include <cstddef>  // for size_t
+#include <cstdio>   // for sprintf, nullptr
+#include <iostream> // for operator<<, basic_ostream, etc
+#include <string>   // for string, char_traits, etc
+#include <vector>   // for vector
 template <typename INT> class ExoII_Read;
 
 namespace {
@@ -110,10 +110,10 @@ int Create_File(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const std::strin
 {
   // Multiple modes:
   // summary_flag == true   --> Single file, output summary and variable names, return
-  // diffile_name == ""     --> Dual file, output summary, variable names, check compatability,
+  // diffile_name == ""     --> Dual file, output summary, variable names, check compatibility,
   // diffile_name != ""     --> Three files (2 in, 1 out)
   //                            create output file which is diff of input.
-  //                            output summary, variable names, check compatability
+  //                            output summary, variable names, check compatibility
   // quiet_flag == true     --> don't output summary information
 
   SMART_ASSERT(!interface.summary_flag);

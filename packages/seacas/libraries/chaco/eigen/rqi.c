@@ -72,7 +72,7 @@ void rqi(struct vtx_data **A,     /* matrix/graph being analyzed */
   double     normxlim;              /* a stopping criteria for symmlq */
   double     normx;                 /* norm of the solution vector */
   int        symmlqitns;            /* # symmlq itns */
-  int        inv_it_steps;          /* intial steps of inverse iteration */
+  int        inv_it_steps;          /* initial steps of inverse iteration */
   long       itnmin;                /* symmlq input */
   double     shift, rtol;           /* symmlq input */
   long       precon, goodb, nout;   /* symmlq input */
@@ -162,8 +162,8 @@ void rqi(struct vtx_data **A,     /* matrix/graph being analyzed */
     }
 
     symmlq(&long_n, &u[1], &r1[1], &r2[1], &v[1], &w[1], &x[1], &y[1], work, &checka, &goodb,
-            &precon, &shift, &nout, &intlim, &rtol, &istop, &itn, &anorm, &acond, &rnorm, &ynorm,
-            (double *)A, vwsqrt, (double *)orthlist, &macheps, &normxlim, &itnmin);
+           &precon, &shift, &nout, &intlim, &rtol, &istop, &itn, &anorm, &acond, &rnorm, &ynorm,
+           (double *)A, vwsqrt, (double *)orthlist, &macheps, &normxlim, &itnmin);
     symmlqitns += itn;
     normx = ch_norm(x, 1, n);
     vecscale(u, 1, n, 1.0 / normx, x);

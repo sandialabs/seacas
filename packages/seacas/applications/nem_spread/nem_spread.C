@@ -95,8 +95,8 @@ int main(int argc, char *argv[])
       printf("%s version %s\n", UTIL_NAME, VER_STR);
       exit(0);
       break;
-    case 'p': /* Which proc to use? Also for compatability */ break;
-    case 'r': /* raid number.  Seems to be unused; left around for compatability */ break;
+    case 'p': /* Which proc to use? Also for compatibility */ break;
+    case 'r': /* raid number.  Seems to be unused; left around for compatibility */ break;
     case 's': /* Start with processor <x> */ sscanf(optarg, "%d", &start_proc); break;
     case 'n': /* Number of processors to output files for */ sscanf(optarg, "%d", &num_proc); break;
     case '6':

@@ -137,7 +137,7 @@ int submain(struct vtx_data **graph,         /* data structure for graph */
   int               nsets_tot;                 /* total number of sets */
   int               bits;                      /* used in computing hops */
   int               flag;                      /* return code from check_input */
-  int               old_perturb = 0;           /* saves original pertubation flag */
+  int               old_perturb = 0;           /* saves original perturbation flag */
   int               i, j, k;                   /* loop counters */
   double            seconds();
   void              setrandom(long int seed);

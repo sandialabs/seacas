@@ -91,7 +91,7 @@
    extra robust numericlly. */
 
 void lanczos_FO(struct vtx_data **A,      /* graph data structure */
-                int               n,      /* number of rows/colums in matrix */
+                int               n,      /* number of rows/columns in matrix */
                 int               d,      /* problem dimension = # evecs to find */
                 double **         y,      /* columns of y are eigenvectors of A  */
                 double *          lambda, /* ritz approximation to eigenvals of A */
@@ -120,7 +120,7 @@ void lanczos_FO(struct vtx_data **A,      /* graph data structure */
   extern double    init_time;           /* time for allocating memory, etc. */
   extern double    scan_time;           /* time for scanning bounds list */
   extern double    debug_time;          /* time for debug computations and output */
-  int              i, j;                /* indicies */
+  int              i, j;                /* indices */
   int              maxj;                /* maximum number of Lanczos iterations */
   double *         u, *r;               /* Lanczos vectors */
   double *         Aq;                  /* sparse matrix-vector product vector */
@@ -310,9 +310,9 @@ void lanczos_FO(struct vtx_data **A,      /* graph data structure */
     }
     else if (version == 2) {
       symmlq(&long_n, &(q[j][1]), &wv1[1], &wv2[1], &wv3[1], &wv4[1], &Aq[1], &wv5[1], &wv6[1],
-              &checka, &goodb, &precon, &shift, &nout, &intlim, &rtol, &istop, &itn, &anorm, &acond,
-              &rnorm, &ynorm, (double *)A, vwsqrt, (double *)orthlist2, &macheps, &normxlim,
-              &itnmin);
+             &checka, &goodb, &precon, &shift, &nout, &intlim, &rtol, &istop, &itn, &anorm, &acond,
+             &rnorm, &ynorm, (double *)A, vwsqrt, (double *)orthlist2, &macheps, &normxlim,
+             &itnmin);
       symmlqitns += itn;
       if (DEBUG_EVECS > 2) {
         printf("Symmlq report:      rtol %g\n", rtol);

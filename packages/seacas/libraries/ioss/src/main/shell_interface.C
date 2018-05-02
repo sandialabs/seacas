@@ -169,7 +169,7 @@ void IOShell::Interface::enroll_options()
                   "not use for a real run)",
                   nullptr);
   options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
-                  "Number of processors that can perform simulataneous IO operations in "
+                  "Number of processors that can perform simultaneous IO operations in "
                   "a parallel run; 0 to disable",
                   nullptr);
 #endif

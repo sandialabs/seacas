@@ -640,7 +640,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
 
   if ((tmp_stats->id_vals == NULL) || (!(tmp_stats->valid_ids))) {
 
-    /* first time thru or id arrays haven't been completely filled yet */
+    /* first time through or id arrays haven't been completely filled yet */
 
     /* get size of id array */
 
@@ -770,7 +770,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       return (EX_FATAL);
     }
 
-    /* first time thru or status arrays haven't been filled yet */
+    /* first time through or status arrays haven't been filled yet */
     if (nc_inq_varid(exoid, stat_table, &varid) == NC_NOERR) {
       /* get variable id of status array */
       /* if status array exists, use it, otherwise assume object exists

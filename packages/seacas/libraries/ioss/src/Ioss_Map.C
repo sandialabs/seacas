@@ -484,7 +484,7 @@ void Ioss::Map::build_reorder_map__(int64_t start, int64_t count)
   // application level, we build the node reorder map to map the
   // current order into the original order.  An added complication is
   // that this is more than just a reordering... It may be that the
-  // application has 'ghosted' nodes that it doesnt want put out on
+  // application has 'ghosted' nodes that it doesn't want to put out on
   // the database, so the reorder map must handle a node that is not
   // in the original mesh and map that to an invalid value (currently
   // using -1 as invalid value...)

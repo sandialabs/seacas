@@ -176,7 +176,7 @@ TEST_CASE("test reverse segmented map creation", "[reverse segment]")
 
 TEST_CASE("test segment gap", "[segment gap]")
 {
-  // Each segement is sequential, but there is a gap between each segment.
+  // Each segment is sequential, but there is a gap between each segment.
   // Make sure mapping can detect the gap...
   size_t segments = 4;
   size_t count    = 128;
