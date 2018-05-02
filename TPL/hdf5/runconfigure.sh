@@ -16,7 +16,12 @@ MPI="${MPI:-OFF}"
 if [ "$MPI" == "ON" ]
 then
   PARALLEL_ON_OFF="--enable-parallel"
-  export CC=mpicc
+  if [ "$CRAY" == "ON" ]
+  then
+    export CC=cc
+  else
+    export CC=mpicc
+  fi
 else
   PARALLEL_ON_OFF="--disable-parallel"
   COMPILER="${COMPILER:-gnu}"
@@ -27,6 +32,10 @@ else
   if [ "$COMPILER" == "clang" ]
   then
       export CC=clang
+  fi
+  if [ "$COMPILER" == "intel" ]
+  then
+      export CC=icc
   fi
 fi
 
@@ -39,8 +48,10 @@ rm -f config.cache
 FC=''; export FC
 F90=''; export F90
 
-SHARED="--enable-shared"
-
+if ! [ "$CRAY" == "ON" ]
+then
+  SHARED="--enable-shared"
+fi
 ./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
 
 echo ""
