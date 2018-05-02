@@ -994,8 +994,10 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
           if (strcmp(dname, "FamBC_UserId") == 0) {
             // Convert text in `dtext` to integer...
             id = Ioss::Utils::get_number(dtext);
+	    cg_free(dtext);
             break;
           }
+	  cg_free(dtext);
         }
       }
       auto *ss = new Ioss::SideSet(db, ss_name);
