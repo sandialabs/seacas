@@ -983,10 +983,10 @@ namespace Iocgns {
       }
 
       else if (field.get_name() == "connectivity") {
-        // Do nothing, just handles an idiosyncracy of the GroupingEntity
+        // Do nothing, just handles an idiosyncrasy of the GroupingEntity
       }
       else if (field.get_name() == "connectivity_raw") {
-        // Do nothing, just handles an idiosyncracy of the GroupingEntity
+        // Do nothing, just handles an idiosyncrasy of the GroupingEntity
       }
       else if (field.get_name() == "owning_processor") {
         // If parallel, then set the "locally_owned" property on the nodeblocks.
@@ -1402,7 +1402,7 @@ namespace Iocgns {
       }
     }
     else if (field.get_name() == "ids") {
-      // Do nothing, just handles an idiosyncracy of the GroupingEntity
+      // Do nothing, just handles an idiosyncrasy of the GroupingEntity
     }
     else {
       num_to_get = Ioss::Utils::field_warning(cs, field, "input");
@@ -2175,7 +2175,7 @@ namespace Iocgns {
      * -- In both cases, update the nodeMap.reorder
      *
      * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
-     *       should be in the orginal order...
+     *       should be in the original order...
      */
     if (!nodeMap.defined()) {
       nodeMap.set_size(num_to_get);

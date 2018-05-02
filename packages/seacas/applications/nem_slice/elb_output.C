@@ -683,7 +683,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
     }
   }
 
-  else { /* For nodal/element results visualization of the partioning. */
+  else { /* For nodal/element results visualization of the partitioning. */
     // Copy the mesh portion to the vis file.
     ex_copy(exid_inp, exid_vis);
 

@@ -251,10 +251,10 @@ namespace Iogn {
         m_generatedMesh->owning_processor(owner, num_to_get);
       }
       else if (field.get_name() == "connectivity") {
-        // Do nothing, just handles an idiosyncracy of the GroupingEntity
+        // Do nothing, just handles an idiosyncrasy of the GroupingEntity
       }
       else if (field.get_name() == "connectivity_raw") {
-        // Do nothing, just handles an idiosyncracy of the GroupingEntity
+        // Do nothing, just handles an idiosyncrasy of the GroupingEntity
       }
       else {
         num_to_get = Ioss::Utils::field_warning(nb, field, "input");
@@ -583,7 +583,7 @@ namespace Iogn {
       }
     }
     else if (field.get_name() == "ids") {
-      // Do nothing, just handles an idiosyncracy of the GroupingEntity
+      // Do nothing, just handles an idiosyncrasy of the GroupingEntity
     }
     else {
       num_to_get = Ioss::Utils::field_warning(cs, field, "input");
@@ -680,7 +680,7 @@ namespace Iogn {
 
   const Ioss::Map &DatabaseIO::get_element_map() const
   {
-    // Allocate space for elemente number map and read it in...
+    // Allocate space for element number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (elemMap.map().empty()) {
       elemMap.set_size(elementCount);

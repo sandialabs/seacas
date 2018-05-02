@@ -43,7 +43,7 @@ void evals2(double  H[2][2], /* symmetric matrix for eigenvalues */
 )
 {
   double M[2][2];      /* normalized version of matrix */
-  double b, c;         /* coefficents of cubic equation */
+  double b, c;         /* coefficients of cubic equation */
   double root1, root2; /* roots of quadratic */
   double xmax;         /* largest matrix element */
   int    i, j;         /* loop counters */

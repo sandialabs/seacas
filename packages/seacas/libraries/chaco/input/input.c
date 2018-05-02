@@ -42,7 +42,7 @@ void input_queries(FILE **fin,           /* input file */
                    char * geomname,      /* name of geometry input file */
                    char * inassignname,  /* name of assignment input file */
                    char * outassignname, /* name of assignment output file */
-                   char * outfilename,   /* name of file for outputing run results */
+                   char * outfilename,   /* name of file for outputting run results */
                    int *  architecture,  /* 0=> hypercube, d=> d-dimensional mesh */
                    int *  ndims_tot,     /* target number of hypercube dimensions */
                    int    mesh_dims[3],  /* mesh dimensions */

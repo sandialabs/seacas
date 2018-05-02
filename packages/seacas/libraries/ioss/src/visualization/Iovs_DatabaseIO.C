@@ -550,7 +550,7 @@ namespace Iovs {
           new_this->handle_node_ids(data, num_to_get);
         }
         else if (field.get_name() == "connectivity") {
-          // Do nothing, just handles an idiosyncracy of the GroupingEntity
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
         }
         else {
           return field_warning(nb, field, "mesh output");
@@ -829,7 +829,7 @@ namespace Iovs {
      * -- In both cases, update the reorderNodeMap
      *
      * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
-     *       should be in the orginal order...
+     *       should be in the original order...
      */
     assert(num_to_get == nodeCount);
 
@@ -905,7 +905,7 @@ namespace Iovs {
      *
      * NOTE: the maps are built an element block at a time...
      * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
-     *       should be in the orginal order...
+     *       should be in the original order...
      */
 
     // Overwrite this portion of the 'elementMap', but keep other
@@ -957,7 +957,7 @@ namespace Iovs {
   const Ioss::Map &DatabaseIO::get_element_map() const
   {
     // std::cercercerrn new nathan Iovs DatabaseIO::get_element_map\n";
-    // Allocate space for elemente number map and read it in...
+    // Allocate space for element number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (elemMap.map().empty()) {
       elemMap.set_size(elementCount);
@@ -1084,7 +1084,7 @@ namespace Iovs {
            extractblock.  It may become necessary at a later date to
            pass in both ebowner->name() AND eb->name(), but for now we
            are just passing in ebowner->name() to give us correct
-           functionality while not chaning the function interface*/
+           functionality while not changing the function interface*/
           this->pvcsa->CreateSideSet(/*eb->name().c_str(),*/
                                      ebowner->name().c_str(), id, num_to_get, &element[0], &side[0],
                                      this->DBFilename.c_str());
@@ -1140,7 +1140,7 @@ namespace Iovs {
            extractblock.  It may become necessary at a later date to
            pass in both ebowner->name() AND eb->name(), but for now we
            are just passing in ebowner->name() to give us correct
-           functionality while not chaning the function interface*/
+           functionality while not changing the function interface*/
           this->pvcsa->CreateSideSet(/*eb->name().c_str(),*/
                                      ebowner->name().c_str(), id, num_to_get, &element[0], &side[0],
                                      this->DBFilename.c_str());

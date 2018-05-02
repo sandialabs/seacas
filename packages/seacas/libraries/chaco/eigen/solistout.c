@@ -63,7 +63,7 @@ void solistout(struct orthlink **solist, /* vector of pntrs to orthlnks */
   printf("%d\n", ngood);
 
   if (DEBUG_EVECS > 2) {
-    printf("  actual indicies: ");
+    printf("  actual indices: ");
     for (i = 1; i <= ngood; i++) {
       printf(" %2d", solist[i]->index);
     }

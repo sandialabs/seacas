@@ -161,7 +161,7 @@ namespace {
 
   int extract_trailing_int(char *name)
   {
-    // 'name' consists of an arbitray number of characters followed by
+    // 'name' consists of an arbitrary number of characters followed by
     // zero or more digits.  Return the integer value of the contiguous
     // set of trailing digits.
     // Example: Name42 returns 42;  Name_52or_perhaps_3_43 returns 43.
@@ -602,21 +602,21 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   validate_blocks(structured_blocks);
 
   // If `is_parallel` and `!is_parallel_io`, then writing file-per-processor
-  bool is_parallel = region.get_database()->util().parallel_size() > 1; 
-  int rank = region.get_database()->util().parallel_rank();
+  bool is_parallel = region.get_database()->util().parallel_size() > 1;
+  int  rank        = region.get_database()->util().parallel_rank();
 
   for (const auto &sb : structured_blocks) {
     int      zone    = 0;
     cgsize_t size[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     if (is_parallel_io) {
-      size[3]          = sb->get_property("ni_global").get_int();
-      size[4]          = sb->get_property("nj_global").get_int();
-      size[5]          = sb->get_property("nk_global").get_int();
+      size[3] = sb->get_property("ni_global").get_int();
+      size[4] = sb->get_property("nj_global").get_int();
+      size[5] = sb->get_property("nk_global").get_int();
     }
     else {
-      size[3]          = sb->get_property("ni").get_int();
-      size[4]          = sb->get_property("nj").get_int();
-      size[5]          = sb->get_property("nk").get_int();
+      size[3] = sb->get_property("ni").get_int();
+      size[4] = sb->get_property("nj").get_int();
+      size[5] = sb->get_property("nk").get_int();
     }
     size[0] = size[3] + 1;
     size[1] = size[4] + 1;
@@ -625,8 +625,8 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     if (is_parallel_io || sb->is_active()) {
       std::string name = sb->name();
       if (is_parallel && !is_parallel_io) {
-	name += "_proc-";
-	name += std::to_string(rank);
+        name += "_proc-";
+        name += std::to_string(rank);
       }
       CGERR(cg_zone_write(file_ptr, base, name.c_str(), size, CG_Structured, &zone));
       sb->property_update("zone", zone);
@@ -670,7 +670,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       continue;
     }
 
-    int zone = sb->get_property("zone").get_int();
+    int         zone = sb->get_property("zone").get_int();
     std::string name = sb->name();
     if (is_parallel && !is_parallel_io) {
       name += "_proc-";
@@ -707,8 +707,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       int bc_idx = 0;
       CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
                           CG_PointRange, 2, &bc_range[idx], &bc_idx));
-      CGERR(cg_goto(file_ptr, base, name.c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0,
-                    "end"));
+      CGERR(cg_goto(file_ptr, base, name.c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0, "end"));
       CGERR(cg_famname_write(bc.m_famName.c_str()));
       CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
       idx += 6;
@@ -717,42 +716,42 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     // Transfer Zone Grid Connectivity...
     for (const auto &zgc : sb->m_zoneConnectivity) {
       if (zgc.is_valid() && zgc.is_active()) {
-	int                zgc_idx = 0;
-	std::array<INT, 6> owner_range{{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1],
-	      zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[0],
-	      zgc.m_ownerRangeEnd[1], zgc.m_ownerRangeEnd[2]}};
-	std::array<INT, 6> donor_range{{zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1],
-	      zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[0],
-	      zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]}};
+        int                zgc_idx = 0;
+        std::array<INT, 6> owner_range{{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1],
+                                        zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[0],
+                                        zgc.m_ownerRangeEnd[1], zgc.m_ownerRangeEnd[2]}};
+        std::array<INT, 6> donor_range{{zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1],
+                                        zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[0],
+                                        zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]}};
 
-	std::string donor_name = zgc.m_donorName;
-	std::string connect_name = zgc.m_connectionName;
-	if (is_parallel && !is_parallel_io) {
-	  if (zgc.is_intra_block()) {
-	    connect_name = std::to_string(zgc.m_ownerGUID) + "--" + std::to_string(zgc.m_donorGUID);
-	  }
-	  donor_name += "_proc-";
-	  donor_name += std::to_string(zgc.m_donorProcessor);
-	  owner_range[0] -= zgc.m_ownerOffset[0];
-	  owner_range[1] -= zgc.m_ownerOffset[1];
-	  owner_range[2] -= zgc.m_ownerOffset[2];
-	  owner_range[3] -= zgc.m_ownerOffset[0];
-	  owner_range[4] -= zgc.m_ownerOffset[1];
-	  owner_range[5] -= zgc.m_ownerOffset[2];
+        std::string donor_name   = zgc.m_donorName;
+        std::string connect_name = zgc.m_connectionName;
+        if (is_parallel && !is_parallel_io) {
+          if (zgc.is_intra_block()) {
+            connect_name = std::to_string(zgc.m_ownerGUID) + "--" + std::to_string(zgc.m_donorGUID);
+          }
+          donor_name += "_proc-";
+          donor_name += std::to_string(zgc.m_donorProcessor);
+          owner_range[0] -= zgc.m_ownerOffset[0];
+          owner_range[1] -= zgc.m_ownerOffset[1];
+          owner_range[2] -= zgc.m_ownerOffset[2];
+          owner_range[3] -= zgc.m_ownerOffset[0];
+          owner_range[4] -= zgc.m_ownerOffset[1];
+          owner_range[5] -= zgc.m_ownerOffset[2];
 
-	  donor_range[0] -= zgc.m_donorOffset[0];
-	  donor_range[1] -= zgc.m_donorOffset[1];
-	  donor_range[2] -= zgc.m_donorOffset[2];
-	  donor_range[3] -= zgc.m_donorOffset[0];
-	  donor_range[4] -= zgc.m_donorOffset[1];
-	  donor_range[5] -= zgc.m_donorOffset[2];
-	}
+          donor_range[0] -= zgc.m_donorOffset[0];
+          donor_range[1] -= zgc.m_donorOffset[1];
+          donor_range[2] -= zgc.m_donorOffset[2];
+          donor_range[3] -= zgc.m_donorOffset[0];
+          donor_range[4] -= zgc.m_donorOffset[1];
+          donor_range[5] -= zgc.m_donorOffset[2];
+        }
 #if IOSS_DEBUG_OUTPUT
-	std::cerr << "P[" << rank << "]: " << connect_name << "\n"; 
+        std::cerr << "P[" << rank << "]: " << connect_name << "\n";
 #endif
-	CGERR(cg_1to1_write(file_ptr, base, zone, connect_name.c_str(),
-			    donor_name.c_str(), owner_range.data(), donor_range.data(),
-			    zgc.m_transform.data(), &zgc_idx));
+        CGERR(cg_1to1_write(file_ptr, base, zone, connect_name.c_str(), donor_name.c_str(),
+                            owner_range.data(), donor_range.data(), zgc.m_transform.data(),
+                            &zgc_idx));
       }
     }
   }

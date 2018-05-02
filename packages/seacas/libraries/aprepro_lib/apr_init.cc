@@ -402,7 +402,7 @@ namespace SEAMS {
 
     for (int i = 0; variables[i].vname != nullptr; i++) {
       // These should be immutable, but possible user is using them for some other purpose...
-      // For backward compatability, keep as mutable.
+      // For backward compatibility, keep as mutable.
       add_variable(variables[i].vname, variables[i].value, false, true);
     }
 

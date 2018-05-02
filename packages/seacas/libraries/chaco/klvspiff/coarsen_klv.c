@@ -54,7 +54,7 @@ void coarsen_klv(
     int               nedges,       /* number of edges in graph */
     int               using_vwgts,  /* are vertices weights being used? */
     int               using_ewgts,  /* are edge weights being used? */
-    float *           term_wgts[],  /* weights for terminal propogation */
+    float *           term_wgts[],  /* weights for terminal propagation */
     int               igeom,        /* dimension for geometric information */
     float **          coords,       /* coordinates for vertices */
     int               vwgt_max,     /* largest vertex weight */
@@ -68,7 +68,7 @@ void coarsen_klv(
     int     vmax,                   /* largest subgraph to stop coarsening */
     int     mediantype,             /* flag for different assignment strategies */
     int     mkconnected,            /* enforce connectivity before eigensolve? */
-    double  eigtol,                 /* tolerence in eigen calculation */
+    double  eigtol,                 /* tolerance in eigen calculation */
     int     nstep,                  /* number of coarsenings between RQI steps */
     int     step,                   /* current step number */
     int **  pbndy_list,             /* pointer to returned boundary list */

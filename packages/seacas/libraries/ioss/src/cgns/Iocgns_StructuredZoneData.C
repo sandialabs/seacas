@@ -349,7 +349,7 @@ namespace Iocgns {
     // Add ZoneGridConnectivity instance to account for split...
     add_proc_split_zgc(this, m_child1, m_child2, ordinal);
 
-    // Propogate parent ZoneGridConnectivities to appropriate children.
+    // Propagate parent ZoneGridConnectivities to appropriate children.
     // Split if needed...
     propogate_zgc(this, m_child1, ordinal, rank);
     propogate_zgc(this, m_child2, ordinal, rank);

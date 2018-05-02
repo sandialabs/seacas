@@ -39,7 +39,7 @@
 
 static int bfsearch();
 
-/* Breadth first seach algorithm to find & mark connected components. */
+/* Breadth first search algorithm to find & mark connected components. */
 int find_comps(struct vtx_data **graph,  /* graph data structure */
                int               nvtxs,  /* number of vertices in graph */
                int *             mark,   /* space for nvtxs+1 ints */
@@ -77,7 +77,7 @@ int find_comps(struct vtx_data **graph,  /* graph data structure */
   return (ncomps + 1);
 }
 
-/* Breadth first seach algorithm to find & mark connected components. */
+/* Breadth first search algorithm to find & mark connected components. */
 /* Returns list of edges to connect them together. */
 int find_edges(struct vtx_data ** graph,   /* graph data structure */
                int                nvtxs,   /* number of vertices in graph */

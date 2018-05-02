@@ -129,7 +129,7 @@ declared with
 \param io_ws            The word size in bytes (4 or 8) of the floating point
                         data as they are to be stored in the exodus file.
 
-\param run_version (internally generated) used to verify compatability of libary
+\param run_version (internally generated) used to verify compatibility of library
 and include files.
 
 The following code segment creates an exodus file called \file{test.exo}:

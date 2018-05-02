@@ -1059,7 +1059,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
         get_node_map().map_implicit_data(data, field, num_to_get, 0);
       }
       else if (field.get_name() == "connectivity") {
-        // Do nothing, just handles an idiosyncracy of the GroupingEntity
+        // Do nothing, just handles an idiosyncrasy of the GroupingEntity
       }
       else if (field.get_name() == "owning_processor") {
         if (isParallel) {
@@ -1249,7 +1249,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
         }
       }
       else if (field.get_name() == "ids") {
-        // Do nothing, just handles an idiosyncracy of the GroupingEntity
+        // Do nothing, just handles an idiosyncrasy of the GroupingEntity
       }
       else {
         num_to_get = Ioss::Utils::field_warning(cs, field, "input");
@@ -1547,7 +1547,7 @@ const Ioss::Map &DatabaseIO::get_node_map() const
 
 const Ioss::Map &DatabaseIO::get_element_map() const
 {
-  // Allocate space for elemente number map and read it in...
+  // Allocate space for element number map and read it in...
   // Can be called multiple times, allocate 1 time only
   if (elemMap.map().empty()) {
     elemMap.set_size(elementCount);

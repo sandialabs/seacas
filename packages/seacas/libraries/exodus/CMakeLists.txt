@@ -50,7 +50,7 @@ if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
       INSTALL(TARGETS exodus_static DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
    endif(BUILD_SHARED_LIBS)
 
-   # For backwards compatability, the C exodus library was called libexoIIv2c.a
+   # For backwards compatibility, the C exodus library was called libexoIIv2c.a
    # Create a symbolic link from libexodus.a to libexoIIv2c.a -- do only for static lib
    InstallSymLink(libexodus.a ${CMAKE_INSTALL_PREFIX}/lib/libexoIIv2c.a)
 

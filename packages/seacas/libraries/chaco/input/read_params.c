@@ -541,7 +541,7 @@ static int read_intTF(char *ptr, /* pointer to string to parse */
                       int * val  /* value returned */
 )
 {
-  int nvals; /* number of values sucessfully read */
+  int nvals; /* number of values successfully read */
 
   while (*ptr != 'T' && *ptr != 't' && *ptr != 'F' && *ptr != 'f' && *ptr != '-' &&
          !isdigit(*ptr) && *ptr != '\0') {
@@ -567,7 +567,7 @@ static int read_double(char *  ptr, /* pointer to string to parse */
                        double *val  /* value returned */
 )
 {
-  int nvals; /* number of values sucessfully read */
+  int nvals; /* number of values successfully read */
 
   while (*ptr != '-' && *ptr != '.' && !isdigit(*ptr) && *ptr != '\0') {
     ptr++;
@@ -586,7 +586,7 @@ static int read_long(char *ptr, /* pointer to string to parse */
                      long *val  /* value returned */
 )
 {
-  int nvals; /* number of values sucessfully read */
+  int nvals; /* number of values successfully read */
 
   while (*ptr != '-' && !isdigit(*ptr) && *ptr != '\0') {
     ptr++;

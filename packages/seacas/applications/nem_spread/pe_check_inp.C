@@ -94,7 +94,7 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
     Restart_Info.Num_Times = -1; /* -1 means spread all results */
   }
 
-  /* check to see if there is a seperate restart file */
+  /* check to see if there is a separate restart file */
   if (Restart_Info.Flag > 0) {
     if (strlen(Exo_Res_File) <= 0) {
       strcpy(Exo_Res_File, ExoFile); /* if not use the input FEM file */
@@ -122,7 +122,7 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
   /*                 Check the parallel IO specifications                      */
   /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
-  /* default is not to have preceeding 0's in the disk names */
+  /* default is not to have preceding 0's in the disk names */
   if (PIO_Info.Zeros < 0) {
     PIO_Info.Zeros = 0;
   }

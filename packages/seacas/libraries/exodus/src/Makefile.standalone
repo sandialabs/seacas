@@ -320,7 +320,7 @@ libexodus.a: $(OBJS) $(DEP_OBJS)
 	cp libexodus.a ..
 
 clean::
-	rm -f *.CKP *.ln *.BAK *.bak *.o deprectated/*.o core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut   "#"*
+	rm -f *.CKP *.ln *.BAK *.bak *.o deprecated/*.o core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut   "#"*
 
 .SUFFIXES: .c
 .c.o:

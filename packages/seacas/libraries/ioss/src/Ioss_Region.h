@@ -367,7 +367,7 @@ inline void Ioss::Region::add_qa_record(const std::string &code, const std::stri
 
 /** \brief Get all QA records, each of which consists of 4 strings, from the region's database.
  *
- *  The 4 strings that make up a databse QA record are:
+ *  The 4 strings that make up a database QA record are:
  *
  *  1. A descriptive code name, such as the application that modified the database.
  *
