@@ -14,7 +14,10 @@ NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
 DOWNLOAD=${DOWNLOAD:-YES}
 INSTALL=${INSTALL:-YES}
 
-if [ "$MPI" == "ON" ]
+if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
+then
+    CC=cc; export CC
+elif [ "$MPI" == "ON" ]
 then
     CC=/usr/bin/mpicc; export CC
 fi
@@ -77,7 +80,12 @@ then
 	tar -xzf parallel-netcdf-${pnet_version}.tar.gz
 	cd parallel-netcdf-${pnet_version}
 	bash ../runconfigure.sh
-	make -j${JOBS} && ${SUDO} make install
+        if [ "$CRAY" == "ON" ]
+        then
+	  make -j${JOBS} LDFLAGS=-all-static && ${SUDO} make install
+        else
+	  make -j${JOBS} && ${SUDO} make install
+        fi
     fi
 fi
 

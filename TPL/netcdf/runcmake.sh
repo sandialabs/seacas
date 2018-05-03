@@ -20,7 +20,10 @@ then
 fi
 
 MPI="${MPI:-OFF}"
-if [ "$MPI" == "ON" ]
+if [ "$MPI" == "ON" ] && [ "$CRAY" = "ON" ]
+then
+  export CC=cc
+elif [ "$MPI" == "ON" ]
 then
   export CC=mpicc
 else
@@ -33,6 +36,11 @@ else
   then
       export CC=clang
   fi
+  if [ "$COMPILER" == "intel" ]
+  then
+      export CC=icc
+  fi
+
 fi
 
 rm -f config.cache

@@ -249,4 +249,7 @@ TPL/matio/matio/
 TPL/netcdf/netcdf-c/
 TPL/parallel/parallel-*/
 TPL/parallel/parallel-*.tar.bz2
+TPL/hdf5/hdf5-*.tar.bz2
+TPL/pnetcdf/parallel-netcdf-*.tar.gz
+TPL/pnetcdf/parallel-netcdf-*/
 build/
