@@ -24,6 +24,8 @@ then
       CXX=g++
       CC=gcc
       FC=gfortran
+      CFLAGS="-Wall -Wunused -pedantic"
+      CXXFLAGS="-Wall -Wunused -pedantic"      
   fi
   
   if [ "$COMPILER" == "clang" ]
@@ -31,6 +33,8 @@ then
       CXX=clang++-mp-4.0
       CC=clang-mp-4.0
       FC=gfortran-mp-4.9
+      CFLAGS="-Wall -Wunused -pedantic"
+      CXXFLAGS="-Wall -Wunused -pedantic"
   fi
 
   if [ "$COMPILER" == "intel" ]
@@ -38,6 +42,8 @@ then
       CXX=icpc
       CC=icc
       FC=ifort
+      CFLAGS="-Wall -Wunused"
+      CXXFLAGS="-Wall -Wunused"
   fi
 
 fi
@@ -57,7 +63,7 @@ ACCESS=$(cd ..; pwd)
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then change the "ON"
 ### below to "OFF". It will disable blot and fastq
-HAVE_X11=ON
+HAVE_X11=${X11:-ON}
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-OFF}
@@ -166,8 +172,8 @@ cmake  \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
--D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
--D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
+-D CMAKE_CXX_FLAGS=${CXXFLAGS} \
+-D CMAKE_C_FLAGS=${CFLAGS} \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
 -D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \

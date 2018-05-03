@@ -9,7 +9,12 @@ fi
 MPI="${MPI:-OFF}"
 if [ "$MPI" == "ON" ]
 then
-  export CC=mpicc
+  if [ "$CRAY" == "ON" ]
+  then
+    export CC=cc
+  else
+    export CC=mpicc
+  fi
 else
   COMPILER="${COMPILER:-gnu}"
   if [ "$COMPILER" == "gnu" ]
@@ -19,6 +24,10 @@ else
   if [ "$COMPILER" == "clang" ]
   then
       export CC=clang
+  fi
+  if [ "$COMPILER" == "intel" ]
+  then
+      export CC=icc
   fi
 fi
 

@@ -15,6 +15,11 @@ if [ "$COMPILER" == "clang" ]
 then
     export CC=clang
 fi
+if [ "$COMPILER" == "intel" ]
+then
+    export CC=icc
+fi
+
 CFLAGS="-I${ACCESS}/include"; export CFLAGS
 CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 LDFLAGS="-L${ACCESS}/lib"; export LDFLAGS
