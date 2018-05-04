@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+# blow up if any command fails
+set -e
+
 export COMPILER=${COMPILER:-gnu}
 SUDO=${SUDO:-}
 CGNS=${CGNS:-ON}
@@ -7,6 +10,7 @@ MATIO=${MATIO:-ON}
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
 JOBS=${JOBS:-2}
 ACCESS=`pwd`
+VERBOSE=${VERBOSE:-1}
 pwd
 
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
@@ -17,6 +21,7 @@ INSTALL=${INSTALL:-YES}
 if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
 then
     CC=cc; export CC
+    CFLAGS=-static; export CFLAGS
 elif [ "$MPI" == "ON" ]
 then
     CC=/usr/bin/mpicc; export CC
@@ -57,7 +62,17 @@ then
     tar -jxf hdf5-${hdf_version}.tar.bz2
     cd hdf5-${hdf_version}
     NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
-    make -j${JOBS} && ${SUDO} make install
+    if [[ $? != 0 ]]
+    then
+      echo 1>&2 couldn\'t configure hdf5. exiting.
+      exit 1
+    fi
+    make -j${JOBS} && ${SUDO} make "V=${VERBOSE}" install
+    if [[ $? != 0 ]]
+    then
+      echo 1>&2 couldn\'t make hdf5. exiting.
+      exit 1
+    fi
 fi
 
 # =================== INSTALL PNETCDF (if mpi) ===============
@@ -80,11 +95,23 @@ then
 	tar -xzf parallel-netcdf-${pnet_version}.tar.gz
 	cd parallel-netcdf-${pnet_version}
 	bash ../runconfigure.sh
+        if [[ $? != 0 ]]
+        then
+            echo 1>&2 couldn\'t configure pnetcdf. exiting.
+            exit 1
+        fi
+
+
         if [ "$CRAY" == "ON" ]
         then
 	  make -j${JOBS} LDFLAGS=-all-static && ${SUDO} make install
         else
 	  make -j${JOBS} && ${SUDO} make install
+        fi
+        if [[ $? != 0 ]]
+        then
+            echo 1>&2 couldn\'t make pnetcdf. exiting.
+            exit 1
         fi
     fi
 fi
@@ -125,6 +152,12 @@ then
 	mkdir build
 	cd build
 	MPI=${MPI} bash ../../runconfigure.sh
+        if [[ $? != 0 ]]
+        then
+            echo 1>&2 couldn\'t configure hdf5. exiting.
+            exit 1
+        fi
+
 	make -j${JOBS} && ${SUDO} make install
     fi
 fi
