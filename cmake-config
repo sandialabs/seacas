@@ -114,7 +114,8 @@ CUDA=${CUDA:-OFF}
 # BUG needs to work with cray too.
 if [ "${MPI}" == "ON" ] && [ "${CRAY}" == "ON" ]
 then
-   MPI_EXEC=`which mpiexec`
+   MPI_EXEC=`which srun`
+   MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-n"
    CXX=CC
    CC=cc
    FC=ftn
@@ -122,6 +123,7 @@ then
 elif [ "${MPI}" == "ON" ]
 then
    MPI_EXEC=`which mpiexec`
+   MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC}"
    MPI_BIN=`dirname "${MPI_EXEC}"`
    CXX=mpicxx
    CC=mpicc
@@ -196,6 +198,7 @@ cmake  \
 -D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
+${MPI_SYMBOLS} \
 ${KOKKOS_SYMBOLS} \
 ${DW_SYMBOLS} \
 ${DARWIN_OPT} \
