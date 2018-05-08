@@ -9,10 +9,13 @@ fi
 OS=`uname -s`
 if [ "$OS" = "Darwin" ] ; then
 LD_EXT="dylib"
+elif [ "$SHARED" = "ON" ] ; then
+	LD_EXT="so"
 else
-LD_EXT="so"
+	LD_EXT="a"
 fi
 
+export LIBS="-ldl -lzlib"
 NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
@@ -46,7 +49,7 @@ fi
 rm -f config.cache
 
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
-         -DBUILD_SHARED_LIBS:BOOL=ON \
+         -DBUILD_SHARED_LIBS:BOOL=${SHARED} \
 	 -DBUILD_TESTING:BOOL=OFF \
          -DCMAKE_INSTALL_PREFIX=${ACCESS} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
