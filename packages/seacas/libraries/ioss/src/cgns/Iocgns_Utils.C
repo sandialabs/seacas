@@ -72,6 +72,24 @@
   }
 
 namespace {
+  int power_2(int count)
+  {
+    // Return the maximum power of two which is less than or equal to 'count'
+    // count = 15 -> returns 8
+    // count = 16 -> returns 16
+    // count = 17 -> returns 16
+
+    // Use brute force...
+    int pow2 = 1;
+    while (pow2 <= count) {
+      pow2 *= 2;
+    }
+    if (pow2 > count) {
+      pow2 /= 2;
+    }
+    return pow2;
+  }
+
   struct Range
   {
     Range(int a, int b) : m_beg(a < b ? a : b), m_end(a < b ? b : a), m_reversed(b < a) {}
@@ -1639,56 +1657,115 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
     }
   }
 
-  int    procs        = proc_count;
-  for (size_t i=0; i < zones.size(); i++) {
-    auto zone = zones[i];
-    int  num_active = 0;
-    bool split      = false;
+  if (adaptive_avg) {
+    for (size_t i=0; i < zones.size(); i++) {
+      auto zone = zones[i];
+      int  num_active = 0;
 
-    auto work_average = avg_work;
-    int  split_cnt    = 0;
-    if (adaptive_avg) {
-      split_cnt = splits[i];
+      auto work_average = avg_work;
+      int  split_cnt    = splits[i];
       work_average = zone->work() / (double)split_cnt;
-    }
-    do {
-      split = false;
-      if (zone->is_active() && zone->work() > work_average * load_balance) {
-        auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
 
-        if (children.first != nullptr && children.second != nullptr) {
-          split = true;
-          new_zone_id += 2;
-          zone = children.second;
-          new_zones.push_back(children.first);
-          new_zones.push_back(children.second);
-          if (adaptive_avg) {
-            split_cnt--;
-            double work = zone->work();
-            if (split_cnt > 0) {
-              work_average = work / (double)split_cnt;
-            }
-            else {
-              work_average = work;
-            }
-          }
-          else {
-          // Do something here to adjust since probably didn't do exactly perfect split...
-          // Decrement proc count by 1 and total_work by
-#if 1
-            total_work -= children.first->work();
-            procs--;
-            work_average = total_work / (double)procs;
-#endif
-          }
-        }
-        num_active++; // Add 2 children; parent goes inactive
-        if (num_active >= proc_count) {
-          split = false;
-          break;
-        }
+      std::vector<std::pair<int,Iocgns::StructuredZoneData *>> active;
+      active.push_back(std::make_pair(split_cnt,zone));
+      do {
+	split_cnt = active.back().first;
+	zone = active.back().second;
+	active.pop_back();
+
+	if (zone->is_active()) {
+	  int max_power_2 = power_2(split_cnt);
+	  if (max_power_2 == split_cnt) {
+	    work_average = zone->work() / 2.0;
+	  }
+	  else {
+	    work_average = zone->work() / (double(split_cnt) / double(max_power_2));
+	  }
+	  
+	  if (max_power_2 == 1) {
+	    new_zones.push_back(zone);
+	  }
+	  else {
+	    if (max_power_2 == split_cnt) {
+	      max_power_2 /= 2;
+	    }
+	    auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
+	    if (children.first != nullptr && children.second != nullptr) {
+	      active.push_back(std::make_pair(split_cnt-max_power_2,children.second));
+	      active.push_back(std::make_pair(max_power_2,children.first));
+	      num_active++;
+	    }
+	  }
+	}
+	if (num_active >= proc_count) { // Don't split a single zone into more than `proc_count` pieces
+	  break;
+	}
+      } while (!active.empty());
+    }
+  }
+  else {
+    for (size_t i=0; i < zones.size(); i++) {
+      auto zone = zones[i];
+      int  num_active = 0;
+      if (zone->work() <= max_avg) {
+	// This zone is already in `new_zones`; just skip doing anything else with it.
       }
-    } while (split);
+      else {
+	std::vector<std::pair<int,Iocgns::StructuredZoneData *>> active;
+
+	double work = zone->work();
+	int split_cnt = int(work / avg_work);
+
+	// Find modulus of work % avg_work and split off that amount
+	// which will be < avg_work.  
+	double mod_work = work - avg_work * split_cnt;
+	if (mod_work > max_avg - avg_work) {
+	  auto children = zone->split(new_zone_id, mod_work, load_balance, proc_rank);
+	  if (children.first != nullptr && children.second != nullptr) {
+	    new_zones.push_back(children.first);
+	    num_active++;
+	    active.push_back(std::make_pair(split_cnt,children.second));
+	  }
+	}
+
+	// The work remaining on this zone should be approximately
+	// equally divided among `split_cnt` processors.
+	do {
+	  split_cnt = active.back().first;
+	  zone = active.back().second;
+	  active.pop_back();
+
+	  if (zone->is_active()) {
+	    int max_power_2 = power_2(split_cnt);
+	    double work_average = 0.0;
+	    if (max_power_2 == split_cnt) {
+	      work_average = zone->work() / 2.0;
+	    }
+	    else {
+	      work_average = zone->work() / (double(split_cnt) / double(max_power_2));
+	    }
+	  
+	    if (max_power_2 == 1) {
+	      new_zones.push_back(zone);
+	    }
+	    else {
+	      if (max_power_2 == split_cnt) {
+		max_power_2 /= 2;
+	      }
+	      auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
+	      if (children.first != nullptr && children.second != nullptr) {
+		active.push_back(std::make_pair(split_cnt-max_power_2,children.second));
+		active.push_back(std::make_pair(max_power_2,children.first));
+		num_active++;
+	      }
+	    }
+	  }
+	  if (num_active >= proc_count) { // Don't split a single zone into more than `proc_count` pieces
+	    break;
+	  }
+	} while (!active.empty());
+      }
+    }
   }
   std::swap(new_zones, zones);
   return new_zone_id;

@@ -253,21 +253,18 @@ namespace Iocgns {
     }
 
     int ord0 = int((double)m_ordinal[0] * ratio + 0.5);
-    ord0     = ord0 == 0 ? 1 : ord0;
     int ord1 = int((double)m_ordinal[1] * ratio + 0.5);
-    ord1     = ord1 == 0 ? 1 : ord1;
     int ord2 = int((double)m_ordinal[2] * ratio + 0.5);
-    ord2     = ord2 == 0 ? 1 : ord2;
 
     double work0 = ord0 * m_ordinal[1] * m_ordinal[2];
     double work1 = ord1 * m_ordinal[0] * m_ordinal[2];
     double work2 = ord2 * m_ordinal[0] * m_ordinal[1];
 
-    if (m_lineOrdinal == 0)
+    if (m_lineOrdinal == 0 || m_ordinal[0] == 1)
       work0 = 0.0;
-    if (m_lineOrdinal == 1)
+    if (m_lineOrdinal == 1 || m_ordinal[1] == 1)
       work1 = 0.0;
-    if (m_lineOrdinal == 2)
+    if (m_lineOrdinal == 2 || m_ordinal[2] == 1)
       work2 = 0.0;
 
     auto delta0 = std::make_pair(fabs(work0 - avg_work), -(int)m_ordinal[0]);
