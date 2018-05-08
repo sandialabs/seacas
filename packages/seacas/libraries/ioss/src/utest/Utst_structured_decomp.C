@@ -567,3 +567,80 @@ TEST_CASE("farmer_h1_mk21", "[h1_mk21]")
     }
   }
 }
+
+TEST_CASE("bc-257x129x2", "[bc-257x129x2]")
+{
+  std::vector<Iocgns::StructuredZoneData *> zones;
+
+  // Failing for line decomposition on 84 processors; 72 works
+  {
+    int zone = 1;
+    zones.push_back(new Iocgns::StructuredZoneData("zone01", zone++, 257, 129, 2));
+    zones.back()->m_lineOrdinal = 1;
+  }
+
+  double load_balance_tolerance = 1.2;
+
+  double total_work =
+      std::accumulate(zones.begin(), zones.end(), 0.0,
+                      [](double a, Iocgns::StructuredZoneData *b) { return a + b->work(); });
+
+  for (size_t proc_count = 84; proc_count <= 84; proc_count *= 2) {
+    std::string name = "BC_ProcCount_" + std::to_string(proc_count);
+    SECTION(name)
+    {
+      double avg_work = total_work / (double)proc_count;
+
+      SECTION("split_zones")
+      {
+        Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+
+        // double min_work = avg_work / load_balance_tolerance;
+        double max_work = avg_work * load_balance_tolerance;
+        for (const auto zone : zones) {
+          if (zone->is_active()) {
+            CHECK(zone->work() <= max_work);
+          }
+        }
+
+        SECTION("assign_to_procs")
+        {
+          std::vector<size_t> work_vector(proc_count);
+          Iocgns::Utils::assign_zones_to_procs(zones, work_vector);
+
+#if 0
+	      std::cerr << "\nDecomposition for " << proc_count << " processors; Total work = " << total_work << " Average = " << avg_work << "\n";
+	      for (const auto zone : zones) {
+		std::cerr << "Zone " << zone->m_name << "\tProc: " << zone->m_proc
+			  << "\tOrdinal: " << zone->m_ordinal[0] << "x" << zone->m_ordinal[1] << "x" << zone->m_ordinal[2] 
+			  << " \tWork: " << zone->work() << "\n";
+	      }
+#endif
+          // Each active zone must be on a processor
+          for (const auto zone : zones) {
+            if (zone->is_active()) {
+              CHECK(zone->m_proc >= 0);
+            }
+          }
+
+          // Work must be min_work <= work <= max_work
+          max_work *= 1.1; // Modify range until we get full splitting working in test.
+          for (auto work : work_vector) {
+            // CHECK(work >= min_work);
+            CHECK(work <= max_work);
+          }
+
+          // A processor cannot have more than one zone with the same adam zone
+          std::set<std::pair<int, int>> proc_adam_map;
+          for (const auto zone : zones) {
+            if (zone->is_active()) {
+              auto success =
+                  proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
+              CHECK(success.second);
+            }
+          }
+        }
+      }
+    }
+  }
+}
