@@ -1664,6 +1664,10 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
 
       auto work_average = avg_work;
       int  split_cnt    = splits[i];
+      if (split_cnt == 1) {
+	continue;
+      }
+
       work_average = zone->work() / (double)split_cnt;
 
       std::vector<std::pair<int,Iocgns::StructuredZoneData *>> active;
@@ -1674,18 +1678,18 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
 	active.pop_back();
 
 	if (zone->is_active()) {
-	  int max_power_2 = power_2(split_cnt);
-	  if (max_power_2 == split_cnt) {
-	    work_average = zone->work() / 2.0;
-	  }
-	  else {
-	    work_average = zone->work() / (double(split_cnt) / double(max_power_2));
-	  }
-	  
-	  if (max_power_2 == 1) {
+	  if (split_cnt == 1) {
 	    new_zones.push_back(zone);
 	  }
 	  else {
+	    int max_power_2 = power_2(split_cnt);
+	    if (max_power_2 == split_cnt) {
+	      work_average = zone->work() / 2.0;
+	    }
+	    else {
+	      work_average = zone->work() / (double(split_cnt) / double(max_power_2));
+	    }
+	  
 	    if (max_power_2 == split_cnt) {
 	      max_power_2 /= 2;
 	    }
@@ -1726,6 +1730,9 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
 	    num_active++;
 	    active.push_back(std::make_pair(split_cnt,children.second));
 	  }
+	}
+	else {
+	  active.push_back(std::make_pair(split_cnt,zone));
 	}
 
 	// The work remaining on this zone should be approximately
