@@ -33,6 +33,7 @@
 #include <Ioss_CodeTypes.h>
 #include <algorithm>
 #include <cgns/Iocgns_StructuredZoneData.h>
+#include <tokenize.h>
 
 #define OUTPUT std::cerr
 
@@ -240,6 +241,20 @@ namespace {
 
 namespace Iocgns {
 
+  StructuredZoneData::StructuredZoneData(int zone, const std::string &nixnjxnk) : m_zone(zone)
+  {
+    m_name = "zone_" + std::to_string(zone);
+
+    auto ordinals = Ioss::tokenize(nixnjxnk, "x");
+    assert(ordinals.size() == 3);
+
+    m_ordinal[0] = std::strtol(ordinals[0].c_str(), nullptr, 10);
+    m_ordinal[1] = std::strtol(ordinals[1].c_str(), nullptr, 10);
+    m_ordinal[2] = std::strtol(ordinals[2].c_str(), nullptr, 10);
+
+    m_adam = this;
+  }
+
   // ========================================================================
   // Split this StructuredZone along the largest ordinal
   // into two children and return the created zones.
@@ -256,20 +271,20 @@ namespace Iocgns {
     int ord1 = int((double)m_ordinal[1] * ratio + 0.5);
     int ord2 = int((double)m_ordinal[2] * ratio + 0.5);
 
-    double work0 = ord0 * m_ordinal[1] * m_ordinal[2];
-    double work1 = ord1 * m_ordinal[0] * m_ordinal[2];
-    double work2 = ord2 * m_ordinal[0] * m_ordinal[1];
+    int work0 = ord0 * m_ordinal[1] * m_ordinal[2];
+    int work1 = ord1 * m_ordinal[0] * m_ordinal[2];
+    int work2 = ord2 * m_ordinal[0] * m_ordinal[1];
 
     if (m_lineOrdinal == 0 || m_ordinal[0] == 1)
-      work0 = 0.0;
+      work0 = 0;
     if (m_lineOrdinal == 1 || m_ordinal[1] == 1)
-      work1 = 0.0;
+      work1 = 0;
     if (m_lineOrdinal == 2 || m_ordinal[2] == 1)
-      work2 = 0.0;
+      work2 = 0;
 
-    auto delta0 = std::make_pair(fabs(work0 - avg_work), -(int)m_ordinal[0]);
-    auto delta1 = std::make_pair(fabs(work1 - avg_work), -(int)m_ordinal[1]);
-    auto delta2 = std::make_pair(fabs(work2 - avg_work), -(int)m_ordinal[2]);
+    auto delta0 = std::make_pair(abs(work0 - avg_work), -(int)m_ordinal[0]);
+    auto delta1 = std::make_pair(abs(work1 - avg_work), -(int)m_ordinal[1]);
+    auto delta2 = std::make_pair(abs(work2 - avg_work), -(int)m_ordinal[2]);
 
     auto min_ordinal = 0;
     auto min_delta   = delta0;
@@ -283,11 +298,12 @@ namespace Iocgns {
     }
 
     int ordinal = min_ordinal;
-    assert(ordinal != m_lineOrdinal);
 
-    if (m_ordinal[ordinal] <= 1) {
+    if (m_ordinal[ordinal] <= 1 || (work0 == 0 && work1 == 0 && work2 == 0)) {
       return std::make_pair(nullptr, nullptr);
     }
+
+    assert(ordinal != m_lineOrdinal);
 
     m_child1 = new StructuredZoneData;
     m_child2 = new StructuredZoneData;

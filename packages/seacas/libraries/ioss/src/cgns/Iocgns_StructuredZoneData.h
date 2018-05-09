@@ -52,6 +52,10 @@ namespace Iocgns {
       m_adam = this;
     }
 
+    // Used for regression tests to make it easier to define...
+    // Last argument is of the form "5x12x32"
+    StructuredZoneData(int zone, const std::string &nixnjxnk);
+
     std::string m_name{};
     Ioss::IJK_t m_ordinal{{0, 0, 0}};
 
