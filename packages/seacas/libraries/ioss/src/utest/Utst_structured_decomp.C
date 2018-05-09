@@ -8,10 +8,9 @@
 #include <numeric>
 #include <vector>
 
-
 // Helper function that drives all tests...
-void check_split_assign(std::vector<Iocgns::StructuredZoneData *> &zones, double load_balance_tolerance, size_t proc_count,
-			double min_toler = 0.9)
+void check_split_assign(std::vector<Iocgns::StructuredZoneData *> &zones,
+                        double load_balance_tolerance, size_t proc_count, double min_toler = 0.9)
 {
   double total_work =
       std::accumulate(zones.begin(), zones.end(), 0.0,
@@ -19,21 +18,21 @@ void check_split_assign(std::vector<Iocgns::StructuredZoneData *> &zones, double
 
   double avg_work = total_work / (double)proc_count;
   SECTION("split_zones")
-    {
-      Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
-      
-      double max_work = avg_work * load_balance_tolerance;
-      for (const auto zone : zones) {
-	if (zone->is_active()) {
-	  CHECK(zone->work() <= max_work);
-	}
+  {
+    Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+
+    double max_work = avg_work * load_balance_tolerance;
+    for (const auto zone : zones) {
+      if (zone->is_active()) {
+        CHECK(zone->work() <= max_work);
       }
-      
-      SECTION("assign_to_procs")
-        {
-          std::vector<size_t> work_vector(proc_count);
-          Iocgns::Utils::assign_zones_to_procs(zones, work_vector);
-	  
+    }
+
+    SECTION("assign_to_procs")
+    {
+      std::vector<size_t> work_vector(proc_count);
+      Iocgns::Utils::assign_zones_to_procs(zones, work_vector);
+
 #if 0
 	  std::cerr << "\nDecomposition for " << proc_count << " processors; Total work = " << total_work << " Average = " << avg_work << "\n";
 	  for (const auto zone : zones) {
@@ -42,31 +41,30 @@ void check_split_assign(std::vector<Iocgns::StructuredZoneData *> &zones, double
 		      << " \tWork: " << zone->work() << "\n";
 	  }
 #endif
-          // Each active zone must be on a processor
-          for (const auto zone : zones) {
-            if (zone->is_active()) {
-              CHECK(zone->m_proc >= 0);
-            }
-          }
-	  
-          // Work must be min_work <= work <= max_work
-	  double min_work = avg_work / load_balance_tolerance * min_toler;
-          for (auto work : work_vector) {
-	    CHECK(work >= min_work);
-            CHECK(work <= max_work);
-          }
-	  
-          // A processor cannot have more than one zone with the same adam zone
-          std::set<std::pair<int, int>> proc_adam_map;
-          for (const auto zone : zones) {
-            if (zone->is_active()) {
-              auto success =
-		proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
-              CHECK(success.second);
-            }
-          }
+      // Each active zone must be on a processor
+      for (const auto zone : zones) {
+        if (zone->is_active()) {
+          CHECK(zone->m_proc >= 0);
         }
+      }
+
+      // Work must be min_work <= work <= max_work
+      double min_work = avg_work / load_balance_tolerance * min_toler;
+      for (auto work : work_vector) {
+        CHECK(work >= min_work);
+        CHECK(work <= max_work);
+      }
+
+      // A processor cannot have more than one zone with the same adam zone
+      std::set<std::pair<int, int>> proc_adam_map;
+      for (const auto zone : zones) {
+        if (zone->is_active()) {
+          auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
+          CHECK(success.second);
+        }
+      }
     }
+  }
 }
 
 TEST_CASE("single block", "[single_block]")
@@ -74,7 +72,7 @@ TEST_CASE("single block", "[single_block]")
   std::vector<Iocgns::StructuredZoneData *> zones;
   zones.push_back(new Iocgns::StructuredZoneData(1, "4x4x1"));
 
-  int    proc_count = 2;
+  int    proc_count             = 2;
   double load_balance_tolerance = 1.2;
 
   check_split_assign(zones, load_balance_tolerance, proc_count);
@@ -86,7 +84,7 @@ TEST_CASE("single block line", "[single_block_line]")
   zones.push_back(new Iocgns::StructuredZoneData(1, "4x4x1"));
   zones.back()->m_lineOrdinal = 0;
 
-  int    proc_count = 4;
+  int    proc_count             = 4;
   double load_balance_tolerance = 1.05;
 
   check_split_assign(zones, load_balance_tolerance, proc_count);
@@ -101,10 +99,7 @@ TEST_CASE("prime sides", "[prime_sides]")
 
   for (size_t proc_count = 2; proc_count < 8; proc_count++) {
     std::string name = "Prime_ProcCount_" + std::to_string(proc_count);
-    SECTION(name)
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count, 0.8);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.8); }
   }
 }
 
@@ -122,10 +117,7 @@ TEST_CASE("farmer plenum", "[farmer_plenum]")
 
   for (size_t proc_count = 2; proc_count < 20; proc_count++) {
     std::string name = "Plenum_ProcCount_" + std::to_string(proc_count);
-    SECTION(name)
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
 }
 
@@ -208,10 +200,7 @@ TEST_CASE("mk21", "[mk21]")
 
   for (size_t proc_count = 2; proc_count < 17; proc_count++) {
     std::string name = "MK21_ProcCount_" + std::to_string(proc_count);
-    SECTION(name)
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
 }
 
@@ -243,10 +232,7 @@ TEST_CASE("farmer_h1_nozzle", "[h1_nozzle]")
 
   for (size_t proc_count = 3; proc_count <= 384; proc_count *= 2) {
     std::string name = "NOZ_ProcCount_" + std::to_string(proc_count);
-    SECTION(name)
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
 }
 
@@ -294,10 +280,7 @@ TEST_CASE("farmer_h1_mk21", "[h1_mk21]")
 
   for (size_t proc_count = 3; proc_count <= 384; proc_count *= 2) {
     std::string name = "H1_MK21_ProcCount_" + std::to_string(proc_count);
-    SECTION(name)
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count, 0.75);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.75); }
   }
 }
 
@@ -314,9 +297,6 @@ TEST_CASE("bc-257x129x2", "[bc-257x129x2]")
 
   for (size_t proc_count = 4; proc_count <= 84; proc_count += 4) {
     std::string name = "BC_ProcCount_" + std::to_string(proc_count);
-    SECTION(name)
-    {
-      check_split_assign(zones, load_balance_tolerance, proc_count);
-    }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
 }

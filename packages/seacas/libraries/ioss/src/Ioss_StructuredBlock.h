@@ -122,11 +122,8 @@ namespace Ioss {
 
     /** \brief Does block contain any cells
      */
-    bool is_active() const
-    {
-      return m_ni * m_nj * m_nk > 0;
-    }
-    
+    bool is_active() const { return m_ni * m_nj * m_nk > 0; }
+
     // Handle implicit properties -- These are calcuated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
