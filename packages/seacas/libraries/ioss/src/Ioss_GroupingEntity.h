@@ -532,9 +532,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &         field_name,
   typename ViewType::HostMirror host_data = Kokkos::create_mirror_view(data);
 
   // Extract a pointer to the underlying allocated memory of the host view.
-  // Kokkos::View::ptr_on_device() will soon be changed to Kokkos::View::data(),
-  // in which case, TOPTR(data) will work.
-  T *host_data_ptr = host_data.ptr_on_device();
+  T *host_data_ptr = host_data.data();
 
   // Extract the data from disk to the underlying memory pointed to by host_data_ptr.
   int retval = internal_get_field_data(field, host_data_ptr, data_size);
@@ -638,9 +636,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string &         field_name,
   Kokkos::deep_copy(host_data, data);
 
   // Extract a pointer to the underlying allocated memory of the host view.
-  // Kokkos::View::ptr_on_device() will soon be changed to Kokkos::View::data(),
-  // in which case, TOPTR(data) will work.
-  T *host_data_ptr = host_data.ptr_on_device();
+  T *host_data_ptr = host_data.data();
 
   // Transform the field
   field.transform(host_data_ptr);
