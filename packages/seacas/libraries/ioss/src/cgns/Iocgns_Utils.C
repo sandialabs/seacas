@@ -1541,26 +1541,37 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
             });
 
 #if 1
-  for (auto &zone : zones) {
-    zone->m_proc = -1;
+  std::set<std::pair<int, int>> proc_adam_map;
+  
+  // On first entry, work_vector will be all zeros.  To avoid any
+  // searching, assign the first `nproc` zones to the `nproc` entries
+  // in `work_vector`.  Avoids searching...
+  assert(zones.size() >= work_vector.size());
+  size_t i = 0;
+  for ( ; i < work_vector.size(); i++) {
+    auto &zone = zones[i];
+    zone->m_proc = i;
+    work_vector[i] += zone->work();
+    auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
+    assert(success.second);
+  }
+
+  for ( ; i < zones.size(); i++) {
+    auto &zone = zones[i];
+
     // Assign zone to processor with minimum work...
     ssize_t proc = proc_with_minimum_work(work_vector);
 
     // See if any other zone on this processor has the same adam zone...
-    // TODO: Currently only do one "re-search".  Need to do something
-    // better to make sure; or be able to handle this condition correctly.
     if (proc >= 0) {
-      for (auto &pzone : zones) {
-        if (pzone->is_active() && pzone->m_proc == proc) {
-          if (pzone->m_adam == zone->m_adam) {
-            proc = proc_with_minimum_work(work_vector, proc);
-            break;
-          }
-        }
+      auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
+      if (!success.second) {
+	proc = proc_with_minimum_work(work_vector, proc);
+	break;
       }
-      zone->m_proc = proc;
-      work_vector[proc] += zone->work();
     }
+    zone->m_proc = proc;
+    work_vector[proc] += zone->work();
   }
 #else
   // Assign zone to first processor that has "capacity".
