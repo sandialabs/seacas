@@ -1523,12 +1523,18 @@ int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timestep
   return num_timesteps;
 }
 
-void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &zones,
+void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &all_zones,
                                           std::vector<size_t> &                      work_vector)
 {
-  // Sort zones based on work.  Most work first..
-  // TODO: Possibly filter 'zones' down to only active zones to
-  // reduce sort and iteration time.
+  for (auto &zone : all_zones) {
+    zone->m_proc = -1;
+  }
+
+  // Sort zones based on work.  Most work first.. Filtered to active only...
+  std::vector<Iocgns::StructuredZoneData *> zones;
+  std::copy_if(all_zones.begin(), all_zones.end(), std::back_inserter(zones),
+               [](Iocgns::StructuredZoneData *z) { return z->is_active(); });
+
   std::sort(zones.begin(), zones.end(),
             [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
               return a->work() > b->work();
@@ -1537,25 +1543,23 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
 #if 1
   for (auto &zone : zones) {
     zone->m_proc = -1;
-    if (zone->is_active()) {
-      // Assign zone to processor with minimum work...
-      ssize_t proc = proc_with_minimum_work(work_vector);
+    // Assign zone to processor with minimum work...
+    ssize_t proc = proc_with_minimum_work(work_vector);
 
-      // See if any other zone on this processor has the same adam zone...
-      // TODO: Currently only do one "re-search".  Need to do something
-      // better to make sure; or be able to handle this condition correctly.
-      if (proc >= 0) {
-        for (auto &pzone : zones) {
-          if (pzone->is_active() && pzone->m_proc == proc) {
-            if (pzone->m_adam == zone->m_adam) {
-              proc = proc_with_minimum_work(work_vector, proc);
-              break;
-            }
+    // See if any other zone on this processor has the same adam zone...
+    // TODO: Currently only do one "re-search".  Need to do something
+    // better to make sure; or be able to handle this condition correctly.
+    if (proc >= 0) {
+      for (auto &pzone : zones) {
+        if (pzone->is_active() && pzone->m_proc == proc) {
+          if (pzone->m_adam == zone->m_adam) {
+            proc = proc_with_minimum_work(work_vector, proc);
+            break;
           }
         }
-        zone->m_proc = proc;
-        work_vector[proc] += zone->work();
       }
+      zone->m_proc = proc;
+      work_vector[proc] += zone->work();
     }
   }
 #else
@@ -1565,10 +1569,8 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
   int num_zones = 0;
   for (auto &zone : zones) {
     zone->m_proc = -1;
-    if (zone->is_active()) {
-      work += zone->work();
-      num_zones++;
-    }
+    work += zone->work();
+    num_zones++;
   }
 
   double avg_work = work / work_vector.size();
@@ -1673,28 +1675,27 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
       std::vector<std::pair<int, Iocgns::StructuredZoneData *>> active;
       active.push_back(std::make_pair(split_cnt, zone));
       do {
+        assert(!active.empty());
         split_cnt = active.back().first;
         zone      = active.back().second;
         active.pop_back();
 
         if (zone->is_active()) {
-          if (split_cnt == 1) {
-            new_zones.push_back(zone);
-          }
-          else {
+          if (split_cnt != 1) {
             int max_power_2 = power_2(split_cnt);
             if (max_power_2 == split_cnt) {
               work_average = zone->work() / 2.0;
+              max_power_2 /= 2;
             }
             else {
               work_average = zone->work() / (double(split_cnt) / double(max_power_2));
             }
 
-            if (max_power_2 == split_cnt) {
-              max_power_2 /= 2;
-            }
             auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
             if (children.first != nullptr && children.second != nullptr) {
+              new_zones.push_back(children.first);
+              new_zones.push_back(children.second);
+              new_zone_id += 2;
               active.push_back(std::make_pair(split_cnt - max_power_2, children.second));
               active.push_back(std::make_pair(max_power_2, children.first));
               num_active++;
@@ -1728,8 +1729,13 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
           auto children = zone->split(new_zone_id, mod_work, load_balance, proc_rank);
           if (children.first != nullptr && children.second != nullptr) {
             new_zones.push_back(children.first);
+            new_zones.push_back(children.second);
+            new_zone_id += 2;
             num_active++;
             active.push_back(std::make_pair(split_cnt, children.second));
+          }
+          else {
+            active.push_back(std::make_pair(split_cnt, zone));
           }
         }
         else {
@@ -1739,6 +1745,7 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
         // The work remaining on this zone should be approximately
         // equally divided among `split_cnt` processors.
         do {
+          assert(!active.empty());
           split_cnt = active.back().first;
           zone      = active.back().second;
           active.pop_back();
@@ -1753,15 +1760,15 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
               work_average = zone->work() / (double(split_cnt) / double(max_power_2));
             }
 
-            if (max_power_2 == 1) {
-              new_zones.push_back(zone);
-            }
-            else {
+            if (max_power_2 != 1) {
               if (max_power_2 == split_cnt) {
                 max_power_2 /= 2;
               }
               auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
               if (children.first != nullptr && children.second != nullptr) {
+                new_zones.push_back(children.first);
+                new_zones.push_back(children.second);
+                new_zone_id += 2;
                 active.push_back(std::make_pair(split_cnt - max_power_2, children.second));
                 active.push_back(std::make_pair(max_power_2, children.first));
                 num_active++;
