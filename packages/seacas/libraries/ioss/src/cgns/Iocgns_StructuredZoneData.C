@@ -221,9 +221,12 @@ namespace {
     auto c2_base = std::to_string(c2->m_adam->m_zone) + "_" + std::to_string(c2->m_zone);
 
     const auto &adam_name = parent->m_adam->m_name;
+
+    assert(c1->m_adam->m_zone == c2->m_adam->m_zone);
+
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
-                                        donor_range_end);
+                                        donor_range_end, true, true);
     auto &zgc1         = c1->m_zoneConnectivity.back();
     zgc1.m_sameRange   = true;
     zgc1.m_ownerOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
@@ -231,7 +234,7 @@ namespace {
 
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
-                                        range_end);
+                                        range_end, false, true);
     auto &zgc2         = c2->m_zoneConnectivity.back();
     zgc2.m_sameRange   = true;
     zgc2.m_ownerOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
@@ -267,13 +270,13 @@ namespace Iocgns {
       ratio = 1.0 / ratio;
     }
 
-    int ord0 = int((double)m_ordinal[0] * ratio + 0.5);
-    int ord1 = int((double)m_ordinal[1] * ratio + 0.5);
-    int ord2 = int((double)m_ordinal[2] * ratio + 0.5);
+    size_t ord0 = size_t((double)m_ordinal[0] * ratio + 0.5);
+    size_t ord1 = size_t((double)m_ordinal[1] * ratio + 0.5);
+    size_t ord2 = size_t((double)m_ordinal[2] * ratio + 0.5);
 
-    int work0 = ord0 * m_ordinal[1] * m_ordinal[2];
-    int work1 = ord1 * m_ordinal[0] * m_ordinal[2];
-    int work2 = ord2 * m_ordinal[0] * m_ordinal[1];
+    size_t work0 = ord0 * m_ordinal[1] * m_ordinal[2];
+    size_t work1 = ord1 * m_ordinal[0] * m_ordinal[2];
+    size_t work2 = ord2 * m_ordinal[0] * m_ordinal[1];
 
     if (m_lineOrdinal == 0 || m_ordinal[0] == 1)
       work0 = 0;
@@ -282,9 +285,9 @@ namespace Iocgns {
     if (m_lineOrdinal == 2 || m_ordinal[2] == 1)
       work2 = 0;
 
-    auto delta0 = std::make_pair(abs(work0 - avg_work), -(int)m_ordinal[0]);
-    auto delta1 = std::make_pair(abs(work1 - avg_work), -(int)m_ordinal[1]);
-    auto delta2 = std::make_pair(abs(work2 - avg_work), -(int)m_ordinal[2]);
+    auto delta0 = std::make_pair(abs((double)work0 - avg_work), -(int)m_ordinal[0]);
+    auto delta1 = std::make_pair(abs((double)work1 - avg_work), -(int)m_ordinal[1]);
+    auto delta2 = std::make_pair(abs((double)work2 - avg_work), -(int)m_ordinal[2]);
 
     auto min_ordinal = 0;
     auto min_delta   = delta0;

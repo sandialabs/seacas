@@ -123,15 +123,13 @@ namespace {
           }
         }
 
-        // Zone Grid Connectivity instances must be symmetric...
+        // Zone Grid Connectivity intra_block instances must be symmetric...
         // The GUID encodes the id and the processor,
         std::map<std::pair<size_t, size_t>, int> is_symm;
         for (auto &zone : zones) {
           if (zone->is_active()) {
-            const std::string &owner_adam = zone->m_adam->m_name;
             for (const auto &zgc : zone->m_zoneConnectivity) {
-              // NOTE: is_intra_block() does not work here since not resolved yet.
-              if (zgc.is_active() && owner_adam == zgc.m_donorName) {
+              if (zgc.is_active() && zgc.is_intra_block()) {
                 is_symm[std::make_pair(std::min(zgc.m_ownerGUID, zgc.m_donorGUID),
                                        std::max(zgc.m_ownerGUID, zgc.m_donorGUID))]++;
               }
@@ -756,6 +754,21 @@ TEST_CASE("bc-257x129x2", "[bc-257x129x2]")
 
   for (size_t proc_count = 4; proc_count <= 84; proc_count += 4) {
     std::string name = "BC_ProcCount_" + std::to_string(proc_count);
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+  }
+}
+
+TEST_CASE("6billion", "[6billion]")
+{
+  std::vector<Iocgns::StructuredZoneData *> zones;
+
+  int zone = 1;
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "4096x4096x4096"));
+
+  double load_balance_tolerance = 1.01;
+
+  for (size_t proc_count = 2; proc_count <= 1<<15; proc_count *= 2) {
+    std::string name = "Billion_PC_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
 }
