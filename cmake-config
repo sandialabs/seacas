@@ -139,12 +139,14 @@ then
     KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
                     -D TPL_ENABLE_CUDA:Bool=ON \
                     -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} \
+		    -D KOKKOS_ENABLE_DEPRECATED_CODE:BOOL=OFF" \
                     -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   else
     export OMPI_CXX=`which gcc`
     unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
     KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
                     -D SEACASProj_ENABLE_OpenMP:Bool=ON \
+		    -D KOKKOS_ENABLE_DEPRECATED_CODE:BOOL=OFF" \
                     -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   fi
 else
