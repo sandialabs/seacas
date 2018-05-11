@@ -767,8 +767,24 @@ TEST_CASE("6billion", "[6billion]")
 
   double load_balance_tolerance = 1.01;
 
-  for (size_t proc_count = 2; proc_count <= 1<<15; proc_count *= 2) {
+  for (size_t proc_count = 2; proc_count <= 1 << 15; proc_count *= 2) {
     std::string name = "Billion_PC_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+  }
+}
+
+TEST_CASE("LotsOfZones", "[LotsOfZones]")
+{
+  std::vector<Iocgns::StructuredZoneData *> zones;
+
+  for (int zone = 1; zone <= 10000; zone++) {
+    zones.push_back(new Iocgns::StructuredZoneData(zone, "1000x1000x100"));
+  }
+
+  double load_balance_tolerance = 1.01;
+
+  for (size_t proc_count = 2; proc_count <= 1024; proc_count *= 4) {
+    std::string name = "Lots_PC_" + std::to_string(proc_count);
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.1); }
   }
 }
