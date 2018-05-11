@@ -2,6 +2,7 @@ var classIocgns_1_1StructuredZoneData =
 [
     [ "StructuredZoneData", "classIocgns_1_1StructuredZoneData.html#a9b8d344eefe137a720dd1cef84ba43a1", null ],
     [ "StructuredZoneData", "classIocgns_1_1StructuredZoneData.html#a57f16edb971ee1bef323c42e7815fe3d", null ],
+    [ "StructuredZoneData", "classIocgns_1_1StructuredZoneData.html#a244a08717385bd20d2713094744f47e7", null ],
     [ "is_active", "classIocgns_1_1StructuredZoneData.html#aab68938b876393a2f8ba7dbd25264939", null ],
     [ "resolve_zgc_split_donor", "classIocgns_1_1StructuredZoneData.html#a88527c5e557cd385b45e7741e1c1b658", null ],
     [ "split", "classIocgns_1_1StructuredZoneData.html#ae7b4b9bc6a4cfb29b1a14f442badfca5", null ],
