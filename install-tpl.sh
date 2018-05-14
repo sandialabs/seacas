@@ -182,10 +182,10 @@ then
                 mkdir build
             fi
             cd build
-            MPI=${MPI} bash ../../runconfigure.sh
+            MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
             then
-                echo 1>&2 couldn\'t configure hdf5. exiting.
+                echo 1>&2 couldn\'t configure CGNS. exiting.
                 exit 1
             fi
 
