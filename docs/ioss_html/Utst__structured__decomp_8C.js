@@ -15,5 +15,6 @@ var Utst__structured__decomp_8C =
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#a47bccd02607f08cbdea8f90e5cb61f47", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#aedab364cbf1466bcebe3ec2b024d06b6", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#a9b373089f464a1baa3bfe77c809807f4", null ],
+    [ "TEST_CASE", "Utst__structured__decomp_8C.html#ae9b5bb738a269182fc92ef0545ca3e03", null ],
     [ "update_zgc_data", "Utst__structured__decomp_8C.html#a30fa7fb4167127ad067ef67e8879b2de", null ]
 ];
