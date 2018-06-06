@@ -755,6 +755,34 @@ namespace Iopx {
 
     this_region->property_add(Ioss::Property(std::string("title"), info.title));
 
+    // Get QA records from database and add to qaRecords...
+    int num_qa = ex_inquire_int(get_file_pointer(), EX_INQ_QA);
+    if (num_qa > 0) {
+      struct qa_element
+      {
+        char *qa_record[1][4];
+      };
+
+      auto qa = new qa_element[num_qa];
+      for (int i = 0; i < num_qa; i++) {
+        for (int j = 0; j < 4; j++) {
+          qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
+        }
+      }
+
+      ex_get_qa(get_file_pointer(), qa[0].qa_record);
+      for (int i = 0; i < num_qa; i++) {
+        add_qa_record(qa[i].qa_record[0][0], qa[i].qa_record[0][1], qa[i].qa_record[0][2],
+                      qa[i].qa_record[0][3]);
+      }
+      for (int i = 0; i < num_qa; i++) {
+        for (int j = 0; j < 4; j++) {
+          delete[] qa[i].qa_record[0][j];
+        }
+      }
+      delete[] qa;
+    }
+
     // Get information records from database and add to informationRecords...
     int num_info = ex_inquire_int(get_file_pointer(), EX_INQ_INFO);
     if (num_info > 0) {
