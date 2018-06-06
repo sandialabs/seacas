@@ -30,6 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cgns/Iocgns_Defines.h>
+
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_SmartAssert.h>
@@ -135,7 +137,7 @@ namespace {
 
     for (cgsize_t zone = 1; zone <= num_zones; zone++) {
       cgsize_t size[9];
-      char     zone_name[33];
+      char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
       CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
       zone_name_map[zone_name] = zone;
 
@@ -157,8 +159,8 @@ namespace {
       int nconn = 0;
       CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
       for (int i = 0; i < nconn; i++) {
-        char                    connectname[33];
-        char                    donorname[33];
+        char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
+        char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
         std::array<cgsize_t, 6> range;
         std::array<cgsize_t, 6> donor_range;
         Ioss::IJK_t             transform;
@@ -222,7 +224,7 @@ namespace {
     std::vector<std::string> families;
     families.reserve(num_families);
     for (int family = 1; family <= num_families; family++) {
-      char name[33];
+      char name[CGNS_MAX_NAME_LENGTH + 1];
       int  num_bc  = 0;
       int  num_geo = 0;
       CGCHECKNP(cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo));
@@ -258,7 +260,7 @@ namespace {
       CGCHECKNP(cg_nbocos(cgnsFilePtr, base, izone, &num_bcs));
 
       for (int ibc = 0; ibc < num_bcs; ibc++) {
-        char              boconame[33];
+        char              boconame[CGNS_MAX_NAME_LENGTH + 1];
         CG_BCType_t       bocotype;
         CG_PointSetType_t ptset_type;
         cgsize_t          npnts;
@@ -564,7 +566,7 @@ namespace Iocgns {
     {
       int  cell_dimension = 0;
       int  phys_dimension = 0;
-      char base_name[33];
+      char base_name[CGNS_MAX_NAME_LENGTH + 1];
       CGCHECK2(cg_base_read(filePtr, base, base_name, &cell_dimension, &phys_dimension));
       m_decomposition.m_spatialDimension = phys_dimension;
     }
@@ -578,7 +580,7 @@ namespace Iocgns {
       // All zones are "Unstructured" since this was checked prior to
       // calling this function...
       cgsize_t size[3];
-      char     zone_name[33];
+      char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
       CGCHECK2(cg_zone_read(filePtr, base, zone, zone_name, size));
 
       INT total_block_nodes = size[0];
@@ -695,12 +697,12 @@ namespace Iocgns {
       int nconn = 0;
       CGCHECK2(cg_nconns(filePtr, base, zone, &nconn));
       for (int i = 0; i < nconn; i++) {
-        char                      connectname[33];
+        char                      connectname[CGNS_MAX_NAME_LENGTH + 1];
         CG_GridLocation_t         location;
         CG_GridConnectivityType_t connect_type;
         CG_PointSetType_t         ptset_type;
         cgsize_t                  npnts = 0;
-        char                      donorname[33];
+        char                      donorname[CGNS_MAX_NAME_LENGTH + 1];
         CG_ZoneType_t             donor_zonetype;
         CG_PointSetType_t         donor_ptset_type;
         CG_DataType_t             donor_datatype;
@@ -803,7 +805,7 @@ namespace Iocgns {
     CGCHECK2(cg_nzones(filePtr, base, &num_zones));
     for (int zone = 1; zone <= num_zones; zone++) {
       cgsize_t size[3];
-      char     zone_name[33];
+      char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
       CGCHECK2(cg_zone_read(filePtr, base, zone, zone_name, size));
 
       INT total_elements = size[1];
@@ -817,7 +819,7 @@ namespace Iocgns {
 
       size_t last_blk_location = 0;
       for (int is = 1; is <= num_sections; is++) {
-        char             section_name[33];
+        char             section_name[CGNS_MAX_NAME_LENGTH + 1];
         CG_ElementType_t e_type;
         cgsize_t         el_start    = 0;
         cgsize_t         el_end      = 0;

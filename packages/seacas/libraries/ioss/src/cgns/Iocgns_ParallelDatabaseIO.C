@@ -35,6 +35,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cgns/Iocgns_Defines.h>
+
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
 #include <cassert>
@@ -437,7 +439,7 @@ namespace Iocgns {
 
     Utils::add_sidesets(cgnsFilePtr, this);
 
-    char basename[33];
+    char basename[CGNS_MAX_NAME_LENGTH + 1];
     int  cell_dimension = 0;
     int  phys_dimension = 0;
     CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
@@ -1136,7 +1138,7 @@ namespace Iocgns {
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
-        char basename[33];
+        char basename[CGNS_MAX_NAME_LENGTH + 1];
         int  cell_dimension = 0;
         int  phys_dimension = 0;
         CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
