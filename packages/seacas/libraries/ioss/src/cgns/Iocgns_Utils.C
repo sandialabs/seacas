@@ -30,6 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cgns/Iocgns_Defines.h>
+
 #include <Ioss_Bar2.h>
 #include <Ioss_Bar3.h>
 #include <Ioss_Hex20.h>
@@ -327,16 +329,16 @@ namespace {
   // processor.
   // ...Could do this on a per sb basis, but better to do all at once...
   // Data:
-  // 32 - connectionName -- 32 char max
+  // CGNS_MAX_NAME_LENGTH - connectionName -- CGNS_MAX_NAME_LENGTH char max
   // 1 - int zone
   // 1 - int donor_zone -- get by mapping donorName to zone
   // 6 cgsize_t[6] ownerRange (can probably use 32-bit int...)
   // 6 cgsize_t[6] donorRange (can probably use 32-bit int...)
   // 3 int[3] transform; (values range from -3 to +3 (could store as single int)
-  // 32 characters + 17 ints / connection.
+  // CGNS_MAX_NAME_LENGTH characters + 17 ints / connection.
 
 #ifdef SEACAS_HAVE_MPI
-    const int BYTE_PER_NAME = 32;
+    const int BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH;
     const int INT_PER_ZGC   = 17;
     // Gather all to processor 0, consolidate, and then scatter back...
     int         my_count          = 0;
@@ -930,7 +932,7 @@ int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int 
   bool location_matches = false;
   for (int i = 0; i < nsols; i++) {
     CG_GridLocation_t db_location;
-    char              db_name[33];
+    char              db_name[CGNS_MAX_NAME_LENGTH + 1];
     CGCHECKNP(cg_sol_info(cgnsFilePtr, base, zone, i + 1, db_name, &db_location));
     if (location == db_location) {
       location_matches = true;
@@ -943,7 +945,7 @@ int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int 
       bool found_step_descriptor = false;
       for (int d = 0; d < descriptor_count; d++) {
         char *db_step = nullptr;
-        char  name[33];
+        char  name[CGNS_MAX_NAME_LENGTH + 1];
         CGCHECKNP(cg_descriptor_read(d + 1, name, &db_step));
         if (strcmp(name, "step") == 0) {
           found_step_descriptor = true;
@@ -982,7 +984,7 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
   CGCHECKNP(cg_nfamilies(cgnsFilePtr, base, &num_families));
 
   for (int family = 1; family <= num_families; family++) {
-    char        name[33];
+    char        name[CGNS_MAX_NAME_LENGTH + 1];
     CG_BCType_t bocotype;
     int         num_bc  = 0;
     int         num_geo = 0;
@@ -1006,7 +1008,7 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
       CGCHECKNP(cg_ndescriptors(&ndescriptors));
       if (ndescriptors > 0) {
         for (int ndesc = 1; ndesc <= ndescriptors; ndesc++) {
-          char  dname[33];
+          char  dname[CGNS_MAX_NAME_LENGTH + 1];
           char *dtext;
           CGCHECKNP(cg_descriptor_read(ndesc, dname, &dtext));
           if (strcmp(dname, "FamBC_UserId") == 0) {
@@ -1227,8 +1229,8 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
   cgsize_t range[6];
   for (int ibc = 0; ibc < num_bcs; ibc++) {
-    char              boco_name[32 + 1];
-    char              fam_name[32 + 1];
+    char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
+    char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
     CG_BCType_t       bocotype;
     CG_PointSetType_t ptset_type;
     cgsize_t          npnts;
@@ -1246,7 +1248,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       CGCHECKNP(cg_famname_read(fam_name));
     }
     else {
-      strncpy(fam_name, boco_name, 32);
+      strncpy(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
     }
 
     CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
@@ -1429,19 +1431,19 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
     assert(sol_count % (int)timesteps.size() == 0);
 
     for (int sol = 1; sol <= sol_per_step; sol++) {
-      char              solution_name[33];
+      char              solution_name[CGNS_MAX_NAME_LENGTH + 1];
       CG_GridLocation_t grid_loc;
       CGCHECK(cg_sol_info(cgnsFilePtr, b, z, sol, solution_name, &grid_loc));
 
       int field_count = 0;
       CGCHECK(cg_nfields(cgnsFilePtr, b, z, sol, &field_count));
 
-      char **field_names = Ioss::Utils::get_name_array(field_count, 33);
+      char **field_names = Ioss::Utils::get_name_array(field_count, CGNS_MAX_NAME_LENGTH + 1);
       for (int field = 1; field <= field_count; field++) {
         CG_DataType_t data_type;
-        char          field_name[33];
+        char          field_name[CGNS_MAX_NAME_LENGTH + 1];
         CGCHECK(cg_field_info(cgnsFilePtr, b, z, sol, field, &data_type, field_name));
-        std::strncpy(field_names[field - 1], field_name, 32);
+        std::strncpy(field_names[field - 1], field_name, CGNS_MAX_NAME_LENGTH);
       }
 
       // Convert raw field names into composite fields (a_x, a_y, a_z ==> 3D vector 'a')
@@ -1497,7 +1499,7 @@ int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timestep
 {
   int  base          = 1;
   int  num_timesteps = 0;
-  char bitername[33];
+  char bitername[CGNS_MAX_NAME_LENGTH + 1];
   int  ierr = cg_biter_read(cgnsFilePtr, base, bitername, &num_timesteps);
   if (ierr == CG_NODE_NOT_FOUND) {
     return num_timesteps;
@@ -1542,21 +1544,21 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
 
 #if 1
   std::set<std::pair<int, int>> proc_adam_map;
-  
+
   // On first entry, work_vector will be all zeros.  To avoid any
   // searching, assign the first `nproc` zones to the `nproc` entries
   // in `work_vector`.  Avoids searching...
   assert(zones.size() >= work_vector.size());
   size_t i = 0;
-  for ( ; i < work_vector.size(); i++) {
-    auto &zone = zones[i];
+  for (; i < work_vector.size(); i++) {
+    auto &zone   = zones[i];
     zone->m_proc = i;
     work_vector[i] += zone->work();
     auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
     assert(success.second);
   }
 
-  for ( ; i < zones.size(); i++) {
+  for (; i < zones.size(); i++) {
     auto &zone = zones[i];
 
     // Assign zone to processor with minimum work...
@@ -1566,8 +1568,8 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
     if (proc >= 0) {
       auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
       if (!success.second) {
-	proc = proc_with_minimum_work(work_vector, proc);
-	break;
+        proc = proc_with_minimum_work(work_vector, proc);
+        break;
       }
     }
     zone->m_proc = proc;
@@ -1640,13 +1642,19 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
     size_t min_z     = 0;
     double min_delta = 1.0e27;
     for (size_t i = 0; i < zones.size(); i++) {
-      auto   zone     = zones[i];
-      double work     = zone->work();
+      auto   zone = zones[i];
+      double work = zone->work();
+
+      if (splits[i] == 0) {
+        continue;
+      }
       double zone_avg = work / (double)splits[i];
-      double delta    = std::abs(zone_avg - work / (double)(splits[i] + step));
-      if (delta < min_delta) {
-        min_delta = delta;
-        min_z     = i;
+      if ((splits[i] + step) > 0) {
+        double delta = std::abs(zone_avg - work / (double)(splits[i] + step));
+        if (delta < min_delta) {
+          min_delta = delta;
+          min_z     = i;
+        }
       }
     }
     splits[min_z] += step;
@@ -1661,8 +1669,12 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
   double max_avg      = avg_work * load_balance;
   bool   adaptive_avg = true;
   for (size_t i = 0; i < zones.size(); i++) {
-    auto   zone     = zones[i];
-    double work     = zone->work();
+    auto   zone = zones[i];
+    double work = zone->work();
+    if (splits[i] == 0) {
+      adaptive_avg = false;
+      break;
+    }
     double zone_avg = work / (double)splits[i];
     if (zone_avg < min_avg || zone_avg > max_avg) {
       adaptive_avg = false;
