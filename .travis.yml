@@ -43,6 +43,7 @@ before_install:
   - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
   - if [ -n "$MPI" ]; then sudo apt-get -y install libopenmpi-dev; fi
   - apt search openmpi
+  - apt search mpich
   - ./install-tpl.sh 
 
 before_script:
