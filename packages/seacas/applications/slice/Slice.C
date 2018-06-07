@@ -36,6 +36,7 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_Region.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>

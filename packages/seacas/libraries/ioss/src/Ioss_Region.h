@@ -259,10 +259,10 @@ namespace Ioss {
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
-                                    size_t data_size) const override;
+                                    size_t data_size = 0) const override;
 
     int64_t internal_put_field_data(const Field &field, void *data,
-                                    size_t data_size) const override;
+                                    size_t data_size = 0) const override;
 
   private:
     // Add the name 'alias' as an alias for the database entity with the
