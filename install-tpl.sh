@@ -38,7 +38,10 @@ elif [ "$MPI" == "ON" ]
 then
     CC=mpicc; export CC
     echo ${txtred}
+    which mpicc
+    which mpicc.openmpi
     mpicc --version
+    mpicc.openmpi --version
     echo ${txtrst}
 fi
 
