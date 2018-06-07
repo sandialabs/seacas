@@ -24,6 +24,8 @@ then
   else
     export CC=mpicc
   fi
+  echo "Checking MPI Version -- "
+  mpiexec --version
 else
   PARALLEL_ON_OFF="--disable-parallel"
   COMPILER="${COMPILER:-gnu}"
