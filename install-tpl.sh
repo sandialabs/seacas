@@ -37,6 +37,9 @@ then
 elif [ "$MPI" == "ON" ]
 then
     CC=mpicc; export CC
+    echo ${txtred}
+    mpicc --version
+    echo ${txtrst}
 fi
 
 if [ "$SHARED" == "YES" ]
