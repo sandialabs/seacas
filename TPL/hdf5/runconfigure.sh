@@ -63,7 +63,8 @@ fi
 
 mpicc --version
 
-./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
+#./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
+./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
 
 echo ""
 echo "     MPI: ${MPI}"
