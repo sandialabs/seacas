@@ -1807,5 +1807,10 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
     }
   }
   std::swap(new_zones, zones);
+  if (zones.size() < (size_t)proc_count && load_balance > 1.05) {
+    // Tighten up the load_balance factor to get some decomposition going...
+    double new_load_balance = (1.0 + load_balance) / 2.0;
+    new_zone_id             = pre_split(zones, avg_work, new_load_balance, proc_rank, proc_count);
+  }
   return new_zone_id;
 }
