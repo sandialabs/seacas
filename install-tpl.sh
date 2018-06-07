@@ -36,7 +36,7 @@ then
     SHARED=NO
 elif [ "$MPI" == "ON" ]
 then
-    CC=/usr/bin/mpicc; export CC
+    CC=mpicc; export CC
 fi
 
 if [ "$SHARED" == "YES" ]
