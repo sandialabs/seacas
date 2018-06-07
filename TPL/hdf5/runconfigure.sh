@@ -48,11 +48,20 @@ rm -f config.cache
 FC=''; export FC
 F90=''; export F90
 
-if ! [ "$CRAY" == "ON" ]
+if [ "$CRAY" == "ON" ]
 then
-  SHARED="--enable-shared"
+    USE_SHARED="--disable-shared"
+else
+    SHARED="${SHARED:-ON}"
+    if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
+    then
+	USE_SHARED="--enable-shared"
+    else
+	USE_SHARED="--disable-shared"
+    fi
 fi
-./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
+
+./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
 
 echo ""
 echo "     MPI: ${MPI}"

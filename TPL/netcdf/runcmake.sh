@@ -6,13 +6,17 @@ if [ "X$ACCESS" == "X" ] ; then
   echo "ACCESS set to ${ACCESS}"
 fi
 
-OS=`uname -s`
-if [ "$OS" = "Darwin" ] ; then
-LD_EXT="dylib"
-elif [ "$SHARED" = "ON" ] ; then
-	LD_EXT="so"
+SHARED="${SHARED:-ON}"
+if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
+then
+  OS=`uname -s`
+  if [ "$OS" = "Darwin" ] ; then
+    LD_EXT="dylib"
+  else
+    LD_EXT="so"
+  fi
 else
-	LD_EXT="a"
+  LD_EXT="a"
 fi
 
 export LIBS="-ldl -lzlib"
@@ -46,6 +50,10 @@ else
 
 fi
 
+# If using an XLF compiler on an IBM system, may need to add the following:
+# -DCMAKE_Fortran_FLAGS="-qfixed=72" \
+# -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
+
 rm -f config.cache
 
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
@@ -55,7 +63,8 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
          -DENABLE_NETCDF_4:BOOL=ON \
          -DENABLE_PNETCDF:BOOL=${MPI} \
-         -DENABLE_CDF5:BOOL=TRUE \
+	 -DNC_EXTRA_DEPS="z" \
+	 -DENABLE_CDF5:BOOL=TRUE \
          -DENABLE_MMAP:BOOL=ON \
          -DENABLE_DAP:BOOL=OFF \
          -DENABLE_V2_API:BOOL=OFF \

@@ -38,12 +38,20 @@ CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 
 # Find hdf5 library...
 LDFLAGS="-L${ACCESS}/lib"; export LDFLAGS
-if ! [ "$CRAY" == "ON" ]
+if [ "$CRAY" == "ON" ]
 then
-  SHARED="--enable-shared"
+    USE_SHARED="--disable-shared"
+else
+    SHARED="${SHARED:-ON}"
+    if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
+    then
+	USE_SHARED="--enable-shared"
+    else
+	USE_SHARED="--disable-shared"
+    fi
 fi
 
-./configure --with-hdf5=${ACCESS} --enable-mat73 ${SHARED} --prefix=${ACCESS} $1
+./configure --with-hdf5=${ACCESS} --enable-mat73 ${USE_SHARED} --prefix=${ACCESS} $1
 
 echo ""
 echo "     MPI: ${MPI}"
