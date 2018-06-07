@@ -195,6 +195,33 @@ TEST_CASE("bump", "[bump_zgc]")
   }
 }
 
+TEST_CASE("bump_loose", "[bump_loose_zgc]")
+{
+  int                                       zone = 1;
+  std::vector<Iocgns::StructuredZoneData *> zones;
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "2x2x1"));
+  zones.back()->m_zoneConnectivity.emplace_back(
+      "A1", zones.back()->m_zone, "zone02", 2, Ioss::IJK_t{1, 2, 3}, Ioss::IJK_t{3, 1, 1},
+      Ioss::IJK_t{3, 3, 2}, Ioss::IJK_t{1, 1, 1}, Ioss::IJK_t{1, 3, 2});
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "2x2x1"));
+  zones.back()->m_zoneConnectivity.emplace_back(
+      "B1", zones.back()->m_zone, "zone01", 1, Ioss::IJK_t{1, 2, 3}, Ioss::IJK_t{1, 1, 1},
+      Ioss::IJK_t{1, 3, 2}, Ioss::IJK_t{3, 1, 1}, Ioss::IJK_t{3, 3, 2});
+  zones.back()->m_zoneConnectivity.emplace_back(
+      "A2", zones.back()->m_zone, "zone03", 3, Ioss::IJK_t{1, 2, 3}, Ioss::IJK_t{3, 1, 1},
+      Ioss::IJK_t{3, 3, 2}, Ioss::IJK_t{1, 1, 1}, Ioss::IJK_t{1, 3, 2});
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "2x2x1"));
+  zones.back()->m_zoneConnectivity.emplace_back(
+      "B2", zones.back()->m_zone, "zone02", 2, Ioss::IJK_t{1, 2, 3}, Ioss::IJK_t{1, 1, 1},
+      Ioss::IJK_t{1, 3, 2}, Ioss::IJK_t{3, 1, 1}, Ioss::IJK_t{3, 3, 2});
+  double load_balance_tolerance = 1.4;
+
+  for (size_t proc_count = 2; proc_count < 8; proc_count++) {
+    std::string name = "bump_loose_ProcCount_" + std::to_string(proc_count);
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.8, 1.2); }
+  }
+}
+
 TEST_CASE("prime sides", "[prime_sides]")
 {
   std::vector<Iocgns::StructuredZoneData *> zones;
