@@ -103,14 +103,15 @@ fi
 if ! [ -e $ACCESS/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ Installing HDF5${txtrst}"
-    hdf_version="1.10.2"
-
+#    hdf_version="1.10.2"
+    hdf_version="1.8.20"
     cd $ACCESS
     cd TPL/hdf5
     if [ "$DOWNLOAD" == "YES" ]
     then
         rm -f hdf5-${hdf_version}.tar.bz2
-        wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+	wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.20.tar.bz2
+#        wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
     fi
 
     if [ "$INSTALL" == "YES" ]
