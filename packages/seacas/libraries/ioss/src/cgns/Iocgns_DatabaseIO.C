@@ -556,33 +556,33 @@ namespace Iocgns {
       int tot_zones = std::accumulate(zones_per_proc.begin(), zones_per_proc.end(), 0);
       if (myProcessor == 0) {
         for (auto &cnt : zones_per_proc) {
-          cnt *= (MAX_NAME_LENGTH + 1);
+          cnt *= (CGNS_MAX_NAME_LENGTH + 1);
         }
       }
       std::vector<int> offset(zones_per_proc);
 
-      std::vector<char> names(num_zones * (MAX_NAME_LENGTH + 1));
+      std::vector<char> names(num_zones * (CGNS_MAX_NAME_LENGTH + 1));
       std::vector<char> all_names;
       if (myProcessor == 0) {
         for (auto &cnt : zones_per_proc) {
-          cnt *= (MAX_NAME_LENGTH + 1);
+          cnt *= (CGNS_MAX_NAME_LENGTH + 1);
         }
         Ioss::Utils::generate_index(offset);
-        all_names.resize(tot_zones * (MAX_NAME_LENGTH + 1));
+        all_names.resize(tot_zones * (CGNS_MAX_NAME_LENGTH + 1));
       }
 
       for (int i = 0; i < num_zones; i++) {
-        char *name = names.data() + i * (MAX_NAME_LENGTH + 1);
-        strncpy(name, blocks[i]->name().c_str(), MAX_NAME_LENGTH);
+        char *name = names.data() + i * (CGNS_MAX_NAME_LENGTH + 1);
+        strncpy(name, blocks[i]->name().c_str(), CGNS_MAX_NAME_LENGTH);
       }
-      MPI_Gatherv(names.data(), num_zones * (MAX_NAME_LENGTH + 1), MPI_CHAR, all_names.data(),
+      MPI_Gatherv(names.data(), num_zones * (CGNS_MAX_NAME_LENGTH + 1), MPI_CHAR, all_names.data(),
                   zones_per_proc.data(), offset.data(), MPI_CHAR, 0, util().communicator());
 
       // Get unique set of names and tell each processor how many and what they are...
       if (myProcessor == 0) {
         std::vector<std::string> snames(tot_zones);
         for (int i = 0; i < tot_zones; i++) {
-          char *sname = all_names.data() + i * (MAX_NAME_LENGTH + 1);
+          char *sname = all_names.data() + i * (CGNS_MAX_NAME_LENGTH + 1);
           snames[i]   = sname;
         }
         Ioss::Utils::uniquify(snames);
