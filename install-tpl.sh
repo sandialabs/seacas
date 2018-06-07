@@ -1,57 +1,102 @@
 #! /usr/bin/env bash
 
-# so how do I make this work?
-# I want it to keep a build if what you need already exists.
+# Which compiler to use?
 export COMPILER=${COMPILER:-gnu}
-SUDO=${SUDO:-}
-CGNS=${CGNS:-ON}
-MATIO=${MATIO:-ON}
-GNU_PARALLEL=${GNU_PARALLEL:-ON}
-JOBS=${JOBS:-2}
-ACCESS=`pwd`
-VERBOSE=${VERBOSE:-1}
-pwd
 
-NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
-
+#By default, download and then install.
 DOWNLOAD=${DOWNLOAD:-YES}
 INSTALL=${INSTALL:-YES}
 
+# Shared libraries or static libraries?
 SHARED=${SHARED:-YES}
-# Need to think about if we're going to make for a static or a shared environment.
+
+# Which TPLS? (HDF5 and NetCDF always, PNetCDF if MPI=ON)
+CGNS=${CGNS:-ON}
+MATIO=${MATIO:-ON}
+GNU_PARALLEL=${GNU_PARALLEL:-ON}
+NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
+
+SUDO=${SUDO:-}
+JOBS=${JOBS:-2}
+VERBOSE=${VERBOSE:-1}
+
+pwd
+
+export ACCESS=`pwd`
+
+# Text color variables
+txtred=$(tput setaf 1)    # Red
+txtgrn=$(tput setaf 2)    # Green
+txtrst=$(tput sgr0)       # Text reset
+
 if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
 then
     CC=cc; export CC
     CFLAGS=-static; export CFLAGS
-    STATIC=YES
+    SHARED=NO
 elif [ "$MPI" == "ON" ]
 then
     CC=/usr/bin/mpicc; export CC
 fi
 
+if [ "$SHARED" == "YES" ]
+then
+    OS=`uname -s`
+    if [ "$OS" == "Darwin" ] ; then
+	LD_EXT="dylib"
+    else
+	LD_EXT="so"
+    fi
+else
+    LD_EXT="a"
+fi
+
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
-    cd $ACCESS
-    cd TPL
-    if [ "$DOWNLOAD" == "YES" ]
+    if ! [ -e $ACCESS/lib/libz.${LD_EXT} ]
     then
-        rm -rf zlib-1.2.11.tar.gz
-        wget --no-check-certificate https://zlib.net/zlib-1.2.11.tar.gz
-    fi
-
-    if [ "$INSTALL" == "YES" ]
-    then
-        tar -xzf zlib-1.2.11.tar.gz
-        cd zlib-1.2.11
-        ./configure --prefix=${ACCESS}
-        make -j${JOBS} && ${SUDO} make install
+	echo "${txtgrn}+++ Installing ZLIB${txtrst}"
+					 
+	cd $ACCESS
+	cd TPL
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+            rm -rf zlib-1.2.11.tar.gz
+            wget --no-check-certificate https://zlib.net/zlib-1.2.11.tar.gz
+	fi
+	
+	if [ "$INSTALL" == "YES" ]
+	then
+            tar -xzf zlib-1.2.11.tar.gz
+            cd zlib-1.2.11
+	    if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
+	    then
+		USE_SHARED=""
+	    else
+		USE_SHARED="--static"
+	    fi
+            ./configure --prefix=${ACCESS}
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 ${txtred}couldn\'t configure zlib. exiting.${txtrst}
+		exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 ${txtred}couldn\'t build zlib. exiting.${txtrst}
+		exit 1
+            fi
+	fi
+    else
+	echo "${txtgrn}+++ ZLIB already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
 # =================== INSTALL HDF5 ===============
-if ([ "$SHARED" == "NO" ] && ! [ -e $ACCESS/lib/libhdf5.a ]) && ! [ -e $ACCESS/lib/libhdf5.so ]
+if ! [ -e $ACCESS/lib/libhdf5.${LD_EXT} ]
 then
-    echo Installing HDF5
+    echo "${txtgrn}+++ Installing HDF5${txtrst}"
     hdf_version="1.10.2"
 
     cd $ACCESS
@@ -66,26 +111,29 @@ then
     then
         tar -jxf hdf5-${hdf_version}.tar.bz2
         cd hdf5-${hdf_version}
-        NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
+        SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
         then
-            echo 1>&2 couldn\'t configure hdf5. exiting.
+            echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
             exit 1
         fi
         make -j${JOBS} && ${SUDO} make "V=${VERBOSE}" install
         if [[ $? != 0 ]]
         then
-            echo 1>&2 couldn\'t make hdf5. exiting.
+            echo 1>&2 ${txtred}couldn\'t build hdf5. exiting.${txtrst}
             exit 1
         fi
     fi
+else
+    echo "${txtgrn}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
-# =================== INSTALL PNETCDF (if mpi) ===============
+# =================== INSTALL PNETCDF if parallel build ===============
 if [ "$MPI" == "ON" ]
 then
-    if ([ "$SHARED" == "NO" ] && ! [ -e $ACCESS/lib/libpnetcdf.a ]) && ! [ -e $ACCESS/lib/libpnetcdf.so ]
+    # PnetCDF currently only builds static library...
+    if ! [ -e $ACCESS/lib/libpnetcdf.a ]
     then
-        echo Installing PNetCDF
+        echo "${txtgrn}+++ Installing PNetCDF${txtrst}"
         #    pnet_version="1.8.1"
         pnet_version="1.9.0"
 
@@ -101,10 +149,10 @@ then
         then
             tar -xzf parallel-netcdf-${pnet_version}.tar.gz
             cd parallel-netcdf-${pnet_version}
-            bash ../runconfigure.sh
+            SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
-                echo 1>&2 couldn\'t configure pnetcdf. exiting.
+                echo 1>&2 ${txtred}couldn\'t configure PnetCDF. exiting.${txtrst}
                 exit 1
             fi
 
@@ -117,17 +165,19 @@ then
             fi
             if [[ $? != 0 ]]
             then
-                echo 1>&2 couldn\'t make pnetcdf. exiting.
+                echo 1>&2 ${txtred}couldn\'t build PnetCDF. exiting.${txtrst}
                 exit 1
             fi
         fi
+    else
+	echo "${txtgrn}+++ PNetCDF already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
 # =================== INSTALL NETCDF ===============
-if ([ "$SHARED" == "NO" ] && ! [ -e $ACCESS/lib/libnetcdf.a ]) && ! [ -e $ACCESS/lib/libnetcdf.so ]
+if ! [ -e $ACCESS/lib/libnetcdf.${LD_EXT} ]
 then
-    echo Installing NetCDF
+    echo "${txtgrn}+++ Installing NetCDF${txtrst}"
     cd $ACCESS
     cd TPL/netcdf
     if [ "$DOWNLOAD" == "YES" ]
@@ -145,27 +195,29 @@ then
         fi
         mkdir build
         cd build
-        NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
+        SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
         if [[ $? != 0 ]]
         then
-            echo 1>&2 couldn\'t configure cmake for netcdf. exiting.
+            echo 1>&2 ${txtred}couldn\'t configure cmake for NetCDF. exiting.${txtrst}
             exit 1
         fi
 
         make -j${JOBS} && ${SUDO} make "VERBOSE=${VERBOSE}" install
         if [[ $? != 0 ]]
         then
-            echo 1>&2 couldn\'t configure make netcdf. exiting.
+            echo 1>&2 ${txtred}couldn\'t build NetCDF. exiting.${txtrst}
             exit 1
         fi
     fi
+else
+    echo "${txtgrn}+++ NetCDF already installed.  Skipping download and installation.${txtrst}"
 fi
 # =================== INSTALL CGNS ===============
 if [ "$CGNS" == "ON" ]
 then
-    if ([ "$SHARED" == "NO" ] && ! [ -e $ACCESS/lib/libcgns.a ]) && ! [ -e $ACCESS/lib/libcgns.so ]
+    if ! [ -e $ACCESS/lib/libcgns.${LD_EXT} ]
     then
-        echo Installing CGNS
+        echo "${txtgrn}+++ Installing CGNS${txtrst}"
         cd $ACCESS
         cd TPL/cgns
         if [ "$DOWNLOAD" == "YES" ]
@@ -182,36 +234,58 @@ then
                 mkdir build
             fi
             cd build
-            MPI=${MPI} bash ../../runcmake.sh
+            SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
             then
-                echo 1>&2 couldn\'t configure CGNS. exiting.
+                echo 1>&2 ${txtred}couldn\'t configure CGNS. exiting.${txtrst}
                 exit 1
             fi
 
             make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build CGNS. exiting.${txtrst}
+                exit 1
+            fi
         fi
+    else
+	echo "${txtgrn}+++ CGNS already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
 # =================== INSTALL MATIO  ===============
 if [ "$MATIO" == "ON" ]
 then
-
-    cd $ACCESS
-    cd TPL/matio
-    if [ "$DOWNLOAD" == "YES" ]
+    if ! [ -e $ACCESS/lib/libmatio.${LD_EXT} ]
     then
-        rm -rf matio
-        git clone https://github.com/tbeu/matio.git
-    fi
-
-    if [ "$INSTALL" == "YES" ]
-    then
-        cd matio
-        ./autogen.sh
-        bash ../runconfigure.sh
-        make -j${JOBS} && ${SUDO} make install
+	echo "${txtgrn}+++ Installing MatIO${txtrst}"
+	cd $ACCESS
+	cd TPL/matio
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+            rm -rf matio
+            git clone https://github.com/tbeu/matio.git
+	fi
+	
+	if [ "$INSTALL" == "YES" ]
+	then
+            cd matio
+            ./autogen.sh
+            SHARED=${SHARED} bash ../runconfigure.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure MatIO. exiting.${txtrst}
+                exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build MatIO. exiting.${txtrst}
+                exit 1
+            fi
+	fi
+    else
+	echo "${txtgrn}+++ MatIO already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -220,6 +294,7 @@ if [ "$GNU_PARALLEL" == "ON" ]
 then
     if ! [ -e $ACCESS/bin/env_parallel ]
     then
+	echo "${txtgrn}+++ Installing Parallel${txtrst}"
         cd $ACCESS
         cd TPL/parallel
         if [ "$DOWNLOAD" == "YES" ]
@@ -233,13 +308,25 @@ then
             tar -jxf parallel-latest.tar.bz2
             cd parallel-*
             bash ../runconfigure.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure parallel. exiting.${txtrst}
+                exit 1
+            fi
             make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build parallel. exiting.${txtrst}
+                exit 1
+            fi
         fi
+    else
+	echo "${txtgrn}+++ Parallel already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
 # ==================================
 cd $ACCESS
-ls -l include
-ls -l bin
-ls -l lib
+#ls -l include
+#ls -l bin
+#ls -l lib

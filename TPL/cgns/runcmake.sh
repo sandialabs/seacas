@@ -14,6 +14,8 @@ if [ "X$ACCESS" == "X" ] ; then
   echo "ACCESS set to ${ACCESS}"
 fi
 
+SHARED="${SHARED:-ON}"
+
 if [ "$MPI" == "ON" ]
 then
   if [ "$CRAY" == "ON" ]
@@ -46,16 +48,20 @@ rm -f CMakeCache.txt
 
 if [ "$OS" == "Darwin" ] ; then
   RPATH="-D CMAKE_MACOSX_RPATH:BOOL=ON -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib"
-  LD_EXT="dylib"
+  if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
+  then
+      LD_EXT="dylib"
+  else
+      LD_EXT="a"
+  fi
   LIB="-DHDF5_LIBRARY:PATH=${ACCESS}/lib/libhdf5.${LD_EXT} -DHDF5_LIBRARIES:PATH=${ACCESS}/lib/libhdf5.${LD_EXT}"
 else
-  LD_EXT="so"
   LIB="-DHDF5_LIBRARY:PATH=${ACCESS}/lib"
 fi
 
 cmake \
 ${RPATH} \
--D CGNS_BUILD_SHARED:BOOL=ON \
+-D CGNS_BUILD_SHARED:BOOL=${SHARED} \
 -D CGNS_ENABLE_HDF5:BOOL=ON \
 ${LIB} \
 -D HDF5_ROOT=${ACCESS} \
