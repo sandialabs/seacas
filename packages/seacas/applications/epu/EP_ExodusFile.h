@@ -56,7 +56,7 @@ namespace Excn {
     static int  io_word_size() { return ioWordSize_; }
                 operator int() const;
     static int  max_name_length() { return maximumNameLength_; }
-    static int  get_free_descriptor_count();
+    static size_t  get_free_descriptor_count();
     static void unlink_temporary_files();
 
   private:
