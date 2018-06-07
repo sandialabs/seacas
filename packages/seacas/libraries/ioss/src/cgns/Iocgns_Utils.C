@@ -1567,9 +1567,9 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
     // See if any other zone on this processor has the same adam zone...
     if (proc >= 0) {
       auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
-      if (!success.second) {
-        proc = proc_with_minimum_work(work_vector, proc);
-        break;
+      while (!success.second) {
+        proc    = proc_with_minimum_work(work_vector, proc);
+        success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
       }
     }
     zone->m_proc = proc;
