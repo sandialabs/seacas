@@ -6,6 +6,8 @@ if [ "X$ACCESS" == "X" ] ; then
   echo "ACCESS set to ${ACCESS}"
 fi
 
+H5VERSION=${H5VERSION:-V110}
+
 NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
@@ -61,10 +63,12 @@ else
     fi
 fi
 
-mpicc --version
-
-#./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
-./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
+if [ "${H5VERSION}" == "V18" ]
+then
+    ./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
+else
+    ./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
+fi
 
 echo ""
 echo "     MPI: ${MPI}"

@@ -37,12 +37,6 @@ then
 elif [ "$MPI" == "ON" ]
 then
     CC=mpicc; export CC
-    echo ${txtred}
-    which mpicc
-    which mpicc.openmpi
-    mpicc --version
-    mpicc.openmpi --version
-    echo ${txtrst}
 fi
 
 if [ "$SHARED" == "YES" ]
@@ -103,22 +97,32 @@ fi
 if ! [ -e $ACCESS/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ Installing HDF5${txtrst}"
-#    hdf_version="1.10.2"
-    hdf_version="1.8.20"
+    H5VERSION=${H5VERSION:-V110}
+    if [ "${H5VERSION}" == "V18" ]
+    then
+	hdf_version="1.8.20"
+    else
+	hdf_version="1.10.2"
+    fi
+
     cd $ACCESS
     cd TPL/hdf5
     if [ "$DOWNLOAD" == "YES" ]
     then
         rm -f hdf5-${hdf_version}.tar.bz2
-	wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.20.tar.bz2
-#        wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+	if [ "${H5VERSION}" == "V18" ]
+	then
+	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-${hdf_version}.tar.bz2
+	else
+	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
+	fi
     fi
 
     if [ "$INSTALL" == "YES" ]
     then
         tar -jxf hdf5-${hdf_version}.tar.bz2
         cd hdf5-${hdf_version}
-        SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
+        H5VERSION=${H5VERSION} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
