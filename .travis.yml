@@ -40,10 +40,8 @@ before_install:
   - sudo apt-get -y install gfortran-6
   - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-6 90
   - sudo apt-get -y install libz-dev
-  - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
-  - if [ -n "$MPI" ]; then sudo apt-get -y install libopenmpi-dev; fi
-  - apt search openmpi
-  - apt search mpich
+  - if [ -n "$MPI" ]; then sudo apt-get -y install mpich; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install libmpich-dev; fi
   - ./install-tpl.sh 
 
 before_script:
