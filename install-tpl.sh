@@ -5,7 +5,10 @@ export COMPILER=${COMPILER:-gnu}
 
 #By default, download and then install.
 DOWNLOAD=${DOWNLOAD:-YES}
-INSTALL=${INSTALL:-YES}
+BUILD=${BUILD:-YES}
+
+# Force downloading and installation even if the TPL already exists in lib/include
+FORCE=${FORCE:-NO}
 
 # Shared libraries or static libraries?
 SHARED=${SHARED:-YES}
@@ -53,22 +56,27 @@ fi
 
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
-    if ! [ -e $ACCESS/lib/libz.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libz.${LD_EXT} ]
     then
-	echo "${txtgrn}+++ Installing ZLIB${txtrst}"
+	echo "${txtgrn}+++ ZLIB${txtrst}"
+        zlib_version="1.2.11"
 					 
 	cd $ACCESS
 	cd TPL
 	if [ "$DOWNLOAD" == "YES" ]
 	then
-            rm -rf zlib-1.2.11.tar.gz
-            wget --no-check-certificate https://zlib.net/zlib-1.2.11.tar.gz
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf zlib-${zlib_version}
+            rm -rf zlib-${zlib_version}.tar.gz
+            wget --no-check-certificate https://zlib.net/zlib-${zlib_version}.tar.gz
+            tar -xzf zlib-${zlib_version}.tar.gz
+            rm -rf zlib-${zlib_version}.tar.gz
 	fi
 	
-	if [ "$INSTALL" == "YES" ]
+	if [ "$BUILD" == "YES" ]
 	then
-            tar -xzf zlib-1.2.11.tar.gz
-            cd zlib-1.2.11
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd zlib-${zlib_version}
 	    if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 	    then
 		USE_SHARED=""
@@ -93,10 +101,10 @@ then
     fi
 fi
 
-# =================== INSTALL HDF5 ===============
-if ! [ -e $ACCESS/lib/libhdf5.${LD_EXT} ]
+# =================== BUILD HDF5 ===============
+if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libhdf5.${LD_EXT} ]
 then
-    echo "${txtgrn}+++ Installing HDF5${txtrst}"
+    echo "${txtgrn}+++ HDF5${txtrst}"
     H5VERSION=${H5VERSION:-V110}
     if [ "${H5VERSION}" == "V18" ]
     then
@@ -109,6 +117,8 @@ then
     cd TPL/hdf5
     if [ "$DOWNLOAD" == "YES" ]
     then
+	echo "${txtgrn}+++ Downloading...${txtrst}"
+        rm -rf hdf5-${hdf_version}
         rm -f hdf5-${hdf_version}.tar.bz2
 	if [ "${H5VERSION}" == "V18" ]
 	then
@@ -116,11 +126,13 @@ then
 	else
 	    wget --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-${hdf_version}/src/hdf5-${hdf_version}.tar.bz2
 	fi
+        tar -jxf hdf5-${hdf_version}.tar.bz2
+        rm -f hdf5-${hdf_version}.tar.bz2
     fi
 
-    if [ "$INSTALL" == "YES" ]
+    if [ "$BUILD" == "YES" ]
     then
-        tar -jxf hdf5-${hdf_version}.tar.bz2
+	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version}
         H5VERSION=${H5VERSION} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
@@ -142,23 +154,26 @@ fi
 if [ "$MPI" == "ON" ]
 then
     # PnetCDF currently only builds static library...
-    if ! [ -e $ACCESS/lib/libpnetcdf.a ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libpnetcdf.a ]
     then
-        echo "${txtgrn}+++ Installing PNetCDF${txtrst}"
-        #    pnet_version="1.8.1"
+        echo "${txtgrn}+++ PNetCDF${txtrst}"
         pnet_version="1.9.0"
 
         cd $ACCESS
         cd TPL/pnetcdf
         if [ "$DOWNLOAD" == "YES" ]
         then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf parallel-netcdf-${pnet_version}
             rm -f parallel-netcdf-${pnet_version}.tar.gz
             wget http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-${pnet_version}.tar.gz
+            tar -xzf parallel-netcdf-${pnet_version}.tar.gz
+            rm -f parallel-netcdf-${pnet_version}.tar.gz
         fi
 
-        if [ "$INSTALL" == "YES" ]
+        if [ "$BUILD" == "YES" ]
         then
-            tar -xzf parallel-netcdf-${pnet_version}.tar.gz
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd parallel-netcdf-${pnet_version}
             SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
@@ -186,19 +201,21 @@ then
 fi
 
 # =================== INSTALL NETCDF ===============
-if ! [ -e $ACCESS/lib/libnetcdf.${LD_EXT} ]
+if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libnetcdf.${LD_EXT} ]
 then
-    echo "${txtgrn}+++ Installing NetCDF${txtrst}"
+    echo "${txtgrn}+++ NetCDF${txtrst}"
     cd $ACCESS
     cd TPL/netcdf
     if [ "$DOWNLOAD" == "YES" ]
     then
+	echo "${txtgrn}+++ Downloading...${txtrst}"
         rm -rf netcdf-c
         git clone https://github.com/Unidata/netcdf-c netcdf-c
     fi
 
-    if [ "$INSTALL" == "YES" ]
+    if [ "$BUILD" == "YES" ]
     then
+	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
         if [ -d build ]
         then
@@ -226,19 +243,21 @@ fi
 # =================== INSTALL CGNS ===============
 if [ "$CGNS" == "ON" ]
 then
-    if ! [ -e $ACCESS/lib/libcgns.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libcgns.${LD_EXT} ]
     then
-        echo "${txtgrn}+++ Installing CGNS${txtrst}"
+        echo "${txtgrn}+++ CGNS${txtrst}"
         cd $ACCESS
         cd TPL/cgns
         if [ "$DOWNLOAD" == "YES" ]
         then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf CGNS
             git clone https://github.com/cgns/CGNS
         fi
 
-        if [ "$INSTALL" == "YES" ]
+        if [ "$BUILD" == "YES" ]
         then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd CGNS
             if ! [ -d build ]
             then
@@ -267,19 +286,21 @@ fi
 # =================== INSTALL MATIO  ===============
 if [ "$MATIO" == "ON" ]
 then
-    if ! [ -e $ACCESS/lib/libmatio.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libmatio.${LD_EXT} ]
     then
-	echo "${txtgrn}+++ Installing MatIO${txtrst}"
+	echo "${txtgrn}+++ MatIO${txtrst}"
 	cd $ACCESS
 	cd TPL/matio
 	if [ "$DOWNLOAD" == "YES" ]
 	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf matio
             git clone https://github.com/tbeu/matio.git
 	fi
 	
-	if [ "$INSTALL" == "YES" ]
+	if [ "$BUILD" == "YES" ]
 	then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd matio
             ./autogen.sh
             SHARED=${SHARED} bash ../runconfigure.sh
@@ -303,20 +324,23 @@ fi
 # =================== INSTALL PARALLEL  ===============
 if [ "$GNU_PARALLEL" == "ON" ]
 then
-    if ! [ -e $ACCESS/bin/env_parallel ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/bin/env_parallel ]
     then
-	echo "${txtgrn}+++ Installing Parallel${txtrst}"
+	echo "${txtgrn}+++ GNU Parallel${txtrst}"
         cd $ACCESS
         cd TPL/parallel
         if [ "$DOWNLOAD" == "YES" ]
         then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf parallel-*
             wget --no-check-certificate ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2
+            tar -jxf parallel-latest.tar.bz2
+            rm -rf parallel-latest.tar.bz2
         fi
 
-        if [ "$INSTALL" == "YES" ]
+        if [ "$BUILD" == "YES" ]
         then
-            tar -jxf parallel-latest.tar.bz2
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd parallel-*
             bash ../runconfigure.sh
             if [[ $? != 0 ]]

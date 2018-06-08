@@ -43,14 +43,16 @@ PNetCDF libraries.
 | COMPILER | clang, gnu | gnu | What compiler should be used for non-parallel build |
 | JOBS     | {count}|  2      | Number of "jobs" used for simultaneous compiles |
 | DOWNLOAD | YES, NO | YES |  Should TPLs be downloaded. |
-| INSTALL  | YES, NO | YES | Should TPLs be built and installed. |
+| BUILD    | YES, NO | YES | Should TPLs be built and installed. |
+| FORCE    | YES, NO | NO  | Force downloading and building even if lib is already installed. |
+| SHARED   | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
 | MPI      | ON, OFF | OFF | If ON, then build parallel capability |
 | NEEDS_ZLIB| YES, NO| NO  | If system does not have zlib installed, download and install it. |
 | CGNS     | YES, NO | YES | Should CGNS TPL be built.  |
 | MATIO    | YES, NO | YES | Should matio TPL be built. |
 | GNU_PARALLEL | YES, NO | YES | Should GNU parallel script be built. |
 
-* NOTE: The `DOWNLOAD` and `INSTALL` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
+* NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
 * The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
  
 ### Download and build dependencies (Third-Party Libraries)
