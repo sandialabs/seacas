@@ -19,15 +19,15 @@ matrix:
     - compiler: clang
       env: SANITIZER="-fsanitize=address -fsanitize=memory -fno-omit-frame-pointer -fPIC" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
     - compiler: gcc
-      env: MPI=ON H5VERSION=V18
+      env: MPI=ON H5VERSION=V110
     - compiler: clang
-      env: MPI=ON THREADSAFE=ON H5VERSION=V18
+      env: MPI=ON THREADSAFE=ON H5VERSION=V110
     - compiler: gcc
       env: KOKKOS=ON
     - compiler: gcc
-      env: KOKKOS=ON MPI=ON H5VERSION=V18
+      env: KOKKOS=ON MPI=ON H5VERSION=V110
     - compiler: gcc
-      env: CGNS=OFF MPI=ON H5VERSION=V18
+      env: CGNS=OFF MPI=ON H5VERSION=V110
     - compiler: gcc
       env: FORTRAN=OFF
 
