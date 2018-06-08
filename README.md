@@ -64,7 +64,7 @@ described in the previous section.
 
  * [Zoltan](#zoltan) -- required, supplied
  * [HDF5](#hdf5) -- optional
- * [NetCDF](#netcdf) -- required with modifications
+ * [NetCDF](#netcdf) -- required with possible modifications
  * [MatIO](#matio) -- optional, required for exo2mat and mat2exo
  * [GNU Parallel](#gnu-parallel) -- optional
  * [CGNS](#cgns) -- experimental optional
