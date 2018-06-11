@@ -487,12 +487,12 @@ namespace Iogn {
     void show_parameters() const;
     void initialize();
 
-    std::vector<ShellLocation> shellBlocks;
-    std::vector<ShellLocation> nodesets;
-    std::vector<ShellLocation> sidesets;
-    double                     rotmat[3][3];
-    size_t                     numX, numY, numZ;
-    size_t                     myNumZ, myStartZ;
+    std::vector<ShellLocation>           shellBlocks;
+    std::vector<ShellLocation>           nodesets;
+    std::vector<ShellLocation>           sidesets;
+    std::array<std::array<double, 3>, 3> rotmat;
+    size_t                               numX, numY, numZ;
+    size_t                               myNumZ, myStartZ;
 
     size_t processorCount;
     size_t myProcessor;
