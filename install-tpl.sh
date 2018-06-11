@@ -28,6 +28,9 @@ pwd
 export ACCESS=`pwd`
 
 # Text color variables
+if [[ $TERM != *"xterm"* ]]; then
+    export TERM=dumb
+fi
 txtred=$(tput setaf 1)    # Red
 txtgrn=$(tput setaf 2)    # Green
 txtrst=$(tput sgr0)       # Text reset
