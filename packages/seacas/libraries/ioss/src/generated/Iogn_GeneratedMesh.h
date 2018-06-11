@@ -35,12 +35,13 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityType.h> // for EntityType
-#include <cstddef>           // for size_t
-#include <cstdint>           // for int64_t
-#include <map>               // for map, etc
-#include <string>            // for string
-#include <utility>           // for pair
-#include <vector>            // for vector
+#include <array>
+#include <cstddef> // for size_t
+#include <cstdint> // for int64_t
+#include <map>     // for map, etc
+#include <string>  // for string
+#include <utility> // for pair
+#include <vector>  // for vector
 
 namespace Iogn {
   using MapVector = std::vector<int64_t>;
