@@ -1,27 +1,77 @@
-#!/bin/sh
-EXTRA_ARGS=$@
+#! /usr/bin/env bash
 
-### Set to ON for parallel compile; otherwise OFF for serial (default)
-MPI=OFF
-
-### Switch for Debug or Release build:
-#BUILD_TYPE=Release
-BUILD_TYPE=Debug
-
-### Define to YES to *disable* all exodus deprecated functions
-OMIT_DEPRECATED_CODE="NO"
+if [ "${TRAVIS}" == "true" ]
+then
+  BUILDDIR=${1:-build}
+  mkdir $BUILDDIR && cd $BUILDDIR
+else
+  EXTRA_ARGS=$@
+fi
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 ### If not, then define "ACCESS" to point to the root of the SEACAS source code.
-ACCESS=$(cd ..; pwd)
+if [ "$ACCESS" == "" ]
+then
+    ACCESS=$(cd ..; pwd)
+fi
+
+### Set to ON for parallel compile; otherwise OFF for serial (default)
+MPI="${MPI:-OFF}"
+echo "MPI set to ${MPI}"
+
+if [ "${MPI}" == "OFF" ]
+then
+  ### Change this to point to the compilers you want to use
+    ## Travis build (and others) set this to EXTERNAL to set
+    ## CXX, CC, and FC externally.
+  COMPILER=${COMPILER:-gnu}
+
+  if [ "$COMPILER" == "gnu" ]
+  then
+      CXX=g++
+      CC=gcc
+      FC=gfortran
+      CFLAGS="-Wall -Wunused -pedantic"
+      CXXFLAGS="-Wall -Wunused -pedantic"      
+  fi
+  
+  if [ "$COMPILER" == "clang" ]
+  then
+      CXX=clang++
+      CC=clang
+      FC=gfortran
+      CFLAGS="-Wall -Wunused -pedantic"
+      CXXFLAGS="-Wall -Wunused -pedantic"
+  fi
+
+  if [ "$COMPILER" == "intel" ]
+  then
+      CXX=icpc
+      CC=icc
+      FC=ifort
+      CFLAGS="-Wall -Wunused"
+      CXXFLAGS="-Wall -Wunused"
+  fi
+
+fi
+
+# If using an XLF compiler on an IBM system, may need to add the following:
+# -DCMAKE_Fortran_FLAGS="-qfixed=72" \
+# -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
+
+SHARED="${SHARED:-ON}"
+### Switch for Debug or Release build:
+BUILD_TYPE="${BUILD_TYPE:-DEBUG}"
 
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then change the "ON"
 ### below to "OFF". It will disable blot and fastq
-HAVE_X11=ON
+HAVE_X11=${X11:-ON}
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
-THREADSAFE_IO_LIBS=OFF
+THREADSAFE=${THREADSAFE:-OFF}
+
+FORTRAN=${FORTRAN:-ON}
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
@@ -30,55 +80,64 @@ INSTALL_PATH=${ACCESS}
 ### Make sure these point to the locations to find the libraries and includes in lib and include
 ### subdirectories of the specified paths.
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
-HAVE_NETCDF=ON
-HAVE_MATIO=ON
-HAVE_CGNS=OFF
-HAVE_DATAWAREHOUSE=OFF
-
 NETCDF_PATH=${ACCESS}
+PNETCDF_PATH=${ACCESS}
 MATIO_PATH=${ACCESS}
 HDF5_PATH=${ACCESS}
 CGNS_PATH=${ACCESS}
 DATAWAREHOUSE_PATH=${ACCESS}
 
+function check_enable()
+{
+    local path=$1
+    if [ -e "${path}" ]
+    then
+	echo "ON"
+    else
+	echo "OFF"
+    fi
+}
+
+HAVE_NETCDF=`check_enable "${NETCDF_PATH}/include/netcdf.h"`
+HAVE_MATIO=`check_enable "${MATIO_PATH}/include/matio.h"`
+HAVE_CGNS=`check_enable "${CGNS_PATH}/include/cgnslib.h"`
+HAVE_DATAWAREHOUSE=OFF
+
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
 
 ### Set to ON to use Kokkos in the Ioss library; otherwise OFF (default)
-KOKKOS=OFF
+KOKKOS=${KOKKOS:-OFF}
+
+CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
 
 ### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
-CUDA=OFF
+CUDA=${CUDA:-OFF}
 
-### Change this to point to the compilers you want to use
-COMPILER="gnu"
-#COMPILER="clang"
-if [ "$MPI" == "ON" ]
+# BUG needs to work with cray too.
+if [ "${MPI}" == "ON" ] && [ "${CRAY}" == "ON" ]
 then
-  MPI_EXEC=`which mpiexec`
-  MPI_BIN=`dirname $MPI_EXEC`
-
-  if [ "$COMPILER" == "gnu" ]
-  then
-      CXX=mpicxx
-      CC=mpicc
-      FC=mpif77
-  else
-      CXX=mpicxx
-      CC=mpicc
-      FC=mpif77
-  fi
-else
-  if [ "$COMPILER" == "gnu" ]
-  then
-      CXX=g++
-      CC=gcc
-      FC=gfortran
-  else
-      CXX=clang++
-      CC=clang
-      FC=gfortran-mp-4.9
-  fi
+   MPI_EXEC=`which srun`
+   MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-n"
+   CXX=CC
+   CC=cc
+   FC=ftn
+   MPI_BIN=`dirname \`which ${CC}\``
+elif [ "${MPI}" == "ON" ]
+then
+   if [ "${USE_SRUN}" == "ON" ]
+   then
+       MPI_EXEC=`which srun`
+       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-N"
+       MPI_BIN=`dirname "${MPI_EXEC}"`
+   else
+       MPI_EXEC=`which mpiexec`
+       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC}"
+       MPI_BIN=`dirname "${MPI_EXEC}"`
+   fi
+   CXX=mpicxx
+   CC=mpicc
+   FC=mpif77
 fi
 
 if [ "$KOKKOS" == "ON" ]
@@ -90,12 +149,14 @@ then
     KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
                     -D TPL_ENABLE_CUDA:Bool=ON \
                     -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} \
+		    -D KOKKOS_ENABLE_DEPRECATED_CODE:BOOL=OFF" \
                     -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   else
     export OMPI_CXX=`which gcc`
     unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
     KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
                     -D SEACASProj_ENABLE_OpenMP:Bool=ON \
+		    -D KOKKOS_ENABLE_DEPRECATED_CODE:BOOL=OFF" \
                     -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   fi
 else
@@ -109,6 +170,15 @@ then
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
     
+OS=`uname -s`
+if [ "$OS" == "Darwin" ] ; then
+  DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include"
+else
+  DARWIN_OPT=""
+fi
+
+FC=${FC:-gfortran}
+
 rm -f CMakeCache.txt
 
 ### To use the clang sanitizers:
@@ -136,16 +206,14 @@ SANITIZER="-fsanitize=${sanitizer} -fno-omit-frame-pointer -fPIC"
 if [ "$COMPILER" == "gnu" ]
 then
   COMMON_WARNING_FLAGS="\
-   -Wduplicated-cond\
    -Wlogical-op\
-   -Wnull-dereference\
    -Wshadow\
    -Wformat=2\
   "
 
   C_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wjump-misses-init"
 
-  CXX_WARNING_FLAGS="${COMMON_WARNING_FLAGS}"
+  CXX_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wnull-dereference -Wduplicated-cond"
 
   # -Wuseless-cast
   # -Wold-style-cast
@@ -155,49 +223,73 @@ else
 
   CXX_WARNING_FLAGS="-Weverything -Wno-c++98-compat -Wno-old-style-cast -Wno-sign-conversion -Wno-reserved-id-macro"
 fi
+
 ###------------------------------------------------------------------------
 cmake  \
--D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic ${CXX_WARNING_FLAGS} ${SANITIZER}" \
--D CMAKE_C_FLAGS="-Wall -Wunused -pedantic ${C_WARNING_FLAGS} ${SANITIZER}" \
+-D CMAKE_CXX_FLAGS="${CXXFLAGS} ${CXX_WARNING_FLAGS} ${SANITIZER}" \
+-D CMAKE_C_FLAGS="${CFLAGS} ${C_WARNING_FLAGS} ${SANITIZER}" \
 -D CMAKE_Fortran_FLAGS="-Wall ${SANITIZER}" \
--D CMAKE_MACOSX_RPATH:BOOL=ON \
+-D SEACASProj_ENABLE_STRONG_C_COMPILE_WARNINGS=ON \
+-D SEACASProj_ENABLE_STRONG_CXX_COMPILE_WARNINGS=ON \
+-D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
+-D CMAKE_C_COMPILER:FILEPATH=${CC} \
+-D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
--D BUILD_SHARED_LIBS:BOOL=OFF \
+-D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
 -D SEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
 -D SEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
 -D SEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
 -D SEACASProj_ENABLE_TESTS=ON \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
--D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
--D CMAKE_C_COMPILER:FILEPATH=${CC} \
--D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
--D SEACASProj_ENABLE_STRONG_C_COMPILE_WARNINGS=ON \
--D SEACASProj_ENABLE_STRONG_CXX_COMPILE_WARNINGS=ON \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 \
+-D SEACASProj_ENABLE_Fortran=${FORTRAN} \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
--D TPL_ENABLE_Pthread:BOOL=${THREADSAFE_IO_LIBS} \
--D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
--D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
--D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include \
+-D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
+-D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
+-D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
+${MPI_SYMBOLS} \
 ${KOKKOS_SYMBOLS} \
 ${DW_SYMBOLS} \
+${DARWIN_OPT} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
 -D HDF5_NO_SYSTEM_PATHS=ON \
 -D CGNS_ROOT:PATH=${CGNS_PATH} \
--D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
--D TPL_Matio_INCLUDE_DIRS:PATH=${MATIO_PATH}/include \
+-D Matio_ROOT:PATH=${MATIO_PATH} \
+-D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
 \
 $EXTRA_ARGS \
-..
+${ACCESS}
+
+echo ""
+echo "     ACCESS: ${ACCESS}"
+echo "  "
+echo "         CC: ${CC}"
+echo "        CXX: ${CXX}"
+echo "         FC: ${FC}"
+echo "        MPI: ${MPI}"
+echo " THREADSAFE: ${THREADSAFE}"
+echo "  "
+echo "HAVE_NETCDF: ${HAVE_NETCDF}"
+echo " HAVE_MATIO: ${HAVE_MATIO}"
+echo "  HAVE_CGNS: ${HAVE_CGNS}"
+echo "     KOKKOS: ${KOKKOS}"
+echo ""
+
+if [ "${TRAVIS}" == "true" ]
+then
+  make -j2
+  cd ${ACCESS}
+fi
+
