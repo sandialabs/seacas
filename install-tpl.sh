@@ -33,6 +33,11 @@ if [[ $TERM != *"xterm"* ]]; then
 fi
 txtred=$(tput setaf 1)    # Red
 txtgrn=$(tput setaf 2)    # Green
+txtylw=$(tput setaf 3)    # Yellow
+txtblu=$(tput setaf 4)    # Blue
+txtpur=$(tput setaf 5)    # Purple
+txtcyn=$(tput setaf 6)    # Cyan
+txtwht=$(tput setaf 7)    # White
 txtrst=$(tput sgr0)       # Text reset
 
 if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
@@ -100,7 +105,7 @@ then
             fi
 	fi
     else
-	echo "${txtgrn}+++ ZLIB already installed.  Skipping download and installation.${txtrst}"
+	echo "${txtylw}+++ ZLIB already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -151,7 +156,7 @@ then
         fi
     fi
 else
-    echo "${txtgrn}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
+    echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
 # =================== INSTALL PNETCDF if parallel build ===============
 if [ "$MPI" == "ON" ]
@@ -199,7 +204,7 @@ then
             fi
         fi
     else
-	echo "${txtgrn}+++ PNetCDF already installed.  Skipping download and installation.${txtrst}"
+	echo "${txtylw}+++ PNetCDF already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -241,7 +246,7 @@ then
         fi
     fi
 else
-    echo "${txtgrn}+++ NetCDF already installed.  Skipping download and installation.${txtrst}"
+    echo "${txtylw}+++ NetCDF already installed.  Skipping download and installation.${txtrst}"
 fi
 # =================== INSTALL CGNS ===============
 if [ "$CGNS" == "ON" ]
@@ -282,7 +287,7 @@ then
             fi
         fi
     else
-	echo "${txtgrn}+++ CGNS already installed.  Skipping download and installation.${txtrst}"
+	echo "${txtylw}+++ CGNS already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -320,7 +325,7 @@ then
             fi
 	fi
     else
-	echo "${txtgrn}+++ MatIO already installed.  Skipping download and installation.${txtrst}"
+	echo "${txtylw}+++ MatIO already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -359,7 +364,7 @@ then
             fi
         fi
     else
-	echo "${txtgrn}+++ Parallel already installed.  Skipping download and installation.${txtrst}"
+	echo "${txtylw}+++ Parallel already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
