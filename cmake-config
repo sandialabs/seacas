@@ -125,9 +125,16 @@ then
    MPI_BIN=`dirname \`which ${CC}\``
 elif [ "${MPI}" == "ON" ]
 then
-   MPI_EXEC=`which mpiexec`
-   MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC}"
-   MPI_BIN=`dirname "${MPI_EXEC}"`
+   if [ "${USE_SRUN}" == "ON" ]
+   then
+       MPI_EXEC=`which srun`
+       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-N"
+       MPI_BIN=`dirname "${MPI_EXEC}"`
+   else
+       MPI_EXEC=`which mpiexec`
+       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC}"
+       MPI_BIN=`dirname "${MPI_EXEC}"`
+   fi
    CXX=mpicxx
    CC=mpicc
    FC=mpif77
