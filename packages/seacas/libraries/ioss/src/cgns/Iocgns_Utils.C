@@ -201,12 +201,14 @@ namespace {
     return nstep;
   }
 
-  ssize_t proc_with_minimum_work(const std::vector<size_t> &work, ssize_t exclude_proc = -1)
+  ssize_t proc_with_minimum_work(Iocgns::StructuredZoneData *zone, const std::vector<size_t> &work,
+                                 std::set<std::pair<int, int>> &proc_adam_map)
   {
     size_t  min_work = std::numeric_limits<size_t>::max();
     ssize_t min_proc = -1;
     for (ssize_t i = 0; i < (ssize_t)work.size(); i++) {
-      if (work[i] < min_work && i != exclude_proc) {
+      if (work[i] < min_work &&
+          proc_adam_map.find(std::make_pair(zone->m_adam->m_zone, i)) == proc_adam_map.end()) {
         min_work = work[i];
         min_proc = i;
         if (min_work == 0) {
@@ -1547,7 +1549,6 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
               return a->work() > b->work();
             });
 
-#if 1
   std::set<std::pair<int, int>> proc_adam_map;
 
   // On first entry, work_vector will be all zeros.  To avoid any
@@ -1566,57 +1567,23 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
   for (; i < zones.size(); i++) {
     auto &zone = zones[i];
 
-    // Assign zone to processor with minimum work...
-    ssize_t proc = proc_with_minimum_work(work_vector);
+    // Assign zone to processor with minimum work that does not already have a zone with the same
+    // adam zone...
+    ssize_t proc = proc_with_minimum_work(zone, work_vector, proc_adam_map);
 
     // See if any other zone on this processor has the same adam zone...
     if (proc >= 0) {
       auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
-      while (!success.second) {
-        proc    = proc_with_minimum_work(work_vector, proc);
-        success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
-      }
+      assert(success.second);
+      zone->m_proc = proc;
+      work_vector[proc] += zone->work();
     }
-    zone->m_proc = proc;
-    work_vector[proc] += zone->work();
+    else {
+      std::ostringstream errmsg;
+      errmsg << "IOCGNS error: Could not assign zones to processors in " << __func__;
+      IOSS_ERROR(errmsg);
+    }
   }
-#else
-  // Assign zone to first processor that has "capacity".
-  // Determine average_work per processor...
-  double work = 0.0;
-  int num_zones = 0;
-  for (auto &zone : zones) {
-    zone->m_proc = -1;
-    work += zone->work();
-    num_zones++;
-  }
-
-  double avg_work = work / work_vector.size();
-
-  int zones_placed = 0;
-  do {
-    zones_placed = 0;
-    for (size_t proc = 0; proc < work_vector.size(); proc++) {
-      work_vector[proc] = 0;
-    }
-    for (auto &zone : zones) {
-      if (zone->is_active()) {
-        // Find first processor that has capacity...
-        double my_work = zone->work();
-        for (size_t proc = 0; proc < work_vector.size(); proc++) {
-          if (work_vector[proc] + my_work <= avg_work) {
-            zone->m_proc = proc;
-            work_vector[proc] += zone->work();
-            zones_placed++;
-            break;
-          }
-        }
-      }
-    }
-    avg_work *= 1.2; // Allow 20% overage
-  } while (zones_placed != num_zones);
-
-#endif
 }
 
 size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
