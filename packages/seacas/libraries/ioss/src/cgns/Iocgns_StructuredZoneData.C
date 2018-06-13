@@ -128,6 +128,7 @@ namespace {
       }
       zgc.m_ownerOffset = {{zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]}};
       assert(zgc.is_valid());
+      zgc.m_isActive = zgc.has_faces();
     }
     else {
       // This zgc does not overlap on this zone, so set all ranges to 0.

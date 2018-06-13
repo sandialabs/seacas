@@ -89,6 +89,26 @@ namespace Ioss {
     return os;
   }
 
+  bool ZoneConnectivity::has_faces() const
+  {
+    // Determine whether the ownerRange specifies faces instead of just a line...
+    if (m_ownerRangeBeg[0] == 0 || m_ownerRangeEnd[0] == 0 || m_ownerRangeBeg[1] == 0 || m_ownerRangeEnd[1] == 0 ||
+        m_ownerRangeBeg[2] == 0 || m_ownerRangeEnd[2] == 0) {
+      return false;
+    }
+
+    auto diff0 = std::abs(m_ownerRangeEnd[0] - m_ownerRangeBeg[0]);
+    auto diff1 = std::abs(m_ownerRangeEnd[1] - m_ownerRangeBeg[1]);
+    auto diff2 = std::abs(m_ownerRangeEnd[2] - m_ownerRangeBeg[2]);
+
+    int same_count = (diff0 == 0 ? 1 : 0) + (diff1 == 0 ? 1 : 0) + (diff2 == 0 ? 1 : 0);
+
+    if (same_count > 1) {
+      return false;
+    }
+    return true;
+  }
+
   bool ZoneConnectivity::is_valid() const
   {
     bool valid = true;

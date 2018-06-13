@@ -750,6 +750,11 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
           if (zgc.is_intra_block()) {
             connect_name = std::to_string(zgc.m_ownerGUID) + "--" + std::to_string(zgc.m_donorGUID);
           }
+	  else {
+	    if (zgc.m_ownerProcessor != zgc.m_donorProcessor) {
+	      connect_name += "_proc" + std::to_string(zgc.m_donorProcessor);
+	    }
+	  }
           donor_name += "_proc-";
           donor_name += std::to_string(zgc.m_donorProcessor);
           owner_range[0] -= zgc.m_ownerOffset[0];
