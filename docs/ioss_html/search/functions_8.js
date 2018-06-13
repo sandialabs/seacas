@@ -15,6 +15,7 @@ var searchData=
   ['info_5faliases',['info_aliases',['../namespaceanonymous__namespace_02io__info_8C_03.html#afdb9a0405ae48d65c2059564489c71f5',1,'anonymous_namespace{io_info.C}']]],
   ['info_5fcommsets',['info_commsets',['../namespaceanonymous__namespace_02io__info_8C_03.html#a7135fe337b53f492fcbbe52a5ee69b17',1,'anonymous_namespace{io_info.C}']]],
   ['info_5fcoordinate_5fframes',['info_coordinate_frames',['../namespaceanonymous__namespace_02io__info_8C_03.html#aa6a00d56377e1c7c770ff39f587f538e',1,'anonymous_namespace{io_info.C}']]],
+  ['info_5fdf',['info_df',['../namespaceanonymous__namespace_02io__info_8C_03.html#a421bfcd14a946c37c043e44a4acc1430',1,'anonymous_namespace{io_info.C}']]],
   ['info_5fedgeblock',['info_edgeblock',['../namespaceanonymous__namespace_02io__info_8C_03.html#a9698fb8ddfdc891270155a8944e64f5f',1,'anonymous_namespace{io_info.C}']]],
   ['info_5fedgesets',['info_edgesets',['../namespaceanonymous__namespace_02io__info_8C_03.html#ae766e249b6e63e898e1c8f4a3f401b3e',1,'anonymous_namespace{io_info.C}']]],
   ['info_5felementblock',['info_elementblock',['../namespaceanonymous__namespace_02io__info_8C_03.html#acf0151f0783a57e7a68cb18b19b4a6bd',1,'anonymous_namespace{io_info.C}']]],
