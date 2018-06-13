@@ -688,7 +688,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
         }
         else {
           // Try to convert to integer...
-          explicit_steps.first = strtol(tokens[0].c_str(), nullptr, 0);
+          explicit_steps.first = std::stoi(tokens[0]);
         }
 
         if (case_strcmp(tokens[1], "last") == 0) {
@@ -696,7 +696,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
         }
         else {
           // Try to convert to integer...
-          explicit_steps.second = strtol(tokens[1].c_str(), nullptr, 0);
+          explicit_steps.second = std::stoi(tokens[1]);
         }
       }
       else {

@@ -78,7 +78,7 @@ void Ioss::ParallelUtils::add_environment_properties(Ioss::PropertyManager &prop
         std::cerr << "IOSS: Adding property '" << prop << "' with value '" << value << "'\n";
       }
       if (all_digit) {
-        int int_value = std::strtol(value.c_str(), nullptr, 10);
+        int int_value = std::stoi(value);
         properties.add(Property(prop, int_value));
       }
       else if (up_value == "TRUE" || up_value == "YES") {
