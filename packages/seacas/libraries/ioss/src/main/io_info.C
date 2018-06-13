@@ -68,6 +68,23 @@ namespace {
   void file_info(const Info::Interface &interface);
   void group_info(Info::Interface &interface);
 
+  void info_df(const Ioss::GroupingEntity *ge, const std::string &prefix)
+  {
+    int64_t num_dist = ge->get_property("distribution_factor_count").get_int();
+    if (num_dist > 0) {
+      std::vector<double> df;
+      ge->get_field_data("distribution_factors", df);
+      auto mm = std::minmax_element(df.begin(), df.end());
+      OUTPUT << prefix << "Distribution Factors: ";
+      if (*mm.first == *mm.second) {
+        OUTPUT << "all values = " << *mm.first << "\n";
+      }
+      else {
+        OUTPUT << "minimum value = " << *mm.first << ", maximum value = " << *mm.second << "\n";
+      }
+    }
+  }
+
   std::string name(Ioss::GroupingEntity *entity)
   {
     return entity->type_string() + " '" + entity->name() + "'";
@@ -458,7 +475,7 @@ namespace {
             OUTPUT << ",\tparent block: '" << parent->name() << "' (" << parent->type_string()
                    << ")";
           }
-          OUTPUT << "\n";
+          info_df(fb, "\n\t\t\t");
           if (interface.adjacencies()) {
             std::vector<std::string> blocks;
             fb->block_membership(blocks);
@@ -468,7 +485,6 @@ namespace {
             }
             OUTPUT << "\n";
           }
-          OUTPUT << "\n";
           info_fields(fb, Ioss::Field::ATTRIBUTE, "\t\tAttributes: ");
           info_fields(fb, Ioss::Field::TRANSIENT, "\t\tTransient:  ");
         }
@@ -496,6 +512,7 @@ namespace {
                << " nodes" << std::setw(3) << num_attrib << " attributes" << std::setw(8)
                << num_dist << " distribution factors.\n";
         info_aliases(region, ns, false, true);
+        info_df(ns, "\t");
         info_fields(ns, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
         info_fields(ns, Ioss::Field::TRANSIENT, "\tTransient:  ");
       }
@@ -505,6 +522,7 @@ namespace {
       OUTPUT << " Number of nodal point sets   =" << std::setw(12) << nss.size() << "\t";
       OUTPUT << " Length of node list        =" << std::setw(12) << total_nodes << "\n";
     }
+    OUTPUT << '\n';
   }
 
   void info_edgesets(Ioss::Region &region, bool summary)
@@ -519,6 +537,7 @@ namespace {
                << name(ns) << " id: " << std::setw(6) << id(ns) << ", " << std::setw(8) << count
                << " edges" << std::setw(3) << num_attrib << " attributes.\n";
         info_aliases(region, ns, false, true);
+        info_df(ns, "\t");
         info_fields(ns, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
         info_fields(ns, Ioss::Field::TRANSIENT, "\tTransient:  ");
       }
@@ -542,6 +561,7 @@ namespace {
                << name(fs) << " id: " << std::setw(6) << id(fs) << ", " << std::setw(8) << count
                << " faces" << std::setw(3) << num_attrib << " attributes.\n";
         info_aliases(region, fs, false, true);
+        info_df(fs, "\t");
         info_fields(fs, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
         info_fields(fs, Ioss::Field::TRANSIENT, "\tTransient:  ");
       }
@@ -565,6 +585,7 @@ namespace {
                << " elements"
                << "\n";
         info_aliases(region, es, false, true);
+        info_df(es, "\t");
         info_fields(es, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
         info_fields(es, Ioss::Field::TRANSIENT, "\tTransient:  ");
       }
