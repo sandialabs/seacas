@@ -384,13 +384,16 @@ namespace {
     // Pack data for gathering to processor 0...
     size_t off_name = 0;
     size_t off_data = 0;
+    size_t off_cnt  = 0;
 
     // ========================================================================
-    auto pack_lambda = [&off_data, &off_name, &snd_zgc_data,
+    auto pack_lambda = [&off_data, &off_name, &off_cnt, &snd_zgc_data,
                         &snd_zgc_name](const std::vector<Ioss::ZoneConnectivity> &zgc) {
+      off_data = off_name = off_cnt = 0;
       for (const auto &z : zgc) {
         if (!z.is_intra_block() && z.is_active()) {
           strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), BYTE_PER_NAME);
+	  off_cnt++;
           off_name += BYTE_PER_NAME;
 
           snd_zgc_data[off_data++] = z.m_ownerZone;
@@ -421,7 +424,9 @@ namespace {
     for (const auto &sb : structured_blocks) {
       pack_lambda(sb->m_zoneConnectivity);
     }
-    assert(my_count == 0 || (off_data % my_count == 0 && off_data / my_count == INT_PER_ZGC));
+    assert(off_cnt == my_count);
+    assert(my_count == 0 || (off_data % my_count == 0));
+    assert(my_count == 0 || (off_data / my_count == INT_PER_ZGC));
     assert(my_count == 0 || (off_name % my_count == 0 && off_name / my_count == BYTE_PER_NAME));
 
     MPI_Gatherv(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, rcv_zgc_name.data(),
@@ -457,7 +462,8 @@ namespace {
         zgc.emplace_back(name, zone, "", donor, transform, range_beg, range_end, donor_beg,
                          donor_end);
       }
-      assert(off_data % count == 0 && off_data / count == INT_PER_ZGC);
+      assert(off_data % count == 0);
+      assert(off_data / count == INT_PER_ZGC);
       assert(off_name % count == 0 && off_name / count == BYTE_PER_NAME);
 
       // Consolidate down to the minimum set that has the union of all ranges.
@@ -483,7 +489,7 @@ namespace {
       // Cull out all 'non-active' zgc instances (owner and donor zone <= 0)
       zgc.erase(std::remove_if(zgc.begin(), zgc.end(),
                                [](Ioss::ZoneConnectivity &z) {
-                                 return z.m_ownerZone == -1 && z.m_donorZone == -1;
+                                 return (z.m_ownerZone == -1 && z.m_donorZone == -1) || z.is_intra_block() || !z.is_active();
                                }),
                 zgc.end());
 
@@ -494,12 +500,11 @@ namespace {
       // of the ranges on each individual processor.  Pack the data
       // and broadcast back to all processors so all processors can
       // output the same data for Zone Connectivity.
-      off_name = 0;
-      off_data = 0;
-
       pack_lambda(zgc);
 
-      assert(off_data % count == 0 && off_data / count == INT_PER_ZGC);
+      assert(off_cnt == count);
+      assert(off_data % count == 0);
+      assert(off_data / count == INT_PER_ZGC);
       assert(off_name % count == 0 && off_name / count == BYTE_PER_NAME);
     } // End of processor 0 only processing...
 
