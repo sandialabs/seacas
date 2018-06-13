@@ -299,7 +299,7 @@ size_t Ioss::Utils::get_number(const std::string &suffix)
   int  N       = 0;
   bool all_dig = suffix.find_first_not_of("0123456789") == std::string::npos;
   if (all_dig) {
-    N = std::strtol(suffix.c_str(), nullptr, 10);
+    N = std::stoi(suffix);
   }
   return N;
 }

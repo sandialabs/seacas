@@ -103,7 +103,7 @@ namespace {
       for (size_t i = 1; i < tokens.size(); i++) {
         if (tokens[i].substr(0, 5) == "proc-") {
           auto ptoken = Ioss::tokenize(tokens[i], "-");
-          proc        = std::strtol(ptoken[1].c_str(), nullptr, 10);
+          proc        = std::stoi(ptoken[1]);
           break;
         }
         else {
