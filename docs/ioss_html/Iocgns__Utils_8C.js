@@ -7,6 +7,7 @@ var Iocgns__Utils_8C =
     [ "consolidate_zgc", "Iocgns__Utils_8C.html#a397d516e435535ef9fae83c788a399db", null ],
     [ "extract_trailing_int", "Iocgns__Utils_8C.html#a91ce0e4544810d79a476945400ae8945", null ],
     [ "overlaps", "Iocgns__Utils_8C.html#a94857b49d46525263574fa357a76a037", null ],
+    [ "power_2", "Iocgns__Utils_8C.html#a8b8dc13ccaa987729b8b60d50ded3a80", null ],
     [ "proc_with_minimum_work", "Iocgns__Utils_8C.html#ad51afb85b289f105d1041bde7bc754fe", null ],
     [ "subset_range", "Iocgns__Utils_8C.html#a765f362be82c7cf09c6f3cae4981c882", null ],
     [ "validate_blocks", "Iocgns__Utils_8C.html#a90d8fbce505c2946989029aa90749f47", null ]

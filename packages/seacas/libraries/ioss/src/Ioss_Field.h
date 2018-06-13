@@ -173,8 +173,8 @@ namespace Ioss {
     size_t         size_{};       // maximum data size (in bytes) required to hold entire field
     mutable size_t index_{}; // Optional flag that can be used by a client to indicate an ordering.
                              // Unused by field itself.
-    BasicType type_;
-    RoleType  role_;
+    BasicType type_{INVALID};
+    RoleType  role_{INTERNAL};
 
     const VariableType *rawStorage_{};   // Storage type of raw field
     const VariableType *transStorage_{}; // Storage type after transformation

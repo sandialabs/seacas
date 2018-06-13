@@ -78,7 +78,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_params(
  * compare_mesh_param -- function which checks that parameters in
  *                       the restart EXODUS II file are the same as in
  *                       the mesh EXODUS II file
- * read_var_param -- function which reads the time indicies, number
+ * read_var_param -- function which reads the time indices, number
  *                   of variables, and their names from the restart file
  *
  *----------------------------------------------------------------------------
@@ -540,7 +540,7 @@ int NemSpread<T, INT>::read_var_param(int exoid, int max_name_length)
     }
   }
   else {
-    /* Check to see if the requested indeces are valid */
+    /* Check to see if the requested indices are valid */
     for (int cnt = 0; cnt < Restart_Info.Num_Times; cnt++) {
 
       /* if the user wants the last time, then set it */

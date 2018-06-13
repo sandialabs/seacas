@@ -259,10 +259,10 @@ namespace Ioss {
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
-                                    size_t data_size) const override;
+                                    size_t data_size = 0) const override;
 
     int64_t internal_put_field_data(const Field &field, void *data,
-                                    size_t data_size) const override;
+                                    size_t data_size = 0) const override;
 
   private:
     // Add the name 'alias' as an alias for the database entity with the
@@ -367,7 +367,7 @@ inline void Ioss::Region::add_qa_record(const std::string &code, const std::stri
 
 /** \brief Get all QA records, each of which consists of 4 strings, from the region's database.
  *
- *  The 4 strings that make up a databse QA record are:
+ *  The 4 strings that make up a database QA record are:
  *
  *  1. A descriptive code name, such as the application that modified the database.
  *

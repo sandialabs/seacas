@@ -360,7 +360,7 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   return true;
 }
 
-int Excn::ExodusFile::get_free_descriptor_count()
+size_t Excn::ExodusFile::get_free_descriptor_count()
 {
 // Returns maximum number of files that one process can have open
 // at one time. (POSIX)

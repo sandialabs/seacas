@@ -110,11 +110,7 @@ namespace Ioex {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), exodusFilePtr(-1),
-        exodusMode(EX_CLOBBER), dbRealWordSize(8), maximumNameLength(32), spatialDimension(0),
-        edgeCount(0), faceCount(0), commsetNodeCount(0), commsetElemCount(0), timeLastFlush(0),
-        fileExists(false), minimizeOpenFiles(false), blockAdjacenciesCalculated(false),
-        nodeConnectivityStatusCalculated(false)
+      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props)
   {
     m_groupCount[EX_GLOBAL]     = 1; // To make some common code work more cleanly.
     m_groupCount[EX_NODE_BLOCK] = 1; // To make some common code work more cleanly.
@@ -560,7 +556,7 @@ namespace Ioex {
      *
      * NOTE: the maps are built an element block at a time...
      * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
-     *       should be in the orginal order...
+     *       should be in the original order...
      */
 
     // Overwrite this portion of the 'elemMap.map', but keep other

@@ -37,7 +37,7 @@
 
 void y2x(double **xvecs,   /* pointer to list of x-vectors */
          int      ndims,   /* number of divisions to make (# xvecs) */
-         int      nmyvtxs, /* number of vertices I own (lenght xvecs) */
+         int      nmyvtxs, /* number of vertices I own (length xvecs) */
          double * wsqrt    /* sqrt of vertex weights */
 )
 
@@ -62,7 +62,7 @@ void y2x(double **xvecs,   /* pointer to list of x-vectors */
 
 void x2y(double **yvecs,   /* pointer to list of y-vectors */
          int      ndims,   /* number of divisions to make (# yvecs) */
-         int      nmyvtxs, /* number of vertices I own (lenght yvecs) */
+         int      nmyvtxs, /* number of vertices I own (length yvecs) */
          double * wsqrt    /* sqrt of vertex weights */
 )
 

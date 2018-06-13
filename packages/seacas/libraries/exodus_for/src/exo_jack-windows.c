@@ -309,7 +309,7 @@ void F2C(EXPQA)(int *idexo, int *num_qa_records, char *qa_record, int *ierr, int
                 * use */
   int i, ii, iii, slen, alen;
 
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = MAX_STR_LENGTH; /* max str size */
   if (qa_recordlen != MAX_STR_LENGTH) {
@@ -370,7 +370,7 @@ void F2C(EXGQA)(int *idexo, char *qa_record, int *ierr, int qa_recordlen)
                 * use */
   int i, ii, iii, slen, alen;
 
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = MAX_STR_LENGTH; /* max str size */
   if (qa_recordlen != MAX_STR_LENGTH) {
@@ -440,7 +440,7 @@ void F2C(EXPINF)(int *idexo, int *num_info, char *info, int *ierr, int infolen)
   char *sptr;  /* internal string pointer for malloc use */
   int   i, slen;
 
-  *ierr = 0;               /* default no errror */
+  *ierr = 0;               /* default no error */
   slen  = MAX_LINE_LENGTH; /* max str size */
   if (infolen != MAX_LINE_LENGTH) {
     slen = infolen;
@@ -483,7 +483,7 @@ void F2C(EXGINF)(int *idexo, char *info, int *ierr, int infolen)
   char *sptr;  /* internal string pointer for malloc use */
   int   i, slen, num_info;
 
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   /* do exodusII C call to find out how many info records are avail */
   num_info = ex_inquire_int(*idexo, EX_INQ_INFO);
@@ -560,7 +560,7 @@ void F2C(EXPCON)(int *idexo, char *coord_names, int *ierr, int coord_nameslen)
   char *sptr;  /* internal string pointer for malloc use */
   int   i, ndim, slen;
 
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH); /* max str size */
   if (coord_nameslen < slen) {
@@ -859,7 +859,7 @@ void F2C(EXGEAN)(int *idexo, entity_id *elem_blk_id, int *num_attr, char *names,
   char *sptr;  /* ptr to temp staging space for strings */
   int   i, slen;
 
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
   if (nameslen < slen) {
@@ -908,7 +908,7 @@ void F2C(EXPEAN)(int *idexo, entity_id *elem_blk_id, int *num_attr, char *names,
   char *sptr;  /* ptr to temp staging space for strings */
   int   i, slen;
 
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH); /* max str size */
   if (nameslen < slen) {
@@ -951,7 +951,7 @@ void F2C(EXPNAMS)(int *idexo, int *type, int *num_obj, char *names, int *ierr, i
   char *sptr;  /* ptr to temp staging space for strings */
   int   i, slen;
 
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH); /* max str size */
   if (nameslen < slen) {
@@ -993,7 +993,7 @@ void F2C(EXGNAMS)(int *idexo, int *type, int *num_obj, char *names, int *ierr, i
   char *sptr;  /* ptr to temp staging space for strings */
   int   i, slen;
 
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
   if (nameslen < slen) {
@@ -1645,7 +1645,7 @@ void F2C(EXPVAN)(int *idexo, char *var_type, int *num_vars, char *var_names, int
   char *sptr;  /* ptr to temp staging space for strings */
   int   i, slen;
 
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH); /* max str size */
   if (var_nameslen < slen) {
@@ -1687,7 +1687,7 @@ void F2C(EXGVAN)(int *idexo, char *var_type, int *num_vars, char *var_names, int
   char *sptr;  /* ptr to temp staging space for strings */
   int   i, slen;
 
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
   if (var_nameslen < slen) {
@@ -2241,7 +2241,7 @@ void F2C(EXGVNM)(int *idexo, char *var_type, int *var_index, char *var_name, int
 {
   char *sptr; /* ptr to temp staging space for string */
   int   slen;
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
   if (var_namelen < slen) {
@@ -2332,7 +2332,7 @@ void F2C(EXPVNM)(int *idexo, char *var_type, int *var_index, char *var_name, int
 {
   char *sptr; /* ptr to temp staging space for string */
   int   slen;
-  *ierr = 0; /* default no errror */
+  *ierr = 0; /* default no error */
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH); /* max str size */
   if (var_namelen < slen) {

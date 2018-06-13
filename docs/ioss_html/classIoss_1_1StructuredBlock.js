@@ -27,6 +27,7 @@ var classIoss_1_1StructuredBlock =
     [ "get_node_offset", "classIoss_1_1StructuredBlock.html#a24122d6310e213f0bf670cbd3282e73b", null ],
     [ "internal_get_field_data", "classIoss_1_1StructuredBlock.html#ad961978ad6efcf2acedb41e81d9cd08b", null ],
     [ "internal_put_field_data", "classIoss_1_1StructuredBlock.html#a1775960f697fba84df0382331d060424", null ],
+    [ "is_active", "classIoss_1_1StructuredBlock.html#a455a4f098fe0c6b0d3984951505bc4be", null ],
     [ "set_cell_global_offset", "classIoss_1_1StructuredBlock.html#aaace0ae89c136bda6ce43d7d3a5e3fc9", null ],
     [ "set_cell_offset", "classIoss_1_1StructuredBlock.html#a41a525d54dbf413575b1b586ab4a92d0", null ],
     [ "set_node_global_offset", "classIoss_1_1StructuredBlock.html#a151ff94e3dcfcf1bd1ce022a0a1abc95", null ],

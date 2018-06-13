@@ -6,6 +6,8 @@ if [ "X$ACCESS" == "X" ] ; then
   echo "ACCESS set to ${ACCESS}"
 fi
 
+H5VERSION=${H5VERSION:-V110}
+
 NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
@@ -16,7 +18,14 @@ MPI="${MPI:-OFF}"
 if [ "$MPI" == "ON" ]
 then
   PARALLEL_ON_OFF="--enable-parallel"
-  export CC=mpicc
+  if [ "$CRAY" == "ON" ]
+  then
+    export CC=cc
+  else
+    export CC=mpicc
+  fi
+  echo "Checking MPI Version -- "
+  mpiexec --version
 else
   PARALLEL_ON_OFF="--disable-parallel"
   COMPILER="${COMPILER:-gnu}"
@@ -27,6 +36,10 @@ else
   if [ "$COMPILER" == "clang" ]
   then
       export CC=clang
+  fi
+  if [ "$COMPILER" == "intel" ]
+  then
+      export CC=icc
   fi
 fi
 
@@ -39,9 +52,25 @@ rm -f config.cache
 FC=''; export FC
 F90=''; export F90
 
-SHARED="--enable-shared"
+if [ "$CRAY" == "ON" ]
+then
+    USE_SHARED="--disable-shared"
+else
+    SHARED="${SHARED:-ON}"
+    if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
+    then
+	USE_SHARED="--enable-shared"
+    else
+	USE_SHARED="--disable-shared"
+    fi
+fi
 
-./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
+if [ "${H5VERSION}" == "V18" ]
+then
+    ./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
+else
+    ./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
+fi
 
 echo ""
 echo "     MPI: ${MPI}"

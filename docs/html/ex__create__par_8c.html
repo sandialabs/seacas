@@ -105,7 +105,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section note"><dt>Note</dt><dd>The <a class="el" href="exodusII_8h.html#aaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int()</a> is an internal function called by <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a>. The user should call <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> and not <a class="el" href="exodusII_8h.html#aaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int()</a>.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The ex_create_par_int() is an internal function called by ex_create_par(). The user should call ex_create_par() and not ex_create_par_int().</dd></dl>
 <p>The function <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> creates a new exodus file and returns an ID that can subsequently be used to refer to the file.</p>
 <p>All floating point values in an exodus file are stored as either 4-byte (float) or 8-byte (double) numbers; no mixing of 4- and 8-byte numbers in a single file is allowed. An application code can compute either 4- or 8-byte values and can designate that the values be stored in the exodus file as either 4- or 8-byte numbers; conversion between the 4- and 8-byte values is performed automatically by the API routines. Thus, there are four possible combinations of compute word size and storage (or I/O) word size.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> returns a negative number. Possible causes of errors include:<ul>
@@ -145,7 +145,7 @@ Variables</h2></td></tr>
 </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">comp_ws</td><td>The word size in bytes (0, 4 or 8) of the floating point variables used in the application program. If 0 (zero) is passed, the default sizeof(float) will be used and returned in this variable. WARNING: all exodus functions requiring floats must be passed floats declared with this passed in or returned compute word size (4 or 8).}</td></tr>
     <tr><td class="paramdir"></td><td class="paramname">io_ws</td><td>The word size in bytes (4 or 8) of the floating point data as they are to be stored in the exodus file.</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">run_version</td><td>(internally generated) used to verify compatability of libary and include files.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">run_version</td><td>(internally generated) used to verify compatibility of library and include files.</td></tr>
   </table>
   </dd>
 </dl>

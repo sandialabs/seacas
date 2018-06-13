@@ -36,7 +36,7 @@
  *
  *
  *
- *	Include file for I/O global varibales used in FEM
+ *	Include file for I/O global variables used in FEM
  *	problem specification
  *
  */

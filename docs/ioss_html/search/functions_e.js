@@ -27,7 +27,7 @@ var searchData=
   ['plane_5f1_5f3_5fpoint',['plane_1_3_point',['../classIoss_1_1CoordinateFrame.html#a2cc5381b30c3e38178f0f7903d79edba',1,'Ioss::CoordinateFrame']]],
   ['plane_5fnormal',['plane_normal',['../classvector3d.html#abc5513772b1ef3470c1cfa6c0bd0c193',1,'vector3d']]],
   ['platform_5finformation',['platform_information',['../classIoss_1_1Utils.html#a9f148e3768f9322640e47ac8c0bc50c0',1,'Ioss::Utils']]],
-  ['power_5f2',['power_2',['../classIoss_1_1Utils.html#a4f3b2d6a6ac736d341fee8db95c6fc4b',1,'Ioss::Utils']]],
+  ['power_5f2',['power_2',['../classIoss_1_1Utils.html#a4f3b2d6a6ac736d341fee8db95c6fc4b',1,'Ioss::Utils::power_2()'],['../namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a8b8dc13ccaa987729b8b60d50ded3a80',1,'anonymous_namespace{Iocgns_Utils.C}::power_2()']]],
   ['pre_5fsplit',['pre_split',['../classIocgns_1_1Utils.html#a5e67bb322bea1c4dfbaf6ce55d699fb6',1,'Iocgns::Utils']]],
   ['print_5fcontext',['print_context',['../structAssert.html#a3475b6e4e9f82c8bdd2a8674761f008d',1,'Assert']]],
   ['print_5fcurrent_5fval',['print_current_val',['../structAssert.html#ac987aa0b37ed26a6dd7c14941a1448f7',1,'Assert']]],

@@ -117,34 +117,38 @@ do
       echo ""
       echo "--arch=[OPT]:  Set target architectures. Options are:"
       echo "               [AMD]"
-      echo "                 AMDAVX         = AMD CPU"
+      echo "                 AMDAVX          = AMD CPU"
       echo "               [ARM]"
-      echo "                 ARMv80         = ARMv8.0 Compatible CPU"
-      echo "                 ARMv81         = ARMv8.1 Compatible CPU"
-      echo "                 ARMv8-ThunderX = ARMv8 Cavium ThunderX CPU"
+      echo "                 ARMv80          = ARMv8.0 Compatible CPU"
+      echo "                 ARMv81          = ARMv8.1 Compatible CPU"
+      echo "                 ARMv8-ThunderX  = ARMv8 Cavium ThunderX CPU"
+      echo "                 ARMv8-TX2       = ARMv8 Cavium ThunderX2 CPU"
       echo "               [IBM]"
-      echo "                 Power7         = IBM POWER7 and POWER7+ CPUs"
-      echo "                 Power8         = IBM POWER8 CPUs"
-      echo "                 Power9         = IBM POWER9 CPUs"
+      echo "                 BGQ             = IBM Blue Gene Q"
+      echo "                 Power7          = IBM POWER7 and POWER7+ CPUs"
+      echo "                 Power8          = IBM POWER8 CPUs"
+      echo "                 Power9          = IBM POWER9 CPUs"
       echo "               [Intel]"
-      echo "                 WSM            = Intel Westmere CPUs"
-      echo "                 SNB            = Intel Sandy/Ivy Bridge CPUs"
-      echo "                 HSW            = Intel Haswell CPUs"
-      echo "                 BDW            = Intel Broadwell Xeon E-class CPUs"
-      echo "                 SKX            = Intel Sky Lake Xeon E-class HPC CPUs (AVX512)"
+      echo "                 WSM             = Intel Westmere CPUs"
+      echo "                 SNB             = Intel Sandy/Ivy Bridge CPUs"
+      echo "                 HSW             = Intel Haswell CPUs"
+      echo "                 BDW             = Intel Broadwell Xeon E-class CPUs"
+      echo "                 SKX             = Intel Sky Lake Xeon E-class HPC CPUs (AVX512)"
       echo "               [Intel Xeon Phi]"
-      echo "                 KNC            = Intel Knights Corner Xeon Phi"
-      echo "                 KNL            = Intel Knights Landing Xeon Phi"
+      echo "                 KNC             = Intel Knights Corner Xeon Phi"
+      echo "                 KNL             = Intel Knights Landing Xeon Phi"
       echo "               [NVIDIA]"
-      echo "                 Kepler30       = NVIDIA Kepler generation CC 3.0"
-      echo "                 Kepler32       = NVIDIA Kepler generation CC 3.2"
-      echo "                 Kepler35       = NVIDIA Kepler generation CC 3.5"
-      echo "                 Kepler37       = NVIDIA Kepler generation CC 3.7"
-      echo "                 Maxwell50      = NVIDIA Maxwell generation CC 5.0"
-      echo "                 Maxwell52      = NVIDIA Maxwell generation CC 5.2"
-      echo "                 Maxwell53      = NVIDIA Maxwell generation CC 5.3"
-      echo "                 Pascal60       = NVIDIA Pascal generation CC 6.0"
-      echo "                 Pascal61       = NVIDIA Pascal generation CC 6.1"
+      echo "                 Kepler30        = NVIDIA Kepler generation CC 3.0"
+      echo "                 Kepler32        = NVIDIA Kepler generation CC 3.2"
+      echo "                 Kepler35        = NVIDIA Kepler generation CC 3.5"
+      echo "                 Kepler37        = NVIDIA Kepler generation CC 3.7"
+      echo "                 Maxwell50       = NVIDIA Maxwell generation CC 5.0"
+      echo "                 Maxwell52       = NVIDIA Maxwell generation CC 5.2"
+      echo "                 Maxwell53       = NVIDIA Maxwell generation CC 5.3"
+      echo "                 Pascal60        = NVIDIA Pascal generation CC 6.0"
+      echo "                 Pascal61        = NVIDIA Pascal generation CC 6.1"
+      echo "                 Volta70         = NVIDIA Volta generation CC 7.0"
+      echo "                 Volta72         = NVIDIA Volta generation CC 7.2"
       echo ""
       echo "--compiler=/Path/To/Compiler  Set the compiler."
       echo "--debug,-dbg:                 Enable Debugging."
@@ -271,9 +275,10 @@ else
 fi
 
 mkdir -p install
-echo "#Makefile to satisfy existens of target kokkos-clean before installing the library" > install/Makefile.kokkos
-echo "kokkos-clean:" >> install/Makefile.kokkos
-echo "" >> install/Makefile.kokkos
+gen_makefile=Makefile.kokkos
+echo "#Makefile to satisfy existens of target kokkos-clean before installing the library" > install/${gen_makefile}
+echo "kokkos-clean:" >> install/${gen_makefile}
+echo "" >> install/${gen_makefile}
 mkdir -p core
 mkdir -p core/unit_test
 mkdir -p core/perf_test
@@ -287,6 +292,7 @@ mkdir -p example
 mkdir -p example/fixture
 mkdir -p example/feint
 mkdir -p example/fenl
+mkdir -p example/make_buildlink
 mkdir -p example/tutorial
 
 if [ ${#KOKKOS_ENABLE_EXAMPLE_ICHOL} -gt 0 ]; then
@@ -386,6 +392,17 @@ echo "" >> example/fenl/Makefile
 echo "clean:" >> example/fenl/Makefile
 echo -e "\t\$(MAKE) -f ${KOKKOS_PATH}/example/fenl/Makefile ${KOKKOS_SETTINGS} clean" >> example/fenl/Makefile
 
+echo "KOKKOS_SETTINGS=${KOKKOS_SETTINGS}" > example/make_buildlink/Makefile
+echo "" >> example/make_buildlink/Makefile
+echo "build:" >> example/make_buildlink/Makefile
+echo -e "\t\$(MAKE) -f ${KOKKOS_PATH}/example/make_buildlink/Makefile ${KOKKOS_SETTINGS} build" >> example/make_buildlink/Makefile
+echo "" >> example/make_buildlink/Makefile
+echo "test: build" >> example/make_buildlink/Makefile
+echo -e "\t\$(MAKE) -f ${KOKKOS_PATH}/example/make_buildlink/Makefile ${KOKKOS_SETTINGS} test" >> example/make_buildlink/Makefile
+echo "" >> example/make_buildlink/Makefile
+echo "clean:" >> example/make_buildlink/Makefile
+echo -e "\t\$(MAKE) -f ${KOKKOS_PATH}/example/make_buildlink/Makefile ${KOKKOS_SETTINGS} clean" >> example/make_buildlink/Makefile
+
 echo "KOKKOS_SETTINGS=${KOKKOS_SETTINGS}" > example/tutorial/Makefile
 echo "" >> example/tutorial/Makefile
 echo "build:" >> example/tutorial/Makefile
@@ -442,6 +459,7 @@ if [ ${KOKKOS_DO_EXAMPLES} -gt 0 ]; then
 echo -e "\t\$(MAKE) -C example/fixture" >> Makefile
 echo -e "\t\$(MAKE) -C example/feint" >> Makefile
 echo -e "\t\$(MAKE) -C example/fenl" >> Makefile
+echo -e "\t\$(MAKE) -C example/make_buildlink build" >> Makefile
 echo -e "\t\$(MAKE) -C example/tutorial build" >> Makefile
 fi
 echo "" >> Makefile
@@ -455,6 +473,7 @@ if [ ${KOKKOS_DO_EXAMPLES} -gt 0 ]; then
 echo -e "\t\$(MAKE) -C example/fixture test" >> Makefile
 echo -e "\t\$(MAKE) -C example/feint test" >> Makefile
 echo -e "\t\$(MAKE) -C example/fenl test" >> Makefile
+echo -e "\t\$(MAKE) -C example/make_buildlink test" >> Makefile
 echo -e "\t\$(MAKE) -C example/tutorial test" >> Makefile
 fi
 echo "" >> Makefile
@@ -474,6 +493,7 @@ if [ ${KOKKOS_DO_EXAMPLES} -gt 0 ]; then
 echo -e "\t\$(MAKE) -C example/fixture clean" >> Makefile
 echo -e "\t\$(MAKE) -C example/feint clean" >> Makefile
 echo -e "\t\$(MAKE) -C example/fenl clean" >> Makefile
+echo -e "\t\$(MAKE) -C example/make_buildlink clean" >> Makefile
 echo -e "\t\$(MAKE) -C example/tutorial clean" >> Makefile
 fi
 echo -e "\tcd core; \\" >> Makefile

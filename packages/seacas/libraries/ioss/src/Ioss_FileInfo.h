@@ -85,7 +85,7 @@ namespace Ioss {
     //! processor 0.
     int parallel_exists(MPI_Comm communicator, std::string &where) const;
 
-    bool exists() const;        //!< returns True if file exists, false if nonexistant
+    bool exists() const;        //!< returns True if file exists, false if nonexistent
     bool is_readable() const;   //!< Exists and is readable
     bool is_writable() const;   //!< Exists and is writable
     bool is_executable() const; //!< Exists and is executable
@@ -116,9 +116,9 @@ namespace Ioss {
     bool remove_file();
 
   private:
-    std::string filename_;
-    bool        exists_{};   ///< this is used frequently, check on creation
-    bool        readable_{}; ///< this is used frequently, check on creation
+    std::string filename_{};
+    bool        exists_{false};   ///< this is used frequently, check on creation
+    bool        readable_{false}; ///< this is used frequently, check on creation
   };
 } // namespace Ioss
 #endif // IOSS_Ioss_FileInfo_h

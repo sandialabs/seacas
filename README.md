@@ -43,14 +43,16 @@ PNetCDF libraries.
 | COMPILER | clang, gnu | gnu | What compiler should be used for non-parallel build |
 | JOBS     | {count}|  2      | Number of "jobs" used for simultaneous compiles |
 | DOWNLOAD | YES, NO | YES |  Should TPLs be downloaded. |
-| INSTALL  | YES, NO | YES | Should TPLs be built and installed. |
+| BUILD    | YES, NO | YES | Should TPLs be built and installed. |
+| FORCE    | YES, NO | NO  | Force downloading and building even if lib is already installed. |
+| SHARED   | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
 | MPI      | ON, OFF | OFF | If ON, then build parallel capability |
 | NEEDS_ZLIB| YES, NO| NO  | If system does not have zlib installed, download and install it. |
 | CGNS     | YES, NO | YES | Should CGNS TPL be built.  |
 | MATIO    | YES, NO | YES | Should matio TPL be built. |
 | GNU_PARALLEL | YES, NO | YES | Should GNU parallel script be built. |
 
-* NOTE: The `DOWNLOAD` and `INSTALL` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
+* NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
 * The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
  
 ### Download and build dependencies (Third-Party Libraries)
@@ -62,7 +64,7 @@ described in the previous section.
 
  * [Zoltan](#zoltan) -- required, supplied
  * [HDF5](#hdf5) -- optional
- * [NetCDF](#netcdf) -- required with modifications
+ * [NetCDF](#netcdf) -- required with possible modifications
  * [MatIO](#matio) -- optional, required for exo2mat and mat2exo
  * [GNU Parallel](#gnu-parallel) -- optional
  * [CGNS](#cgns) -- experimental optional
@@ -92,7 +94,7 @@ create or read models of this size, you do not have to build hdf5.
    * `make && make install`
 
 #### NetCDF
-The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
+The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required if using verions prior to 4.5.1.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
  * Download the latest netcdf-c release from <http://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
  * `cd TPL/netcdf`

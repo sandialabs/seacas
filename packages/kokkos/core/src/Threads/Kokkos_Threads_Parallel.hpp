@@ -35,7 +35,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Questions? Contact  H. Carter Edwards (hcedwar@sandia.gov)
+// Questions? Contact Christian R. Trott (crtrott@sandia.gov)
 //
 // ************************************************************************
 //@HEADER
@@ -180,12 +180,12 @@ public:
 // MDRangePolicy impl
 template< class FunctorType , class ... Traits >
 class ParallelFor< FunctorType
-                 , Kokkos::Experimental::MDRangePolicy< Traits ... >
+                 , Kokkos::MDRangePolicy< Traits ... >
                  , Kokkos::Threads
                  >
 {
 private:
-  typedef Kokkos::Experimental::MDRangePolicy< Traits ... > MDRangePolicy ;
+  typedef Kokkos::MDRangePolicy< Traits ... > MDRangePolicy ;
   typedef typename MDRangePolicy::impl_range_policy         Policy ;
 
   typedef typename MDRangePolicy::work_tag                  WorkTag ;
@@ -193,7 +193,7 @@ private:
   typedef typename Policy::WorkRange   WorkRange ;
   typedef typename Policy::member_type Member ;
 
-  typedef typename Kokkos::Experimental::Impl::HostIterateTile< MDRangePolicy, FunctorType, typename MDRangePolicy::work_tag, void > iterate_type;
+  typedef typename Kokkos::Impl::HostIterateTile< MDRangePolicy, FunctorType, typename MDRangePolicy::work_tag, void > iterate_type;
 
   const FunctorType   m_functor ;
   const MDRangePolicy m_mdr_policy ;
@@ -396,9 +396,10 @@ private:
 
   typedef Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, FunctorType, ReducerType> ReducerConditional;
   typedef typename ReducerConditional::type ReducerTypeFwd;
+  typedef typename Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, WorkTag, void>::type WorkTagFwd;
 
-  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd, WorkTag > ValueTraits ;
-  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd, WorkTag > ValueInit ;
+  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd , WorkTagFwd > ValueTraits ;
+  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd , WorkTagFwd > ValueInit ;
 
   typedef typename ValueTraits::pointer_type    pointer_type ;
   typedef typename ValueTraits::reference_type  reference_type ;
@@ -458,7 +459,7 @@ private:
       ( self.m_functor , range.begin() , range.end()
       , ValueInit::init( ReducerConditional::select(self.m_functor , self.m_reducer) , exec.reduce_memory() ) );
 
-    exec.template fan_in_reduce< ReducerTypeFwd , WorkTag >( ReducerConditional::select(self.m_functor , self.m_reducer) );
+    exec.template fan_in_reduce< ReducerTypeFwd , WorkTagFwd >( ReducerConditional::select(self.m_functor , self.m_reducer) );
   }
 
   template<class Schedule>
@@ -484,7 +485,7 @@ private:
       work_index = exec.get_work_index();
     }
 
-    exec.template fan_in_reduce< ReducerTypeFwd , WorkTag >( ReducerConditional::select(self.m_functor , self.m_reducer) );
+    exec.template fan_in_reduce< ReducerTypeFwd , WorkTagFwd >( ReducerConditional::select(self.m_functor , self.m_reducer) );
   }
 
 public:
@@ -519,7 +520,7 @@ public:
     : m_functor( arg_functor )
     , m_policy( arg_policy )
     , m_reducer( InvalidType() )
-    , m_result_ptr( arg_result_view.ptr_on_device() )
+    , m_result_ptr( arg_result_view.data() )
     {
       static_assert( Kokkos::is_view< HostViewType >::value
         , "Kokkos::Threads reduce result must be a View" );
@@ -548,14 +549,14 @@ public:
 // MDRangePolicy impl
 template< class FunctorType , class ReducerType, class ... Traits >
 class ParallelReduce< FunctorType
-                    , Kokkos::Experimental::MDRangePolicy< Traits ... >
+                    , Kokkos::MDRangePolicy< Traits ... >
                     , ReducerType
                     , Kokkos::Threads
                     >
 {
 private:
 
-  typedef Kokkos::Experimental::MDRangePolicy< Traits ... > MDRangePolicy ;
+  typedef Kokkos::MDRangePolicy< Traits ... > MDRangePolicy ;
   typedef typename MDRangePolicy::impl_range_policy Policy ;
 
   typedef typename MDRangePolicy::work_tag    WorkTag ;
@@ -564,19 +565,19 @@ private:
 
   typedef Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, FunctorType, ReducerType> ReducerConditional;
   typedef typename ReducerConditional::type ReducerTypeFwd;
+  typedef typename Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, WorkTag, void>::type WorkTagFwd;
 
-  typedef typename ReducerTypeFwd::value_type ValueType; 
-
-  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd, WorkTag > ValueTraits ;
-  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd, WorkTag > ValueInit ;
+  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd , WorkTagFwd > ValueTraits ;
+  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd , WorkTagFwd > ValueInit ;
 
   typedef typename ValueTraits::pointer_type    pointer_type ;
+  typedef typename ValueTraits::value_type      value_type ;
   typedef typename ValueTraits::reference_type  reference_type ;
 
-  using iterate_type = typename Kokkos::Experimental::Impl::HostIterateTile< MDRangePolicy
+  using iterate_type = typename Kokkos::Impl::HostIterateTile< MDRangePolicy
                                                                            , FunctorType
                                                                            , WorkTag
-                                                                           , ValueType
+                                                                           , reference_type
                                                                            >;
 
   const FunctorType   m_functor ;
@@ -618,7 +619,7 @@ private:
       ( self.m_mdr_policy, self.m_functor , range.begin() , range.end()
       , ValueInit::init( ReducerConditional::select(self.m_functor , self.m_reducer) , exec.reduce_memory() ) );
 
-    exec.template fan_in_reduce< ReducerTypeFwd , WorkTag >( ReducerConditional::select(self.m_functor , self.m_reducer) );
+    exec.template fan_in_reduce< ReducerTypeFwd , WorkTagFwd >( ReducerConditional::select(self.m_functor , self.m_reducer) );
   }
 
   template<class Schedule>
@@ -644,7 +645,7 @@ private:
       work_index = exec.get_work_index();
     }
 
-    exec.template fan_in_reduce< ReducerTypeFwd , WorkTag >( ReducerConditional::select(self.m_functor , self.m_reducer) );
+    exec.template fan_in_reduce< ReducerTypeFwd , WorkTagFwd >( ReducerConditional::select(self.m_functor , self.m_reducer) );
   }
 
 public:
@@ -680,7 +681,7 @@ public:
     , m_mdr_policy( arg_policy )
     , m_policy( Policy(0, m_mdr_policy.m_num_tiles).set_chunk_size(1) )
     , m_reducer( InvalidType() )
-    , m_result_ptr( arg_result_view.ptr_on_device() )
+    , m_result_ptr( arg_result_view.data() )
     {
       static_assert( Kokkos::is_view< HostViewType >::value
         , "Kokkos::Threads reduce result must be a View" );
@@ -725,9 +726,10 @@ private:
 
   typedef Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, FunctorType, ReducerType> ReducerConditional;
   typedef typename ReducerConditional::type ReducerTypeFwd;
+  typedef typename Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, WorkTag, void>::type WorkTagFwd;
 
-  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd, WorkTag > ValueTraits ;
-  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd, WorkTag > ValueInit ;
+  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd , WorkTagFwd > ValueTraits ;
+  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd , WorkTagFwd > ValueInit ;
 
   typedef typename ValueTraits::pointer_type    pointer_type ;
   typedef typename ValueTraits::reference_type  reference_type ;
@@ -767,7 +769,7 @@ private:
       ( self.m_functor , Member( & exec , self.m_policy , self.m_shared )
       , ValueInit::init( ReducerConditional::select(self.m_functor , self.m_reducer) , exec.reduce_memory() ) );
 
-    exec.template fan_in_reduce< ReducerTypeFwd , WorkTag >( ReducerConditional::select(self.m_functor , self.m_reducer) );
+    exec.template fan_in_reduce< ReducerTypeFwd , WorkTagFwd >( ReducerConditional::select(self.m_functor , self.m_reducer) );
   }
 
 public:
@@ -802,7 +804,7 @@ public:
     : m_functor( arg_functor )
     , m_policy(  arg_policy )
     , m_reducer( InvalidType() )
-    , m_result_ptr( arg_result.ptr_on_device() )
+    , m_result_ptr( arg_result.data() )
     , m_shared( arg_policy.scratch_size(0) + arg_policy.scratch_size(1) + FunctorTeamShmemSize< FunctorType >::value( arg_functor , arg_policy.team_size() ) )
     {}
 
@@ -915,6 +917,106 @@ public:
               , const Policy      & arg_policy )
     : m_functor( arg_functor )
     , m_policy( arg_policy )
+    { }
+};
+
+template< class FunctorType, class ReturnType, class ... Traits >
+class ParallelScanWithTotal< FunctorType
+                           , Kokkos::RangePolicy< Traits ... >
+                           , ReturnType
+                           , Kokkos::Threads
+                           >
+{
+private:
+
+  typedef Kokkos::RangePolicy< Traits ... > Policy ;
+  typedef typename Policy::WorkRange                               WorkRange ;
+  typedef typename Policy::work_tag                                WorkTag ;
+  typedef typename Policy::member_type                             Member ;
+  typedef Kokkos::Impl::FunctorValueTraits< FunctorType, WorkTag > ValueTraits ;
+  typedef Kokkos::Impl::FunctorValueInit<   FunctorType, WorkTag > ValueInit ;
+
+  typedef typename ValueTraits::pointer_type    pointer_type ;
+  typedef typename ValueTraits::reference_type  reference_type ;
+
+  const FunctorType  m_functor ;
+  const Policy       m_policy ;
+  ReturnType       & m_returnvalue;
+
+  template< class TagType >
+  inline static
+  typename std::enable_if< std::is_same< TagType , void >::value >::type
+  exec_range( const FunctorType & functor
+            , const Member & ibeg , const Member & iend
+            , reference_type update , const bool final )
+    {
+      #if defined( KOKKOS_ENABLE_AGGRESSIVE_VECTORIZATION ) && \
+          defined( KOKKOS_ENABLE_PRAGMA_IVDEP )
+      #pragma ivdep
+      #endif
+      for ( Member i = ibeg ; i < iend ; ++i ) {
+        functor( i , update , final );
+      }
+    }
+
+  template< class TagType >
+  inline static
+  typename std::enable_if< ! std::is_same< TagType , void >::value >::type
+  exec_range( const FunctorType & functor
+            , const Member & ibeg , const Member & iend
+            , reference_type update , const bool final )
+    {
+      const TagType t{} ;
+      #if defined( KOKKOS_ENABLE_AGGRESSIVE_VECTORIZATION ) && \
+          defined( KOKKOS_ENABLE_PRAGMA_IVDEP )
+      #pragma ivdep
+      #endif
+      for ( Member i = ibeg ; i < iend ; ++i ) {
+        functor( t , i , update , final );
+      }
+    }
+
+  static void exec( ThreadsExec & exec , const void * arg )
+  {
+    const ParallelScanWithTotal & self = * ((const ParallelScanWithTotal *) arg );
+
+    const WorkRange range( self.m_policy, exec.pool_rank(), exec.pool_size() );
+
+    reference_type update =
+      ValueInit::init( self.m_functor , exec.reduce_memory() );
+
+    ParallelScanWithTotal::template exec_range< WorkTag >
+      ( self.m_functor , range.begin(), range.end(), update, false );
+
+    //  exec.template scan_large<FunctorType,WorkTag>( self.m_functor );
+    exec.template scan_small<FunctorType,WorkTag>( self.m_functor );
+
+    ParallelScanWithTotal::template exec_range< WorkTag >
+      ( self.m_functor , range.begin(), range.end(), update, true );
+
+    exec.fan_in();
+
+    if (exec.pool_rank()==exec.pool_size()-1) {
+      self.m_returnvalue = update;
+    }
+  }
+
+public:
+
+  inline
+  void execute() const
+    {
+      ThreadsExec::resize_scratch( 2 * ValueTraits::value_size( m_functor ) , 0 );
+      ThreadsExec::start( & ParallelScanWithTotal::exec , this );
+      ThreadsExec::fence();
+    }
+
+  ParallelScanWithTotal( const FunctorType & arg_functor
+                       , const Policy      & arg_policy
+                       , ReturnType        & arg_returnvalue )
+    : m_functor( arg_functor )
+    , m_policy( arg_policy )
+    , m_returnvalue(  arg_returnvalue )
     { }
 };
 

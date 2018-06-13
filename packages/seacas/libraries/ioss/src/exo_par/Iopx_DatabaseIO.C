@@ -250,8 +250,7 @@ namespace Iopx {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-      : Ioex::DatabaseIO(region, filename, db_usage, communicator, props), decomp(nullptr),
-        metaDataWritten(false)
+      : Ioex::DatabaseIO(region, filename, db_usage, communicator, props)
   {
     usingParallelIO = true;
     if (!is_parallel_consistent()) {
@@ -755,6 +754,34 @@ namespace Iopx {
         Ioss::Property("global_element_count", static_cast<int64_t>(decomp->global_elem_count())));
 
     this_region->property_add(Ioss::Property(std::string("title"), info.title));
+
+    // Get QA records from database and add to qaRecords...
+    int num_qa = ex_inquire_int(get_file_pointer(), EX_INQ_QA);
+    if (num_qa > 0) {
+      struct qa_element
+      {
+        char *qa_record[1][4];
+      };
+
+      auto qa = new qa_element[num_qa];
+      for (int i = 0; i < num_qa; i++) {
+        for (int j = 0; j < 4; j++) {
+          qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
+        }
+      }
+
+      ex_get_qa(get_file_pointer(), qa[0].qa_record);
+      for (int i = 0; i < num_qa; i++) {
+        add_qa_record(qa[i].qa_record[0][0], qa[i].qa_record[0][1], qa[i].qa_record[0][2],
+                      qa[i].qa_record[0][3]);
+      }
+      for (int i = 0; i < num_qa; i++) {
+        for (int j = 0; j < 4; j++) {
+          delete[] qa[i].qa_record[0][j];
+        }
+      }
+      delete[] qa;
+    }
 
     // Get information records from database and add to informationRecords...
     int num_info = ex_inquire_int(get_file_pointer(), EX_INQ_INFO);
@@ -1778,10 +1805,10 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
     }
 
     else if (field.get_name() == "connectivity") {
-      // Do nothing, just handles an idiosyncracy of the GroupingEntity
+      // Do nothing, just handles an idiosyncrasy of the GroupingEntity
     }
     else if (field.get_name() == "connectivity_raw") {
-      // Do nothing, just handles an idiosyncracy of the GroupingEntity
+      // Do nothing, just handles an idiosyncrasy of the GroupingEntity
     }
     else if (field.get_name() == "node_connectivity_status") {
       compute_node_status();
@@ -2210,7 +2237,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::SideSet *fs, const Ioss::Fiel
 {
   size_t num_to_get = field.verify(data_size);
   if (field.get_name() == "ids") {
-    // Do nothing, just handles an idiosyncracy of the GroupingEntity
+    // Do nothing, just handles an idiosyncrasy of the GroupingEntity
   }
   else {
     num_to_get = Ioss::Utils::field_warning(fs, field, "input");
@@ -2248,7 +2275,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
     }
   }
   else if (field.get_name() == "ids") {
-    // Do nothing, just handles an idiosyncracy of the GroupingEntity
+    // Do nothing, just handles an idiosyncrasy of the GroupingEntity
   }
   else {
     num_to_get = Ioss::Utils::field_warning(cs, field, "input");
@@ -3282,10 +3309,10 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       handle_node_ids(data, num_to_get, proc_offset, file_count);
     }
     else if (field.get_name() == "connectivity") {
-      // Do nothing, just handles an idiosyncracy of the GroupingEntity
+      // Do nothing, just handles an idiosyncrasy of the GroupingEntity
     }
     else if (field.get_name() == "connectivity_raw") {
-      // Do nothing, just handles an idiosyncracy of the GroupingEntity
+      // Do nothing, just handles an idiosyncrasy of the GroupingEntity
     }
     else if (field.get_name() == "node_connectivity_status") {
       // Do nothing, input only field.
@@ -3658,7 +3685,7 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get, size_t /* off
    * -- In both cases, update the nodeMap.reorder
    *
    * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
-   *       should be in the orginal order...
+   *       should be in the original order...
    */
   nodeMap.set_size(num_to_get);
 
@@ -4070,7 +4097,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::SideSet *fs, const Ioss::Fiel
 {
   size_t num_to_get = field.verify(data_size);
   if (field.get_name() == "ids") {
-    // Do nothing, just handles an idiosyncracy of the GroupingEntity
+    // Do nothing, just handles an idiosyncrasy of the GroupingEntity
   }
   else {
     num_to_get = Ioss::Utils::field_warning(fs, field, "output");
@@ -4267,10 +4294,10 @@ int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
       }
     }
     else if (field.get_name() == "connectivity") {
-      // Do nothing, just handles an idiosyncracy of the GroupingEntity
+      // Do nothing, just handles an idiosyncrasy of the GroupingEntity
     }
     else if (field.get_name() == "connectivity_raw") {
-      // Do nothing, just handles an idiosyncracy of the GroupingEntity
+      // Do nothing, just handles an idiosyncrasy of the GroupingEntity
     }
     else {
       num_to_get = Ioss::Utils::field_warning(fb, field, "output");
@@ -4556,7 +4583,7 @@ void DatabaseIO::write_meta_data()
     ssets[i]->property_add(Ioss::Property("processor_offset", mesh.sidesets[i].procOffset));
     ssets[i]->property_add(Ioss::Property("processor_df_offset", mesh.sidesets[i].dfProcOffset));
 
-    // Propogate down to owned sideblocks...
+    // Propagate down to owned sideblocks...
     Ioss::SideBlockContainer side_blocks = ssets[i]->get_side_blocks();
     for (auto &block : side_blocks) {
       block->property_add(Ioss::Property("processor_offset", mesh.sidesets[i].procOffset));

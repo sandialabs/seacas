@@ -1166,7 +1166,7 @@ namespace Iogn {
         INT    tet_vert[][3] = {{0, 3, 2}, {0, 2, 1}};
         INT    hex_vert[4];
         switch (loc) {
-        case MX: // Minumum X Face
+        case MX: // Minimum X Face
           for (size_t i = 0; i < myNumZ; i++) {
             size_t layer_off = i * xp1yp1;
             for (size_t j = 0; j < numY; j++) {
@@ -1202,7 +1202,7 @@ namespace Iogn {
             }
           }
           break;
-        case MY: // Minumum Y Face
+        case MY: // Minimum Y Face
           for (size_t i = 0; i < myNumZ; i++) {
             size_t layer_off = i * xp1yp1;
             for (size_t j = 0; j < numX; j++) {
@@ -1238,7 +1238,7 @@ namespace Iogn {
             }
           }
           break;
-        case MZ: // Minumum Z Face
+        case MZ: // Minimum Z Face
           if (myProcessor == 0) {
             for (size_t i = 0, k = 0; i < numY; i++) {
               for (size_t j = 0; j < numX; j++, k++) {
@@ -1282,7 +1282,7 @@ namespace Iogn {
         // Hex shells
         size_t cnt = 0;
         switch (loc) {
-        case MX: // Minumum X Face
+        case MX: // Minimum X Face
           for (size_t i = 0; i < myNumZ; i++) {
             size_t layer_off = i * xp1yp1;
             for (size_t j = 0; j < numY; j++) {
@@ -1306,7 +1306,7 @@ namespace Iogn {
             }
           }
           break;
-        case MY: // Minumum Y Face
+        case MY: // Minimum Y Face
           for (size_t i = 0; i < myNumZ; i++) {
             size_t layer_off = i * xp1yp1;
             for (size_t j = 0; j < numX; j++) {
@@ -1330,7 +1330,7 @@ namespace Iogn {
             }
           }
           break;
-        case MZ: // Minumum Z Face
+        case MZ: // Minimum Z Face
           if (myProcessor == 0) {
             for (size_t i = 0, k = 0; i < numY; i++) {
               for (size_t j = 0; j < numX; j++, k++) {
@@ -1375,7 +1375,7 @@ namespace Iogn {
     size_t k      = 0;
 
     switch (loc) {
-    case MX: // Minumum X Face
+    case MX: // Minimum X Face
       for (size_t i = 0; i < myNumZ + 1; i++) {
         size_t layer_off = myStartZ * xp1yp1 + i * xp1yp1;
         for (size_t j = 0; j < numY + 1; j++) {
@@ -1391,7 +1391,7 @@ namespace Iogn {
         }
       }
       break;
-    case MY: // Minumum Y Face
+    case MY: // Minimum Y Face
       for (size_t i = 0; i < myNumZ + 1; i++) {
         size_t layer_off = myStartZ * xp1yp1 + i * xp1yp1;
         for (size_t j = 0; j < numX + 1; j++) {
@@ -1407,7 +1407,7 @@ namespace Iogn {
         }
       }
       break;
-    case MZ: // Minumum Z Face
+    case MZ: // Minimum Z Face
       if (myProcessor == 0) {
         for (size_t i = 0; i < (numY + 1) * (numX + 1); i++) {
           nodes[i] = i + 1;
@@ -1531,7 +1531,7 @@ namespace Iogn {
     double sinang = std::sin(ang);
 
     assert(n1 >= 0 && n2 >= 0 && n3 >= 0);
-    double by[3][3];
+    std::array<std::array<double, 3>, 3> by;
     by[n1][n1] = cosang;
     by[n2][n1] = -sinang;
     by[n1][n3] = 0.0;
@@ -1542,21 +1542,12 @@ namespace Iogn {
     by[n3][n2] = 0.0;
     by[n3][n3] = 1.0;
 
-    double res[3][3];
+    std::array<std::array<double, 3>, 3> res;
     for (int i = 0; i < 3; i++) {
       res[i][0] = rotmat[i][0] * by[0][0] + rotmat[i][1] * by[1][0] + rotmat[i][2] * by[2][0];
       res[i][1] = rotmat[i][0] * by[0][1] + rotmat[i][1] * by[1][1] + rotmat[i][2] * by[2][1];
       res[i][2] = rotmat[i][0] * by[0][2] + rotmat[i][1] * by[1][2] + rotmat[i][2] * by[2][2];
     }
-
-#if 1
-    std::memcpy(rotmat, res, 9 * sizeof(double));
-#else
-    for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++) {
-        rotmat[i][j] = res[i][j];
-      }
-    }
-#endif
+    rotmat = res;
   }
 } // namespace Iogn

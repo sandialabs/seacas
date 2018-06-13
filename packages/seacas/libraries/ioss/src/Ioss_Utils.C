@@ -37,7 +37,6 @@
 #include <cassert>
 #include <cctype>
 #include <chrono>
-#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -1097,7 +1096,7 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &            face_is_
 
 /** \brief Get the appropriate index offset for the sides of elements in a SideBlock.
  *
- *  And yet another idiosyncracy of sidesets...
+ *  And yet another idiosyncrasy of sidesets...
  *  The side of an element (especially shells) can be
  *  either a face or an edge in the same sideset.  The
  *  ordinal of an edge is (local_edge_number+numfaces) on the

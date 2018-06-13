@@ -35,7 +35,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Questions? Contact  H. Carter Edwards (hcedwar@sandia.gov)
+// Questions? Contact Christian R. Trott (crtrott@sandia.gov)
 //
 // ************************************************************************
 //@HEADER
@@ -49,6 +49,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <impl/Kokkos_Timer.hpp>
+#include <Kokkos_DualView.hpp>
 
 namespace Test {
 
@@ -88,10 +89,10 @@ namespace Impl {
 
       a.template sync<typename ViewType::host_mirror_space>();
       Scalar count = 0;
-      for(unsigned int i = 0; i<a.d_view.dimension_0(); i++)
-        for(unsigned int j = 0; j<a.d_view.dimension_1(); j++)
+      for(unsigned int i = 0; i<a.d_view.extent(0); i++)
+        for(unsigned int j = 0; j<a.d_view.extent(1); j++)
           count += a.h_view(i,j);
-      return count -  a.d_view.dimension_0()*a.d_view.dimension_1()-2-4-3*2;
+      return count -  a.d_view.extent(0)*a.d_view.extent(1)-2-4-3*2;
     }
 
 
@@ -113,6 +114,10 @@ void test_dualview_combinations(unsigned int size)
   Impl::test_dualview_combinations<Scalar,Device> test(size);
   ASSERT_EQ( test.result,0);
 
+}
+
+TEST_F( TEST_CATEGORY, dualview_combination) {
+    test_dualview_combinations<int,TEST_EXECSPACE>(10);
 }
 
 

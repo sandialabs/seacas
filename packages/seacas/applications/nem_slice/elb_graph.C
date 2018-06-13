@@ -274,7 +274,7 @@ namespace {
 
       /* for face adjacencies, need to allocate some memory */
       if (problem->face_adj) {
-        /* allocate space to hold info about surounding elements */
+        /* allocate space to hold info about surrounding elements */
         pt_list   = (INT *)malloc(sizeof(INT) * graph->max_nsur);
         hold_elem = (INT *)malloc(sizeof(INT) * graph->max_nsur);
         if (!(pt_list) || !(hold_elem)) {
@@ -552,7 +552,7 @@ namespace {
                         /* need to check for hex's */
                         hflag2 = is_hex(etype2);
 
-                        /* TET10 cannnot connect to a HEX */
+                        /* TET10 cannot connect to a HEX */
                         tflag2 = is_tet(etype2);
 
                         /* check here for tet/hex combinations */

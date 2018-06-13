@@ -35,6 +35,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cgns/Iocgns_Defines.h>
+
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
 #include <cassert>
@@ -198,6 +200,7 @@ namespace Iocgns {
       cgp_mpi_comm(util().communicator());
 #endif
       CGCHECK(cgp_pio_mode(CGP_COLLECTIVE));
+      CGCHECK(cg_set_file_type(CG_FILE_HDF5));
       int ierr = cgp_open(get_filename().c_str(), mode, &cgnsFilePtr);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
@@ -436,7 +439,7 @@ namespace Iocgns {
 
     Utils::add_sidesets(cgnsFilePtr, this);
 
-    char basename[33];
+    char basename[CGNS_MAX_NAME_LENGTH + 1];
     int  cell_dimension = 0;
     int  phys_dimension = 0;
     CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
@@ -982,10 +985,10 @@ namespace Iocgns {
       }
 
       else if (field.get_name() == "connectivity") {
-        // Do nothing, just handles an idiosyncracy of the GroupingEntity
+        // Do nothing, just handles an idiosyncrasy of the GroupingEntity
       }
       else if (field.get_name() == "connectivity_raw") {
-        // Do nothing, just handles an idiosyncracy of the GroupingEntity
+        // Do nothing, just handles an idiosyncrasy of the GroupingEntity
       }
       else if (field.get_name() == "owning_processor") {
         // If parallel, then set the "locally_owned" property on the nodeblocks.
@@ -1135,7 +1138,7 @@ namespace Iocgns {
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
-        char basename[33];
+        char basename[CGNS_MAX_NAME_LENGTH + 1];
         int  cell_dimension = 0;
         int  phys_dimension = 0;
         CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
@@ -1401,7 +1404,7 @@ namespace Iocgns {
       }
     }
     else if (field.get_name() == "ids") {
-      // Do nothing, just handles an idiosyncracy of the GroupingEntity
+      // Do nothing, just handles an idiosyncrasy of the GroupingEntity
     }
     else {
       num_to_get = Ioss::Utils::field_warning(cs, field, "input");
@@ -2174,7 +2177,7 @@ namespace Iocgns {
      * -- In both cases, update the nodeMap.reorder
      *
      * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
-     *       should be in the orginal order...
+     *       should be in the original order...
      */
     if (!nodeMap.defined()) {
       nodeMap.set_size(num_to_get);

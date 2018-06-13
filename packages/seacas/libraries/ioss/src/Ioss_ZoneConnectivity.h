@@ -77,6 +77,14 @@ namespace Ioss {
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
           m_ownsSharedNodes(owns_nodes), m_intraBlock(intra_block)
     {
+      // NOTE: Originally thought that could deprecate this constructor and calculate the
+      // intra_block status via the `owner_zone` and `donor_zone`, but in parallel, we get the
+      // "non-adam" owner and donor zone, so even though it is intra_block (with same adam_zone), we
+      // can't determine that in the constructor.  We can get rid of the `owns_nodes` argument, but then
+      // the constructors are ambiguous since both end with a boolean and can't tell which is which.
+      //
+      // Currently, only the decomposition process creates intra_block ZGC, so that function is calling
+      // this constructor correctly...
       assert(is_valid());
     }
 
@@ -103,7 +111,7 @@ namespace Ioss {
     std::vector<int>     get_range(int ordinal) const;
     friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
-    bool is_intra_block() const { return m_ownerZone == m_donorZone; }
+    bool is_intra_block() const { return m_intraBlock; }
     bool is_active() const { return m_isActive; }
 
     std::string m_connectionName; // Name of the connection; either generated or from file
@@ -112,7 +120,7 @@ namespace Ioss {
     Ioss::IJK_t m_transform; // The transform.  In the same form as defined by CGNS
 
     // The following are all subsetted down to the portion that is actually on this zone
-    // This can be different thant m_ownerRange and m_donorRange in a parallel run if the
+    // This can be different than m_ownerRange and m_donorRange in a parallel run if the
     // decomposition splits the connection.  In a serial run, they are the same.
     //
     // 1 of ijk should be the same for rangeBeg and rangeEnd defining a surface.

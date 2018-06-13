@@ -35,7 +35,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Questions? Contact  H. Carter Edwards (hcedwar@sandia.gov)
+// Questions? Contact Christian R. Trott (crtrott@sandia.gov)
 //
 // ************************************************************************
 //@HEADER
@@ -269,6 +269,7 @@ public:
 
   inline int chunk_size() const { return m_chunk_size ; }
 
+#ifdef KOKKOS_ENABLE_DEPRECATED_CODE
   /** \brief set chunk_size to a discrete value*/
   inline TeamPolicyInternal set_chunk_size(typename traits::index_type chunk_size_) const {
     TeamPolicyInternal p = *this;
@@ -297,8 +298,62 @@ public:
     p.m_thread_scratch_size[level] = per_thread.value;
     return p;
   };
+#else
+  /** \brief set chunk_size to a discrete value*/
+  inline TeamPolicyInternal& set_chunk_size(typename traits::index_type chunk_size_) {
+    m_chunk_size = chunk_size_;
+    return *this;
+  }
+
+  /** \brief set per team scratch size for a specific level of the scratch hierarchy */
+  inline TeamPolicyInternal& set_scratch_size(const int& level, const PerTeamValue& per_team) {
+    m_team_scratch_size[level] = per_team.value;
+    return *this;
+  }
+
+  /** \brief set per thread scratch size for a specific level of the scratch hierarchy */
+  inline TeamPolicyInternal& set_scratch_size(const int& level, const PerThreadValue& per_thread) {
+    m_thread_scratch_size[level] = per_thread.value;
+    return *this;
+  }
+
+  /** \brief set per thread and per team scratch size for a specific level of the scratch hierarchy */
+  inline TeamPolicyInternal& set_scratch_size(const int& level, const PerTeamValue& per_team, const PerThreadValue& per_thread) {
+    m_team_scratch_size[level] = per_team.value;
+    m_thread_scratch_size[level] = per_thread.value;
+    return *this;
+  }
+#endif
 
   typedef Kokkos::Impl::CudaTeamMember member_type ;
+
+protected:
+#ifdef KOKKOS_ENABLE_DEPRECATED_CODE
+  /** \brief set chunk_size to a discrete value*/
+  inline TeamPolicyInternal internal_set_chunk_size(typename traits::index_type chunk_size_) {
+    m_chunk_size = chunk_size_;
+    return *this;
+  }
+
+  /** \brief set per team scratch size for a specific level of the scratch hierarchy */
+  inline TeamPolicyInternal internal_set_scratch_size(const int& level, const PerTeamValue& per_team) {
+    m_team_scratch_size[level] = per_team.value;
+    return *this;
+  }
+
+  /** \brief set per thread scratch size for a specific level of the scratch hierarchy */
+  inline TeamPolicyInternal internal_set_scratch_size(const int& level, const PerThreadValue& per_thread) {
+    m_thread_scratch_size[level] = per_thread.value;
+    return *this;
+  }
+
+  /** \brief set per thread and per team scratch size for a specific level of the scratch hierarchy */
+  inline TeamPolicyInternal internal_set_scratch_size(const int& level, const PerTeamValue& per_team, const PerThreadValue& per_thread) {
+    m_team_scratch_size[level] = per_team.value;
+    m_thread_scratch_size[level] = per_thread.value;
+    return *this;
+  }
+#endif
 };
 
 } // namspace Impl
@@ -355,7 +410,7 @@ public:
       for ( Member
               iwork =  m_policy.begin() + threadIdx.y + blockDim.y * blockIdx.x ;
               iwork <  work_end ;
-              iwork += work_stride ) {
+              iwork = iwork < work_end - work_stride ? iwork + work_stride : work_end) {
         this-> template exec_range< WorkTag >( iwork );
       }
     }
@@ -363,9 +418,10 @@ public:
   inline
   void execute() const
     {
-      const int nwork = m_policy.end() - m_policy.begin();
-      const dim3 block(  1 , CudaTraits::WarpSize * cuda_internal_maximum_warp_count(), 1);
-      const dim3 grid( std::min( ( nwork + block.y - 1 ) / block.y , cuda_internal_maximum_grid_count() ) , 1 , 1);
+      const typename Policy::index_type nwork = m_policy.end() - m_policy.begin();
+      const int block_size = Kokkos::Impl::cuda_get_opt_block_size< ParallelFor >( m_functor , 1, 0 , 0 );
+      const dim3 block(  1 , block_size , 1);
+      const dim3 grid( std::min( typename Policy::index_type(( nwork + block.y - 1 ) / block.y) , typename Policy::index_type(cuda_internal_maximum_grid_count()) ) , 1 , 1);
 
       CudaParallelLaunch< ParallelFor, LaunchBounds >( *this , grid , block , 0 );
     }
@@ -381,12 +437,12 @@ public:
 // MDRangePolicy impl
 template< class FunctorType , class ... Traits >
 class ParallelFor< FunctorType
-                 , Kokkos::Experimental::MDRangePolicy< Traits ... >
+                 , Kokkos::MDRangePolicy< Traits ... >
                  , Kokkos::Cuda
                  >
 {
 private:
-  typedef Kokkos::Experimental::MDRangePolicy< Traits ...  > Policy ;
+  typedef Kokkos::MDRangePolicy< Traits ...  > Policy ;
   using RP = Policy;
   typedef typename Policy::array_index_type array_index_type;
   typedef typename Policy::index_type index_type;
@@ -402,7 +458,7 @@ public:
   __device__
   void operator()(void) const
     {
-      Kokkos::Experimental::Impl::Refactor::DeviceIterateTile<Policy::rank,Policy,FunctorType,typename Policy::work_tag>(m_rp,m_functor).exec_range();
+      Kokkos::Impl::Refactor::DeviceIterateTile<Policy::rank,Policy,FunctorType,typename Policy::work_tag>(m_rp,m_functor).exec_range();
     }
 
 
@@ -540,19 +596,19 @@ public:
   void operator()(void) const
   {
     // Iterate this block through the league
-    int threadid = 0;
+    int64_t threadid = 0;
     if ( m_scratch_size[1]>0 ) {
-      __shared__ int base_thread_id;
+      __shared__ int64_t base_thread_id;
       if (threadIdx.x==0 && threadIdx.y==0 ) {
-        threadid = ((blockIdx.x*blockDim.z + threadIdx.z) * blockDim.x * blockDim.y) % Kokkos::Impl::g_device_cuda_lock_arrays.n;
-        threadid = ((threadid + blockDim.x * blockDim.y-1)/(blockDim.x * blockDim.y)) * blockDim.x * blockDim.y;
-        if(threadid > Kokkos::Impl::g_device_cuda_lock_arrays.n) threadid-=blockDim.x * blockDim.y;
+        threadid = (blockIdx.x*blockDim.z + threadIdx.z) %
+          (Kokkos::Impl::g_device_cuda_lock_arrays.n / (blockDim.x * blockDim.y));
+        threadid *= blockDim.x * blockDim.y;
         int done = 0;
         while (!done) {
           done = (0 == atomicCAS(&Kokkos::Impl::g_device_cuda_lock_arrays.scratch[threadid],0,1));
           if(!done) {
             threadid += blockDim.x * blockDim.y;
-            if(threadid > Kokkos::Impl::g_device_cuda_lock_arrays.n) threadid = 0;
+            if(int64_t(threadid+blockDim.x * blockDim.y) >= int64_t(Kokkos::Impl::g_device_cuda_lock_arrays.n)) threadid = 0;
           }
         }
         base_thread_id = threadid;
@@ -584,7 +640,7 @@ public:
   inline
   void execute() const
     {
-      const int shmem_size_total = m_shmem_begin + m_shmem_size ;
+      const int64_t shmem_size_total = m_shmem_begin + m_shmem_size ;
       const dim3 grid( int(m_league_size) , 1 , 1 );
       const dim3 block( int(m_vector_size) , int(m_team_size) , 1 );
 
@@ -648,10 +704,11 @@ private:
 
   typedef Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, FunctorType, ReducerType> ReducerConditional;
   typedef typename ReducerConditional::type ReducerTypeFwd;
+  typedef typename Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, WorkTag, void>::type WorkTagFwd;
 
-  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd, WorkTag > ValueTraits ;
-  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd, WorkTag > ValueInit ;
-  typedef Kokkos::Impl::FunctorValueJoin<   ReducerTypeFwd, WorkTag > ValueJoin ;
+  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd, WorkTagFwd > ValueTraits ;
+  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd, WorkTagFwd > ValueInit ;
+  typedef Kokkos::Impl::FunctorValueJoin<   ReducerTypeFwd, WorkTagFwd > ValueJoin ;
 
 public:
 
@@ -659,7 +716,8 @@ public:
   typedef typename ValueTraits::value_type      value_type ;
   typedef typename ValueTraits::reference_type  reference_type ;
   typedef FunctorType                           functor_type ;
-  typedef Cuda::size_type                       size_type ;
+  typedef Kokkos::Cuda::size_type                  size_type ;
+  typedef typename Policy::index_type             index_type ;
 
   // Algorithmic constraints: blockSize is a power of two AND blockDim.y == blockDim.z == 1
 
@@ -721,7 +779,7 @@ public:
     }
 
     // Reduce with final value at blockDim.y - 1 location.
-    if ( cuda_single_inter_block_reduce_scan<false,ReducerTypeFwd,WorkTag>(
+    if ( cuda_single_inter_block_reduce_scan<false,ReducerTypeFwd,WorkTagFwd>(
            ReducerConditional::select(m_functor , m_reducer) , blockIdx.x , gridDim.x ,
            kokkos_impl_cuda_shared_memory<size_type>() , m_scratch_space , m_scratch_flags ) ) {
 
@@ -731,7 +789,7 @@ public:
       size_type * const global = m_unified_space ? m_unified_space : m_scratch_space ;
 
       if ( threadIdx.y == 0 ) {
-        Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTag >::final( ReducerConditional::select(m_functor , m_reducer) , shared );
+        Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTagFwd >::final( ReducerConditional::select(m_functor , m_reducer) , shared );
       }
 
       if ( CudaTraits::WarpSize < word_count.value ) { __syncthreads(); }
@@ -766,11 +824,11 @@ public:
 
     value_type init;
     ValueInit::init( ReducerConditional::select(m_functor , m_reducer) , &init);
-     if(Impl::cuda_inter_block_reduction<ReducerTypeFwd,ValueJoin,WorkTag>
+     if(Impl::cuda_inter_block_reduction<ReducerTypeFwd,ValueJoin,WorkTagFwd>
             (value,init,ValueJoin(ReducerConditional::select(m_functor , m_reducer)),m_scratch_space,result,m_scratch_flags,max_active_thread)) {
        const unsigned id = threadIdx.y*blockDim.x + threadIdx.x;
        if(id==0) {
-         Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTag >::final( ReducerConditional::select(m_functor , m_reducer) , (void*) &value );
+         Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTagFwd >::final( ReducerConditional::select(m_functor , m_reducer) , (void*) &value );
          *result = value;
        }
      }
@@ -788,7 +846,7 @@ public:
   inline
   void execute()
     {
-      const int nwork = m_policy.end() - m_policy.begin();
+      const index_type nwork = m_policy.end() - m_policy.begin();
       if ( nwork ) {
         const int block_size = local_block_size( m_functor );
 
@@ -835,7 +893,7 @@ public:
   : m_functor( arg_functor )
   , m_policy(  arg_policy )
   , m_reducer( InvalidType() )
-  , m_result_ptr( arg_result.ptr_on_device() )
+  , m_result_ptr( arg_result.data() )
   , m_scratch_space( 0 )
   , m_scratch_flags( 0 )
   , m_unified_space( 0 )
@@ -847,7 +905,7 @@ public:
   : m_functor( arg_functor )
   , m_policy(  arg_policy )
   , m_reducer( reducer )
-  , m_result_ptr( reducer.view().ptr_on_device() )
+  , m_result_ptr( reducer.view().data() )
   , m_scratch_space( 0 )
   , m_scratch_flags( 0 )
   , m_unified_space( 0 )
@@ -858,14 +916,14 @@ public:
 // MDRangePolicy impl
 template< class FunctorType , class ReducerType, class ... Traits >
 class ParallelReduce< FunctorType
-                    , Kokkos::Experimental::MDRangePolicy< Traits ... >
+                    , Kokkos::MDRangePolicy< Traits ... >
                     , ReducerType
                     , Kokkos::Cuda
                     >
 {
 private:
 
-  typedef Kokkos::Experimental::MDRangePolicy< Traits ... > Policy ;
+  typedef Kokkos::MDRangePolicy< Traits ... > Policy ;
   typedef typename Policy::array_index_type                 array_index_type;
   typedef typename Policy::index_type                       index_type;
 
@@ -875,10 +933,11 @@ private:
 
   typedef Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, FunctorType, ReducerType> ReducerConditional;
   typedef typename ReducerConditional::type ReducerTypeFwd;
+  typedef typename Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, WorkTag, void>::type WorkTagFwd;
 
-  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd, WorkTag > ValueTraits ;
-  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd, WorkTag > ValueInit ;
-  typedef Kokkos::Impl::FunctorValueJoin<   ReducerTypeFwd, WorkTag > ValueJoin ;
+  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd, WorkTagFwd > ValueTraits ;
+  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd, WorkTagFwd > ValueInit ;
+  typedef Kokkos::Impl::FunctorValueJoin<   ReducerTypeFwd, WorkTagFwd > ValueJoin ;
 
 public:
 
@@ -898,7 +957,7 @@ public:
   size_type *         m_scratch_flags ;
   size_type *         m_unified_space ;
 
-  typedef typename Kokkos::Experimental::Impl::Reduce::DeviceIterateTile<Policy::rank, Policy, FunctorType, typename Policy::work_tag, reference_type> DeviceIteratePattern;
+  typedef typename Kokkos::Impl::Reduce::DeviceIterateTile<Policy::rank, Policy, FunctorType, typename Policy::work_tag, reference_type> DeviceIteratePattern;
 
   // Shall we use the shfl based reduction or not (only use it for static sized types of more than 128bit
   enum { UseShflReduction = ((sizeof(value_type)>2*sizeof(double)) && ValueTraits::StaticValueSize) };
@@ -913,7 +972,7 @@ public:
   void
   exec_range( reference_type update ) const
   {
-    Kokkos::Experimental::Impl::Reduce::DeviceIterateTile<Policy::rank,Policy,FunctorType,typename Policy::work_tag, reference_type>(m_policy, m_functor, update).exec_range();
+    Kokkos::Impl::Reduce::DeviceIterateTile<Policy::rank,Policy,FunctorType,typename Policy::work_tag, reference_type>(m_policy, m_functor, update).exec_range();
   }
 
   inline
@@ -942,7 +1001,7 @@ public:
 
     // Reduce with final value at blockDim.y - 1 location.
     // Problem: non power-of-two blockDim
-    if ( cuda_single_inter_block_reduce_scan<false,ReducerTypeFwd,WorkTag>(
+    if ( cuda_single_inter_block_reduce_scan<false,ReducerTypeFwd,WorkTagFwd>(
            ReducerConditional::select(m_functor , m_reducer) , blockIdx.x , gridDim.x ,
            kokkos_impl_cuda_shared_memory<size_type>() , m_scratch_space , m_scratch_flags ) ) {
 
@@ -951,7 +1010,7 @@ public:
       size_type * const global = m_unified_space ? m_unified_space : m_scratch_space ;
 
       if ( threadIdx.y == 0 ) {
-        Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTag >::final( ReducerConditional::select(m_functor , m_reducer) , shared );
+        Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTagFwd >::final( ReducerConditional::select(m_functor , m_reducer) , shared );
       }
 
       if ( CudaTraits::WarpSize < word_count.value ) { __syncthreads(); }
@@ -983,11 +1042,11 @@ public:
 
      value_type init;
      ValueInit::init( ReducerConditional::select(m_functor , m_reducer) , &init);
-     if(Impl::cuda_inter_block_reduction<ReducerTypeFwd,ValueJoin,WorkTag>
+     if(Impl::cuda_inter_block_reduction<ReducerTypeFwd,ValueJoin,WorkTagFwd>
          (value,init,ValueJoin(ReducerConditional::select(m_functor , m_reducer)),m_scratch_space,result,m_scratch_flags,max_active_thread)) {
        const unsigned id = threadIdx.y*blockDim.x + threadIdx.x;
        if(id==0) {
-         Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTag >::final( ReducerConditional::select(m_functor , m_reducer) , (void*) &value );
+         Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTagFwd >::final( ReducerConditional::select(m_functor , m_reducer) , (void*) &value );
          *result = value;
        }
      }
@@ -1060,7 +1119,7 @@ public:
   : m_functor( arg_functor )
   , m_policy(  arg_policy )
   , m_reducer( InvalidType() )
-  , m_result_ptr( arg_result.ptr_on_device() )
+  , m_result_ptr( arg_result.data() )
   , m_scratch_space( 0 )
   , m_scratch_flags( 0 )
   , m_unified_space( 0 )
@@ -1072,7 +1131,7 @@ public:
   : m_functor( arg_functor )
   , m_policy(  arg_policy )
   , m_reducer( reducer )
-  , m_result_ptr( reducer.view().ptr_on_device() )
+  , m_result_ptr( reducer.view().data() )
   , m_scratch_space( 0 )
   , m_scratch_flags( 0 )
   , m_unified_space( 0 )
@@ -1100,10 +1159,11 @@ private:
 
   typedef Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, FunctorType, ReducerType> ReducerConditional;
   typedef typename ReducerConditional::type ReducerTypeFwd;
+  typedef typename Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, WorkTag, void>::type WorkTagFwd;
 
-  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd, WorkTag > ValueTraits ;
-  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd, WorkTag > ValueInit ;
-  typedef Kokkos::Impl::FunctorValueJoin<   ReducerTypeFwd, WorkTag > ValueJoin ;
+  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd, WorkTagFwd > ValueTraits ;
+  typedef Kokkos::Impl::FunctorValueInit<   ReducerTypeFwd, WorkTagFwd > ValueInit ;
+  typedef Kokkos::Impl::FunctorValueJoin<   ReducerTypeFwd, WorkTagFwd > ValueJoin ;
 
   typedef typename ValueTraits::pointer_type    pointer_type ;
   typedef typename ValueTraits::reference_type  reference_type ;
@@ -1159,19 +1219,19 @@ public:
 
   __device__ inline
   void operator() () const {
-    int threadid = 0;
+    int64_t threadid = 0;
     if ( m_scratch_size[1]>0 ) {
-      __shared__ int base_thread_id;
+      __shared__ int64_t base_thread_id;
       if (threadIdx.x==0 && threadIdx.y==0 ) {
-        threadid = ((blockIdx.x*blockDim.z + threadIdx.z) * blockDim.x * blockDim.y) % Kokkos::Impl::g_device_cuda_lock_arrays.n;
-        threadid = ((threadid + blockDim.x * blockDim.y-1)/(blockDim.x * blockDim.y)) * blockDim.x * blockDim.y;
-        if(threadid > Kokkos::Impl::g_device_cuda_lock_arrays.n) threadid-=blockDim.x * blockDim.y;
+        threadid = (blockIdx.x*blockDim.z + threadIdx.z) %
+          (Kokkos::Impl::g_device_cuda_lock_arrays.n / (blockDim.x * blockDim.y));
+        threadid *= blockDim.x * blockDim.y;
         int done = 0;
         while (!done) {
           done = (0 == atomicCAS(&Kokkos::Impl::g_device_cuda_lock_arrays.scratch[threadid],0,1));
           if(!done) {
             threadid += blockDim.x * blockDim.y;
-            if(threadid > Kokkos::Impl::g_device_cuda_lock_arrays.n) threadid = 0;
+            if(int64_t(threadid + blockDim.x * blockDim.y) >= int64_t(Kokkos::Impl::g_device_cuda_lock_arrays.n)) threadid = 0;
           }
         }
         base_thread_id = threadid;
@@ -1222,7 +1282,7 @@ public:
       size_type * const global = m_unified_space ? m_unified_space : m_scratch_space ;
 
       if ( threadIdx.y == 0 ) {
-        Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTag >::final( ReducerConditional::select(m_functor , m_reducer) , shared );
+        Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTagFwd >::final( ReducerConditional::select(m_functor , m_reducer) , shared );
       }
 
       if ( CudaTraits::WarpSize < word_count.value ) { __syncthreads(); }
@@ -1260,7 +1320,7 @@ public:
            (value,init,ValueJoin(ReducerConditional::select(m_functor , m_reducer)),m_scratch_space,result,m_scratch_flags,blockDim.y)) {
       const unsigned id = threadIdx.y*blockDim.x + threadIdx.x;
       if(id==0) {
-        Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTag >::final( ReducerConditional::select(m_functor , m_reducer) , (void*) &value );
+        Kokkos::Impl::FunctorFinal< ReducerTypeFwd , WorkTagFwd >::final( ReducerConditional::select(m_functor , m_reducer) , (void*) &value );
         *result = value;
       }
     }
@@ -1313,7 +1373,7 @@ public:
                                 ,void*>::type = NULL)
   : m_functor( arg_functor )
   , m_reducer( InvalidType() )
-  , m_result_ptr( arg_result.ptr_on_device() )
+  , m_result_ptr( arg_result.data() )
   , m_scratch_space( 0 )
   , m_scratch_flags( 0 )
   , m_unified_space( 0 )
@@ -1340,7 +1400,7 @@ public:
   {
     // Return Init value if the number of worksets is zero
     if( arg_policy.league_size() == 0) {
-      ValueInit::init( ReducerConditional::select(m_functor , m_reducer) , arg_result.ptr_on_device() );
+      ValueInit::init( ReducerConditional::select(m_functor , m_reducer) , arg_result.data() );
       return ;
     }
 
@@ -1383,7 +1443,7 @@ public:
                 , const ReducerType & reducer)
   : m_functor( arg_functor )
   , m_reducer( reducer )
-  , m_result_ptr( reducer.view().ptr_on_device() )
+  , m_result_ptr( reducer.view().data() )
   , m_scratch_space( 0 )
   , m_scratch_flags( 0 )
   , m_unified_space( 0 )
@@ -2020,6 +2080,230 @@ public:
   { }
 };
 
+//----------------------------------------------------------------------------
+template< class FunctorType, class ReturnType, class ... Traits >
+class ParallelScanWithTotal< FunctorType
+                           , Kokkos::RangePolicy< Traits ... >
+                           , ReturnType
+                           , Kokkos::Cuda
+                           >
+{
+private:
+
+  typedef Kokkos::RangePolicy< Traits ... >  Policy ;
+  typedef typename Policy::member_type  Member ;
+  typedef typename Policy::work_tag     WorkTag ;
+  typedef typename Policy::WorkRange    WorkRange ;
+  typedef typename Policy::launch_bounds  LaunchBounds ;
+
+  typedef Kokkos::Impl::FunctorValueTraits< FunctorType, WorkTag > ValueTraits ;
+  typedef Kokkos::Impl::FunctorValueInit<   FunctorType, WorkTag > ValueInit ;
+  typedef Kokkos::Impl::FunctorValueOps<    FunctorType, WorkTag > ValueOps ;
+
+public:
+
+  typedef typename ValueTraits::pointer_type    pointer_type ;
+  typedef typename ValueTraits::reference_type  reference_type ;
+  typedef FunctorType                           functor_type ;
+  typedef Cuda::size_type                       size_type ;
+
+private:
+
+  // Algorithmic constraints:
+  //  (a) blockDim.y is a power of two
+  //  (b) blockDim.y == blockDim.z == 1
+  //  (c) gridDim.x  <= blockDim.y * blockDim.y
+  //  (d) gridDim.y  == gridDim.z == 1
+
+  const FunctorType m_functor ;
+  const Policy      m_policy ;
+  size_type *       m_scratch_space ;
+  size_type *       m_scratch_flags ;
+  size_type         m_final ;
+  ReturnType      & m_returnvalue;
+
+  template< class TagType >
+  __device__ inline
+  typename std::enable_if< std::is_same< TagType , void >::value >::type
+  exec_range( const Member & i , reference_type update , const bool final_result ) const
+    { m_functor( i , update , final_result ); }
+
+  template< class TagType >
+  __device__ inline
+  typename std::enable_if< ! std::is_same< TagType , void >::value >::type
+  exec_range( const Member & i , reference_type update , const bool final_result ) const
+    { m_functor( TagType() , i , update , final_result ); }
+
+  //----------------------------------------
+
+  __device__ inline
+  void initial(void) const
+  {
+    const integral_nonzero_constant< size_type , ValueTraits::StaticValueSize / sizeof(size_type) >
+      word_count( ValueTraits::value_size( m_functor ) / sizeof(size_type) );
+
+    size_type * const shared_value = kokkos_impl_cuda_shared_memory<size_type>() + word_count.value * threadIdx.y ;
+
+    ValueInit::init( m_functor , shared_value );
+
+    // Number of blocks is bounded so that the reduction can be limited to two passes.
+    // Each thread block is given an approximately equal amount of work to perform.
+    // Accumulate the values for this block.
+    // The accumulation ordering does not match the final pass, but is arithmatically equivalent.
+
+    const WorkRange range( m_policy , blockIdx.x , gridDim.x );
+
+    for ( Member iwork = range.begin() + threadIdx.y , iwork_end = range.end() ;
+          iwork < iwork_end ; iwork += blockDim.y ) {
+      this-> template exec_range< WorkTag >( iwork , ValueOps::reference( shared_value ) , false );
+    }
+
+    // Reduce and scan, writing out scan of blocks' totals and block-groups' totals.
+    // Blocks' scan values are written to 'blockIdx.x' location.
+    // Block-groups' scan values are at: i = ( j * blockDim.y - 1 ) for i < gridDim.x
+    cuda_single_inter_block_reduce_scan<true,FunctorType,WorkTag>( m_functor , blockIdx.x , gridDim.x , kokkos_impl_cuda_shared_memory<size_type>() , m_scratch_space , m_scratch_flags );
+  }
+
+  //----------------------------------------
+
+  __device__ inline
+  void final(void) const
+  {
+    const integral_nonzero_constant< size_type , ValueTraits::StaticValueSize / sizeof(size_type) >
+      word_count( ValueTraits::value_size( m_functor ) / sizeof(size_type) );
+
+    // Use shared memory as an exclusive scan: { 0 , value[0] , value[1] , value[2] , ... }
+    size_type * const shared_data   = kokkos_impl_cuda_shared_memory<size_type>();
+    size_type * const shared_prefix = shared_data + word_count.value * threadIdx.y ;
+    size_type * const shared_accum  = shared_data + word_count.value * ( blockDim.y + 1 );
+
+    // Starting value for this thread block is the previous block's total.
+    if ( blockIdx.x ) {
+      size_type * const block_total = m_scratch_space + word_count.value * ( blockIdx.x - 1 );
+      for ( unsigned i = threadIdx.y ; i < word_count.value ; ++i ) { shared_accum[i] = block_total[i] ; }
+    }
+    else if ( 0 == threadIdx.y ) {
+      ValueInit::init( m_functor , shared_accum );
+    }
+
+    const WorkRange range( m_policy , blockIdx.x , gridDim.x );
+
+    for ( typename Policy::member_type iwork_base = range.begin(); iwork_base < range.end() ; iwork_base += blockDim.y ) {
+
+      const typename Policy::member_type iwork = iwork_base + threadIdx.y ;
+
+      __syncthreads(); // Don't overwrite previous iteration values until they are used
+
+      ValueInit::init( m_functor , shared_prefix + word_count.value );
+
+      // Copy previous block's accumulation total into thread[0] prefix and inclusive scan value of this block
+      for ( unsigned i = threadIdx.y ; i < word_count.value ; ++i ) {
+        shared_data[i + word_count.value] = shared_data[i] = shared_accum[i] ;
+      }
+
+      if ( CudaTraits::WarpSize < word_count.value ) { __syncthreads(); } // Protect against large scan values.
+
+      // Call functor to accumulate inclusive scan value for this work item
+      if ( iwork < range.end() ) {
+        this-> template exec_range< WorkTag >( iwork , ValueOps::reference( shared_prefix + word_count.value ) , false );
+      }
+
+      // Scan block values into locations shared_data[1..blockDim.y]
+      cuda_intra_block_reduce_scan<true,FunctorType,WorkTag>( m_functor , typename ValueTraits::pointer_type(shared_data+word_count.value) );
+
+      {
+        size_type * const block_total = shared_data + word_count.value * blockDim.y ;
+        for ( unsigned i = threadIdx.y ; i < word_count.value ; ++i ) { shared_accum[i] = block_total[i]; }
+      }
+
+      // Call functor with exclusive scan value
+      if ( iwork < range.end() ) {
+        this-> template exec_range< WorkTag >( iwork , ValueOps::reference( shared_prefix ) , true );
+      }
+    }
+  }
+
+public:
+
+  //----------------------------------------
+
+  __device__ inline
+  void operator()(void) const
+  {
+    if ( ! m_final ) {
+      initial();
+    }
+    else {
+      final();
+    }
+  }
+
+  // Determine block size constrained by shared memory:
+  static inline
+  unsigned local_block_size( const FunctorType & f )
+    {
+      // blockDim.y must be power of two = 128 (4 warps) or 256 (8 warps) or 512 (16 warps)
+      // gridDim.x <= blockDim.y * blockDim.y
+      //
+      // 4 warps was 10% faster than 8 warps and 20% faster than 16 warps in unit testing
+
+      unsigned n = CudaTraits::WarpSize * 4 ;
+      while ( n && CudaTraits::SharedMemoryCapacity < cuda_single_inter_block_reduce_scan_shmem<false,FunctorType,WorkTag>( f , n ) ) { n >>= 1 ; }
+      return n ;
+    }
+
+  inline
+  void execute()
+    {
+      const int nwork    = m_policy.end() - m_policy.begin();
+      if ( nwork ) {
+        enum { GridMaxComputeCapability_2x = 0x0ffff };
+
+        const int block_size = local_block_size( m_functor );
+
+        const int grid_max =
+          ( block_size * block_size ) < GridMaxComputeCapability_2x ?
+          ( block_size * block_size ) : GridMaxComputeCapability_2x ;
+
+        // At most 'max_grid' blocks:
+        const int max_grid = std::min( int(grid_max) , int(( nwork + block_size - 1 ) / block_size ));
+
+        // How much work per block:
+        const int work_per_block = ( nwork + max_grid - 1 ) / max_grid ;
+
+        // How many block are really needed for this much work:
+        const int grid_x = ( nwork + work_per_block - 1 ) / work_per_block ;
+
+        m_scratch_space = cuda_internal_scratch_space( ValueTraits::value_size( m_functor ) * grid_x );
+        m_scratch_flags = cuda_internal_scratch_flags( sizeof(size_type) * 1 );
+
+        const dim3 grid( grid_x , 1 , 1 );
+        const dim3 block( 1 , block_size , 1 ); // REQUIRED DIMENSIONS ( 1 , N , 1 )
+        const int shmem = ValueTraits::value_size( m_functor ) * ( block_size + 2 );
+
+        m_final = false ;
+        CudaParallelLaunch< ParallelScanWithTotal, LaunchBounds >( *this, grid, block, shmem ); // copy to device and execute
+
+        m_final = true ;
+        CudaParallelLaunch< ParallelScanWithTotal, LaunchBounds >( *this, grid, block, shmem ); // copy to device and execute
+
+        const int size = ValueTraits::value_size( m_functor );
+        DeepCopy<HostSpace,CudaSpace>( &m_returnvalue, m_scratch_space + (grid_x - 1)*size/sizeof(int), size );
+      }
+    }
+
+  ParallelScanWithTotal( const FunctorType  & arg_functor ,
+                         const Policy       & arg_policy ,   
+                         ReturnType         & arg_returnvalue )
+  : m_functor( arg_functor )
+  , m_policy( arg_policy )
+  , m_scratch_space( 0 )
+  , m_scratch_flags( 0 )
+  , m_final( false )
+  , m_returnvalue( arg_returnvalue )
+  { }
+};
+
 } // namespace Impl
 } // namespace Kokkos
 
@@ -2038,8 +2322,39 @@ namespace Impl {
     __device__ inline
     void operator() (typename ExecPolicy::work_tag, const typename ExecPolicy::member_type& i, ValueType& val) const {
       //Insert Static Assert with decltype on ValueType equals third argument type of FunctorType::operator()
-      f(typename ExecPolicy::work_tag(), i,val);
+      f(typename ExecPolicy::work_tag(), i, val);
     }
+
+    __device__ inline
+    void operator() (typename ExecPolicy::work_tag, const typename ExecPolicy::member_type& i, const typename ExecPolicy::member_type& j, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals third argument type of FunctorType::operator()
+      f(typename ExecPolicy::work_tag(), i, j, val);
+    }
+
+    __device__ inline
+    void operator() (typename ExecPolicy::work_tag, const typename ExecPolicy::member_type& i, const typename ExecPolicy::member_type& j, const typename ExecPolicy::member_type& k, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals third argument type of FunctorType::operator()
+      f(typename ExecPolicy::work_tag(), i, j, k, val);
+    }
+
+    __device__ inline
+    void operator() (typename ExecPolicy::work_tag, const typename ExecPolicy::member_type& i, const typename ExecPolicy::member_type& j, const typename ExecPolicy::member_type& k, const typename ExecPolicy::member_type& l, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals third argument type of FunctorType::operator()
+      f(typename ExecPolicy::work_tag(), i, j, k, l, val);
+    }
+
+    __device__ inline
+    void operator() (typename ExecPolicy::work_tag, const typename ExecPolicy::member_type& i, const typename ExecPolicy::member_type& j, const typename ExecPolicy::member_type& k, const typename ExecPolicy::member_type& l, const typename ExecPolicy::member_type& m, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals third argument type of FunctorType::operator()
+      f(typename ExecPolicy::work_tag(), i, j, k, l, m, val);
+    }
+
+    __device__ inline
+    void operator() (typename ExecPolicy::work_tag, const typename ExecPolicy::member_type& i, const typename ExecPolicy::member_type& j, const typename ExecPolicy::member_type& k, const typename ExecPolicy::member_type& l, const typename ExecPolicy::member_type& m, const typename ExecPolicy::member_type& n, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals third argument type of FunctorType::operator()
+      f(typename ExecPolicy::work_tag(), i, j, k, l, m, n, val);
+    }
+
   };
 
   template< class FunctorType, class ExecPolicy, class ValueType >
@@ -2053,10 +2368,72 @@ namespace Impl {
       //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
       f(i,val);
     }
+
+    __device__ inline
+    void operator() (const typename ExecPolicy::member_type& i, const typename ExecPolicy::member_type& j, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
+      f(i,j,val);
+    }
+
+    __device__ inline
+    void operator() (const typename ExecPolicy::member_type& i, const typename ExecPolicy::member_type& j, const typename ExecPolicy::member_type& k, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
+      f(i,j,k,val);
+    }
+
+    __device__ inline
+    void operator() (const typename ExecPolicy::member_type& i, const typename ExecPolicy::member_type& j, const typename ExecPolicy::member_type& k, const typename ExecPolicy::member_type& l, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
+      f(i,j,k,l,val);
+    }
+
+    __device__ inline
+    void operator() (const typename ExecPolicy::member_type& i, const typename ExecPolicy::member_type& j, const typename ExecPolicy::member_type& k, const typename ExecPolicy::member_type& l, const typename ExecPolicy::member_type& m, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
+      f(i,j,k,l,m,val);
+    }
+
+    __device__ inline
+    void operator() (const typename ExecPolicy::member_type& i, const typename ExecPolicy::member_type& j, const typename ExecPolicy::member_type& k, const typename ExecPolicy::member_type& l, const typename ExecPolicy::member_type& m, const typename ExecPolicy::member_type& n, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
+      f(i,j,k,l,m,n,val);
+    }
+
+
     __device__ inline
     void operator() (typename ExecPolicy::member_type& i, ValueType& val) const {
       //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
       f(i,val);
+    }
+
+    __device__ inline
+    void operator() (typename ExecPolicy::member_type& i, typename ExecPolicy::member_type& j, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
+      f(i,j,val);
+    }
+
+    __device__ inline
+    void operator() (typename ExecPolicy::member_type& i, typename ExecPolicy::member_type& j, typename ExecPolicy::member_type& k, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
+      f(i,j,k,val);
+    }
+
+    __device__ inline
+    void operator() (typename ExecPolicy::member_type& i, typename ExecPolicy::member_type& j, typename ExecPolicy::member_type& k, typename ExecPolicy::member_type& l, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
+      f(i,j,k,l,val);
+    }
+
+    __device__ inline
+    void operator() (typename ExecPolicy::member_type& i, typename ExecPolicy::member_type& j, typename ExecPolicy::member_type& k, typename ExecPolicy::member_type& l, typename ExecPolicy::member_type& m, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
+      f(i,j,k,l,m,val);
+    }
+
+    __device__ inline
+    void operator() (typename ExecPolicy::member_type& i, typename ExecPolicy::member_type& j, typename ExecPolicy::member_type& k, typename ExecPolicy::member_type& l, typename ExecPolicy::member_type& m, typename ExecPolicy::member_type& n, ValueType& val) const {
+      //Insert Static Assert with decltype on ValueType equals second argument type of FunctorType::operator()
+      f(i,j,k,l,m,n,val);
     }
 
   };

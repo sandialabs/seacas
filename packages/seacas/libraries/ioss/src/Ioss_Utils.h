@@ -30,8 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IOSS_Ioss_IOUtils_h
-#define IOSS_Ioss_IOUtils_h
+#ifndef IOSS_Ioss_Utils_h
+#define IOSS_Ioss_Utils_h
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Field.h>
@@ -285,7 +285,7 @@ namespace Ioss {
                                                const void *sides, int64_t number_sides,
                                                const Region *region);
 
-    // And yet another idiosyncracy of sidesets...
+    // And yet another idiosyncrasy of sidesets...
     // The side of an element (especially shells) can be
     // either a face or an edge in the same sideset.  The
     // ordinal of an edge is (local_edge_number+#faces) on the

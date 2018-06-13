@@ -33,6 +33,7 @@
 #include <Ioss_CodeTypes.h>
 #include <algorithm>
 #include <cgns/Iocgns_StructuredZoneData.h>
+#include <tokenize.h>
 
 #define OUTPUT std::cerr
 
@@ -220,9 +221,12 @@ namespace {
     auto c2_base = std::to_string(c2->m_adam->m_zone) + "_" + std::to_string(c2->m_zone);
 
     const auto &adam_name = parent->m_adam->m_name;
+
+    assert(c1->m_adam->m_zone == c2->m_adam->m_zone);
+
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
-                                        donor_range_end);
+                                        donor_range_end, true, true);
     auto &zgc1         = c1->m_zoneConnectivity.back();
     zgc1.m_sameRange   = true;
     zgc1.m_ownerOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
@@ -230,7 +234,7 @@ namespace {
 
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
-                                        range_end);
+                                        range_end, false, true);
     auto &zgc2         = c2->m_zoneConnectivity.back();
     zgc2.m_sameRange   = true;
     zgc2.m_ownerOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
@@ -239,6 +243,20 @@ namespace {
 } // namespace
 
 namespace Iocgns {
+
+  StructuredZoneData::StructuredZoneData(int zone, const std::string &nixnjxnk) : m_zone(zone)
+  {
+    m_name = "zone_" + std::to_string(zone);
+
+    auto ordinals = Ioss::tokenize(nixnjxnk, "x");
+    assert(ordinals.size() == 3);
+
+    m_ordinal[0] = std::strtol(ordinals[0].c_str(), nullptr, 10);
+    m_ordinal[1] = std::strtol(ordinals[1].c_str(), nullptr, 10);
+    m_ordinal[2] = std::strtol(ordinals[2].c_str(), nullptr, 10);
+
+    m_adam = this;
+  }
 
   // ========================================================================
   // Split this StructuredZone along the largest ordinal
@@ -252,27 +270,24 @@ namespace Iocgns {
       ratio = 1.0 / ratio;
     }
 
-    int ord0 = int((double)m_ordinal[0] * ratio + 0.5);
-    ord0     = ord0 == 0 ? 1 : ord0;
-    int ord1 = int((double)m_ordinal[1] * ratio + 0.5);
-    ord1     = ord1 == 0 ? 1 : ord1;
-    int ord2 = int((double)m_ordinal[2] * ratio + 0.5);
-    ord2     = ord2 == 0 ? 1 : ord2;
+    size_t ord0 = size_t((double)m_ordinal[0] * ratio + 0.5);
+    size_t ord1 = size_t((double)m_ordinal[1] * ratio + 0.5);
+    size_t ord2 = size_t((double)m_ordinal[2] * ratio + 0.5);
 
-    double work0 = ord0 * m_ordinal[1] * m_ordinal[2];
-    double work1 = ord1 * m_ordinal[0] * m_ordinal[2];
-    double work2 = ord2 * m_ordinal[0] * m_ordinal[1];
+    size_t work0 = ord0 * m_ordinal[1] * m_ordinal[2];
+    size_t work1 = ord1 * m_ordinal[0] * m_ordinal[2];
+    size_t work2 = ord2 * m_ordinal[0] * m_ordinal[1];
 
-    if (m_lineOrdinal == 0)
-      work0 = 0.0;
-    if (m_lineOrdinal == 1)
-      work1 = 0.0;
-    if (m_lineOrdinal == 2)
-      work2 = 0.0;
+    if (m_lineOrdinal == 0 || m_ordinal[0] == 1)
+      work0 = 0;
+    if (m_lineOrdinal == 1 || m_ordinal[1] == 1)
+      work1 = 0;
+    if (m_lineOrdinal == 2 || m_ordinal[2] == 1)
+      work2 = 0;
 
-    auto delta0 = std::make_pair(fabs(work0 - avg_work), -(int)m_ordinal[0]);
-    auto delta1 = std::make_pair(fabs(work1 - avg_work), -(int)m_ordinal[1]);
-    auto delta2 = std::make_pair(fabs(work2 - avg_work), -(int)m_ordinal[2]);
+    auto delta0 = std::make_pair(abs((double)work0 - avg_work), -(int)m_ordinal[0]);
+    auto delta1 = std::make_pair(abs((double)work1 - avg_work), -(int)m_ordinal[1]);
+    auto delta2 = std::make_pair(abs((double)work2 - avg_work), -(int)m_ordinal[2]);
 
     auto min_ordinal = 0;
     auto min_delta   = delta0;
@@ -286,11 +301,12 @@ namespace Iocgns {
     }
 
     int ordinal = min_ordinal;
-    assert(ordinal != m_lineOrdinal);
 
-    if (m_ordinal[ordinal] <= 1) {
+    if (m_ordinal[ordinal] <= 1 || (work0 == 0 && work1 == 0 && work2 == 0)) {
       return std::make_pair(nullptr, nullptr);
     }
+
+    assert(ordinal != m_lineOrdinal);
 
     m_child1 = new StructuredZoneData;
     m_child2 = new StructuredZoneData;
@@ -349,7 +365,7 @@ namespace Iocgns {
     // Add ZoneGridConnectivity instance to account for split...
     add_proc_split_zgc(this, m_child1, m_child2, ordinal);
 
-    // Propogate parent ZoneGridConnectivities to appropriate children.
+    // Propagate parent ZoneGridConnectivities to appropriate children.
     // Split if needed...
     propogate_zgc(this, m_child1, ordinal, rank);
     propogate_zgc(this, m_child2, ordinal, rank);

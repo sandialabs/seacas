@@ -1270,7 +1270,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Get the appropriate index offset for the sides of elements in a <a class="el" href="classIoss_1_1SideBlock.html" title="A collection of element sides having the same topology. ">SideBlock</a>. </p>
-<p>And yet another idiosyncracy of sidesets... The side of an element (especially shells) can be either a face or an edge in the same sideset. The ordinal of an edge is (local_edge_number+numfaces) on the database, but needs to be (local_edge_number) for Sierra...</p>
+<p>And yet another idiosyncrasy of sidesets... The side of an element (especially shells) can be either a face or an edge in the same sideset. The ordinal of an edge is (local_edge_number+numfaces) on the database, but needs to be (local_edge_number) for Sierra...</p>
 <p>If the sideblock has a "parent_element_topology" and a "topology", then we can determine whether to offset the side ordinals...</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

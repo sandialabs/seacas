@@ -465,24 +465,16 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
 
   if (iproc == 0) {
     /* Generate a QA record for the utility */
-    time_t time_val = time(nullptr);
-    char * ct_ptr   = asctime(localtime(&time_val));
-    char   tm_date[30];
-    strncpy(tm_date, ct_ptr, 30);
+    time_t date_time = time(nullptr);
 
-    /* Break string with null characters */
-    tm_date[3]  = '\0';
-    tm_date[7]  = '\0';
-    tm_date[10] = '\0';
-    tm_date[19] = '\0';
-    tm_date[29] = '\0';
-
-    char qa_date[MAX_STR_LENGTH + 1];
     char qa_time[MAX_STR_LENGTH + 1];
     char qa_name[MAX_STR_LENGTH + 1];
     char qa_vers[MAX_STR_LENGTH + 1];
-    sprintf(qa_date, "%s %s %s", &tm_date[8], &tm_date[4], &tm_date[20]);
-    sprintf(qa_time, "%s", &tm_date[11]);
+    char qa_date[MAX_STR_LENGTH + 1];
+
+    strftime(qa_date, MAX_STR_LENGTH, "%Y/%m/%d", localtime(&date_time));
+    strftime(qa_time, MAX_STR_LENGTH, "%H:%M:%S", localtime(&date_time));
+
     strncpy(qa_name, UTIL_NAME, MAX_STR_LENGTH);
     strncpy(qa_vers, VER_STR, MAX_STR_LENGTH);
 
@@ -490,7 +482,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
       qa_date[strlen(qa_date) - 1] = '\0';
     }
     if (globals.Num_QA_Recs > 0) {
-      strcpy(globals.QA_Record[4 * (globals.Num_QA_Recs - 1)], qa_name);
+      strcpy(globals.QA_Record[(4 * (globals.Num_QA_Recs - 1)) + 0], qa_name);
       strcpy(globals.QA_Record[(4 * (globals.Num_QA_Recs - 1)) + 1], qa_vers);
       strcpy(globals.QA_Record[(4 * (globals.Num_QA_Recs - 1)) + 2], qa_date);
       strcpy(globals.QA_Record[(4 * (globals.Num_QA_Recs - 1)) + 3], qa_time);

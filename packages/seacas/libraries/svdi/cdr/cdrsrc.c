@@ -383,7 +383,7 @@ unsigned *next, ibuf[];
   int      idx, i;
   unsigned temp, mask;
 
-  /* check boundries */
+  /* check boundaries */
   if (*iwidth > cdrcom_.KWRDSZ) {
     return;
   }
@@ -479,7 +479,7 @@ unsigned ibuf[], *next;
 #if defined(DEC) || defined(linux) || defined(interix)
   unsigned char *p_temp, ctemp;
 #endif
-  /* check boundries */
+  /* check boundaries */
   if (*iwidth > cdrcom_.KWRDSZ) {
     return;
   }
@@ -495,7 +495,7 @@ unsigned ibuf[], *next;
 
   if (*ibitlc + *iwidth > cdrcom_.KWRDSZ) {
 
-    /* crosses word boundry - break it up */
+    /* crosses word boundary - break it up */
 
     temp = ibuf[idx];
 #if defined(DEC) || defined(linux) || defined(interix)
@@ -531,7 +531,7 @@ unsigned ibuf[], *next;
   }
   else {
 
-    /* doesn't cross word boundry */
+    /* doesn't cross word boundary */
 
     temp = ibuf[idx];
 #if defined(DEC) || defined(linux) || defined(interix)
@@ -655,11 +655,11 @@ void cdrcfs_(ifilcd, eof) int *ifilcd, *eof;
   Convert from internal character set to ASCII character set.
 
   Notes and Revisions:
-    This routine is here to satisify the call, since the internal
+    This routine is here to satisfy the call, since the internal
     character set is ASCII.
 
   Parameters:
-    in - IN - character to be converted, in host interal format
+    in - IN - character to be converted, in host internal format
     iout - OUT - character converted to ASCII
 
 */
@@ -671,7 +671,7 @@ void cdrcvt_(in, iout) int *in, *iout;
 /*  *** CDRELA ***
 
   Collect CPU time.  This is a dummy routine to satisfy calls from
-  VDMONI. Monitoring isn't done on this sytem
+  VDMONI. Monitoring isn't done on this system
 
   Parameters:
     icode - IN - 0 = initialize timer, 1 = save timer
@@ -1089,7 +1089,7 @@ char *buffer;
 Convert from ASCII character set to internal character set.
 
 Notes and Revisions:
-This routine is here to satisify the call, since the internal
+This routine is here to satisfy the call, since the internal
 character set is ASCII.
 
 Parameters:

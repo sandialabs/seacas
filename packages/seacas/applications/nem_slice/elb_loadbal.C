@@ -392,7 +392,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
     nadjg.resize(machine->num_boxes);
 
     /*
-     * Call Chaco to get the initial breakdown of the verticies
+     * Call Chaco to get the initial breakdown of the vertices
      * onto the boxes. The vertex2proc array can then be used
      * to assign elements to groups that can be used in the
      * Chaco calls below.
@@ -1106,7 +1106,7 @@ namespace {
         }
 
         size_t components =
-	  extract_connected_lists(nrow, columns.data(), rows.data(), list.data(), list_ptr);
+            extract_connected_lists(nrow, columns.data(), rows.data(), list.data(), list_ptr);
 
         if (components) {
           printf("There are " ST_ZU " connected components.\n", components);
@@ -1199,7 +1199,7 @@ namespace {
             }
 
             int components =
-	      extract_connected_lists(nrow, columns.data(), rows.data(), list.data(), list_ptr);
+                extract_connected_lists(nrow, columns.data(), rows.data(), list.data(), list_ptr);
 
             if (components > 0) {
               printf("For Processor %d there are %d connected components.\n", pcnt, components);
@@ -1344,10 +1344,11 @@ namespace {
                       }
                     }
 
-                    /* at this point, a shell was connnect to this volume element.
-                     * if count, then the shell has a element connect to one of
-                     * its faces and thus this is not a mechanism.  If !count,
-                     * then this is a mechanism.
+                    /* at this point, a shell was connected to this
+                     * volume element.  if count, then the shell has a
+                     * element connect to one of its faces and thus
+                     * this is not a mechanism.  If !count, then this
+                     * is a mechanism.
                      */
 
                     if (!count) {
@@ -1534,7 +1535,7 @@ namespace {
     lb->e_cmap_procs.resize(machine->num_procs);
     lb->e_cmap_neigh.resize(machine->num_procs);
 
-    /* allocate space to hold info about surounding elements */
+    /* allocate space to hold info about surrounding elements */
     std::vector<INT> pt_list(graph->max_nsur);
     std::vector<INT> hold_elem(graph->max_nsur);
 
@@ -1598,10 +1599,10 @@ namespace {
             }
 
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-              /* Find elements connnected to both node '0' and node 'ncnt+1' */
+              /* Find elements connected to both node '0' and node 'ncnt+1' */
               nelem =
-		find_inter(hold_elem.data(), graph->sur_elem[side_nodes[(ncnt + 1)]].data(),
-			   nhold, graph->sur_elem[side_nodes[(ncnt + 1)]].size(), pt_list.data());
+                  find_inter(hold_elem.data(), graph->sur_elem[side_nodes[(ncnt + 1)]].data(),
+                             nhold, graph->sur_elem[side_nodes[(ncnt + 1)]].size(), pt_list.data());
 
               if (nelem < 2) {
                 break;
@@ -1663,7 +1664,7 @@ namespace {
             int    node  = 2;
             size_t nhold = 0;
             for (int ncnt = 0; ncnt < nnodes; ncnt++) {
-              /* Find elements connnected to both node 'inode' and node 'node' */
+              /* Find elements connected to both node 'inode' and node 'node' */
               nelem = find_inter(graph->sur_elem[side_nodes[inode]].data(),
                                  graph->sur_elem[side_nodes[node]].data(),
                                  graph->sur_elem[side_nodes[inode]].size(),

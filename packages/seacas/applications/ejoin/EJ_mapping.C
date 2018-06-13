@@ -312,7 +312,7 @@ void generate_element_ids(RegionVector &part_mesh, const std::vector<INT> &local
   }
   // Check for duplicates...
   // NOTE: Used to use an indexed sort here, but if there was a
-  // duplicate id, it didnt really care whether part 1 or part N's
+  // duplicate id, it didn't really care whether part 1 or part N's
   // index came first which causes really screwy element maps.
   // Instead, lets sort a vector containing pairs of <id, index> where
   // the index will always? increase for increasing part numbers...

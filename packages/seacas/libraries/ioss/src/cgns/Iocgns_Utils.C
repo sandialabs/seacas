@@ -30,6 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cgns/Iocgns_Defines.h>
+
 #include <Ioss_Bar2.h>
 #include <Ioss_Bar3.h>
 #include <Ioss_Hex20.h>
@@ -72,6 +74,24 @@
   }
 
 namespace {
+  int power_2(int count)
+  {
+    // Return the maximum power of two which is less than or equal to 'count'
+    // count = 15 -> returns 8
+    // count = 16 -> returns 16
+    // count = 17 -> returns 16
+
+    // Use brute force...
+    int pow2 = 1;
+    while (pow2 <= count) {
+      pow2 *= 2;
+    }
+    if (pow2 > count) {
+      pow2 /= 2;
+    }
+    return pow2;
+  }
+
   struct Range
   {
     Range(int a, int b) : m_beg(a < b ? a : b), m_end(a < b ? b : a), m_reversed(b < a) {}
@@ -161,7 +181,7 @@ namespace {
 
   int extract_trailing_int(char *name)
   {
-    // 'name' consists of an arbitray number of characters followed by
+    // 'name' consists of an arbitrary number of characters followed by
     // zero or more digits.  Return the integer value of the contiguous
     // set of trailing digits.
     // Example: Name42 returns 42;  Name_52or_perhaps_3_43 returns 43.
@@ -309,16 +329,16 @@ namespace {
   // processor.
   // ...Could do this on a per sb basis, but better to do all at once...
   // Data:
-  // 32 - connectionName -- 32 char max
+  // CGNS_MAX_NAME_LENGTH - connectionName -- CGNS_MAX_NAME_LENGTH char max
   // 1 - int zone
   // 1 - int donor_zone -- get by mapping donorName to zone
   // 6 cgsize_t[6] ownerRange (can probably use 32-bit int...)
   // 6 cgsize_t[6] donorRange (can probably use 32-bit int...)
   // 3 int[3] transform; (values range from -3 to +3 (could store as single int)
-  // 32 characters + 17 ints / connection.
+  // CGNS_MAX_NAME_LENGTH characters + 17 ints / connection.
 
 #ifdef SEACAS_HAVE_MPI
-    const int BYTE_PER_NAME = 32;
+    const int BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH;
     const int INT_PER_ZGC   = 17;
     // Gather all to processor 0, consolidate, and then scatter back...
     int         my_count          = 0;
@@ -531,7 +551,7 @@ namespace {
 }
 
 size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
-                                             std::vector<size_t> &zone_offset, bool is_parallel)
+                                             std::vector<size_t> &zone_offset, bool is_parallel_io)
 {
   // Make sure mesh is not hybrid...
   if (region.mesh_type() == Ioss::MeshType::HYBRID) {
@@ -586,7 +606,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   for (const auto &eb : element_blocks) {
     int64_t local_count = eb->entity_count();
 #ifdef SEACAS_HAVE_MPI
-    if (is_parallel) {
+    if (is_parallel_io) {
       int64_t start = 0;
       MPI_Exscan(&local_count, &start, 1, Ioss::mpi_type(start), MPI_SUM,
                  region.get_database()->util().communicator());
@@ -601,27 +621,44 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   const auto &structured_blocks = region.get_structured_blocks();
   validate_blocks(structured_blocks);
 
+  // If `is_parallel` and `!is_parallel_io`, then writing file-per-processor
+  bool is_parallel = region.get_database()->util().parallel_size() > 1;
+  int  rank        = region.get_database()->util().parallel_rank();
+
   for (const auto &sb : structured_blocks) {
     int      zone    = 0;
     cgsize_t size[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-    size[3]          = sb->get_property("ni_global").get_int();
-    size[4]          = sb->get_property("nj_global").get_int();
-    size[5]          = sb->get_property("nk_global").get_int();
-
+    if (is_parallel_io) {
+      size[3] = sb->get_property("ni_global").get_int();
+      size[4] = sb->get_property("nj_global").get_int();
+      size[5] = sb->get_property("nk_global").get_int();
+    }
+    else {
+      size[3] = sb->get_property("ni").get_int();
+      size[4] = sb->get_property("nj").get_int();
+      size[5] = sb->get_property("nk").get_int();
+    }
     size[0] = size[3] + 1;
     size[1] = size[4] + 1;
     size[2] = size[5] + 1;
 
-    CGERR(cg_zone_write(file_ptr, base, sb->name().c_str(), size, CG_Structured, &zone));
-    sb->property_update("zone", zone);
-    sb->property_update("base", base);
+    if (is_parallel_io || sb->is_active()) {
+      std::string name = sb->name();
+      if (is_parallel && !is_parallel_io) {
+        name += "_proc-";
+        name += std::to_string(rank);
+      }
+      CGERR(cg_zone_write(file_ptr, base, name.c_str(), size, CG_Structured, &zone));
+      sb->property_update("zone", zone);
+      sb->property_update("base", base);
 
-    assert(zone > 0);
-    zone_offset[zone] = zone_offset[zone - 1] + sb->get_property("cell_count").get_int();
+      assert(zone > 0);
+      zone_offset[zone] = zone_offset[zone - 1] + sb->get_property("cell_count").get_int();
 
-    // Add GridCoordinates Node...
-    int grid_idx = 0;
-    CGERR(cg_grid_write(file_ptr, base, zone, "GridCoordinates", &grid_idx));
+      // Add GridCoordinates Node...
+      int grid_idx = 0;
+      CGERR(cg_grid_write(file_ptr, base, zone, "GridCoordinates", &grid_idx));
+    }
   }
 
   {
@@ -644,12 +681,21 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     }
   }
 
-  if (is_parallel) {
+  if (is_parallel_io) {
     consolidate_zgc(region);
   }
 
   for (const auto &sb : structured_blocks) {
-    int zone = sb->get_property("zone").get_int();
+    if (!is_parallel_io && !sb->is_active()) {
+      continue;
+    }
+
+    int         zone = sb->get_property("zone").get_int();
+    std::string name = sb->name();
+    if (is_parallel && !is_parallel_io) {
+      name += "_proc-";
+      name += std::to_string(rank);
+    }
 
     // Transfer boundary condition nodes...
     // The bc.m_ownerRange argument needs to be the union of the size on all processors
@@ -666,7 +712,9 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       }
     }
 
-    region.get_database()->util().global_array_minmax(bc_range, Ioss::ParallelUtils::DO_MAX);
+    if (is_parallel_io) {
+      region.get_database()->util().global_array_minmax(bc_range, Ioss::ParallelUtils::DO_MAX);
+    }
 
     for (idx = 0; idx < bc_range.size(); idx += 6) {
       bc_range[idx + 0] = -bc_range[idx + 0];
@@ -679,8 +727,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       int bc_idx = 0;
       CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
                           CG_PointRange, 2, &bc_range[idx], &bc_idx));
-      CGERR(cg_goto(file_ptr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0,
-                    "end"));
+      CGERR(cg_goto(file_ptr, base, name.c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0, "end"));
       CGERR(cg_famname_write(bc.m_famName.c_str()));
       CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
       idx += 6;
@@ -688,17 +735,44 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 
     // Transfer Zone Grid Connectivity...
     for (const auto &zgc : sb->m_zoneConnectivity) {
-      assert(zgc.is_valid() && zgc.is_active());
-      int                zgc_idx = 0;
-      std::array<INT, 6> owner_range{{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1],
-                                      zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[0],
-                                      zgc.m_ownerRangeEnd[1], zgc.m_ownerRangeEnd[2]}};
-      std::array<INT, 6> donor_range{{zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1],
-                                      zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[0],
-                                      zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]}};
-      CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
-                          zgc.m_donorName.c_str(), owner_range.data(), donor_range.data(),
-                          zgc.m_transform.data(), &zgc_idx));
+      if (zgc.is_valid() && zgc.is_active()) {
+        int                zgc_idx = 0;
+        std::array<INT, 6> owner_range{{zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1],
+                                        zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[0],
+                                        zgc.m_ownerRangeEnd[1], zgc.m_ownerRangeEnd[2]}};
+        std::array<INT, 6> donor_range{{zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1],
+                                        zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[0],
+                                        zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]}};
+
+        std::string donor_name   = zgc.m_donorName;
+        std::string connect_name = zgc.m_connectionName;
+        if (is_parallel && !is_parallel_io) {
+          if (zgc.is_intra_block()) {
+            connect_name = std::to_string(zgc.m_ownerGUID) + "--" + std::to_string(zgc.m_donorGUID);
+          }
+          donor_name += "_proc-";
+          donor_name += std::to_string(zgc.m_donorProcessor);
+          owner_range[0] -= zgc.m_ownerOffset[0];
+          owner_range[1] -= zgc.m_ownerOffset[1];
+          owner_range[2] -= zgc.m_ownerOffset[2];
+          owner_range[3] -= zgc.m_ownerOffset[0];
+          owner_range[4] -= zgc.m_ownerOffset[1];
+          owner_range[5] -= zgc.m_ownerOffset[2];
+
+          donor_range[0] -= zgc.m_donorOffset[0];
+          donor_range[1] -= zgc.m_donorOffset[1];
+          donor_range[2] -= zgc.m_donorOffset[2];
+          donor_range[3] -= zgc.m_donorOffset[0];
+          donor_range[4] -= zgc.m_donorOffset[1];
+          donor_range[5] -= zgc.m_donorOffset[2];
+        }
+#if IOSS_DEBUG_OUTPUT
+        std::cerr << "P[" << rank << "]: " << connect_name << "\n";
+#endif
+        CGERR(cg_1to1_write(file_ptr, base, zone, connect_name.c_str(), donor_name.c_str(),
+                            owner_range.data(), donor_range.data(), zgc.m_transform.data(),
+                            &zgc_idx));
+      }
     }
   }
   return element_count;
@@ -858,7 +932,7 @@ int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int 
   bool location_matches = false;
   for (int i = 0; i < nsols; i++) {
     CG_GridLocation_t db_location;
-    char              db_name[33];
+    char              db_name[CGNS_MAX_NAME_LENGTH + 1];
     CGCHECKNP(cg_sol_info(cgnsFilePtr, base, zone, i + 1, db_name, &db_location));
     if (location == db_location) {
       location_matches = true;
@@ -871,7 +945,7 @@ int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int 
       bool found_step_descriptor = false;
       for (int d = 0; d < descriptor_count; d++) {
         char *db_step = nullptr;
-        char  name[33];
+        char  name[CGNS_MAX_NAME_LENGTH + 1];
         CGCHECKNP(cg_descriptor_read(d + 1, name, &db_step));
         if (strcmp(name, "step") == 0) {
           found_step_descriptor = true;
@@ -910,7 +984,7 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
   CGCHECKNP(cg_nfamilies(cgnsFilePtr, base, &num_families));
 
   for (int family = 1; family <= num_families; family++) {
-    char        name[33];
+    char        name[CGNS_MAX_NAME_LENGTH + 1];
     CG_BCType_t bocotype;
     int         num_bc  = 0;
     int         num_geo = 0;
@@ -934,14 +1008,16 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
       CGCHECKNP(cg_ndescriptors(&ndescriptors));
       if (ndescriptors > 0) {
         for (int ndesc = 1; ndesc <= ndescriptors; ndesc++) {
-          char  dname[33];
+          char  dname[CGNS_MAX_NAME_LENGTH + 1];
           char *dtext;
           CGCHECKNP(cg_descriptor_read(ndesc, dname, &dtext));
           if (strcmp(dname, "FamBC_UserId") == 0) {
             // Convert text in `dtext` to integer...
             id = Ioss::Utils::get_number(dtext);
+            cg_free(dtext);
             break;
           }
+          cg_free(dtext);
         }
       }
       auto *ss = new Ioss::SideSet(db, ss_name);
@@ -1153,8 +1229,8 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
   cgsize_t range[6];
   for (int ibc = 0; ibc < num_bcs; ibc++) {
-    char              boco_name[32 + 1];
-    char              fam_name[32 + 1];
+    char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
+    char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
     CG_BCType_t       bocotype;
     CG_PointSetType_t ptset_type;
     cgsize_t          npnts;
@@ -1172,7 +1248,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       CGCHECKNP(cg_famname_read(fam_name));
     }
     else {
-      strncpy(fam_name, boco_name, 32);
+      strncpy(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
     }
 
     CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
@@ -1355,19 +1431,19 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
     assert(sol_count % (int)timesteps.size() == 0);
 
     for (int sol = 1; sol <= sol_per_step; sol++) {
-      char              solution_name[33];
+      char              solution_name[CGNS_MAX_NAME_LENGTH + 1];
       CG_GridLocation_t grid_loc;
       CGCHECK(cg_sol_info(cgnsFilePtr, b, z, sol, solution_name, &grid_loc));
 
       int field_count = 0;
       CGCHECK(cg_nfields(cgnsFilePtr, b, z, sol, &field_count));
 
-      char **field_names = Ioss::Utils::get_name_array(field_count, 33);
+      char **field_names = Ioss::Utils::get_name_array(field_count, CGNS_MAX_NAME_LENGTH + 1);
       for (int field = 1; field <= field_count; field++) {
         CG_DataType_t data_type;
-        char          field_name[33];
+        char          field_name[CGNS_MAX_NAME_LENGTH + 1];
         CGCHECK(cg_field_info(cgnsFilePtr, b, z, sol, field, &data_type, field_name));
-        std::strncpy(field_names[field - 1], field_name, 32);
+        std::strncpy(field_names[field - 1], field_name, CGNS_MAX_NAME_LENGTH);
       }
 
       // Convert raw field names into composite fields (a_x, a_y, a_z ==> 3D vector 'a')
@@ -1423,7 +1499,7 @@ int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timestep
 {
   int  base          = 1;
   int  num_timesteps = 0;
-  char bitername[33];
+  char bitername[CGNS_MAX_NAME_LENGTH + 1];
   int  ierr = cg_biter_read(cgnsFilePtr, base, bitername, &num_timesteps);
   if (ierr == CG_NODE_NOT_FOUND) {
     return num_timesteps;
@@ -1449,40 +1525,55 @@ int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timestep
   return num_timesteps;
 }
 
-void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &zones,
+void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &all_zones,
                                           std::vector<size_t> &                      work_vector)
 {
-  // Sort zones based on work.  Most work first..
-  // TODO: Possibly filter 'zones' down to only active zones to
-  // reduce sort and iteration time.
+  for (auto &zone : all_zones) {
+    zone->m_proc = -1;
+  }
+
+  // Sort zones based on work.  Most work first.. Filtered to active only...
+  std::vector<Iocgns::StructuredZoneData *> zones;
+  std::copy_if(all_zones.begin(), all_zones.end(), std::back_inserter(zones),
+               [](Iocgns::StructuredZoneData *z) { return z->is_active(); });
+
   std::sort(zones.begin(), zones.end(),
             [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
               return a->work() > b->work();
             });
 
 #if 1
-  for (auto &zone : zones) {
-    zone->m_proc = -1;
-    if (zone->is_active()) {
-      // Assign zone to processor with minimum work...
-      ssize_t proc = proc_with_minimum_work(work_vector);
+  std::set<std::pair<int, int>> proc_adam_map;
 
-      // See if any other zone on this processor has the same adam zone...
-      // TODO: Currently only do one "re-search".  Need to do something
-      // better to make sure; or be able to handle this condition correctly.
-      if (proc >= 0) {
-        for (auto &pzone : zones) {
-          if (pzone->is_active() && pzone->m_proc == proc) {
-            if (pzone->m_adam == zone->m_adam) {
-              proc = proc_with_minimum_work(work_vector, proc);
-              break;
-            }
-          }
-        }
-        zone->m_proc = proc;
-        work_vector[proc] += zone->work();
+  // On first entry, work_vector will be all zeros.  To avoid any
+  // searching, assign the first `nproc` zones to the `nproc` entries
+  // in `work_vector`.  Avoids searching...
+  assert(zones.size() >= work_vector.size());
+  size_t i = 0;
+  for (; i < work_vector.size(); i++) {
+    auto &zone   = zones[i];
+    zone->m_proc = i;
+    work_vector[i] += zone->work();
+    auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
+    assert(success.second);
+  }
+
+  for (; i < zones.size(); i++) {
+    auto &zone = zones[i];
+
+    // Assign zone to processor with minimum work...
+    ssize_t proc = proc_with_minimum_work(work_vector);
+
+    // See if any other zone on this processor has the same adam zone...
+    if (proc >= 0) {
+      auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
+      while (!success.second) {
+        proc    = proc_with_minimum_work(work_vector, proc);
+        success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
       }
     }
+    zone->m_proc = proc;
+    work_vector[proc] += zone->work();
   }
 #else
   // Assign zone to first processor that has "capacity".
@@ -1491,10 +1582,8 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
   int num_zones = 0;
   for (auto &zone : zones) {
     zone->m_proc = -1;
-    if (zone->is_active()) {
-      work += zone->work();
-      num_zones++;
-    }
+    work += zone->work();
+    num_zones++;
   }
 
   double avg_work = work / work_vector.size();
@@ -1532,83 +1621,196 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
   size_t new_zone_id = zones.size() + 1;
 
   // See if can split each zone over a set of procs...
-  int    procs        = proc_count;
-  bool   adaptive_avg = false;
-  double min_avg      = avg_work / load_balance;
-  double max_avg      = avg_work * load_balance;
-  double total_work   = 0.0;
-  for (auto zone : zones) {
+  double           total_work = 0.0;
+  std::vector<int> splits(zones.size());
+
+  for (size_t i = 0; i < zones.size(); i++) {
+    auto   zone = zones[i];
     double work = zone->work();
     total_work += work;
-    int splits      = int(std::round(work / avg_work));
-    splits          = splits == 0 ? 1 : splits;
-    double zone_avg = work / (double)splits;
-    if ((splits > 1 && zone_avg < min_avg) || zone_avg > max_avg) {
-      procs = 0;
-    }
-    procs -= splits;
+    splits[i] = int(std::round(work / avg_work));
+    splits[i] = splits[i] == 0 ? 1 : splits[i];
   }
 
-  adaptive_avg = (procs == 0);
-  procs        = proc_count;
+  int num_splits = std::accumulate(splits.begin(), splits.end(), 0);
+  int diff       = proc_count - num_splits;
 
-  for (auto zone : zones) {
-    int  num_active = 0;
-    bool split      = false;
+  while (diff != 0) {
+    // Adjust splits so sum is equal to proc_count.
+    // Adjust the largest split count(s)
+    int    step      = diff < 0 ? -1 : 1;
+    size_t min_z     = 0;
+    double min_delta = 1.0e27;
+    for (size_t i = 0; i < zones.size(); i++) {
+      auto   zone = zones[i];
+      double work = zone->work();
 
-    auto work_average = avg_work;
-    int  splits       = 0;
-    if (adaptive_avg) {
-      double work  = zone->work();
-      splits       = int(std::round(work / avg_work));
-      splits       = splits == 0 ? 1 : splits;
-      work_average = work / (double)splits;
-#if IOSS_DEBUG_OUTPUT
-      if (proc_rank == 0) {
-        std::cerr << "Setting average work from " << avg_work << " to " << work_average
-                  << " for zone " << zone->m_name << "\n";
+      if (splits[i] == 0) {
+        continue;
       }
-#endif
+      double zone_avg = work / (double)splits[i];
+      if ((splits[i] + step) > 0) {
+        double delta = std::abs(zone_avg - work / (double)(splits[i] + step));
+        if (delta < min_delta) {
+          min_delta = delta;
+          min_z     = i;
+        }
+      }
     }
-    do {
-      split = false;
-      if (zone->is_active() && zone->work() > work_average * load_balance) {
-        auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
+    splits[min_z] += step;
+    diff -= step;
+  }
 
-        if (children.first != nullptr && children.second != nullptr) {
-          split = true;
-          new_zone_id += 2;
-          zone = children.second;
-          new_zones.push_back(children.first);
-          new_zones.push_back(children.second);
-          if (adaptive_avg) {
-            splits--;
-            double work = zone->work();
-            if (splits > 0) {
-              work_average = work / (double)splits;
+  assert(diff == 0);
+  assert(std::accumulate(splits.begin(), splits.end(), 0) == proc_count);
+
+  // See if splits result in avg_work for all zones in range...
+  double min_avg      = avg_work / load_balance;
+  double max_avg      = avg_work * load_balance;
+  bool   adaptive_avg = true;
+  for (size_t i = 0; i < zones.size(); i++) {
+    auto   zone = zones[i];
+    double work = zone->work();
+    if (splits[i] == 0) {
+      adaptive_avg = false;
+      break;
+    }
+    double zone_avg = work / (double)splits[i];
+    if (zone_avg < min_avg || zone_avg > max_avg) {
+      adaptive_avg = false;
+      break;
+    }
+  }
+
+  if (adaptive_avg) {
+    for (size_t i = 0; i < zones.size(); i++) {
+      auto zone       = zones[i];
+      int  num_active = 0;
+
+      auto work_average = avg_work;
+      int  split_cnt    = splits[i];
+      if (split_cnt == 1) {
+        continue;
+      }
+
+      work_average = zone->work() / (double)split_cnt;
+
+      std::vector<std::pair<int, Iocgns::StructuredZoneData *>> active;
+      active.push_back(std::make_pair(split_cnt, zone));
+      do {
+        assert(!active.empty());
+        split_cnt = active.back().first;
+        zone      = active.back().second;
+        active.pop_back();
+
+        if (zone->is_active()) {
+          if (split_cnt != 1) {
+            int max_power_2 = power_2(split_cnt);
+            if (max_power_2 == split_cnt) {
+              work_average = zone->work() / 2.0;
+              max_power_2 /= 2;
             }
             else {
-              work_average = work;
+              work_average = zone->work() / (double(split_cnt) / double(max_power_2));
+            }
+
+            auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
+            if (children.first != nullptr && children.second != nullptr) {
+              new_zones.push_back(children.first);
+              new_zones.push_back(children.second);
+              new_zone_id += 2;
+              active.push_back(std::make_pair(split_cnt - max_power_2, children.second));
+              active.push_back(std::make_pair(max_power_2, children.first));
+              num_active++;
             }
           }
-          else {
-          // Do something here to adjust since probably didn't do exactly perfect split...
-          // Decrement proc count by 1 and total_work by
-#if 1
-            total_work -= children.first->work();
-            procs--;
-            work_average = total_work / (double)procs;
-#endif
-          }
         }
-        num_active++; // Add 2 children; parent goes inactive
-        if (num_active >= proc_count) {
-          split = false;
+        if (num_active >=
+            proc_count) { // Don't split a single zone into more than `proc_count` pieces
           break;
         }
+      } while (!active.empty());
+    }
+  }
+  else {
+    for (size_t i = 0; i < zones.size(); i++) {
+      auto zone       = zones[i];
+      int  num_active = 0;
+      if (zone->work() <= max_avg) {
+        // This zone is already in `new_zones`; just skip doing anything else with it.
       }
-    } while (split);
+      else {
+        std::vector<std::pair<int, Iocgns::StructuredZoneData *>> active;
+
+        double work      = zone->work();
+        int    split_cnt = int(work / avg_work);
+
+        // Find modulus of work % avg_work and split off that amount
+        // which will be < avg_work.
+        double mod_work = work - avg_work * split_cnt;
+        if (mod_work > max_avg - avg_work) {
+          auto children = zone->split(new_zone_id, mod_work, load_balance, proc_rank);
+          if (children.first != nullptr && children.second != nullptr) {
+            new_zones.push_back(children.first);
+            new_zones.push_back(children.second);
+            new_zone_id += 2;
+            num_active++;
+            active.push_back(std::make_pair(split_cnt, children.second));
+          }
+          else {
+            active.push_back(std::make_pair(split_cnt, zone));
+          }
+        }
+        else {
+          active.push_back(std::make_pair(split_cnt, zone));
+        }
+
+        // The work remaining on this zone should be approximately
+        // equally divided among `split_cnt` processors.
+        do {
+          assert(!active.empty());
+          split_cnt = active.back().first;
+          zone      = active.back().second;
+          active.pop_back();
+
+          if (zone->is_active()) {
+            int    max_power_2  = power_2(split_cnt);
+            double work_average = 0.0;
+            if (max_power_2 == split_cnt) {
+              work_average = zone->work() / 2.0;
+            }
+            else {
+              work_average = zone->work() / (double(split_cnt) / double(max_power_2));
+            }
+
+            if (max_power_2 != 1) {
+              if (max_power_2 == split_cnt) {
+                max_power_2 /= 2;
+              }
+              auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
+              if (children.first != nullptr && children.second != nullptr) {
+                new_zones.push_back(children.first);
+                new_zones.push_back(children.second);
+                new_zone_id += 2;
+                active.push_back(std::make_pair(split_cnt - max_power_2, children.second));
+                active.push_back(std::make_pair(max_power_2, children.first));
+                num_active++;
+              }
+            }
+          }
+          if (num_active >=
+              proc_count) { // Don't split a single zone into more than `proc_count` pieces
+            break;
+          }
+        } while (!active.empty());
+      }
+    }
   }
   std::swap(new_zones, zones);
+  if (zones.size() < (size_t)proc_count && load_balance > 1.05) {
+    // Tighten up the load_balance factor to get some decomposition going...
+    double new_load_balance = (1.0 + load_balance) / 2.0;
+    new_zone_id             = pre_split(zones, avg_work, new_load_balance, proc_rank, proc_count);
+  }
   return new_zone_id;
 }

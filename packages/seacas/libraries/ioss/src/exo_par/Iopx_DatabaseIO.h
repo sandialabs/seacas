@@ -273,7 +273,7 @@ namespace Iopx {
     // for a GroupingEntity* which is a NodeSet*
     mutable std::map<const Ioss::GroupingEntity *, Ioss::Int64Vector> nodesetOwnedNodes;
 
-    mutable bool metaDataWritten;
+    mutable bool metaDataWritten{false};
   };
 } // namespace Iopx
 #endif

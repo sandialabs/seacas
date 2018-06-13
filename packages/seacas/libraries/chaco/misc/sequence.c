@@ -94,7 +94,7 @@ void sequence(struct vtx_data **graph,       /* graph data structure */
   time        = seconds();
   using_vwgts = (vwsqrt != NULL);
 
-  /* Sort each connected component seperately. */
+  /* Sort each connected component separately. */
   compnum     = smalloc((nvtxs + 1) * sizeof(int));
   permutation = smalloc(nvtxs * sizeof(int));
   values      = smalloc((nvtxs + 1) * sizeof(double));

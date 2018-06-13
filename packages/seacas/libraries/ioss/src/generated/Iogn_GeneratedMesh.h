@@ -35,12 +35,13 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityType.h> // for EntityType
-#include <cstddef>           // for size_t
-#include <cstdint>           // for int64_t
-#include <map>               // for map, etc
-#include <string>            // for string
-#include <utility>           // for pair
-#include <vector>            // for vector
+#include <array>
+#include <cstddef> // for size_t
+#include <cstdint> // for int64_t
+#include <map>     // for map, etc
+#include <string>  // for string
+#include <utility> // for pair
+#include <vector>  // for vector
 
 namespace Iogn {
   using MapVector = std::vector<int64_t>;
@@ -487,12 +488,12 @@ namespace Iogn {
     void show_parameters() const;
     void initialize();
 
-    std::vector<ShellLocation> shellBlocks;
-    std::vector<ShellLocation> nodesets;
-    std::vector<ShellLocation> sidesets;
-    double                     rotmat[3][3];
-    size_t                     numX, numY, numZ;
-    size_t                     myNumZ, myStartZ;
+    std::vector<ShellLocation>           shellBlocks;
+    std::vector<ShellLocation>           nodesets;
+    std::vector<ShellLocation>           sidesets;
+    std::array<std::array<double, 3>, 3> rotmat;
+    size_t                               numX, numY, numZ;
+    size_t                               myNumZ, myStartZ;
 
     size_t processorCount;
     size_t myProcessor;

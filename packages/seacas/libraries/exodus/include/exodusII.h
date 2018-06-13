@@ -69,8 +69,8 @@
 #endif
 
 /* EXODUS version number */
-#define EX_API_VERS 7.12f
-#define EX_API_VERS_NODOT 712
+#define EX_API_VERS 7.13f
+#define EX_API_VERS_NODOT 713
 #define EX_VERS EX_API_VERS
 #define NEMESIS_API_VERSION EX_API_VERS
 #define NEMESIS_API_VERSION_NODOT EX_API_VERS_NODOT
@@ -1036,7 +1036,7 @@ EXODUS_EXPORT int ex_put_elem_cmap(int          exoid,    /* NetCDF/Exodus file 
                                    int          processor /* This processor ID */
 );
 
-/* Deprectated Code Handling Options:
+/* Deprecated Code Handling Options:
  * 1. Ignore -- treat deprecated functions as normal non-deprecated functions (default)
  * 2. Delete -- the deprecated functions are not defined or compiled (SEACAS_HIDE_DEPRECATED_CODE is
  * defined)

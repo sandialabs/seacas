@@ -36,6 +36,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cgns/Iocgns_Defines.h>
+
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
 #include <cassert>
@@ -49,6 +51,7 @@
 #include <numeric>
 #include <string>
 #include <sys/select.h>
+#include <tokenize.h>
 #include <vector>
 
 #if !defined(CGNSLIB_H)
@@ -82,6 +85,36 @@
 
 extern char hdf5_access[64];
 
+#ifdef SEACAS_HAVE_MPI
+extern int pcg_mpi_initialized;
+#endif
+
+namespace {
+  std::pair<std::string, int> decompose_name(const std::string &name, bool is_parallel)
+  {
+    int         proc = 0;
+    std::string zname{name};
+
+    if (is_parallel) {
+      // Name should/might be of the form `basename_proc-#`.  Strip
+      // off the `_proc-#` portion and return just the basename.
+      auto tokens = Ioss::tokenize(zname, "_");
+      zname       = tokens[0];
+      for (size_t i = 1; i < tokens.size(); i++) {
+        if (tokens[i].substr(0, 5) == "proc-") {
+          auto ptoken = Ioss::tokenize(tokens[i], "-");
+          proc        = std::strtol(ptoken[1].c_str(), nullptr, 10);
+          break;
+        }
+        else {
+          zname += "_" + tokens[i];
+        }
+      }
+    }
+    return std::make_pair(zname, proc);
+  }
+} // namespace
+
 namespace Iocgns {
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
@@ -113,6 +146,12 @@ namespace Iocgns {
         strcpy(hdf5_access, "PARALLEL");
       }
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
+      CGCHECK(cg_set_file_type(CG_FILE_HDF5));
+
+#ifdef SEACAS_HAVE_MPI
+      // Kluge to get fpp and dof CGNS working at same time.
+      pcg_mpi_initialized = 0;
+#endif
       int ierr = cg_open(decoded_filename().c_str(), mode, &cgnsFilePtr);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
@@ -185,9 +224,15 @@ namespace Iocgns {
   void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node)
   {
     cgsize_t size[9];
-    char     zone_name[33];
+    char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
     CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
-    m_zoneNameMap[zone_name] = zone;
+
+    auto        name_proc = decompose_name(zone_name, isParallel);
+    std::string zname     = name_proc.first;
+    int         proc      = name_proc.second;
+    assert(proc == myProcessor);
+
+    m_zoneNameMap[zname] = zone;
 
     assert(size[0] - 1 == size[3]);
     assert(size[1] - 1 == size[4]);
@@ -201,7 +246,7 @@ namespace Iocgns {
     CGCHECK(cg_index_dim(cgnsFilePtr, base, zone, &index_dim));
     // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
     Ioss::StructuredBlock *block =
-        new Ioss::StructuredBlock(this, zone_name, index_dim, size[3], size[4], size[5]);
+        new Ioss::StructuredBlock(this, zname, index_dim, size[3], size[4], size[5]);
 
     block->property_add(Ioss::Property("base", base));
     block->property_add(Ioss::Property("zone", zone));
@@ -215,8 +260,8 @@ namespace Iocgns {
     int nconn = 0;
     CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
     for (int i = 0; i < nconn; i++) {
-      char                    connectname[33];
-      char                    donorname[33];
+      char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
+      char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
       std::array<cgsize_t, 6> range;
       std::array<cgsize_t, 6> donor_range;
       Ioss::IJK_t             transform;
@@ -224,10 +269,13 @@ namespace Iocgns {
       CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
                            donor_range.data(), transform.data()));
 
+      auto        donorname_proc = decompose_name(donorname, isParallel);
+      std::string donor_name     = donorname_proc.first;
+
       // Get number of nodes shared with other "previous" zones...
       // A "previous" zone will have a lower zone number this this zone...
       int  donor_zone = -1;
-      auto donor_iter = m_zoneNameMap.find(donorname);
+      auto donor_iter = m_zoneNameMap.find(donor_name);
       if (donor_iter != m_zoneNameMap.end()) {
         donor_zone = (*donor_iter).second;
       }
@@ -236,10 +284,11 @@ namespace Iocgns {
       Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
       Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
 
-      block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
+      block->m_zoneConnectivity.emplace_back(connectname, zone, donor_name, donor_zone, transform,
                                              range_beg, range_end, donor_beg, donor_end);
-      block->m_zoneConnectivity.back().m_donorProcessor = 0;
-      block->m_zoneConnectivity.back().m_ownerProcessor = 0;
+
+      block->m_zoneConnectivity.back().m_ownerProcessor = myProcessor;
+      block->m_zoneConnectivity.back().m_donorProcessor = donorname_proc.second;
     }
 
     // Handle boundary conditions...
@@ -272,7 +321,7 @@ namespace Iocgns {
   void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node)
   {
     cgsize_t size[9];
-    char     zone_name[33];
+    char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
     CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
     m_zoneNameMap[zone_name] = zone;
 
@@ -285,12 +334,12 @@ namespace Iocgns {
       CGCHECK(cg_nconns(cgnsFilePtr, base, zone, &nconn));
       cgsize_t num_shared = 0;
       for (int i = 0; i < nconn; i++) {
-        char                      connectname[33];
+        char                      connectname[CGNS_MAX_NAME_LENGTH + 1];
         CG_GridLocation_t         location;
         CG_GridConnectivityType_t connect_type;
         CG_PointSetType_t         ptset_type;
         cgsize_t                  npnts = 0;
-        char                      donorname[33];
+        char                      donorname[CGNS_MAX_NAME_LENGTH + 1];
         CG_ZoneType_t             donor_zonetype;
         CG_PointSetType_t         donor_ptset_type;
         CG_DataType_t             donor_datatype;
@@ -370,7 +419,7 @@ namespace Iocgns {
     Ioss::ElementBlock *eblock = nullptr;
 
     for (int is = 1; is <= num_sections; is++) {
-      char             section_name[33];
+      char             section_name[CGNS_MAX_NAME_LENGTH + 1];
       CG_ElementType_t e_type;
       cgsize_t         el_start    = 0;
       cgsize_t         el_end      = 0;
@@ -495,11 +544,59 @@ namespace Iocgns {
       }
     }
 
+    if (isParallel) {
+#ifdef SEACAS_HAVE_MPI
+      const auto &blocks = get_region()->get_structured_blocks();
+      assert(blocks.size() == (size_t)num_zones);
+
+      // Each processor may have a different set of zones.  Sync here to get consistent set.
+      // First each processor sends their zone count to processor 0...
+      std::vector<int> zones_per_proc;
+      util().gather(num_zones, zones_per_proc);
+      int tot_zones = std::accumulate(zones_per_proc.begin(), zones_per_proc.end(), 0);
+      if (myProcessor == 0) {
+        for (auto &cnt : zones_per_proc) {
+          cnt *= (CGNS_MAX_NAME_LENGTH + 1);
+        }
+      }
+      std::vector<int> offset(zones_per_proc);
+
+      std::vector<char> names(num_zones * (CGNS_MAX_NAME_LENGTH + 1));
+      std::vector<char> all_names;
+      if (myProcessor == 0) {
+        for (auto &cnt : zones_per_proc) {
+          cnt *= (CGNS_MAX_NAME_LENGTH + 1);
+        }
+        Ioss::Utils::generate_index(offset);
+        all_names.resize(tot_zones * (CGNS_MAX_NAME_LENGTH + 1));
+      }
+
+      for (int i = 0; i < num_zones; i++) {
+        char *name = names.data() + i * (CGNS_MAX_NAME_LENGTH + 1);
+        strncpy(name, blocks[i]->name().c_str(), CGNS_MAX_NAME_LENGTH);
+      }
+      MPI_Gatherv(names.data(), num_zones * (CGNS_MAX_NAME_LENGTH + 1), MPI_CHAR, all_names.data(),
+                  zones_per_proc.data(), offset.data(), MPI_CHAR, 0, util().communicator());
+
+      // Get unique set of names and tell each processor how many and what they are...
+      if (myProcessor == 0) {
+        std::vector<std::string> snames(tot_zones);
+        for (int i = 0; i < tot_zones; i++) {
+          char *sname = all_names.data() + i * (CGNS_MAX_NAME_LENGTH + 1);
+          snames[i]   = sname;
+        }
+        Ioss::Utils::uniquify(snames);
+        // Broadcast from proc 0 to others... [this is where I was prior to vacation]
+        std::cerr << "There are " << snames.size() << "names\n";
+      }
+#endif
+    }
+
     if (common_zone_type == CG_Structured) {
       num_node = finalize_structured_blocks();
     }
 
-    char basename[33];
+    char basename[CGNS_MAX_NAME_LENGTH + 1];
     int  cell_dimension = 0;
     int  phys_dimension = 0;
     CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
@@ -667,7 +764,7 @@ namespace Iocgns {
     size_t                num_to_get = field.verify(data_size);
     cgsize_t              first      = 1;
 
-    char basename[33];
+    char basename[CGNS_MAX_NAME_LENGTH + 1];
 
     // Create a lambda to eliminate lots of duplicate code in coordinate outputs...
     auto coord_lambda = [this, &data, &first, base](const char *ordinate) {
@@ -1015,7 +1112,7 @@ namespace Iocgns {
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
-        char basename[33];
+        char basename[CGNS_MAX_NAME_LENGTH + 1];
         int  cell_dimension = 0;
         int  phys_dimension = 0;
         CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
@@ -1232,6 +1329,12 @@ namespace Iocgns {
     int                   zone = sb->get_property("zone").get_int();
 
     cgsize_t num_to_get = field.verify(data_size);
+
+    // In this routine, if isParallel, then writing file-per-processor; not parallel io to single
+    // file.
+    if (isParallel && num_to_get == 0) {
+      return 0;
+    }
 
     if (role == Ioss::Field::MESH) {
       bool cell_field = Utils::is_cell_field(field);
