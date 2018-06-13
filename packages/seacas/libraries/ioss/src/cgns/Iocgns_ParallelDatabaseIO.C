@@ -192,6 +192,11 @@ namespace Iocgns {
   {
     if (cgnsFilePtr < 0) {
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
+
+      bool do_timer = false;
+      Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+      double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+
 #if 0
       // Currently, cgp_mpi_comm returns an internal NO_ERROR value which
       // is equal to -1.  There is an issue submitted for this.
@@ -202,6 +207,15 @@ namespace Iocgns {
       CGCHECK(cgp_pio_mode(CGP_COLLECTIVE));
       CGCHECK(cg_set_file_type(CG_FILE_HDF5));
       int ierr = cgp_open(get_filename().c_str(), mode, &cgnsFilePtr);
+
+      if (do_timer) {
+        double t_end    = Ioss::Utils::timer();
+        double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
+        if (myProcessor == 0) {
+          std::cerr << "File Open Time = " << duration << "\n";
+        }
+      }
+
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
         std::ostringstream errmsg;
