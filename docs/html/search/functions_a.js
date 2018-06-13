@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['set_5fcount',['set_count',['../ex__get__side__set__node__list_8c.html#a839dd3fff5c981b498d1f810742398fb',1,'ex_get_side_set_node_list.c']]]
+  ['write_5fdummy_5fnames',['write_dummy_names',['../ex__put__init__ext_8c.html#abfc339c622ee6573951f0ab675d1d4fa',1,'ex_put_init_ext.c']]]
 ];

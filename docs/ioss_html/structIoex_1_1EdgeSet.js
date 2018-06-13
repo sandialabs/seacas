@@ -1,7 +1,7 @@
 var structIoex_1_1EdgeSet =
 [
-    [ "EdgeSet", "structIoex_1_1EdgeSet.html#accf9db87e8f78adcc9b6c3528b3d6278", null ],
-    [ "EdgeSet", "structIoex_1_1EdgeSet.html#a9d082068d4958248223ecb18c1561026", null ],
+    [ "EdgeSet", "structIoex_1_1EdgeSet.html#a046b02935fedcfb43d9e4a83c394aa50", null ],
+    [ "EdgeSet", "structIoex_1_1EdgeSet.html#aadb590de0c5d38652f106a5461aa6c17", null ],
     [ "EdgeSet", "structIoex_1_1EdgeSet.html#a78f22840a931f83de1a5ccbd160dbc7f", null ],
     [ "operator!=", "structIoex_1_1EdgeSet.html#a8da76d9c282dbea28bed15a2aa8bc360", null ],
     [ "operator==", "structIoex_1_1EdgeSet.html#a1f302f9e8ad0ce4ed765037419698b5b", null ],
