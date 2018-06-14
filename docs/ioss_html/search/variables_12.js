@@ -15,7 +15,7 @@ var searchData=
   ['role',['role',['../structanonymous__namespace_02io__shell__ts_8C_03_1_1param.html#a53825be2f7b1684653ff08c42eb62dcb',1,'anonymous_namespace{io_shell_ts.C}::param']]],
   ['role_5f',['role_',['../classIoss_1_1Field.html#a2cd53b0125a68215ee52c2735f497eae',1,'Ioss::Field']]],
   ['root_5f',['root_',['../classIoss_1_1SetDecompositionData.html#a3cbfb610b0bf63e3c7c7dd71b30b6ce6',1,'Ioss::SetDecompositionData']]],
-  ['rotmat',['rotmat',['../classIogn_1_1GeneratedMesh.html#aff5f6e4487dae1419d598e8718555d80',1,'Iogn::GeneratedMesh']]],
+  ['rotmat',['rotmat',['../classIogs_1_1GeneratedMesh.html#ad82ba56de126da29a863f82ea82edbc2',1,'Iogs::GeneratedMesh::rotmat()'],['../classIogn_1_1GeneratedMesh.html#aff5f6e4487dae1419d598e8718555d80',1,'Iogn::GeneratedMesh::rotmat()']]],
   ['runtimeerror',['RuntimeError',['../namespaceJson.html#a96716e81c7f8b88d747ee7fe9a8e421a',1,'Json']]],
   ['rval',['rval',['../unionIoss_1_1Property_1_1Data.html#ae76660466f3a0d2cd5c9db98e20cf341',1,'Ioss::Property::Data']]]
 ];

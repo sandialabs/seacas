@@ -18,6 +18,7 @@ var searchData=
   ['anonymous_5fnamespace_7bioex_5futils_2ec_7d',['anonymous_namespace{Ioex_Utils.C}',['../namespaceanonymous__namespace_02Ioex__Utils_8C_03.html',1,'']]],
   ['anonymous_5fnamespace_7biofx_5fdatabaseio_2ec_7d',['anonymous_namespace{Iofx_DatabaseIO.C}',['../namespaceanonymous__namespace_02Iofx__DatabaseIO_8C_03.html',1,'']]],
   ['anonymous_5fnamespace_7biogn_5fdatabaseio_2ec_7d',['anonymous_namespace{Iogn_DatabaseIO.C}',['../namespaceanonymous__namespace_02Iogn__DatabaseIO_8C_03.html',1,'']]],
+  ['anonymous_5fnamespace_7biogs_5fdatabaseio_2ec_7d',['anonymous_namespace{Iogs_DatabaseIO.C}',['../namespaceanonymous__namespace_02Iogs__DatabaseIO_8C_03.html',1,'']]],
   ['anonymous_5fnamespace_7biohb_5fdatabaseio_2ec_7d',['anonymous_namespace{Iohb_DatabaseIO.C}',['../namespaceanonymous__namespace_02Iohb__DatabaseIO_8C_03.html',1,'']]],
   ['anonymous_5fnamespace_7bionit_5finitializer_2ec_7d',['anonymous_namespace{Ionit_Initializer.C}',['../namespaceanonymous__namespace_02Ionit__Initializer_8C_03.html',1,'']]],
   ['anonymous_5fnamespace_7biopg_5fdatabaseio_2ec_7d',['anonymous_namespace{Iopg_DatabaseIO.C}',['../namespaceanonymous__namespace_02Iopg__DatabaseIO_8C_03.html',1,'']]],

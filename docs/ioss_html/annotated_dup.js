@@ -65,6 +65,7 @@ var annotated_dup =
     [ "Ioex", "namespaceIoex.html", "namespaceIoex" ],
     [ "Iofx", "namespaceIofx.html", "namespaceIofx" ],
     [ "Iogn", "namespaceIogn.html", "namespaceIogn" ],
+    [ "Iogs", "namespaceIogs.html", "namespaceIogs" ],
     [ "Iohb", "namespaceIohb.html", "namespaceIohb" ],
     [ "Iopg", "namespaceIopg.html", "namespaceIopg" ],
     [ "Iopx", "namespaceIopx.html", "namespaceIopx" ],
