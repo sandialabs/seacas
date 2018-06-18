@@ -340,7 +340,7 @@ namespace {
   // CGNS_MAX_NAME_LENGTH characters + 17 ints / connection.
 
 #ifdef SEACAS_HAVE_MPI
-    const int BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH;
+    const int BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH+1;
     const int INT_PER_ZGC   = 17;
     // Gather all to processor 0, consolidate, and then scatter back...
     int         my_count          = 0;
@@ -445,7 +445,7 @@ namespace {
       off_data = 0;
       off_name = 0;
       for (int i = 0; i < count; i++) {
-        std::string name{&rcv_zgc_name[off_name], BYTE_PER_NAME};
+        std::string name{&rcv_zgc_name[off_name]};
         off_name += BYTE_PER_NAME;
         int         zone  = rcv_zgc_data[off_data++];
         int         donor = rcv_zgc_data[off_data++];
@@ -531,7 +531,7 @@ namespace {
     off_data = 0;
     off_name = 0;
     for (int i = 0; i < count; i++) {
-      std::string name{&snd_zgc_name[off_name], BYTE_PER_NAME};
+      std::string name{&snd_zgc_name[off_name]};
       off_name += BYTE_PER_NAME;
       int zone = snd_zgc_data[off_data++];
       assert(zone < (int)sb_names.size());
