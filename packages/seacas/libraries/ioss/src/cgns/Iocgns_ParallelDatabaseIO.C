@@ -197,6 +197,11 @@ namespace Iocgns {
       Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
       double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
+      CGCHECK(cg_set_file_type(CG_FILE_HDF5));
+      if (myProcessor == 0 && is_input()) {
+	cg_open(get_filename().c_str(), mode, &cgnsSerFilePtr);
+      }
+
 #if 0
       // Currently, cgp_mpi_comm returns an internal NO_ERROR value which
       // is equal to -1.  There is an issue submitted for this.
@@ -205,7 +210,6 @@ namespace Iocgns {
       cgp_mpi_comm(util().communicator());
 #endif
       CGCHECK(cgp_pio_mode(CGP_COLLECTIVE));
-      CGCHECK(cg_set_file_type(CG_FILE_HDF5));
       int ierr = cgp_open(get_filename().c_str(), mode, &cgnsFilePtr);
 
       if (do_timer) {
@@ -298,7 +302,10 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::read_meta_data__()
   {
+    std::vector<double> times;
+    times.push_back(Ioss::Utils::timer());
     openDatabase__();
+    times.push_back(Ioss::Utils::timer());
 
     // Determine the number of bases in the grid.
     // Currently only handle 1.
@@ -318,6 +325,7 @@ namespace Iocgns {
     // We typically only want to retain one copy of these and ignore the other.
     properties.add(Ioss::Property("RETAIN_FREE_NODES", "NO"));
 
+    times.push_back(Ioss::Utils::timer());
     if (int_byte_size_api() == 8) {
       decomp = std::unique_ptr<DecompositionDataBase>(
           new DecompositionData<int64_t>(properties, util().communicator()));
@@ -327,7 +335,8 @@ namespace Iocgns {
           new DecompositionData<int>(properties, util().communicator()));
     }
     assert(decomp != nullptr);
-    decomp->decompose_model(cgnsFilePtr, m_zoneType);
+    decomp->decompose_model(cgnsSerFilePtr, cgnsFilePtr, m_zoneType);
+    times.push_back(Ioss::Utils::timer());
 
     if (m_zoneType == CG_Structured) {
       handle_structured_blocks();
@@ -335,9 +344,18 @@ namespace Iocgns {
     else if (m_zoneType == CG_Unstructured) {
       handle_unstructured_blocks();
     }
+    times.push_back(Ioss::Utils::timer());
 
     Utils::add_transient_variables(cgnsFilePtr, m_timesteps, get_region(), get_field_recognition(),
                                    get_field_separator(), myProcessor);
+    times.push_back(Ioss::Utils::timer());
+    if (myProcessor == 0) {
+      std::cerr << "DECOMP/INIT: ";
+      for (size_t i=1; i < times.size(); i++) {
+	std::cerr << times[i] - times[i-1] << "\t";
+      }
+      std::cerr << "\n";
+    }
   }
 
   void ParallelDatabaseIO::handle_unstructured_blocks()
