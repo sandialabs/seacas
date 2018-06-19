@@ -340,7 +340,7 @@ namespace {
   // CGNS_MAX_NAME_LENGTH characters + 17 ints / connection.
 
 #ifdef SEACAS_HAVE_MPI
-    const int BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH+1;
+    const int BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH;
     const int INT_PER_ZGC   = 17;
     // Gather all to processor 0, consolidate, and then scatter back...
     int         my_count          = 0;
@@ -389,7 +389,6 @@ namespace {
     // ========================================================================
     auto pack_lambda = [&off_data, &off_name, &off_cnt, &snd_zgc_data,
                         &snd_zgc_name](const std::vector<Ioss::ZoneConnectivity> &zgc) {
-      off_data = off_name = off_cnt = 0;
       for (const auto &z : zgc) {
         if (!z.is_intra_block() && z.is_active()) {
           strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), BYTE_PER_NAME);
@@ -421,9 +420,11 @@ namespace {
     };
     // ========================================================================
 
+    off_data = off_name = off_cnt = 0;
     for (const auto &sb : structured_blocks) {
       pack_lambda(sb->m_zoneConnectivity);
     }
+    std::cerr << off_cnt << " " << count << " " << my_count << "\n";
     assert(off_cnt == my_count);
     assert(my_count == 0 || (off_data % my_count == 0));
     assert(my_count == 0 || (off_data / my_count == INT_PER_ZGC));
@@ -500,6 +501,7 @@ namespace {
       // of the ranges on each individual processor.  Pack the data
       // and broadcast back to all processors so all processors can
       // output the same data for Zone Connectivity.
+      off_data = off_name = off_cnt = 0;
       pack_lambda(zgc);
 
       assert(off_cnt == count);

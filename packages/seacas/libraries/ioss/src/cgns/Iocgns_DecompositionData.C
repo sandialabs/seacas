@@ -126,12 +126,13 @@ namespace {
 #endif
 
   // These are used for structured parallel decomposition...
-  void create_zone_data(int cgnsFilePtr, std::vector<Iocgns::StructuredZoneData *> &zones, MPI_Comm comm)
+  void create_zone_data(int cgnsSerFilePtr, int cgnsFilePtr, std::vector<Iocgns::StructuredZoneData *> &zones, MPI_Comm comm)
   {
     Ioss::ParallelUtils par_util(comm);
     int myProcessor = par_util.parallel_rank(); // To make error macro work...
     int base        = 1;
     int num_zones   = 0;
+
     CGCHECK(cg_nzones(cgnsFilePtr, base, &num_zones));
 
     std::map<std::string, int> zone_name_map;
@@ -154,9 +155,9 @@ namespace {
       zones.push_back(zone_data);
 
       // Handle zone-grid-connectivity...
-      int nconn = 0;
-      CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
       if (rank == 0) {
+	int nconn = 0;
+	CGCHECK(cg_n1to1(cgnsSerFilePtr, base, zone, &nconn));
 	for (int i = 0; i < nconn; i++) {
 	  char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
 	  char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
@@ -164,10 +165,8 @@ namespace {
 	  std::array<cgsize_t, 6> donor_range;
 	  Ioss::IJK_t             transform;
 
-	  std::cerr << "Prior to cg_1to1_read\n";
-	  CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
+	  CGCHECK(cg_1to1_read(cgnsSerFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
 			       donor_range.data(), transform.data()));
-	  std::cerr << "After cg_1to1_read\n";
 
 	  // Get number of nodes shared with other "previous" zones...
 	  // A "previous" zone will have a lower zone number this this zone...
@@ -214,9 +213,9 @@ namespace {
 
       if (rank == 0) {
 	// Pack the data...
-	size_t off_name = 0;
-	size_t off_data = 0;
-	size_t off_cnt  = 0;
+	int off_name = 0;
+	int off_data = 0;
+	int off_cnt  = 0;
 
 	for (auto &zone : zones) {
 	  for (auto &z : zone->m_zoneConnectivity) {
@@ -260,14 +259,15 @@ namespace {
 
       if (rank != 0) {
 	// Unpack the data...
-	size_t off_name = 0;
-	size_t off_data = 0;
-	size_t off_cnt  = 0;
+	int off_name = 0;
+	int off_data = 0;
+	int off_cnt  = 0;
 
 	for (size_t i = 0; i < zones.size(); i++) {
 	  auto zgc_cnt = zgc_size[i];
 	  auto zone = zones[i];
-	  for (size_t j = 0; j < zgc_cnt; j++) {
+	  for (int j = 0; j < zgc_cnt; j++) {
+	    off_cnt++;
 	    std::string name{&zgc_name[off_name]};
 	    off_name += BYTE_PER_NAME;
 	    std::string donor_name{&zgc_name[off_name]};
@@ -455,13 +455,13 @@ namespace Iocgns {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::decompose_model(int filePtr, CG_ZoneType_t common_zone_type)
+  void DecompositionData<INT>::decompose_model(int serFilePtr, int filePtr, CG_ZoneType_t common_zone_type)
   {
     if (common_zone_type == CG_Unstructured) {
       decompose_unstructured(filePtr);
     }
     else if (common_zone_type == CG_Structured) {
-      decompose_structured(filePtr);
+      decompose_structured(serFilePtr, filePtr);
     }
     else {
       std::ostringstream errmsg;
@@ -471,13 +471,17 @@ namespace Iocgns {
     }
   }
 
-  template <typename INT> void DecompositionData<INT>::decompose_structured(int filePtr)
+  template <typename INT> void DecompositionData<INT>::decompose_structured(int serFilePtr, int filePtr)
   {
+    std::vector<double> times;
+    times.push_back(Ioss::Utils::timer());
+
     m_decomposition.show_progress(__func__);
-    create_zone_data(filePtr, m_structuredZones, m_decomposition.m_comm);
+    create_zone_data(serFilePtr, filePtr, m_structuredZones, m_decomposition.m_comm);
     if (m_structuredZones.empty()) {
       return;
     }
+    times.push_back(Ioss::Utils::timer());
 
     // Determine whether user has specified "line decompositions" for any of the zones.
     // The line decomposition is an ordinal which will not be split during the
@@ -485,6 +489,7 @@ namespace Iocgns {
     if (!m_lineDecomposition.empty()) {
       set_line_decomposition(filePtr, m_lineDecomposition, m_structuredZones);
     }
+    times.push_back(Ioss::Utils::timer());
 
     size_t work = 0;
     for (const auto &z : m_structuredZones) {
@@ -511,6 +516,7 @@ namespace Iocgns {
       std::exit(EXIT_FAILURE);
     }
 
+    times.push_back(Ioss::Utils::timer());
 #if IOSS_DEBUG_OUTPUT
     OUTPUT << "========================================================================\n";
     OUTPUT << "Pre-Splitting:\n";
@@ -522,6 +528,7 @@ namespace Iocgns {
     // At this point, there should be no zone with block->work() > avg_work * m_loadBalanceThreshold
 #if IOSS_DEBUG_OUTPUT
     OUTPUT << "========================================================================\n";
+    times.push_back(Ioss::Utils::timer());
 #endif
     do {
       std::vector<size_t> work_vector(m_decomposition.m_processorCount);
@@ -586,6 +593,7 @@ namespace Iocgns {
       OUTPUT << "========================================================================\n";
 #endif
     } while (px > 0 && num_split > 0);
+    times.push_back(Ioss::Utils::timer());
 
     std::sort(m_structuredZones.begin(), m_structuredZones.end(),
               [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
@@ -597,6 +605,7 @@ namespace Iocgns {
         zone->resolve_zgc_split_donor(m_structuredZones);
       }
     }
+    times.push_back(Ioss::Utils::timer());
 
     // Update and Output the processor assignments
     for (auto &zone : m_structuredZones) {
@@ -615,6 +624,7 @@ namespace Iocgns {
 #endif
       }
     }
+    times.push_back(Ioss::Utils::timer());
 
     // Output the processor assignments in form similar to 'split' file
     if (rank == 0) {
@@ -646,11 +656,20 @@ namespace Iocgns {
         zone->m_proc = -1;
       }
     }
+    times.push_back(Ioss::Utils::timer());
 
 #if IOSS_DEBUG_OUTPUT
     MPI_Barrier(m_decomposition.m_comm);
     OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n" << Ioss::trmclr::normal;
 #endif
+    if (rank == 0) {
+      std::cerr << "DECOMPOSITION: ";
+      for (size_t i=1; i < times.size(); i++) {
+	std::cerr << times[i] - times[i-1] << "\t";
+      }
+      std::cerr << "\n";
+    }
+
   }
 
   template <typename INT> void DecompositionData<INT>::decompose_unstructured(int filePtr)
