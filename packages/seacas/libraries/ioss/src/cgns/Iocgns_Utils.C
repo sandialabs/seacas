@@ -1237,6 +1237,9 @@ Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_proce
 void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,
                                                        Ioss::StructuredBlock *block)
 {
+  int rank = block->get_database()->util().parallel_rank();
+  int proc = block->get_database()->util().parallel_size();
+
   int base = block->get_property("base").get_int();
   int zone = block->get_property("zone").get_int();
 
