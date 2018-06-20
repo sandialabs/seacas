@@ -126,12 +126,13 @@ namespace {
 #endif
 
   // These are used for structured parallel decomposition...
-  void create_zone_data(int cgnsSerFilePtr, int cgnsFilePtr, std::vector<Iocgns::StructuredZoneData *> &zones, MPI_Comm comm)
+  void create_zone_data(int cgnsSerFilePtr, int cgnsFilePtr,
+                        std::vector<Iocgns::StructuredZoneData *> &zones, MPI_Comm comm)
   {
     Ioss::ParallelUtils par_util(comm);
-    int myProcessor = par_util.parallel_rank(); // To make error macro work...
-    int base        = 1;
-    int num_zones   = 0;
+    int                 myProcessor = par_util.parallel_rank(); // To make error macro work...
+    int                 base        = 1;
+    int                 num_zones   = 0;
 
     CGCHECK(cg_nzones(cgnsFilePtr, base, &num_zones));
 
@@ -156,238 +157,248 @@ namespace {
 
       // Handle zone-grid-connectivity...
       if (rank == 0) {
-	int nconn = 0;
-	CGCHECK(cg_n1to1(cgnsSerFilePtr, base, zone, &nconn));
-	for (int i = 0; i < nconn; i++) {
-	  char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
-	  char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
-	  std::array<cgsize_t, 6> range;
-	  std::array<cgsize_t, 6> donor_range;
-	  Ioss::IJK_t             transform;
+        int nconn = 0;
+        CGCHECK(cg_n1to1(cgnsSerFilePtr, base, zone, &nconn));
+        for (int i = 0; i < nconn; i++) {
+          char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
+          char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
+          std::array<cgsize_t, 6> range;
+          std::array<cgsize_t, 6> donor_range;
+          Ioss::IJK_t             transform;
 
-	  CGCHECK(cg_1to1_read(cgnsSerFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
-			       donor_range.data(), transform.data()));
+          CGCHECK(cg_1to1_read(cgnsSerFilePtr, base, zone, i + 1, connectname, donorname,
+                               range.data(), donor_range.data(), transform.data()));
 
-	  // Get number of nodes shared with other "previous" zones...
-	  // A "previous" zone will have a lower zone number this this zone...
-	  int  donor_zone = -1;
-	  auto donor_iter = zone_name_map.find(donorname);
-	  if (donor_iter != zone_name_map.end()) {
-	    donor_zone = (*donor_iter).second;
-	  }
-	  Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
-	  Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
-	  Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
-	  Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
-	  
+          // Get number of nodes shared with other "previous" zones...
+          // A "previous" zone will have a lower zone number this this zone...
+          int  donor_zone = -1;
+          auto donor_iter = zone_name_map.find(donorname);
+          if (donor_iter != zone_name_map.end()) {
+            donor_zone = (*donor_iter).second;
+          }
+          Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
+          Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
+          Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
+          Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
+
 #if IOSS_DEBUG_OUTPUT
-	  OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname
-		 << "\n";
+          OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname
+                 << "\n";
 #endif
-	  zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
-						     transform, range_beg, range_end, donor_beg,
-						     donor_end);
-	}
+          zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
+                                                     transform, range_beg, range_end, donor_beg,
+                                                     donor_end);
+        }
       }
     }
 
-    // If parallel, pack the data on rank 0 and broadcast to all other processors...
+      // If parallel, pack the data on rank 0 and broadcast to all other processors...
 #ifdef SEACAS_HAVE_MPI
 
     if (par_util.parallel_size() > 1) {
       std::vector<int> zgc_size(zones.size());
       // Let each processor know how many zgc each of its zones should have...
       if (rank == 0) {
-	for (size_t i=0; i < zones.size(); i++) {
-	  zgc_size[i] = (int)zones[i]->m_zoneConnectivity.size();
-	}
+        for (size_t i = 0; i < zones.size(); i++) {
+          zgc_size[i] = (int)zones[i]->m_zoneConnectivity.size();
+        }
       }
       MPI_Bcast(zgc_size.data(), (int)zgc_size.size(), MPI_INT, 0, comm);
       int count = std::accumulate(zgc_size.begin(), zgc_size.end(), (int)0);
 
       // Pack the zgc for all zones on rank=0 and send to all other ranks for unpacking.
-      const int BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH+1;
-      const int INT_PER_ZGC   = 17;
+      const int         BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH + 1;
+      const int         INT_PER_ZGC   = 17;
       std::vector<char> zgc_name(count * 2 * BYTE_PER_NAME);
       std::vector<int>  zgc_data(count * INT_PER_ZGC);
 
       if (rank == 0) {
-	// Pack the data...
-	int off_name = 0;
-	int off_data = 0;
-	int off_cnt  = 0;
+        // Pack the data...
+        int off_name = 0;
+        int off_data = 0;
+        int off_cnt  = 0;
 
-	for (auto &zone : zones) {
-	  for (auto &z : zone->m_zoneConnectivity) {
-	    strncpy(&zgc_name[off_name], z.m_connectionName.c_str(), BYTE_PER_NAME);
-	    off_name += BYTE_PER_NAME;
-	    strncpy(&zgc_name[off_name], z.m_donorName.c_str(), BYTE_PER_NAME);
-	    off_name += BYTE_PER_NAME;
+        for (auto &zone : zones) {
+          for (auto &z : zone->m_zoneConnectivity) {
+            strncpy(&zgc_name[off_name], z.m_connectionName.c_str(), BYTE_PER_NAME);
+            off_name += BYTE_PER_NAME;
+            strncpy(&zgc_name[off_name], z.m_donorName.c_str(), BYTE_PER_NAME);
+            off_name += BYTE_PER_NAME;
 
-	    off_cnt++;
+            off_cnt++;
 
-	    zgc_data[off_data++] = z.m_ownerZone;
-	    zgc_data[off_data++] = z.m_donorZone;
+            zgc_data[off_data++] = z.m_ownerZone;
+            zgc_data[off_data++] = z.m_donorZone;
 
-	    zgc_data[off_data++] = z.m_ownerRangeBeg[0];
-	    zgc_data[off_data++] = z.m_ownerRangeBeg[1];
-	    zgc_data[off_data++] = z.m_ownerRangeBeg[2];
-	    zgc_data[off_data++] = z.m_ownerRangeEnd[0];
-	    zgc_data[off_data++] = z.m_ownerRangeEnd[1];
-	    zgc_data[off_data++] = z.m_ownerRangeEnd[2];
+            zgc_data[off_data++] = z.m_ownerRangeBeg[0];
+            zgc_data[off_data++] = z.m_ownerRangeBeg[1];
+            zgc_data[off_data++] = z.m_ownerRangeBeg[2];
+            zgc_data[off_data++] = z.m_ownerRangeEnd[0];
+            zgc_data[off_data++] = z.m_ownerRangeEnd[1];
+            zgc_data[off_data++] = z.m_ownerRangeEnd[2];
 
-	    zgc_data[off_data++] = z.m_donorRangeBeg[0];
-	    zgc_data[off_data++] = z.m_donorRangeBeg[1];
-	    zgc_data[off_data++] = z.m_donorRangeBeg[2];
-	    zgc_data[off_data++] = z.m_donorRangeEnd[0];
-	    zgc_data[off_data++] = z.m_donorRangeEnd[1];
-	    zgc_data[off_data++] = z.m_donorRangeEnd[2];
+            zgc_data[off_data++] = z.m_donorRangeBeg[0];
+            zgc_data[off_data++] = z.m_donorRangeBeg[1];
+            zgc_data[off_data++] = z.m_donorRangeBeg[2];
+            zgc_data[off_data++] = z.m_donorRangeEnd[0];
+            zgc_data[off_data++] = z.m_donorRangeEnd[1];
+            zgc_data[off_data++] = z.m_donorRangeEnd[2];
 
-	    zgc_data[off_data++] = z.m_transform[0];
-	    zgc_data[off_data++] = z.m_transform[1];
-	    zgc_data[off_data++] = z.m_transform[2];
-	  }
-	}
-	assert(off_cnt == count);
-	assert(count == 0 || (off_data % count == 0));
-	assert(count == 0 || (off_data / count == INT_PER_ZGC));
-	assert(count == 0 || (off_name % count == 0 && off_name / count / 2 == BYTE_PER_NAME));
+            zgc_data[off_data++] = z.m_transform[0];
+            zgc_data[off_data++] = z.m_transform[1];
+            zgc_data[off_data++] = z.m_transform[2];
+          }
+        }
+        assert(off_cnt == count);
+        assert(count == 0 || (off_data % count == 0));
+        assert(count == 0 || (off_data / count == INT_PER_ZGC));
+        assert(count == 0 || (off_name % count == 0 && off_name / count / 2 == BYTE_PER_NAME));
       }
-      
+
       MPI_Bcast(zgc_name.data(), (int)zgc_name.size(), MPI_CHAR, 0, comm);
       MPI_Bcast(zgc_data.data(), (int)zgc_data.size(), MPI_INT, 0, comm);
 
       if (rank != 0) {
-	// Unpack the data...
-	int off_name = 0;
-	int off_data = 0;
-	int off_cnt  = 0;
+        // Unpack the data...
+        int off_name = 0;
+        int off_data = 0;
+        int off_cnt  = 0;
 
-	for (size_t i = 0; i < zones.size(); i++) {
-	  auto zgc_cnt = zgc_size[i];
-	  auto zone = zones[i];
-	  for (int j = 0; j < zgc_cnt; j++) {
-	    off_cnt++;
-	    std::string name{&zgc_name[off_name]};
-	    off_name += BYTE_PER_NAME;
-	    std::string donor_name{&zgc_name[off_name]};
-	    off_name += BYTE_PER_NAME;
+        for (size_t i = 0; i < zones.size(); i++) {
+          auto zgc_cnt = zgc_size[i];
+          auto zone    = zones[i];
+          for (int j = 0; j < zgc_cnt; j++) {
+            off_cnt++;
+            std::string name{&zgc_name[off_name]};
+            off_name += BYTE_PER_NAME;
+            std::string donor_name{&zgc_name[off_name]};
+            off_name += BYTE_PER_NAME;
 
-	    int         zone_id  = zgc_data[off_data++];
-	    int         donor_id = zgc_data[off_data++];
-	    Ioss::IJK_t range_beg{{zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
-	    Ioss::IJK_t range_end{{zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
-	    Ioss::IJK_t donor_beg{{zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
-	    Ioss::IJK_t donor_end{{zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
-	    Ioss::IJK_t transform{{zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
-	    zone->m_zoneConnectivity.emplace_back(name, zone_id, donor_name, donor_id, transform, range_beg, range_end, donor_beg,
-						  donor_end);
-	  }
-	}
-	assert(off_cnt == count);
-	assert(count == 0 || (off_data % count == 0));
-	assert(count == 0 || (off_data / count == INT_PER_ZGC));
-	assert(count == 0 || (off_name % count == 0 && off_name / count / 2 == BYTE_PER_NAME));
+            int         zone_id  = zgc_data[off_data++];
+            int         donor_id = zgc_data[off_data++];
+            Ioss::IJK_t range_beg{
+                {zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
+            Ioss::IJK_t range_end{
+                {zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
+            Ioss::IJK_t donor_beg{
+                {zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
+            Ioss::IJK_t donor_end{
+                {zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
+            Ioss::IJK_t transform{
+                {zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
+            zone->m_zoneConnectivity.emplace_back(name, zone_id, donor_name, donor_id, transform,
+                                                  range_beg, range_end, donor_beg, donor_end);
+          }
+        }
+        assert(off_cnt == count);
+        assert(count == 0 || (off_data % count == 0));
+        assert(count == 0 || (off_data / count == INT_PER_ZGC));
+        assert(count == 0 || (off_name % count == 0 && off_name / count / 2 == BYTE_PER_NAME));
       }
     }
 #endif
 
-    // If parallel, pack the data on rank 0 and broadcast to all other processors...
+      // If parallel, pack the data on rank 0 and broadcast to all other processors...
 #ifdef SEACAS_HAVE_MPI
 
     if (par_util.parallel_size() > 1) {
       std::vector<int> zgc_size(zones.size());
       // Let each processor know how many zgc each of its zones should have...
       if (rank == 0) {
-	for (size_t i=0; i < zones.size(); i++) {
-	  zgc_size[i] = (int)zones[i]->m_zoneConnectivity.size();
-	}
+        for (size_t i = 0; i < zones.size(); i++) {
+          zgc_size[i] = (int)zones[i]->m_zoneConnectivity.size();
+        }
       }
       MPI_Bcast(zgc_size.data(), (int)zgc_size.size(), MPI_INT, 0, comm);
       int count = std::accumulate(zgc_size.begin(), zgc_size.end(), (int)0);
 
       // Pack the zgc for all zones on rank=0 and send to all other ranks for unpacking.
-      const int BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH+1;
-      const int INT_PER_ZGC   = 17;
+      const int         BYTE_PER_NAME = CGNS_MAX_NAME_LENGTH + 1;
+      const int         INT_PER_ZGC   = 17;
       std::vector<char> zgc_name(count * 2 * BYTE_PER_NAME);
       std::vector<int>  zgc_data(count * INT_PER_ZGC);
 
       if (rank == 0) {
-	// Pack the data...
-	size_t off_name = 0;
-	size_t off_data = 0;
-	size_t off_cnt  = 0;
+        // Pack the data...
+        size_t off_name = 0;
+        size_t off_data = 0;
+        size_t off_cnt  = 0;
 
-	for (auto &zone : zones) {
-	  for (auto &z : zone->m_zoneConnectivity) {
-	    strncpy(&zgc_name[off_name], z.m_connectionName.c_str(), BYTE_PER_NAME);
-	    off_name += BYTE_PER_NAME;
-	    strncpy(&zgc_name[off_name], z.m_donorName.c_str(), BYTE_PER_NAME);
-	    off_name += BYTE_PER_NAME;
+        for (auto &zone : zones) {
+          for (auto &z : zone->m_zoneConnectivity) {
+            strncpy(&zgc_name[off_name], z.m_connectionName.c_str(), BYTE_PER_NAME);
+            off_name += BYTE_PER_NAME;
+            strncpy(&zgc_name[off_name], z.m_donorName.c_str(), BYTE_PER_NAME);
+            off_name += BYTE_PER_NAME;
 
-	    off_cnt++;
+            off_cnt++;
 
-	    zgc_data[off_data++] = z.m_ownerZone;
-	    zgc_data[off_data++] = z.m_donorZone;
+            zgc_data[off_data++] = z.m_ownerZone;
+            zgc_data[off_data++] = z.m_donorZone;
 
-	    zgc_data[off_data++] = z.m_ownerRangeBeg[0];
-	    zgc_data[off_data++] = z.m_ownerRangeBeg[1];
-	    zgc_data[off_data++] = z.m_ownerRangeBeg[2];
-	    zgc_data[off_data++] = z.m_ownerRangeEnd[0];
-	    zgc_data[off_data++] = z.m_ownerRangeEnd[1];
-	    zgc_data[off_data++] = z.m_ownerRangeEnd[2];
+            zgc_data[off_data++] = z.m_ownerRangeBeg[0];
+            zgc_data[off_data++] = z.m_ownerRangeBeg[1];
+            zgc_data[off_data++] = z.m_ownerRangeBeg[2];
+            zgc_data[off_data++] = z.m_ownerRangeEnd[0];
+            zgc_data[off_data++] = z.m_ownerRangeEnd[1];
+            zgc_data[off_data++] = z.m_ownerRangeEnd[2];
 
-	    zgc_data[off_data++] = z.m_donorRangeBeg[0];
-	    zgc_data[off_data++] = z.m_donorRangeBeg[1];
-	    zgc_data[off_data++] = z.m_donorRangeBeg[2];
-	    zgc_data[off_data++] = z.m_donorRangeEnd[0];
-	    zgc_data[off_data++] = z.m_donorRangeEnd[1];
-	    zgc_data[off_data++] = z.m_donorRangeEnd[2];
+            zgc_data[off_data++] = z.m_donorRangeBeg[0];
+            zgc_data[off_data++] = z.m_donorRangeBeg[1];
+            zgc_data[off_data++] = z.m_donorRangeBeg[2];
+            zgc_data[off_data++] = z.m_donorRangeEnd[0];
+            zgc_data[off_data++] = z.m_donorRangeEnd[1];
+            zgc_data[off_data++] = z.m_donorRangeEnd[2];
 
-	    zgc_data[off_data++] = z.m_transform[0];
-	    zgc_data[off_data++] = z.m_transform[1];
-	    zgc_data[off_data++] = z.m_transform[2];
-	  }
-	}
-	assert(off_cnt == count);
-	assert(count == 0 || (off_data % count == 0));
-	assert(count == 0 || (off_data / count == INT_PER_ZGC));
-	assert(count == 0 || (off_name % count == 0 && off_name / count / 2 == BYTE_PER_NAME));
+            zgc_data[off_data++] = z.m_transform[0];
+            zgc_data[off_data++] = z.m_transform[1];
+            zgc_data[off_data++] = z.m_transform[2];
+          }
+        }
+        assert(off_cnt == count);
+        assert(count == 0 || (off_data % count == 0));
+        assert(count == 0 || (off_data / count == INT_PER_ZGC));
+        assert(count == 0 || (off_name % count == 0 && off_name / count / 2 == BYTE_PER_NAME));
       }
-      
+
       MPI_Bcast(zgc_name.data(), (int)zgc_name.size(), MPI_CHAR, 0, comm);
       MPI_Bcast(zgc_data.data(), (int)zgc_data.size(), MPI_INT, 0, comm);
 
       if (rank != 0) {
-	// Unpack the data...
-	size_t off_name = 0;
-	size_t off_data = 0;
-	size_t off_cnt  = 0;
+        // Unpack the data...
+        size_t off_name = 0;
+        size_t off_data = 0;
+        size_t off_cnt  = 0;
 
-	for (size_t i = 0; i < zones.size(); i++) {
-	  auto zgc_cnt = zgc_size[i];
-	  auto zone = zones[i];
-	  for (size_t j = 0; j < zgc_cnt; j++) {
-	    std::string name{&zgc_name[off_name]};
-	    off_name += BYTE_PER_NAME;
-	    std::string donor_name{&zgc_name[off_name]};
-	    off_name += BYTE_PER_NAME;
+        for (size_t i = 0; i < zones.size(); i++) {
+          auto zgc_cnt = zgc_size[i];
+          auto zone    = zones[i];
+          for (size_t j = 0; j < zgc_cnt; j++) {
+            std::string name{&zgc_name[off_name]};
+            off_name += BYTE_PER_NAME;
+            std::string donor_name{&zgc_name[off_name]};
+            off_name += BYTE_PER_NAME;
 
-	    int         zone_id  = zgc_data[off_data++];
-	    int         donor_id = zgc_data[off_data++];
-	    Ioss::IJK_t range_beg{{zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
-	    Ioss::IJK_t range_end{{zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
-	    Ioss::IJK_t donor_beg{{zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
-	    Ioss::IJK_t donor_end{{zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
-	    Ioss::IJK_t transform{{zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
-	    zone->m_zoneConnectivity.emplace_back(name, zone_id, donor_name, donor_id, transform, range_beg, range_end, donor_beg,
-						  donor_end);
-	  }
-	}
-	assert(off_cnt == count);
-	assert(count == 0 || (off_data % count == 0));
-	assert(count == 0 || (off_data / count == INT_PER_ZGC));
-	assert(count == 0 || (off_name % count == 0 && off_name / count / 2 == BYTE_PER_NAME));
+            int         zone_id  = zgc_data[off_data++];
+            int         donor_id = zgc_data[off_data++];
+            Ioss::IJK_t range_beg{
+                {zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
+            Ioss::IJK_t range_end{
+                {zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
+            Ioss::IJK_t donor_beg{
+                {zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
+            Ioss::IJK_t donor_end{
+                {zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
+            Ioss::IJK_t transform{
+                {zgc_data[off_data++], zgc_data[off_data++], zgc_data[off_data++]}};
+            zone->m_zoneConnectivity.emplace_back(name, zone_id, donor_name, donor_id, transform,
+                                                  range_beg, range_end, donor_beg, donor_end);
+          }
+        }
+        assert(off_cnt == count);
+        assert(count == 0 || (off_data % count == 0));
+        assert(count == 0 || (off_data / count == INT_PER_ZGC));
+        assert(count == 0 || (off_name % count == 0 && off_name / count / 2 == BYTE_PER_NAME));
       }
     }
 #endif
@@ -555,7 +566,8 @@ namespace Iocgns {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::decompose_model(int serFilePtr, int filePtr, CG_ZoneType_t common_zone_type)
+  void DecompositionData<INT>::decompose_model(int serFilePtr, int filePtr,
+                                               CG_ZoneType_t common_zone_type)
   {
     if (common_zone_type == CG_Unstructured) {
       decompose_unstructured(filePtr);
@@ -571,7 +583,8 @@ namespace Iocgns {
     }
   }
 
-  template <typename INT> void DecompositionData<INT>::decompose_structured(int serFilePtr, int filePtr)
+  template <typename INT>
+  void DecompositionData<INT>::decompose_structured(int serFilePtr, int filePtr)
   {
     std::vector<double> times;
     times.push_back(Ioss::Utils::timer());
@@ -764,12 +777,11 @@ namespace Iocgns {
 #endif
     if (rank == 0) {
       std::cerr << "DECOMPOSITION: ";
-      for (size_t i=1; i < times.size(); i++) {
-	std::cerr << times[i] - times[i-1] << "\t";
+      for (size_t i = 1; i < times.size(); i++) {
+        std::cerr << times[i] - times[i - 1] << "\t";
       }
       std::cerr << "\n";
     }
-
   }
 
   template <typename INT> void DecompositionData<INT>::decompose_unstructured(int filePtr)

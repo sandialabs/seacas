@@ -83,9 +83,9 @@ namespace Iocgns {
 
     virtual ~DecompositionDataBase();
     virtual void   decompose_model(int serFilePtr, int filePtr, CG_ZoneType_t common_zone_type) = 0;
-    virtual size_t ioss_node_count() const                                      = 0;
-    virtual size_t ioss_elem_count() const                                      = 0;
-    virtual int    int_size() const                                             = 0;
+    virtual size_t ioss_node_count() const                                                      = 0;
+    virtual size_t ioss_elem_count() const                                                      = 0;
+    virtual int    int_size() const                                                             = 0;
 
     virtual int    spatial_dimension() const = 0;
     virtual size_t global_node_count() const = 0;
