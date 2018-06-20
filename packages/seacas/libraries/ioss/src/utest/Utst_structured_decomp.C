@@ -10,6 +10,14 @@
 #include <vector>
 
 namespace {
+  void cleanup(std::vector<Iocgns::StructuredZoneData *> &zones)
+  {
+    for (auto &zone : zones) {
+      delete zone;
+      zone = nullptr;
+    }
+  }
+
   int64_t generate_guid(size_t id, int rank, int proc_count)
   {
     static size_t lpow2 = 0;
@@ -154,6 +162,7 @@ TEST_CASE("single block", "[single_block]")
   double load_balance_tolerance = 1.2;
 
   check_split_assign(zones, load_balance_tolerance, proc_count);
+  cleanup(zones);
 }
 
 TEST_CASE("single block line", "[single_block_line]")
@@ -166,6 +175,7 @@ TEST_CASE("single block line", "[single_block_line]")
   double load_balance_tolerance = 1.05;
 
   check_split_assign(zones, load_balance_tolerance, proc_count);
+  cleanup(zones);
 }
 
 TEST_CASE("bump", "[bump_zgc]")
@@ -193,6 +203,7 @@ TEST_CASE("bump", "[bump_zgc]")
     std::string name = "bump_ProcCount_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.8, 1.2); }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("bump_loose", "[bump_loose_zgc]")
@@ -220,6 +231,7 @@ TEST_CASE("bump_loose", "[bump_loose_zgc]")
     std::string name = "bump_loose_ProcCount_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.8, 1.2); }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("prime sides", "[prime_sides]")
@@ -233,6 +245,7 @@ TEST_CASE("prime sides", "[prime_sides]")
     std::string name = "Prime_ProcCount_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.8); }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("farmer plenum", "[farmer_plenum]")
@@ -273,6 +286,7 @@ TEST_CASE("farmer plenum", "[farmer_plenum]")
     std::string name = "Plenum_ProcCount_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("grv-nose", "[grv-nose]")
@@ -388,6 +402,7 @@ TEST_CASE("grv-nose", "[grv-nose]")
       check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.2);
     }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("grv", "[grv]")
@@ -418,6 +433,7 @@ TEST_CASE("grv", "[grv]")
       check_split_assign(zones, load_balance_tolerance, proc_count, .7);
     }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("mk21", "[mk21]")
@@ -471,6 +487,7 @@ TEST_CASE("mk21", "[mk21]")
     std::string name = "MK21_ProcCount_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("farmer_h1_nozzle", "[h1_nozzle]")
@@ -503,6 +520,7 @@ TEST_CASE("farmer_h1_nozzle", "[h1_nozzle]")
     std::string name = "NOZ_ProcCount_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("farmer_h1_mk21", "[h1_mk21]")
@@ -766,6 +784,7 @@ TEST_CASE("farmer_h1_mk21", "[h1_mk21]")
     std::string name = "H1_MK21_ProcCount_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.75); }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("bc-257x129x2", "[bc-257x129x2]")
@@ -783,6 +802,7 @@ TEST_CASE("bc-257x129x2", "[bc-257x129x2]")
     std::string name = "BC_ProcCount_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("6billion", "[6billion]")
@@ -798,6 +818,7 @@ TEST_CASE("6billion", "[6billion]")
     std::string name = "Billion_PC_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
+  cleanup(zones);
 }
 
 TEST_CASE("LotsOfZones", "[LotsOfZones]")
@@ -814,4 +835,5 @@ TEST_CASE("LotsOfZones", "[LotsOfZones]")
     std::string name = "Lots_PC_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.1); }
   }
+  cleanup(zones);
 }
