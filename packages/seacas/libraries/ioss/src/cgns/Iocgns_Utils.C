@@ -557,7 +557,7 @@ namespace {
     }
 #endif
   }
-}
+} // namespace
 
 size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
                                              std::vector<size_t> &zone_offset, bool is_parallel_io)
@@ -1236,36 +1236,106 @@ Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_proce
 void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,
                                                        Ioss::StructuredBlock *block)
 {
+  int rank = block->get_database()->util().parallel_rank();
+  int proc = block->get_database()->util().parallel_size();
+
   int base = block->get_property("base").get_int();
   int zone = block->get_property("zone").get_int();
-  int num_bcs;
-  CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
 
-  cgsize_t range[6];
+  // Called by both parallel and serial runs.
+  // In parallel, the 'cgnsFilePtr' is for the serial file on processor 0.
+  // Read all CGNS data on processor 0 and then broadcast to other processors.
+  // Data needed:
+  // * boco_name (CGNS_MAX_NAME_LENGTH + 1 chars)
+  // * fam_name  (CGNS_MAX_NAME_LENGTH + 1 chars)
+  // * data     (cgsize_t * 7) (bocotype + range[6])
+
+  int num_bcs = 0;
+  if (rank == 0) {
+    CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
+  }
+
+  if (proc > 1) {
+    MPI_Bcast(&num_bcs, 1, MPI_INT, 0, 
+              block->get_database()->util().communicator());
+  }
+
+  std::vector<int>  bc_data(7 * num_bcs);
+  std::vector<char> bc_names(2 * (CGNS_MAX_NAME_LENGTH + 1) * num_bcs);
+
+  if (rank == 0) {
+    int      off_data = 0;
+    int      off_name = 0;
+    cgsize_t range[6];
+
+    for (int ibc = 0; ibc < num_bcs; ibc++) {
+      char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
+      char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
+      CG_BCType_t       bocotype;
+      CG_PointSetType_t ptset_type;
+      cgsize_t          npnts;
+      cgsize_t          NormalListSize;
+      CG_DataType_t     NormalDataType;
+      int               ndataset;
+
+      // All we really want from this is 'boco_name'
+      CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
+                             &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+
+      if (bocotype == CG_FamilySpecified) {
+        // Get family name associated with this boco_name
+        CGCHECKNP(
+            cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
+        CGCHECKNP(cg_famname_read(fam_name));
+      }
+      else {
+        strncpy(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
+      }
+
+      CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
+
+      strncpy(&bc_names[off_name], boco_name, CGNS_MAX_NAME_LENGTH + 1);
+      off_name += (CGNS_MAX_NAME_LENGTH + 1);
+      strncpy(&bc_names[off_name], fam_name, CGNS_MAX_NAME_LENGTH + 1);
+      off_name += (CGNS_MAX_NAME_LENGTH + 1);
+
+      bc_data[off_data++] = bocotype;
+      bc_data[off_data++] = range[0];
+      bc_data[off_data++] = range[1];
+      bc_data[off_data++] = range[2];
+      bc_data[off_data++] = range[3];
+      bc_data[off_data++] = range[4];
+      bc_data[off_data++] = range[5];
+    }
+  }
+
+  // If parallel, broadcast data to other processors...
+  if (proc > 1) {
+    MPI_Bcast(bc_names.data(), (int)bc_names.size(), MPI_BYTE, 0,
+              block->get_database()->util().communicator());
+    MPI_Bcast(bc_data.data(), (int)bc_data.size(), MPI_INT, 0,
+              block->get_database()->util().communicator());
+  }
+
+  // Now just unpack the data and run through the same calculations on all processors.
+  // A little more work than needed for a serial run, but shouldn't be excessive...
+  int off_data = 0;
+  int off_name = 0;
   for (int ibc = 0; ibc < num_bcs; ibc++) {
-    char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
-    char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
-    CG_BCType_t       bocotype;
-    CG_PointSetType_t ptset_type;
-    cgsize_t          npnts;
-    cgsize_t          NormalListSize;
-    CG_DataType_t     NormalDataType;
-    int               ndataset;
+    cgsize_t range[6];
 
-    // All we really want from this is 'boco_name'
-    CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
-                           &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+    CG_BCType_t bocotype = (CG_BCType_t)bc_data[off_data++];
+    range[0]             = bc_data[off_data++];
+    range[1]             = bc_data[off_data++];
+    range[2]             = bc_data[off_data++];
+    range[3]             = bc_data[off_data++];
+    range[4]             = bc_data[off_data++];
+    range[5]             = bc_data[off_data++];
 
-    if (bocotype == CG_FamilySpecified) {
-      // Get family name associated with this boco_name
-      CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
-      CGCHECKNP(cg_famname_read(fam_name));
-    }
-    else {
-      strncpy(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
-    }
-
-    CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
+    std::string boco_name{&bc_names[off_name]};
+    off_name += (CGNS_MAX_NAME_LENGTH + 1);
+    std::string fam_name{&bc_names[off_name]};
+    off_name += (CGNS_MAX_NAME_LENGTH + 1);
 
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
@@ -1278,6 +1348,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
                 << ". This code only supports surfaces.\n";
       continue;
     }
+
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
     if (sset == nullptr) {
       // Need to create a new sideset since didn't see this earlier.
