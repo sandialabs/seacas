@@ -80,6 +80,7 @@
 #include "Ioss_VariableType.h"
 
 using GL_IdVector = std::vector<std::pair<int, int>>;
+extern int pcg_mpi_initialized;
 
 namespace {
   MPI_Datatype cgns_mpi_type()
@@ -186,6 +187,12 @@ namespace Iocgns {
       delete gtb.second;
     }
     cgp_close(cgnsFilePtr);
+    if (myProcessor == 0 && cgnsSerFilePtr >= 0) {
+      auto init = pcg_mpi_initialized;
+      pcg_mpi_initialized = 0;
+      cg_close(cgnsSerFilePtr);
+      pcg_mpi_initialized = init;
+    }
   }
 
   void ParallelDatabaseIO::openDatabase__() const
@@ -198,9 +205,6 @@ namespace Iocgns {
       double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
       CGCHECK(cg_set_file_type(CG_FILE_HDF5));
-      if (myProcessor == 0 && is_input()) {
-	cg_open(get_filename().c_str(), mode, &cgnsSerFilePtr);
-      }
 
 #if 0
       // Currently, cgp_mpi_comm returns an internal NO_ERROR value which
@@ -211,6 +215,13 @@ namespace Iocgns {
 #endif
       CGCHECK(cgp_pio_mode(CGP_COLLECTIVE));
       int ierr = cgp_open(get_filename().c_str(), mode, &cgnsFilePtr);
+
+      if (myProcessor == 0 && is_input()) {
+	auto init = pcg_mpi_initialized;
+	pcg_mpi_initialized = 0;
+	cg_open(get_filename().c_str(), mode, &cgnsSerFilePtr);
+	pcg_mpi_initialized = init;
+      }
 
       if (do_timer) {
         double t_end    = Ioss::Utils::timer();
