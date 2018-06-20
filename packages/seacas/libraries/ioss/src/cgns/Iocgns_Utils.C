@@ -392,7 +392,7 @@ namespace {
       for (const auto &z : zgc) {
         if (!z.is_intra_block() && z.is_active()) {
           strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), BYTE_PER_NAME);
-	  off_cnt++;
+          off_cnt++;
           off_name += BYTE_PER_NAME;
 
           snd_zgc_data[off_data++] = z.m_ownerZone;
@@ -490,7 +490,8 @@ namespace {
       // Cull out all 'non-active' zgc instances (owner and donor zone <= 0)
       zgc.erase(std::remove_if(zgc.begin(), zgc.end(),
                                [](Ioss::ZoneConnectivity &z) {
-                                 return (z.m_ownerZone == -1 && z.m_donorZone == -1) || z.is_intra_block() || !z.is_active();
+                                 return (z.m_ownerZone == -1 && z.m_donorZone == -1) ||
+                                        z.is_intra_block() || !z.is_active();
                                }),
                 zgc.end());
 
@@ -759,11 +760,11 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
           if (zgc.is_intra_block()) {
             connect_name = std::to_string(zgc.m_ownerGUID) + "--" + std::to_string(zgc.m_donorGUID);
           }
-	  else {
-	    if (zgc.m_ownerProcessor != zgc.m_donorProcessor) {
-	      connect_name += "_proc" + std::to_string(zgc.m_donorProcessor);
-	    }
-	  }
+          else {
+            if (zgc.m_ownerProcessor != zgc.m_donorProcessor) {
+              connect_name += "_proc" + std::to_string(zgc.m_donorProcessor);
+            }
+          }
           donor_name += "_proc-";
           donor_name += std::to_string(zgc.m_donorProcessor);
           owner_range[0] -= zgc.m_ownerOffset[0];
@@ -1236,9 +1237,6 @@ Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_proce
 void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,
                                                        Ioss::StructuredBlock *block)
 {
-  int rank = block->get_database()->util().parallel_rank();
-  int proc = block->get_database()->util().parallel_size();
-
   int base = block->get_property("base").get_int();
   int zone = block->get_property("zone").get_int();
 
@@ -1251,14 +1249,17 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
   // * data     (cgsize_t * 7) (bocotype + range[6])
 
   int num_bcs = 0;
+  int rank    = block->get_database()->util().parallel_rank();
   if (rank == 0) {
     CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
   }
 
+#ifdef SEACAS_HAVE_MPI
+  int proc = block->get_database()->util().parallel_size();
   if (proc > 1) {
-    MPI_Bcast(&num_bcs, 1, MPI_INT, 0, 
-              block->get_database()->util().communicator());
+    MPI_Bcast(&num_bcs, 1, MPI_INT, 0, block->get_database()->util().communicator());
   }
+#endif
 
   std::vector<int>  bc_data(7 * num_bcs);
   std::vector<char> bc_names(2 * (CGNS_MAX_NAME_LENGTH + 1) * num_bcs);
@@ -1309,6 +1310,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     }
   }
 
+#ifdef SEACAS_HAVE_MPI
   // If parallel, broadcast data to other processors...
   if (proc > 1) {
     MPI_Bcast(bc_names.data(), (int)bc_names.size(), MPI_BYTE, 0,
@@ -1316,6 +1318,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     MPI_Bcast(bc_data.data(), (int)bc_data.size(), MPI_INT, 0,
               block->get_database()->util().communicator());
   }
+#endif
 
   // Now just unpack the data and run through the same calculations on all processors.
   // A little more work than needed for a serial run, but shouldn't be excessive...
