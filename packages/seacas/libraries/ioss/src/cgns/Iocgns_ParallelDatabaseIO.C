@@ -188,7 +188,7 @@ namespace Iocgns {
     }
     cgp_close(cgnsFilePtr);
     if (myProcessor == 0 && cgnsSerFilePtr >= 0) {
-      auto init = pcg_mpi_initialized;
+      auto init           = pcg_mpi_initialized;
       pcg_mpi_initialized = 0;
       cg_close(cgnsSerFilePtr);
       pcg_mpi_initialized = init;
@@ -217,10 +217,10 @@ namespace Iocgns {
       int ierr = cgp_open(get_filename().c_str(), mode, &cgnsFilePtr);
 
       if (myProcessor == 0 && is_input()) {
-	auto init = pcg_mpi_initialized;
-	pcg_mpi_initialized = 0;
-	cg_open(get_filename().c_str(), mode, &cgnsSerFilePtr);
-	pcg_mpi_initialized = init;
+        auto init           = pcg_mpi_initialized;
+        pcg_mpi_initialized = 0;
+        cg_open(get_filename().c_str(), mode, &cgnsSerFilePtr);
+        pcg_mpi_initialized = init;
       }
 
       if (do_timer) {
@@ -362,8 +362,8 @@ namespace Iocgns {
     times.push_back(Ioss::Utils::timer());
     if (myProcessor == 0) {
       std::cerr << "DECOMP/INIT: ";
-      for (size_t i=1; i < times.size(); i++) {
-	std::cerr << times[i] - times[i-1] << "\t";
+      for (size_t i = 1; i < times.size(); i++) {
+        std::cerr << times[i] - times[i - 1] << "\t";
       }
       std::cerr << "\n";
     }
