@@ -103,7 +103,7 @@ alias install-targets
     genshell
     grepos
     gjoin
-    grope
+    explore
     mapvar
     mapvar_kd
     nem_slice
@@ -164,7 +164,7 @@ alias install-targets
     genshell
     grepos
     gjoin
-    grope
+    explore
     mapvar
     mapvar_kd
     nem_slice
@@ -353,7 +353,7 @@ install install-user-bin
     genshell
     grepos
     gjoin
-    grope
+    explore
     mapvar
     mapvar_kd
     nem_slice
@@ -409,7 +409,7 @@ install install-user-bin
     genshell
     grepos
     gjoin
-    grope
+    explore
     mapvar
     mapvar_kd
     nem_slice
@@ -1754,13 +1754,13 @@ fexe grepos
     <tag>@utility-exec-tag
   ;
 
-fexe grope
+fexe explore
   :
-    [ glob $(seacas-root)/applications/grope/*.f ]
+    [ glob $(seacas-root)/applications/explore/*.f ]
     suplib
     exodus_for
     supes
-  : <include>$(seacas-root)/applications/grope
+  : <include>$(seacas-root)/applications/explore
     <tag>@utility-exec-tag
   ;
 
