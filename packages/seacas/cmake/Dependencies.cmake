@@ -31,7 +31,7 @@ TRIBITS_PACKAGE_DEFINE_DEPENDENCIES(
   Gen3D       applications/gen3d      PT  OPTIONAL
   Genshell    applications/genshell   PT  OPTIONAL
   Grepos      applications/grepos     PT  OPTIONAL
-  Grope       applications/grope      PT  OPTIONAL
+  Explore     applications/explore    PT  OPTIONAL
   Mapvarlib   libraries/mapvarlib     PT  OPTIONAL
   Mapvar      applications/mapvar     PT  OPTIONAL
   Mapvar-kd   applications/mapvar-kd  PT  OPTIONAL

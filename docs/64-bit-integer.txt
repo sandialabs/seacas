@@ -129,11 +129,11 @@ capable. The include:
 		 meshes. Other options are being investigated for the
 		 slicing of large meshes.
 
-  * algebra, blot, exotxt, gen3d, genshell, gjoin, grepos, grope,
+  * algebra, blot, exotxt, gen3d, genshell, gjoin, grepos, explore,
     mapvar, numbers, txtexo
      -- These will probably work, but have not all been tested on
         very large models. Blot has read and displayed a 4.4 billion
-	element model; grope and grepos have also read/written the
+	element model; explore and grepos have also read/written the
 	same model, but that is the extent of the testing.
 
 Still need conversion:

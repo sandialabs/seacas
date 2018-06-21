@@ -138,7 +138,7 @@ capable. They include:
 		 meshes. Other options are being investigated for the
 		 slicing of large meshes.
 
-  * algebra, blot, exotxt, gen3d, genshell, gjoin, grepos, grope,
+  * algebra, blot, exotxt, gen3d, genshell, gjoin, grepos, explore,
     mapvar, numbers, txtexo
    
 ## AVAILABILITY:
