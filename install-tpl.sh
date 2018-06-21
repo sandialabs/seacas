@@ -261,6 +261,7 @@ then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf CGNS
             git clone https://github.com/cgns/CGNS
+            cd CGNS; git am ../CGNS-parallel.patch; cd ..
         fi
 
         if [ "$BUILD" == "YES" ]
