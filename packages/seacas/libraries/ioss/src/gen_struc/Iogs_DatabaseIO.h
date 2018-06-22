@@ -121,7 +121,7 @@ namespace Iogs {
 
     void get_step_times__() override;
     void get_nodeblocks();
-    void get_elemblocks();
+    void get_structured_blocks();
     void get_nodesets();
     void get_sidesets();
     void get_commsets();
@@ -138,12 +138,13 @@ namespace Iogs {
     int64_t get_field_internal(const Ioss::FaceBlock *nb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-                               void *data, size_t data_size) const override
+                               size_t data_size) const override
     {
       return -1;
     }
+
+    int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+                               void *data, size_t data_size) const override;
     int64_t get_field_internal(const Ioss::SideBlock *ef_blk, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field, void *data,

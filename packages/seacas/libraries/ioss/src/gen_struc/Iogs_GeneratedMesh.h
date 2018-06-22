@@ -218,9 +218,9 @@ namespace Iogs {
     virtual int64_t node_count_proc() const;
 
     /**
-     * Return number of element blocks in the entire model.
+     * Return number of structured blocks in the entire model.
      */
-    virtual int64_t block_count() const;
+    virtual int64_t structured_block_count() const;
 
     /**
      * Return number of sidesets in the entire model.
@@ -238,26 +238,33 @@ namespace Iogs {
      */
     virtual int64_t sideset_side_count_proc(int64_t id) const;
 
+    Ioss::IJK_t block_range(int64_t id) const
+    {
+      return Ioss::IJK_t{(int)numX, (int)numY, (int)numZ};
+    }
+    Ioss::IJK_t block_range_proc(int64_t id) const;
+    Ioss::IJK_t block_offset_proc(int64_t id) const;
+
     /**
-     * Return number of elements in all element blocks in the model.
+     * Return number of elements in all structured blocks in the model.
      */
     virtual int64_t element_count() const;
 
     /**
-     * Return number of elements in all element blocks on this processor.
+     * Return number of elements in all structured blocks on this processor.
      */
     virtual int64_t element_count_proc() const;
 
     int64_t timestep_count() const { return timestepCount; }
     /**
-     * Return number of elements in the element block with id
+     * Return number of elements in the structured block with id
      * 'block_number'. The 'block_number' ranges from '1' to
      * 'block_count()'.
      */
     virtual int64_t element_count(int64_t block_number) const;
 
     /**
-     * Return number of elements on this processor in the element
+     * Return number of elements on this processor in the structured
      * block with id 'block_number'. The 'block_number' ranges from
      * '1' to 'block_count()'.
      */
@@ -353,6 +360,17 @@ namespace Iogs {
      * if a rotation is defined.
      */
     virtual void coordinates(int component, std::vector<double> &xyz) const;
+
+    /**
+     * Return the coordinates for componenet 'comp' (1=x, 2=y, 3=z, 0=all)
+     * for all nodes in zone `zone` on this processor. The
+     * vector will be resized to the size required to contain the
+     * nodal coordinates; all information in the vector will be
+     * overwritten.
+     * It is an error to request the coordinates via this function
+     * if a rotation is defined.
+     */
+    void coordinates(int component, int zone, double *coord) const;
 
     /**
      * Return the list of the face/ordinal pairs

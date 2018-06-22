@@ -343,7 +343,7 @@ namespace Iogs {
                 << " <= Z <= " << offZ + numZ * sclZ << "\n\n"
                 << "\tNode Count (total)    = " << std::setw(9) << node_count() << "\n"
                 << "\tElement Count (total) = " << std::setw(9) << element_count() << "\n"
-                << "\tBlock Count           = " << std::setw(9) << block_count() << "\n"
+                << "\tBlock Count           = " << std::setw(9) << structured_block_count() << "\n"
                 << "\tSideset Count         = " << std::setw(9) << sideset_count() << "\n\n"
                 << "\tTimestep Count        = " << std::setw(9) << timestep_count() << "\n\n";
       if (doRotation) {
@@ -363,7 +363,7 @@ namespace Iogs {
 
   int64_t GeneratedMesh::node_count_proc() const { return (numX + 1) * (numY + 1) * (myNumZ + 1); }
 
-  int64_t GeneratedMesh::block_count() const { return 1; }
+  int64_t GeneratedMesh::structured_block_count() const { return 1; }
 
   int64_t GeneratedMesh::sideset_count() const { return sidesets.size(); }
 
@@ -376,7 +376,7 @@ namespace Iogs {
   int64_t GeneratedMesh::element_count_proc() const
   {
     int64_t count = 0;
-    for (int64_t i = 0; i < block_count(); i++) {
+    for (int64_t i = 0; i < structured_block_count(); i++) {
       count += element_count_proc(i + 1);
     }
     return count;
@@ -384,13 +384,13 @@ namespace Iogs {
 
   int64_t GeneratedMesh::element_count(int64_t block_number) const
   {
-    assert(block_number <= block_count());
+    assert(block_number <= structured_block_count());
     return numX * numY * numZ;
   }
 
   int64_t GeneratedMesh::element_count_proc(int64_t block_number) const
   {
-    assert(block_number <= block_count());
+    assert(block_number <= structured_block_count());
     return numX * numY * myNumZ;
   }
 
@@ -440,7 +440,7 @@ namespace Iogs {
 
   std::pair<std::string, int> GeneratedMesh::topology_type(int64_t block_number) const
   {
-    assert(block_number <= block_count() && block_number > 0);
+    assert(block_number <= structured_block_count() && block_number > 0);
     return std::make_pair(std::string(Ioss::Hex8::name), 8);
   }
 
@@ -528,7 +528,7 @@ namespace Iogs {
   template <typename INT>
   void GeneratedMesh::raw_element_map(int64_t block_number, std::vector<INT> &map) const
   {
-    assert(block_number <= block_count() && block_number > 0);
+    assert(block_number <= structured_block_count() && block_number > 0);
 
     INT count = element_count_proc(block_number);
     map.reserve(count);
@@ -714,29 +714,85 @@ namespace Iogs {
     size_t count = node_count_proc();
     xyz.reserve(count);
 
+    double offset = 0;
+    double scale  = 1;
     if (component == 1) {
+      offset = offX;
+      scale  = sclX;
       for (size_t m = myStartZ; m < myStartZ + myNumZ + 1; m++) {
         for (size_t i = 0; i < numY + 1; i++) {
           for (size_t j = 0; j < numX + 1; j++) {
-            xyz.push_back(sclX * static_cast<double>(j) + offX);
+            xyz.push_back(scale * static_cast<double>(j) + offset);
           }
         }
       }
     }
     else if (component == 2) {
+      offset = offY;
+      scale  = sclY;
       for (size_t m = myStartZ; m < myStartZ + myNumZ + 1; m++) {
         for (size_t i = 0; i < numY + 1; i++) {
           for (size_t j = 0; j < numX + 1; j++) {
-            xyz.push_back(sclY * static_cast<double>(i) + offY);
+            xyz.push_back(scale * static_cast<double>(i) + offset);
           }
         }
       }
     }
     else if (component == 3) {
+      offset = offZ;
+      scale  = sclZ;
       for (size_t m = myStartZ; m < myStartZ + myNumZ + 1; m++) {
         for (size_t i = 0; i < numY + 1; i++) {
           for (size_t j = 0; j < numX + 1; j++) {
-            xyz.push_back(sclZ * static_cast<double>(m) + offZ);
+            xyz.push_back(scale * static_cast<double>(m) + offset);
+          }
+        }
+      }
+    }
+  }
+
+  void GeneratedMesh::coordinates(int component, int zone, double *xyz) const
+  {
+    assert(!doRotation);
+    /* create global coordinates */
+    if (component == 0) {
+      size_t jjj = 0;
+      for (size_t m = 0; m < numZ + 1; m++) {
+        for (size_t i = 0; i < numY + 1; i++) {
+          for (size_t j = 0; j < numX + 1; j++) {
+            xyz[jjj++] = (sclX * static_cast<double>(j) + offX);
+            xyz[jjj++] = (sclY * static_cast<double>(i) + offY);
+            xyz[jjj++] = (sclZ * static_cast<double>(m) + offZ);
+          }
+        }
+      }
+    }
+    else if (component == 1) {
+      size_t jjj = 0;
+      for (size_t m = 0; m < numZ + 1; m++) {
+        for (size_t i = 0; i < numY + 1; i++) {
+          for (size_t j = 0; j < numX + 1; j++) {
+            xyz[jjj++] = (sclX * static_cast<double>(j) + offX);
+          }
+        }
+      }
+    }
+    else if (component == 2) {
+      size_t jjj = 0;
+      for (size_t m = 0; m < numZ + 1; m++) {
+        for (size_t i = 0; i < numY + 1; i++) {
+          for (size_t j = 0; j < numX + 1; j++) {
+            xyz[jjj++] = (sclY * static_cast<double>(i) + offY);
+          }
+        }
+      }
+    }
+    else if (component == 3) {
+      size_t jjj = 0;
+      for (size_t m = 0; m < numZ + 1; m++) {
+        for (size_t i = 0; i < numY + 1; i++) {
+          for (size_t j = 0; j < numX + 1; j++) {
+            xyz[jjj++] = (sclZ * static_cast<double>(m) + offZ);
           }
         }
       }
@@ -772,7 +828,7 @@ namespace Iogs {
   template <typename INT>
   void GeneratedMesh::raw_connectivity(int64_t block_number, INT *connect) const
   {
-    assert(block_number <= block_count());
+    assert(block_number <= structured_block_count());
 
     INT xp1yp1 = (numX + 1) * (numY + 1);
 
