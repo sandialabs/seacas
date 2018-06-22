@@ -45,13 +45,14 @@
 #include "Ioss_PropertyManager.h" // for PropertyManager
 #include "Ioss_Region.h"          // for Region
 #include "Ioss_SideSet.h"         // for SideSet
-#include "Ioss_VariableType.h"    // for VariableType
-#include <Ioss_CodeTypes.h>       // for Int64Vector, IntVector
-#include <Ioss_SideBlock.h>       // for SideBlock
-#include <Ioss_Utils.h>           // for Utils, IOSS_ERROR
-#include <algorithm>              // for copy
-#include <cassert>                // for assert
-#include <cmath>                  // for sqrt
+#include "Ioss_StructuredBlock.h"
+#include "Ioss_VariableType.h" // for VariableType
+#include <Ioss_CodeTypes.h>    // for Int64Vector, IntVector
+#include <Ioss_SideBlock.h>    // for SideBlock
+#include <Ioss_Utils.h>        // for Utils, IOSS_ERROR
+#include <algorithm>           // for copy
+#include <cassert>             // for assert
+#include <cmath>               // for sqrt
 #include <gen_struc/Iogs_DatabaseIO.h>
 #include <gen_struc/Iogs_GeneratedMesh.h> // for GeneratedMesh
 #include <iostream>                       // for ostringstream, operator<<, etc
@@ -74,6 +75,15 @@ namespace Ioss {
 } // namespace Ioss
 
 namespace {
+  bool is_cell_field(const Ioss::Field &field)
+  {
+    return !(field.get_name() == "mesh_model_coordinates" ||
+             field.get_name() == "mesh_model_coordinates_x" ||
+             field.get_name() == "mesh_model_coordinates_y" ||
+             field.get_name() == "mesh_model_coordinates_z" ||
+             field.get_name() == "cell_node_ids"); // Default to cell field...
+  }
+
   template <typename INT>
   void map_global_to_local(const Ioss::Map &map, size_t count, size_t stride, INT *data)
   {
@@ -189,19 +199,16 @@ namespace Iogs {
     this_region->property_add(
         Ioss::Property("global_element_count", m_generatedMesh->element_count()));
 
-    spatialDimension  = 3;
-    nodeCount         = m_generatedMesh->node_count_proc();
-    elementCount      = m_generatedMesh->element_count_proc();
-    elementBlockCount = m_generatedMesh->block_count();
-    sidesetCount      = m_generatedMesh->sideset_count();
+    spatialDimension = 3;
+    nodeCount        = m_generatedMesh->node_count_proc();
+    elementCount     = m_generatedMesh->element_count_proc();
 
     get_step_times__();
 
     add_transient_fields(this_region);
     get_nodeblocks();
-    get_elemblocks();
+    get_structured_blocks();
     get_sidesets();
-    get_commsets();
 
     this_region->property_add(
         Ioss::Property(std::string("title"), std::string("GeneratedMesh: ") += get_filename()));
@@ -278,71 +285,94 @@ namespace Iogs {
     return 1;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
+  int64_t DatabaseIO::get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
-    size_t num_to_get = field.verify(data_size);
+    Ioss::Field::RoleType role = field.get_role();
+    int                   zone = sb->get_property("zone").get_int();
 
-    int64_t               id            = eb->get_property("id").get_int();
-    int64_t               element_count = eb->entity_count();
-    Ioss::Field::RoleType role          = field.get_role();
+    cgsize_t num_to_get = field.verify(data_size);
+
+    cgsize_t rmin[3] = {0, 0, 0};
+    cgsize_t rmax[3] = {0, 0, 0};
+
+    bool cell_field = is_cell_field(field);
+    if (cell_field) {
+      assert(num_to_get == sb->get_property("cell_count").get_int());
+      if (num_to_get > 0) {
+        rmin[0] = sb->get_property("offset_i").get_int() + 1;
+        rmin[1] = sb->get_property("offset_j").get_int() + 1;
+        rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+        rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
+        rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
+        rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
+      }
+    }
+    else {
+      // cell nodal field.
+      assert(num_to_get == sb->get_property("node_count").get_int());
+      if (num_to_get > 0) {
+        rmin[0] = sb->get_property("offset_i").get_int() + 1;
+        rmin[1] = sb->get_property("offset_j").get_int() + 1;
+        rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+        rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+        rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+        rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+      }
+    }
+
+    assert(num_to_get ==
+           (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+    double *rdata = static_cast<double *>(data);
 
     if (role == Ioss::Field::MESH) {
-      // Handle the MESH fields required for an ExodusII file model.
-      // (The 'genesis' portion)
+      if (field.get_name() == "mesh_model_coordinates_x") {
+        m_generatedMesh->coordinates(1, zone, rdata);
+      }
 
-      if (field.get_name() == "connectivity" || field.get_name() == "connectivity_raw") {
-        assert(field.raw_storage()->component_count() == m_generatedMesh->topology_type(id).second);
+      else if (field.get_name() == "mesh_model_coordinates_y") {
+        m_generatedMesh->coordinates(2, zone, rdata);
+      }
 
-        // The gen_struc mesh connectivity is returned in a vector.  Ids are global
-        if (field.is_type(Ioss::Field::INTEGER)) {
-          int *connect = static_cast<int *>(data);
-          m_generatedMesh->connectivity(id, connect);
-          if (field.get_name() == "connectivity_raw") {
-            map_global_to_local(get_node_map(),
-                                element_count * field.raw_storage()->component_count(), 1, connect);
-          }
+      else if (field.get_name() == "mesh_model_coordinates_z") {
+        m_generatedMesh->coordinates(3, zone, rdata);
+      }
+
+      else if (field.get_name() == "mesh_model_coordinates") {
+        m_generatedMesh->coordinates(0, zone, rdata);
+      }
+      else if (field.get_name() == "cell_node_ids") {
+        if (field.get_type() == Ioss::Field::INT64) {
+          int64_t *idata = static_cast<int64_t *>(data);
+          sb->get_cell_node_ids(idata, true);
         }
         else {
-          int64_t *connect = static_cast<int64_t *>(data);
-          m_generatedMesh->connectivity(id, connect);
-          if (field.get_name() == "connectivity_raw") {
-            map_global_to_local(get_node_map(),
-                                element_count * field.raw_storage()->component_count(), 1, connect);
-          }
+          assert(field.get_type() == Ioss::Field::INT32);
+          int *idata = static_cast<int *>(data);
+          sb->get_cell_node_ids(idata, true);
         }
       }
-      else if (field.get_name() == "ids" || field.get_name() == "implicit_ids") {
-        // Map the local ids in this element block
-        // (eb_offset+1...eb_offset+1+element_count) to global element ids.
-        get_element_map().map_implicit_data(data, field, num_to_get, eb->get_offset());
+      else if (field.get_name() == "cell_ids") {
+        if (field.get_type() == Ioss::Field::INT64) {
+          int64_t *idata = static_cast<int64_t *>(data);
+          sb->get_cell_ids(idata, true);
+        }
+        else {
+          assert(field.get_type() == Ioss::Field::INT32);
+          int *idata = static_cast<int *>(data);
+          sb->get_cell_ids(idata, true);
+        }
       }
       else {
-        num_to_get = Ioss::Utils::field_warning(eb, field, "input");
+        num_to_get = Ioss::Utils::field_warning(sb, field, "input");
       }
     }
-
-    else if (role == Ioss::Field::ATTRIBUTE) {
-      if (element_count > 0) {
-        int attribute_count = eb->get_property("attribute_count").get_int();
-        if (attribute_count > 0) {
-          double *attr = static_cast<double *>(data);
-          for (size_t i = 0; i < num_to_get; i++) {
-            attr[i] = 1.0;
-          }
-        }
-      }
-    }
-
     else if (role == Ioss::Field::TRANSIENT) {
-      // Fill the field with arbitrary data...
-      const Ioss::Field &id_fld = eb->get_fieldref("ids");
-      std::vector<char>  ids(id_fld.get_size());
-      get_field_internal(eb, id_fld, ids.data(), id_fld.get_size());
-      fill_transient_data(eb, field, data, ids.data(), num_to_get, currentTime);
     }
-    else if (role == Ioss::Field::REDUCTION) {
-      num_to_get = Ioss::Utils::field_warning(eb, field, "input reduction");
+    else {
+      num_to_get = Ioss::Utils::field_warning(sb, field, "input");
     }
     return num_to_get;
   }
@@ -664,34 +694,20 @@ namespace Iogs {
     }
   }
 
-  void DatabaseIO::get_elemblocks()
+  void DatabaseIO::get_structured_blocks()
   {
-    // Attributes of an element block are:
-    // -- id
-    // -- name
-    // -- element type
-    // -- number of elements
-    // -- number of attributes per element
-    // -- number of nodes per element (derivable from type)
-    // -- number of faces per element (derivable from type)
-    // -- number of edges per element (derivable from type)
-
-    int block_count = m_generatedMesh->block_count();
+    // Name, global range, local offset, local range.
+    int block_count = m_generatedMesh->structured_block_count();
     for (int i = 0; i < block_count; i++) {
-      std::string name          = Ioss::Utils::encode_entity_name("block", i + 1);
-      std::string type          = m_generatedMesh->topology_type(i + 1).first;
-      size_t      element_count = m_generatedMesh->element_count_proc(i + 1);
-      auto        block         = new Ioss::ElementBlock(this, name, type, element_count);
+      std::string name   = Ioss::Utils::encode_entity_name("block", i + 1);
+      Ioss::IJK_t global = m_generatedMesh->block_range(i + 1);
+      auto        block = new Ioss::StructuredBlock(this, name, 3, global[0], global[1], global[2]);
 
+      block->property_add(Ioss::Property("base", 1));
+      block->property_add(Ioss::Property("zone", i + 1));
       block->property_add(Ioss::Property("id", i + 1));
-      block->property_add(Ioss::Property("guid", util().generate_guid(i + 1)));
-      block->property_add(Ioss::Property("original_block_order", i));
-
-      block->property_add(
-          Ioss::Property("global_entity_count", m_generatedMesh->element_count(i + 1)));
-
+      block->property_add(Ioss::Property("guid", i + 1));
       get_region()->add(block);
-      add_transient_fields(block);
     }
   }
 
@@ -754,20 +770,6 @@ namespace Iogs {
           add_transient_fields(ef_block);
         }
       }
-    }
-  }
-
-  void DatabaseIO::get_commsets()
-  {
-    if (util().parallel_size() > 1) {
-      // Get size of communication map...
-      size_t my_node_count = m_generatedMesh->communication_node_count_proc();
-
-      // Create a single node commset
-      Ioss::CommSet *commset = new Ioss::CommSet(this, "commset_node", "node", my_node_count);
-      commset->property_add(Ioss::Property("id", 1));
-      commset->property_add(Ioss::Property("guid", util().generate_guid(1)));
-      get_region()->add(commset);
     }
   }
 
