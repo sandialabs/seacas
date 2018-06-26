@@ -1,5 +1,9 @@
 INCLUDE(FortranSettings)
 
+if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
+INCLUDE(InstallSymLink)
+endif()
+
 TRIBITS_SUBPACKAGE(Explore)
 
 INCLUDE_DIRECTORIES(
@@ -18,8 +22,10 @@ TRIBITS_ADD_EXECUTABLE(
   COMM serial mpi
   )
 
+if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
 InstallSymLink(explore ${CMAKE_INSTALL_PREFIX}/bin/grope)
 install_executable(explore)
+endif()
 
 TRIBITS_SUBPACKAGE_POSTPROCESS()
 
