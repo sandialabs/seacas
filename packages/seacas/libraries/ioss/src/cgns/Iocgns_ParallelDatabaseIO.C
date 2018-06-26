@@ -206,11 +206,11 @@ namespace Iocgns {
 
       CGCHECK(cg_set_file_type(CG_FILE_HDF5));
 
-#if 0
-      // Currently, cgp_mpi_comm returns an internal NO_ERROR value which
-      // is equal to -1.  There is an issue submitted for this.
+#if CGNS_VERSION >= 3320
       CGCHECK(cgp_mpi_comm(util().communicator()));
 #else
+      // Older versions of cgp_mpi_comm returned an internal NO_ERROR
+      // value which is equal to -1.  
       cgp_mpi_comm(util().communicator());
 #endif
       CGCHECK(cgp_pio_mode(CGP_COLLECTIVE));
