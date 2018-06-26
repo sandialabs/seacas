@@ -223,6 +223,22 @@ If you only want the exodus library, then follow most of the above instructions 
   * Use the `cmake-exodus` file instead of `cmake-config`.
   * This will build, by default, a shared exodus library and also install the exodus.py Python interface.
 
+## Trilinos
+
+Although SEACAS is included in Trilinos
+(https://github.com/trilinos/Trilinos), it is also possible to use the
+SEACAS code from this repository to override the possibly older SEACAS
+code in Trilinos.  The steps are to directly pull SEACAS from github
+under Trilinos and then build SEACAS under Trilinos with that version
+using `SEACAS_SORUCE_DIR_OVERRIDE`.  Here is how you do it:
+ 
+```
+$ cd Trilinos/
+$ git clone https://github.com/gsjaardema/seacas.git
+$ cd BUILD/
+$ cmake -DSEACAS_SOURCE_DIR_OVERRIDE:STRING=seacas/packages/seacas -DTrilinos_ENABLE_SEACAS [other options] ..
+```
+
 ## License
 
 SEACAS is licensed under the Modified BSD License.  See the LICENSE  file for details.
