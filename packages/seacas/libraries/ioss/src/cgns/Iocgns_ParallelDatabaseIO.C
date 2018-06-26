@@ -313,10 +313,7 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::read_meta_data__()
   {
-    std::vector<double> times;
-    times.push_back(Ioss::Utils::timer());
     openDatabase__();
-    times.push_back(Ioss::Utils::timer());
 
     // Determine the number of bases in the grid.
     // Currently only handle 1.
@@ -336,7 +333,6 @@ namespace Iocgns {
     // We typically only want to retain one copy of these and ignore the other.
     properties.add(Ioss::Property("RETAIN_FREE_NODES", "NO"));
 
-    times.push_back(Ioss::Utils::timer());
     if (int_byte_size_api() == 8) {
       decomp = std::unique_ptr<DecompositionDataBase>(
           new DecompositionData<int64_t>(properties, util().communicator()));
@@ -347,7 +343,6 @@ namespace Iocgns {
     }
     assert(decomp != nullptr);
     decomp->decompose_model(cgnsSerFilePtr, cgnsFilePtr, m_zoneType);
-    times.push_back(Ioss::Utils::timer());
 
     if (m_zoneType == CG_Structured) {
       handle_structured_blocks();
@@ -355,18 +350,9 @@ namespace Iocgns {
     else if (m_zoneType == CG_Unstructured) {
       handle_unstructured_blocks();
     }
-    times.push_back(Ioss::Utils::timer());
 
     Utils::add_transient_variables(cgnsFilePtr, m_timesteps, get_region(), get_field_recognition(),
                                    get_field_separator(), myProcessor);
-    times.push_back(Ioss::Utils::timer());
-    if (myProcessor == 0) {
-      std::cerr << "DECOMP/INIT: ";
-      for (size_t i = 1; i < times.size(); i++) {
-        std::cerr << times[i] - times[i - 1] << "\t";
-      }
-      std::cerr << "\n";
-    }
   }
 
   void ParallelDatabaseIO::handle_unstructured_blocks()
