@@ -382,9 +382,9 @@ namespace {
     }
 
     // Pack data for gathering to processor 0...
-    size_t off_name = 0;
-    size_t off_data = 0;
-    size_t off_cnt  = 0;
+    int off_name = 0;
+    int off_data = 0;
+    int off_cnt  = 0;
 
     // ========================================================================
     auto pack_lambda = [&off_data, &off_name, &off_cnt, &snd_zgc_data,
@@ -424,7 +424,6 @@ namespace {
     for (const auto &sb : structured_blocks) {
       pack_lambda(sb->m_zoneConnectivity);
     }
-    std::cerr << off_cnt << " " << count << " " << my_count << "\n";
     assert(off_cnt == my_count);
     assert(my_count == 0 || (off_data % my_count == 0));
     assert(my_count == 0 || (off_data / my_count == INT_PER_ZGC));

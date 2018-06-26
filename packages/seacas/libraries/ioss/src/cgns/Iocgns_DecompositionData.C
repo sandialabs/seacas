@@ -320,9 +320,9 @@ namespace {
 
       if (rank == 0) {
         // Pack the data...
-        size_t off_name = 0;
-        size_t off_data = 0;
-        size_t off_cnt  = 0;
+        int off_name = 0;
+        int off_data = 0;
+        int off_cnt  = 0;
 
         for (auto &zone : zones) {
           for (auto &z : zone->m_zoneConnectivity) {
@@ -366,14 +366,14 @@ namespace {
 
       if (rank != 0) {
         // Unpack the data...
-        size_t off_name = 0;
-        size_t off_data = 0;
-        size_t off_cnt  = 0;
+        int off_name = 0;
+        int off_data = 0;
+        int off_cnt  = 0;
 
         for (size_t i = 0; i < zones.size(); i++) {
           auto zgc_cnt = zgc_size[i];
           auto zone    = zones[i];
-          for (size_t j = 0; j < zgc_cnt; j++) {
+          for (int j = 0; j < zgc_cnt; j++) {
             std::string name{&zgc_name[off_name]};
             off_name += BYTE_PER_NAME;
             std::string donor_name{&zgc_name[off_name]};
