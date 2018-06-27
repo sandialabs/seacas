@@ -821,7 +821,7 @@ namespace {
 
       for (int time_step = interface.time_step_start; time_step <= min_num_times;
            time_step += interface.time_step_increment) {
-        if (timeStepIsExcluded(time_step)) {
+        if (timeStepIsExcluded(time_step) || interface.ignore_steps) {
           continue;
         }
 
@@ -935,13 +935,15 @@ namespace {
       } // End of time step loop.
 
       // Make sure there is an operation to perform (compare times, variables, ...)
-      if ((min_num_times == 0 && interface.coord_tol.type == IGNORE) ||
-          (min_num_times > 0 && interface.time_tol.type == IGNORE &&
-           interface.glob_var_names.empty() && interface.node_var_names.empty() &&
-           interface.elmt_var_names.empty() && interface.elmt_att_names.empty() &&
-           interface.ns_var_names.empty() && interface.ss_var_names.empty())) {
-        DIFF_OUT("\nWARNING: No comparisons were performed during this execution.");
-        diff_flag = true;
+      if (!interface.ignore_steps) {
+        if ((min_num_times == 0 && interface.coord_tol.type == IGNORE) ||
+            (min_num_times > 0 && interface.time_tol.type == IGNORE &&
+             interface.glob_var_names.empty() && interface.node_var_names.empty() &&
+             interface.elmt_var_names.empty() && interface.elmt_att_names.empty() &&
+             interface.ns_var_names.empty() && interface.ss_var_names.empty())) {
+          DIFF_OUT("\nWARNING: No comparisons were performed during this execution.");
+          diff_flag = true;
+        }
       }
     }
 
@@ -954,6 +956,11 @@ namespace {
     }
     else if (diff_flag) {
       DIFF_OUT("\nexodiff: Files are different\n");
+    }
+    else if (interface.ignore_steps && (file1.Num_Times() != 0 || file2.Num_Times() != 0)) {
+      DIFF_OUT("\nexodiff: Files are the same, but all transient data was ignored due to "
+               "-ignore_steps option",
+               trmclr::green);
     }
     else if (file1.Num_Times() != file2.Num_Times()) {
       if ((file1.Num_Times() - interface.time_step_offset == file2.Num_Times()) ||
