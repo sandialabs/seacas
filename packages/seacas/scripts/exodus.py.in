@@ -1,6 +1,6 @@
 """
 
-exodus.py v 1.06 (beta) is a python wrapper of some of the exodus II library
+exodus.py v 1.07 (beta) is a python wrapper of some of the exodus II library
 
 Copyright(C) 2017 National Technology & Engineering Solutions of
 Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
@@ -38,10 +38,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.06 (beta-cmake)"
+EXODUS_PY_VERSION = "1.07 (beta-cmake)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.06 (beta-cmake), a python wrapper of some of the exodus II library.
+You are using exodus.py v 1.07 (beta-cmake), a python wrapper of some of the exodus II library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
