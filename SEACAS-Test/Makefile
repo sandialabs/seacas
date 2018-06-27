@@ -101,6 +101,7 @@ python: baseline.g
 	PYTHONPATH=../lib:$$PYTHONPATH python testExo.py
 	$(EXODIFF) -stat -pedantic baseline.g baseline_numpy_copy.e
 	$(EXODIFF) -stat -pedantic baseline.g baseline_ctype_copy.e
+	$(EXODIFF) -stat -pedantic baseline.g baseline_copy.e
 
 conjoin:
 	$(IO_SHELL) --in_type generated --split_times 1 10x10x10+times:2000+variables:nodal,3,element,6 conjoin/output.g
@@ -118,5 +119,5 @@ clean:
 	$(RM) -r mesh/ tmp.g3d
 	$(RM) *.decomp.out *.nem *.pex
 	$(RM) *.mat *.exo
-	$(RM) baseline_*_copy.e
+	$(RM) baseline_*_copy.e baseline_copy.e
 	$(RM) -r conjoin
