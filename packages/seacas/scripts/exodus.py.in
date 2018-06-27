@@ -3502,8 +3502,8 @@ class exodus:
 
   # --------------------------------------------------------------------
 
-  def __copy_file(self, other):
-    EXODUS_LIB.ex_copy(self.fileId, other.fileId)
+  def __copy_file(self, fileId):
+    EXODUS_LIB.ex_copy(self.fileId, fileId)
 
   # --------------------------------------------------------------------
 
