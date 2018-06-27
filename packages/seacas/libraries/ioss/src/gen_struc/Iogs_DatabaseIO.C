@@ -291,10 +291,10 @@ namespace Iogs {
     Ioss::Field::RoleType role = field.get_role();
     int                   zone = sb->get_property("zone").get_int();
 
-    size_t num_to_get = field.verify(data_size);
+    int64_t num_to_get = field.verify(data_size);
 
-    size_t rmin[3] = {0, 0, 0};
-    size_t rmax[3] = {0, 0, 0};
+    int64_t rmin[3] = {0, 0, 0};
+    int64_t rmax[3] = {0, 0, 0};
 
     bool cell_field = is_cell_field(field);
     if (cell_field) {
