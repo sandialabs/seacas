@@ -413,7 +413,7 @@ class exodus:
     self.__copy_file(fileId)
     EXODUS_LIB.ex_close(self.fileId)
 
-    return exodus(fileName)
+    return exodus(fileName, "a")
 
   #
   # general info
