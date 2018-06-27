@@ -403,6 +403,8 @@ void SystemInterface::enroll_options()
                   "Don't compare element attribute values.", nullptr);
   options_.enroll("ignore_sideset_df", GetLongOption::NoValue,
                   "Don't compare sideset distribution factors.", nullptr);
+  options_.enroll("ignore_steps", GetLongOption::NoValue,
+                  "Don't compare any transient data; compare mesh only.", nullptr);
   options_.enroll("64-bit", GetLongOption::NoValue,
                   "True if forcing the use of 64-bit integers for the output file", nullptr);
   options_.enroll("nosymmetric_name_check", GetLongOption::NoValue,
@@ -797,6 +799,9 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
   if (options_.retrieve("ignore_dups") != nullptr) {
     ignore_dups = true;
+  }
+  if (options_.retrieve("ignore_steps") != nullptr) {
+    ignore_steps = true;
   }
   if (options_.retrieve("64-bit") != nullptr) {
     ints_64_bits = true;

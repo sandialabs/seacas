@@ -104,7 +104,7 @@ template <typename INT> bool Check_Global(ExoII_Read<INT> &file1, ExoII_Read<INT
       is_same = false;
     }
   }
-  if (file1.Num_Times() != file2.Num_Times() && !interface.quiet_flag) {
+  if (file1.Num_Times() != file2.Num_Times() && !interface.quiet_flag && !interface.ignore_steps) {
     ERROR(".. First file has " << file1.Num_Times() << " result times while the second file has "
                                << file2.Num_Times() << ".\n");
   }
