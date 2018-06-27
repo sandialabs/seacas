@@ -65,6 +65,7 @@ for array_type in array_types:
 e = exodus.exodus(database_path)
 new_database_path = database_path[:-2] + '_copy.e'
 exo_copy = e.copy(new_database_path)
+exo_copy.put_time(1,0.0)
 
 print "Exodus file has title:", exo_copy.title()
 print "Exodus file has", exo_copy.num_dimensions(), "dimensions"
