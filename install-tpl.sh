@@ -18,13 +18,13 @@ CGNS=${CGNS:-ON}
 MATIO=${MATIO:-ON}
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
+H5VERSION=${H5VERSION:-V110}
 
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
 VERBOSE=${VERBOSE:-1}
 
 pwd
-
 export ACCESS=`pwd`
 
 # Text color variables
@@ -60,6 +60,33 @@ then
     fi
 else
     LD_EXT="a"
+fi
+
+if [ $# -gt 0 ]; then
+    if [ "$1" == "--help" ]; then
+	echo "${txtcyn}Environment Variables used in the script and their default values:"
+	echo ""
+	echo "   ACCESS       = ${ACCESS} (Automatically set to current directory)"
+	echo "   OS           = ${OS} (Automatically set)"
+	echo "   COMPILER     = ${COMPILER}"
+	echo ""
+	echo "   DOWNLOAD     = ${DOWNLOAD}"
+	echo "   BUILD        = ${BUILD}"
+	echo "   FORCE        = ${FORCE}"
+	echo "   SHARED       = ${SHARED}"
+	echo ""
+	echo "   H5VERSION    = ${H5VERSION}"
+	echo "   CGNS         = ${CGNS}"
+	echo "   MATIO        = ${MATIO}"
+	echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
+	echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
+	echo ""
+	echo "   SUDO         = ${SUDO}"
+	echo "   JOBS         = ${JOBS}"
+	echo "   VERBOSE      = ${VERBOSE}"
+	echo "${txtrst}"
+	exit 0
+    fi
 fi
 
 if [ "$NEEDS_ZLIB" == "YES" ]
@@ -113,7 +140,6 @@ fi
 if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
-    H5VERSION=${H5VERSION:-V110}
     if [ "${H5VERSION}" == "V18" ]
     then
 	hdf_version="1.8.20"
