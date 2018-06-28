@@ -61,6 +61,7 @@ var classIocgns_1_1ParallelDatabaseIO =
     [ "write_meta_data", "classIocgns_1_1ParallelDatabaseIO.html#a9d91edcb11e439ea07b5bcfa8e5b99ac", null ],
     [ "write_results_meta_data", "classIocgns_1_1ParallelDatabaseIO.html#ab9dcf886ca94e6ec0aa428206a65c781", null ],
     [ "cgnsFilePtr", "classIocgns_1_1ParallelDatabaseIO.html#ab90ab4d22f0d490bf46e6f3d9ce32e1f", null ],
+    [ "cgnsSerFilePtr", "classIocgns_1_1ParallelDatabaseIO.html#a6b18fa048c96dc8e34ea6324c192928c", null ],
     [ "decomp", "classIocgns_1_1ParallelDatabaseIO.html#a79b280acd4bdf71ffea61a670ed5d52a", null ],
     [ "m_bcOffset", "classIocgns_1_1ParallelDatabaseIO.html#af1ae3c200fb1a93c114f45904da0a6ee", null ],
     [ "m_currentCellCenterSolutionIndex", "classIocgns_1_1ParallelDatabaseIO.html#aaf55546e6d7eebc24ca90bd7abeff545", null ],

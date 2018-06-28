@@ -135,7 +135,7 @@ public:
   bool ignore_nans{false};                    // Don't check for NaNs
   bool ignore_dups{false}; // If two elements/nodes in same location in map or partial map
                            // case, just return first match instead of aborting.
-
+  bool ignore_steps{false};
   bool ignore_attributes{false}; // Don't compare attributes...
   bool ignore_sideset_df{false}; // Don't compare sideset df
 

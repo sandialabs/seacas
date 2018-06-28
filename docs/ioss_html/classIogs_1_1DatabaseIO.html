@@ -293,8 +293,8 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a4606760d8f6f5d7f58b0d64849907761"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a707a15c3e6efde35bc4eb23268f67a05"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIogs_1_1DatabaseIO.html#a707a15c3e6efde35bc4eb23268f67a05">get_nodeblocks</a> ()</td></tr>
 <tr class="separator:a707a15c3e6efde35bc4eb23268f67a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cd7932e5317c4272a3958c8ea6d576d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIogs_1_1DatabaseIO.html#a2cd7932e5317c4272a3958c8ea6d576d">get_elemblocks</a> ()</td></tr>
-<tr class="separator:a2cd7932e5317c4272a3958c8ea6d576d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a803a900c3c11114a952ae457c2adcdec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIogs_1_1DatabaseIO.html#a803a900c3c11114a952ae457c2adcdec">get_structured_blocks</a> ()</td></tr>
+<tr class="separator:a803a900c3c11114a952ae457c2adcdec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2701ea0a86b164f64bf9e2d4962ab26c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIogs_1_1DatabaseIO.html#a2701ea0a86b164f64bf9e2d4962ab26c">get_nodesets</a> ()</td></tr>
 <tr class="separator:a2701ea0a86b164f64bf9e2d4962ab26c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae049afb51342092d22d0211d5f1c9827"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIogs_1_1DatabaseIO.html#ae049afb51342092d22d0211d5f1c9827">get_sidesets</a> ()</td></tr>
@@ -778,31 +778,6 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a2cd7932e5317c4272a3958c8ea6d576d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2cd7932e5317c4272a3958c8ea6d576d">&#9670;&nbsp;</a></span>get_elemblocks()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Iogs::DatabaseIO::get_elemblocks </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a7705b88d8fd26d250d01f5bcd2cdb702"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7705b88d8fd26d250d01f5bcd2cdb702">&#9670;&nbsp;</a></span>get_element_map()</h2>
 
@@ -1069,7 +1044,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1119,7 +1094,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1652,6 +1627,31 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#aea27ea271bcde188848364ccc0bb37e0">Ioss::DatabaseIO</a>.</p>
+
+</div>
+</div>
+<a id="a803a900c3c11114a952ae457c2adcdec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a803a900c3c11114a952ae457c2adcdec">&#9670;&nbsp;</a></span>get_structured_blocks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iogs::DatabaseIO::get_structured_blocks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

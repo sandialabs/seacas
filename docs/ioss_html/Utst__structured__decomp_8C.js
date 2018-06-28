@@ -2,6 +2,7 @@ var Utst__structured__decomp_8C =
 [
     [ "CATCH_CONFIG_MAIN", "Utst__structured__decomp_8C.html#a656eb5868e824d59f489f910db438420", null ],
     [ "check_split_assign", "Utst__structured__decomp_8C.html#ae6b2b0fb1588099481ff4e550bfc2552", null ],
+    [ "cleanup", "Utst__structured__decomp_8C.html#ae24f8882fe4f52b332f5e9287530d543", null ],
     [ "generate_guid", "Utst__structured__decomp_8C.html#a3b567f5a3bae047251df70710f33084f", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ae227bd353365db005323f627c50a7796", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ab714d768c6469287d172c18041cd1fd0", null ],
