@@ -607,7 +607,13 @@ namespace Ioss {
     }
 
     if (current_state == STATE_DEFINE_MODEL) {
-      if (!is_input_or_appending_output(get_database())) {
+      if (is_input_or_appending_output(get_database())) {
+        auto sortName = [](const Ioss::EntityBlock *b1, const Ioss::EntityBlock *b2) {
+          return (b1->name() < b2->name());
+        };
+        std::sort(structuredBlocks.begin(), structuredBlocks.end(), sortName);
+      }
+      else {
         // Sort the element blocks based on the idOffset field, followed by
         // name...
         auto lessOffset = [](const Ioss::EntityBlock *b1, const Ioss::EntityBlock *b2) {

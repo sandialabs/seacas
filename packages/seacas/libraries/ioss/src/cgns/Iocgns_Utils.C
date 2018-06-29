@@ -710,11 +710,17 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     // The bc.m_ownerRange argument needs to be the union of the size on all processors
     // Instead of requiring that of the caller, do the union in this routine.
     // TODO: Calculate it outside of the loop...
+    // Need to handle possible range == 0,0,0.  Only affects the beg data...
     std::vector<cgsize_t> bc_range(sb->m_boundaryConditions.size() * 6);
     size_t                idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
       for (size_t i = 0; i < 3; i++) {
-        bc_range[idx++] = -bc.m_rangeBeg[i];
+	if (bc.m_rangeBeg[i] == 0) {
+	  bc_range[idx++] = std::numeric_limits<int>::min();
+	}
+	else {
+	  bc_range[idx++] = -bc.m_rangeBeg[i];
+	}
       }
       for (size_t i = 0; i < 3; i++) {
         bc_range[idx++] = bc.m_rangeEnd[i];
@@ -1234,8 +1240,12 @@ Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_proce
 }
 
 void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,
-                                                       Ioss::StructuredBlock *block)
+                                                       Ioss::StructuredBlock *block,
+						       bool is_parallel_io)
 {
+  // `is_parallel_io` is true if all processors reading single file.
+  // `is_parallel_io` is false if serial, or each processor reading its own file (fpp)
+
   int base = block->get_property("base").get_int();
   int zone = block->get_property("zone").get_int();
 
@@ -1249,21 +1259,23 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
   int num_bcs = 0;
   int rank    = block->get_database()->util().parallel_rank();
-  if (rank == 0) {
+  if (!is_parallel_io || rank == 0) {
     CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
   }
 
 #ifdef SEACAS_HAVE_MPI
   int proc = block->get_database()->util().parallel_size();
-  if (proc > 1) {
-    MPI_Bcast(&num_bcs, 1, MPI_INT, 0, block->get_database()->util().communicator());
+  if (is_parallel_io) {
+    if (proc > 1) {
+      MPI_Bcast(&num_bcs, 1, MPI_INT, 0, block->get_database()->util().communicator());
+    }
   }
 #endif
 
   std::vector<int>  bc_data(7 * num_bcs);
   std::vector<char> bc_names(2 * (CGNS_MAX_NAME_LENGTH + 1) * num_bcs);
 
-  if (rank == 0) {
+  if (rank == 0 || !is_parallel_io) {
     int      off_data = 0;
     int      off_name = 0;
     cgsize_t range[6];
@@ -1311,7 +1323,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
 #ifdef SEACAS_HAVE_MPI
   // If parallel, broadcast data to other processors...
-  if (proc > 1) {
+  if (proc > 1 && is_parallel_io) {
     MPI_Bcast(bc_names.data(), (int)bc_names.size(), MPI_BYTE, 0,
               block->get_database()->util().communicator());
     MPI_Bcast(bc_data.data(), (int)bc_data.size(), MPI_INT, 0,
