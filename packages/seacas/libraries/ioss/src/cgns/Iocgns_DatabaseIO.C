@@ -92,6 +92,14 @@ extern int pcg_mpi_initialized;
 #endif
 
 namespace {
+  template <typename T>
+  void pack(int &idx, std::vector<int> &pack, T* from, int count) 
+  {
+    for (int i=0; i < count; i++) {
+      pack[idx++] = from[i];
+    }
+  }
+
   int find_face(const std::array<cgsize_t, 6> &range)
   {
     // 0,1,2 == min x,y,z; 3,4,5 == Max x,y,z
@@ -296,8 +304,8 @@ namespace Iocgns {
 
     // First, get basenames of all zones on all processors so we can
     // work with consistent set...
-    size_t id = 0;
-    size_t in = 0;
+    int id = 0;
+    int in = 0;
     const int INT_PER_ZONE = 16;
     std::vector<int>  zone_data(num_zones*INT_PER_ZONE);
     std::vector<char> zone_names(num_zones*(CGNS_MAX_NAME_LENGTH+1));
@@ -331,9 +339,7 @@ namespace Iocgns {
       assert(proc == myProcessor);
 
       zone_data[id++] = proc;
-      zone_data[id++] = size[3];
-      zone_data[id++] = size[4];
-      zone_data[id++] = size[5];
+      pack(id, zone_data, &size[3], 3); // Packing 3,4,5
       strncpy(&zone_names[in], zone_name.c_str(), CGNS_MAX_NAME_LENGTH);
       in += CGNS_MAX_NAME_LENGTH+1;
       zone_id_map[zone_name] = zone;
@@ -369,12 +375,7 @@ namespace Iocgns {
 	  adjacency[face] = donorname_proc.second;
 	}
       }
-      zone_data[id++] = adjacency[0];
-      zone_data[id++] = adjacency[1];
-      zone_data[id++] = adjacency[2];
-      zone_data[id++] = adjacency[3];
-      zone_data[id++] = adjacency[4];
-      zone_data[id++] = adjacency[5];
+      pack(id, zone_data, adjacency, 6);
 
       int num_bcs = 0;
       CGCHECK(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
@@ -419,15 +420,8 @@ namespace Iocgns {
 	  bc[face] = bc_id;
 	}
       }
-      zone_data[id++] = bc[0];
-      zone_data[id++] = bc[1];
-      zone_data[id++] = bc[2];
-      zone_data[id++] = bc[3];
-      zone_data[id++] = bc[4];
-      zone_data[id++] = bc[5];
-
+      pack(id, zone_data, bc.data(), 6);
       assert(id % INT_PER_ZONE == 0);
-
     }
 
     // Now gather all information to processor 0
@@ -544,21 +538,10 @@ namespace Iocgns {
 	    in += CGNS_MAX_NAME_LENGTH+1;
 	  }
 	  all_data[id++] = block.proc;
-	  all_data[id++] = block.range[0];
-	  all_data[id++] = block.range[1];
-	  all_data[id++] = block.range[2];
-	  all_data[id++] = block.glob_range[0];
-	  all_data[id++] = block.glob_range[1];
-	  all_data[id++] = block.glob_range[2];
-	  all_data[id++] = block.offset[0];
-	  all_data[id++] = block.offset[1];
-	  all_data[id++] = block.offset[2];
-	  all_data[id++] = block.bc[0];
-	  all_data[id++] = block.bc[1];
-	  all_data[id++] = block.bc[2];
-	  all_data[id++] = block.bc[3];
-	  all_data[id++] = block.bc[4];
-	  all_data[id++] = block.bc[5];
+	  pack(id, all_data, block.range.data(), 3);
+	  pack(id, all_data, block.glob_range.data(), 3);
+	  pack(id, all_data, block.offset.data(), 3);
+	  pack(id, all_data, block.bc.data(), 6);
 	}
       }
     }
