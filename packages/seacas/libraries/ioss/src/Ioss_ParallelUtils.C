@@ -100,7 +100,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &
 #ifdef SEACAS_HAVE_MPI
   char *            result_string = nullptr;
   std::vector<char> broadcast_string;
-  ;
+
   int string_length = 0;
 
   int rank = parallel_rank();

@@ -547,7 +547,7 @@ namespace Iocgns {
     const auto &sbs = get_region()->get_structured_blocks();
     for (const auto &block : sbs) {
       // Handle boundary conditions...
-      Utils::add_structured_boundary_conditions(cgnsSerFilePtr, block);
+      Utils::add_structured_boundary_conditions(cgnsSerFilePtr, block, true);
     }
 
     size_t node_count = finalize_structured_blocks();

@@ -182,7 +182,7 @@ namespace Iocgns {
     static CG_ElementType_t map_topology_to_cgns(const std::string &name);
     static std::string      map_cgns_to_topology_type(CG_ElementType_t type);
     static void             add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db);
-    static void add_structured_boundary_conditions(int cgnsFilePtr, Ioss::StructuredBlock *block);
+    static void add_structured_boundary_conditions(int cgnsFilePtr, Ioss::StructuredBlock *block, bool is_parallel_io);
     static void finalize_database(int cgnsFilePtr, const std::vector<double> &timesteps,
                                   Ioss::Region *region, int myProcessor);
     static int get_step_times(int cgnsFilePtr, std::vector<double> &timesteps, Ioss::Region *region,
