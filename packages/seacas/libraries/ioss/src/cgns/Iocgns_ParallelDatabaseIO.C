@@ -210,7 +210,7 @@ namespace Iocgns {
       CGCHECK(cgp_mpi_comm(util().communicator()));
 #else
       // Older versions of cgp_mpi_comm returned an internal NO_ERROR
-      // value which is equal to -1.  
+      // value which is equal to -1.
       cgp_mpi_comm(util().communicator());
 #endif
       CGCHECK(cgp_pio_mode(CGP_COLLECTIVE));
