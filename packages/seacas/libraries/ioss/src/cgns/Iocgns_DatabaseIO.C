@@ -473,12 +473,73 @@ namespace Iocgns {
       for (size_t i=0; i < blocks.size(); i++) {
 	auto &b = blocks[i];
 	if (b.split()) {
-	  assert(1 == 0 && "Not implemented yet.");
 	  // The blocks it is split with should be adjacent in list.
+	  // Need a quick map from processor to block, so build that now...
+	  std::map<int, int> proc_block_map;
+	  size_t j=i+1;
+	  for (; j < blocks.size(); j++) {
+	    if (blocks[j].name != b.name) {
+	      break;
+	    }
+	    proc_block_map[blocks[j].proc] = j;
+	  }
+	  // Get sum of ni, nj, nk for all blocks in the range -- this will be the 
+	  // glob_ni, glob_nj, glob_nk.
+	  auto bbeg = i;
+	  auto bend = j;
+	  b.glob_range = b.range;
+	  for (j = bbeg+1; j < bend; j++) {
+	    if (blocks[j].adjacency[0] >= 0 || blocks[j].adjacency[3] >= 0) {
+	      b.glob_range[0] += blocks[j].range[0];
+	    }
+	    if (blocks[j].adjacency[1] >= 0 || blocks[j].adjacency[4] >= 0) {
+	      b.glob_range[1] += blocks[j].range[1];
+	    }
+	    if (blocks[j].adjacency[2] >= 0 || blocks[j].adjacency[5] >= 0) {
+	      b.glob_range[2] += blocks[j].range[2];
+	    }
+	  }
+	  // Now set range on all blocks...
+	  for (j = bbeg+1; j < bend; j++) {
+	    blocks[j].glob_range = b.glob_range;
+	  }
+	  
+	  // Iterate to get correct offset for these blocks on all processors...
+	  for (size_t p = 0; p < (bend - bbeg); p++) {
+	    for (j = bbeg; j < bend; j++) {
+	      auto &block = blocks[j];
+	      // See which blocks are below/left/under this block which means
+	      // that this blocks offset is affected.
+	      for (int comp = 0; comp < 3; comp++) {
+		if (block.adjacency[comp] >= 0) {
+		  auto adj_block_idx = proc_block_map[block.adjacency[comp]];
+		  block.offset[comp] = blocks[adj_block_idx].offset[comp] + blocks[adj_block_idx].range[comp];
+		}
+	      }
+	    }
+	  } 
+	  std::cerr << "Range of blocks for " << b.name << " is " << i << " to " << j-1 << " Global I,J,K = " 
+		    << b.glob_range[0] << " " << b.glob_range[1] << " " << b.glob_range[2] << "\n";
+	  // All processors need to know about it...
+	  for (int p = 0; p < proc_count; p++) {
+	    auto iter = proc_block_map.find(p);
+	    if (iter == proc_block_map.end()) {
+	      SBlock newb = b;
+	      newb.proc = p;
+	      newb.range = {0,0,0};
+	      resolved_blocks.push_back(newb);
+	    }
+	    else {
+	      auto idx = (*iter).second;
+	      SBlock newb = blocks[idx];
+	      resolved_blocks.push_back(newb);
+	    }
+	  }
+	  i = bend - 1;
 	}
 	else {
 	  // If not split, then global size = local size and offset = 0
-	  b.glob_range = {b.range[0], b.range[1], b.range[2]};
+	  b.glob_range = b.range;
 
 	  // All processors need to know about it...
 	  for (int p = 0; p < proc_count; p++) {
@@ -558,7 +619,7 @@ namespace Iocgns {
     for (int i=0; i < tot_zones; i++) {
       std::string zone_name(&all_names[in]);
       in += CGNS_MAX_NAME_LENGTH+1;
-      int proc = zone_data[id++];
+      zone_data[id++]; // proc field. Not currently used.
       Ioss::IJK_t local_ijk{{zone_data[id++], zone_data[id++], zone_data[id++]}};
       Ioss::IJK_t global_ijk{{zone_data[id++], zone_data[id++], zone_data[id++]}};
       Ioss::IJK_t offset_ijk{{zone_data[id++], zone_data[id++], zone_data[id++]}};
@@ -619,6 +680,30 @@ namespace Iocgns {
 	}
 	// Handle boundary conditions...
 	Utils::add_structured_boundary_conditions(cgnsFilePtr, block, false);
+
+	// Enusre that all BCs that should be applied have been applied...
+	for (int ii=0; ii < 6; ii++) {
+	  if (bc[ii] >  0) {
+	    assert(bc[ii] -1 < (int)sidesets.size());
+	    auto sset = sidesets[bc[ii] - 1];
+	    assert(sset != nullptr);
+	    std::string name = sset->name() + "/" + block->name();
+	    if (sset->get_side_block(name) == nullptr) {
+	      Ioss::IJK_t empty_range{{0, 0, 0}};
+
+	      auto        sbc  = Ioss::BoundaryCondition(sset->name().c_str(), sset->name().c_str(), empty_range, empty_range);
+	      block->m_boundaryConditions.push_back(sbc);
+	      auto sb = new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,0);
+	      sb->set_parent_block(block);
+	      sset->add(sb);
+	      sb->property_add(Ioss::Property("base", base));
+	      sb->property_add(Ioss::Property("zone", zone));
+	      sb->property_add(Ioss::Property("section", bc[ii]+1));
+	      sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
+	      sb->property_add(Ioss::Property("guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
+	    }
+	  }
+	}
       }
       else {
 	// Zone does not exist on the file associated with this processor.
@@ -1469,9 +1554,9 @@ namespace Iocgns {
     if (cell_field) {
       assert(num_to_get == sb->get_property("cell_count").get_int());
       if (num_to_get > 0) {
-        rmin[0] = sb->get_property("offset_i").get_int() + 1;
-        rmin[1] = sb->get_property("offset_j").get_int() + 1;
-        rmin[2] = sb->get_property("offset_k").get_int() + 1;
+        rmin[0] = 1;
+        rmin[1] = 1;
+        rmin[2] = 1;
 
         rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
         rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
@@ -1482,9 +1567,9 @@ namespace Iocgns {
       // cell nodal field.
       assert(num_to_get == sb->get_property("node_count").get_int());
       if (num_to_get > 0) {
-        rmin[0] = sb->get_property("offset_i").get_int() + 1;
-        rmin[1] = sb->get_property("offset_j").get_int() + 1;
-        rmin[2] = sb->get_property("offset_k").get_int() + 1;
+        rmin[0] = 1;
+        rmin[1] = 1;
+        rmin[2] = 1;
 
         rmax[0] = rmin[0] + sb->get_property("ni").get_int();
         rmax[1] = rmin[1] + sb->get_property("nj").get_int();
