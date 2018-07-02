@@ -715,12 +715,12 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     size_t                idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
       for (size_t i = 0; i < 3; i++) {
-	if (bc.m_rangeBeg[i] == 0) {
-	  bc_range[idx++] = std::numeric_limits<int>::min();
-	}
-	else {
-	  bc_range[idx++] = -bc.m_rangeBeg[i];
-	}
+        if (bc.m_rangeBeg[i] == 0) {
+          bc_range[idx++] = std::numeric_limits<int>::min();
+        }
+        else {
+          bc_range[idx++] = -bc.m_rangeBeg[i];
+        }
       }
       for (size_t i = 0; i < 3; i++) {
         bc_range[idx++] = bc.m_rangeEnd[i];
@@ -1241,7 +1241,7 @@ Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_proce
 
 void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,
                                                        Ioss::StructuredBlock *block,
-						       bool is_parallel_io)
+                                                       bool                   is_parallel_io)
 {
   // `is_parallel_io` is true if all processors reading single file.
   // `is_parallel_io` is false if serial, or each processor reading its own file (fpp)

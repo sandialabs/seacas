@@ -289,7 +289,7 @@ namespace {
             zone->m_zoneConnectivity.emplace_back(name, zone_id, donor_name, donor_id, transform,
                                                   range_beg, range_end, donor_beg, donor_end);
           }
-	  assert((int)zone->m_zoneConnectivity.size() == zgc_cnt);
+          assert((int)zone->m_zoneConnectivity.size() == zgc_cnt);
         }
         assert(off_cnt == count);
         assert(count == 0 || (off_data % count == 0));
