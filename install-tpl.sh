@@ -191,7 +191,7 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PNetCDF${txtrst}"
-        pnet_version="1.9.0"
+        pnet_version="1.10.0"
 
         cd $ACCESS
         cd TPL/pnetcdf
