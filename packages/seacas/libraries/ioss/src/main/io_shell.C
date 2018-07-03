@@ -433,18 +433,18 @@ namespace {
       properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interface.shuffle)));
     }
 
-    if (interface.compose_output != "none") {
+    if (interface.compose_output == "external") {
+      properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
+      properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
+    }
+    else if (interface.compose_output != "none") {
       properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
       properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
       if (interface.compose_output != "default") {
         properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
       }
     }
-    else {
-      properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
-      properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
-    }
-
+    
     if (interface.netcdf4) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
     }
