@@ -440,6 +440,10 @@ namespace {
         properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
       }
     }
+    else {
+      properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
+      properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
+    }
 
     if (interface.netcdf4) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));

@@ -121,7 +121,7 @@ void IOShell::Interface::enroll_options()
   options_.enroll(
       "compose", Ioss::GetLongOption::MandatoryValue,
       "Specify the parallel-io method to be used to output a single file in a parallel run. "
-      "Options are default, mpiio, mpiposix, pnetcdf",
+      "Options are default, mpiio, mpiposix, pnetcdf, none",
       nullptr);
 
   options_.enroll(
