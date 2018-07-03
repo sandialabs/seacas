@@ -740,11 +740,13 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
       int bc_idx = 0;
-      CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
-                          CG_PointRange, 2, &bc_range[idx], &bc_idx));
-      CGERR(cg_goto(file_ptr, base, name.c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0, "end"));
-      CGERR(cg_famname_write(bc.m_famName.c_str()));
-      CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
+      if (is_parallel_io || (bc_range[idx+3] > 0 && bc_range[idx+4] > 0 && bc_range[idx+5] > 0)) {
+	CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
+			    CG_PointRange, 2, &bc_range[idx], &bc_idx));
+	CGERR(cg_goto(file_ptr, base, name.c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0, "end"));
+	CGERR(cg_famname_write(bc.m_famName.c_str()));
+	CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
+      }
       idx += 6;
     }
 
