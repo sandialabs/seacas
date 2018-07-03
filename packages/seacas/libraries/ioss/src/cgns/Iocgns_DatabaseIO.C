@@ -472,6 +472,7 @@ namespace Iocgns {
           // The blocks it is split with should be adjacent in list.
           // Need a quick map from processor to block, so build that now...
           std::map<int, int> proc_block_map;
+	  proc_block_map[b.proc] = i;
           size_t             j = i + 1;
           for (; j < blocks.size(); j++) {
             if (blocks[j].name != b.name) {
