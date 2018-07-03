@@ -674,7 +674,8 @@ namespace Iocgns {
           Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
           Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
 
-          block->m_zoneConnectivity.emplace_back(connectname, zone, donor_name, donor_zone,
+	  auto con_name = decompose_name(connectname, isParallel).first;
+          block->m_zoneConnectivity.emplace_back(con_name, zone, donor_name, donor_zone,
                                                  transform, range_beg, range_end, donor_beg,
                                                  donor_end);
 
