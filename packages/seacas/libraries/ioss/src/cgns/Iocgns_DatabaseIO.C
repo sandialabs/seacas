@@ -99,6 +99,13 @@ namespace {
     }
   }
 
+  template <typename T> void unpack(int &idx, T *pack, T *to, int count)
+  {
+    for (int i = 0; i < count; i++) {
+      to[i] = pack[idx++];
+    }
+  }
+
   int find_face(const std::array<cgsize_t, 6> &range)
   {
     // 0,1,2 == min x,y,z; 3,4,5 == Max x,y,z
@@ -135,43 +142,6 @@ namespace {
     return face;
   }
 
-  struct SBlock
-  {
-    SBlock(char *names, int *data)
-    {
-      name         = std::string{names};
-      int idx      = 0;
-      proc         = data[idx++];
-      range[0]     = data[idx++];
-      range[1]     = data[idx++];
-      range[2]     = data[idx++];
-      adjacency[0] = data[idx++];
-      adjacency[1] = data[idx++];
-      adjacency[2] = data[idx++];
-      adjacency[3] = data[idx++];
-      adjacency[4] = data[idx++];
-      adjacency[5] = data[idx++];
-      bc[0]        = data[idx++];
-      bc[1]        = data[idx++];
-      bc[2]        = data[idx++];
-      bc[3]        = data[idx++];
-      bc[4]        = data[idx++];
-      bc[5]        = data[idx++];
-    }
-    bool split() const
-    {
-      return adjacency[0] != -1 || adjacency[1] != -1 || adjacency[2] != -1 || adjacency[3] != -1 ||
-             adjacency[4] != -1 || adjacency[5] != -1;
-    }
-    std::string        name{};
-    int                proc{-1};
-    std::array<int, 3> range{{0, 0, 0}};
-    std::array<int, 6> adjacency{{-1, -1, -1, -1, -1, -1}};
-    std::array<int, 6> bc{{-1, -1, -1, -1, -1, -1}};
-    std::array<int, 3> glob_range{{0, 0, 0}};
-    std::array<int, 3> offset{{0, 0, 0}};
-  };
-
   std::pair<std::string, int> decompose_name(const std::string &name, bool is_parallel)
   {
     int         proc = 0;
@@ -195,6 +165,137 @@ namespace {
     }
     return std::make_pair(zname, proc);
   }
+
+  std::array<int, 6> generate_bc_mapping(int cgnsFilePtr, int base, int zone, const std::map<std::string, int> &ss_id_map, int myProcessor)
+  {
+    int num_bcs = 0;
+    CGCHECK(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
+    std::array<cgsize_t, 6> range;
+
+    std::array<int, 6> bc{-1, -1, -1, -1, -1, -1};
+    for (int ibc = 0; ibc < num_bcs; ibc++) {
+      char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
+      char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
+      CG_BCType_t       bocotype;
+      CG_PointSetType_t ptset_type;
+      cgsize_t          npnts;
+      cgsize_t          NormalListSize;
+      CG_DataType_t     NormalDataType;
+      int               ndataset;
+      
+      // All we really want from this is 'boco_name'
+      CGCHECK(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
+			   &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+      
+      if (bocotype == CG_FamilySpecified) {
+	// Get family name associated with this boco_name
+	CGCHECK(
+		cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
+	CGCHECK(cg_famname_read(fam_name));
+      }
+      else {
+	strncpy(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
+      }
+      
+      CGCHECK(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range.data(), nullptr));
+      
+      // See if there is a sideset (bc) with this name...
+      int  bc_id = -1;
+      auto iter  = ss_id_map.find(fam_name);
+      if (iter != ss_id_map.end()) {
+	bc_id = (*iter).second;
+	
+	// Exists, so see what face it is applied to...
+	int face = find_face(range); // 0..5
+	assert(bc[face] == -1);
+	bc[face] = bc_id;
+      }
+    }
+    return bc;
+  }
+
+  std::array<int, 6> generate_inter_proc_adjacency(int cgnsFilePtr, int base, int zone, int myProcessor, const std::string &zone_name)
+    {
+      // Handle zone-grid-connectivity... At this point we only want
+      // the zgc that are inter-proc between the same "base zone".
+      // That is, the zgc which are result of parallel decomp.
+
+      // If adjacency[i] != -1, then it contains the processor with
+      // which this face is shared. 0,1,2 == min x,y,z; 3,4,5 = MAX X,
+      // Y, Z
+      std::array<int, 6> adjacency{-1, -1, -1, -1, -1, -1};
+      int nconn        = 0;
+      CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
+      for (int i = 0; i < nconn; i++) {
+        char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
+        char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
+        std::array<cgsize_t, 6> range;
+        std::array<cgsize_t, 6> donor_range;
+        Ioss::IJK_t             transform;
+
+        CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
+                             donor_range.data(), transform.data()));
+
+        auto        donorname_proc = decompose_name(donorname, true);
+        std::string donor_name     = donorname_proc.first;
+
+        if (donor_name == zone_name) {
+          // Determine which face of the zone on this processor is
+          // shared with the other processor...
+          int face = find_face(range);
+          assert(adjacency[face] == -1);
+          adjacency[face] = donorname_proc.second;
+        }
+      }
+      return adjacency;
+    }
+
+  void add_empty_side_block(Ioss::SideSet *sset, Ioss::StructuredBlock *block, int base, int zone, int section)
+  {
+    assert(sset != nullptr);
+
+    Ioss::IJK_t empty_range{{0, 0, 0}};
+
+    auto sbc = Ioss::BoundaryCondition("", sset->name().c_str(), empty_range, empty_range);
+    std::string name = sset->name() + "/" + block->name();
+
+    block->m_boundaryConditions.push_back(sbc);
+    auto sb = new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name,
+                                          Ioss::Hex8::name, 0);
+    sb->set_parent_block(block);
+    sset->add(sb);
+    sb->property_add(Ioss::Property("base", base));
+    sb->property_add(Ioss::Property("zone", zone));
+    sb->property_add(Ioss::Property("section", section));
+    sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
+    sb->property_add(Ioss::Property("guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
+  }
+
+  struct SBlock
+  {
+    SBlock(char *names, int *data)
+    {
+      name         = std::string{names};
+      int idx      = 0;
+      proc         = data[idx++];
+      unpack(idx, data, range.data(), 3);
+      unpack(idx, data, adjacency.data(), 6);
+      unpack(idx, data, bc.data(), 6);
+    }
+    bool split() const
+    {
+      return adjacency[0] != -1 || adjacency[1] != -1 || adjacency[2] != -1 || adjacency[3] != -1 ||
+             adjacency[4] != -1 || adjacency[5] != -1;
+    }
+    std::string        name{};
+    int                proc{-1};
+    std::array<int, 3> range{{0, 0, 0}};
+    std::array<int, 6> adjacency{{-1, -1, -1, -1, -1, -1}};
+    std::array<int, 6> bc{{-1, -1, -1, -1, -1, -1}};
+    std::array<int, 3> glob_range{{0, 0, 0}};
+    std::array<int, 3> offset{{0, 0, 0}};
+  };
+
 } // namespace
 
 namespace Iocgns {
@@ -364,109 +465,20 @@ namespace Iocgns {
       // If adjacency[i] != -1, then it contains the processor with
       // which this face is shared. 0,1,2 == min x,y,z; 3,4,5 = MAX X,
       // Y, Z
-      int adjacency[6] = {-1, -1, -1, -1, -1, -1};
-      int nconn        = 0;
-      CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
-      for (int i = 0; i < nconn; i++) {
-        char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
-        char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
-        std::array<cgsize_t, 6> range;
-        std::array<cgsize_t, 6> donor_range;
-        Ioss::IJK_t             transform;
+      std::array<int, 6> adjacency = generate_inter_proc_adjacency(cgnsFilePtr, base, zone, myProcessor, zone_name);
+      pack(id, zone_data, adjacency.data(), 6);
 
-        CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
-                             donor_range.data(), transform.data()));
-
-        auto        donorname_proc = decompose_name(donorname, isParallel);
-        std::string donor_name     = donorname_proc.first;
-
-        if (donor_name == zone_name) {
-          // Determine which face of the zone on this processor is
-          // shared with the other processor...
-          int face = find_face(range);
-          assert(adjacency[face] == -1);
-          adjacency[face] = donorname_proc.second;
-        }
-      }
-      pack(id, zone_data, adjacency, 6);
-
-      int num_bcs = 0;
-      CGCHECK(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
-      std::array<cgsize_t, 6> range;
-
-      std::array<int, 6> bc{-1, -1, -1, -1, -1, -1};
-      ;
-      for (int ibc = 0; ibc < num_bcs; ibc++) {
-        char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
-        char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
-        CG_BCType_t       bocotype;
-        CG_PointSetType_t ptset_type;
-        cgsize_t          npnts;
-        cgsize_t          NormalListSize;
-        CG_DataType_t     NormalDataType;
-        int               ndataset;
-
-        // All we really want from this is 'boco_name'
-        CGCHECK(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
-                             &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
-
-        if (bocotype == CG_FamilySpecified) {
-          // Get family name associated with this boco_name
-          CGCHECK(
-              cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
-          CGCHECK(cg_famname_read(fam_name));
-        }
-        else {
-          strncpy(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
-        }
-
-        CGCHECK(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range.data(), nullptr));
-
-        // See if there is a sideset (bc) with this name...
-        int  bc_id = -1;
-        auto iter  = ss_id_map.find(fam_name);
-        if (iter != ss_id_map.end()) {
-          bc_id = (*iter).second;
-
-          // Exists, so see what face it is applied to...
-          int face = find_face(range); // 0..5
-          assert(bc[face] == -1);
-          bc[face] = bc_id;
-        }
-      }
+      std::array<int, 6> bc = generate_bc_mapping(cgnsFilePtr, base, zone, ss_id_map, myProcessor);
       pack(id, zone_data, bc.data(), 6);
       assert(id % INT_PER_ZONE == 0);
     }
 
     // Now gather all information to processor 0
-    std::vector<int> zones_per_proc;
-    util().gather(num_zones, zones_per_proc);
-    int              tot_zones = std::accumulate(zones_per_proc.begin(), zones_per_proc.end(), 0);
-    std::vector<int> name_offset(zones_per_proc);
-    std::vector<int> name_index(zones_per_proc);
-    std::vector<int> data_index(zones_per_proc);
-    std::vector<int> data_offset(zones_per_proc);
-
     std::vector<char> all_names;
     std::vector<int>  all_data;
-    if (myProcessor == 0) {
-      Ioss::Utils::generate_index(name_offset);
-      Ioss::Utils::generate_index(data_offset);
-      for (size_t i = 0; i < zones_per_proc.size(); i++) {
-        name_index[i] *= (CGNS_MAX_NAME_LENGTH + 1);
-        name_offset[i] *= (CGNS_MAX_NAME_LENGTH + 1);
-        data_index[i] *= INT_PER_ZONE;
-        data_offset[i] *= INT_PER_ZONE;
-      }
-      all_names.resize(tot_zones * (CGNS_MAX_NAME_LENGTH + 1));
-      all_data.resize(tot_zones * INT_PER_ZONE);
-    }
 
-    MPI_Gatherv(zone_names.data(), num_zones * (CGNS_MAX_NAME_LENGTH + 1), MPI_CHAR,
-                all_names.data(), name_index.data(), name_offset.data(), MPI_CHAR, 0,
-                util().communicator());
-    MPI_Gatherv(zone_data.data(), num_zones * INT_PER_ZONE, MPI_INT, all_data.data(),
-                data_index.data(), data_offset.data(), MPI_INT, 0, util().communicator());
+    util().gather(num_zones, zone_names, all_names);
+    int tot_zones = util().gather(num_zones, zone_data,  all_data);
 
     if (myProcessor == 0) {
       std::vector<SBlock> blocks;
@@ -641,12 +653,16 @@ namespace Iocgns {
     for (int i = 0; i < tot_zones; i++) {
       std::string zone_name(&all_names[in]);
       in += CGNS_MAX_NAME_LENGTH + 1;
+      Ioss::IJK_t        local_ijk;
+      Ioss::IJK_t        global_ijk;
+      Ioss::IJK_t        offset_ijk;
+      std::array<int, 6> bc;
+
       zone_data[id++]; // proc field. Not currently used.
-      Ioss::IJK_t        local_ijk{{zone_data[id++], zone_data[id++], zone_data[id++]}};
-      Ioss::IJK_t        global_ijk{{zone_data[id++], zone_data[id++], zone_data[id++]}};
-      Ioss::IJK_t        offset_ijk{{zone_data[id++], zone_data[id++], zone_data[id++]}};
-      std::array<int, 6> bc{{zone_data[id++], zone_data[id++], zone_data[id++], zone_data[id++],
-                             zone_data[id++], zone_data[id++]}};
+      unpack(id, zone_data.data(), local_ijk.data(), 3);
+      unpack(id, zone_data.data(), global_ijk.data(), 3);
+      unpack(id, zone_data.data(), offset_ijk.data(), 3);
+      unpack(id, zone_data.data(), bc.data(), 6);
 
       Ioss::StructuredBlock *block =
           new Ioss::StructuredBlock(this, zone_name, 3, local_ijk, offset_ijk, global_ijk);
@@ -716,22 +732,8 @@ namespace Iocgns {
             assert(sset != nullptr);
             std::string name = sset->name() + "/" + block->name();
             if (sset->get_side_block(name) == nullptr) {
-              Ioss::IJK_t empty_range{{0, 0, 0}};
-
+	      add_empty_side_block(sset, block, base, zone, bc[ii] + 1);
               need_bc_name = 1;
-              auto sbc =
-                  Ioss::BoundaryCondition("", sset->name().c_str(), empty_range, empty_range);
-              block->m_boundaryConditions.push_back(sbc);
-              auto sb = new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name,
-                                            Ioss::Hex8::name, 0);
-              sb->set_parent_block(block);
-              sset->add(sb);
-              sb->property_add(Ioss::Property("base", base));
-              sb->property_add(Ioss::Property("zone", zone));
-              sb->property_add(Ioss::Property("section", bc[ii] + 1));
-              sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
-              sb->property_add(Ioss::Property("guid", block->get_database()->util().generate_guid(
-                                                          sset->get_property("id").get_int())));
             }
           }
         }
@@ -744,25 +746,8 @@ namespace Iocgns {
           if (bc[ii] > 0) {
             assert(bc[ii] - 1 < (int)sidesets.size());
             auto sset = sidesets[bc[ii] - 1];
-            assert(sset != nullptr);
-
-            Ioss::IJK_t empty_range{{0, 0, 0}};
-
             need_bc_name = 1;
-            auto sbc = Ioss::BoundaryCondition("", sset->name().c_str(), empty_range, empty_range);
-            std::string name = sset->name() + "/" + block->name();
-
-            block->m_boundaryConditions.push_back(sbc);
-            auto sb = new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name,
-                                          Ioss::Hex8::name, 0);
-            sb->set_parent_block(block);
-            sset->add(sb);
-            sb->property_add(Ioss::Property("base", base));
-            sb->property_add(Ioss::Property("zone", zone));
-            sb->property_add(Ioss::Property("section", bc[ii] + 1));
-            sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
-            sb->property_add(Ioss::Property("guid", block->get_database()->util().generate_guid(
-                                                        sset->get_property("id").get_int())));
+	    add_empty_side_block(sset, block, base, zone, bc[ii] + 1);
           }
         }
       }
