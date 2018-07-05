@@ -557,13 +557,14 @@ void Ioss::ParallelUtils::gather(std::vector<T> &my_values, std::vector<T> &resu
 }
 
 template int Ioss::ParallelUtils::gather(int num_vals, int size_per_val,
-					  std::vector<int> &my_values,
-                                          std::vector<int> &result) const;
+                                         std::vector<int> &my_values,
+                                         std::vector<int> &result) const;
 template int Ioss::ParallelUtils::gather(int num_vals, int size_per_val,
-					  std::vector<char> &my_values,
-                                          std::vector<char> &result) const;
+                                         std::vector<char> &my_values,
+                                         std::vector<char> &result) const;
 template <typename T>
-int Ioss::ParallelUtils::gather(int num_vals, int size_per_val, std::vector<T> &my_values, std::vector<T> &result) const
+int Ioss::ParallelUtils::gather(int num_vals, int size_per_val, std::vector<T> &my_values,
+                                std::vector<T> &result) const
 {
 #ifdef SEACAS_HAVE_MPI
   std::vector<int> vals_per_proc;
@@ -586,14 +587,12 @@ int Ioss::ParallelUtils::gather(int num_vals, int size_per_val, std::vector<T> &
     result.resize(tot_vals * size_per_val);
   }
 
-  MPI_Gatherv(my_values.data(), (int)my_values.size(), mpi_type(T{}),
-	      result.data(), vals_index.data(), vals_offset.data(), mpi_type(T{}), 0,
-	      communicator());
+  MPI_Gatherv(my_values.data(), (int)my_values.size(), mpi_type(T{}), result.data(),
+              vals_index.data(), vals_offset.data(), mpi_type(T{}), 0, communicator());
 #else
   int tot_vals = num_vals;
   result.resize(num_vals);
-  std::copy(my_values.begin, my_values.end(), result.begin());
+  std::copy(my_values.begin(), my_values.end(), result.begin());
 #endif
   return tot_vals; // NOTE: Only valid on processor 0
 }
-
