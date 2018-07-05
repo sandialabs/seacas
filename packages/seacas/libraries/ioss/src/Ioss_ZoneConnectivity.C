@@ -92,8 +92,8 @@ namespace Ioss {
   bool ZoneConnectivity::has_faces() const
   {
     // Determine whether the ownerRange specifies faces instead of just a line...
-    if (m_ownerRangeBeg[0] == 0 || m_ownerRangeEnd[0] == 0 || m_ownerRangeBeg[1] == 0 || m_ownerRangeEnd[1] == 0 ||
-        m_ownerRangeBeg[2] == 0 || m_ownerRangeEnd[2] == 0) {
+    if (m_ownerRangeBeg[0] == 0 || m_ownerRangeEnd[0] == 0 || m_ownerRangeBeg[1] == 0 ||
+        m_ownerRangeEnd[1] == 0 || m_ownerRangeBeg[2] == 0 || m_ownerRangeEnd[2] == 0) {
       return false;
     }
 

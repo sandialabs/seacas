@@ -51,7 +51,7 @@
 
 namespace {
 #ifdef SEACAS_HAVE_MPI
-  MPI_Op which_reduction(Ioss::ParallelUtils::MinMax which) 
+  MPI_Op which_reduction(Ioss::ParallelUtils::MinMax which)
   {
     MPI_Op oper = MPI_MAX;
     if (which == Ioss::ParallelUtils::DO_MAX) {
@@ -324,7 +324,7 @@ void Ioss::ParallelUtils::global_count(const IntVector &local_counts,
       IOSS_ERROR(errmsg);
     }
     const int success =
-      MPI_Allreduce((void *)local_counts.data(), global_counts.data(),
+        MPI_Allreduce((void *)local_counts.data(), global_counts.data(),
                       static_cast<int>(local_counts.size()), MPI_INT, MPI_SUM, communicator_);
     if (success != MPI_SUCCESS) {
       std::ostringstream errmsg;
@@ -427,7 +427,7 @@ void Ioss::ParallelUtils::global_array_minmax(T *local_minmax, size_t count,
     }
 
     std::vector<T> maxout(count);
-    MPI_Op oper = which_reduction(which);
+    MPI_Op         oper = which_reduction(which);
 
     const int success = MPI_Allreduce((void *)local_minmax, maxout.data(), static_cast<int>(count),
                                       mpi_type(T()), oper, communicator_);
