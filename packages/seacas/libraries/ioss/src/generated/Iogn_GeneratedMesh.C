@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <cassert> // for assert
 #include <cmath>   // for atan2, cos, sin
-#include <cstdlib> // for strtod, nullptr, strtol, exit, etc
+#include <cstdlib> // for strtod, nullptr, exit, etc
 #include <cstring> // for memcpy
 #include <generated/Iogn_GeneratedMesh.h>
 #include <iomanip>  // for operator<<, setw
@@ -73,9 +73,9 @@ namespace Iogn {
     // First 'group' is the interval specification -- IxJxK
     auto tokens = Ioss::tokenize(groups[0], "x");
     assert(tokens.size() == 3);
-    numX = std::strtol(tokens[0].c_str(), nullptr, 10);
-    numY = std::strtol(tokens[1].c_str(), nullptr, 10);
-    numZ = std::strtol(tokens[2].c_str(), nullptr, 10);
+    numX = std::stoi(tokens[0]);
+    numY = std::stoi(tokens[1]);
+    numZ = std::stoi(tokens[2]);
 
     if (numX <= 0 || numY <= 0 || numZ <= 0) {
       if (myProcessor == 0) {
@@ -300,7 +300,7 @@ namespace Iogn {
         Ioss::Int64Vector Zs;
         numZ = 0;
         for (size_t j = 0; j < processorCount; j++) {
-          Zs.push_back(std::strtol(tokens[j].c_str(), nullptr, 10));
+          Zs.push_back(std::stoi(tokens[j]));
           numZ += Zs[j];
         }
         myNumZ   = Zs[myProcessor];
@@ -336,7 +336,7 @@ namespace Iogn {
       }
 
       else if (option[0] == "times") {
-        timestepCount = std::strtol(option[1].c_str(), nullptr, 10);
+        timestepCount = std::stoi(option[1]);
       }
 
       else if (option[0] == "tets") {
@@ -349,7 +349,7 @@ namespace Iogn {
         assert(tokens.size() % 2 == 0);
         for (size_t ir = 0; ir < tokens.size();) {
           std::string type  = tokens[ir++];
-          int         count = std::strtol(tokens[ir++].c_str(), nullptr, 10);
+          int         count = std::stoi(tokens[ir++]);
           set_variable_count(type, count);
         }
         if (timestepCount == 0) {

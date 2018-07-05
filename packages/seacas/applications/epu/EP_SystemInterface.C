@@ -640,7 +640,7 @@ bool Excn::SystemInterface::decompose_filename(const std::string &cs)
   }
 
   std::string tmp = s.substr(ind + 1); // Skip the '.'
-  processorCount_ = strtol(tmp.c_str(), nullptr, 10);
+  processorCount_ = std::stoi(tmp);
   if (processorCount_ <= 0) {
     std::cerr << "\nERROR: (EPU) Invalid processor count specified: '" << processorCount_
               << "'. Must be greater than zero.\n";

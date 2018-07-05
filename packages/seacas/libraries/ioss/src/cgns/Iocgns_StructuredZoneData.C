@@ -128,6 +128,7 @@ namespace {
       }
       zgc.m_ownerOffset = {{zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]}};
       assert(zgc.is_valid());
+      zgc.m_isActive = zgc.has_faces();
     }
     else {
       // This zgc does not overlap on this zone, so set all ranges to 0.
@@ -251,9 +252,9 @@ namespace Iocgns {
     auto ordinals = Ioss::tokenize(nixnjxnk, "x");
     assert(ordinals.size() == 3);
 
-    m_ordinal[0] = std::strtol(ordinals[0].c_str(), nullptr, 10);
-    m_ordinal[1] = std::strtol(ordinals[1].c_str(), nullptr, 10);
-    m_ordinal[2] = std::strtol(ordinals[2].c_str(), nullptr, 10);
+    m_ordinal[0] = std::stoi(ordinals[0]);
+    m_ordinal[1] = std::stoi(ordinals[1]);
+    m_ordinal[2] = std::stoi(ordinals[2]);
 
     m_adam = this;
   }

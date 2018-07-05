@@ -630,7 +630,7 @@ namespace {
 
       auto I = part_list.begin();
       while (I != part_list.end()) {
-        int id = strtol((*I).c_str(), nullptr, 0);
+        int id = std::stoi(*I);
         (*list).push_back(id);
         ++I;
       }

@@ -112,6 +112,7 @@ namespace Iocgns {
 
   private:
     void   create_structured_block(int base, int zone, size_t &num_node);
+    void   create_structured_block_fpp(int base, int zone, size_t &num_node);
     size_t finalize_structured_blocks();
     void   finalize_database() override;
     void   get_step_times__() override;

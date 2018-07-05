@@ -46,7 +46,7 @@ TRIBITS_ADD_LIBRARY(
 	HEADERS	${HEADERS}
 	SOURCES ${SOURCES}
 	DEPLIBS Ioss ${EXODUSLIB} ${PAREXOLIB}
-	        Iogn Iohb Iotr Iovs ${EXODUSFAC}
+	        Iogn Iogs Iohb Iotr Iovs ${EXODUSFAC}
             ${PAMGENLIB} ${CGNSLIB} ${VISLIB} ${DATAWAREHOUSELIB}
 )
 

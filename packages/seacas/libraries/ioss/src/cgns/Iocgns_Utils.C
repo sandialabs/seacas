@@ -201,12 +201,14 @@ namespace {
     return nstep;
   }
 
-  ssize_t proc_with_minimum_work(const std::vector<size_t> &work, ssize_t exclude_proc = -1)
+  ssize_t proc_with_minimum_work(Iocgns::StructuredZoneData *zone, const std::vector<size_t> &work,
+                                 std::set<std::pair<int, int>> &proc_adam_map)
   {
     size_t  min_work = std::numeric_limits<size_t>::max();
     ssize_t min_proc = -1;
     for (ssize_t i = 0; i < (ssize_t)work.size(); i++) {
-      if (work[i] < min_work && i != exclude_proc) {
+      if (work[i] < min_work &&
+          proc_adam_map.find(std::make_pair(zone->m_adam->m_zone, i)) == proc_adam_map.end()) {
         min_work = work[i];
         min_proc = i;
         if (min_work == 0) {
@@ -380,15 +382,17 @@ namespace {
     }
 
     // Pack data for gathering to processor 0...
-    size_t off_name = 0;
-    size_t off_data = 0;
+    int off_name = 0;
+    int off_data = 0;
+    int off_cnt  = 0;
 
     // ========================================================================
-    auto pack_lambda = [&off_data, &off_name, &snd_zgc_data,
+    auto pack_lambda = [&off_data, &off_name, &off_cnt, &snd_zgc_data,
                         &snd_zgc_name](const std::vector<Ioss::ZoneConnectivity> &zgc) {
       for (const auto &z : zgc) {
         if (!z.is_intra_block() && z.is_active()) {
           strncpy(&snd_zgc_name[off_name], z.m_connectionName.c_str(), BYTE_PER_NAME);
+          off_cnt++;
           off_name += BYTE_PER_NAME;
 
           snd_zgc_data[off_data++] = z.m_ownerZone;
@@ -416,10 +420,13 @@ namespace {
     };
     // ========================================================================
 
+    off_data = off_name = off_cnt = 0;
     for (const auto &sb : structured_blocks) {
       pack_lambda(sb->m_zoneConnectivity);
     }
-    assert(my_count == 0 || (off_data % my_count == 0 && off_data / my_count == INT_PER_ZGC));
+    assert(off_cnt == my_count);
+    assert(my_count == 0 || (off_data % my_count == 0));
+    assert(my_count == 0 || (off_data / my_count == INT_PER_ZGC));
     assert(my_count == 0 || (off_name % my_count == 0 && off_name / my_count == BYTE_PER_NAME));
 
     MPI_Gatherv(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, rcv_zgc_name.data(),
@@ -438,7 +445,7 @@ namespace {
       off_data = 0;
       off_name = 0;
       for (int i = 0; i < count; i++) {
-        std::string name{&rcv_zgc_name[off_name], BYTE_PER_NAME};
+        std::string name{&rcv_zgc_name[off_name]};
         off_name += BYTE_PER_NAME;
         int         zone  = rcv_zgc_data[off_data++];
         int         donor = rcv_zgc_data[off_data++];
@@ -455,7 +462,8 @@ namespace {
         zgc.emplace_back(name, zone, "", donor, transform, range_beg, range_end, donor_beg,
                          donor_end);
       }
-      assert(off_data % count == 0 && off_data / count == INT_PER_ZGC);
+      assert(off_data % count == 0);
+      assert(off_data / count == INT_PER_ZGC);
       assert(off_name % count == 0 && off_name / count == BYTE_PER_NAME);
 
       // Consolidate down to the minimum set that has the union of all ranges.
@@ -481,7 +489,8 @@ namespace {
       // Cull out all 'non-active' zgc instances (owner and donor zone <= 0)
       zgc.erase(std::remove_if(zgc.begin(), zgc.end(),
                                [](Ioss::ZoneConnectivity &z) {
-                                 return z.m_ownerZone == -1 && z.m_donorZone == -1;
+                                 return (z.m_ownerZone == -1 && z.m_donorZone == -1) ||
+                                        z.is_intra_block() || !z.is_active();
                                }),
                 zgc.end());
 
@@ -492,12 +501,12 @@ namespace {
       // of the ranges on each individual processor.  Pack the data
       // and broadcast back to all processors so all processors can
       // output the same data for Zone Connectivity.
-      off_name = 0;
-      off_data = 0;
-
+      off_data = off_name = off_cnt = 0;
       pack_lambda(zgc);
 
-      assert(off_data % count == 0 && off_data / count == INT_PER_ZGC);
+      assert(off_cnt == count);
+      assert(off_data % count == 0);
+      assert(off_data / count == INT_PER_ZGC);
       assert(off_name % count == 0 && off_name / count == BYTE_PER_NAME);
     } // End of processor 0 only processing...
 
@@ -524,7 +533,7 @@ namespace {
     off_data = 0;
     off_name = 0;
     for (int i = 0; i < count; i++) {
-      std::string name{&snd_zgc_name[off_name], BYTE_PER_NAME};
+      std::string name{&snd_zgc_name[off_name]};
       off_name += BYTE_PER_NAME;
       int zone = snd_zgc_data[off_data++];
       assert(zone < (int)sb_names.size());
@@ -548,7 +557,7 @@ namespace {
     }
 #endif
   }
-}
+} // namespace
 
 size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
                                              std::vector<size_t> &zone_offset, bool is_parallel_io)
@@ -701,11 +710,17 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     // The bc.m_ownerRange argument needs to be the union of the size on all processors
     // Instead of requiring that of the caller, do the union in this routine.
     // TODO: Calculate it outside of the loop...
+    // Need to handle possible range == 0,0,0.  Only affects the beg data...
     std::vector<cgsize_t> bc_range(sb->m_boundaryConditions.size() * 6);
     size_t                idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
       for (size_t i = 0; i < 3; i++) {
-        bc_range[idx++] = -bc.m_rangeBeg[i];
+        if (bc.m_rangeBeg[i] == 0) {
+          bc_range[idx++] = std::numeric_limits<int>::min();
+        }
+        else {
+          bc_range[idx++] = -bc.m_rangeBeg[i];
+        }
       }
       for (size_t i = 0; i < 3; i++) {
         bc_range[idx++] = bc.m_rangeEnd[i];
@@ -725,14 +740,17 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
       int bc_idx = 0;
-      CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
-                          CG_PointRange, 2, &bc_range[idx], &bc_idx));
-      CGERR(cg_goto(file_ptr, base, name.c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0, "end"));
-      CGERR(cg_famname_write(bc.m_famName.c_str()));
-      CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
+      if (is_parallel_io ||
+          (bc_range[idx + 3] > 0 && bc_range[idx + 4] > 0 && bc_range[idx + 5] > 0)) {
+        CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
+                            CG_PointRange, 2, &bc_range[idx], &bc_idx));
+        CGERR(
+            cg_goto(file_ptr, base, name.c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0, "end"));
+        CGERR(cg_famname_write(bc.m_famName.c_str()));
+        CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
+      }
       idx += 6;
     }
-
     // Transfer Zone Grid Connectivity...
     for (const auto &zgc : sb->m_zoneConnectivity) {
       if (zgc.is_valid() && zgc.is_active()) {
@@ -749,6 +767,11 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
         if (is_parallel && !is_parallel_io) {
           if (zgc.is_intra_block()) {
             connect_name = std::to_string(zgc.m_ownerGUID) + "--" + std::to_string(zgc.m_donorGUID);
+          }
+          else {
+            if (zgc.m_ownerProcessor != zgc.m_donorProcessor) {
+              connect_name += "_proc-" + std::to_string(zgc.m_donorProcessor);
+            }
           }
           donor_name += "_proc-";
           donor_name += std::to_string(zgc.m_donorProcessor);
@@ -1220,38 +1243,116 @@ Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_proce
 }
 
 void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,
-                                                       Ioss::StructuredBlock *block)
+                                                       Ioss::StructuredBlock *block,
+                                                       bool                   is_parallel_io)
 {
+  // `is_parallel_io` is true if all processors reading single file.
+  // `is_parallel_io` is false if serial, or each processor reading its own file (fpp)
+
   int base = block->get_property("base").get_int();
   int zone = block->get_property("zone").get_int();
-  int num_bcs;
-  CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
 
-  cgsize_t range[6];
+  // Called by both parallel and serial runs.
+  // In parallel, the 'cgnsFilePtr' is for the serial file on processor 0.
+  // Read all CGNS data on processor 0 and then broadcast to other processors.
+  // Data needed:
+  // * boco_name (CGNS_MAX_NAME_LENGTH + 1 chars)
+  // * fam_name  (CGNS_MAX_NAME_LENGTH + 1 chars)
+  // * data     (cgsize_t * 7) (bocotype + range[6])
+
+  int num_bcs = 0;
+  int rank    = block->get_database()->util().parallel_rank();
+  if (!is_parallel_io || rank == 0) {
+    CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
+  }
+
+#ifdef SEACAS_HAVE_MPI
+  int proc = block->get_database()->util().parallel_size();
+  if (is_parallel_io) {
+    if (proc > 1) {
+      MPI_Bcast(&num_bcs, 1, MPI_INT, 0, block->get_database()->util().communicator());
+    }
+  }
+#endif
+
+  std::vector<int>  bc_data(7 * num_bcs);
+  std::vector<char> bc_names(2 * (CGNS_MAX_NAME_LENGTH + 1) * num_bcs);
+
+  if (rank == 0 || !is_parallel_io) {
+    int      off_data = 0;
+    int      off_name = 0;
+    cgsize_t range[6];
+
+    for (int ibc = 0; ibc < num_bcs; ibc++) {
+      char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
+      char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
+      CG_BCType_t       bocotype;
+      CG_PointSetType_t ptset_type;
+      cgsize_t          npnts;
+      cgsize_t          NormalListSize;
+      CG_DataType_t     NormalDataType;
+      int               ndataset;
+
+      // All we really want from this is 'boco_name'
+      CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
+                             &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+
+      if (bocotype == CG_FamilySpecified) {
+        // Get family name associated with this boco_name
+        CGCHECKNP(
+            cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
+        CGCHECKNP(cg_famname_read(fam_name));
+      }
+      else {
+        strncpy(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
+      }
+
+      CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
+
+      strncpy(&bc_names[off_name], boco_name, CGNS_MAX_NAME_LENGTH + 1);
+      off_name += (CGNS_MAX_NAME_LENGTH + 1);
+      strncpy(&bc_names[off_name], fam_name, CGNS_MAX_NAME_LENGTH + 1);
+      off_name += (CGNS_MAX_NAME_LENGTH + 1);
+
+      bc_data[off_data++] = bocotype;
+      bc_data[off_data++] = range[0];
+      bc_data[off_data++] = range[1];
+      bc_data[off_data++] = range[2];
+      bc_data[off_data++] = range[3];
+      bc_data[off_data++] = range[4];
+      bc_data[off_data++] = range[5];
+    }
+  }
+
+#ifdef SEACAS_HAVE_MPI
+  // If parallel, broadcast data to other processors...
+  if (proc > 1 && is_parallel_io) {
+    MPI_Bcast(bc_names.data(), (int)bc_names.size(), MPI_BYTE, 0,
+              block->get_database()->util().communicator());
+    MPI_Bcast(bc_data.data(), (int)bc_data.size(), MPI_INT, 0,
+              block->get_database()->util().communicator());
+  }
+#endif
+
+  // Now just unpack the data and run through the same calculations on all processors.
+  // A little more work than needed for a serial run, but shouldn't be excessive...
+  int off_data = 0;
+  int off_name = 0;
   for (int ibc = 0; ibc < num_bcs; ibc++) {
-    char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
-    char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
-    CG_BCType_t       bocotype;
-    CG_PointSetType_t ptset_type;
-    cgsize_t          npnts;
-    cgsize_t          NormalListSize;
-    CG_DataType_t     NormalDataType;
-    int               ndataset;
+    cgsize_t range[6];
 
-    // All we really want from this is 'boco_name'
-    CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
-                           &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+    CG_BCType_t bocotype = (CG_BCType_t)bc_data[off_data++];
+    range[0]             = bc_data[off_data++];
+    range[1]             = bc_data[off_data++];
+    range[2]             = bc_data[off_data++];
+    range[3]             = bc_data[off_data++];
+    range[4]             = bc_data[off_data++];
+    range[5]             = bc_data[off_data++];
 
-    if (bocotype == CG_FamilySpecified) {
-      // Get family name associated with this boco_name
-      CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
-      CGCHECKNP(cg_famname_read(fam_name));
-    }
-    else {
-      strncpy(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
-    }
-
-    CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
+    std::string boco_name{&bc_names[off_name]};
+    off_name += (CGNS_MAX_NAME_LENGTH + 1);
+    std::string fam_name{&bc_names[off_name]};
+    off_name += (CGNS_MAX_NAME_LENGTH + 1);
 
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
@@ -1264,6 +1365,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
                 << ". This code only supports surfaces.\n";
       continue;
     }
+
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
     if (sset == nullptr) {
       // Need to create a new sideset since didn't see this earlier.
@@ -1291,7 +1393,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       // be split among multiple processors and the block face this is applied
       // to may not exist on this decomposed block)
       auto        bc   = Ioss::BoundaryCondition(boco_name, fam_name, range_beg, range_end);
-      std::string name = std::string(boco_name) + "/" + block->name();
+      std::string name = std::string(fam_name) + "/" + block->name();
 
       bc_subset_range(block, bc);
       block->m_boundaryConditions.push_back(bc);
@@ -1542,7 +1644,6 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
               return a->work() > b->work();
             });
 
-#if 1
   std::set<std::pair<int, int>> proc_adam_map;
 
   // On first entry, work_vector will be all zeros.  To avoid any
@@ -1561,57 +1662,23 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
   for (; i < zones.size(); i++) {
     auto &zone = zones[i];
 
-    // Assign zone to processor with minimum work...
-    ssize_t proc = proc_with_minimum_work(work_vector);
+    // Assign zone to processor with minimum work that does not already have a zone with the same
+    // adam zone...
+    ssize_t proc = proc_with_minimum_work(zone, work_vector, proc_adam_map);
 
     // See if any other zone on this processor has the same adam zone...
     if (proc >= 0) {
       auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
-      while (!success.second) {
-        proc    = proc_with_minimum_work(work_vector, proc);
-        success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
-      }
+      assert(success.second);
+      zone->m_proc = proc;
+      work_vector[proc] += zone->work();
     }
-    zone->m_proc = proc;
-    work_vector[proc] += zone->work();
+    else {
+      std::ostringstream errmsg;
+      errmsg << "IOCGNS error: Could not assign zones to processors in " << __func__;
+      IOSS_ERROR(errmsg);
+    }
   }
-#else
-  // Assign zone to first processor that has "capacity".
-  // Determine average_work per processor...
-  double work = 0.0;
-  int num_zones = 0;
-  for (auto &zone : zones) {
-    zone->m_proc = -1;
-    work += zone->work();
-    num_zones++;
-  }
-
-  double avg_work = work / work_vector.size();
-
-  int zones_placed = 0;
-  do {
-    zones_placed = 0;
-    for (size_t proc = 0; proc < work_vector.size(); proc++) {
-      work_vector[proc] = 0;
-    }
-    for (auto &zone : zones) {
-      if (zone->is_active()) {
-        // Find first processor that has capacity...
-        double my_work = zone->work();
-        for (size_t proc = 0; proc < work_vector.size(); proc++) {
-          if (work_vector[proc] + my_work <= avg_work) {
-            zone->m_proc = proc;
-            work_vector[proc] += zone->work();
-            zones_placed++;
-            break;
-          }
-        }
-      }
-    }
-    avg_work *= 1.2; // Allow 20% overage
-  } while (zones_placed != num_zones);
-
-#endif
 }
 
 size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,

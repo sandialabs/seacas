@@ -13,6 +13,7 @@ var searchData=
   ['handle_5funstructured_5fblocks',['handle_unstructured_blocks',['../classIocgns_1_1ParallelDatabaseIO.html#a9f182523c0d50ee8820a6d7b2ff268ff',1,'Iocgns::ParallelDatabaseIO']]],
   ['handlers',['handlers',['../structAssert.html#a5d25d98d37ad3f261275039e17bce90a',1,'Assert']]],
   ['handlers_5fcollection',['handlers_collection',['../structAssert.html#a1ae311975c9ed1f4d3514502230233aa',1,'Assert']]],
+  ['has_5ffaces',['has_faces',['../structIoss_1_1ZoneConnectivity.html#a40c5f8aa682e677f9f735978cfafb965',1,'Ioss::ZoneConnectivity']]],
   ['has_5ftransform',['has_transform',['../classIoss_1_1Field.html#a7a2d32fa8abd51081e5e4099ae408ee0',1,'Ioss::Field']]],
   ['hascomment',['hasComment',['../classJson_1_1Value.html#a65d8e3ab6a5871cbd019a3e0f0b944a3',1,'Json::Value']]],
   ['hascommentforvalue',['hasCommentForValue',['../classJson_1_1StyledWriter.html#a37a806d010f708cb68556f2666f79bdf',1,'Json::StyledWriter::hasCommentForValue()'],['../classJson_1_1StyledStreamWriter.html#ad2892f57171919fa4f8a5ae5574755cf',1,'Json::StyledStreamWriter::hasCommentForValue()']]],

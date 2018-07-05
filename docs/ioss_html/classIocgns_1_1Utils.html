@@ -132,8 +132,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a38aad5f42ea2883fd7e420bf426776cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95829b5d70f50d5231bdddd714fbe1b8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a95829b5d70f50d5231bdddd714fbe1b8">add_sidesets</a> (int cgnsFilePtr, <a class="el" href="classIoss_1_1DatabaseIO.html">Ioss::DatabaseIO</a> *db)</td></tr>
 <tr class="separator:a95829b5d70f50d5231bdddd714fbe1b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f097bf417b2b34d984c52632233f4a3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a3f097bf417b2b34d984c52632233f4a3">add_structured_boundary_conditions</a> (int cgnsFilePtr, <a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *block)</td></tr>
-<tr class="separator:a3f097bf417b2b34d984c52632233f4a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5483dea525d91f0521f7fb850ec8db0a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a5483dea525d91f0521f7fb850ec8db0a">add_structured_boundary_conditions</a> (int cgnsFilePtr, <a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *block, bool is_parallel_io)</td></tr>
+<tr class="separator:a5483dea525d91f0521f7fb850ec8db0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31a49ff6c43e030fe6735dd1bf114653"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a31a49ff6c43e030fe6735dd1bf114653">finalize_database</a> (int cgnsFilePtr, const std::vector&lt; double &gt; &amp;timesteps, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, int myProcessor)</td></tr>
 <tr class="separator:a31a49ff6c43e030fe6735dd1bf114653"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada733053c60201753363c5bf2637af89"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ada733053c60201753363c5bf2637af89">get_step_times</a> (int cgnsFilePtr, std::vector&lt; double &gt; &amp;timesteps, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, double timeScaleFactor, int myProcessor)</td></tr>
@@ -240,8 +240,8 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a3f097bf417b2b34d984c52632233f4a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3f097bf417b2b34d984c52632233f4a3">&#9670;&nbsp;</a></span>add_structured_boundary_conditions()</h2>
+<a id="a5483dea525d91f0521f7fb850ec8db0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5483dea525d91f0521f7fb850ec8db0a">&#9670;&nbsp;</a></span>add_structured_boundary_conditions()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -259,7 +259,13 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *&#160;</td>
-          <td class="paramname"><em>block</em>&#160;</td>
+          <td class="paramname"><em>block</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_parallel_io</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

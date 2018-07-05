@@ -80,6 +80,7 @@
 #include "Ioss_VariableType.h"
 
 using GL_IdVector = std::vector<std::pair<int, int>>;
+extern int pcg_mpi_initialized;
 
 namespace {
   MPI_Datatype cgns_mpi_type()
@@ -186,22 +187,50 @@ namespace Iocgns {
       delete gtb.second;
     }
     cgp_close(cgnsFilePtr);
+    if (myProcessor == 0 && cgnsSerFilePtr >= 0) {
+      auto init           = pcg_mpi_initialized;
+      pcg_mpi_initialized = 0;
+      cg_close(cgnsSerFilePtr);
+      pcg_mpi_initialized = init;
+    }
   }
 
   void ParallelDatabaseIO::openDatabase__() const
   {
     if (cgnsFilePtr < 0) {
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
-#if 0
-      // Currently, cgp_mpi_comm returns an internal NO_ERROR value which
-      // is equal to -1.  There is an issue submitted for this.
+
+      bool do_timer = false;
+      Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+      double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+
+      CGCHECK(cg_set_file_type(CG_FILE_HDF5));
+
+#if CGNS_VERSION >= 3320
       CGCHECK(cgp_mpi_comm(util().communicator()));
 #else
+      // Older versions of cgp_mpi_comm returned an internal NO_ERROR
+      // value which is equal to -1.
       cgp_mpi_comm(util().communicator());
 #endif
       CGCHECK(cgp_pio_mode(CGP_COLLECTIVE));
-      CGCHECK(cg_set_file_type(CG_FILE_HDF5));
       int ierr = cgp_open(get_filename().c_str(), mode, &cgnsFilePtr);
+
+      if (myProcessor == 0 && is_input()) {
+        auto init           = pcg_mpi_initialized;
+        pcg_mpi_initialized = 0;
+        cg_open(get_filename().c_str(), mode, &cgnsSerFilePtr);
+        pcg_mpi_initialized = init;
+      }
+
+      if (do_timer) {
+        double t_end    = Ioss::Utils::timer();
+        double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
+        if (myProcessor == 0) {
+          std::cerr << "File Open Time = " << duration << "\n";
+        }
+      }
+
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
         std::ostringstream errmsg;
@@ -313,7 +342,7 @@ namespace Iocgns {
           new DecompositionData<int>(properties, util().communicator()));
     }
     assert(decomp != nullptr);
-    decomp->decompose_model(cgnsFilePtr, m_zoneType);
+    decomp->decompose_model(cgnsSerFilePtr, cgnsFilePtr, m_zoneType);
 
     if (m_zoneType == CG_Structured) {
       handle_structured_blocks();
@@ -518,7 +547,7 @@ namespace Iocgns {
     const auto &sbs = get_region()->get_structured_blocks();
     for (const auto &block : sbs) {
       // Handle boundary conditions...
-      Utils::add_structured_boundary_conditions(cgnsFilePtr, block);
+      Utils::add_structured_boundary_conditions(cgnsSerFilePtr, block, true);
     }
 
     size_t node_count = finalize_structured_blocks();

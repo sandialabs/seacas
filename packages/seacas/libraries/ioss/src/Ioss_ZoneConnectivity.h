@@ -65,6 +65,7 @@ namespace Ioss {
       assert(is_valid());
       m_intraBlock      = m_ownerZone == m_donorZone;
       m_ownsSharedNodes = m_ownerZone < m_donorZone || m_donorZone == -1;
+      m_isActive        = has_faces();
     }
 
     ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
@@ -80,12 +81,14 @@ namespace Ioss {
       // NOTE: Originally thought that could deprecate this constructor and calculate the
       // intra_block status via the `owner_zone` and `donor_zone`, but in parallel, we get the
       // "non-adam" owner and donor zone, so even though it is intra_block (with same adam_zone), we
-      // can't determine that in the constructor.  We can get rid of the `owns_nodes` argument, but then
-      // the constructors are ambiguous since both end with a boolean and can't tell which is which.
+      // can't determine that in the constructor.  We can get rid of the `owns_nodes` argument, but
+      // then the constructors are ambiguous since both end with a boolean and can't tell which is
+      // which.
       //
-      // Currently, only the decomposition process creates intra_block ZGC, so that function is calling
-      // this constructor correctly...
+      // Currently, only the decomposition process creates intra_block ZGC, so that function is
+      // calling this constructor correctly...
       assert(is_valid());
+      m_isActive = has_faces();
     }
 
     ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
@@ -103,6 +106,7 @@ namespace Ioss {
     // Validate zgc -- if is_active(), then must have non-zero entries for all ranges.
     // transform must have valid entries.
     bool is_valid() const;
+    bool has_faces() const;
 
     std::array<INT, 9> transform_matrix() const;
     Ioss::IJK_t        transform(const Ioss::IJK_t &index_1) const;
@@ -112,7 +116,7 @@ namespace Ioss {
     friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
     bool is_intra_block() const { return m_intraBlock; }
-    bool is_active() const { return m_isActive; }
+    bool is_active() const { return m_isActive && has_faces(); }
 
     std::string m_connectionName; // Name of the connection; either generated or from file
     std::string m_donorName; // Name of the zone (m_donorZone) to which this zone is connected via
