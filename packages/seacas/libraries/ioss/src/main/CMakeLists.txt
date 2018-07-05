@@ -327,6 +327,18 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_fpp
   COMM mpi
   )
 
+TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_fpp2
+   TEST_0 EXEC io_shell ARGS --compose external ${CMAKE_CURRENT_SOURCE_DIR}/test/sparc1.cgns sparc2.cgns
+     NUM_MPI_PROCS 1-4
+     NOEXEPREFIX NOEXESUFFIX
+   TEST_1 EXEC io_shell ARGS --external sparc2.cgns sparc3.cgns
+     NUM_MPI_PROCS 1-4
+     NOEXEPREFIX NOEXESUFFIX
+   TEST_2 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/test/sparc1.cgns sparc3.cgns
+     NUM_MPI_PROCS 1
+  COMM mpi
+  )
+
 TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_fields
    TEST_0 EXEC io_shell ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/transient-fields.cgns transient-fields-out.cgns
      NUM_MPI_PROCS 1-4
