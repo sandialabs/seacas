@@ -49,6 +49,25 @@
 #include <cstring>
 #endif
 
+namespace {
+#ifdef SEACAS_HAVE_MPI
+  MPI_Op which_reduction(Ioss::ParallelUtils::MinMax which) 
+  {
+    MPI_Op oper = MPI_MAX;
+    if (which == Ioss::ParallelUtils::DO_MAX) {
+      oper = MPI_MAX;
+    }
+    else if (which == Ioss::ParallelUtils::DO_MIN) {
+      oper = MPI_MIN;
+    }
+    else if (which == Ioss::ParallelUtils::DO_SUM) {
+      oper = MPI_SUM;
+    }
+    return oper;
+  }
+#endif
+}
+
 Ioss::ParallelUtils::ParallelUtils(MPI_Comm the_communicator) : communicator_(the_communicator) {}
 
 void Ioss::ParallelUtils::add_environment_properties(Ioss::PropertyManager &properties,
@@ -305,7 +324,7 @@ void Ioss::ParallelUtils::global_count(const IntVector &local_counts,
       IOSS_ERROR(errmsg);
     }
     const int success =
-        MPI_Allreduce((void *)&local_counts[0], &global_counts[0],
+      MPI_Allreduce((void *)local_counts.data(), global_counts.data(),
                       static_cast<int>(local_counts.size()), MPI_INT, MPI_SUM, communicator_);
     if (success != MPI_SUCCESS) {
       std::ostringstream errmsg;
@@ -337,7 +356,7 @@ void Ioss::ParallelUtils::global_count(const Int64Vector &local_counts,
       errmsg << "Attempting mpi while in barrier owned by " << Ioss::SerializeIO::getOwner();
       IOSS_ERROR(errmsg);
     }
-    const int success = MPI_Allreduce((void *)&local_counts[0], &global_counts[0],
+    const int success = MPI_Allreduce((void *)local_counts.data(), global_counts.data(),
                                       static_cast<int>(local_counts.size()), MPI_LONG_LONG_INT,
                                       MPI_SUM, communicator_);
     if (success != MPI_SUCCESS) {
@@ -377,19 +396,10 @@ T Ioss::ParallelUtils::global_minmax(T local_minmax, Ioss::ParallelUtils::MinMax
     static T inbuf[1], outbuf[1];
     inbuf[0] = local_minmax;
 
-    MPI_Op oper = MPI_MAX;
-    if (which == DO_MAX) {
-      oper = MPI_MAX;
-    }
-    else if (which == DO_MIN) {
-      oper = MPI_MIN;
-    }
-    else if (which == DO_SUM) {
-      oper = MPI_SUM;
-    }
+    MPI_Op oper = which_reduction(which);
 
     const int success =
-        MPI_Allreduce((void *)&inbuf[0], &outbuf[0], 1, mpi_type(T(1)), oper, communicator_);
+        MPI_Allreduce((void *)&inbuf[0], &outbuf[0], 1, mpi_type(T()), oper, communicator_);
     if (success != MPI_SUCCESS) {
       std::ostringstream errmsg;
       errmsg << "Ioss::ParallelUtils::global_minmax - MPI_Allreduce failed";
@@ -417,20 +427,10 @@ void Ioss::ParallelUtils::global_array_minmax(T *local_minmax, size_t count,
     }
 
     std::vector<T> maxout(count);
+    MPI_Op oper = which_reduction(which);
 
-    MPI_Op oper = MPI_MAX;
-    if (which == DO_MAX) {
-      oper = MPI_MAX;
-    }
-    else if (which == DO_MIN) {
-      oper = MPI_MIN;
-    }
-    else if (which == DO_SUM) {
-      oper = MPI_SUM;
-    }
-
-    const int success = MPI_Allreduce((void *)&local_minmax[0], &maxout[0], static_cast<int>(count),
-                                      mpi_type(T(1)), oper, communicator_);
+    const int success = MPI_Allreduce((void *)local_minmax, maxout.data(), static_cast<int>(count),
+                                      mpi_type(T()), oper, communicator_);
     if (success != MPI_SUCCESS) {
       std::ostringstream errmsg;
       errmsg << "Ioss::ParallelUtils::global_array_minmax - MPI_Allreduce failed";
@@ -444,6 +444,7 @@ void Ioss::ParallelUtils::global_array_minmax(T *local_minmax, size_t count,
 #endif
 }
 
+template void Ioss::ParallelUtils::global_array_minmax(std::vector<char> &, MinMax) const;
 template void Ioss::ParallelUtils::global_array_minmax(std::vector<int> &, MinMax) const;
 template void Ioss::ParallelUtils::global_array_minmax(std::vector<int64_t> &, MinMax) const;
 template void Ioss::ParallelUtils::global_array_minmax(std::vector<double> &, MinMax) const;
@@ -453,7 +454,7 @@ template <typename T>
 void Ioss::ParallelUtils::global_array_minmax(std::vector<T> &local_minmax, MinMax which) const
 {
   if (!local_minmax.empty()) {
-    global_array_minmax(&local_minmax[0], local_minmax.size(), which);
+    global_array_minmax(local_minmax.data(), local_minmax.size(), which);
   }
 }
 
@@ -469,8 +470,8 @@ template <typename T> void Ioss::ParallelUtils::gather(T my_value, std::vector<T
   }
 #ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1) {
-    const int success = MPI_Gather((void *)&my_value, 1, mpi_type(T(1)), (void *)&result[0], 1,
-                                   mpi_type(T(1)), 0, communicator_);
+    const int success = MPI_Gather((void *)&my_value, 1, mpi_type(T()), (void *)result.data(), 1,
+                                   mpi_type(T()), 0, communicator_);
     if (success != MPI_SUCCESS) {
       std::ostringstream errmsg;
       errmsg << "Ioss::ParallelUtils::gather - MPI_Gather failed";
@@ -490,8 +491,8 @@ template <typename T> void Ioss::ParallelUtils::all_gather(T my_value, std::vect
   result.resize(parallel_size());
 #ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1) {
-    const int success = MPI_Allgather((void *)&my_value, 1, mpi_type(T(1)), (void *)&result[0], 1,
-                                      mpi_type(T(1)), communicator_);
+    const int success = MPI_Allgather((void *)&my_value, 1, mpi_type(T()), (void *)result.data(), 1,
+                                      mpi_type(T()), communicator_);
     if (success != MPI_SUCCESS) {
       std::ostringstream errmsg;
       errmsg << "Ioss::ParallelUtils::gather - MPI_Gather failed";
@@ -538,8 +539,8 @@ void Ioss::ParallelUtils::gather(std::vector<T> &my_values, std::vector<T> &resu
   }
 #ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1) {
-    const int success = MPI_Gather((void *)TOPTR(my_values), count, mpi_type(T(1)),
-                                   (void *)TOPTR(result), count, mpi_type(T(1)), 0, communicator_);
+    const int success = MPI_Gather((void *)TOPTR(my_values), count, mpi_type(T()),
+                                   (void *)TOPTR(result), count, mpi_type(T()), 0, communicator_);
     if (success != MPI_SUCCESS) {
       std::ostringstream errmsg;
       errmsg << "Ioss::ParallelUtils::gather - MPI_Gather failed";
