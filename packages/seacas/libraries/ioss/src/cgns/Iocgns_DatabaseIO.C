@@ -477,8 +477,8 @@ namespace Iocgns {
     std::vector<char> all_names;
     std::vector<int>  all_data;
 
-    util().gather(num_zones, zone_names, all_names);
-    int tot_zones = util().gather(num_zones, zone_data,  all_data);
+    util().gather(num_zones, CGNS_MAX_NAME_LENGTH+1, zone_names, all_names);
+    int tot_zones = util().gather(num_zones, INT_PER_ZONE, zone_data,  all_data);
 
     if (myProcessor == 0) {
       std::vector<SBlock> blocks;

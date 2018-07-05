@@ -556,15 +556,16 @@ void Ioss::ParallelUtils::gather(std::vector<T> &my_values, std::vector<T> &resu
 #endif
 }
 
-template int Ioss::ParallelUtils::gather(int num_vals, 
+template int Ioss::ParallelUtils::gather(int num_vals, int size_per_val,
 					  std::vector<int> &my_values,
                                           std::vector<int> &result) const;
-template int Ioss::ParallelUtils::gather(int num_vals,
+template int Ioss::ParallelUtils::gather(int num_vals, int size_per_val,
 					  std::vector<char> &my_values,
                                           std::vector<char> &result) const;
 template <typename T>
-int Ioss::ParallelUtils::gather(int num_vals, std::vector<T> &my_values, std::vector<T> &result) const
+int Ioss::ParallelUtils::gather(int num_vals, int size_per_val, std::vector<T> &my_values, std::vector<T> &result) const
 {
+#ifdef SEACAS_HAVE_MPI
   std::vector<int> vals_per_proc;
   gather(num_vals, vals_per_proc);
 
@@ -574,11 +575,9 @@ int Ioss::ParallelUtils::gather(int num_vals, std::vector<T> &my_values, std::ve
   std::vector<int> vals_index(vals_per_proc);
 
   int rank = parallel_rank();
-  int size_per_val = my_values.size() / vals_per_proc[rank];
   assert(my_values.size() % size_per_val == 0);
 
   if (rank == 0) {
-    std::cerr << "Size per val = " << size_per_val << "\n";
     Ioss::Utils::generate_index(vals_offset);
     for (size_t i = 0; i < vals_per_proc.size(); i++) {
       vals_index[i] *= size_per_val;
@@ -590,7 +589,11 @@ int Ioss::ParallelUtils::gather(int num_vals, std::vector<T> &my_values, std::ve
   MPI_Gatherv(my_values.data(), (int)my_values.size(), mpi_type(T{}),
 	      result.data(), vals_index.data(), vals_offset.data(), mpi_type(T{}), 0,
 	      communicator());
-
-  return tot_vals;
+#else
+  int tot_vals = num_vals;
+  result.resize(num_vals);
+  std::copy(my_values.begin, my_values.end(), result.begin());
+#endif
+  return tot_vals; // NOTE: Only valid on processor 0
 }
 

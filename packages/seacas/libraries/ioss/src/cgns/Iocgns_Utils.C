@@ -362,24 +362,8 @@ namespace {
       return;
     }
 
-    std::vector<int> rcv_name_cnt(rcv_data_cnt);
-    std::transform(rcv_data_cnt.begin(), rcv_data_cnt.end(), rcv_data_cnt.begin(),
-                   [](int i) -> int { return i * INT_PER_ZGC; });
-    std::transform(rcv_name_cnt.begin(), rcv_name_cnt.end(), rcv_name_cnt.begin(),
-                   [](int i) -> int { return i * BYTE_PER_NAME; });
-
-    std::vector<char> rcv_zgc_name;
-    std::vector<int>  rcv_zgc_data;
     std::vector<char> snd_zgc_name(my_count * BYTE_PER_NAME);
     std::vector<int>  snd_zgc_data(my_count * INT_PER_ZGC);
-    std::vector<int>  rcv_name_off(rcv_name_cnt);
-    std::vector<int>  rcv_data_off(rcv_data_cnt);
-    if (region.get_database()->util().parallel_rank() == 0) {
-      Ioss::Utils::generate_index(rcv_name_off);
-      Ioss::Utils::generate_index(rcv_data_off);
-      rcv_zgc_name.resize(count * BYTE_PER_NAME);
-      rcv_zgc_data.resize(count * INT_PER_ZGC);
-    }
 
     // Pack data for gathering to processor 0...
     int off_name = 0;
@@ -429,12 +413,10 @@ namespace {
     assert(my_count == 0 || (off_data / my_count == INT_PER_ZGC));
     assert(my_count == 0 || (off_name % my_count == 0 && off_name / my_count == BYTE_PER_NAME));
 
-    MPI_Gatherv(snd_zgc_name.data(), (int)snd_zgc_name.size(), MPI_BYTE, rcv_zgc_name.data(),
-                rcv_name_cnt.data(), rcv_name_off.data(), MPI_BYTE, 0,
-                region.get_database()->util().communicator());
-    MPI_Gatherv(snd_zgc_data.data(), (int)snd_zgc_data.size(), MPI_INT, rcv_zgc_data.data(),
-                rcv_data_cnt.data(), rcv_data_off.data(), MPI_INT, 0,
-                region.get_database()->util().communicator());
+    std::vector<char> rcv_zgc_name;
+    std::vector<int>  rcv_zgc_data;
+    region.get_database()->util().gather(my_count, BYTE_PER_NAME, snd_zgc_name, rcv_zgc_name);
+    region.get_database()->util().gather(my_count, INT_PER_ZGC, snd_zgc_data, rcv_zgc_data);
 
     // Processor 0 now has all the zgc instances from all blocks on all processors.
     std::vector<Ioss::ZoneConnectivity> zgc;
