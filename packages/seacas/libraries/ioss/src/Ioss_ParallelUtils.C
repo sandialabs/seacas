@@ -39,6 +39,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
+#include <numeric>
 #include <string>
 #include <tokenize.h>
 #include <vector>
@@ -554,3 +555,42 @@ void Ioss::ParallelUtils::gather(std::vector<T> &my_values, std::vector<T> &resu
   std::copy(my_values.begin(), my_values.end(), result.begin());
 #endif
 }
+
+template int Ioss::ParallelUtils::gather(int num_vals, 
+					  std::vector<int> &my_values,
+                                          std::vector<int> &result) const;
+template int Ioss::ParallelUtils::gather(int num_vals,
+					  std::vector<char> &my_values,
+                                          std::vector<char> &result) const;
+template <typename T>
+int Ioss::ParallelUtils::gather(int num_vals, std::vector<T> &my_values, std::vector<T> &result) const
+{
+  std::vector<int> vals_per_proc;
+  gather(num_vals, vals_per_proc);
+
+  int tot_vals = std::accumulate(vals_per_proc.begin(), vals_per_proc.end(), 0);
+
+  std::vector<int> vals_offset(vals_per_proc);
+  std::vector<int> vals_index(vals_per_proc);
+
+  int rank = parallel_rank();
+  int size_per_val = my_values.size() / vals_per_proc[rank];
+  assert(my_values.size() % size_per_val == 0);
+
+  if (rank == 0) {
+    std::cerr << "Size per val = " << size_per_val << "\n";
+    Ioss::Utils::generate_index(vals_offset);
+    for (size_t i = 0; i < vals_per_proc.size(); i++) {
+      vals_index[i] *= size_per_val;
+      vals_offset[i] *= size_per_val;
+    }
+    result.resize(tot_vals * size_per_val);
+  }
+
+  MPI_Gatherv(my_values.data(), (int)my_values.size(), mpi_type(T{}),
+	      result.data(), vals_index.data(), vals_offset.data(), mpi_type(T{}), 0,
+	      communicator());
+
+  return tot_vals;
+}
+
