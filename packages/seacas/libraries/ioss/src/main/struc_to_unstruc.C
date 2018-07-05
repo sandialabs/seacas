@@ -380,7 +380,7 @@ namespace {
         // Find this sideblock on the parent block...
         auto &bc_name = fb->name();
         for (auto &bc : sb_parent->m_boundaryConditions) {
-          auto bc_compose = bc.m_bcName + "/" + sb_parent->name();
+          auto bc_compose = bc.m_famName + "/" + sb_parent->name();
           if (bc_name == bc_compose) {
             std::vector<int> elem_side;
             if (bc.get_face_count() > 0) {
