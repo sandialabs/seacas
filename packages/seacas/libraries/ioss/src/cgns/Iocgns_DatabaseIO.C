@@ -117,6 +117,24 @@ namespace {
     return face;
   }
 
+  int find_face(const Ioss::IJK_t &begin, const Ioss::IJK_t &end)
+  {
+    // 0,1,2 == min x,y,z; 3,4,5 == Max x,y,z
+    bool is_x = begin[0] == end[0];
+    bool is_y = begin[1] == end[1];
+    bool is_z = begin[2] == end[2];
+    assert(is_x || is_y || is_z);
+    assert((is_x ? 1 : 0) + (is_y ? 1 : 0) + (is_z ? 1 : 0) == 1);
+    int idx = is_x ? 0 : is_y ? 1 : 2;
+
+    // Which face on this block?
+    int face = idx;
+    if (begin[idx] != 1) {
+      face += 3;
+    }
+    return face;
+  }
+
   struct SBlock
   {
     SBlock(char *names, int *data)
@@ -516,9 +534,11 @@ namespace Iocgns {
               }
             }
           }
+#if IOSS_DEBUG_OUTPUT
           std::cerr << "Range of blocks for " << b.name << " is " << i << " to " << j - 1
                     << " Global I,J,K = " << b.glob_range[0] << " " << b.glob_range[1] << " "
                     << b.glob_range[2] << "\n";
+#endif
           // All processors need to know about it...
           for (int p = 0; p < proc_count; p++) {
             auto iter = proc_block_map.find(p);
@@ -572,6 +592,7 @@ namespace Iocgns {
         }
       }
 
+#if IOSS_DEBUG_OUTPUT
       for (const auto &b : resolved_blocks) {
         std::cerr << b.name << " " << b.proc << " (" << b.range[0] << " " << b.range[1] << " "
                   << b.range[2] << ") (" << b.glob_range[0] << " " << b.glob_range[1] << " "
@@ -582,7 +603,8 @@ namespace Iocgns {
                   << b.bc[3] << " " << b.bc[4] << " " << b.bc[5] << ")"
                   << "\n";
       }
-
+#endif
+      
       // Data now consistent for all zones.  Send back to their "owning" processor
       tot_zones = num_unique;
       all_names.resize(num_unique * (CGNS_MAX_NAME_LENGTH + 1));
@@ -646,6 +668,7 @@ namespace Iocgns {
       get_region()->add(block);
       m_zoneNameMap[zone_name] = zone;
 
+      int need_bc_name = 0;
       if (native) {
         // Handle zone-grid-connectivity...
         int nconn = 0;
@@ -686,6 +709,7 @@ namespace Iocgns {
         // Handle boundary conditions...
         Utils::add_structured_boundary_conditions(cgnsFilePtr, block, false);
 
+
         // Enusre that all BCs that should be applied have been applied...
         for (int ii = 0; ii < 6; ii++) {
           if (bc[ii] > 0) {
@@ -696,7 +720,8 @@ namespace Iocgns {
             if (sset->get_side_block(name) == nullptr) {
               Ioss::IJK_t empty_range{{0, 0, 0}};
 
-              auto sbc = Ioss::BoundaryCondition(sset->name().c_str(), sset->name().c_str(),
+	      need_bc_name = 1;
+              auto sbc = Ioss::BoundaryCondition("", sset->name().c_str(),
                                                  empty_range, empty_range);
               block->m_boundaryConditions.push_back(sbc);
               auto sb = new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name,
@@ -725,7 +750,8 @@ namespace Iocgns {
 
             Ioss::IJK_t empty_range{{0, 0, 0}};
 
-            auto        sbc  = Ioss::BoundaryCondition(sset->name().c_str(), sset->name().c_str(),
+	    need_bc_name = 1;
+            auto        sbc  = Ioss::BoundaryCondition("", sset->name().c_str(),
                                                empty_range, empty_range);
             std::string name = sset->name() + "/" + block->name();
 
@@ -743,12 +769,42 @@ namespace Iocgns {
           }
         }
       }
+
+      need_bc_name = util().global_minmax(need_bc_name, Ioss::ParallelUtils::DO_MAX);
+
+      if (need_bc_name == 1) {
+	// Get consistent set of names for all BC on this block...
+	std::vector<char> bc_names(12 * (CGNS_MAX_NAME_LENGTH+1));
+	for (const auto &sbc : block->m_boundaryConditions) {
+	  if (!sbc.m_bcName.empty()) {
+	    int face = find_face(sbc.m_rangeBeg, sbc.m_rangeEnd);
+	    assert(face >= 0 && face < 6);
+	    strncpy(&bc_names[(2*face+0) * (CGNS_MAX_NAME_LENGTH+1)], sbc.m_famName.c_str(), CGNS_MAX_NAME_LENGTH);
+	    strncpy(&bc_names[(2*face+1) * (CGNS_MAX_NAME_LENGTH+1)], sbc.m_bcName.c_str(), CGNS_MAX_NAME_LENGTH);
+	  }
+	}
+	util().global_array_minmax(bc_names, Ioss::ParallelUtils::DO_MAX);
+
+	// Now we have a mapping from sset_name (which is same as bc.m_famName) and bcName.
+	// Build that map...
+	std::map<std::string, std::string> sset_bc_name_map;
+	for (int ii=0; ii < 6; ii++) {
+	  std::string sset_name(&bc_names[(2*ii+0) * (CGNS_MAX_NAME_LENGTH+1)]);
+	  std::string bc_name(&bc_names[(2*ii+1) * (CGNS_MAX_NAME_LENGTH+1)]);
+	  sset_bc_name_map[sset_name] = bc_name;
+	}
+
+	for (auto &sbc : block->m_boundaryConditions) {
+	  if (sbc.m_bcName.empty()) {
+	    sbc.m_bcName = sset_bc_name_map[sbc.m_famName];
+	  }
+	}
+      }
       std::sort(block->m_boundaryConditions.begin(), block->m_boundaryConditions.end(),
                 [](const Ioss::BoundaryCondition &b1, const Ioss::BoundaryCondition &b2) {
                   return (b1.m_bcName < b2.m_bcName);
                 });
     }
-    MPI_Barrier(util().communicator());
 #endif
   }
 

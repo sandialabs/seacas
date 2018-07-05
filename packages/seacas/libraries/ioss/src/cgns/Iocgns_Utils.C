@@ -749,7 +749,6 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       }
       idx += 6;
     }
-
     // Transfer Zone Grid Connectivity...
     for (const auto &zgc : sb->m_zoneConnectivity) {
       if (zgc.is_valid() && zgc.is_active()) {
@@ -1392,7 +1391,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       // be split among multiple processors and the block face this is applied
       // to may not exist on this decomposed block)
       auto        bc   = Ioss::BoundaryCondition(boco_name, fam_name, range_beg, range_end);
-      std::string name = std::string(boco_name) + "/" + block->name();
+      std::string name = std::string(fam_name) + "/" + block->name();
 
       bc_subset_range(block, bc);
       block->m_boundaryConditions.push_back(bc);
