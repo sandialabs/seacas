@@ -3,7 +3,7 @@ var classIocgns_1_1Utils =
     [ "Utils", "classIocgns_1_1Utils.html#aaa6e690faa9240432cdea7d8df511b14", null ],
     [ "~Utils", "classIocgns_1_1Utils.html#ab6fa6122f34e7057265f68d21c1b4a21", null ],
     [ "add_sidesets", "classIocgns_1_1Utils.html#a95829b5d70f50d5231bdddd714fbe1b8", null ],
-    [ "add_structured_boundary_conditions", "classIocgns_1_1Utils.html#a3f097bf417b2b34d984c52632233f4a3", null ],
+    [ "add_structured_boundary_conditions", "classIocgns_1_1Utils.html#a5483dea525d91f0521f7fb850ec8db0a", null ],
     [ "add_transient_variables", "classIocgns_1_1Utils.html#a74351236018d1887504e14bd0d5fffa0", null ],
     [ "assign_zones_to_procs", "classIocgns_1_1Utils.html#a3c4edee8fc781353cb4fc58588f579c0", null ],
     [ "cgns_error", "classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda", null ],

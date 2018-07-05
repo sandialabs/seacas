@@ -43,6 +43,7 @@ var namespaces =
     [ "anonymous_namespace{Ioss_IOFactory.C}", "namespaceanonymous__namespace_02Ioss__IOFactory_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Map.C}", "namespaceanonymous__namespace_02Ioss__Map_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Node.C}", "namespaceanonymous__namespace_02Ioss__Node_8C_03.html", null ],
+    [ "anonymous_namespace{Ioss_ParallelUtils.C}", "namespaceanonymous__namespace_02Ioss__ParallelUtils_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Property.C}", "namespaceanonymous__namespace_02Ioss__Property_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Pyramid13.C}", "namespaceanonymous__namespace_02Ioss__Pyramid13_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Pyramid14.C}", "namespaceanonymous__namespace_02Ioss__Pyramid14_8C_03.html", null ],

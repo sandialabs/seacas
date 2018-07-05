@@ -5,6 +5,7 @@ var searchData=
   ['addchildvalues_5f',['addChildValues_',['../classJson_1_1StyledWriter.html#acaabfa48b50a8bb7fa9ce98e2ae971d9',1,'Json::StyledWriter::addChildValues_()'],['../classJson_1_1StyledStreamWriter.html#a4e4bb7fc223b2652b72b523b1ce414fa',1,'Json::StyledStreamWriter::addChildValues_()']]],
   ['addtimefield',['addTimeField',['../classIohb_1_1DatabaseIO.html#a60b6274217cb4675a11fad99797efec5',1,'Iohb::DatabaseIO']]],
   ['adjacencies_5f',['adjacencies_',['../classInfo_1_1Interface.html#aeb72a96878e86247280da37595e89285',1,'Info::Interface']]],
+  ['adjacency',['adjacency',['../structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1SBlock.html#ab2c84ab8c5ea3f938ba05a7dfbc6a7c5',1,'anonymous_namespace{Iocgns_DatabaseIO.C}::SBlock']]],
   ['aliases_5f',['aliases_',['../classIoss_1_1Region.html#ac1ea2764b899072ae0bc0b04a78b4b85',1,'Ioss::Region']]],
   ['allocated_5f',['allocated_',['../classJson_1_1Value.html#ae0126c80dc4907aad94088553fc7632b',1,'Json::Value']]],
   ['allowcomments_5f',['allowComments_',['../classJson_1_1Features.html#a33afd389719624b6bdb23950b3c346c9',1,'Json::Features']]],

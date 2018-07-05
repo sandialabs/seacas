@@ -8,7 +8,7 @@ var searchData=
   ['edgeset',['EdgeSet',['../structIoex_1_1EdgeSet.html',1,'Ioex::EdgeSet'],['../classIoss_1_1EdgeSet.html',1,'Ioss::EdgeSet'],['../structIodw_1_1meta_1_1EdgeSet.html',1,'Iodw::meta::EdgeSet']]],
   ['elemblock',['ElemBlock',['../structIodw_1_1Utils_1_1ElemBlock.html',1,'Iodw::Utils::ElemBlock'],['../structIoex_1_1ElemBlock.html',1,'Ioex::ElemBlock']]],
   ['elementblock',['ElementBlock',['../structIodw_1_1meta_1_1ElementBlock.html',1,'Iodw::meta::ElementBlock'],['../classIoss_1_1ElementBlock.html',1,'Ioss::ElementBlock']]],
-  ['elementset',['ElementSet',['../structIodw_1_1meta_1_1ElementSet.html',1,'Iodw::meta::ElementSet'],['../classIoss_1_1ElementSet.html',1,'Ioss::ElementSet']]],
+  ['elementset',['ElementSet',['../classIoss_1_1ElementSet.html',1,'Ioss::ElementSet'],['../structIodw_1_1meta_1_1ElementSet.html',1,'Iodw::meta::ElementSet']]],
   ['elementtopology',['ElementTopology',['../classIoss_1_1ElementTopology.html',1,'Ioss']]],
   ['elementvariabletype',['ElementVariableType',['../classIoss_1_1ElementVariableType.html',1,'Ioss']]],
   ['elemset',['ElemSet',['../structIoex_1_1ElemSet.html',1,'Ioex']]],
