@@ -81,7 +81,6 @@ var searchData=
   ['finalpressuretype',['FinalPressureType',['../structanonymous__namespace_02cth__pressure__map_8C_03_1_1Globals.html#a3b157d25d5957fe645bcbb21c4a12a01',1,'anonymous_namespace{cth_pressure_map.C}::Globals']]],
   ['find',['find',['../classIoss_1_1ETRegistry.html#a5be5e515dd01a2b81bcdf23e1313b7ee',1,'Ioss::ETRegistry::find()'],['../classIoss_1_1Registry.html#ae913ba0a64b603060c0b401655f56d1a',1,'Ioss::Registry::find()'],['../classJson_1_1Value.html#aaaf7ac58d15152d6439a22010cd64b46',1,'Json::Value::find()']]],
   ['find_5fdisplacement_5ffield',['find_displacement_field',['../namespaceIoex.html#afd98f843b2c93b81b9b61ee20cc7b90e',1,'Ioex']]],
-  ['find_5fface',['find_face',['../namespaceanonymous__namespace_02Iocgns__DatabaseIO_8C_03.html#a86b3655c451e3465e39ea5a03101a0e7',1,'anonymous_namespace{Iocgns_DatabaseIO.C}::find_face(const std::array&lt; cgsize_t, 6 &gt; &amp;range)'],['../namespaceanonymous__namespace_02Iocgns__DatabaseIO_8C_03.html#a6b834684690a6aa65e95b1811bc1f211',1,'anonymous_namespace{Iocgns_DatabaseIO.C}::find_face(const Ioss::IJK_t &amp;begin, const Ioss::IJK_t &amp;end)']]],
   ['find_5findex_5flocation',['find_index_location',['../classIoss_1_1Utils.html#a30e6ff5d426b82deed57af1d2b6605c7',1,'Ioss::Utils']]],
   ['find_5fsolution_5findex',['find_solution_index',['../classIocgns_1_1Utils.html#a89a83fe3324b0f3ba44dd884afdd065e',1,'Iocgns::Utils']]],
   ['fix_5fbad_5fname',['fix_bad_name',['../namespaceIoex.html#a708730b563f7f8b975a0237783c794c5',1,'Ioex']]],
