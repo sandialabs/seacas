@@ -33,28 +33,28 @@
  *
  */
 /*****************************************************************************
-*
-* testwtm - test write many ExodusII database files
-*
-* author - Sandia-2017 National Laboratories
-*          Larry A. Schoof - Original
-*          Vic Yarberry    - Added headers and error logging
-*               7/7/93          Modified for use with Exodus 2.00
-*
-*
-* environment - UNIX
-*
-* entry conditions -
-*
-* exit conditions -
-*
-* revision history -
-*
-*  This is a test program for the C binding of the EXODUS II
-*  database write routines. It tests multiple simultaneous output files.
-*
-*
-*****************************************************************************/
+ *
+ * testwtm - test write many ExodusII database files
+ *
+ * author - Sandia-2017 National Laboratories
+ *          Larry A. Schoof - Original
+ *          Vic Yarberry    - Added headers and error logging
+ *               7/7/93          Modified for use with Exodus 2.00
+ *
+ *
+ * environment - UNIX
+ *
+ * entry conditions -
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *  This is a test program for the C binding of the EXODUS II
+ *  database write routines. It tests multiple simultaneous output files.
+ *
+ *
+ *****************************************************************************/
 
 #define EX_TEST_INDIV_NODESET
 #define EX_TEST_INDIV_SIDESET
@@ -1365,7 +1365,7 @@ int main(int argc, char **argv)
     printf("after ex_put_prop (%d), error = %d\n", n, error);
   }
 
-/* END COMMENTED OUT SECTION */
+    /* END COMMENTED OUT SECTION */
 
 #endif /* TEST_INDIV_SIDESET */
 

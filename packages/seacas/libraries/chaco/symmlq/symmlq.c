@@ -33,43 +33,42 @@
  *
  */
 /* symmlq.f -- translated by f2c (version of 16 May 1991  13:06:06).
-*/
+ */
 
 #include <math.h>
 
 /* Table of constant values */
 
-static long int    c__1  = 1;
-static double c_b4  = 1.;
-static double c_b18 = 1.0 / 3.0;
+static long int c__1  = 1;
+static double   c_b4  = 1.;
+static double   c_b18 = 1.0 / 3.0;
 
-int symmlq(long int *n, double *b, double *r1, double *r2, double *v, double *w,
-            double *x, double *y, double *work, long int *checka, long int *goodb,
-            long int *precon, double *shift, long int *nout, long int *itnlim, double *rtol,
-            long int *istop, long int *itn, double *anorm, double *acond, double *rnorm,
-            double *ynorm, double *a, double *vwsqrt, double *orthlist,
-            double *macheps, double *normxlim, long int *itnmin)
+int symmlq(long int *n, double *b, double *r1, double *r2, double *v, double *w, double *x,
+           double *y, double *work, long int *checka, long int *goodb, long int *precon,
+           double *shift, long int *nout, long int *itnlim, double *rtol, long int *istop,
+           long int *itn, double *anorm, double *acond, double *rnorm, double *ynorm, double *a,
+           double *vwsqrt, double *orthlist, double *macheps, double *normxlim, long int *itnmin)
 {
 
   /* System generated locals */
-  long int    i__1;
-  double d__1, d__2;
+  long int i__1;
+  double   d__1, d__2;
 
   /* Local variables */
-  static double           alfa, diag, dbar, beta, gbar, oldb, epsa;
-  extern double           ch_ddot();
-  static double           gmin, gmax, zbar, epsr, epsx, beta1;
-  extern double           chdnrm2();
-  static long int              i;
-  static double           gamma, s, t, delta, z, denom;
+  static double               alfa, diag, dbar, beta, gbar, oldb, epsa;
+  extern double               ch_ddot();
+  static double               gmin, gmax, zbar, epsr, epsx, beta1;
+  extern double               chdnrm2();
+  static long int             i;
+  static double               gamma, s, t, delta, z, denom;
   extern /* Subroutine */ int aprod();
-  static double           bstep;
+  static double               bstep;
   extern /* Subroutine */ int chdcopy();
-  static double           epsln;
+  static double               epsln;
   extern /* Subroutine */ int chdaxpy();
-  static double           tnorm, cs, ynorm2, sn, cgnorm;
+  static double               tnorm, cs, ynorm2, sn, cgnorm;
   extern /* Subroutine */ int msolve();
-  static double           snprod, lqnorm, qrnorm, eps, rhs1, rhs2;
+  static double               snprod, lqnorm, qrnorm, eps, rhs1, rhs2;
 
   /*     ------------------------------------------------------------------
    */

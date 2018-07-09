@@ -33,10 +33,10 @@
  *
  */
 /*****************************************************************************
-*
-* testwt - test write an ExodusII database file (testwt-nfaced.exo)
-*
-*****************************************************************************/
+ *
+ * testwt - test write an ExodusII database file (testwt-nfaced.exo)
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"
 #include <assert.h>

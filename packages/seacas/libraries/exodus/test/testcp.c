@@ -33,23 +33,23 @@
  *
  */
 /*****************************************************************************
-*
-* testcp - copy file test.exo created by testwt
-*
-* author - Sandia-2017 National Laboratories
-*          Larry A. Schoof - Original
-*
-*
-* environment - UNIX
-*
-* entry conditions -
-*   input parameters:
-*
-* exit conditions -
-*
-* revision history -
-*
-*****************************************************************************/
+ *
+ * testcp - copy file test.exo created by testwt
+ *
+ * author - Sandia-2017 National Laboratories
+ *          Larry A. Schoof - Original
+ *
+ *
+ * environment - UNIX
+ *
+ * entry conditions -
+ *   input parameters:
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"
 #include "netcdf.h"
