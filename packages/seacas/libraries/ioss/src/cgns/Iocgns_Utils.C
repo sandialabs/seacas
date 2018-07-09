@@ -1025,20 +1025,22 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
           cg_free(dtext);
         }
       }
-      auto *ss = new Ioss::SideSet(db, ss_name);
       if (id == 0) {
         id = Ioss::Utils::extract_id(ss_name);
       }
       if (id != 0) {
+	auto *ss = new Ioss::SideSet(db, ss_name);
         ss->property_add(Ioss::Property("id", id));
         ss->property_add(Ioss::Property("guid", db->util().generate_guid(id)));
+	ss->property_add(Ioss::Property("bc_type", bocotype));
+	db->get_region()->add(ss);
       }
       else {
-        ss->property_add(Ioss::Property("id", family));
-        ss->property_add(Ioss::Property("guid", db->util().generate_guid(family)));
+	if (db->parallel_rank() == 0) {
+	  IOSS_WARNING << "*** WARNING: Skipping BC with name " << ss_name
+                       << " since FamBC_UserId is equal to 0.\n\n";
+	}
       }
-      ss->property_add(Ioss::Property("bc_type", bocotype));
-      db->get_region()->add(ss);
     }
   }
 }
@@ -1338,14 +1340,16 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
-    int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
-                     (range[2] == range[5] ? 1 : 0);
-    if (same_count != 1) {
-      std::cerr << "WARNING: CGNS: Skipping Boundary Condition '" << boco_name << "' on block '"
-                << block->name() << "'. It is applied to "
-                << (same_count == 2 ? "an edge" : "a vertex")
-                << ". This code only supports surfaces.\n";
-      continue;
+    {
+      int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
+	(range[2] == range[5] ? 1 : 0);
+      if (same_count != 1) {
+	std::cerr << "WARNING: CGNS: Skipping Boundary Condition '" << boco_name << "' on block '"
+		  << block->name() << "'. It is applied to "
+		  << (same_count == 2 ? "an edge" : "a vertex")
+		  << ". This code only supports surfaces.\n";
+	continue;
+      }
     }
 
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
@@ -1378,6 +1382,15 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       std::string name = std::string(fam_name) + "/" + block->name();
 
       bc_subset_range(block, bc);
+      if (!is_parallel_io) {
+	int same_count = (bc.m_rangeBeg[0] == bc.m_rangeEnd[0] ? 1 : 0) + 
+	  (bc.m_rangeBeg[1] == bc.m_rangeEnd[1] ? 1 : 0) + 
+	  (bc.m_rangeBeg[2] == bc.m_rangeEnd[2] ? 1 : 0);
+	if (same_count != 1) {
+	  bc.m_rangeBeg = {0,0,0};
+	  bc.m_rangeEnd = {0,0,0};
+	}
+      }
       block->m_boundaryConditions.push_back(bc);
       auto sb =
           new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,
