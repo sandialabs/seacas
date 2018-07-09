@@ -111,7 +111,7 @@ namespace Ioss {
 namespace Ioex {
   struct NodeBlock
   {
-    NodeBlock() = default;
+    NodeBlock()                       = default;
     NodeBlock(const NodeBlock &other) = default;
     explicit NodeBlock(const Ioss::NodeBlock &other);
 
@@ -134,10 +134,7 @@ namespace Ioex {
 
   struct EdgeBlock
   {
-    EdgeBlock()
-    {
-      std::strcpy(elType, "");
-    }
+    EdgeBlock() { std::strcpy(elType, ""); }
 
     EdgeBlock(const EdgeBlock &other)
         : name(other.name), id(other.id), entityCount(other.entityCount),
@@ -246,7 +243,7 @@ namespace Ioex {
 
   struct NodeSet
   {
-    NodeSet() = default;
+    NodeSet()                     = default;
     NodeSet(const NodeSet &other) = default;
     explicit NodeSet(const Ioss::NodeSet &other);
     bool operator==(const NodeSet & /*other*/) const;
@@ -263,7 +260,7 @@ namespace Ioex {
 
   struct EdgeSet
   {
-    EdgeSet() = default;
+    EdgeSet()                     = default;
     EdgeSet(const EdgeSet &other) = default;
     explicit EdgeSet(const Ioss::EdgeSet &other);
     bool operator==(const EdgeSet & /*other*/) const;
@@ -279,7 +276,7 @@ namespace Ioex {
 
   struct FaceSet
   {
-    FaceSet() = default;
+    FaceSet()                     = default;
     FaceSet(const FaceSet &other) = default;
     explicit FaceSet(const Ioss::FaceSet &other);
     bool operator==(const FaceSet & /*other*/) const;
@@ -295,7 +292,7 @@ namespace Ioex {
 
   struct ElemSet
   {
-    ElemSet() = default;
+    ElemSet()                     = default;
     ElemSet(const ElemSet &other) = default;
     explicit ElemSet(const Ioss::ElementSet &other);
     bool operator==(const ElemSet & /*other*/) const;

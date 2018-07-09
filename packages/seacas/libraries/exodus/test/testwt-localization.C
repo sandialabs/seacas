@@ -218,7 +218,7 @@ int main(int argc, char **argv)
   EXCHECK(ex_put_conn(exoid, EX_ELEM_BLOCK, blocks[2].id, connect2.data(), NULL, NULL));
 
   /* write information records; test empty and just blank-filled records */
-  constexpr int num_info = 3;
+  constexpr int                      num_info = 3;
   std::array<const char *, num_info> info;
 
   info[0] = "This is the first information record.";

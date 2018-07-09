@@ -33,27 +33,27 @@
  *
  */
 /******************************************************************************
-* testrdd - read exodus file test.exo created by testwt - double precision
-*
-* author - Sandia-2017 National Laboratories
-*          Larry A. Schoof - Original
-*
-*
-* environment - UNIX
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*
-* exit conditions -
-*
-* revision history -
-*
-*   Original L. A. Schoof
-*   04/05/93 V.R. Yarberry - revised so that output resembles Fortran version
-*   06/25/93 VRY - revised to match 2.00 API.
-*
-*****************************************************************************/
+ * testrdd - read exodus file test.exo created by testwt - double precision
+ *
+ * author - Sandia-2017 National Laboratories
+ *          Larry A. Schoof - Original
+ *
+ *
+ * environment - UNIX
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *   Original L. A. Schoof
+ *   04/05/93 V.R. Yarberry - revised so that output resembles Fortran version
+ *   06/25/93 VRY - revised to match 2.00 API.
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"
 #include "netcdf.h"

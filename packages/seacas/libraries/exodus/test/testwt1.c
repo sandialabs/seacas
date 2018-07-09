@@ -33,28 +33,28 @@
  *
  */
 /*****************************************************************************
-*
-* testwt1 - test write an ExodusII database file
-*
-* author - Sandia-2017 National Laboratories
-*          Larry A. Schoof - Original
-*          Vic Yarberry    - Added headers and error logging
-*               7/7/93          Modified for use with Exodus 2.00
-*
-*
-* environment - UNIX
-*
-* entry conditions -
-*
-* exit conditions -
-*
-* revision history -
-*
-*  This is a test program for the C binding of the EXODUS II
-*  database write routines.
-*
-*
-*****************************************************************************/
+ *
+ * testwt1 - test write an ExodusII database file
+ *
+ * author - Sandia-2017 National Laboratories
+ *          Larry A. Schoof - Original
+ *          Vic Yarberry    - Added headers and error logging
+ *               7/7/93          Modified for use with Exodus 2.00
+ *
+ *
+ * environment - UNIX
+ *
+ * entry conditions -
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *  This is a test program for the C binding of the EXODUS II
+ *  database write routines.
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"
 #include "netcdf.h"

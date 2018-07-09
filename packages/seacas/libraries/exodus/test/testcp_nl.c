@@ -33,23 +33,23 @@
  *
  */
 /*****************************************************************************
-*
-* testcp_lrg - copy file test.exo created by testwt, normal_model to large_model
-*
-* author - Sandia-2017 National Laboratories
-*          Larry A. Schoof - Original
-*
-*
-* environment - UNIX
-*
-* entry conditions -
-*   input parameters:
-*
-* exit conditions -
-*
-* revision history -
-*
-*****************************************************************************/
+ *
+ * testcp_lrg - copy file test.exo created by testwt, normal_model to large_model
+ *
+ * author - Sandia-2017 National Laboratories
+ *          Larry A. Schoof - Original
+ *
+ *
+ * environment - UNIX
+ *
+ * entry conditions -
+ *   input parameters:
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"
 #include "netcdf.h"
