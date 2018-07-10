@@ -352,9 +352,9 @@ namespace {
 
   void output_sidesets(Ioss::Region &region, Ioss::Region &output_region)
   {
-    // Maps the 'parent_face'+3 returned from which_parent_face()
+    // Maps the 'parent_face'+1 returned from which_face()
     // to the local 1-based face of the hex elements in that block.
-    static int face_map[] = {5, 1, 4, 0, 2, 3, 6};
+    static int face_map[] = {5, 1, 4, 2, 3, 6};
 
     const auto &ssets = region.get_sidesets();
     for (auto ss : ssets) {
@@ -410,7 +410,7 @@ namespace {
 #if IOSS_DEBUG_OUTPUT
               std::cerr << bc << "\n";
 #endif
-              auto parent_face = face_map[bc.which_parent_face() + 3];
+              auto parent_face = face_map[bc.which_face() + 1];
               elem_side.reserve(bc.get_face_count() * 2);
               for (auto k = range_beg[2]; k <= cell_range_end[2]; k++) {
                 for (auto j = range_beg[1]; j <= cell_range_end[1]; j++) {

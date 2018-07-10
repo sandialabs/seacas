@@ -1397,14 +1397,9 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       std::string name = std::string(fam_name) + "/" + block->name();
 
       bc_subset_range(block, bc);
-      if (!is_parallel_io) {
-        int same_count = (bc.m_rangeBeg[0] == bc.m_rangeEnd[0] ? 1 : 0) +
-                         (bc.m_rangeBeg[1] == bc.m_rangeEnd[1] ? 1 : 0) +
-                         (bc.m_rangeBeg[2] == bc.m_rangeEnd[2] ? 1 : 0);
-        if (same_count != 1) {
-          bc.m_rangeBeg = {0, 0, 0};
-          bc.m_rangeEnd = {0, 0, 0};
-        }
+      if (!is_parallel_io && !bc.is_valid()) {
+        bc.m_rangeBeg = {0, 0, 0};
+        bc.m_rangeEnd = {0, 0, 0};
       }
       block->m_boundaryConditions.push_back(bc);
       auto sb =
