@@ -134,7 +134,8 @@ namespace Ioss {
     template <typename T> void all_gather(T my_value, std::vector<T> &result) const;
     template <typename T> void gather(std::vector<T> &my_values, std::vector<T> &result) const;
     template <typename T>
-      int gather(int vals_count, int size_per_val, std::vector<T> &my_values, std::vector<T> &result) const;
+    int gather(int vals_count, int size_per_val, std::vector<T> &my_values,
+               std::vector<T> &result) const;
 
     void progress(const std::string &output) const;
 

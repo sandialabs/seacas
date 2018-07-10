@@ -76,7 +76,10 @@ namespace Ioss {
     BoundaryCondition(const BoundaryCondition &copy_from) = default;
 
     // Determine which "face" of the parent block this BC is applied to.
-    int which_parent_face() const;
+    int which_face() const;
+
+    // Does range specify a valid face
+    bool is_valid() const;
 
     // Return number of cell faces in the BC
     size_t get_face_count() const;

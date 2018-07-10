@@ -123,22 +123,6 @@ namespace {
     return true;
   }
 
-  bool bc_is_valid(const Ioss::IJK_t &begin, const Ioss::IJK_t &end)
-  {
-    // Return true/false if range specifies a valid face
-    bool is_x = begin[0] == end[0];
-    bool is_y = begin[1] == end[1];
-    bool is_z = begin[2] == end[2];
-    if (!is_x && !is_y && !is_z) {
-      return false;
-    }
-
-    if ((is_x ? 1 : 0) + (is_y ? 1 : 0) + (is_z ? 1 : 0) != 1) {
-      return false;
-    }
-    return true;
-  }
-
   int find_face(const std::array<cgsize_t, 6> &range)
   {
     // 0,1,2 == min x,y,z; 3,4,5 == Max x,y,z
@@ -152,26 +136,6 @@ namespace {
     // Which face on this block?
     int face = idx;
     if (range[idx] != 1) {
-      face += 3;
-    }
-    return face;
-  }
-#endif
-
-#ifdef SEACAS_HAVE_MPI
-  int find_face(const Ioss::IJK_t &begin, const Ioss::IJK_t &end)
-  {
-    // 0,1,2 == min x,y,z; 3,4,5 == Max x,y,z
-    bool is_x = begin[0] == end[0];
-    bool is_y = begin[1] == end[1];
-    bool is_z = begin[2] == end[2];
-    assert(is_x || is_y || is_z);
-    assert((is_x ? 1 : 0) + (is_y ? 1 : 0) + (is_z ? 1 : 0) == 1);
-    int idx = is_x ? 0 : is_y ? 1 : 2;
-
-    // Which face on this block?
-    int face = idx;
-    if (begin[idx] != 1) {
       face += 3;
     }
     return face;
@@ -238,17 +202,17 @@ namespace {
       CGCHECK(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range.data(), nullptr));
 
       if (bc_is_valid(range)) {
-	// See if there is a sideset (bc) with this name...
-	int  bc_id = -1;
-	auto iter  = ss_id_map.find(fam_name);
-	if (iter != ss_id_map.end()) {
-	  bc_id = (*iter).second;
+        // See if there is a sideset (bc) with this name...
+        int  bc_id = -1;
+        auto iter  = ss_id_map.find(fam_name);
+        if (iter != ss_id_map.end()) {
+          bc_id = (*iter).second;
 
-	  // Exists, so see what face it is applied to...
-	  int face = find_face(range); // 0..5
-	  assert(bc[face] == -1);
-	  bc[face] = bc_id;
-	}
+          // Exists, so see what face it is applied to...
+          int face = find_face(range); // 0..5
+          assert(bc[face] == -1);
+          bc[face] = bc_id;
+        }
       }
     }
     return bc;
@@ -807,8 +771,8 @@ namespace Iocgns {
         // Get consistent set of names for all BC on this block...
         std::vector<char> bc_names(12 * (CGNS_MAX_NAME_LENGTH + 1));
         for (const auto &sbc : block->m_boundaryConditions) {
-          if (!sbc.m_bcName.empty() && bc_is_valid(sbc.m_rangeBeg, sbc.m_rangeEnd)) {
-            int face = find_face(sbc.m_rangeBeg, sbc.m_rangeEnd);
+          if (!sbc.m_bcName.empty() && sbc.is_valid()) {
+            int face = sbc.which_face();
             assert(face >= 0 && face < 6);
             strncpy(&bc_names[(2 * face + 0) * (CGNS_MAX_NAME_LENGTH + 1)], sbc.m_famName.c_str(),
                     CGNS_MAX_NAME_LENGTH);
