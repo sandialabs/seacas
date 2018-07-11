@@ -220,6 +220,87 @@ namespace {
   }
   void validate_blocks(const Ioss::StructuredBlockContainer &structured_blocks) {}
 
+  void add_bc_to_block(Ioss::StructuredBlock *block,
+		       const std::string &boco_name,
+		       const std::string &fam_name,
+		       int ibc, 
+		       cgsize_t *range,
+		       CG_BCType_t bocotype,
+		       bool is_parallel_io)
+  {
+    Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
+    if (sset == nullptr) {
+      // Need to create a new sideset since didn't see this earlier.
+      auto *db = block->get_database();
+      sset     = new Ioss::SideSet(db, fam_name);
+      if (sset == nullptr) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Could not create sideset named '" << fam_name << "' on block '"
+               << block->name() << "'.\n";
+        IOSS_ERROR(errmsg);
+      }
+      sset->property_add(Ioss::Property("id", ibc + 1)); // Not sure this is unique id...8
+      sset->property_add(Ioss::Property("guid", db->util().generate_guid(ibc + 1)));
+      db->get_region()->add(sset);
+    }
+
+    if (sset != nullptr) {
+      Ioss::IJK_t range_beg{{(int)std::min(range[0], range[3]), (int)std::min(range[1], range[4]),
+                             (int)std::min(range[2], range[5])}};
+
+      Ioss::IJK_t range_end{{(int)std::max(range[0], range[3]), (int)std::max(range[1], range[4]),
+                             (int)std::max(range[2], range[5])}};
+
+      // Determine overlap of surface with block (in parallel, a block may
+      // be split among multiple processors and the block face this is applied
+      // to may not exist on this decomposed block)
+      auto        bc   = Ioss::BoundaryCondition(boco_name, fam_name, range_beg, range_end);
+      std::string name = std::string(fam_name) + "/" + block->name();
+
+      bc_subset_range(block, bc);
+      if (!is_parallel_io && !bc.is_valid()) {
+        bc.m_rangeBeg = {0, 0, 0};
+        bc.m_rangeEnd = {0, 0, 0};
+      }
+      block->m_boundaryConditions.push_back(bc);
+      auto sb =
+          new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,
+                              block->m_boundaryConditions.back().get_face_count());
+      sb->set_parent_block(block);
+      sset->add(sb);
+
+      int base = block->get_property("base").get_int();
+      int zone = block->get_property("zone").get_int();
+      sb->property_add(Ioss::Property("base", base));
+      sb->property_add(Ioss::Property("zone", zone));
+      sb->property_add(Ioss::Property("section", ibc + 1));
+      sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
+      sb->property_add(Ioss::Property(
+          "guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
+
+      // Set a property on the sideset specifying the boundary condition type (bocotype)
+      // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.
+      if (sset->property_exists("bc_type")) {
+        // Check that the 'bocotype' value matches the value of the property.
+        auto old_bocotype = sset->get_property("bc_type").get_int();
+        if (old_bocotype != bocotype && bocotype != CG_FamilySpecified) {
+          IOSS_WARNING << "On sideset " << sset->name()
+                       << ", the boundary condition type was previously set to " << old_bocotype
+                       << " which does not match the current value of " << bocotype
+                       << ". It will keep the old value.\n";
+        }
+      }
+      else {
+        sset->property_add(Ioss::Property("bc_type", (int)bocotype));
+      }
+    }
+    else {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: CGNS: StructuredBlock '" << block->name()
+             << "' Did not find matching sideset with name '" << boco_name << "'";
+      IOSS_ERROR(errmsg);
+    }
+}
 } // namespace
 
 void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *function, int lineno,
@@ -1233,12 +1314,22 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 {
   // `is_parallel_io` is true if all processors reading single file.
   // `is_parallel_io` is false if serial, or each processor reading its own file (fpp)
+  if (is_parallel_io) {
+    add_structured_boundary_conditions_pio(cgnsFilePtr, block);
+  }
+  else {
+    add_structured_boundary_conditions_fpp(cgnsFilePtr, block);
+  }
+}
 
+void Iocgns::Utils::add_structured_boundary_conditions_pio(int                    cgnsFilePtr,
+							   Ioss::StructuredBlock *block)
+{
   int base = block->get_property("base").get_int();
   int zone = block->get_property("zone").get_int();
 
-  // Called by both parallel and serial runs.
-  // In parallel, the 'cgnsFilePtr' is for the serial file on processor 0.
+  // Called by Parallel run reading single file only.
+  // The 'cgnsFilePtr' is for the serial file on processor 0.
   // Read all CGNS data on processor 0 and then broadcast to other processors.
   // Data needed:
   // * boco_name (CGNS_MAX_NAME_LENGTH + 1 chars)
@@ -1247,23 +1338,21 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
   int num_bcs = 0;
   int rank    = block->get_database()->util().parallel_rank();
-  if (!is_parallel_io || rank == 0) {
+  if (rank == 0) {
     CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
   }
 
 #ifdef SEACAS_HAVE_MPI
   int proc = block->get_database()->util().parallel_size();
-  if (is_parallel_io) {
-    if (proc > 1) {
-      MPI_Bcast(&num_bcs, 1, MPI_INT, 0, block->get_database()->util().communicator());
-    }
+  if (proc > 1) {
+    MPI_Bcast(&num_bcs, 1, MPI_INT, 0, block->get_database()->util().communicator());
   }
 #endif
 
   std::vector<int>  bc_data(7 * num_bcs);
   std::vector<char> bc_names(2 * (CGNS_MAX_NAME_LENGTH + 1) * num_bcs);
 
-  if (rank == 0 || !is_parallel_io) {
+  if (rank == 0) {
     int      off_data = 0;
     int      off_name = 0;
     cgsize_t range[6];
@@ -1310,8 +1399,8 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
   }
 
 #ifdef SEACAS_HAVE_MPI
-  // If parallel, broadcast data to other processors...
-  if (proc > 1 && is_parallel_io) {
+  // Broadcast data to other processors...
+  if (proc > 1) {
     MPI_Bcast(bc_names.data(), (int)bc_names.size(), MPI_BYTE, 0,
               block->get_database()->util().communicator());
     MPI_Bcast(bc_data.data(), (int)bc_data.size(), MPI_INT, 0,
@@ -1320,7 +1409,6 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 #endif
 
   // Now just unpack the data and run through the same calculations on all processors.
-  // A little more work than needed for a serial run, but shouldn't be excessive...
   int off_data = 0;
   int off_name = 0;
   for (int ibc = 0; ibc < num_bcs; ibc++) {
@@ -1353,7 +1441,71 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       }
     }
 
-    if (proc > 1 && !is_parallel_io) {
+    bool is_parallel_io = true;
+    add_bc_to_block(block, boco_name, fam_name, ibc, range, bocotype, is_parallel_io);
+  }
+}
+
+void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                    cgnsFilePtr,
+							   Ioss::StructuredBlock *block)
+{
+  int base = block->get_property("base").get_int();
+  int zone = block->get_property("zone").get_int();
+
+  // Called by both parallel fpp and serial runs.
+  // In parallel, the 'cgnsFilePtr' is specific for each processor
+
+  int num_bcs = 0;
+  int rank    = block->get_database()->util().parallel_rank();
+  CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
+
+  std::vector<int>  bc_data(7 * num_bcs);
+  std::vector<char> bc_names(2 * (CGNS_MAX_NAME_LENGTH + 1) * num_bcs);
+
+  int proc = block->get_database()->util().parallel_size();
+  
+    for (int ibc = 0; ibc < num_bcs; ibc++) {
+      char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
+      char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
+      CG_BCType_t       bocotype;
+      CG_PointSetType_t ptset_type;
+      cgsize_t          npnts;
+      cgsize_t          NormalListSize;
+      CG_DataType_t     NormalDataType;
+      int               ndataset;
+      cgsize_t range[6];
+
+      // All we really want from this is 'boco_name'
+      CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
+                             &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+
+      if (bocotype == CG_FamilySpecified) {
+        // Get family name associated with this boco_name
+        CGCHECKNP(
+            cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
+        CGCHECKNP(cg_famname_read(fam_name));
+      }
+      else {
+        strncpy(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
+      }
+
+      CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
+
+    // There are some BC that are applied on an edge or a vertex;
+    // Don't want those (yet?), so filter them out at this time...
+    {
+      int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
+                       (range[2] == range[5] ? 1 : 0);
+      if (same_count != 1) {
+        std::cerr << "WARNING: CGNS: Skipping Boundary Condition '" << boco_name << "' on block '"
+                  << block->name() << "'. It is applied to "
+                  << (same_count == 2 ? "an edge" : "a vertex")
+                  << ". This code only supports surfaces.\n";
+        continue;
+      }
+    }
+
+    if (proc > 1) {
       // Need to modify range with block offset to put into global space
       int offset[3];
       offset[0] = block->get_property("offset_i").get_int();
@@ -1367,75 +1519,8 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       range[5] += offset[2];
     }
 
-    Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
-    if (sset == nullptr) {
-      // Need to create a new sideset since didn't see this earlier.
-      auto *db = block->get_database();
-      sset     = new Ioss::SideSet(db, fam_name);
-      if (sset == nullptr) {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Could not create sideset named '" << fam_name << "' on block '"
-               << block->name() << "'.\n";
-        IOSS_ERROR(errmsg);
-      }
-      sset->property_add(Ioss::Property("id", ibc + 1)); // Not sure this is unique id...8
-      sset->property_add(Ioss::Property("guid", db->util().generate_guid(ibc + 1)));
-      db->get_region()->add(sset);
-    }
-
-    if (sset != nullptr) {
-      Ioss::IJK_t range_beg{{(int)std::min(range[0], range[3]), (int)std::min(range[1], range[4]),
-                             (int)std::min(range[2], range[5])}};
-
-      Ioss::IJK_t range_end{{(int)std::max(range[0], range[3]), (int)std::max(range[1], range[4]),
-                             (int)std::max(range[2], range[5])}};
-
-      // Determine overlap of surface with block (in parallel, a block may
-      // be split among multiple processors and the block face this is applied
-      // to may not exist on this decomposed block)
-      auto        bc   = Ioss::BoundaryCondition(boco_name, fam_name, range_beg, range_end);
-      std::string name = std::string(fam_name) + "/" + block->name();
-
-      bc_subset_range(block, bc);
-      if (!is_parallel_io && !bc.is_valid()) {
-        bc.m_rangeBeg = {0, 0, 0};
-        bc.m_rangeEnd = {0, 0, 0};
-      }
-      block->m_boundaryConditions.push_back(bc);
-      auto sb =
-          new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,
-                              block->m_boundaryConditions.back().get_face_count());
-      sb->set_parent_block(block);
-      sset->add(sb);
-      sb->property_add(Ioss::Property("base", base));
-      sb->property_add(Ioss::Property("zone", zone));
-      sb->property_add(Ioss::Property("section", ibc + 1));
-      sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
-      sb->property_add(Ioss::Property(
-          "guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
-
-      // Set a property on the sideset specifying the boundary condition type (bocotype)
-      // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.
-      if (sset->property_exists("bc_type")) {
-        // Check that the 'bocotype' value matches the value of the property.
-        auto old_bocotype = sset->get_property("bc_type").get_int();
-        if (old_bocotype != bocotype && bocotype != CG_FamilySpecified) {
-          IOSS_WARNING << "On sideset " << sset->name()
-                       << ", the boundary condition type was previously set to " << old_bocotype
-                       << " which does not match the current value of " << bocotype
-                       << ". It will keep the old value.\n";
-        }
-      }
-      else {
-        sset->property_add(Ioss::Property("bc_type", (int)bocotype));
-      }
-    }
-    else {
-      std::ostringstream errmsg;
-      errmsg << "ERROR: CGNS: StructuredBlock '" << block->name()
-             << "' Did not find matching sideset with name '" << boco_name << "'";
-      IOSS_ERROR(errmsg);
-    }
+    bool is_parallel_io = false;
+    add_bc_to_block(block, boco_name, fam_name, ibc, range, bocotype, is_parallel_io);
   }
 }
 
