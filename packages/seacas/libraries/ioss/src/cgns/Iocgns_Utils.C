@@ -1353,6 +1353,20 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       }
     }
 
+    if (proc > 1 && !is_parallel_io) {
+      // Need to modify range with block offset to put into global space
+      int offset[3];
+      offset[0] = block->get_property("offset_i").get_int();
+      offset[1] = block->get_property("offset_j").get_int();
+      offset[2] = block->get_property("offset_k").get_int();
+      range[0] += offset[0];
+      range[1] += offset[1];
+      range[2] += offset[2];
+      range[3] += offset[0];
+      range[4] += offset[1];
+      range[5] += offset[2];
+    }
+
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
     if (sset == nullptr) {
       // Need to create a new sideset since didn't see this earlier.
