@@ -1456,14 +1456,8 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
   // In parallel, the 'cgnsFilePtr' is specific for each processor
 
   int num_bcs = 0;
-  int rank    = block->get_database()->util().parallel_rank();
   CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
 
-  std::vector<int>  bc_data(7 * num_bcs);
-  std::vector<char> bc_names(2 * (CGNS_MAX_NAME_LENGTH + 1) * num_bcs);
-
-  int proc = block->get_database()->util().parallel_size();
-  
     for (int ibc = 0; ibc < num_bcs; ibc++) {
       char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
       char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
@@ -1493,7 +1487,6 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
 
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
-    {
       int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
                        (range[2] == range[5] ? 1 : 0);
       if (same_count != 1) {
@@ -1503,21 +1496,6 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
                   << ". This code only supports surfaces.\n";
         continue;
       }
-    }
-
-    if (proc > 1) {
-      // Need to modify range with block offset to put into global space
-      int offset[3];
-      offset[0] = block->get_property("offset_i").get_int();
-      offset[1] = block->get_property("offset_j").get_int();
-      offset[2] = block->get_property("offset_k").get_int();
-      range[0] += offset[0];
-      range[1] += offset[1];
-      range[2] += offset[2];
-      range[3] += offset[0];
-      range[4] += offset[1];
-      range[5] += offset[2];
-    }
 
     bool is_parallel_io = false;
     add_bc_to_block(block, boco_name, fam_name, ibc, range, bocotype, is_parallel_io);

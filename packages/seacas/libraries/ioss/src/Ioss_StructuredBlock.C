@@ -259,15 +259,25 @@ namespace Ioss {
 
   int BoundaryCondition::which_face() const
   {
-    // Determine which "face" of the parent block this BC is applied to.
-    // min X, max X, min Y, max Y, min Z, max Z -- 0, 3, 1, 4, 2, 5
-    if (m_rangeBeg[0] == m_rangeEnd[0]) {
-      return (m_rangeBeg[0] == 1) ? 0 : 3;
+    if (m_face == -1) {
+      // Determine which "face" of the parent block this BC is applied to.
+      // min X, max X, min Y, max Y, min Z, max Z -- 0, 3, 1, 4, 2, 5
+      if (m_rangeBeg[0] == 0 || m_rangeEnd[0] == 0 ||
+	  m_rangeBeg[1] == 0 || m_rangeEnd[1] == 0 ||
+	  m_rangeBeg[2] == 0 || m_rangeEnd[2] == 0) {
+	m_face = -1;
+      }
+      else if (m_rangeBeg[0] == m_rangeEnd[0]) {
+	m_face = (m_rangeBeg[0] == 1) ? 0 : 3;
+      }
+      else if (m_rangeBeg[1] == m_rangeEnd[1]) {
+	m_face = (m_rangeBeg[1] == 1) ? 1 : 4;
+      }
+      else if (m_rangeBeg[2] == m_rangeEnd[2]) {
+	m_face = (m_rangeBeg[2] == 1) ? 2 : 5;
+      }
     }
-    if (m_rangeBeg[1] == m_rangeEnd[1]) {
-      return (m_rangeBeg[1] == 1) ? 1 : 4;
-    }
-    return (m_rangeBeg[2] == 1) ? 2 : 5;
+    return m_face;
   }
 
   std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc)
