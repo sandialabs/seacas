@@ -6,7 +6,15 @@
 #include <catch.hpp>
 #include <exception>
 #include <numeric>
+#include <random>
 #include <vector>
+
+template <typename INT> void initialize_data(std::vector<INT> &init)
+{
+  std::random_device rd;
+  std::mt19937       g(rd());
+  std::shuffle(init.begin(), init.end(), g);
+}
 
 template <typename INT>
 void verify_global_to_local(const Ioss::Map &my_map, const std::vector<INT> &init)
@@ -28,8 +36,8 @@ template <typename INT> void test_reorder(Ioss::Map &my_map, std::vector<INT> &i
   // Redefine the map with a shuffle of the original ids -- reorder
   // Then map the shuffled ordering back to the original order
   // using the `map_field_to_db_scalar_order` function and verify.
+  initialize_data(init);
 
-  std::random_shuffle(init.begin(), init.end());
   my_map.set_map(init.data(), init.size(), 0, false);
   REQUIRE(!my_map.is_sequential());
 
@@ -56,7 +64,9 @@ TEST_CASE("test random ids", "[random_ids]")
 
   std::vector<int> init(count);
   std::iota(init.begin(), init.end(), 2511);
-  std::random_shuffle(init.begin(), init.end());
+
+  initialize_data(init);
+
   for (auto &e : init) {
     e = 11 * e;
   }
@@ -313,7 +323,9 @@ TEST_CASE("test map_data random", "[map_data_ran]")
 
   std::vector<int> init(count);
   std::iota(init.begin(), init.end(), 2511);
-  std::random_shuffle(init.begin(), init.end());
+
+  initialize_data(init);
+
   for (auto &e : init) {
     e = 11 * e;
   }
