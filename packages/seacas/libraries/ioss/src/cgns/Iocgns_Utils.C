@@ -800,9 +800,23 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       bc_range[idx + 2] = -bc_range[idx + 2];
     }
 
+    int offset[3];
+    offset[0] = sb->get_property("offset_i").get_int();
+    offset[1] = sb->get_property("offset_j").get_int();
+    offset[2] = sb->get_property("offset_k").get_int();
+
     idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
       int bc_idx = 0;
+      if (!is_parallel_io) {
+	bc_range[idx + 0] -= offset[0];
+	bc_range[idx + 1] -= offset[1];
+	bc_range[idx + 2] -= offset[2];
+	bc_range[idx + 3] -= offset[0];
+	bc_range[idx + 4] -= offset[1];
+	bc_range[idx + 5] -= offset[2];
+      }
+
       if (is_parallel_io ||
           (bc_range[idx + 3] > 0 && bc_range[idx + 4] > 0 && bc_range[idx + 5] > 0)) {
         CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
@@ -1496,6 +1510,21 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
                   << ". This code only supports surfaces.\n";
         continue;
       }
+
+    int proc = block->get_database()->util().parallel_size();
+    if (proc > 1) {
+      // Need to modify range with block offset to put into global space
+      int offset[3];
+      offset[0] = block->get_property("offset_i").get_int();
+      offset[1] = block->get_property("offset_j").get_int();
+      offset[2] = block->get_property("offset_k").get_int();
+      range[0] += offset[0];
+      range[1] += offset[1];
+      range[2] += offset[2];
+      range[3] += offset[0];
+      range[4] += offset[1];
+      range[5] += offset[2];
+    }
 
     bool is_parallel_io = false;
     add_bc_to_block(block, boco_name, fam_name, ibc, range, bocotype, is_parallel_io);
