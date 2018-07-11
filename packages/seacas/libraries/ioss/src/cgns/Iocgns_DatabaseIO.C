@@ -102,15 +102,14 @@ namespace {
       // off the `_proc-#` portion and return just the basename.
       auto tokens = Ioss::tokenize(zname, "_");
       zname       = tokens[0];
-      for (size_t i = 1; i < tokens.size(); i++) {
-        if (tokens[i].substr(0, 5) == "proc-") {
-          auto ptoken = Ioss::tokenize(tokens[i], "-");
-          proc        = std::stoi(ptoken[1]);
-          break;
-        }
-        else {
-          zname += "_" + tokens[i];
-        }
+      if (tokens.size() >= 2) {
+	size_t idx = tokens.size() - 1;
+        if (tokens[idx].substr(0, 5) == "proc-") {
+	  auto ptoken = Ioss::tokenize(tokens[idx], "-");
+	  proc        = std::stoi(ptoken[1]);
+	  idx--;
+	  zname = tokens[idx];
+	}
       }
     }
     return std::make_pair(zname, proc);
@@ -149,6 +148,17 @@ namespace {
 	Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
 	Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
 	
+	int offset[3];
+	offset[0] = block->get_property("offset_i").get_int();
+	offset[1] = block->get_property("offset_j").get_int();
+	offset[2] = block->get_property("offset_k").get_int();
+	range_beg[0] += offset[0];
+	range_beg[1] += offset[1];
+	range_beg[2] += offset[2];
+	range_end[0] += offset[0];
+	range_end[1] += offset[1];
+	range_end[2] += offset[2];
+
 	auto con_name = decompose_name(connectname, isParallel).first;
 	block->m_zoneConnectivity.emplace_back(con_name, zone, donor_name, donor_zone, transform,
 					       range_beg, range_end, donor_beg, donor_end);
@@ -251,7 +261,7 @@ namespace {
     sset->add(sb);
     sb->property_add(Ioss::Property("base", base));
     sb->property_add(Ioss::Property("zone", zone));
-    sb->property_add(Ioss::Property("section", face));
+    sb->property_add(Ioss::Property("section", face+1));
     sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
     sb->property_add(Ioss::Property(
         "guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
@@ -691,7 +701,7 @@ namespace Iocgns {
 
 	    Ioss::SideSet *sset = get_region()->get_sideset(fam_name);
 	    assert(sset != nullptr);
-	    add_empty_bc(sset, block, base, zone, face+1, fam_name, boco_name);
+	    add_empty_bc(sset, block, base, zone, face, fam_name, boco_name);
 	  }
 	}
       }
