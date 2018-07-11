@@ -91,6 +91,8 @@ namespace Ioss {
     Ioss::IJK_t m_rangeBeg;
     Ioss::IJK_t m_rangeEnd;
 
+    mutable int m_face{-1};
+    
     friend std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc);
   };
 
