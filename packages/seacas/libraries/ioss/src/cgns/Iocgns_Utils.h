@@ -184,6 +184,11 @@ namespace Iocgns {
     static void             add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db);
     static void add_structured_boundary_conditions(int cgnsFilePtr, Ioss::StructuredBlock *block,
                                                    bool is_parallel_io);
+    static void add_structured_boundary_conditions_fpp(int                    cgnsFilePtr,
+                                                       Ioss::StructuredBlock *block);
+    static void add_structured_boundary_conditions_pio(int                    cgnsFilePtr,
+                                                       Ioss::StructuredBlock *block);
+
     static void finalize_database(int cgnsFilePtr, const std::vector<double> &timesteps,
                                   Ioss::Region *region, int myProcessor);
     static int get_step_times(int cgnsFilePtr, std::vector<double> &timesteps, Ioss::Region *region,
