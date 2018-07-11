@@ -44,19 +44,20 @@
 #include <exo_fpp/Iofx_DatabaseIO.h>
 #include <init/Ionit_Initializer.h>
 
+#include <exodusII.h>
+
+#include <algorithm>
 #include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
-#include <exodusII.h>
-
-#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <locale>
 #include <map>
 #include <numeric>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -436,7 +437,9 @@ namespace {
         }
         elem_beg = elem_end;
       }
-      std::random_shuffle(elem_to_proc.begin(), elem_to_proc.end());
+      std::random_device rd;
+      std::mt19937       g(rd());
+      std::shuffle(elem_to_proc.begin(), elem_to_proc.end(), g);
     }
 
     else if (interface.decomposition_method() == "file") {
