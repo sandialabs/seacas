@@ -1513,8 +1513,8 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
         continue;
       }
 
-    int proc = block->get_database()->util().parallel_size();
-    if (proc > 1) {
+    int num_proc = block->get_database()->util().parallel_size();
+    if (num_proc > 1) {
       // Need to modify range with block offset to put into global space
       Ioss::IJK_t offset;
       offset[0] = block->get_property("offset_i").get_int();

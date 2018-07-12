@@ -656,58 +656,78 @@ namespace Iocgns {
         Utils::add_structured_boundary_conditions(cgnsFilePtr, block, false);
       }
 
-      std::vector<int> bc(6);
-      for (auto &sbc : block->m_boundaryConditions) {
-	auto face = sbc.which_face();
-	if (face >= 0) {
-	  assert(bc[face] == 0);
-	  bc[face] = 1;
+      // Need to get a count of number of unique BC's.
+      // Note that possible to assign multiple BC to a single face, so can't do this based on faces
+      // Assume that if a BC is on multiple processors, then its name will be the same on all processors.
+      // * Gather all names to processor 0;
+      // * Get unique ordered set
+      // * Broadcast back to each processor
+      int in_bc = 0;
+      size_t num_bc = block->m_boundaryConditions.size();
+      std::vector<char> bc_names(num_bc * (CGNS_MAX_NAME_LENGTH + 1));
+      for (size_t ibc = 0; ibc < num_bc; ibc++) {
+	std::string name = block->m_boundaryConditions[ibc].m_famName + "/" + block->m_boundaryConditions[ibc].m_bcName;
+	strncpy(&bc_names[in_bc], name.c_str(), CGNS_MAX_NAME_LENGTH);
+	in_bc += CGNS_MAX_NAME_LENGTH + 1;
+      }
+      std::vector<char> all_bc_names;
+      int tot_names = util().gather(num_bc, CGNS_MAX_NAME_LENGTH + 1, bc_names, all_bc_names);
+
+      if (myProcessor == 0) {
+	int off_name = 0;
+	std::vector<std::string> bc;
+	for (int ibc = 0; ibc < tot_names; ibc++) {
+	  bc.emplace_back(&all_bc_names[off_name]);
+	  off_name += CGNS_MAX_NAME_LENGTH + 1;
+	}
+	Ioss::Utils::uniquify(bc);
+	tot_names = (int)bc.size();
+	all_bc_names.clear();
+	all_bc_names.shrink_to_fit();
+	bc_names.resize(tot_names * (CGNS_MAX_NAME_LENGTH + 1));
+	in_bc = 0;
+	for (const auto &name : bc) {
+	  strncpy(&bc_names[in_bc], name.c_str(), CGNS_MAX_NAME_LENGTH);
+	  in_bc += CGNS_MAX_NAME_LENGTH + 1;
 	}
       }
+      MPI_Bcast(&tot_names, 1, MPI_INT, 0, util().communicator());
+      bc_names.resize(tot_names * (CGNS_MAX_NAME_LENGTH + 1));
+      MPI_Bcast(bc_names.data(),  tot_names * (CGNS_MAX_NAME_LENGTH + 1), MPI_CHAR, 0,
+		util().communicator());
 
-      // Enusre that all BCs that should be applied have been applied...
-      auto my_bc = bc;
-      util().global_array_minmax(bc, Ioss::ParallelUtils::DO_SUM);
-
-      int proc = util().parallel_size();;
-      bool need_bc_name = false;
-      for (int jj=0; jj < 6; jj++) {
-	if (bc[jj] != 0 && bc[jj] != proc) {
-	  need_bc_name = true;
-	  break;
-	}
+      std::vector<std::string> bc;
+      int off_name = 0;
+      for (int ibc = 0; ibc < tot_names; ibc++) {
+	bc.emplace_back(&bc_names[off_name]);
+	off_name += CGNS_MAX_NAME_LENGTH + 1;
       }
+      bc_names.clear(); bc_names.shrink_to_fit();
 
-      if (need_bc_name == 1) {
-        // Get consistent set of names for all BC on this block...
-        std::vector<char> bc_names(12 * (CGNS_MAX_NAME_LENGTH + 1));
-        for (const auto &sbc : block->m_boundaryConditions) {
-          if (!sbc.m_bcName.empty() && sbc.is_valid()) {
-            int face = sbc.which_face();
-            assert(face >= 0 && face < 6);
-            strncpy(&bc_names[(2 * face + 0) * (CGNS_MAX_NAME_LENGTH + 1)], sbc.m_famName.c_str(),
-                    CGNS_MAX_NAME_LENGTH);
-            strncpy(&bc_names[(2 * face + 1) * (CGNS_MAX_NAME_LENGTH + 1)], sbc.m_bcName.c_str(),
-                    CGNS_MAX_NAME_LENGTH);
-          }
-        }
-        util().global_array_minmax(bc_names, Ioss::ParallelUtils::DO_MAX);
-
-	// See which faces I need BC for...
-	for (int face=0; face < 6; face++) {
-	  if (bc[face] > 0 && my_bc[face] == 0) {
-	    std::string fam_name{&bc_names[(2 * face + 0) * (CGNS_MAX_NAME_LENGTH + 1)]};
-	    std::string boco_name {&bc_names[(2 * face + 1) * (CGNS_MAX_NAME_LENGTH + 1)]};
-
-	    Ioss::SideSet *sset = get_region()->get_sideset(fam_name);
-	    assert(sset != nullptr);
-	    add_empty_bc(sset, block, base, zone, face, fam_name, boco_name);
+      // Each processor now has a unique set of BC names for this block.
+      // Now create the missing (empty) BC on each processor.
+      for (const auto &bc_name : bc) {
+	auto split_name = Ioss::tokenize(bc_name, "/");
+	assert(split_name.size() == 2);
+	bool has_name = false;
+	for (auto &sbc : block->m_boundaryConditions) {
+	  if (sbc.m_bcName == split_name[1]) {
+	    has_name = true;
+	    break;
 	  }
 	}
+	if (!has_name) {
+	  // Create an empty BC with that name...
+	  int face = -1;
+	  Ioss::SideSet *sset = get_region()->get_sideset(split_name[0]);
+	  assert(sset != nullptr);
+	  add_empty_bc(sset, block, base, zone, face, split_name[0], split_name[1]);
+	}
       }
+	
       std::sort(block->m_boundaryConditions.begin(), block->m_boundaryConditions.end(),
                 [](const Ioss::BoundaryCondition &b1, const Ioss::BoundaryCondition &b2) {
-                  return (b1.m_face < b2.m_face);
+                  return (b1.m_bcName < b2.m_bcName);
                 });
     }
 #endif
