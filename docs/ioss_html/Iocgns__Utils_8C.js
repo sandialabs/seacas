@@ -2,6 +2,7 @@ var Iocgns__Utils_8C =
 [
     [ "Range", "structanonymous__namespace_02Iocgns__Utils_8C_03_1_1Range.html", "structanonymous__namespace_02Iocgns__Utils_8C_03_1_1Range" ],
     [ "CGERR", "Iocgns__Utils_8C.html#a1a7dadc832bf0767a2ac81ecd9e7c743", null ],
+    [ "add_bc_to_block", "Iocgns__Utils_8C.html#a7cc9a7da58d1b8d94b1fb5b78e6222e6", null ],
     [ "bc_overlaps", "Iocgns__Utils_8C.html#a438fbeb34b60bbaebe9d53b540e8fdd3", null ],
     [ "bc_subset_range", "Iocgns__Utils_8C.html#ab655cb4bf7fe82089505620b49823dba", null ],
     [ "consolidate_zgc", "Iocgns__Utils_8C.html#a397d516e435535ef9fae83c788a399db", null ],

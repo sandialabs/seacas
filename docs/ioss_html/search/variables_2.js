@@ -1,7 +1,6 @@
 var searchData=
 [
   ['basetype',['baseType',['../classIoss_1_1CompositeVariableType.html#ac5ceb689a30e2ba798300dbb41576465',1,'Ioss::CompositeVariableType']]],
-  ['bc',['bc',['../structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1SBlock.html#a4afba8cc81b768f8a67415b03544b368',1,'anonymous_namespace{Iocgns_DatabaseIO.C}::SBlock']]],
   ['begin_5f',['begin_',['../classJson_1_1Reader.html#a327166839022ea91f0a8290960a8af76',1,'Json::Reader']]],
   ['bid',['bid',['../classVe2mSideSetInfo.html#ab61d3d37f77d9fb67d08e01662697db9',1,'Ve2mSideSetInfo']]],
   ['blockadjacenciescalculated',['blockAdjacenciesCalculated',['../classIoex_1_1DatabaseIO.html#ab9c45d254a0db843298dd81a4b5e47c1',1,'Ioex::DatabaseIO::blockAdjacenciesCalculated()'],['../classIoss_1_1DatabaseIO.html#aec6a8e90c689b4c065e617310136419d',1,'Ioss::DatabaseIO::blockAdjacenciesCalculated()']]],

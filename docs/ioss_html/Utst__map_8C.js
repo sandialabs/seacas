@@ -1,6 +1,7 @@
 var Utst__map_8C =
 [
     [ "CATCH_CONFIG_MAIN", "Utst__map_8C.html#a656eb5868e824d59f489f910db438420", null ],
+    [ "initialize_data", "Utst__map_8C.html#a05e3ddf235072c08f239d6373330a2e2", null ],
     [ "TEST_CASE", "Utst__map_8C.html#a4ae27c8590e96c3930e97f0ad2c97817", null ],
     [ "TEST_CASE", "Utst__map_8C.html#a4ed52968120ae8ff0ced4469e18b3444", null ],
     [ "TEST_CASE", "Utst__map_8C.html#a2b1646c6659fc0936c94b5a7833800e8", null ],
