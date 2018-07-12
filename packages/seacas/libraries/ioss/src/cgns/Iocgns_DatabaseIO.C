@@ -148,7 +148,7 @@ namespace {
 	Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
 	Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
 	
-	int offset[3];
+	Ioss::IJK_t offset;
 	offset[0] = block->get_property("offset_i").get_int();
 	offset[1] = block->get_property("offset_j").get_int();
 	offset[2] = block->get_property("offset_k").get_int();
@@ -161,7 +161,7 @@ namespace {
 
 	auto con_name = decompose_name(connectname, isParallel).first;
 	block->m_zoneConnectivity.emplace_back(con_name, zone, donor_name, donor_zone, transform,
-					       range_beg, range_end, donor_beg, donor_end);
+					       range_beg, range_end, donor_beg, donor_end, offset);
 	
 	block->m_zoneConnectivity.back().m_ownerProcessor = myProcessor;
 	block->m_zoneConnectivity.back().m_donorProcessor = donorname_proc.second;
@@ -803,8 +803,8 @@ namespace Iocgns {
           assert(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
         }
-        conn.m_donorGUID = conn.m_donorZone;
-        conn.m_ownerGUID = conn.m_ownerZone;
+        conn.m_donorGUID = util().generate_guid(conn.m_donorZone, conn.m_donorProcessor);
+        conn.m_ownerGUID = util().generate_guid(conn.m_ownerZone, conn.m_ownerProcessor);
       }
     }
 

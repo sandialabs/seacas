@@ -105,7 +105,7 @@ namespace {
 
   bool bc_overlaps(const Ioss::StructuredBlock *block, const Ioss::BoundaryCondition &bc)
   {
-    int ordinal[3];
+    Ioss::IJK_t ordinal;
     ordinal[0] = block->get_property("ni").get_int();
     ordinal[1] = block->get_property("nj").get_int();
     ordinal[2] = block->get_property("nk").get_int();
@@ -114,7 +114,7 @@ namespace {
       return false;
     }
 
-    int offset[3];
+    Ioss::IJK_t offset;
     offset[0] = block->get_property("offset_i").get_int();
     offset[1] = block->get_property("offset_j").get_int();
     offset[2] = block->get_property("offset_k").get_int();
@@ -141,12 +141,12 @@ namespace {
   void bc_subset_range(const Ioss::StructuredBlock *block, Ioss::BoundaryCondition &bc)
   {
     if (bc_overlaps(block, bc)) {
-      int ordinal[3];
+      Ioss::IJK_t ordinal;
       ordinal[0] = block->get_property("ni").get_int();
       ordinal[1] = block->get_property("nj").get_int();
       ordinal[2] = block->get_property("nk").get_int();
 
-      int offset[3];
+      Ioss::IJK_t offset;
       offset[0] = block->get_property("offset_i").get_int();
       offset[1] = block->get_property("offset_j").get_int();
       offset[2] = block->get_property("offset_k").get_int();
@@ -733,7 +733,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     }
   }
 
-  {
+  if (is_parallel_io || !is_parallel) { // Only for single file output or serial...
     // Create a vector for mapping from sb_name to zone -- used to update zgc instances
     std::map<std::string, int> sb_zone;
     for (const auto &sb : structured_blocks) {
@@ -748,7 +748,9 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       for (auto &zgc : sb->m_zoneConnectivity) {
         int donor_zone  = sb_zone[zgc.m_donorName];
         zgc.m_ownerZone = owner_zone;
+	zgc.m_ownerGUID = region.get_database()->util().generate_guid(owner_zone);
         zgc.m_donorZone = donor_zone;
+	zgc.m_donorGUID = region.get_database()->util().generate_guid(donor_zone);
       }
     }
   }
@@ -800,7 +802,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       bc_range[idx + 2] = -bc_range[idx + 2];
     }
 
-    int offset[3];
+    Ioss::IJK_t offset;
     offset[0] = sb->get_property("offset_i").get_int();
     offset[1] = sb->get_property("offset_j").get_int();
     offset[2] = sb->get_property("offset_k").get_int();
@@ -1514,7 +1516,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
     int proc = block->get_database()->util().parallel_size();
     if (proc > 1) {
       // Need to modify range with block offset to put into global space
-      int offset[3];
+      Ioss::IJK_t offset;
       offset[0] = block->get_property("offset_i").get_int();
       offset[1] = block->get_property("offset_j").get_int();
       offset[2] = block->get_property("offset_k").get_int();

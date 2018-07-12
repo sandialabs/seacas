@@ -56,11 +56,12 @@ namespace Ioss {
     ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
                      int donor_zone, const Ioss::IJK_t p_transform, const Ioss::IJK_t range_beg,
                      const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
-                     const Ioss::IJK_t donor_end)
+                     const Ioss::IJK_t donor_end, const Ioss::IJK_t owner_offset = IJK_t(), const Ioss::IJK_t donor_offset = IJK_t())
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
-          m_ownerRangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
-          m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
+          m_ownerRangeEnd(std::move(range_end)), m_ownerOffset(std::move(owner_offset)), m_donorRangeBeg(std::move(donor_beg)),
+      m_donorRangeEnd(std::move(donor_end)),
+      m_donorOffset(std::move(donor_offset)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
     {
       assert(is_valid());
       m_intraBlock      = m_ownerZone == m_donorZone;
@@ -115,7 +116,7 @@ namespace Ioss {
     std::vector<int>     get_range(int ordinal) const;
     friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
-    bool is_intra_block() const { return m_intraBlock; }
+    bool is_intra_block() const { return m_ownerZone == m_donorZone || m_intraBlock; }
     bool is_active() const { return m_isActive && has_faces(); }
 
     std::string m_connectionName; // Name of the connection; either generated or from file
