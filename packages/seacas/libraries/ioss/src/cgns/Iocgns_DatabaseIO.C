@@ -44,6 +44,7 @@
 #include <cgns/Iocgns_DatabaseIO.h>
 #include <cgns/Iocgns_Utils.h>
 #include <cgnslib.h>
+#include <bitset>
 #include <cstddef>
 #include <ctime>
 #include <fstream>
@@ -92,6 +93,45 @@ extern int pcg_mpi_initialized;
 #endif
 
 namespace {
+
+  template <typename T> void pack(int &idx, std::vector<int> &pack, T *from, int count)
+  {
+    for (int i = 0; i < count; i++) {
+      pack[idx++] = from[i];
+    }
+  }
+
+  template <typename T> void unpack(int &idx, T *pack, T *to, int count)
+  {
+    for (int i = 0; i < count; i++) {
+      to[i] = pack[idx++];
+    }
+  }
+
+  struct SBlock
+  {
+    SBlock() = default;
+    SBlock(char *names, int *data)
+    {
+      name    = std::string{names};
+      int idx = 0;
+      proc    = data[idx++];
+      unpack(idx, data, range.data(), 3);
+      int z = data[idx++];
+      split = z < 0;
+      local_zone = std::abs(z);
+    }
+    std::string        name{};
+    int                proc{-1};
+    int  local_zone{};
+    std::vector<std::pair<int, int>> adjacency; // face, proc pairs
+    std::array<int, 3> range{{0, 0, 0}};
+    std::array<int, 3> glob_range{{0, 0, 0}};
+    std::array<int, 3> offset{{0, 0, 0}};
+    bool split;
+    std::bitset<6> face_adj;
+  };
+
   std::pair<std::string, int> decompose_name(const std::string &name, bool is_parallel)
   {
     int         proc = 0;
@@ -167,22 +207,21 @@ namespace {
 	block->m_zoneConnectivity.back().m_donorProcessor = donorname_proc.second;
       }
   }
-
-  template <typename T> void pack(int &idx, std::vector<int> &pack, T *from, int count)
-  {
-    for (int i = 0; i < count; i++) {
-      pack[idx++] = from[i];
-    }
-  }
-
-  template <typename T> void unpack(int &idx, T *pack, T *to, int count)
-  {
-    for (int i = 0; i < count; i++) {
-      to[i] = pack[idx++];
-    }
-  }
-
 #ifdef SEACAS_HAVE_MPI
+  int adjacent_block(const SBlock &b, int ijk, std::map<int, int> &proc_block_map)
+  {
+    // Find a block the the 'left|right|up|down|front|back' (ijk) of blocks[br]
+    if (b.face_adj[ijk]) {
+      for (auto adj : b.adjacency) {
+	if (adj.first == ijk) {
+	  int proc = adj.second;
+	  return proc_block_map[proc];
+	}
+      }
+    }
+    return -1;
+  }
+
   int find_face(const std::array<cgsize_t, 6> &range)
   {
     // 0,1,2 == min x,y,z; 3,4,5 == Max x,y,z
@@ -203,17 +242,16 @@ namespace {
 #endif
 
 #ifdef SEACAS_HAVE_MPI
-  std::array<int, 6> generate_inter_proc_adjacency(int cgnsFilePtr, int base, int zone,
-                                                   int myProcessor, const std::string &zone_name)
+  bool generate_inter_proc_adjacency(int cgnsFilePtr, int base, int zone,
+				     int myProcessor, const std::string &zone_name, 
+				     std::vector<int> &adjacency)
   {
     // Handle zone-grid-connectivity... At this point we only want
     // the zgc that are inter-proc between the same "base zone".
     // That is, the zgc which are result of parallel decomp.
 
-    // If adjacency[i] != -1, then it contains the processor with
-    // which this face is shared. 0,1,2 == min x,y,z; 3,4,5 = MAX X,
-    // Y, Z
-    std::array<int, 6> adjacency{-1, -1, -1, -1, -1, -1};
+    // Stored in format:  "-myproc, -local_zone, face, shared_proc" for each shared face.
+    bool zone_added = false;
     int                nconn = 0;
     CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
     for (int i = 0; i < nconn; i++) {
@@ -233,12 +271,34 @@ namespace {
         // Determine which face of the zone on this processor is
         // shared with the other processor...
         int face = find_face(range);
-        assert(adjacency[face] == -1);
-        adjacency[face] = donorname_proc.second;
+	adjacency.push_back(-myProcessor);
+	adjacency.push_back(-zone);
+	adjacency.push_back(face);
+	adjacency.push_back(donorname_proc.second);
+	zone_added = true;
       }
     }
-    return adjacency;
+    return zone_added;
   }
+
+  void set_adjacency(SBlock &b, std::vector<int> &adjacency)
+  {
+    // Stored in format:  "-myproc, -local_zone, face, shared_proc" for each shared face.
+    for (size_t i=0; i < adjacency.size(); i+=4) {
+      assert(adjacency[i] <= 0); // -proc
+      if (adjacency[i] == -b.proc) {
+	assert(adjacency[i+1] < 0);
+	if (adjacency[i+1] == -b.local_zone) {
+	  b.adjacency.emplace_back(adjacency[i+2], adjacency[i+3]);
+	  b.face_adj.set(adjacency[i+2]);
+	}
+      }
+      else if (adjacency[i] < -b.proc) {
+	return;
+      }
+    }
+  }
+
 #endif
 
 #ifdef SEACAS_HAVE_MPI
@@ -267,29 +327,6 @@ namespace {
         "guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
   }
 #endif
-
-  struct SBlock
-  {
-    SBlock(char *names, int *data)
-    {
-      name    = std::string{names};
-      int idx = 0;
-      proc    = data[idx++];
-      unpack(idx, data, range.data(), 3);
-      unpack(idx, data, adjacency.data(), 6);
-    }
-    bool split() const
-    {
-      return adjacency[0] != -1 || adjacency[1] != -1 || adjacency[2] != -1 || adjacency[3] != -1 ||
-             adjacency[4] != -1 || adjacency[5] != -1;
-    }
-    std::string        name{};
-    int                proc{-1};
-    std::array<int, 3> range{{0, 0, 0}};
-    std::array<int, 6> adjacency{{-1, -1, -1, -1, -1, -1}};
-    std::array<int, 3> glob_range{{0, 0, 0}};
-    std::array<int, 3> offset{{0, 0, 0}};
-  };
 
 } // namespace
 
@@ -415,10 +452,12 @@ namespace Iocgns {
     // work with consistent set...
     int                        id           = 0;
     int                        in           = 0;
-    const int                  INT_PER_ZONE = 10;
+    const int                  INT_PER_ZONE = 5; // proc, range[3], zone
+    const int                  OUT_INT_PER_ZONE = 10; // proc, range[3], glob_range[3], offset[3]
     std::vector<int>           zone_data(num_zones * INT_PER_ZONE);
     std::vector<char>          zone_names(num_zones * (CGNS_MAX_NAME_LENGTH + 1));
     std::map<std::string, int> zone_id_map;
+    std::vector<int> adjacency;
 
     for (int zone = 1; zone <= num_zones; zone++) {
       cgsize_t size[9];
@@ -448,22 +487,20 @@ namespace Iocgns {
       // the zgc that are inter-proc between the same "base zone".
       // That is, the zgc which are result of parallel decomp.
 
-      // If adjacency[i] != -1, then it contains the processor with
-      // which this face is shared. 0,1,2 == min x,y,z; 3,4,5 = MAX X,
-      // Y, Z
-      std::array<int, 6> adjacency =
-          generate_inter_proc_adjacency(cgnsFilePtr, base, zone, myProcessor, zone_name);
-      pack(id, zone_data, adjacency.data(), 6);
+      // Stored as -P, -Z, f1, p1, -P, -Z, f2, p2, ..., -P, -Z, f1, ...
+      bool split = generate_inter_proc_adjacency(cgnsFilePtr, base, zone, myProcessor, zone_name, adjacency);
 
+      zone_data[id++] = split ? -zone : zone;
       assert(id % INT_PER_ZONE == 0);
     }
 
     // Now gather all information to processor 0
     std::vector<char> all_names;
     std::vector<int>  all_data;
-
+    std::vector<int>  all_adj;
     util().gather(num_zones, CGNS_MAX_NAME_LENGTH + 1, zone_names, all_names);
     int tot_zones = util().gather(num_zones, INT_PER_ZONE, zone_data, all_data);
+    util().gather((int)adjacency.size(), 1, adjacency, all_adj);
 
     if (myProcessor == 0) {
       std::vector<SBlock> blocks;
@@ -473,7 +510,14 @@ namespace Iocgns {
         blocks.emplace_back(&all_names[off_name], &all_data[off_data]);
         off_name += CGNS_MAX_NAME_LENGTH + 1;
         off_data += INT_PER_ZONE;
+
+	// Find the index location of this block in the `all_adj` list.
+	auto &b = blocks.back();
+	set_adjacency(b, all_adj);
       }
+      all_adj.clear();
+      all_adj.shrink_to_fit();
+
       // Sort blocks to get similar zones adjacent -- will have same name, but different proc
       std::sort(blocks.begin(), blocks.end(), [](const SBlock &b1, const SBlock &b2) {
         return (b1.name == b2.name ? b1.proc < b2.proc : b1.name < b2.name);
@@ -483,7 +527,7 @@ namespace Iocgns {
 
       for (size_t i = 0; i < blocks.size(); i++) {
         auto &b = blocks[i];
-        if (b.split()) {
+        if (b.split) {
           // The blocks it is split with should be adjacent in list.
           // Need a quick map from processor to block, so build that now...
           std::map<int, int> proc_block_map;
@@ -498,24 +542,34 @@ namespace Iocgns {
           auto bbeg    = i;
           auto bend    = j;
 
-          // Get sum of ni, nj, nk for all blocks in the range -- this will be the
-          // glob_ni, glob_nj, glob_nk.
-          b.glob_range = b.range;
-          for (j = bbeg + 1; j < bend; j++) {
-            if (blocks[j].adjacency[0] >= 0 || blocks[j].adjacency[3] >= 0) {
-              b.glob_range[0] += blocks[j].range[0];
-            }
-            if (blocks[j].adjacency[1] >= 0 || blocks[j].adjacency[4] >= 0) {
-              b.glob_range[1] += blocks[j].range[1];
-            }
-            if (blocks[j].adjacency[2] >= 0 || blocks[j].adjacency[5] >= 0) {
-              b.glob_range[2] += blocks[j].range[2];
-            }
-          }
-          // Now set range on all blocks...
-          for (j = bbeg + 1; j < bend; j++) {
-            blocks[j].glob_range = b.glob_range;
-          }
+	  // Get global extent in each direction...
+	  Ioss::IJK_t global{0, 0, 0};
+	  for (int ijk = 0; ijk < 3; ijk++) {
+	    // Find a block in range [bbeg, bend) with no block to the "left|below|behind
+	    for (size_t bb = bbeg; bb < bend; bb++) {
+	      if (blocks[bb].face_adj[ijk] == 0) {
+		// No blocks to min 'ijk' direction...
+		// Traverse all blocks toward max 'ijk' direction setting offsets and global range.
+		size_t iter = 0;
+		int br = bb;
+		do {
+		  global[ijk] += blocks[br].range[ijk];
+		  br = adjacent_block(blocks[br], ijk+3, proc_block_map);
+		  if (++iter > bend - bbeg) {
+		    auto bp = adjacent_block(blocks[br], ijk+3, proc_block_map);
+		    std::ostringstream errmsg;
+		    errmsg << "ERROR: CGNS: Block '" << blocks[bb].name << "' is in infinite loop calculating processor adjacencies for direction "
+			   << (ijk == 0 ? 'i' : ijk == 1 ? 'j' : 'k') << " on processors " << blocks[bp].proc << " and " << blocks[br].proc << ".  Check decomposition.";
+		    IOSS_ERROR(errmsg);
+		  }
+		} while (br >= 0);
+		break;
+	      }
+	    }
+	  }
+	  for (size_t bb = bbeg; bb < bend; bb++) {
+	    blocks[bb].glob_range = global;
+	  }
 
           // Iterate to get correct offset for these blocks on all processors...
           for (size_t p = 0; p < (bend - bbeg); p++) {
@@ -523,11 +577,10 @@ namespace Iocgns {
               auto &block = blocks[j];
               // See which blocks are below/left/under this block which means
               // that this blocks offset is affected.
-              for (int comp = 0; comp < 3; comp++) {
-                if (block.adjacency[comp] >= 0) {
-                  auto adj_block_idx = proc_block_map[block.adjacency[comp]];
-                  block.offset[comp] =
-                      blocks[adj_block_idx].offset[comp] + blocks[adj_block_idx].range[comp];
+              for (int ijk = 0; ijk < 3; ijk++) {
+		int br = adjacent_block(block, ijk, proc_block_map);
+		if (br >= 0) {
+                  block.offset[ijk] = blocks[br].offset[ijk] + blocks[br].range[ijk];
                 }
               }
             }
@@ -541,9 +594,10 @@ namespace Iocgns {
           for (int p = 0; p < proc_count; p++) {
             auto iter = proc_block_map.find(p);
             if (iter == proc_block_map.end()) {
-              SBlock newb = b;
-              newb.proc   = p;
-              newb.range  = {0, 0, 0};
+              SBlock newb;
+	      newb.name = b.name;
+              newb.proc = p;
+              newb.glob_range = b.glob_range;
               resolved_blocks.push_back(newb);
             }
             else {
@@ -553,17 +607,19 @@ namespace Iocgns {
             }
           }
           i = bend - 1;
-        }
-        else {
+	}
+	else {
           // If not split, then global size = local size and offset = 0
           b.glob_range = b.range;
 
           // All processors need to know about it...
           for (int p = 0; p < proc_count; p++) {
-            SBlock newb = b;
-            if (p != b.proc) {
-              newb.proc  = p;
-              newb.range = {0, 0, 0};
+            SBlock newb;
+	    newb.name = b.name;
+	    newb.glob_range = b.glob_range;
+	    newb.proc = p;
+            if (p == b.proc) {
+              newb.range = b.range;
             }
             resolved_blocks.push_back(newb);
           }
@@ -574,12 +630,10 @@ namespace Iocgns {
 
 #if IOSS_DEBUG_OUTPUT
       for (const auto &b : resolved_blocks) {
-        std::cerr << b.name << " " << b.proc << " (" << b.range[0] << " " << b.range[1] << " "
+        std::cerr << b.name << " " << b.proc << " " << b.local_zone << " " << " (" << b.range[0] << " " << b.range[1] << " "
                   << b.range[2] << ") (" << b.glob_range[0] << " " << b.glob_range[1] << " "
                   << b.glob_range[2] << ") (" << b.offset[0] << " " << b.offset[1] << " "
-                  << b.offset[2] << ") (" << b.adjacency[0] << " " << b.adjacency[1] << " "
-                  << b.adjacency[2] << " " << b.adjacency[3] << " " << b.adjacency[4] << " "
-                  << b.adjacency[5] << ")"
+                  << b.offset[2] << ") [" << b.face_adj[0] << b.face_adj[1] << b.face_adj[2] << b.face_adj[3] << b.face_adj[4] << b.face_adj[5] << "]"
                   << "\n";
       }
 #endif
@@ -587,7 +641,7 @@ namespace Iocgns {
       // Data now consistent for all zones.  Send back to their "owning" processor
       tot_zones = num_unique;
       all_names.resize(num_unique * (CGNS_MAX_NAME_LENGTH + 1));
-      all_data.resize(resolved_blocks.size() * INT_PER_ZONE);
+      all_data.resize(resolved_blocks.size() * OUT_INT_PER_ZONE);
       id = in = 0;
       for (int off = 0; off < proc_count; off++) {
         for (int b = 0; b < num_unique; b++) {
@@ -603,15 +657,15 @@ namespace Iocgns {
           pack(id, all_data, block.offset.data(), 3);
         }
       }
+      assert(id % OUT_INT_PER_ZONE == 0);
     }
-    assert(id % INT_PER_ZONE == 0);
     MPI_Bcast(&tot_zones, 1, MPI_INT, 0, util().communicator());
-    zone_data.resize(tot_zones * INT_PER_ZONE);
+    zone_data.resize(tot_zones * OUT_INT_PER_ZONE);
     all_names.resize(tot_zones * (CGNS_MAX_NAME_LENGTH + 1));
     MPI_Bcast(all_names.data(), tot_zones * (CGNS_MAX_NAME_LENGTH + 1), MPI_CHAR, 0,
               util().communicator());
-    MPI_Scatter(all_data.data(), tot_zones * INT_PER_ZONE, MPI_INT, zone_data.data(),
-                tot_zones * INT_PER_ZONE, MPI_INT, 0, util().communicator());
+    MPI_Scatter(all_data.data(), tot_zones * OUT_INT_PER_ZONE, MPI_INT, zone_data.data(),
+                tot_zones * OUT_INT_PER_ZONE, MPI_INT, 0, util().communicator());
 
     // Each processor now has a consistent set of structured blocks.
     // Create the Ioss::StructuredBlocks objects and add to region.
