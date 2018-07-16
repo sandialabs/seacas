@@ -192,7 +192,7 @@ namespace {
       }
     }
 
-      // If parallel, pack the data on rank 0 and broadcast to all other processors...
+    // If parallel, pack the data on rank 0 and broadcast to all other processors...
 #ifdef SEACAS_HAVE_MPI
 
     if (par_util.parallel_size() > 1) {
