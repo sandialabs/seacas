@@ -223,6 +223,60 @@ namespace {
     return -1;
   }
 
+  void set_block_offset(size_t begin, size_t end, std::vector<SBlock> &blocks, std::map<int, int> &proc_block_map)
+  {
+    for (size_t p = 0; p < (end - begin); p++) {
+      for (size_t j = begin; j < end; j++) {
+	auto &block = blocks[j];
+	// See which blocks are below/left/under this block which means
+	// that this blocks offset is affected.
+	for (int ijk = 0; ijk < 3; ijk++) {
+	  int br = adjacent_block(block, ijk, proc_block_map);
+	  if (br >= 0) {
+	    block.offset[ijk] = blocks[br].offset[ijk] + blocks[br].range[ijk];
+	  }
+	}
+      }
+    }
+  }
+
+  void set_global_extent(size_t begin, size_t end, std::vector<SBlock> &blocks, std::map<int, int> &proc_block_map)
+  {
+    // Determine the global ijk extent for the block which is spread over multiple processors 
+    // and is in the range [begin, end) in blocks.
+    Ioss::IJK_t global{0, 0, 0};
+    for (int ijk = 0; ijk < 3; ijk++) {
+      // Find a block in range [bbeg, bend) with no block to the "left|below|behind
+      for (size_t bb = begin; bb < end; bb++) {
+	if (blocks[bb].face_adj[ijk] == 0) {
+	  // No blocks to min 'ijk' direction...
+	  // Traverse all blocks toward max 'ijk' direction setting offsets and global range.
+	  size_t iter = 0;
+	  int    br   = bb;
+	  do {
+	    global[ijk] += blocks[br].range[ijk];
+	    br = adjacent_block(blocks[br], ijk + 3, proc_block_map);
+	    if (++iter > end - begin) {
+	      auto               bp = adjacent_block(blocks[br], ijk + 3, proc_block_map);
+	      std::ostringstream errmsg;
+	      errmsg
+		<< "ERROR: CGNS: Block '" << blocks[bb].name
+		<< "' is in infinite loop calculating processor adjacencies for direction "
+		<< (ijk == 0 ? 'i' : ijk == 1 ? 'j' : 'k') << " on processors "
+		<< blocks[bp].proc << " and " << blocks[br].proc
+		<< ".  Check decomposition.";
+	      IOSS_ERROR(errmsg);
+	    }
+	  } while (br >= 0);
+	  break;
+	}
+      }
+    }
+    for (size_t bb = begin; bb < end; bb++) {
+      blocks[bb].glob_range = global;
+    }
+  }
+
   int find_face(const std::array<cgsize_t, 6> &range)
   {
     // 0,1,2 == min x,y,z; 3,4,5 == Max x,y,z
@@ -553,7 +607,7 @@ namespace Iocgns {
         off_name += CGNS_MAX_NAME_LENGTH + 1;
         off_data += INT_PER_ZONE;
 
-        // Find the index location of this block in the `all_adj` list.
+        // Add inter-processor adjacency information to the block
         auto &b = blocks.back();
         set_adjacency(b, all_adj);
       }
@@ -564,6 +618,7 @@ namespace Iocgns {
       std::sort(blocks.begin(), blocks.end(), [](const SBlock &b1, const SBlock &b2) {
         return (b1.name == b2.name ? b1.proc < b2.proc : b1.name < b2.name);
       });
+
       int                 proc_count = util().parallel_size();
       std::vector<SBlock> resolved_blocks;
 
@@ -571,7 +626,8 @@ namespace Iocgns {
         auto &b = blocks[i];
         if (b.split()) {
           // The blocks it is split with should be adjacent in list.
-          // Need a quick map from processor to block, so build that now...
+	  // Get range of indices referring to this block and build 
+          // a map from processor to index, so build that now...
           std::map<int, int> proc_block_map;
           proc_block_map[b.proc] = i;
           size_t j               = i + 1;
@@ -584,53 +640,12 @@ namespace Iocgns {
           auto bbeg = i;
           auto bend = j;
 
-          // Get global extent in each direction...
-          Ioss::IJK_t global{0, 0, 0};
-          for (int ijk = 0; ijk < 3; ijk++) {
-            // Find a block in range [bbeg, bend) with no block to the "left|below|behind
-            for (size_t bb = bbeg; bb < bend; bb++) {
-              if (blocks[bb].face_adj[ijk] == 0) {
-                // No blocks to min 'ijk' direction...
-                // Traverse all blocks toward max 'ijk' direction setting offsets and global range.
-                size_t iter = 0;
-                int    br   = bb;
-                do {
-                  global[ijk] += blocks[br].range[ijk];
-                  br = adjacent_block(blocks[br], ijk + 3, proc_block_map);
-                  if (++iter > bend - bbeg) {
-                    auto               bp = adjacent_block(blocks[br], ijk + 3, proc_block_map);
-                    std::ostringstream errmsg;
-                    errmsg
-                        << "ERROR: CGNS: Block '" << blocks[bb].name
-                        << "' is in infinite loop calculating processor adjacencies for direction "
-                        << (ijk == 0 ? 'i' : ijk == 1 ? 'j' : 'k') << " on processors "
-                        << blocks[bp].proc << " and " << blocks[br].proc
-                        << ".  Check decomposition.";
-                    IOSS_ERROR(errmsg);
-                  }
-                } while (br >= 0);
-                break;
-              }
-            }
-          }
-          for (size_t bb = bbeg; bb < bend; bb++) {
-            blocks[bb].glob_range = global;
-          }
+          // Get global ijk extent in each direction...
+	  set_global_extent(bbeg, bend, blocks, proc_block_map);
 
           // Iterate to get correct offset for these blocks on all processors...
-          for (size_t p = 0; p < (bend - bbeg); p++) {
-            for (j = bbeg; j < bend; j++) {
-              auto &block = blocks[j];
-              // See which blocks are below/left/under this block which means
-              // that this blocks offset is affected.
-              for (int ijk = 0; ijk < 3; ijk++) {
-                int br = adjacent_block(block, ijk, proc_block_map);
-                if (br >= 0) {
-                  block.offset[ijk] = blocks[br].offset[ijk] + blocks[br].range[ijk];
-                }
-              }
-            }
-          }
+	  set_block_offset(bbeg, bend, blocks, proc_block_map);
+
 #if IOSS_DEBUG_OUTPUT
           std::cerr << "Range of blocks for " << b.name << " is " << i << " to " << j - 1
                     << " Global I,J,K = " << b.glob_range[0] << " " << b.glob_range[1] << " "
@@ -662,8 +677,8 @@ namespace Iocgns {
           for (int p = 0; p < proc_count; p++) {
             SBlock newb;
             newb.name       = b.name;
-            newb.glob_range = b.glob_range;
             newb.proc       = p;
+            newb.glob_range = b.glob_range;
             if (p == b.proc) {
               newb.range = b.range;
             }
