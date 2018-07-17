@@ -484,26 +484,49 @@ namespace Iocgns {
 
       // See which processors could not open/create the file...
       std::ostringstream errmsg;
+      int ok_count = 0;
       if (isParallel) {
-        errmsg << "ERROR: Unable to open CGNS decomposed database files:\n";
-        for (int i = 0; i < util().parallel_size(); i++) {
-          if (err_status[i] != CG_OK) {
-            errmsg << "\t\t"
-                   << Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size())
-                   << "\n";
-          }
-        }
-        errmsg << "\tfor " << (is_input() ? "read" : "write") << " access. ";
+	ok_count = std::count(err_status.begin(), err_status.end(), CG_OK);
+	if (ok_count == 0) {
+	  errmsg << "ERROR: Unable to open CGNS decomposed database files:\n";
+	  errmsg << "\t\t"
+		 << Ioss::Utils::decode_filename(get_filename(), 0, util().parallel_size())
+		 << "\n"
+		 << "\t\t  ...\n\t\t"
+		 << Ioss::Utils::decode_filename(get_filename(), util().parallel_size()-1, util().parallel_size())
+		 << "\n";
+	}
+	else {
+	  errmsg << "ERROR: Unable to open CGNS decomposed database files:\n";
+	  for (int i = 0; i < util().parallel_size(); i++) {
+	    if (err_status[i] != CG_OK) {
+	      errmsg << "\t\t"
+		     << Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size())
+		     << "\n";
+	    }
+	  }
+	}
+	errmsg << "       for " << (is_input() ? "read" : "write") << " access. ";
       }
       else {
-        errmsg << "ERROR: Unable to open CGNS database '" << get_filename() << "' for "
-               << (is_input() ? "read" : "write") << " access. ";
+	errmsg << "ERROR: Unable to open CGNS database '" << get_filename() << "' for "
+	       << (is_input() ? "read" : "write") << " access. ";
       }
-
       if (status != CG_OK) {
-        std::ostringstream msg;
-        msg << "[" << myProcessor << "] CGNS Error: '" << cg_get_error() << "'\n";
-        std::cerr << msg.str();
+	if (ok_count != 0) {
+	  std::ostringstream msg;
+	  msg << "[" << myProcessor << "] CGNS Error: '" << cg_get_error() << "'\n";
+	  std::cerr << msg.str();
+	}
+	else {
+	  // Since error on all processors, assume the same error on all and only print
+	  // the error from processor 0.
+	  if (myProcessor == 0) {
+	    std::ostringstream msg;
+	    msg << "CGNS Error: '" << cg_get_error() << "'\n";
+	    std::cerr << msg.str();
+	  }
+	}
       }
 
       IOSS_ERROR(errmsg);
