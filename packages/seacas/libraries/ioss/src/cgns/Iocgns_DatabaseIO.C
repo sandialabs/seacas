@@ -369,14 +369,8 @@ namespace Iocgns {
       pcg_mpi_initialized = 0;
 #endif
       int ierr = cg_open(decoded_filename().c_str(), mode, &cgnsFilePtr);
-      if (ierr != CG_OK) {
-        // NOTE: Code will not continue past this call...
-        std::ostringstream errmsg;
-        errmsg << "ERROR: Problem opening file '" << decoded_filename() << "' for "
-               << (is_input() ? "read" : "write") << " access. "
-               << "CGNS Error: '" << cg_get_error() << "'";
-        IOSS_ERROR(errmsg);
-      }
+      // Will not return if error...
+      check_valid_file_open(ierr);
       if ((is_input() && properties.exists("MEMORY_READ")) ||
           (!is_input() && properties.exists("MEMORY_WRITE"))) {
         strcpy(hdf5_access, "NATIVE");
@@ -415,6 +409,52 @@ namespace Iocgns {
       CGCHECK(cg_close(cgnsFilePtr));
     }
     cgnsFilePtr = -1;
+  }
+
+  bool DatabaseIO::check_valid_file_open(int status) const
+  {
+    int global_status = status;
+    if (isParallel) {
+      global_status = util().global_minmax(status, Ioss::ParallelUtils::DO_MAX);
+    }
+
+    if (global_status != CG_OK) {
+      Ioss::IntVector err_status;
+      if (isParallel) {
+	util().all_gather(status, err_status);
+      }
+      else {
+	err_status.push_back(status);
+      }
+
+      // See which processors could not open/create the file...
+      std::ostringstream errmsg;
+      if (isParallel) {
+	errmsg << "ERROR: Unable to open CGNS decomposed database files:\n";
+	for (int i = 0; i < util().parallel_size(); i++) {
+	  if (err_status[i] != CG_OK) {
+	    errmsg << "\t\t"
+		   << Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size())
+		   << "\n";
+	  }
+	}
+	errmsg << "\tfor " << (is_input() ? "read" : "write") << " access. ";
+      }
+      else {
+	errmsg << "ERROR: Unable to open CGNS database '" << get_filename() << "' for "
+	       << (is_input() ? "read" : "write") << " access. ";
+      }
+
+      if (status != CG_OK) {
+	std::ostringstream msg;
+	msg << "[" << myProcessor << "] CGNS Error: '" << cg_get_error() << "'\n";
+	std::cerr << msg.str();
+      }
+
+      IOSS_ERROR(errmsg);
+      return false;
+    }
+    return true;
   }
 
   void DatabaseIO::finalize_database()
