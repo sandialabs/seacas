@@ -1746,8 +1746,7 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
     auto &zone   = zones[i];
     zone->m_proc = i;
     work_vector[i] += zone->work();
-    auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
-    assert(success.second);
+    proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
   }
 
   for (; i < zones.size(); i++) {
@@ -1760,9 +1759,15 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
     // See if any other zone on this processor has the same adam zone...
     if (proc >= 0) {
       auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
-      assert(success.second);
-      zone->m_proc = proc;
-      work_vector[proc] += zone->work();
+      if (success.second) {
+        zone->m_proc = proc;
+        work_vector[proc] += zone->work();
+      }
+      else {
+        std::ostringstream errmsg;
+        errmsg << "IOCGNS error: Could not assign zones to processors in " << __func__;
+        IOSS_ERROR(errmsg);
+      }
     }
     else {
       std::ostringstream errmsg;
