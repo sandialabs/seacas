@@ -127,15 +127,9 @@ int main(int argc, char *argv[])
     if (rank == 0) {
       std::cerr << "\n" << e.what() << "\n\nio_shell terminated due to exception\n";
     }
-#ifdef SEACAS_HAVE_KOKKOS
-    Kokkos::finalize();
-#endif
-    
-#ifdef SEACAS_HAVE_MPI
-    MPI_Finalize();
-#endif
     exit(EXIT_FAILURE);
   }
+
 #ifdef SEACAS_HAVE_MPI
   MPI_Barrier(MPI_COMM_WORLD);
 #endif
