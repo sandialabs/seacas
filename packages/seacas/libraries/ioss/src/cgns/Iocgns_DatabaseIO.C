@@ -117,9 +117,7 @@ namespace {
       int idx = 0;
       proc    = data[idx++];
       unpack(idx, data, range.data(), 3);
-      int z      = data[idx++];
-      split      = z < 0;
-      local_zone = std::abs(z);
+      local_zone = data[idx++];
     }
     std::string                      name{};
     int                              proc{-1};
@@ -128,8 +126,9 @@ namespace {
     std::array<int, 3>               range{{0, 0, 0}};
     std::array<int, 3>               glob_range{{0, 0, 0}};
     std::array<int, 3>               offset{{0, 0, 0}};
-    bool                             split;
     std::bitset<6>                   face_adj;
+
+    bool split() const { return face_adj.any(); }
   };
 
   std::pair<std::string, int> decompose_name(const std::string &name, bool is_parallel)
@@ -341,7 +340,9 @@ namespace Iocgns {
     dbState = Ioss::STATE_UNKNOWN;
 
 #if IOSS_DEBUG_OUTPUT
-    std::cout << "CGNS DatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n";
+    if (myProcessor == 0) {
+      std::cout << "CGNS DatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n";
+    }
 #endif
     openDatabase__();
   }
@@ -421,34 +422,34 @@ namespace Iocgns {
     if (global_status != CG_OK) {
       Ioss::IntVector err_status;
       if (isParallel) {
-	util().all_gather(status, err_status);
+        util().all_gather(status, err_status);
       }
       else {
-	err_status.push_back(status);
+        err_status.push_back(status);
       }
 
       // See which processors could not open/create the file...
       std::ostringstream errmsg;
       if (isParallel) {
-	errmsg << "ERROR: Unable to open CGNS decomposed database files:\n";
-	for (int i = 0; i < util().parallel_size(); i++) {
-	  if (err_status[i] != CG_OK) {
-	    errmsg << "\t\t"
-		   << Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size())
-		   << "\n";
-	  }
-	}
-	errmsg << "\tfor " << (is_input() ? "read" : "write") << " access. ";
+        errmsg << "ERROR: Unable to open CGNS decomposed database files:\n";
+        for (int i = 0; i < util().parallel_size(); i++) {
+          if (err_status[i] != CG_OK) {
+            errmsg << "\t\t"
+                   << Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size())
+                   << "\n";
+          }
+        }
+        errmsg << "\tfor " << (is_input() ? "read" : "write") << " access. ";
       }
       else {
-	errmsg << "ERROR: Unable to open CGNS database '" << get_filename() << "' for "
-	       << (is_input() ? "read" : "write") << " access. ";
+        errmsg << "ERROR: Unable to open CGNS database '" << get_filename() << "' for "
+               << (is_input() ? "read" : "write") << " access. ";
       }
 
       if (status != CG_OK) {
-	std::ostringstream msg;
-	msg << "[" << myProcessor << "] CGNS Error: '" << cg_get_error() << "'\n";
-	std::cerr << msg.str();
+        std::ostringstream msg;
+        msg << "[" << myProcessor << "] CGNS Error: '" << cg_get_error() << "'\n";
+        std::cerr << msg.str();
       }
 
       IOSS_ERROR(errmsg);
@@ -529,10 +530,9 @@ namespace Iocgns {
       // That is, the zgc which are result of parallel decomp.
 
       // Stored as -P, -Z, f1, p1, -P, -Z, f2, p2, ..., -P, -Z, f1, ...
-      bool split =
-          generate_inter_proc_adjacency(cgnsFilePtr, base, zone, myProcessor, zone_name, adjacency);
+      generate_inter_proc_adjacency(cgnsFilePtr, base, zone, myProcessor, zone_name, adjacency);
 
-      zone_data[id++] = split ? -zone : zone;
+      zone_data[id++] = zone;
       assert(id % INT_PER_ZONE == 0);
     }
 
@@ -569,7 +569,7 @@ namespace Iocgns {
 
       for (size_t i = 0; i < blocks.size(); i++) {
         auto &b = blocks[i];
-        if (b.split) {
+        if (b.split()) {
           // The blocks it is split with should be adjacent in list.
           // Need a quick map from processor to block, so build that now...
           std::map<int, int> proc_block_map;
@@ -679,9 +679,8 @@ namespace Iocgns {
         std::cerr << b.name << " " << b.proc << " " << b.local_zone << " "
                   << " (" << b.range[0] << " " << b.range[1] << " " << b.range[2] << ") ("
                   << b.glob_range[0] << " " << b.glob_range[1] << " " << b.glob_range[2] << ") ("
-                  << b.offset[0] << " " << b.offset[1] << " " << b.offset[2] << ") ["
-                  << b.face_adj[0] << b.face_adj[1] << b.face_adj[2] << b.face_adj[3]
-                  << b.face_adj[4] << b.face_adj[5] << "]"
+                  << b.offset[0] << " " << b.offset[1] << " " << b.offset[2] << ") [" << b.face_adj
+                  << "]"
                   << "\n";
       }
 #endif
@@ -1178,9 +1177,11 @@ namespace Iocgns {
     int  cell_dimension = 0;
     int  phys_dimension = 0;
     CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
-#if IOSS_DEBUG_OUTPUT
-    std::cout << "Physical dimension = " << phys_dimension << "\n";
-#endif
+    if (phys_dimension != 3) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: The model is " << phys_dimension << "D.  Only 3D models are supported.";
+      IOSS_ERROR(errmsg);
+    }
 
     Ioss::NodeBlock *nblock = new Ioss::NodeBlock(this, "nodeblock_1", num_node, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
