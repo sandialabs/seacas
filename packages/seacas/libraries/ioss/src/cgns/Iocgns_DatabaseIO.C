@@ -223,53 +223,53 @@ namespace {
     return -1;
   }
 
-  void set_block_offset(size_t begin, size_t end, std::vector<SBlock> &blocks, std::map<int, int> &proc_block_map)
+  void set_block_offset(size_t begin, size_t end, std::vector<SBlock> &blocks,
+                        std::map<int, int> &proc_block_map)
   {
     for (size_t p = 0; p < (end - begin); p++) {
       for (size_t j = begin; j < end; j++) {
-	auto &block = blocks[j];
-	// See which blocks are below/left/under this block which means
-	// that this blocks offset is affected.
-	for (int ijk = 0; ijk < 3; ijk++) {
-	  int br = adjacent_block(block, ijk, proc_block_map);
-	  if (br >= 0) {
-	    block.offset[ijk] = blocks[br].offset[ijk] + blocks[br].range[ijk];
-	  }
-	}
+        auto &block = blocks[j];
+        // See which blocks are below/left/under this block which means
+        // that this blocks offset is affected.
+        for (int ijk = 0; ijk < 3; ijk++) {
+          int br = adjacent_block(block, ijk, proc_block_map);
+          if (br >= 0) {
+            block.offset[ijk] = blocks[br].offset[ijk] + blocks[br].range[ijk];
+          }
+        }
       }
     }
   }
 
-  void set_global_extent(size_t begin, size_t end, std::vector<SBlock> &blocks, std::map<int, int> &proc_block_map)
+  void set_global_extent(size_t begin, size_t end, std::vector<SBlock> &blocks,
+                         std::map<int, int> &proc_block_map)
   {
-    // Determine the global ijk extent for the block which is spread over multiple processors 
+    // Determine the global ijk extent for the block which is spread over multiple processors
     // and is in the range [begin, end) in blocks.
     Ioss::IJK_t global{0, 0, 0};
     for (int ijk = 0; ijk < 3; ijk++) {
       // Find a block in range [bbeg, bend) with no block to the "left|below|behind
       for (size_t bb = begin; bb < end; bb++) {
-	if (blocks[bb].face_adj[ijk] == 0) {
-	  // No blocks to min 'ijk' direction...
-	  // Traverse all blocks toward max 'ijk' direction setting offsets and global range.
-	  size_t iter = 0;
-	  int    br   = bb;
-	  do {
-	    global[ijk] += blocks[br].range[ijk];
-	    br = adjacent_block(blocks[br], ijk + 3, proc_block_map);
-	    if (++iter > end - begin) {
-	      auto               bp = adjacent_block(blocks[br], ijk + 3, proc_block_map);
-	      std::ostringstream errmsg;
-	      errmsg
-		<< "ERROR: CGNS: Block '" << blocks[bb].name
-		<< "' is in infinite loop calculating processor adjacencies for direction "
-		<< (ijk == 0 ? 'i' : ijk == 1 ? 'j' : 'k') << " on processors "
-		<< blocks[bp].proc << " and " << blocks[br].proc
-		<< ".  Check decomposition.";
-	      IOSS_ERROR(errmsg);
-	    }
-	  } while (br >= 0);
-	  break;
-	}
+        if (blocks[bb].face_adj[ijk] == 0) {
+          // No blocks to min 'ijk' direction...
+          // Traverse all blocks toward max 'ijk' direction setting offsets and global range.
+          size_t iter = 0;
+          int    br   = bb;
+          do {
+            global[ijk] += blocks[br].range[ijk];
+            br = adjacent_block(blocks[br], ijk + 3, proc_block_map);
+            if (++iter > end - begin) {
+              auto               bp = adjacent_block(blocks[br], ijk + 3, proc_block_map);
+              std::ostringstream errmsg;
+              errmsg << "ERROR: CGNS: Block '" << blocks[bb].name
+                     << "' is in infinite loop calculating processor adjacencies for direction "
+                     << (ijk == 0 ? 'i' : ijk == 1 ? 'j' : 'k') << " on processors "
+                     << blocks[bp].proc << " and " << blocks[br].proc << ".  Check decomposition.";
+              IOSS_ERROR(errmsg);
+            }
+          } while (br >= 0);
+          break;
+        }
       }
     }
     for (size_t bb = begin; bb < end; bb++) {
@@ -484,47 +484,48 @@ namespace Iocgns {
 
       // See which processors could not open/create the file...
       std::ostringstream errmsg;
-      int ok_count = 0;
+      int                ok_count = 0;
       if (isParallel) {
-	ok_count = std::count(err_status.begin(), err_status.end(), CG_OK);
-	if (ok_count == 0 && util().parallel_size() > 2) {
-	  errmsg << "ERROR: Unable to open CGNS decomposed database files:\n\t\t"
-		 << Ioss::Utils::decode_filename(get_filename(), 0, util().parallel_size())
-		 << "  ...\n\t\t"
-		 << Ioss::Utils::decode_filename(get_filename(), util().parallel_size()-1, util().parallel_size())
-		 << "\n";
-	}
-	else {
-	  errmsg << "ERROR: Unable to open CGNS decomposed database files:\n";
-	  for (int i = 0; i < util().parallel_size(); i++) {
-	    if (err_status[i] != CG_OK) {
-	      errmsg << "\t\t"
-		     << Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size())
-		     << "\n";
-	    }
-	  }
-	}
-	errmsg << "       for " << (is_input() ? "read" : "write") << " access.\n";
+        ok_count = std::count(err_status.begin(), err_status.end(), CG_OK);
+        if (ok_count == 0 && util().parallel_size() > 2) {
+          errmsg << "ERROR: Unable to open CGNS decomposed database files:\n\t\t"
+                 << Ioss::Utils::decode_filename(get_filename(), 0, util().parallel_size())
+                 << "  ...\n\t\t"
+                 << Ioss::Utils::decode_filename(get_filename(), util().parallel_size() - 1,
+                                                 util().parallel_size())
+                 << "\n";
+        }
+        else {
+          errmsg << "ERROR: Unable to open CGNS decomposed database files:\n";
+          for (int i = 0; i < util().parallel_size(); i++) {
+            if (err_status[i] != CG_OK) {
+              errmsg << "\t\t"
+                     << Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size())
+                     << "\n";
+            }
+          }
+        }
+        errmsg << "       for " << (is_input() ? "read" : "write") << " access.\n";
       }
       else {
-	errmsg << "ERROR: Unable to open CGNS database '" << get_filename() << "' for "
-	       << (is_input() ? "read" : "write") << " access.\n";
+        errmsg << "ERROR: Unable to open CGNS database '" << get_filename() << "' for "
+               << (is_input() ? "read" : "write") << " access.\n";
       }
       if (status != CG_OK) {
-	if (ok_count != 0 || util().parallel_size() <= 2) {
-	  std::ostringstream msg;
-	  msg << "[" << myProcessor << "] CGNS Error: '" << cg_get_error() << "'\n";
-	  std::cerr << msg.str();
-	}
-	else {
-	  // Since error on all processors, assume the same error on all and only print
-	  // the error from processor 0.
-	  if (myProcessor == 0) {
-	    std::ostringstream msg;
-	    msg << "CGNS Error: '" << cg_get_error() << "'\n";
-	    std::cerr << msg.str();
-	  }
-	}
+        if (ok_count != 0 || util().parallel_size() <= 2) {
+          std::ostringstream msg;
+          msg << "[" << myProcessor << "] CGNS Error: '" << cg_get_error() << "'\n";
+          std::cerr << msg.str();
+        }
+        else {
+          // Since error on all processors, assume the same error on all and only print
+          // the error from processor 0.
+          if (myProcessor == 0) {
+            std::ostringstream msg;
+            msg << "CGNS Error: '" << cg_get_error() << "'\n";
+            std::cerr << msg.str();
+          }
+        }
       }
 
       IOSS_ERROR(errmsg);
@@ -647,7 +648,7 @@ namespace Iocgns {
         auto &b = blocks[i];
         if (b.split()) {
           // The blocks it is split with should be adjacent in list.
-	  // Get range of indices referring to this block and build 
+          // Get range of indices referring to this block and build
           // a map from processor to index, so build that now...
           std::map<int, int> proc_block_map;
           proc_block_map[b.proc] = i;
@@ -662,10 +663,10 @@ namespace Iocgns {
           auto bend = j;
 
           // Get global ijk extent in each direction...
-	  set_global_extent(bbeg, bend, blocks, proc_block_map);
+          set_global_extent(bbeg, bend, blocks, proc_block_map);
 
           // Iterate to get correct offset for these blocks on all processors...
-	  set_block_offset(bbeg, bend, blocks, proc_block_map);
+          set_block_offset(bbeg, bend, blocks, proc_block_map);
 
 #if IOSS_DEBUG_OUTPUT
           std::cerr << "Range of blocks for " << b.name << " is " << i << " to " << j - 1
@@ -884,7 +885,13 @@ namespace Iocgns {
     auto        name_proc = decompose_name(zone_name, isParallel);
     std::string zname     = name_proc.first;
     int         proc      = name_proc.second;
-    assert(proc == myProcessor);
+    if (proc != myProcessor) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: CGNS: Zone " << zone
+             << " has a name that specifies it should be on processor " << proc
+             << ", but it is actually on processor " << myProcessor;
+      IOSS_ERROR(errmsg);
+    }
 
     m_zoneNameMap[zname] = zone;
 
