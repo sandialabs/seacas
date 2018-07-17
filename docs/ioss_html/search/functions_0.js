@@ -35,7 +35,6 @@ var searchData=
   ['add_5ftransient_5ffields',['add_transient_fields',['../classIogs_1_1DatabaseIO.html#a26d61d75630e203eea9e19ecacbc52db',1,'Iogs::DatabaseIO::add_transient_fields()'],['../classIogn_1_1DatabaseIO.html#a2c0391f8ac7c10430cd675146dd2458c',1,'Iogn::DatabaseIO::add_transient_fields()']]],
   ['add_5ftransient_5fvariables',['add_transient_variables',['../classIocgns_1_1Utils.html#a74351236018d1887504e14bd0d5fffa0',1,'Iocgns::Utils']]],
   ['add_5fval',['add_val',['../classassert__context.html#a9765135c616a252cb4747e141265e31d',1,'assert_context']]],
-  ['add_5fzgc_5ffpp',['add_zgc_fpp',['../namespaceanonymous__namespace_02Iocgns__DatabaseIO_8C_03.html#ad4dcc9e8623f43b8b4b00791a4623a03',1,'anonymous_namespace{Iocgns_DatabaseIO.C}']]],
   ['addcomment',['addComment',['../classJson_1_1Reader.html#aaea3bd62d12ffb6117a61476c0685049',1,'Json::Reader']]],
   ['adderror',['addError',['../classJson_1_1Reader.html#a04a3a13dbc609dfdf9e3c6723e37ff21',1,'Json::Reader']]],
   ['adderrorandrecover',['addErrorAndRecover',['../classJson_1_1Reader.html#af47fb7564db6ac21faebaba8cebb41ce',1,'Json::Reader']]],
