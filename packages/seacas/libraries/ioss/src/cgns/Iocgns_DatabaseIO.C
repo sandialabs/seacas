@@ -487,12 +487,10 @@ namespace Iocgns {
       int ok_count = 0;
       if (isParallel) {
 	ok_count = std::count(err_status.begin(), err_status.end(), CG_OK);
-	if (ok_count == 0) {
-	  errmsg << "ERROR: Unable to open CGNS decomposed database files:\n";
-	  errmsg << "\t\t"
+	if (ok_count == 0 && util().parallel_size() > 2) {
+	  errmsg << "ERROR: Unable to open CGNS decomposed database files:\n\t\t"
 		 << Ioss::Utils::decode_filename(get_filename(), 0, util().parallel_size())
-		 << "\n"
-		 << "\t\t  ...\n\t\t"
+		 << "  ...\n\t\t"
 		 << Ioss::Utils::decode_filename(get_filename(), util().parallel_size()-1, util().parallel_size())
 		 << "\n";
 	}
@@ -506,14 +504,14 @@ namespace Iocgns {
 	    }
 	  }
 	}
-	errmsg << "       for " << (is_input() ? "read" : "write") << " access. ";
+	errmsg << "       for " << (is_input() ? "read" : "write") << " access.\n";
       }
       else {
 	errmsg << "ERROR: Unable to open CGNS database '" << get_filename() << "' for "
-	       << (is_input() ? "read" : "write") << " access. ";
+	       << (is_input() ? "read" : "write") << " access.\n";
       }
       if (status != CG_OK) {
-	if (ok_count != 0) {
+	if (ok_count != 0 || util().parallel_size() <= 2) {
 	  std::ostringstream msg;
 	  msg << "[" << myProcessor << "] CGNS Error: '" << cg_get_error() << "'\n";
 	  std::cerr << msg.str();
