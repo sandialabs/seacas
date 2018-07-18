@@ -147,14 +147,15 @@ install_executable(io_info)
 install_executable(sphgen)
 install_executable(skinner)
 
-IF (TPL_ENABLE_CGNS)
-
 if (TPL_ENABLE_MPI)
   IF (TPL_Netcdf_PARALLEL)
   set(DECOMP_ARG "--rcb")
   set(JOIN_ARG   "--compose=mpiio")
   endif()
 endif()
+
+
+IF (TPL_ENABLE_CGNS)
 
 if ( CGNS_CGNSLIST_BINARY )
    # Do nothing. Set earlier in config process...
@@ -238,7 +239,7 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_to_exodus
    TEST_1 EXEC io_shell ARGS ${JOIN_ARG} 8-block.cgns 8-block.g
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
-   TEST_2 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic -map -dumpmap ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block.g
+   TEST_2 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic -map -dumpmap ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block.g
   COMM mpi serial
   )
 
@@ -249,7 +250,7 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_to_exodus_single_block
    TEST_1 EXEC io_shell ARGS ${JOIN_ARG} cube.cgns cube.g
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
-   TEST_2 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic -map ${CMAKE_CURRENT_SOURCE_DIR}/test/cube.g cube.g
+   TEST_2 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic -map ${CMAKE_CURRENT_SOURCE_DIR}/test/cube.g cube.g
   COMM mpi serial
   )
 
@@ -260,7 +261,7 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_to_exodus_double_block
    TEST_1 EXEC io_shell ARGS ${JOIN_ARG} two-block.cgns two-block.g
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
-   TEST_2 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic -map ${CMAKE_CURRENT_SOURCE_DIR}/test/two-block.g two-block.g
+   TEST_2 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic -map ${CMAKE_CURRENT_SOURCE_DIR}/test/two-block.g two-block.g
   COMM mpi serial
   )
 
@@ -268,7 +269,7 @@ TRIBITS_ADD_ADVANCED_TEST(unstructured_cgns_to_exodus
    TEST_0 EXEC io_shell ARGS ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/generated.cgns exodus_generated.e
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
-   TEST_1 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_generated.gold exodus_generated.e
+   TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_generated.gold exodus_generated.e
   COMM mpi serial
   )
 
@@ -277,7 +278,7 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_to_unstructured
    TEST_0 EXEC struc_to_unstruc ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/sparc1.cgns exodus_struc.e
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
-   TEST_1 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_struc.gold exodus_struc.e
+   TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_struc.gold exodus_struc.e
   COMM mpi 
   )
 ELSE()
@@ -285,7 +286,7 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_to_unstructured
    TEST_0 EXEC struc_to_unstruc ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/sparc1.cgns exodus_struc.e
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
-   TEST_1 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_struc.gold exodus_struc.e
+   TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_struc.gold exodus_struc.e
   COMM serial
   )
 ENDIF()
