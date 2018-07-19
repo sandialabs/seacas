@@ -184,7 +184,7 @@ TEST_CASE("cube_2blocks", "[cube_2blocks]")
   std::vector<Iocgns::StructuredZoneData *> zones;
   zones.push_back(new Iocgns::StructuredZoneData(zone++, "5x2x5"));
   zones.back()->m_zoneConnectivity.emplace_back(
-      "A1", zones.back()->m_zone, "zone02", 2, Ioss::IJK_t{1, 2, 3}, Ioss::IJK_t{1, 1, 1},
+      "A1", zones.back()->m_zone, "zone02", 2, Ioss::IJK_t{1, -3, 2}, Ioss::IJK_t{1, 1, 1},
       Ioss::IJK_t{6, 1, 6}, Ioss::IJK_t{1, 1, 1}, Ioss::IJK_t{6, 6, 1});
   zones.push_back(new Iocgns::StructuredZoneData(zone++, "5x5x3"));
   zones.back()->m_zoneConnectivity.emplace_back(
