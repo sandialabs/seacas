@@ -696,7 +696,7 @@ namespace Iofx {
         Ioss::Region *this_region = get_region();
         for (int i = 0; i < max_step; i++) {
           if (tsteps[i] <= max_time) {
-            this_region->add_state(tsteps[i] * timeScaleFactor);
+            this_region->add_state__(tsteps[i] * timeScaleFactor);
           }
         }
       }
@@ -759,7 +759,7 @@ namespace Iofx {
       Ioss::Region *this_region = get_region();
       for (int i = 0; i < max_step; i++) {
         if (tsteps[i] <= last_time) {
-          this_region->add_state(tsteps[i] * timeScaleFactor);
+          this_region->add_state__(tsteps[i] * timeScaleFactor);
         }
         else {
           if (myProcessor == 0 && max_time == std::numeric_limits<double>::max()) {

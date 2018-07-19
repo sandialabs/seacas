@@ -121,7 +121,12 @@ namespace Ioss {
     bool end_mode(State current_state);
 
     // Add a new state at this time, return state number
-    virtual int add_state(double time);
+    virtual int add_state(double time)
+    {
+      IOSS_FUNC_ENTER(m_);
+      return add_state__(time);
+    }
+    virtual int add_state__(double time);
 
     // Get time corresponding to specified state
 

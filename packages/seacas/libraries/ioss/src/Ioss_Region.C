@@ -297,13 +297,13 @@ namespace Ioss {
     if (iodatabase->usage() != Ioss::WRITE_HEARTBEAT &&
         (is_input_or_appending_output(iodatabase))) {
       // Read metadata -- populates GroupingEntity lists and transient data
-      Region::begin_mode__(STATE_DEFINE_MODEL);
+      Region::begin_mode(STATE_DEFINE_MODEL);
       iodatabase->read_meta_data();
       modelDefined     = true;
       transientDefined = true;
-      Region::end_mode__(STATE_DEFINE_MODEL);
+      Region::end_mode(STATE_DEFINE_MODEL);
       if (iodatabase->open_create_behavior() != Ioss::DB_APPEND) {
-        Region::begin_mode__(STATE_READONLY);
+        Region::begin_mode(STATE_READONLY);
       }
     }
 
@@ -529,8 +529,27 @@ namespace Ioss {
    */
   bool Region::begin_mode(State new_state)
   {
-    IOSS_FUNC_ENTER(m_);
-    return begin_mode__(new_state);
+    bool success = false;
+    {
+      IOSS_FUNC_ENTER(m_);
+      success = begin_mode__(new_state);
+    }
+    // Pass the 'begin state' message on to the database so it can do any
+    // cleanup/data checking/manipulations it needs to do.
+    if (success) {
+      DatabaseIO *db = get_database();
+
+      if (new_state == STATE_DEFINE_TRANSIENT && db->usage() == Ioss::WRITE_HISTORY &&
+          !(is_input_or_appending_output(db))) {
+        set_state(STATE_CLOSED);
+        Ioss::Utils::generate_history_mesh(this);
+        set_state(new_state);
+      }
+
+      IOSS_FUNC_ENTER(m_);
+      success = db->begin(new_state);
+    }
+    return success;
   }
 
   bool Region::begin_mode__(State new_state)
@@ -565,21 +584,6 @@ namespace Ioss {
       }
       }
     }
-    // Pass the 'begin state' message on to the database so it can do any
-    // cleanup/data checking/manipulations it needs to do.
-    if (success) {
-      DatabaseIO *db = get_database();
-
-      if (new_state == STATE_DEFINE_TRANSIENT && db->usage() == Ioss::WRITE_HISTORY &&
-          !(is_input_or_appending_output(db))) {
-        set_state(STATE_CLOSED);
-        Ioss::Utils::generate_history_mesh(this);
-        set_state(new_state);
-      }
-
-      success = db->begin(new_state);
-    }
-
     return success;
   }
 
@@ -697,7 +701,7 @@ namespace Ioss {
    *  \param[in] time The time at the new state.
    *  \returns The state index (1-based).
    */
-  int Region::add_state(double time)
+  int Region::add_state__(double time)
   {
     static bool warning_output = false;
 
@@ -2182,7 +2186,6 @@ namespace Ioss {
    */
   void Region::synchronize_id_and_name(const Region *from, bool sync_attribute_field_names)
   {
-    IOSS_FUNC_ENTER(m_);
     for (auto alias_pair : aliases_) {
       std::string alias = alias_pair.first;
       std::string base  = alias_pair.second;
