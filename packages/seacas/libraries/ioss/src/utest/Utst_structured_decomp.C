@@ -69,7 +69,7 @@ namespace {
     {
       Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
 
-      double max_work = avg_work * load_balance_tolerance;
+      double max_work = avg_work * load_balance_tolerance * max_toler;
       for (const auto zone : zones) {
         if (zone->is_active()) {
           CHECK(zone->work() <= max_work);
@@ -175,6 +175,27 @@ TEST_CASE("single block line", "[single_block_line]")
   double load_balance_tolerance = 1.05;
 
   check_split_assign(zones, load_balance_tolerance, proc_count);
+  cleanup(zones);
+}
+
+TEST_CASE("cube_2blocks", "[cube_2blocks]")
+{
+  int                                       zone = 1;
+  std::vector<Iocgns::StructuredZoneData *> zones;
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "5x2x5"));
+  zones.back()->m_zoneConnectivity.emplace_back(
+      "A1", zones.back()->m_zone, "zone02", 2, Ioss::IJK_t{1, 2, 3}, Ioss::IJK_t{1, 1, 1},
+      Ioss::IJK_t{6, 1, 6}, Ioss::IJK_t{1, 1, 1}, Ioss::IJK_t{6, 6, 1});
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "5x5x3"));
+  zones.back()->m_zoneConnectivity.emplace_back(
+      "B1", zones.back()->m_zone, "zone01", 1, Ioss::IJK_t{1, 3, -2}, Ioss::IJK_t{1, 1, 1},
+      Ioss::IJK_t{6, 6, 1}, Ioss::IJK_t{1, 1, 1}, Ioss::IJK_t{6, 1, 6});
+  double load_balance_tolerance = 1.2;
+
+  for (size_t proc_count = 2; proc_count < 8; proc_count += 2) {
+    std::string name = "cube_2blocks_ProcCount_" + std::to_string(proc_count);
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.9, 1.1); }
+  }
   cleanup(zones);
 }
 
