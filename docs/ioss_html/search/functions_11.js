@@ -1,7 +1,7 @@
 var searchData=
 [
   ['s',['S',['../namespaceanonymous__namespace_02Ioss__ConcreteVariableType_8C_03.html#a310b31980af192e72ff5f21c508289f5',1,'anonymous_namespace{Ioss_ConcreteVariableType.C}']]],
-  ['sblock',['SBlock',['../structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1SBlock.html#ad505e7780f241cc725393f321a3a6afd',1,'anonymous_namespace{Iocgns_DatabaseIO.C}::SBlock']]],
+  ['sblock',['SBlock',['../structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1SBlock.html#af7558bc6737cbc649b311e6c3f59d920',1,'anonymous_namespace{Iocgns_DatabaseIO.C}::SBlock::SBlock()=default'],['../structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1SBlock.html#ad505e7780f241cc725393f321a3a6afd',1,'anonymous_namespace{Iocgns_DatabaseIO.C}::SBlock::SBlock(char *names, int *data)']]],
   ['scalar',['Scalar',['../classIoss_1_1Scalar.html#a0924eda38246347ea62c3e1a3ce23173',1,'Ioss::Scalar::Scalar()'],['../classIoss_1_1Scalar.html#a5ffb6fc767e3c37f06ef035f66b3fc84',1,'Ioss::Scalar::Scalar(const Scalar &amp;)'],['../namespaceanonymous__namespace_02Ioss__ConcreteVariableType_8C_03.html#a4f2b455a57b8cb117406f32104b8037e',1,'anonymous_namespace{Ioss_ConcreteVariableType.C}::scalar()']]],
   ['scale',['Scale',['../classIotr_1_1Scale.html#a0399b631208bcc24b34de32b5c7f1b11',1,'Iotr::Scale']]],
   ['scale3d',['Scale3D',['../classIotr_1_1Scale3D.html#a0801a2f50d55b4e9bcf92a855409b66a',1,'Iotr::Scale3D']]],
@@ -179,7 +179,7 @@ var searchData=
   ['superelement',['SuperElement',['../classIoex_1_1SuperElement.html#a441858d4cb5645641c6272aa99b8f0bd',1,'Ioex::SuperElement']]],
   ['supports_5ffield_5ftype',['supports_field_type',['../classIoss_1_1Region.html#ab7a0f8332b639db13420627c532d19cc',1,'Ioss::Region']]],
   ['surface_5fsplit_5fscheme',['surface_split_scheme',['../classInfo_1_1Interface.html#ad9c990dc73f0e9396539e80a1f79ea67',1,'Info::Interface']]],
-  ['swap',['swap',['../classJson_1_1Value_1_1CZString.html#ad59f3542d2eea749a6a63409d1a02207',1,'Json::Value::CZString::swap()'],['../classJson_1_1Value.html#aab841120d78e296e1bc06a373345e822',1,'Json::Value::swap()'],['../namespacestd.html#a22cc6fcbbb1f2f705c7888b615e43582',1,'std::swap()'],['../namespaceanonymous__namespace_02Ioss__Sort_8h_03.html#a6794cfe69325b5f641920cbdb77abd74',1,'anonymous_namespace{Ioss_Sort.h}::SWAP()']]],
+  ['swap',['swap',['../classJson_1_1Value_1_1CZString.html#ad59f3542d2eea749a6a63409d1a02207',1,'Json::Value::CZString::swap()'],['../classJson_1_1Value.html#aab841120d78e296e1bc06a373345e822',1,'Json::Value::swap()'],['../namespaceanonymous__namespace_02Ioss__Sort_8h_03.html#a6794cfe69325b5f641920cbdb77abd74',1,'anonymous_namespace{Ioss_Sort.h}::SWAP()'],['../namespacestd.html#a22cc6fcbbb1f2f705c7888b615e43582',1,'std::swap()']]],
   ['swappayload',['swapPayload',['../classJson_1_1Value.html#a5263476047f20e2fc6de470e4de34fe5',1,'Json::Value']]],
   ['sym_5ftensor_5f10',['sym_tensor_10',['../namespaceanonymous__namespace_02Ioss__ConcreteVariableType_8C_03.html#add0faf5c066823c2aec002ff04d9ae51',1,'anonymous_namespace{Ioss_ConcreteVariableType.C}']]],
   ['sym_5ftensor_5f11',['sym_tensor_11',['../namespaceanonymous__namespace_02Ioss__ConcreteVariableType_8C_03.html#a64de8ac390c07334c56e122f96551c7f',1,'anonymous_namespace{Ioss_ConcreteVariableType.C}']]],

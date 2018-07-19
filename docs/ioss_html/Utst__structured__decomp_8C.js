@@ -6,6 +6,7 @@ var Utst__structured__decomp_8C =
     [ "generate_guid", "Utst__structured__decomp_8C.html#a3b567f5a3bae047251df70710f33084f", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ae227bd353365db005323f627c50a7796", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ab714d768c6469287d172c18041cd1fd0", null ],
+    [ "TEST_CASE", "Utst__structured__decomp_8C.html#a2a0397afb545ae15f37249ef943d8801", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ab3da514ed5d92aa19a49dcf47f18f5c1", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#a96f204c09e81f981aae3212079e8e3f6", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#a92973bbfa85d97d39f99ce746e8a8e4d", null ],

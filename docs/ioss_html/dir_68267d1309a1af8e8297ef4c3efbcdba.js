@@ -330,7 +330,7 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "Ioss_SideBlock.h", "Ioss__SideBlock_8h.html", [
       [ "SideBlock", "classIoss_1_1SideBlock.html", "classIoss_1_1SideBlock" ]
     ] ],
-    [ "Ioss_SideSet.C", "Ioss__SideSet_8C.html", null ],
+    [ "Ioss_SideSet.C", "Ioss__SideSet_8C.html", "Ioss__SideSet_8C" ],
     [ "Ioss_SideSet.h", "Ioss__SideSet_8h.html", "Ioss__SideSet_8h" ],
     [ "Ioss_SmartAssert.C", "Ioss__SmartAssert_8C.html", "Ioss__SmartAssert_8C" ],
     [ "Ioss_SmartAssert.h", "Ioss__SmartAssert_8h.html", "Ioss__SmartAssert_8h" ],
