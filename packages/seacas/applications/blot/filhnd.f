@@ -68,7 +68,7 @@ c
 c DESCRIPTION:          Opens and closes files.
 c
 c AUTHOR:               John H. Glick
-c                       Sandia-2017 National Laboratories
+c                       Sandia National Laboratories
 c                       Division 1511
 c
 c DATE:                 December 20, 1988
