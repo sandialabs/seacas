@@ -473,9 +473,9 @@ namespace {
           if (fb->parent_block() != nullptr) {
             const auto *parent = fb->parent_block();
             OUTPUT << ",\tparent block: '" << parent->name() << "' (" << parent->type_string()
-                   << ")";
+                   << ")\n";
           }
-          info_df(fb, "\n\t\t\t");
+          info_df(fb, "\t\t\t");
           if (interface.adjacencies()) {
             std::vector<std::string> blocks;
             fb->block_membership(blocks);
