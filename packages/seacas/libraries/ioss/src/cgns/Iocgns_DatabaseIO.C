@@ -154,6 +154,7 @@ namespace {
     return std::make_pair(zname, proc);
   }
 
+#ifdef SEACAS_HAVE_MPI
   void add_zgc_fpp(int cgnsFilePtr, Ioss::StructuredBlock *block,
                    const std::map<std::string, int> &zone_name_map, int myProcessor,
                    bool isParallel)
@@ -208,6 +209,8 @@ namespace {
       block->m_zoneConnectivity.back().m_donorProcessor = donorname_proc.second;
     }
   }
+#endif
+
 #ifdef SEACAS_HAVE_MPI
   int adjacent_block(const SBlock &b, int ijk, std::map<int, int> &proc_block_map)
   {
