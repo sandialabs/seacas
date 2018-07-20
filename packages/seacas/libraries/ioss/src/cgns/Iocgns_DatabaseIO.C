@@ -367,7 +367,7 @@ namespace {
     sbc.m_face = face;
     block->m_boundaryConditions.push_back(sbc);
 
-    std::string name = sset->name() + "/" + block->name();
+    std::string name = boco_name + "/" + block->name();
 
     auto sb =
         new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name, 0);
