@@ -124,7 +124,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="ex__get__map_8c.html#a30b961ff5c0887cc5a56d5292a469219">ex_get_map()</a> reads the element order map from the database. See #ElementOrderMap for a description of the element order map. If an element order map is not stored in the data file, a default array (1,2,3,. .. num_elem) is returned. Memory must be allocated for the element map array ({num_elem} in length) before this call is made.</p>
+<p>The function <a class="el" href="ex__get__map_8c.html#a30b961ff5c0887cc5a56d5292a469219">ex_get_map()</a> reads the element order map from the database. If an element order map is not stored in the data file, a default array (1,2,3,. .. num_elem) is returned. Memory must be allocated for the element map array ({num_elem} in length) before this call is made.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__get__map_8c.html#a30b961ff5c0887cc5a56d5292a469219">ex_get_map()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>if an element order map is not stored, a default map and a warning value are returned.</li>

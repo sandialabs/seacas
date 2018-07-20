@@ -14,8 +14,6 @@ var searchData=
   ['handlers',['handlers',['../structAssert.html#a5d25d98d37ad3f261275039e17bce90a',1,'Assert']]],
   ['has_5ffaces',['has_faces',['../structIoss_1_1ZoneConnectivity.html#a40c5f8aa682e677f9f735978cfafb965',1,'Ioss::ZoneConnectivity']]],
   ['has_5ftransform',['has_transform',['../classIoss_1_1Field.html#a7a2d32fa8abd51081e5e4099ae408ee0',1,'Ioss::Field']]],
-  ['hascomment',['hasComment',['../classJson_1_1Value.html#a65d8e3ab6a5871cbd019a3e0f0b944a3',1,'Json::Value']]],
-  ['hascommentforvalue',['hasCommentForValue',['../classJson_1_1StyledWriter.html#a37a806d010f708cb68556f2666f79bdf',1,'Json::StyledWriter::hasCommentForValue()'],['../classJson_1_1StyledStreamWriter.html#ad2892f57171919fa4f8a5ae5574755cf',1,'Json::StyledStreamWriter::hasCommentForValue()']]],
   ['hash',['hash',['../classIoss_1_1GroupingEntity.html#a1cd7715c7b5324175d030dceb4aa9315',1,'Ioss::GroupingEntity::hash()'],['../classIoss_1_1Utils.html#a1ec73edea0e845665ac385f605f4aa99',1,'Ioss::Utils::hash()']]],
   ['hex16',['Hex16',['../classIoss_1_1Hex16.html#a4beae35a81199bc455c8fcab8e588a08',1,'Ioss::Hex16::Hex16()'],['../classIoss_1_1Hex16.html#aa71d537e62b2d10795048122985e6a68',1,'Ioss::Hex16::Hex16(const Hex16 &amp;)=delete']]],
   ['hex20',['Hex20',['../classIoss_1_1Hex20.html#a3c793f479e2ae381b212e8c638ee6101',1,'Ioss::Hex20::Hex20()'],['../classIoss_1_1Hex20.html#a405e6c4fa975543c59a17e444ad6bc11',1,'Ioss::Hex20::Hex20(const Hex20 &amp;)=delete']]],

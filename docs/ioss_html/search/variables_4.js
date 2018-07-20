@@ -37,9 +37,7 @@ var searchData=
   ['do_5fnormals',['do_normals',['../structanonymous__namespace_02cth__pressure__map_8C_03_1_1Globals.html#a593fa8a2e6c7281985be5bf5064b038b',1,'anonymous_namespace{cth_pressure_map.C}::Globals::do_normals()'],['../structanonymous__namespace_02shell__to__hex_8C_03_1_1Globals.html#ab5836fbd398992bf322719bfccea3eaf',1,'anonymous_namespace{shell_to_hex.C}::Globals::do_normals()']]],
   ['do_5ftransform_5ffields',['do_transform_fields',['../classIOShell_1_1Interface.html#a9cf155c21c5f3c3edeca035474b5ad1f',1,'IOShell::Interface']]],
   ['doabs',['doAbs',['../classIotr_1_1MinMax.html#a27b45beac9b238ef5c70445a2f6e3b11',1,'Iotr::MinMax']]],
-  ['document_5f',['document_',['../classJson_1_1Reader.html#afde4a4311ae30597da5b6060a8d60542',1,'Json::Reader::document_()'],['../classJson_1_1FastWriter.html#afc70d465b79bfc7741ff75294dcefeab',1,'Json::FastWriter::document_()'],['../classJson_1_1StyledWriter.html#ac092c93313e7ab202b13e075d682faea',1,'Json::StyledWriter::document_()'],['../classJson_1_1StyledStreamWriter.html#aa6a4be02f654d9105af8fa560b676967',1,'Json::StyledStreamWriter::document_()']]],
   ['dologging',['doLogging',['../classIoss_1_1DatabaseIO.html#a364e1592a80c9227429bb0be6866b98e',1,'Ioss::DatabaseIO::doLogging()'],['../classIovs_1_1DatabaseIO.html#ac9903dee16063fbe2d78ba3776787a5d',1,'Iovs::DatabaseIO::doLogging()']]],
   ['domin',['doMin',['../classIotr_1_1MinMax.html#a6aafc8fbbbe342ce903be024c811af62',1,'Iotr::MinMax']]],
-  ['dorotation',['doRotation',['../classIogs_1_1GeneratedMesh.html#a783a827ad0771e697dcff857a1667e1f',1,'Iogs::GeneratedMesh::doRotation()'],['../classIogn_1_1GeneratedMesh.html#a0da6689bb52014b75b29bc2422f93931',1,'Iogn::GeneratedMesh::doRotation()']]],
-  ['dropnullplaceholders_5f',['dropNullPlaceholders_',['../classJson_1_1FastWriter.html#a97e9d4ff84b59a48756dcc27a71b5904',1,'Json::FastWriter']]]
+  ['dorotation',['doRotation',['../classIogs_1_1GeneratedMesh.html#a783a827ad0771e697dcff857a1667e1f',1,'Iogs::GeneratedMesh::doRotation()'],['../classIogn_1_1GeneratedMesh.html#a0da6689bb52014b75b29bc2422f93931',1,'Iogn::GeneratedMesh::doRotation()']]]
 ];

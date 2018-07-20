@@ -8,10 +8,7 @@ var hierarchy =
     [ "Ioss::trmclr::Background", "structIoss_1_1trmclr_1_1Background.html", null ],
     [ "Ioss::BlockDecompositionData", "classIoss_1_1BlockDecompositionData.html", null ],
     [ "Ioss::BoundaryCondition", "structIoss_1_1BoundaryCondition.html", null ],
-    [ "CatalystParserInterface", "classCatalystParserInterface.html", null ],
     [ "Ioss::GetLongOption::Cell", "structIoss_1_1GetLongOption_1_1Cell.html", null ],
-    [ "Json::CharReader", "classJson_1_1CharReader.html", null ],
-    [ "Json::Value::CommentInfo", "structJson_1_1Value_1_1CommentInfo.html", null ],
     [ "Ioex::CommunicationMap", "structIoex_1_1CommunicationMap.html", null ],
     [ "Ioex::CommunicationMetaData", "structIoex_1_1CommunicationMetaData.html", null ],
     [ "anonymous_namespace{Ioss_Hex20.C}::Constants", "structanonymous__namespace_02Ioss__Hex20_8C_03_1_1Constants.html", null ],
@@ -38,8 +35,8 @@ var hierarchy =
     [ "anonymous_namespace{Ioss_Pyramid19.C}::Constants", "structanonymous__namespace_02Ioss__Pyramid19_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Pyramid5.C}::Constants", "structanonymous__namespace_02Ioss__Pyramid5_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Quad4.C}::Constants", "structanonymous__namespace_02Ioss__Quad4_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Quad8.C}::Constants", "structanonymous__namespace_02Ioss__Quad8_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Quad6.C}::Constants", "structanonymous__namespace_02Ioss__Quad6_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Quad8.C}::Constants", "structanonymous__namespace_02Ioss__Quad8_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Quad9.C}::Constants", "structanonymous__namespace_02Ioss__Quad9_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Shell4.C}::Constants", "structanonymous__namespace_02Ioss__Shell4_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Edge2.C}::Constants", "structanonymous__namespace_02Ioss__Edge2_8C_03_1_1Constants.html", null ],
@@ -65,7 +62,6 @@ var hierarchy =
     [ "anonymous_namespace{Ioss_Tri6.C}::Constants", "structanonymous__namespace_02Ioss__Tri6_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tri7.C}::Constants", "structanonymous__namespace_02Ioss__Tri7_8C_03_1_1Constants.html", null ],
     [ "Ioss::CoordinateFrame", "classIoss_1_1CoordinateFrame.html", null ],
-    [ "Json::Value::CZString", "classJson_1_1Value_1_1CZString.html", null ],
     [ "Iogn::DashSurfaceData", "structIogn_1_1DashSurfaceData.html", null ],
     [ "Ioss::Property::Data", "unionIoss_1_1Property_1_1Data.html", null ],
     [ "Ioss::DatabaseIO", "classIoss_1_1DatabaseIO.html", [
@@ -147,7 +143,6 @@ var hierarchy =
       [ "Ioss::Wedge6", "classIoss_1_1Wedge6.html", null ]
     ] ],
     [ "Ioex::ElemSet", "structIoex_1_1ElemSet.html", null ],
-    [ "Json::Reader::ErrorInfo", "classJson_1_1Reader_1_1ErrorInfo.html", null ],
     [ "Ioss::ETRegistry", "classIoss_1_1ETRegistry.html", null ],
     [ "Iogn::ExodusData", "structIogn_1_1ExodusData.html", null ],
     [ "Ioss::Face", "classIoss_1_1Face.html", null ],
@@ -156,12 +151,6 @@ var hierarchy =
     [ "Ioss::FaceGenerator", "classIoss_1_1FaceGenerator.html", null ],
     [ "Ioss::FaceHash", "structIoss_1_1FaceHash.html", null ],
     [ "Ioex::FaceSet", "structIoex_1_1FaceSet.html", null ],
-    [ "Json::CharReader::Factory", "classJson_1_1CharReader_1_1Factory.html", [
-      [ "Json::CharReaderBuilder", "classJson_1_1CharReaderBuilder.html", null ]
-    ] ],
-    [ "Json::StreamWriter::Factory", "classJson_1_1StreamWriter_1_1Factory.html", [
-      [ "Json::StreamWriterBuilder", "classJson_1_1StreamWriterBuilder.html", null ]
-    ] ],
     [ "Iotr::Factory", "classIotr_1_1Factory.html", [
       [ "Iotr::MinMax_Factory", "classIotr_1_1MinMax__Factory.html", null ],
       [ "Iotr::Offset3D_Factory", "classIotr_1_1Offset3D__Factory.html", null ],
@@ -171,7 +160,6 @@ var hierarchy =
       [ "Iotr::Tensor_Factory", "classIotr_1_1Tensor__Factory.html", null ],
       [ "Iotr::VM_Factory", "classIotr_1_1VM__Factory.html", null ]
     ] ],
-    [ "Json::Features", "classJson_1_1Features.html", null ],
     [ "Iodw::Utils::Field", "structIodw_1_1Utils_1_1Field.html", null ],
     [ "Iodw::meta::Field", "structIodw_1_1meta_1_1Field.html", null ],
     [ "Ioss::Field", "classIoss_1_1Field.html", null ],
@@ -230,9 +218,9 @@ var hierarchy =
     [ "Ioss::Init::Initializer", "classIoss_1_1Init_1_1Initializer.html", null ],
     [ "Iotr::Initializer", "classIotr_1_1Initializer.html", null ],
     [ "Iocgns::Initializer", "classIocgns_1_1Initializer.html", null ],
+    [ "IOShell::Interface", "classIOShell_1_1Interface.html", null ],
     [ "Info::Interface", "classInfo_1_1Interface.html", null ],
     [ "Skinner::Interface", "classSkinner_1_1Interface.html", null ],
-    [ "IOShell::Interface", "classIOShell_1_1Interface.html", null ],
     [ "Ioex::Internals", "classIoex_1_1Internals.html", null ],
     [ "Ioss::IOFactory", "classIoss_1_1IOFactory.html", [
       [ "Iocgns::IOFactory", "classIocgns_1_1IOFactory.html", null ],
@@ -260,19 +248,12 @@ var hierarchy =
     ] ],
     [ "Ioss::ParallelUtils", "classIoss_1_1ParallelUtils.html", null ],
     [ "anonymous_namespace{io_shell_ts.C}::param", "structanonymous__namespace_02io__shell__ts_8C_03_1_1param.html", null ],
-    [ "ParaViewCatalystIossAdapterBase", "classParaViewCatalystIossAdapterBase.html", [
-      [ "ParaViewCatalystIossAdapter", "classParaViewCatalystIossAdapter.html", null ]
-    ] ],
-    [ "CatalystParserInterface::parse_info", "classCatalystParserInterface_1_1parse__info.html", null ],
-    [ "Json::Path", "classJson_1_1Path.html", null ],
-    [ "Json::PathArgument", "classJson_1_1PathArgument.html", null ],
     [ "Iodw::Utils::Property", "structIodw_1_1Utils_1_1Property.html", null ],
     [ "Iodw::meta::Property", "structIodw_1_1meta_1_1Property.html", null ],
     [ "Ioss::Property", "classIoss_1_1Property.html", null ],
     [ "Ioss::PropertyManager", "classIoss_1_1PropertyManager.html", null ],
     [ "anonymous_namespace{Iocgns_StructuredZoneData.C}::Range", "structanonymous__namespace_02Iocgns__StructuredZoneData_8C_03_1_1Range.html", null ],
     [ "anonymous_namespace{Iocgns_Utils.C}::Range", "structanonymous__namespace_02Iocgns__Utils_8C_03_1_1Range.html", null ],
-    [ "Json::Reader", "classJson_1_1Reader.html", null ],
     [ "Ioex::Redefine", "classIoex_1_1Redefine.html", null ],
     [ "Iodw::meta::Region", "structIodw_1_1meta_1_1Region.html", null ],
     [ "Iodw::Utils::RegionKeys", "structIodw_1_1Utils_1_1RegionKeys.html", null ],
@@ -282,17 +263,11 @@ var hierarchy =
     [ "Ioss::SetDecompositionData", "classIoss_1_1SetDecompositionData.html", null ],
     [ "Iogn::SharedNode", "structIogn_1_1SharedNode.html", null ],
     [ "Ioex::SideSet", "structIoex_1_1SideSet.html", null ],
-    [ "Json::StaticString", "classJson_1_1StaticString.html", null ],
     [ "Ioss::StorageInitializer", "classIoss_1_1StorageInitializer.html", null ],
     [ "anonymous_namespace{Ioss_SmartAssert.C}::stream_holder", "structanonymous__namespace_02Ioss__SmartAssert_8C_03_1_1stream__holder.html", null ],
-    [ "Json::StreamWriter", "classJson_1_1StreamWriter.html", null ],
-    [ "Json::Value::CZString::StringStorage", "structJson_1_1Value_1_1CZString_1_1StringStorage.html", null ],
-    [ "Json::Reader::StructuredError", "structJson_1_1Reader_1_1StructuredError.html", null ],
     [ "Iocgns::StructuredZoneData", "classIocgns_1_1StructuredZoneData.html", null ],
     [ "Ioss::trmclr::Style", "structIoss_1_1trmclr_1_1Style.html", null ],
-    [ "Json::StyledStreamWriter", "classJson_1_1StyledStreamWriter.html", null ],
     [ "Ioss::Suffix", "structIoss_1_1Suffix.html", null ],
-    [ "Json::Reader::Token", "classJson_1_1Reader_1_1Token.html", null ],
     [ "Iopg::TopologyMapCompare", "structIopg_1_1TopologyMapCompare.html", null ],
     [ "Ioex::TopologyMapCompare", "structIoex_1_1TopologyMapCompare.html", null ],
     [ "Ioss::Tracer", "classIoss_1_1Tracer.html", null ],
@@ -307,12 +282,6 @@ var hierarchy =
     ] ],
     [ "Ioss::Utils", "classIoss_1_1Utils.html", null ],
     [ "Iocgns::Utils", "classIocgns_1_1Utils.html", null ],
-    [ "Json::Value", "classJson_1_1Value.html", null ],
-    [ "Json::Value::ValueHolder", "unionJson_1_1Value_1_1ValueHolder.html", null ],
-    [ "Json::ValueIteratorBase", "classJson_1_1ValueIteratorBase.html", [
-      [ "Json::ValueConstIterator", "classJson_1_1ValueConstIterator.html", null ],
-      [ "Json::ValueIterator", "classJson_1_1ValueIterator.html", null ]
-    ] ],
     [ "Ioss::VariableType", "classIoss_1_1VariableType.html", [
       [ "Ioss::CompositeVariableType", "classIoss_1_1CompositeVariableType.html", null ],
       [ "Ioss::ConstructedVariableType", "classIoss_1_1ConstructedVariableType.html", null ],
@@ -373,15 +342,7 @@ var hierarchy =
       [ "Ioss::NamedSuffixVariableType", "classIoss_1_1NamedSuffixVariableType.html", null ],
       [ "Ioss::Scalar", "classIoss_1_1Scalar.html", null ]
     ] ],
-    [ "Ve2mSideSetInfo", "classVe2mSideSetInfo.html", null ],
     [ "vector3d", "classvector3d.html", null ],
-    [ "vtkMultiBlockDataSet", null, [
-      [ "vtkExodusIIMultiBlockDataSet", "classvtkExodusIIMultiBlockDataSet.html", null ]
-    ] ],
-    [ "Json::Writer", "classJson_1_1Writer.html", [
-      [ "Json::FastWriter", "classJson_1_1FastWriter.html", null ],
-      [ "Json::StyledWriter", "classJson_1_1StyledWriter.html", null ]
-    ] ],
     [ "Ioss::ZoneConnectivity", "structIoss_1_1ZoneConnectivity.html", null ],
     [ "Iocgns::ZoneData", "classIocgns_1_1ZoneData.html", null ]
 ];

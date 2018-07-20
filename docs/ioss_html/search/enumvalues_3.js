@@ -13,7 +13,5 @@ var searchData=
   ['do_5fmax',['DO_MAX',['../classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8fa4a57d024f25fdc9646404c6f8b8c0238',1,'Ioss::ParallelUtils']]],
   ['do_5fmin',['DO_MIN',['../classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8fab1e049cec56ec5220aff4ba142b6ed64',1,'Ioss::ParallelUtils']]],
   ['do_5fsum',['DO_SUM',['../classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8fac4685d6c20afe7016d6db9fee5e849ff',1,'Ioss::ParallelUtils']]],
-  ['double',['DOUBLE',['../classIoss_1_1Field.html#a43f29f9ba05cb45ed893455c76526c3ea7c36510148875c4facbe377717c9574a',1,'Ioss::Field']]],
-  ['duplicate',['duplicate',['../classJson_1_1Value_1_1CZString.html#a2805c46fb4a72bbaed55de6d75941b6dabb2134294dd8fc37dd82d18bb794fe20',1,'Json::Value::CZString']]],
-  ['duplicateoncopy',['duplicateOnCopy',['../classJson_1_1Value_1_1CZString.html#a2805c46fb4a72bbaed55de6d75941b6da5c18c35205a3be63ad14ce659e70fe7d',1,'Json::Value::CZString']]]
+  ['double',['DOUBLE',['../classIoss_1_1Field.html#a43f29f9ba05cb45ed893455c76526c3ea7c36510148875c4facbe377717c9574a',1,'Ioss::Field']]]
 ];
