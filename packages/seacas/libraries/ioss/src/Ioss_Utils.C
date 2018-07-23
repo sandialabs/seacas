@@ -1549,28 +1549,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
                                 Ioss::MeshCopyOptions &options)
 {
   DataPool data_pool;
-#ifdef SEACAS_HAVE_KOKKOS
-  data_pool.data_view_char      = Kokkos::View<char *>("view_char", 0);
-  data_pool.data_view_int       = Kokkos::View<int *>("view_int", 0);
-  data_pool.data_view_int64     = Kokkos::View<int64_t *>("view_int64", 0);
-  data_pool.data_view_double    = Kokkos::View<double *>("view_double", 0);
-  data_pool.data_view_2D_char   = Kokkos::View<char **>("view_2D_char", 0, 0);
-  data_pool.data_view_2D_int    = Kokkos::View<int **>("view_2D_int", 0, 0);
-  data_pool.data_view_2D_int64  = Kokkos::View<int64_t **>("view_2D_int64", 0, 0);
-  data_pool.data_view_2D_double = Kokkos::View<double **>("view_2D_double", 0, 0);
-  data_pool.data_view_2D_char_layout_space =
-      Kokkos::View<char **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_char_layout_space", 0,
-                                                                    0);
-  data_pool.data_view_2D_int_layout_space =
-      Kokkos::View<int **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_int_layout_space", 0,
-                                                                   0);
-  data_pool.data_view_2D_int64_layout_space =
-      Kokkos::View<int64_t **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_int64_layout_space",
-                                                                       0, 0);
-  data_pool.data_view_2D_double_layout_space =
-      Kokkos::View<double **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_double_layout_space",
-                                                                      0, 0);
-#endif
 
   bool              memory_stats = options.memory_statistics;
   Ioss::DatabaseIO *dbi          = region.get_database();
