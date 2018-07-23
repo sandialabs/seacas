@@ -15,7 +15,7 @@ var searchData=
   ['shellline2d2',['ShellLine2D2',['../classIoss_1_1ShellLine2D2.html',1,'Ioss']]],
   ['shellline2d3',['ShellLine2D3',['../classIoss_1_1ShellLine2D3.html',1,'Ioss']]],
   ['sideblock',['SideBlock',['../structIodw_1_1meta_1_1SideBlock.html',1,'Iodw::meta::SideBlock'],['../classIoss_1_1SideBlock.html',1,'Ioss::SideBlock']]],
-  ['sideset',['SideSet',['../classIoss_1_1SideSet.html',1,'Ioss::SideSet'],['../structIoex_1_1SideSet.html',1,'Ioex::SideSet'],['../structIodw_1_1meta_1_1SideSet.html',1,'Iodw::meta::SideSet']]],
+  ['sideset',['SideSet',['../structIoex_1_1SideSet.html',1,'Ioex::SideSet'],['../classIoss_1_1SideSet.html',1,'Ioss::SideSet'],['../structIodw_1_1meta_1_1SideSet.html',1,'Iodw::meta::SideSet']]],
   ['sphere',['Sphere',['../classIoss_1_1Sphere.html',1,'Ioss']]],
   ['st_5fbar2',['St_Bar2',['../classIoss_1_1St__Bar2.html',1,'Ioss']]],
   ['st_5fbar3',['St_Bar3',['../classIoss_1_1St__Bar3.html',1,'Ioss']]],
