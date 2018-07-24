@@ -174,6 +174,7 @@ var searchData=
   ['ioss_5fquad9_2eh',['Ioss_Quad9.h',['../Ioss__Quad9_8h.html',1,'']]],
   ['ioss_5fregion_2ec',['Ioss_Region.C',['../Ioss__Region_8C.html',1,'']]],
   ['ioss_5fregion_2eh',['Ioss_Region.h',['../Ioss__Region_8h.html',1,'']]],
+  ['ioss_5fscopeguard_2eh',['Ioss_ScopeGuard.h',['../Ioss__ScopeGuard_8h.html',1,'']]],
   ['ioss_5fserializeio_2ec',['Ioss_SerializeIO.C',['../Ioss__SerializeIO_8C.html',1,'']]],
   ['ioss_5fserializeio_2eh',['Ioss_SerializeIO.h',['../Ioss__SerializeIO_8h.html',1,'']]],
   ['ioss_5fshell4_2ec',['Ioss_Shell4.C',['../Ioss__Shell4_8C.html',1,'']]],

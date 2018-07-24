@@ -287,6 +287,7 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     ] ],
     [ "Ioss_Region.C", "Ioss__Region_8C.html", "Ioss__Region_8C" ],
     [ "Ioss_Region.h", "Ioss__Region_8h.html", "Ioss__Region_8h" ],
+    [ "Ioss_ScopeGuard.h", "Ioss__ScopeGuard_8h.html", "Ioss__ScopeGuard_8h" ],
     [ "Ioss_SerializeIO.C", "Ioss__SerializeIO_8C.html", null ],
     [ "Ioss_SerializeIO.h", "Ioss__SerializeIO_8h.html", [
       [ "SerializeIO", "classIoss_1_1SerializeIO.html", "classIoss_1_1SerializeIO" ]

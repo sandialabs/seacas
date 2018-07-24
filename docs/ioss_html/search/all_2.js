@@ -42,5 +42,6 @@ var searchData=
   ['build_5freverse_5fmap',['build_reverse_map',['../classIoss_1_1Map.html#a5b69ebb0e2961bc505b871da01af8971',1,'Ioss::Map::build_reverse_map()'],['../classIoss_1_1Map.html#a6d87aa40f3e8701e9976a07e2785d9bb',1,'Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)']]],
   ['build_5freverse_5fmap_5f_5f',['build_reverse_map__',['../classIoss_1_1Map.html#adc60962a0f5d1b2b5873486829c06a84',1,'Ioss::Map']]],
   ['build_5freverse_5fmap_5fno_5flock',['build_reverse_map_no_lock',['../classIoss_1_1Map.html#a7d0ce49e4904fea91fa775fbc1f6c99c',1,'Ioss::Map']]],
-  ['build_5fvariable_5ftype',['build_variable_type',['../classIoss_1_1VariableType.html#abd78d4a71fcc1845b8cf777e597a9120',1,'Ioss::VariableType']]]
+  ['build_5fvariable_5ftype',['build_variable_type',['../classIoss_1_1VariableType.html#abd78d4a71fcc1845b8cf777e597a9120',1,'Ioss::VariableType']]],
+  ['byref',['ByRef',['../Ioss__ScopeGuard_8h.html#a8923f417ff23282003132189d7b9f54d',1,'Ioss_ScopeGuard.h']]]
 ];

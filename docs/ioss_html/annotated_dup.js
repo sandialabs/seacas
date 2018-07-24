@@ -78,5 +78,14 @@ var annotated_dup =
     [ "Skinner", "namespaceSkinner.html", "namespaceSkinner" ],
     [ "Assert", "structAssert.html", "structAssert" ],
     [ "assert_context", "classassert__context.html", "classassert__context" ],
+    [ "ObjScopeGuardImpl0", "classObjScopeGuardImpl0.html", "classObjScopeGuardImpl0" ],
+    [ "ObjScopeGuardImpl1", "classObjScopeGuardImpl1.html", "classObjScopeGuardImpl1" ],
+    [ "ObjScopeGuardImpl2", "classObjScopeGuardImpl2.html", "classObjScopeGuardImpl2" ],
+    [ "RefHolder", "classRefHolder.html", "classRefHolder" ],
+    [ "ScopeGuardImpl0", "classScopeGuardImpl0.html", "classScopeGuardImpl0" ],
+    [ "ScopeGuardImpl1", "classScopeGuardImpl1.html", "classScopeGuardImpl1" ],
+    [ "ScopeGuardImpl2", "classScopeGuardImpl2.html", "classScopeGuardImpl2" ],
+    [ "ScopeGuardImpl3", "classScopeGuardImpl3.html", "classScopeGuardImpl3" ],
+    [ "ScopeGuardImplBase", "classScopeGuardImplBase.html", "classScopeGuardImplBase" ],
     [ "vector3d", "classvector3d.html", "classvector3d" ]
 ];
