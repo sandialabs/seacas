@@ -85,8 +85,7 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef SEACAS_HAVE_KOKKOS
-  Kokkos::initialize(argc, argv);
-  ON_BLOCK_EXIT(Kokkos::finalize);
+  Kokkos::ScopeGuard kokkos(argc, argv);
 #endif
 
   std::cout.imbue(std::locale(std::locale(), new my_numpunct));

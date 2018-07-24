@@ -185,8 +185,7 @@ int main(int argc, char *argv[])
   std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
 
 #ifdef SEACAS_HAVE_KOKKOS
-  Kokkos::initialize(argc, argv);
-  ON_BLOCK_EXIT(Kokkos::finalize);
+  Kokkos::ScopeGuard kokkos(argc, argv);
 #endif
 
   IOShell::Interface interface;
