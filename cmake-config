@@ -55,6 +55,8 @@ then
 
 fi
 
+GENERATOR=${GENERATOR:-"Unix Makefiles"}
+
 # If using an XLF compiler on an IBM system, may need to add the following:
 # -DCMAKE_Fortran_FLAGS="-qfixed=72" \
 # -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
@@ -182,7 +184,7 @@ FC=${FC:-gfortran}
 rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
-cmake  \
+cmake -G "${GENERATOR}" \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
