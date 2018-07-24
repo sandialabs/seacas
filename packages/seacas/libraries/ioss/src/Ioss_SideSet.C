@@ -65,7 +65,8 @@ namespace {
         id2 = old_ge->get_property(id_str()).get_int();
       }
       errmsg << "\nERROR: There are multiple side blocks with the same name "
-             << "defined in the database file '" << filename << "'.\n"
+             << "defined in side set '" << sset->name() << "' in the database file '" << filename
+             << "'.\n"
              << "\tBoth " << side_block->type_string() << " " << id1 << " and "
              << old_ge->type_string() << " " << id2 << " are named '" << name
              << "'.  All names must be unique.";
