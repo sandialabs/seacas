@@ -1463,13 +1463,12 @@ int get_side_id_hex_tet(const E_Type etype,     /* The element type */
   case TET10:
   case TET8:
   case TET14:
-  case TET15:
-    {
+  case TET15: {
     auto il1 = in_list(1, lcnt, loc_node_ids.data()) >= 0;
     auto il2 = in_list(2, lcnt, loc_node_ids.data()) >= 0;
     auto il3 = in_list(3, lcnt, loc_node_ids.data()) >= 0;
     auto il4 = in_list(4, lcnt, loc_node_ids.data()) >= 0;
-    
+
     if (il1 && il2 && il4) {
       return 1;
     }
@@ -1485,14 +1484,12 @@ int get_side_id_hex_tet(const E_Type etype,     /* The element type */
     if (il1 && il2 && il3) {
       return 4;
     }
-    }
-    break;
+  } break;
 
   case HEX8:
   case HEX16:
   case HEX20:
-  case HEX27:
-    {
+  case HEX27: {
     auto il1 = in_list(1, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
     auto il2 = in_list(2, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
     auto il3 = in_list(3, lcnt, loc_node_ids.data()) >= 0 ? 1 : 0;
@@ -1525,8 +1522,7 @@ int get_side_id_hex_tet(const E_Type etype,     /* The element type */
     if (il5 + il6 + il7 + il8 > 2) {
       return 6;
     }
-    }
-    break;
+  } break;
 
   default: {
     char err_buff[300];

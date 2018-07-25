@@ -100,8 +100,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3d656c5d470b45b26383b25ac905574e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9240c7c4dd8f49097ec9ad5f88784bd9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#a9240c7c4dd8f49097ec9ad5f88784bd9">BoundaryCondition</a> (const <a class="el" href="structIoss_1_1BoundaryCondition.html">BoundaryCondition</a> &amp;copy_from)=default</td></tr>
 <tr class="separator:a9240c7c4dd8f49097ec9ad5f88784bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad843be12291cdd237e91f5292e5b8cbd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#ad843be12291cdd237e91f5292e5b8cbd">which_parent_face</a> () const</td></tr>
-<tr class="separator:ad843be12291cdd237e91f5292e5b8cbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5be05724df2809128210b7099a6a8726"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#a5be05724df2809128210b7099a6a8726">which_face</a> () const</td></tr>
+<tr class="separator:a5be05724df2809128210b7099a6a8726"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb73889996f3236118422cc387470dbe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#adb73889996f3236118422cc387470dbe">is_valid</a> () const</td></tr>
+<tr class="separator:adb73889996f3236118422cc387470dbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0b08ae3e67e738bdf40d1951f52514f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#ab0b08ae3e67e738bdf40d1951f52514f">get_face_count</a> () const</td></tr>
 <tr class="separator:ab0b08ae3e67e738bdf40d1951f52514f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -115,6 +117,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a6ed7927a6c29ca7f727d1a303ec5f4fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d6cf81a46926a51a2ad43da06828af4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#a530b4479c2b2ba7c8a59596d24e78709">Ioss::IJK_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#a8d6cf81a46926a51a2ad43da06828af4">m_rangeEnd</a></td></tr>
 <tr class="separator:a8d6cf81a46926a51a2ad43da06828af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeee0052e9e4adbb0e8ef575f2fb154da"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoss_1_1BoundaryCondition.html#aeee0052e9e4adbb0e8ef575f2fb154da">m_face</a> {-1}</td></tr>
+<tr class="separator:aeee0052e9e4adbb0e8ef575f2fb154da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -256,14 +260,31 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="ad843be12291cdd237e91f5292e5b8cbd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad843be12291cdd237e91f5292e5b8cbd">&#9670;&nbsp;</a></span>which_parent_face()</h2>
+<a id="adb73889996f3236118422cc387470dbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb73889996f3236118422cc387470dbe">&#9670;&nbsp;</a></span>is_valid()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int Ioss::BoundaryCondition::which_parent_face </td>
+          <td class="memname">bool Ioss::BoundaryCondition::is_valid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5be05724df2809128210b7099a6a8726"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5be05724df2809128210b7099a6a8726">&#9670;&nbsp;</a></span>which_face()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Ioss::BoundaryCondition::which_face </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -321,6 +342,28 @@ Friends</h2></td></tr>
           <td class="memname">std::string Ioss::BoundaryCondition::m_bcName</td>
         </tr>
       </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeee0052e9e4adbb0e8ef575f2fb154da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeee0052e9e4adbb0e8ef575f2fb154da">&#9670;&nbsp;</a></span>m_face</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Ioss::BoundaryCondition::m_face {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>

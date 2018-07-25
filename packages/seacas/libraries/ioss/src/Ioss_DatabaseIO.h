@@ -412,7 +412,6 @@ namespace Ioss {
     void compute_block_membership(Ioss::SideBlock *         efblock,
                                   std::vector<std::string> &block_membership) const
     {
-      IOSS_FUNC_ENTER(m_);
       return compute_block_membership__(efblock, block_membership);
     }
 

@@ -15,8 +15,6 @@ var searchData=
   ['handlers_5fcollection',['handlers_collection',['../structAssert.html#a1ae311975c9ed1f4d3514502230233aa',1,'Assert']]],
   ['has_5ffaces',['has_faces',['../structIoss_1_1ZoneConnectivity.html#a40c5f8aa682e677f9f735978cfafb965',1,'Ioss::ZoneConnectivity']]],
   ['has_5ftransform',['has_transform',['../classIoss_1_1Field.html#a7a2d32fa8abd51081e5e4099ae408ee0',1,'Ioss::Field']]],
-  ['hascomment',['hasComment',['../classJson_1_1Value.html#a65d8e3ab6a5871cbd019a3e0f0b944a3',1,'Json::Value']]],
-  ['hascommentforvalue',['hasCommentForValue',['../classJson_1_1StyledWriter.html#a37a806d010f708cb68556f2666f79bdf',1,'Json::StyledWriter::hasCommentForValue()'],['../classJson_1_1StyledStreamWriter.html#ad2892f57171919fa4f8a5ae5574755cf',1,'Json::StyledStreamWriter::hasCommentForValue()']]],
   ['hasentities',['hasEntities',['../classIoss_1_1SetDecompositionData.html#a9d858981c4a8f20bec9f54e9b416eca4',1,'Ioss::SetDecompositionData']]],
   ['hash',['hash',['../classIoss_1_1GroupingEntity.html#a1cd7715c7b5324175d030dceb4aa9315',1,'Ioss::GroupingEntity::hash()'],['../classIoss_1_1Utils.html#a1ec73edea0e845665ac385f605f4aa99',1,'Ioss::Utils::hash()']]],
   ['hash_5f',['hash_',['../classIoss_1_1GroupingEntity.html#acdc0efe103a8de47444bc43d2b80f61c',1,'Ioss::GroupingEntity']]],

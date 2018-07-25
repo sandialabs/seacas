@@ -37,9 +37,9 @@ then
   
   if [ "$COMPILER" == "clang" ]
   then
-      CXX=clang++-mp-4.0
-      CC=clang-mp-4.0
-      FC=gfortran-mp-4.9
+      CXX=clang++
+      CC=clang
+      FC=gfortran-mp-7
       CFLAGS="-Wall -Wunused -pedantic"
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi

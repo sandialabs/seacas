@@ -333,7 +333,7 @@
 #endif
 /* cgix11.h - header file to define device dependent stuff for driver
  *   X.11 (x11)
- * Sandia-2017 National Laboratories, Div 2634
+ * Sandia National Laboratories, Div 2634
  * Sun Nov 19 12:02:52 MST 1989 - last date modified
  */
 
@@ -3027,9 +3027,7 @@ static void xclnt(anything **params, int num_surfaces, anything **surf_list)
       case 2: vdi_style = 5; break;
       case 3: vdi_style = 1; break;
       case 4: vdi_style = 2; break;
-      case 5:
-        vdi_style = 0;
-        break; /* not supported, set to solid */
+      case 5: vdi_style = 0; break; /* not supported, set to solid */
       default: vdi_style = cur_state->line_type; break;
       } /* end switch */
 
@@ -3754,9 +3752,7 @@ static void xcqlnt(anything **params, anything **surf_list)
       switch (dev_descrip.line_types[i]) {
       case 0: dev_descrip.line_types[i] = 1; break;
       case 1: dev_descrip.line_types[i] = 3; break;
-      case 2:
-        dev_descrip.line_types[i] = 4;
-        break;
+      case 2: dev_descrip.line_types[i] = 4; break;
       /* ...all SVDI dashes map to cgi dash */
       case 3: dev_descrip.line_types[i] = 2; break;
       case 4: dev_descrip.line_types[i] = 2; break;
@@ -5266,18 +5262,10 @@ static int inside_bnd(point *v, point *bmin, point *bmax, int bound_num)
 {
   /* this routine assumes a rectangular boundary */
   switch (bound_num) {
-  case 0:
-    return (v->y <= bmax->y);
-    break; /* top */
-  case 1:
-    return (v->x <= bmax->x);
-    break; /* right */
-  case 2:
-    return (v->y >= bmin->y);
-    break; /* bottom */
-  case 3:
-    return (v->x >= bmin->x);
-    break; /* left */
+  case 0: return (v->y <= bmax->y); break; /* top */
+  case 1: return (v->x <= bmax->x); break; /* right */
+  case 2: return (v->y >= bmin->y); break; /* bottom */
+  case 3: return (v->x >= bmin->x); break; /* left */
   default: return (FALSE); break;
   } /* end switch */
 } /* end inside_bnd */

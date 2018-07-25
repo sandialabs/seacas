@@ -55,7 +55,7 @@ c                       BLOT command line, indicating
 c                       that instructions are to be read interactively.
 c
 c AUTHOR:               John H. Glick
-c                       Sandia-2017 National Laboratories
+c                       Sandia National Laboratories
 c                       Division 1511
 c
 c DATE:                 December 20, 1988

@@ -34,7 +34,7 @@
  */
 /* cgisx11.c - linker specifiable driver routine for driver
  *   X.11 (x11)
- * Sandia-2017 National Laboratories, Div 2634
+ * Sandia National Laboratories, Div 2634
  * Sun Nov 19 12:02:52 MST 1989 - last date modified
  */
 

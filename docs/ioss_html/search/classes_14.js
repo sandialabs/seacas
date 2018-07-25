@@ -6,6 +6,5 @@ var searchData=
   ['wedge18',['Wedge18',['../classIoss_1_1Wedge18.html',1,'Ioss']]],
   ['wedge20',['Wedge20',['../classIoss_1_1Wedge20.html',1,'Ioss']]],
   ['wedge21',['Wedge21',['../classIoss_1_1Wedge21.html',1,'Ioss']]],
-  ['wedge6',['Wedge6',['../classIoss_1_1Wedge6.html',1,'Ioss']]],
-  ['writer',['Writer',['../classJson_1_1Writer.html',1,'Json']]]
+  ['wedge6',['Wedge6',['../classIoss_1_1Wedge6.html',1,'Ioss']]]
 ];

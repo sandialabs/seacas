@@ -131,9 +131,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5f455825763ca8a655f3fc3ebe27ba9a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#a5f455825763ca8a655f3fc3ebe27ba9a">end_mode</a> (<a class="el" href="namespaceIoss.html#a02dbd3bfbd7f633e636c8c0c385c4a34">State</a> current_state)</td></tr>
 <tr class="memdesc:a5f455825763ca8a655f3fc3ebe27ba9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the <a class="el" href="classIoss_1_1Region.html" title="A grouping entity that contains other grouping entities. ">Region</a> and the associated <a class="el" href="classIoss_1_1DatabaseIO.html" title="An input or output Database. ">DatabaseIO</a> to STATE_CLOSED.  <a href="#a5f455825763ca8a655f3fc3ebe27ba9a">More...</a><br /></td></tr>
 <tr class="separator:a5f455825763ca8a655f3fc3ebe27ba9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1cef706efe1f8438932d405019107b47"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#a1cef706efe1f8438932d405019107b47">add_state</a> (double time)</td></tr>
-<tr class="memdesc:a1cef706efe1f8438932d405019107b47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a state for a specified time.  <a href="#a1cef706efe1f8438932d405019107b47">More...</a><br /></td></tr>
-<tr class="separator:a1cef706efe1f8438932d405019107b47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc1e575c0f97923d57db3b0b4659ca79"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#abc1e575c0f97923d57db3b0b4659ca79">add_state</a> (double time)</td></tr>
+<tr class="separator:abc1e575c0f97923d57db3b0b4659ca79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecc5d7ede05ee08ad1080daadfd78bd3"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#aecc5d7ede05ee08ad1080daadfd78bd3">add_state__</a> (double time)</td></tr>
+<tr class="memdesc:aecc5d7ede05ee08ad1080daadfd78bd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a state for a specified time.  <a href="#aecc5d7ede05ee08ad1080daadfd78bd3">More...</a><br /></td></tr>
+<tr class="separator:aecc5d7ede05ee08ad1080daadfd78bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abca1d673af9d7ad46ade9f9f26655435"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Region.html#abca1d673af9d7ad46ade9f9f26655435">get_state_time</a> (int state=-1) const</td></tr>
 <tr class="memdesc:abca1d673af9d7ad46ade9f9f26655435"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the time corresponding to the specified state or the currently active state.  <a href="#abca1d673af9d7ad46ade9f9f26655435">More...</a><br /></td></tr>
 <tr class="separator:abca1d673af9d7ad46ade9f9f26655435"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1167,8 +1169,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a1cef706efe1f8438932d405019107b47"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1cef706efe1f8438932d405019107b47">&#9670;&nbsp;</a></span>add_state()</h2>
+<a id="abc1e575c0f97923d57db3b0b4659ca79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc1e575c0f97923d57db3b0b4659ca79">&#9670;&nbsp;</a></span>add_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1177,7 +1179,33 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int Ioss::Region::add_state </td>
+          <td class="memname">virtual int Ioss::Region::add_state </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aecc5d7ede05ee08ad1080daadfd78bd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecc5d7ede05ee08ad1080daadfd78bd3">&#9670;&nbsp;</a></span>add_state__()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Ioss::Region::add_state__ </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>time</em></td><td>)</td>

@@ -134,6 +134,10 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a95829b5d70f50d5231bdddd714fbe1b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5483dea525d91f0521f7fb850ec8db0a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a5483dea525d91f0521f7fb850ec8db0a">add_structured_boundary_conditions</a> (int cgnsFilePtr, <a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *block, bool is_parallel_io)</td></tr>
 <tr class="separator:a5483dea525d91f0521f7fb850ec8db0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e34e5bfefa22e20d710e1dd5b33ba72"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a3e34e5bfefa22e20d710e1dd5b33ba72">add_structured_boundary_conditions_fpp</a> (int cgnsFilePtr, <a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *block)</td></tr>
+<tr class="separator:a3e34e5bfefa22e20d710e1dd5b33ba72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3fc4288397f83a59236f35a8498aa75"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#aa3fc4288397f83a59236f35a8498aa75">add_structured_boundary_conditions_pio</a> (int cgnsFilePtr, <a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *block)</td></tr>
+<tr class="separator:aa3fc4288397f83a59236f35a8498aa75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31a49ff6c43e030fe6735dd1bf114653"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a31a49ff6c43e030fe6735dd1bf114653">finalize_database</a> (int cgnsFilePtr, const std::vector&lt; double &gt; &amp;timesteps, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, int myProcessor)</td></tr>
 <tr class="separator:a31a49ff6c43e030fe6735dd1bf114653"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada733053c60201753363c5bf2637af89"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ada733053c60201753363c5bf2637af89">get_step_times</a> (int cgnsFilePtr, std::vector&lt; double &gt; &amp;timesteps, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, double timeScaleFactor, int myProcessor)</td></tr>
@@ -266,6 +270,78 @@ Static Public Attributes</h2></td></tr>
           <td></td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>is_parallel_io</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3e34e5bfefa22e20d710e1dd5b33ba72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e34e5bfefa22e20d710e1dd5b33ba72">&#9670;&nbsp;</a></span>add_structured_boundary_conditions_fpp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::Utils::add_structured_boundary_conditions_fpp </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cgnsFilePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *&#160;</td>
+          <td class="paramname"><em>block</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa3fc4288397f83a59236f35a8498aa75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3fc4288397f83a59236f35a8498aa75">&#9670;&nbsp;</a></span>add_structured_boundary_conditions_pio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::Utils::add_structured_boundary_conditions_pio </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cgnsFilePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *&#160;</td>
+          <td class="paramname"><em>block</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

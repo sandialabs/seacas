@@ -381,7 +381,7 @@ C
 *                  b is an eigenvector when M = I.
 *                  More complicated if there is a preconditioner;
 *                  not clear yet how to describe it.
-*    14 Dec 1992:  Modified by Robert Leland, Sandia-2017 National Laboratories
+*    14 Dec 1992:  Modified by Robert Leland, Sandia National Laboratories
 *		   to integrate with a C application code. The matrix
 *                  data is now passed by reference through symmlq to
 *                  aprod and msolve. These are now just Fortran wrappers

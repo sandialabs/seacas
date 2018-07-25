@@ -111,6 +111,7 @@ namespace Iocgns {
     void write_results_meta_data();
 
   private:
+    bool   check_valid_file_open(int status) const;
     void   create_structured_block(int base, int zone, size_t &num_node);
     void   create_structured_block_fpp(int base, int zone, size_t &num_node);
     size_t finalize_structured_blocks();

@@ -33,7 +33,7 @@
  *
  */
 /* symmlqblas.f -- translated by f2c (version of 16 May 1991  13:06:06).
-*/
+ */
 
 #include <math.h>
 
@@ -48,8 +48,7 @@
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-int chdaxpy(long int *n, double *da, double *dx, long int *incx, double *dy,
-             long int *incy)
+int chdaxpy(long int *n, double *da, double *dx, long int *incx, double *dy, long int *incy)
 {
   /* System generated locals */
   long int i__1;
@@ -208,13 +207,13 @@ L40:
 double ch_ddot(long int *n, double *dx, long int *incx, double *dy, long int *incy)
 {
   /* System generated locals */
-  long int    i__1;
-  double ret_val;
+  long int i__1;
+  double   ret_val;
 
   /* Local variables */
-  static long int    i, m;
-  static double dtemp;
-  static long int    ix, iy, mp1;
+  static long int i, m;
+  static double   dtemp;
+  static long int ix, iy, mp1;
 
   /*     forms the dot product of two vectors. */
   /*     uses unrolled loops for increments equal to one. */
@@ -300,16 +299,16 @@ double chdnrm2(long int *n, double *dx, long int *incx)
      ""; static char fmt_110[] = ""; */
 
   /* System generated locals */
-  long int    i__1, i__2;
-  double ret_val, d__1;
+  long int i__1, i__2;
+  double   ret_val, d__1;
 
   /* Builtin functions */
   double sqrt();
 
   /* Local variables */
-  static double xmax;
-  static long int    next, i, j, nn;
-  static double hitest, sum;
+  static double   xmax;
+  static long int next, i, j, nn;
+  static double   hitest, sum;
 
   /* Parameter adjustments */
   --dx;

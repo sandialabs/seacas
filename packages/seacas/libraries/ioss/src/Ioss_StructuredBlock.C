@@ -247,17 +247,37 @@ namespace Ioss {
     return diff0 * diff1 * diff2;
   }
 
-  int BoundaryCondition::which_parent_face() const
+  bool BoundaryCondition::is_valid() const
   {
-    // Determine which "face" of the parent block this BC is applied to.
-    // min X, max X, min Y, max Y, min Z, max Z -- -1, 1, -2, 2, -3, 3
-    if (m_rangeBeg[0] == m_rangeEnd[0]) {
-      return (m_rangeBeg[0] == 1) ? -1 : 1;
+    // Return true/false if range specifies a valid face
+    bool is_x = m_rangeBeg[0] == m_rangeEnd[0];
+    bool is_y = m_rangeBeg[1] == m_rangeEnd[1];
+    bool is_z = m_rangeBeg[2] == m_rangeEnd[2];
+
+    return ((is_x ? 1 : 0) + (is_y ? 1 : 0) + (is_z ? 1 : 0) == 1);
+  }
+
+  int BoundaryCondition::which_face() const
+  {
+    if (m_face == -1) {
+      // Determine which "face" of the parent block this BC is applied to.
+      // min X, max X, min Y, max Y, min Z, max Z -- 0, 3, 1, 4, 2, 5
+      if (m_rangeBeg[0] == 0 || m_rangeEnd[0] == 0 ||
+	  m_rangeBeg[1] == 0 || m_rangeEnd[1] == 0 ||
+	  m_rangeBeg[2] == 0 || m_rangeEnd[2] == 0) {
+	m_face = -1;
+      }
+      else if (m_rangeBeg[0] == m_rangeEnd[0]) {
+	m_face = (m_rangeBeg[0] == 1) ? 0 : 3;
+      }
+      else if (m_rangeBeg[1] == m_rangeEnd[1]) {
+	m_face = (m_rangeBeg[1] == 1) ? 1 : 4;
+      }
+      else if (m_rangeBeg[2] == m_rangeEnd[2]) {
+	m_face = (m_rangeBeg[2] == 1) ? 2 : 5;
+      }
     }
-    if (m_rangeBeg[1] == m_rangeEnd[1]) {
-      return (m_rangeBeg[1] == 1) ? -2 : 2;
-    }
-    return (m_rangeBeg[2] == 1) ? -3 : 3;
+    return m_face;
   }
 
   std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc)

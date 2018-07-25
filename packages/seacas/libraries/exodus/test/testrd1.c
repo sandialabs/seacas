@@ -33,25 +33,25 @@
  *
  */
 /*****************************************************************************
-*
-* testrd1 - read exodus file test.exo created by testwt1
-*
-* author - Sandia-2017 National Laboratories
-*          Larry A. Schoof - Original
-*
-*
-* environment - UNIX
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * testrd1 - read exodus file test.exo created by testwt1
+ *
+ * author - Sandia National Laboratories
+ *          Larry A. Schoof - Original
+ *
+ *
+ * environment - UNIX
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"
 #include "netcdf.h"

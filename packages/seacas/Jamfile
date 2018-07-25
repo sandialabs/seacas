@@ -120,7 +120,9 @@ alias install-targets
     Utst_database_io
     Utst_sort
     Utst_map
+    Utst_structured_decomp
     $(seacas-root)/scripts/decomp
+    $(seacas-root)/scripts/grope
     /tpl/netcdf//nc_test
     /tpl/netcdf//ncdump
     /tpl/netcdf//ncgen
@@ -181,8 +183,10 @@ alias install-targets
     Utst_database_io
     Utst_sort
     Utst_map
+    Utst_structured_decomp
     $(seacas-root)/scripts/blot
     $(seacas-root)/scripts/decomp
+    $(seacas-root)/scripts/grope
     $(seacas-root)/scripts/fastq
     /tpl/netcdf//nc_test
     /tpl/netcdf//ncdump
@@ -294,6 +298,7 @@ install install-user-lib
     iopg
     iohb
     iogn
+    iogs
     ioinit
     ioss
     iotr
@@ -324,6 +329,7 @@ install install-user-lib
     iopg
     iohb
     iogn
+    iogs
     ioinit
     ioss
     iotr
@@ -367,6 +373,7 @@ install install-user-bin
     struc_to_unstruc
     $(seacas-root)/scripts/blot
     $(seacas-root)/scripts/decomp
+    $(seacas-root)/scripts/grope
     $(seacas-root)/scripts/fastq
     /tpl/netcdf//nc_test
     /tpl/netcdf//ncdump
@@ -423,6 +430,7 @@ install install-user-bin
     struc_to_unstruc
     $(seacas-root)/scripts/blot
     $(seacas-root)/scripts/decomp
+    $(seacas-root)/scripts/grope
     $(seacas-root)/scripts/fastq
     /tpl/netcdf//nc_test
     /tpl/netcdf//ncdump
@@ -611,6 +619,23 @@ lib iogn
     ]
   ;
 
+lib iogs
+  :
+    [ ifdevbuild
+    # Any parameters within this 'ifdevbuild' block apply to development
+    # builds only and will not be present for user builds.
+        [ glob $(seacas-root)/libraries/ioss/src/gen_struc/*.C ]
+    ]
+    ioss
+    /mpi//mpi
+  : 
+    [ ifuserbuild
+    # Any parameters within this 'ifuserbuild' block apply to user
+    # builds only and will not be present for developer builds.
+        <file>$(seacas-root)/lib/libiogs.a
+    ]
+  ;
+
 lib ioinit
   :
     [ ifdevbuild
@@ -626,6 +651,7 @@ lib ioinit
     iopg
     iohb
     iogn
+    iogs
     iotr
     iovs
     /mpi//mpi
@@ -1877,12 +1903,18 @@ exe Utst_map
   : <tag>@sierra-exec-tag
   ;
 
+exe Utst_structured_decomp
+  :
+    $(seacas-root)/libraries/ioss/src/utest/Utst_structured_decomp.C
+    iocgns
+    /mpi//mpi
+  : <tag>@sierra-exec-tag
+  ;
+
 exe Utst_superelement
   :
     $(seacas-root)/libraries/ioss/src/utest/Utst_superelement.C
     ioex
-    /mpi//mpi
-    /tpl/parmetis//parmetis
   : <tag>@sierra-exec-tag
   ;
   

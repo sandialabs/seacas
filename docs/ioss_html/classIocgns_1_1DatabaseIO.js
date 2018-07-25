@@ -8,6 +8,7 @@ var classIocgns_1_1DatabaseIO =
     [ "~DatabaseIO", "classIocgns_1_1DatabaseIO.html#a1feccaa4d27f7685193c911740a93a93", null ],
     [ "begin__", "classIocgns_1_1DatabaseIO.html#aaec53d7ca47df6f6d0850ef1fb8863d1", null ],
     [ "begin_state__", "classIocgns_1_1DatabaseIO.html#a3ab38d6b7c5521bc8984e2f1f3f2f92a", null ],
+    [ "check_valid_file_open", "classIocgns_1_1DatabaseIO.html#ac24c1fe72e1e14f91497d6f4ddcd73d0", null ],
     [ "closeDatabase__", "classIocgns_1_1DatabaseIO.html#a471eeae9ef27a32dafadbe1a73203f05", null ],
     [ "create_structured_block", "classIocgns_1_1DatabaseIO.html#a3b5d3b4ac91f45ae8ee426c152fb4441", null ],
     [ "create_structured_block_fpp", "classIocgns_1_1DatabaseIO.html#aff9640cf8ff3bb0c6b87500e240d7108", null ],

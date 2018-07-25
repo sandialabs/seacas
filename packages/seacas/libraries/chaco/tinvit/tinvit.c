@@ -33,30 +33,29 @@
  *
  */
 /* tinvit.f -- translated by f2c (version of 16 May 1991  13:06:06).
-*/
+ */
 
 #include <float.h>
 #include <math.h>
 
-
-int tinvit(long int *nm, long int *n, double *d, double *e, double *e2, long int *m,
-            double *w, long int *ind, double *z, long int *ierr, double *rv1,
-            double *rv2, double *rv3, double *rv4, double *rv6)
+int tinvit(long int *nm, long int *n, double *d, double *e, double *e2, long int *m, double *w,
+           long int *ind, double *z, long int *ierr, double *rv1, double *rv2, double *rv3,
+           double *rv4, double *rv6)
 {
   /* System generated locals */
-  long int    z_dim1, z_offset, i__1, i__2, i__3;
-  double d__1, d__2, d__3, d__4;
+  long int z_dim1, z_offset, i__1, i__2, i__3;
+  double   d__1, d__2, d__3, d__4;
 
   /* Local variables */
-  static double norm;
-  static long int    i, j, p, q, r, s;
-  static double u, v, order;
-  static long int    group;
-  static double x0, x1;
-  static long int    ii, jj, ip;
-  static double uk, xu;
-  static long int    tag, its;
-  static double eps2, eps3, eps4;
+  static double   norm;
+  static long int i, j, p, q, r, s;
+  static double   u, v, order;
+  static long int group;
+  static double   x0, x1;
+  static long int ii, jj, ip;
+  static double   uk, xu;
+  static long int tag, its;
+  static double   eps2, eps3, eps4;
 
   /*     this subroutine is a translation of the inverse iteration tech- */
   /*     nique in the algol procedure tristurm by peters and wilkinson. */

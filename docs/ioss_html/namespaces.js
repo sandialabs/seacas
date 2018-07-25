@@ -61,6 +61,7 @@ var namespaces =
     [ "anonymous_namespace{Ioss_ShellLine2D2.C}", "namespaceanonymous__namespace_02Ioss__ShellLine2D2_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_ShellLine2D3.C}", "namespaceanonymous__namespace_02Ioss__ShellLine2D3_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_SideBlock.C}", "namespaceanonymous__namespace_02Ioss__SideBlock_8C_03.html", null ],
+    [ "anonymous_namespace{Ioss_SideSet.C}", "namespaceanonymous__namespace_02Ioss__SideSet_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_SmartAssert.C}", "namespaceanonymous__namespace_02Ioss__SmartAssert_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Sort.h}", "namespaceanonymous__namespace_02Ioss__Sort_8h_03.html", null ],
     [ "anonymous_namespace{Ioss_Sphere.C}", "namespaceanonymous__namespace_02Ioss__Sphere_8C_03.html", null ],
@@ -115,8 +116,6 @@ var namespaces =
     [ "Ioss", "namespaceIoss.html", "namespaceIoss" ],
     [ "Iotr", "namespaceIotr.html", null ],
     [ "Iovs", "namespaceIovs.html", null ],
-    [ "Json", "namespaceJson.html", null ],
     [ "Skinner", "namespaceSkinner.html", null ],
-    [ "SmartAssert", "namespaceSmartAssert.html", null ],
-    [ "std", "namespacestd.html", null ]
+    [ "SmartAssert", "namespaceSmartAssert.html", null ]
 ];
