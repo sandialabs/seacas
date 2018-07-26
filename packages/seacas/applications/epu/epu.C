@@ -1379,7 +1379,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     double estimated_remaining = time_per_step * (output_steps - time_step_out);
     std::cout << "\t\t[" << std::fixed << std::setw(5) << std::setprecision(1) << percentage_done
               << "%, Elapsed=" << format_time(elapsed)
-              << ", ETA=" << format_time(estimated_remaining) << "]\n";
+              << ", ETA=" << format_time(estimated_remaining) << "]\r";
     if (debug_level & 1) {
       std::cout << "\n";
     }
@@ -1403,7 +1403,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   if (subcycles > 2) {
     std::cout << cycle + 1 << "/" << subcycles << " ";
   }
-  std::cout << "******* END *******\n";
+  std::cout << "\n******* END *******\n";
   return (0);
 }
 
