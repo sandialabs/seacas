@@ -544,11 +544,12 @@ double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh,
   std::ios::fmtflags f(std::cout.flags());
   double             ts_begin = Ioss::Utils::timer();
   int                steps    = 0;
+  int                nsteps   = (ts_max - ts_min + 1) / ts_step;
   for (int step = ts_min - 1; step < ts_max; step += ts_step) {
     int ostep = output_region.add_state(global_times[step]);
     output_region.begin_state(ostep);
     output_transient_state(output_region, part_mesh, global_times[step], local_node_map, interface);
-    std::cout << "\rWrote step " << std::setw(4) << step + 1 << "/" << global_times.size()
+    std::cout << "\rWrote step " << std::setw(4) << step + 1 << "/" << nsteps
               << ", time " << std::scientific << std::setprecision(4) << global_times[step];
     output_region.end_state(ostep);
     steps++;
@@ -1308,10 +1309,10 @@ namespace {
   void transfer_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
                                     const std::string &field_name)
   {
+    static std::vector<double> data;
 
     assert(ige->get_field(field_name).get_size() == oge->get_field(field_name).get_size());
 
-    std::vector<double> data;
     ige->get_field_data(field_name, data);
     oge->put_field_data(field_name, data);
   }
