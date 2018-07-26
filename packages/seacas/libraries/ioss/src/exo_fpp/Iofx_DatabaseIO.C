@@ -3380,6 +3380,20 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
   size_t var_index  = 0;
 
   char field_suffix_separator = get_field_separator();
+  if (comp_count == 1 && field.get_type() == Ioss::Field::REAL) {
+    std::string var_name = var_type->label_name(field.get_name(), 1, field_suffix_separator);
+
+    // Read the variable...
+    int64_t id   = Ioex::get_id(ge, type, &ids_);
+    int     ierr = 0;
+    var_index    = variables.find(var_name)->second;
+    assert(var_index > 0);
+    ierr = ex_get_var(get_file_pointer(), step, type, var_index, id, num_entity, data);
+    if (ierr < 0) {
+      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+    }
+  }
+  else {
   for (size_t i = 0; i < comp_count; i++) {
     std::string var_name = var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
 
@@ -3420,6 +3434,7 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
       IOSS_ERROR(errmsg);
     }
     assert(k == num_entity);
+  }
   }
   return num_entity;
 }
@@ -4425,6 +4440,23 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
   int comp_count = var_type->component_count();
   int var_index  = 0;
 
+  // Handle quick easy, hopefully common case first...
+  if (comp_count == 1 && ioss_type == Ioss::Field::REAL && type != EX_SIDE_SET && !map->reorders()) {
+    // Simply output the variable...
+    int64_t id = Ioex::get_id(ge, type, &ids_);
+    std::string var_name = var_type->label_name(field.get_name(), 1);
+    var_index = m_variables[type].find(var_name)->second;
+    assert(var_index > 0);
+    int ierr = ex_put_var(get_file_pointer(), step, type, var_index, id, count, variables);
+
+    if (ierr < 0) {
+      std::ostringstream extra_info;
+      extra_info << "Outputting field " << field.get_name() << " at step "
+                   << step << " on " << ge->type_string() << " " << ge->name() << ".";
+      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
+    }
+    return;
+  }
   int re_im = 1;
   if (ioss_type == Ioss::Field::COMPLEX) {
     re_im = 2;
@@ -4490,7 +4522,7 @@ int64_t DatabaseIO::put_Xset_field_internal(ex_entity_type type, const Ioss::Ent
 {
   {
     Ioss::SerializeIO serializeIO__(this);
-    ex_update(get_file_pointer());
+    //    ex_update(get_file_pointer());
 
     size_t entity_count = ns->entity_count();
     size_t num_to_get   = field.verify(data_size);
