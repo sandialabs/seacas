@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
   double end = Ioss::Utils::timer();
 
   if (rank == 0 && !interface.quiet) {
-    std::cerr << "\n\tTotal Execution time = " << end - begin << " seconds.\n";
+    std::cerr << "\n\n\tTotal Execution time = " << end - begin << " seconds.\n";
   }
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
