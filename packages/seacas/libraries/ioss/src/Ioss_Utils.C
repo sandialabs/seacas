@@ -2580,8 +2580,8 @@ namespace {
       std::cerr.setf(std::ios::showpoint);
     }
     if (verbose && rank == 0) {
-      std::cerr << "     Time step " << std::setw(5) << istep << " at time " << std::setprecision(5)
-                << time << '\n';
+      std::cerr << "\r\tTime step " << std::setw(5) << istep << " at time " << std::setprecision(5)
+                << time;
     }
   }
 
