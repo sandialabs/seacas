@@ -206,7 +206,7 @@ namespace Iocgns {
 
       CGCHECK(cg_set_file_type(CG_FILE_HDF5));
 
-#if CGNS_VERSION >= 3320
+#if CGNS_VERSION > 3320
       CGCHECK(cgp_mpi_comm(util().communicator()));
 #else
       // Older versions of cgp_mpi_comm returned an internal NO_ERROR
