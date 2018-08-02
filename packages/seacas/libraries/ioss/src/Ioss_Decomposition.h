@@ -132,6 +132,7 @@ namespace Ioss {
     double distributionFactorValue{
         0.0}; // If distributionFactorConstant == true, the constant value
     bool distributionFactorConstant{false}; // T if all distribution factors the same value.
+    bool onMostProcs{false}; // True if set on majority of processors 
   };
 
   template <typename INT> class Decomposition

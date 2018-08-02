@@ -44,6 +44,7 @@
 #include <algorithm> // for lower_bound, copy, etc
 #include <cassert>   // for assert
 #include <climits>   // for INT_MAX
+#include <cmath>
 #include <cstdlib>   // for exit, EXIT_FAILURE
 #include <cstring>
 #include <iostream> // for operator<<, ostringstream, etc
@@ -505,12 +506,15 @@ namespace Iopx {
         for (size_t i = 0; i < set_count; i++) {
           node_sets[i].hasEntities.resize(m_processorCount);
           node_sets[i].root_ = m_processorCount;
+	  int count = 0;
           for (int p = 0; p < m_processorCount; p++) {
             if (p < node_sets[i].root_ && has_nodes[p * set_count + i] != 0) {
               node_sets[i].root_ = p;
             }
             node_sets[i].hasEntities[p] = has_nodes[p * set_count + i];
+	    count += has_nodes[p * set_count + i];
           }
+	  node_sets[i].onMostProcs = count >= std::log2(m_processorCount)+1;
         }
       }
 
@@ -653,12 +657,15 @@ namespace Iopx {
         for (size_t i = 0; i < set_count; i++) {
           side_sets[i].hasEntities.resize(m_processorCount);
           side_sets[i].root_ = m_processorCount;
+	  int count = 0;
           for (int p = 0; p < m_processorCount; p++) {
             if (p < side_sets[i].root_ && has_elems[p * set_count + i] != 0) {
               side_sets[i].root_ = p;
             }
             side_sets[i].hasEntities[p] = has_elems[p * set_count + i];
+	    count += has_elems[p * set_count + i];
           }
+	  side_sets[i].onMostProcs = count >= (3 * m_processorCount) / 4;
         }
       }
 
