@@ -197,6 +197,13 @@ namespace Ioex {
       }
     }
 
+    if (!is_input()) {
+      if (properties.exists("FLUSH_INTERVAL")) {
+	int interval = properties.get("FLUSH_INTERVAL").get_int();
+	flushInterval = interval;
+      }
+    }
+
     // Don't open output files until they are actually going to be
     // written to.  This is needed for proper support of the topology
     // files and auto restart so we don't overwrite a file with data we
@@ -963,14 +970,14 @@ namespace Ioex {
   }
 
   // common
-  bool DatabaseIO::end_state__(Ioss::Region * /*region*/, int /*state*/, double time)
+  bool DatabaseIO::end_state__(Ioss::Region * /*region*/, int state, double time)
   {
     Ioss::SerializeIO serializeIO__(this);
 
     if (!is_input()) {
       write_reduction_fields();
       time /= timeScaleFactor;
-      finalize_write(time);
+      finalize_write(state, time);
       if (minimizeOpenFiles) {
         free_file_pointer();
       }
@@ -1411,7 +1418,7 @@ namespace Ioex {
     }
   }
 
-  void DatabaseIO::finalize_write(double sim_time)
+  void DatabaseIO::finalize_write(int state, double sim_time)
   {
     // Attempt to ensure that all data written up to this point has
     // actually made it out to disk.  We also write a special attribute
@@ -1444,7 +1451,12 @@ namespace Ioex {
     // results in negligible impact on runtime with more syncs.
 
     bool do_flush = true;
-    if (dbUsage == Ioss::WRITE_HISTORY || !isParallel) {
+    if (flushInterval != 1) {
+      if (flushInterval == 0 || state % flushInterval != 0) {
+	do_flush = false;
+      }
+    }
+    else if (dbUsage == Ioss::WRITE_HISTORY || !isParallel) {
       assert(myProcessor == 0);
       time_t cur_time = time(nullptr);
       if (cur_time - timeLastFlush >= 10) {

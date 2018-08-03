@@ -260,7 +260,7 @@ namespace Ioex {
     int get_database_step(int global_step) const;
 
     void flush_database__() const override;
-    void finalize_write(double sim_time);
+    void finalize_write(int state, double sim_time);
 
     // Private member data...
   protected:
@@ -310,6 +310,7 @@ namespace Ioex {
     mutable std::map<std::string, Ioss::Int64Vector> activeNodesetNodesIndex;
 
     time_t timeLastFlush{0};
+    int    flushInterval{1};
 
     mutable bool fileExists{false}; // False if file has never been opened/created
     mutable bool minimizeOpenFiles{false};
