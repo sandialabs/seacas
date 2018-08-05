@@ -657,9 +657,9 @@ namespace Ioss {
         }
       }
 
-        // GroupingEntity consistency check:
-        // -- debug and parallel     -- default to true; can disable via environment variable
-        // -- non-debug and parallel -- default to false; can enable via environment variable
+      // GroupingEntity consistency check:
+      // -- debug and parallel     -- default to true; can disable via environment variable
+      // -- non-debug and parallel -- default to false; can enable via environment variable
 #ifndef NDEBUG
       bool check_consistency = true;
 #else

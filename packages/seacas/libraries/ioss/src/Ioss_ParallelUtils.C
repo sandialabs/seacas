@@ -67,7 +67,7 @@ namespace {
     return oper;
   }
 #endif
-}
+} // namespace
 
 Ioss::ParallelUtils::ParallelUtils(MPI_Comm the_communicator) : communicator_(the_communicator) {}
 

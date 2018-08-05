@@ -1480,7 +1480,7 @@ namespace Ioss {
     if (set.onMostProcs) {
       recv_data.resize(size);
       if (m_processor == set.root_) {
-	std::copy(file_data, file_data+size, recv_data.begin());
+        std::copy(file_data, file_data + size, recv_data.begin());
       }
       MPI_Bcast(recv_data.data(), size, Ioss::mpi_type(T(0)), set.root_, m_comm);
     }
@@ -1488,26 +1488,26 @@ namespace Ioss {
       // NOTE That a processor either sends or receives, but never both,
       // so this will not cause a deadlock...
       if (m_processor != set.root_ && set.hasEntities[m_processor]) {
-	recv_data.resize(size);
-	result =
-          MPI_Recv(recv_data.data(), size, Ioss::mpi_type(T(0)), set.root_, 111, m_comm, &status);
+        recv_data.resize(size);
+        result =
+            MPI_Recv(recv_data.data(), size, Ioss::mpi_type(T(0)), set.root_, 111, m_comm, &status);
 
-	if (result != MPI_SUCCESS) {
-	  std::ostringstream errmsg;
-	  errmsg << "ERROR: MPI_Recv error on processor " << m_processor
-		 << " in Iopx::Decomposition<INT>::communicate_set_data";
-	  std::cerr << errmsg.str();
-	}
+        if (result != MPI_SUCCESS) {
+          std::ostringstream errmsg;
+          errmsg << "ERROR: MPI_Recv error on processor " << m_processor
+                 << " in Iopx::Decomposition<INT>::communicate_set_data";
+          std::cerr << errmsg.str();
+        }
       }
 
       if (set.root_ == m_processor) {
-	// Sending data to other processors...
-	for (int i = m_processor + 1; i < m_processorCount; i++) {
-	  if (set.hasEntities[i]) {
-	    // Send same data to all active processors...
-	    MPI_Send(file_data, size, Ioss::mpi_type(T(0)), i, 111, m_comm);
-	  }
-	}
+        // Sending data to other processors...
+        for (int i = m_processor + 1; i < m_processorCount; i++) {
+          if (set.hasEntities[i]) {
+            // Send same data to all active processors...
+            MPI_Send(file_data, size, Ioss::mpi_type(T(0)), i, 111, m_comm);
+          }
+        }
       }
     }
 

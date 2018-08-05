@@ -753,9 +753,8 @@ namespace Ioss {
     bool useGenericCanonicalName{
         false}; // True if "block_id" is used as canonical name instead of the name
     // given on the mesh file e.g. "fireset".  Both names are still aliases.
-    bool ignoreDatabaseNames{
-        false}; // True if "block_{id}" used as canonical name; ignore any names on
-                // database.
+    bool ignoreDatabaseNames{false}; // True if "block_{id}" used as canonical name; ignore any
+                                     // names on database.
     mutable bool blockAdjacenciesCalculated{false}; // True if the lazy creation of
     // block adjacencies has been calculated.
   };
