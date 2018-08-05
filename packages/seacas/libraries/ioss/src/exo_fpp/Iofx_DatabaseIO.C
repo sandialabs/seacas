@@ -3394,47 +3394,47 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
     }
   }
   else {
-  for (size_t i = 0; i < comp_count; i++) {
-    std::string var_name = var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+    for (size_t i = 0; i < comp_count; i++) {
+      std::string var_name = var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
 
-    // Read the variable...
-    int64_t id   = Ioex::get_id(ge, type, &ids_);
-    int     ierr = 0;
-    var_index    = variables.find(var_name)->second;
-    assert(var_index > 0);
-    ierr = ex_get_var(get_file_pointer(), step, type, var_index, id, num_entity, TOPTR(temp));
-    if (ierr < 0) {
-      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-    }
+      // Read the variable...
+      int64_t id   = Ioex::get_id(ge, type, &ids_);
+      int     ierr = 0;
+      var_index    = variables.find(var_name)->second;
+      assert(var_index > 0);
+      ierr = ex_get_var(get_file_pointer(), step, type, var_index, id, num_entity, TOPTR(temp));
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
 
-    // Transfer to 'data' array.
-    size_t k = 0;
-    if (field.get_type() == Ioss::Field::INTEGER) {
-      int *ivar = static_cast<int *>(data);
-      for (size_t j = i; j < num_entity * comp_count; j += comp_count) {
-        ivar[j] = static_cast<int>(temp[k++]);
+      // Transfer to 'data' array.
+      size_t k = 0;
+      if (field.get_type() == Ioss::Field::INTEGER) {
+        int *ivar = static_cast<int *>(data);
+        for (size_t j = i; j < num_entity * comp_count; j += comp_count) {
+          ivar[j] = static_cast<int>(temp[k++]);
+        }
       }
-    }
-    else if (field.get_type() == Ioss::Field::INT64) { // FIX 64 UNSAFE
-      int64_t *ivar = static_cast<int64_t *>(data);
-      for (size_t j = i; j < num_entity * comp_count; j += comp_count) {
-        ivar[j] = static_cast<int64_t>(temp[k++]);
+      else if (field.get_type() == Ioss::Field::INT64) { // FIX 64 UNSAFE
+        int64_t *ivar = static_cast<int64_t *>(data);
+        for (size_t j = i; j < num_entity * comp_count; j += comp_count) {
+          ivar[j] = static_cast<int64_t>(temp[k++]);
+        }
       }
-    }
-    else if (field.get_type() == Ioss::Field::REAL) {
-      double *rvar = static_cast<double *>(data);
-      for (size_t j = i; j < num_entity * comp_count; j += comp_count) {
-        rvar[j] = temp[k++];
+      else if (field.get_type() == Ioss::Field::REAL) {
+        double *rvar = static_cast<double *>(data);
+        for (size_t j = i; j < num_entity * comp_count; j += comp_count) {
+          rvar[j] = temp[k++];
+        }
       }
+      else {
+        std::ostringstream errmsg;
+        errmsg << "IOSS_ERROR: Field storage type must be either integer or double.\n"
+               << "       Field '" << field.get_name() << "' is invalid.\n";
+        IOSS_ERROR(errmsg);
+      }
+      assert(k == num_entity);
     }
-    else {
-      std::ostringstream errmsg;
-      errmsg << "IOSS_ERROR: Field storage type must be either integer or double.\n"
-             << "       Field '" << field.get_name() << "' is invalid.\n";
-      IOSS_ERROR(errmsg);
-    }
-    assert(k == num_entity);
-  }
   }
   return num_entity;
 }
@@ -4441,18 +4441,19 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
   int var_index  = 0;
 
   // Handle quick easy, hopefully common case first...
-  if (comp_count == 1 && ioss_type == Ioss::Field::REAL && type != EX_SIDE_SET && !map->reorders()) {
+  if (comp_count == 1 && ioss_type == Ioss::Field::REAL && type != EX_SIDE_SET &&
+      !map->reorders()) {
     // Simply output the variable...
-    int64_t id = Ioex::get_id(ge, type, &ids_);
+    int64_t     id       = Ioex::get_id(ge, type, &ids_);
     std::string var_name = var_type->label_name(field.get_name(), 1);
-    var_index = m_variables[type].find(var_name)->second;
+    var_index            = m_variables[type].find(var_name)->second;
     assert(var_index > 0);
     int ierr = ex_put_var(get_file_pointer(), step, type, var_index, id, count, variables);
 
     if (ierr < 0) {
       std::ostringstream extra_info;
-      extra_info << "Outputting field " << field.get_name() << " at step "
-                   << step << " on " << ge->type_string() << " " << ge->name() << ".";
+      extra_info << "Outputting field " << field.get_name() << " at step " << step << " on "
+                 << ge->type_string() << " " << ge->name() << ".";
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
     }
     return;

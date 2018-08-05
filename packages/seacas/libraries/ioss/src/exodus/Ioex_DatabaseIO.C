@@ -199,8 +199,8 @@ namespace Ioex {
 
     if (!is_input()) {
       if (properties.exists("FLUSH_INTERVAL")) {
-	int interval = properties.get("FLUSH_INTERVAL").get_int();
-	flushInterval = interval;
+        int interval  = properties.get("FLUSH_INTERVAL").get_int();
+        flushInterval = interval;
       }
     }
 
@@ -1453,7 +1453,7 @@ namespace Ioex {
     bool do_flush = true;
     if (flushInterval != 1) {
       if (flushInterval == 0 || state % flushInterval != 0) {
-	do_flush = false;
+        do_flush = false;
       }
     }
     else if (dbUsage == Ioss::WRITE_HISTORY || !isParallel) {
