@@ -665,7 +665,7 @@ namespace Iopx {
             side_sets[i].hasEntities[p] = has_elems[p * set_count + i];
             count += has_elems[p * set_count + i];
           }
-          side_sets[i].onMostProcs = count >= (3 * m_processorCount) / 4;
+          side_sets[i].onMostProcs = count >= std::log2(m_processorCount) + 1;
         }
       }
 
