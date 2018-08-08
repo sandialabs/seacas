@@ -514,7 +514,8 @@ namespace Iopx {
             node_sets[i].hasEntities[p] = has_nodes[p * set_count + i];
             count += has_nodes[p * set_count + i];
           }
-          node_sets[i].onMostProcs = count >= std::log2(m_processorCount) + 1;
+	  int color = node_sets[i].hasEntities[m_processor] ? 1 : MPI_UNDEFINED;
+	  MPI_Comm_split(comm_, color, m_processor, &node_sets[i].setComm_);
         }
       }
 
@@ -665,7 +666,8 @@ namespace Iopx {
             side_sets[i].hasEntities[p] = has_elems[p * set_count + i];
             count += has_elems[p * set_count + i];
           }
-          side_sets[i].onMostProcs = count >= std::log2(m_processorCount) + 1;
+	  int color = side_sets[i].hasEntities[m_processor] ? 1 : MPI_UNDEFINED;
+	  MPI_Comm_split(comm_, color, m_processor, &side_sets[i].setComm_);
         }
       }
 
