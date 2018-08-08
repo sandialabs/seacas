@@ -349,6 +349,17 @@ CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
   return common_zone_type;
 }
 
+int Iocgns::Utils::get_db_zone(const Ioss::EntityBlock *block)
+{
+  // Returns the zone of the entity as it appears on the cgns database.
+  // Usually, but not always the same as the IOSS zone...
+  // Can differ on fpp reads and maybe writes.
+  if (block->property_exists("db_zone")) {
+    return block->get_property("db_zone").get_int();
+  }
+  return block->get_property("zone").get_int();
+}
+
 size_t Iocgns::Utils::index(const Ioss::Field &field) { return field.get_index() & 0xffffffff; }
 
 void Iocgns::Utils::set_field_index(const Ioss::Field &field, size_t index,
@@ -718,6 +729,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       }
       CGERR(cg_zone_write(file_ptr, base, name.c_str(), size, CG_Structured, &zone));
       sb->property_update("zone", zone);
+      sb->property_update("db_zone", zone);
       sb->property_update("base", base);
 
       assert(zone > 0);
@@ -987,9 +999,9 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *reg
 
   // Create a lambda to avoid code duplication for similar treatment
   // of structured blocks and element blocks.
-  auto sol_lambda = [=](Ioss::GroupingEntity *block) {
+  auto sol_lambda = [=](Ioss::EntityBlock *block) {
     int base = block->get_property("base").get_int();
-    int zone = block->get_property("zone").get_int();
+    int zone = get_db_zone(block);
     if (has_nodal_fields) {
       CGERR(cg_sol_write(file_ptr, base, zone, v_name.c_str(), CG_Vertex, vertex_solution_index));
       CGERR(
@@ -1335,7 +1347,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
                                                            Ioss::StructuredBlock *block)
 {
   int base = block->get_property("base").get_int();
-  int zone = block->get_property("zone").get_int();
+  int zone = get_db_zone(block);
 
   // Called by Parallel run reading single file only.
   // The 'cgnsFilePtr' is for the serial file on processor 0.
@@ -1459,7 +1471,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
                                                            Ioss::StructuredBlock *block)
 {
   int base = block->get_property("base").get_int();
-  int zone = block->get_property("zone").get_int();
+  int zone = get_db_zone(block);
 
   // Called by both parallel fpp and serial runs.
   // In parallel, the 'cgnsFilePtr' is specific for each processor
@@ -1556,8 +1568,8 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
 
   // Create a lambda to avoid code duplication for similar treatment
   // of structured blocks and element blocks.
-  auto ziter = [=](Ioss::GroupingEntity *block) {
-    int              zone = block->get_property("zone").get_int();
+  auto ziter = [=](Ioss::EntityBlock *block) {
+    int              zone = get_db_zone(block);
     std::vector<int> indices(timesteps.size());
     bool             has_cell_center_fields = block->field_count(Ioss::Field::TRANSIENT) > 0;
     if (has_cell_center_fields || has_nodal_fields) {
@@ -1614,9 +1626,9 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
 
   // Assuming that the fields on all steps are the same, but can vary
   // from zone to zone.
-  auto sol_iter = [=](Ioss::GroupingEntity *block) {
+  auto sol_iter = [=](Ioss::EntityBlock *block) {
     int b = block->get_property("base").get_int();
-    int z = block->get_property("zone").get_int();
+    int z = get_db_zone(block);
 
     int sol_count = 0;
     CGCHECK(cg_nsols(cgnsFilePtr, b, z, &sol_count));

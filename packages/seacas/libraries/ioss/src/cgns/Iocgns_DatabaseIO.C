@@ -161,9 +161,9 @@ namespace {
   {
     int base = block->get_property("base").get_int();
     int zone = block->get_property("zone").get_int();
-
+    int db_zone = Iocgns::Utils::get_db_zone(block);
     int nconn = 0;
-    CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
+    CGCHECK(cg_n1to1(cgnsFilePtr, base, db_zone, &nconn));
 
     for (int ii = 0; ii < nconn; ii++) {
       char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
@@ -172,7 +172,7 @@ namespace {
       std::array<cgsize_t, 6> donor_range;
       Ioss::IJK_t             transform;
 
-      CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, ii + 1, connectname, donorname, range.data(),
+      CGCHECK(cg_1to1_read(cgnsFilePtr, base, db_zone, ii + 1, connectname, donorname, range.data(),
                            donor_range.data(), transform.data()));
 
       auto        donorname_proc = decompose_name(donorname, isParallel);
@@ -783,11 +783,15 @@ namespace Iocgns {
       }
 
       block->property_add(Ioss::Property("base", base));
-      block->property_add(Ioss::Property("zone", zone));
+      if (native) {
+	block->property_add(Ioss::Property("db_zone", zone));
+      }
+      block->property_add(Ioss::Property("zone", i + 1));
       block->property_add(Ioss::Property("id", i + 1));
-      block->property_add(Ioss::Property("guid", util().generate_guid(zone)));
+      // Note that 'zone' is not consistent among processors
+      block->property_add(Ioss::Property("guid", util().generate_guid(i+1)));
       get_region()->add(block);
-      m_zoneNameMap[zone_name] = zone;
+      m_zoneNameMap[zone_name] = i + 1;
 
       if (native) {
         // Handle zone-grid-connectivity...
@@ -913,6 +917,7 @@ namespace Iocgns {
         new Ioss::StructuredBlock(this, zname, index_dim, size[3], size[4], size[5]);
 
     block->property_add(Ioss::Property("base", base));
+    block->property_add(Ioss::Property("db_zone", zone));
     block->property_add(Ioss::Property("zone", zone));
     block->property_add(Ioss::Property("id", zone));
     block->property_add(Ioss::Property("guid", zone));
@@ -1107,6 +1112,7 @@ namespace Iocgns {
         eblock = new Ioss::ElementBlock(this, zone_name, element_topo, num_entity);
         eblock->property_add(Ioss::Property("base", base));
         eblock->property_add(Ioss::Property("zone", zone));
+        eblock->property_add(Ioss::Property("db_zone", zone));
         eblock->property_add(Ioss::Property("id", zone));
         eblock->property_add(Ioss::Property("guid", zone));
         eblock->property_add(Ioss::Property("section", is));
@@ -1270,7 +1276,7 @@ namespace Iocgns {
     const auto &blocks = get_region()->get_element_blocks();
     for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
       int base = (*I)->get_property("base").get_int();
-      int zone = (*I)->get_property("zone").get_int();
+      int zone = Iocgns::Utils::get_db_zone(*I);
 
       const auto &I_map = m_globalToBlockLocalNodeMap[zone];
 
@@ -1550,7 +1556,7 @@ namespace Iocgns {
     if (num_to_get > 0) {
 
       int                   base             = eb->get_property("base").get_int();
-      int                   zone             = eb->get_property("zone").get_int();
+      int                   zone             = Iocgns::Utils::get_db_zone(eb);
       int                   sect             = eb->get_property("section").get_int();
       cgsize_t              my_element_count = eb->entity_count();
       Ioss::Field::RoleType role             = field.get_role();
@@ -1682,7 +1688,7 @@ namespace Iocgns {
   {
     Ioss::Field::RoleType role = field.get_role();
     int                   base = sb->get_property("base").get_int();
-    int                   zone = sb->get_property("zone").get_int();
+    int                   zone = Iocgns::Utils::get_db_zone(sb);
 
     cgsize_t num_to_get = field.verify(data_size);
 
@@ -1867,7 +1873,7 @@ namespace Iocgns {
                                          void *data, size_t data_size) const
   {
     int base = sb->get_property("base").get_int();
-    int zone = sb->get_property("zone").get_int();
+    int zone = Iocgns::Utils::get_db_zone(sb);
     int sect = sb->get_property("section").get_int();
 
     ssize_t num_to_get = field.verify(data_size);
@@ -1956,7 +1962,7 @@ namespace Iocgns {
   {
     Ioss::Field::RoleType role = field.get_role();
     int                   base = sb->get_property("base").get_int();
-    int                   zone = sb->get_property("zone").get_int();
+    int                   zone = Iocgns::Utils::get_db_zone(sb);
 
     cgsize_t num_to_get = field.verify(data_size);
 
@@ -2115,6 +2121,7 @@ namespace Iocgns {
 
           CGCHECK(
               cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone));
+          eb->property_update("db_zone", zone);
           eb->property_update("zone", zone);
           eb->property_update("id", zone);
           eb->property_update("guid", zone);
@@ -2167,7 +2174,7 @@ namespace Iocgns {
       }
       else if (role == Ioss::Field::TRANSIENT) {
         int     base                   = eb->get_property("base").get_int();
-        int     zone                   = eb->get_property("zone").get_int();
+        int     zone                   = Iocgns::Utils::get_db_zone(eb);
         double *rdata                  = static_cast<double *>(data);
         int     cgns_field             = 0;
         auto    var_type               = field.transformed_storage();
@@ -2400,7 +2407,7 @@ namespace Iocgns {
     }
 
     int     base       = parent_block->get_property("base").get_int();
-    int     zone       = parent_block->get_property("zone").get_int();
+    int     zone       = Iocgns::Utils::get_db_zone(parent_block);
     ssize_t num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role = field.get_role();
