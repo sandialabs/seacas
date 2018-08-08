@@ -34,7 +34,7 @@ int PMPI_Init ( int *argc, char **argv[]) {
       _MPI_COVERAGE();
       _MPI_ERR_ROUTINE(MPI_ERR_IN_STATUS, "MPI was already initialized");	
     }
-    MPI_ERRORS_ARE_FATAL((MPI_Comm)0, &retval);
+    MPI_ERRORS_ARE_FATAL((MPI_Comm*)0, &retval);
     return MPI_ERR_OTHER;
   } 
 
