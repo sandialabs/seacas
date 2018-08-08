@@ -396,8 +396,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a363f39485f8cdcac0c116b36ff35e1c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1b9cbebd8c58750b8133d654e671ddf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#ad1b9cbebd8c58750b8133d654e671ddf">flush_database__</a> () const override</td></tr>
 <tr class="separator:ad1b9cbebd8c58750b8133d654e671ddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a011add6d2210a766c4278893d9750846"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#a011add6d2210a766c4278893d9750846">finalize_write</a> (double sim_time)</td></tr>
-<tr class="separator:a011add6d2210a766c4278893d9750846"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1742d22539e9ff6d5a2dba896364115"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#ab1742d22539e9ff6d5a2dba896364115">finalize_write</a> (int state, double sim_time)</td></tr>
+<tr class="separator:ab1742d22539e9ff6d5a2dba896364115"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classIoss_1_1DatabaseIO"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classIoss_1_1DatabaseIO')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classIoss_1_1DatabaseIO.html">Ioss::DatabaseIO</a></td></tr>
 <tr class="memitem:ac424982f766c762292b823a270982f08 inherit pro_methods_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ac424982f766c762292b823a270982f08">DatabaseIO</a> (<a class="el" href="classIoss_1_1Region.html">Region</a> *region, std::string filename, <a class="el" href="namespaceIoss.html#a4ec41517502e82a7291184cd7b68b34f">Ioss::DatabaseUsage</a> db_usage, <a class="el" href="Ioss__CodeTypes_8h.html#a161d2f0d69c09838316e4ea9a74f02d7">MPI_Comm</a> communicator, const <a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;props)</td></tr>
 <tr class="separator:ac424982f766c762292b823a270982f08 inherit pro_methods_classIoss_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -460,6 +460,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a3b2d40eb036edbf280ec29e163b4bc4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adecd2390d036e7319045bd663b754496"><td class="memItemLeft" align="right" valign="top">time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#adecd2390d036e7319045bd663b754496">timeLastFlush</a> {0}</td></tr>
 <tr class="separator:adecd2390d036e7319045bd663b754496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6b5dd7d4f3e06368388fbd1ad831233"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#ae6b5dd7d4f3e06368388fbd1ad831233">flushInterval</a> {1}</td></tr>
+<tr class="separator:ae6b5dd7d4f3e06368388fbd1ad831233"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa64ee0637079eb17508253f638b9e34e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#aa64ee0637079eb17508253f638b9e34e">fileExists</a> {false}</td></tr>
 <tr class="separator:aa64ee0637079eb17508253f638b9e34e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9515e3a5489d724f404061e6adf2ff85"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#a9515e3a5489d724f404061e6adf2ff85">minimizeOpenFiles</a> {false}</td></tr>
@@ -1008,8 +1010,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a011add6d2210a766c4278893d9750846"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a011add6d2210a766c4278893d9750846">&#9670;&nbsp;</a></span>finalize_write()</h2>
+<a id="ab1742d22539e9ff6d5a2dba896364115"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1742d22539e9ff6d5a2dba896364115">&#9670;&nbsp;</a></span>finalize_write()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1020,9 +1022,19 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void Ioex::DatabaseIO::finalize_write </td>
           <td>(</td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>sim_time</em></td><td>)</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sim_time</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -3650,6 +3662,28 @@ template&lt;typename T &gt; </div>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae6b5dd7d4f3e06368388fbd1ad831233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6b5dd7d4f3e06368388fbd1ad831233">&#9670;&nbsp;</a></span>flushInterval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Ioex::DatabaseIO::flushInterval {1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
