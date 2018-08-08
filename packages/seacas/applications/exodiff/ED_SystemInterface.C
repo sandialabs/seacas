@@ -47,16 +47,15 @@ namespace {
   {
     SMART_ASSERT(!str_val.empty());
 
-    char *endptr;
-    errno      = 0;
-    double val = strtod(str_val.c_str(), &endptr);
-
-    if (errno == ERANGE) {
+    double val = 0;
+    try {
+      val = std::stod(str_val);
+    }
+    catch (...) {
       ERROR(" Overflow or underflow occurred when trying"
             << " to parse command line tolerance.  Aborting...\n");
       exit(1);
     }
-    errno = 0;
 
     if (val < 0.0) {
       ERROR(" Parsed a negative value \"" << val << "\".  Aborting...\n");
