@@ -255,8 +255,8 @@ namespace {
 
       bc_subset_range(block, bc);
       if (!is_parallel_io && !bc.is_valid()) {
-        bc.m_rangeBeg = {0, 0, 0};
-        bc.m_rangeEnd = {0, 0, 0};
+        bc.m_rangeBeg = {{0, 0, 0}};
+        bc.m_rangeEnd = {{0, 0, 0}};
       }
       block->m_boundaryConditions.push_back(bc);
       auto sb =
