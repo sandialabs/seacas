@@ -84,14 +84,14 @@ static char *cur_string = &ret_string[0];
 
 int ex_check_file_type(const char *path, int *type)
 {
-/* Based on (stolen from?) NC_check_file_type from netcdf sources.
+  /* Based on (stolen from?) NC_check_file_type from netcdf sources.
 
-Type is set to:
-1 if this is a netcdf classic file,
-2 if this is a netcdf 64-bit offset file,
-4 pnetcdf cdf5 file.
-5 if this is an hdf5 file
-*/
+  Type is set to:
+  1 if this is a netcdf classic file,
+  2 if this is a netcdf 64-bit offset file,
+  4 pnetcdf cdf5 file.
+  5 if this is an hdf5 file
+  */
 
 #define MAGIC_NUMBER_LEN 4
 
@@ -1145,23 +1145,23 @@ static void ex_swap64(int64_t v[], int64_t i, int64_t j)
   v[j] = temp;
 }
 
-  /*!
-   * The following 'indexed qsort' routine is modified from Sedgewicks
-   * algorithm It selects the pivot based on the median of the left,
-   * right, and center values to try to avoid degenerate cases ocurring
-   * when a single value is chosen.  It performs a quicksort on
-   * intervals down to the EX_QSORT_CUTOFF size and then performs a final
-   * insertion sort on the almost sorted final array.  Based on data in
-   * Sedgewick, the EX_QSORT_CUTOFF value should be between 5 and 20.
-   *
-   * See Sedgewick for further details
-   * Define DEBUG_QSORT at the top of this file and recompile to compile
-   * in code that verifies that the array is sorted.
-   *
-   * NOTE: The 'int' implementation below assumes that *both* the items
-   *       being sorted and the *number* of items being sorted are both
-   *       representable as 'int'.
-   */
+/*!
+ * The following 'indexed qsort' routine is modified from Sedgewicks
+ * algorithm It selects the pivot based on the median of the left,
+ * right, and center values to try to avoid degenerate cases ocurring
+ * when a single value is chosen.  It performs a quicksort on
+ * intervals down to the EX_QSORT_CUTOFF size and then performs a final
+ * insertion sort on the almost sorted final array.  Based on data in
+ * Sedgewick, the EX_QSORT_CUTOFF value should be between 5 and 20.
+ *
+ * See Sedgewick for further details
+ * Define DEBUG_QSORT at the top of this file and recompile to compile
+ * in code that verifies that the array is sorted.
+ *
+ * NOTE: The 'int' implementation below assumes that *both* the items
+ *       being sorted and the *number* of items being sorted are both
+ *       representable as 'int'.
+ */
 
 #define EX_QSORT_CUTOFF 12
 

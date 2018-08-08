@@ -543,8 +543,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
     case EX_EDGE_BLOCK: vblkids = VAR_ID_ED_BLK; break;
     case EX_FACE_BLOCK: vblkids = VAR_ID_FA_BLK; break;
     case EX_ELEM_BLOCK: vblkids = VAR_ID_EL_BLK; break;
-    default:
-      EX_FUNC_LEAVE(EX_FATAL); /* should have been handled earlier; quiet compiler here */
+    default: EX_FUNC_LEAVE(EX_FATAL); /* should have been handled earlier; quiet compiler here */
     }
 
     nc_inq_varid(exoid, vblkids, &att_name_varid);
