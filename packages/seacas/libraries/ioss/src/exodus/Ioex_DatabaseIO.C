@@ -1468,7 +1468,6 @@ namespace Ioex {
       }
     }
     if (do_flush) {
-      std::cerr << "Flush...\n";
       flush_database__();
     }
   }
