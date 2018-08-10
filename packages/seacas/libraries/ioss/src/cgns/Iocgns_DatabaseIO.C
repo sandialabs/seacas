@@ -547,7 +547,7 @@ namespace Iocgns {
       return;
     }
 
-    Utils::finalize_database(cgnsFilePtr, m_timesteps, get_region(), myProcessor);
+    Utils::finalize_database(cgnsFilePtr, m_timesteps, get_region(), myProcessor, false);
   }
 
   int64_t DatabaseIO::node_global_to_local__(int64_t global, bool /*must_exist*/) const
@@ -1241,7 +1241,7 @@ namespace Iocgns {
     nodeCount = num_node;
 
     Utils::add_transient_variables(cgnsFilePtr, m_timesteps, get_region(), get_field_recognition(),
-                                   get_field_separator(), myProcessor);
+                                   get_field_separator(), myProcessor, false);
   }
 
   void DatabaseIO::write_meta_data()
@@ -1367,7 +1367,8 @@ namespace Iocgns {
     }
     Utils::write_flow_solution_metadata(cgnsFilePtr, get_region(), state,
                                         &m_currentVertexSolutionIndex,
-                                        &m_currentCellCenterSolutionIndex);
+                                        &m_currentCellCenterSolutionIndex,
+					false);
 
     return true;
   }
