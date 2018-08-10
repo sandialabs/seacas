@@ -285,7 +285,7 @@ namespace Iocgns {
       return;
     }
 
-    Utils::finalize_database(cgnsFilePtr, m_timesteps, get_region(), myProcessor);
+    Utils::finalize_database(cgnsFilePtr, m_timesteps, get_region(), myProcessor, true);
   }
 
   void ParallelDatabaseIO::release_memory__()
@@ -352,7 +352,7 @@ namespace Iocgns {
     }
 
     Utils::add_transient_variables(cgnsFilePtr, m_timesteps, get_region(), get_field_recognition(),
-                                   get_field_separator(), myProcessor);
+                                   get_field_separator(), myProcessor, true);
   }
 
   void ParallelDatabaseIO::handle_unstructured_blocks()
@@ -894,7 +894,8 @@ namespace Iocgns {
     }
     Utils::write_flow_solution_metadata(cgnsFilePtr, get_region(), state,
                                         &m_currentVertexSolutionIndex,
-                                        &m_currentCellCenterSolutionIndex);
+                                        &m_currentCellCenterSolutionIndex,
+					true);
     return true;
   }
 
