@@ -894,8 +894,7 @@ namespace Iocgns {
     }
     Utils::write_flow_solution_metadata(cgnsFilePtr, get_region(), state,
                                         &m_currentVertexSolutionIndex,
-                                        &m_currentCellCenterSolutionIndex,
-					true);
+                                        &m_currentCellCenterSolutionIndex, true);
     return true;
   }
 

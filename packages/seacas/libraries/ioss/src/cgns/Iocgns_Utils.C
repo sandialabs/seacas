@@ -227,11 +227,12 @@ namespace {
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
     if (sset == nullptr) {
       if (block->get_database()->parallel_rank() == 0) {
-	IOSS_WARNING << "On block " << block->name()
-		     << ", found the boundary condition named " << boco_name << " in family "
-		     << fam_name << ". This family was not previously defined at the top-level of the file"
-		     << " which is not normal.  Check your file to make sure this does not incdicate a problem "
-		     << "with the mesh.\n";
+        IOSS_WARNING << "On block " << block->name() << ", found the boundary condition named "
+                     << boco_name << " in family " << fam_name
+                     << ". This family was not previously defined at the top-level of the file"
+                     << " which is not normal.  Check your file to make sure this does not "
+                        "incdicate a problem "
+                     << "with the mesh.\n";
       }
 
       // Need to create a new sideset since didn't see this earlier.
@@ -244,13 +245,13 @@ namespace {
         IOSS_ERROR(errmsg);
       }
       // Get all previous sidesets to make sure we set a unique id...
-      int64_t max_id = 0;
+      int64_t     max_id   = 0;
       const auto &sidesets = db->get_region()->get_sidesets();
       for (const auto &ss : sidesets) {
-	if (ss->property_exists("id")) {
-	  auto id = ss->get_property("id").get_int();
-	  max_id = (id > max_id) ? id : max_id;
-	}
+        if (ss->property_exists("id")) {
+          auto id = ss->get_property("id").get_int();
+          max_id  = (id > max_id) ? id : max_id;
+        }
       }
       sset->property_add(Ioss::Property("id", max_id + 10));
       sset->property_add(Ioss::Property("guid", db->util().generate_guid(max_id + 10)));
@@ -765,7 +766,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     // Create a vector for mapping from sb_name to zone -- used to update zgc instances
     std::map<std::string, int> sb_zone;
     for (const auto &sb : structured_blocks) {
-      zone = sb->get_property("zone").get_int();
+      zone                = sb->get_property("zone").get_int();
       sb_zone[sb->name()] = zone;
     }
 
@@ -792,8 +793,8 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       continue;
     }
 
-    auto db_zone = get_db_zone(sb);
-    std::string name = sb->name();
+    auto        db_zone = get_db_zone(sb);
+    std::string name    = sb->name();
     if (is_parallel && !is_parallel_io) {
       name += "_proc-";
       name += std::to_string(rank);
@@ -1006,7 +1007,7 @@ CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
 void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *region, int state,
                                                  int *vertex_solution_index,
                                                  int *cell_center_solution_index,
-						 bool is_parallel_io)
+                                                 bool is_parallel_io)
 {
   std::string c_name = "CellCenterSolutionAtStep";
   std::string v_name = "VertexSolutionAtStep";
@@ -1642,7 +1643,8 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
 
 void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<double> &timesteps,
                                             Ioss::Region *region, bool enable_field_recognition,
-                                            char suffix_separator, int myProcessor, bool is_parallel_io)
+                                            char suffix_separator, int myProcessor,
+                                            bool is_parallel_io)
 {
   // ==========================================
   // Add transient variables (if any) to all zones...
@@ -1716,7 +1718,7 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
     const auto &sblocks = region->get_structured_blocks();
     for (auto &block : sblocks) {
       if (is_parallel_io || block->is_active()) {
-	sol_iter(block);
+        sol_iter(block);
       }
     }
     const auto &eblocks = region->get_element_blocks();
