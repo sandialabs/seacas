@@ -226,6 +226,14 @@ namespace {
   {
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
     if (sset == nullptr) {
+      if (block->get_database()->parallel_rank() == 0) {
+	IOSS_WARNING << "On block " << block->name()
+		     << ", found the boundary condition named " << boco_name << " in family "
+		     << fam_name << ". This family was not previously defined at the top-level of the file"
+		     << " which is not normal.  Check your file to make sure this does not incdicate a problem "
+		     << "with the mesh.\n";
+      }
+
       // Need to create a new sideset since didn't see this earlier.
       auto *db = block->get_database();
       sset     = new Ioss::SideSet(db, fam_name);
@@ -235,8 +243,17 @@ namespace {
                << block->name() << "'.\n";
         IOSS_ERROR(errmsg);
       }
-      sset->property_add(Ioss::Property("id", ibc + 1)); // Not sure this is unique id...8
-      sset->property_add(Ioss::Property("guid", db->util().generate_guid(ibc + 1)));
+      // Get all previous sidesets to make sure we set a unique id...
+      int64_t max_id = 0;
+      const auto &sidesets = db->get_region()->get_sidesets();
+      for (const auto &ss : sidesets) {
+	if (ss->property_exists("id")) {
+	  auto id = ss->get_property("id").get_int();
+	  max_id = (id > max_id) ? id : max_id;
+	}
+      }
+      sset->property_add(Ioss::Property("id", max_id + 10));
+      sset->property_add(Ioss::Property("guid", db->util().generate_guid(max_id + 10)));
       db->get_region()->add(sset);
     }
 
@@ -703,9 +720,8 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   // If `is_parallel` and `!is_parallel_io`, then writing file-per-processor
   bool is_parallel = region.get_database()->util().parallel_size() > 1;
   int  rank        = region.get_database()->util().parallel_rank();
-
+  int  zone        = 0;
   for (const auto &sb : structured_blocks) {
-    int      zone    = 0;
     cgsize_t size[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     if (is_parallel_io) {
       size[3] = sb->get_property("ni_global").get_int();
@@ -727,25 +743,26 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
         name += "_proc-";
         name += std::to_string(rank);
       }
-      CGERR(cg_zone_write(file_ptr, base, name.c_str(), size, CG_Structured, &zone));
-      sb->property_update("zone", zone);
-      sb->property_update("db_zone", zone);
-      sb->property_update("base", base);
-
-      assert(zone > 0);
-      zone_offset[zone] = zone_offset[zone - 1] + sb->get_property("cell_count").get_int();
+      int db_zone = 0;
+      CGERR(cg_zone_write(file_ptr, base, name.c_str(), size, CG_Structured, &db_zone));
+      sb->property_update("db_zone", db_zone);
 
       // Add GridCoordinates Node...
       int grid_idx = 0;
-      CGERR(cg_grid_write(file_ptr, base, zone, "GridCoordinates", &grid_idx));
+      CGERR(cg_grid_write(file_ptr, base, db_zone, "GridCoordinates", &grid_idx));
     }
+    zone++;
+    assert(zone > 0);
+    zone_offset[zone] = zone_offset[zone - 1] + sb->get_property("cell_count").get_int();
+    sb->property_update("zone", zone);
+    sb->property_update("base", base);
   }
 
   if (is_parallel_io || !is_parallel) { // Only for single file output or serial...
     // Create a vector for mapping from sb_name to zone -- used to update zgc instances
     std::map<std::string, int> sb_zone;
     for (const auto &sb : structured_blocks) {
-      auto zone           = sb->get_property("zone").get_int();
+      zone = sb->get_property("zone").get_int();
       sb_zone[sb->name()] = zone;
     }
 
@@ -772,7 +789,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       continue;
     }
 
-    int         zone = sb->get_property("zone").get_int();
+    auto db_zone = get_db_zone(sb);
     std::string name = sb->name();
     if (is_parallel && !is_parallel_io) {
       name += "_proc-";
@@ -829,12 +846,12 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 
       if (is_parallel_io ||
           (bc_range[idx + 3] > 0 && bc_range[idx + 4] > 0 && bc_range[idx + 5] > 0)) {
-        CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
+        CGERR(cg_boco_write(file_ptr, base, db_zone, bc.m_bcName.c_str(), CG_FamilySpecified,
                             CG_PointRange, 2, &bc_range[idx], &bc_idx));
         CGERR(
             cg_goto(file_ptr, base, name.c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0, "end"));
         CGERR(cg_famname_write(bc.m_famName.c_str()));
-        CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
+        CGERR(cg_boco_gridlocation_write(file_ptr, base, db_zone, bc_idx, CG_Vertex));
       }
       idx += 6;
     }
@@ -876,7 +893,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
           donor_range[4] -= zgc.m_donorOffset[1];
           donor_range[5] -= zgc.m_donorOffset[2];
         }
-        CGERR(cg_1to1_write(file_ptr, base, zone, connect_name.c_str(), donor_name.c_str(),
+        CGERR(cg_1to1_write(file_ptr, base, db_zone, connect_name.c_str(), donor_name.c_str(),
                             owner_range.data(), donor_range.data(), zgc.m_transform.data(),
                             &zgc_idx));
       }
