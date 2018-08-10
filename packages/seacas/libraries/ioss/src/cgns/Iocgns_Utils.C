@@ -751,6 +751,9 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       int grid_idx = 0;
       CGERR(cg_grid_write(file_ptr, base, db_zone, "GridCoordinates", &grid_idx));
     }
+    else {
+      sb->property_update("db_zone", -1);
+    }
     zone++;
     assert(zone > 0);
     zone_offset[zone] = zone_offset[zone - 1] + sb->get_property("cell_count").get_int();
@@ -1002,7 +1005,8 @@ CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
 
 void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *region, int state,
                                                  int *vertex_solution_index,
-                                                 int *cell_center_solution_index)
+                                                 int *cell_center_solution_index,
+						 bool is_parallel_io)
 {
   std::string c_name = "CellCenterSolutionAtStep";
   std::string v_name = "VertexSolutionAtStep";
@@ -1038,7 +1042,9 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *reg
   // Use the lambda
   const auto &sblocks = region->get_structured_blocks();
   for (auto &block : sblocks) {
-    sol_lambda(block);
+    if (is_parallel_io || block->is_active()) {
+      sol_lambda(block);
+    }
   }
   // Use the lambda
   const auto &eblocks = region->get_element_blocks();
@@ -1555,7 +1561,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
 }
 
 void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double> &timesteps,
-                                      Ioss::Region *region, int myProcessor)
+                                      Ioss::Region *region, int myProcessor, bool is_parallel_io)
 {
   int base = 1;
   CGCHECK(cg_biter_write(cgnsFilePtr, base, "TimeIterValues", timesteps.size()));
@@ -1622,7 +1628,9 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
   // Use the lambda...
   const auto &sblocks = region->get_structured_blocks();
   for (auto &block : sblocks) {
-    ziter(block);
+    if (is_parallel_io || block->is_active()) {
+      ziter(block);
+    }
   }
 
   // Use the lambda...
@@ -1634,7 +1642,7 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
 
 void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<double> &timesteps,
                                             Ioss::Region *region, bool enable_field_recognition,
-                                            char suffix_separator, int myProcessor)
+                                            char suffix_separator, int myProcessor, bool is_parallel_io)
 {
   // ==========================================
   // Add transient variables (if any) to all zones...
@@ -1707,7 +1715,9 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
   if (!timesteps.empty()) {
     const auto &sblocks = region->get_structured_blocks();
     for (auto &block : sblocks) {
-      sol_iter(block);
+      if (is_parallel_io || block->is_active()) {
+	sol_iter(block);
+      }
     }
     const auto &eblocks = region->get_element_blocks();
     for (auto &block : eblocks) {
