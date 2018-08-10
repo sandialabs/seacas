@@ -79,7 +79,7 @@ namespace Iocgns {
     static void cgns_error(int cgnsid, const char *file, const char *function, int lineno,
                            int processor);
 
-    static int get_db_zone(const Ioss::EntityBlock *block);
+    static int  get_db_zone(const Ioss::EntityBlock *block);
     static void set_field_index(const Ioss::Field &field, size_t index, CG_GridLocation_t location);
     static bool is_cell_field(const Ioss::Field &field);
 
@@ -170,8 +170,7 @@ namespace Iocgns {
 
     static void          write_flow_solution_metadata(int file_ptr, Ioss::Region *region, int state,
                                                       int *vertex_solution_index,
-                                                      int *cell_center_solution_index,
-						      bool is_parallel_io);
+                                                      int *cell_center_solution_index, bool is_parallel_io);
     static int           find_solution_index(int cgnsFilePtr, int base, int zone, int step,
                                              CG_GridLocation_t location);
     static CG_ZoneType_t check_zone_type(int cgnsFilePtr);
@@ -197,7 +196,8 @@ namespace Iocgns {
                               double timeScaleFactor, int myProcessor);
     static void add_transient_variables(int cgnsFilePtr, const std::vector<double> &timesteps,
                                         Ioss::Region *region, bool enable_field_recognition,
-                                        char suffix_separator, int myProcessor, bool is_parallel_io);
+                                        char suffix_separator, int myProcessor,
+                                        bool is_parallel_io);
 
     static size_t pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
                             double load_balance, int proc_rank, int proc_count);
