@@ -509,13 +509,15 @@ template <typename T> void Ioss::ParallelUtils::all_gather(T my_value, std::vect
 #endif
 }
 
-template <typename T> void Ioss::ParallelUtils::all_gather(std::vector<T> &my_values, std::vector<T> &result) const
+template <typename T>
+void Ioss::ParallelUtils::all_gather(std::vector<T> &my_values, std::vector<T> &result) const
 {
   result.resize(parallel_size() * my_values.size());
 #ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1) {
-    const int success = MPI_Allgather(my_values.data(), my_values.size(), mpi_type(T()), (void *)result.data(), my_values.size(),
-                                      mpi_type(T()), communicator_);
+    const int success =
+        MPI_Allgather(my_values.data(), my_values.size(), mpi_type(T()), (void *)result.data(),
+                      my_values.size(), mpi_type(T()), communicator_);
     if (success != MPI_SUCCESS) {
       std::ostringstream errmsg;
       errmsg << "Ioss::ParallelUtils::gather - MPI_Allgather failed";
@@ -526,7 +528,7 @@ template <typename T> void Ioss::ParallelUtils::all_gather(std::vector<T> &my_va
     result = my_values;
   }
 #else
-  result = my_values;
+  result    = my_values;
 #endif
 }
 
