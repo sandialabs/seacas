@@ -826,7 +826,7 @@ TEST_CASE("bc-257x129x2", "[bc-257x129x2]")
   cleanup(zones);
 }
 
-TEST_CASE("6billion", "[6billion]")
+TEST_CASE("64GiElem", "[64GiElem]")
 {
   std::vector<Iocgns::StructuredZoneData *> zones;
 
@@ -836,7 +836,7 @@ TEST_CASE("6billion", "[6billion]")
   double load_balance_tolerance = 1.01;
 
   for (size_t proc_count = 2; proc_count <= 1 << 15; proc_count *= 2) {
-    std::string name = "Billion_PC_" + std::to_string(proc_count);
+    std::string name = "64GiElem_PC_" + std::to_string(proc_count);
     SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
   }
   cleanup(zones);
