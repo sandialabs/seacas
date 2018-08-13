@@ -367,7 +367,7 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_single_fpp_single_fields
      NOEXEPREFIX NOEXESUFFIX
    TEST_2 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/test/blottner.cgns blottner-single.cgns
      NUM_MPI_PROCS 1
-  COMM mpi serial
+  COMM mpi
   )
 
 IF (TPL_ENABLE_Pamgen)
