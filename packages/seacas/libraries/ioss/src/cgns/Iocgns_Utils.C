@@ -331,7 +331,7 @@ namespace {
     // broadcast back...
     // Need: 'name' and 'VariableType'.  Assume all are double and the
     // size will be processor dependent.
-    auto &sblocks = region->get_structured_blocks();
+    auto &           sblocks = region->get_structured_blocks();
     std::vector<int> fld_count;
     fld_count.reserve(sblocks.size());
     for (const auto &block : sblocks) {
@@ -346,14 +346,14 @@ namespace {
     std::vector<char> fld_names(tot_fld * 2 * (CGNS_MAX_NAME_LENGTH + 1), 0);
 
     size_t offset = 0;
-    for (size_t i=0; i < sblocks.size(); i++) {
-      const auto &block = sblocks[i];
+    for (size_t i = 0; i < sblocks.size(); i++) {
+      const auto &   block = sblocks[i];
       Ioss::NameList fields;
       block->field_describe(Ioss::Field::TRANSIENT, &fields);
       if (!fields.empty()) {
         for (const auto &field_name : fields) {
           const Ioss::Field &field = block->get_fieldref(field_name);
-          std::string type = field.raw_storage()->name();
+          std::string        type  = field.raw_storage()->name();
           strncpy(&fld_names[offset], field_name.c_str(), CGNS_MAX_NAME_LENGTH);
           offset += CGNS_MAX_NAME_LENGTH + 1;
           strncpy(&fld_names[offset], type.c_str(), CGNS_MAX_NAME_LENGTH);
@@ -371,7 +371,7 @@ namespace {
     // names.  Now need to add the missing fields to the blocks that
     // are not 'native' to this processor...
     //
-    for (size_t i=0; i < sblocks.size(); i++) {
+    for (size_t i = 0; i < sblocks.size(); i++) {
       auto &block = sblocks[i];
       if (block->field_count(Ioss::Field::TRANSIENT) != (size_t)fld_count[i]) {
         // Verify that either has 0 or correct number of fields...
@@ -386,7 +386,8 @@ namespace {
           std::string fld_type(&fld_names[offset]);
           offset += CGNS_MAX_NAME_LENGTH + 1;
 
-          block->field_add(Ioss::Field(fld_name, Ioss::Field::DOUBLE, fld_type, Ioss::Field::TRANSIENT, 0));
+          block->field_add(
+              Ioss::Field(fld_name, Ioss::Field::DOUBLE, fld_type, Ioss::Field::TRANSIENT, 0));
         }
       }
       assert(block->field_count(Ioss::Field::TRANSIENT) == (size_t)fld_count[i]);
@@ -642,7 +643,7 @@ namespace {
                 zgc[j].m_ownerZone == owner_zone && zgc[j].m_donorZone == donor_zone) {
               // Found another instance of the "same" zgc...  Union the ranges
               union_zgc_range(zgc[i], zgc[j]);
-	      assert(zgc[i].is_valid());
+              assert(zgc[i].is_valid());
 
               // Flag the 'j' instance so it is processed only this time.
               zgc[j].m_ownerZone = -1;
