@@ -315,6 +315,83 @@ namespace {
       IOSS_ERROR(errmsg);
     }
   }
+
+  void sync_transient_variables_fpp(Ioss::Region *region, int myProcessor)
+  {
+    // With an fpp read, certain blocks may only be on certain
+    // processors -- This consistency is addressed elsewhere; however,
+    // if a block is not on a processor, then that block will not have
+    // any transient fields.  Need to sync across all processors such
+    // that a block has the same fields on all processors.
+    //
+    // ASSUME: A block will have the same fields in the same order on
+    // all processors on which it exists.
+    //
+    // Do the gather all metadata to proc 0; consolidate and then
+    // broadcast back...
+    // Need: 'name' and 'VariableType'.  Assume all are double and the
+    // size will be processor dependent.
+    auto &sblocks = region->get_structured_blocks();
+    std::vector<int> fld_count;
+    fld_count.reserve(sblocks.size());
+    for (const auto &block : sblocks) {
+      fld_count.push_back(block->field_count(Ioss::Field::TRANSIENT));
+    }
+    auto par = region->get_database()->util();
+    par.global_array_minmax(fld_count, Ioss::ParallelUtils::DO_MAX);
+
+    // Determine total number of fields on all blocks...
+    int tot_fld = std::accumulate(fld_count.begin(), fld_count.end(), 0);
+    // Assuming fields are the same on all processors that have fields...
+    std::vector<char> fld_names(tot_fld * 2 * (CGNS_MAX_NAME_LENGTH + 1), 0);
+
+    size_t offset = 0;
+    for (size_t i=0; i < sblocks.size(); i++) {
+      const auto &block = sblocks[i];
+      Ioss::NameList fields;
+      block->field_describe(Ioss::Field::TRANSIENT, &fields);
+      if (!fields.empty()) {
+        for (const auto &field_name : fields) {
+          const Ioss::Field &field = block->get_fieldref(field_name);
+          std::string type = field.raw_storage()->name();
+          strncpy(&fld_names[offset], field_name.c_str(), CGNS_MAX_NAME_LENGTH);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+          strncpy(&fld_names[offset], type.c_str(), CGNS_MAX_NAME_LENGTH);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+        }
+      }
+      else {
+        offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[i];
+      }
+    }
+
+    par.global_array_minmax(fld_names, Ioss::ParallelUtils::DO_MAX);
+
+    // Each processor now should have a consistent list of the field
+    // names.  Now need to add the missing fields to the blocks that
+    // are not 'native' to this processor...
+    //
+    for (size_t i=0; i < sblocks.size(); i++) {
+      auto &block = sblocks[i];
+      if (block->field_count(Ioss::Field::TRANSIENT) != (size_t)fld_count[i]) {
+        // Verify that either has 0 or correct number of fields...
+        assert(block->field_count(Ioss::Field::TRANSIENT) == 0);
+
+        // Extract the field name and storage type...
+        offset = (CGNS_MAX_NAME_LENGTH + 1) * 2 * i;
+
+        for (int nf = 0; nf < fld_count[i]; nf++) {
+          std::string fld_name(&fld_names[offset]);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+          std::string fld_type(&fld_names[offset]);
+          offset += CGNS_MAX_NAME_LENGTH + 1;
+
+          block->field_add(Ioss::Field(fld_name, Ioss::Field::DOUBLE, fld_type, Ioss::Field::TRANSIENT, 0));
+        }
+      }
+      assert(block->field_count(Ioss::Field::TRANSIENT) == (size_t)fld_count[i]);
+    }
+  }
 } // namespace
 
 void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *function, int lineno,
@@ -565,6 +642,7 @@ namespace {
                 zgc[j].m_ownerZone == owner_zone && zgc[j].m_donorZone == donor_zone) {
               // Found another instance of the "same" zgc...  Union the ranges
               union_zgc_range(zgc[i], zgc[j]);
+	      assert(zgc[i].is_valid());
 
               // Flag the 'j' instance so it is processed only this time.
               zgc[j].m_ownerZone = -1;
@@ -1724,6 +1802,10 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
     const auto &eblocks = region->get_element_blocks();
     for (auto &block : eblocks) {
       sol_iter(block);
+    }
+    bool is_parallel = region->get_database()->util().parallel_size() > 1;
+    if (is_parallel && !is_parallel_io) {
+      sync_transient_variables_fpp(region, myProcessor);
     }
   }
 }
