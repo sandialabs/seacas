@@ -328,6 +328,8 @@ double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh,
     properties.add(Ioss::Property("COMPRESSION_SHUFFLE", true));
   }
 
+  properties.add(Ioss::Property("FLUSH_INTERVAL", 0));
+
   Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
       "exodusII", interface.outputName_, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
   if (dbo == nullptr || !dbo->ok(true)) {
@@ -549,8 +551,8 @@ double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh,
     int ostep = output_region.add_state(global_times[step]);
     output_region.begin_state(ostep);
     output_transient_state(output_region, part_mesh, global_times[step], local_node_map, interface);
-    std::cout << "\rWrote step " << std::setw(4) << step + 1 << "/" << nsteps
-              << ", time " << std::scientific << std::setprecision(4) << global_times[step];
+    std::cout << "\rWrote step " << std::setw(4) << step + 1 << "/" << nsteps << ", time "
+              << std::scientific << std::setprecision(4) << global_times[step];
     output_region.end_state(ostep);
     steps++;
   }
