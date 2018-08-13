@@ -108,7 +108,7 @@ namespace Ioss {
     ~SetDecompositionData()
     {
       if (setComm_ != MPI_COMM_NULL) {
-	MPI_Comm_free(&setComm_);
+        MPI_Comm_free(&setComm_);
       }
     }
 
@@ -138,7 +138,7 @@ namespace Ioss {
     double distributionFactorValue{
         0.0}; // If distributionFactorConstant == true, the constant value
     MPI_Comm setComm_{MPI_COMM_NULL};
-    bool distributionFactorConstant{false}; // T if all distribution factors the same value.
+    bool     distributionFactorConstant{false}; // T if all distribution factors the same value.
   };
 
   template <typename INT> class Decomposition

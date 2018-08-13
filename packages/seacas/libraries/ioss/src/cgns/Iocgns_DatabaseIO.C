@@ -159,10 +159,10 @@ namespace {
                    const std::map<std::string, int> &zone_name_map, int myProcessor,
                    bool isParallel)
   {
-    int base = block->get_property("base").get_int();
-    int zone = block->get_property("zone").get_int();
+    int base    = block->get_property("base").get_int();
+    int zone    = block->get_property("zone").get_int();
     int db_zone = Iocgns::Utils::get_db_zone(block);
-    int nconn = 0;
+    int nconn   = 0;
     CGCHECK(cg_n1to1(cgnsFilePtr, base, db_zone, &nconn));
 
     for (int ii = 0; ii < nconn; ii++) {
@@ -547,7 +547,7 @@ namespace Iocgns {
       return;
     }
 
-    Utils::finalize_database(cgnsFilePtr, m_timesteps, get_region(), myProcessor);
+    Utils::finalize_database(cgnsFilePtr, m_timesteps, get_region(), myProcessor, false);
   }
 
   int64_t DatabaseIO::node_global_to_local__(int64_t global, bool /*must_exist*/) const
@@ -784,12 +784,12 @@ namespace Iocgns {
 
       block->property_add(Ioss::Property("base", base));
       if (native) {
-	block->property_add(Ioss::Property("db_zone", zone));
+        block->property_add(Ioss::Property("db_zone", zone));
       }
       block->property_add(Ioss::Property("zone", i + 1));
       block->property_add(Ioss::Property("id", i + 1));
       // Note that 'zone' is not consistent among processors
-      block->property_add(Ioss::Property("guid", util().generate_guid(i+1)));
+      block->property_add(Ioss::Property("guid", util().generate_guid(i + 1)));
       get_region()->add(block);
       m_zoneNameMap[zone_name] = i + 1;
 
@@ -968,15 +968,54 @@ namespace Iocgns {
   {
     const auto &blocks = get_region()->get_structured_blocks();
 
+    int              proc_count = util().parallel_size();
+    std::vector<int> my_offsets;
+    std::vector<int> all_offsets;
+
+    if (proc_count > 1) {
+      my_offsets.reserve(blocks.size() * 3 * proc_count);
+      int zone = 1;
+      for (const auto &sb : blocks) {
+        assert(sb->get_property("zone").get_int() == zone++);
+        my_offsets.push_back(sb->get_property("offset_i").get_int());
+        my_offsets.push_back(sb->get_property("offset_j").get_int());
+        my_offsets.push_back(sb->get_property("offset_k").get_int());
+      }
+      util().all_gather(my_offsets, all_offsets);
+    }
+
     // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
     // and update the donor_zone id for zones that had not yet been processed at the time of
     // definition...
+
+    // If parallel, then all need to update the donor offset field since that was not known
+    // at time of definition...
     for (auto &block : blocks) {
       for (auto &conn : block->m_zoneConnectivity) {
         if (conn.m_donorZone < 0) {
           auto donor_iter = m_zoneNameMap.find(conn.m_donorName);
           assert(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
+        }
+        if (proc_count > 1) {
+          int         offset = (conn.m_donorProcessor * blocks.size() + (conn.m_donorZone - 1)) * 3;
+          Ioss::IJK_t donor_offset{
+              {all_offsets[offset + 0], all_offsets[offset + 1], all_offsets[offset + 2]}};
+#if 1
+          conn.m_donorOffset[0] = donor_offset[0];
+          conn.m_donorOffset[1] = donor_offset[1];
+          conn.m_donorOffset[2] = donor_offset[2];
+          conn.m_donorRangeBeg[0] += donor_offset[0];
+          conn.m_donorRangeBeg[1] += donor_offset[1];
+          conn.m_donorRangeBeg[2] += donor_offset[2];
+          conn.m_donorRangeEnd[0] += donor_offset[0];
+          conn.m_donorRangeEnd[1] += donor_offset[1];
+          conn.m_donorRangeEnd[2] += donor_offset[2];
+#else
+          conn.m_donorOffset = donor_offset;
+          conn.m_donorRangeBeg += donor_offset;
+          conn.m_donorRangeEnd += donor_offset;
+#endif
         }
         conn.m_donorGUID = util().generate_guid(conn.m_donorZone, conn.m_donorProcessor);
         conn.m_ownerGUID = util().generate_guid(conn.m_ownerZone, conn.m_ownerProcessor);
@@ -1241,7 +1280,7 @@ namespace Iocgns {
     nodeCount = num_node;
 
     Utils::add_transient_variables(cgnsFilePtr, m_timesteps, get_region(), get_field_recognition(),
-                                   get_field_separator(), myProcessor);
+                                   get_field_separator(), myProcessor, false);
   }
 
   void DatabaseIO::write_meta_data()
@@ -1367,7 +1406,7 @@ namespace Iocgns {
     }
     Utils::write_flow_solution_metadata(cgnsFilePtr, get_region(), state,
                                         &m_currentVertexSolutionIndex,
-                                        &m_currentCellCenterSolutionIndex);
+                                        &m_currentCellCenterSolutionIndex, false);
 
     return true;
   }

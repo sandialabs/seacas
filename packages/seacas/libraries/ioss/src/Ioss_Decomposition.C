@@ -1474,13 +1474,13 @@ namespace Ioss {
     std::vector<T> recv_data;
 
     size_t size = set.file_count() * comp_count;
-    if (size == 0) 
+    if (size == 0)
       return;
 
     if (set.setComm_ != MPI_COMM_NULL) {
       recv_data.resize(size);
       if (m_processor == set.root_) {
-	std::copy(file_data, file_data + size, recv_data.begin());
+        std::copy(file_data, file_data + size, recv_data.begin());
       }
       // NOTE: This broadcast uses a split communicator, so possibly
       // not all processors participating.
