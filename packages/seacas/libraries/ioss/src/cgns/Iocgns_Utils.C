@@ -364,6 +364,7 @@ namespace {
         offset += (CGNS_MAX_NAME_LENGTH + 1) * 2 * fld_count[i];
       }
     }
+
     par.global_array_minmax(fld_names, Ioss::ParallelUtils::DO_MAX);
 
     // Each processor now should have a consistent list of the field
@@ -641,6 +642,7 @@ namespace {
                 zgc[j].m_ownerZone == owner_zone && zgc[j].m_donorZone == donor_zone) {
               // Found another instance of the "same" zgc...  Union the ranges
               union_zgc_range(zgc[i], zgc[j]);
+	      assert(zgc[i].is_valid());
 
               // Flag the 'j' instance so it is processed only this time.
               zgc[j].m_ownerZone = -1;
