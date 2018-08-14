@@ -182,6 +182,14 @@ namespace Ioss {
       }
     }
 
+    if (properties.exists("CYCLE_COUNT")) {
+      cycleCount = properties.get("CYCLE_COUNT").get_int();
+    }
+
+    if (properties.exists("OVERLAY_COUNT")) {
+      overlayCount = properties.get("OVERLAY_COUNT").get_int();
+    }
+
     {
       bool logging;
       if (Utils::check_set_bool_property(properties, "LOGGING", logging)) {
