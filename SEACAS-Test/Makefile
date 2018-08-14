@@ -85,12 +85,12 @@ slicec: baseline.g
 	$(EPU) -output_extension e -auto mesh/baseline.g.$(NPROCC).00 
 	$(EXODIFF) -stat baseline.g baseline.e
 
-# NOTE: This conversion will lose the block, nset, and sset names
-#       that are in baseline.g
-conv_text: baseline.g
-	$(EXOTXT) baseline.g baseline.t
-	$(TXTEXO) baseline.t baseline.gt
-	$(EXODIFF) -stat baseline.g baseline.gt
+# test-gap.g has some nodesets with df and some without
+conv_text: test-gap.g.et
+	cp test-gap.g.et test-gap.g
+	$(EXOTXT) test-gap.g test-gap.t
+	$(TXTEXO) test-gap.t test-gap.gt
+	$(EXODIFF) -stat test-gap.g test-gap.gt
 
 matlab: baseline.g
 	$(EXO2MAT) baseline.g
