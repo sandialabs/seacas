@@ -67,8 +67,8 @@ C     --A - the dynamic memory base array
 C     Program Information
 C.
       QAINFO(1) = 'txtexo                          '
-      QAINFO(2) = '2018/02/06                      '
-      QAINFO(3) = ' 1.14                           '
+      QAINFO(2) = '2018/08/14                      '
+      QAINFO(3) = ' 2.00                           '
       QAINFO(4) = '                                '
       QAINFO(5) = '                                '
       QAINFO(6) = '                                '
