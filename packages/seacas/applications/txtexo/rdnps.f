@@ -71,20 +71,31 @@ C   --upon entry; upon exit at end of node set information.
       READ (NTXT, *, END=120, ERR=120)
       READ (NTXT, *, END=120, ERR=120)
       READ (NTXT, *, END=120, ERR=120)
-      DO 110 INPS = 1, NUMNPS
+      DO INPS = 1, NUMNPS
          READ (NTXT, *, END=120, ERR=120)
          READ (NTXT, *, END=120, ERR=120) IDNPS(INPS), NNNPS(INPS),
      &        NDNPS(INPS)
 
          IXNNPS(INPS) = NN + 1
          NN = NN + NNNPS(INPS)
+
          IXDNPS(INPS) = ND + 1
          ND = ND + NDNPS(INPS)
-         
-         DO 100 NL = IXNNPS(INPS), NN
-            READ (NTXT, *, END=130, ERR=130) LSTNPS(NL), FACNPS(NL)
-  100    CONTINUE
-  110 CONTINUE
+
+         if (NDNPS(INPS) .NE. 0) THEN
+C ... Node set has distribution factors
+            IND = ND
+            DO NL = IXNNPS(INPS), NN
+               READ (NTXT, *, END=130, ERR=130) LSTNPS(NL), FACNPS(IND)
+               IND = IND + 1
+            end do
+         else
+C ... Node set doesn't have distribution factors
+            DO NL = IXNNPS(INPS), NN
+               READ (NTXT, *, END=130, ERR=130) LSTNPS(NL)
+            end do
+         endif
+      end do
 
       IF (NN .NE. LNPSNL) THEN
          CALL INTSTR (1, 0, NN, STRA, LSTRA)
