@@ -182,14 +182,6 @@ namespace Ioss {
       }
     }
 
-    if (properties.exists("SERIALIZE_IO")) {
-      int isize = properties.get("SERIALIZE_IO").get_int();
-      Ioss::SerializeIO::setGroupFactor(isize);
-      if (isize > 0) {
-        singleProcOnly = true;
-      }
-    }
-
     {
       bool logging;
       if (Utils::check_set_bool_property(properties, "LOGGING", logging)) {
