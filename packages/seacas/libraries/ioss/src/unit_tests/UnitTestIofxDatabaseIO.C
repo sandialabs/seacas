@@ -350,7 +350,7 @@ namespace {
 
       const std::vector<Ioss::SideBlock *> &side_blocks = sidesets_input[i]->get_side_blocks();
       for (size_t k = 0; k < side_blocks.size(); ++k) {
-        consst std::string &topo_name        = side_blocks[k]->topology()->name();
+        const std::string & topo_name        = side_blocks[k]->topology()->name();
         int64_t             side_count       = side_blocks[k]->entity_count();
         const std::string & parent_topo_name = side_blocks[k]->parent_element_topology()->name();
         const std::string & side_block_name  = side_blocks[k]->name();

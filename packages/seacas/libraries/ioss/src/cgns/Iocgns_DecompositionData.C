@@ -1165,6 +1165,8 @@ namespace Iocgns {
             }
             m_sideSets[i].hasEntities[p] = has_elems[p * m_sideSets.size() + i];
           }
+	  int color = m_sideSets[i].hasEntities[m_decomposition.m_processor] ? 1 : MPI_UNDEFINED;
+	  MPI_Comm_split(m_decomposition.m_comm, color, m_decomposition.m_processor, &m_sideSets[i].setComm_);
         }
       }
     }
