@@ -1359,7 +1359,7 @@ namespace Iocgns {
                                                  size_t data_size) const
   {
     int  id   = sb->get_property("id").get_int();
-    auto sset = decomp->m_sideSets[id];
+    const auto &sset = decomp->m_sideSets[id];
 
     ssize_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {

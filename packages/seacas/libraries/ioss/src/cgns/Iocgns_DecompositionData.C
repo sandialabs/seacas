@@ -983,7 +983,7 @@ namespace Iocgns {
           sset.fileCount        = num_entity;
           sset.topologyType     = Utils::map_cgns_to_topology_type(e_type);
           sset.parentBlockIndex = last_blk_location;
-          m_sideSets.push_back(sset);
+          m_sideSets.emplace_back(std::move(sset));
         }
       }
       zone_node_offset += size[0];

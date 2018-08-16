@@ -104,7 +104,10 @@ namespace Ioss {
   class SetDecompositionData
   {
   public:
-    SetDecompositionData() = default;
+    SetDecompositionData()                             = default;
+    SetDecompositionData(const SetDecompositionData &) = delete;
+    SetDecompositionData(SetDecompositionData &&)      = default;
+
     ~SetDecompositionData()
     {
       if (setComm_ != MPI_COMM_NULL) {
