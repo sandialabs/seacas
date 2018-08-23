@@ -210,12 +210,13 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
           STRING(REGEX REPLACE "/\\*.* \\*/$" "" netcdf_max_dims_tmp "${netcdf_max_dims_string}")
           string(REGEX REPLACE "[^0-9]" "" netcdf_max_dims "${netcdf_max_dims_tmp}")
 
+          file(STRINGS "${netcdf_h}" netcdf_max_vars_string REGEX "^#define NC_MAX_VARS")
           string(REGEX REPLACE "[^0-9]" "" netcdf_max_vars "${netcdf_max_vars_string}")
           # Strip C Comment from end of string (may include numbers)
           STRING(REGEX REPLACE "/\\*.* \\*/$" "" netcdf_max_vars_tmp "${netcdf_max_vars_string}")
           string(REGEX REPLACE "[^0-9]" "" netcdf_max_vars "${netcdf_max_vars_tmp}")
 
-          if ( (netcdf_max_dims GREATER_EQUAL 65536) AND (netcdf_max_vars GREATER_EQUAL 524288) )
+          if ( (netcdf_max_dims GREATER 65535) AND (netcdf_max_vars GREATER 524287) )
              set(NetCDF_LARGE_DIMS TRUE)
           else()
              message(WARNING "WARNING: The NetCDF found in ${NetCDF_ROOT} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
