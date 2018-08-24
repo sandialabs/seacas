@@ -1,8 +1,6 @@
 netcdf testcpd {
 dimensions:
-	len_string = 33 ;
 	len_line = 81 ;
-	four = 4 ;
 	len_name = 256 ;
 	time_step = UNLIMITED ; // (0 currently)
 	num_dim = 3 ;
@@ -35,6 +33,8 @@ dimensions:
 	num_side_ss3 = 7 ;
 	num_side_ss4 = 4 ;
 	num_side_ss5 = 5 ;
+	four = 4 ;
+	len_string = 33 ;
 variables:
 	double time_whole(time_step) ;
 	int eb_status(num_el_blk) ;
