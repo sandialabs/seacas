@@ -52,8 +52,7 @@ namespace {
       val = std::stod(str_val);
     }
     catch (...) {
-      ERROR(" Overflow or underflow occurred when trying"
-            << " to parse command line tolerance.  Aborting...\n");
+      ERROR(" Problem converting the string '" << str_val << "' to a double value while parsing tolerance.  Aborting...\n");
       exit(1);
     }
 
