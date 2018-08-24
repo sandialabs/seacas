@@ -137,17 +137,17 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
       }
 
       /* create number "4" dimension; must be of type long */
-      if ((status = nc_def_dim(exoid, DIM_N4, 4L, &n4dim)) != NC_NOERR) {
+      if ((status = nc_def_dim(rootid, DIM_N4, 4L, &n4dim)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to define number \"4\" dimension in file id %d", exoid);
+                 "ERROR: failed to define number \"4\" dimension in file id %d", rootid);
         ex_err(__func__, errmsg, status);
         goto error_ret; /* exit define mode and return */
       }
 
       /* create string length dimension -- only used for QA records */
-      if ((status = nc_def_dim(exoid, DIM_STR, (MAX_STR_LENGTH + 1), &strdim)) != NC_NOERR) {
+      if ((status = nc_def_dim(rootid, DIM_STR, (MAX_STR_LENGTH + 1), &strdim)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define string length in file id %d",
-                 exoid);
+                 rootid);
         ex_err(__func__, errmsg, status);
         goto error_ret; /* exit define mode and return */
       }
