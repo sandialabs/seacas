@@ -1411,12 +1411,14 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
   if ((status = nc_inq_dimid(exoid, DIMENSION, dimid)) != NC_NOERR) {
     if (routine != NULL) {
       if (status == NC_EBADDIM) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s defined in file id %d", label, exoid);
+        snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no dimension defining '%s' found in file id %d",
+                 label, exoid);
         ex_err(__func__, errmsg, status);
       }
       else {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate number of %s in file id %d",
-                 label, exoid);
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to locate dimension defining number of '%s' in file id %d", label,
+                 exoid);
         ex_err(__func__, errmsg, status);
       }
     }
@@ -1425,8 +1427,9 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
 
   if ((status = nc_inq_dimlen(exoid, *dimid, count)) != NC_NOERR) {
     if (routine != NULL) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s in file id %d", label,
-               exoid);
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to get length of dimension defining number of '%s' in file id %d",
+               label, exoid);
       ex_err(__func__, errmsg, status);
       return -1;
     }
