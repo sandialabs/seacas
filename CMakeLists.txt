@@ -36,6 +36,8 @@ SET(${PROJECT_NAME}_EXCLUDE_DISABLED_SUBPACKAGES_FROM_DISTRIBUTION_DEFAULT FALSE
 
 SET(TPL_ENABLE_Pthread OFF CACHE BOOL "")
 
+OPTION(SEACASProj_ENABLE_DOXYGEN "Enable Doxygen documentation creation." ON)
+
 # Do all of the processing for this Tribits project
 TRIBITS_PROJECT()
 
