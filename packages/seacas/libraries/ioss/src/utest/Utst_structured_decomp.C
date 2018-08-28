@@ -457,6 +457,37 @@ TEST_CASE("grv", "[grv]")
   cleanup(zones);
 }
 
+TEST_CASE("grv-large", "[grv-large]")
+{
+  std::vector<Iocgns::StructuredZoneData *> zones;
+
+  int zone = 1;
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x32x32"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x32x32"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x32x32"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x16x64"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x64x64"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x64x64"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x64x64"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x32x32"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x32x32"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x32x32"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x16x64"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x64x64"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x64x64"));
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "128x64x64"));
+
+  for (size_t proc_count = 2; proc_count < 8192; proc_count*=2) {
+    std::string name = "GRV-LARGE_ProcCount_" + std::to_string(proc_count);
+    SECTION(name)
+    {
+      double load_balance_tolerance = 1.3;
+      check_split_assign(zones, load_balance_tolerance, proc_count, .7);
+    }
+  }
+  cleanup(zones);
+}
+
 TEST_CASE("mk21", "[mk21]")
 {
   std::vector<Iocgns::StructuredZoneData *> zones;
