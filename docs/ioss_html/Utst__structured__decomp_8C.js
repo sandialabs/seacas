@@ -13,11 +13,12 @@ var Utst__structured__decomp_8C =
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#a1f02dcb2366203b2049ef2633cd1892d", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ad36196517f5665eea3d1a967df7f209c", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#acf41df98bd071551c6403e8485278247", null ],
+    [ "TEST_CASE", "Utst__structured__decomp_8C.html#a94449dc790f8610902a14e38594c81ea", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ae8f6024fd1a3201752c18c50b6615383", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#a119db9acfd96c045f318472ce5ce402a", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#a47bccd02607f08cbdea8f90e5cb61f47", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#aedab364cbf1466bcebe3ec2b024d06b6", null ],
-    [ "TEST_CASE", "Utst__structured__decomp_8C.html#a9b373089f464a1baa3bfe77c809807f4", null ],
+    [ "TEST_CASE", "Utst__structured__decomp_8C.html#ab100bc18e62c7d1adeb487902441d696", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ae9b5bb738a269182fc92ef0545ca3e03", null ],
     [ "update_zgc_data", "Utst__structured__decomp_8C.html#a30fa7fb4167127ad067ef67e8879b2de", null ]
 ];

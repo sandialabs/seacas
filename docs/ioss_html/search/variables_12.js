@@ -13,6 +13,7 @@ var searchData=
   ['section_5f',['section_',['../classIoss_1_1BlockDecompositionData.html#ac68bf456a7b33916948325af2f1af0b4',1,'Ioss::BlockDecompositionData::section_()'],['../classIoss_1_1SetDecompositionData.html#abcdafca59d03d5b825cb7c8d35f7da7a',1,'Ioss::SetDecompositionData::section_()']]],
   ['separator_5f',['separator_',['../classIohb_1_1DatabaseIO.html#a6295069bf27f1fba8787abe863aebe32',1,'Iohb::DatabaseIO::separator_()'],['../classIohb_1_1Layout.html#a193e36c297502e28fe14d1d827dfc078',1,'Iohb::Layout::separator_()']]],
   ['serialize_5fio_5fsize',['serialize_io_size',['../classIOShell_1_1Interface.html#af0560116a65c386339b750984552dde3',1,'IOShell::Interface']]],
+  ['setcomm_5f',['setComm_',['../classIoss_1_1SetDecompositionData.html#ad49ecac608fcfc51f3a500e46d38414f',1,'Ioss::SetDecompositionData']]],
   ['sharednodes',['sharedNodes',['../structIogn_1_1ExodusData.html#a1e00c93b859a22e52f51b50e586bcdff',1,'Iogn::ExodusData::sharedNodes()'],['../structIogn_1_1DashSurfaceData.html#aa6fd391b4bfcc9ff36328e03ea08a8a0',1,'Iogn::DashSurfaceData::sharedNodes()']]],
   ['sharedwithproc_5f',['sharedWithProc_',['../classIoss_1_1Face.html#afa997f7ad6a87e3d599bd830fb3319ba',1,'Ioss::Face']]],
   ['shellblocks',['shellBlocks',['../classIogn_1_1GeneratedMesh.html#a4356d7dc3c22525095b7154db26af75d',1,'Iogn::GeneratedMesh']]],

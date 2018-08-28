@@ -11,5 +11,6 @@ var Iocgns__Utils_8C =
     [ "power_2", "Iocgns__Utils_8C.html#a8b8dc13ccaa987729b8b60d50ded3a80", null ],
     [ "proc_with_minimum_work", "Iocgns__Utils_8C.html#af38cfc06f8a6742dda73059955c1216f", null ],
     [ "subset_range", "Iocgns__Utils_8C.html#a765f362be82c7cf09c6f3cae4981c882", null ],
+    [ "sync_transient_variables_fpp", "Iocgns__Utils_8C.html#ad39473b0d87565783abdd7389d05aaed", null ],
     [ "validate_blocks", "Iocgns__Utils_8C.html#a90d8fbce505c2946989029aa90749f47", null ]
 ];

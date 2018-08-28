@@ -70,7 +70,7 @@ var searchData=
   ['set_5fuse_5fgeneric_5fcanonical_5fname',['set_use_generic_canonical_name',['../classIoss_1_1DatabaseIO.html#a7b7bc827d6bd3023a26e770009bf8618',1,'Ioss::DatabaseIO']]],
   ['set_5fvariable_5fcount',['set_variable_count',['../classIogs_1_1GeneratedMesh.html#a5745b5dcbe19ddafdddfda3f2e8af163',1,'Iogs::GeneratedMesh::set_variable_count()'],['../classIogn_1_1GeneratedMesh.html#ae95a0d0eed44d809e04e839abfd9995f',1,'Iogn::GeneratedMesh::set_variable_count()']]],
   ['setcell',['setcell',['../classIoss_1_1GetLongOption.html#a7919f3c4cb978e2aff31990961ba2ec9',1,'Ioss::GetLongOption']]],
-  ['setdecompositiondata',['SetDecompositionData',['../classIoss_1_1SetDecompositionData.html#a55abe5937b86eee7c337976451a90d51',1,'Ioss::SetDecompositionData']]],
+  ['setdecompositiondata',['SetDecompositionData',['../classIoss_1_1SetDecompositionData.html#a55abe5937b86eee7c337976451a90d51',1,'Ioss::SetDecompositionData::SetDecompositionData()=default'],['../classIoss_1_1SetDecompositionData.html#aeefca13f16ba8cabd1d87abe2c8c8d4d',1,'Ioss::SetDecompositionData::SetDecompositionData(const SetDecompositionData &amp;)=delete'],['../classIoss_1_1SetDecompositionData.html#ad091be2433043b45a8f53e48af667548',1,'Ioss::SetDecompositionData::SetDecompositionData(SetDecompositionData &amp;&amp;)=default']]],
   ['setgeneratedmesh',['setGeneratedMesh',['../classIogs_1_1DatabaseIO.html#a0834352f7998f580c597986f2aef3e84',1,'Iogs::DatabaseIO::setGeneratedMesh()'],['../classIogn_1_1DatabaseIO.html#a8e36d96d6dd77f55db2a45401e9bc425',1,'Iogn::DatabaseIO::setGeneratedMesh()']]],
   ['setgroupfactor',['setGroupFactor',['../classIoss_1_1SerializeIO.html#af07ba50639b68621f5955c0b0da9141c',1,'Ioss::SerializeIO']]],
   ['setserialdefaults',['setSerialDefaults',['../structIogn_1_1DashSurfaceData.html#a9be6625229666a0e4d31f073623700aa',1,'Iogn::DashSurfaceData']]],
@@ -178,5 +178,6 @@ var searchData=
   ['sym_5ftensor_5f21',['sym_tensor_21',['../namespaceanonymous__namespace_02Ioss__ConcreteVariableType_8C_03.html#a47e404ed369d1c8784ca00cc410c2a45',1,'anonymous_namespace{Ioss_ConcreteVariableType.C}']]],
   ['sym_5ftensor_5f31',['sym_tensor_31',['../namespaceanonymous__namespace_02Ioss__ConcreteVariableType_8C_03.html#aa9328997a4643cbe1186ecd5d4f06418',1,'anonymous_namespace{Ioss_ConcreteVariableType.C}']]],
   ['sym_5ftensor_5f33',['sym_tensor_33',['../namespaceanonymous__namespace_02Ioss__ConcreteVariableType_8C_03.html#af61b38eb159a52250a0f96169e2f47db',1,'anonymous_namespace{Ioss_ConcreteVariableType.C}']]],
+  ['sync_5ftransient_5fvariables_5ffpp',['sync_transient_variables_fpp',['../namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#ad39473b0d87565783abdd7389d05aaed',1,'anonymous_namespace{Iocgns_Utils.C}']]],
   ['synchronize_5fid_5fand_5fname',['synchronize_id_and_name',['../classIoss_1_1Region.html#a62e4b42525b3b2f18f03642fdf689de4',1,'Ioss::Region']]]
 ];
