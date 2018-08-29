@@ -119,8 +119,8 @@ Functions</h2></td></tr>
 <tr class="separator:a277936583873e2bae7094286341f050a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a933c749188e413f99bb348833e1b89ea"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__all__var__param__ext_8c.html#a933c749188e413f99bb348833e1b89ea">define_truth_table</a> (<a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> obj_type, int exoid, int num_ent, int num_var, int *var_tab, int *status_tab, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *ids, const char *label)</td></tr>
 <tr class="separator:a933c749188e413f99bb348833e1b89ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab35e39ffd4060a3e59d0e288d2f3da91"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__all__var__param__ext_8c.html#ab35e39ffd4060a3e59d0e288d2f3da91">ex_define_vars</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> obj_type, const char *entity_name, const char *entity_blk_name, int numvar, const char *DNAME, int dimid1, int dimid2, int DVAL, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *entity_ids, const char *VNOV, const char *VTV, int *status_var, int *truth_table, int *truth_table_var)</td></tr>
-<tr class="separator:ab35e39ffd4060a3e59d0e288d2f3da91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28d6e8d7ddc8e3b6c34b123fa43677b0"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__all__var__param__ext_8c.html#a28d6e8d7ddc8e3b6c34b123fa43677b0">ex_define_vars</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> obj_type, const char *entity_name, const char *entity_blk_name, int numvar, const char *DNAME, int dimid1, int dimid2, int DVAL, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> **entity_ids, const char *VNOV, const char *VTV, int **status_var, int *truth_table, int *truth_table_var)</td></tr>
+<tr class="separator:a28d6e8d7ddc8e3b6c34b123fa43677b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1081b59c3c29c0136ae88ca96566c2bf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__all__var__param__ext_8c.html#a1081b59c3c29c0136ae88ca96566c2bf">ex_put_all_var_param_ext</a> (int exoid, const <a class="el" href="structex__var__params.html">ex_var_params</a> *vp)</td></tr>
 <tr class="separator:a1081b59c3c29c0136ae88ca96566c2bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -375,8 +375,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab35e39ffd4060a3e59d0e288d2f3da91"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab35e39ffd4060a3e59d0e288d2f3da91">&#9670;&nbsp;</a></span>ex_define_vars()</h2>
+<a id="a28d6e8d7ddc8e3b6c34b123fa43677b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28d6e8d7ddc8e3b6c34b123fa43677b0">&#9670;&nbsp;</a></span>ex_define_vars()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -441,7 +441,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> **&#160;</td>
           <td class="paramname"><em>entity_ids</em>, </td>
         </tr>
         <tr>
@@ -459,7 +459,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int *&#160;</td>
+          <td class="paramtype">int **&#160;</td>
           <td class="paramname"><em>status_var</em>, </td>
         </tr>
         <tr>
