@@ -48,6 +48,7 @@ var searchData=
   ['get_5fcurrent_5fstate',['get_current_state',['../classIoex_1_1DatabaseIO.html#a61ce28ee19d73a9c21a951e9c6e901b4',1,'Ioex::DatabaseIO::get_current_state()'],['../classIoss_1_1Region.html#a517aaf7d7c161d3072ce2a762b1666c3',1,'Ioss::Region::get_current_state()']]],
   ['get_5fdatabase',['get_database',['../classIoss_1_1GroupingEntity.html#a318cd5cde65370bb9c83f8ca223f8481',1,'Ioss::GroupingEntity']]],
   ['get_5fdatabase_5fstep',['get_database_step',['../classIoex_1_1DatabaseIO.html#a363f39485f8cdcac0c116b36ff35e1c0',1,'Ioex::DatabaseIO']]],
+  ['get_5fdb_5fzone',['get_db_zone',['../classIocgns_1_1Utils.html#ad75ee7ac23c7c75a2a266f35cd73d364',1,'Iocgns::Utils']]],
   ['get_5fdecomp_5fset',['get_decomp_set',['../classIopx_1_1DecompositionDataBase.html#a70e331cc3b722b2eb4493bab869f3400',1,'Iopx::DecompositionDataBase']]],
   ['get_5fdecomposition_5fmethod',['get_decomposition_method',['../namespaceanonymous__namespace_02Ioss__Decomposition_8C_03.html#a83e6da51e36eb3aabe5af60bf43d1c76',1,'anonymous_namespace{Ioss_Decomposition.C}']]],
   ['get_5fedge_5fblock',['get_edge_block',['../classIoss_1_1Region.html#ae41288c041c96f64f7d320aefb1e1eec',1,'Ioss::Region']]],

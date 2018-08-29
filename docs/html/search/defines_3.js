@@ -4,7 +4,6 @@ var searchData=
   ['ex_5fapi_5fvers',['EX_API_VERS',['../exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49',1,'exodusII.h']]],
   ['ex_5fapi_5fvers_5fnodot',['EX_API_VERS_NODOT',['../exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf',1,'exodusII.h']]],
   ['ex_5fcreate',['ex_create',['../exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87',1,'exodusII.h']]],
-  ['ex_5fdefine_5fvars',['EX_DEFINE_VARS',['../ex__put__all__var__param__ext_8c.html#a585ad2a79583f448ad93940c093cf881',1,'ex_put_all_var_param_ext.c']]],
   ['ex_5ferr_5fnum',['EX_ERR_NUM',['../ex__err_8c.html#a7830513119631ee2455d69e21cb2927b',1,'ex_err.c']]],
   ['ex_5ferrmsg',['EX_ERRMSG',['../ex__err_8c.html#aa4ee73df97bd96a5ebf17531044e710d',1,'ex_err.c']]],
   ['ex_5ffalse',['EX_FALSE',['../exodusII_8h.html#a1c43ac839d9171680f8fbeccec482e08',1,'exodusII.h']]],

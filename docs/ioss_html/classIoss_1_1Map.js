@@ -22,6 +22,7 @@ var classIoss_1_1Map =
     [ "map_implicit_data", "classIoss_1_1Map.html#af1ad6013c22431a227b9845ef1cdfa98", null ],
     [ "operator=", "classIoss_1_1Map.html#a0151ae510acb19999b84118ffd0edab4", null ],
     [ "release_memory", "classIoss_1_1Map.html#a4620c2cbe27be00361eda198387e66da", null ],
+    [ "reorders", "classIoss_1_1Map.html#a33fe6f2511b8a6ffae560e545cd269c5", null ],
     [ "reverse_map_data", "classIoss_1_1Map.html#a4e757e282fd3350ffaea92ca57080c77", null ],
     [ "reverse_map_data", "classIoss_1_1Map.html#abb85ac649e5e757f97f770a572c6ac81", null ],
     [ "set_default", "classIoss_1_1Map.html#abfaa5f83928a9d0c3691387e86050275", null ],

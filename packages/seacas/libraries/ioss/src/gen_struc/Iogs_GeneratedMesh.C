@@ -56,7 +56,7 @@ namespace Iogs {
   }
 
   GeneratedMesh::GeneratedMesh(const std::string &parameters, int proc_count, int my_proc)
-    : processorCount(proc_count), myProcessor(my_proc)
+      : processorCount(proc_count), myProcessor(my_proc)
   {
     // Possible that the 'parameters' has the working directory path
     // prepended to the parameter list.  Strip off everything in front
@@ -84,10 +84,7 @@ namespace Iogs {
     parse_options(groups);
   }
 
-  GeneratedMesh::GeneratedMesh()
-  {
-    initialize();
-  }
+  GeneratedMesh::GeneratedMesh() { initialize(); }
 
   GeneratedMesh::~GeneratedMesh() = default;
 

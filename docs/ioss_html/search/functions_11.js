@@ -26,6 +26,7 @@ var searchData=
   ['release_5fmemory',['release_memory',['../classIoss_1_1DatabaseIO.html#a2ee122665a52a2cd6f7de816738fed08',1,'Ioss::DatabaseIO::release_memory()'],['../classIoss_1_1Map.html#a4620c2cbe27be00361eda198387e66da',1,'Ioss::Map::release_memory()']]],
   ['release_5fmemory_5f_5f',['release_memory__',['../classIocgns_1_1ParallelDatabaseIO.html#a7a8ebae706e4652632d698fb94146270',1,'Iocgns::ParallelDatabaseIO::release_memory__()'],['../classIopx_1_1DatabaseIO.html#a1270d894f27dee291276551f67589f26',1,'Iopx::DatabaseIO::release_memory__()'],['../classIoss_1_1DatabaseIO.html#a59bba176acaae8012f85904fed8afef8',1,'Ioss::DatabaseIO::release_memory__()']]],
   ['remove_5ffile',['remove_file',['../classIoss_1_1FileInfo.html#a859242fc28423ca9796f4666846f13cf',1,'Ioss::FileInfo']]],
+  ['reorders',['reorders',['../classIoss_1_1Map.html#a33fe6f2511b8a6ffae560e545cd269c5',1,'Ioss::Map']]],
   ['report_5finconsistency',['report_inconsistency',['../namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a2f8c4edf9fcba5a6ace342c7f9231727',1,'anonymous_namespace{Ioss_Region.C}']]],
   ['reset_5fcount',['reset_count',['../classIoss_1_1Field.html#ab921c05d49de26267b14ab4d8a3368c9',1,'Ioss::Field']]],
   ['reset_5ftype',['reset_type',['../classIoss_1_1Field.html#a92eed1e2e74395e83a2c0d18ed1963d1',1,'Ioss::Field']]],

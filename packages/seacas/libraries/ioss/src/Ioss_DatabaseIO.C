@@ -182,12 +182,12 @@ namespace Ioss {
       }
     }
 
-    if (properties.exists("SERIALIZE_IO")) {
-      int isize = properties.get("SERIALIZE_IO").get_int();
-      Ioss::SerializeIO::setGroupFactor(isize);
-      if (isize > 0) {
-        singleProcOnly = true;
-      }
+    if (properties.exists("CYCLE_COUNT")) {
+      cycleCount = properties.get("CYCLE_COUNT").get_int();
+    }
+
+    if (properties.exists("OVERLAY_COUNT")) {
+      overlayCount = properties.get("OVERLAY_COUNT").get_int();
     }
 
     {
