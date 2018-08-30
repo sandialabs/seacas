@@ -315,8 +315,6 @@ namespace {
 
     std::vector<double> centroids(spatial_dimension * sph_node_count);
 
-    const Ioss::ElementBlockContainer &eb_out = output_region.get_element_blocks();
-
     I             = ebs.begin();
     size_t offset = 0;
     while (I != ebs.end()) {
