@@ -464,7 +464,7 @@ namespace {
 
     // Now do the same for element blocks...
     {
-      Ioss::ElementBlockContainer                 ebs = region.get_element_blocks();
+      const Ioss::ElementBlockContainer &         ebs = region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator I   = ebs.begin();
 
       while (I != ebs.end()) {
@@ -490,7 +490,7 @@ namespace {
 
     // Node Sets
     {
-      Ioss::NodeSetContainer                 nss = region.get_nodesets();
+      const Ioss::NodeSetContainer &         nss = region.get_nodesets();
       Ioss::NodeSetContainer::const_iterator I   = nss.begin();
       while (I != nss.end()) {
         std::string name = (*I)->name();
@@ -513,7 +513,7 @@ namespace {
 
     // Comm Sets
     {
-      Ioss::CommSetContainer                 css = region.get_commsets();
+      const Ioss::CommSetContainer &         css = region.get_commsets();
       Ioss::CommSetContainer::const_iterator I   = css.begin();
       while (I != css.end()) {
         std::string name = (*I)->name();
@@ -537,7 +537,7 @@ namespace {
 
     // Side Sets
     if (!globals.do_normals) {
-      Ioss::SideSetContainer                 fss = region.get_sidesets();
+      const Ioss::SideSetContainer &         fss = region.get_sidesets();
       Ioss::SideSetContainer::const_iterator I   = fss.begin();
       while (I != fss.end()) {
         std::string name = (*I)->name();
@@ -552,7 +552,7 @@ namespace {
           transfer_field_data(*I, ofs, Ioss::Field::MESH);
           transfer_field_data(*I, ofs, Ioss::Field::ATTRIBUTE);
 
-          Ioss::SideBlockContainer                 fbs = (*I)->get_side_blocks();
+          const Ioss::SideBlockContainer &         fbs = (*I)->get_side_blocks();
           Ioss::SideBlockContainer::const_iterator J   = fbs.begin();
           while (J != fbs.end()) {
 
@@ -628,7 +628,7 @@ namespace {
 
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
-    Ioss::NodeBlockContainer                 nbs = region.get_node_blocks();
+    const Ioss::NodeBlockContainer &         nbs = region.get_node_blocks();
     Ioss::NodeBlockContainer::const_iterator i   = nbs.begin();
     int                                      id  = 1;
     while (i != nbs.end()) {
@@ -659,7 +659,7 @@ namespace {
 
   void transfer_elementblock(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
-    Ioss::ElementBlockContainer                 ebs            = region.get_element_blocks();
+    const Ioss::ElementBlockContainer &         ebs            = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator i              = ebs.begin();
     int                                         total_elements = 0;
     while (i != ebs.end()) {
@@ -691,7 +691,7 @@ namespace {
 
   void transfer_sidesets(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
-    Ioss::SideSetContainer                 fss         = region.get_sidesets();
+    const Ioss::SideSetContainer &         fss         = region.get_sidesets();
     Ioss::SideSetContainer::const_iterator i           = fss.begin();
     int                                    total_sides = 0;
     while (i != fss.end()) {
@@ -701,7 +701,7 @@ namespace {
       }
       auto surf = new Ioss::SideSet(output_region.get_database(), name);
 
-      Ioss::SideBlockContainer                 fbs = (*i)->get_side_blocks();
+      const Ioss::SideBlockContainer &         fbs = (*i)->get_side_blocks();
       Ioss::SideBlockContainer::const_iterator j   = fbs.begin();
       while (j != fbs.end()) {
         std::string fbname = (*j)->name();
@@ -738,7 +738,7 @@ namespace {
 
   void transfer_nodesets(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
-    Ioss::NodeSetContainer                 nss         = region.get_nodesets();
+    const Ioss::NodeSetContainer &         nss         = region.get_nodesets();
     Ioss::NodeSetContainer::const_iterator i           = nss.begin();
     int                                    total_nodes = 0;
     while (i != nss.end()) {
@@ -766,7 +766,7 @@ namespace {
 
   void transfer_commsets(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
-    Ioss::CommSetContainer                 css = region.get_commsets();
+    const Ioss::CommSetContainer &         css = region.get_commsets();
     Ioss::CommSetContainer::const_iterator i   = css.begin();
     while (i != css.end()) {
       std::string name = (*i)->name();
@@ -916,7 +916,7 @@ namespace {
     Ioss::SideSet *pressures = new Ioss::SideSet(output_region.get_database(), "cth_pressures");
     // Each element block in the sset file will be a surside in the mesh file...
     {
-      Ioss::ElementBlockContainer                 ebs = ss_region.get_element_blocks();
+      const Ioss::ElementBlockContainer &         ebs = ss_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
       while (i != ebs.end()) {
         std::string name = (*i)->name();
@@ -943,7 +943,7 @@ namespace {
   {
     // Each element block in the sset file will be a surface in the mesh file...
     {
-      Ioss::ElementBlockContainer                 ebs = ss_region.get_element_blocks();
+      const Ioss::ElementBlockContainer &         ebs = ss_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
       while (i != ebs.end()) {
         std::string name    = (*i)->name();
@@ -1010,7 +1010,7 @@ namespace {
     if (globals.convert_gage) {
       ss_region.begin_state(1);
 
-      Ioss::ElementBlockContainer                 ebs = ss_region.get_element_blocks();
+      const Ioss::ElementBlockContainer &         ebs = ss_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
       while (i != ebs.end()) {
 
@@ -1036,7 +1036,7 @@ namespace {
     if (globals.offset_time > 0.0) {
       int ostep = output_region.add_state(0.0);
       output_region.begin_state(ostep);
-      Ioss::ElementBlockContainer                 ebs = ss_region.get_element_blocks();
+      const Ioss::ElementBlockContainer &         ebs = ss_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
       while (i != ebs.end()) {
         std::string      eb_name = (*i)->name();
@@ -1088,7 +1088,7 @@ namespace {
 
       output_region.begin_state(ostep);
       ss_region.begin_state(istep);
-      Ioss::ElementBlockContainer                 ebs = ss_region.get_element_blocks();
+      const Ioss::ElementBlockContainer &         ebs = ss_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
       while (i != ebs.end()) {
         std::string      eb_name = (*i)->name();
@@ -1174,7 +1174,7 @@ namespace {
       // an
       // "equilibrium" state in case the CTH analysis was not run out to an equilibrium
       // state. If ZERO was specified, then it simply zeros out the pressure field at the last step.
-      Ioss::ElementBlockContainer                 ebs = ss_region.get_element_blocks();
+      const Ioss::ElementBlockContainer &         ebs = ss_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
       while (i != ebs.end()) {
         std::string      eb_name = (*i)->name();
@@ -1242,7 +1242,7 @@ namespace {
   {
     // Each element block in the sset file will be a surface in the mesh file...
     {
-      Ioss::ElementBlockContainer                 ebs = ss_region.get_element_blocks();
+      const Ioss::ElementBlockContainer &         ebs = ss_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
       while (i != ebs.end()) {
         std::string name    = (*i)->name();
@@ -1275,7 +1275,7 @@ namespace {
       nb->field_add(node_normal);
 
       // Iterate over the element blocks and calculate both node normals and face normals...
-      Ioss::ElementBlockContainer                 ebs = output_region.get_element_blocks();
+      const Ioss::ElementBlockContainer &         ebs = output_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator ib  = ebs.begin();
       while (ib != ebs.end()) {
         Ioss::ElementBlock *eb = *ib;
@@ -1309,9 +1309,9 @@ namespace {
     std::fill(node_normal.begin(), node_normal.end(), 0.0);
 
     // Iterate over the element blocks and calculate both node normals and face normals...
-    std::vector<int>            conn;
-    std::vector<double>         face_normal;
-    Ioss::ElementBlockContainer ebs = region.get_element_blocks();
+    std::vector<int>                   conn;
+    std::vector<double>                face_normal;
+    const Ioss::ElementBlockContainer &ebs = region.get_element_blocks();
 
     Ioss::ElementBlockContainer::const_iterator ib = ebs.begin();
     while (ib != ebs.end()) {

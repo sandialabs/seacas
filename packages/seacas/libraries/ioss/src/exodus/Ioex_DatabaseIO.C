@@ -595,7 +595,7 @@ namespace Ioex {
   void DatabaseIO::compute_block_membership__(Ioss::SideBlock *         efblock,
                                               std::vector<std::string> &block_membership) const
   {
-    Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
+    const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
 
     Ioss::Int64Vector block_ids(element_blocks.size());
@@ -1105,36 +1105,36 @@ namespace Ioex {
     glob_index = gather_names(EX_GLOBAL, m_variables[EX_GLOBAL], get_region(), glob_index, true);
     assert(glob_index == static_cast<int>(m_variables[EX_GLOBAL].size()));
 
-    Ioss::NodeBlockContainer node_blocks = get_region()->get_node_blocks();
+    const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
     assert(node_blocks.size() == 1);
     internal_write_results_metadata(EX_NODE_BLOCK, node_blocks, glob_index);
 
-    Ioss::EdgeBlockContainer edge_blocks = get_region()->get_edge_blocks();
+    const Ioss::EdgeBlockContainer &edge_blocks = get_region()->get_edge_blocks();
     internal_write_results_metadata(EX_EDGE_BLOCK, edge_blocks, glob_index);
 
-    Ioss::FaceBlockContainer face_blocks = get_region()->get_face_blocks();
+    const Ioss::FaceBlockContainer &face_blocks = get_region()->get_face_blocks();
     internal_write_results_metadata(EX_FACE_BLOCK, face_blocks, glob_index);
 
-    Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
+    const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
     internal_write_results_metadata(EX_ELEM_BLOCK, element_blocks, glob_index);
 
-    Ioss::NodeSetContainer nodesets = get_region()->get_nodesets();
+    const Ioss::NodeSetContainer &nodesets = get_region()->get_nodesets();
     internal_write_results_metadata(EX_NODE_SET, nodesets, glob_index);
 
-    Ioss::EdgeSetContainer edgesets = get_region()->get_edgesets();
+    const Ioss::EdgeSetContainer &edgesets = get_region()->get_edgesets();
     internal_write_results_metadata(EX_EDGE_SET, edgesets, glob_index);
 
-    Ioss::FaceSetContainer facesets = get_region()->get_facesets();
+    const Ioss::FaceSetContainer &facesets = get_region()->get_facesets();
     internal_write_results_metadata(EX_FACE_SET, facesets, glob_index);
 
-    Ioss::ElementSetContainer elementsets = get_region()->get_elementsets();
+    const Ioss::ElementSetContainer &elementsets = get_region()->get_elementsets();
     internal_write_results_metadata(EX_ELEM_SET, elementsets, glob_index);
 
     {
-      int                    index    = 0;
-      Ioss::SideSetContainer sidesets = get_region()->get_sidesets();
+      int                           index    = 0;
+      const Ioss::SideSetContainer &sidesets = get_region()->get_sidesets();
       for (const auto &sideset : sidesets) {
-        Ioss::SideBlockContainer side_blocks = sideset->get_side_blocks();
+        const Ioss::SideBlockContainer &side_blocks = sideset->get_side_blocks();
         for (const auto &block : side_blocks) {
           glob_index = gather_names(EX_SIDE_SET, m_variables[EX_SIDE_SET], block, glob_index, true);
           index      = gather_names(EX_SIDE_SET, m_variables[EX_SIDE_SET], block, index, false);
@@ -1307,10 +1307,10 @@ namespace Ioex {
 
     char field_suffix_separator = get_field_separator();
 
-    Ioss::SideSetContainer sidesets = get_region()->get_sidesets();
+    const Ioss::SideSetContainer &sidesets = get_region()->get_sidesets();
     for (const auto &sideset : sidesets) {
 
-      Ioss::SideBlockContainer side_blocks = sideset->get_side_blocks();
+      const Ioss::SideBlockContainer &side_blocks = sideset->get_side_blocks();
       for (const auto &block : side_blocks) {
         // See if this sideblock has a corresponding entry in the sideset list.
         if (block->property_exists("invalid")) {

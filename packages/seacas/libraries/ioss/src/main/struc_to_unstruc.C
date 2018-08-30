@@ -515,9 +515,9 @@ namespace {
     for (auto ss : ssets) {
       const std::string &name = ss->name();
 
-      int                      ss_sides = 0;
-      auto                     surf     = new Ioss::SideSet(output_region.get_database(), name);
-      Ioss::SideBlockContainer fbs      = ss->get_side_blocks();
+      int                             ss_sides = 0;
+      auto                            surf = new Ioss::SideSet(output_region.get_database(), name);
+      const Ioss::SideBlockContainer &fbs  = ss->get_side_blocks();
       for (auto fb : fbs) {
         const std::string &fbname   = fb->name();
         std::string        fbtype   = fb->get_property("topology_type").get_string();
