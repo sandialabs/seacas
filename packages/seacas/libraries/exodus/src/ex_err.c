@@ -131,6 +131,20 @@ void ex_err(const char *module_name, const char *message, int err_num)
     EX_FUNC_VOID();
   }
 
+  /* save the error message for replays */
+  strncpy(EX_ERRMSG, message, MAX_ERR_LENGTH);
+  strncpy(EX_PNAME, module_name, MAX_ERR_LENGTH);
+  EX_ERRMSG[MAX_ERR_LENGTH - 1] = '\0';
+  EX_PNAME[MAX_ERR_LENGTH - 1]  = '\0';
+
+  if (err_num == EX_LASTERR) {
+    err_num = EX_ERR_NUM;
+  }
+  else {
+    exerrval   = err_num;
+    EX_ERR_NUM = err_num;
+  }
+
   if (err_num == EX_PRTLASTMSG) {
     fprintf(stderr, "[%s] %s\n", EX_PNAME, EX_ERRMSG);
     fprintf(stderr, "    exerrval = %d\n", EX_ERR_NUM);
@@ -149,16 +163,6 @@ void ex_err(const char *module_name, const char *message, int err_num)
       fprintf(stderr, "\t%s\n", ex_strerror(err_num));
     }
   }
-  /* save the error message for replays */
-  strncpy(EX_ERRMSG, message, MAX_ERR_LENGTH);
-  strncpy(EX_PNAME, module_name, MAX_ERR_LENGTH);
-  EX_ERRMSG[MAX_ERR_LENGTH - 1] = '\0';
-  EX_PNAME[MAX_ERR_LENGTH - 1]  = '\0';
-  if (err_num != EX_LASTERR) {
-    exerrval   = err_num;
-    EX_ERR_NUM = err_num;
-  }
-
   fflush(stderr);
 
   /* with netCDF 3.4, (fatal) system error codes are > 0;
