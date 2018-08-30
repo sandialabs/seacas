@@ -654,7 +654,7 @@ namespace {
 
         const Ioss::SideBlockContainer &fbs = fs->get_side_blocks();
         for (auto &fb : fbs) {
-          std::string fbname = prefix + "_" + fb->name();
+          const std::string &fbname = prefix + "_" + fb->name();
           if (debug) {
             std::cerr << fbname << ", ";
           }

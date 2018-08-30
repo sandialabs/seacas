@@ -787,7 +787,7 @@ namespace Iopg {
 
           for (int i = 0; i < elementBlockCount; i++) {
             Ioss::ElementBlock *         block        = element_blocks[i];
-            std::string                  name         = block->name();
+            const std::string &          name         = block->name();
             const Ioss::ElementTopology *common_ftopo = block->topology()->boundary_type(0);
             if (common_ftopo != nullptr) {
               // All sides of this element block's topology have the same topology

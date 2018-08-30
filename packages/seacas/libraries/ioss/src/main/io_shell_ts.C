@@ -489,7 +489,7 @@ namespace {
       {
         const auto &fss = region.get_sidesets();
         for (const auto &ifs : fss) {
-          std::string name = ifs->name();
+          const std::string &name = ifs->name();
           if (interface.debug) {
             OUTPUT << name << ", ";
           }
@@ -504,7 +504,7 @@ namespace {
             for (const auto &ifb : fbs) {
 
               // Find matching output sideblock
-              std::string fbname = ifb->name();
+              const std::string &fbname = ifb->name();
               if (interface.debug) {
                 OUTPUT << fbname << ", ";
               }
@@ -574,7 +574,7 @@ namespace {
         {
           const auto &fss = region.get_sidesets();
           for (const auto &ifs : fss) {
-            std::string name = ifs->name();
+            const std::string &name = ifs->name();
             if (interface.debug) {
               OUTPUT << name << ", ";
             }
@@ -588,7 +588,7 @@ namespace {
               for (const auto &ifb : fbs) {
 
                 // Find matching output sideblock
-                std::string fbname = ifb->name();
+                const std::string &fbname = ifb->name();
                 if (interface.debug) {
                   OUTPUT << fbname << ", ";
                 }
@@ -665,7 +665,7 @@ namespace {
         {
           const auto &fss = region.get_sidesets();
           for (const auto &ifs : fss) {
-            std::string name = ifs->name();
+            const std::string &name = ifs->name();
             if (interface.debug) {
               OUTPUT << name << ", ";
             }
@@ -679,7 +679,7 @@ namespace {
               for (const auto &ifb : fbs) {
 
                 // Find matching output sideblock
-                std::string fbname = ifb->name();
+                const std::string &fbname = ifb->name();
                 if (interface.debug) {
                   OUTPUT << fbname << ", ";
                 }
@@ -717,7 +717,7 @@ namespace {
     const auto &nbs = region.get_node_blocks();
     size_t      id  = 1;
     for (const auto &inb : nbs) {
-      std::string name = inb->name();
+      const std::string &name = inb->name();
       if (debug) {
         OUTPUT << name << ", ";
       }
@@ -765,7 +765,7 @@ namespace {
                        Ioss::Field::RoleType role, const IOShell::Interface &interface)
   {
     for (const auto &entity : entities) {
-      std::string name = entity->name();
+      const std::string &name = entity->name();
       if (interface.debug) {
         OUTPUT << name << ", ";
       }
@@ -801,7 +801,7 @@ namespace {
     auto   interface     = arg->interface;
     auto   role          = arg->role;
 
-    std::string name = entity->name();
+    const std::string &name = entity->name();
     if (interface->debug) {
       OUTPUT << name << ", ";
     }
@@ -850,7 +850,7 @@ namespace {
     auto   interface     = arg->interface;
     auto   role          = arg->role;
 
-    std::string name = entity->name();
+    const std::string &name = entity->name();
 
     // Find the corresponding output block...
     Ioss::GroupingEntity *output = output_region->get_entity(name, entity->type());
@@ -891,7 +891,7 @@ namespace {
     if (!blocks.empty()) {
       size_t total_entities = 0;
       for (const auto &iblock : blocks) {
-        std::string name = iblock->name();
+        const std::string &name = iblock->name();
         if (debug) {
           OUTPUT << name << ", ";
         }
@@ -939,7 +939,7 @@ namespace {
     const auto &fss         = region.get_sidesets();
     size_t      total_sides = 0;
     for (const auto &ss : fss) {
-      std::string name = ss->name();
+      const std::string &name = ss->name();
       if (debug) {
         OUTPUT << name << ", ";
       }
@@ -947,7 +947,7 @@ namespace {
       auto        surf = new Ioss::SideSet(output_region.get_database(), name);
       const auto &fbs  = ss->get_side_blocks();
       for (const auto &fb : fbs) {
-        std::string fbname = fb->name();
+        const std::string &fbname = fb->name();
         if (debug) {
           OUTPUT << fbname << ", ";
         }
@@ -983,7 +983,7 @@ namespace {
     if (!sets.empty()) {
       size_t total_entities = 0;
       for (const auto &set : sets) {
-        std::string name = set->name();
+        const std::string &name = set->name();
         if (debug) {
           OUTPUT << name << ", ";
         }
@@ -1035,7 +1035,7 @@ namespace {
   {
     const auto &css = region.get_commsets();
     for (const auto &ics : css) {
-      std::string name = ics->name();
+      const std::string &name = ics->name();
       if (debug) {
         OUTPUT << name << ", ";
       }

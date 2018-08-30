@@ -446,7 +446,7 @@ namespace {
       assert(nb != nullptr);
 
       if (nb != nullptr) {
-        std::string name = nb->name();
+        const std::string &name = nb->name();
         if (globals.debug) {
           std::cerr << name << ", ";
 
@@ -468,7 +468,7 @@ namespace {
       Ioss::ElementBlockContainer::const_iterator I   = ebs.begin();
 
       while (I != ebs.end()) {
-        std::string name = (*I)->name();
+        const std::string &name = (*I)->name();
         if (globals.debug) {
           std::cerr << name << ", ";
 
@@ -493,7 +493,7 @@ namespace {
       const Ioss::NodeSetContainer &         nss = region.get_nodesets();
       Ioss::NodeSetContainer::const_iterator I   = nss.begin();
       while (I != nss.end()) {
-        std::string name = (*I)->name();
+        const std::string &name = (*I)->name();
         if (globals.debug) {
           std::cerr << name << ", ";
 
@@ -516,7 +516,7 @@ namespace {
       const Ioss::CommSetContainer &         css = region.get_commsets();
       Ioss::CommSetContainer::const_iterator I   = css.begin();
       while (I != css.end()) {
-        std::string name = (*I)->name();
+        const std::string &name = (*I)->name();
         if (globals.debug) {
           std::cerr << name << ", ";
 
@@ -540,7 +540,7 @@ namespace {
       const Ioss::SideSetContainer &         fss = region.get_sidesets();
       Ioss::SideSetContainer::const_iterator I   = fss.begin();
       while (I != fss.end()) {
-        std::string name = (*I)->name();
+        const std::string &name = (*I)->name();
         if (globals.debug) {
           std::cerr << name << ", ";
 
@@ -557,7 +557,7 @@ namespace {
           while (J != fbs.end()) {
 
             // Find matching output sideblock
-            std::string fbname = (*J)->name();
+            const std::string &fbname = (*J)->name();
             if (globals.debug) {
               std::cerr << fbname << ", ";
             }
@@ -632,7 +632,7 @@ namespace {
     Ioss::NodeBlockContainer::const_iterator i   = nbs.begin();
     int                                      id  = 1;
     while (i != nbs.end()) {
-      std::string name = (*i)->name();
+      const std::string &name = (*i)->name();
       if (debug) {
         std::cerr << name << ", ";
       }
@@ -663,7 +663,7 @@ namespace {
     Ioss::ElementBlockContainer::const_iterator i              = ebs.begin();
     int                                         total_elements = 0;
     while (i != ebs.end()) {
-      std::string name = (*i)->name();
+      const std::string &name = (*i)->name();
       if (debug) {
         std::cerr << name << ", ";
       }
@@ -695,7 +695,7 @@ namespace {
     Ioss::SideSetContainer::const_iterator i           = fss.begin();
     int                                    total_sides = 0;
     while (i != fss.end()) {
-      std::string name = (*i)->name();
+      const std::string &name = (*i)->name();
       if (debug) {
         std::cerr << name << ", ";
       }
@@ -704,7 +704,7 @@ namespace {
       const Ioss::SideBlockContainer &         fbs = (*i)->get_side_blocks();
       Ioss::SideBlockContainer::const_iterator j   = fbs.begin();
       while (j != fbs.end()) {
-        std::string fbname = (*j)->name();
+        const std::string &fbname = (*j)->name();
         if (debug) {
           std::cerr << fbname << ", ";
         }
@@ -742,7 +742,7 @@ namespace {
     Ioss::NodeSetContainer::const_iterator i           = nss.begin();
     int                                    total_nodes = 0;
     while (i != nss.end()) {
-      std::string name = (*i)->name();
+      const std::string &name = (*i)->name();
       if (debug) {
         std::cerr << name << ", ";
       }
@@ -769,7 +769,7 @@ namespace {
     const Ioss::CommSetContainer &         css = region.get_commsets();
     Ioss::CommSetContainer::const_iterator i   = css.begin();
     while (i != css.end()) {
-      std::string name = (*i)->name();
+      const std::string &name = (*i)->name();
       if (debug) {
         std::cerr << name << ", ";
       }
@@ -1015,7 +1015,7 @@ namespace {
       while (i != ebs.end()) {
 
         // The gage pressure conversion is currently only applied to the field "cth_pressure"
-        std::string name = (*i)->name();
+        const std::string &name = (*i)->name();
         if ((*i)->field_exists(cth_pressure)) {
           int   isize                = (*i)->get_field(cth_pressure).get_size();
           void *zdata                = new char[isize];
@@ -1039,9 +1039,9 @@ namespace {
       const Ioss::ElementBlockContainer &         ebs = ss_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
       while (i != ebs.end()) {
-        std::string      eb_name = (*i)->name();
-        std::string      name    = "ss" + eb_name;
-        Ioss::SideBlock *fb      = output_region.get_sideblock(name);
+        const std::string &eb_name = (*i)->name();
+        std::string        name    = "ss" + eb_name;
+        Ioss::SideBlock *  fb      = output_region.get_sideblock(name);
         if (fb == nullptr) {
           std::cerr << "INTERNAL ERROR: Could not find sideblock named '" << name << "'\n";
           std::exit(EXIT_FAILURE);
@@ -1091,9 +1091,9 @@ namespace {
       const Ioss::ElementBlockContainer &         ebs = ss_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
       while (i != ebs.end()) {
-        std::string      eb_name = (*i)->name();
-        std::string      name    = "ss" + eb_name;
-        Ioss::SideBlock *fb      = output_region.get_sideblock(name);
+        const std::string &eb_name = (*i)->name();
+        std::string        name    = "ss" + eb_name;
+        Ioss::SideBlock *  fb      = output_region.get_sideblock(name);
         if (fb == nullptr) {
           std::cerr << "INTERNAL ERROR: Could not find side block named '" << name << "'\n";
           std::exit(EXIT_FAILURE);
@@ -1177,9 +1177,9 @@ namespace {
       const Ioss::ElementBlockContainer &         ebs = ss_region.get_element_blocks();
       Ioss::ElementBlockContainer::const_iterator i   = ebs.begin();
       while (i != ebs.end()) {
-        std::string      eb_name = (*i)->name();
-        std::string      name    = "ss" + eb_name;
-        Ioss::SideBlock *fb      = output_region.get_sideblock(name);
+        const std::string &eb_name = (*i)->name();
+        std::string        name    = "ss" + eb_name;
+        Ioss::SideBlock *  fb      = output_region.get_sideblock(name);
         if (fb == nullptr) {
           std::ostringstream msg;
           msg << " INTERNAL_ERROR: Could not find sideblock '" << name << "'\n";
@@ -1317,7 +1317,7 @@ namespace {
     while (ib != ebs.end()) {
       Ioss::ElementBlock *eb = *ib;
       ++ib;
-      std::string name = (*eb).name();
+      const std::string &name = (*eb).name();
 
       Ioss::ElementBlock *ebo = output_region.get_element_block(name);
       if (ebo == nullptr) {
