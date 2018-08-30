@@ -492,7 +492,7 @@ char *ex_dim_num_entries_in_object(ex_entity_type obj_type, int idx)
   case EX_FACE_SET: return DIM_NUM_FACE_FS(idx);
   case EX_SIDE_SET: return DIM_NUM_SIDE_SS(idx);
   case EX_ELEM_SET: return DIM_NUM_ELE_ELS(idx);
-  default: return 0;
+  default: return NULL;
   }
 }
 
@@ -507,7 +507,7 @@ char *ex_name_var_of_object(ex_entity_type obj_type, int i, int j)
   case EX_FACE_SET: return VAR_FS_VAR(i, j);
   case EX_SIDE_SET: return VAR_SS_VAR(i, j);
   case EX_ELEM_SET: return VAR_ELS_VAR(i, j);
-  default: return 0;
+  default: return NULL;
   }
 }
 
@@ -518,7 +518,7 @@ char *ex_name_of_map(ex_entity_type map_type, int map_index)
   case EX_EDGE_MAP: return VAR_EDGE_MAP(map_index);
   case EX_FACE_MAP: return VAR_FACE_MAP(map_index);
   case EX_ELEM_MAP: return VAR_ELEM_MAP(map_index);
-  default: return 0;
+  default: return NULL;
   }
 }
 
@@ -1422,7 +1422,7 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
         ex_err(__func__, errmsg, status);
       }
     }
-    return (status);
+    return status;
   }
 
   if ((status = nc_inq_dimlen(exoid, *dimid, count)) != NC_NOERR) {
@@ -1431,10 +1431,10 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
                "ERROR: failed to get length of dimension defining number of '%s' in file id %d",
                label, exoid);
       ex_err(__func__, errmsg, status);
-      return -1;
     }
+    return status;
   }
-  return (status);
+  return status;
 }
 
 /* Deprecated. do not use */
