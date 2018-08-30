@@ -314,7 +314,7 @@ namespace {
     Ioss::NodeBlockContainer::const_iterator i   = nbs.begin();
     int                                      id  = 1;
     while (i != nbs.end()) {
-      std::string name = (*i)->name();
+      const std::string &name = (*i)->name();
       if (debug) {
         std::cerr << name << ", ";
       }
@@ -341,7 +341,7 @@ namespace {
     Ioss::ElementBlockContainer::const_iterator i              = ebs.begin();
     int                                         total_elements = 0;
     while (i != ebs.end()) {
-      std::string name = (*i)->name();
+      const std::string &name = (*i)->name();
       if (debug) {
         std::cerr << name << ", ";
       }
@@ -423,7 +423,7 @@ namespace {
       ++ib;
       Ioss::ElementBlock *out_eb = *out_ib;
       ++out_ib;
-      std::string name = (*eb).name();
+      const std::string &name = (*eb).name();
 
       int num_elem          = eb->entity_count();
       int num_node_per_elem = eb->topology()->number_nodes();

@@ -1505,8 +1505,7 @@ namespace Ioex {
 
     assert(block != nullptr);
     if (attribute_count > 0) {
-      std::string block_name       = block->name();
-      size_t      my_element_count = block->entity_count();
+      size_t my_element_count = block->entity_count();
 
       // Get the attribute names. May not exist or may be blank...
       char ** names = Ioss::Utils::get_name_array(attribute_count, maximumNameLength);
