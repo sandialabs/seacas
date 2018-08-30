@@ -584,8 +584,8 @@ namespace Ioex {
     // array consistent.
 
     // Get all element blocks in region...
-    bool                        omitted        = false;
-    Ioss::ElementBlockContainer element_blocks = region->get_element_blocks();
+    bool                               omitted        = false;
+    const Ioss::ElementBlockContainer &element_blocks = region->get_element_blocks();
     for (const auto &block : element_blocks) {
 
       if (Ioss::Utils::block_is_omitted(block)) {

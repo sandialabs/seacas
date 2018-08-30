@@ -1055,7 +1055,7 @@ namespace {
 
   void transfer_coordinate_frames(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
-    Ioss::CoordinateFrameContainer cf = region.get_coordinate_frames();
+    const Ioss::CoordinateFrameContainer &cf = region.get_coordinate_frames();
     for (const auto &frame : cf) {
       output_region.add(frame);
     }
@@ -1642,7 +1642,7 @@ namespace {
       nb->property_add(Ioss::Property("locally_owned_count", owned));
 
       // Set locally_owned_count property on all nodesets...
-      Ioss::NodeSetContainer nss = region.get_nodesets();
+      const Ioss::NodeSetContainer &nss = region.get_nodesets();
       for (auto ns : nss) {
 
         std::vector<INT> ids;
