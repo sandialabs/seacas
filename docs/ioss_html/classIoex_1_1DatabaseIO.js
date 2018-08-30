@@ -45,7 +45,6 @@ var classIoex_1_1DatabaseIO =
     [ "maximum_symbol_length", "classIoex_1_1DatabaseIO.html#a6d052ad14dd56bd3f30a69f37b5383b5", null ],
     [ "ok__", "classIoex_1_1DatabaseIO.html#a4f32f89139224725c12661563fca2178", null ],
     [ "open_group__", "classIoex_1_1DatabaseIO.html#ab518e1a17e9ca82eef592828fc5ec9ed", null ],
-    [ "open_step_file", "classIoex_1_1DatabaseIO.html#a5e06475055fead6e0288fe17659dfd24", null ],
     [ "openDatabase__", "classIoex_1_1DatabaseIO.html#a45ae5ecad3d6383c1248f9b2ad85b8ac", null ],
     [ "operator=", "classIoex_1_1DatabaseIO.html#a6159cc348cde32f17b708a106d8f7106", null ],
     [ "output_other_meta_data", "classIoex_1_1DatabaseIO.html#a3296e033fe2d71f6e0084589f72b88d0", null ],
