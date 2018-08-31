@@ -423,7 +423,6 @@ namespace {
       ++ib;
       Ioss::ElementBlock *out_eb = *out_ib;
       ++out_ib;
-      const std::string &name = (*eb).name();
 
       int num_elem          = eb->entity_count();
       int num_node_per_elem = eb->topology()->number_nodes();
