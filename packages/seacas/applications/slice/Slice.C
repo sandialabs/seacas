@@ -488,13 +488,13 @@ namespace {
         }
         else if (tokens.size() == 1) {
           // Just a processor specification for the next element...
-          proc = strtoul(tokens[0].c_str(), nullptr, 0);
+          proc = std::stoi(tokens[0]);
           elem_to_proc.push_back(proc);
         }
         else {
           // Count and processor specified.
-          count = strtoul(tokens[0].c_str(), nullptr, 0);
-          proc  = strtoul(tokens[1].c_str(), nullptr, 0);
+          count = std::stoi(tokens[0]);
+          proc  = std::stoi(tokens[1]);
         }
         if (proc > interface.processor_count()) {
           OUTPUT << "\nERROR: Invalid processor " << proc << " specified on line " << line_num

@@ -174,7 +174,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, int &value,
   std::string str_value;
   bool        success = get_environment(name, str_value, sync_parallel);
   if (success) {
-    value = std::atoi(str_value.c_str());
+    value = std::stoi(str_value);
   }
   return success;
 }
