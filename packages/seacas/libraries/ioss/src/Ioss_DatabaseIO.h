@@ -539,6 +539,7 @@ namespace Ioss {
      * run since the passed in filename is just the basename, not the
      * processor-specific filename.
      */
+    std::string         originalDBFilename;
     std::string         DBFilename;
     mutable std::string decodedFilename;
 

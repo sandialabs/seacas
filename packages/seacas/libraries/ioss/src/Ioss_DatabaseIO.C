@@ -156,6 +156,10 @@ namespace Ioss {
     isParallel  = util_.parallel_size() > 1;
     myProcessor = util_.parallel_rank();
 
+    // Some operations modify DBFilename and there is a need to get
+    // back to the original filename...
+    originalDBFilename = DBFilename;
+
     // Check environment variable IOSS_PROPERTIES. If it exists, parse
     // the contents and add to the 'properties' map.
     util_.add_environment_properties(properties, myProcessor == 0);
