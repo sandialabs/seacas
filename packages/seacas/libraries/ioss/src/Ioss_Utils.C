@@ -1840,7 +1840,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     if (time < options.minimum_time) {
       continue;
     }
-    if (options.maximum_time != 0.0 && time > options.maximum_time) {
+    if (time > options.maximum_time) {
       break;
     }
 
