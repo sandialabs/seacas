@@ -451,6 +451,10 @@ namespace {
       }
     }
 
+    if (interface.file_per_state) {
+      properties.add(Ioss::Property("FILE_PER_STATE", "YES"));
+    }
+
     if (interface.netcdf4) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
     }
