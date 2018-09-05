@@ -106,6 +106,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adde3f4788bbbde05ec9a3aba7581a498"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae844888ccff55267133ba91b9f836e33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoex_1_1Internals.html">Internals</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#ae844888ccff55267133ba91b9f836e33">operator=</a> (const <a class="el" href="classIoex_1_1Internals.html">Internals</a> &amp;from)=delete</td></tr>
 <tr class="separator:ae844888ccff55267133ba91b9f836e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28ad1b1280907df0bf4b65f36fddc73f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a28ad1b1280907df0bf4b65f36fddc73f">initialize_state_file</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, const ex_var_params &amp;var_params, const std::string &amp;base_file_name)</td></tr>
+<tr class="separator:a28ad1b1280907df0bf4b65f36fddc73f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8878ed6cd2c8043a80d8e6395fba3392"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Internals.html#a8878ed6cd2c8043a80d8e6395fba3392">write_meta_data</a> (<a class="el" href="classIoex_1_1Mesh.html">Mesh</a> &amp;mesh)</td></tr>
 <tr class="separator:a8878ed6cd2c8043a80d8e6395fba3392"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -262,6 +264,40 @@ Private Attributes</h2></td></tr>
 <li>when the file was written. This code checks whether that information matches the current processor count and id. If it</li>
 <li>exists, but doesn't match, a warning message is printed. Eventually, this will be used to determine whether certain decomposition-related data in the file is valid or has been invalidated by a join/re-spread to a different number of processors. </li>
 </ul>
+
+</div>
+</div>
+<a id="a28ad1b1280907df0bf4b65f36fddc73f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28ad1b1280907df0bf4b65f36fddc73f">&#9670;&nbsp;</a></span>initialize_state_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Internals::initialize_state_file </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;&#160;</td>
+          <td class="paramname"><em>region</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ex_var_params &amp;&#160;</td>
+          <td class="paramname"><em>var_params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>base_file_name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
