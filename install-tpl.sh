@@ -50,9 +50,9 @@ then
     CC=mpicc; export CC
 fi
 
+OS=`uname -s`
 if [ "$SHARED" == "YES" ]
 then
-    OS=`uname -s`
     if [ "$OS" == "Darwin" ] ; then
 	LD_EXT="dylib"
     else
@@ -67,7 +67,7 @@ if [ $# -gt 0 ]; then
 	echo "${txtcyn}Environment Variables used in the script and their default values:"
 	echo ""
 	echo "   ACCESS       = ${txtgrn}${ACCESS}${txtcyn} (Automatically set to current directory)"
-	echo "   OS           = ${OS} (Automatically set)"
+	echo "   OS           = ${txtgrn}${OS}${txtcyn} (Automatically set)"
 	echo "   COMPILER     = ${COMPILER}"
 	echo ""
 	echo "   DOWNLOAD     = ${DOWNLOAD}"
