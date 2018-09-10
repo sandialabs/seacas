@@ -77,7 +77,14 @@ A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zol
 If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library.  
 
 **
-It is recommended at this time that you do *not* use the hdf5-1.10.X release series.  Please use the hdf5-1.8.X releases.
+There are some issues with using HDF5-1.10.0 through HDF5-1.10.2 since
+it will possibly create files which are unreadable by applications
+using an earlier version of the library.  As of HDF5-1.10.3 and later,
+the HDF5 team added an option that makes it possible for the library
+to create files readable by those applications. This flag is currently
+being used by NetCDF, but not CGNS.  Therefore, you should only use
+hdf5-1.10.3 or later if you are only using NetCDF, or if you do not
+need compatability with applications using an HDF5-1.8.X version.
 **
 
 The hdf5 library is used for the netcdf4 capability in netcdf which in
@@ -85,8 +92,10 @@ turn is used by exodus.  The netcdf4 capability is typically used for
 large models (>150 million elements); if you are not planning to
 create or read models of this size, you do not have to build hdf5. 
 
-   * Download HDF5 from <http://www.hdfgroup.org/HDF5/release/obtain5.html> and put it inside `seacas/TPL/hdf5`
-   * untar it
+   * Download HDF5 from either:
+     * <https://www.hdfgroup.org/HDF5/release/obtain5.html> for HDF5-1.10.X or
+     * <https://support.hdfgroup.org/HDF5/release/obtain518.html> for HDF5-1.8.X
+   * Download to `seacas/TPL/hdf5` and untar it
    * `cd` to that directory and enter the command:
     ```
     sh ../runconfigure.sh
@@ -96,7 +105,7 @@ create or read models of this size, you do not have to build hdf5.
 #### NetCDF
 The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required if using verions prior to 4.5.1.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
- * Download the latest netcdf-c release from <http://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
+ * Download the latest netcdf-c release from <https://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
  * `cd TPL/netcdf`
  * `tar zxvf netcdf-4.6.1.tar.gz`
  * If the version is *prior* to 4.5.1, then you need to modify the
@@ -152,7 +161,7 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
  *  `make && make install`
 
 #### CGNS
-Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and install the CGNS library:
+Support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and install the CGNS library:
 
    * Download CGNS via git:
 
