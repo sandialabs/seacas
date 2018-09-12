@@ -89,6 +89,7 @@ $(document).ready(function(){initNavTree('Ioss__FaceGenerator_8h.html','');});
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">Ioss_FaceGenerator.h File Reference</div>  </div>
@@ -98,7 +99,7 @@ $(document).ready(function(){initNavTree('Ioss__FaceGenerator_8h.html','');});
 <code>#include &lt;array&gt;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
-<code>#include &lt;unordered_set&gt;</code><br />
+<code>#include &lt;<a class="el" href="robin__set_8h_source.html">hash/robin_set.h</a>&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 </div>
 <p><a href="Ioss__FaceGenerator_8h_source.html">Go to the source code of this file.</a></p>
@@ -120,11 +121,31 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespaceIoss"><td class="mdescLeft">&#160;</td><td class="mdescRight">The main namespace for the <a class="el" href="namespaceIoss.html" title="The main namespace for the Ioss library. ">Ioss</a> library. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:ad424c47efe6a59cfc1150592011505cf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Ioss__FaceGenerator_8h.html#ad424c47efe6a59cfc1150592011505cf">USE_ROBIN</a></td></tr>
+<tr class="separator:ad424c47efe6a59cfc1150592011505cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a9185542903bb783c26923d8c2fa10cf3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoss.html#a9185542903bb783c26923d8c2fa10cf3">Ioss::FaceUnorderedSet</a> = std::unordered_set&lt; Face, FaceHash, FaceEqual &gt;</td></tr>
-<tr class="separator:a9185542903bb783c26923d8c2fa10cf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a098070d2a8062645c46f150cfb467b74"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">Ioss::FaceUnorderedSet</a> = <a class="el" href="classtsl_1_1robin__set.html">tsl::robin_set</a>&lt; Face, FaceHash, FaceEqual &gt;</td></tr>
+<tr class="separator:a098070d2a8062645c46f150cfb467b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="ad424c47efe6a59cfc1150592011505cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad424c47efe6a59cfc1150592011505cf">&#9670;&nbsp;</a></span>USE_ROBIN</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define USE_ROBIN</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

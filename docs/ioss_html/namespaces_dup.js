@@ -117,5 +117,6 @@ var namespaces_dup =
     [ "Iotr", "namespaceIotr.html", null ],
     [ "Iovs", "namespaceIovs.html", null ],
     [ "Skinner", "namespaceSkinner.html", null ],
-    [ "SmartAssert", "namespaceSmartAssert.html", null ]
+    [ "SmartAssert", "namespaceSmartAssert.html", null ],
+    [ "tsl", "namespacetsl.html", "namespacetsl" ]
 ];
