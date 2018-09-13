@@ -936,15 +936,15 @@ namespace tsl {
         m_load_threshold  = size_type(float(bucket_count()) * m_max_load_factor);
       }
 
-      void rehash(size_type count)
+      void rehash(size_type count_)
       {
-        count = std::max(count, size_type(std::ceil(float(size()) / max_load_factor())));
-        rehash_impl(count);
+        count_ = std::max(count_, size_type(std::ceil(float(size()) / max_load_factor())));
+        rehash_impl(count_);
       }
 
-      void reserve(size_type count)
+      void reserve(size_type count_)
       {
-        rehash(size_type(std::ceil(float(count) / max_load_factor())));
+        rehash(size_type(std::ceil(float(count_) / max_load_factor())));
       }
 
       /*
@@ -1140,9 +1140,9 @@ namespace tsl {
                                                      std::move(value));
       }
 
-      void rehash_impl(size_type count)
+      void rehash_impl(size_type count_)
       {
-        robin_hash new_table(count, static_cast<Hash &>(*this), static_cast<KeyEqual &>(*this),
+        robin_hash new_table(count_, static_cast<Hash &>(*this), static_cast<KeyEqual &>(*this),
                              get_allocator(), m_max_load_factor);
 
         const bool use_stored_hash = USE_STORED_HASH_ON_REHASH(new_table.bucket_count());
