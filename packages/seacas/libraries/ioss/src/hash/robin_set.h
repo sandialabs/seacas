@@ -113,62 +113,62 @@ namespace tsl {
      */
     robin_set() : robin_set(ht::DEFAULT_INIT_BUCKETS_SIZE) {}
 
-    explicit robin_set(size_type bucket_count, const Hash &hash = Hash(),
+    explicit robin_set(size_type bucket_count_, const Hash &hash = Hash(),
                        const KeyEqual &equal = KeyEqual(), const Allocator &alloc = Allocator())
-        : m_ht(bucket_count, hash, equal, alloc, ht::DEFAULT_MAX_LOAD_FACTOR)
+        : m_ht(bucket_count_, hash, equal, alloc, ht::DEFAULT_MAX_LOAD_FACTOR)
     {
     }
 
-    robin_set(size_type bucket_count, const Allocator &alloc)
-        : robin_set(bucket_count, Hash(), KeyEqual(), alloc)
+    robin_set(size_type bucket_count_, const Allocator &alloc)
+        : robin_set(bucket_count_, Hash(), KeyEqual(), alloc)
     {
     }
 
-    robin_set(size_type bucket_count, const Hash &hash, const Allocator &alloc)
-        : robin_set(bucket_count, hash, KeyEqual(), alloc)
+    robin_set(size_type bucket_count_, const Hash &hash, const Allocator &alloc)
+        : robin_set(bucket_count_, hash, KeyEqual(), alloc)
     {
     }
 
     explicit robin_set(const Allocator &alloc) : robin_set(ht::DEFAULT_INIT_BUCKETS_SIZE, alloc) {}
 
     template <class InputIt>
-    robin_set(InputIt first, InputIt last, size_type bucket_count = ht::DEFAULT_INIT_BUCKETS_SIZE,
+    robin_set(InputIt first, InputIt last, size_type bucket_count_ = ht::DEFAULT_INIT_BUCKETS_SIZE,
               const Hash &hash = Hash(), const KeyEqual &equal = KeyEqual(),
               const Allocator &alloc = Allocator())
-        : robin_set(bucket_count, hash, equal, alloc)
+        : robin_set(bucket_count_, hash, equal, alloc)
     {
       insert(first, last);
     }
 
     template <class InputIt>
-    robin_set(InputIt first, InputIt last, size_type bucket_count, const Allocator &alloc)
-        : robin_set(first, last, bucket_count, Hash(), KeyEqual(), alloc)
+    robin_set(InputIt first, InputIt last, size_type bucket_count_, const Allocator &alloc)
+        : robin_set(first, last, bucket_count_, Hash(), KeyEqual(), alloc)
     {
     }
 
     template <class InputIt>
-    robin_set(InputIt first, InputIt last, size_type bucket_count, const Hash &hash,
+    robin_set(InputIt first, InputIt last, size_type bucket_count_, const Hash &hash,
               const Allocator &alloc)
-        : robin_set(first, last, bucket_count, hash, KeyEqual(), alloc)
+        : robin_set(first, last, bucket_count_, hash, KeyEqual(), alloc)
     {
     }
 
     robin_set(std::initializer_list<value_type> init,
-              size_type bucket_count = ht::DEFAULT_INIT_BUCKETS_SIZE, const Hash &hash = Hash(),
+              size_type bucket_count_ = ht::DEFAULT_INIT_BUCKETS_SIZE, const Hash &hash = Hash(),
               const KeyEqual &equal = KeyEqual(), const Allocator &alloc = Allocator())
-        : robin_set(init.begin(), init.end(), bucket_count, hash, equal, alloc)
+        : robin_set(init.begin(), init.end(), bucket_count_, hash, equal, alloc)
     {
     }
 
-    robin_set(std::initializer_list<value_type> init, size_type bucket_count,
+    robin_set(std::initializer_list<value_type> init, size_type bucket_count_,
               const Allocator &alloc)
-        : robin_set(init.begin(), init.end(), bucket_count, Hash(), KeyEqual(), alloc)
+        : robin_set(init.begin(), init.end(), bucket_count_, Hash(), KeyEqual(), alloc)
     {
     }
 
-    robin_set(std::initializer_list<value_type> init, size_type bucket_count, const Hash &hash,
+    robin_set(std::initializer_list<value_type> init, size_type bucket_count_, const Hash &hash,
               const Allocator &alloc)
-        : robin_set(init.begin(), init.end(), bucket_count, hash, KeyEqual(), alloc)
+        : robin_set(init.begin(), init.end(), bucket_count_, hash, KeyEqual(), alloc)
     {
     }
 
