@@ -1432,7 +1432,7 @@ namespace Ioex {
       // have already created the output database and populated the set/block names. At this point,
       // it is too late to change the size of the names stored on the output database... (I think...
       // try changing DIM_STR_NAME value and see if works...)
-      if (name_length > maximumNameLength) {
+      if (name_length > (size_t)maximumNameLength) {
         if (myProcessor == 0) {
           IOSS_WARNING << "WARNING: There are variables names whose length exceeds the current "
                           "maximum name length set for this database ("
