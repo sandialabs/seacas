@@ -451,7 +451,7 @@ void test_memory_pool_corners( const bool print_statistics
   typedef typename functor_type::ptrs_type      ptrs_type ;
 
   {
-    // superblock size 1 << 14 
+    // superblock size 1 << 14
     const size_t  min_superblock_size = 1u << 14 ;
 
     // four superblocks
@@ -555,7 +555,7 @@ struct TestMemoryPoolHuge< DeviceType
   enum : size_t { min_block_size = 512
                 , max_block_size = 1lu << 31
                 , min_superblock_size = max_block_size
-                , num_superblock = 4 
+                , num_superblock = 4
                 , total_alloc_size = num_superblock * max_block_size };
 
   TestMemoryPoolHuge()
@@ -626,10 +626,9 @@ TEST_F( TEST_CATEGORY, memory_pool )
   TestMemoryPool::test_host_memory_pool_stats<>();
   TestMemoryPool::test_memory_pool_v2< TEST_EXECSPACE >(false,false);
   TestMemoryPool::test_memory_pool_corners< TEST_EXECSPACE >(false,false);
-  TestMemoryPool::test_memory_pool_huge< TEST_EXECSPACE >();
+  //  TestMemoryPool::test_memory_pool_huge< TEST_EXECSPACE >();
 }
 
 }
 
 #endif
-
