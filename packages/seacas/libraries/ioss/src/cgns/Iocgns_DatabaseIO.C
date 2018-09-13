@@ -285,7 +285,9 @@ namespace {
     // 0,1,2 == min x,y,z; 3,4,5 == Max x,y,z
     bool is_x = range[0] == range[3];
     bool is_y = range[1] == range[4];
+#ifndef NDEBUG
     bool is_z = range[2] == range[5];
+#endif
     assert(is_x || is_y || is_z);
     assert((is_x ? 1 : 0) + (is_y ? 1 : 0) + (is_z ? 1 : 0) == 1);
     int idx = is_x ? 0 : is_y ? 1 : 2;
@@ -974,7 +976,9 @@ namespace Iocgns {
 
     if (proc_count > 1) {
       my_offsets.reserve(blocks.size() * 3 * proc_count);
+#ifndef NDEBUG
       int zone = 1;
+#endif
       for (const auto &sb : blocks) {
         assert(sb->get_property("zone").get_int() == zone++);
         my_offsets.push_back(sb->get_property("offset_i").get_int());
