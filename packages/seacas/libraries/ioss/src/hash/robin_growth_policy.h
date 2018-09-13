@@ -202,17 +202,17 @@ namespace tsl {
           TSL_THROW_OR_TERMINATE(std::length_error, "The hash table exceeds its maxmimum size.");
         }
 
-        const double next_bucket_count =
+        const double next_bucket_count_ =
             std::ceil(double(m_mod) * REHASH_SIZE_MULTIPLICATION_FACTOR);
-        if (!std::isnormal(next_bucket_count)) {
+        if (!std::isnormal(next_bucket_count_)) {
           TSL_THROW_OR_TERMINATE(std::length_error, "The hash table exceeds its maxmimum size.");
         }
 
-        if (next_bucket_count > double(max_bucket_count())) {
+        if (next_bucket_count_ > double(max_bucket_count())) {
           return max_bucket_count();
         }
         else {
-          return std::size_t(next_bucket_count);
+          return std::size_t(next_bucket_count_);
         }
       }
 

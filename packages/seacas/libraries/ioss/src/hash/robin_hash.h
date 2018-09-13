@@ -135,9 +135,9 @@ namespace tsl {
         tsl_assert(empty());
       }
 
-      bucket_entry(bool last_bucket) noexcept
+      bucket_entry(bool last_bucket_) noexcept
           : bucket_hash(), m_dist_from_ideal_bucket(EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET),
-            m_last_bucket(last_bucket)
+            m_last_bucket(last_bucket_)
       {
         tsl_assert(empty());
       }
@@ -224,28 +224,28 @@ namespace tsl {
       void set_as_last_bucket() noexcept { m_last_bucket = true; }
 
       template <typename... Args>
-      void set_value_of_empty_bucket(distance_type dist_from_ideal_bucket, truncated_hash_type hash,
-                                     Args &&... value_type_args)
+      void set_value_of_empty_bucket(distance_type       dist_from_ideal_bucket_,
+                                     truncated_hash_type hash, Args &&... value_type_args)
       {
-        tsl_assert(dist_from_ideal_bucket >= 0);
+        tsl_assert(dist_from_ideal_bucket_ >= 0);
         tsl_assert(empty());
 
         ::new (static_cast<void *>(std::addressof(m_value)))
             value_type(std::forward<Args>(value_type_args)...);
         this->set_hash(hash);
-        m_dist_from_ideal_bucket = dist_from_ideal_bucket;
+        m_dist_from_ideal_bucket = dist_from_ideal_bucket_;
 
         tsl_assert(!empty());
       }
 
-      void swap_with_value_in_bucket(distance_type &      dist_from_ideal_bucket,
-                                     truncated_hash_type &hash, value_type &value)
+      void swap_with_value_in_bucket(distance_type &      dist_from_ideal_bucket_,
+                                     truncated_hash_type &hash, value_type &value_)
       {
         tsl_assert(!empty());
 
         using std::swap;
-        swap(value, this->value());
-        swap(dist_from_ideal_bucket, m_dist_from_ideal_bucket);
+        swap(value_, this->value());
+        swap(dist_from_ideal_bucket_, m_dist_from_ideal_bucket);
 
         // Avoid warning of unused variable if StoreHash is false
         (void)hash;
@@ -473,13 +473,13 @@ namespace tsl {
       };
 
     public:
-      robin_hash(size_type bucket_count, const Hash &hash, const KeyEqual &equal,
-                 const Allocator &alloc, float max_load_factor)
-          : Hash(hash), KeyEqual(equal), GrowthPolicy(bucket_count), m_buckets(alloc),
-            m_first_or_empty_bucket(static_empty_bucket_ptr()), m_bucket_count(bucket_count),
+      robin_hash(size_type bucket_count_, const Hash &hash, const KeyEqual &equal,
+                 const Allocator &alloc, float max_load_factor_)
+          : Hash(hash), KeyEqual(equal), GrowthPolicy(bucket_count_), m_buckets(alloc),
+            m_first_or_empty_bucket(static_empty_bucket_ptr()), m_bucket_count(bucket_count_),
             m_nb_elements(0), m_grow_on_next_insert(false)
       {
-        if (bucket_count > max_bucket_count()) {
+        if (bucket_count_ > max_bucket_count()) {
           TSL_THROW_OR_TERMINATE(std::length_error, "The map exceeds its maxmimum size.");
         }
 
@@ -499,7 +499,7 @@ namespace tsl {
           m_buckets.back().set_as_last_bucket();
         }
 
-        this->max_load_factor(max_load_factor);
+        this->max_load_factor(max_load_factor_);
       }
 
       robin_hash(const robin_hash &other)
@@ -570,24 +570,24 @@ namespace tsl {
        */
       iterator begin() noexcept
       {
-        auto begin = m_buckets.begin();
-        while (begin != m_buckets.end() && begin->empty()) {
-          ++begin;
+        auto begin_ = m_buckets.begin();
+        while (begin_ != m_buckets.end() && begin_->empty()) {
+          ++begin_;
         }
 
-        return iterator(begin);
+        return iterator(begin_);
       }
 
       const_iterator begin() const noexcept { return cbegin(); }
 
       const_iterator cbegin() const noexcept
       {
-        auto begin = m_buckets.cbegin();
-        while (begin != m_buckets.cend() && begin->empty()) {
-          ++begin;
+        auto begin_ = m_buckets.cbegin();
+        while (begin_ != m_buckets.cend() && begin->empty()) {
+          ++begin_;
         }
 
-        return const_iterator(begin);
+        return const_iterator(begin_);
       }
 
       iterator end() noexcept { return iterator(m_buckets.end()); }
@@ -1004,10 +1004,10 @@ namespace tsl {
 
       template <class K> const_iterator find_impl(const K &key, std::size_t hash) const
       {
-        std::size_t   ibucket                = bucket_for_hash(hash);
-        distance_type dist_from_ideal_bucket = 0;
+        std::size_t   ibucket                 = bucket_for_hash(hash);
+        distance_type dist_from_ideal_bucket_ = 0;
 
-        while (dist_from_ideal_bucket <=
+        while (dist_from_ideal_bucket_ <=
                (m_first_or_empty_bucket + ibucket)->dist_from_ideal_bucket()) {
           if (TSL_LIKELY(
                   (!USE_STORED_HASH_ON_LOOKUP ||
@@ -1017,7 +1017,7 @@ namespace tsl {
           }
 
           ibucket = next_bucket(ibucket);
-          dist_from_ideal_bucket++;
+          dist_from_ideal_bucket_++;
         }
 
         return cend();
@@ -1059,10 +1059,10 @@ namespace tsl {
       {
         const std::size_t hash = hash_key(key);
 
-        std::size_t   ibucket                = bucket_for_hash(hash);
-        distance_type dist_from_ideal_bucket = 0;
+        std::size_t   ibucket                 = bucket_for_hash(hash);
+        distance_type dist_from_ideal_bucket_ = 0;
 
-        while (dist_from_ideal_bucket <=
+        while (dist_from_ideal_bucket_ <=
                (m_first_or_empty_bucket + ibucket)->dist_from_ideal_bucket()) {
           if ((!USE_STORED_HASH_ON_LOOKUP ||
                (m_first_or_empty_bucket + ibucket)->bucket_hash_equal(hash)) &&
@@ -1071,27 +1071,28 @@ namespace tsl {
           }
 
           ibucket = next_bucket(ibucket);
-          dist_from_ideal_bucket++;
+          dist_from_ideal_bucket_++;
         }
 
         if (grow_on_high_load()) {
-          ibucket                = bucket_for_hash(hash);
-          dist_from_ideal_bucket = 0;
+          ibucket                 = bucket_for_hash(hash);
+          dist_from_ideal_bucket_ = 0;
 
-          while (dist_from_ideal_bucket <=
+          while (dist_from_ideal_bucket_ <=
                  (m_first_or_empty_bucket + ibucket)->dist_from_ideal_bucket()) {
             ibucket = next_bucket(ibucket);
-            dist_from_ideal_bucket++;
+            dist_from_ideal_bucket_++;
           }
         }
 
         if ((m_first_or_empty_bucket + ibucket)->empty()) {
           (m_first_or_empty_bucket + ibucket)
-              ->set_value_of_empty_bucket(dist_from_ideal_bucket, bucket_entry::truncate_hash(hash),
+              ->set_value_of_empty_bucket(dist_from_ideal_bucket_,
+                                          bucket_entry::truncate_hash(hash),
                                           std::forward<Args>(value_type_args)...);
         }
         else {
-          insert_value(ibucket, dist_from_ideal_bucket, bucket_entry::truncate_hash(hash),
+          insert_value(ibucket, dist_from_ideal_bucket_, bucket_entry::truncate_hash(hash),
                        std::forward<Args>(value_type_args)...);
         }
 
@@ -1104,23 +1105,23 @@ namespace tsl {
       }
 
       template <class... Args>
-      void insert_value(std::size_t ibucket, distance_type dist_from_ideal_bucket,
+      void insert_value(std::size_t ibucket, distance_type dist_from_ideal_bucket_,
                         truncated_hash_type hash, Args &&... value_type_args)
       {
-        insert_value(ibucket, dist_from_ideal_bucket, hash,
+        insert_value(ibucket, dist_from_ideal_bucket_, hash,
                      value_type(std::forward<Args>(value_type_args)...));
       }
 
-      void insert_value(std::size_t ibucket, distance_type dist_from_ideal_bucket,
+      void insert_value(std::size_t ibucket, distance_type dist_from_ideal_bucket_,
                         truncated_hash_type hash, value_type &&value)
       {
-        m_buckets[ibucket].swap_with_value_in_bucket(dist_from_ideal_bucket, hash, value);
+        m_buckets[ibucket].swap_with_value_in_bucket(dist_from_ideal_bucket_, hash, value);
         ibucket = next_bucket(ibucket);
-        dist_from_ideal_bucket++;
+        dist_from_ideal_bucket_++;
 
         while (!m_buckets[ibucket].empty()) {
-          if (dist_from_ideal_bucket > m_buckets[ibucket].dist_from_ideal_bucket()) {
-            if (dist_from_ideal_bucket >= REHASH_ON_HIGH_NB_PROBES__NPROBES &&
+          if (dist_from_ideal_bucket_ > m_buckets[ibucket].dist_from_ideal_bucket()) {
+            if (dist_from_ideal_bucket_ >= REHASH_ON_HIGH_NB_PROBES__NPROBES &&
                 load_factor() >= REHASH_ON_HIGH_NB_PROBES__MIN_LOAD_FACTOR) {
               /**
                * The number of probes is really high, rehash the map on the next insert.
@@ -1129,14 +1130,14 @@ namespace tsl {
               m_grow_on_next_insert = true;
             }
 
-            m_buckets[ibucket].swap_with_value_in_bucket(dist_from_ideal_bucket, hash, value);
+            m_buckets[ibucket].swap_with_value_in_bucket(dist_from_ideal_bucket_, hash, value);
           }
 
           ibucket = next_bucket(ibucket);
-          dist_from_ideal_bucket++;
+          dist_from_ideal_bucket_++;
         }
 
-        m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket, hash,
+        m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket_, hash,
                                                      std::move(value));
       }
 
@@ -1164,22 +1165,22 @@ namespace tsl {
         new_table.swap(*this);
       }
 
-      void insert_value_on_rehash(std::size_t ibucket, distance_type dist_from_ideal_bucket,
+      void insert_value_on_rehash(std::size_t ibucket, distance_type dist_from_ideal_bucket_,
                                   truncated_hash_type hash, value_type &&value)
       {
         while (true) {
-          if (dist_from_ideal_bucket > m_buckets[ibucket].dist_from_ideal_bucket()) {
+          if (dist_from_ideal_bucket_ > m_buckets[ibucket].dist_from_ideal_bucket()) {
             if (m_buckets[ibucket].empty()) {
-              m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket, hash,
+              m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket_, hash,
                                                            std::move(value));
               return;
             }
             else {
-              m_buckets[ibucket].swap_with_value_in_bucket(dist_from_ideal_bucket, hash, value);
+              m_buckets[ibucket].swap_with_value_in_bucket(dist_from_ideal_bucket_, hash, value);
             }
           }
 
-          dist_from_ideal_bucket++;
+          dist_from_ideal_bucket_++;
           ibucket = next_bucket(ibucket);
         }
       }
