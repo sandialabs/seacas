@@ -1409,6 +1409,7 @@ namespace Ioex {
     size_t var_count = variables.size();
 
     if (var_count > 0) {
+      size_t name_length = 0;
       // Push into a char** array...
       std::vector<char *>      var_names(var_count);
       std::vector<std::string> variable_names(var_count);
@@ -1423,8 +1424,25 @@ namespace Ioex {
           variable_names[index - 1] = Ioss::Utils::lowercase(variable_names[index - 1]);
         }
         var_names[index - 1] = const_cast<char *>(variable_names[index - 1].c_str());
+        size_t name_len      = variable_names[index - 1].length();
+        name_length          = name_len > name_length ? name_len : name_length;
       }
 
+      // Should handle this automatically, but by the time we get to defining transient fields, we
+      // have already created the output database and populated the set/block names. At this point,
+      // it is too late to change the size of the names stored on the output database... (I think...
+      // try changing DIM_STR_NAME value and see if works...)
+      if (name_length > maximumNameLength) {
+        if (myProcessor == 0) {
+          IOSS_WARNING << "WARNING: There are variables names whose length exceeds the current "
+                          "maximum name length set for this database ("
+                       << maximumNameLength << ").\n"
+                       << "         You should either reduce the length of the variable name, or "
+                          "set the 'MAXIMUM_NAME_LENGTH' property "
+                       << "to at least " << name_length
+                       << ".\n         Contact gdsjaar@sandia.gov for more information.\n\n";
+        }
+      }
       int ierr = ex_put_variable_names(get_file_pointer(), type, var_count, TOPTR(var_names));
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
