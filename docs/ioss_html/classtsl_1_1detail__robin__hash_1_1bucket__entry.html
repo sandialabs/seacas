@@ -113,8 +113,8 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6f08f244a044583e5781de95c5894f7e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a6f08f244a044583e5781de95c5894f7e">bucket_entry</a> () noexcept</td></tr>
 <tr class="separator:a6f08f244a044583e5781de95c5894f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02b183ad60395bb88562e8166d153759"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a02b183ad60395bb88562e8166d153759">bucket_entry</a> (bool <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a8ce2ff4b1c6c36aff7d7d535d4db738a">last_bucket</a>) noexcept</td></tr>
-<tr class="separator:a02b183ad60395bb88562e8166d153759"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a727301de1ee4f60c5dc9cb20b2316c96"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a727301de1ee4f60c5dc9cb20b2316c96">bucket_entry</a> (bool last_bucket_) noexcept</td></tr>
+<tr class="separator:a727301de1ee4f60c5dc9cb20b2316c96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3df7516de58606a8c581da4b0551a1fa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a3df7516de58606a8c581da4b0551a1fa">bucket_entry</a> (const <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html">bucket_entry</a> &amp;other) noexcept(std::is_nothrow_copy_constructible&lt; <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a47ea807152a9961777b99cb42513935b">value_type</a> &gt;::<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a8e20ad6cf768b8d9e5c3791e9a251a20">value</a>)</td></tr>
 <tr class="separator:a3df7516de58606a8c581da4b0551a1fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef8661319886dd65cb3c50b3b7e2202d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#aef8661319886dd65cb3c50b3b7e2202d">bucket_entry</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html">bucket_entry</a> &amp;&amp;other) noexcept(std::is_nothrow_move_constructible&lt; <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a47ea807152a9961777b99cb42513935b">value_type</a> &gt;::<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a8e20ad6cf768b8d9e5c3791e9a251a20">value</a>)</td></tr>
@@ -139,11 +139,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8ce2ff4b1c6c36aff7d7d535d4db738a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb0ee5976a76914648f8238fe76a0741"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#afb0ee5976a76914648f8238fe76a0741">set_as_last_bucket</a> () noexcept</td></tr>
 <tr class="separator:afb0ee5976a76914648f8238fe76a0741"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac04faad1279a09d6f335c21172798d3a"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:ac04faad1279a09d6f335c21172798d3a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#ac04faad1279a09d6f335c21172798d3a">set_value_of_empty_bucket</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#ad7620035b0efafd864a9627a9e610e8a">distance_type</a> <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a9bea1736cfcae38d3e5a623e65d2ca74">dist_from_ideal_bucket</a>, <a class="el" href="namespacetsl_1_1detail__robin__hash.html#a2cbfbac638bc4acedda5558419aeb228">truncated_hash_type</a> hash, Args &amp;&amp;... value_type_args)</td></tr>
-<tr class="separator:ac04faad1279a09d6f335c21172798d3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1648ffc6d624f42fda266f2ad00c2956"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a1648ffc6d624f42fda266f2ad00c2956">swap_with_value_in_bucket</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#ad7620035b0efafd864a9627a9e610e8a">distance_type</a> &amp;<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a9bea1736cfcae38d3e5a623e65d2ca74">dist_from_ideal_bucket</a>, <a class="el" href="namespacetsl_1_1detail__robin__hash.html#a2cbfbac638bc4acedda5558419aeb228">truncated_hash_type</a> &amp;hash, <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a47ea807152a9961777b99cb42513935b">value_type</a> &amp;<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a8e20ad6cf768b8d9e5c3791e9a251a20">value</a>)</td></tr>
-<tr class="separator:a1648ffc6d624f42fda266f2ad00c2956"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2350065c56a774542cfa2f35d8e82ece"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:a2350065c56a774542cfa2f35d8e82ece"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a2350065c56a774542cfa2f35d8e82ece">set_value_of_empty_bucket</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#ad7620035b0efafd864a9627a9e610e8a">distance_type</a> dist_from_ideal_bucket_, <a class="el" href="namespacetsl_1_1detail__robin__hash.html#a2cbfbac638bc4acedda5558419aeb228">truncated_hash_type</a> hash, Args &amp;&amp;... value_type_args)</td></tr>
+<tr class="separator:a2350065c56a774542cfa2f35d8e82ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a921d07d27715e027d4a31242aa44c247"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a921d07d27715e027d4a31242aa44c247">swap_with_value_in_bucket</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#ad7620035b0efafd864a9627a9e610e8a">distance_type</a> &amp;dist_from_ideal_bucket_, <a class="el" href="namespacetsl_1_1detail__robin__hash.html#a2cbfbac638bc4acedda5558419aeb228">truncated_hash_type</a> &amp;hash, <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a47ea807152a9961777b99cb42513935b">value_type</a> &amp;value_)</td></tr>
+<tr class="separator:a921d07d27715e027d4a31242aa44c247"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classtsl_1_1detail__robin__hash_1_1bucket__entry__hash"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classtsl_1_1detail__robin__hash_1_1bucket__entry__hash')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry__hash.html">tsl::detail_robin_hash::bucket_entry_hash&lt; StoreHash &gt;</a></td></tr>
 <tr class="memitem:a79c39ff26357841c7136d17520f6b538 inherit pub_methods_classtsl_1_1detail__robin__hash_1_1bucket__entry__hash"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry__hash.html#a79c39ff26357841c7136d17520f6b538">bucket_hash_equal</a> (std::size_t) const noexcept</td></tr>
 <tr class="separator:a79c39ff26357841c7136d17520f6b538 inherit pub_methods_classtsl_1_1detail__robin__hash_1_1bucket__entry__hash"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -306,8 +306,8 @@ template&lt;typename ValueType , bool StoreHash&gt; </div>
 
 </div>
 </div>
-<a id="a02b183ad60395bb88562e8166d153759"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02b183ad60395bb88562e8166d153759">&#9670;&nbsp;</a></span>bucket_entry() <span class="overload">[2/4]</span></h2>
+<a id="a727301de1ee4f60c5dc9cb20b2316c96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a727301de1ee4f60c5dc9cb20b2316c96">&#9670;&nbsp;</a></span>bucket_entry() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -321,7 +321,7 @@ template&lt;typename ValueType , bool StoreHash&gt; </div>
           <td class="memname"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html">tsl::detail_robin_hash::bucket_entry</a>&lt; ValueType, StoreHash &gt;::<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html">bucket_entry</a> </td>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>last_bucket</em></td><td>)</td>
+          <td class="paramname"><em>last_bucket_</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -637,8 +637,8 @@ template&lt;typename ValueType , bool StoreHash&gt; </div>
 
 </div>
 </div>
-<a id="ac04faad1279a09d6f335c21172798d3a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac04faad1279a09d6f335c21172798d3a">&#9670;&nbsp;</a></span>set_value_of_empty_bucket()</h2>
+<a id="a2350065c56a774542cfa2f35d8e82ece"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2350065c56a774542cfa2f35d8e82ece">&#9670;&nbsp;</a></span>set_value_of_empty_bucket()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -654,7 +654,7 @@ template&lt;typename... Args&gt; </div>
           <td class="memname">void <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html">tsl::detail_robin_hash::bucket_entry</a>&lt; ValueType, StoreHash &gt;::set_value_of_empty_bucket </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#ad7620035b0efafd864a9627a9e610e8a">distance_type</a>&#160;</td>
-          <td class="paramname"><em>dist_from_ideal_bucket</em>, </td>
+          <td class="paramname"><em>dist_from_ideal_bucket_</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -683,8 +683,8 @@ template&lt;typename... Args&gt; </div>
 
 </div>
 </div>
-<a id="a1648ffc6d624f42fda266f2ad00c2956"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1648ffc6d624f42fda266f2ad00c2956">&#9670;&nbsp;</a></span>swap_with_value_in_bucket()</h2>
+<a id="a921d07d27715e027d4a31242aa44c247"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a921d07d27715e027d4a31242aa44c247">&#9670;&nbsp;</a></span>swap_with_value_in_bucket()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -698,7 +698,7 @@ template&lt;typename ValueType , bool StoreHash&gt; </div>
           <td class="memname">void <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html">tsl::detail_robin_hash::bucket_entry</a>&lt; ValueType, StoreHash &gt;::swap_with_value_in_bucket </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#ad7620035b0efafd864a9627a9e610e8a">distance_type</a> &amp;&#160;</td>
-          <td class="paramname"><em>dist_from_ideal_bucket</em>, </td>
+          <td class="paramname"><em>dist_from_ideal_bucket_</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -710,7 +710,7 @@ template&lt;typename ValueType , bool StoreHash&gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a47ea807152a9961777b99cb42513935b">value_type</a> &amp;&#160;</td>
-          <td class="paramname"><em>value</em>&#160;</td>
+          <td class="paramname"><em>value_</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
