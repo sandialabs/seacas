@@ -583,7 +583,7 @@ namespace tsl {
       const_iterator cbegin() const noexcept
       {
         auto begin_ = m_buckets.cbegin();
-        while (begin_ != m_buckets.cend() && begin->empty()) {
+        while (begin_ != m_buckets.cend() && begin_->empty()) {
           ++begin_;
         }
 
