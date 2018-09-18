@@ -67,7 +67,11 @@ C   --   NAMEEV - IN - the element variable names
 
       WRITE(FMT1,20) NAMLEN
       CALL SQZSTR(FMT1, LFMT)
-      WRITE(FMT, 30) FMT1(:LFMT), FMT1(:LFMT)
+      if (namlen .le. 20) then
+         WRITE(FMT, 30) FMT1(:LFMT), FMT1(:LFMT)
+      else
+         WRITE(FMT, 40) FMT1(:LFMT), FMT1(:LFMT)
+      endif
 
 C ... Print them out.
       if (nout .le. 0) then
@@ -88,6 +92,7 @@ C ... Print them out.
 
  20   FORMAT('A',I4)
  30   FORMAT ('(4X, A, :, 3 (2X, ',A,'), :, /,(12X, 3 (2X, ',A,')))')
+ 40   FORMAT ('(4X, A, :, 2 (2X, ',A,'), :, /,(12X, 2 (2X, ',A,')))')
 
 10000  FORMAT (/, 1X, 'VARIABLES NAMES')
 10010  FORMAT (/, 1X, 'Variables Names:')
