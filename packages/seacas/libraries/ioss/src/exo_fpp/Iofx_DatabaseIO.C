@@ -2138,14 +2138,15 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
         }
 
         else if (field.get_name() == "owning_processor") {
+	  // owning_processor field is always 32-bit.
           if (isParallel) {
             Ioss::CommSet *css = get_region()->get_commset("commset_node");
-            if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-              int64_t *idata = static_cast<int64_t *>(data);
-              for (int64_t i = 0; i < nodeCount; i++) {
-                idata[i] = myProcessor;
-              }
+	    int *idata = static_cast<int *>(data);
+	    for (int64_t i = 0; i < nodeCount; i++) {
+	      idata[i] = myProcessor;
+	    }
 
+            if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
               Ioss::Field          ep_field = css->get_field("entity_processor_raw");
               std::vector<int64_t> ent_proc(ep_field.raw_count() *
                                             ep_field.raw_storage()->component_count());
@@ -2160,11 +2161,6 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
               }
             }
             else {
-              int *idata = static_cast<int *>(data);
-              for (int64_t i = 0; i < nodeCount; i++) {
-                idata[i] = myProcessor;
-              }
-
               Ioss::Field      ep_field = css->get_field("entity_processor_raw");
               std::vector<int> ent_proc(ep_field.raw_count() *
                                         ep_field.raw_storage()->component_count());
@@ -2181,18 +2177,10 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
           }
           else {
             // Serial case...
-            if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-              int64_t *idata = static_cast<int64_t *>(data);
-              for (int64_t i = 0; i < nodeCount; i++) {
-                idata[i] = 0;
-              }
-            }
-            else {
-              int *idata = static_cast<int *>(data);
-              for (int64_t i = 0; i < nodeCount; i++) {
-                idata[i] = 0;
-              }
-            }
+	    int *idata = static_cast<int *>(data);
+	    for (int64_t i = 0; i < nodeCount; i++) {
+	      idata[i] = 0;
+	    }
           }
         }
         else {
