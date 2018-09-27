@@ -451,6 +451,8 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     mode_name = "NOCLOBBER";
   }
 
+  nc_mode |= NC_WRITE;
+
   if ((status = nc_create_par(path, nc_mode | pariomode, comm, info, &exoid)) != NC_NOERR) {
 #if NC_HAS_HDF5
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s, mode: %s", path, mode_name);
