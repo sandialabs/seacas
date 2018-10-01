@@ -575,23 +575,25 @@ int Internals::initialize_state_file(Ioss::Region &region, const ex_var_params &
         edge_blk_status.push_back(edge_count > 0 ? 1 : 0);
 
         int ndim;
-        status = nc_def_dim(exodusFilePtr, DIM_NUM_ED_IN_EBLK(iblk + 1), edge_count, &ndim);
-        if (status != NC_NOERR) {
-          if (status == NC_ENAMEINUSE) { // duplicate entry
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg, "Error: edge block %" PRId64 " already defined in file id %d",
-                    edge_blk_id[iblk], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
+        if (edge_count > 0) {
+          status = nc_def_dim(exodusFilePtr, DIM_NUM_ED_IN_EBLK(iblk + 1), edge_count, &ndim);
+          if (status != NC_NOERR) {
+            if (status == NC_ENAMEINUSE) { // duplicate entry
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg, "Error: edge block %" PRId64 " already defined in file id %d",
+                      edge_blk_id[iblk], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            else {
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg,
+                      "Error: failed to define number of edges/block for block %" PRId64
+                      " file id %d",
+                      edge_blk_id[iblk], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            return (EX_FATAL);
           }
-          else {
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg,
-                    "Error: failed to define number of edges/block for block %" PRId64
-                    " file id %d",
-                    edge_blk_id[iblk], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
-          }
-          return (EX_FATAL);
         }
 
         iblk++;
@@ -614,25 +616,26 @@ int Internals::initialize_state_file(Ioss::Region &region, const ex_var_params &
         face_blk_status.push_back(face_count > 0 ? 1 : 0);
 
         int ndim;
-        status = nc_def_dim(exodusFilePtr, DIM_NUM_FA_IN_FBLK(iblk + 1), face_count, &ndim);
-        if (status != NC_NOERR) {
-          if (status == NC_ENAMEINUSE) { // duplicate entry
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg, "Error: face block %" PRId64 " already defined in file id %d",
-                    face_blk_id[iblk], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
+        if (face_count > 0) {
+          status = nc_def_dim(exodusFilePtr, DIM_NUM_FA_IN_FBLK(iblk + 1), face_count, &ndim);
+          if (status != NC_NOERR) {
+            if (status == NC_ENAMEINUSE) { // duplicate entry
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg, "Error: face block %" PRId64 " already defined in file id %d",
+                      face_blk_id[iblk], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            else {
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg,
+                      "Error: failed to define number of faces/block for block %" PRId64
+                      " file id %d",
+                      face_blk_id[iblk], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            return (EX_FATAL);
           }
-          else {
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg,
-                    "Error: failed to define number of faces/block for block %" PRId64
-                    " file id %d",
-                    face_blk_id[iblk], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
-          }
-          return (EX_FATAL);
         }
-
         iblk++;
       }
     }
@@ -653,25 +656,26 @@ int Internals::initialize_state_file(Ioss::Region &region, const ex_var_params &
         elem_blk_status.push_back(element_count > 0 ? 1 : 0);
 
         int ndim;
-        status = nc_def_dim(exodusFilePtr, DIM_NUM_EL_IN_BLK(iblk + 1), element_count, &ndim);
-        if (status != NC_NOERR) {
-          if (status == NC_ENAMEINUSE) { // duplicate entry
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg, "Error: element block %" PRId64 " already defined in file id %d",
-                    elem_blk_id[iblk], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
+        if (element_count > 0) {
+          status = nc_def_dim(exodusFilePtr, DIM_NUM_EL_IN_BLK(iblk + 1), element_count, &ndim);
+          if (status != NC_NOERR) {
+            if (status == NC_ENAMEINUSE) { // duplicate entry
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg, "Error: element block %" PRId64 " already defined in file id %d",
+                      elem_blk_id[iblk], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            else {
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg,
+                      "Error: failed to define number of elements/block for block %" PRId64
+                      " file id %d",
+                      elem_blk_id[iblk], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            return (EX_FATAL);
           }
-          else {
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg,
-                    "Error: failed to define number of elements/block for block %" PRId64
-                    " file id %d",
-                    elem_blk_id[iblk], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
-          }
-          return (EX_FATAL);
         }
-
         iblk++;
       }
     }
@@ -692,22 +696,24 @@ int Internals::initialize_state_file(Ioss::Region &region, const ex_var_params &
         node_set_status.push_back(node_count > 0 ? 1 : 0);
 
         int nsdim;
-        status = nc_def_dim(exodusFilePtr, DIM_NUM_NOD_NS(iset + 1), node_count, &nsdim);
-        if (status != NC_NOERR) {
-          if (status == NC_ENAMEINUSE) { // duplicate entry
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg, "Error: node set %" PRId64 " already defined in file id %d",
-                    node_set_id[iset], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
+        if (node_count > 0) {
+          status = nc_def_dim(exodusFilePtr, DIM_NUM_NOD_NS(iset + 1), node_count, &nsdim);
+          if (status != NC_NOERR) {
+            if (status == NC_ENAMEINUSE) { // duplicate entry
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg, "Error: node set %" PRId64 " already defined in file id %d",
+                      node_set_id[iset], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            else {
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg,
+                      "Error: failed to define number of nodes/set for set %" PRId64 " file id %d",
+                      node_set_id[iset], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            return (EX_FATAL);
           }
-          else {
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg,
-                    "Error: failed to define number of nodes/set for set %" PRId64 " file id %d",
-                    node_set_id[iset], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
-          }
-          return (EX_FATAL);
         }
         iset++;
       }
@@ -729,22 +735,24 @@ int Internals::initialize_state_file(Ioss::Region &region, const ex_var_params &
         edge_set_status.push_back(edge_count > 0 ? 1 : 0);
 
         int nsdim;
-        status = nc_def_dim(exodusFilePtr, DIM_NUM_EDGE_ES(iset + 1), edge_count, &nsdim);
-        if (status != NC_NOERR) {
-          if (status == NC_ENAMEINUSE) { // duplicate entry
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg, "Error: edge set %" PRId64 " already defined in file id %d",
-                    edge_set_id[iset], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
+        if (edge_count > 0) {
+          status = nc_def_dim(exodusFilePtr, DIM_NUM_EDGE_ES(iset + 1), edge_count, &nsdim);
+          if (status != NC_NOERR) {
+            if (status == NC_ENAMEINUSE) { // duplicate entry
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg, "Error: edge set %" PRId64 " already defined in file id %d",
+                      edge_set_id[iset], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            else {
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg,
+                      "Error: failed to define number of edges/set for set %" PRId64 " file id %d",
+                      edge_set_id[iset], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            return (EX_FATAL);
           }
-          else {
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg,
-                    "Error: failed to define number of edges/set for set %" PRId64 " file id %d",
-                    edge_set_id[iset], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
-          }
-          return (EX_FATAL);
         }
         iset++;
       }
@@ -766,22 +774,24 @@ int Internals::initialize_state_file(Ioss::Region &region, const ex_var_params &
         face_set_status.push_back(face_count > 0 ? 1 : 0);
 
         int nsdim;
-        status = nc_def_dim(exodusFilePtr, DIM_NUM_FACE_FS(iset + 1), face_count, &nsdim);
-        if (status != NC_NOERR) {
-          if (status == NC_ENAMEINUSE) { // duplicate entry
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg, "Error: face set %" PRId64 " already defined in file id %d",
-                    face_set_id[iset], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
+        if (face_count > 0) {
+          status = nc_def_dim(exodusFilePtr, DIM_NUM_FACE_FS(iset + 1), face_count, &nsdim);
+          if (status != NC_NOERR) {
+            if (status == NC_ENAMEINUSE) { // duplicate entry
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg, "Error: face set %" PRId64 " already defined in file id %d",
+                      face_set_id[iset], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            else {
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg,
+                      "Error: failed to define number of faces/set for set %" PRId64 " file id %d",
+                      face_set_id[iset], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            return (EX_FATAL);
           }
-          else {
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg,
-                    "Error: failed to define number of faces/set for set %" PRId64 " file id %d",
-                    face_set_id[iset], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
-          }
-          return (EX_FATAL);
         }
         iset++;
       }
@@ -803,22 +813,25 @@ int Internals::initialize_state_file(Ioss::Region &region, const ex_var_params &
         elem_set_status.push_back(element_count > 0 ? 1 : 0);
 
         int nsdim;
-        status = nc_def_dim(exodusFilePtr, DIM_NUM_ELE_ELS(iset + 1), element_count, &nsdim);
-        if (status != NC_NOERR) {
-          if (status == NC_ENAMEINUSE) { // duplicate entry
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg, "Error: element set %" PRId64 " already defined in file id %d",
-                    elem_set_id[iset], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
+        if (element_count > 0) {
+          status = nc_def_dim(exodusFilePtr, DIM_NUM_ELE_ELS(iset + 1), element_count, &nsdim);
+          if (status != NC_NOERR) {
+            if (status == NC_ENAMEINUSE) { // duplicate entry
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg, "Error: element set %" PRId64 " already defined in file id %d",
+                      elem_set_id[iset], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            else {
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg,
+                      "Error: failed to define number of elements/set for set %" PRId64
+                      " file id %d",
+                      elem_set_id[iset], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            return (EX_FATAL);
           }
-          else {
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg,
-                    "Error: failed to define number of elements/set for set %" PRId64 " file id %d",
-                    elem_set_id[iset], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
-          }
-          return (EX_FATAL);
         }
         iset++;
       }
@@ -840,22 +853,24 @@ int Internals::initialize_state_file(Ioss::Region &region, const ex_var_params &
         side_set_status.push_back(side_count > 0 ? 1 : 0);
 
         int ssdim;
-        status = nc_def_dim(exodusFilePtr, DIM_NUM_SIDE_SS(iset + 1), side_count, &ssdim);
-        if (status != NC_NOERR) {
-          if (status == NC_ENAMEINUSE) { // duplicate entry
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg, "Error: side set %" PRId64 " already defined in file id %d",
-                    side_set_id[iset], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
+        if (side_count > 0) {
+          status = nc_def_dim(exodusFilePtr, DIM_NUM_SIDE_SS(iset + 1), side_count, &ssdim);
+          if (status != NC_NOERR) {
+            if (status == NC_ENAMEINUSE) { // duplicate entry
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg, "Error: side set %" PRId64 " already defined in file id %d",
+                      side_set_id[iset], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            else {
+              ex_opts(EX_VERBOSE);
+              sprintf(errmsg,
+                      "Error: failed to define number of sides/set for set %" PRId64 " file id %d",
+                      side_set_id[iset], exodusFilePtr);
+              ex_err(__func__, errmsg, status);
+            }
+            return (EX_FATAL);
           }
-          else {
-            ex_opts(EX_VERBOSE);
-            sprintf(errmsg,
-                    "Error: failed to define number of sides/set for set %" PRId64 " file id %d",
-                    side_set_id[iset], exodusFilePtr);
-            ex_err(__func__, errmsg, status);
-          }
-          return (EX_FATAL);
         }
         iset++;
       }
