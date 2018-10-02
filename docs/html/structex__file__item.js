@@ -8,7 +8,7 @@ var structex__file__item =
     [ "has_faces", "structex__file__item.html#a130d9a218e757a5ee9a2cece77f9814e", null ],
     [ "has_nodes", "structex__file__item.html#ab51e32d98f587410c3ef0dbf0816c13d", null ],
     [ "int64_status", "structex__file__item.html#ae8461793d6d57b3592d87f9903e3bdb5", null ],
-    [ "is_mpiio", "structex__file__item.html#a3dc9fa1c33b502b3c9a44ee638f355e6", null ],
+    [ "is_hdf5", "structex__file__item.html#afeb2f764e2b6991065b39bc8c3a8a6d8", null ],
     [ "is_parallel", "structex__file__item.html#a32e21a329d87048cfa2464ef5fbb97bf", null ],
     [ "is_pnetcdf", "structex__file__item.html#ab3a55ace76e9182085a20e241f759f22", null ],
     [ "maximum_name_length", "structex__file__item.html#a14047410c8a0bf6c6d9098b3f4988748", null ],

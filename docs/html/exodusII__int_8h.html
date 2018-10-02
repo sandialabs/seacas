@@ -721,8 +721,8 @@ Functions</h2></td></tr>
 <tr class="separator:aae66ebb40c45e38e69658297621788d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45bf245f3ab5920be1e82dcb45d398b1"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#a45bf245f3ab5920be1e82dcb45d398b1">ex_name_of_map</a> (<a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a>, int)</td></tr>
 <tr class="separator:a45bf245f3ab5920be1e82dcb45d398b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bbaabf5970ec98b8a4674f32c5bc198"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#a0bbaabf5970ec98b8a4674f32c5bc198">ex_conv_ini</a> (int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize, int int64_status, int is_parallel, int is_mpiio, int is_pnetcdf)</td></tr>
-<tr class="separator:a0bbaabf5970ec98b8a4674f32c5bc198"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af60c05ed71d7bb4655cc22e301f89575"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#af60c05ed71d7bb4655cc22e301f89575">ex_conv_ini</a> (int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize, int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf)</td></tr>
+<tr class="separator:af60c05ed71d7bb4655cc22e301f89575"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83b103def944ee4eef727b743eb7eb0b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#a83b103def944ee4eef727b743eb7eb0b">ex_conv_exit</a> (int exoid)</td></tr>
 <tr class="separator:a83b103def944ee4eef727b743eb7eb0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bcb99c4a23dde165c0a75e9acfb3d55"><td class="memItemLeft" align="right" valign="top">nc_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#a0bcb99c4a23dde165c0a75e9acfb3d55">nc_flt_code</a> (int exoid)</td></tr>
@@ -5414,8 +5414,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a0bbaabf5970ec98b8a4674f32c5bc198"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0bbaabf5970ec98b8a4674f32c5bc198">&#9670;&nbsp;</a></span>ex_conv_ini()</h2>
+<a id="af60c05ed71d7bb4655cc22e301f89575"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af60c05ed71d7bb4655cc22e301f89575">&#9670;&nbsp;</a></span>ex_conv_ini()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -5460,7 +5460,7 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>is_mpiio</em>, </td>
+          <td class="paramname"><em>is_hdf5</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -5475,7 +5475,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p><a class="el" href="ex__conv_8c.html#a0bbaabf5970ec98b8a4674f32c5bc198">ex_conv_ini()</a> initializes the floating point conversion process.</p>
+<p><a class="el" href="ex__conv_8c.html#af60c05ed71d7bb4655cc22e301f89575">ex_conv_ini()</a> initializes the floating point conversion process.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>an integer uniquely identifying the file of interest.</td></tr>
@@ -5484,7 +5484,7 @@ Variables</h2></td></tr>
     <tr><td class="paramname">file_wordsize</td><td>floating point word size in an existing netCDF file. a value of 0 should be passed in for a new netCDF file.</td></tr>
     <tr><td class="paramname">int64_status</td><td>the flags specifying how integer values should be stored on the database and how they should be passes through the api functions.</td></tr>
     <tr><td class="paramname">is_parallel</td><td>1 if parallel file; 0 if serial</td></tr>
-    <tr><td class="paramname">is_mpiio</td><td>1 if parallel netcdf-4 mode; 0 if not.</td></tr>
+    <tr><td class="paramname">is_hdf5</td><td>1 if parallel netcdf-4 mode; 0 if not.</td></tr>
     <tr><td class="paramname">is_pnetcdf</td><td>1 if parallel PNetCDF file; 0 if not.</td></tr>
   </table>
   </dd>
