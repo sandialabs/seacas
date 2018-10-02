@@ -141,18 +141,18 @@ void ex_err(const char *module_name, const char *message, int err_num)
     EX_PNAME[MAX_ERR_LENGTH - 1] = '\0';
   }
 
+  if (err_num == EX_PRTLASTMSG) {
+    fprintf(stderr, "\n[%s] %s\n", EX_PNAME, EX_ERRMSG);
+    fprintf(stderr, "    exerrval = %d\n", EX_ERR_NUM);
+    EX_FUNC_VOID();
+  }
+
   if (err_num == EX_LASTERR) {
     err_num = EX_ERR_NUM;
   }
   else {
     exerrval   = err_num;
     EX_ERR_NUM = err_num;
-  }
-
-  if (err_num == EX_PRTLASTMSG) {
-    fprintf(stderr, "\n[%s] %s\n", EX_PNAME, EX_ERRMSG);
-    fprintf(stderr, "    exerrval = %d\n", EX_ERR_NUM);
-    EX_FUNC_VOID();
   }
 
   if (err_num == EX_NULLENTITY) {
