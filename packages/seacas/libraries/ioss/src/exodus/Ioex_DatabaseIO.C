@@ -975,8 +975,25 @@ namespace Ioex {
     exo_params.num_sset  = m_variables[EX_SIDE_SET].size();
     exo_params.num_elset = m_variables[EX_ELEM_SET].size();
 
+    char the_title[max_line_length + 1];
+
+    // Title...
+    if (get_region()->property_exists("title")) {
+      std::string title_str = get_region()->get_property("title").get_string();
+      std::strncpy(the_title, title_str.c_str(), max_line_length);
+    }
+    else {
+      std::strncpy(the_title, "IOSS Default Title", max_line_length);
+    }
+    the_title[max_line_length] = '\0';
+
+    Ioex::Mesh mesh(spatialDimension, the_title, !usingParallelIO);
+    mesh.populate(get_region());
+
+    // Write the metadata to the exodus file...
     Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
-    int ierr = data.initialize_state_file(*get_region(), exo_params, originalDBFilename);
+    int             ierr = data.initialize_state_file(mesh, exo_params, originalDBFilename);
+
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }

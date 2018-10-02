@@ -5001,12 +5001,7 @@ void DatabaseIO::write_meta_data()
   }
   the_title[max_line_length] = '\0';
 
-  bool       file_per_processor = true;
-  Ioex::Mesh mesh(spatialDimension, the_title, file_per_processor);
-
   Ioex::get_id(node_blocks[0], EX_NODE_BLOCK, &ids_);
-  Ioex::NodeBlock N(*node_blocks[0]);
-  mesh.nodeblocks.push_back(N);
 
   // Edge Blocks --
   {
@@ -5022,10 +5017,8 @@ void DatabaseIO::write_meta_data()
       edgeCount += edge_block->entity_count();
       // Set ids of all entities that do not have "id" property...
       Ioex::get_id(edge_block, EX_EDGE_BLOCK, &ids_);
-      Ioex::EdgeBlock T(*(edge_block));
-      mesh.edgeblocks.push_back(T);
     }
-    m_groupCount[EX_EDGE_BLOCK] = mesh.edgeblocks.size();
+    m_groupCount[EX_EDGE_BLOCK] = edge_blocks.size();
   }
 
   // Face Blocks --
@@ -5042,10 +5035,8 @@ void DatabaseIO::write_meta_data()
       faceCount += face_block->entity_count();
       // Set ids of all entities that do not have "id" property...
       Ioex::get_id(face_block, EX_FACE_BLOCK, &ids_);
-      Ioex::FaceBlock T(*(face_block));
-      mesh.faceblocks.push_back(T);
     }
-    m_groupCount[EX_FACE_BLOCK] = mesh.faceblocks.size();
+    m_groupCount[EX_FACE_BLOCK] = face_blocks.size();
   }
 
   // Element Blocks --
@@ -5062,10 +5053,8 @@ void DatabaseIO::write_meta_data()
       elementCount += element_block->entity_count();
       // Set ids of all entities that do not have "id" property...
       Ioex::get_id(element_block, EX_ELEM_BLOCK, &ids_);
-      Ioex::ElemBlock T(*(element_block));
-      mesh.elemblocks.push_back(T);
     }
-    m_groupCount[EX_ELEM_BLOCK] = mesh.elemblocks.size();
+    m_groupCount[EX_ELEM_BLOCK] = element_blocks.size();
   }
 
   // Nodesets ...
@@ -5077,10 +5066,8 @@ void DatabaseIO::write_meta_data()
 
     for (auto &nodeset : nodesets) {
       Ioex::get_id(nodeset, EX_NODE_SET, &ids_);
-      const Ioex::NodeSet T(*(nodeset));
-      mesh.nodesets.push_back(T);
     }
-    m_groupCount[EX_NODE_SET] = mesh.nodesets.size();
+    m_groupCount[EX_NODE_SET] = nodesets.size();
   }
 
   // Edgesets ...
@@ -5092,10 +5079,8 @@ void DatabaseIO::write_meta_data()
 
     for (auto &edgeset : edgesets) {
       Ioex::get_id(edgeset, EX_EDGE_SET, &ids_);
-      const Ioex::EdgeSet T(*(edgeset));
-      mesh.edgesets.push_back(T);
     }
-    m_groupCount[EX_EDGE_SET] = mesh.edgesets.size();
+    m_groupCount[EX_EDGE_SET] = edgesets.size();
   }
 
   // Facesets ...
@@ -5107,10 +5092,8 @@ void DatabaseIO::write_meta_data()
 
     for (auto &faceset : facesets) {
       Ioex::get_id(faceset, EX_FACE_SET, &ids_);
-      const Ioex::FaceSet T(*(faceset));
-      mesh.facesets.push_back(T);
     }
-    m_groupCount[EX_FACE_SET] = mesh.facesets.size();
+    m_groupCount[EX_FACE_SET] = facesets.size();
   }
 
   // Elementsets ...
@@ -5122,10 +5105,8 @@ void DatabaseIO::write_meta_data()
 
     for (auto &elementset : elementsets) {
       Ioex::get_id(elementset, EX_ELEM_SET, &ids_);
-      const Ioex::ElemSet T(*(elementset));
-      mesh.elemsets.push_back(T);
     }
-    m_groupCount[EX_ELEM_SET] = mesh.elemsets.size();
+    m_groupCount[EX_ELEM_SET] = elementsets.size();
   }
 
   // SideSets ...
@@ -5163,14 +5144,7 @@ void DatabaseIO::write_meta_data()
     new_entity->property_add(Ioss::Property("distribution_factor_count", df_count));
   }
 
-  for (const auto &sset : ssets) {
-    // Add a SideSet corresponding to this SideSet/SideBlock
-    Ioex::SideSet T(*(sset));
-    mesh.sidesets.push_back(T);
-  }
-  m_groupCount[EX_SIDE_SET] = mesh.sidesets.size();
-
-  gather_communication_metadata(&mesh.comm);
+  m_groupCount[EX_SIDE_SET] = ssets.size();
 
   {
     Ioss::SerializeIO serializeIO__(this);
@@ -5180,6 +5154,11 @@ void DatabaseIO::write_meta_data()
     if (!properties.exists("OMIT_INFO_RECORDS")) {
       put_info();
     }
+
+    bool       file_per_processor = true;
+    Ioex::Mesh mesh(spatialDimension, the_title, file_per_processor);
+    mesh.populate(region);
+    gather_communication_metadata(&mesh.comm);
 
     // Write the metadata to the exodus file...
     Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
