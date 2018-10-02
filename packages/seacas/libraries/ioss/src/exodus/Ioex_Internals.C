@@ -1940,7 +1940,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks, bool count_onl
       // 1 and in parallel mode, set the mode to independent.
       if (blocks[iblk].attributeCount > 1) {
         struct ex_file_item *file = ex_find_file_item(exodusFilePtr);
-        if (file->is_parallel && file->is_mpiio) {
+        if (file->is_parallel && file->is_hdf5) {
           nc_var_par_access(exodusFilePtr, varid, NC_INDEPENDENT);
         }
       }

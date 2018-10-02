@@ -350,7 +350,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
        */
       if (blocks[i].num_attribute > 1) {
         struct ex_file_item *file = ex_find_file_item(exoid);
-        if (file->is_parallel && file->is_mpiio) {
+        if (file->is_parallel && file->is_hdf5) {
           nc_var_par_access(exoid, varid, NC_INDEPENDENT);
         }
       }
