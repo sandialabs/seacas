@@ -318,11 +318,17 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
 
   /* Check parallel io mode.  Valid is NC_MPIPOSIX or NC_MPIIO or NC_PNETCDF
    * Exodus uses different flag values; map to netcdf values
+   *
+   * NOTE: In curent versions of NetCDF, MPIPOSIX and MPIIO are ignored and the
+   *       underlying format is either NC_PNETCDF or NC_NETCDF4 (hdf5-based)
+   *       They map NC_MPIIO to NC_PNETCDF, but in the past, exodus mapped EX_MPIIO
+   *       to EX_NETCDF4.
    */
   {
     int tmp_mode = 0;
     if (my_mode & EX_MPIPOSIX) {
-      pariomode = NC_MPIPOSIX;
+      pariomode = NC_MPIIO;
+      is_hdf5  = 1;
       tmp_mode  = EX_NETCDF4;
 #if !NC_HAS_HDF5
       snprintf(errmsg, MAX_ERR_LENGTH,
@@ -340,6 +346,19 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
 #if !NC_HAS_HDF5
       snprintf(errmsg, MAX_ERR_LENGTH,
                "EXODUS: ERROR: EX_MPIIO parallel output requested which "
+               "requires NetCDF-4 support, but the library does not "
+               "have that option enabled.\n");
+      ex_err(__func__, errmsg, EX_BADPARAM);
+      EX_FUNC_LEAVE(EX_FATAL);
+#endif
+    }
+    else if (my_mode & EX_NETCDF4) {
+      pariomode = NC_MPIIO;
+      is_hdf5  = 1;
+      tmp_mode  = EX_NETCDF4;
+#if !NC_HAS_HDF5
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "EXODUS: ERROR: EX_NETCDF4 parallel output requested which "
                "requires NetCDF-4 support, but the library does not "
                "have that option enabled.\n");
       ex_err(__func__, errmsg, EX_BADPARAM);
