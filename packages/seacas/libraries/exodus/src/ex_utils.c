@@ -1461,7 +1461,7 @@ void ex_compress_variable(int exoid, int varid, int type)
       nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
     }
 #if defined(PARALLEL_AWARE_EXODUS)
-    if (type != 3 && file->is_parallel && file->is_mpiio) {
+    if (type != 3 && file->is_parallel && file->is_hdf5) {
       nc_var_par_access(exoid, varid, NC_COLLECTIVE);
     }
 #endif

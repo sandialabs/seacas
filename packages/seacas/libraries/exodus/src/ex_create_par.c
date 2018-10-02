@@ -185,7 +185,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
 
   int int64_status;
   int pariomode  = 0;
-  int is_mpiio   = 0;
+  int is_hdf5   = 0;
   int is_pnetcdf = 0;
 
   unsigned int my_mode = cmode;
@@ -335,7 +335,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     }
     else if (my_mode & EX_MPIIO) {
       pariomode = NC_MPIIO;
-      is_mpiio  = 1;
+      is_hdf5  = 1;
       tmp_mode  = EX_NETCDF4;
 #if !NC_HAS_HDF5
       snprintf(errmsg, MAX_ERR_LENGTH,
@@ -509,7 +509,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
   /* initialize floating point size conversion.  since creating new file,
    * i/o wordsize attribute from file is zero.
    */
-  if (ex_conv_ini(exoid, comp_ws, io_ws, 0, int64_status, 1, is_mpiio, is_pnetcdf) != EX_NOERR) {
+  if (ex_conv_ini(exoid, comp_ws, io_ws, 0, int64_status, 1, is_hdf5, is_pnetcdf) != EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to init conversion routines in file id %d",
              exoid);
     ex_err(__func__, errmsg, EX_LASTERR);
