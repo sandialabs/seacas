@@ -547,6 +547,8 @@ int Internals::initialize_state_file(Mesh &mesh, const ex_var_params &var_params
       }
     }
 
+    // ========================================================================
+    // Blocks...
     size_t elem_count = 0;
     for (const auto &elem : mesh.elemblocks) {
       elem_count += elem.entityCount;
@@ -559,6 +561,10 @@ int Internals::initialize_state_file(Mesh &mesh, const ex_var_params &var_params
         ex_opts(EX_VERBOSE);
         sprintf(errmsg, "Error: failed to define number of elements in file id %d", exodusFilePtr);
         ex_err(__func__, errmsg, status);
+        return (EX_FATAL);
+      }
+      if (define_netcdf_vars(exodusFilePtr, "element block", mesh.elemblocks.size(), DIM_NUM_EL_BLK,
+                             VAR_STAT_EL_BLK, VAR_ID_EL_BLK, VAR_NAME_EL_BLK) != EX_NOERR) {
         return (EX_FATAL);
       }
     }
@@ -577,6 +583,10 @@ int Internals::initialize_state_file(Mesh &mesh, const ex_var_params &var_params
         ex_err(__func__, errmsg, status);
         return (EX_FATAL);
       }
+      if (define_netcdf_vars(exodusFilePtr, "face block", mesh.faceblocks.size(), DIM_NUM_FA_BLK,
+                             VAR_STAT_FA_BLK, VAR_ID_FA_BLK, VAR_NAME_FA_BLK) != EX_NOERR) {
+        return (EX_FATAL);
+      }
     }
 
     size_t edge_count = 0;
@@ -593,106 +603,95 @@ int Internals::initialize_state_file(Mesh &mesh, const ex_var_params &var_params
         ex_err(__func__, errmsg, status);
         return (EX_FATAL);
       }
-    }
-
-    // ========================================================================
-    // Blocks...
-    if (!mesh.edgeblocks.empty() && var_params.num_edge > 0) {
-      status += define_netcdf_vars(exodusFilePtr, "edge block", mesh.edgeblocks.size(),
-                                   DIM_NUM_ED_BLK, VAR_STAT_ED_BLK, VAR_ID_ED_BLK, VAR_NAME_ED_BLK);
-    }
-
-    if (!mesh.faceblocks.empty() && var_params.num_face > 0) {
-      status += define_netcdf_vars(exodusFilePtr, "face block", mesh.faceblocks.size(),
-                                   DIM_NUM_FA_BLK, VAR_STAT_FA_BLK, VAR_ID_FA_BLK, VAR_NAME_FA_BLK);
-    }
-
-    if (!mesh.elemblocks.empty() && var_params.num_elem > 0) {
-      status += define_netcdf_vars(exodusFilePtr, "element block", mesh.elemblocks.size(),
-                                   DIM_NUM_EL_BLK, VAR_STAT_EL_BLK, VAR_ID_EL_BLK, VAR_NAME_EL_BLK);
+      if (define_netcdf_vars(exodusFilePtr, "edge block", mesh.edgeblocks.size(), DIM_NUM_ED_BLK,
+                             VAR_STAT_ED_BLK, VAR_ID_ED_BLK, VAR_NAME_ED_BLK) != EX_NOERR) {
+        return (EX_FATAL);
+      }
     }
 
     // ========================================================================
     // Sets...
-    if (!mesh.nodesets.empty() && var_params.num_nset > 0) {
-      status += define_netcdf_vars(exodusFilePtr, "node set", mesh.nodesets.size(), DIM_NUM_NS,
-                                   VAR_NS_STAT, VAR_NS_IDS, VAR_NAME_NS);
+    if (var_params.num_nset > 0) {
+      if (define_netcdf_vars(exodusFilePtr, "node set", mesh.nodesets.size(), DIM_NUM_NS,
+                             VAR_NS_STAT, VAR_NS_IDS, VAR_NAME_NS) != EX_NOERR) {
+        return (EX_FATAL);
+      }
     }
 
-    if (!mesh.edgesets.empty() && var_params.num_eset > 0) {
-      status += define_netcdf_vars(exodusFilePtr, "edge set", mesh.edgesets.size(), DIM_NUM_ES,
-                                   VAR_ES_STAT, VAR_ES_IDS, VAR_NAME_ES);
+    if (var_params.num_eset > 0) {
+      if (define_netcdf_vars(exodusFilePtr, "edge set", mesh.edgesets.size(), DIM_NUM_ES,
+                             VAR_ES_STAT, VAR_ES_IDS, VAR_NAME_ES) != EX_NOERR) {
+        return (EX_FATAL);
+      }
     }
 
-    if (!mesh.facesets.empty() && var_params.num_eset > 0) {
-      status += define_netcdf_vars(exodusFilePtr, "face set", mesh.facesets.size(), DIM_NUM_FS,
-                                   VAR_FS_STAT, VAR_FS_IDS, VAR_NAME_FS);
+    if (var_params.num_eset > 0) {
+      if (define_netcdf_vars(exodusFilePtr, "face set", mesh.facesets.size(), DIM_NUM_FS,
+                             VAR_FS_STAT, VAR_FS_IDS, VAR_NAME_FS) != EX_NOERR) {
+        return (EX_FATAL);
+      }
     }
 
-    if (!mesh.elemsets.empty() && var_params.num_elset > 0) {
-      status += define_netcdf_vars(exodusFilePtr, "element set", mesh.elemsets.size(), DIM_NUM_ELS,
-                                   VAR_ELS_STAT, VAR_ELS_IDS, VAR_NAME_ELS);
+    if (var_params.num_elset > 0) {
+      if (define_netcdf_vars(exodusFilePtr, "element set", mesh.elemsets.size(), DIM_NUM_ELS,
+                             VAR_ELS_STAT, VAR_ELS_IDS, VAR_NAME_ELS) != EX_NOERR) {
+        return (EX_FATAL);
+      }
     }
 
     // ========================================================================
     // side sets...
-    if (static_cast<int>(!mesh.sidesets.empty()) > 0 && var_params.num_sset > 0) {
-      status += define_netcdf_vars(exodusFilePtr, "side set", mesh.sidesets.size(), DIM_NUM_SS,
-                                   VAR_SS_STAT, VAR_SS_IDS, VAR_NAME_SS);
+    if (var_params.num_sset > 0) {
+      if (define_netcdf_vars(exodusFilePtr, "side set", mesh.sidesets.size(), DIM_NUM_SS,
+                             VAR_SS_STAT, VAR_SS_IDS, VAR_NAME_SS) != EX_NOERR) {
+        return (EX_FATAL);
+      }
     }
 
     if (var_params.num_edge > 0) {
-      ierr = put_metadata(mesh.edgeblocks, true);
-      if (ierr != EX_NOERR) {
+      if ((ierr = put_metadata(mesh.edgeblocks, true)) != EX_NOERR) {
         EX_FUNC_LEAVE(ierr);
       }
     }
 
     if (var_params.num_face > 0) {
-      ierr = put_metadata(mesh.faceblocks, true);
-      if (ierr != EX_NOERR) {
+      if ((ierr = put_metadata(mesh.faceblocks, true)) != EX_NOERR) {
         EX_FUNC_LEAVE(ierr);
       }
     }
 
     if (var_params.num_elem > 0) {
-      ierr = put_metadata(mesh.elemblocks, true);
-      if (ierr != EX_NOERR) {
+      if ((ierr = put_metadata(mesh.elemblocks, true)) != EX_NOERR) {
         EX_FUNC_LEAVE(ierr);
       }
     }
 
     if (var_params.num_nset > 0) {
-      ierr = put_metadata(mesh.nodesets, true);
-      if (ierr != EX_NOERR) {
+      if ((ierr = put_metadata(mesh.nodesets, true)) != EX_NOERR) {
         EX_FUNC_LEAVE(ierr);
       }
     }
 
     if (var_params.num_eset > 0) {
-      ierr = put_metadata(mesh.edgesets, true);
-      if (ierr != EX_NOERR) {
+      if ((ierr = put_metadata(mesh.edgesets, true)) != EX_NOERR) {
         EX_FUNC_LEAVE(ierr);
       }
     }
 
     if (var_params.num_fset > 0) {
-      ierr = put_metadata(mesh.facesets, true);
-      if (ierr != EX_NOERR) {
+      if ((ierr = put_metadata(mesh.facesets, true)) != EX_NOERR) {
         EX_FUNC_LEAVE(ierr);
       }
     }
 
     if (var_params.num_elset > 0) {
-      ierr = put_metadata(mesh.elemsets, true);
-      if (ierr != EX_NOERR) {
+      if ((ierr = put_metadata(mesh.elemsets, true)) != EX_NOERR) {
         EX_FUNC_LEAVE(ierr);
       }
     }
 
     if (var_params.num_sset > 0) {
-      ierr = put_metadata(mesh.sidesets, true);
-      if (ierr != EX_NOERR) {
+      if ((ierr = put_metadata(mesh.sidesets, true)) != EX_NOERR) {
         EX_FUNC_LEAVE(ierr);
       }
     }
@@ -715,64 +714,56 @@ int Internals::initialize_state_file(Mesh &mesh, const ex_var_params &var_params
   } // Exit redefine mode
 
   if (var_params.num_edge > 0) {
-    ierr = put_non_define_data(mesh.edgeblocks);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.edgeblocks)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.edgeblocks, exodusFilePtr, EX_EDGE_BLOCK);
   }
 
   if (var_params.num_face > 0) {
-    ierr = put_non_define_data(mesh.faceblocks);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.faceblocks)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.faceblocks, exodusFilePtr, EX_FACE_BLOCK);
   }
 
   if (var_params.num_elem > 0) {
-    ierr = put_non_define_data(mesh.elemblocks);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.elemblocks)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.elemblocks, exodusFilePtr, EX_ELEM_BLOCK);
   }
 
   if (var_params.num_nset > 0) {
-    ierr = put_non_define_data(mesh.nodesets);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.nodesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.nodesets, exodusFilePtr, EX_NODE_SET);
   }
 
   if (var_params.num_eset > 0) {
-    ierr = put_non_define_data(mesh.edgesets);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.edgesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.edgesets, exodusFilePtr, EX_EDGE_SET);
   }
 
   if (var_params.num_fset > 0) {
-    ierr = put_non_define_data(mesh.facesets);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.facesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.facesets, exodusFilePtr, EX_FACE_SET);
   }
 
   if (var_params.num_elset > 0) {
-    ierr = put_non_define_data(mesh.elemsets);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.elemsets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.elemsets, exodusFilePtr, EX_ELEM_SET);
   }
 
   if (var_params.num_sset > 0) {
-    ierr = put_non_define_data(mesh.sidesets);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_non_define_data(mesh.sidesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
     output_names(mesh.sidesets, exodusFilePtr, EX_SIDE_SET);
@@ -888,100 +879,81 @@ int Internals::write_meta_data(Mesh &mesh)
     // Set the database to NOFILL mode.  Only writes values we want written...
     int old_fill = 0;
 
-    ierr = nc_set_fill(exodusFilePtr, NC_NOFILL, &old_fill);
-    if (ierr != EX_NOERR) {
+    if ((ierr = nc_set_fill(exodusFilePtr, NC_NOFILL, &old_fill)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
 
-    ierr = put_metadata(mesh, mesh.comm);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_metadata(mesh, mesh.comm)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
 
-    ierr = put_metadata(mesh.edgeblocks);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_metadata(mesh.edgeblocks)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
 
-    ierr = put_metadata(mesh.faceblocks);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_metadata(mesh.faceblocks)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
 
-    ierr = put_metadata(mesh.elemblocks);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_metadata(mesh.elemblocks)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
 
-    ierr = put_metadata(mesh.nodesets);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_metadata(mesh.nodesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
 
-    ierr = put_metadata(mesh.edgesets);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_metadata(mesh.edgesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
 
-    ierr = put_metadata(mesh.facesets);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_metadata(mesh.facesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
 
-    ierr = put_metadata(mesh.elemsets);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_metadata(mesh.elemsets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
 
-    ierr = put_metadata(mesh.sidesets);
-    if (ierr != EX_NOERR) {
+    if ((ierr = put_metadata(mesh.sidesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
   }
 
   // NON-Define mode output...
-  ierr = put_non_define_data(mesh.comm);
-  if (ierr != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.comm)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
-  ierr = put_non_define_data(mesh.edgeblocks);
-  if (ierr != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.edgeblocks)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
-  ierr = put_non_define_data(mesh.faceblocks);
-  if (ierr != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.faceblocks)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
-  ierr = put_non_define_data(mesh.elemblocks);
-  if (ierr != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.elemblocks)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
-  ierr = put_non_define_data(mesh.nodesets);
-  if (ierr != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.nodesets)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
-  ierr = put_non_define_data(mesh.edgesets);
-  if (ierr != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.edgesets)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
-  ierr = put_non_define_data(mesh.facesets);
-  if (ierr != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.facesets)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
-  ierr = put_non_define_data(mesh.elemsets);
-  if (ierr != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.elemsets)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
-  ierr = put_non_define_data(mesh.sidesets);
-  if (ierr != EX_NOERR) {
+  if ((ierr = put_non_define_data(mesh.sidesets)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
@@ -1424,54 +1396,53 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
 
   // ========================================================================
   // Blocks...
-  if (!mesh.edgeblocks.empty()) {
-    status += define_netcdf_vars(exodusFilePtr, "edge block", mesh.edgeblocks.size(),
-                                 DIM_NUM_ED_BLK, VAR_STAT_ED_BLK, VAR_ID_ED_BLK, VAR_NAME_ED_BLK);
+  if (define_netcdf_vars(exodusFilePtr, "edge block", mesh.edgeblocks.size(), DIM_NUM_ED_BLK,
+                         VAR_STAT_ED_BLK, VAR_ID_ED_BLK, VAR_NAME_ED_BLK) != EX_NOERR) {
+    return (EX_FATAL);
   }
 
-  if (!mesh.faceblocks.empty()) {
-    status += define_netcdf_vars(exodusFilePtr, "face block", mesh.faceblocks.size(),
-                                 DIM_NUM_FA_BLK, VAR_STAT_FA_BLK, VAR_ID_FA_BLK, VAR_NAME_FA_BLK);
+  if (define_netcdf_vars(exodusFilePtr, "face block", mesh.faceblocks.size(), DIM_NUM_FA_BLK,
+                         VAR_STAT_FA_BLK, VAR_ID_FA_BLK, VAR_NAME_FA_BLK) != EX_NOERR) {
+    return (EX_FATAL);
   }
 
-  if (!mesh.elemblocks.empty()) {
-    status += define_netcdf_vars(exodusFilePtr, "element block", mesh.elemblocks.size(),
-                                 DIM_NUM_EL_BLK, VAR_STAT_EL_BLK, VAR_ID_EL_BLK, VAR_NAME_EL_BLK);
+  if (define_netcdf_vars(exodusFilePtr, "element block", mesh.elemblocks.size(), DIM_NUM_EL_BLK,
+                         VAR_STAT_EL_BLK, VAR_ID_EL_BLK, VAR_NAME_EL_BLK) != EX_NOERR) {
+    return (EX_FATAL);
   }
 
   // ========================================================================
   // Sets...
-  if (!mesh.nodesets.empty()) {
-    status += define_netcdf_vars(exodusFilePtr, "node set", mesh.nodesets.size(), DIM_NUM_NS,
-                                 VAR_NS_STAT, VAR_NS_IDS, VAR_NAME_NS);
+  if (define_netcdf_vars(exodusFilePtr, "node set", mesh.nodesets.size(), DIM_NUM_NS, VAR_NS_STAT,
+                         VAR_NS_IDS, VAR_NAME_NS) != EX_NOERR) {
+    return (EX_FATAL);
   }
 
-  if (!mesh.edgesets.empty()) {
-    status += define_netcdf_vars(exodusFilePtr, "edge set", mesh.edgesets.size(), DIM_NUM_ES,
-                                 VAR_ES_STAT, VAR_ES_IDS, VAR_NAME_ES);
+  if (define_netcdf_vars(exodusFilePtr, "edge set", mesh.edgesets.size(), DIM_NUM_ES, VAR_ES_STAT,
+                         VAR_ES_IDS, VAR_NAME_ES) != EX_NOERR) {
+    return (EX_FATAL);
   }
 
-  if (!mesh.facesets.empty()) {
-    status += define_netcdf_vars(exodusFilePtr, "face set", mesh.facesets.size(), DIM_NUM_FS,
-                                 VAR_FS_STAT, VAR_FS_IDS, VAR_NAME_FS);
+  if (define_netcdf_vars(exodusFilePtr, "face set", mesh.facesets.size(), DIM_NUM_FS, VAR_FS_STAT,
+                         VAR_FS_IDS, VAR_NAME_FS) != EX_NOERR) {
+    return (EX_FATAL);
   }
 
-  if (!mesh.elemsets.empty()) {
-    status += define_netcdf_vars(exodusFilePtr, "element set", mesh.elemsets.size(), DIM_NUM_ELS,
-                                 VAR_ELS_STAT, VAR_ELS_IDS, VAR_NAME_ELS);
+  if (define_netcdf_vars(exodusFilePtr, "element set", mesh.elemsets.size(), DIM_NUM_ELS,
+                         VAR_ELS_STAT, VAR_ELS_IDS, VAR_NAME_ELS) != EX_NOERR) {
+    return (EX_FATAL);
   }
 
   // ========================================================================
   // side sets...
-  if (static_cast<int>(!mesh.sidesets.empty()) > 0) {
-    status += define_netcdf_vars(exodusFilePtr, "side set", mesh.sidesets.size(), DIM_NUM_SS,
-                                 VAR_SS_STAT, VAR_SS_IDS, VAR_NAME_SS);
+  if (define_netcdf_vars(exodusFilePtr, "side set", mesh.sidesets.size(), DIM_NUM_SS, VAR_SS_STAT,
+                         VAR_SS_IDS, VAR_NAME_SS) != EX_NOERR) {
+    return (EX_FATAL);
   }
 
   // ========================================================================
-  status += define_coordinate_vars(exodusFilePtr, mesh.nodeblocks[0].entityCount, numnoddim,
-                                   mesh.dimensionality, numdimdim, namestrdim);
-  if (status != EX_NOERR) {
+  if (define_coordinate_vars(exodusFilePtr, mesh.nodeblocks[0].entityCount, numnoddim,
+                             mesh.dimensionality, numdimdim, namestrdim) != EX_NOERR) {
     return (EX_FATAL);
   }
 
@@ -3944,6 +3915,10 @@ namespace {
   int define_netcdf_vars(int exoid, const char *type, size_t count, const char *dim_num,
                          const char *stat_var, const char *id_var, const char *name_var)
   {
+    if (count == 0) {
+      return EX_NOERR;
+    }
+
     int  dimid = 0;
     int  varid = 0;
     int  dim[2];
