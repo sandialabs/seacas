@@ -451,7 +451,13 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     mode_name = "NOCLOBBER";
   }
 
-  nc_mode |= NC_WRITE;
+#if NC_HAS_DISKLESS
+  /* Use of diskless (in-memory) and parallel is not tested... */
+  if (my_mode & EX_DISKLESS) {
+    nc_mode |= NC_DISKLESS;
+    nc_mode |= NC_WRITE;
+  }
+#endif
 
   if ((status = nc_create_par(path, nc_mode | pariomode, comm, info, &exoid)) != NC_NOERR) {
 #if NC_HAS_HDF5

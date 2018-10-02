@@ -378,10 +378,10 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
 #if NC_HAS_DISKLESS
   if (my_mode & EX_DISKLESS) {
     nc_mode |= NC_DISKLESS;
+    nc_mode |= NC_WRITE;
   }
 #endif
 
-  nc_mode |= NC_WRITE;
 
   if ((status = nc_create(path, nc_mode, &exoid)) != NC_NOERR) {
 #if NC_HAS_HDF5
