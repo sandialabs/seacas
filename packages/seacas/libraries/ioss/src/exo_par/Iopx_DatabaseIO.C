@@ -4488,8 +4488,8 @@ void DatabaseIO::write_meta_data()
     m_groupCount[EX_SIDE_SET] = ssets.size();
   }
 
-  bool            file_per_processor = false;
-  Ioex::Mesh      mesh(spatialDimension, the_title, file_per_processor);
+  bool       file_per_processor = false;
+  Ioex::Mesh mesh(spatialDimension, the_title, file_per_processor);
   {
     if (!properties.exists("OMIT_QA_RECORDS")) {
       put_qa();
