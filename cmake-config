@@ -179,6 +179,14 @@ else
   DARWIN_OPT=""
 fi
 
+DOXYGEN=OFF
+if [[ "$OS" == "Darwin" && "$MPI" == "OFF" ]] ; then
+    USER=`id -nu`
+    if [ "$USER" == "gdsjaar" ] ; then
+	DOXYGEN=ON
+    fi
+fi
+
 FC=${FC:-gfortran}
 
 rm -f CMakeCache.txt
@@ -200,6 +208,7 @@ cmake -G "${GENERATOR}" \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
+-D SEACASProj_ENABLE_DOXYGEN:BOOL=${DOXYGEN} \
 \
 -D SEACASProj_ENABLE_Fortran=${FORTRAN} \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
@@ -241,6 +250,7 @@ echo "HAVE_NETCDF: ${HAVE_NETCDF}"
 echo " HAVE_MATIO: ${HAVE_MATIO}"
 echo "  HAVE_CGNS: ${HAVE_CGNS}"
 echo "     KOKKOS: ${KOKKOS}"
+echo "    DOXYGEN: ${DOXYGEN}"
 echo ""
 
 if [ "${TRAVIS}" == "true" ]

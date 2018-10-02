@@ -1286,7 +1286,7 @@ namespace Iofx {
       }
 
       if (!blockInclusions.empty()) {
-        auto blocks = get_region()->get_element_blocks();
+        const auto &blocks = get_region()->get_element_blocks();
         for (auto &block : blocks) {
           block->property_add(Ioss::Property(std::string("omitted"), 1));
         }
@@ -1319,7 +1319,7 @@ namespace Iofx {
 
     nodeConnectivityStatus.resize(nodeCount);
 
-    Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
+    const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
 
     for (Ioss::ElementBlock *block : element_blocks) {
@@ -1592,7 +1592,7 @@ namespace Iofx {
             // Seed the topo_map map with <block->name, side_topo>
             // pairs so we are sure that all processors have the same
             // starting topo_map (size and order).
-            Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
+            const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
             assert(Ioss::Utils::check_block_order(element_blocks));
 
             for (Ioss::ElementBlock *block : element_blocks) {
@@ -2138,14 +2138,15 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
         }
 
         else if (field.get_name() == "owning_processor") {
+          // owning_processor field is always 32-bit.
           if (isParallel) {
-            Ioss::CommSet *css = get_region()->get_commset("commset_node");
-            if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-              int64_t *idata = static_cast<int64_t *>(data);
-              for (int64_t i = 0; i < nodeCount; i++) {
-                idata[i] = myProcessor;
-              }
+            Ioss::CommSet *css   = get_region()->get_commset("commset_node");
+            int *          idata = static_cast<int *>(data);
+            for (int64_t i = 0; i < nodeCount; i++) {
+              idata[i] = myProcessor;
+            }
 
+            if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
               Ioss::Field          ep_field = css->get_field("entity_processor_raw");
               std::vector<int64_t> ent_proc(ep_field.raw_count() *
                                             ep_field.raw_storage()->component_count());
@@ -2160,11 +2161,6 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
               }
             }
             else {
-              int *idata = static_cast<int *>(data);
-              for (int64_t i = 0; i < nodeCount; i++) {
-                idata[i] = myProcessor;
-              }
-
               Ioss::Field      ep_field = css->get_field("entity_processor_raw");
               std::vector<int> ent_proc(ep_field.raw_count() *
                                         ep_field.raw_storage()->component_count());
@@ -2181,17 +2177,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
           }
           else {
             // Serial case...
-            if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-              int64_t *idata = static_cast<int64_t *>(data);
-              for (int64_t i = 0; i < nodeCount; i++) {
-                idata[i] = 0;
-              }
-            }
-            else {
-              int *idata = static_cast<int *>(data);
-              for (int64_t i = 0; i < nodeCount; i++) {
-                idata[i] = 0;
-              }
+            int *idata = static_cast<int *>(data);
+            for (int64_t i = 0; i < nodeCount; i++) {
+              idata[i] = 0;
             }
           }
         }
@@ -4996,7 +4984,7 @@ void DatabaseIO::write_meta_data()
 {
   Ioss::Region *region = get_region();
 
-  Ioss::NodeBlockContainer node_blocks = region->get_node_blocks();
+  const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
   assert(node_blocks.size() == 1);
   nodeCount        = node_blocks[0]->entity_count();
   spatialDimension = node_blocks[0]->get_property("component_degree").get_int();
@@ -5013,16 +5001,11 @@ void DatabaseIO::write_meta_data()
   }
   the_title[max_line_length] = '\0';
 
-  bool       file_per_processor = true;
-  Ioex::Mesh mesh(spatialDimension, the_title, file_per_processor);
-
   Ioex::get_id(node_blocks[0], EX_NODE_BLOCK, &ids_);
-  Ioex::NodeBlock N(*node_blocks[0]);
-  mesh.nodeblocks.push_back(N);
 
   // Edge Blocks --
   {
-    Ioss::EdgeBlockContainer edge_blocks = region->get_edge_blocks();
+    const Ioss::EdgeBlockContainer &edge_blocks = region->get_edge_blocks();
     assert(Ioss::Utils::check_block_order(edge_blocks));
     // Set ids of all entities that have "id" property...
     for (auto &edge_block : edge_blocks) {
@@ -5034,15 +5017,13 @@ void DatabaseIO::write_meta_data()
       edgeCount += edge_block->entity_count();
       // Set ids of all entities that do not have "id" property...
       Ioex::get_id(edge_block, EX_EDGE_BLOCK, &ids_);
-      Ioex::EdgeBlock T(*(edge_block));
-      mesh.edgeblocks.push_back(T);
     }
-    m_groupCount[EX_EDGE_BLOCK] = mesh.edgeblocks.size();
+    m_groupCount[EX_EDGE_BLOCK] = edge_blocks.size();
   }
 
   // Face Blocks --
   {
-    Ioss::FaceBlockContainer face_blocks = region->get_face_blocks();
+    const Ioss::FaceBlockContainer &face_blocks = region->get_face_blocks();
     assert(Ioss::Utils::check_block_order(face_blocks));
     // Set ids of all entities that have "id" property...
     for (auto &face_block : face_blocks) {
@@ -5054,15 +5035,13 @@ void DatabaseIO::write_meta_data()
       faceCount += face_block->entity_count();
       // Set ids of all entities that do not have "id" property...
       Ioex::get_id(face_block, EX_FACE_BLOCK, &ids_);
-      Ioex::FaceBlock T(*(face_block));
-      mesh.faceblocks.push_back(T);
     }
-    m_groupCount[EX_FACE_BLOCK] = mesh.faceblocks.size();
+    m_groupCount[EX_FACE_BLOCK] = face_blocks.size();
   }
 
   // Element Blocks --
   {
-    Ioss::ElementBlockContainer element_blocks = region->get_element_blocks();
+    const Ioss::ElementBlockContainer &element_blocks = region->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
     // Set ids of all entities that have "id" property...
     for (auto &element_block : element_blocks) {
@@ -5074,74 +5053,64 @@ void DatabaseIO::write_meta_data()
       elementCount += element_block->entity_count();
       // Set ids of all entities that do not have "id" property...
       Ioex::get_id(element_block, EX_ELEM_BLOCK, &ids_);
-      Ioex::ElemBlock T(*(element_block));
-      mesh.elemblocks.push_back(T);
     }
-    m_groupCount[EX_ELEM_BLOCK] = mesh.elemblocks.size();
+    m_groupCount[EX_ELEM_BLOCK] = element_blocks.size();
   }
 
   // Nodesets ...
   {
-    Ioss::NodeSetContainer nodesets = region->get_nodesets();
+    const Ioss::NodeSetContainer &nodesets = region->get_nodesets();
     for (auto &nodeset : nodesets) {
       Ioex::set_id(nodeset, EX_NODE_SET, &ids_);
     }
 
     for (auto &nodeset : nodesets) {
       Ioex::get_id(nodeset, EX_NODE_SET, &ids_);
-      const Ioex::NodeSet T(*(nodeset));
-      mesh.nodesets.push_back(T);
     }
-    m_groupCount[EX_NODE_SET] = mesh.nodesets.size();
+    m_groupCount[EX_NODE_SET] = nodesets.size();
   }
 
   // Edgesets ...
   {
-    Ioss::EdgeSetContainer edgesets = region->get_edgesets();
+    const Ioss::EdgeSetContainer &edgesets = region->get_edgesets();
     for (auto &edgeset : edgesets) {
       Ioex::set_id(edgeset, EX_EDGE_SET, &ids_);
     }
 
     for (auto &edgeset : edgesets) {
       Ioex::get_id(edgeset, EX_EDGE_SET, &ids_);
-      const Ioex::EdgeSet T(*(edgeset));
-      mesh.edgesets.push_back(T);
     }
-    m_groupCount[EX_EDGE_SET] = mesh.edgesets.size();
+    m_groupCount[EX_EDGE_SET] = edgesets.size();
   }
 
   // Facesets ...
   {
-    Ioss::FaceSetContainer facesets = region->get_facesets();
+    const Ioss::FaceSetContainer &facesets = region->get_facesets();
     for (auto &faceset : facesets) {
       Ioex::set_id(faceset, EX_FACE_SET, &ids_);
     }
 
     for (auto &faceset : facesets) {
       Ioex::get_id(faceset, EX_FACE_SET, &ids_);
-      const Ioex::FaceSet T(*(faceset));
-      mesh.facesets.push_back(T);
     }
-    m_groupCount[EX_FACE_SET] = mesh.facesets.size();
+    m_groupCount[EX_FACE_SET] = facesets.size();
   }
 
   // Elementsets ...
   {
-    Ioss::ElementSetContainer elementsets = region->get_elementsets();
+    const Ioss::ElementSetContainer &elementsets = region->get_elementsets();
     for (auto &elementset : elementsets) {
       Ioex::set_id(elementset, EX_ELEM_SET, &ids_);
     }
 
     for (auto &elementset : elementsets) {
       Ioex::get_id(elementset, EX_ELEM_SET, &ids_);
-      const Ioex::ElemSet T(*(elementset));
-      mesh.elemsets.push_back(T);
     }
-    m_groupCount[EX_ELEM_SET] = mesh.elemsets.size();
+    m_groupCount[EX_ELEM_SET] = elementsets.size();
   }
 
   // SideSets ...
-  Ioss::SideSetContainer ssets = region->get_sidesets();
+  const Ioss::SideSetContainer &ssets = region->get_sidesets();
   for (auto &sset : ssets) {
     Ioex::set_id(sset, EX_SIDE_SET, &ids_);
   }
@@ -5153,7 +5122,7 @@ void DatabaseIO::write_meta_data()
     int64_t entity_count = 0;
     int64_t df_count     = 0;
 
-    Ioss::SideBlockContainer side_blocks = sset->get_side_blocks();
+    const Ioss::SideBlockContainer &side_blocks = sset->get_side_blocks();
     for (auto &side_block : side_blocks) {
       // Add  "*_offset" properties to specify at what offset
       // the data for this block appears in the containing set.
@@ -5175,14 +5144,7 @@ void DatabaseIO::write_meta_data()
     new_entity->property_add(Ioss::Property("distribution_factor_count", df_count));
   }
 
-  for (const auto &sset : ssets) {
-    // Add a SideSet corresponding to this SideSet/SideBlock
-    Ioex::SideSet T(*(sset));
-    mesh.sidesets.push_back(T);
-  }
-  m_groupCount[EX_SIDE_SET] = mesh.sidesets.size();
-
-  gather_communication_metadata(&mesh.comm);
+  m_groupCount[EX_SIDE_SET] = ssets.size();
 
   {
     Ioss::SerializeIO serializeIO__(this);
@@ -5192,6 +5154,11 @@ void DatabaseIO::write_meta_data()
     if (!properties.exists("OMIT_INFO_RECORDS")) {
       put_info();
     }
+
+    bool       file_per_processor = true;
+    Ioex::Mesh mesh(spatialDimension, the_title, file_per_processor);
+    mesh.populate(region);
+    gather_communication_metadata(&mesh.comm);
 
     // Write the metadata to the exodus file...
     Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
@@ -5299,7 +5266,7 @@ void DatabaseIO::gather_communication_metadata(Ioex::CommunicationMetaData *meta
       meta->elementsBorder = get_region()->get_property("border_element_count").get_int();
     }
 
-    Ioss::CommSetContainer comm_sets = get_region()->get_commsets();
+    const Ioss::CommSetContainer &comm_sets = get_region()->get_commsets();
     for (auto &cs : comm_sets) {
       std::string type  = cs->get_property("entity_type").get_string();
       size_t      count = cs->entity_count();

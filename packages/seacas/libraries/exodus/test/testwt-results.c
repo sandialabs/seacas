@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   int  exoid, num_dim, num_nodes, num_elem, num_elem_blk;
   int  num_node_sets, num_side_sets, error;
   int  i, j, k, m;
-  int  num_glo_vars, num_nod_vars, num_ele_vars, num_sset_vars, num_nset_vars;
+  int  num_glo_vars, num_nod_vars, num_ele_vars;
   int *truth_tab;
   int  whole_time_step, num_time_steps;
   int  CPU_word_size, IO_word_size;

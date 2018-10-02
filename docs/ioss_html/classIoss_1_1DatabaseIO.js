@@ -154,6 +154,7 @@ var classIoss_1_1DatabaseIO =
     [ "myProcessor", "classIoss_1_1DatabaseIO.html#a1c53cb32bfb7940d689ead8c42deab8f", null ],
     [ "nodeCount", "classIoss_1_1DatabaseIO.html#ae53a675e757ae1c5c6176a313e0ccade", null ],
     [ "nodeMap", "classIoss_1_1DatabaseIO.html#a4d9f58f4670a4a98009661f3cf964e2c", null ],
+    [ "originalDBFilename", "classIoss_1_1DatabaseIO.html#a5fc3c1ac04516bfb5993be9e28118cbd", null ],
     [ "overlayCount", "classIoss_1_1DatabaseIO.html#a7277a4580fc3d91326b9ff18502bbe52", null ],
     [ "properties", "classIoss_1_1DatabaseIO.html#af79dd0ec8b3e8d09142362ff875a07e7", null ],
     [ "qaRecords", "classIoss_1_1DatabaseIO.html#abaf1032632e81a483325df150aaaffaa", null ],
