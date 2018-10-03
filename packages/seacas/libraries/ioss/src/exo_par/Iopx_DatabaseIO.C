@@ -369,11 +369,8 @@ namespace Iopx {
     }
 #endif
 
-    int par_mode = get_parallel_io_mode(properties);
-
-    MPI_Info    info        = MPI_INFO_NULL;
-    int         app_opt_val = ex_opts(EX_VERBOSE);
-    std::string filename    = get_filename();
+    MPI_Info    info     = MPI_INFO_NULL;
+    std::string filename = get_filename();
 
     // See bug description in thread at
     // https://www.open-mpi.org/community/lists/users/2015/01/26167.php and
@@ -396,7 +393,9 @@ namespace Iopx {
     Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
     double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
-    exodusFilePtr = ex_open_par(filename.c_str(), EX_READ | par_mode | mode, &cpu_word_size,
+    int par_mode    = get_parallel_io_mode(properties);
+    int app_opt_val = ex_opts(EX_VERBOSE);
+    exodusFilePtr   = ex_open_par(filename.c_str(), EX_READ | par_mode | mode, &cpu_word_size,
                                 &io_word_size, &version, util().communicator(), info);
 
     if (do_timer) {

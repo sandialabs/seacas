@@ -288,9 +288,20 @@ namespace Iofx {
       mode |= EX_DISKLESS;
     }
 #endif
+
+    bool do_timer = false;
+    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+    double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+
     int app_opt_val = ex_opts(EX_VERBOSE);
     exodusFilePtr   = ex_open(decoded_filename().c_str(), EX_READ | mode, &cpu_word_size,
                             &io_word_size, &version);
+
+    if (do_timer) {
+      double t_end    = Ioss::Utils::timer();
+      double duration = t_end - t_begin;
+      std::cerr << "File Open Time = " << duration << "\n";
+    }
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
 
