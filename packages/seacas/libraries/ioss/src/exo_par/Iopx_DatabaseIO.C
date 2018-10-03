@@ -350,43 +350,6 @@ namespace Iopx {
     return true;
   }
 
-  bool DatabaseIO::ok__(bool write_message, std::string *error_msg, int *bad_count) const
-  {
-    // For input, we try to open the existing file.
-
-    // For output, we do not want to overwrite or clobber the output
-    // file if it already exists since the app might be reading the restart
-    // data from this file and then later clobbering it and then writing
-    // restart data to the same file. So, for output, we first check
-    // whether the file exists and if it it and is writable, assume
-    // that we can later create a new or append to existing file.
-
-    // Returns the number of processors on which this file is *NOT* ok in 'bad_count' if not null.
-    // Will return 'true' only if file ok on all processors.
-
-    if (fileExists) {
-      // File has already been opened at least once...
-      return dbState != Ioss::STATE_INVALID;
-    }
-
-    bool abort_if_error = false;
-    bool is_ok;
-    if (is_input()) {
-      is_ok = open_input_file(write_message, error_msg, bad_count, abort_if_error);
-    }
-    else {
-      // See if file exists... Don't overwrite (yet) it it exists.
-      bool overwrite = false;
-      is_ok = handle_output_file(write_message, error_msg, bad_count, overwrite, abort_if_error);
-      // Close all open files...
-      if (exodusFilePtr >= 0) {
-        ex_close(exodusFilePtr);
-        exodusFilePtr = -1;
-      }
-    }
-    return is_ok;
-  }
-
   bool DatabaseIO::open_input_file(bool write_message, std::string *error_msg, int *bad_count,
                                    bool abort_if_error) const
   {
