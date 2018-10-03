@@ -321,8 +321,6 @@ namespace Ioex {
 
     mutable bool fileExists{false}; // False if file has never been opened/created
     mutable bool minimizeOpenFiles{false};
-    mutable bool filePerState{
-        false}; // Output transient data at each state (timestep) to separate file
 
     mutable bool blockAdjacenciesCalculated{false}; // True if the lazy creation of
     // block adjacencies has been calculated.
