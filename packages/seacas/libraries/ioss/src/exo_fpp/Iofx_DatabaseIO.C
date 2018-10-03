@@ -449,7 +449,6 @@ namespace Iofx {
   {
     // Returns the file_pointer used to access the file on disk.
     // Checks that the file is open and if not, opens it first.
-
     if (Ioss::SerializeIO::isEnabled()) {
       if (!Ioss::SerializeIO::inBarrier()) {
         std::ostringstream errmsg;
@@ -467,24 +466,7 @@ namespace Iofx {
       }
     }
 
-    if (exodusFilePtr < 0) {
-      bool write_message  = true;
-      bool abort_if_error = true;
-      if (is_input()) {
-        open_input_file(write_message, nullptr, nullptr, abort_if_error);
-      }
-      else {
-        bool overwrite = true;
-        handle_output_file(write_message, nullptr, nullptr, overwrite, abort_if_error);
-      }
-
-      if (!m_groupName.empty()) {
-        ex_get_group_id(exodusFilePtr, m_groupName.c_str(), &exodusFilePtr);
-      }
-    }
-    fileExists = true;
-    assert(exodusFilePtr >= 0);
-    return exodusFilePtr;
+    return Ioex::DatabaseIO::get_file_pointer();
   }
 
   void DatabaseIO::read_meta_data__()

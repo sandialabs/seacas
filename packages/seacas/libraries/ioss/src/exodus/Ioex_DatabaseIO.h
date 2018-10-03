@@ -220,6 +220,11 @@ namespace Ioex {
   protected:
     virtual int free_file_pointer() const; // Close file and set exodusFilePtr.
 
+    virtual bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
+                                 bool abort_if_error) const                    = 0;
+    virtual bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
+                                    bool overwrite, bool abort_if_error) const = 0;
+
     int  get_current_state() const; // Get current state with error checks and usage message.
     void put_qa();
     void put_info();

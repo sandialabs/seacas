@@ -597,30 +597,7 @@ namespace Iopx {
     return is_ok;
   }
 
-  int DatabaseIO::get_file_pointer() const
-  {
-    // Returns the file_pointer used to access the file on disk.
-    // Checks that the file is open and if not, opens it first.
-
-    if (exodusFilePtr < 0) {
-      bool write_message  = true;
-      bool abort_if_error = true;
-      if (is_input()) {
-        open_input_file(write_message, nullptr, nullptr, abort_if_error);
-      }
-      else {
-        bool overwrite = true;
-        handle_output_file(write_message, nullptr, nullptr, overwrite, abort_if_error);
-      }
-
-      if (!m_groupName.empty()) {
-        ex_get_group_id(exodusFilePtr, m_groupName.c_str(), &exodusFilePtr);
-      }
-    }
-    assert(exodusFilePtr >= 0);
-    fileExists = true;
-    return exodusFilePtr;
-  }
+  int DatabaseIO::get_file_pointer() const { return Ioex::DatabaseIO::get_file_pointer(); }
 
   int DatabaseIO::free_file_pointer() const
   {

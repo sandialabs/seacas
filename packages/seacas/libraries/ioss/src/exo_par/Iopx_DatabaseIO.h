@@ -110,9 +110,9 @@ namespace Iopx {
     void get_step_times__() override;
 
     bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
-                         bool abort_if_error) const;
+                         bool abort_if_error) const override;
     bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
-                            bool overwrite, bool abort_if_error) const;
+                            bool overwrite, bool abort_if_error) const override;
     bool check_valid_file_ptr(bool write_message, std::string *error_msg, int *bad_count,
                               bool abort_if_error) const;
 
