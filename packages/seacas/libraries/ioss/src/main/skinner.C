@@ -110,11 +110,17 @@ int main(int argc, char *argv[])
     }
   }
 
-  if (interface.ints_64_bit()) {
-    skinner(interface, static_cast<int64_t>(0));
+  try {
+    if (interface.ints_64_bit()) {
+      skinner(interface, static_cast<int64_t>(0));
+    }
+    else {
+      skinner(interface, 0);
+    }
   }
-  else {
-    skinner(interface, 0);
+  catch (std::exception &e) {
+    std::cerr << "\n" << e.what() << "\n\nskinner terminated due to exception\n";
+    exit(EXIT_FAILURE);
   }
 
   if (my_rank == 0) {
