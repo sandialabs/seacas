@@ -146,7 +146,13 @@ namespace Ioex {
         Ioss::Utils::check_set_bool_property(properties, "MINIMIZE_OPEN_FILES", minimizeOpenFiles);
       }
 
-      Ioss::Utils::check_set_bool_property(properties, "FILE_PER_STATE", filePerState);
+      {
+        bool file_per_state = false;
+        Ioss::Utils::check_set_bool_property(properties, "FILE_PER_STATE", file_per_state);
+        if (file_per_state) {
+          set_file_per_state(true);
+        }
+      }
     }
 
     // See if there are any properties that need to (or can) be
@@ -983,7 +989,16 @@ namespace Ioex {
     if (!db.pathname().empty()) {
       new_filename += db.pathname() + "/";
     }
-    new_filename += db.basename() + "-state-" + std::to_string(state) + "." + db.extension();
+
+    if (get_cycle_count() >= 1) {
+      static const std::string suffix{"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+      int                      index = (state - 1) % get_cycle_count();
+      new_filename += db.basename() + "-state-" + suffix[index] + "." + db.extension();
+    }
+    else {
+      new_filename += db.basename() + "-state-" + std::to_string(state) + "." + db.extension();
+    }
+
     DBFilename = new_filename;
     fileExists = false;
 
@@ -1021,8 +1036,6 @@ namespace Ioex {
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }
-
-    cycleCount = 1;
   }
 
   bool DatabaseIO::begin_state__(Ioss::Region * /* region */, int state, double time)
@@ -1032,7 +1045,7 @@ namespace Ioex {
     time /= timeScaleFactor;
 
     if (!is_input()) {
-      if (filePerState) {
+      if (get_file_per_state()) {
         // Close current file; create new file and output transient metadata...
         open_state_file(state);
         write_results_metadata(false);
@@ -1496,6 +1509,10 @@ namespace Ioex {
   // Given the global region step, return the step on the database...
   int DatabaseIO::get_database_step(int global_step) const
   {
+    if (get_file_per_state()) {
+      return 1;
+    }
+
     assert(overlayCount >= 0 && cycleCount >= 0);
     if (overlayCount == 0 && cycleCount == 0) {
       return global_step;
