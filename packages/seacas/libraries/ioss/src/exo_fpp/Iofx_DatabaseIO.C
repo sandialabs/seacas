@@ -306,24 +306,7 @@ namespace Iofx {
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
 
     if (is_ok) {
-      assert(exodusFilePtr >= 0);
-      // Check byte-size of integers stored on the database...
-      if ((ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
-        if (myProcessor == 0) {
-          std::cerr << "IOSS: Input database contains 8-byte integers. Setting Ioss to use 8-byte "
-                       "integers.\n";
-        }
-        ex_set_int64_status(exodusFilePtr, EX_ALL_INT64_API);
-        set_int_byte_size_api(Ioss::USE_INT64_API);
-      }
-
-      // Check for maximum name length used on the input file.
-      int max_name_length = ex_inquire_int(exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-      if (max_name_length > maximumNameLength) {
-        maximumNameLength = max_name_length;
-      }
-
-      ex_set_max_name_length(exodusFilePtr, maximumNameLength);
+      finalize_file_open();
     }
     ex_opts(app_opt_val); // Reset back to what it was.
     return is_ok;
