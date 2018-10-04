@@ -185,7 +185,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
 
   int int64_status;
   int pariomode  = 0;
-  int is_hdf5   = 0;
+  int is_hdf5    = 0;
   int is_pnetcdf = 0;
 
   unsigned int my_mode = cmode;
@@ -328,7 +328,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     int tmp_mode = 0;
     if (my_mode & EX_MPIPOSIX) {
       pariomode = NC_MPIIO;
-      is_hdf5  = 1;
+      is_hdf5   = 1;
       tmp_mode  = EX_NETCDF4;
 #if !NC_HAS_HDF5
       snprintf(errmsg, MAX_ERR_LENGTH,
@@ -341,7 +341,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     }
     else if (my_mode & EX_MPIIO) {
       pariomode = NC_MPIIO;
-      is_hdf5  = 1;
+      is_hdf5   = 1;
       tmp_mode  = EX_NETCDF4;
 #if !NC_HAS_HDF5
       snprintf(errmsg, MAX_ERR_LENGTH,
@@ -354,7 +354,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     }
     else if (my_mode & EX_NETCDF4) {
       pariomode = NC_MPIIO;
-      is_hdf5  = 1;
+      is_hdf5   = 1;
       tmp_mode  = EX_NETCDF4;
 #if !NC_HAS_HDF5
       snprintf(errmsg, MAX_ERR_LENGTH,

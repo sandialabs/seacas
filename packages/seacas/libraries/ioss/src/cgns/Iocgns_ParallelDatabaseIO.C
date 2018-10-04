@@ -1358,7 +1358,7 @@ namespace Iocgns {
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
   {
-    int  id   = sb->get_property("id").get_int();
+    int         id   = sb->get_property("id").get_int();
     const auto &sset = decomp->m_sideSets[id];
 
     ssize_t num_to_get = field.verify(data_size);

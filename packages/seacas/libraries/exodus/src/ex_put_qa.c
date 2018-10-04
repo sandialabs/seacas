@@ -147,14 +147,14 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
       /* create string length dimension -- only used for QA records */
       if ((status = nc_def_dim(rootid, DIM_STR, (MAX_STR_LENGTH + 1), &strdim)) != NC_NOERR) {
         if (status == NC_ENAMEINUSE) { /* already defined */
-	  nc_inq_dimid(rootid, DIM_STR, &strdim);
-	}
-	else {
-	  snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define string length in file id %d",
-		   rootid);
-	  ex_err(__func__, errmsg, status);
-	  goto error_ret; /* exit define mode and return */
-	}
+          nc_inq_dimid(rootid, DIM_STR, &strdim);
+        }
+        else {
+          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define string length in file id %d",
+                   rootid);
+          ex_err(__func__, errmsg, status);
+          goto error_ret; /* exit define mode and return */
+        }
       }
 
       /*   define variable  */
