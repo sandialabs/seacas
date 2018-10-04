@@ -224,6 +224,7 @@ namespace Ioex {
                                  bool abort_if_error) const                    = 0;
     virtual bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
                                     bool overwrite, bool abort_if_error) const = 0;
+    void         finalize_file_open() const;
 
     int  get_current_state() const; // Get current state with error checks and usage message.
     void put_qa();
