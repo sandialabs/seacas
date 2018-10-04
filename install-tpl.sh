@@ -13,6 +13,9 @@ FORCE=${FORCE:-NO}
 # Shared libraries or static libraries?
 SHARED=${SHARED:-YES}
 
+# Enable Burst-Buffer support in PNetCDF?
+BB=${BB:-NO}
+
 # Which TPLS? (HDF5 and NetCDF always, PNetCDF if MPI=ON)
 CGNS=${CGNS:-ON}
 MATIO=${MATIO:-ON}
@@ -74,6 +77,7 @@ if [ $# -gt 0 ]; then
 	echo "   BUILD        = ${BUILD}"
 	echo "   FORCE        = ${FORCE}"
 	echo "   SHARED       = ${SHARED}"
+	ecoh "   BB           = ${BB}"
 	echo ""
 	echo "   H5VERSION    = ${H5VERSION}"
 	echo "   CGNS         = ${CGNS}"
@@ -209,7 +213,7 @@ then
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd parallel-netcdf-${pnet_version}
-            SHARED=${SHARED} bash ../runconfigure.sh
+            BB=${BB} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure PnetCDF. exiting.${txtrst}
