@@ -213,10 +213,9 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     warning_output = 1;
   }
 
-  nc_mode         = ex_int_handle_mode(my_mode, is_parallel)
+  nc_mode = ex_int_handle_mode(my_mode, is_parallel);
 
-      if ((status = nc_create_par(path, nc_mode, comm, info, &exoid)) != NC_NOERR)
-  {
+  if ((status = nc_create_par(path, nc_mode, comm, info, &exoid)) != NC_NOERR) {
 #if NC_HAS_HDF5
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s, mode: %s", path, mode_name);
 #else

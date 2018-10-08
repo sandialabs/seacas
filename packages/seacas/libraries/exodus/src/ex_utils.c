@@ -1484,6 +1484,11 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel)
   int int64_status;
   int pariomode = 0;
 
+#if defined(PARALLEL_AWARE_EXODUS)
+  int is_hdf5    = 0;
+  int is_pnetcdf = 0;
+#endif
+
   /* Contains a 1 in all bits corresponding to file modes */
   static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4;
 
