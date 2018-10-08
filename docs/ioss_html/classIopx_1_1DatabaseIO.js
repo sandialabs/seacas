@@ -45,7 +45,6 @@ var classIopx_1_1DatabaseIO =
     [ "handle_node_ids", "classIopx_1_1DatabaseIO.html#acdd057dd932cff28f58cc050c745375d", null ],
     [ "handle_output_file", "classIopx_1_1DatabaseIO.html#a1813e1dc1c3f3e15259d181c9dec0cac", null ],
     [ "needs_shared_node_information", "classIopx_1_1DatabaseIO.html#a707b2d8db6a36c153a21cbf6003f1d6c", null ],
-    [ "ok__", "classIopx_1_1DatabaseIO.html#a1294813355325095f3ecbe494e4991da", null ],
     [ "open_input_file", "classIopx_1_1DatabaseIO.html#aaef51b830dd5e404af3383f8f00a82ae", null ],
     [ "operator=", "classIopx_1_1DatabaseIO.html#af07bc9874e38dad5a5f64d2d895ae356", null ],
     [ "output_node_map", "classIopx_1_1DatabaseIO.html#a5581e88a163b67d2a1c4dc4acbc27f09", null ],

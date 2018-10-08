@@ -288,8 +288,6 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a5378742e6c225e7c1781bba3981110bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIofx_1_1DatabaseIO.html#a5378742e6c225e7c1781bba3981110bd">ok__</a> (bool write_message=false, std::string *error_msg=nullptr, int *bad_count=nullptr) const override</td></tr>
-<tr class="separator:a5378742e6c225e7c1781bba3981110bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acebef2478ca255c80b3cce8f5ac9e2fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIofx_1_1DatabaseIO.html#acebef2478ca255c80b3cce8f5ac9e2fd">get_step_times__</a> () override</td></tr>
 <tr class="separator:acebef2478ca255c80b3cce8f5ac9e2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09acdec1fe9c955329437c07617d33ca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIofx_1_1DatabaseIO.html#a09acdec1fe9c955329437c07617d33ca">open_input_file</a> (bool write_message, std::string *error_msg, int *bad_count, bool abort_if_error) const override</td></tr>
@@ -438,6 +436,8 @@ Private Attributes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_classIoex_1_1DatabaseIO"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classIoex_1_1DatabaseIO')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classIoex_1_1DatabaseIO.html">Ioex::DatabaseIO</a></td></tr>
+<tr class="memitem:a5aed73d2aa6ab7f127b1de4f9344229b inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#a5aed73d2aa6ab7f127b1de4f9344229b">ok__</a> (bool write_message=false, std::string *error_message=nullptr, int *bad_count=nullptr) const override</td></tr>
+<tr class="separator:a5aed73d2aa6ab7f127b1de4f9344229b inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab518e1a17e9ca82eef592828fc5ec9ed inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#ab518e1a17e9ca82eef592828fc5ec9ed">open_group__</a> (const std::string &amp;group_name) override</td></tr>
 <tr class="separator:ab518e1a17e9ca82eef592828fc5ec9ed inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ec5b04518141cace44155b3e72480c6 inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#a5ec5b04518141cace44155b3e72480c6">create_subgroup__</a> (const std::string &amp;group_name) override</td></tr>
@@ -2436,50 +2436,6 @@ template&lt;typename INT &gt; </div>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classIoex_1_1DatabaseIO.html#a184b2da08689814c05d2692855a7365d">Ioex::DatabaseIO</a>.</p>
-
-</div>
-</div>
-<a id="a5378742e6c225e7c1781bba3981110bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5378742e6c225e7c1781bba3981110bd">&#9670;&nbsp;</a></span>ok__()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Iofx::DatabaseIO::ok__ </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>write_message</em> = <code>false</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string *&#160;</td>
-          <td class="paramname"><em>error_msg</em> = <code>nullptr</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>bad_count</em> = <code>nullptr</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classIoex_1_1DatabaseIO.html#a4f32f89139224725c12661563fca2178">Ioex::DatabaseIO</a>.</p>
 
 </div>
 </div>

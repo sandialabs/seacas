@@ -191,6 +191,10 @@ Functions</h2></td></tr>
 <tr class="separator:a5cf345127f80e3bcf813194c15d97030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae240484d9a735c54d1192cde3ab82b5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#ae240484d9a735c54d1192cde3ab82b5a">ex_compress_variable</a> (int exoid, int varid, int type)</td></tr>
 <tr class="separator:ae240484d9a735c54d1192cde3ab82b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c22ac22d0d6a90bc5e5a96b6f7413b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#a71c22ac22d0d6a90bc5e5a96b6f7413b">ex_int_handle_mode</a> (unsigned int my_mode, int is_parallel)</td></tr>
+<tr class="separator:a71c22ac22d0d6a90bc5e5a96b6f7413b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1ad63da05c12d5f309cd978b2cb5693"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#ab1ad63da05c12d5f309cd978b2cb5693">ex_int_populate_header</a> (int exoid, const char *path, int my_mode, int *comp_ws, int *io_ws)</td></tr>
+<tr class="separator:ab1ad63da05c12d5f309cd978b2cb5693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -832,6 +836,34 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="a71c22ac22d0d6a90bc5e5a96b6f7413b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71c22ac22d0d6a90bc5e5a96b6f7413b">&#9670;&nbsp;</a></span>ex_int_handle_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_int_handle_mode </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>my_mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>is_parallel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a70aed184c504449a0022fbd757dfbb41"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a70aed184c504449a0022fbd757dfbb41">&#9670;&nbsp;</a></span>ex_int_iisort()</h2>
 
@@ -1104,6 +1136,52 @@ Variables</h2></td></tr>
 <span class="mlabels"><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1ad63da05c12d5f309cd978b2cb5693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1ad63da05c12d5f309cd978b2cb5693">&#9670;&nbsp;</a></span>ex_int_populate_header()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_int_populate_header </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>my_mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>comp_ws</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>io_ws</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
 </div><div class="memdoc">
 
 </div>

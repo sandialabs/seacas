@@ -44,7 +44,6 @@ var classIofx_1_1DatabaseIO =
     [ "handle_face_ids", "classIofx_1_1DatabaseIO.html#a803fcc950896948321d72beb927fc365", null ],
     [ "handle_node_ids", "classIofx_1_1DatabaseIO.html#a27f10af1b87e8332baec913a909bef2e", null ],
     [ "handle_output_file", "classIofx_1_1DatabaseIO.html#a3cfa484094240eaf8eddbbcd7876f957", null ],
-    [ "ok__", "classIofx_1_1DatabaseIO.html#a5378742e6c225e7c1781bba3981110bd", null ],
     [ "open_input_file", "classIofx_1_1DatabaseIO.html#a09acdec1fe9c955329437c07617d33ca", null ],
     [ "operator=", "classIofx_1_1DatabaseIO.html#a33e28060c10c3ce702ac3fee74431b32", null ],
     [ "put_field_internal", "classIofx_1_1DatabaseIO.html#adf1fa91efd304d5d0f0749d09e45fcce", null ],
