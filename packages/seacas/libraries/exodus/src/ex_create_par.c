@@ -157,8 +157,6 @@ exoid = ex_create ("test.exo"       \comment{filename path}
 #include <mpi.h>
 #include <stdlib.h>
 
-static int warning_output = 0;
-
 /* NOTE: Do *not* call `ex_create_par_int()` directly.  The public API
  *       function name is `ex_create_par()` which is a wrapper that calls
  *       `ex_create_par_int` with an additional argument to make sure
@@ -169,23 +167,11 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
 {
   int   exoid;
   int   status;
-  int   old_fill;
-  int   lio_ws;
-  int   filesiz = 1;
-  float vers;
   char  errmsg[MAX_ERR_LENGTH];
-  char *mode_name;
   int   nc_mode = 0;
-#if NC_HAS_HDF5
-  static int netcdf4_mode = -1;
-#endif /* NC_NETCDF4 */
-#if defined(NC_64BIT_DATA)
-  static int netcdf5_mode = -1;
-#endif
 
-  unsigned int my_mode      = cmode;
-  int          int64_status = my_mode & (EX_ALL_INT64_DB | EX_ALL_INT64_API);
-  int          is_parallel  = 1;
+  unsigned int my_mode     = cmode;
+  int          is_parallel = 1;
 
   EX_FUNC_ENTER();
 
@@ -199,35 +185,20 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
   EX_FUNC_LEAVE(EX_FATAL);
 #endif
 
-  if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
-    int run_version_major = run_version / 100;
-    int run_version_minor = run_version % 100;
-    int lib_version_major = EX_API_VERS_NODOT / 100;
-    int lib_version_minor = EX_API_VERS_NODOT % 100;
-    fprintf(stderr,
-            "EXODUS: Warning: This code was compiled with exodusII "
-            "version %d.%02d,\n          but was linked with exodusII "
-            "library version %d.%02d\n          This is probably an "
-            "error in the build process of this code.\n",
-            run_version_major, run_version_minor, lib_version_major, lib_version_minor);
-    warning_output = 1;
-  }
-
-  nc_mode = ex_int_handle_mode(my_mode, is_parallel);
+  nc_mode = ex_int_handle_mode(my_mode, is_parallel, run_version);
 
   if ((status = nc_create_par(path, nc_mode, comm, info, &exoid)) != NC_NOERR) {
 #if NC_HAS_HDF5
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s, mode: %s", path, mode_name);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s", path);
 #else
     if (my_mode & EX_NETCDF4) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: file create failed for %s in NETCDF4 and %s "
+               "ERROR: file create failed for %s in NETCDF4 "
                "mode.\n\tThis library does not support netcdf-4 files.",
-               path, mode_name);
+               path);
     }
     else {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s, mode: %s", path,
-               mode_name);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s", path);
     }
 #endif
     ex_err(__func__, errmsg, status);
