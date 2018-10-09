@@ -152,8 +152,6 @@ exoid = ex_create ("test.exo"       \comment{filename path}
 #include "exodusII_int.h"
 #include <stdlib.h>
 
-static int warning_output = 0;
-
 /* NOTE: Do *not* call `ex_create_int()` directly.  The public API
  *       function name is `ex_create()` which is a wrapper that calls
  *       `ex_create_int` with an additional argument to make sure
@@ -161,30 +159,17 @@ static int warning_output = 0;
  */
 int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run_version)
 {
-  int          exoid;
-  int          status;
-  char         errmsg[MAX_ERR_LENGTH];
-  int          nc_mode = 0;
-  unsigned int my_mode = cmode;
+  int   exoid;
+  int   status;
+  char  errmsg[MAX_ERR_LENGTH];
+  int   nc_mode = 0;
+
+  unsigned int my_mode     = cmode;
   int          is_parallel = 0;
 
   EX_FUNC_ENTER();
 
-  if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
-    int run_version_major = run_version / 100;
-    int run_version_minor = run_version % 100;
-    int lib_version_major = EX_API_VERS_NODOT / 100;
-    int lib_version_minor = EX_API_VERS_NODOT % 100;
-    fprintf(stderr,
-            "EXODUS: Warning: This code was compiled with exodusII "
-            "version %d.%02d,\n          but was linked with exodusII "
-            "library version %d.%02d\n          This is probably an "
-            "error in the build process of this code.\n",
-            run_version_major, run_version_minor, lib_version_major, lib_version_minor);
-    warning_output = 1;
-  }
-
-  nc_mode = ex_int_handle_mode(my_mode, is_parallel);
+  nc_mode = ex_int_handle_mode(my_mode, is_parallel, run_version);
 
   if ((status = nc_create(path, nc_mode, &exoid)) != NC_NOERR) {
 #if NC_HAS_HDF5

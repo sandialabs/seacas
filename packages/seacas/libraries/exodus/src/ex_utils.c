@@ -1469,7 +1469,9 @@ void ex_compress_variable(int exoid, int varid, int type)
 #endif
 }
 
-int ex_int_handle_mode(unsigned int my_mode, int is_parallel)
+static int warning_output = 0;
+
+int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
 {
   char errmsg[MAX_ERR_LENGTH];
   int  nc_mode = 0;
@@ -1484,13 +1486,22 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel)
   int int64_status;
   int pariomode = 0;
 
-#if defined(PARALLEL_AWARE_EXODUS)
-  int is_hdf5    = 0;
-  int is_pnetcdf = 0;
-#endif
-
   /* Contains a 1 in all bits corresponding to file modes */
   static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4;
+
+  if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
+    int run_version_major = run_version / 100;
+    int run_version_minor = run_version % 100;
+    int lib_version_major = EX_API_VERS_NODOT / 100;
+    int lib_version_minor = EX_API_VERS_NODOT % 100;
+    fprintf(stderr,
+            "EXODUS: Warning: This code was compiled with exodusII "
+            "version %d.%02d,\n          but was linked with exodusII "
+            "library version %d.%02d\n          This is probably an "
+            "error in the build process of this code.\n",
+            run_version_major, run_version_minor, lib_version_major, lib_version_minor);
+    warning_output = 1;
+  }
 
 /*
  * See if specified mode is supported in the version of netcdf we
@@ -1638,7 +1649,6 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel)
     }
     else if (my_mode & EX_PNETCDF) {
       pariomode  = NC_PNETCDF;
-      is_pnetcdf = 1;
       /* See if client specified 64-bit or not... */
       if ((int64_status & EX_ALL_INT64_DB) != 0) {
         tmp_mode = EX_64BIT_DATA;
