@@ -141,13 +141,13 @@ int ex_set_max_name_length(int exoid, int length)
   ex_check_valid_file_id(exoid, __func__);
   if (length <= 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Max name length must be positive.");
-    ex_err(__func__, errmsg, NC_EMAXNAME);
+    ex_err_fn(exoid, __func__, errmsg, NC_EMAXNAME);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   if (length > NC_MAX_NAME) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: Max name length (%d) exceeds netcdf max name size (%d).", length, NC_MAX_NAME);
-    ex_err(__func__, errmsg, NC_EMAXNAME);
+    ex_err_fn(exoid, __func__, errmsg, NC_EMAXNAME);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -170,7 +170,7 @@ void ex_update_max_name_length(int exoid, int length)
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to update 'max_name_length' attribute in file id %d", exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
   }
 
   if (length > db_length) {
@@ -228,7 +228,7 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
     free(int_names);
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -275,7 +275,7 @@ int ex_put_name_internal(int exoid, int varid, size_t index, const char *name,
     if ((status = nc_put_vara_text(exoid, varid, start, count, name)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s name in file id %d",
                ex_name_of_object(obj_type), exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       return (EX_FATAL);
     }
 
@@ -333,7 +333,7 @@ int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int nam
   if (status != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s name at index %d from file id %d",
              ex_name_of_object(obj_type), (int)index, exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     return (EX_FATAL);
   }
 
@@ -634,7 +634,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   default:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported id array type %d for file id %d", id_type,
              exoid);
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     return (EX_FATAL);
   }
 
@@ -648,7 +648,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     if ((status = nc_inq_dimid(exoid, id_dim, &dimid)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate id array dimension in file id %d",
                exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       return (EX_FATAL);
     }
 
@@ -656,7 +656,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     if ((status = nc_inq_dimlen(exoid, dimid, &dim_len)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s array length in file id %d",
                id_table, exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       return (EX_FATAL);
     }
 
@@ -664,7 +664,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     if ((status = nc_inq_varid(exoid, id_table, &varid)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s array in file id %d", id_table,
                exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       return (EX_FATAL);
     }
 
@@ -673,7 +673,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     if (!(id_vals = calloc(dim_len, sizeof(int64_t)))) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to allocate memory for %s array for file id %d", id_table, exoid);
-      ex_err(__func__, errmsg, EX_MEMFAIL);
+      ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
       return (EX_FATAL);
     }
 
@@ -687,7 +687,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
                  "ERROR: failed to allocate memory for temporary array "
                  "id_vals_int for file id %d",
                  exoid);
-        ex_err(__func__, errmsg, EX_MEMFAIL);
+        ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
         free(id_vals);
         return (EX_FATAL);
       }
@@ -703,7 +703,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     if (status != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s array from file id %d", id_table,
                exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       free(id_vals);
       return (EX_FATAL);
     }
@@ -766,7 +766,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       free(id_vals);
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to allocate memory for %s array for file id %d", id_table, exoid);
-      ex_err(__func__, errmsg, EX_MEMFAIL);
+      ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
       return (EX_FATAL);
     }
 
@@ -781,7 +781,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
         free(stat_vals);
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s array from file id %d",
                  stat_table, exoid);
-        ex_err(__func__, errmsg, status);
+        ex_err_fn(exoid, __func__, errmsg, status);
         return (EX_FATAL);
       }
     }
@@ -802,7 +802,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   }
 
   if (stat_vals[i] == 0) /* is this object null? */ {
-    ex_err(__func__, "", EX_NULLENTITY);
+    ex_err_fn(exoid, __func__, "", EX_NULLENTITY);
     if (!(tmp_stats->valid_stat)) {
       free(stat_vals);
     }
@@ -1109,7 +1109,7 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
     default:
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
-      ex_err(__func__, errmsg, EX_BADPARAM);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -1413,13 +1413,13 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
       if (status == NC_EBADDIM) {
         snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no dimension defining '%s' found in file id %d",
                  label, exoid);
-        ex_err(__func__, errmsg, status);
+        ex_err_fn(exoid, __func__, errmsg, status);
       }
       else {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to locate dimension defining number of '%s' in file id %d", label,
                  exoid);
-        ex_err(__func__, errmsg, status);
+        ex_err_fn(exoid, __func__, errmsg, status);
       }
     }
     return status;
@@ -1430,7 +1430,7 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to get length of dimension defining number of '%s' in file id %d",
                label, exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
     }
     return status;
   }
@@ -1451,7 +1451,7 @@ void ex_compress_variable(int exoid, int varid, int type)
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_compress_variable().",
              exoid);
-    ex_err(__func__, errmsg, EX_BADFILEID);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
   }
   else {
     int deflate_level = file->compression_level;
@@ -1513,7 +1513,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
              "EXODUS: ERROR: File format specified as netcdf-4, but the "
              "NetCDF library being used was not configured to enable "
              "this format\n");
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 #endif
@@ -1524,7 +1524,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
              "EXODUS: ERROR: File format specified as 64bit_data, but "
              "the NetCDF library being used does not support this "
              "format\n");
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 #endif
@@ -1595,7 +1595,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
              "EXODUS: ERROR: 64-bit integer storage requested, but the "
              "netcdf library does not support the required netcdf-4 or "
              "64BIT_DATA extensions.\n");
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
 #endif
   }
@@ -1619,7 +1619,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
                "EXODUS: ERROR: EX_MPIPOSIX parallel output requested "
                "which requires NetCDF-4 support, but the library does "
                "not have that option enabled.\n");
-      ex_err(__func__, errmsg, EX_BADPARAM);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
 #endif
     }
@@ -1631,7 +1631,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
                "EXODUS: ERROR: EX_MPIIO parallel output requested which "
                "requires NetCDF-4 support, but the library does not "
                "have that option enabled.\n");
-      ex_err(__func__, errmsg, EX_BADPARAM);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
 #endif
     }
@@ -1643,12 +1643,12 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
                "EXODUS: ERROR: EX_NETCDF4 parallel output requested which "
                "requires NetCDF-4 support, but the library does not "
                "have that option enabled.\n");
-      ex_err(__func__, errmsg, EX_BADPARAM);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
 #endif
     }
     else if (my_mode & EX_PNETCDF) {
-      pariomode  = NC_PNETCDF;
+      pariomode = NC_PNETCDF;
       /* See if client specified 64-bit or not... */
       if ((int64_status & EX_ALL_INT64_DB) != 0) {
         tmp_mode = EX_64BIT_DATA;
@@ -1661,7 +1661,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
                "EXODUS: ERROR: EX_PNETCDF parallel output requested "
                "which requires PNetCDF support, but the library does "
                "not have that option enabled.\n");
-      ex_err(__func__, errmsg, EX_BADPARAM);
+      ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
 #endif
     }
@@ -1777,7 +1777,7 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int *comp_w
   /* turn off automatic filling of netCDF variables */
   if ((status = nc_set_fill(exoid, NC_NOFILL, &old_fill)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to set nofill mode in file id %d", exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     return (EX_FATAL);
   }
 
@@ -1796,7 +1796,7 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int *comp_w
              "nc_close() called instead of ex_close() on an open Exodus "
              "file?\n",
              exoid, path);
-    ex_err(__func__, errmsg, EX_BADFILEID);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
     nc_close(exoid);
     return (EX_FATAL);
   }
@@ -1818,7 +1818,7 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int *comp_w
       EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to init conversion routines in file id %d",
              exoid);
-    ex_err(__func__, errmsg, EX_LASTERR);
+    ex_err_fn(exoid, __func__, errmsg, EX_LASTERR);
     return (EX_FATAL);
   }
 
@@ -1832,7 +1832,7 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int *comp_w
       NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store Exodus II API version attribute in file id %d", exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     return (EX_FATAL);
   }
 
@@ -1841,7 +1841,7 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int *comp_w
   if ((status = nc_put_att_float(exoid, NC_GLOBAL, ATT_VERSION, NC_FLOAT, 1, &vers)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store Exodus II file version attribute in file id %d", exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     return (EX_FATAL);
   }
 
@@ -1853,7 +1853,7 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int *comp_w
              "ERROR: failed to store Exodus II file float word size "
              "attribute in file id %d",
              exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     return (EX_FATAL);
   }
 
@@ -1861,7 +1861,7 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int *comp_w
   if ((status = nc_put_att_int(exoid, NC_GLOBAL, ATT_FILESIZE, NC_INT, 1, &filesiz)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store Exodus II file size attribute in file id %d", exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     return (EX_FATAL);
   }
 
@@ -1871,7 +1871,7 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int *comp_w
         NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to add maximum_name_length attribute in file id %d", exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       return (EX_FATAL);
     }
   }
@@ -1882,14 +1882,14 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int *comp_w
                                  &int64_db_status)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to add int64_status attribute in file id %d",
                exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       return (EX_FATAL);
     }
   }
 
   if ((status = nc_enddef(exoid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     return (EX_FATAL);
   }
   return EX_NOERR;

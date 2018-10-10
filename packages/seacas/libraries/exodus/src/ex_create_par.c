@@ -165,10 +165,10 @@ exoid = ex_create ("test.exo"       \comment{filename path}
 int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI_Comm comm,
                       MPI_Info info, int run_version)
 {
-  int   exoid;
-  int   status;
-  char  errmsg[MAX_ERR_LENGTH];
-  int   nc_mode = 0;
+  int  exoid;
+  int  status;
+  char errmsg[MAX_ERR_LENGTH];
+  int  nc_mode = 0;
 
   unsigned int my_mode     = cmode;
   int          is_parallel = 1;
@@ -181,7 +181,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
            "EXODUS: ERROR: Parallel output requires the netcdf-4 and/or "
            "pnetcdf library format, but this netcdf library does not "
            "support either.\n");
-  ex_err(__func__, errmsg, EX_BADPARAM);
+  ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
   EX_FUNC_LEAVE(EX_FATAL);
 #endif
 
@@ -201,7 +201,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s", path);
     }
 #endif
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
