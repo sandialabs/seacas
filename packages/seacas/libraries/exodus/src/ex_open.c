@@ -169,7 +169,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
 
   if ((mode & EX_READ) && (mode & EX_WRITE)) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Cannot specify both EX_READ and EX_WRITE");
-    ex_err(__func__, errmsg, EX_BADFILEMODE);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADFILEMODE);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -262,7 +262,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
                "the file does not exist, or there is a permission or file "
                "format issue.",
                path, type);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -280,7 +280,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
                "does not exist, or there is a permission or file format "
                "issue.",
                path);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
