@@ -94,7 +94,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
 
   if (num_time_steps == 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: there are no time_steps on the file id %d", exoid);
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -102,7 +102,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: time_step must be greater than 0.  Entered value is %d in file id %d",
              time_step, exoid);
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -111,7 +111,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
              "ERROR: beginning time_step is out-of-range. Value = %d, "
              "valid range is 1 to %d in file id %d",
              time_step, num_time_steps, exoid);
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -122,7 +122,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
     if ((status = nc_inq_varid(exoid, VAR_WHOLE_TIME, &varid)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate time variable in file id %d",
                exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
     file->time_varid = varid;
@@ -140,7 +140,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
 
   if (status != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get time value in file id %d", exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);
