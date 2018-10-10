@@ -479,6 +479,14 @@ namespace Iopx {
     filename            = file.tailname();
 
     char *current_cwd = getcwd(nullptr, 0);
+
+    if (using_dw()) {
+      // Use DW path instead of permanent-file-store path
+      path = get_dwPath();
+      set_dwname(path + filename);
+      set_pfsname(get_filename());
+    }
+
     chdir(path.c_str());
 
     bool do_timer = false;

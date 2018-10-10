@@ -211,7 +211,11 @@ namespace Ioex {
 
     void openDatabase__() const override { get_file_pointer(); }
 
-    void closeDatabase__() const override { free_file_pointer(); }
+    void closeDatabase__() const override
+    {
+      free_file_pointer();
+      closeDW();
+    }
 
   public:
     // Temporarily made public for use during Salinas transition

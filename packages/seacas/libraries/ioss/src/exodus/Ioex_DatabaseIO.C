@@ -311,7 +311,7 @@ namespace Ioex {
       double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
       ex_close(exodusFilePtr);
-
+      closeDW();
       if (do_timer && isParallel) {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
@@ -368,8 +368,8 @@ namespace Ioex {
     // Check byte-size of integers stored on the database...
     if ((ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
       if (myProcessor == 0) {
-	std::cerr << "IOSS: Input database contains 8-byte integers. Setting Ioss to use 8-byte "
-	  "integers.\n";
+        std::cerr << "IOSS: Input database contains 8-byte integers. Setting Ioss to use 8-byte "
+                     "integers.\n";
       }
       ex_set_int64_status(exodusFilePtr, EX_ALL_INT64_API);
       set_int_byte_size_api(Ioss::USE_INT64_API);
