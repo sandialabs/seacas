@@ -115,6 +115,13 @@ int ex_get_glob_var_time_int(int exoid, int glob_var_index, int beg_time_step, i
   /* Check that times are in range */
   {
     int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
+
+    if (num_time_steps == 0) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: there are no time_steps on the file id %d", exoid);
+      ex_err(__func__, errmsg, EX_BADPARAM);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+
     if (beg_time_step <= 0 || beg_time_step > num_time_steps) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: beginning time_step is out-of-range. Value = %d, "
