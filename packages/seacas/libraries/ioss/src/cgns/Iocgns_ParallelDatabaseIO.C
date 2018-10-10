@@ -279,9 +279,9 @@ namespace Iocgns {
         pcg_mpi_initialized = 0;
         cg_open(get_filename().c_str(), CG_MODE_READ, &cgnsSerFilePtr);
         pcg_mpi_initialized = init;
+	assert(cgnsSerFilePtr >= 0);
       }
     }
-    assert(cgnsSerFilePtr >= 0);
   }
 
   void ParallelDatabaseIO::closeDatabase__() const
