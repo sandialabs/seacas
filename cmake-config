@@ -179,6 +179,13 @@ then
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
     
+# DataWarp (Burst Buffer)
+# I use the following for mutrino (10/16/2018):
+#    module load datawarp
+#    -D TPL_ENABLE_DataWarp:BOOL=ON \
+#    -D DataWarp_LIBRARY_DIRS:PATH=/opt/cray/datawarp/2.1.16-6.0.5.1_2.61__g238b34d.ari/lib \
+#    -D DataWarp_INCLUDE_DIRS:PATH=/opt/cray/datawarp/2.1.16-6.0.5.1_2.61__g238b34d.ari/include \
+
 OS=`uname -s`
 if [ "$OS" == "Darwin" ] ; then
   DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/X11/include"
