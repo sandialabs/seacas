@@ -265,9 +265,9 @@ namespace Ioss {
   void DatabaseIO::openDW() const
   {
 #if defined SEACAS_HAVE_DATAWARP
-    if (!is_input() && using_dw()) { // We are about to write to a output database in BB
+    if (using_dw()) { // We are about to write to a output database in BB
       Ioss::FileInfo path{get_filename()};
-      std::string    bbfname = get_dwPath() + path.filename();
+      std::string    bbfname = get_dwPath() + path.tailname();
       Ioss::FileInfo file    = Ioss::FileInfo(bbfname);
       if (file.exists() && !file.is_writable()) { // already existing file which has been closed
         // stage wait returns 0 = success, ENOENT or errno
@@ -275,7 +275,7 @@ namespace Ioss {
         if (dwret < 0) {
           std::ostringstream errmsg;
           errmsg << "ERROR: failed waiting for file stage" << bbfname
-                 << "' : " << std::strerror(errno) << "\n";
+                 << "' : " << std::strerror(-dwret) << "\n";
           IOSS_ERROR(errmsg);
         }
       }
@@ -295,14 +295,20 @@ namespace Ioss {
   {
 #if defined SEACAS_HAVE_DATAWARP
     // get file on disk
-    if (!is_input() && using_dw()) {
-      int ret = dw_stage_file_out(get_dwname().c_str(), get_pfsname().c_str(), DW_STAGE_IMMEDIATE);
-      if (ret < 0) {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: file staging of " << get_dwname() << " to " << get_pfsname()
-               << " failed at close "
-               << "' : " << std::strerror(errno) << "\n";
-        IOSS_ERROR(errmsg);
+    if (using_dw()) {
+      if (!using_parallel_io() || (using_parallel_io() && myProcessor == 0)) {
+	int ret = dw_stage_file_out(get_dwname().c_str(), get_pfsname().c_str(), DW_STAGE_IMMEDIATE);
+	if (ret < 0) {
+	  std::ostringstream errmsg;
+	  errmsg << "ERROR: file staging of " << get_dwname() << " to " << get_pfsname()
+		 << " failed at close "
+		 << "' : " << std::strerror(-ret) << "\n";
+	  std::cerr << "DW " << errmsg.str();
+	  IOSS_ERROR(errmsg);
+	}
+      }
+      if (using_parallel_io()) {
+	MPI_Barrier(util().communicator());
       }
     }
 #endif
@@ -313,21 +319,19 @@ namespace Ioss {
   void DatabaseIO::check_setDW() const
   {
 #if defined SEACAS_HAVE_DATAWARP
+    if (!is_input()) {
     std::string bb_path;
-
     util().get_environment("DW_JOB_STRIPED", bb_path, isParallel);
-    // check_set_bool_property returns true or false into set_dw
-    bool set_dw = false;
-    if ((!bbpath.empty()) &&
-        (Utils::check_set_bool_property(properties, "ENABLE_DATAWARP", set_dw) == true)) {
+    if (!bb_path.empty()) {
+      bool set_dw = false;
+      Utils::check_set_bool_property(properties, "ENABLE_DATAWARP", set_dw);
       usingDataWarp = set_dw;
-      dwPath        = bbpath;
+      dwPath = bb_path;
     }
-    else {
-      usingDataWarp = set_dw;
+    if (myProcessor == 0) {
+      std::cerr << "Using DataWarp = " << std::boolalpha << usingDataWarp << "; burst buffer path ='" << dwPath << "'\n";
     }
-#else
-    usingDataWarp = false;
+    }
 #endif
   }
 
@@ -421,11 +425,12 @@ namespace Ioss {
 #if defined SEACAS_HAVE_DATAWARP
       // If an output file and using BB (DataWarp), then modify the file location to point to the
       // burst buffer location instead...
-      if (using_dw() && !is_input()) {
+      set_pfsname(decodedFilename);   // Name on permanent-file-store
+      if (using_dw()) {
         {
           // Strip off path (if any) and add path to BB
           Ioss::FileInfo path{decodedFilename};
-          decodedFilename = get_dwPath() + path.filename();
+          decodedFilename = get_dwPath() + path.tailname();
         }
 
         Ioss::FileInfo file{decodedFilename};
@@ -438,12 +443,11 @@ namespace Ioss {
           if (dwret < 0) {
             std::ostringstream errmsg;
             errmsg << "ERROR: failed waiting for file stage" << decodedFilename
-                   << "' : " << std::strerror(errno) << "\n";
+                   << "' : " << std::strerror(-dwret) << "\n";
             IOSS_ERROR(errmsg);
           }
         }
         set_dwname(decodedFilename); // Name on burst-buffer
-        set_pfsname(name_on_disk);   // Name on permanent-file-store
       }
 #endif
     }
