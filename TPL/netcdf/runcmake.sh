@@ -15,8 +15,10 @@ then
   else
     LD_EXT="so"
   fi
+  SKIP_RPATH="NO"
 else
   LD_EXT="a"
+  SKIP_RPATH="YES"
 fi
 
 export LIBS="-ldl -lzlib"
@@ -58,6 +60,7 @@ rm -f config.cache
 
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DBUILD_SHARED_LIBS:BOOL=${SHARED} \
+         -DCMAKE_SKIP_INSTALL_RPATH:BOOL=${SKIP_RPATH} \
 	 -DBUILD_TESTING:BOOL=OFF \
          -DCMAKE_INSTALL_PREFIX=${ACCESS} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
