@@ -262,30 +262,36 @@ namespace Ioss {
    * provides ability to use NVMe based flash storage available across all compute nodes accessible
    * via high speed NIC.
    */
-  void DatabaseIO::openDW() const
+  void DatabaseIO::openDW(const std::string &filename) const
   {
+    set_pfsname(filename); // Name on permanent-file-store
+    if (using_dw()) {      // We are about to write to a output database in BB
 #if defined SEACAS_HAVE_DATAWARP
-    if (using_dw()) { // We are about to write to a output database in BB
-      Ioss::FileInfo path{get_filename()};
-      std::string    bbfname = get_dwPath() + path.tailname();
-      Ioss::FileInfo file    = Ioss::FileInfo(bbfname);
-      if (file.exists() && !file.is_writable()) { // already existing file which has been closed
+      Ioss::FileInfo path{filename};
+      Ioss::FileInfo bb_file{get_dwPath() + path.tailname()};
+      if (bb_file.exists() &&
+          !bb_file.is_writable()) { // already existing file which has been closed
+        // If we can't write to the file on the BB, then it is a file which
+        // is being staged by datawarp system over to the permanent filesystem.
+        // Wait until staging has finished...
         // stage wait returns 0 = success, ENOENT or errno
-        int dwret = dw_wait_file_stage(bbfname.c_str());
+        int dwret = dw_wait_file_stage(bb_file.filename().c_str());
         if (dwret < 0) {
           std::ostringstream errmsg;
-          errmsg << "ERROR: failed waiting for file stage" << bbfname
+          errmsg << "ERROR: failed waiting for file stage" << bb_file.filename()
                  << "' : " << std::strerror(-dwret) << "\n";
           IOSS_ERROR(errmsg);
         }
       }
-      set_dwname(bbfname);
-      set_pfsname(get_filename());
-    }
+      set_dwname(bb_file.filename());
 #endif
+    }
+    else {
+      set_dwname(filename);
+    }
   }
 
-  void DatabaseIO::openDatabase__() const { openDW(); }
+  void DatabaseIO::openDatabase__() const { openDW(get_filename()); }
 
   /** \brief This function gets called inside closeDatabase__(), which checks if Cray Datawarp (DW)
    * is in use, if so, we want to call a stageout before actual close of this file.
@@ -297,18 +303,19 @@ namespace Ioss {
     // get file on disk
     if (using_dw()) {
       if (!using_parallel_io() || (using_parallel_io() && myProcessor == 0)) {
-	int ret = dw_stage_file_out(get_dwname().c_str(), get_pfsname().c_str(), DW_STAGE_IMMEDIATE);
-	if (ret < 0) {
-	  std::ostringstream errmsg;
-	  errmsg << "ERROR: file staging of " << get_dwname() << " to " << get_pfsname()
-		 << " failed at close "
-		 << "' : " << std::strerror(-ret) << "\n";
-	  std::cerr << "DW " << errmsg.str();
-	  IOSS_ERROR(errmsg);
-	}
+        int ret =
+            dw_stage_file_out(get_dwname().c_str(), get_pfsname().c_str(), DW_STAGE_IMMEDIATE);
+        if (ret < 0) {
+          std::ostringstream errmsg;
+          errmsg << "ERROR: file staging of " << get_dwname() << " to " << get_pfsname()
+                 << " failed at close "
+                 << "' : " << std::strerror(-ret) << "\n";
+          std::cerr << "DW " << errmsg.str();
+          IOSS_ERROR(errmsg);
+        }
       }
       if (using_parallel_io()) {
-	MPI_Barrier(util().communicator());
+        MPI_Barrier(util().communicator());
       }
     }
 #endif
@@ -320,17 +327,18 @@ namespace Ioss {
   {
 #if defined SEACAS_HAVE_DATAWARP
     if (!is_input()) {
-    std::string bb_path;
-    util().get_environment("DW_JOB_STRIPED", bb_path, isParallel);
-    if (!bb_path.empty()) {
-      bool set_dw = false;
-      Utils::check_set_bool_property(properties, "ENABLE_DATAWARP", set_dw);
-      usingDataWarp = set_dw;
-      dwPath = bb_path;
-    }
-    if (myProcessor == 0) {
-      std::cerr << "Using DataWarp = " << std::boolalpha << usingDataWarp << "; burst buffer path ='" << dwPath << "'\n";
-    }
+      std::string bb_path;
+      util().get_environment("DW_JOB_STRIPED", bb_path, isParallel);
+      if (!bb_path.empty()) {
+        bool set_dw = false;
+        Utils::check_set_bool_property(properties, "ENABLE_DATAWARP", set_dw);
+        usingDataWarp = set_dw;
+        dwPath        = bb_path;
+      }
+      if (myProcessor == 0) {
+        std::cerr << "Using DataWarp = " << std::boolalpha << usingDataWarp
+                  << "; burst buffer path ='" << dwPath << "'\n";
+      }
     }
 #endif
   }
@@ -423,31 +431,10 @@ namespace Ioss {
       }
 
 #if defined SEACAS_HAVE_DATAWARP
-      // If an output file and using BB (DataWarp), then modify the file location to point to the
-      // burst buffer location instead...
-      set_pfsname(decodedFilename);   // Name on permanent-file-store
+      openDW(decodedFilename);
       if (using_dw()) {
-        {
-          // Strip off path (if any) and add path to BB
-          Ioss::FileInfo path{decodedFilename};
-          decodedFilename = get_dwPath() + path.tailname();
-        }
-
-        Ioss::FileInfo file{decodedFilename};
-        if (file.is_file() && !file.is_writable()) {
-          // If we can't write to the file on the BB, then it is a file which
-          // is being staged by datawarp system over to the permanent filesystem.
-          // Wait until staging has finished...
-          // stage wait returns 0 = success, ENOENT or errno
-          int dwret = dw_wait_file_stage(decodedFilename.c_str());
-          if (dwret < 0) {
-            std::ostringstream errmsg;
-            errmsg << "ERROR: failed waiting for file stage" << decodedFilename
-                   << "' : " << std::strerror(-dwret) << "\n";
-            IOSS_ERROR(errmsg);
-          }
-        }
-        set_dwname(decodedFilename); // Name on burst-buffer
+        // Note that if using_dw(), then we need to set the decodedFilename to the BB name.
+        decodedFilename = get_dwname();
       }
 #endif
     }

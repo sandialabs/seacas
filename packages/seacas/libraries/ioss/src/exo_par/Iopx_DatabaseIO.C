@@ -470,23 +470,17 @@ namespace Iopx {
 
     int par_mode = get_parallel_io_mode(properties);
 
-    MPI_Info    info        = MPI_INFO_NULL;
-    int         app_opt_val = ex_opts(EX_VERBOSE);
-    std::string filename    = get_filename();
+    MPI_Info info        = MPI_INFO_NULL;
+    int      app_opt_val = ex_opts(EX_VERBOSE);
+    openDW(get_filename());
+
+    std::string filename = get_dwname();
 
     Ioss::FileInfo file(filename);
     std::string    path = file.pathname();
     filename            = file.tailname();
 
     char *current_cwd = getcwd(nullptr, 0);
-
-    if (using_dw()) {
-      // Use DW path instead of permanent-file-store path
-      path = get_dwPath();
-      set_dwname(path + filename);
-      set_pfsname(get_filename());
-    }
-
     chdir(path.c_str());
 
     bool do_timer = false;

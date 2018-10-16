@@ -235,7 +235,7 @@ namespace Ioss {
      * for all related subsequent functions(e.g: get_filename, get_file_ptr etc) once burst buffer
      * is found and set to be used.
      */
-    void openDW() const;
+    void openDW(const std::string &filename) const;
 
     /** \brief  Function which invokes stageout  from BB to Disk, prior to completion of final close
      */
