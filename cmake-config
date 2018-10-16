@@ -105,6 +105,13 @@ HAVE_MATIO=`check_enable "${MATIO_PATH}/include/matio.h"`
 HAVE_CGNS=`check_enable "${CGNS_PATH}/include/cgnslib.h"`
 HAVE_DATAWAREHOUSE=OFF
 
+### DataWarp (Burst Buffer)
+### I use the following for mutrino (10/16/2018):
+###    module load datawarp
+###    -D TPL_ENABLE_DataWarp:BOOL=ON \
+###    -D DataWarp_LIBRARY_DIRS:PATH=/opt/cray/datawarp/2.1.16-6.0.5.1_2.61__g238b34d.ari/lib \
+###    -D DataWarp_INCLUDE_DIRS:PATH=/opt/cray/datawarp/2.1.16-6.0.5.1_2.61__g238b34d.ari/include \
+
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
 
