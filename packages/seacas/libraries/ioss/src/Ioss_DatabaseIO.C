@@ -303,6 +303,9 @@ namespace Ioss {
     // get file on disk
     if (using_dw()) {
       if (!using_parallel_io() || (using_parallel_io() && myProcessor == 0)) {
+#if IOSS_DEBUG_OUTPUT
+	std::cerr << "Staging `" << get_dwname() << "` to `" << get_pfsname() << "`\n";
+#endif
         int ret =
             dw_stage_file_out(get_dwname().c_str(), get_pfsname().c_str(), DW_STAGE_IMMEDIATE);
         if (ret < 0) {
@@ -327,17 +330,25 @@ namespace Ioss {
   {
 #if defined SEACAS_HAVE_DATAWARP
     if (!is_input()) {
-      std::string bb_path;
-      util().get_environment("DW_JOB_STRIPED", bb_path, isParallel);
-      if (!bb_path.empty()) {
-        bool set_dw = false;
-        Utils::check_set_bool_property(properties, "ENABLE_DATAWARP", set_dw);
-        usingDataWarp = set_dw;
-        dwPath        = bb_path;
-      }
-      if (myProcessor == 0) {
-        std::cerr << "Using DataWarp = " << std::boolalpha << usingDataWarp
-                  << "; burst buffer path ='" << dwPath << "'\n";
+      bool set_dw = false;
+      Utils::check_set_bool_property(properties, "ENABLE_DATAWARP", set_dw);
+      if (set_dw) {
+	std::string bb_path;
+	// Selected via `#DW jobdw type=scratch access_mode=striped`
+	util().get_environment("DW_JOB_STRIPED", bb_path, isParallel);
+
+	if (bb_path.empty()) { // See if using `private` mode...
+	  // Selected via `#DW jobdw type=scratch access_mode=private`
+	  util().get_environment("DW_JOB_PRIVATE", bb_path, isParallel);
+	}
+	if (!bb_path.empty()) {
+	  usingDataWarp = true;
+	  dwPath        = bb_path;
+	}
+	if (myProcessor == 0) {
+	  std::cerr << "Using DataWarp = " << std::boolalpha << usingDataWarp
+		    << "; burst buffer path ='" << dwPath << "'\n";
+	}
       }
     }
 #endif
