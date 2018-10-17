@@ -787,8 +787,8 @@ Functions</h2></td></tr>
 <tr class="separator:ae356629b4b51b86cf54a498492f14f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab86e9f8fb7fe52a0ae98204946e77f35"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#ab86e9f8fb7fe52a0ae98204946e77f35">ex_leavedef</a> (int exoid, const char *call_rout)</td></tr>
 <tr class="separator:ab86e9f8fb7fe52a0ae98204946e77f35"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71c22ac22d0d6a90bc5e5a96b6f7413b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#a71c22ac22d0d6a90bc5e5a96b6f7413b">ex_int_handle_mode</a> (unsigned int my_mode, int is_parallel)</td></tr>
-<tr class="separator:a71c22ac22d0d6a90bc5e5a96b6f7413b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc7ab35150b72a96c904ac2fb831fa32"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#afc7ab35150b72a96c904ac2fb831fa32">ex_int_handle_mode</a> (unsigned int my_mode, int is_parallel, int run_version)</td></tr>
+<tr class="separator:afc7ab35150b72a96c904ac2fb831fa32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1ad63da05c12d5f309cd978b2cb5693"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#ab1ad63da05c12d5f309cd978b2cb5693">ex_int_populate_header</a> (int exoid, const char *path, int my_mode, int *comp_ws, int *io_ws)</td></tr>
 <tr class="separator:ab1ad63da05c12d5f309cd978b2cb5693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bf0a3077a0a1a2d6c1f77019eb35884"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#a2bf0a3077a0a1a2d6c1f77019eb35884">ex_int_get_block_param</a> (int exoid, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> id, int ndim, struct <a class="el" href="structelem__blk__parm.html">elem_blk_parm</a> *<a class="el" href="structelem__blk__parm.html">elem_blk_parm</a>)</td></tr>
@@ -6198,8 +6198,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a71c22ac22d0d6a90bc5e5a96b6f7413b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a71c22ac22d0d6a90bc5e5a96b6f7413b">&#9670;&nbsp;</a></span>ex_int_handle_mode()</h2>
+<a id="afc7ab35150b72a96c904ac2fb831fa32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc7ab35150b72a96c904ac2fb831fa32">&#9670;&nbsp;</a></span>ex_int_handle_mode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6214,7 +6214,13 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>is_parallel</em>&#160;</td>
+          <td class="paramname"><em>is_parallel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>run_version</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

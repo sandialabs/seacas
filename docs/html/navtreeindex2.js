@@ -183,7 +183,6 @@ var NAVTREEINDEX2 =
 "ex__utils_8c.html#a6a9492348daa4fc26d1b7e5d13819f64":[9,0,2,157,64],
 "ex__utils_8c.html#a6c2fa92940d40e58f2dbd28063cd4fc2":[9,0,2,157,40],
 "ex__utils_8c.html#a70aed184c504449a0022fbd757dfbb41":[9,0,2,157,20],
-"ex__utils_8c.html#a71c22ac22d0d6a90bc5e5a96b6f7413b":[9,0,2,157,19],
 "ex__utils_8c.html#a71feba7b6408b2bd8f3554d49289039f":[9,0,2,157,43],
 "ex__utils_8c.html#a7429fd926ddecc1a7efa097966c3192d":[9,0,2,157,47],
 "ex__utils_8c.html#a743cb35d5fa5fca560c84edfcba8f857":[9,0,2,157,54],
@@ -200,6 +199,7 @@ var NAVTREEINDEX2 =
 "ex__utils_8c.html#aa992f34cd15bcad5c1aa37e863000eec":[9,0,2,157,3],
 "ex__utils_8c.html#aac19ba1b27495467de816438a5f60f25":[9,0,2,157,28],
 "ex__utils_8c.html#ab1ad63da05c12d5f309cd978b2cb5693":[9,0,2,157,26],
+"ex__utils_8c.html#ab71aa5cfa846f02a7fb1924bcfeb77db":[9,0,2,157,69],
 "ex__utils_8c.html#ab92a5c5542f6fc8fae6198071e8f97a5":[9,0,2,157,52],
 "ex__utils_8c.html#abc3ad0e4f6220f9e230c50458d5d3cfb":[9,0,2,157,21],
 "ex__utils_8c.html#abfcb73acccb51722a1fc0488766056a6":[9,0,2,157,30],
@@ -223,6 +223,7 @@ var NAVTREEINDEX2 =
 "ex__utils_8c.html#af35e776de5243f4b5a3f2bbbe06d42c6":[9,0,2,157,39],
 "ex__utils_8c.html#af5d7d2d496640993b1c6fe395532e1bc":[9,0,2,157,14],
 "ex__utils_8c.html#af8c4570298295a78d1f0ce9ad1bbdb5c":[9,0,2,157,25],
+"ex__utils_8c.html#afc7ab35150b72a96c904ac2fb831fa32":[9,0,2,157,19],
 "examples.html":[10],
 "exo__jack-windows_8c.html":[9,0,0,0,1],
 "exo__jack-windows_8c.html#a0059844ab2a0911190c1fa553aeb5312":[9,0,0,0,1,24],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "exo__jack-windows_8c.html#a1cd5658d688e49770028652520635d07":[9,0,0,0,1,137],
 "exo__jack-windows_8c.html#a1fa3ab66e16e8b2832ae0cdf606321a1":[9,0,0,0,1,69],
 "exo__jack-windows_8c.html#a206a16230bf3b836f767fea8ac24bf13":[9,0,0,0,1,87],
-"exo__jack-windows_8c.html#a22060ad6f44727a9908ff1b3b612b2d5":[9,0,0,0,1,153],
-"exo__jack-windows_8c.html#a22ea0b385ce0f87e8e8173c15655a7ed":[9,0,0,0,1,49]
+"exo__jack-windows_8c.html#a22060ad6f44727a9908ff1b3b612b2d5":[9,0,0,0,1,153]
 };
