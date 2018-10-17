@@ -175,6 +175,7 @@ var exodusII_8h =
     [ "ex_create_int", "exodusII_8h.html#aaea5bc36c6f151eacbe5fb9d23eb22a5", null ],
     [ "ex_cvt_nodes_to_sides", "exodusII_8h.html#a27866a3e7d0d04c5849cd34ccd13b579", null ],
     [ "ex_err", "exodusII_8h.html#a73924582d1725b8f8672ce292dde53e5", null ],
+    [ "ex_err_fn", "exodusII_8h.html#ad80ad976010b0653dd981c3c7867475f", null ],
     [ "ex_get_all_times", "exodusII_8h.html#a25705723a510ee4c6b23959925eca4ec", null ],
     [ "ex_get_attr", "exodusII_8h.html#a2b1eea67e34b3167bd22febc06081d11", null ],
     [ "ex_get_attr_names", "exodusII_8h.html#add3ac6317bf78162bdc37554c080c1dd", null ],

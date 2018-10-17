@@ -191,8 +191,8 @@ Functions</h2></td></tr>
 <tr class="separator:a5cf345127f80e3bcf813194c15d97030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae240484d9a735c54d1192cde3ab82b5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#ae240484d9a735c54d1192cde3ab82b5a">ex_compress_variable</a> (int exoid, int varid, int type)</td></tr>
 <tr class="separator:ae240484d9a735c54d1192cde3ab82b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71c22ac22d0d6a90bc5e5a96b6f7413b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#a71c22ac22d0d6a90bc5e5a96b6f7413b">ex_int_handle_mode</a> (unsigned int my_mode, int is_parallel)</td></tr>
-<tr class="separator:a71c22ac22d0d6a90bc5e5a96b6f7413b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc7ab35150b72a96c904ac2fb831fa32"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#afc7ab35150b72a96c904ac2fb831fa32">ex_int_handle_mode</a> (unsigned int my_mode, int is_parallel, int run_version)</td></tr>
+<tr class="separator:afc7ab35150b72a96c904ac2fb831fa32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1ad63da05c12d5f309cd978b2cb5693"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#ab1ad63da05c12d5f309cd978b2cb5693">ex_int_populate_header</a> (int exoid, const char *path, int my_mode, int *comp_ws, int *io_ws)</td></tr>
 <tr class="separator:ab1ad63da05c12d5f309cd978b2cb5693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -250,6 +250,8 @@ Variables</h2></td></tr>
 <tr class="separator:acbd68227405088fdad1a25580a38c00c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b905aa37fa32fb21a5231c72fe2baa7"><td class="memItemLeft" align="right" valign="top">static struct <a class="el" href="structlist__item.html">list_item</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#a3b905aa37fa32fb21a5231c72fe2baa7">em_ctr_list</a> = 0</td></tr>
 <tr class="separator:a3b905aa37fa32fb21a5231c72fe2baa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab71aa5cfa846f02a7fb1924bcfeb77db"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#ab71aa5cfa846f02a7fb1924bcfeb77db">warning_output</a> = 0</td></tr>
+<tr class="separator:ab71aa5cfa846f02a7fb1924bcfeb77db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ad80acff89f02005080373bf6cf4ff468"></a>
@@ -836,8 +838,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a71c22ac22d0d6a90bc5e5a96b6f7413b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a71c22ac22d0d6a90bc5e5a96b6f7413b">&#9670;&nbsp;</a></span>ex_int_handle_mode()</h2>
+<a id="afc7ab35150b72a96c904ac2fb831fa32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc7ab35150b72a96c904ac2fb831fa32">&#9670;&nbsp;</a></span>ex_int_handle_mode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -852,7 +854,13 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>is_parallel</em>&#160;</td>
+          <td class="paramname"><em>is_parallel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>run_version</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2174,6 +2182,28 @@ Variables</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">struct <a class="el" href="structlist__item.html">list_item</a>* ss_ctr_list = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab71aa5cfa846f02a7fb1924bcfeb77db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab71aa5cfa846f02a7fb1924bcfeb77db">&#9670;&nbsp;</a></span>warning_output</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int warning_output = 0</td>
         </tr>
       </table>
   </td>

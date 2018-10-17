@@ -125,9 +125,9 @@ Data Structures</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:af5aeb509bb9ac704f563622a00d0c11e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#af5aeb509bb9ac704f563622a00d0c11e">NC_HAVE_META_H</a></td></tr>
 <tr class="separator:af5aeb509bb9ac704f563622a00d0c11e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa18e08d59faa100114b77fe55900ec49"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a>&#160;&#160;&#160;7.16f</td></tr>
+<tr class="memitem:aa18e08d59faa100114b77fe55900ec49"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a>&#160;&#160;&#160;7.17f</td></tr>
 <tr class="separator:aa18e08d59faa100114b77fe55900ec49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54e92e59ab8df2901302fd50bc103fbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>&#160;&#160;&#160;716</td></tr>
+<tr class="memitem:a54e92e59ab8df2901302fd50bc103fbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>&#160;&#160;&#160;717</td></tr>
 <tr class="separator:a54e92e59ab8df2901302fd50bc103fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d5e98bf5604721ad61b71685b68ef7e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a2d5e98bf5604721ad61b71685b68ef7e">EX_VERS</a>&#160;&#160;&#160;<a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a></td></tr>
 <tr class="separator:a2d5e98bf5604721ad61b71685b68ef7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -536,6 +536,8 @@ Functions</h2></td></tr>
 <tr class="separator:a5cf345127f80e3bcf813194c15d97030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73924582d1725b8f8672ce292dde53e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a73924582d1725b8f8672ce292dde53e5">ex_err</a> (const char *module_name, const char *message, int err_num)</td></tr>
 <tr class="separator:a73924582d1725b8f8672ce292dde53e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad80ad976010b0653dd981c3c7867475f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#ad80ad976010b0653dd981c3c7867475f">ex_err_fn</a> (int exoid, const char *module_name, const char *message, int err_num)</td></tr>
+<tr class="separator:ad80ad976010b0653dd981c3c7867475f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3da0f860c0efa4b115e905c042403346"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a3da0f860c0efa4b115e905c042403346">ex_set_err</a> (const char *module_name, const char *message, int err_num)</td></tr>
 <tr class="separator:a3da0f860c0efa4b115e905c042403346"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1cdf87b4af74c54b772410d09b3b358"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aa1cdf87b4af74c54b772410d09b3b358">ex_strerror</a> (int err_num)</td></tr>
@@ -958,7 +960,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define EX_API_VERS&#160;&#160;&#160;7.16f</td>
+          <td class="memname">#define EX_API_VERS&#160;&#160;&#160;7.17f</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -972,7 +974,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define EX_API_VERS_NODOT&#160;&#160;&#160;716</td>
+          <td class="memname">#define EX_API_VERS_NODOT&#160;&#160;&#160;717</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1732,7 +1734,52 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
+<dl class="section note"><dt>Note</dt><dd>The <a class="el" href="ex__create_8c.html#aaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int()</a> is an internal function called by <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a>. The user should call <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> and not <a class="el" href="ex__create_8c.html#aaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int()</a>.</dd></dl>
+<p>The function <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> creates a new exodus file and returns an ID that can subsequently be used to refer to the file.</p>
+<p>All floating point values in an exodus file are stored as either 4-byte (float) or 8-byte (double) numbers; no mixing of 4- and 8-byte numbers in a single file is allowed. An application code can compute either 4- or 8-byte values and can designate that the values be stored in the exodus file as either 4- or 8-byte numbers; conversion between the 4- and 8-byte values is performed automatically by the API routines. Thus, there are four possible combinations of compute word size and storage (or I/O) word size.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> returns a negative number. Possible causes of errors include:<ul>
+<li>Passing a file name that includes a directory that does not exist.</li>
+<li>Specifying a file name of a file that exists and also specifying a no clobber option.</li>
+<li>Attempting to create a file in a directory without permission to create files there.</li>
+<li>Passing an invalid file clobber mode.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">path</td><td>The file name of the new exodus file. This can be given as either an absolute path name (from the root of the file system) or a relative path name (from the current directory).</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">cmode</td><td>Mode. Use one of the following predefined constants: <ul>
+<li>EX_NOCLOBBER To create the new file only if the given file name does not refer to a file that already exists.</li>
+</ul>
+<ul>
+<li>EX_CLOBBER To create the new file, regardless of whether a file with the same name already exists. If a file with the same name does exist, its contents will be erased.</li>
+</ul>
+<ul>
+<li>EX_64BIT_OFFSET To create a model that can store individual datasets larger than 2 gigabytes. This modifies the internal storage used by exodusII and also puts the underlying NetCDF file into the <em>64-bit</em> offset' mode. See largemodel for more details on this mode. A large model file will also be created if the environment variable EXODUS_LARGE_MODEL is defined in the users environment. A message will be printed to standard output if this environment variable is found. EX_LARGE_MODEL is alias.</li>
+</ul>
+<ul>
+<li>EX_NORMAL_MODEL Create a standard model.</li>
+</ul>
+<ul>
+<li>EX_64BIT_DATA To create a model using the CDF5 format which uses the classic model but has 64-bit dimensions and sizes. This type will also be created if the environment variable EXODUS_NETCDF5 is defined in the users environment. A message will be printed to standard output if this environment variable is found.</li>
+</ul>
+<ul>
+<li>EX_NETCDF4 To create a model using the HDF5-based NetCDF-4 output. An HDF5-based NetCDF-4 file will also be created if the environment variable EXODUS_NETCDF4 is defined in the users environment. A message will be printed to standard output if this environment variable is found.</li>
+</ul>
+<ul>
+<li>EX_NOSHARE Do not open the underlying NetCDF file in <em>share</em> mode. See the NetCDF documentation for more details.</li>
+</ul>
+<ul>
+<li>EX_SHARE Do open the underlying NetCDF file in <em>share</em> mode. See the NetCDF documentation for more details.</li>
+</ul>
+</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">comp_ws</td><td>The word size in bytes (0, 4 or 8) of the floating point variables used in the application program. If 0 (zero) is passed, the default sizeof(float) will be used and returned in this variable. WARNING: all exodus functions requiring floats must be passed floats declared with this passed in or returned compute word size (4 or 8).}</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">io_ws</td><td>The word size in bytes (4 or 8) of the floating point data as they are to be stored in the exodus file.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">run_version</td><td>(internally generated) used to verify compatibility of library and include files.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The following code segment creates an exodus file called <code>test.exo</code>:</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="exodusII_8h.html">exodusII.h</a>&quot;</span></div><div class="line"><span class="keywordtype">int</span> CPU_word_size, IO_word_size, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line">CPU_word_size = <span class="keyword">sizeof</span>(float);      <span class="comment">/* use float or double */</span></div><div class="line">IO_word_size = 8;                   <span class="comment">/* store variables as doubles */</span></div><div class="line"></div><div class="line"><span class="comment">/* create exodus file */</span></div><div class="line"><a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a> = <a class="code" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create</a> (<span class="stringliteral">&quot;test.exo&quot;</span>       <span class="comment">/* filename path */</span></div><div class="line">                    <a class="code" href="group__FileVars.html#gadeed66ded179e51a8858254052a76ba4">EX_CLOBBER</a>,     <span class="comment">/* create mode */</span></div><div class="line">                    &amp;CPU_word_size, <span class="comment">/* CPU float word size in bytes */</span></div><div class="line">                    &amp;IO_word_size); <span class="comment">/* I/O float word size in bytes */</span></div></div><!-- fragment --> 
 </div>
 </div>
 <a id="a27866a3e7d0d04c5849cd34ccd13b579"></a>
@@ -1889,19 +1936,48 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="ex__err_8c.html#a73924582d1725b8f8672ce292dde53e5">ex_err()</a> logs an error to stderr. It is intended to provide explanatory messages for error codes returned from other exodus routines.</p>
-<p>The passed in error codes and corresponding messages are listed in ???. The programmer may supplement the error message printed for standard errors by providing an error message. If the error code is provided with no error message, the predefined message will be used. The error code EX_MSG is available to log application specific messages.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">module_name</td><td>This is a string containing the name of the calling function. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">message</td><td>This is a string containing a message explaining the error or problem. If EX_VERBOSE (see <a class="el" href="exodusII_8h.html#a8f47bbb035d32bbafc594c5ed3c00403">ex_opts()</a>) is true, this message will be printed to stderr. Otherwise, nothing will be printed. Maximum length is <code>MAX_ERR_LENGTH</code>.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">err_num</td><td>This is an integer code identifying the error. exodus C functions place an error code value in exerrval, an external int. Negative values are considered fatal errors while positive values are warnings. There is a set of predefined values defined in <code><a class="el" href="exodusII_8h.html">exodusII.h</a></code>. The predefined constant <code>EX_PRTLASTMSG</code> will cause the last error message to be output, regardless of the setting of the error reporting level (see <a class="el" href="exodusII_8h.html#a8f47bbb035d32bbafc594c5ed3c00403">ex_opts()</a>).</td></tr>
-  </table>
-  </dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_2test_2test_ts_errval_8c-example.html#a2">/test/test_ts_errval.c</a>.</dd>
 </dl>
-<p>The following is an example of the use of this function:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, CPU_word_size, IO_word_size, errval;</div><div class="line"><span class="keywordtype">float</span> version;</div><div class="line"><span class="keywordtype">char</span> errmsg[<a class="code" href="group__StringLengths.html#ga3e81d99126d7d910227927550fc32288">MAX_ERR_LENGTH</a>];</div><div class="line"></div><div class="line">CPU_word_size = <span class="keyword">sizeof</span>(float);</div><div class="line">IO_word_size = 0;</div><div class="line"></div><div class="line"><span class="comment">/* open exodus file */</span></div><div class="line"><span class="keywordflow">if</span> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a> = <a class="code" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open</a> (<span class="stringliteral">&quot;test.exo&quot;</span>, <a class="code" href="group__FileVars.html#ga49938d96ef78ea1726e9970383bf61b1">EX_READ</a>, &amp;CPU_word_size,</div><div class="line">                     &amp;IO_word_size, &amp;version)) {</div><div class="line">   errval = 999;</div><div class="line">   snprintf(errmsg, <a class="code" href="group__StringLengths.html#ga3e81d99126d7d910227927550fc32288">MAX_ERR_LENGTH</a>,<span class="stringliteral">&quot;ERROR: cannot open file test.exo&quot;</span>);</div><div class="line">   <a class="code" href="exodusII_8h.html#a73924582d1725b8f8672ce292dde53e5">ex_err</a>(__func__, errmsg, errval);</div><div class="line">}</div></div><!-- fragment --> <dl><dt><b>Examples: </b></dt><dd><a class="el" href="_2test_2test_ts_errval_8c-example.html#a2">/test/test_ts_errval.c</a>.</dd>
-</dl>
+</div>
+</div>
+<a id="ad80ad976010b0653dd981c3c7867475f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad80ad976010b0653dd981c3c7867475f">&#9670;&nbsp;</a></span>ex_err_fn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ex_err_fn </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>module_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>err_num</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 </div>
 </div>
 <a id="a25705723a510ee4c6b23959925eca4ec"></a>

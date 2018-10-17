@@ -1,5 +1,6 @@
 var NAVTREEINDEX3 =
 {
+"exo__jack-windows_8c.html#a22ea0b385ce0f87e8e8173c15655a7ed":[9,0,0,0,1,49],
 "exo__jack-windows_8c.html#a24e9f358e8ac860dd571c8628af9e2b7":[9,0,0,0,1,101],
 "exo__jack-windows_8c.html#a2831b405ef057ff5402b3a4dbab80fa1":[9,0,0,0,1,40],
 "exo__jack-windows_8c.html#a2afcad8a32ffecb9237121f272c06ad6":[9,0,0,0,1,163],
@@ -248,6 +249,5 @@ var NAVTREEINDEX3 =
 "exo__jack_8c.html#aa76210654596e190ccefd608d7ec6b81":[9,0,0,0,2,69],
 "exo__jack_8c.html#aa80c23af939ed0443eb6eb3ed2e2f550":[9,0,0,0,2,58],
 "exo__jack_8c.html#aa941f7e73c92a5f0a69b1507670357f3":[9,0,0,0,2,96],
-"exo__jack_8c.html#aa9c9e69108aef78b8a5c0b4dd9619e53":[9,0,0,0,2,77],
-"exo__jack_8c.html#aa9d3e8a472480691ab92c194a5fc822a":[9,0,0,0,2,20]
+"exo__jack_8c.html#aa9c9e69108aef78b8a5c0b4dd9619e53":[9,0,0,0,2,77]
 };

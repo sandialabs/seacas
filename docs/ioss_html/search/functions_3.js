@@ -35,6 +35,7 @@ var searchData=
   ['clone',['clone',['../classIoss_1_1StructuredBlock.html#a1d080d0d7963b4b4ce84ff5f5092af1d',1,'Ioss::StructuredBlock']]],
   ['closedatabase',['closeDatabase',['../classIoss_1_1DatabaseIO.html#abd61efb4ff35bb829faac1e1ebbb26ea',1,'Ioss::DatabaseIO']]],
   ['closedatabase_5f_5f',['closeDatabase__',['../classIocgns_1_1DatabaseIO.html#a471eeae9ef27a32dafadbe1a73203f05',1,'Iocgns::DatabaseIO::closeDatabase__()'],['../classIocgns_1_1ParallelDatabaseIO.html#a461a816513692d456089de4f72040600',1,'Iocgns::ParallelDatabaseIO::closeDatabase__()'],['../classIoex_1_1DatabaseIO.html#a17600f7a3af7e82f80ae5ab1b4bca779',1,'Ioex::DatabaseIO::closeDatabase__()'],['../classIoss_1_1DatabaseIO.html#a8a846d65962cbc8d412bb615bc0a9d37',1,'Ioss::DatabaseIO::closeDatabase__()']]],
+  ['closeserialdatabase_5f_5f',['closeSerialDatabase__',['../classIocgns_1_1ParallelDatabaseIO.html#a22b49b2a0e0c418210b6b5207784d2fc',1,'Iocgns::ParallelDatabaseIO']]],
   ['common_5fwrite_5fmeta_5fdata',['common_write_meta_data',['../classIocgns_1_1Utils.html#a4436c119a691be04b8407f0f69185161',1,'Iocgns::Utils']]],
   ['commset',['CommSet',['../classIoss_1_1CommSet.html#a99f831527991fb14c729738e79582748',1,'Ioss::CommSet']]],
   ['communicate_5fblock_5fdata',['communicate_block_data',['../classIocgns_1_1DecompositionData.html#ac490fba872c27fe24e929ce92309c401',1,'Iocgns::DecompositionData::communicate_block_data()'],['../classIoss_1_1Decomposition.html#a971abd166ba8021c8714fb763aadddfa',1,'Ioss::Decomposition::communicate_block_data()']]],
