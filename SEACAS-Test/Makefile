@@ -28,16 +28,16 @@ RM	=	rm -f
 
 test:	baseline.g3 new_tape.g3 new_shell.g3 slice conv_text matlab python conjoin
 
-base_o.g3: base_o.g base_o.g3i 
+base_o.g3: base_o.g base_o.g3i
 	$(APREPRO) base_o.g3i |	$(GEN3D) base_o.g base_o.g3
 
-base.g3: base.g base.g3i 
+base.g3: base.g base.g3i
 	$(APREPRO) base.g3i | $(GEN3D)  base.g base.g3
 
-base_sh.g3: base_sh.g base_sh.g3i 
+base_sh.g3: base_sh.g base_sh.g3i
 	$(APREPRO) base_sh.g3i | $(GENSHELL)  base_sh.g base_sh.g3
 
-cap.g3: cap.g cap.g3i 
+cap.g3: cap.g cap.g3i
 	$(APREPRO) cap.g3i | $(GEN3D)  cap.g cap.g3
 
 new_tape.g3: base.g3 base_o.g3 rigid.g3 cap.g3 new_tape.gj
@@ -70,19 +70,19 @@ slice: slicea sliceb slicec
 slicea: baseline.g
 	$(DECOMP) -p $(NPROCA) --subdir mesh baseline.g
 	ls -l mesh/baseline.g.$(NPROCA).*
-	$(EPU) --max_open_files 10 -output_extension e -auto mesh/baseline.g.$(NPROCA).00 
+	$(EPU) --max_open_files 10 -output_extension e -auto mesh/baseline.g.$(NPROCA).00
 	$(EXODIFF) -stat baseline.g baseline.e
 
 sliceb: baseline.g
 	$(DECOMP) -p $(NPROCB) --subdir mesh baseline.g
 	ls -l mesh/baseline.g.$(NPROCB).*
-	$(EPU) --max_open_files 8 -output_extension e -auto mesh/baseline.g.$(NPROCB).00 
+	$(EPU) --max_open_files 8 -output_extension e -auto mesh/baseline.g.$(NPROCB).00
 	$(EXODIFF) -stat baseline.g baseline.e
 
 slicec: baseline.g
 	$(DECOMP) -p $(NPROCC) --subdir mesh baseline.g
 	ls -l mesh/baseline.g.$(NPROCC).*
-	$(EPU) -output_extension e -auto mesh/baseline.g.$(NPROCC).00 
+	$(EPU) -output_extension e -auto mesh/baseline.g.$(NPROCC).00
 	$(EXODIFF) -stat baseline.g baseline.e
 
 # test-gap.g has some nodesets with df and some without
@@ -109,6 +109,12 @@ conjoin:
 	$(IO_SHELL) --in_type generated 10x10x10+times:2000+variables:nodal,3,element,6 gold.g
 	$(EXODIFF) -stat -pedantic conjoin-out.e gold.g
 
+exodiff_partial:
+	$(EXODIFF)  -p 8-block.e 1-block.e
+	$(EXODIFF)  -p 8-block.e 4-block.e
+	$(EXODIFF)  -p 1-block.e 8-block.e
+	$(EXODIFF)  -p 4-block.e 8-block.e
+	$(EXODIFF)  -p 1-block.e 4-block.e
 ############################# Default Rules#####################
 # Dependencies:
 base_o.g: common.h
