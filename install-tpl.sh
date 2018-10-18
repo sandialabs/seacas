@@ -1,20 +1,48 @@
 #! /usr/bin/env bash
 
+# Text color variables
+if [[ $TERM != *"xterm"* ]]; then
+    export TERM=dumb
+fi
+txtred=$(tput setaf 1)    # Red
+txtgrn=$(tput setaf 2)    # Green
+txtylw=$(tput setaf 3)    # Yellow
+txtblu=$(tput setaf 4)    # Blue
+txtpur=$(tput setaf 5)    # Purple
+txtcyn=$(tput setaf 6)    # Cyan
+txtwht=$(tput setaf 7)    # White
+txtrst=$(tput sgr0)       # Text reset
+
 # Which compiler to use?
 export COMPILER=${COMPILER:-gnu}
 
+function check_valid_yes_no()
+{
+    local var=$1
+    if ! [ "${!var}" == "YES" ] && ! [ "${!var}" == "NO" ]; then
+    echo "${txtred}Invalid value for $var (${!var}) -- Must be YES or NO${txtrst}"
+    exit 1
+fi
+}
+
 #By default, download and then install.
 DOWNLOAD=${DOWNLOAD:-YES}
+check_valid_yes_no DOWNLOAD
+
 BUILD=${BUILD:-YES}
+check_valid_yes_no BUILD
 
 # Force downloading and installation even if the TPL already exists in lib/include
 FORCE=${FORCE:-NO}
+check_valid_yes_no FORCE
 
 # Shared libraries or static libraries?
 SHARED=${SHARED:-YES}
+check_valid_yes_no SHARED
 
 # Enable Burst-Buffer support in PNetCDF?
 BB=${BB:-NO}
+check_valid_yes_no BB
 
 # Which TPLS? (HDF5 and NetCDF always, PNetCDF if MPI=ON)
 CGNS=${CGNS:-ON}
@@ -29,19 +57,6 @@ VERBOSE=${VERBOSE:-1}
 
 pwd
 export ACCESS=`pwd`
-
-# Text color variables
-if [[ $TERM != *"xterm"* ]]; then
-    export TERM=dumb
-fi
-txtred=$(tput setaf 1)    # Red
-txtgrn=$(tput setaf 2)    # Green
-txtylw=$(tput setaf 3)    # Yellow
-txtblu=$(tput setaf 4)    # Blue
-txtpur=$(tput setaf 5)    # Purple
-txtcyn=$(tput setaf 6)    # Cyan
-txtwht=$(tput setaf 7)    # White
-txtrst=$(tput sgr0)       # Text reset
 
 if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
 then
