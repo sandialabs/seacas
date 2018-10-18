@@ -77,7 +77,7 @@ namespace SEAMS {
 
   Aprepro::~Aprepro()
   {
-    if ( outputStream.size() > 0) {
+    if (!outputStream.empty()) {
       outputStream.top()->flush();
     }
 
@@ -848,7 +848,7 @@ namespace SEAMS {
       history_data hist;
       hist.original     = original;
       hist.substitution = substitution;
-      hist.index        = outputStream.top()->tellp();
+      hist.index        = outputStream.empty() ? 0 : outputStream.top()->tellp();
 
       history.push_back(hist);
     }
