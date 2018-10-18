@@ -148,9 +148,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="exodusII_8h.html#a7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var()</a> reads the values of a single nodal variable for a single time step. Memory must be allocated for the nodal variable values array before this function is invoked.</p>
+<p>The function <a class="el" href="exodusII_8h.html#aba2f69afb622a1d7467e6c00fb53ecfc">ex_get_nodal_var()</a> reads the values of a single nodal variable for a single time step. Memory must be allocated for the nodal variable values array before this function is invoked.</p>
 <p>Because nodal variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#aba2f69afb622a1d7467e6c00fb53ecfc">ex_get_nodal_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>specified nodal variable does not exist.</li>
 <li>a warning value is returned if no nodal variables are stored in the file.</li>
@@ -167,7 +167,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>For example, the following demonstrates how this function would be used:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nodes, time_step, var_index;</div><div class="line"><span class="keywordtype">float</span> *var_values;</div><div class="line"></div><div class="line"><span class="comment">/* read the second nodal variable at the first time step */</span></div><div class="line">time_step = 1;</div><div class="line">var_index = 2;</div><div class="line"></div><div class="line">var_values = (<span class="keywordtype">float</span> *) calloc (num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, time_step, var_index, num_nodes,</div><div class="line">                         var_values);</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nodes, time_step, var_index;</div><div class="line"><span class="keywordtype">float</span> *var_values;</div><div class="line"></div><div class="line"><span class="comment">/* read the second nodal variable at the first time step */</span></div><div class="line">time_step = 1;</div><div class="line">var_index = 2;</div><div class="line"></div><div class="line">var_values = (<span class="keywordtype">float</span> *) calloc (num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#aba2f69afb622a1d7467e6c00fb53ecfc">ex_get_nodal_var</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, time_step, var_index, num_nodes,</div><div class="line">                         var_values);</div></div><!-- fragment --> 
 </div>
 </div>
 </div><!-- contents -->

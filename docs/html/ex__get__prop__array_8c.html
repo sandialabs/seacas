@@ -143,9 +143,9 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>The function <a class="el" href="ex__get__prop__array_8c.html#a74cf2c88e0f5f5d98247033b6f9d6e9e">ex_get_prop_array()</a> reads an array of integer property values for all element blocks, node sets, or side sets. The order of the values in the array correspond to the order in which the element blocks, node sets, or side sets were introduced into the file. Before this function is invoked, memory must be allocated for the returned array of(num_elem_blk, num_node_sets, or {num_side_sets}) integer values.</p>
 <p>This function can be used in place of</p><ul>
-<li><a class="el" href="exodusII_8h.html#ac7a259ad988532a988dab0699e2d58cf">ex_get_elem_blk_ids()</a>,</li>
-<li><a class="el" href="exodusII_8h.html#a71c575ba3911753b14ae2801c9c77c53">ex_get_node_set_ids()</a>, and</li>
-<li><a class="el" href="exodusII_8h.html#a5662333f96883889694aab0b65367eab">ex_get_side_set_ids()</a> to get element block, node set, and side set IDs, respectively, by requesting the property name <b>ID</b>. One should also note that this same function can be accomplished with multiple calls to <a class="el" href="exodusII_8h.html#acd124cd392f1e92c6da04c525508f39d">ex_get_prop()</a>.</li>
+<li><a class="el" href="exodusII_8h.html#a93999c6ef6831cc64be11f7ae6053a3f">ex_get_elem_blk_ids()</a>,</li>
+<li><a class="el" href="exodusII_8h.html#a05ca87d2e8527da174dc30e9731ee1a8">ex_get_node_set_ids()</a>, and</li>
+<li><a class="el" href="exodusII_8h.html#a22bf5315322ea87d9bb3c5dc12599efb">ex_get_side_set_ids()</a> to get element block, node set, and side set IDs, respectively, by requesting the property name <b>ID</b>. One should also note that this same function can be accomplished with multiple calls to <a class="el" href="exodusII_8h.html#acd124cd392f1e92c6da04c525508f39d">ex_get_prop()</a>.</li>
 </ul>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__get__prop__array_8c.html#a74cf2c88e0f5f5d98247033b6f9d6e9e">ex_get_prop_array()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
