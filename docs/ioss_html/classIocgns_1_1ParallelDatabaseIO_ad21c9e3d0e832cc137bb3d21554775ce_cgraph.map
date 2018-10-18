@@ -1,0 +1,5 @@
+<map id="Iocgns::ParallelDatabaseIO::get_serial_file_pointer" name="Iocgns::ParallelDatabaseIO::get_serial_file_pointer">
+<area shape="rect" id="node2" href="$classIocgns_1_1ParallelDatabaseIO.html#a7bc74f571d3c8d942059ec3b4b3ed544" title="Iocgns::ParallelDatabase\lIO::openSerialDatabase__" alt="" coords="227,37,405,76"/>
+<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="458,5,599,44"/>
+<area shape="rect" id="node4" href="$classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba" title="Get the file name associated with the database. " alt="" coords="453,68,603,107"/>
+</map>

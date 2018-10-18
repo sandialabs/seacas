@@ -1,0 +1,5 @@
+<map id="tsl::detail_hopscotch_hash::hopscotch_hash::get_allocator" name="tsl::detail_hopscotch_hash::hopscotch_hash::get_allocator">
+<area shape="rect" id="node2" href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a8414fb7f1bdaa3fd962226fe8198e1bb" title="tsl::detail_hopscotch\l_hash::hopscotch_hash\l\&lt; Key, KeySelect, void,\l Hash, KeyEqual, Allocator,\l NeighborhoodSize, StoreHash,\l GrowthPolicy, overflow_container\l_type \&gt;::new_hopscotch_hash" alt="" coords="216,5,437,111"/>
+<area shape="rect" id="node3" href="$classtsl_1_1hopscotch__map.html#adff56f4907ab6625b61c64fbf7df92bd" title="tsl::hopscotch_map\l::get_allocator" alt="" coords="258,135,395,173"/>
+<area shape="rect" id="node4" href="$classtsl_1_1hopscotch__set.html#a5ce19daef17d31cd8aa121428cd014b9" title="tsl::hopscotch_set\l::get_allocator" alt="" coords="262,197,391,236"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="Ioex::DatabaseIO::finalize_file_open" name="Ioex::DatabaseIO::finalize_file_open">
+<area shape="rect" id="node2" href="$classIoex_1_1DatabaseIO.html#a4f857d674cdf0b2b0a4e9b88ace6c69c" title="Returns 4 or 8. " alt="" coords="227,68,378,107"/>
+<area shape="rect" id="node3" href="$classIoex_1_1DatabaseIO.html#af0ddcfa1cd90af9397e76e2e80a7ef27" title="Ioex::DatabaseIO::get\l_file_pointer" alt="" coords="426,68,577,107"/>
+<area shape="rect" id="node4" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="640,5,782,44"/>
+<area shape="rect" id="node5" href="$classIoex_1_1DatabaseIO.html#a74597cacb5f8b3aa935cc91fd05adf81" title="Ioex::DatabaseIO::open\l_input_file" alt="" coords="630,68,792,107"/>
+<area shape="rect" id="node6" href="$classIoex_1_1DatabaseIO.html#a184b2da08689814c05d2692855a7365d" title="Ioex::DatabaseIO::handle\l_output_file" alt="" coords="625,131,797,169"/>
+</map>

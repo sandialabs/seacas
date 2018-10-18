@@ -1,0 +1,11 @@
+<map id="Ioex::DatabaseIO::handle_block_ids" name="Ioex::DatabaseIO::handle_block_ids">
+<area shape="rect" id="node2" href="$classIoss_1_1EntityBlock.html#a74b0e9e33b69bc3384798f342b68228b" title="Get the &#39;offset&#39; for the block. " alt="" coords="238,5,365,44"/>
+<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#aae00a220b8c3cbd720bcda80803513a1" title="Returns 4 or 8. " alt="" coords="228,68,374,107"/>
+<area shape="rect" id="node4" href="$classIoss_1_1Map.html#a2e65d0ea8d6b141ed17a929e4c610b41" title="Ioss::Map::set_map" alt="" coords="233,131,370,156"/>
+<area shape="rect" id="node6" href="$classIoex_1_1DatabaseIO.html#af0ddcfa1cd90af9397e76e2e80a7ef27" title="Ioex::DatabaseIO::get\l_file_pointer" alt="" coords="226,180,377,219"/>
+<area shape="rect" id="node10" href="$namespaceIoex.html#a7697aeff911a70745bd170f5259fd686" title="Ioex::exodus_error" alt="" coords="235,243,368,268"/>
+<area shape="rect" id="node5" href="$namespaceanonymous__namespace_02Ioss__Map_8C_03.html#aa1a8680ec9949ce1b6ad349b6f0e48ea" title="anonymous_namespace\l\{Ioss_Map::C\}::is_one2one" alt="" coords="425,85,606,124"/>
+<area shape="rect" id="node7" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="445,148,586,187"/>
+<area shape="rect" id="node8" href="$classIoex_1_1DatabaseIO.html#a74597cacb5f8b3aa935cc91fd05adf81" title="Ioex::DatabaseIO::open\l_input_file" alt="" coords="435,211,597,249"/>
+<area shape="rect" id="node9" href="$classIoex_1_1DatabaseIO.html#a184b2da08689814c05d2692855a7365d" title="Ioex::DatabaseIO::handle\l_output_file" alt="" coords="429,273,602,312"/>
+</map>
