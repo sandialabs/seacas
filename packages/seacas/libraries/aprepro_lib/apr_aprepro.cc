@@ -77,7 +77,9 @@ namespace SEAMS {
 
   Aprepro::~Aprepro()
   {
-    outputStream.top()->flush();
+    if ( outputStream.size() > 0) {
+      outputStream.top()->flush();
+    }
 
     if ((stringScanner != nullptr) && stringScanner != lexer) {
       delete stringScanner;
