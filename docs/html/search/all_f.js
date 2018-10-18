@@ -1,6 +1,7 @@
 var searchData=
 [
   ['structures_20used_20by_20external_20api_20functions_2e',['Structures used by external API functions.',['../group__APIStructs.html',1,'']]],
+  ['seacas_5fdeprecated',['SEACAS_DEPRECATED',['../exodusII_8h.html#aa6f92a73fd4902e97d32ce0acd679896',1,'exodusII.h']]],
   ['sequential',['sequential',['../structobj__stats.html#a867842e852e1802f20d07124cc5f35e4',1,'obj_stats']]],
   ['sets_5fdist_5ffact',['sets_dist_fact',['../structex__set__specs.html#a885624dab2047d1cb53eac5e125d7791',1,'ex_set_specs']]],
   ['sets_5fdist_5findex',['sets_dist_index',['../structex__set__specs.html#a01768e58fd47a77b4c54eb75ff8fc1b9',1,'ex_set_specs']]],

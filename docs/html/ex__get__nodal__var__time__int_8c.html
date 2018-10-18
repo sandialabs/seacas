@@ -154,9 +154,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="exodusII_8h.html#afef762ab61ca2dabf04d548e51f026eb">ex_get_nodal_var_time()</a> reads the values of a nodal variable for a single node through a specified number of time steps. Memory must be allocated for the nodal variable values array before this function is invoked.</p>
+<p>The function <a class="el" href="exodusII_8h.html#a7ff376425773f7b5c1a05d9a9b8643fb">ex_get_nodal_var_time()</a> reads the values of a nodal variable for a single node through a specified number of time steps. Memory must be allocated for the nodal variable values array before this function is invoked.</p>
 <p>Because nodal variables are floating point values, the application code must declare the array passed to be the appropriate type (float or `&lsquo;double&rsquo;') to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#afef762ab61ca2dabf04d548e51f026eb">ex_get_nodal_var_time()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a7ff376425773f7b5c1a05d9a9b8643fb">ex_get_nodal_var_time()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>specified nodal variable does not exist.</li>
 <li>a warning value is returned if no nodal variables are stored in the file.</li>
 </ul>

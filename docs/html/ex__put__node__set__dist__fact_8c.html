@@ -132,14 +132,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000091">Deprecated:</a></b></dt><dd>Use <a class="el" href="exodusII_8h.html#adab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact()</a>(exoid, EX_NODE_SET, node_set_id, node_set_dist_fact)</dd></dl>
-<p>The function <a class="el" href="ex__put__node__set__dist__fact_8c.html#a3d826dbc074b586bbbcc52d26f442585">ex_put_node_set_dist_fact()</a> writes node set distribution factors for a single node set. The function <a class="el" href="exodusII_8h.html#adca0e30d164d2a036dc0b3b127d3f401">ex_put_node_set_param()</a> must be called before this routine is invoked.</p>
+<p>The function <a class="el" href="ex__put__node__set__dist__fact_8c.html#a3d826dbc074b586bbbcc52d26f442585">ex_put_node_set_dist_fact()</a> writes node set distribution factors for a single node set. The function <a class="el" href="exodusII_8h.html#a8cdfacc20b190562b2f194c0d91f7657">ex_put_node_set_param()</a> must be called before this routine is invoked.</p>
 <p>Because the distribution factors are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__put__node__set__dist__fact_8c.html#a3d826dbc074b586bbbcc52d26f442585">ex_put_node_set_dist_fact()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>data file opened for read only.</li>
 <li>data file not initialized properly with call to <a class="el" href="exodusII_8h.html#aad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
-<li><a class="el" href="exodusII_8h.html#adca0e30d164d2a036dc0b3b127d3f401">ex_put_node_set_param()</a> not called previously.</li>
-<li>a call to <a class="el" href="exodusII_8h.html#adca0e30d164d2a036dc0b3b127d3f401">ex_put_node_set_param()</a> specified zero distribution factors.</li>
+<li><a class="el" href="exodusII_8h.html#a8cdfacc20b190562b2f194c0d91f7657">ex_put_node_set_param()</a> not called previously.</li>
+<li>a call to <a class="el" href="exodusII_8h.html#a8cdfacc20b190562b2f194c0d91f7657">ex_put_node_set_param()</a> specified zero distribution factors.</li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -150,7 +150,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>Refer to the description of <a class="el" href="exodusII_8h.html#adca0e30d164d2a036dc0b3b127d3f401">ex_put_node_set_param()</a> for a sample code segment to write out the distribution factors for a node set. </p>
+<p>Refer to the description of <a class="el" href="exodusII_8h.html#a8cdfacc20b190562b2f194c0d91f7657">ex_put_node_set_param()</a> for a sample code segment to write out the distribution factors for a node set. </p>
 
 </div>
 </div>
