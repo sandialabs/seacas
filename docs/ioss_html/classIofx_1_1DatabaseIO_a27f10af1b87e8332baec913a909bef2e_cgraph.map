@@ -1,0 +1,18 @@
+<map id="Iofx::DatabaseIO::handle_node_ids" name="Iofx::DatabaseIO::handle_node_ids">
+<area shape="rect" id="node2" href="$classIoss_1_1Map.html#aeb06d5b955371e06cfaa5cb0f3e2ea7f" title="Ioss::Map::set_size" alt="" coords="230,5,365,31"/>
+<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#aae00a220b8c3cbd720bcda80803513a1" title="Returns 4 or 8. " alt="" coords="224,55,370,93"/>
+<area shape="rect" id="node4" href="$classIoss_1_1Map.html#a2e65d0ea8d6b141ed17a929e4c610b41" title="Ioss::Map::set_map" alt="" coords="228,117,366,143"/>
+<area shape="rect" id="node6" href="$classIoss_1_1DatabaseIO.html#ac7cb8bf7c8175fa0546a2bd965570e7c" title="Ioss::DatabaseIO::get\l_region" alt="" coords="222,167,372,205"/>
+<area shape="rect" id="node7" href="$classIofx_1_1DatabaseIO.html#a8212f6de9aaec63d0b3511726e6ff4c5" title="Iofx::DatabaseIO::get\l_file_pointer" alt="" coords="224,229,371,268"/>
+<area shape="rect" id="node17" href="$namespaceIoex.html#a7697aeff911a70745bd170f5259fd686" title="Ioex::exodus_error" alt="" coords="231,292,364,317"/>
+<area shape="rect" id="node5" href="$namespaceanonymous__namespace_02Ioss__Map_8C_03.html#aa1a8680ec9949ce1b6ad349b6f0e48ea" title="anonymous_namespace\l\{Ioss_Map::C\}::is_one2one" alt="" coords="420,41,602,80"/>
+<area shape="rect" id="node8" href="$classIoss_1_1SerializeIO.html#a5d68f99aed4918df6020bda04222b97f" title="Ioss::SerializeIO::\lisEnabled" alt="" coords="448,104,574,143"/>
+<area shape="rect" id="node9" href="$classIoss_1_1SerializeIO.html#a85299d763408cb35c3c000f02e08ede0" title="Ioss::SerializeIO::\linBarrier" alt="" coords="448,167,574,205"/>
+<area shape="rect" id="node10" href="$classIoss_1_1SerializeIO.html#aa5f6ac3404b9f4c1d579afed18c95ee0" title="Ioss::SerializeIO::\lgetRank" alt="" coords="448,229,574,268"/>
+<area shape="rect" id="node11" href="$classIoss_1_1SerializeIO.html#a11b5a0040899d90bffa3ed46a7ac2c65" title="Ioss::SerializeIO::\linMyGroup" alt="" coords="448,292,574,331"/>
+<area shape="rect" id="node12" href="$classIoss_1_1SerializeIO.html#ac7468ed4a5f858ffb502c3132e3e87b6" title="Ioss::SerializeIO::\lgetOwner" alt="" coords="448,355,574,393"/>
+<area shape="rect" id="node13" href="$classIoex_1_1DatabaseIO.html#af0ddcfa1cd90af9397e76e2e80a7ef27" title="Ioex::DatabaseIO::get\l_file_pointer" alt="" coords="436,417,587,456"/>
+<area shape="rect" id="node14" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="665,355,807,393"/>
+<area shape="rect" id="node15" href="$classIoex_1_1DatabaseIO.html#a74597cacb5f8b3aa935cc91fd05adf81" title="Ioex::DatabaseIO::open\l_input_file" alt="" coords="655,417,817,456"/>
+<area shape="rect" id="node16" href="$classIoex_1_1DatabaseIO.html#a184b2da08689814c05d2692855a7365d" title="Ioex::DatabaseIO::handle\l_output_file" alt="" coords="650,480,822,519"/>
+</map>

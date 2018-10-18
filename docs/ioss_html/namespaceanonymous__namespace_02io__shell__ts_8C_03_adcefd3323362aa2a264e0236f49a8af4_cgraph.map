@@ -1,0 +1,35 @@
+<map id="anonymous_namespace{io_shell_ts::C}::transfer_field_data_ts" name="anonymous_namespace{io_shell_ts::C}::transfer_field_data_ts">
+<area shape="rect" id="node2" href="$namespaceanonymous__namespace_02io__info_8C_03.html#ac76aa36231a3291b803cc8e620fce319" title="anonymous_namespace\l\{io_info::C\}::name" alt="" coords="908,142,1074,181"/>
+<area shape="rect" id="node5" href="$classIoss_1_1Region.html#ade4b35eb74526f47d2b1c8157cc93859" title="Get an entity of a known EntityType. " alt="" coords="223,411,384,437"/>
+<area shape="rect" id="node21" href="$namespaceanonymous__namespace_02io__shell__ts_8C_03.html#a789b475da437dedb28310922519fd151" title="anonymous_namespace\l\{io_shell_ts::C\}::transfer\l_field_data" alt="" coords="220,746,387,798"/>
+<area shape="rect" id="node34" href="$namespaceanonymous__namespace_02io__shell__ts_8C_03.html#aca655bb63f9bab8eb010da44f6d303fd" title="anonymous_namespace\l\{io_shell_ts::C\}::transform\l_field_data" alt="" coords="445,810,619,862"/>
+<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html#adf92c4256dc89b729f4492642bc4d745" title="Get the name of the particular type of entity. " alt="" coords="1135,111,1276,150"/>
+<area shape="rect" id="node4" href="$classIoss_1_1GroupingEntity.html#a50d4053f49c8c3205e05d939fdc9fbc5" title="Get name of entity. " alt="" coords="1135,174,1276,213"/>
+<area shape="rect" id="node6" href="$classIoss_1_1Region.html#aebdd3aae32cc17d9d43ac13612c060b9" title="Get the node block with the given name. " alt="" coords="452,49,611,87"/>
+<area shape="rect" id="node10" href="$classIoss_1_1Region.html#a0b646180161f131be5c4e74aea12ae8a" title="Get the element block with the given name. " alt="" coords="443,111,620,150"/>
+<area shape="rect" id="node11" href="$classIoss_1_1Region.html#af7088a51cf1b79bab79e7646c53caa5b" title="Get the structured block with the given name. " alt="" coords="438,174,626,213"/>
+<area shape="rect" id="node12" href="$classIoss_1_1Region.html#a72a1f9c3f650554a4bdd4ef23c885fe7" title="Get the face block with the given name. " alt="" coords="455,237,609,275"/>
+<area shape="rect" id="node13" href="$classIoss_1_1Region.html#ae41288c041c96f64f7d320aefb1e1eec" title="Get the edge block with the given name. " alt="" coords="452,299,611,338"/>
+<area shape="rect" id="node14" href="$classIoss_1_1Region.html#a8501e315487d7e89766f087b732710a5" title="Get the side set with the given name. " alt="" coords="446,362,617,387"/>
+<area shape="rect" id="node15" href="$classIoss_1_1Region.html#a8040ae8eb0d2bc19ecaf24078b67f548" title="Get the node set with the given name. " alt="" coords="443,411,620,437"/>
+<area shape="rect" id="node16" href="$classIoss_1_1Region.html#a3a4690764046d1563e34d84b82f4c2bd" title="Get the edge set with the given name. " alt="" coords="443,461,620,486"/>
+<area shape="rect" id="node17" href="$classIoss_1_1Region.html#af9a871366a0715daa5219e9ce5c29327" title="Get the face set with the given name. " alt="" coords="446,510,617,535"/>
+<area shape="rect" id="node18" href="$classIoss_1_1Region.html#a2019ddb77e5dc6d9da134b5da4637df2" title="Get the element set with the given name. " alt="" coords="435,559,629,585"/>
+<area shape="rect" id="node19" href="$classIoss_1_1Region.html#a4f0d17a0e1e1d7361b65194910a42a56" title="Get the comm set with the given name. " alt="" coords="440,609,623,634"/>
+<area shape="rect" id="node20" href="$classIoss_1_1Region.html#a89e07659d86dda973104999206eda291" title="Get the side block with the given name. " alt="" coords="439,658,624,683"/>
+<area shape="rect" id="node7" href="$classIoss_1_1Region.html#a83e8885c1191dcd9200e1b0954ba0e10" title="Ioss::Region::get_alias__" alt="" coords="677,362,848,387"/>
+<area shape="rect" id="node9" href="$classIoss_1_1Utils.html#a1ec73edea0e845665ac385f605f4aa99" title="Ioss::Utils::hash" alt="" coords="704,309,820,334"/>
+<area shape="rect" id="node8" href="$namespaceanonymous__namespace_02Ioss__Region_8C_03.html#acd06ef87eff981abc4c9d7cfb0a4f11d" title="anonymous_namespace\l\{Ioss_Region::C\}::uppercase" alt="" coords="896,355,1087,394"/>
+<area shape="rect" id="node22" href="$classIoss_1_1GroupingEntity.html#a92f4d388db4e0d10b1be6ac7fa69af4a" title="Get the names of all fields in the entity&#39;s field manager. " alt="" coords="691,649,833,687"/>
+<area shape="rect" id="node23" href="$classIoss_1_1GroupingEntity.html#a54edce5713d3439e095c37064a66ea50" title="Checks if a field with a given name exists in the entity&#39;s field manager. " alt="" coords="691,711,833,750"/>
+<area shape="rect" id="node24" href="$namespaceanonymous__namespace_02io__shell__ts_8C_03.html#aeb0d0ef9e20004165b29a405d8c5fcc0" title="anonymous_namespace\l\{io_shell_ts::C\}::transfer\l_field_data_internal" alt="" coords="448,886,615,938"/>
+<area shape="rect" id="node30" href="$classIoss_1_1GroupingEntity.html#a878ad30d29d9565bfcb108d60797ebdc" title="Get the EntityType, which indicates the particular type of GroupingEntity this is. " alt="" coords="691,1061,833,1099"/>
+<area shape="rect" id="node25" href="$classIoss_1_1GroupingEntity.html#a508cc132f3c03c54d0dfd84f567fa1b6" title="Get a field from the entity&#39;s field manager. " alt="" coords="691,774,833,813"/>
+<area shape="rect" id="node26" href="$classIoss_1_1Field.html#a5fefc8709124002432cf8ba943d3780b" title="Ioss::Field::get_size" alt="" coords="693,837,832,862"/>
+<area shape="rect" id="node29" href="$classIoss_1_1Field.html#a8abb33dcfa0630f6422e7541b36694b4" title="Get the basic data type of the data held in the field. " alt="" coords="692,886,832,911"/>
+<area shape="rect" id="node31" href="$classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728" title="Read field data from the database file into memory using a pointer. " alt="" coords="691,935,833,974"/>
+<area shape="rect" id="node33" href="$classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d" title="Write field data from memory into the database file using a pointer. " alt="" coords="691,998,833,1037"/>
+<area shape="rect" id="node27" href="$namespaceanonymous__namespace_02Ioss__Field_8C_03.html#a6f17c234b0f7c17fe27d6910811e43de" title="anonymous_namespace\l\{Ioss_Field::C\}::internal\l_get_size" alt="" coords="908,823,1074,875"/>
+<area shape="rect" id="node28" href="$classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c" title="Ioss::VariableType\l::component_count" alt="" coords="1138,830,1273,869"/>
+<area shape="rect" id="node32" href="$classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec" title="Ioss::Field::transform" alt="" coords="918,973,1064,998"/>
+</map>

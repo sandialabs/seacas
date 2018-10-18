@@ -1,0 +1,5 @@
+<map id="anonymous_namespace{Ioss_DatabaseIO::C}::calc_bounding_box" name="anonymous_namespace{Ioss_DatabaseIO::C}::calc_bounding_box">
+<area shape="rect" id="node2" href="$classIoss_1_1DatabaseIO.html#a205567b7e63d4568282ded81c2a41899" title="Ioss::DatabaseIO::get\l_bounding_box" alt="" coords="220,37,370,76"/>
+<area shape="rect" id="node3" href="$classIoss_1_1ElementBlock.html#a76b48de48fed953faa01b53a1c66ae44" title="Ioss::ElementBlock\l::get_bounding_box" alt="" coords="423,5,561,44"/>
+<area shape="rect" id="node4" href="$classIoss_1_1StructuredBlock.html#a6e94dcf8c1c520ac4143f481439acbc2" title="Ioss::StructuredBlock\l::get_bounding_box" alt="" coords="418,68,566,107"/>
+</map>

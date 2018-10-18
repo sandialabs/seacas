@@ -1,0 +1,6 @@
+<map id="anonymous_namespace{Ioss_DatabaseIO::C}::my_max" name="anonymous_namespace{Ioss_DatabaseIO::C}::my_max">
+<area shape="rect" id="node2" href="$namespaceanonymous__namespace_02Ioss__DatabaseIO_8C_03.html#ae9e63bf0734fcf926ccbae8d81a3f208" title="anonymous_namespace\l\{Ioss_DatabaseIO::C\}\l::calc_bounding_box" alt="" coords="220,31,387,83"/>
+<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#a205567b7e63d4568282ded81c2a41899" title="Ioss::DatabaseIO::get\l_bounding_box" alt="" coords="435,37,585,76"/>
+<area shape="rect" id="node4" href="$classIoss_1_1ElementBlock.html#a76b48de48fed953faa01b53a1c66ae44" title="Ioss::ElementBlock\l::get_bounding_box" alt="" coords="637,5,776,44"/>
+<area shape="rect" id="node5" href="$classIoss_1_1StructuredBlock.html#a6e94dcf8c1c520ac4143f481439acbc2" title="Ioss::StructuredBlock\l::get_bounding_box" alt="" coords="633,68,780,107"/>
+</map>

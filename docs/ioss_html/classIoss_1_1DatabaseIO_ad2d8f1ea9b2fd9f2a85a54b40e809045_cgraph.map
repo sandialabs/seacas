@@ -1,0 +1,26 @@
+<map id="Ioss::DatabaseIO::compute_block_adjacencies" name="Ioss::DatabaseIO::compute_block_adjacencies">
+<area shape="rect" id="node2" href="$classIoss_1_1DatabaseIO.html#ac7cb8bf7c8175fa0546a2bd965570e7c" title="Ioss::DatabaseIO::get\l_region" alt="" coords="264,5,414,44"/>
+<area shape="rect" id="node3" href="$classIoss_1_1Region.html#a8c28d389019952e48ea8e953947421f7" title="Get all the region&#39;s ElementBlock objects. " alt="" coords="251,68,427,107"/>
+<area shape="rect" id="node4" href="$classIoss_1_1Utils.html#a5dc73348c31bc226725b3e62cdbf3dac" title="Ioss::Utils::check\l_block_order" alt="" coords="278,131,400,169"/>
+<area shape="rect" id="node5" href="$classIoss_1_1DatabaseIO.html#aae00a220b8c3cbd720bcda80803513a1" title="Returns 4 or 8. " alt="" coords="266,193,412,232"/>
+<area shape="rect" id="node6" href="$classIoss_1_1Region.html#a4f0d17a0e1e1d7361b65194910a42a56" title="Get the comm set with the given name. " alt="" coords="248,256,431,281"/>
+<area shape="rect" id="node13" href="$classIoss_1_1Utils.html#a3cdb54933afe453c3a00a20308c338da" title="Ioss::Utils::check\l_non_null" alt="" coords="515,304,636,343"/>
+<area shape="rect" id="node14" href="$classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728" title="Read field data from the database file into memory using a pointer. " alt="" coords="268,357,410,396"/>
+<area shape="rect" id="node16" href="$classIoss_1_1DatabaseIO.html#acd988f56b93ac669b2e504a8e471b321" title="Ioss::DatabaseIO::util" alt="" coords="501,444,650,469"/>
+<area shape="rect" id="node17" href="$classIoss_1_1DatabaseIO.html#aceccfba755333cf8af271ba5dcc659c4" title="Ioss::DatabaseIO::parallel_size" alt="" coords="236,472,442,497"/>
+<area shape="rect" id="node18" href="$classIoss_1_1ParallelUtils.html#a795617c394bd2bc1b68a15a006981971" title="Ioss::ParallelUtils\l::parallel_size" alt="" coords="514,504,637,543"/>
+<area shape="rect" id="node19" href="$classIoss_1_1Map.html#ab5b9f9efc6c50d676989ae6660bff073" title="Ioss::Map::global_to\l_local" alt="" coords="269,573,409,612"/>
+<area shape="rect" id="node20" href="$classIoss_1_1ParallelUtils.html#aaa898869534e6938d6314ffd57663c52" title="Ioss::ParallelUtils\l::parallel_rank" alt="" coords="277,636,401,675"/>
+<area shape="rect" id="node21" href="$classIoss_1_1ParallelUtils.html#a0caf3dea894c98f32b83b705aaa1e360" title="Ioss::ParallelUtils\l::global_minmax" alt="" coords="277,699,401,737"/>
+<area shape="rect" id="node25" href="$classIoss_1_1ParallelUtils.html#a77906941da759887bff81406d9cdc26f" title="Ioss::ParallelUtils\l::communicator" alt="" coords="277,761,401,800"/>
+<area shape="rect" id="node7" href="$classIoss_1_1Region.html#a83e8885c1191dcd9200e1b0954ba0e10" title="Ioss::Region::get_alias__" alt="" coords="490,205,661,231"/>
+<area shape="rect" id="node9" href="$classIoss_1_1Utils.html#a1ec73edea0e845665ac385f605f4aa99" title="Ioss::Utils::hash" alt="" coords="518,255,633,280"/>
+<area shape="rect" id="node8" href="$namespaceanonymous__namespace_02Ioss__Region_8C_03.html#acd06ef87eff981abc4c9d7cfb0a4f11d" title="anonymous_namespace\l\{Ioss_Region::C\}::uppercase" alt="" coords="709,199,900,237"/>
+<area shape="rect" id="node10" href="$namespaceanonymous__namespace_02io__info_8C_03.html#ac76aa36231a3291b803cc8e620fce319" title="anonymous_namespace\l\{io_info::C\}::name" alt="" coords="721,283,888,321"/>
+<area shape="rect" id="node11" href="$classIoss_1_1GroupingEntity.html#adf92c4256dc89b729f4492642bc4d745" title="Get the name of the particular type of entity. " alt="" coords="948,251,1090,289"/>
+<area shape="rect" id="node12" href="$classIoss_1_1GroupingEntity.html#a50d4053f49c8c3205e05d939fdc9fbc5" title="Get name of entity. " alt="" coords="948,313,1090,352"/>
+<area shape="rect" id="node15" href="$classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec" title="Ioss::Field::transform" alt="" coords="503,367,649,392"/>
+<area shape="rect" id="node22" href="$classIoss_1_1SerializeIO.html#a5d68f99aed4918df6020bda04222b97f" title="Ioss::SerializeIO::\lisEnabled" alt="" coords="513,636,639,675"/>
+<area shape="rect" id="node23" href="$classIoss_1_1SerializeIO.html#a85299d763408cb35c3c000f02e08ede0" title="Ioss::SerializeIO::\linBarrier" alt="" coords="513,699,639,737"/>
+<area shape="rect" id="node24" href="$classIoss_1_1SerializeIO.html#ac7468ed4a5f858ffb502c3132e3e87b6" title="Ioss::SerializeIO::\lgetOwner" alt="" coords="513,761,639,800"/>
+</map>

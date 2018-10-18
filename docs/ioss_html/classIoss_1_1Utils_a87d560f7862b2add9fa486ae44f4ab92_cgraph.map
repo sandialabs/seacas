@@ -1,0 +1,7 @@
+<map id="Ioss::Utils::get_side_offset" name="Ioss::Utils::get_side_offset">
+<area shape="rect" id="node2" href="$classIoss_1_1EntityBlock.html#abc83ec3b85f7ffd6fd80789061472e17" title="Get the topology of the entities in the block. " alt="" coords="207,5,334,44"/>
+<area shape="rect" id="node3" href="$classIoss_1_1SideBlock.html#ac286eba8ba8bc6ca20008d18331de871" title="Ioss::SideBlock::parent\l_element_topology" alt="" coords="191,68,349,107"/>
+<area shape="rect" id="node4" href="$classIoss_1_1ElementTopology.html#a14c856ccdd0651d127e4d26433b99f47" title="Ioss::ElementTopology\l::parametric_dimension" alt="" coords="190,131,350,169"/>
+<area shape="rect" id="node5" href="$classIoss_1_1ElementTopology.html#a0b99a087f1e1a7767328af25c8324bb7" title="Ioss::ElementTopology\l::spatial_dimension" alt="" coords="192,193,348,232"/>
+<area shape="rect" id="node6" href="$classIoss_1_1ElementTopology.html#ae893762375a41f1532b55dd0ff5e689c" title="Ioss::ElementTopology\l::number_faces" alt="" coords="192,256,348,295"/>
+</map>

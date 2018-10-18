@@ -1,0 +1,4 @@
+<map id="Ioss::StructuredBlock" name="Ioss::StructuredBlock">
+<area shape="rect" id="node2" href="$classIoss_1_1EntityBlock.html" title="Base class for all &#39;block&#39;&#45;type grouping entities, which means all members of the block are similar o..." alt="" coords="19,79,139,104"/>
+<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ..." alt="" coords="8,5,150,31"/>
+</map>

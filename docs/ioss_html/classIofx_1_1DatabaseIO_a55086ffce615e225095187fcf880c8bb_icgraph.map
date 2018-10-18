@@ -1,0 +1,7 @@
+<map id="Iofx::DatabaseIO::get_sets" name="Iofx::DatabaseIO::get_sets">
+<area shape="rect" id="node2" href="$classIofx_1_1DatabaseIO.html#a8298d2d8f141676749d6e5d0abb6bcbd" title="Iofx::DatabaseIO::get\l_nodesets" alt="" coords="233,5,380,44"/>
+<area shape="rect" id="node4" href="$classIofx_1_1DatabaseIO.html#a56ddda62eb3637cd13191ff67bbc0029" title="Iofx::DatabaseIO::get\l_edgesets" alt="" coords="233,68,380,107"/>
+<area shape="rect" id="node5" href="$classIofx_1_1DatabaseIO.html#a52bfbfd10d033b4f5e50afe18607c415" title="Iofx::DatabaseIO::get\l_facesets" alt="" coords="233,131,380,169"/>
+<area shape="rect" id="node6" href="$classIofx_1_1DatabaseIO.html#a1d9816bc858a047528865240b4730071" title="Iofx::DatabaseIO::get\l_elemsets" alt="" coords="233,193,380,232"/>
+<area shape="rect" id="node3" href="$classIofx_1_1DatabaseIO.html#a79b188c0f0320a9656ad80866af72fb6" title="Iofx::DatabaseIO::read\l_meta_data__" alt="" coords="428,100,583,139"/>
+</map>

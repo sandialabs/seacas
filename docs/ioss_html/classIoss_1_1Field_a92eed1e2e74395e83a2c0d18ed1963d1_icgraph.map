@@ -1,0 +1,5 @@
+<map id="Ioss::Field::reset_type" name="Ioss::Field::reset_type">
+<area shape="rect" id="node2" href="$classIoss_1_1Field.html#ad4f3aa9b1f18f9f3eb29e1db399d01f4" title="Ioss::Field::check_type" alt="" coords="205,44,362,69"/>
+<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html#aea644daddfe26ebaaad2e01e027c8913" title="Read type &#39;T&#39; field data from the database file into memory using a std::vector. " alt="" coords="410,5,551,44"/>
+<area shape="rect" id="node4" href="$classIoss_1_1GroupingEntity.html#aaf4cae39181ef7f0910e6e9f775b4b4f" title="Write type &#39;T&#39; field data from memory into the database file using a std::vector. ..." alt="" coords="410,68,551,107"/>
+</map>

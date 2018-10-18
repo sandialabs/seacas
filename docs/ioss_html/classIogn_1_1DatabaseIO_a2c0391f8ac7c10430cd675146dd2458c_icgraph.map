@@ -1,0 +1,7 @@
+<map id="Iogn::DatabaseIO::add_transient_fields" name="Iogn::DatabaseIO::add_transient_fields">
+<area shape="rect" id="node2" href="$classIogn_1_1DatabaseIO.html#a0c6ceee37a96cddfe02a598c49cfd2c9" title="Iogn::DatabaseIO::read\l_meta_data__" alt="" coords="409,97,569,135"/>
+<area shape="rect" id="node3" href="$classIogn_1_1DatabaseIO.html#acfe917b575765e8045e9bce9ac83e4f3" title="Iogn::DatabaseIO::get\l_nodeblocks" alt="" coords="209,34,361,73"/>
+<area shape="rect" id="node4" href="$classIogn_1_1DatabaseIO.html#a7ddf05aad9f647150922a91999c08cd9" title="Iogn::DatabaseIO::get\l_elemblocks" alt="" coords="209,97,361,135"/>
+<area shape="rect" id="node5" href="$classIogn_1_1DatabaseIO.html#a2be4f5ada09d328eac98582837c1eadd" title="Iogn::DatabaseIO::get\l_nodesets" alt="" coords="209,159,361,198"/>
+<area shape="rect" id="node6" href="$classIogn_1_1DatabaseIO.html#a8fb6a277f2b675197194c41db4f7bc7e" title="Iogn::DatabaseIO::get\l_sidesets" alt="" coords="209,222,361,261"/>
+</map>

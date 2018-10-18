@@ -1,0 +1,5 @@
+<map id="tsl::detail_hopscotch_hash::hopscotch_hash::max_bucket_count" name="tsl::detail_hopscotch_hash::hopscotch_hash::max_bucket_count">
+<area shape="rect" id="node2" href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a399064f50b93280ef88a32d6f37ced97" title="tsl::detail_hopscotch\l_hash::hopscotch_hash\l\&lt; Key, KeySelect, void,\l Hash, KeyEqual, Allocator,\l NeighborhoodSize, StoreHash,\l GrowthPolicy, overflow_container\l_type \&gt;::hopscotch_hash" alt="" coords="216,5,437,111"/>
+<area shape="rect" id="node3" href="$classtsl_1_1hopscotch__map.html#ae391a0f4c83b6ab9c7503b4ca335b370" title="tsl::hopscotch_map\l::max_bucket_count" alt="" coords="256,135,397,173"/>
+<area shape="rect" id="node4" href="$classtsl_1_1hopscotch__set.html#abcd550788f6ce6cab6f22d0af9567dee" title="tsl::hopscotch_set\l::max_bucket_count" alt="" coords="256,197,397,236"/>
+</map>

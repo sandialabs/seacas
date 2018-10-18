@@ -1,0 +1,16 @@
+<map id="anonymous_namespace{Ioss_Utils::C}::transfer_fields" name="anonymous_namespace{Ioss_Utils::C}::transfer_fields">
+<area shape="rect" id="node2" href="$classIoss_1_1GroupingEntity.html#a92f4d388db4e0d10b1be6ac7fa69af4a" title="Get the names of all fields in the entity&#39;s field manager. " alt="" coords="233,5,374,44"/>
+<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html#a508cc132f3c03c54d0dfd84f567fa1b6" title="Get a field from the entity&#39;s field manager. " alt="" coords="233,68,374,107"/>
+<area shape="rect" id="node4" href="$namespaceanonymous__namespace_02Ioss__Utils_8C_03.html#a6702852ad82c5b905eaa1ad3d1a1c29e" title="anonymous_namespace\l\{Ioss_Utils::C\}::MAX" alt="" coords="220,131,387,169"/>
+<area shape="rect" id="node5" href="$classIoss_1_1Field.html#a5fefc8709124002432cf8ba943d3780b" title="Ioss::Field::get_size" alt="" coords="234,193,373,219"/>
+<area shape="rect" id="node8" href="$classIoss_1_1GroupingEntity.html#a54edce5713d3439e095c37064a66ea50" title="Checks if a field with a given name exists in the entity&#39;s field manager. " alt="" coords="233,243,374,281"/>
+<area shape="rect" id="node9" href="$classIoss_1_1GroupingEntity.html#a5a856638e3a522a70b0ee62103a43657" title="Add a field to the entity&#39;s field manager. " alt="" coords="233,308,374,347"/>
+<area shape="rect" id="node6" href="$namespaceanonymous__namespace_02Ioss__Field_8C_03.html#a6f17c234b0f7c17fe27d6910811e43de" title="anonymous_namespace\l\{Ioss_Field::C\}::internal\l_get_size" alt="" coords="435,176,601,228"/>
+<area shape="rect" id="node7" href="$classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c" title="Ioss::VariableType\l::component_count" alt="" coords="652,183,787,221"/>
+<area shape="rect" id="node10" href="$classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb" title="Ioss::Field::raw_count" alt="" coords="442,252,593,277"/>
+<area shape="rect" id="node11" href="$namespaceanonymous__namespace_02Ioss__Field_8C_03.html#a54a9e06fd87ef280d7cd5a33d986222e" title="anonymous_namespace\l\{Ioss_Field::C\}::type\l_string" alt="" coords="435,301,601,353"/>
+<area shape="rect" id="node12" href="$namespaceanonymous__namespace_02io__info_8C_03.html#ac76aa36231a3291b803cc8e620fce319" title="anonymous_namespace\l\{io_info::C\}::name" alt="" coords="435,377,601,416"/>
+<area shape="rect" id="node15" href="$classIoss_1_1Field.html#aca1c35eb7fb1dcd0bf8c80b2b6926131" title="Ioss::Field::get_name" alt="" coords="443,440,592,465"/>
+<area shape="rect" id="node13" href="$classIoss_1_1GroupingEntity.html#adf92c4256dc89b729f4492642bc4d745" title="Get the name of the particular type of entity. " alt="" coords="649,347,791,385"/>
+<area shape="rect" id="node14" href="$classIoss_1_1GroupingEntity.html#a50d4053f49c8c3205e05d939fdc9fbc5" title="Get name of entity. " alt="" coords="649,409,791,448"/>
+</map>

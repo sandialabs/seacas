@@ -1,0 +1,6 @@
+<map id="Iocgns::Utils::get_db_zone" name="Iocgns::Utils::get_db_zone">
+<area shape="rect" id="node2" href="$classIocgns_1_1DatabaseIO.html#a7bc09ba1a2c526f2f6c4f347147d7399" title="Iocgns::DatabaseIO\l::write_adjacency_data" alt="" coords="173,5,331,44"/>
+<area shape="rect" id="node4" href="$classIocgns_1_1DatabaseIO.html#a0fdb59a10d7ab6a0c47e3a176a36fae1" title="Iocgns::DatabaseIO\l::get_field_internal" alt="" coords="182,68,322,107"/>
+<area shape="rect" id="node5" href="$classIocgns_1_1DatabaseIO.html#a54fb8af967d5fab52f26812da2fe2e21" title="Iocgns::DatabaseIO\l::put_field_internal" alt="" coords="182,131,322,169"/>
+<area shape="rect" id="node3" href="$classIocgns_1_1DatabaseIO.html#a2c5d72d71cbf54e42bfc2eb770d804b2" title="Iocgns::DatabaseIO\l::end__" alt="" coords="379,5,518,44"/>
+</map>
