@@ -1,9 +1,0 @@
-<map id="Ioss::CompositeVariableType::label" name="Ioss::CompositeVariableType::label">
-<area shape="rect" id="node2" href="$classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c" title="Ioss::VariableType\l::component_count" alt="" coords="247,5,382,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1VariableType.html#aa8a89c3c0be5cca092180cb6d30bfe3d" title="Ioss::VariableType\l::label" alt="" coords="249,68,380,107"/>
-<area shape="rect" id="node4" href="$classIoss_1_1VariableType.html#abb6df4603afd79690025027170f0d208" title="Ioss::VariableType\l::numeric_label" alt="" coords="249,131,380,169"/>
-<area shape="rect" id="node8" href="$classIoss_1_1VariableType.html#a737316d0f49ca1a913f9c99d3132e742" title="Ioss::VariableType\l::name" alt="" coords="249,193,380,232"/>
-<area shape="rect" id="node5" href="$namespaceanonymous__namespace_02io__info_8C_03.html#ac76aa36231a3291b803cc8e620fce319" title="anonymous_namespace\l\{io_info::C\}::name" alt="" coords="430,131,596,169"/>
-<area shape="rect" id="node6" href="$classIoss_1_1GroupingEntity.html#adf92c4256dc89b729f4492642bc4d745" title="Get the name of the particular type of entity. " alt="" coords="644,99,786,137"/>
-<area shape="rect" id="node7" href="$classIoss_1_1GroupingEntity.html#a50d4053f49c8c3205e05d939fdc9fbc5" title="Get name of entity. " alt="" coords="644,161,786,200"/>
-</map>

@@ -1,8 +1,0 @@
-<map id="anonymous_namespace{cth_pressure_map::C}::transfer_properties" name="anonymous_namespace{cth_pressure_map::C}::transfer_properties">
-<area shape="rect" id="node2" href="$classIoss_1_1GroupingEntity.html#a0388ba5c4b7e07807d9e6b8a5baf7ac4" title="Get the names of all properties in the property manager for this entity. " alt="" coords="220,5,361,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html#aef4ddf9b47f28f0fb54a2aa1d352e234" title="Checks if a property exists in the entity&#39;s property manager. " alt="" coords="220,68,361,107"/>
-<area shape="rect" id="node4" href="$classIoss_1_1GroupingEntity.html#ab472accb6574a89fd058c9c6a0342927" title="Add a property to the entity&#39;s property manager. " alt="" coords="220,131,361,169"/>
-<area shape="rect" id="node7" href="$classIoss_1_1GroupingEntity.html#a3e8284b8cafbbe1646625124f68a2652" title="Get the Property from the property manager associated with the entity. " alt="" coords="220,193,361,232"/>
-<area shape="rect" id="node5" href="$classIoss_1_1PropertyManager.html#a8d6d5a27856b4618b56d542208ad86e2" title="Add a property to the property manager. " alt="" coords="409,137,595,163"/>
-<area shape="rect" id="node6" href="$classIoss_1_1Property.html#a33f2d36f732d7504f12116b285c2ccb2" title="Get the property name. " alt="" coords="643,137,814,163"/>
-</map>

@@ -18,7 +18,7 @@
 <!-- Node12 -->
 <g id="node2" class="node">
 <title>Node12</title>
-<g id="a_node2"><a xlink:href="$Ioss__Sphere_8C.html" xlink:title="src/Ioss_Sphere.C">
+<g id="a_node2"><a xlink:href="Ioss__Sphere_8C.html" target="_top" xlink:title="src/Ioss_Sphere.C">
 <polygon fill="#ffffff" stroke="#000000" points="0,-60.5 0,-78.5 98.2559,-78.5 98.2559,-60.5 0,-60.5"/>
 <text text-anchor="middle" x="49.1279" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/Ioss_Sphere.C</text>
 </a>
@@ -33,7 +33,7 @@
 <!-- Node13 -->
 <g id="node3" class="node">
 <title>Node13</title>
-<g id="a_node3"><a xlink:href="$Ioss__StandardElementTypes_8h.html" xlink:title="src/Ioss_StandardElement\lTypes.h">
+<g id="a_node3"><a xlink:href="Ioss__StandardElementTypes_8h.html" target="_top" xlink:title="src/Ioss_StandardElement\lTypes.h">
 <polygon fill="#ffffff" stroke="#000000" points="116.4878,-55.5 116.4878,-83.5 249.7681,-83.5 249.7681,-55.5 116.4878,-55.5"/>
 <text text-anchor="start" x="124.4878" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/Ioss_StandardElement</text>
 <text text-anchor="middle" x="183.1279" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Types.h</text>
@@ -49,7 +49,7 @@
 <!-- Node14 -->
 <g id="node4" class="node">
 <title>Node14</title>
-<g id="a_node4"><a xlink:href="$Ioss__Initializer_8C.html" xlink:title="src/Ioss_Initializer.C">
+<g id="a_node4"><a xlink:href="Ioss__Initializer_8C.html" target="_top" xlink:title="src/Ioss_Initializer.C">
 <polygon fill="#ffffff" stroke="#000000" points="130.6675,-.5 130.6675,-18.5 235.5884,-18.5 235.5884,-.5 130.6675,-.5"/>
 <text text-anchor="middle" x="183.1279" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/Ioss_Initializer.C</text>
 </a>

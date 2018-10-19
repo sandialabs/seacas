@@ -18,7 +18,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$Ioss__Tracer_8C.html" xlink:title="src/Ioss_Tracer.C">
+<g id="a_node2"><a xlink:href="Ioss__Tracer_8C.html" target="_top" xlink:title="src/Ioss_Tracer.C">
 <polygon fill="#ffffff" stroke="#000000" points="0,-.5 0,-18.5 93.9883,-18.5 93.9883,-.5 0,-.5"/>
 <text text-anchor="middle" x="46.9941" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/Ioss_Tracer.C</text>
 </a>

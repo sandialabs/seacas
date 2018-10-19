@@ -18,7 +18,7 @@
 <!-- Node3 -->
 <g id="node2" class="node">
 <title>Node3</title>
-<g id="a_node2"><a xlink:href="$classScopeGuardImplBase.html" xlink:title="ScopeGuardImplBase">
+<g id="a_node2"><a xlink:href="classScopeGuardImplBase.html" target="_top" xlink:title="ScopeGuardImplBase">
 <polygon fill="#ffffff" stroke="#000000" points="3.0566,-55.5 3.0566,-73.5 116.8887,-73.5 116.8887,-55.5 3.0566,-55.5"/>
 <text text-anchor="middle" x="59.9727" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">ScopeGuardImplBase</text>
 </a>

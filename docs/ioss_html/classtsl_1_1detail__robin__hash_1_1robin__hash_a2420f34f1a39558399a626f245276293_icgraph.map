@@ -1,7 +1,0 @@
-<map id="tsl::detail_robin_hash::robin_hash::reserve" name="tsl::detail_robin_hash::robin_hash::reserve">
-<area shape="rect" id="node2" href="$classtsl_1_1detail__robin__hash_1_1robin__hash.html#aaf74fa2603261bfe3f1b547dca46e626" title="tsl::detail_robin_hash\l::robin_hash\&lt; std::pair\l\&lt; Key, T \&gt;, KeySelect, ValueSelect,\l Hash, KeyEqual, Allocator, StoreHash,\l GrowthPolicy \&gt;::insert" alt="" coords="201,5,453,84"/>
-<area shape="rect" id="node3" href="$classtsl_1_1robin__map.html#a6708108c82d353ba9e634265ef8b1cf1" title="tsl::robin_map::operator=" alt="" coords="242,108,412,133"/>
-<area shape="rect" id="node4" href="$classtsl_1_1robin__map.html#abb69b23fc5dc672d25fa7d66e7bcfc7b" title="tsl::robin_map::reserve" alt="" coords="248,157,405,183"/>
-<area shape="rect" id="node5" href="$classtsl_1_1robin__set.html#ae312ab98399e06c3340f40bd78fdd0b5" title="tsl::robin_set\&lt; Face,\l FaceHash, FaceEqual\l \&gt;::operator=" alt="" coords="248,207,405,259"/>
-<area shape="rect" id="node6" href="$classtsl_1_1robin__set.html#a676b9d96b2573e45b50f115422c7724f" title="tsl::robin_set\&lt; Face,\l FaceHash, FaceEqual\l \&gt;::reserve" alt="" coords="248,283,405,335"/>
-</map>

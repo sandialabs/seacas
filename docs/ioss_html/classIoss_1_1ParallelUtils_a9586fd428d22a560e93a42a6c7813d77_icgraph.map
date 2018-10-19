@@ -1,7 +1,0 @@
-<map id="Ioss::ParallelUtils::attribute_reduction" name="Ioss::ParallelUtils::attribute_reduction">
-<area shape="rect" id="node2" href="$classIofx_1_1DatabaseIO.html#a78baca50e8ed293624236a1b497f69b3" title="Iofx::DatabaseIO::get\l_blocks" alt="" coords="193,68,340,107"/>
-<area shape="rect" id="node3" href="$classIofx_1_1DatabaseIO.html#a5352613bb7149d93d7948d02518a4b23" title="Iofx::DatabaseIO::get\l_elemblocks" alt="" coords="388,5,535,44"/>
-<area shape="rect" id="node5" href="$classIofx_1_1DatabaseIO.html#aee5d0d60d0f0ab20a3965c38d76deb30" title="Iofx::DatabaseIO::get\l_faceblocks" alt="" coords="388,68,535,107"/>
-<area shape="rect" id="node6" href="$classIofx_1_1DatabaseIO.html#a01fc0509353b79eb6285efdf2269b40b" title="Iofx::DatabaseIO::get\l_edgeblocks" alt="" coords="388,131,535,169"/>
-<area shape="rect" id="node4" href="$classIofx_1_1DatabaseIO.html#a79b188c0f0320a9656ad80866af72fb6" title="Iofx::DatabaseIO::read\l_meta_data__" alt="" coords="583,68,739,107"/>
-</map>

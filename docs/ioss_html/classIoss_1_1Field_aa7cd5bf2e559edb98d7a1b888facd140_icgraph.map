@@ -1,9 +1,0 @@
-<map id="Ioss::Field::transformed_count" name="Ioss::Field::transformed_count">
-<area shape="rect" id="node2" href="$classIohb_1_1DatabaseIO.html#aec1bc1b47445d567a2ec33881a493984" title="Iohb::DatabaseIO::put\l_field_internal" alt="" coords="214,5,366,44"/>
-<area shape="rect" id="node3" href="$classIotr_1_1MinMax.html#a40829fb5ff09fcece4687cd4b16d303d" title="Iotr::MinMax::internal\l_execute" alt="" coords="217,68,363,107"/>
-<area shape="rect" id="node4" href="$classIotr_1_1Offset.html#a27af6714ab2e1ba05dce36b7df72feb6" title="Iotr::Offset::internal\l_execute" alt="" coords="223,131,357,169"/>
-<area shape="rect" id="node5" href="$classIotr_1_1Offset3D.html#aa849e869f8f86f4ed11ce6b97ed970b3" title="Iotr::Offset3D::internal\l_execute" alt="" coords="214,193,366,232"/>
-<area shape="rect" id="node6" href="$classIotr_1_1Scale.html#af04a50a15fce2d815b001789f5f6bb3b" title="Iotr::Scale::internal\l_execute" alt="" coords="224,256,356,295"/>
-<area shape="rect" id="node7" href="$classIotr_1_1Scale3D.html#a2794b6017312b4423e10d58a606d8c73" title="Iotr::Scale3D::internal\l_execute" alt="" coords="215,319,365,357"/>
-<area shape="rect" id="node8" href="$classIotr_1_1VectorMagnitude.html#a9d558fd320c672d26e3808e976169ce6" title="Iotr::VectorMagnitude\l::internal_execute" alt="" coords="216,381,364,420"/>
-</map>

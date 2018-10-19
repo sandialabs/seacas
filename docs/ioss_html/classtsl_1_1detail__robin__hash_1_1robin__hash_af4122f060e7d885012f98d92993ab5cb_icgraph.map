@@ -1,5 +1,0 @@
-<map id="tsl::detail_robin_hash::robin_hash::max_bucket_count" name="tsl::detail_robin_hash::robin_hash::max_bucket_count">
-<area shape="rect" id="node2" href="$classtsl_1_1detail__robin__hash_1_1robin__hash.html#a4dae8dae5a31a0ef5413fb71cb7ddaaf" title="tsl::detail_robin_hash\l::robin_hash\&lt; std::pair\l\&lt; Key, T \&gt;, KeySelect, ValueSelect,\l Hash, KeyEqual, Allocator, StoreHash,\l GrowthPolicy \&gt;::robin_hash" alt="" coords="267,5,520,84"/>
-<area shape="rect" id="node3" href="$classtsl_1_1robin__map.html#a69155fc70ea3d6887fa90a48ffb9bd3d" title="tsl::robin_map::max\l_bucket_count" alt="" coords="325,108,463,147"/>
-<area shape="rect" id="node4" href="$classtsl_1_1robin__set.html#af63a2baee29b4680f49e55f9f8e8b2ab" title="tsl::robin_set\&lt; Face,\l FaceHash, FaceEqual\l \&gt;::max_bucket_count" alt="" coords="315,171,472,223"/>
-</map>

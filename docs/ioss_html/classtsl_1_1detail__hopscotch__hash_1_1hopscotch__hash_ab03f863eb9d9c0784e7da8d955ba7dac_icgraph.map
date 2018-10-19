@@ -1,6 +1,0 @@
-<map id="tsl::detail_hopscotch_hash::hopscotch_hash::size" name="tsl::detail_hopscotch_hash::hopscotch_hash::size">
-<area shape="rect" id="node2" href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#ac80fe2e4ba5afabc95f32735a8ee7c6c" title="tsl::detail_hopscotch\l_hash::hopscotch_hash\l\&lt; Key, KeySelect, void,\l Hash, KeyEqual, Allocator,\l NeighborhoodSize, StoreHash,\l GrowthPolicy, overflow_container\l_type \&gt;::rehash" alt="" coords="247,5,469,111"/>
-<area shape="rect" id="node3" href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#aef9acb85ae3b882bf04a8ce0f9ddec67" title="tsl::detail_hopscotch\l_hash::hopscotch_hash\l\&lt; Key, KeySelect, void,\l Hash, KeyEqual, Allocator,\l NeighborhoodSize, StoreHash,\l GrowthPolicy, overflow_container\l_type \&gt;::insert_impl" alt="" coords="247,135,469,240"/>
-<area shape="rect" id="node4" href="$classtsl_1_1hopscotch__map.html#a4927ca3c49b36756a1d4ade22ac4c59f" title="tsl::hopscotch_map\l::size" alt="" coords="289,264,426,303"/>
-<area shape="rect" id="node5" href="$classtsl_1_1hopscotch__set.html#ae23945779bfd7dcac251dc5290b1df18" title="tsl::hopscotch_set\l::size" alt="" coords="294,327,422,365"/>
-</map>

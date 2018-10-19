@@ -18,7 +18,7 @@
 <!-- Node32 -->
 <g id="node2" class="node">
 <title>Node32</title>
-<g id="a_node2"><a xlink:href="$Iocgns__Initializer_8C.html" xlink:title="src/cgns/Iocgns_Initializer.C">
+<g id="a_node2"><a xlink:href="Iocgns__Initializer_8C.html" target="_top" xlink:title="src/cgns/Iocgns_Initializer.C">
 <polygon fill="#ffffff" stroke="#000000" points="0,-.5 0,-18.5 139.9453,-18.5 139.9453,-.5 0,-.5"/>
 <text text-anchor="middle" x="69.9727" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/cgns/Iocgns_Initializer.C</text>
 </a>
@@ -33,7 +33,7 @@
 <!-- Node33 -->
 <g id="node3" class="node">
 <title>Node33</title>
-<g id="a_node3"><a xlink:href="$Iocgns__IOFactory_8C.html" xlink:title="src/cgns/Iocgns_IOFactory.C">
+<g id="a_node3"><a xlink:href="Iocgns__IOFactory_8C.html" target="_top" xlink:title="src/cgns/Iocgns_IOFactory.C">
 <polygon fill="#ffffff" stroke="#000000" points="157.876,-.5 157.876,-18.5 302.0693,-18.5 302.0693,-.5 157.876,-.5"/>
 <text text-anchor="middle" x="229.9727" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/cgns/Iocgns_IOFactory.C</text>
 </a>

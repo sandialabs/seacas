@@ -1,9 +1,0 @@
-<map id="Ioss::SerializeIO::SerializeIO" name="Ioss::SerializeIO::SerializeIO">
-<area shape="rect" id="node2" href="$classIoss_1_1DatabaseIO.html#a6e5c575a44253f465dd993bb49a16d2d" title="Ioss::DatabaseIO::using\l_parallel_io" alt="" coords="207,5,370,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#acd988f56b93ac669b2e504a8e471b321" title="Ioss::DatabaseIO::util" alt="" coords="214,68,363,93"/>
-<area shape="rect" id="node4" href="$classIoss_1_1ParallelUtils.html#aaa898869534e6938d6314ffd57663c52" title="Ioss::ParallelUtils\l::parallel_rank" alt="" coords="227,117,350,156"/>
-<area shape="rect" id="node5" href="$classIoss_1_1ParallelUtils.html#a795617c394bd2bc1b68a15a006981971" title="Ioss::ParallelUtils\l::parallel_size" alt="" coords="227,180,350,219"/>
-<area shape="rect" id="node6" href="$classIoss_1_1ParallelUtils.html#a77906941da759887bff81406d9cdc26f" title="Ioss::ParallelUtils\l::communicator" alt="" coords="227,243,350,281"/>
-<area shape="rect" id="node7" href="$classIoss_1_1DatabaseIO.html#a08202be4190cabd1992a3622a9a399ec" title="Ioss::DatabaseIO::openDatabase" alt="" coords="179,305,398,331"/>
-<area shape="rect" id="node8" href="$classIoss_1_1DatabaseIO.html#a0d3fb2ac80b85d128b2947d9e2cc4d27" title="Ioss::DatabaseIO::openDatabase__" alt="" coords="446,305,679,331"/>
-</map>

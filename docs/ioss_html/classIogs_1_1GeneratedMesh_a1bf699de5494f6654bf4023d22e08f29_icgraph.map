@@ -1,6 +1,0 @@
-<map id="Iogs::GeneratedMesh::get_variable_count" name="Iogs::GeneratedMesh::get_variable_count">
-<area shape="rect" id="node2" href="$classIogs_1_1DatabaseIO.html#a26d61d75630e203eea9e19ecacbc52db" title="Iogs::DatabaseIO::add\l_transient_fields" alt="" coords="203,24,358,63"/>
-<area shape="rect" id="node3" href="$classIogs_1_1DatabaseIO.html#a669429535862aabc78eabea41157e77a" title="Iogs::DatabaseIO::read\l_meta_data__" alt="" coords="605,24,764,63"/>
-<area shape="rect" id="node4" href="$classIogs_1_1DatabaseIO.html#a707a15c3e6efde35bc4eb23268f67a05" title="Iogs::DatabaseIO::get\l_nodeblocks" alt="" coords="406,24,557,63"/>
-<area shape="rect" id="node5" href="$classIogs_1_1DatabaseIO.html#ae049afb51342092d22d0211d5f1c9827" title="Iogs::DatabaseIO::get\l_sidesets" alt="" coords="406,87,557,126"/>
-</map>

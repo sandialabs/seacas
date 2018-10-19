@@ -18,7 +18,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="$structIoex_1_1CommunicationMetaData.html" xlink:title="Ioex::CommunicationMetaData">
+<g id="a_node2"><a xlink:href="structIoex_1_1CommunicationMetaData.html" target="_top" xlink:title="Ioex::CommunicationMetaData">
 <polygon fill="#ffffff" stroke="#000000" points="0,-65.5 0,-83.5 153.2852,-83.5 153.2852,-65.5 0,-65.5"/>
 <text text-anchor="middle" x="76.6426" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioex::CommunicationMetaData</text>
 </a>

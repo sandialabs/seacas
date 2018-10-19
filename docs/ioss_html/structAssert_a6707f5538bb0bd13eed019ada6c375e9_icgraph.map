@@ -1,8 +1,0 @@
-<map id="Assert::logger" name="Assert::logger">
-<area shape="rect" id="node2" href="$structAssert.html#a1546fa240ed153e2c32c5d25c7e48520" title="Assert::Assert" alt="" coords="554,5,658,31"/>
-<area shape="rect" id="node3" href="$structAssert.html#a0213abfa1b618a1107fd653b91dfe241" title="Assert::set_log" alt="" coords="177,63,287,88"/>
-<area shape="rect" id="node6" href="$structAssert.html#a0d7219bccf2f9630f61596cbbf6dbba7" title="Assert::handle_assert" alt="" coords="157,115,307,140"/>
-<area shape="rect" id="node4" href="$namespaceIoss_1_1Private.html#a5481d73517f1f874d17bf37a0983295c" title="Ioss::Private::init\l_assert" alt="" coords="355,56,474,95"/>
-<area shape="rect" id="node5" href="$structanonymous__namespace_02Ioss__SmartAssert_8C_03_1_1assert__initializer.html#aca30d7f444721ba24768fa856174c1ac" title="anonymous_namespace\l\{Ioss_SmartAssert::C\}\l::assert_initializer::\lassert_initializer" alt="" coords="522,55,689,120"/>
-<area shape="rect" id="node7" href="$structAssert.html#af9011a637bfaa99605af4b775be54e07" title="Assert::~Assert" alt="" coords="359,119,471,144"/>
-</map>

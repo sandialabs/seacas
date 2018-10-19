@@ -1,8 +1,0 @@
-<map id="Iogs::DatabaseIO::get_node_map" name="Iogs::DatabaseIO::get_node_map">
-<area shape="rect" id="node2" href="$classIoss_1_1Map.html#af3499aa0dc4ab638c5ddca50bed41252" title="Ioss::Map::map" alt="" coords="223,5,335,31"/>
-<area shape="rect" id="node3" href="$classIoss_1_1Map.html#aeb06d5b955371e06cfaa5cb0f3e2ea7f" title="Ioss::Map::set_size" alt="" coords="211,55,347,80"/>
-<area shape="rect" id="node4" href="$classIogs_1_1GeneratedMesh.html#aa11c918ce9ab8801d297647a6bf0058f" title="Iogs::GeneratedMesh\l::node_map" alt="" coords="204,104,354,143"/>
-<area shape="rect" id="node6" href="$classIoss_1_1Map.html#a2e65d0ea8d6b141ed17a929e4c610b41" title="Ioss::Map::set_map" alt="" coords="210,168,348,193"/>
-<area shape="rect" id="node5" href="$classIogs_1_1GeneratedMesh.html#a6990857ad65f4bf12a375e8d56cf80bd" title="Iogs::GeneratedMesh\l::node_count_proc" alt="" coords="418,101,567,140"/>
-<area shape="rect" id="node7" href="$namespaceanonymous__namespace_02Ioss__Map_8C_03.html#aa1a8680ec9949ce1b6ad349b6f0e48ea" title="anonymous_namespace\l\{Ioss_Map::C\}::is_one2one" alt="" coords="402,164,583,203"/>
-</map>

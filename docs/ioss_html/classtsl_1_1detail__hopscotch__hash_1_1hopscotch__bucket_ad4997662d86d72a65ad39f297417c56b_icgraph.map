@@ -1,6 +1,0 @@
-<map id="tsl::detail_hopscotch_hash::hopscotch_bucket::set_empty" name="tsl::detail_hopscotch_hash::hopscotch_bucket::set_empty">
-<area shape="rect" id="node2" href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#a2ec0f960dfb8695f76064dea77726dbf" title="tsl::detail_hopscotch\l_hash::hopscotch_bucket\l::set_value_of_empty_bucket" alt="" coords="238,5,433,57"/>
-<area shape="rect" id="node3" href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#aad084f464937d2fa0fe12e26476a7ac5" title="tsl::detail_hopscotch\l_hash::hopscotch_bucket\l::swap_value_into_empty_bucket" alt="" coords="226,81,444,133"/>
-<area shape="rect" id="node4" href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#aebff2fef640b913e76b3e31fcf4d58fb" title="tsl::detail_hopscotch\l_hash::hopscotch_bucket\l::remove_value" alt="" coords="249,157,421,209"/>
-<area shape="rect" id="node5" href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#a42dcfe39c042b369f4f94848de755333" title="tsl::detail_hopscotch\l_hash::hopscotch_bucket\l::operator=" alt="" coords="492,157,665,209"/>
-</map>

@@ -1,8 +1,0 @@
-<map id="Iocgns::ParallelDatabaseIO::get_map" name="Iocgns::ParallelDatabaseIO::get_map">
-<area shape="rect" id="node2" href="$classIoss_1_1Map.html#af3499aa0dc4ab638c5ddca50bed41252" title="Ioss::Map::map" alt="" coords="267,5,379,31"/>
-<area shape="rect" id="node3" href="$classIoss_1_1Map.html#aeb06d5b955371e06cfaa5cb0f3e2ea7f" title="Ioss::Map::set_size" alt="" coords="255,55,391,80"/>
-<area shape="rect" id="node4" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="252,104,394,143"/>
-<area shape="rect" id="node5" href="$classIoss_1_1Map.html#ade017633891fb2155441fdd29aa76bd5" title="Ioss::Map::is_sequential" alt="" coords="241,167,405,192"/>
-<area shape="rect" id="node6" href="$classIoss_1_1Map.html#a5b69ebb0e2961bc505b871da01af8971" title="Ioss::Map::build_reverse_map" alt="" coords="223,216,423,241"/>
-<area shape="rect" id="node7" href="$classIoss_1_1Map.html#abfaa5f83928a9d0c3691387e86050275" title="Ioss::Map::set_default" alt="" coords="247,265,399,291"/>
-</map>

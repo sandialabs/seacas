@@ -1,6 +1,0 @@
-<map id="Ioss::Region::get_max_time" name="Ioss::Region::get_max_time">
-<area shape="rect" id="node2" href="$classIoss_1_1GroupingEntity.html#a318cd5cde65370bb9c83f8ca223f8481" title="Ioss::GroupingEntity\l::get_database" alt="" coords="244,5,386,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1Utils.html#a65686647761a8ee32e4a4d4e866d196f" title="Ioss::Utils::clear" alt="" coords="257,68,373,93"/>
-<area shape="rect" id="node4" href="$classIoss_1_1DatabaseIO.html#ab33d09315ea221f35a8a74ce82851028" title="Ioss::DatabaseIO::get\l_step_times" alt="" coords="240,117,390,156"/>
-<area shape="rect" id="node5" href="$classIoss_1_1DatabaseIO.html#aea27ea271bcde188848364ccc0bb37e0" title="Ioss::DatabaseIO::get\l_step_times__" alt="" coords="438,117,589,156"/>
-</map>

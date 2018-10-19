@@ -1,7 +1,0 @@
-<map id="Ioex::DatabaseIO::open_group__" name="Ioex::DatabaseIO::open_group__">
-<area shape="rect" id="node2" href="$classIoex_1_1DatabaseIO.html#af0ddcfa1cd90af9397e76e2e80a7ef27" title="Ioex::DatabaseIO::get\l_file_pointer" alt="" coords="216,68,367,107"/>
-<area shape="rect" id="node6" href="$classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba" title="Get the file name associated with the database. " alt="" coords="216,131,366,169"/>
-<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="430,5,572,44"/>
-<area shape="rect" id="node4" href="$classIoex_1_1DatabaseIO.html#a74597cacb5f8b3aa935cc91fd05adf81" title="Ioex::DatabaseIO::open\l_input_file" alt="" coords="420,68,582,107"/>
-<area shape="rect" id="node5" href="$classIoex_1_1DatabaseIO.html#a184b2da08689814c05d2692855a7365d" title="Ioex::DatabaseIO::handle\l_output_file" alt="" coords="415,131,587,169"/>
-</map>

@@ -18,7 +18,7 @@
 <!-- Node3 -->
 <g id="node2" class="node">
 <title>Node3</title>
-<g id="a_node2"><a xlink:href="$classIogn_1_1GeneratedMesh.html" xlink:title="Iogn::GeneratedMesh">
+<g id="a_node2"><a xlink:href="classIogn_1_1GeneratedMesh.html" target="_top" xlink:title="Iogn::GeneratedMesh">
 <polygon fill="#ffffff" stroke="#000000" points="0,-65.5 0,-83.5 112.7285,-83.5 112.7285,-65.5 0,-65.5"/>
 <text text-anchor="middle" x="56.3643" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Iogn::GeneratedMesh</text>
 </a>
@@ -33,7 +33,7 @@
 <!-- Node4 -->
 <g id="node3" class="node">
 <title>Node4</title>
-<g id="a_node3"><a xlink:href="$structIogn_1_1ExodusData.html" xlink:title="Iogn::ExodusData">
+<g id="a_node3"><a xlink:href="structIogn_1_1ExodusData.html" target="_top" xlink:title="Iogn::ExodusData">
 <polygon fill="#ffffff" stroke="#000000" points="130.6157,-65.5 130.6157,-83.5 226.1128,-83.5 226.1128,-65.5 130.6157,-65.5"/>
 <text text-anchor="middle" x="178.3643" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Iogn::ExodusData</text>
 </a>

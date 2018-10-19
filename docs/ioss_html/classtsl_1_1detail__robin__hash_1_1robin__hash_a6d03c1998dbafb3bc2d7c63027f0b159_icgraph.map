@@ -1,5 +1,0 @@
-<map id="tsl::detail_robin_hash::robin_hash::get_allocator" name="tsl::detail_robin_hash::robin_hash::get_allocator">
-<area shape="rect" id="node2" href="$classtsl_1_1detail__robin__hash_1_1robin__hash.html#aaf0e1c20edc5bdcea17ace051b4edace" title="tsl::detail_robin_hash\l::robin_hash\&lt; std::pair\l\&lt; Key, T \&gt;, KeySelect, ValueSelect,\l Hash, KeyEqual, Allocator, StoreHash,\l GrowthPolicy \&gt;::rehash_impl" alt="" coords="232,5,484,84"/>
-<area shape="rect" id="node3" href="$classtsl_1_1robin__map.html#a6e5e61c1fce7fc1427938808f0c838fc" title="tsl::robin_map::get\l_allocator" alt="" coords="293,108,424,147"/>
-<area shape="rect" id="node4" href="$classtsl_1_1robin__set.html#aaf6d53ce36f50c1d755afd82e37e6e17" title="tsl::robin_set\&lt; Face,\l FaceHash, FaceEqual\l \&gt;::get_allocator" alt="" coords="280,171,437,223"/>
-</map>

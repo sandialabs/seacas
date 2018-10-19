@@ -1,6 +1,0 @@
-<map id="Iogn::GeneratedMesh::nodeset_node_count_proc" name="Iogn::GeneratedMesh::nodeset_node_count_proc">
-<area shape="rect" id="node2" href="$classIogn_1_1DatabaseIO.html#a2be4f5ada09d328eac98582837c1eadd" title="Iogn::DatabaseIO::get\l_nodesets" alt="" coords="240,5,392,44"/>
-<area shape="rect" id="node4" href="$classIogn_1_1GeneratedMesh.html#aba34619c42e1af678511fd5718781932" title="Iogn::GeneratedMesh\l::nodeset_nodes" alt="" coords="241,68,391,107"/>
-<area shape="rect" id="node3" href="$classIogn_1_1DatabaseIO.html#a0c6ceee37a96cddfe02a598c49cfd2c9" title="Iogn::DatabaseIO::read\l_meta_data__" alt="" coords="440,5,600,44"/>
-<area shape="rect" id="node5" href="$classIogn_1_1DatabaseIO.html#ab67092adab83d99fca4dffce6e4c1762" title="Iogn::DatabaseIO::get\l_field_internal" alt="" coords="444,68,596,107"/>
-</map>

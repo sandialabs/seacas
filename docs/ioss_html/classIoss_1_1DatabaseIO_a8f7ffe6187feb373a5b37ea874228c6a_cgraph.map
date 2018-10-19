@@ -1,5 +1,0 @@
-<map id="Ioss::DatabaseIO::set_common_side_topology" name="Ioss::DatabaseIO::set_common_side_topology">
-<area shape="rect" id="node2" href="$classIoss_1_1DatabaseIO.html#ac7cb8bf7c8175fa0546a2bd965570e7c" title="Ioss::DatabaseIO::get\l_region" alt="" coords="236,5,386,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1Region.html#a8c28d389019952e48ea8e953947421f7" title="Get all the region&#39;s ElementBlock objects. " alt="" coords="223,68,399,107"/>
-<area shape="rect" id="node4" href="$classIoss_1_1ElementTopology.html#a264efcfd8390e25c8fbcafa44c9273da" title="Ioss::ElementTopology\l::boundary_type" alt="" coords="233,131,389,169"/>
-</map>

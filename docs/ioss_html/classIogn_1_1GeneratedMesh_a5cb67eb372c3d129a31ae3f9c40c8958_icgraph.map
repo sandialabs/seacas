@@ -1,6 +1,0 @@
-<map id="Iogn::GeneratedMesh::element_map" name="Iogn::GeneratedMesh::element_map">
-<area shape="rect" id="node2" href="$classIogn_1_1DatabaseIO.html#a37a52691669407b1f20a2393e8d5f6ed" title="Iogn::DatabaseIO::get\l_element_map" alt="" coords="204,5,355,44"/>
-<area shape="rect" id="node4" href="$classIogn_1_1GeneratedMesh.html#a99c789006b20196fb83b6e9a801740e0" title="Iogn::GeneratedMesh\l::sideset_elem_sides" alt="" coords="204,68,355,107"/>
-<area shape="rect" id="node3" href="$classIogn_1_1DatabaseIO.html#aa021bc9f0a9d3b8214f8608d6abefa9c" title="Iogn::DatabaseIO::get\l_field_internal" alt="" coords="403,5,555,44"/>
-<area shape="rect" id="node5" href="$classIogn_1_1DatabaseIO.html#a3dcabef660dea9d0b71c964b7e6607a0" title="Iogn::DatabaseIO::get\l_field_internal" alt="" coords="403,68,555,107"/>
-</map>

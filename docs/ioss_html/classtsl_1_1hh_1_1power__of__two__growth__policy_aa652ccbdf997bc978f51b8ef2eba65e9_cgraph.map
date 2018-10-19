@@ -1,5 +1,0 @@
-<map id="tsl::hh::power_of_two_growth_policy::power_of_two_growth_policy" name="tsl::hh::power_of_two_growth_policy::power_of_two_growth_policy">
-<area shape="rect" id="node2" href="$classtsl_1_1hh_1_1power__of__two__growth__policy.html#a6b4162f094ab1fbcc37f2dbd32cd998c" title="tsl::hh::power_of_two\l_growth_policy::max_bucket_count" alt="" coords="210,5,440,44"/>
-<area shape="rect" id="node3" href="$classtsl_1_1hh_1_1power__of__two__growth__policy.html#a80a9c67203b6232e118974590acd8db0" title="tsl::hh::power_of_two\l_growth_policy::round\l_up_to_power_of_two" alt="" coords="249,68,401,120"/>
-<area shape="rect" id="node4" href="$classtsl_1_1hh_1_1power__of__two__growth__policy.html#aad66432e83b57818dcaa1f709092f77c" title="tsl::hh::power_of_two\l_growth_policy::is_power\l_of_two" alt="" coords="488,68,659,120"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="Iocgns::Utils::find_solution_index" name="Iocgns::Utils::find_solution_index">
-<area shape="rect" id="node2" href="$classIocgns_1_1DatabaseIO.html#a7f1eb6e0964125b7368fcda4fbe0ce63" title="Iocgns::DatabaseIO\l::get_field_internal" alt="" coords="199,5,338,44"/>
-<area shape="rect" id="node3" href="$classIocgns_1_1DecompositionData.html#a2e410d081d2a1f9f3e0ee604c532251b" title="Iocgns::DecompositionData\l::get_node_field" alt="" coords="176,68,361,107"/>
-<area shape="rect" id="node5" href="$classIocgns_1_1ParallelDatabaseIO.html#a51d5034b04db8f0d3bf70e321c8e6d2a" title="Iocgns::ParallelDatabase\lIO::get_field_internal" alt="" coords="184,131,353,169"/>
-<area shape="rect" id="node4" href="$classIocgns_1_1DecompositionDataBase.html#a84a976635f9d3fc4e7384386d54d75b2" title="Iocgns::DecompositionData\lBase::get_node_field" alt="" coords="409,68,593,107"/>
-</map>

@@ -1,8 +1,0 @@
-<map id="Iogn::GeneratedMesh::show_parameters" name="Iogn::GeneratedMesh::show_parameters">
-<area shape="rect" id="node2" href="$classIogn_1_1GeneratedMesh.html#a83a6078a3e0fd8f119a864b694c275b7" title="Iogn::GeneratedMesh\l::node_count" alt="" coords="204,5,354,44"/>
-<area shape="rect" id="node3" href="$classIogn_1_1GeneratedMesh.html#ae872b2bc88870537de38c044e3effcdc" title="Iogn::GeneratedMesh\l::element_count" alt="" coords="204,68,354,107"/>
-<area shape="rect" id="node4" href="$classIogn_1_1GeneratedMesh.html#a80b39683b24235fcc06f1b8e1df04e4a" title="Iogn::GeneratedMesh\l::block_count" alt="" coords="204,131,354,169"/>
-<area shape="rect" id="node5" href="$classIogn_1_1GeneratedMesh.html#a1c0ed57406d0a57db7138ae065eda366" title="Iogn::GeneratedMesh\l::nodeset_count" alt="" coords="204,193,354,232"/>
-<area shape="rect" id="node6" href="$classIogn_1_1GeneratedMesh.html#acb6607d069e9c847c6ea27929758e706" title="Iogn::GeneratedMesh\l::sideset_count" alt="" coords="204,256,354,295"/>
-<area shape="rect" id="node7" href="$classIogn_1_1GeneratedMesh.html#acf0b8edd6835b477db3fb891ec873cc0" title="Iogn::GeneratedMesh\l::timestep_count" alt="" coords="204,319,354,357"/>
-</map>
