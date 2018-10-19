@@ -586,6 +586,10 @@ namespace Ioss {
     // Create new sets as groups of existing exodus sets...
     void handle_groups();
 
+    virtual void openDatabase__() const;
+    virtual void closeDatabase__() const;
+    virtual void flush_database__() const {}
+
     /*!
      * Filename that this Database is connected with.  Derived
      * DatabaseIO classes may need to change this if the passed  in
@@ -713,10 +717,6 @@ namespace Ioss {
       faceMap.release_memory();
       elemMap.release_memory();
     }
-
-    virtual void openDatabase__() const;
-    virtual void closeDatabase__() const;
-    virtual void flush_database__() const {}
 
     virtual bool open_group__(const std::string &group_name) { return false; }
     virtual bool create_subgroup__(const std::string &group_name) { return false; }
