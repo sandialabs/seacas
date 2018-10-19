@@ -50,12 +50,6 @@
 #include <utility>                // for pair
 #include <vector>                 // for vector
 
-#if defined(SEACAS_HAVE_DATAWARP)
-extern "C" {
-#include <datawarp.h>
-}
-#endif // SEACAS_HAVE_DATAWARP
-
 namespace Ioss {
   class CommSet;
   class EdgeBlock;

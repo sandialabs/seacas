@@ -178,7 +178,7 @@ namespace Iocgns {
                 << "                        using the parallel CGNS library and API.\n";
     }
 #endif
-    openDatabase();
+    openDatabase__();
   }
 
   ParallelDatabaseIO::~ParallelDatabaseIO()
@@ -225,7 +225,9 @@ namespace Iocgns {
       cgp_mpi_comm(util().communicator());
 #endif
       CGCHECK(cgp_pio_mode(CGP_COLLECTIVE));
-      openDW(get_filename());
+
+      Ioss::DatabaseIO::openDatabase__();
+
       int ierr = cgp_open(get_dwname().c_str(), mode, &cgnsFilePtr);
 
       if (do_timer) {
@@ -280,7 +282,7 @@ namespace Iocgns {
         pcg_mpi_initialized = 0;
         cg_open(get_filename().c_str(), CG_MODE_READ, &cgnsSerFilePtr);
         pcg_mpi_initialized = init;
-	assert(cgnsSerFilePtr >= 0);
+        assert(cgnsSerFilePtr >= 0);
       }
     }
   }
