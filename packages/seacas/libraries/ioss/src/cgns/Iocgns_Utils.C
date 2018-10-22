@@ -179,7 +179,7 @@ namespace {
     }
   }
 
-  int extract_trailing_int(char *name)
+  int extract_trailing_int(const char *name)
   {
     // 'name' consists of an arbitrary number of characters followed by
     // zero or more digits.  Return the integer value of the contiguous
@@ -1172,17 +1172,22 @@ int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int 
       if (!found_step_descriptor) {
         // There was no Descriptor_t node with the name "step",
         // Try to decode the step from the FlowSolution_t name.
-        int nstep = extract_trailing_int(db_name);
-        if (nstep == step) {
-          return i + 1;
+	// If `db_name` does not have `Step` or `step` in name,
+	// then don't search
+	if (strcasestr(db_name, "step") != NULL) {
+	  int nstep = extract_trailing_int(db_name);
+	  if (nstep == step) {
+	    return i + 1;
+	  }
         }
       }
     }
   }
 
-  if (nsols == 1 && location_matches) {
-    return 1;
+  if (location_matches) {
+    return step;
   }
+
   std::cerr << "WARNING: CGNS: Could not find valid solution index for step " << step << ", zone "
             << zone << ", and location " << GridLocationName[location] << "\n";
   return 0;
