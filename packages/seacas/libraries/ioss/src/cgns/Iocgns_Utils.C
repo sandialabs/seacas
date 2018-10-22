@@ -1664,15 +1664,6 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
   bool has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
 
   cgsize_t          dim[2] = {32, (cgsize_t)timesteps.size()};
-  std::vector<char> names(32 * timesteps.size(), ' ');
-  for (size_t state = 0; state < timesteps.size(); state++) {
-    // This name is the "postfix" or common portion of all FlowSolution names...
-    std::string name = "SolutionAtStep" + std::to_string(state + 1);
-    std::strncpy(&names[state * 32], name.c_str(), 32);
-    for (size_t i = name.size(); i < 32; i++) {
-      names[state * 32 + i] = ' ';
-    }
-  }
 
   // Create a lambda to avoid code duplication for similar treatment
   // of structured blocks and element blocks.
@@ -1680,6 +1671,27 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
     int              zone = get_db_zone(block);
     std::vector<int> indices(timesteps.size());
     bool             has_cell_center_fields = block->field_count(Ioss::Field::TRANSIENT) > 0;
+    std::string base_type;
+    if (has_nodal_fields && !has_cell_center_fields) {
+      base_type = "VertexSolutionAtStep";
+    }
+    else if (!has_nodal_fields && has_cell_center_fields) {
+      base_type = "CellCenterSolutionAtStep";
+    }
+    else {
+      base_type = "SolutionAtStep";
+    }
+
+    std::vector<char> names(32 * timesteps.size(), ' ');
+    for (size_t state = 0; state < timesteps.size(); state++) {
+      // This name is the "postfix" or common portion of all FlowSolution names...
+      std::string name = base_type + std::to_string(state + 1);
+      std::strncpy(&names[state * 32], name.c_str(), 32);
+      for (size_t i = name.size(); i < 32; i++) {
+	names[state * 32 + i] = ' ';
+      }
+    }
+
     if (has_cell_center_fields || has_nodal_fields) {
       CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
       CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
