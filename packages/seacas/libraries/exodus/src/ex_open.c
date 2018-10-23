@@ -271,6 +271,9 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
 #if NC_HAS_DISKLESS
     if (mode & EX_DISKLESS) {
       nc_mode |= NC_DISKLESS;
+#if defined NC_PERSIST
+      nc_mode |= NC_PERSIST;
+#endif
     }
 #endif
     if ((status = nc_open(path, nc_mode, &exoid)) != NC_NOERR) {
