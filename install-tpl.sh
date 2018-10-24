@@ -1,17 +1,48 @@
 #! /usr/bin/env bash
 
+# Text color variables
+if [[ $TERM != *"xterm"* ]]; then
+    export TERM=dumb
+fi
+txtred=$(tput setaf 1)    # Red
+txtgrn=$(tput setaf 2)    # Green
+txtylw=$(tput setaf 3)    # Yellow
+txtblu=$(tput setaf 4)    # Blue
+txtpur=$(tput setaf 5)    # Purple
+txtcyn=$(tput setaf 6)    # Cyan
+txtwht=$(tput setaf 7)    # White
+txtrst=$(tput sgr0)       # Text reset
+
 # Which compiler to use?
 export COMPILER=${COMPILER:-gnu}
 
+function check_valid_yes_no()
+{
+    local var=$1
+    if ! [ "${!var}" == "YES" ] && ! [ "${!var}" == "NO" ]; then
+    echo "${txtred}Invalid value for $var (${!var}) -- Must be YES or NO${txtrst}"
+    exit 1
+fi
+}
+
 #By default, download and then install.
 DOWNLOAD=${DOWNLOAD:-YES}
+check_valid_yes_no DOWNLOAD
+
 BUILD=${BUILD:-YES}
+check_valid_yes_no BUILD
 
 # Force downloading and installation even if the TPL already exists in lib/include
 FORCE=${FORCE:-NO}
+check_valid_yes_no FORCE
 
 # Shared libraries or static libraries?
 SHARED=${SHARED:-YES}
+check_valid_yes_no SHARED
+
+# Enable Burst-Buffer support in PNetCDF?
+BB=${BB:-NO}
+check_valid_yes_no BB
 
 # Which TPLS? (HDF5 and NetCDF always, PNetCDF if MPI=ON)
 CGNS=${CGNS:-ON}
@@ -26,19 +57,6 @@ VERBOSE=${VERBOSE:-1}
 
 pwd
 export ACCESS=`pwd`
-
-# Text color variables
-if [[ $TERM != *"xterm"* ]]; then
-    export TERM=dumb
-fi
-txtred=$(tput setaf 1)    # Red
-txtgrn=$(tput setaf 2)    # Green
-txtylw=$(tput setaf 3)    # Yellow
-txtblu=$(tput setaf 4)    # Blue
-txtpur=$(tput setaf 5)    # Purple
-txtcyn=$(tput setaf 6)    # Cyan
-txtwht=$(tput setaf 7)    # White
-txtrst=$(tput sgr0)       # Text reset
 
 if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
 then
@@ -74,6 +92,7 @@ if [ $# -gt 0 ]; then
 	echo "   BUILD        = ${BUILD}"
 	echo "   FORCE        = ${FORCE}"
 	echo "   SHARED       = ${SHARED}"
+	ecoh "   BB           = ${BB}"
 	echo ""
 	echo "   H5VERSION    = ${H5VERSION}"
 	echo "   CGNS         = ${CGNS}"
@@ -144,7 +163,7 @@ then
     then
 	hdf_version="1.8.20"
     else
-	hdf_version="1.10.3"
+	hdf_version="1.10.4"
     fi
 
     cd $ACCESS
@@ -209,7 +228,7 @@ then
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd parallel-netcdf-${pnet_version}
-            SHARED=${SHARED} bash ../runconfigure.sh
+            BB=${BB} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure PnetCDF. exiting.${txtrst}

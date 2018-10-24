@@ -19,12 +19,14 @@ var ex__utils_8c =
     [ "ex_header_size", "ex__utils_8c.html#a5cf345127f80e3bcf813194c15d97030", null ],
     [ "ex_id_lkup", "ex__utils_8c.html#a53ca5c604b4ce9f9e98a82ee98269282", null ],
     [ "ex_inc_file_item", "ex__utils_8c.html#a5398767332961eafc5c67adefc14623c", null ],
+    [ "ex_int_handle_mode", "ex__utils_8c.html#afc7ab35150b72a96c904ac2fb831fa32", null ],
     [ "ex_int_iisort", "ex__utils_8c.html#a70aed184c504449a0022fbd757dfbb41", null ],
     [ "ex_int_iisort64", "ex__utils_8c.html#abc3ad0e4f6220f9e230c50458d5d3cfb", null ],
     [ "ex_int_iqsort", "ex__utils_8c.html#a21c689b616d265b2bf0850f774d7e84b", null ],
     [ "ex_int_iqsort64", "ex__utils_8c.html#a3c595fdaf757b5f9a6327e8e5fb6711b", null ],
     [ "ex_int_median3", "ex__utils_8c.html#adeace13064d28a62f3019e8a9e01ce4e", null ],
     [ "ex_int_median3_64", "ex__utils_8c.html#af8c4570298295a78d1f0ce9ad1bbdb5c", null ],
+    [ "ex_int_populate_header", "ex__utils_8c.html#ab1ad63da05c12d5f309cd978b2cb5693", null ],
     [ "ex_iqsort", "ex__utils_8c.html#a1777a8149e2810dbe0d070a109fcf361", null ],
     [ "ex_iqsort64", "ex__utils_8c.html#aac19ba1b27495467de816438a5f60f25", null ],
     [ "ex_large_model", "ex__utils_8c.html#aa8231cf6c15bb76730fd5903a3ad5777", null ],
@@ -66,5 +68,6 @@ var ex__utils_8c =
     [ "nm_ctr_list", "ex__utils_8c.html#ac944c708b77debda299673c7d09a917b", null ],
     [ "ns_ctr_list", "ex__utils_8c.html#a14f6bbcdbc129aca1f42c38d7bf0ed7e", null ],
     [ "ret_string", "ex__utils_8c.html#ae67741a50448c3f9dc8ef28f9c1dc6e6", null ],
-    [ "ss_ctr_list", "ex__utils_8c.html#a2c857892e1addf2a8782d4a4cb2c3413", null ]
+    [ "ss_ctr_list", "ex__utils_8c.html#a2c857892e1addf2a8782d4a4cb2c3413", null ],
+    [ "warning_output", "ex__utils_8c.html#ab71aa5cfa846f02a7fb1924bcfeb77db", null ]
 ];

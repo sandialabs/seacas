@@ -270,43 +270,6 @@ namespace Iofx {
     return true;
   }
 
-  bool DatabaseIO::ok__(bool write_message, std::string *error_msg, int *bad_count) const
-  {
-    // For input, we try to open the existing file.
-
-    // For output, we do not want to overwrite or clobber the output
-    // file if it already exists since the app might be reading the restart
-    // data from this file and then later clobbering it and then writing
-    // restart data to the same file. So, for output, we first check
-    // whether the file exists and if it it and is writable, assume
-    // that we can later create a new or append to existing file.
-
-    // Returns the number of processors on which this file is *NOT* ok in 'bad_count' if not null.
-    // Will return 'true' only if file ok on all processors.
-
-    if (fileExists) {
-      // File has already been opened at least once...
-      return dbState != Ioss::STATE_INVALID;
-    }
-
-    bool abort_if_error = false;
-    bool is_ok;
-    if (is_input()) {
-      is_ok = open_input_file(write_message, error_msg, bad_count, abort_if_error);
-    }
-    else {
-      // See if file exists... Don't overwrite (yet) it it exists.
-      bool overwrite = false;
-      is_ok = handle_output_file(write_message, error_msg, bad_count, overwrite, abort_if_error);
-      // Close all open files...
-      if (exodusFilePtr >= 0) {
-        ex_close(exodusFilePtr);
-        exodusFilePtr = -1;
-      }
-    }
-    return is_ok;
-  }
-
   bool DatabaseIO::open_input_file(bool write_message, std::string *error_msg, int *bad_count,
                                    bool abort_if_error) const
   {
@@ -325,31 +288,25 @@ namespace Iofx {
       mode |= EX_DISKLESS;
     }
 #endif
+
+    bool do_timer = false;
+    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+    double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+
     int app_opt_val = ex_opts(EX_VERBOSE);
     exodusFilePtr   = ex_open(decoded_filename().c_str(), EX_READ | mode, &cpu_word_size,
                             &io_word_size, &version);
 
+    if (do_timer) {
+      double t_end    = Ioss::Utils::timer();
+      double duration = t_end - t_begin;
+      std::cerr << "File Open Time = " << duration << "\n";
+    }
+
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
 
     if (is_ok) {
-      assert(exodusFilePtr >= 0);
-      // Check byte-size of integers stored on the database...
-      if ((ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
-        if (myProcessor == 0) {
-          std::cerr << "IOSS: Input database contains 8-byte integers. Setting Ioss to use 8-byte "
-                       "integers.\n";
-        }
-        ex_set_int64_status(exodusFilePtr, EX_ALL_INT64_API);
-        set_int_byte_size_api(Ioss::USE_INT64_API);
-      }
-
-      // Check for maximum name length used on the input file.
-      int max_name_length = ex_inquire_int(exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-      if (max_name_length > maximumNameLength) {
-        maximumNameLength = max_name_length;
-      }
-
-      ex_set_max_name_length(exodusFilePtr, maximumNameLength);
+      finalize_file_open();
     }
     ex_opts(app_opt_val); // Reset back to what it was.
     return is_ok;
@@ -449,7 +406,6 @@ namespace Iofx {
   {
     // Returns the file_pointer used to access the file on disk.
     // Checks that the file is open and if not, opens it first.
-
     if (Ioss::SerializeIO::isEnabled()) {
       if (!Ioss::SerializeIO::inBarrier()) {
         std::ostringstream errmsg;
@@ -467,24 +423,7 @@ namespace Iofx {
       }
     }
 
-    if (exodusFilePtr < 0) {
-      bool write_message  = true;
-      bool abort_if_error = true;
-      if (is_input()) {
-        open_input_file(write_message, nullptr, nullptr, abort_if_error);
-      }
-      else {
-        bool overwrite = true;
-        handle_output_file(write_message, nullptr, nullptr, overwrite, abort_if_error);
-      }
-
-      if (!m_groupName.empty()) {
-        ex_get_group_id(exodusFilePtr, m_groupName.c_str(), &exodusFilePtr);
-      }
-    }
-    fileExists = true;
-    assert(exodusFilePtr >= 0);
-    return exodusFilePtr;
+    return Ioex::DatabaseIO::get_file_pointer();
   }
 
   void DatabaseIO::read_meta_data__()

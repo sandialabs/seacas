@@ -146,7 +146,13 @@ namespace Ioex {
         Ioss::Utils::check_set_bool_property(properties, "MINIMIZE_OPEN_FILES", minimizeOpenFiles);
       }
 
-      Ioss::Utils::check_set_bool_property(properties, "FILE_PER_STATE", filePerState);
+      {
+        bool file_per_state = false;
+        Ioss::Utils::check_set_bool_property(properties, "FILE_PER_STATE", file_per_state);
+        if (file_per_state) {
+          set_file_per_state(true);
+        }
+      }
     }
 
     // See if there are any properties that need to (or can) be
@@ -271,6 +277,30 @@ namespace Ioex {
   }
 
   // common
+  int DatabaseIO::get_file_pointer() const
+  {
+    // Returns the file_pointer used to access the file on disk.
+    // Checks that the file is open and if not, opens it first.
+    if (exodusFilePtr < 0) {
+      bool write_message  = true;
+      bool abort_if_error = true;
+      if (is_input()) {
+        open_input_file(write_message, nullptr, nullptr, abort_if_error);
+      }
+      else {
+        bool overwrite = true;
+        handle_output_file(write_message, nullptr, nullptr, overwrite, abort_if_error);
+      }
+
+      if (!m_groupName.empty()) {
+        ex_get_group_id(exodusFilePtr, m_groupName.c_str(), &exodusFilePtr);
+      }
+    }
+    assert(exodusFilePtr >= 0);
+    fileExists = true;
+    return exodusFilePtr;
+  }
+
   int DatabaseIO::free_file_pointer() const
   {
     if (exodusFilePtr != -1) {
@@ -293,6 +323,65 @@ namespace Ioex {
     exodusFilePtr = -1;
 
     return exodusFilePtr;
+  }
+
+  bool DatabaseIO::ok__(bool write_message, std::string *error_msg, int *bad_count) const
+  {
+    // For input, we try to open the existing file.
+
+    // For output, we do not want to overwrite or clobber the output
+    // file if it already exists since the app might be reading the restart
+    // data from this file and then later clobbering it and then writing
+    // restart data to the same file. So, for output, we first check
+    // whether the file exists and if it it and is writable, assume
+    // that we can later create a new or append to existing file.
+
+    // Returns the number of processors on which this file is *NOT* ok in 'bad_count' if not null.
+    // Will return 'true' only if file ok on all processors.
+
+    if (fileExists) {
+      // File has already been opened at least once...
+      return dbState != Ioss::STATE_INVALID;
+    }
+
+    bool abort_if_error = false;
+    bool is_ok;
+    if (is_input()) {
+      is_ok = open_input_file(write_message, error_msg, bad_count, abort_if_error);
+    }
+    else {
+      // See if file exists... Don't overwrite (yet) it it exists.
+      bool overwrite = false;
+      is_ok = handle_output_file(write_message, error_msg, bad_count, overwrite, abort_if_error);
+      // Close all open files...
+      if (exodusFilePtr >= 0) {
+        ex_close(exodusFilePtr);
+        exodusFilePtr = -1;
+      }
+    }
+    return is_ok;
+  }
+
+  void DatabaseIO::finalize_file_open() const
+  {
+    assert(exodusFilePtr >= 0);
+    // Check byte-size of integers stored on the database...
+    if ((ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
+      if (myProcessor == 0) {
+	std::cerr << "IOSS: Input database contains 8-byte integers. Setting Ioss to use 8-byte "
+	  "integers.\n";
+      }
+      ex_set_int64_status(exodusFilePtr, EX_ALL_INT64_API);
+      set_int_byte_size_api(Ioss::USE_INT64_API);
+    }
+
+    // Check for maximum name length used on the input file.
+    int max_name_length = ex_inquire_int(exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+    if (max_name_length > maximumNameLength) {
+      maximumNameLength = max_name_length;
+    }
+
+    ex_set_max_name_length(exodusFilePtr, maximumNameLength);
   }
 
   bool DatabaseIO::open_group__(const std::string &group_name)
@@ -959,7 +1048,16 @@ namespace Ioex {
     if (!db.pathname().empty()) {
       new_filename += db.pathname() + "/";
     }
-    new_filename += db.basename() + "-state-" + std::to_string(state) + "." + db.extension();
+
+    if (get_cycle_count() >= 1) {
+      static const std::string suffix{"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+      int                      index = (state - 1) % get_cycle_count();
+      new_filename += db.basename() + "-state-" + suffix[index] + "." + db.extension();
+    }
+    else {
+      new_filename += db.basename() + "-state-" + std::to_string(state) + "." + db.extension();
+    }
+
     DBFilename = new_filename;
     fileExists = false;
 
@@ -997,8 +1095,6 @@ namespace Ioex {
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }
-
-    cycleCount = 1;
   }
 
   bool DatabaseIO::begin_state__(Ioss::Region * /* region */, int state, double time)
@@ -1008,7 +1104,7 @@ namespace Ioex {
     time /= timeScaleFactor;
 
     if (!is_input()) {
-      if (filePerState) {
+      if (get_file_per_state()) {
         // Close current file; create new file and output transient metadata...
         open_state_file(state);
         write_results_metadata(false);
@@ -1472,6 +1568,10 @@ namespace Ioex {
   // Given the global region step, return the step on the database...
   int DatabaseIO::get_database_step(int global_step) const
   {
+    if (get_file_per_state()) {
+      return 1;
+    }
+
     assert(overlayCount >= 0 && cycleCount >= 0);
     if (overlayCount == 0 && cycleCount == 0) {
       return global_step;

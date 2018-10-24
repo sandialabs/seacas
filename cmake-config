@@ -179,10 +179,12 @@ else
   DARWIN_OPT=""
 fi
 
+# Only run doxygen if me and on master branch...
 DOXYGEN=OFF
 if [[ "$OS" == "Darwin" && "$MPI" == "OFF" ]] ; then
+    branch=`git branch |grep \* |cut -c3-`
     USER=`id -nu`
-    if [ "$USER" == "gdsjaar" ] ; then
+    if [ "$USER" == "gdsjaar" ] && [ "$branch" == "master" ]; then
 	DOXYGEN=ON
     fi
 fi

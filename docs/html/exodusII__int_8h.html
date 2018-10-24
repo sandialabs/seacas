@@ -787,6 +787,10 @@ Functions</h2></td></tr>
 <tr class="separator:ae356629b4b51b86cf54a498492f14f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab86e9f8fb7fe52a0ae98204946e77f35"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#ab86e9f8fb7fe52a0ae98204946e77f35">ex_leavedef</a> (int exoid, const char *call_rout)</td></tr>
 <tr class="separator:ab86e9f8fb7fe52a0ae98204946e77f35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc7ab35150b72a96c904ac2fb831fa32"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#afc7ab35150b72a96c904ac2fb831fa32">ex_int_handle_mode</a> (unsigned int my_mode, int is_parallel, int run_version)</td></tr>
+<tr class="separator:afc7ab35150b72a96c904ac2fb831fa32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1ad63da05c12d5f309cd978b2cb5693"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#ab1ad63da05c12d5f309cd978b2cb5693">ex_int_populate_header</a> (int exoid, const char *path, int my_mode, int *comp_ws, int *io_ws)</td></tr>
+<tr class="separator:ab1ad63da05c12d5f309cd978b2cb5693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bf0a3077a0a1a2d6c1f77019eb35884"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#a2bf0a3077a0a1a2d6c1f77019eb35884">ex_int_get_block_param</a> (int exoid, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> id, int ndim, struct <a class="el" href="structelem__blk__parm.html">elem_blk_parm</a> *<a class="el" href="structelem__blk__parm.html">elem_blk_parm</a>)</td></tr>
 <tr class="separator:a2bf0a3077a0a1a2d6c1f77019eb35884"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e1c283ff36891ac4019c85fcab52bc7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII__int_8h.html#a3e1c283ff36891ac4019c85fcab52bc7">ex_get_file_type</a> (int exoid, char *ftype)</td></tr>
@@ -5670,7 +5674,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>this routine accesses a structure to track and increment a counter for each open exodus file. it is designed to be used by the routines <a class="el" href="exodusII_8h.html#a0f17165fef6a216b12f081e2794cd7aa">ex_put_elem_block()</a>, and <a class="el" href="exodusII_8h.html#a00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param()</a>, to get the number of element blocks, or a type of set, respectively, for an open exodus II file.</p>
+<p>this routine accesses a structure to track and increment a counter for each open exodus file. it is designed to be used by the routines <a class="el" href="exodusII_8h.html#a8203562a4606a04c2724ac3220da17d0">ex_put_elem_block()</a>, and <a class="el" href="exodusII_8h.html#a00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param()</a>, to get the number of element blocks, or a type of set, respectively, for an open exodus II file.</p>
 <p>The list structure is used as follows:</p>
 <h2>ptr --------&mdash;&gt; list item structure </h2>
 <p>exodus file id item value (int) ptr to next (NULL if last)</p>
@@ -5749,9 +5753,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="exodusII_8h.html#aee292cace958782398b2f5fbfa119626">ex_get_glob_var_time()</a> reads the values of a single global variable through a specified number of time steps. Memory must be allocated for the global variable values array before this function is invoked.</p>
+<p>The function <a class="el" href="exodusII_8h.html#a4d51e0740116cc60e2daa4aef1757ad2">ex_get_glob_var_time()</a> reads the values of a single global variable through a specified number of time steps. Memory must be allocated for the global variable values array before this function is invoked.</p>
 <p>Because global variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#aee292cace958782398b2f5fbfa119626">ex_get_glob_var_time()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a4d51e0740116cc60e2daa4aef1757ad2">ex_get_glob_var_time()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>specified global variable does not exist.</li>
 <li>a warning value is returned if no global variables are stored in the file.</li>
@@ -5768,7 +5772,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <p>The following is an example of using this function:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_time_steps, var_index;</div><div class="line"><span class="keywordtype">int</span> beg_time, end_time;</div><div class="line"></div><div class="line"><span class="keywordtype">float</span> *var_values;</div><div class="line"></div><div class="line">num_time_steps = <a class="code" href="exodusII_8h.html#a81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631">EX_INQ_TIME</a>);</div><div class="line"></div><div class="line">var_index = 1;</div><div class="line">beg_time = 1;</div><div class="line">end_time = -1;</div><div class="line"></div><div class="line">var_values = (<span class="keywordtype">float</span> *) calloc (num_time_steps, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#aee292cace958782398b2f5fbfa119626">ex_get_glob_var_time</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, var_index, beg_time,</div><div class="line">                             end_time, var_values);</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_time_steps, var_index;</div><div class="line"><span class="keywordtype">int</span> beg_time, end_time;</div><div class="line"></div><div class="line"><span class="keywordtype">float</span> *var_values;</div><div class="line"></div><div class="line">num_time_steps = <a class="code" href="exodusII_8h.html#a81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631">EX_INQ_TIME</a>);</div><div class="line"></div><div class="line">var_index = 1;</div><div class="line">beg_time = 1;</div><div class="line">end_time = -1;</div><div class="line"></div><div class="line">var_values = (<span class="keywordtype">float</span> *) calloc (num_time_steps, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a4d51e0740116cc60e2daa4aef1757ad2">ex_get_glob_var_time</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, var_index, beg_time,</div><div class="line">                             end_time, var_values);</div></div><!-- fragment --> 
 </div>
 </div>
 <a id="a280fb5a55b9640e6daea736b3de19f96"></a>
@@ -5965,9 +5969,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="exodusII_8h.html#a7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var()</a> reads the values of a single nodal variable for a single time step. Memory must be allocated for the nodal variable values array before this function is invoked.</p>
+<p>The function <a class="el" href="exodusII_8h.html#aba2f69afb622a1d7467e6c00fb53ecfc">ex_get_nodal_var()</a> reads the values of a single nodal variable for a single time step. Memory must be allocated for the nodal variable values array before this function is invoked.</p>
 <p>Because nodal variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#aba2f69afb622a1d7467e6c00fb53ecfc">ex_get_nodal_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>specified nodal variable does not exist.</li>
 <li>a warning value is returned if no nodal variables are stored in the file.</li>
@@ -5984,7 +5988,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <p>For example, the following demonstrates how this function would be used:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nodes, time_step, var_index;</div><div class="line"><span class="keywordtype">float</span> *var_values;</div><div class="line"></div><div class="line"><span class="comment">/* read the second nodal variable at the first time step */</span></div><div class="line">time_step = 1;</div><div class="line">var_index = 2;</div><div class="line"></div><div class="line">var_values = (<span class="keywordtype">float</span> *) calloc (num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, time_step, var_index, num_nodes,</div><div class="line">                         var_values);</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nodes, time_step, var_index;</div><div class="line"><span class="keywordtype">float</span> *var_values;</div><div class="line"></div><div class="line"><span class="comment">/* read the second nodal variable at the first time step */</span></div><div class="line">time_step = 1;</div><div class="line">var_index = 2;</div><div class="line"></div><div class="line">var_values = (<span class="keywordtype">float</span> *) calloc (num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#aba2f69afb622a1d7467e6c00fb53ecfc">ex_get_nodal_var</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, time_step, var_index, num_nodes,</div><div class="line">                         var_values);</div></div><!-- fragment --> 
 </div>
 </div>
 <a id="a8bd2e58f6ee88b71f2f5bfee5623cb35"></a>
@@ -6036,9 +6040,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="exodusII_8h.html#afef762ab61ca2dabf04d548e51f026eb">ex_get_nodal_var_time()</a> reads the values of a nodal variable for a single node through a specified number of time steps. Memory must be allocated for the nodal variable values array before this function is invoked.</p>
+<p>The function <a class="el" href="exodusII_8h.html#a7ff376425773f7b5c1a05d9a9b8643fb">ex_get_nodal_var_time()</a> reads the values of a nodal variable for a single node through a specified number of time steps. Memory must be allocated for the nodal variable values array before this function is invoked.</p>
 <p>Because nodal variables are floating point values, the application code must declare the array passed to be the appropriate type (float or `&lsquo;double&rsquo;') to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#afef762ab61ca2dabf04d548e51f026eb">ex_get_nodal_var_time()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a7ff376425773f7b5c1a05d9a9b8643fb">ex_get_nodal_var_time()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>specified nodal variable does not exist.</li>
 <li>a warning value is returned if no nodal variables are stored in the file.</li>
 </ul>
@@ -6146,7 +6150,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>this routine sets up a structure to track and increment a counter for each open exodus file. it is designed to be used by the routines <a class="el" href="exodusII_8h.html#a0f17165fef6a216b12f081e2794cd7aa">ex_put_elem_block()</a> and <a class="el" href="exodusII_8h.html#a00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param()</a>, to keep track of the number of element blocks, and each type of set, respectively, for each open exodus II file.</p>
+<p>this routine sets up a structure to track and increment a counter for each open exodus file. it is designed to be used by the routines <a class="el" href="exodusII_8h.html#a8203562a4606a04c2724ac3220da17d0">ex_put_elem_block()</a> and <a class="el" href="exodusII_8h.html#a00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param()</a>, to keep track of the number of element blocks, and each type of set, respectively, for each open exodus II file.</p>
 <p>The list structure is used as follows:</p>
 <h2>ptr --------&mdash;&gt; list item structure </h2>
 <p>exodus file id item value (int) ptr to next (NULL if last)</p>
@@ -6183,6 +6187,86 @@ Variables</h2></td></tr>
           <td></td>
           <td class="paramtype">struct <a class="el" href="structelem__blk__parm.html">elem_blk_parm</a> *&#160;</td>
           <td class="paramname"><em>elem_blk_parm</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afc7ab35150b72a96c904ac2fb831fa32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc7ab35150b72a96c904ac2fb831fa32">&#9670;&nbsp;</a></span>ex_int_handle_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_int_handle_mode </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>my_mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>is_parallel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>run_version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1ad63da05c12d5f309cd978b2cb5693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1ad63da05c12d5f309cd978b2cb5693">&#9670;&nbsp;</a></span>ex_int_populate_header()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_int_populate_header </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>my_mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>comp_ws</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>io_ws</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -6553,9 +6637,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="exodusII_8h.html#a295aba6f56b209f0a8d5c2208a3bbc39">ex_put_nodal_var()</a> writes the values of a single nodal variable for a single time step. The function <a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> must be invoked before this call is made.</p>
+<p>The function <a class="el" href="exodusII_8h.html#aac2d4d012d5e2a8069c50a5eb1c05a59">ex_put_nodal_var()</a> writes the values of a single nodal variable for a single time step. The function <a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> must be invoked before this call is made.</p>
 <p>Because nodal variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a295aba6f56b209f0a8d5c2208a3bbc39">ex_put_nodal_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#aac2d4d012d5e2a8069c50a5eb1c05a59">ex_put_nodal_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>data file opened for read only.</li>
 <li>data file not initialized properly with call to <a class="el" href="exodusII_8h.html#aad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
@@ -6573,7 +6657,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <p>As an example, the following code segment writes all the nodal variables for a single time step:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nod_vars, num_nodes, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, time_step;</div><div class="line"><span class="keywordtype">float</span> *nodal_var_vals;</div><div class="line"></div><div class="line"><span class="comment">/* write nodal variables */</span></div><div class="line">nodal_var_vals = (<span class="keywordtype">float</span> *) calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"><span class="keywordflow">for</span> (k=1; k &lt;= num_nod_vars; k++) {</div><div class="line">   <span class="keywordflow">for</span> (j=0; j &lt; num_nodes; j++) {</div><div class="line">      <span class="comment">/* application code fills in this array */</span></div><div class="line">      nodal_var_vals[j] = 10.0;</div><div class="line">   }</div><div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a295aba6f56b209f0a8d5c2208a3bbc39">ex_put_nodal_var</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, time_step, k, num_nodes,</div><div class="line">                            nodal_var_vals);</div><div class="line">}</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nod_vars, num_nodes, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, time_step;</div><div class="line"><span class="keywordtype">float</span> *nodal_var_vals;</div><div class="line"></div><div class="line"><span class="comment">/* write nodal variables */</span></div><div class="line">nodal_var_vals = (<span class="keywordtype">float</span> *) calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"><span class="keywordflow">for</span> (k=1; k &lt;= num_nod_vars; k++) {</div><div class="line">   <span class="keywordflow">for</span> (j=0; j &lt; num_nodes; j++) {</div><div class="line">      <span class="comment">/* application code fills in this array */</span></div><div class="line">      nodal_var_vals[j] = 10.0;</div><div class="line">   }</div><div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#aac2d4d012d5e2a8069c50a5eb1c05a59">ex_put_nodal_var</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, time_step, k, num_nodes,</div><div class="line">                            nodal_var_vals);</div><div class="line">}</div></div><!-- fragment --> 
 </div>
 </div>
 <a id="a2bfe82f5a1be0b1382a481e1cc7c3731"></a>

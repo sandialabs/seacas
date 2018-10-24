@@ -6,6 +6,11 @@ if [ "X$ACCESS" == "X" ] ; then
   echo "ACCESS set to ${ACCESS}"
 fi
 
+if [ "$BB" == "ON" ]
+then
+   USE_BB="--enable-burst-buffering"
+fi
+   
 if [ "$CRAY" == "ON" ]
 then
     USE_SHARED="--disable-shared"
@@ -32,7 +37,7 @@ CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 AR_FLAGS='cru'; export AR_FLAGS
 
 LDFLAGS='-L${ACCESS}/lib'; export LDFLAGS
-./configure --disable-fortran ${USE_SHARED} --disable-cxx --prefix=${ACCESS}
+./configure --disable-fortran ${USE_SHARED} ${USE_BB} --disable-cxx --prefix=${ACCESS}
 
 echo ""
 echo "COMPILER: ${CC}"
