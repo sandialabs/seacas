@@ -48,38 +48,38 @@ if (edges && edges.length) {
 <script type="text/javascript">
 var viewWidth = 707;
 var viewHeight = 283;
-var sectionId = 'dynsection-74';
+var sectionId = 'dynsection-83';
 </script>
 <script xlink:href="svgpan.js"/>
 <svg id="graph" class="graph">
 <g id="viewport">
 <title>Ioss::DatabaseIO::needs_shared_node_information</title>
 <polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-278.5674 703.2979,-278.5674 703.2979,4 -4,4"/>
-<!-- Node1464 -->
+<!-- Node1704 -->
 <g id="node1" class="node">
-<title>Node1464</title>
+<title>Node1704</title>
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-143.5 0,-171.5 134.9746,-171.5 134.9746,-143.5 0,-143.5"/>
 <text text-anchor="start" x="8" y="-159.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::DatabaseIO::needs</text>
 <text text-anchor="middle" x="67.4873" y="-149.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">_shared_node_information</text>
 </g>
-<!-- Node1465 -->
+<!-- Node1705 -->
 <g id="node2" class="node">
-<title>Node1465</title>
+<title>Node1705</title>
 <g id="a_node2"><a xlink:href="classIoss_1_1Utils.html#a24de37b7a335e4d98eb046f9ee0adb8d" target="_top" xlink:title="Ioss::Utils::copy_database">
 <polygon fill="#ffffff" stroke="#000000" points="331.9346,-244.5 331.9346,-262.5 464.6631,-262.5 464.6631,-244.5 331.9346,-244.5"/>
 <text text-anchor="middle" x="398.2988" y="-250.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::Utils::copy_database</text>
 </a>
 </g>
 </g>
-<!-- Node1464&#45;&gt;Node1465 -->
+<!-- Node1704&#45;&gt;Node1705 -->
 <g id="edge1" class="edge">
-<title>Node1464&#45;&gt;Node1465</title>
+<title>Node1704&#45;&gt;Node1705</title>
 <path fill="none" stroke="#191970" d="M82.3788,-180.1029C100.1106,-204.7344 132.2491,-242.7346 170.9746,-258.5 234.9579,-284.548 317.6927,-272.647 363.6428,-262.5082"/>
 <polygon fill="#191970" stroke="#191970" points="85.1063,-177.8953 76.5124,-171.6989 79.3664,-181.9021 85.1063,-177.8953"/>
 </g>
-<!-- Node1468 -->
+<!-- Node1708 -->
 <g id="node5" class="node">
-<title>Node1468</title>
+<title>Node1708</title>
 <g id="a_node5"><a xlink:href="namespaceanonymous__namespace_02Ioss__Utils_8C_03.html#af46caf2c983b2f70978a4d84ab260e1b" target="_top" xlink:title="anonymous_namespace\l\{Ioss_Utils::C\}::transfer\l_nodeblock">
 <polygon fill="#ffffff" stroke="#000000" points="170.9746,-210.5 170.9746,-248.5 295.9346,-248.5 295.9346,-210.5 170.9746,-210.5"/>
 <text text-anchor="start" x="178.9746" y="-236.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">anonymous_namespace</text>
@@ -88,15 +88,15 @@ var sectionId = 'dynsection-74';
 </a>
 </g>
 </g>
-<!-- Node1464&#45;&gt;Node1468 -->
+<!-- Node1704&#45;&gt;Node1708 -->
 <g id="edge4" class="edge">
-<title>Node1464&#45;&gt;Node1468</title>
+<title>Node1704&#45;&gt;Node1708</title>
 <path fill="none" stroke="#191970" d="M109.2667,-175.6247C133.7591,-186.25 164.6688,-199.6593 189.5237,-210.4419"/>
 <polygon fill="#191970" stroke="#191970" points="110.4484,-172.3223 99.8815,-171.5532 107.6624,-178.744 110.4484,-172.3223"/>
 </g>
-<!-- Node1469 -->
+<!-- Node1709 -->
 <g id="node6" class="node">
-<title>Node1469</title>
+<title>Node1709</title>
 <g id="a_node6"><a xlink:href="namespaceanonymous__namespace_02io__shell__ts_8C_03.html#a095c7ac686af64729318e491a9d5622d" target="_top" xlink:title="anonymous_namespace\l\{io_shell_ts::C\}::file_copy">
 <polygon fill="#ffffff" stroke="#000000" points="334.4321,-143.5 334.4321,-171.5 462.1655,-171.5 462.1655,-143.5 334.4321,-143.5"/>
 <text text-anchor="start" x="342.4321" y="-159.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">anonymous_namespace</text>
@@ -104,15 +104,15 @@ var sectionId = 'dynsection-74';
 </a>
 </g>
 </g>
-<!-- Node1464&#45;&gt;Node1469 -->
+<!-- Node1704&#45;&gt;Node1709 -->
 <g id="edge6" class="edge">
-<title>Node1464&#45;&gt;Node1469</title>
+<title>Node1704&#45;&gt;Node1709</title>
 <path fill="none" stroke="#191970" d="M145.2509,-161.6626C153.9272,-162.0064 162.6381,-162.2987 170.9746,-162.5 226.4962,-163.8405 240.4133,-163.8552 295.9346,-162.5 308.3858,-162.1961 321.6813,-161.6845 334.4285,-161.1016"/>
 <polygon fill="#191970" stroke="#191970" points="145.2437,-158.1593 135.106,-161.2376 144.9507,-165.1531 145.2437,-158.1593"/>
 </g>
-<!-- Node1471 -->
+<!-- Node1711 -->
 <g id="node8" class="node">
-<title>Node1471</title>
+<title>Node1711</title>
 <g id="a_node8"><a xlink:href="namespaceanonymous__namespace_02io__shell__ts_8C_03.html#a8bfcf5b7c4084f28c72596c01eeaac6a" target="_top" xlink:title="anonymous_namespace\l\{io_shell_ts::C\}::transfer\l_nodeblock">
 <polygon fill="#ffffff" stroke="#000000" points="170.9746,-114.5 170.9746,-152.5 295.9346,-152.5 295.9346,-114.5 170.9746,-114.5"/>
 <text text-anchor="start" x="178.9746" y="-140.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">anonymous_namespace</text>
@@ -121,15 +121,15 @@ var sectionId = 'dynsection-74';
 </a>
 </g>
 </g>
-<!-- Node1464&#45;&gt;Node1471 -->
+<!-- Node1704&#45;&gt;Node1711 -->
 <g id="edge8" class="edge">
-<title>Node1464&#45;&gt;Node1471</title>
+<title>Node1704&#45;&gt;Node1711</title>
 <path fill="none" stroke="#191970" d="M145.0688,-146.2812C153.7021,-145.0328 162.4137,-143.773 170.8277,-142.5563"/>
 <polygon fill="#191970" stroke="#191970" points="144.3887,-142.843 134.9926,-147.7383 145.3906,-149.771 144.3887,-142.843"/>
 </g>
-<!-- Node1472 -->
+<!-- Node1712 -->
 <g id="node9" class="node">
-<title>Node1472</title>
+<title>Node1712</title>
 <g id="a_node9"><a xlink:href="namespaceanonymous__namespace_02struc__to__unstruc_8C_03.html#ad18d4a3be1f2d0bafce776952b2fe25f" target="_top" xlink:title="anonymous_namespace\l\{struc_to_unstruc::C\}\l::transfer_nodal">
 <polygon fill="#ffffff" stroke="#000000" points="170.9746,-57.5 170.9746,-95.5 295.9346,-95.5 295.9346,-57.5 170.9746,-57.5"/>
 <text text-anchor="start" x="178.9746" y="-83.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">anonymous_namespace</text>
@@ -138,15 +138,15 @@ var sectionId = 'dynsection-74';
 </a>
 </g>
 </g>
-<!-- Node1464&#45;&gt;Node1472 -->
+<!-- Node1704&#45;&gt;Node1712 -->
 <g id="edge10" class="edge">
-<title>Node1464&#45;&gt;Node1472</title>
+<title>Node1704&#45;&gt;Node1712</title>
 <path fill="none" stroke="#191970" d="M104.0136,-138.7993C123.7651,-128.7748 148.6246,-116.2988 170.9746,-105.5 177.7583,-102.2224 184.987,-98.8016 192.0309,-95.5067"/>
 <polygon fill="#191970" stroke="#191970" points="102.3708,-135.7081 95.0441,-143.3612 105.5442,-141.9475 102.3708,-135.7081"/>
 </g>
-<!-- Node1475 -->
+<!-- Node1715 -->
 <g id="node12" class="node">
-<title>Node1475</title>
+<title>Node1715</title>
 <g id="a_node12"><a xlink:href="namespaceanonymous__namespace_02struc__to__unstruc_8C_03.html#ab48c619af8fe68015cb9762358cf2450" target="_top" xlink:title="anonymous_namespace\l\{struc_to_unstruc::C\}\l::transfer_nodeblock">
 <polygon fill="#ffffff" stroke="#000000" points="170.9746,-.5 170.9746,-38.5 295.9346,-38.5 295.9346,-.5 170.9746,-.5"/>
 <text text-anchor="start" x="178.9746" y="-26.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">anonymous_namespace</text>
@@ -155,15 +155,15 @@ var sectionId = 'dynsection-74';
 </a>
 </g>
 </g>
-<!-- Node1464&#45;&gt;Node1475 -->
+<!-- Node1704&#45;&gt;Node1715 -->
 <g id="edge13" class="edge">
-<title>Node1464&#45;&gt;Node1475</title>
+<title>Node1704&#45;&gt;Node1715</title>
 <path fill="none" stroke="#191970" d="M84.1397,-135.0907C103.0192,-110.9233 135.7784,-72.5527 170.9746,-47.5 175.5261,-44.2603 180.5123,-41.2663 185.6202,-38.5372"/>
 <polygon fill="#191970" stroke="#191970" points="81.1492,-133.2383 77.8332,-143.3009 86.7005,-137.5025 81.1492,-133.2383"/>
 </g>
-<!-- Node1466 -->
+<!-- Node1706 -->
 <g id="node3" class="node">
-<title>Node1466</title>
+<title>Node1706</title>
 <g id="a_node3"><a xlink:href="namespaceanonymous__namespace_02io__shell_8C_03.html#a3614c6356ba84d7eb73b876e616107bd" target="_top" xlink:title="anonymous_namespace\l\{io_shell::C\}::file_copy">
 <polygon fill="#ffffff" stroke="#000000" points="500.6631,-239.5 500.6631,-267.5 625.623,-267.5 625.623,-239.5 500.6631,-239.5"/>
 <text text-anchor="start" x="508.6631" y="-255.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">anonymous_namespace</text>
@@ -171,57 +171,57 @@ var sectionId = 'dynsection-74';
 </a>
 </g>
 </g>
-<!-- Node1465&#45;&gt;Node1466 -->
+<!-- Node1705&#45;&gt;Node1706 -->
 <g id="edge2" class="edge">
-<title>Node1465&#45;&gt;Node1466</title>
+<title>Node1705&#45;&gt;Node1706</title>
 <path fill="none" stroke="#191970" d="M474.9084,-253.5C483.5102,-253.5 492.1969,-253.5 500.5912,-253.5"/>
 <polygon fill="#191970" stroke="#191970" points="474.8722,-250.0001 464.8721,-253.5 474.8721,-257.0001 474.8722,-250.0001"/>
 </g>
-<!-- Node1467 -->
+<!-- Node1707 -->
 <g id="node4" class="node">
-<title>Node1467</title>
+<title>Node1707</title>
 <g id="a_node4"><a xlink:href="io__shell_8C.html#a0ddf1224851353fc92bfbff6f499fa97" target="_top" xlink:title="main">
 <polygon fill="#ffffff" stroke="#000000" points="661.623,-244.5 661.623,-262.5 699.2979,-262.5 699.2979,-244.5 661.623,-244.5"/>
 <text text-anchor="middle" x="680.4604" y="-250.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">main</text>
 </a>
 </g>
 </g>
-<!-- Node1466&#45;&gt;Node1467 -->
+<!-- Node1706&#45;&gt;Node1707 -->
 <g id="edge3" class="edge">
-<title>Node1466&#45;&gt;Node1467</title>
+<title>Node1706&#45;&gt;Node1707</title>
 <path fill="none" stroke="#191970" d="M636.1505,-253.5C645.4349,-253.5 654.2083,-253.5 661.4606,-253.5"/>
 <polygon fill="#191970" stroke="#191970" points="635.9232,-250.0001 625.9232,-253.5 635.9231,-257.0001 635.9232,-250.0001"/>
 </g>
-<!-- Node1468&#45;&gt;Node1465 -->
+<!-- Node1708&#45;&gt;Node1705 -->
 <g id="edge5" class="edge">
-<title>Node1468&#45;&gt;Node1465</title>
+<title>Node1708&#45;&gt;Node1705</title>
 <path fill="none" stroke="#191970" d="M306.1813,-240.0884C316.2042,-241.5477 326.421,-243.0352 336.2279,-244.463"/>
 <polygon fill="#191970" stroke="#191970" points="306.6453,-236.6192 296.2454,-238.6418 305.6368,-243.5461 306.6453,-236.6192"/>
 </g>
-<!-- Node1470 -->
+<!-- Node1710 -->
 <g id="node7" class="node">
-<title>Node1470</title>
+<title>Node1710</title>
 <g id="a_node7"><a xlink:href="io__shell__ts_8C.html#a0ddf1224851353fc92bfbff6f499fa97" target="_top" xlink:title="main">
 <polygon fill="#ffffff" stroke="#000000" points="544.3057,-148.5 544.3057,-166.5 581.9805,-166.5 581.9805,-148.5 544.3057,-148.5"/>
 <text text-anchor="middle" x="563.1431" y="-154.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">main</text>
 </a>
 </g>
 </g>
-<!-- Node1469&#45;&gt;Node1470 -->
+<!-- Node1709&#45;&gt;Node1710 -->
 <g id="edge7" class="edge">
-<title>Node1469&#45;&gt;Node1470</title>
+<title>Node1709&#45;&gt;Node1710</title>
 <path fill="none" stroke="#191970" d="M472.5594,-157.5C499.0005,-157.5 526.573,-157.5 544.2484,-157.5"/>
 <polygon fill="#191970" stroke="#191970" points="472.504,-154.0001 462.5039,-157.5 472.5039,-161.0001 472.504,-154.0001"/>
 </g>
-<!-- Node1471&#45;&gt;Node1469 -->
+<!-- Node1711&#45;&gt;Node1709 -->
 <g id="edge9" class="edge">
-<title>Node1471&#45;&gt;Node1469</title>
+<title>Node1711&#45;&gt;Node1709</title>
 <path fill="none" stroke="#191970" d="M306.29,-144.1043C315.6284,-145.4638 325.1331,-146.8477 334.316,-148.1846"/>
 <polygon fill="#191970" stroke="#191970" points="306.6453,-140.6192 296.2454,-142.6418 305.6368,-147.5461 306.6453,-140.6192"/>
 </g>
-<!-- Node1473 -->
+<!-- Node1713 -->
 <g id="node10" class="node">
-<title>Node1473</title>
+<title>Node1713</title>
 <g id="a_node10"><a xlink:href="namespaceanonymous__namespace_02struc__to__unstruc_8C_03.html#a1f676fd5f6a957f657aee10356750a70" target="_top" xlink:title="anonymous_namespace\l\{struc_to_unstruc::C\}\l::create_unstructured">
 <polygon fill="#ffffff" stroke="#000000" points="335.8188,-29.5 335.8188,-67.5 460.7788,-67.5 460.7788,-29.5 335.8188,-29.5"/>
 <text text-anchor="start" x="343.8188" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">anonymous_namespace</text>
@@ -230,30 +230,30 @@ var sectionId = 'dynsection-74';
 </a>
 </g>
 </g>
-<!-- Node1472&#45;&gt;Node1473 -->
+<!-- Node1712&#45;&gt;Node1713 -->
 <g id="edge11" class="edge">
-<title>Node1472&#45;&gt;Node1473</title>
+<title>Node1712&#45;&gt;Node1713</title>
 <path fill="none" stroke="#191970" d="M306.3509,-64.118C316.1338,-62.4563 326.0981,-60.7638 335.6826,-59.1358"/>
 <polygon fill="#191970" stroke="#191970" points="305.518,-60.7093 296.2454,-65.8345 306.6903,-67.6104 305.518,-60.7093"/>
 </g>
-<!-- Node1474 -->
+<!-- Node1714 -->
 <g id="node11" class="node">
-<title>Node1474</title>
+<title>Node1714</title>
 <g id="a_node11"><a xlink:href="struc__to__unstruc_8C.html#a0ddf1224851353fc92bfbff6f499fa97" target="_top" xlink:title="main">
 <polygon fill="#ffffff" stroke="#000000" points="544.3057,-39.5 544.3057,-57.5 581.9805,-57.5 581.9805,-39.5 544.3057,-39.5"/>
 <text text-anchor="middle" x="563.1431" y="-45.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">main</text>
 </a>
 </g>
 </g>
-<!-- Node1473&#45;&gt;Node1474 -->
+<!-- Node1713&#45;&gt;Node1714 -->
 <g id="edge12" class="edge">
-<title>Node1473&#45;&gt;Node1474</title>
+<title>Node1713&#45;&gt;Node1714</title>
 <path fill="none" stroke="#191970" d="M471.2844,-48.5C498.1203,-48.5 526.3084,-48.5 544.2672,-48.5"/>
 <polygon fill="#191970" stroke="#191970" points="471.0897,-45.0001 461.0896,-48.5 471.0896,-52.0001 471.0897,-45.0001"/>
 </g>
-<!-- Node1475&#45;&gt;Node1473 -->
+<!-- Node1715&#45;&gt;Node1713 -->
 <g id="edge14" class="edge">
-<title>Node1475&#45;&gt;Node1473</title>
+<title>Node1715&#45;&gt;Node1713</title>
 <path fill="none" stroke="#191970" d="M306.3509,-32.3242C316.1338,-34.0452 326.0981,-35.7982 335.6826,-37.4843"/>
 <polygon fill="#191970" stroke="#191970" points="306.7006,-28.832 296.2454,-30.5464 305.4877,-35.7262 306.7006,-28.832"/>
 </g>

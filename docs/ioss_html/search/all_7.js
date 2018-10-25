@@ -54,6 +54,8 @@ var searchData=
   ['get_5fdb_5fzone',['get_db_zone',['../classIocgns_1_1Utils.html#ad75ee7ac23c7c75a2a266f35cd73d364',1,'Iocgns::Utils']]],
   ['get_5fdecomp_5fset',['get_decomp_set',['../classIopx_1_1DecompositionDataBase.html#a70e331cc3b722b2eb4493bab869f3400',1,'Iopx::DecompositionDataBase']]],
   ['get_5fdecomposition_5fmethod',['get_decomposition_method',['../namespaceanonymous__namespace_02Ioss__Decomposition_8C_03.html#a83e6da51e36eb3aabe5af60bf43d1c76',1,'anonymous_namespace{Ioss_Decomposition.C}']]],
+  ['get_5fdwname',['get_dwname',['../classIoss_1_1DatabaseIO.html#a647e5041a48ca35ee03cb739333b1bf2',1,'Ioss::DatabaseIO']]],
+  ['get_5fdwpath',['get_dwPath',['../classIoss_1_1DatabaseIO.html#a4a4dc5f08b09384edb478b7eadca9599',1,'Ioss::DatabaseIO']]],
   ['get_5fedge_5fblock',['get_edge_block',['../classIoss_1_1Region.html#ae41288c041c96f64f7d320aefb1e1eec',1,'Ioss::Region']]],
   ['get_5fedge_5fblocks',['get_edge_blocks',['../classIoss_1_1Region.html#ad1ba15aff07766e2874486d6c96e8006',1,'Ioss::Region']]],
   ['get_5fedgeblocks',['get_edgeblocks',['../classIodw_1_1DatabaseIO.html#a38875233d2624899fa0eeeb4c8e31ff7',1,'Iodw::DatabaseIO::get_edgeblocks()'],['../classIofx_1_1DatabaseIO.html#a01fc0509353b79eb6285efdf2269b40b',1,'Iofx::DatabaseIO::get_edgeblocks()'],['../classIopx_1_1DatabaseIO.html#a185ff5ce85603b8723bea2ec9132528d',1,'Iopx::DatabaseIO::get_edgeblocks()']]],
@@ -145,6 +147,7 @@ var searchData=
   ['get_5fone_5fset_5fattr',['get_one_set_attr',['../classIopx_1_1DecompositionData.html#af6c2b2202fbb89d0f993665a81390f38',1,'Iopx::DecompositionData']]],
   ['get_5foverlay_5fcount',['get_overlay_count',['../classIoss_1_1DatabaseIO.html#ad8a19a9995d541f47f116b83bacecb76',1,'Ioss::DatabaseIO']]],
   ['get_5fparallel_5fio_5fmode',['get_parallel_io_mode',['../namespaceanonymous__namespace_02Iopx__DatabaseIO_8C_03.html#ab36f718b38d378889dae29feef6814a6',1,'anonymous_namespace{Iopx_DatabaseIO.C}']]],
+  ['get_5fpfsname',['get_pfsname',['../classIoss_1_1DatabaseIO.html#ac9a4f5418c881354de482d8bf319868f',1,'Ioss::DatabaseIO']]],
   ['get_5fpointer',['get_pointer',['../classIoss_1_1Property.html#a1a2d44d227a26a1abed0d794060779c6',1,'Ioss::Property']]],
   ['get_5fprocessor_5fzone_5fnode_5foffset',['get_processor_zone_node_offset',['../classIocgns_1_1ParallelDatabaseIO.html#ae3818355d8b764b2bc65804b4fbc081c',1,'Iocgns::ParallelDatabaseIO']]],
   ['get_5fproperty',['get_property',['../classIoss_1_1GroupingEntity.html#a3e8284b8cafbbe1646625124f68a2652',1,'Ioss::GroupingEntity']]],
@@ -234,7 +237,7 @@ var searchData=
   ['green',['GREEN',['../structIoss_1_1trmclr_1_1Foreground.html#a7712591c720f5319dc922f46b80b959aa59087aa17dc073c4d8d2b4c49edd5dec',1,'Ioss::trmclr::Foreground::GREEN()'],['../structIoss_1_1trmclr_1_1Background.html#a0ae610a20611939d24afd1489d854334ab5b0c6a81cf85826cc30efc2dc09feb4',1,'Ioss::trmclr::Background::GREEN()'],['../namespaceIoss_1_1trmclr.html#ad523aa3a9b49f92d3b7166a5e676bfa1',1,'Ioss::trmclr::green()']]],
   ['group_5finfo',['group_info',['../namespaceanonymous__namespace_02io__info_8C_03.html#a171e4e43a1ff528e9f9b62bb08816863',1,'anonymous_namespace{io_info.C}']]],
   ['groupingentity',['GroupingEntity',['../structIodw_1_1meta_1_1GroupingEntity.html',1,'Iodw::meta::GroupingEntity'],['../classIoss_1_1GroupingEntity.html',1,'Ioss::GroupingEntity'],['../classIoss_1_1GroupingEntity.html#a31bff1067f10fbec1dc386cd0a9d050b',1,'Ioss::GroupingEntity::GroupingEntity()=default'],['../classIoss_1_1GroupingEntity.html#acb7142728e96a35ac40d94a646ff5c96',1,'Ioss::GroupingEntity::GroupingEntity(DatabaseIO *io_database, const std::string &amp;my_name, int64_t entity_count)'],['../classIoss_1_1GroupingEntity.html#a4a7c6f4ca464b9f334f11e5c484e3431',1,'Ioss::GroupingEntity::GroupingEntity(const GroupingEntity &amp;)=delete']]],
-  ['groupname',['groupname',['../classInfo_1_1Interface.html#a62d95325c23c24c85e9e53e5a1798c9e',1,'Info::Interface::groupname()'],['../classIOShell_1_1Interface.html#a46c43fa5a8c60d30bc46374b9c1f46ff',1,'IOShell::Interface::groupName()']]],
+  ['groupname',['groupName',['../classIOShell_1_1Interface.html#a46c43fa5a8c60d30bc46374b9c1f46ff',1,'IOShell::Interface::groupName()'],['../classInfo_1_1Interface.html#a62d95325c23c24c85e9e53e5a1798c9e',1,'Info::Interface::groupname()']]],
   ['groupname_5f',['groupname_',['../classInfo_1_1Interface.html#a742073e4982e0c59ef4cd7551b090e5a',1,'Info::Interface']]],
   ['grow_5fon_5fhigh_5fload',['grow_on_high_load',['../classtsl_1_1detail__robin__hash_1_1robin__hash.html#ab9a61d96e3e7f7dcb21d84dee190a4e0',1,'tsl::detail_robin_hash::robin_hash']]]
 ];

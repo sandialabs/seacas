@@ -1,0 +1,9 @@
+<map id="Ioss::DatabaseIO::closeDW" name="Ioss::DatabaseIO::closeDW">
+<area shape="rect" id="node2" href="$classIoss_1_1DatabaseIO.html#a7ebbdc09be146cd42dc26b135e494a95" title="Ioss::DatabaseIO::using_dw" alt="" coords="450,5,638,31"/>
+<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#a6e5c575a44253f465dd993bb49a16d2d" title="Ioss::DatabaseIO::using\l_parallel_io" alt="" coords="238,40,402,79"/>
+<area shape="rect" id="node4" href="$classIoss_1_1DatabaseIO.html#a647e5041a48ca35ee03cb739333b1bf2" title="Ioss::DatabaseIO::get\l_dwname" alt="" coords="245,103,395,141"/>
+<area shape="rect" id="node7" href="$classIoss_1_1DatabaseIO.html#ac9a4f5418c881354de482d8bf319868f" title="Ioss::DatabaseIO::get\l_pfsname" alt="" coords="245,165,395,204"/>
+<area shape="rect" id="node8" href="$classIoss_1_1DatabaseIO.html#acd988f56b93ac669b2e504a8e471b321" title="Ioss::DatabaseIO::util" alt="" coords="246,228,395,253"/>
+<area shape="rect" id="node5" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="473,87,615,125"/>
+<area shape="rect" id="node6" href="$classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba" title="Get the file name associated with the database. " alt="" coords="469,149,619,188"/>
+</map>

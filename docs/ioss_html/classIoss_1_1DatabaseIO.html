@@ -135,6 +135,22 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2ee122665a52a2cd6f7de816738fed08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6ba97639a8796347bf0edbb0588046f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#aa6ba97639a8796347bf0edbb0588046f">finalize_database</a> ()</td></tr>
 <tr class="separator:aa6ba97639a8796347bf0edbb0588046f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38beccd1ba2407ad7c510a3fa6daa067"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a38beccd1ba2407ad7c510a3fa6daa067">set_pfsname</a> (const std::string &amp;name) const</td></tr>
+<tr class="separator:a38beccd1ba2407ad7c510a3fa6daa067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9a4f5418c881354de482d8bf319868f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ac9a4f5418c881354de482d8bf319868f">get_pfsname</a> () const</td></tr>
+<tr class="separator:ac9a4f5418c881354de482d8bf319868f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f57325a25c1fcd14f9f3cc9947b0b3e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a1f57325a25c1fcd14f9f3cc9947b0b3e">set_dwname</a> (const std::string &amp;name) const</td></tr>
+<tr class="memdesc:a1f57325a25c1fcd14f9f3cc9947b0b3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">this will be the name in BB namespace  <a href="#a1f57325a25c1fcd14f9f3cc9947b0b3e">More...</a><br /></td></tr>
+<tr class="separator:a1f57325a25c1fcd14f9f3cc9947b0b3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a647e5041a48ca35ee03cb739333b1bf2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a647e5041a48ca35ee03cb739333b1bf2">get_dwname</a> () const</td></tr>
+<tr class="separator:a647e5041a48ca35ee03cb739333b1bf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a4dc5f08b09384edb478b7eadca9599"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a4a4dc5f08b09384edb478b7eadca9599">get_dwPath</a> () const</td></tr>
+<tr class="memdesc:a4a4dc5f08b09384edb478b7eadca9599"><td class="mdescLeft">&#160;</td><td class="mdescRight">We call this ONLY after we assure that <a class="el" href="classIoss_1_1DatabaseIO.html#a7ebbdc09be146cd42dc26b135e494a95">using_dw()</a> is TRUE \ returns mount point of Datawarp namespace, e.g: /opt/cray/....&lt;jobid&gt;  <a href="#a4a4dc5f08b09384edb478b7eadca9599">More...</a><br /></td></tr>
+<tr class="separator:a4a4dc5f08b09384edb478b7eadca9599"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b590c354a84661cab4408eff66ce90c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a9b590c354a84661cab4408eff66ce90c">check_setDW</a> () const</td></tr>
+<tr class="separator:a9b590c354a84661cab4408eff66ce90c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ebbdc09be146cd42dc26b135e494a95"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a7ebbdc09be146cd42dc26b135e494a95">using_dw</a> () const</td></tr>
+<tr class="separator:a7ebbdc09be146cd42dc26b135e494a95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c9ad01905e9773cd69b452a8551cbba"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba">get_filename</a> () const</td></tr>
 <tr class="memdesc:a1c9ad01905e9773cd69b452a8551cbba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the file name associated with the database.  <a href="#a1c9ad01905e9773cd69b452a8551cbba">More...</a><br /></td></tr>
 <tr class="separator:a1c9ad01905e9773cd69b452a8551cbba"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,6 +173,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8699adfe7e31b56a149321e7c6d9e82b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ba2e389f4a98c646f8a8dcaffa6660c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a2ba2e389f4a98c646f8a8dcaffa6660c">set_region</a> (<a class="el" href="classIoss_1_1Region.html">Region</a> *region)</td></tr>
 <tr class="separator:a2ba2e389f4a98c646f8a8dcaffa6660c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e6d55ed99477a4437ac7d853bc42211"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a5e6d55ed99477a4437ac7d853bc42211">openDW</a> (const std::string &amp;filename) const</td></tr>
+<tr class="memdesc:a5e6d55ed99477a4437ac7d853bc42211"><td class="mdescLeft">&#160;</td><td class="mdescRight">If we are planning to use BB(aka Burst Buffer) service, we will call simple C API provided by Cray DataWarp module.  <a href="#a5e6d55ed99477a4437ac7d853bc42211">More...</a><br /></td></tr>
+<tr class="separator:a5e6d55ed99477a4437ac7d853bc42211"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac744cfa124aea2aca48ddbb429cfb697"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ac744cfa124aea2aca48ddbb429cfb697">closeDW</a> () const</td></tr>
+<tr class="memdesc:ac744cfa124aea2aca48ddbb429cfb697"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function which invokes stageout from BB to Disk, prior to completion of final close.  <a href="#ac744cfa124aea2aca48ddbb429cfb697">More...</a><br /></td></tr>
+<tr class="separator:ac744cfa124aea2aca48ddbb429cfb697"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08202be4190cabd1992a3622a9a399ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a08202be4190cabd1992a3622a9a399ec">openDatabase</a> () const</td></tr>
 <tr class="separator:a08202be4190cabd1992a3622a9a399ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd61efb4ff35bb829faac1e1ebbb26ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#abd61efb4ff35bb829faac1e1ebbb26ea">closeDatabase</a> () const</td></tr>
@@ -307,6 +329,12 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a78237b30809a43bc5e5f5cad9ea8b8c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c87b440fd3d95dc9bebd52ada1e7608"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a4c87b440fd3d95dc9bebd52ada1e7608">handle_groups</a> ()</td></tr>
 <tr class="separator:a4c87b440fd3d95dc9bebd52ada1e7608"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a638d34a31593a0f4f6e3faf9a55f4118"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a638d34a31593a0f4f6e3faf9a55f4118">openDatabase__</a> () const</td></tr>
+<tr class="separator:a638d34a31593a0f4f6e3faf9a55f4118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a76a51e956ab708923e6f5d93afa3ac"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a1a76a51e956ab708923e6f5d93afa3ac">closeDatabase__</a> () const</td></tr>
+<tr class="separator:a1a76a51e956ab708923e6f5d93afa3ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe9f123be89f09b3fb6ee22abefa47a3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#afe9f123be89f09b3fb6ee22abefa47a3">flush_database__</a> () const</td></tr>
+<tr class="separator:afe9f123be89f09b3fb6ee22abefa47a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0a0a89a632e9400e9b972d4ed0a40b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#aa0a0a89a632e9400e9b972d4ed0a40b7">check_side_topology</a> () const</td></tr>
 <tr class="separator:aa0a0a89a632e9400e9b972d4ed0a40b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -322,6 +350,14 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a1a1ef206190cabc4ed3b65fe6eaab941"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a125a43dbbce651b46ea38fe095a5dbf1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a125a43dbbce651b46ea38fe095a5dbf1">decodedFilename</a></td></tr>
 <tr class="separator:a125a43dbbce651b46ea38fe095a5dbf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75d8447712b2656a0ef06ffc24263b09"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a75d8447712b2656a0ef06ffc24263b09">bbName</a> {}</td></tr>
+<tr class="separator:a75d8447712b2656a0ef06ffc24263b09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a777e21d492b8567c03ec757dae7ac414"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a777e21d492b8567c03ec757dae7ac414">pfsName</a> {}</td></tr>
+<tr class="separator:a777e21d492b8567c03ec757dae7ac414"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01386f77f7c21053a812bf4b7d4a230d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a01386f77f7c21053a812bf4b7d4a230d">dwPath</a> {}</td></tr>
+<tr class="separator:a01386f77f7c21053a812bf4b7d4a230d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a167898d3053a8cfa5f2c8dfbe5001e5d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a167898d3053a8cfa5f2c8dfbe5001e5d">usingDataWarp</a> {false}</td></tr>
+<tr class="separator:a167898d3053a8cfa5f2c8dfbe5001e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab05041fc11bc180a05636fd9e340af3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#a02dbd3bfbd7f633e636c8c0c385c4a34">Ioss::State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ab05041fc11bc180a05636fd9e340af3a">dbState</a> {<a class="el" href="namespaceIoss.html#a02dbd3bfbd7f633e636c8c0c385c4a34aa32814d2f8fedbeb5f265250004b584e">STATE_INVALID</a>}</td></tr>
 <tr class="separator:ab05041fc11bc180a05636fd9e340af3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea8f55d83b4ae9599f443ba49f0a219a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#aea8f55d83b4ae9599f443ba49f0a219a">isParallel</a> {false}</td></tr>
@@ -384,12 +420,6 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:aaeb53d638a78885f4bdcb08f86fdcb65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59bba176acaae8012f85904fed8afef8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a59bba176acaae8012f85904fed8afef8">release_memory__</a> ()</td></tr>
 <tr class="separator:a59bba176acaae8012f85904fed8afef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d3fb2ac80b85d128b2947d9e2cc4d27"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a0d3fb2ac80b85d128b2947d9e2cc4d27">openDatabase__</a> () const</td></tr>
-<tr class="separator:a0d3fb2ac80b85d128b2947d9e2cc4d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a846d65962cbc8d412bb615bc0a9d37"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a8a846d65962cbc8d412bb615bc0a9d37">closeDatabase__</a> () const</td></tr>
-<tr class="separator:a8a846d65962cbc8d412bb615bc0a9d37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe9f123be89f09b3fb6ee22abefa47a3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#afe9f123be89f09b3fb6ee22abefa47a3">flush_database__</a> () const</td></tr>
-<tr class="separator:afe9f123be89f09b3fb6ee22abefa47a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bdce691d0b80a3b546f7e7fe54cb27f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a2bdce691d0b80a3b546f7e7fe54cb27f">open_group__</a> (const std::string &amp;group_name)</td></tr>
 <tr class="separator:a2bdce691d0b80a3b546f7e7fe54cb27f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cbcbc9eee27f5791200f9b394c27bb8"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a8cbcbc9eee27f5791200f9b394c27bb8">create_subgroup__</a> (const std::string &amp;group_name)</td></tr>
@@ -584,7 +614,8 @@ Private Attributes</h2></td></tr>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac424982f766c762292b823a270982f08_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac424982f766c762292b823a270982f08_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -667,7 +698,8 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a0da3fcf5cb34a32e2c6375ab251b4349_icgraph.svg" width="579" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a0da3fcf5cb34a32e2c6375ab251b4349_icgraph.svg" width="579" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -750,7 +782,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ae08238723053bb3a3413cdbae40abe70_icgraph.svg" width="579" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ae08238723053bb3a3413cdbae40abe70_icgraph.svg" width="579" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -792,12 +825,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a53913dd63638db01ec12c0d82dae06d1_cgraph.svg" width="403" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a53913dd63638db01ec12c0d82dae06d1_cgraph.svg" width="403" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a53913dd63638db01ec12c0d82dae06d1_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a53913dd63638db01ec12c0d82dae06d1_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -830,7 +865,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a3b53318d28f33f0c5751830a1d02ff81_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a3b53318d28f33f0c5751830a1d02ff81_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -877,12 +913,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac0abc172dc240f106363975705f0f7cc_cgraph.svg" width="388" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac0abc172dc240f106363975705f0f7cc_cgraph.svg" width="388" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac0abc172dc240f106363975705f0f7cc_icgraph.svg" width="100%" height="550"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac0abc172dc240f106363975705f0f7cc_icgraph.svg" width="100%" height="550"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -931,7 +969,40 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a7a3509e2a23a62f3c4ce21cba99b85e1_icgraph.svg" width="100%" height="550"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a7a3509e2a23a62f3c4ce21cba99b85e1_icgraph.svg" width="100%" height="550"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a9b590c354a84661cab4408eff66ce90c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b590c354a84661cab4408eff66ce90c">&#9670;&nbsp;</a></span>check_setDW()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::DatabaseIO::check_setDW </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Determine whether Cray Datawarp module is loaded and we have BB capacity allocated for this job ( i.e: DW_JOB_STRIPED is set) &amp;&amp; IOSS property to use DATAWARP is set to Y/YES (i.e enviromental variable ENABLE_DATAWARP) . If we are using DW then set some pathnames for writing directly to BB instead of PFS(i.e Lustre)</p>
+<p>Check whether user wants to use Cray DataWarp. It will be enabled if: the <code>DW_JOB_STRIPED</code> or <code>DW_JOB_PRIVATE</code> environment variable is set by the queuing system during runtime and the IOSS property <code>ENABLE_DATAWARP</code> set to <code>YES</code>.</p>
+<p>We currently only want output files to be directed to BB. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a9b590c354a84661cab4408eff66ce90c_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a9b590c354a84661cab4408eff66ce90c_icgraph.svg" width="428" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -962,12 +1033,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aa0a0a89a632e9400e9b972d4ed0a40b7_cgraph.svg" width="100%" height="572"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aa0a0a89a632e9400e9b972d4ed0a40b7_cgraph.svg" width="100%" height="572"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aa0a0a89a632e9400e9b972d4ed0a40b7_icgraph.svg" width="586" height="311"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aa0a0a89a632e9400e9b972d4ed0a40b7_icgraph.svg" width="586" height="311"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -997,18 +1070,20 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abd61efb4ff35bb829faac1e1ebbb26ea_cgraph.svg" width="514" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abd61efb4ff35bb829faac1e1ebbb26ea_cgraph.svg" width="100%" height="494"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abd61efb4ff35bb829faac1e1ebbb26ea_icgraph.svg" width="404" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abd61efb4ff35bb829faac1e1ebbb26ea_icgraph.svg" width="404" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
 </div>
-<a id="a8a846d65962cbc8d412bb615bc0a9d37"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a846d65962cbc8d412bb615bc0a9d37">&#9670;&nbsp;</a></span>closeDatabase__()</h2>
+<a id="a1a76a51e956ab708923e6f5d93afa3ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a76a51e956ab708923e6f5d93afa3ac">&#9670;&nbsp;</a></span>closeDatabase__()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1017,7 +1092,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Ioss::DatabaseIO::closeDatabase__ </td>
+          <td class="memname">void Ioss::DatabaseIO::closeDatabase__ </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1025,16 +1100,55 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Reimplemented in <a class="el" href="classIoex_1_1DatabaseIO.html#a17600f7a3af7e82f80ae5ab1b4bca779">Ioex::DatabaseIO</a>, <a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a461a816513692d456089de4f72040600">Iocgns::ParallelDatabaseIO</a>, and <a class="el" href="classIocgns_1_1DatabaseIO.html#a471eeae9ef27a32dafadbe1a73203f05">Iocgns::DatabaseIO</a>.</p>
 <div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a1a76a51e956ab708923e6f5d93afa3ac_cgraph.svg" width="100%" height="494"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+<div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a8a846d65962cbc8d412bb615bc0a9d37_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a1a76a51e956ab708923e6f5d93afa3ac_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac744cfa124aea2aca48ddbb429cfb697"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac744cfa124aea2aca48ddbb429cfb697">&#9670;&nbsp;</a></span>closeDW()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::DatabaseIO::closeDW </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Function which invokes stageout from BB to Disk, prior to completion of final close. </p>
+<p>This function gets called inside <a class="el" href="classIoss_1_1DatabaseIO.html#a1a76a51e956ab708923e6f5d93afa3ac">closeDatabase__()</a>, which checks if Cray Datawarp (DW) is in use, if so, we want to call a stageout before actual close of this file. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac744cfa124aea2aca48ddbb429cfb697_cgraph.svg" width="644" height="259"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac744cfa124aea2aca48ddbb429cfb697_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -1064,12 +1178,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ad2d8f1ea9b2fd9f2a85a54b40e809045_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ad2d8f1ea9b2fd9f2a85a54b40e809045_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ad2d8f1ea9b2fd9f2a85a54b40e809045_icgraph.svg" width="100%" height="394"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ad2d8f1ea9b2fd9f2a85a54b40e809045_icgraph.svg" width="100%" height="394"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -1110,7 +1226,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2d50707a93638511b7c223ecccb119b2_cgraph.svg" width="424" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2d50707a93638511b7c223ecccb119b2_cgraph.svg" width="424" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1153,7 +1270,8 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a3660f90fccb6ae832f97ff0ee90a1e89_icgraph.svg" width="424" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a3660f90fccb6ae832f97ff0ee90a1e89_icgraph.svg" width="424" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1200,7 +1318,8 @@ template&lt;&gt; </div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aac2c775ee8130ed9f175b6c56a289f2e_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aac2c775ee8130ed9f175b6c56a289f2e_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -1255,7 +1374,8 @@ template&lt;typename T &gt; </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a78237b30809a43bc5e5f5cad9ea8b8c4_icgraph.svg" width="100%" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a78237b30809a43bc5e5f5cad9ea8b8c4_icgraph.svg" width="100%" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -1310,12 +1430,14 @@ template&lt;typename T &gt; </div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a917be08e6a067bddfb5d15f39c6aebb0_cgraph.svg" width="100%" height="505"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a917be08e6a067bddfb5d15f39c6aebb0_cgraph.svg" width="100%" height="505"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a917be08e6a067bddfb5d15f39c6aebb0_icgraph.svg" width="607" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a917be08e6a067bddfb5d15f39c6aebb0_icgraph.svg" width="607" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1340,12 +1462,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a8699adfe7e31b56a149321e7c6d9e82b_cgraph.svg" width="599" height="211"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a8699adfe7e31b56a149321e7c6d9e82b_cgraph.svg" width="599" height="211"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a8699adfe7e31b56a149321e7c6d9e82b_icgraph.svg" width="464" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a8699adfe7e31b56a149321e7c6d9e82b_icgraph.svg" width="464" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1386,12 +1510,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ad0fc842a496f5e8af148adccc21301c5_cgraph.svg" width="396" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ad0fc842a496f5e8af148adccc21301c5_cgraph.svg" width="396" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ad0fc842a496f5e8af148adccc21301c5_icgraph.svg" width="496" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ad0fc842a496f5e8af148adccc21301c5_icgraph.svg" width="496" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1424,7 +1550,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a8cbcbc9eee27f5791200f9b394c27bb8_icgraph.svg" width="100%" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a8cbcbc9eee27f5791200f9b394c27bb8_icgraph.svg" width="100%" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -1449,12 +1576,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2086f8e605c31f9eb2af5fac410a46b2_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2086f8e605c31f9eb2af5fac410a46b2_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2086f8e605c31f9eb2af5fac410a46b2_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2086f8e605c31f9eb2af5fac410a46b2_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -1485,12 +1614,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aa6d658c9fddf9ccf74b00fd106ae7e2a_cgraph.svg" width="606" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aa6d658c9fddf9ccf74b00fd106ae7e2a_cgraph.svg" width="606" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aa6d658c9fddf9ccf74b00fd106ae7e2a_icgraph.svg" width="423" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aa6d658c9fddf9ccf74b00fd106ae7e2a_icgraph.svg" width="423" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1523,12 +1654,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aaeb53d638a78885f4bdcb08f86fdcb65_cgraph.svg" width="379" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aaeb53d638a78885f4bdcb08f86fdcb65_cgraph.svg" width="379" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aaeb53d638a78885f4bdcb08f86fdcb65_icgraph.svg" width="650" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aaeb53d638a78885f4bdcb08f86fdcb65_icgraph.svg" width="650" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1569,12 +1702,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a5d8e540f4416132b1453c0c7a7fa6c7e_cgraph.svg" width="382" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a5d8e540f4416132b1453c0c7a7fa6c7e_cgraph.svg" width="382" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a5d8e540f4416132b1453c0c7a7fa6c7e_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a5d8e540f4416132b1453c0c7a7fa6c7e_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -1607,7 +1742,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a511fe9a77435e39aaa5cea5e34067f4a_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a511fe9a77435e39aaa5cea5e34067f4a_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -1654,12 +1790,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac2b39dfc5b713193dc6d9ebd8feae4db_cgraph.svg" width="367" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac2b39dfc5b713193dc6d9ebd8feae4db_cgraph.svg" width="367" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac2b39dfc5b713193dc6d9ebd8feae4db_icgraph.svg" width="100%" height="550"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac2b39dfc5b713193dc6d9ebd8feae4db_icgraph.svg" width="100%" height="550"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -1708,7 +1846,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a12f7b5181924f04dd968eddd3e356764_icgraph.svg" width="100%" height="550"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a12f7b5181924f04dd968eddd3e356764_icgraph.svg" width="100%" height="550"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -1767,7 +1906,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aa6ba97639a8796347bf0edbb0588046f_icgraph.svg" width="386" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aa6ba97639a8796347bf0edbb0588046f_icgraph.svg" width="386" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1797,12 +1937,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a6b8de4070f16af017990177cc2ca526f_cgraph.svg" width="379" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a6b8de4070f16af017990177cc2ca526f_cgraph.svg" width="379" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a6b8de4070f16af017990177cc2ca526f_icgraph.svg" width="375" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a6b8de4070f16af017990177cc2ca526f_icgraph.svg" width="375" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1825,7 +1967,7 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1834,7 +1976,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_afe9f123be89f09b3fb6ee22abefa47a3_icgraph.svg" width="583" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_afe9f123be89f09b3fb6ee22abefa47a3_icgraph.svg" width="583" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1875,12 +2018,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aced27ca42bbc7db5e4d8b059b00fd8cb_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aced27ca42bbc7db5e4d8b059b00fd8cb_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aced27ca42bbc7db5e4d8b059b00fd8cb_icgraph.svg" width="376" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aced27ca42bbc7db5e4d8b059b00fd8cb_icgraph.svg" width="376" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1921,12 +2066,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abd896198f2e53e6403d1620154a89e36_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abd896198f2e53e6403d1620154a89e36_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abd896198f2e53e6403d1620154a89e36_icgraph.svg" width="576" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abd896198f2e53e6403d1620154a89e36_icgraph.svg" width="576" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1949,12 +2096,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a205567b7e63d4568282ded81c2a41899_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a205567b7e63d4568282ded81c2a41899_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a205567b7e63d4568282ded81c2a41899_icgraph.svg" width="356" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a205567b7e63d4568282ded81c2a41899_icgraph.svg" width="356" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -1977,7 +2126,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab0dcbe306c5ba8201795dcb5a7611d2b_cgraph.svg" width="100%" height="422"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab0dcbe306c5ba8201795dcb5a7611d2b_cgraph.svg" width="100%" height="422"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -2007,7 +2157,78 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a89a00fab4e24f2e02108214012c0df05_icgraph.svg" width="584" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a89a00fab4e24f2e02108214012c0df05_icgraph.svg" width="584" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a647e5041a48ca35ee03cb739333b1bf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a647e5041a48ca35ee03cb739333b1bf2">&#9670;&nbsp;</a></span>get_dwname()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::DatabaseIO::get_dwname </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a647e5041a48ca35ee03cb739333b1bf2_cgraph.svg" width="398" height="162"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a647e5041a48ca35ee03cb739333b1bf2_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4a4dc5f08b09384edb478b7eadca9599"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a4dc5f08b09384edb478b7eadca9599">&#9670;&nbsp;</a></span>get_dwPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::DatabaseIO::get_dwPath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>We call this ONLY after we assure that <a class="el" href="classIoss_1_1DatabaseIO.html#a7ebbdc09be146cd42dc26b135e494a95">using_dw()</a> is TRUE \ returns mount point of Datawarp namespace, e.g: /opt/cray/....&lt;jobid&gt; </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a4a4dc5f08b09384edb478b7eadca9599_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -2062,12 +2283,14 @@ template&lt;typename T &gt; </div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aedf2b3f4a5e779049c507620bd934445_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aedf2b3f4a5e779049c507620bd934445_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aedf2b3f4a5e779049c507620bd934445_icgraph.svg" width="372" height="175"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aedf2b3f4a5e779049c507620bd934445_icgraph.svg" width="372" height="175"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -2122,7 +2345,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aec872641b68e8ff228e5f318424d831c_icgraph.svg" width="571" height="175"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aec872641b68e8ff228e5f318424d831c_icgraph.svg" width="571" height="175"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -2752,7 +2976,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_af616ab4ee470f8a994d2ef35eb1fa100_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_af616ab4ee470f8a994d2ef35eb1fa100_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -2782,7 +3007,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aac344d090f98ae0082547ea7d8e0db7e_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aac344d090f98ae0082547ea7d8e0db7e_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -2812,7 +3038,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a876aac01eb56f11f6c006651a43de3d5_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a876aac01eb56f11f6c006651a43de3d5_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -2845,7 +3072,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a1c9ad01905e9773cd69b452a8551cbba_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a1c9ad01905e9773cd69b452a8551cbba_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -2903,7 +3131,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a48942e443c4c83a30c30167d444bd034_icgraph.svg" width="100%" height="572"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a48942e443c4c83a30c30167d444bd034_icgraph.svg" width="100%" height="572"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -2930,6 +3159,37 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac9a4f5418c881354de482d8bf319868f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9a4f5418c881354de482d8bf319868f">&#9670;&nbsp;</a></span>get_pfsname()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::DatabaseIO::get_pfsname </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac9a4f5418c881354de482d8bf319868f_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
 
 </div>
 </div>
@@ -3019,7 +3279,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac7cb8bf7c8175fa0546a2bd965570e7c_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac7cb8bf7c8175fa0546a2bd965570e7c_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3049,12 +3310,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab33d09315ea221f35a8a74ce82851028_cgraph.svg" width="359" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab33d09315ea221f35a8a74ce82851028_cgraph.svg" width="359" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab33d09315ea221f35a8a74ce82851028_icgraph.svg" width="590" height="86"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab33d09315ea221f35a8a74ce82851028_icgraph.svg" width="590" height="86"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -3086,7 +3349,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aea27ea271bcde188848364ccc0bb37e0_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aea27ea271bcde188848364ccc0bb37e0_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3141,7 +3405,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a10b4e39c00fbfa842be7a0e6521774d6_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a10b4e39c00fbfa842be7a0e6521774d6_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3171,12 +3436,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a4c87b440fd3d95dc9bebd52ada1e7608_cgraph.svg" width="100%" height="505"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a4c87b440fd3d95dc9bebd52ada1e7608_cgraph.svg" width="100%" height="505"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a4c87b440fd3d95dc9bebd52ada1e7608_icgraph.svg" width="390" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a4c87b440fd3d95dc9bebd52ada1e7608_icgraph.svg" width="390" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -3206,7 +3473,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_adfbafe8d52fd9ae79cdfe216360482eb_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_adfbafe8d52fd9ae79cdfe216360482eb_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3256,7 +3524,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aae00a220b8c3cbd720bcda80803513a1_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aae00a220b8c3cbd720bcda80803513a1_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3366,7 +3635,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_afaf8598b13b44b8f262b3eec8398cb06_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_afaf8598b13b44b8f262b3eec8398cb06_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3396,7 +3666,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aec5c215a32e9c46727ca2e7666e909c9_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aec5c215a32e9c46727ca2e7666e909c9_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3429,7 +3700,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a09b5eac4575eb2e8585dc09df3c09833_icgraph.svg" width="100%" height="572"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a09b5eac4575eb2e8585dc09df3c09833_icgraph.svg" width="100%" height="572"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3464,7 +3736,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a80b3ae0ed4a72514221ff553023e6e2e_icgraph.svg" width="518" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a80b3ae0ed4a72514221ff553023e6e2e_icgraph.svg" width="518" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -3499,7 +3772,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a31dbf4c27fae8fd9160e99a2c318f4a9_icgraph.svg" width="100%" height="583"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a31dbf4c27fae8fd9160e99a2c318f4a9_icgraph.svg" width="100%" height="583"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3550,12 +3824,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a508cb4e8ba172b238fd6af316538f89d_cgraph.svg" width="571" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a508cb4e8ba172b238fd6af316538f89d_cgraph.svg" width="571" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a508cb4e8ba172b238fd6af316538f89d_icgraph.svg" width="100%" height="369"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a508cb4e8ba172b238fd6af316538f89d_icgraph.svg" width="100%" height="369"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3598,12 +3874,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a9aee6ca9b63ac01505ea97b4c966b8a2_cgraph.svg" width="362" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a9aee6ca9b63ac01505ea97b4c966b8a2_cgraph.svg" width="362" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a9aee6ca9b63ac01505ea97b4c966b8a2_icgraph.svg" width="100%" height="369"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a9aee6ca9b63ac01505ea97b4c966b8a2_icgraph.svg" width="100%" height="369"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3636,7 +3914,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a46ee337e677c8c09ad9ea2b0e20fd5c6_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a46ee337e677c8c09ad9ea2b0e20fd5c6_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3694,12 +3973,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a87736d6eb5a3b7dfa3144743067d282e_cgraph.svg" width="586" height="162"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a87736d6eb5a3b7dfa3144743067d282e_cgraph.svg" width="586" height="162"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a87736d6eb5a3b7dfa3144743067d282e_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a87736d6eb5a3b7dfa3144743067d282e_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3748,7 +4029,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a27a91486fb3777cf168ec3fd55487399_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a27a91486fb3777cf168ec3fd55487399_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3770,12 +4052,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a110ec1217f40eade5bf71e0e490a602b_cgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a110ec1217f40eade5bf71e0e490a602b_cgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a110ec1217f40eade5bf71e0e490a602b_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a110ec1217f40eade5bf71e0e490a602b_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3816,12 +4100,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab0a9d27aab0c3d504708f07bc4e67ce8_cgraph.svg" width="382" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab0a9d27aab0c3d504708f07bc4e67ce8_cgraph.svg" width="382" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab0a9d27aab0c3d504708f07bc4e67ce8_icgraph.svg" width="100%" height="431"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab0a9d27aab0c3d504708f07bc4e67ce8_icgraph.svg" width="100%" height="431"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3854,7 +4140,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2bdce691d0b80a3b546f7e7fe54cb27f_icgraph.svg" width="100%" height="431"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2bdce691d0b80a3b546f7e7fe54cb27f_icgraph.svg" width="100%" height="431"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3884,18 +4171,20 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a08202be4190cabd1992a3622a9a399ec_cgraph.svg" width="511" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a08202be4190cabd1992a3622a9a399ec_cgraph.svg" width="100%" height="468"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a08202be4190cabd1992a3622a9a399ec_icgraph.svg" width="447" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a08202be4190cabd1992a3622a9a399ec_icgraph.svg" width="403" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
 </div>
-<a id="a0d3fb2ac80b85d128b2947d9e2cc4d27"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0d3fb2ac80b85d128b2947d9e2cc4d27">&#9670;&nbsp;</a></span>openDatabase__()</h2>
+<a id="a638d34a31593a0f4f6e3faf9a55f4118"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a638d34a31593a0f4f6e3faf9a55f4118">&#9670;&nbsp;</a></span>openDatabase__()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3904,7 +4193,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Ioss::DatabaseIO::openDatabase__ </td>
+          <td class="memname">void Ioss::DatabaseIO::openDatabase__ </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -3912,16 +4201,57 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Reimplemented in <a class="el" href="classIoex_1_1DatabaseIO.html#a45ae5ecad3d6383c1248f9b2ad85b8ac">Ioex::DatabaseIO</a>, <a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a904506384522d1720a3d2d52a85cca63">Iocgns::ParallelDatabaseIO</a>, and <a class="el" href="classIocgns_1_1DatabaseIO.html#a7ec7460e9012476c2ce023b4be3bb34c">Iocgns::DatabaseIO</a>.</p>
 <div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a638d34a31593a0f4f6e3faf9a55f4118_cgraph.svg" width="100%" height="468"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+<div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a0d3fb2ac80b85d128b2947d9e2cc4d27_icgraph.svg" width="100%" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a638d34a31593a0f4f6e3faf9a55f4118_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a5e6d55ed99477a4437ac7d853bc42211"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e6d55ed99477a4437ac7d853bc42211">&#9670;&nbsp;</a></span>openDW()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::DatabaseIO::openDW </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>If we are planning to use BB(aka Burst Buffer) service, we will call simple C API provided by Cray DataWarp module. </p>
+<p>Note: We would only like to use BB during write to avoid cache coherency issues during read. <code>dwPath</code> is the DW namespace which gets set during runtime from environment variable DW_JOB_STRIPED. Afterword, <code><a class="el" href="classIoss_1_1DatabaseIO.html#a7ebbdc09be146cd42dc26b135e494a95">using_dw()</a></code> function is used extensively for filename redirection for all related subsequent functions(e.g: get_filename, get_file_ptr etc) once burst buffer is found and set to be used.</p>
+<p>In this wrapper function we check if user intends to use Cray DataWarp(aka DW), which provides ability to use NVMe based flash storage available across all compute nodes accessible via high speed NIC. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a5e6d55ed99477a4437ac7d853bc42211_cgraph.svg" width="100%" height="468"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a5e6d55ed99477a4437ac7d853bc42211_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -3980,7 +4310,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a5f9d85da0afe95a1291480aeb79571fd_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a5f9d85da0afe95a1291480aeb79571fd_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -4010,12 +4341,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aceccfba755333cf8af271ba5dcc659c4_cgraph.svg" width="414" height="99"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aceccfba755333cf8af271ba5dcc659c4_cgraph.svg" width="414" height="99"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aceccfba755333cf8af271ba5dcc659c4_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aceccfba755333cf8af271ba5dcc659c4_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -4070,12 +4403,14 @@ template&lt;typename T &gt; </div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_af3241b32b369d4cb5b749891eb0c6a29_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_af3241b32b369d4cb5b749891eb0c6a29_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_af3241b32b369d4cb5b749891eb0c6a29_icgraph.svg" width="372" height="175"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_af3241b32b369d4cb5b749891eb0c6a29_icgraph.svg" width="372" height="175"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -4130,7 +4465,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2ca44c5ea33ebf21a324b3d89e46e5e0_icgraph.svg" width="571" height="175"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2ca44c5ea33ebf21a324b3d89e46e5e0_icgraph.svg" width="571" height="175"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -4760,12 +5096,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a6c5f6c3109f120af25bdca0fbb25112c_cgraph.svg" width="376" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a6c5f6c3109f120af25bdca0fbb25112c_cgraph.svg" width="376" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a6c5f6c3109f120af25bdca0fbb25112c_icgraph.svg" width="363" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a6c5f6c3109f120af25bdca0fbb25112c_icgraph.svg" width="363" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -4797,7 +5135,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a008fd8b0d05b9c9193e2f4c52687d6cb_icgraph.svg" width="568" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a008fd8b0d05b9c9193e2f4c52687d6cb_icgraph.svg" width="568" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -4827,12 +5166,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2ee122665a52a2cd6f7de816738fed08_cgraph.svg" width="588" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2ee122665a52a2cd6f7de816738fed08_cgraph.svg" width="588" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2ee122665a52a2cd6f7de816738fed08_icgraph.svg" width="503" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2ee122665a52a2cd6f7de816738fed08_icgraph.svg" width="503" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -4864,12 +5205,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a59bba176acaae8012f85904fed8afef8_cgraph.svg" width="364" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a59bba176acaae8012f85904fed8afef8_cgraph.svg" width="364" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a59bba176acaae8012f85904fed8afef8_icgraph.svg" width="100%" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a59bba176acaae8012f85904fed8afef8_icgraph.svg" width="100%" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -4928,7 +5271,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a8f7ffe6187feb373a5b37ea874228c6a_cgraph.svg" width="404" height="175"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a8f7ffe6187feb373a5b37ea874228c6a_cgraph.svg" width="404" height="175"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -4967,6 +5311,46 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="a1f57325a25c1fcd14f9f3cc9947b0b3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f57325a25c1fcd14f9f3cc9947b0b3e">&#9670;&nbsp;</a></span>set_dwname()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::DatabaseIO::set_dwname </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>this will be the name in BB namespace </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a1f57325a25c1fcd14f9f3cc9947b0b3e_cgraph.svg" width="564" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a1f57325a25c1fcd14f9f3cc9947b0b3e_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
 <a id="ac078e6793326cd029bc0412d342fb626"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac078e6793326cd029bc0412d342fb626">&#9670;&nbsp;</a></span>set_field_recognition()</h2>
 
@@ -4993,7 +5377,8 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac078e6793326cd029bc0412d342fb626_icgraph.svg" width="100%" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ac078e6793326cd029bc0412d342fb626_icgraph.svg" width="100%" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -5024,12 +5409,14 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abfe3242a9864a794a758870288a499af_cgraph.svg" width="612" height="162"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abfe3242a9864a794a758870288a499af_cgraph.svg" width="612" height="162"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abfe3242a9864a794a758870288a499af_icgraph.svg" width="100%" height="431"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_abfe3242a9864a794a758870288a499af_icgraph.svg" width="100%" height="431"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -5060,7 +5447,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a894af7b5cc9d09b8a880c7a97acdf6b8_icgraph.svg" width="412" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a894af7b5cc9d09b8a880c7a97acdf6b8_icgraph.svg" width="412" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -5102,7 +5490,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_add13a49b34f8c4bb7b85bb7ad91c01c3_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_add13a49b34f8c4bb7b85bb7ad91c01c3_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -5133,7 +5522,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aed550ada84092956918c1011949239e8_icgraph.svg" width="411" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_aed550ada84092956918c1011949239e8_icgraph.svg" width="411" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -5164,7 +5554,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a4d6ffe8a955335ceb105c2d0a1fee0c0_icgraph.svg" width="526" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a4d6ffe8a955335ceb105c2d0a1fee0c0_icgraph.svg" width="526" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -5249,7 +5640,46 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a55a1d498ef146eb2997c63a3475f08ef_icgraph.svg" width="510" height="99"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a55a1d498ef146eb2997c63a3475f08ef_icgraph.svg" width="510" height="99"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a38beccd1ba2407ad7c510a3fa6daa067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38beccd1ba2407ad7c510a3fa6daa067">&#9670;&nbsp;</a></span>set_pfsname()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::DatabaseIO::set_pfsname </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a38beccd1ba2407ad7c510a3fa6daa067_cgraph.svg" width="564" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a38beccd1ba2407ad7c510a3fa6daa067_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -5280,7 +5710,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2ba2e389f4a98c646f8a8dcaffa6660c_icgraph.svg" width="354" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a2ba2e389f4a98c646f8a8dcaffa6660c_icgraph.svg" width="354" height="50"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -5311,7 +5742,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab90f66226b7460db282b835ca60e8a61_icgraph.svg" width="100%" height="431"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_ab90f66226b7460db282b835ca60e8a61_icgraph.svg" width="100%" height="431"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -5368,7 +5800,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a7b7bc827d6bd3023a26e770009bf8618_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a7b7bc827d6bd3023a26e770009bf8618_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -5401,7 +5834,40 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a057729fb7cf18d9dd49042e1166976bc_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a057729fb7cf18d9dd49042e1166976bc_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a7ebbdc09be146cd42dc26b135e494a95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ebbdc09be146cd42dc26b135e494a95">&#9670;&nbsp;</a></span>using_dw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ioss::DatabaseIO::using_dw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set if Cray Datawarp exists and allocated space is found , i.e PATH to DW name space </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a7ebbdc09be146cd42dc26b135e494a95_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -5431,7 +5897,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a6e5c575a44253f465dd993bb49a16d2d_icgraph.svg" width="348" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a6e5c575a44253f465dd993bb49a16d2d_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -5461,7 +5928,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_acd988f56b93ac669b2e504a8e471b321_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_acd988f56b93ac669b2e504a8e471b321_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 
 </div>
@@ -5508,17 +5976,42 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a618aca6d29316cd72a2af28b9867ac56_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a618aca6d29316cd72a2af28b9867ac56_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a618aca6d29316cd72a2af28b9867ac56_icgraph.svg" width="584" height="363"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1DatabaseIO_a618aca6d29316cd72a2af28b9867ac56_icgraph.svg" width="584" height="363"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a75d8447712b2656a0ef06ffc24263b09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75d8447712b2656a0ef06ffc24263b09">&#9670;&nbsp;</a></span>bbName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::DatabaseIO::bbName {}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>bbName is a temporary swizzled name which resides inside Burst Buffer namespace. This is a private trivial mapped name vs original DBFilename (which resides in permament storage backed by parallel filesystem. dwPath is global BB mountpoint for current job with requested capacity via SLURM #DW directive. usingDataWarp &ndash; a boolean, for convenience of use so that we don't have to do getenv() calls to see if BB present. </p>
+
+</div>
+</div>
 <a id="aec6a8e90c689b4c065e617310136419d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aec6a8e90c689b4c065e617310136419d">&#9670;&nbsp;</a></span>blockAdjacenciesCalculated</h2>
 
@@ -5778,6 +6271,28 @@ Here is the caller graph for this function:</div>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a01386f77f7c21053a812bf4b7d4a230d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01386f77f7c21053a812bf4b7d4a230d">&#9670;&nbsp;</a></span>dwPath</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::DatabaseIO::dwPath {}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -6208,6 +6723,28 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a777e21d492b8567c03ec757dae7ac414"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a777e21d492b8567c03ec757dae7ac414">&#9670;&nbsp;</a></span>pfsName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::DatabaseIO::pfsName {}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="af79dd0ec8b3e8d09142362ff875a07e7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af79dd0ec8b3e8d09142362ff875a07e7">&#9670;&nbsp;</a></span>properties</h2>
 
@@ -6396,6 +6933,28 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">{</div><div class="line">        <span class="keyword">false</span>}</div></div><!-- fragment -->
+</div>
+</div>
+<a id="a167898d3053a8cfa5f2c8dfbe5001e5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a167898d3053a8cfa5f2c8dfbe5001e5d">&#9670;&nbsp;</a></span>usingDataWarp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ioss::DatabaseIO::usingDataWarp {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
 </div>
 </div>
 <a id="a7981897eaa5bc4fddb206c6f16be4ddf"></a>

@@ -1,29 +1,35 @@
 <map id="Iofx::DatabaseIO::handle_output_file" name="Iofx::DatabaseIO::handle_output_file">
-<area shape="rect" id="node2" href="$classIoss_1_1DatabaseIO.html#a2086f8e605c31f9eb2af5fac410a46b2" title="Get a file&#45;per&#45;processor filename associated with the database. " alt="" coords="445,317,628,356"/>
-<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#acd988f56b93ac669b2e504a8e471b321" title="Ioss::DatabaseIO::util" alt="" coords="704,767,853,792"/>
-<area shape="rect" id="node7" href="$classIoss_1_1PropertyManager.html#a798ebd15c511dc029050e0d707de283f" title="Checks if a property exists in the database. " alt="" coords="701,99,857,137"/>
-<area shape="rect" id="node8" href="$classIoss_1_1PropertyManager.html#ab9b0abf6f5acb6bd9f5e34e984f840a6" title="Get a property object from the property manager. " alt="" coords="688,161,870,187"/>
-<area shape="rect" id="node9" href="$classIoss_1_1Property.html#a45bcbc7137a296f3eda52c92c04da39f" title="Get the property value if it is of type INTEGER. " alt="" coords="703,211,854,236"/>
-<area shape="rect" id="node13" href="$classIoss_1_1FileInfo.html#a7f7349cd0c418d9fdaa12a9088604193" title="returns True if file exists, false if nonexistent " alt="" coords="235,381,373,407"/>
-<area shape="rect" id="node14" href="$classIoss_1_1FileInfo.html#a747d2861c656638f66abeedaf66ee7de" title="Exists and is writable. " alt="" coords="247,49,361,88"/>
-<area shape="rect" id="node19" href="$classIoss_1_1ParallelUtils.html#a0caf3dea894c98f32b83b705aaa1e360" title="Ioss::ParallelUtils\l::global_minmax" alt="" coords="475,436,599,475"/>
-<area shape="rect" id="node23" href="$classIoss_1_1DatabaseIO.html#aceccfba755333cf8af271ba5dcc659c4" title="Ioss::DatabaseIO::parallel_size" alt="" coords="434,831,640,856"/>
-<area shape="rect" id="node25" href="$classIoss_1_1DatabaseIO.html#aae00a220b8c3cbd720bcda80803513a1" title="Returns 4 or 8. " alt="" coords="231,799,377,837"/>
-<area shape="rect" id="node26" href="$classIofx_1_1DatabaseIO.html#a1c76ab6f580b73c7fb860dc0e28f778c" title="Iofx::DatabaseIO::check\l_valid_file_ptr" alt="" coords="222,544,386,583"/>
-<area shape="rect" id="node4" href="$classIoss_1_1ParallelUtils.html#a847a94880409904693640054d98325df" title="Ioss::ParallelUtils\l::decode_filename" alt="" coords="714,260,844,299"/>
-<area shape="rect" id="node5" href="$classIoss_1_1Utils.html#a72d3b4a8659178159d33d50eef9843cc" title="Ioss::Utils::decode\l_filename" alt="" coords="936,317,1066,356"/>
-<area shape="rect" id="node6" href="$classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba" title="Get the file name associated with the database. " alt="" coords="704,375,854,413"/>
-<area shape="rect" id="node10" href="$namespaceanonymous__namespace_02Ioss__Property_8C_03.html#a7e9f404cf974920b115b502313608c02" title="anonymous_namespace\l\{Ioss_Property::C\}::\lerror_message" alt="" coords="918,197,1084,249"/>
-<area shape="rect" id="node11" href="$namespaceanonymous__namespace_02Ioss__Property_8C_03.html#a33c896c06915d8a83ca1d8886b26d8ed" title="anonymous_namespace\l\{Ioss_Property::C\}::\ltype_string" alt="" coords="1132,165,1299,217"/>
-<area shape="rect" id="node12" href="$classIoss_1_1Property.html#a90c992cd11af736282e63e1c34b1c076" title="Get the property type. " alt="" coords="1135,241,1297,267"/>
-<area shape="rect" id="node15" href="$namespaceanonymous__namespace_02Ioss__FileInfo_8C_03.html#a426debc1dbfaddb25aa6eeab5d5c9c75" title="anonymous_namespace\l\{Ioss_FileInfo::C\}::\linternal_access" alt="" coords="453,37,620,89"/>
-<area shape="rect" id="node16" href="$namespaceanonymous__namespace_02io__info_8C_03.html#ac76aa36231a3291b803cc8e620fce319" title="anonymous_namespace\l\{io_info::C\}::name" alt="" coords="695,36,862,75"/>
-<area shape="rect" id="node17" href="$classIoss_1_1GroupingEntity.html#adf92c4256dc89b729f4492642bc4d745" title="Get the name of the particular type of entity. " alt="" coords="930,5,1072,44"/>
-<area shape="rect" id="node18" href="$classIoss_1_1GroupingEntity.html#a50d4053f49c8c3205e05d939fdc9fbc5" title="Get name of entity. " alt="" coords="930,68,1072,107"/>
-<area shape="rect" id="node20" href="$classIoss_1_1SerializeIO.html#a5d68f99aed4918df6020bda04222b97f" title="Ioss::SerializeIO::\lisEnabled" alt="" coords="716,563,842,601"/>
-<area shape="rect" id="node21" href="$classIoss_1_1SerializeIO.html#a85299d763408cb35c3c000f02e08ede0" title="Ioss::SerializeIO::\linBarrier" alt="" coords="716,500,842,539"/>
-<area shape="rect" id="node22" href="$classIoss_1_1SerializeIO.html#ac7468ed4a5f858ffb502c3132e3e87b6" title="Ioss::SerializeIO::\lgetOwner" alt="" coords="716,437,842,476"/>
-<area shape="rect" id="node24" href="$classIoss_1_1ParallelUtils.html#a795617c394bd2bc1b68a15a006981971" title="Ioss::ParallelUtils\l::parallel_size" alt="" coords="717,839,841,877"/>
-<area shape="rect" id="node27" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="466,716,607,755"/>
-<area shape="rect" id="node28" href="$classIoss_1_1ParallelUtils.html#a6dc17211b6215cdf25671205024b3f08" title="Ioss::ParallelUtils\l::all_gather" alt="" coords="475,601,599,640"/>
+<area shape="rect" id="node2" href="$classIoss_1_1DatabaseIO.html#a2086f8e605c31f9eb2af5fac410a46b2" title="Get a file&#45;per&#45;processor filename associated with the database. " alt="" coords="445,375,628,413"/>
+<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#acd988f56b93ac669b2e504a8e471b321" title="Ioss::DatabaseIO::util" alt="" coords="705,1029,854,1055"/>
+<area shape="rect" id="node7" href="$classIoss_1_1PropertyManager.html#a798ebd15c511dc029050e0d707de283f" title="Checks if a property exists in the database. " alt="" coords="701,7,858,45"/>
+<area shape="rect" id="node8" href="$classIoss_1_1PropertyManager.html#ab9b0abf6f5acb6bd9f5e34e984f840a6" title="Get a property object from the property manager. " alt="" coords="688,69,871,95"/>
+<area shape="rect" id="node9" href="$classIoss_1_1Property.html#a45bcbc7137a296f3eda52c92c04da39f" title="Get the property value if it is of type INTEGER. " alt="" coords="704,119,855,144"/>
+<area shape="rect" id="node23" href="$classIoss_1_1FileInfo.html#a7f7349cd0c418d9fdaa12a9088604193" title="returns True if file exists, false if nonexistent " alt="" coords="235,484,373,509"/>
+<area shape="rect" id="node24" href="$classIoss_1_1FileInfo.html#a747d2861c656638f66abeedaf66ee7de" title="Exists and is writable. " alt="" coords="247,293,361,332"/>
+<area shape="rect" id="node26" href="$classIoss_1_1ParallelUtils.html#a0caf3dea894c98f32b83b705aaa1e360" title="Ioss::ParallelUtils\l::global_minmax" alt="" coords="475,612,599,651"/>
+<area shape="rect" id="node30" href="$classIoss_1_1DatabaseIO.html#aceccfba755333cf8af271ba5dcc659c4" title="Ioss::DatabaseIO::parallel_size" alt="" coords="434,1004,640,1029"/>
+<area shape="rect" id="node32" href="$classIoss_1_1DatabaseIO.html#aae00a220b8c3cbd720bcda80803513a1" title="Returns 4 or 8. " alt="" coords="231,872,377,911"/>
+<area shape="rect" id="node33" href="$classIofx_1_1DatabaseIO.html#a1c76ab6f580b73c7fb860dc0e28f778c" title="Iofx::DatabaseIO::check\l_valid_file_ptr" alt="" coords="222,757,386,796"/>
+<area shape="rect" id="node4" href="$classIoss_1_1ParallelUtils.html#a847a94880409904693640054d98325df" title="Ioss::ParallelUtils\l::decode_filename" alt="" coords="714,487,845,525"/>
+<area shape="rect" id="node5" href="$classIoss_1_1Utils.html#a72d3b4a8659178159d33d50eef9843cc" title="Ioss::Utils::decode\l_filename" alt="" coords="948,513,1078,552"/>
+<area shape="rect" id="node6" href="$classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba" title="Get the file name associated with the database. " alt="" coords="938,388,1088,427"/>
+<area shape="rect" id="node13" href="$classIoss_1_1DatabaseIO.html#a5e6d55ed99477a4437ac7d853bc42211" title="If we are planning to use BB(aka Burst Buffer) service, we will call simple C API provided by Cray Da..." alt="" coords="688,220,871,245"/>
+<area shape="rect" id="node18" href="$classIoss_1_1DatabaseIO.html#a7ebbdc09be146cd42dc26b135e494a95" title="Ioss::DatabaseIO::using_dw" alt="" coords="919,339,1107,364"/>
+<area shape="rect" id="node21" href="$classIoss_1_1DatabaseIO.html#a647e5041a48ca35ee03cb739333b1bf2" title="Ioss::DatabaseIO::get\l_dwname" alt="" coords="704,321,855,360"/>
+<area shape="rect" id="node10" href="$namespaceanonymous__namespace_02Ioss__Property_8C_03.html#a7e9f404cf974920b115b502313608c02" title="anonymous_namespace\l\{Ioss_Property::C\}::\lerror_message" alt="" coords="930,23,1097,75"/>
+<area shape="rect" id="node11" href="$namespaceanonymous__namespace_02Ioss__Property_8C_03.html#a33c896c06915d8a83ca1d8886b26d8ed" title="anonymous_namespace\l\{Ioss_Property::C\}::\ltype_string" alt="" coords="1155,55,1322,107"/>
+<area shape="rect" id="node12" href="$classIoss_1_1Property.html#a90c992cd11af736282e63e1c34b1c076" title="Get the property type. " alt="" coords="1158,5,1320,31"/>
+<area shape="rect" id="node14" href="$classIoss_1_1DatabaseIO.html#a38beccd1ba2407ad7c510a3fa6daa067" title="Ioss::DatabaseIO::set\l_pfsname" alt="" coords="939,276,1088,315"/>
+<area shape="rect" id="node19" href="$classIoss_1_1DatabaseIO.html#a4a4dc5f08b09384edb478b7eadca9599" title="We call this ONLY after we assure that using_dw() is TRUE &#160;returns mount point of Datawarp namespace..." alt="" coords="938,151,1088,189"/>
+<area shape="rect" id="node20" href="$classIoss_1_1DatabaseIO.html#a1f57325a25c1fcd14f9f3cc9947b0b3e" title="this will be the name in BB namespace " alt="" coords="939,213,1088,252"/>
+<area shape="rect" id="node15" href="$namespaceanonymous__namespace_02io__info_8C_03.html#ac76aa36231a3291b803cc8e620fce319" title="anonymous_namespace\l\{io_info::C\}::name" alt="" coords="1155,213,1322,252"/>
+<area shape="rect" id="node16" href="$classIoss_1_1GroupingEntity.html#adf92c4256dc89b729f4492642bc4d745" title="Get the name of the particular type of entity. " alt="" coords="1370,181,1511,220"/>
+<area shape="rect" id="node17" href="$classIoss_1_1GroupingEntity.html#a50d4053f49c8c3205e05d939fdc9fbc5" title="Get name of entity. " alt="" coords="1370,244,1511,283"/>
+<area shape="rect" id="node22" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="943,451,1084,489"/>
+<area shape="rect" id="node25" href="$namespaceanonymous__namespace_02Ioss__FileInfo_8C_03.html#a426debc1dbfaddb25aa6eeab5d5c9c75" title="anonymous_namespace\l\{Ioss_FileInfo::C\}::\linternal_access" alt="" coords="453,264,620,316"/>
+<area shape="rect" id="node27" href="$classIoss_1_1SerializeIO.html#a5d68f99aed4918df6020bda04222b97f" title="Ioss::SerializeIO::\lisEnabled" alt="" coords="717,675,842,713"/>
+<area shape="rect" id="node28" href="$classIoss_1_1SerializeIO.html#a85299d763408cb35c3c000f02e08ede0" title="Ioss::SerializeIO::\linBarrier" alt="" coords="717,549,842,588"/>
+<area shape="rect" id="node29" href="$classIoss_1_1SerializeIO.html#ac7468ed4a5f858ffb502c3132e3e87b6" title="Ioss::SerializeIO::\lgetOwner" alt="" coords="717,612,842,651"/>
+<area shape="rect" id="node31" href="$classIoss_1_1ParallelUtils.html#a795617c394bd2bc1b68a15a006981971" title="Ioss::ParallelUtils\l::parallel_size" alt="" coords="718,916,841,955"/>
+<area shape="rect" id="node34" href="$classIoss_1_1ParallelUtils.html#a6dc17211b6215cdf25671205024b3f08" title="Ioss::ParallelUtils\l::all_gather" alt="" coords="475,941,599,980"/>
 </map>
