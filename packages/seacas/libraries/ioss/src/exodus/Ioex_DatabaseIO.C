@@ -491,8 +491,9 @@ namespace Ioex {
     buffer[MAX_STR_LENGTH] = '\0';
     std::strcpy(qa[num_qa_records].qa_record[0][1], buffer);
 
+    bool i_write = (usingParallelIO && myProcessor == 0) || !usingParallelIO;
     int ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1,
-                         myProcessor == 0 ? qa[0].qa_record : nullptr);
+                         i_write ? qa[0].qa_record : nullptr);
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }
@@ -545,7 +546,8 @@ namespace Ioex {
       info[i][max_line_length] = '\0'; // Once more for good luck...
     }
 
-    int ierr = ex_put_info(get_file_pointer(), total_lines, myProcessor == 0 ? info : nullptr);
+    bool i_write = (usingParallelIO && myProcessor == 0) || !usingParallelIO;
+    int ierr = ex_put_info(get_file_pointer(), total_lines, i_write ? info : nullptr);
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }
