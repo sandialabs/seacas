@@ -186,8 +186,12 @@ namespace Iocgns {
     for (auto &gtb : m_globalToBlockLocalNodeMap) {
       delete gtb.second;
     }
-    closeDatabase__();
-    closeSerialDatabase__();
+    try {
+      closeDatabase__();
+      closeSerialDatabase__();
+    }
+    catch (...) {
+    }
   }
 
   int ParallelDatabaseIO::get_file_pointer() const

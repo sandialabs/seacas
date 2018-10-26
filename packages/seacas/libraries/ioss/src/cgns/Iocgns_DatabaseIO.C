@@ -411,7 +411,11 @@ namespace Iocgns {
     for (auto &gtb : m_globalToBlockLocalNodeMap) {
       delete gtb.second;
     }
-    closeDatabase__();
+    try {
+      closeDatabase__();
+    }
+    catch (...) {
+    }
   }
 
   int DatabaseIO::get_file_pointer() const

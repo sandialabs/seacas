@@ -1755,6 +1755,9 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   if (my_mode & EX_DISKLESS) {
     nc_mode |= NC_DISKLESS;
     nc_mode |= NC_WRITE;
+#if defined NC_PERSIST
+    nc_mode |= NC_PERSIST;
+#endif
   }
 #endif
   return nc_mode | pariomode;

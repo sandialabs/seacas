@@ -239,7 +239,7 @@ Although SEACAS is included in Trilinos
 SEACAS code from this repository to override the possibly older SEACAS
 code in Trilinos.  The steps are to directly pull SEACAS from github
 under Trilinos and then build SEACAS under Trilinos with that version
-using `SEACAS_SORUCE_DIR_OVERRIDE`.  Here is how you do it:
+using `SEACAS_SOURCE_DIR_OVERRIDE`.  Here is how you do it:
  
 ```
 $ cd Trilinos/
