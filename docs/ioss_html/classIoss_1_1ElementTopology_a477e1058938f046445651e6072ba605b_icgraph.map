@@ -1,8 +1,0 @@
-<map id="Ioss::ElementTopology::shape" name="Ioss::ElementTopology::shape">
-<area shape="rect" id="node2" href="$classIocgns_1_1Utils.html#a1deaba96f1a8171154442d06492f3c57" title="Iocgns::Utils::map\l_cgns_face_to_ioss" alt="" coords="209,68,348,107"/>
-<area shape="rect" id="node5" href="$classIocgns_1_1Utils.html#a12c1aefe782b155aefa999e5bb235c3d" title="Iocgns::Utils::map\l_ioss_face_to_cgns" alt="" coords="209,131,348,169"/>
-<area shape="rect" id="node3" href="$classIocgns_1_1DatabaseIO.html#a13ea2d1501f9a7eb6823e1d8fbf9abb6" title="Iocgns::DatabaseIO\l::get_field_internal" alt="" coords="411,5,550,44"/>
-<area shape="rect" id="node4" href="$classIocgns_1_1ParallelDatabaseIO.html#aeb3a7f16818cd45cd6cc1663c92f22c9" title="Iocgns::ParallelDatabase\lIO::get_field_internal" alt="" coords="396,68,566,107"/>
-<area shape="rect" id="node6" href="$classIocgns_1_1DatabaseIO.html#adfb10ef95b148cdb523cd30e7b47c0ba" title="Iocgns::DatabaseIO\l::put_field_internal" alt="" coords="411,131,550,169"/>
-<area shape="rect" id="node7" href="$classIocgns_1_1ParallelDatabaseIO.html#ab1104ff4c7c0b656b8bddf92b3eb79ef" title="Iocgns::ParallelDatabase\lIO::put_field_internal" alt="" coords="396,193,566,232"/>
-</map>

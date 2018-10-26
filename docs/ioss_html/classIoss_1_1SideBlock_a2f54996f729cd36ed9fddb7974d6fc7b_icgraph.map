@@ -1,7 +1,0 @@
-<map id="Ioss::SideBlock::owner" name="Ioss::SideBlock::owner">
-<area shape="rect" id="node2" href="$classIocgns_1_1DatabaseIO.html#adfb10ef95b148cdb523cd30e7b47c0ba" title="Iocgns::DatabaseIO\l::put_field_internal" alt="" coords="225,5,364,44"/>
-<area shape="rect" id="node3" href="$classIocgns_1_1ParallelDatabaseIO.html#ab1104ff4c7c0b656b8bddf92b3eb79ef" title="Iocgns::ParallelDatabase\lIO::put_field_internal" alt="" coords="210,68,379,107"/>
-<area shape="rect" id="node4" href="$classIopx_1_1DatabaseIO.html#a3bc69b10e9372d6910369fec487059f9" title="Iopx::DatabaseIO::get\l_field_internal" alt="" coords="427,155,578,193"/>
-<area shape="rect" id="node5" href="$classIopx_1_1DatabaseIO.html#af098ca539268126648291cf907e686d3" title="Iopx::DatabaseIO::get\l_side_distributions" alt="" coords="219,183,370,221"/>
-<area shape="rect" id="node6" href="$classIovs_1_1DatabaseIO.html#a41f6d757f652a317b8397603b46724fd" title="Iovs::DatabaseIO::put\l_field_internal" alt="" coords="219,245,369,284"/>
-</map>

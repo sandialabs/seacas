@@ -1,7 +1,0 @@
-<map id="Ioss::Region::add_alias__" name="Ioss::Region::add_alias__">
-<area shape="rect" id="node2" href="$classIoss_1_1Region.html#ae806c321adbbff17490f0d39eb537dbd" title="Add a structured block to the region. " alt="" coords="253,5,378,31"/>
-<area shape="rect" id="node3" href="$classIoss_1_1Region.html#a55bc025964aa887d3a8dac9599bdaf79" title="Add a grouping entity&#39;s name as an alias for itself. " alt="" coords="236,55,395,80"/>
-<area shape="rect" id="node4" href="$classIoss_1_1Region.html#aa14f212506863c22b8db6251a3311a62" title="Ioss::Region::add_alias__" alt="" coords="228,104,403,129"/>
-<area shape="rect" id="node5" href="$classIoss_1_1Region.html#a6cbdc416fe13e38defe322c79cc0a3ab" title="Transfer all relevant aliases from this region to another region. " alt="" coords="241,153,390,192"/>
-<area shape="rect" id="node6" href="$classIoss_1_1Region.html#a62e4b42525b3b2f18f03642fdf689de4" title="Ensure that the restart and results files have the same ids. " alt="" coords="228,216,402,255"/>
-</map>

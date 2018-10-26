@@ -1,5 +1,0 @@
-<map id="Iovs::field_warning" name="Iovs::field_warning">
-<area shape="rect" id="node2" href="$classIoss_1_1GroupingEntity.html#a878ad30d29d9565bfcb108d60797ebdc" title="Get the EntityType, which indicates the particular type of GroupingEntity this is. " alt="" coords="189,5,330,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html#a50d4053f49c8c3205e05d939fdc9fbc5" title="Get name of entity. " alt="" coords="189,68,330,107"/>
-<area shape="rect" id="node4" href="$classIoss_1_1Field.html#aca1c35eb7fb1dcd0bf8c80b2b6926131" title="Ioss::Field::get_name" alt="" coords="185,131,334,156"/>
-</map>

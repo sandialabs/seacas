@@ -1,5 +1,0 @@
-<map id="tsl::detail_robin_hash::robin_hash::emplace" name="tsl::detail_robin_hash::robin_hash::emplace">
-<area shape="rect" id="node2" href="$classtsl_1_1robin__map.html#ab5880a79c1b5f53befda5f638974a52e" title="tsl::robin_map::insert" alt="" coords="215,5,360,31"/>
-<area shape="rect" id="node3" href="$classtsl_1_1robin__map.html#a2bed728f16977c4eb16251727fa14090" title="tsl::robin_map::emplace" alt="" coords="206,55,369,80"/>
-<area shape="rect" id="node4" href="$classtsl_1_1robin__set.html#a350aac536c0c747908707788035f2d92" title="tsl::robin_set\&lt; Face,\l FaceHash, FaceEqual\l \&gt;::emplace" alt="" coords="209,104,366,156"/>
-</map>

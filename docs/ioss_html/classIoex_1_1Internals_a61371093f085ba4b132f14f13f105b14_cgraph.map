@@ -1,8 +1,0 @@
-<map id="Ioex::Internals::put_metadata" name="Ioex::Internals::put_metadata">
-<area shape="rect" id="node2" href="$namespaceanonymous__namespace_02Ioex__Internals_8C_03.html#a584658147dc76be7d85c531a8ef9e6e4" title="anonymous_namespace\l\{Ioex_Internals::C\}\l::get_type" alt="" coords="400,11,566,63"/>
-<area shape="rect" id="node3" href="$namespaceanonymous__namespace_02Ioex__Internals_8C_03.html#a855c1fd2bc0c8212e4da4aad5150d7e1" title="anonymous_namespace\l\{Ioex_Internals::C\}\l::define_netcdf_vars" alt="" coords="185,43,351,95"/>
-<area shape="rect" id="node4" href="$namespaceanonymous__namespace_02Ioex__Internals_8C_03.html#a54a2d8c5302cbdb4793a912d1a16e3c9" title="anonymous_namespace\l\{Ioex_Internals::C\}\l::define_coordinate_vars" alt="" coords="184,119,352,171"/>
-<area shape="rect" id="node5" href="$namespaceanonymous__namespace_02Ioex__Internals_8C_03.html#a7a2b5371ad029afa8b0560a0788b42cb" title="anonymous_namespace\l\{Ioex_Internals::C\}\l::define_variables" alt="" coords="185,195,351,247"/>
-<area shape="rect" id="node6" href="$namespaceanonymous__namespace_02Ioex__Internals_8C_03.html#adb453af0d0f658b741fdfe48f102dc13" title="anonymous_namespace\l\{Ioex_Internals::C\}\l::conditional_define\l_variable" alt="" coords="185,271,351,337"/>
-<area shape="rect" id="node7" href="$namespaceanonymous__namespace_02Ioex__Internals_8C_03.html#a6756f82590012cc7d282d2b1928e00e3" title="anonymous_namespace\l\{Ioex_Internals::C\}\l::define_variable" alt="" coords="185,361,351,413"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="Ioex::DatabaseIO::set_int_byte_size_api" name="Ioex::DatabaseIO::set_int_byte_size_api">
-<area shape="rect" id="node2" href="$classIoex_1_1DatabaseIO.html#af0ddcfa1cd90af9397e76e2e80a7ef27" title="Ioex::DatabaseIO::get\l_file_pointer" alt="" coords="204,68,355,107"/>
-<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="418,5,560,44"/>
-<area shape="rect" id="node4" href="$classIoex_1_1DatabaseIO.html#a74597cacb5f8b3aa935cc91fd05adf81" title="Ioex::DatabaseIO::open\l_input_file" alt="" coords="408,68,570,107"/>
-<area shape="rect" id="node5" href="$classIoex_1_1DatabaseIO.html#a184b2da08689814c05d2692855a7365d" title="Ioex::DatabaseIO::handle\l_output_file" alt="" coords="403,131,575,169"/>
-</map>

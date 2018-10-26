@@ -1,6 +1,0 @@
-<map id="Iogn::GeneratedMesh::shell_element_count_proc" name="Iogn::GeneratedMesh::shell_element_count_proc">
-<area shape="rect" id="node2" href="$classIogn_1_1GeneratedMesh.html#a48aeb94ab3d67cb0b9d9ab050fdbe1f9" title="Iogn::GeneratedMesh\l::element_count_proc" alt="" coords="243,5,393,44"/>
-<area shape="rect" id="node3" href="$classIogn_1_1GeneratedMesh.html#a73d09586d07597a0f6c9afa7536e7254" title="Iogn::GeneratedMesh\l::element_surface_map" alt="" coords="238,68,398,107"/>
-<area shape="rect" id="node4" href="$classIogn_1_1GeneratedMesh.html#a99c789006b20196fb83b6e9a801740e0" title="Iogn::GeneratedMesh\l::sideset_elem_sides" alt="" coords="446,68,597,107"/>
-<area shape="rect" id="node5" href="$classIogn_1_1DatabaseIO.html#a3dcabef660dea9d0b71c964b7e6607a0" title="Iogn::DatabaseIO::get\l_field_internal" alt="" coords="645,68,796,107"/>
-</map>

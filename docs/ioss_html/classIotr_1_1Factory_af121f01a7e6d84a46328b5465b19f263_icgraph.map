@@ -1,9 +1,0 @@
-<map id="Iotr::Factory::alias" name="Iotr::Factory::alias">
-<area shape="rect" id="node2" href="$classIotr_1_1MinMax__Factory.html#ad28e2d0b843c3167a0497fdd37fc9f4f" title="Iotr::MinMax_Factory\l::MinMax_Factory" alt="" coords="183,5,330,44"/>
-<area shape="rect" id="node3" href="$classIotr_1_1Offset__Factory.html#a8070965fc71388e5056b10c541bf4193" title="Iotr::Offset_Factory\l::Offset_Factory" alt="" coords="189,68,324,107"/>
-<area shape="rect" id="node4" href="$classIotr_1_1Offset3D__Factory.html#a344e95719bbdbc6ddf289d41b15cd7a3" title="Iotr::Offset3D_Factory\l::Offset3D_Factory" alt="" coords="181,131,333,169"/>
-<area shape="rect" id="node5" href="$classIotr_1_1Scale__Factory.html#aa47f3ee6bd47e24c2d1a2033f93c563f" title="Iotr::Scale_Factory\l::Scale_Factory" alt="" coords="190,193,323,232"/>
-<area shape="rect" id="node6" href="$classIotr_1_1Scale3D__Factory.html#a3830d40ca519a9e3c0900aac6c91c19b" title="Iotr::Scale3D_Factory\l::Scale3D_Factory" alt="" coords="182,256,332,295"/>
-<area shape="rect" id="node7" href="$classIotr_1_1Tensor__Factory.html#a70df07c28c0472585f4eedb776205fb7" title="Iotr::Tensor_Factory\l::Tensor_Factory" alt="" coords="187,319,327,357"/>
-<area shape="rect" id="node8" href="$classIotr_1_1VM__Factory.html#abb40498f6ab4949fb853d174e5f0ef2e" title="Iotr::VM_Factory::VM\l_Factory" alt="" coords="183,381,330,420"/>
-</map>

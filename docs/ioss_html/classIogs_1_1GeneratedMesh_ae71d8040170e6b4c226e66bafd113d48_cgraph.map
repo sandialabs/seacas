@@ -1,5 +1,0 @@
-<map id="Iogs::GeneratedMesh::connectivity" name="Iogs::GeneratedMesh::connectivity">
-<area shape="rect" id="node2" href="$classIogs_1_1GeneratedMesh.html#abae3de064c139fd5e2ef017632354d95" title="Iogs::GeneratedMesh\l::element_count_proc" alt="" coords="203,5,352,44"/>
-<area shape="rect" id="node4" href="$classIogs_1_1GeneratedMesh.html#a3baa736ac3ec3e7ca1c4ef494ea6d552" title="Iogs::GeneratedMesh\l::raw_connectivity" alt="" coords="203,68,352,107"/>
-<area shape="rect" id="node3" href="$classIogs_1_1GeneratedMesh.html#a21bd946f45f556c3d14f9f88ef4a391f" title="Iogs::GeneratedMesh\l::structured_block_count" alt="" coords="400,37,567,76"/>
-</map>

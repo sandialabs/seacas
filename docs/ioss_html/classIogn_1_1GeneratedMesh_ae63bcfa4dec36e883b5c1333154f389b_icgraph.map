@@ -1,8 +1,0 @@
-<map id="Iogn::GeneratedMesh::node_count_proc" name="Iogn::GeneratedMesh::node_count_proc">
-<area shape="rect" id="node2" href="$classIogn_1_1DatabaseIO.html#a0c6ceee37a96cddfe02a598c49cfd2c9" title="Iogn::DatabaseIO::read\l_meta_data__" alt="" coords="403,5,563,44"/>
-<area shape="rect" id="node3" href="$classIogn_1_1DatabaseIO.html#acfe917b575765e8045e9bce9ac83e4f3" title="Iogn::DatabaseIO::get\l_nodeblocks" alt="" coords="204,35,355,73"/>
-<area shape="rect" id="node4" href="$classIogn_1_1GeneratedMesh.html#a8ca47dae9ba3512c1c8f97c553c646dc" title="Iogn::GeneratedMesh\l::node_map" alt="" coords="204,97,355,136"/>
-<area shape="rect" id="node7" href="$classIogn_1_1GeneratedMesh.html#a45b80209c9e51e84ed41483101b8e845" title="Iogn::GeneratedMesh\l::coordinates" alt="" coords="408,159,559,197"/>
-<area shape="rect" id="node5" href="$classIogn_1_1DatabaseIO.html#a6d30dd13247c8da4de57d6a404c947f3" title="Iogn::DatabaseIO::get\l_node_map" alt="" coords="408,96,559,135"/>
-<area shape="rect" id="node6" href="$classIogn_1_1DatabaseIO.html#a7a7040731f50f870721dd9803bbdcec6" title="Iogn::DatabaseIO::get\l_field_internal" alt="" coords="611,128,763,167"/>
-</map>

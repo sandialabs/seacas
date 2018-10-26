@@ -1,7 +1,0 @@
-<map id="Iogs::GeneratedMesh::timestep_count" name="Iogs::GeneratedMesh::timestep_count">
-<area shape="rect" id="node2" href="$classIogs_1_1DatabaseIO.html#a4606760d8f6f5d7f58b0d64849907761" title="Iogs::DatabaseIO::get\l_step_times__" alt="" coords="203,5,354,44"/>
-<area shape="rect" id="node4" href="$classIogs_1_1GeneratedMesh.html#a077b6397c4da0e26f5f19586348b6675" title="Iogs::GeneratedMesh\l::show_parameters" alt="" coords="204,68,353,107"/>
-<area shape="rect" id="node3" href="$classIogs_1_1DatabaseIO.html#a669429535862aabc78eabea41157e77a" title="Iogs::DatabaseIO::read\l_meta_data__" alt="" coords="402,5,561,44"/>
-<area shape="rect" id="node5" href="$classIogs_1_1GeneratedMesh.html#a8b176e156f6b50a1b8588b96290345af" title="Iogs::GeneratedMesh\l::parse_options" alt="" coords="407,68,556,107"/>
-<area shape="rect" id="node6" href="$classIogs_1_1GeneratedMesh.html#a8353b50fd45e72ed787d0b3e880843e5" title="Iogs::GeneratedMesh\l::GeneratedMesh" alt="" coords="609,68,759,107"/>
-</map>

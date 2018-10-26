@@ -1,9 +1,0 @@
-<map id="SmartAssert::default_error_handler" name="SmartAssert::default_error_handler">
-<area shape="rect" id="node2" href="$namespaceSmartAssert.html#a004206ca8808981af35593be4498173a" title="SmartAssert::dump_context\l_summary" alt="" coords="195,163,381,201"/>
-<area shape="rect" id="node3" href="$namespaceSmartAssert.html#ab9c77e2bf430b103a8ac59d852297f6a" title="SmartAssert::get_typeof\l_level" alt="" coords="431,5,595,44"/>
-<area shape="rect" id="node4" href="$classassert__context.html#a679b95be3bfaa20e57e5c6ffe382e508" title="assert_context::get\l_level" alt="" coords="446,68,580,107"/>
-<area shape="rect" id="node5" href="$classassert__context.html#aba6db2d68836a4bb4e651c37a6d5df4b" title="assert_context::get\l_context_file" alt="" coords="446,131,580,169"/>
-<area shape="rect" id="node6" href="$classassert__context.html#a9112747e6d8202e017b4df025e5f17c4" title="assert_context::get\l_context_line" alt="" coords="446,193,580,232"/>
-<area shape="rect" id="node7" href="$classassert__context.html#a401e0b14e2d3525d65843fec3096a934" title="assert_context::get\l_level_msg" alt="" coords="446,256,580,295"/>
-<area shape="rect" id="node8" href="$classassert__context.html#aa6807bfff935e4484ce79b4a043068fc" title="assert_context::get_expr" alt="" coords="429,319,597,344"/>
-</map>

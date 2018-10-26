@@ -1,6 +1,0 @@
-<map id="Iotr::Scale::internal_execute" name="Iotr::Scale::internal_execute">
-<area shape="rect" id="node2" href="$classIoss_1_1Field.html#aa7cd5bf2e559edb98d7a1b888facd140" title="Ioss::Field::transformed\l_count" alt="" coords="186,5,346,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1Field.html#a99c74998a49363e559dc5ca530cbcb4d" title="Ioss::Field::transformed\l_storage" alt="" coords="186,68,346,107"/>
-<area shape="rect" id="node4" href="$classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c" title="Ioss::VariableType\l::component_count" alt="" coords="199,131,334,169"/>
-<area shape="rect" id="node5" href="$classIoss_1_1Field.html#a8abb33dcfa0630f6422e7541b36694b4" title="Get the basic data type of the data held in the field. " alt="" coords="196,193,336,219"/>
-</map>

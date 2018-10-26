@@ -1,8 +1,0 @@
-<map id="Iocgns::Utils::finalize_database" name="Iocgns::Utils::finalize_database">
-<area shape="rect" id="node2" href="$classIoss_1_1Region.html#a98e8859e52343b66d189a85948cb9080" title="Get all the region&#39;s NodeBlock objects. " alt="" coords="211,5,369,44"/>
-<area shape="rect" id="node3" href="$namespaceanonymous__namespace_02io__info_8C_03.html#ac76aa36231a3291b803cc8e620fce319" title="anonymous_namespace\l\{io_info::C\}::name" alt="" coords="207,68,374,107"/>
-<area shape="rect" id="node6" href="$classIoss_1_1Region.html#a5a26433379cf3beaf59906c4b2f5e406" title="Get all the region&#39;s StructuredBlock objects. " alt="" coords="196,131,384,169"/>
-<area shape="rect" id="node7" href="$classIoss_1_1Region.html#a8c28d389019952e48ea8e953947421f7" title="Get all the region&#39;s ElementBlock objects. " alt="" coords="202,193,378,232"/>
-<area shape="rect" id="node4" href="$classIoss_1_1GroupingEntity.html#adf92c4256dc89b729f4492642bc4d745" title="Get the name of the particular type of entity. " alt="" coords="432,37,574,76"/>
-<area shape="rect" id="node5" href="$classIoss_1_1GroupingEntity.html#a50d4053f49c8c3205e05d939fdc9fbc5" title="Get name of entity. " alt="" coords="432,100,574,139"/>
-</map>

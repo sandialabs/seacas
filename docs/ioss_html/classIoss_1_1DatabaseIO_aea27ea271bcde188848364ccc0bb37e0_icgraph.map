@@ -1,6 +1,0 @@
-<map id="Ioss::DatabaseIO::get_step_times__" name="Ioss::DatabaseIO::get_step_times__">
-<area shape="rect" id="node2" href="$classIoss_1_1DatabaseIO.html#ab33d09315ea221f35a8a74ce82851028" title="Ioss::DatabaseIO::get\l_step_times" alt="" coords="204,24,354,63"/>
-<area shape="rect" id="node3" href="$classIoss_1_1Region.html#a4ca4d531b7d5608896dac3256bb4e3c8" title="Get the maximum time step index (1&#45;based) and time for the region. " alt="" coords="402,5,589,31"/>
-<area shape="rect" id="node5" href="$classIoss_1_1Region.html#a8507f1457f2d5f978208804d769155e0" title="Get the minimum time step index (1&#45;based) and time for the region. " alt="" coords="404,55,587,80"/>
-<area shape="rect" id="node4" href="$namespaceIoss.html#a41c9d994802430357276bad3f933bdda" title="Ioss::io_info_file_info" alt="" coords="637,31,782,56"/>
-</map>

@@ -30,7 +30,7 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
-<g id="a_node3"><a xlink:href="$vector3d_8h.html" xlink:title="vector3d.h">
+<g id="a_node3"><a xlink:href="vector3d_8h.html" target="_top" xlink:title="vector3d.h">
 <polygon fill="#ffffff" stroke="#000000" points="61.2686,-.5 61.2686,-18.5 123.9629,-18.5 123.9629,-.5 61.2686,-.5"/>
 <text text-anchor="middle" x="92.6157" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">vector3d.h</text>
 </a>

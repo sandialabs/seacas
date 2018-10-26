@@ -1,6 +1,0 @@
-<map id="Iocgns::Utils::add_sidesets" name="Iocgns::Utils::add_sidesets">
-<area shape="rect" id="node2" href="$classIocgns_1_1DatabaseIO.html#aefeff18c6c405f13bd79260ee41678de" title="Iocgns::DatabaseIO\l::read_meta_data__" alt="" coords="191,5,332,44"/>
-<area shape="rect" id="node3" href="$classIocgns_1_1ParallelDatabaseIO.html#a9f182523c0d50ee8820a6d7b2ff268ff" title="Iocgns::ParallelDatabase\lIO::handle_unstructured\l_blocks" alt="" coords="177,68,347,120"/>
-<area shape="rect" id="node5" href="$classIocgns_1_1ParallelDatabaseIO.html#add1a71d7365d10930987be82a1852efc" title="Iocgns::ParallelDatabase\lIO::handle_structured\l_blocks" alt="" coords="177,144,347,196"/>
-<area shape="rect" id="node4" href="$classIocgns_1_1ParallelDatabaseIO.html#ac4401b921f83ec0976dd53675e80d2c8" title="Iocgns::ParallelDatabase\lIO::read_meta_data__" alt="" coords="395,113,564,152"/>
-</map>

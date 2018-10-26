@@ -1,6 +1,0 @@
-<map id="anonymous_namespace{Iogs_DatabaseIO::C}::fill_transient_data" name="anonymous_namespace{Iogs_DatabaseIO::C}::fill_transient_data">
-<area shape="rect" id="node2" href="$classIoss_1_1GroupingEntity.html#a9f973e7426401292d53ac7215e5197c1" title="Get a reference to a field from the entity&#39;s field manager. " alt="" coords="231,5,372,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1Field.html#aef6a88e8bb72a09570fa57ce0d5dfa10" title="Ioss::Field::is_type" alt="" coords="236,68,367,93"/>
-<area shape="rect" id="node4" href="$classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1" title="Ioss::Field::raw_storage" alt="" coords="220,117,383,143"/>
-<area shape="rect" id="node5" href="$classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c" title="Ioss::VariableType\l::component_count" alt="" coords="234,167,369,205"/>
-</map>

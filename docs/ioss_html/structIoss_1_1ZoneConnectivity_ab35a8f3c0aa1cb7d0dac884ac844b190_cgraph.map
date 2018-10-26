@@ -1,8 +1,0 @@
-<map id="Ioss::ZoneConnectivity::is_valid" name="Ioss::ZoneConnectivity::is_valid">
-<area shape="rect" id="node2" href="$namespaceanonymous__namespace_02Ioss__ZoneConnectivity_8C_03.html#ac9f1a485619214c244f6f4d4b0f22db9" title="anonymous_namespace\l\{Ioss_ZoneConnectivity\l::C\}::sign" alt="" coords="628,7,795,59"/>
-<area shape="rect" id="node3" href="$namespaceanonymous__namespace_02Ioss__ZoneConnectivity_8C_03.html#a14cceeba0c349c1043fca16ef139525b" title="anonymous_namespace\l\{Ioss_ZoneConnectivity\l::C\}::valid_range" alt="" coords="210,43,376,95"/>
-<area shape="rect" id="node4" href="$structIoss_1_1ZoneConnectivity.html#a9df1e293d1477cffb01844dfe59d0565" title="Ioss::ZoneConnectivity\l::transform" alt="" coords="215,119,371,158"/>
-<area shape="rect" id="node7" href="$structIoss_1_1ZoneConnectivity.html#add4d3bbf265f6801644e9ee6a5fb2eb4" title="Ioss::ZoneConnectivity\l::inverse_transform" alt="" coords="215,182,371,221"/>
-<area shape="rect" id="node5" href="$structIoss_1_1ZoneConnectivity.html#aaac247ab4518817bfd64deb1e5e4873e" title="Ioss::ZoneConnectivity\l::transform_matrix" alt="" coords="424,119,580,158"/>
-<area shape="rect" id="node6" href="$namespaceanonymous__namespace_02Ioss__ZoneConnectivity_8C_03.html#a5b8cd6b3fee1a6469af9b8e91c886ea6" title="anonymous_namespace\l\{Ioss_ZoneConnectivity\l::C\}::del" alt="" coords="628,113,795,165"/>
-</map>

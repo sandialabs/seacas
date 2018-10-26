@@ -18,7 +18,7 @@
 <!-- Node3 -->
 <g id="node2" class="node">
 <title>Node3</title>
-<g id="a_node2"><a xlink:href="$classIoss_1_1IOFactory.html" xlink:title="The main public user interface for creating Ioss::DatabaseIO objects. ">
+<g id="a_node2"><a xlink:href="classIoss_1_1IOFactory.html" target="_top" xlink:title="The main public user interface for creating Ioss::DatabaseIO objects. ">
 <polygon fill="#ffffff" stroke="#000000" points=".2808,-55.5 .2808,-73.5 84.0737,-73.5 84.0737,-55.5 .2808,-55.5"/>
 <text text-anchor="middle" x="42.1772" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::IOFactory</text>
 </a>

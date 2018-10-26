@@ -1,9 +1,0 @@
-<map id="Ioex::filter_node_list" name="Ioex::filter_node_list">
-<area shape="rect" id="node2" href="$classIofx_1_1DatabaseIO.html#a55086ffce615e225095187fcf880c8bb" title="Iofx::DatabaseIO::get_sets" alt="" coords="193,107,372,132"/>
-<area shape="rect" id="node8" href="$classIofx_1_1DatabaseIO.html#afd6ce2af119ffa201474f618b769cb9c" title="Iofx::DatabaseIO::get\l_field_internal" alt="" coords="209,156,357,195"/>
-<area shape="rect" id="node3" href="$classIofx_1_1DatabaseIO.html#a8298d2d8f141676749d6e5d0abb6bcbd" title="Iofx::DatabaseIO::get\l_nodesets" alt="" coords="420,5,568,44"/>
-<area shape="rect" id="node5" href="$classIofx_1_1DatabaseIO.html#a56ddda62eb3637cd13191ff67bbc0029" title="Iofx::DatabaseIO::get\l_edgesets" alt="" coords="420,68,568,107"/>
-<area shape="rect" id="node6" href="$classIofx_1_1DatabaseIO.html#a52bfbfd10d033b4f5e50afe18607c415" title="Iofx::DatabaseIO::get\l_facesets" alt="" coords="420,131,568,169"/>
-<area shape="rect" id="node7" href="$classIofx_1_1DatabaseIO.html#a1d9816bc858a047528865240b4730071" title="Iofx::DatabaseIO::get\l_elemsets" alt="" coords="420,193,568,232"/>
-<area shape="rect" id="node4" href="$classIofx_1_1DatabaseIO.html#a79b188c0f0320a9656ad80866af72fb6" title="Iofx::DatabaseIO::read\l_meta_data__" alt="" coords="616,100,771,139"/>
-</map>

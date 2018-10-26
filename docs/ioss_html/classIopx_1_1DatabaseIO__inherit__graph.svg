@@ -18,7 +18,7 @@
 <!-- Node1 -->
 <g id="node2" class="node">
 <title>Node1</title>
-<g id="a_node2"><a xlink:href="$classIoex_1_1DatabaseIO.html" xlink:title="Ioex::DatabaseIO">
+<g id="a_node2"><a xlink:href="classIoex_1_1DatabaseIO.html" target="_top" xlink:title="Ioex::DatabaseIO">
 <polygon fill="#ffffff" stroke="#000000" points="0,-55.5 0,-73.5 93.8223,-73.5 93.8223,-55.5 0,-55.5"/>
 <text text-anchor="middle" x="46.9111" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioex::DatabaseIO</text>
 </a>
@@ -33,7 +33,7 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
-<g id="a_node3"><a xlink:href="$classIoss_1_1DatabaseIO.html" xlink:title="An input or output Database. ">
+<g id="a_node3"><a xlink:href="classIoss_1_1DatabaseIO.html" target="_top" xlink:title="An input or output Database. ">
 <polygon fill="#ffffff" stroke="#000000" points=".2808,-110.5 .2808,-128.5 93.5415,-128.5 93.5415,-110.5 .2808,-110.5"/>
 <text text-anchor="middle" x="46.9111" y="-116.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::DatabaseIO</text>
 </a>

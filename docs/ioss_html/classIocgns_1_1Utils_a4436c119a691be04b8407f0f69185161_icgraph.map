@@ -1,6 +1,0 @@
-<map id="Iocgns::Utils::common_write_meta_data" name="Iocgns::Utils::common_write_meta_data">
-<area shape="rect" id="node2" href="$classIocgns_1_1DatabaseIO.html#afba3d4e19c998e014bbe93b49a5e70c2" title="Iocgns::DatabaseIO\l::write_meta_data" alt="" coords="221,5,360,44"/>
-<area shape="rect" id="node4" href="$classIocgns_1_1ParallelDatabaseIO.html#a9d91edcb11e439ea07b5bcfa8e5b99ac" title="Iocgns::ParallelDatabase\lIO::write_meta_data" alt="" coords="206,68,375,107"/>
-<area shape="rect" id="node3" href="$classIocgns_1_1DatabaseIO.html#a2c5d72d71cbf54e42bfc2eb770d804b2" title="Iocgns::DatabaseIO\l::end__" alt="" coords="439,5,578,44"/>
-<area shape="rect" id="node5" href="$classIocgns_1_1ParallelDatabaseIO.html#a4741b1b0dd5ec3b91bfef5292ca18ecf" title="Iocgns::ParallelDatabase\lIO::end__" alt="" coords="423,68,593,107"/>
-</map>

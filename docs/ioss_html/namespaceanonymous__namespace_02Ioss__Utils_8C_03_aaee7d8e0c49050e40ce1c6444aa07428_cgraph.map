@@ -1,6 +1,0 @@
-<map id="anonymous_namespace{Ioss_Utils::C}::transfer_qa_info" name="anonymous_namespace{Ioss_Utils::C}::transfer_qa_info">
-<area shape="rect" id="node2" href="$classIoss_1_1Region.html#abf4f90b9d95c0312e4e03ac808740089" title="Add multiple information records (informative strings) to the region&#39;s database. " alt="" coords="220,5,418,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1Region.html#a94c59cdc16d63a74b7b29ce18b6c2fbe" title="Get all information records (informative strings) for the region&#39;s database. " alt="" coords="222,68,417,107"/>
-<area shape="rect" id="node4" href="$classIoss_1_1Region.html#a2fc4f5c76576aa7a9a7088c068439903" title="Get all QA records, each of which consists of 4 strings, from the region&#39;s database. " alt="" coords="247,131,391,169"/>
-<area shape="rect" id="node5" href="$classIoss_1_1Region.html#a030391890cc4ca5d664af6c166c8d5ea" title="Add a QA record, which consists of 4 strings, to the region&#39;s database. " alt="" coords="246,193,393,232"/>
-</map>

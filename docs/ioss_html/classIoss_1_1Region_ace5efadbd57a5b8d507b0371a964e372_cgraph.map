@@ -1,8 +1,0 @@
-<map id="Ioss::Region::begin_state" name="Ioss::Region::begin_state">
-<area shape="rect" id="node2" href="$classIoss_1_1GroupingEntity.html#a318cd5cde65370bb9c83f8ca223f8481" title="Ioss::GroupingEntity\l::get_database" alt="" coords="202,5,344,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba" title="Get the file name associated with the database. " alt="" coords="198,68,348,107"/>
-<area shape="rect" id="node4" href="$classIoss_1_1DatabaseIO.html#afaf8598b13b44b8f262b3eec8398cb06" title="Determine whether the database is an input database. " alt="" coords="202,131,344,169"/>
-<area shape="rect" id="node5" href="$classIoss_1_1DatabaseIO.html#a057729fb7cf18d9dd49042e1166976bc" title="Get the Ioss::DatabaseUsage type of the database. " alt="" coords="189,193,357,219"/>
-<area shape="rect" id="node6" href="$classIoss_1_1DatabaseIO.html#ac0abc172dc240f106363975705f0f7cc" title="Ioss::DatabaseIO::begin\l_state" alt="" coords="191,243,355,281"/>
-<area shape="rect" id="node7" href="$classIoss_1_1DatabaseIO.html#a7a3509e2a23a62f3c4ce21cba99b85e1" title="Ioss::DatabaseIO::begin\l_state__" alt="" coords="405,243,569,281"/>
-</map>

@@ -19,7 +19,7 @@
 <!-- Node14 -->
 <g id="node2" class="node">
 <title>Node14</title>
-<g id="a_node2"><a xlink:href="$Ioss__VariableType_8C.html" xlink:title="src/Ioss_VariableType.C">
+<g id="a_node2"><a xlink:href="Ioss__VariableType_8C.html" target="_top" xlink:title="src/Ioss_VariableType.C">
 <polygon fill="#ffffff" stroke="#000000" points="12.7808,-.5 12.7808,-18.5 136.4272,-18.5 136.4272,-.5 12.7808,-.5"/>
 <text text-anchor="middle" x="74.604" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/Ioss_VariableType.C</text>
 </a>

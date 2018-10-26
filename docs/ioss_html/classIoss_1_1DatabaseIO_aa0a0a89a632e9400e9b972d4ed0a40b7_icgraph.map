@@ -1,8 +1,0 @@
-<map id="Ioss::DatabaseIO::check_side_topology" name="Ioss::DatabaseIO::check_side_topology">
-<area shape="rect" id="node2" href="$classIofx_1_1DatabaseIO.html#a79b188c0f0320a9656ad80866af72fb6" title="Iofx::DatabaseIO::read\l_meta_data__" alt="" coords="422,9,577,48"/>
-<area shape="rect" id="node3" href="$classIofx_1_1DatabaseIO.html#a27da0e50c4bfa4895ac1693a8368ed60" title="Iofx::DatabaseIO::get\l_sidesets" alt="" coords="222,37,369,76"/>
-<area shape="rect" id="node4" href="$classIopx_1_1DatabaseIO.html#aa5fbe815a5233885cb3491ee0de291a4" title="Iopx::DatabaseIO::read\l_meta_data__" alt="" coords="420,137,579,176"/>
-<area shape="rect" id="node5" href="$classIopx_1_1DatabaseIO.html#a8817ac53c20c2bc6d7e3285beb718268" title="Iopx::DatabaseIO::get\l_sidesets" alt="" coords="220,152,371,191"/>
-<area shape="rect" id="node6" href="$classIopg_1_1DatabaseIO.html#a375a536391f7a2c94d0dfd5beccbc284" title="Iopg::DatabaseIO::read\l_meta_data__" alt="" coords="420,225,580,264"/>
-<area shape="rect" id="node7" href="$classIopg_1_1DatabaseIO.html#a3e5db0b0f27c271faa50c1f3250dc30c" title="Iopg::DatabaseIO::get\l_sidesets" alt="" coords="220,267,372,305"/>
-</map>

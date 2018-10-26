@@ -1,6 +1,0 @@
-<map id="Ioss::EdgeBlock::EdgeBlock" name="Ioss::EdgeBlock::EdgeBlock">
-<area shape="rect" id="node2" href="$classIoss_1_1EntityBlock.html#abc83ec3b85f7ffd6fd80789061472e17" title="Get the topology of the entities in the block. " alt="" coords="271,5,398,44"/>
-<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html#a50d4053f49c8c3205e05d939fdc9fbc5" title="Get name of entity. " alt="" coords="264,68,405,107"/>
-<area shape="rect" id="node4" href="$classIoss_1_1PropertyManager.html#a8d6d5a27856b4618b56d542208ad86e2" title="Add a property to the property manager. " alt="" coords="241,131,427,156"/>
-<area shape="rect" id="node5" href="$classIoss_1_1Property.html#a33f2d36f732d7504f12116b285c2ccb2" title="Get the property name. " alt="" coords="475,131,646,156"/>
-</map>
