@@ -33,7 +33,7 @@ There are a few externally developed third-party libraries (TPL) that
 are required to build SEACAS. You can build the libraries manually as
 detailed in the following section, or you can use the `install-tpl.sh` script which will
 download and install the HDF5, NetCDF, CGNS, MatIO, and (if MPI set)
-PNetCDF libraries.
+PnetCDF libraries.
 
 * To use the script, simply type `./install-tpl.sh`
 * The default behavior can be modified via a few environment variables:
@@ -227,7 +227,7 @@ If you only want the exodus library, then follow most of the above instructions 
   * You can either clone entire source tree as above, or you can
 	download a zip file containing only the exodus source (and
 	build-related files).  The url for the zip file is
-	<https://github.com/gsjaardema/seacas/archive/exodus.zip>. 
+	<https://github.com/gsjaardema/seacas/archive/exodus.zip> NOTE: Probably out-of-date and better to just clone entire repository. 
   * You only need the netcdf and optionally hdf5 libraries
   * Use the `cmake-exodus` file instead of `cmake-config`.
   * This will build, by default, a shared exodus library and also install the exodus.py Python interface.

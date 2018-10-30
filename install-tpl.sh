@@ -40,11 +40,11 @@ check_valid_yes_no FORCE
 SHARED=${SHARED:-YES}
 check_valid_yes_no SHARED
 
-# Enable Burst-Buffer support in PNetCDF?
+# Enable Burst-Buffer support in PnetCDF?
 BB=${BB:-NO}
 check_valid_yes_no BB
 
-# Which TPLS? (HDF5 and NetCDF always, PNetCDF if MPI=ON)
+# Which TPLS? (HDF5 and NetCDF always, PnetCDF if MPI=ON)
 CGNS=${CGNS:-ON}
 MATIO=${MATIO:-ON}
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
@@ -209,7 +209,7 @@ then
     # PnetCDF currently only builds static library...
     if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libpnetcdf.a ]
     then
-        echo "${txtgrn}+++ PNetCDF${txtrst}"
+        echo "${txtgrn}+++ PnetCDF${txtrst}"
         pnet_version="1.10.0"
 
         cd $ACCESS
@@ -249,7 +249,7 @@ then
             fi
         fi
     else
-	echo "${txtylw}+++ PNetCDF already installed.  Skipping download and installation.${txtrst}"
+	echo "${txtylw}+++ PnetCDF already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
