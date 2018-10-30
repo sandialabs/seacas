@@ -317,6 +317,7 @@ var exodusII_8h =
     [ "ex_name_of_object", "exodusII_8h.html#ace51015c588554746b4729b7d2bf46b0", null ],
     [ "ex_open_int", "exodusII_8h.html#a6595a688ca002de77217c2bb7c271147", null ],
     [ "ex_opts", "exodusII_8h.html#a8f47bbb035d32bbafc594c5ed3c00403", null ],
+    [ "ex_print_config", "exodusII_8h.html#ac89ad2ce316bb7fecf5fab8c9e447347", null ],
     [ "ex_put_all_var_param", "exodusII_8h.html#a4e10ac1ef1f40d2941f7918d527e539d", null ],
     [ "ex_put_all_var_param_ext", "exodusII_8h.html#a1081b59c3c29c0136ae88ca96566c2bf", null ],
     [ "ex_put_attr", "exodusII_8h.html#a995cd1ef78b0873019518411d789be9e", null ],
