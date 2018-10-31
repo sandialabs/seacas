@@ -110,9 +110,6 @@ namespace Iopg {
     bool begin__(Ioss::State state) override;
     bool end__(Ioss::State state) override;
 
-    bool begin_state__(Ioss::Region *region, int state, double time) override;
-    bool end_state__(Ioss::Region *region, int state, double time) override;
-
     void read_region();
     void read_communication_metadata();
 

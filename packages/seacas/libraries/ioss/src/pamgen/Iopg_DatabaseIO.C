@@ -970,13 +970,6 @@ bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
 
 bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
 
-bool DatabaseIO::begin_state__(Ioss::Region *region, int /* state */, double time) { return true; }
-
-bool DatabaseIO::end_state__(Ioss::Region * /* region */, int /* state */, double /* time */)
-{
-  return true;
-}
-
 int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
                                        void *data, size_t data_size) const
 {

@@ -905,7 +905,7 @@ namespace Ioss {
         currentState = state;
       }
       DatabaseIO *db = get_database();
-      db->begin_state(this, state, time);
+      db->begin_state(state, time);
     }
     return time;
   }
@@ -938,7 +938,7 @@ namespace Ioss {
         time = stateTimes[0];
       }
     }
-    db->end_state(this, state, time);
+    db->end_state(state, time);
     currentState = -1;
     return time;
   }

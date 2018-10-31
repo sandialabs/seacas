@@ -117,10 +117,10 @@ namespace Iohb {
     bool begin__(Ioss::State state) override;
     bool end__(Ioss::State state) override;
 
-    bool begin_state__(Ioss::Region *region, int state, double time) override;
-    bool end_state__(Ioss::Region *region, int state, double time) override;
+    bool begin_state__(int state, double time) override;
+    bool end_state__(int state, double time) override;
 
-    void initialize(const Ioss::Region *region) const;
+    void initialize() const;
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;

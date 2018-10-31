@@ -184,7 +184,7 @@ namespace Iohb {
     }
   }
 
-  void DatabaseIO::initialize(const Ioss::Region * /*region*/) const
+  void DatabaseIO::initialize() const
   {
     if (!initialized_) {
       assert(layout_ == nullptr);
@@ -290,10 +290,10 @@ namespace Iohb {
 
   bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::begin_state__(Ioss::Region *region, int /* state */, double time)
+  bool DatabaseIO::begin_state__(int /* state */, double time)
   {
     // If this is the first time, open the output stream and see if user wants a legend
-    initialize(region);
+    initialize();
 
     layout_ = new Layout(showLabels, precision_, separator_, fieldWidth_);
     if (tsFormat != "") {
@@ -316,7 +316,7 @@ namespace Iohb {
     }
   }
 
-  bool DatabaseIO::end_state__(Ioss::Region * /* region */, int /* state */, double /* time */)
+  bool DatabaseIO::end_state__(int /* state */, double /* time */)
   {
     if (legend_ != nullptr) {
       if (fileFormat == SPYHIS) {
@@ -428,7 +428,7 @@ namespace Iohb {
   int64_t DatabaseIO::put_field_internal(const Ioss::Region *region, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
-    initialize(region);
+    initialize();
     Ioss::Field::RoleType role       = field.get_role();
     int64_t               num_to_get = field.verify(data_size);
 
