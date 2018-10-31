@@ -16,7 +16,14 @@ then
 fi
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-MPI="${MPI:-OFF}"
+netcdf_parallel=`../bin/nc-config --has-parallel`
+if [ "${netcdf_parallel}" == "yes" ]
+then
+    MPI=ON
+else
+    MPI=OFF
+fi
+
 echo "MPI set to ${MPI}"
 
 if [ "${MPI}" == "OFF" ]
