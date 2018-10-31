@@ -91,7 +91,7 @@ void ex_print_config(void)
 #else
   fprintf(stderr, "\tExodus Parallel NOT enabled\n");
 #endif
-#if EXODUS_THREADSAFE
+#if defined(EXODUS_THREADSAFE)
   fprintf(stderr, "\tExodus Thread Safe enabled\n");
 #else
   fprintf(stderr, "\tExodus Thread Safe NOT enabled\n");
