@@ -181,8 +181,9 @@ namespace Iocgns {
                              int64_t file_count, entity_type type) const;
 
     int         get_file_pointer() const;
-    mutable int cgnsFilePtr{-1};
+    mutable int m_cgnsFilePtr{-1};
 
+    int m_flushInterval{1};
     int m_currentVertexSolutionIndex     = 0;
     int m_currentCellCenterSolutionIndex = 0;
 
