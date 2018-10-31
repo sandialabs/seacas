@@ -1115,7 +1115,7 @@ namespace Ioex {
     }
   }
 
-  bool DatabaseIO::begin_state__(Ioss::Region * /* region */, int state, double time)
+  bool DatabaseIO::begin_state__(int state, double time)
   {
     Ioss::SerializeIO serializeIO__(this);
 
@@ -1143,7 +1143,7 @@ namespace Ioex {
   }
 
   // common
-  bool DatabaseIO::end_state__(Ioss::Region * /*region*/, int state, double time)
+  bool DatabaseIO::end_state__(int state, double time)
   {
     Ioss::SerializeIO serializeIO__(this);
 

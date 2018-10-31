@@ -126,8 +126,8 @@ namespace Ioex {
 
     void open_state_file(int state);
 
-    bool begin_state__(Ioss::Region *region, int state, double time) override;
-    bool end_state__(Ioss::Region *region, int state, double time) override;
+    bool begin_state__(int state, double time) override;
+    bool end_state__(int state, double time) override;
     void get_step_times__() override = 0;
 
     int maximum_symbol_length() const override { return maximumNameLength; }

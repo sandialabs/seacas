@@ -923,7 +923,7 @@ namespace Iocgns {
     return true;
   }
 
-  bool ParallelDatabaseIO::begin_state__(Ioss::Region *region, int state, double time)
+  bool ParallelDatabaseIO::begin_state__(int state, double time)
   {
     if (is_input()) {
       return true;
@@ -934,7 +934,7 @@ namespace Iocgns {
     return true;
   }
 
-  bool ParallelDatabaseIO::end_state__(Ioss::Region * /* region */, int state, double time)
+  bool ParallelDatabaseIO::end_state__(int state, double time)
   {
     if (!is_input()) {
       m_timesteps.push_back(time);
