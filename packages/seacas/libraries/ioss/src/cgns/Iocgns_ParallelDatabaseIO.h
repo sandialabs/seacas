@@ -97,10 +97,6 @@ namespace Iocgns {
     int get_file_pointer() const;
     int get_serial_file_pointer() const;
 
-    void openDatabase__() const override;
-    void closeDatabase__() const override;
-    void openSerialDatabase__() const;
-    void closeSerialDatabase__() const;
     bool node_major() const override { return false; }
 
     bool needs_shared_node_information() const override { return false; }
@@ -109,18 +105,24 @@ namespace Iocgns {
     // a file with 32-bit ints. However,...
     int int_byte_size_db() const override { return CG_SIZEOF_SIZE; }
 
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
-
-    bool begin_state__(int state, double time) override;
-    bool end_state__(int state, double time) override;
-
     // Metadata-related functions.
     void read_meta_data__() override;
     void write_meta_data();
     void write_results_meta_data();
 
   private:
+    void openDatabase__() const override;
+    void closeDatabase__() const override;
+    void openSerialDatabase__() const;
+    void closeSerialDatabase__() const;
+
+    bool begin__(Ioss::State state) override;
+    bool end__(Ioss::State state) override;
+
+    bool begin_state__(int state, double time) override;
+    bool end_state__(int state, double time) override;
+    void flush_database__() const override;
+
     void    handle_structured_blocks();
     void    handle_unstructured_blocks();
     size_t  finalize_structured_blocks();

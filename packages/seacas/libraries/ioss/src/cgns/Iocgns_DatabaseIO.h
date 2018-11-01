@@ -96,6 +96,12 @@ namespace Iocgns {
 
     bool node_major() const override { return false; }
 
+    // Metadata-related functions.
+    void read_meta_data__() override;
+    void write_meta_data();
+    void write_results_meta_data();
+
+  private:
     void openDatabase__() const override;
     void closeDatabase__() const override;
 
@@ -106,12 +112,6 @@ namespace Iocgns {
     bool end_state__(int state, double time) override;
     void flush_database__() const override;
 
-    // Metadata-related functions.
-    void read_meta_data__() override;
-    void write_meta_data();
-    void write_results_meta_data();
-
-  private:
     bool   check_valid_file_open(int status) const;
     void   create_structured_block(int base, int zone, size_t &num_node);
     void   create_structured_block_fpp(int base, int zone, size_t &num_node);
