@@ -133,6 +133,8 @@ Namespaces</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:aab466a8ebebc3c06fa765cfc5fcafe8f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Iocgns__Utils_8h.html#aab466a8ebebc3c06fa765cfc5fcafe8f">CGCHECK</a>(funcall)</td></tr>
 <tr class="separator:aab466a8ebebc3c06fa765cfc5fcafe8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4d36197c9e8388f34ead8a0635c60bc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Iocgns__Utils_8h.html#ae4d36197c9e8388f34ead8a0635c60bc">CGCHECKM</a>(funcall)</td></tr>
+<tr class="separator:ae4d36197c9e8388f34ead8a0635c60bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a944091392e6d07d906956eca95f02209"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Iocgns__Utils_8h.html#a944091392e6d07d906956eca95f02209">CGCHECKNP</a>(funcall)</td></tr>
 <tr class="separator:a944091392e6d07d906956eca95f02209"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfea9bee4db966718ec489cf3f068cef"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Iocgns__Utils_8h.html#abfea9bee4db966718ec489cf3f068cef">CGCHECK2</a>(funcall)</td></tr>
@@ -154,7 +156,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != CG_OK) {                                                                        <a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">\</a></div><div class="line"><a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">    Iocgns::Utils::cgns_error</a>(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);             \</div><div class="line">  }</div><div class="ttc" id="classIocgns_1_1Utils_html_a34010e9b0618c248e1df20ff38800bda"><div class="ttname"><a href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">Iocgns::Utils::cgns_error</a></div><div class="ttdeci">static void cgns_error(int cgnsid, const char *file, const char *function, int lineno, int processor)</div><div class="ttdef"><b>Definition:</b> Iocgns_Utils.C:398</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != CG_OK) {                                                                        <a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">\</a></div><div class="line"><a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">    Iocgns::Utils::cgns_error</a>(cgns_file_ptr, __FILE__, __func__, __LINE__, myProcessor);           \</div><div class="line">  }</div><div class="ttc" id="classIocgns_1_1Utils_html_a34010e9b0618c248e1df20ff38800bda"><div class="ttname"><a href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">Iocgns::Utils::cgns_error</a></div><div class="ttdeci">static void cgns_error(int cgnsid, const char *file, const char *function, int lineno, int processor)</div><div class="ttdef"><b>Definition:</b> Iocgns_Utils.C:398</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -177,6 +179,25 @@ Macros</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
+<a id="ae4d36197c9e8388f34ead8a0635c60bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4d36197c9e8388f34ead8a0635c60bc">&#9670;&nbsp;</a></span>CGCHECKM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CGCHECKM</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">funcall</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != CG_OK) {                                                                        <a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">\</a></div><div class="line"><a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">    Iocgns::Utils::cgns_error</a>(m_cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);           \</div><div class="line">  }</div><div class="ttc" id="classIocgns_1_1Utils_html_a34010e9b0618c248e1df20ff38800bda"><div class="ttname"><a href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">Iocgns::Utils::cgns_error</a></div><div class="ttdeci">static void cgns_error(int cgnsid, const char *file, const char *function, int lineno, int processor)</div><div class="ttdef"><b>Definition:</b> Iocgns_Utils.C:398</div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a944091392e6d07d906956eca95f02209"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a944091392e6d07d906956eca95f02209">&#9670;&nbsp;</a></span>CGCHECKNP</h2>
 
@@ -192,7 +213,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != CG_OK) {                                                                        <a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">\</a></div><div class="line"><a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">    Iocgns::Utils::cgns_error</a>(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);                      \</div><div class="line">  }</div><div class="ttc" id="classIocgns_1_1Utils_html_a34010e9b0618c248e1df20ff38800bda"><div class="ttname"><a href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">Iocgns::Utils::cgns_error</a></div><div class="ttdeci">static void cgns_error(int cgnsid, const char *file, const char *function, int lineno, int processor)</div><div class="ttdef"><b>Definition:</b> Iocgns_Utils.C:398</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != CG_OK) {                                                                        <a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">\</a></div><div class="line"><a class="code" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">    Iocgns::Utils::cgns_error</a>(cgns_file_ptr, __FILE__, __func__, __LINE__, -1);                    \</div><div class="line">  }</div><div class="ttc" id="classIocgns_1_1Utils_html_a34010e9b0618c248e1df20ff38800bda"><div class="ttname"><a href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">Iocgns::Utils::cgns_error</a></div><div class="ttdeci">static void cgns_error(int cgnsid, const char *file, const char *function, int lineno, int processor)</div><div class="ttdef"><b>Definition:</b> Iocgns_Utils.C:398</div></div>
 </div><!-- fragment -->
 </div>
 </div>

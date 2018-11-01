@@ -412,10 +412,10 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:ab90ab4d22f0d490bf46e6f3d9ce32e1f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#ab90ab4d22f0d490bf46e6f3d9ce32e1f">cgnsFilePtr</a> {-1}</td></tr>
-<tr class="separator:ab90ab4d22f0d490bf46e6f3d9ce32e1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b18fa048c96dc8e34ea6324c192928c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a6b18fa048c96dc8e34ea6324c192928c">cgnsSerFilePtr</a> {-1}</td></tr>
-<tr class="separator:a6b18fa048c96dc8e34ea6324c192928c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9985140b7ece72fc1fcefb955cbf939d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a9985140b7ece72fc1fcefb955cbf939d">m_cgnsFilePtr</a> {-1}</td></tr>
+<tr class="separator:a9985140b7ece72fc1fcefb955cbf939d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5887f6ea9867faa78740b1f45343cc9f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a5887f6ea9867faa78740b1f45343cc9f">m_cgnsSerFilePtr</a> {-1}</td></tr>
+<tr class="separator:a5887f6ea9867faa78740b1f45343cc9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a006dd78660b6f0fd8d6b39564b622543"><td class="memItemLeft" align="right" valign="top">CG_ZoneType_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a006dd78660b6f0fd8d6b39564b622543">m_zoneType</a> {CG_ZoneTypeNull}</td></tr>
 <tr class="separator:a006dd78660b6f0fd8d6b39564b622543"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79b280acd4bdf71ffea61a670ed5d52a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classIocgns_1_1DecompositionDataBase.html">DecompositionDataBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a79b280acd4bdf71ffea61a670ed5d52a">decomp</a></td></tr>
@@ -2838,50 +2838,6 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="ab90ab4d22f0d490bf46e6f3d9ce32e1f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab90ab4d22f0d490bf46e6f3d9ce32e1f">&#9670;&nbsp;</a></span>cgnsFilePtr</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Iocgns::ParallelDatabaseIO::cgnsFilePtr {-1}</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a6b18fa048c96dc8e34ea6324c192928c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6b18fa048c96dc8e34ea6324c192928c">&#9670;&nbsp;</a></span>cgnsSerFilePtr</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Iocgns::ParallelDatabaseIO::cgnsSerFilePtr {-1}</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a79b280acd4bdf71ffea61a670ed5d52a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a79b280acd4bdf71ffea61a670ed5d52a">&#9670;&nbsp;</a></span>decomp</h2>
 
@@ -2915,6 +2871,50 @@ Additional Inherited Members</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt;size_t&gt; Iocgns::ParallelDatabaseIO::m_bcOffset</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9985140b7ece72fc1fcefb955cbf939d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9985140b7ece72fc1fcefb955cbf939d">&#9670;&nbsp;</a></span>m_cgnsFilePtr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Iocgns::ParallelDatabaseIO::m_cgnsFilePtr {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5887f6ea9867faa78740b1f45343cc9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5887f6ea9867faa78740b1f45343cc9f">&#9670;&nbsp;</a></span>m_cgnsSerFilePtr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Iocgns::ParallelDatabaseIO::m_cgnsSerFilePtr {-1}</td>
         </tr>
       </table>
   </td>
