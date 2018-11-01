@@ -19,7 +19,7 @@ var classIocgns_1_1DatabaseIO =
     [ "entity_field_support", "classIocgns_1_1DatabaseIO.html#a2c5342283817964a057d575fe8bece65", null ],
     [ "finalize_database", "classIocgns_1_1DatabaseIO.html#a421c9784c7abe955ddfe5c4d900cdd59", null ],
     [ "finalize_structured_blocks", "classIocgns_1_1DatabaseIO.html#aecf73c449524f2d4cf738d82e802e858", null ],
-    [ "flush_database__", "classIocgns_1_1DatabaseIO.html#a07bd5385e44c451c32e9fe7dbe46d74b", null ],
+    [ "flush_database__", "classIocgns_1_1DatabaseIO.html#a0d5f8df000435285bd03c4c8848ccdea", null ],
     [ "get_field_internal", "classIocgns_1_1DatabaseIO.html#a0aedf4be8cf8c036be662248f84cdf55", null ],
     [ "get_field_internal", "classIocgns_1_1DatabaseIO.html#a7f1eb6e0964125b7368fcda4fbe0ce63", null ],
     [ "get_field_internal", "classIocgns_1_1DatabaseIO.html#a531066eef61b18933a2a418212391103", null ],
