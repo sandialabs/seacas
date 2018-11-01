@@ -440,6 +440,10 @@ namespace Iocgns {
         strcpy(hdf5_access, "PARALLEL");
       }
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
+      if (!is_input() && m_cgnsFilePtr == -2) {
+	// Writing multiple steps with a "flush" (cg_close() / cg_open())
+	mode = CG_MODE_MODIFY;
+      }
       CGCHECKM(cg_set_file_type(CG_FILE_HDF5));
 
 #ifdef SEACAS_HAVE_MPI
@@ -1458,7 +1462,9 @@ namespace Iocgns {
     // For HDF5 files, it looks like we need to close the database between
     // writes if we want to have a valid database for external access or
     // to protect against a crash corrupting the file.
+    Utils::finalize_database(get_file_pointer(), m_timesteps, get_region(), myProcessor, false);
     closeDatabase__();
+    m_cgnsFilePtr = -2; // Tell openDatabase__ that we want to append
   }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::Region *reg, const Ioss::Field &field,

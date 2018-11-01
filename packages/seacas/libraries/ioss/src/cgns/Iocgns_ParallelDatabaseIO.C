@@ -220,6 +220,10 @@ namespace Iocgns {
   {
     if (m_cgnsFilePtr < 0) {
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
+      if (!is_input() && m_cgnsFilePtr == -2) {
+	// Writing multiple steps with a "flush" (cg_close() / cg_open())
+	mode = CG_MODE_MODIFY;
+      }
 
       bool do_timer = false;
       Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
@@ -968,7 +972,9 @@ namespace Iocgns {
     // For HDF5 files, it looks like we need to close the database between
     // writes if we want to have a valid database for external access or
     // to protect against a crash corrupting the file.
+    Utils::finalize_database(get_file_pointer(), m_timesteps, get_region(), myProcessor, false);
     closeDatabase__();
+    m_cgnsFilePtr = -2; // Tell openDatabase__ that we want to append
   }
 
   const Ioss::Map &ParallelDatabaseIO::get_map(entity_type type) const
