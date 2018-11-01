@@ -963,7 +963,7 @@ namespace Iocgns {
     return true;
   }
 
-  void DatabaseIO::flush_database__() const
+  void ParallelDatabaseIO::flush_database__() const
   {
     // For HDF5 files, it looks like we need to close the database between
     // writes if we want to have a valid database for external access or
