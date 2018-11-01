@@ -197,12 +197,13 @@ namespace Iocgns {
 
     std::vector<int64_t> get_processor_zone_node_offset() const;
 
-    mutable int   cgnsFilePtr{-1};
-    mutable int   cgnsSerFilePtr{-1};
+    mutable int   m_cgnsFilePtr{-1};
+    mutable int   m_cgnsSerFilePtr{-1};
     CG_ZoneType_t m_zoneType{CG_ZoneTypeNull};
 
     mutable std::unique_ptr<DecompositionDataBase> decomp;
 
+    int m_flushInterval{0}; // Default is no flushing after each timestep
     int m_currentVertexSolutionIndex     = 0;
     int m_currentCellCenterSolutionIndex = 0;
 
