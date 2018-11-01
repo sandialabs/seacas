@@ -144,6 +144,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9a0d7bc18f25678421dec3224b603885"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa00fb6483ed768c9ab90ca980b9d04b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#aa00fb6483ed768c9ab90ca980b9d04b1">end_state__</a> (int state, double time) override</td></tr>
 <tr class="separator:aa00fb6483ed768c9ab90ca980b9d04b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07bd5385e44c451c32e9fe7dbe46d74b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a07bd5385e44c451c32e9fe7dbe46d74b">flush_database__</a> () override</td></tr>
+<tr class="separator:a07bd5385e44c451c32e9fe7dbe46d74b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefeff18c6c405f13bd79260ee41678de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#aefeff18c6c405f13bd79260ee41678de">read_meta_data__</a> () override</td></tr>
 <tr class="separator:aefeff18c6c405f13bd79260ee41678de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afba3d4e19c998e014bbe93b49a5e70c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#afba3d4e19c998e014bbe93b49a5e70c2">write_meta_data</a> ()</td></tr>
@@ -398,8 +400,10 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a3678da290a50bae7cfc1047ea16c9c30"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a3678da290a50bae7cfc1047ea16c9c30">cgnsFilePtr</a> {-1}</td></tr>
-<tr class="separator:a3678da290a50bae7cfc1047ea16c9c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a369800173d5ee71f6c609a69c93b1dc6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a369800173d5ee71f6c609a69c93b1dc6">m_cgnsFilePtr</a> {-1}</td></tr>
+<tr class="separator:a369800173d5ee71f6c609a69c93b1dc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59a4fefbdbfbbb8d275f3fe02b7feae7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a59a4fefbdbfbbb8d275f3fe02b7feae7">m_flushInterval</a> {1}</td></tr>
+<tr class="separator:a59a4fefbdbfbbb8d275f3fe02b7feae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79c07a8eda4925bdaaa167da0aef35ce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a79c07a8eda4925bdaaa167da0aef35ce">m_currentVertexSolutionIndex</a> = 0</td></tr>
 <tr class="separator:a79c07a8eda4925bdaaa167da0aef35ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1ac6e876dcc16fb6527472555a5e89f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#ac1ac6e876dcc16fb6527472555a5e89f">m_currentCellCenterSolutionIndex</a> = 0</td></tr>
@@ -1011,6 +1015,31 @@ Additional Inherited Members</h2></td></tr>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a07bd5385e44c451c32e9fe7dbe46d74b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07bd5385e44c451c32e9fe7dbe46d74b">&#9670;&nbsp;</a></span>flush_database__()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::DatabaseIO::flush_database__ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -2656,28 +2685,6 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a3678da290a50bae7cfc1047ea16c9c30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3678da290a50bae7cfc1047ea16c9c30">&#9670;&nbsp;</a></span>cgnsFilePtr</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Iocgns::DatabaseIO::cgnsFilePtr {-1}</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="ae7db22966ac29e0a34a0e934327e35b9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae7db22966ac29e0a34a0e934327e35b9">&#9670;&nbsp;</a></span>m_bcOffset</h2>
 
@@ -2722,6 +2729,28 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a369800173d5ee71f6c609a69c93b1dc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a369800173d5ee71f6c609a69c93b1dc6">&#9670;&nbsp;</a></span>m_cgnsFilePtr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Iocgns::DatabaseIO::m_cgnsFilePtr {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ac1ac6e876dcc16fb6527472555a5e89f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac1ac6e876dcc16fb6527472555a5e89f">&#9670;&nbsp;</a></span>m_currentCellCenterSolutionIndex</h2>
 
@@ -2755,6 +2784,28 @@ Additional Inherited Members</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">int Iocgns::DatabaseIO::m_currentVertexSolutionIndex = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a59a4fefbdbfbbb8d275f3fe02b7feae7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59a4fefbdbfbbb8d275f3fe02b7feae7">&#9670;&nbsp;</a></span>m_flushInterval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Iocgns::DatabaseIO::m_flushInterval {1}</td>
         </tr>
       </table>
   </td>
