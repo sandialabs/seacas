@@ -203,6 +203,7 @@ namespace Iocgns {
 
     mutable std::unique_ptr<DecompositionDataBase> decomp;
 
+    int m_flushInterval{0}; // Default is no flushing after each timestep
     int m_currentVertexSolutionIndex     = 0;
     int m_currentCellCenterSolutionIndex = 0;
 
