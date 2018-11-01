@@ -104,6 +104,7 @@ namespace Iocgns {
 
     bool begin_state__(int state, double time) override;
     bool end_state__(int state, double time) override;
+    void flush_database__() const override;
 
     // Metadata-related functions.
     void read_meta_data__() override;
@@ -183,7 +184,7 @@ namespace Iocgns {
     int         get_file_pointer() const;
     mutable int m_cgnsFilePtr{-1};
 
-    int m_flushInterval{1};
+    int m_flushInterval{0}; // Default is no flushing after each timestep
     int m_currentVertexSolutionIndex     = 0;
     int m_currentCellCenterSolutionIndex = 0;
 

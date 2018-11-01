@@ -178,7 +178,13 @@ namespace Iocgns {
                 << "                        using the parallel CGNS library and API.\n";
     }
 #endif
-    openDatabase();
+    if (!is_input()) {
+      if (properties.exists("FLUSH_INTERVAL")) {
+        m_flushInterval = properties.get("FLUSH_INTERVAL").get_int();
+      }
+    }
+
+    openDatabase__();
   }
 
   ParallelDatabaseIO::~ParallelDatabaseIO()
@@ -940,7 +946,29 @@ namespace Iocgns {
       m_timesteps.push_back(time);
       assert(m_timesteps.size() == (size_t)state);
     }
+
+    if (!is_input()) {
+      bool do_flush = true;
+      if (m_flushInterval != 1) {
+        if (m_flushInterval == 0 || state % m_flushInterval != 0) {
+          do_flush = false;
+        }
+      }
+
+      if (do_flush) {
+        flush_database__();
+      }
+    }
+
     return true;
+  }
+
+  void DatabaseIO::flush_database__() const
+  {
+    // For HDF5 files, it looks like we need to close the database between
+    // writes if we want to have a valid database for external access or
+    // to protect against a crash corrupting the file.
+    closeDatabase__();
   }
 
   const Ioss::Map &ParallelDatabaseIO::get_map(entity_type type) const
