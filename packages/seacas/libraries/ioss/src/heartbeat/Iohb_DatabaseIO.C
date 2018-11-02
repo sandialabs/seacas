@@ -165,11 +165,7 @@ namespace Iohb {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), timeLastFlush_(0),
-        flushInterval_(10), logStream(nullptr), layout_(nullptr), legend_(nullptr),
-        tsFormat("[%H:%M:%S]"), separator_(", "), precision_(5), fieldWidth_(0), showLabels(false),
-        showLegend(true), appendOutput(false), addTimeField(false), initialized_(false),
-        streamNeedsDelete(false), fileFormat(DEFAULT)
+      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props)
   {
     timeLastFlush_ = time(nullptr);
     dbState        = Ioss::STATE_UNKNOWN;
