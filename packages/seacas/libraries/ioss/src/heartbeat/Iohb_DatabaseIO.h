@@ -182,25 +182,25 @@ namespace Iohb {
       return -1;
     }
 
-    time_t timeLastFlush_;
-    time_t flushInterval_;
+    time_t timeLastFlush_{0};
+    time_t flushInterval_{10};
 
-    std::ostream *logStream;
-    Layout *      layout_;
-    Layout *      legend_;
+    std::ostream *logStream{nullptr};
+    Layout *      layout_{nullptr};
+    Layout *      legend_{nullptr};
 
-    std::string tsFormat;
-    std::string separator_;
-    int         precision_;
-    int         fieldWidth_;
-    bool        showLabels;
-    bool        showLegend;
-    bool        appendOutput;
-    bool        addTimeField;
+    std::string tsFormat{"[%H:%M:%S]"};
+    std::string separator_{", "};
+    int         precision_{5};
+    int         fieldWidth_{0};
+    bool        showLabels{false};
+    bool        showLegend{true};
+    bool        appendOutput{false};
+    bool        addTimeField{false};
 
-    bool        initialized_;
-    bool        streamNeedsDelete;
-    enum Format fileFormat;
+    bool        initialized_{false};
+    bool        streamNeedsDelete{false};
+    enum Format fileFormat { DEFAULT };
   };
 } // namespace Iohb
 #endif // IOSS_Iohb_DatabaseIO_h
