@@ -44,6 +44,8 @@ check_valid_yes_no SHARED
 BB=${BB:-NO}
 check_valid_yes_no BB
 
+CRAY=${CRAY:-NO}
+
 # Which TPLS? (HDF5 and NetCDF always, PnetCDF if MPI=ON)
 CGNS=${CGNS:-ON}
 MATIO=${MATIO:-ON}
@@ -276,7 +278,7 @@ then
         fi
         mkdir build
         cd build
-        SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
+        CRAY=${CRAY} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure cmake for NetCDF. exiting.${txtrst}
