@@ -19,7 +19,7 @@ else
   LD_EXT="a"
 fi
 
-export LIBS="-ldl -lzlib"
+export LIBS="-ldl -lz"
 NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
@@ -63,7 +63,6 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
          -DENABLE_NETCDF_4:BOOL=ON \
          -DENABLE_PNETCDF:BOOL=${MPI} \
-	 -DNC_EXTRA_DEPS="z" \
 	 -DENABLE_CDF5=ON \
          -DENABLE_MMAP:BOOL=ON \
          -DENABLE_DAP:BOOL=OFF \
