@@ -939,6 +939,8 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       idx += 6;
     }
     // Transfer Zone Grid Connectivity...
+    std::set<std::string>
+        zgc_names; // Used to detect duplicate zgc names in parallel but non-parallel-io case
     for (const auto &zgc : sb->m_zoneConnectivity) {
       if (zgc.is_valid() && zgc.is_active()) {
         int                zgc_idx = 0;
@@ -956,8 +958,17 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
             connect_name = std::to_string(zgc.m_ownerGUID) + "--" + std::to_string(zgc.m_donorGUID);
           }
           else {
-            if (zgc.m_ownerProcessor != zgc.m_donorProcessor) {
-              connect_name += "_proc-" + std::to_string(zgc.m_donorProcessor);
+            auto iter = zgc_names.insert(connect_name);
+            if (!iter.second) {
+              // Name collision...
+              for (char c = 'A'; c <= 'Z'; c++) {
+                std::string potential = connect_name + c;
+                iter                  = zgc_names.insert(potential);
+                if (iter.second) {
+                  connect_name = potential;
+                  break;
+                }
+              }
             }
           }
           donor_name += "_proc-";
