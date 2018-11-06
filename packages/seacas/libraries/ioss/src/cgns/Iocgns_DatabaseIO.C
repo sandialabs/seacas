@@ -441,8 +441,8 @@ namespace Iocgns {
       }
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
       if (!is_input() && m_cgnsFilePtr == -2) {
-	// Writing multiple steps with a "flush" (cg_close() / cg_open())
-	mode = CG_MODE_MODIFY;
+        // Writing multiple steps with a "flush" (cg_close() / cg_open())
+        mode = CG_MODE_MODIFY;
       }
       CGCHECKM(cg_set_file_type(CG_FILE_HDF5));
 
