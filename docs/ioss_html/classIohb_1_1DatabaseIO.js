@@ -44,7 +44,6 @@ var classIohb_1_1DatabaseIO =
     [ "addTimeField", "classIohb_1_1DatabaseIO.html#a60b6274217cb4675a11fad99797efec5", null ],
     [ "appendOutput", "classIohb_1_1DatabaseIO.html#afc13975ead75040d3f6e4fe1ce8dc778", null ],
     [ "fieldWidth_", "classIohb_1_1DatabaseIO.html#a3beb94420150ba18cbe524224e09c171", null ],
-    [ "fileFormat", "classIohb_1_1DatabaseIO.html#a940b15793476c848161853b0c399f8af", null ],
     [ "flushInterval_", "classIohb_1_1DatabaseIO.html#a14979888aa691450b6cdc5ba6ce06f4d", null ],
     [ "initialized_", "classIohb_1_1DatabaseIO.html#afa89fbf0d222beee5ea4f0dc64790f2e", null ],
     [ "layout_", "classIohb_1_1DatabaseIO.html#ae4cbd1877902f335396d1aa5b1e4218d", null ],

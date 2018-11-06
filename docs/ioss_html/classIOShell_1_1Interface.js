@@ -16,6 +16,7 @@ var classIOShell_1_1Interface =
     [ "do_transform_fields", "classIOShell_1_1Interface.html#a9cf155c21c5f3c3edeca035474b5ad1f", null ],
     [ "fieldSuffixSeparator", "classIOShell_1_1Interface.html#a0dd20bf7388c5c19368fafd741d10f86", null ],
     [ "file_per_state", "classIOShell_1_1Interface.html#afa2cf06248f85c2dbfa625f3a541ad72", null ],
+    [ "flush_interval", "classIOShell_1_1Interface.html#a598d5043c3c78b0a2e21aabcbaaa1123", null ],
     [ "groupName", "classIOShell_1_1Interface.html#a46c43fa5a8c60d30bc46374b9c1f46ff", null ],
     [ "in_memory_read", "classIOShell_1_1Interface.html#a7be79eb41cadadc45e794f87920512d9", null ],
     [ "in_memory_write", "classIOShell_1_1Interface.html#ad801a53439deed1c043fef207ab50b4a", null ],
