@@ -132,6 +132,7 @@ then
    CC=cc
    FC=ftn
    MPI_BIN=`dirname \`which ${CC}\``
+   SHARED=OFF
 elif [ "${MPI}" == "ON" ]
 then
    if [ "${USE_SRUN}" == "ON" ]
