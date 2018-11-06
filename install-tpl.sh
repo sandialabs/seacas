@@ -57,6 +57,12 @@ SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
 VERBOSE=${VERBOSE:-1}
 
+if [ "${USE_PROXY}" == "YES" ]
+then
+    export http_proxy="http://wwwproxy.sandia.gov:80"
+    export https_proxy="https://wwwproxy.sandia.gov:80"
+fi
+
 pwd
 export ACCESS=`pwd`
 
@@ -189,7 +195,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version}
-        H5VERSION=${H5VERSION} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
+        CRAY=${CRAY} H5VERSION=${H5VERSION} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
@@ -230,7 +236,7 @@ then
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd parallel-netcdf-${pnet_version}
-            BB=${BB} SHARED=${SHARED} bash ../runconfigure.sh
+            CRAY=${CRAY} BB=${BB} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure PnetCDF. exiting.${txtrst}
@@ -320,7 +326,7 @@ then
                 mkdir build
             fi
             cd build
-            SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
+            CRAY=${CRAY} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure CGNS. exiting.${txtrst}
@@ -359,7 +365,7 @@ then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd matio
             ./autogen.sh
-            SHARED=${SHARED} bash ../runconfigure.sh
+            CRAY=${CRAY} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure MatIO. exiting.${txtrst}
