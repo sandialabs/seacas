@@ -103,7 +103,7 @@ int main(int argc, char **argv)
   int ne_test_plbpc(int /*fileid*/);
   int ne_test_pcmpc(int /*fileid*/);
 
-  /* Unitialized local variables */
+  /* Uninitialized local variables */
   int   ne_file_id;
   float version;
 
@@ -224,7 +224,7 @@ int main(int argc, char **argv)
     fflush(stdout);
   }
   else {
-    printf("succesful\n");
+    printf("successful\n");
     fflush(stdout);
   }
 

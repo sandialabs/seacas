@@ -1529,7 +1529,7 @@ def SetCameraViewExplicitly(theRenderView, EyePosition,
                             inPhactoriCamera = None,
                             inUseParallelProjection = False,
                             inParallelScale = 1.0):
-  "Sets the camera view explicitly by specifing the camera position " \
+  "Sets the camera view explicitly by specifying the camera position " \
   "(EyePosition), focal point (LookAtPoint), clipping range min/man " \
   "(ClippingRange), up view vector (ViewUpVector) " \
   "example:  SetCameraViewExplicitly(oneRenderView, [100.0, 90.0, 70.0], " \
@@ -2282,7 +2282,7 @@ def CalcRelativeCameraDistance2(inFocalPoint, inLookDirection, inUpVector,
                          inXyPixelSize[1] - 2 * int(vertPixBrdrY)]
 
   #we are special casing when the pixel ratio is the same for both
-  #X and Y for backwards compatability of test images;  We should
+  #X and Y for backwards compatibility of test images;  We should
   #take out this special case and update the test images.  The
   #difference is very minor, but detectable
   if inImageSettings.mPixelBorderRatioXY[0] == \
@@ -5097,7 +5097,7 @@ class PhactoriAddPointSetOperation(PhactoriOperationSpecifics):
     if PhactoriDbg(100):
       myDebugPrint3(
           "filename: " + str(self.mInternalPvCSVReader.FileName) + "\n"
-          "delimeter: -->" + str(self.mInternalPvCSVReader.FieldDelimiterCharacters) + "<--\n"
+          "delimiter: -->" + str(self.mInternalPvCSVReader.FieldDelimiterCharacters) + "<--\n"
           "x column: " + str(self.mInternalPvTableToPoints.XColumn) + "\n"
           "y column: " + str(self.mInternalPvTableToPoints.YColumn) + "\n"
           "z column: " + str(self.mInternalPvTableToPoints.ZColumn) + "\n"
@@ -5409,7 +5409,7 @@ class PhactoriExtractBlockOperation(PhactoriOperationSpecifics):
     self.mIncludeBlockList = None
     self.mExcludeBlockList = None
 
-    #this will be list of included block indicies, and is calculated from
+    #this will be list of included block indices, and is calculated from
     #mIncludeBlockList / mExcludeBlockList and passed directly to
     #ExcludeBlockFilter.BlockIndices
     self.mBlockIndices = []
@@ -6196,7 +6196,7 @@ class BlockRecursionControlItem:
     self.mParameters = None
 
 class PhactoriOperationBlock:
-  """manages one stage of the data pipeline, analagous to ParaView Filter
+  """manages one stage of the data pipeline, analogous to ParaView Filter
 
   An instance of this class represents and manages one stage of the data
   pipeline which has been set up for management by phatori.  It creates and
@@ -6207,7 +6207,7 @@ class PhactoriOperationBlock:
   input, so a tree structure is allowed rather than just a linear pipe.
   Operations with multiple inputs and outputs are conceiveable, and may be
   added pending user requirements.
-  The instance is presumed to contain a name unique amound the operation
+  The instance is presumed to contain a name unique among the operation
   blocks and keeps a reference to the input operation (by name), the 
   ParaView/Catalyst filter which is built, and some flags determining where
   we are in the construction process.
@@ -8184,7 +8184,7 @@ class PhactoriImagesetBlock:
     if inRepresentationKey in ioJson:
       representationName = ioJson[inRepresentationKey]
       if representationName not in ioPipeAndViewsState.mRepresentationBlocks:
-        errStr = "ParseOperationAndRepresentationPair::exeception/error\n" + \
+        errStr = "ParseOperationAndRepresentationPair::exception/error\n" + \
             "  imageset (" + str(self.mName) + \
             ") calls for representation (" + \
             str(representationName) + ") which does not exist\n"
@@ -8220,10 +8220,10 @@ class PhactoriPipeAndViewsState:
   imageset blocks, the scatter plot blocks, and the plot over time blocks.
   A set for each type of block is kept, with the block name (assigned by the
   json author) as a key for that block.  The Operation blocks are basically
-  analagous to the ParaView/Catalyst Filters, the imagesets are roughly
-  analagous to the ParaView Views (but with image endpoints rather than
+  analogous to the ParaView/Catalyst Filters, the imagesets are roughly
+  analogous to the ParaView Views (but with image endpoints rather than
   interactive rendering endpoints), the Representation blocks plus the
-  camera blocks are analagous to the ParaView Representations.  The
+  camera blocks are analogous to the ParaView Representations.  The
   scatter plot and plot over time blocks are simply specialized descriptions
   of requested plots, which are converted into ParaView filters and views
   to create plots which can be calculated and/or rendered in parallel at
@@ -8232,7 +8232,7 @@ class PhactoriPipeAndViewsState:
   contains some additional parameters (e.g. image size and file basename)
   which will describe a view to be rendered--repeatedly at different times
   when using insitu.  The camera blocks describe 3-D viewpoints, sometimes in
-  absoulte 3D terms, sometimes dependent on the data.  The representation
+  absolute 3D terms, sometimes dependent on the data.  The representation
   blocks control how the view looks, e.g. if element surface and edges are
   rendered or just surfaces and if we show axes and color legends.  The
   operation blocks can describe a potentially complex data pipeline which can
@@ -8330,7 +8330,7 @@ class PhactoriPipeAndViewsState:
     from WriteImages immediately before we start looping through the
     imagesets and plots to render images in order to basically set all
     paraview Representations to Visibility=0 so that we can turn them
-    visible approriately as we do a WriteImage for each one."""
+    visible appropriately as we do a WriteImage for each one."""
 
     for imagesetName, imagesetInstance in self.mImagesetBlocks.iteritems():
       imagesetInstance.ClearPvViewAndPvRepAfterWriteImage()
@@ -8476,7 +8476,7 @@ def UpdateRepresentationColorBySub1(inPvView, inPvRep,
 
 def DuringRestartUseJsonToSetUp(jsonIn, ioPipeAndViewsState):
   """used by process zero (broadcast send process) as well as other processes
-     (broadcast recieve processes) to actually take the info in json format
+     (broadcast receive processes) to actually take the info in json format
      and set the system up for proper behavior after restart, particularly
      data ranges and plots over time"""
   #go through representations and have each add it's state info to jsonOut
@@ -9492,7 +9492,7 @@ def CreateViewSetFromPhactoriViewMapC(inViewMapC):
   over time.  From these, we will construct ParaView/Catalyst data structures
   to do the data management and rendering.  See the class
   PhactoriPipeAndViewsState and the lower level related classes for more
-  explaination.
+  explanation.
   """
 
   if PhactoriDbg(100):
@@ -9673,7 +9673,7 @@ def CreateViewSetFromPhactoriViewMapC(inViewMapC):
 
   #parse scatter plot blocks
 
-  #special case; check for 'all variables' in a scatter plot and contruct all
+  #special case; check for 'all variables' in a scatter plot and construct all
   #plot json blocks if necessary
   TestForAndConstructAllScatterPlots(scatterplotBlocks)
 
@@ -9684,7 +9684,7 @@ def CreateViewSetFromPhactoriViewMapC(inViewMapC):
   ParseBlocksC2(gPipeAndViewsState.mScatterPlotBlocks, scatterplotBlocks,
       PhactoriScatterPlotBlock, gPipeAndViewsState)
 
-  #special case; check for 'all variables' in a plot over time and contruct all
+  #special case; check for 'all variables' in a plot over time and construct all
   #plot json blocks if necessary
   TestForAndConstructAllPlotsOverTime(timeplotBlocks)
 
@@ -10343,7 +10343,7 @@ def CalculateColorMapRGBPointsWithSubranges(inBaseRgbPoints,
   if minHlRatio >= 1.0 or maxHlRatio <= 0.0:
       if PhactoriDbg(100):
         myDebugPrint3("subrange is above or below overall range, returning\n"
-          "CalculateColorMapRGBPointsWithSubranges returing \n", 100)
+          "CalculateColorMapRGBPointsWithSubranges returning \n", 100)
       return inBaseRgbPoints
 
   if minHlRatio < 0.0:
@@ -10435,7 +10435,7 @@ def CalculateColorMapRGBPointsWithSubranges(inBaseRgbPoints,
       'myRGBPoints: \n' + str(myRgbPoints) + '\n')
 
   if PhactoriDbg(100):
-    myDebugPrint3("CalculateColorMapRGBPointsWithSubranges returing \n", 100)
+    myDebugPrint3("CalculateColorMapRGBPointsWithSubranges returning \n", 100)
 
   return myRgbPoints
 
@@ -10662,7 +10662,7 @@ def ShowDataColorLegendXX(inPvView,
           " now 0: " + str(inColorLegendRepRef) + "\n")
       inColorLegendRepRef.Visibility = 0
     myDebugPrint3(
-        'phactori.ShowDataColorLegendXX returing with none rep: ' + \
+        'phactori.ShowDataColorLegendXX returning with none rep: ' + \
         inOnOffSetting + '\n', 100)
     return None
 
@@ -10689,7 +10689,7 @@ def ShowDataColorLegendXX(inPvView,
       #    inColorSettings.mTextColor
       if PhactoriDbg(100):
         myDebugPrint3(
-            'phactori.ShowDataColorLegendXX returing with old rep: ' + \
+            'phactori.ShowDataColorLegendXX returning with old rep: ' + \
             inOnOffSetting + '\n', 100)
       return inColorLegendRepRef
   #else:
@@ -10867,7 +10867,7 @@ def ShowDataColorLegendXX(inPvView,
     myDebugPrint3(str(newScalarBarWidgetRepresentation) + '\n')
 
   if PhactoriDbg(100):
-    myDebugPrint3('phactori.ShowDataColorLegendXX returing with new rep: ' + \
+    myDebugPrint3('phactori.ShowDataColorLegendXX returning with new rep: ' + \
         inOnOffSetting + '\n', 100)
 
   return newScalarBarWidgetRepresentation
@@ -10884,7 +10884,7 @@ gThresholdFilterNameCounter = 0
 
 def ThresholdFilter(inVariableName, inType, inRange, inThresholdFilterName = None):
   "Apply a threshold filter.  inVariableName is the variable to use for "
-  "thresholding, inType is 'POINTS' or 'CELLS', inRange is the threhold "
+  "thresholding, inType is 'POINTS' or 'CELLS', inRange is the threshold "
   "range, such as [0.5, 1.5] or [-10.0, 10.0]"
   if PhactoriDbg(100):
     myDebugPrint3('phactori.ThresholdFilter entered, setting:' + inVariableName + ' ' + inType + ' ' + str(inRange) + '\n', 100)
@@ -12212,7 +12212,7 @@ def SetPlotPointsFromOneBlock(inInputCsData, ioPlotInfo, ioIndex):
     myDebugPrint3('SetPlotPointsFromOneBlock entered\n', 100)
   if PhactoriDbg():
     myDebugPrint3(' x axis variable: ' + ioPlotInfo.m_XAxisVariableInfo.mVariableName + \
-       '\n y axis varaible: ' + ioPlotInfo.m_YAxisVariableInfo.mVariableName + '\n')
+       '\n y axis variable: ' + ioPlotInfo.m_YAxisVariableInfo.mVariableName + '\n')
 
   #detect variable type (node/element) if necessary, and save info if detected
   detectResult = ioPlotInfo.m_YAxisVariableInfo.DetectVariableType(
@@ -14139,7 +14139,7 @@ class PhactoriImagesetOnOffFilter:
     #criteriaIndex = 0
     #for oneCriteria in self.mStartCriteriaList:
     #  criteriaIndex += 1
-    #  myDebugPrint3("trying critera: " + str(criteriaIndex))
+    #  myDebugPrint3("trying criteria: " + str(criteriaIndex))
     #  if oneCriteria.TestForTruth(ioPipeAndViewsState):
     #    myDebugPrint3("criteria returned true")
     #  else:

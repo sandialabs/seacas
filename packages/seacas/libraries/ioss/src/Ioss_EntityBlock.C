@@ -50,7 +50,7 @@
  *  \param[in] io_database The database associated with the block.
  *  \param[in] my_name The block name.
  *  \param[in] entity_type The topology type for the block.
- *  \param[in] entity_count The number of subentities in the block.
+ *  \param[in] entity_cnt The number of subentities in the block.
  *
  */
 Ioss::EntityBlock::EntityBlock(Ioss::DatabaseIO *io_database, const std::string &my_name,

@@ -36,6 +36,7 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_Region.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
@@ -43,19 +44,20 @@
 #include <exo_fpp/Iofx_DatabaseIO.h>
 #include <init/Ionit_Initializer.h>
 
+#include <exodusII.h>
+
+#include <algorithm>
 #include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
-#include <exodusII.h>
-
-#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <locale>
 #include <map>
 #include <numeric>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -153,7 +155,7 @@ namespace {
     for (const auto &eb : ebs) {
       const Ioss::ElementTopology *topology = eb->topology();
       const Ioss::ElementTopology *boundary = topology->boundary_type(0);
-      if (boundary != NULL) {
+      if (boundary != nullptr) {
         common_nodes = std::min(common_nodes, boundary->number_boundaries());
       }
       else {
@@ -161,7 +163,7 @@ namespace {
         size_t nb = topology->number_boundaries();
         for (size_t bb = 1; bb <= nb; bb++) {
           boundary = topology->boundary_type(bb);
-          if (boundary != NULL) {
+          if (boundary != nullptr) {
             common_nodes = std::min(common_nodes, boundary->number_boundaries());
           }
         }
@@ -400,8 +402,8 @@ namespace {
 
         OUTPUT << "\tCalling METIS Decomposition routine.\n";
 
-        METIS_PartMeshDual(&elem_count, &node_count, &pointer[0], &adjacency[0], NULL, NULL,
-                           &common, &proc_count, NULL, &options[0], &obj_val, &elem_partition[0],
+        METIS_PartMeshDual(&elem_count, &node_count, &pointer[0], &adjacency[0], nullptr, nullptr,
+                           &common, &proc_count, nullptr, &options[0], &obj_val, &elem_partition[0],
                            &node_partition[0]);
 
         Ioss::Utils::clear(node_partition);
@@ -435,7 +437,9 @@ namespace {
         }
         elem_beg = elem_end;
       }
-      std::random_shuffle(elem_to_proc.begin(), elem_to_proc.end());
+      std::random_device rd;
+      std::mt19937       g(rd());
+      std::shuffle(elem_to_proc.begin(), elem_to_proc.end(), g);
     }
 
     else if (interface.decomposition_method() == "file") {
@@ -463,7 +467,7 @@ namespace {
         exit(EXIT_FAILURE);
       }
 
-      std::ifstream decomp_file(filename.c_str(), std::ios::in);
+      std::ifstream decomp_file(filename, std::ios::in);
       if (!decomp_file.good()) {
         OUTPUT << "\nERROR: Element decomposition file '" << filename
                << "' does not exist or could not be opened.\n";
@@ -484,13 +488,13 @@ namespace {
         }
         else if (tokens.size() == 1) {
           // Just a processor specification for the next element...
-          proc = strtoul(tokens[0].c_str(), nullptr, 0);
+          proc = std::stoi(tokens[0]);
           elem_to_proc.push_back(proc);
         }
         else {
           // Count and processor specified.
-          count = strtoul(tokens[0].c_str(), nullptr, 0);
-          proc  = strtoul(tokens[1].c_str(), nullptr, 0);
+          count = std::stoi(tokens[0]);
+          proc  = std::stoi(tokens[1]);
         }
         if (proc > interface.processor_count()) {
           OUTPUT << "\nERROR: Invalid processor " << proc << " specified on line " << line_num
@@ -825,8 +829,7 @@ namespace {
       std::vector<std::vector<INT>>    pns_nodes(proc_count);
       std::vector<std::vector<double>> pns_df(proc_count);
       for (size_t p = 0; p < proc_count; p++) {
-        size_t node_count =
-            proc_region[p]->get_nodesets()[s]->entity_count();
+        size_t node_count = proc_region[p]->get_nodesets()[s]->entity_count();
         pns_nodes[p].reserve(node_count);
         pns_df[p].reserve(node_count);
       }
@@ -1052,8 +1055,8 @@ namespace {
           count = node_count - beg + 1;
         }
 
-        ex_get_partial_coord(exoid, beg, count, TOPTR(glob_coord_x), TOPTR(glob_coord_y),
-                             TOPTR(glob_coord_z));
+        ex_get_partial_coord(exoid, beg, count, glob_coord_x.data(), glob_coord_y.data(),
+                             glob_coord_z.data());
         progress("\tpartial_coord: " + std::to_string(beg) + " " + std::to_string(count));
 
         for (size_t i = 0; i < count; i++) {
@@ -1149,7 +1152,7 @@ namespace {
             count = element_count - beg + 1;
           }
 
-          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, TOPTR(glob_conn), nullptr,
+          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, glob_conn.data(), nullptr,
                               nullptr);
           progress("\tpartial_conn: " + std::to_string(beg) + " " + std::to_string(count));
 

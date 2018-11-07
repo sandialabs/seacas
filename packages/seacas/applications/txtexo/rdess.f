@@ -31,7 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: rdess.f,v 1.5 2007/10/17 18:47:22 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE RDESS (NTXT, NUMESS, LESSEL, LESSNL, LESSDF,
      &  IDESS, NEESS, NNESS, NDESS, IXEESS, IXDESS, LTEESS, LTSESS,
@@ -73,7 +72,7 @@ C   --upon entry; upon exit at end of side set information.
       INTEGER LTSESS(*)
       REAL FACESS(*)
 
-      CHARACTER*5 STRA, STRB
+      CHARACTER*32 STRA, STRB
 
 C ... Skip comment records
       READ (NTXT, *, END=120, ERR=120)

@@ -153,30 +153,32 @@ namespace SmartAssert {
 
 } // namespace SmartAssert
 
-namespace Private {
-  void init_assert();
-  void set_default_log_stream(std::ostream &out);
-  void set_default_log_name(const char *str);
+namespace Ioss {
+  namespace Private {
+    void init_assert();
+    void set_default_log_stream(std::ostream &out);
+    void set_default_log_name(const char *str);
 
-  // allows finding if a value is of type 'const char *'
-  // and is null; if so, we cannot print it to an ostream
-  // directly!!!
-  template <class T> struct is_null_finder
-  {
-    bool is(const T & /*unused*/) const { return false; }
-  };
+    // allows finding if a value is of type 'const char *'
+    // and is null; if so, we cannot print it to an ostream
+    // directly!!!
+    template <class T> struct is_null_finder
+    {
+      bool is(const T & /*unused*/) const { return false; }
+    };
 
-  template <> struct is_null_finder<char *>
-  {
-    bool is(char *const &val) { return val == nullptr; }
-  };
+    template <> struct is_null_finder<char *>
+    {
+      bool is(char *const &val) { return val == nullptr; }
+    };
 
-  template <> struct is_null_finder<const char *>
-  {
-    bool is(const char *const &val) { return val == nullptr; }
-  };
+    template <> struct is_null_finder<const char *>
+    {
+      bool is(const char *const &val) { return val == nullptr; }
+    };
 
-} // namespace Private
+  } // namespace Private
+} // namespace Ioss
 
 struct Assert
 {
@@ -193,7 +195,7 @@ struct Assert
 
     if ((logger() == nullptr) || handlers().size() < 4) {
       // used before main!
-      Private::init_assert();
+      Ioss::Private::init_assert();
     }
   }
 
@@ -215,8 +217,8 @@ struct Assert
   {
     std::ostringstream out;
 
-    Private::is_null_finder<type> f;
-    bool                          bIsNull = f.is(val);
+    Ioss::Private::is_null_finder<type> f;
+    bool                                bIsNull = f.is(val);
     if (!bIsNull) {
       out << val;
     }
@@ -259,7 +261,7 @@ struct Assert
   // write everything to this file
   static void set_log(const char *strFileName)
   {
-    Private::set_default_log_name(strFileName);
+    Ioss::Private::set_default_log_name(strFileName);
     logger() = &SmartAssert::default_logger;
   }
 
@@ -267,7 +269,7 @@ struct Assert
   // write everything to this log
   static void set_log(std::ostream &out)
   {
-    Private::set_default_log_stream(out);
+    Ioss::Private::set_default_log_stream(out);
     logger() = &SmartAssert::default_logger;
   }
 
@@ -328,13 +330,13 @@ namespace SmartAssert {
   inline Assert make_assert(const char *expr) { return Assert(expr); }
 } // namespace SmartAssert
 
-  ////////////////////////////////////////////////////////
-  // macro trickery
+////////////////////////////////////////////////////////
+// macro trickery
 
-  // note: NEVER define SMART_ASSERT_DEBUG directly
-  // (it will be overridden);
-  //
-  // #define SMART_ASSERT_DEBUG_MODE instead
+// note: NEVER define SMART_ASSERT_DEBUG directly
+// (it will be overridden);
+//
+// #define SMART_ASSERT_DEBUG_MODE instead
 
 #ifdef SMART_ASSERT_DEBUG_MODE
 #if SMART_ASSERT_DEBUG_MODE == 1

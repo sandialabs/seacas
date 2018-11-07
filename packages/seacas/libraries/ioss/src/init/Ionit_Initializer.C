@@ -37,6 +37,7 @@
 #include <exo_fac/Ioex_IOFactory.h>
 #endif
 
+#include <gen_struc/Iogs_DatabaseIO.h>
 #include <generated/Iogn_DatabaseIO.h>
 #include <heartbeat/Iohb_DatabaseIO.h>
 
@@ -75,7 +76,7 @@ namespace Ioss {
      *
      *  Calls appropriate internal functions and methods to
      *  initialize the Ioss library. Initializes all database
-     *  types except xdmf.
+     *  types.
      */
     Initializer::Initializer()
     {
@@ -97,6 +98,7 @@ namespace Ioss {
       Iovs::IOFactory::factory(); // Visualization
       Iohb::IOFactory::factory(); // HeartBeat
       Iogn::IOFactory::factory(); // Generated
+      Iogs::IOFactory::factory(); // Structured Mesh Generator
       Ioss::StorageInitializer();
       Ioss::Initializer();
       Iotr::Initializer();

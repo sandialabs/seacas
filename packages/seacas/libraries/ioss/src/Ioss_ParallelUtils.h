@@ -62,6 +62,14 @@ namespace Ioss {
     bool get_environment(const std::string &name, std::string &value, bool sync_parallel) const;
 
     /*!
+     * See if any external properties specified via the
+     * IOSS_PROPERTIES environment variable.  If any found, add to
+     * `properties`. If `do_print` then output to cerr which
+     * properties were set
+     */
+    void add_environment_properties(Ioss::PropertyManager &properties, bool do_print);
+
+    /*!
      * Returns 'true' if 'name' is defined in the environment.
      * The value of the environment variable is converted to an
      * integer via the atoi library call and returned in 'value'.
@@ -125,6 +133,10 @@ namespace Ioss {
     template <typename T> void gather(T my_value, std::vector<T> &result) const;
     template <typename T> void all_gather(T my_value, std::vector<T> &result) const;
     template <typename T> void gather(std::vector<T> &my_values, std::vector<T> &result) const;
+    template <typename T> void all_gather(std::vector<T> &my_values, std::vector<T> &result) const;
+    template <typename T>
+    int gather(int vals_count, int size_per_val, std::vector<T> &my_values,
+               std::vector<T> &result) const;
 
     void progress(const std::string &output) const;
 
@@ -136,6 +148,7 @@ namespace Ioss {
   inline MPI_Datatype mpi_type(double /*dummy*/) { return MPI_DOUBLE; }
   inline MPI_Datatype mpi_type(float /*dummy*/) { return MPI_FLOAT; }
   inline MPI_Datatype mpi_type(int /*dummy*/) { return MPI_INT; }
+  inline MPI_Datatype mpi_type(char /*dummy*/) { return MPI_CHAR; }
   inline MPI_Datatype mpi_type(long int /*dummy*/) { return MPI_LONG_LONG_INT; }
   inline MPI_Datatype mpi_type(long long int /*dummy*/) { return MPI_LONG_LONG_INT; }
   inline MPI_Datatype mpi_type(unsigned int /*dummy*/) { return MPI_UNSIGNED; }

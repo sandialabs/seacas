@@ -33,10 +33,10 @@
  *
  */
 /*****************************************************************************
-*
-* testrd - read exodus file test-nsided.exo created by testwt-nsided
-*
-*****************************************************************************/
+ *
+ * testrd - read exodus file test-nsided.exo created by testwt-nsided
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"
 #include "netcdf.h"

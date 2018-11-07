@@ -48,7 +48,7 @@ int refine_part(struct vtx_data **graph,        /* graph data structure */
                 int               ndims_tot,    /* if hypercube, number of dimensions */
                 int               mesh_dims[3], /* if mesh, size in each direction */
                 double *          goal          /* desired set sizes */
-                )
+)
 {
   extern int        TERM_PROP;              /* perform terminal propagation? */
   struct bilist *   set_list  = NULL;       /* lists of vtxs in each set */

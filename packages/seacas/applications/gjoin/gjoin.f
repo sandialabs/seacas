@@ -53,7 +53,7 @@ C   --Output:
 C   --   o Prompts on the standard output device.
 C   --   o The output database (name requested)
 C
-C   --Developed at Sandia-2017 National Laboratories.
+C   --Developed at Sandia National Laboratories.
 C   --
 C   --Current author and code sponsor: Greg Sjaardema
 C   --

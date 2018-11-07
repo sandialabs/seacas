@@ -31,11 +31,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_BoundingBox.h>  // for AxisAlignedBoundingBox
-#include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_DatabaseIO.h>   // for DatabaseIO
 #include <Ioss_Field.h>        // for Field, etc
+#include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_Hex8.h>
-#include <Ioss_Property.h>     // for Property
+#include <Ioss_Property.h> // for Property
 #include <Ioss_Region.h>
 #include <Ioss_SmartAssert.h>
 #include <Ioss_StructuredBlock.h>
@@ -161,8 +161,8 @@ namespace Ioss {
     else if (index_dim == 3) {
       vector_name = IOSS_VECTOR_3D();
     }
-    fields.add(
-        Ioss::Field("cell_ids", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH, cell_count));
+    fields.add(Ioss::Field("cell_ids", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
+                           cell_count));
 
     fields.add(Ioss::Field("cell_node_ids", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
                            node_count));
@@ -224,17 +224,59 @@ namespace Ioss {
     return get_database()->get_bounding_box(this);
   }
 
-  int BoundaryCondition::which_parent_face() const
+  size_t BoundaryCondition::get_face_count() const
   {
-    // Determine which "face" of the parent block this BC is applied to.
-    // min X, max X, min Y, max Y, min Z, max Z -- -1, 1, -2, 2, -3, 3
-    if (m_rangeBeg[0] == m_rangeEnd[0]) {
-      return (m_rangeBeg[0] == 1) ? -1 : 1;
+    if (m_rangeBeg[0] == 0 || m_rangeEnd[0] == 0 || m_rangeBeg[1] == 0 || m_rangeEnd[1] == 0 ||
+        m_rangeBeg[2] == 0 || m_rangeEnd[2] == 0) {
+      return 0;
     }
-    if (m_rangeBeg[1] == m_rangeEnd[1]) {
-      return (m_rangeBeg[1] == 1) ? -2 : 2;
+
+    auto diff0 = std::abs(m_rangeEnd[0] - m_rangeBeg[0]);
+    auto diff1 = std::abs(m_rangeEnd[1] - m_rangeBeg[1]);
+    auto diff2 = std::abs(m_rangeEnd[2] - m_rangeBeg[2]);
+
+    int same_count = (diff0 == 0 ? 1 : 0) + (diff1 == 0 ? 1 : 0) + (diff2 == 0 ? 1 : 0);
+
+    if (same_count > 1) {
+      return 0;
     }
-    return (m_rangeBeg[2] == 1) ? -3 : 3;
+    diff0 = std::max(diff0, 1);
+    diff1 = std::max(diff1, 1);
+    diff2 = std::max(diff2, 1);
+
+    return diff0 * diff1 * diff2;
+  }
+
+  bool BoundaryCondition::is_valid() const
+  {
+    // Return true/false if range specifies a valid face
+    bool is_x = m_rangeBeg[0] == m_rangeEnd[0];
+    bool is_y = m_rangeBeg[1] == m_rangeEnd[1];
+    bool is_z = m_rangeBeg[2] == m_rangeEnd[2];
+
+    return ((is_x ? 1 : 0) + (is_y ? 1 : 0) + (is_z ? 1 : 0) == 1);
+  }
+
+  int BoundaryCondition::which_face() const
+  {
+    if (m_face == -1) {
+      // Determine which "face" of the parent block this BC is applied to.
+      // min X, max X, min Y, max Y, min Z, max Z -- 0, 3, 1, 4, 2, 5
+      if (m_rangeBeg[0] == 0 || m_rangeEnd[0] == 0 || m_rangeBeg[1] == 0 || m_rangeEnd[1] == 0 ||
+          m_rangeBeg[2] == 0 || m_rangeEnd[2] == 0) {
+        m_face = -1;
+      }
+      else if (m_rangeBeg[0] == m_rangeEnd[0]) {
+        m_face = (m_rangeBeg[0] == 1) ? 0 : 3;
+      }
+      else if (m_rangeBeg[1] == m_rangeEnd[1]) {
+        m_face = (m_rangeBeg[1] == 1) ? 1 : 4;
+      }
+      else if (m_rangeBeg[2] == m_rangeEnd[2]) {
+        m_face = (m_rangeBeg[2] == 1) ? 2 : 5;
+      }
+    }
+    return m_face;
   }
 
   std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc)

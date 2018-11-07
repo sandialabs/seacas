@@ -31,20 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: rdeb1.f,v 1.2 2007/10/17 18:47:21 gdsjaar Exp $
-C $Log: rdeb1.f,v $
-C Revision 1.2  2007/10/17 18:47:21  gdsjaar
-C Added copyright notice to all files.
-C
-C extexo2 is licensed under the BSD license
-C
-C Revision 1.1.1.1  1991/02/22 19:22:30  gdsjaar
-C TxtExo - Convert Text File to EXODUS File
-C
-c Revision 1.1  1991/02/22  19:22:29  gdsjaar
-c Initial revision
-c
-
 C=======================================================================
       SUBROUTINE RDEB1 (NTXT, IELB, NUMELB, NUMLNK, NUMATR,
      &   LINK, ATRIB, natrdm, *)
@@ -73,7 +59,7 @@ C   --upon entry; upon exit at end of element block misc. information.
       INTEGER LINK(NUMLNK,*)
       REAL ATRIB(natrdm, *)
 
-      CHARACTER*5 STRA, STRB
+      CHARACTER*32 STRA, STRB
 
       NE = 0
       READ (NTXT, *, END=120, ERR=120)

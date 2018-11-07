@@ -46,6 +46,7 @@
 
 #include "netcdf.h"
 
+#define NC_HAVE_META_H
 #if defined(NC_HAVE_META_H)
 #include "netcdf_meta.h"
 #if NC_HAS_PARALLEL
@@ -68,8 +69,8 @@
 #endif
 
 /* EXODUS version number */
-#define EX_API_VERS 7.08f
-#define EX_API_VERS_NODOT 708
+#define EX_API_VERS 7.17f
+#define EX_API_VERS_NODOT 717
 #define EX_VERS EX_API_VERS
 #define NEMESIS_API_VERSION EX_API_VERS
 #define NEMESIS_API_VERSION_NODOT EX_API_VERS_NODOT
@@ -424,6 +425,7 @@ typedef struct ex_var_params
 EXODUS_EXPORT int ex_close(int exoid);
 
 EXODUS_EXPORT int ex_copy(int in_exoid, int out_exoid);
+EXODUS_EXPORT int ex_copy_transient(int in_exoid, int out_exoid);
 
 #define ex_create(path, mode, comp_ws, io_ws)                                                      \
   ex_create_int(path, mode, comp_ws, io_ws, EX_API_VERS_NODOT)
@@ -450,6 +452,9 @@ EXODUS_EXPORT int ex_get_all_times(int exoid, void *time_values);
 EXODUS_EXPORT int ex_get_coord_names(int exoid, char **coord_names);
 
 EXODUS_EXPORT int ex_get_coord(int exoid, void *x_coor, void *y_coor, void *z_coor);
+
+EXODUS_EXPORT int ex_get_partial_coord_component(int exoid, int64_t start_node_num,
+                                                 int64_t num_nodes, int component, void *coor);
 
 EXODUS_EXPORT int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes,
                                        void *x_coor, void *y_coor, void *z_coor);
@@ -547,6 +552,10 @@ EXODUS_EXPORT int ex_put_coord_names(int exoid, char *coord_names[]);
 EXODUS_EXPORT int ex_put_coord(int exoid, const void *x_coor, const void *y_coor,
                                const void *z_coor);
 
+EXODUS_EXPORT int ex_put_partial_coord_component(int exoid, int64_t start_node_num,
+                                                 int64_t num_nodes, int component,
+                                                 const void *coor);
+
 EXODUS_EXPORT int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes,
                                        const void *x_coor, const void *y_coor, const void *z_coor);
 
@@ -609,8 +618,9 @@ EXODUS_EXPORT int ex_get_num_props(int exoid, ex_entity_type obj_type);
 EXODUS_EXPORT int ex_large_model(int exoid);
 EXODUS_EXPORT size_t ex_header_size(int exoid);
 
-EXODUS_EXPORT void        ex_err(const char *module_name, const char *message, int err_num);
-EXODUS_EXPORT void        ex_set_err(const char *module_name, const char *message, int err_num);
+EXODUS_EXPORT void ex_err(const char *module_name, const char *message, int err_num);
+EXODUS_EXPORT void ex_err_fn(int exoid, const char *module_name, const char *message, int err_num);
+EXODUS_EXPORT void ex_set_err(const char *module_name, const char *message, int err_num);
 EXODUS_EXPORT const char *ex_strerror(int err_num);
 EXODUS_EXPORT void        ex_get_err(const char **msg, const char **func, int *err_num);
 EXODUS_EXPORT int         ex_opts(int options);
@@ -619,6 +629,8 @@ EXODUS_EXPORT int ex_inquire(int exoid, int req_info, void_int * /*ret_int*/, fl
 EXODUS_EXPORT int64_t ex_inquire_int(int exoid, int req_info);
 EXODUS_EXPORT int     ex_int64_status(int exoid);
 EXODUS_EXPORT int     ex_set_int64_status(int exoid, int mode);
+
+EXODUS_EXPORT void ex_print_config(void);
 
 /** Note that the max name length setting is global at this time; not specific
  * to a particular database; however, the exoid option is passed to give
@@ -1027,7 +1039,7 @@ EXODUS_EXPORT int ex_put_elem_cmap(int          exoid,    /* NetCDF/Exodus file 
                                    int          processor /* This processor ID */
 );
 
-/* Deprectated Code Handling Options:
+/* Deprecated Code Handling Options:
  * 1. Ignore -- treat deprecated functions as normal non-deprecated functions (default)
  * 2. Delete -- the deprecated functions are not defined or compiled (SEACAS_HIDE_DEPRECATED_CODE is
  * defined)

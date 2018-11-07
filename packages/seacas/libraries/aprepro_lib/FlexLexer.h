@@ -111,7 +111,7 @@ public:
   // only make that assignment when initializing in yylex().
   explicit yyFlexLexer(std::istream *arg_yyin = nullptr, std::ostream *arg_yyout = nullptr);
 
-  virtual ~yyFlexLexer();
+  ~yyFlexLexer() override;
 
   void                    yy_switch_to_buffer(struct yy_buffer_state *new_buffer) override;
   struct yy_buffer_state *yy_create_buffer(std::istream *file, int size) override;
@@ -121,9 +121,9 @@ public:
   void yypush_buffer_state(struct yy_buffer_state *new_buffer);
   void yypop_buffer_state();
 
-  virtual int  yylex() override;
-  virtual void switch_streams(std::istream *new_in, std::ostream *new_out = nullptr) override;
-  virtual int  yywrap();
+  int         yylex() override;
+  void        switch_streams(std::istream *new_in, std::ostream *new_out = nullptr) override;
+  virtual int yywrap();
 
 protected:
   virtual int  LexerInput(char *buf, int max_size);

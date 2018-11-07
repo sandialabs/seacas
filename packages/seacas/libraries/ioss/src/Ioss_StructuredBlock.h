@@ -58,51 +58,40 @@ namespace Ioss {
 
   struct BoundaryCondition
   {
+    BoundaryCondition(const std::string name, const std::string fam_name,
+                      const Ioss::IJK_t range_beg, const Ioss::IJK_t range_end)
+        : m_bcName(std::move(name)), m_famName(std::move(fam_name)),
+          m_rangeBeg(std::move(range_beg)), m_rangeEnd(std::move(range_end))
+    {
+    }
+
+    // Deprecated... Use the constructor above with both name and fam_name
     BoundaryCondition(const std::string name, const Ioss::IJK_t range_beg,
                       const Ioss::IJK_t range_end)
-        : m_bcName(std::move(name)), m_rangeBeg(std::move(range_beg)),
+        : m_bcName(name), m_famName(std::move(name)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end))
     {
-#ifndef NDEBUG
-      int same_count = (m_rangeBeg[0] == m_rangeEnd[0] ? 1 : 0) +
-                       (m_rangeBeg[1] == m_rangeEnd[1] ? 1 : 0) +
-                       (m_rangeBeg[2] == m_rangeEnd[2] ? 1 : 0);
-      assert(same_count == 1 || (same_count == 3 && m_rangeBeg[0] == 0));
-#endif
     }
 
     BoundaryCondition(const BoundaryCondition &copy_from) = default;
 
     // Determine which "face" of the parent block this BC is applied to.
-    int which_parent_face() const;
+    int which_face() const;
+
+    // Does range specify a valid face
+    bool is_valid() const;
 
     // Return number of cell faces in the BC
-    size_t get_face_count() const
-    {
-      if (m_rangeBeg[0] == 0 || m_rangeEnd[0] == 0 || m_rangeBeg[1] == 0 || m_rangeEnd[1] == 0 ||
-          m_rangeBeg[2] == 0 || m_rangeEnd[2] == 0) {
-        return 0;
-      }
-
-      size_t cell_count = 1;
-      for (int i = 0; i < 3; i++) {
-        auto diff = std::abs(m_rangeEnd[i] - m_rangeBeg[i]);
-        cell_count *= ((diff == 0) ? 1 : diff);
-      }
-      return cell_count;
-    }
-
-    bool is_active() const
-    {
-      return (m_rangeBeg[0] != 0 || m_rangeEnd[0] != 0 || m_rangeBeg[1] != 0 ||
-              m_rangeEnd[1] != 0 || m_rangeBeg[2] != 0 || m_rangeEnd[2] != 0);
-    }
+    size_t get_face_count() const;
 
     std::string m_bcName;
+    std::string m_famName;
 
     // These are potentially subsetted due to parallel decompositions...
     Ioss::IJK_t m_rangeBeg;
     Ioss::IJK_t m_rangeEnd;
+
+    mutable int m_face{-1};
 
     friend std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc);
   };
@@ -135,6 +124,10 @@ namespace Ioss {
     EntityType  type() const override { return STRUCTUREDBLOCK; }
 
     const Ioss::NodeBlock &get_node_block() const { return m_nodeBlock; }
+
+    /** \brief Does block contain any cells
+     */
+    bool is_active() const { return m_ni * m_nj * m_nk > 0; }
 
     // Handle implicit properties -- These are calcuated from data stored
     // in the grouping entity instead of having an explicit value assigned.
@@ -176,35 +169,17 @@ namespace Ioss {
     size_t get_node_global_offset() const { return m_nodeGlobalOffset; }
     size_t get_cell_global_offset() const { return m_cellGlobalOffset; }
 
-    // Get the local (relative to this block on this processor) node
-    // id at the specified i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
-    size_t get_block_local_node_id(int ii, int jj, int kk) const
-    {
-      auto i = ii - m_offsetI;
-      auto j = jj - m_offsetJ;
-      auto k = kk - m_offsetK;
-      assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
-      return static_cast<size_t>(k - 1) * (m_ni + 1) * (m_nj + 1) +
-             static_cast<size_t>(j - 1) * (m_ni + 1) + i;
-    }
-
-    // Get the local (relative to this block on this processor) cell
-    // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
-    size_t get_block_local_cell_id(int ii, int jj, int kk) const
-    {
-      auto i = ii - m_offsetI;
-      auto j = jj - m_offsetJ;
-      auto k = kk - m_offsetK;
-      assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
-      return static_cast<size_t>(k - 1) * m_ni * m_nj + static_cast<size_t>(j - 1) * m_ni + i;
-    }
-
     // Get the global (over all processors) cell
     // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
     size_t get_global_cell_id(int i, int j, int k) const
     {
       return m_cellGlobalOffset + static_cast<size_t>(k - 1) * m_niGlobal * m_njGlobal +
              static_cast<size_t>(j - 1) * m_niGlobal + i;
+    }
+
+    size_t get_global_cell_id(IJK_t index) const
+    {
+      return get_global_cell_id(index[0], index[1], index[2]);
     }
 
     // Get the global (over all processors) node
@@ -214,6 +189,11 @@ namespace Ioss {
     {
       return m_nodeGlobalOffset + static_cast<size_t>(k - 1) * (m_niGlobal + 1) * (m_njGlobal + 1) +
              static_cast<size_t>(j - 1) * (m_niGlobal + 1) + i - 1;
+    }
+
+    size_t get_global_node_offset(IJK_t index) const
+    {
+      return get_global_node_offset(index[0], index[1], index[2]);
     }
 
     // Get the local (relative to this block on this processor) node id at the specified
@@ -228,19 +208,21 @@ namespace Ioss {
              static_cast<size_t>(j - 1) * (m_ni + 1) + i - 1;
     }
 
+    size_t get_block_local_node_offset(IJK_t index) const
+    {
+      return get_block_local_node_offset(index[0], index[1], index[2]);
+    }
+
     // Get the local (on this processor) cell-node offset at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
     size_t get_local_node_offset(int i, int j, int k) const
-
     {
       return get_block_local_node_offset(i, j, k) + m_nodeOffset;
     }
 
-    // Get the global node id at the specified
-    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
-    size_t get_global_node_id(int i, int j, int k) const
+    size_t get_local_node_offset(IJK_t index) const
     {
-      return get_global_node_offset(i, j, k) + 1;
+      return get_local_node_offset(index[0], index[1], index[2]);
     }
 
     std::vector<INT> get_cell_node_ids(bool add_offset) const
@@ -365,7 +347,6 @@ namespace Ioss {
     std::vector<BoundaryCondition>         m_boundaryConditions;
     std::vector<size_t>                    m_blockLocalNodeIndex;
     std::vector<std::pair<size_t, size_t>> m_globalIdMap;
-    std::vector<std::pair<size_t, size_t>> m_sharedNode;
   };
 } // namespace Ioss
 #endif

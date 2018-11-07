@@ -11,7 +11,7 @@ PARALLEL="${MPI:-OFF}"
 
 rm -f config.cache
 export CFLAGS="-I${ACCESS}/include"
-export CPPFLAGS="-DNDEBUG"
+export CPPFLAGS="-DNDEBUG ${CFLAGS}"
 
 # Find the hdf5 library
 export LDFLAGS="-L${ACCESS}/lib"

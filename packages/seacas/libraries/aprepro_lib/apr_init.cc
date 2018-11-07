@@ -44,8 +44,9 @@
 #include <string>         // for string
 
 namespace SEAMS {
-  init arith_0_fncts[] = {{"time", do_time, "time(x)", "Seconds since epoch (useful for srand())."},
-                          {nullptr, nullptr, nullptr, nullptr}};
+  init arith_0_fncts[] = {
+      {"seconds", do_time, "seconds()", "Seconds since epoch (useful for srand())."},
+      {nullptr, nullptr, nullptr, nullptr}};
 
   init_d arith_fncts[] = {
       {"abs", do_fabs, "abs(x)", "Absolute value of x. |x|."},
@@ -64,6 +65,7 @@ namespace SEAMS {
       {"cosh", do_cosh, "cosh(x)", "Hyperbolic cosine of x."},
       {"d2r", do_d2r, "d2r(x)", "Degrees to radians."},
       {"exp", do_exp, "exp(x)", "Exponential: e^x"},
+      {"expm1", do_expm1, "expm1(x)", "Exponential: Accurate version of e^x - 1.0 for small x"},
       {"floor", do_floor, "floor(x)", "Largest integer not greater than x."},
       {"int", do_int, "int(x), [x]", "Integer part of x truncated toward 0."},
       {"lgamma", do_lgamma, "lgamma(x)", "log(Gamma(x))."},
@@ -223,16 +225,10 @@ namespace SEAMS {
        "Handles the if statements. x can be any valid expression; nonzero is true"},
       {"Elseif", do_str_elseif, "Elseif(x)",
        "Handles the if statements. x can be any valid expression; nonzero is true"},
-      {"ifdef", do_str_if, "ifdef(x)",
+      {"_ifdef", do_str_if, "ifdef(x)",
        "Handles the if statements. x can be any valid expression; "
        "nonzero is true (deprecated, use if)"},
-      {"Ifdef", do_str_if, "Ifdef(x)",
-       "Handles the if statements. x can be any valid expression; "
-       "nonzero is true (deprecated, use if)"},
-      {"ifndef", do_str_notif, "ifndef(x)",
-       "Handles the if statements. x can be any valid "
-       "expression; nonzero is true (deprecated, use if)"},
-      {"Ifndef", do_str_notif, "Ifndef(x)",
+      {"_ifndef", do_str_notif, "ifndef(x)",
        "Handles the if statements. x can be any valid "
        "expression; nonzero is true (deprecated, use if)"},
 #if defined(EXODUS_SUPPORT)
@@ -321,6 +317,10 @@ namespace SEAMS {
        "Create a 2D array from the data in a csv file optionally skipping rows."
        " If skip is integer skip that many rows; if skip is a character, skip lines beginning with "
        "that character"},
+      {"array_from_string", do_array_from_string, "array_from_string(string, delim)",
+       "Create a 1D array from the data in a delimited string."
+       " The array double values are separated by one or more of the characters in the string "
+       "variable delim."},
       {nullptr, nullptr, nullptr, nullptr}};
 
   array_dd_init array_dd_fncts[] = {
@@ -406,7 +406,7 @@ namespace SEAMS {
 
     for (int i = 0; variables[i].vname != nullptr; i++) {
       // These should be immutable, but possible user is using them for some other purpose...
-      // For backward compatability, keep as mutable.
+      // For backward compatibility, keep as mutable.
       add_variable(variables[i].vname, variables[i].value, false, true);
     }
 

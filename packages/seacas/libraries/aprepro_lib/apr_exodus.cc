@@ -196,7 +196,7 @@ namespace SEAMS {
     if (exoid < 0)
       return "";
 
-    // read database paramters
+    // read database parameters
     static char title[MAX_LINE_LENGTH + 1];
     int64_t     ndim, nnodes, nelems, nblks, nnsets, nssets;
     ex_get_init(exoid, title, &ndim, &nnodes, &nelems, &nblks, &nnsets, &nssets);

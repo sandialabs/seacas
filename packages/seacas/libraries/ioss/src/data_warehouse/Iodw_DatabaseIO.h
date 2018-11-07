@@ -62,7 +62,7 @@ namespace Ioss {
   class SideBlock;
   class SideSet;
   class StructuredBlock;
-}
+} // namespace Ioss
 
 /** \brief A namespace for the pamgen database format.
  */
@@ -104,34 +104,14 @@ namespace Iodw {
     int         nodeset_count() const { return nodesetCount; }
     int         maximum_symbol_length() const override { return 32; }
 
-    void get_block_adjacencies(const Ioss::ElementBlock *eb,
-                               std::vector<std::string> &block_adjacency) const;
-
     void compute_block_membership(Ioss::SideBlock *         efblock,
                                   std::vector<std::string> &block_membership) const;
 
   private:
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
-    {
-      return nodeMap.global_to_local(global, must_exist);
-    }
-
-    int64_t element_global_to_local__(int64_t global) const override
-    {
-      return elemMap.global_to_local(global);
-    }
-
-    // Eliminate as much memory as possible, but still retain meta data information
-    // Typically, eliminate the maps...
-    void release_memory__() override;
-
     void read_meta_data__() override;
 
     bool begin__(Ioss::State state) override { return false; };
     bool end__(Ioss::State state) override { return false; };
-
-    bool begin_state__(Ioss::Region *region, int state, double time) override { return false; };
-    bool end_state__(Ioss::Region *region, int state, double time) override { return false; };
 
     void read_region();
     void read_communication_metadata();
@@ -156,8 +136,6 @@ namespace Iodw {
 
     const Ioss::Map &get_node_map() const;
     const Ioss::Map &get_element_map() const;
-
-    void compute_block_adjacencies() const;
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -215,8 +193,6 @@ namespace Iodw {
     std::string databaseTitle;
 
     int spatialDimension;
-    int nodeCount;
-    int elementCount;
 
     int nodeBlockCount;
     int elementBlockCount;
@@ -230,17 +206,6 @@ namespace Iodw {
     Ioss::IntVector elemCmapElemCnts;
     int             commsetNodeCount;
     int             commsetElemCount;
-
-    // MAPS -- Used to convert from local exodusII ids/names to Sierra
-    // database global ids/names
-
-    mutable Ioss::Map nodeMap;
-    mutable Ioss::Map elemMap;
-
-    mutable std::vector<std::vector<bool>> blockAdjacency;
-
-    mutable bool blockAdjacenciesCalculated; // True if the lazy creation of
-    // block adjacencies has been calculated.
   };
-}
+} // namespace Iodw
 #endif // Iodw_DatabaseIO_h

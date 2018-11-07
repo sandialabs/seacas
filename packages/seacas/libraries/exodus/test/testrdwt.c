@@ -33,27 +33,27 @@
  *
  */
 /*****************************************************************************
-*
-* testrdwt - test reading from one ExodusII file and writing to another
-*            ExodusII file open concurrently
-*
-* author - Sandia-2017 National Laboratories
-*          Larry A. Schoof - Original
-*
-* environment - UNIX
-*
-* entry conditions -
-*
-* exit conditions -
-*
-* revision history -
-*
-*  This is a test program for the C binding of the EXODUS II
-*  database read and write routines. It tests reading from an open EXODUSII
-*  file and writing to another concurrently opened EXODUSII file.
-*
-*
-*****************************************************************************/
+ *
+ * testrdwt - test reading from one ExodusII file and writing to another
+ *            ExodusII file open concurrently
+ *
+ * author - Sandia National Laboratories
+ *          Larry A. Schoof - Original
+ *
+ * environment - UNIX
+ *
+ * entry conditions -
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *  This is a test program for the C binding of the EXODUS II
+ *  database read and write routines. It tests reading from an open EXODUSII
+ *  file and writing to another concurrently opened EXODUSII file.
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"
 #include "netcdf.h"

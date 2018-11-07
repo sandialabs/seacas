@@ -7,12 +7,28 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 
 MPI="${MPI:-OFF}"
-
 if [ "$MPI" == "ON" ]
 then
-  export CC=mpicc
+  if [ "$CRAY" == "ON" ]
+  then
+    export CC=cc
+  else
+    export CC=mpicc
+  fi
 else
-  export CC=gcc
+  COMPILER="${COMPILER:-gnu}"
+  if [ "$COMPILER" == "gnu" ]
+  then
+      export CC=gcc
+  fi
+  if [ "$COMPILER" == "clang" ]
+  then
+      export CC=clang
+  fi
+  if [ "$COMPILER" == "intel" ]
+  then
+      export CC=icc
+  fi
 fi
 
 make config cc=${CC} prefix=${ACCESS}

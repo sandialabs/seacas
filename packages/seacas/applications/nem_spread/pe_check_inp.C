@@ -94,7 +94,7 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
     Restart_Info.Num_Times = -1; /* -1 means spread all results */
   }
 
-  /* check to see if there is a seperate restart file */
+  /* check to see if there is a separate restart file */
   if (Restart_Info.Flag > 0) {
     if (strlen(Exo_Res_File) <= 0) {
       strcpy(Exo_Res_File, ExoFile); /* if not use the input FEM file */
@@ -122,7 +122,7 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
   /*                 Check the parallel IO specifications                      */
   /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
-  /* default is not to have preceeding 0's in the disk names */
+  /* default is not to have preceding 0's in the disk names */
   if (PIO_Info.Zeros < 0) {
     PIO_Info.Zeros = 0;
   }
@@ -133,8 +133,9 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
 
   /* check that there is a list of disks, or a number of raids */
   if ((PIO_Info.Dsk_List_Cnt <= 0) && (PIO_Info.Num_Dsk_Ctrlrs <= 0)) {
-    fprintf(stderr, "%s: fatal - must specify a number of raids, or a disk"
-                    " list.\n",
+    fprintf(stderr,
+            "%s: fatal - must specify a number of raids, or a disk"
+            " list.\n",
             yo);
     return 0;
   }
@@ -145,15 +146,17 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
   }
 
   if (strlen(PIO_Info.Par_Dsk_Root) <= 0) {
-    fprintf(stderr, "%s: Error - Root directory for parallel files must"
-                    " be specified.\n",
+    fprintf(stderr,
+            "%s: Error - Root directory for parallel files must"
+            " be specified.\n",
             yo);
     return 0;
   }
 
   if (strlen(PIO_Info.Par_Dsk_SubDirec) <= 0) {
-    fprintf(stderr, "%s: Error - Subdirectory for parallel files must"
-                    " be specified.\n",
+    fprintf(stderr,
+            "%s: Error - Subdirectory for parallel files must"
+            " be specified.\n",
             yo);
     return 0;
   }

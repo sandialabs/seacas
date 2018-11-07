@@ -53,7 +53,7 @@
  *
  *  \param[in] io_database The database associated with the entity.
  *  \param[in] my_name The entity name.
- *  \param[in] entity_count The number of subentities in the entity.
+ *  \param[in] entity_cnt The number of subentities in the entity.
  *
  */
 Ioss::GroupingEntity::GroupingEntity(Ioss::DatabaseIO *io_database, const std::string &my_name,
@@ -215,7 +215,6 @@ void Ioss::GroupingEntity::field_add(const Ioss::Field &new_field)
 int Ioss::GroupingEntity::get_field_data(const std::string &field_name, void *data,
                                          size_t data_size) const
 {
-  IOSS_FUNC_ENTER(m_);
   verify_field_exists(field_name, "input");
 
   Ioss::Field field  = get_field(field_name);
@@ -240,7 +239,6 @@ int Ioss::GroupingEntity::get_field_data(const std::string &field_name, void *da
 int Ioss::GroupingEntity::put_field_data(const std::string &field_name, void *data,
                                          size_t data_size) const
 {
-  IOSS_FUNC_ENTER(m_);
   verify_field_exists(field_name, "input");
 
   Ioss::Field field = get_field(field_name);
@@ -313,7 +311,8 @@ void Ioss::GroupingEntity::property_update(const std::string &property, int64_t 
   }
 }
 
-void Ioss::GroupingEntity::property_update(const std::string &property, const std::string &value) const
+void Ioss::GroupingEntity::property_update(const std::string &property,
+                                           const std::string &value) const
 {
   if (property_exists(property)) {
     if (get_property(property).get_string() != value) {

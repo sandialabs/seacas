@@ -48,7 +48,7 @@ int refine_mesh(struct vtx_data **comm_graph,   /* graph for communication requi
                 double            maxdesire,    /* largest possible desire to flip an edge */
                 int *             vtx2node,     /* mapping from comm_graph vtxs to mesh nodes */
                 int *             node2vtx      /* mapping from mesh nodes to comm_graph vtxs */
-                )
+)
 {
   struct refine_vdata * vdata = NULL;      /* desire data for all vertices */
   struct refine_vdata * vptr;              /* loops through vdata */

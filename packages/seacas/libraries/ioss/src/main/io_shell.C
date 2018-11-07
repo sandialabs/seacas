@@ -36,6 +36,7 @@
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_MeshType.h>
 #include <Ioss_ParallelUtils.h>
+#include <Ioss_ScopeGuard.h>
 #include <Ioss_SerializeIO.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
@@ -52,10 +53,6 @@
 #include <unistd.h>
 
 #include "shell_interface.h"
-
-#ifndef NO_XDMF_SUPPORT
-#include <xdmf/Ioxf_Initializer.h>
-#endif
 
 // ========================================================================
 
@@ -84,10 +81,11 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
 #ifdef SEACAS_HAVE_KOKKOS
-  Kokkos::initialize(argc, argv);
+  Kokkos::ScopeGuard kokkos(argc, argv);
 #endif
 
   std::cout.imbue(std::locale(std::locale(), new my_numpunct));
@@ -105,9 +103,6 @@ int main(int argc, char *argv[])
   mem_stats = interface.memory_statistics;
 
   Ioss::Init::Initializer io;
-#ifndef NO_XDMF_SUPPORT
-  Ioxf::Initializer ioxf;
-#endif
 
   std::string in_file  = interface.inputFile[0];
   std::string out_file = interface.outputFile;
@@ -121,20 +116,29 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_KOKKOS
   if (rank == 0)
     std::cerr << "Kokkos default execution space configuration:\n";
-  Kokkos::DefaultExecutionSpace::print_configuration(std::cout, false);
+  Kokkos::DefaultExecutionSpace::print_configuration(std::cerr, false);
   if (rank == 0)
     std::cerr << '\n';
 #endif
 
   double begin = Ioss::Utils::timer();
-  file_copy(interface, rank);
+  try {
+    file_copy(interface, rank);
+  }
+  catch (std::exception &e) {
+    if (rank == 0) {
+      std::cerr << "\n" << e.what() << "\n\nio_shell terminated due to exception\n";
+    }
+    exit(EXIT_FAILURE);
+  }
+
 #ifdef SEACAS_HAVE_MPI
   MPI_Barrier(MPI_COMM_WORLD);
 #endif
   double end = Ioss::Utils::timer();
 
   if (rank == 0 && !interface.quiet) {
-    std::cerr << "\n\tTotal Execution time = " << end - begin << " seconds.\n";
+    std::cerr << "\n\n\tTotal Execution time = " << end - begin << " seconds.\n";
   }
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
@@ -162,14 +166,6 @@ int main(int argc, char *argv[])
   if (rank == 0) {
     std::cerr << "\n" << codename << " execution successful.\n";
   }
-#ifdef SEACAS_HAVE_KOKKOS
-  Kokkos::finalize();
-#endif
-
-#ifdef SEACAS_HAVE_MPI
-  MPI_Finalize();
-#endif
-
   return EXIT_SUCCESS;
 }
 
@@ -206,6 +202,9 @@ namespace {
         dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_type));
       }
       dbi->set_field_separator(interface.fieldSuffixSeparator);
+
+      dbi->set_field_recognition(!interface.disable_field_recognition);
+
       if (interface.ints_64_bit) {
         dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
       }
@@ -287,6 +286,9 @@ namespace {
           region.get_property("state_count").get_int() > 0) {
         ts_count = region.get_property("state_count").get_int();
       }
+
+      int flush_interval = interface.flush_interval; // Default is zero -- do not flush until end
+      properties.add(Ioss::Property("FLUSH_INTERVAL", flush_interval));
 
       if (interface.split_times == 0 || interface.delete_timesteps || ts_count == 0 || append ||
           interface.inputFile.size() > 1) {
@@ -437,12 +439,20 @@ namespace {
       properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interface.shuffle)));
     }
 
-    if (interface.compose_output != "none") {
+    if (interface.compose_output == "external") {
+      properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
+      properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
+    }
+    else if (interface.compose_output != "none") {
       properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
       properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
       if (interface.compose_output != "default") {
         properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
       }
+    }
+
+    if (interface.file_per_state) {
+      properties.add(Ioss::Property("FILE_PER_STATE", "YES"));
     }
 
     if (interface.netcdf4) {

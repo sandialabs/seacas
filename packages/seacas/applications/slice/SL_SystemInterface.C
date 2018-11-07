@@ -136,7 +136,7 @@ void SystemInterface::enroll_options()
 		  "\t\tOmit block id 1,3,4 from part 1; block 2 3 4 from part 2;\n"
 		  "\t\tand block 8 from part5, specify\n"
 		  "\t\t\t '-omit_blocks p1:1:3:4,p2:2:3:4,p5:8'",
-		  NULL);
+		  nullptr);
 
   options_.enroll("omit_nodesets", GetLongOption::OptionalValue,
 		  "If no value, then don't transfer any nodesets to output file.\n"
@@ -161,7 +161,7 @@ void SystemInterface::enroll_options()
   options_.enroll("disable_field_recognition", GetLongOption::NoValue,
 		  "Do not try to combine scalar fields into higher-order fields such as\n"
 		  "\t\tvectors or tensors based on the field suffix",
-		  NULL);
+		  nullptr);
 
 #endif
   options_.enroll("contiguous_decomposition", GetLongOption::NoValue,
@@ -303,7 +303,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 #if 0
  {
     const char *temp = options_.retrieve("steps");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       parse_step_option(temp);
     }
   }
@@ -445,7 +445,7 @@ namespace {
   void parse_variable_names(const char *tokens, StringIdVector *variable_list)
   {
     // Break into tokens separated by ","
-    if (tokens != NULL) {
+    if (tokens != nullptr) {
       std::string token_string(tokens);
       StringVector var_list;
       var_list = SLIB::tokenize(token_string, ",");
@@ -466,7 +466,7 @@ namespace {
 	} else {
 	  for (size_t i=1; i < name_id.size(); i++) {
 	    // Convert string to integer...
-	    int id = strtoul(name_id[i].c_str(), NULL, 0);
+	    int id = std::stoi(name_id[i]);
 	    (*variable_list).push_back(std::make_pair(var_name,id));
 	  }
 	}
@@ -480,7 +480,7 @@ namespace {
   void parse_integer_list(const char *tokens, std::vector<int> *list)
   {
     // Break into tokens separated by ","
-    if (tokens != NULL) {
+    if (tokens != nullptr) {
       if (LowerCase(tokens) == "all") {
 	(*list).push_back(0);
 	return;
@@ -492,7 +492,7 @@ namespace {
     
       std::vector<std::string>::iterator I = part_list.begin();
       while (I != part_list.end()) {
-	int id = strtol((*I).c_str(), NULL, 0);
+	int id = std::stoi(*I);
 	(*list).push_back(id);
 	++I;
       }
@@ -515,7 +515,7 @@ namespace {
     // just specify a part number and all entities (typically nset or
     // sset) will be omitted on that part.
     
-    if (tokens == NULL)
+    if (tokens == nullptr)
       return;
     
     std::string token_string(tokens);
@@ -546,7 +546,7 @@ namespace {
       
       // Extract the part number...
       std::string part(part_block[0],1);
-      int part_num = strtoul(part.c_str(), NULL, 0) - 1;
+      int part_num = std::stoi(part) - 1;
 
       // If no blocks specified for a part, then omit all entities for
       // this part.  Since don't know how many entities there are,

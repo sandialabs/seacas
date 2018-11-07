@@ -32,6 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "Ioss_CodeTypes.h"
+#include "Ioss_FileInfo.h"
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Utils.h"      // for Utils
 #include "shell_interface.h"
@@ -44,6 +45,24 @@
 #include <vector>   // for vector
 
 #define NPOS std::string::npos
+
+namespace {
+  std::string get_type_from_file(const std::string &filename)
+  {
+    Ioss::FileInfo file(filename);
+    auto           extension = file.extension();
+    if (extension == "e" || extension == "g" || extension == "gen" || extension == "exo") {
+      return "exodus";
+    }
+    else if (extension == "cgns") {
+      return "cgns";
+    }
+    else {
+      // "exodus" is default...
+      return "exodus";
+    }
+  }
+} // namespace
 
 IOShell::Interface::Interface() { enroll_options(); }
 
@@ -59,10 +78,10 @@ void IOShell::Interface::enroll_options()
 
   options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue,
                   "Database type for input file: pamgen|generated|exodus. exodus is the default.",
-                  "exodus");
+                  "unknown");
 
   options_.enroll("out_type", Ioss::GetLongOption::MandatoryValue,
-                  "Database type for output file: exodus. exodus is the default.", "exodus");
+                  "Database type for output file: exodus. exodus is the default.", "unknown");
 
   options_.enroll("extract_group", Ioss::GetLongOption::MandatoryValue,
                   "Write the data from the specified group to the output file.\n", nullptr);
@@ -102,7 +121,7 @@ void IOShell::Interface::enroll_options()
   options_.enroll(
       "compose", Ioss::GetLongOption::MandatoryValue,
       "Specify the parallel-io method to be used to output a single file in a parallel run. "
-      "Options are default, mpiio, mpiposix, pnetcdf",
+      "Options are default, mpiio, mpiposix, pnetcdf, external",
       nullptr);
 
   options_.enroll(
@@ -150,10 +169,13 @@ void IOShell::Interface::enroll_options()
                   "not use for a real run)",
                   nullptr);
   options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
-                  "Number of processors that can perform simulataneous IO operations in "
+                  "Number of processors that can perform simultaneous IO operations in "
                   "a parallel run; 0 to disable",
                   nullptr);
 #endif
+
+  options_.enroll("file_per_state", Ioss::GetLongOption::NoValue,
+                  "put transient data for each timestep in separate file (EXPERMENTAL)", nullptr);
 
   options_.enroll(
       "split_times", Ioss::GetLongOption::MandatoryValue,
@@ -199,10 +221,21 @@ void IOShell::Interface::enroll_options()
       "Sleep for <$val> seconds between timestep output to simulate application calculation time",
       nullptr);
 
+  options_.enroll("flush_interval", Ioss::GetLongOption::MandatoryValue,
+                  "Specify the number of steps between database flushes.\n"
+                  "\t\tIf not specified, then the default database-dependent setting is used.\n"
+                  "\t\tA value of 0 disables flushing.",
+                  nullptr);
+
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
                   "Character used to separate a field suffix from the field basename\n"
                   "\t\t when recognizing vector, tensor fields. Enter '0' for no separator",
                   "_");
+
+  options_.enroll("disable_field_recognition", Ioss::GetLongOption::NoValue,
+                  "Do not combine fields into vector, tensor fields based on basename and suffix.\n"
+                  "\t\tKeep all fields on database as scalars",
+                  nullptr);
 
   options_.enroll("surface_split_scheme", Ioss::GetLongOption::MandatoryValue,
                   "Method used to split sidesets into homogenous blocks\n"
@@ -381,6 +414,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     debug = true;
   }
 
+  if (options_.retrieve("file_per_state") != nullptr) {
+    file_per_state = true;
+  }
+
   if (options_.retrieve("quiet") != nullptr) {
     quiet = true;
   }
@@ -444,6 +481,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     if (temp != nullptr) {
       fieldSuffixSeparator = temp[0];
     }
+  }
+
+  if (options_.retrieve("disable_field_recognition") != nullptr) {
+    disable_field_recognition = true;
   }
 
   {
@@ -521,6 +562,13 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   }
 
   {
+    const char *temp = options_.retrieve("flush_interval");
+    if (temp != nullptr) {
+      flush_interval = std::strtod(temp, nullptr);
+    }
+  }
+
+  {
     const char *temp = options_.retrieve("delay");
     if (temp != nullptr) {
       timestep_delay = std::strtod(temp, nullptr);
@@ -575,6 +623,14 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   else {
     std::cerr << "\nERROR: input and output filename not specified\n\n";
     return false;
+  }
+
+  // If inFileType and/or outFileType not specified, see if can infer from file suffix type...
+  if (inFiletype == "unknown") {
+    inFiletype = get_type_from_file(inputFile[0]);
+  }
+  if (outFiletype == "unknown") {
+    outFiletype = get_type_from_file(outputFile);
   }
   return true;
 }

@@ -96,22 +96,25 @@ namespace Iocgns {
 
     bool node_major() const override { return false; }
 
-    void openDatabase__() const override;
-    void closeDatabase__() const override;
-
-    bool begin__(Ioss::State state) override;
-    bool end__(Ioss::State state) override;
-
-    bool begin_state__(Ioss::Region *region, int state, double time) override;
-    bool end_state__(Ioss::Region *region, int state, double time) override;
-
     // Metadata-related functions.
     void read_meta_data__() override;
     void write_meta_data();
     void write_results_meta_data();
 
   private:
+    void openDatabase__() const override;
+    void closeDatabase__() const override;
+
+    bool begin__(Ioss::State state) override;
+    bool end__(Ioss::State state) override;
+
+    bool begin_state__(int state, double time) override;
+    bool end_state__(int state, double time) override;
+    void flush_database__() const override;
+
+    bool   check_valid_file_open(int status) const;
     void   create_structured_block(int base, int zone, size_t &num_node);
+    void   create_structured_block_fpp(int base, int zone, size_t &num_node);
     size_t finalize_structured_blocks();
     void   finalize_database() override;
     void   get_step_times__() override;
@@ -178,23 +181,10 @@ namespace Iocgns {
     const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount, int64_t file_offset,
                              int64_t file_count, entity_type type) const;
 
-    // Bulk Data
+    int         get_file_pointer() const;
+    mutable int m_cgnsFilePtr{-1};
 
-    // MAPS -- Used to convert from local exodusII ids/names to Sierra
-    // database global ids/names
-
-    //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
-    //               sierra side.   global = nodeMap[local]
-    // nodeMap[0] contains: -1 if sequential, 0 if ordering unknown, 1
-    // if nonsequential
-
-    mutable Ioss::Map nodeMap;
-    mutable Ioss::Map elemMap;
-
-    mutable int cgnsFilePtr;
-    size_t      nodeCount;
-    size_t      elementCount;
-
+    int m_flushInterval{0}; // Default is no flushing after each timestep
     int m_currentVertexSolutionIndex     = 0;
     int m_currentCellCenterSolutionIndex = 0;
 
