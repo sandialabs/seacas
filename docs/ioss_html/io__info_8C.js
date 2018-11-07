@@ -8,6 +8,7 @@ var io__info_8C =
     [ "info_aliases", "io__info_8C.html#afdb9a0405ae48d65c2059564489c71f5", null ],
     [ "info_commsets", "io__info_8C.html#a7135fe337b53f492fcbbe52a5ee69b17", null ],
     [ "info_coordinate_frames", "io__info_8C.html#aa6a00d56377e1c7c770ff39f587f538e", null ],
+    [ "info_df", "io__info_8C.html#a421bfcd14a946c37c043e44a4acc1430", null ],
     [ "info_edgeblock", "io__info_8C.html#a9698fb8ddfdc891270155a8944e64f5f", null ],
     [ "info_edgesets", "io__info_8C.html#ae766e249b6e63e898e1c8f4a3f401b3e", null ],
     [ "info_elementblock", "io__info_8C.html#acf0151f0783a57e7a68cb18b19b4a6bd", null ],
@@ -26,5 +27,6 @@ var io__info_8C =
     [ "io_info_set_db_properties", "io__info_8C.html#a8c7b9467a525b6cdd153295bfa0ba124", null ],
     [ "name", "io__info_8C.html#ac76aa36231a3291b803cc8e620fce319", null ],
     [ "print_groups", "io__info_8C.html#a9e1edabb5a775515503e7cd0c78daf1b", null ],
+    [ "set_properties", "io__info_8C.html#a8a773a27f1f76995b468f6485ad8fdf6", null ],
     [ "data", "io__info_8C.html#ab82386df515c63f94d6856fd76991e0a", null ]
 ];

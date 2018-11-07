@@ -64,7 +64,9 @@ namespace Ioss {
     static Ioss::Field::BasicType get_field_type(char /*dummy*/) { return CHARACTER; }
     static Ioss::Field::BasicType get_field_type(double /*dummy*/) { return DOUBLE; }
     static Ioss::Field::BasicType get_field_type(int /*dummy*/) { return INTEGER; }
+    static Ioss::Field::BasicType get_field_type(unsigned int /*dummy*/) { return INTEGER; }
     static Ioss::Field::BasicType get_field_type(int64_t /*dummy*/) { return INT64; }
+    static Ioss::Field::BasicType get_field_type(uint64_t /*dummy*/) { return INT64; }
     static Ioss::Field::BasicType get_field_type(Complex /*dummy*/) { return COMPLEX; }
     static Ioss::Field::BasicType get_field_type(std::string /*dummy*/) { return STRING; }
 
@@ -171,8 +173,8 @@ namespace Ioss {
     size_t         size_{};       // maximum data size (in bytes) required to hold entire field
     mutable size_t index_{}; // Optional flag that can be used by a client to indicate an ordering.
                              // Unused by field itself.
-    BasicType type_;
-    RoleType  role_;
+    BasicType type_{INVALID};
+    RoleType  role_{INTERNAL};
 
     const VariableType *rawStorage_{};   // Storage type of raw field
     const VariableType *transStorage_{}; // Storage type after transformation

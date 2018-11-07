@@ -1,3 +1,26 @@
+/*
+@ @licstart  The following is the entire license notice for the
+JavaScript code in this file.
+
+Copyright (C) 1997-2017 by Dimitri van Heesch
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+@licend  The above is the entire license notice
+for the JavaScript code in this file
+*/
 var NAVTREE =
 [
   [ "IOSS", "index.html", [
@@ -7,9 +30,8 @@ var NAVTREE =
       [ "License", "index.html#license", null ]
     ] ],
     [ "Todo List", "todo.html", null ],
-    [ "Deprecated List", "deprecated.html", null ],
-    [ "Namespaces", null, [
-      [ "Namespace List", "namespaces.html", "namespaces" ],
+    [ "Namespaces", "namespaces.html", [
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", "namespacemembers_dup" ],
         [ "Functions", "namespacemembers_func.html", "namespacemembers_func" ],
@@ -33,8 +55,8 @@ var NAVTREE =
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
-    [ "Files", null, [
-      [ "File List", "files.html", "files" ],
+    [ "Files", "files.html", [
+      [ "File List", "files.html", "files_dup" ],
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
@@ -49,36 +71,38 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"CatalystParserInterface_8h.html",
-"Ioss__BoundingBox_8h.html",
-"Ioss__IOFactory_8C.html#a229482da308ed9759a7e4041077e94b6",
-"Ioss__Tet4_8h_source.html",
-"classCatalystParserInterface_1_1parse__info.html#ad60e9ba2c99a94534f1f200146991906",
-"classIocgns_1_1ParallelDatabaseIO.html#a76a23ce6c827706c14cf9c1bc50ef5c2",
-"classIoex_1_1DatabaseIO.html#a8868612dd5b895860ed705438e6b5782",
-"classIogn_1_1DatabaseIO.html#a4d31b02871089cc417ea990591acb9e7",
-"classIohb_1_1Layout.html#a811a374fc418a47fd95dd87fd1da43d1",
-"classIopx_1_1DecompositionDataBase.html#a9e32656ad93e46f723db259bc4fc0e27",
-"classIoss_1_1DatabaseIO.html#aced27ca42bbc7db5e4d8b059b00fd8cb",
-"classIoss_1_1ElementTopology.html#a264efcfd8390e25c8fbcafa44c9273da",
-"classIoss_1_1GroupingEntity.html#a85a8850eb52cb273698e63c0279bd416",
-"classIoss_1_1ParallelUtils.html#a77906941da759887bff81406d9cdc26f",
-"classIoss_1_1Quad8.html#a7d068b8769b3365c292028e5c85e3095",
-"classIoss_1_1Shell8.html#aafdf81c6ae41349f3753cea220519fdb",
-"classIoss_1_1St__Tri4a.html",
-"classIoss_1_1Tet4.html#ae945be949a6165bf9cebf2b770699ebd",
-"classIoss_1_1TriShell6.html#a6dc97da5fc3471ae20d19f680c3734a5",
-"classIoss_1_1Wedge21.html",
-"classIoxf_1_1DatabaseIO.html#a0b4f1d1297ab03c330bc23629df8bf76",
-"classJson_1_1Reader.html#aaea3bd62d12ffb6117a61476c0685049",
-"classJson_1_1ValueIterator.html#ae87929b4567aa00372cf602c43b57160",
-"cth__pressure__map_8C.html#a911008b2bb64283453e5324418d59b03",
-"json_8h.html#a3a512184f0bbdd531fe1298f0a490ffe",
-"namespacemembers_b.html",
-"structIoex_1_1ElemSet.html#a07bfb3e8db2ccb60fb9714053a1e36ef",
-"structIoxf_1_1Block.html#aca76368fbc9f4996d2bc95c16a2bab52",
-"structanonymous__namespace_02Ioss__Quad6_8C_03_1_1Constants.html#ad562862b541de9716cc317579a9a7035",
-"structanonymous__namespace_02Ioss__Unknown_8C_03_1_1Constants.html#a262d86cbd2e1dd48c697aa2cb1fbd36b"
+"Iocgns__DatabaseIO_8C.html",
+"Iopx__DatabaseIO_8C.html#a7fcec527c5b86797ab1e8dccef2f129a",
+"Ioss__FileInfo_8h.html",
+"Ioss__Super_8C.html",
+"Utst__structured__decomp_8C.html#a3b567f5a3bae047251df70710f33084f",
+"classIocgns_1_1ParallelDatabaseIO.html",
+"classIoex_1_1DatabaseIO.html#a6159cc348cde32f17b708a106d8f7106",
+"classIogn_1_1DatabaseIO.html#a00105d97ff7a05e9ef2a8396487c4cad",
+"classIogs_1_1GeneratedMesh.html#a0a83b70fc64a083796fac37338bed0c7",
+"classIopx_1_1DatabaseIO.html#a328c4a92a9f98b90df87e37ed33aec85",
+"classIoss_1_1CompositeVariableType.html#ac5ceb689a30e2ba798300dbb41576465",
+"classIoss_1_1Decomposition.html#ad884b64ebd3745cfc4ecf84ec1555d41",
+"classIoss_1_1FaceSet.html#a8708839b42e369417e110459159ae766",
+"classIoss_1_1Hex27.html#a43598cf4dde96886a542498e261159f5",
+"classIoss_1_1Pyramid13.html#a45cc8f91bd20be2b6c1c261c5bf46fe1",
+"classIoss_1_1Region.html#a5a26433379cf3beaf59906c4b2f5e406",
+"classIoss_1_1ShellLine2D3.html#aa34c538e8e7c2cde17ceeb77fb1da197",
+"classIoss_1_1StructuredBlock.html#a4d09d0934111bfd5b0f53c6cc097e3a4",
+"classIoss_1_1Transform.html#abf6cd01b7fdc9b09b9f956da4904e242",
+"classIoss_1_1Utils.html#a1fbe21d5a134b19e4c1b30089aab7000",
+"classIotr_1_1MinMax.html#a40829fb5ff09fcece4687cd4b16d303d",
+"classSkinner_1_1Interface.html#a8019043a514ff70c9a8930784555e9a1",
+"classtsl_1_1detail__hopscotch__hash_1_1smallest__type__for__min__bits_3_01MinBits_00_01typename_7594ccea458f9b75aca83092c8644fc0.html",
+"classtsl_1_1hopscotch__map.html#a7a370299f055b767aa8bd2e884f6f78a",
+"classtsl_1_1robin__map.html#a9404d5336af0f621773a83da4c65a665",
+"functions_n.html",
+"namespaceanonymous__namespace_02Ioss__Node_8C_03.html",
+"struc__to__unstruc_8C.html#aeebc5c23828c066cedfcc8da482de36c",
+"structIogn_1_1SharedNode.html",
+"structanonymous__namespace_02Ioss__Hex8_8C_03_1_1Constants.html#a32ebdea73f1f9fe5dc56ddb8a7f8309a",
+"structanonymous__namespace_02Ioss__Tet8_8C_03_1_1Constants.html#adbf3dc4afbc94a3130074058ff968e52",
+"tokenize_8C.html#adf19389c3ca4ce83f2ade7d5984005fe"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

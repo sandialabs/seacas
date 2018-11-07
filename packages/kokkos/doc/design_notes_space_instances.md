@@ -35,7 +35,7 @@
 
   *  The control thread is a member of the instance
 
-  *  The pool of threads associated with an instances is not mutatable during that instance existence
+  *  The pool of threads associated with an instances is not mutatable during that instance existance
 
   *  The pool of threads associated with an instance may be masked
 

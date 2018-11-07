@@ -1,7 +1,8 @@
 var searchData=
 [
   ['structures_20used_20by_20external_20api_20functions_2e',['Structures used by external API functions.',['../group__APIStructs.html',1,'']]],
-  ['set_5fcount',['set_count',['../ex__get__side__set__node__list_8c.html#a839dd3fff5c981b498d1f810742398fb',1,'ex_get_side_set_node_list.c']]],
+  ['seacas_5fdeprecated',['SEACAS_DEPRECATED',['../exodusII_8h.html#aa6f92a73fd4902e97d32ce0acd679896',1,'exodusII.h']]],
+  ['sequential',['sequential',['../structobj__stats.html#a867842e852e1802f20d07124cc5f35e4',1,'obj_stats']]],
   ['sets_5fdist_5ffact',['sets_dist_fact',['../structex__set__specs.html#a885624dab2047d1cb53eac5e125d7791',1,'ex_set_specs']]],
   ['sets_5fdist_5findex',['sets_dist_index',['../structex__set__specs.html#a01768e58fd47a77b4c54eb75ff8fc1b9',1,'ex_set_specs']]],
   ['sets_5fentry_5findex',['sets_entry_index',['../structex__set__specs.html#af7dc8db54bf8d7ec697a81b4a651c3ca',1,'ex_set_specs']]],

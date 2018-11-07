@@ -52,7 +52,7 @@ c                       string and counts the number of remaining
 c                       non-space characters.
 c
 c AUTHOR:               John H. Glick
-c                       Sandia-2017 National Laboratories
+c                       Sandia National Laboratories
 c                       Division 1511
 c
 c DATE:                 December 20, 1988

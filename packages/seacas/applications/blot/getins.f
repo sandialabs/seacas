@@ -41,7 +41,7 @@ c                       input and keeping track of where
 c                       it is coming from.
 c
 c AUTHOR:               John H. Glick
-c                       Sandia-2017 National Laboratories
+c                       Sandia National Laboratories
 c                       Division 1511
 c
 c DATE:                 December 20, 1988

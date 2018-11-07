@@ -76,7 +76,7 @@ namespace Iodw {
         msg("INVALID");
       }
       else {
-        msg("UNKOWN type");
+        msg("UNKNOWN type");
       }
     };
 

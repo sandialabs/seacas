@@ -93,9 +93,12 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid, __func__);
 
+#if !defined(PARALLEL_AWARE_EXODUS)
   if (num_ent == 0) {
     EX_FUNC_LEAVE(EX_NOERR);
   }
+#endif
+
   /* Determine index of obj_id in vobjids array */
   if (obj_type != EX_NODAL) {
     obj_id_ndx = ex_id_lkup(exoid, obj_type, obj_id);
@@ -107,13 +110,13 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "Warning: no attributes found for NULL %s %" PRId64 " in file id %d",
                    ex_name_of_object(obj_type), obj_id, exoid);
-          ex_err(__func__, errmsg, EX_NULLENTITY);
+          ex_err_fn(exoid, __func__, errmsg, EX_NULLENTITY);
           EX_FUNC_LEAVE(EX_WARN); /* no attributes for this object */
         }
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "Warning: failed to locate %s id%" PRId64 " in id array in file id %d",
                  ex_name_of_object(obj_type), obj_id, exoid);
-        ex_err(__func__, errmsg, status);
+        ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_WARN);
       }
     }
@@ -169,7 +172,7 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Internal ERROR: unrecognized object type in switch: %d in file id %d", obj_type,
              exoid);
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL); /* number of attributes not defined */
   }
 
@@ -179,12 +182,12 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  if (start_num + num_ent - 1 > num_entries_this_obj) {
+  if (start_num + num_ent - 1 > num_entries_this_obj && num_ent > 0) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start index (%" PRId64 ") + count (%" PRId64
              ") is larger than total number of entities (%" ST_ZU ") in file id %d",
              start_num, num_ent, num_entries_this_obj, exoid);
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -197,7 +200,7 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
              "ERROR: Invalid attribute index specified: %d.  Valid "
              "range is 1 to %d for %s %" PRId64 " in file id %d",
              attrib_index, (int)num_attr, ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -205,7 +208,7 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -219,6 +222,9 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
   stride[0] = 1;
   stride[1] = num_attr;
 
+  if (count[0] == 0) {
+    start[0] = 0;
+  }
   if (ex_comp_ws(exoid) == 4) {
     status = nc_get_vars_float(exoid, attrid, start, count, stride, attrib);
   }
@@ -230,7 +236,7 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to get attribute %d for %s %" PRId64 " in file id %d", attrib_index,
              ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);

@@ -34,6 +34,7 @@
 #define IOSS_code_types_h
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>

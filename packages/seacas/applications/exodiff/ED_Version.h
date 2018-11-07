@@ -30,10 +30,10 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-#ifndef SEACAS_Version_h
-#define SEACAS_Version_h
+#ifndef ED_Version_h
+#define ED_Version_h
 
-static std::string version("2.89");
-static std::string verdate("2017-09-19");
+static std::string version("2.93");
+static std::string verdate("2018-10-18");
 
-#endif // SEACAS_Version_h
+#endif // ED_Version_h

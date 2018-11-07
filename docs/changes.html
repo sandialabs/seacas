@@ -57,13 +57,24 @@
       <table class="zebra" WIDTH=90% align=center  BGCOLOR=WHITE CELLPADDING=10>
 	<tr align=left><th>Date</th><th>Code</th><th>Version</th><th>Change</tr>
 
+	<tr><td>2018-06-21</td>
+          <td>explore</td><td>3.00</td>
+
+	  <td>The executable grope has been renamed to explore
+	</tr>
+
 	<tr><td>2016-03-10</td>
           <td>grepos</td><td>1.75</td>
 
-	  <td>Added variable rename option. Syntax is <tt>RENAME [global|nodal|node|elemnet|nodeset|nset|sideset|sset] VARIABLE [oldname] [newname]</tt>
+	  <td>Added variable rename option. Syntax is <tt>RENAME [global|nodal|node|element|nodeset|nset|sideset|sset] VARIABLE [oldname] [newname]</tt>
 	</tr>
 
 
+       <tr><td>2014-02-01</td>
+	 <td>aprepro</td><td>3.03</td>
+         <td>Aprepro has two-dimensional array variables. Can be created internally or by reading data from csv file.
+           Bilinear interpolation supported if using non-integer array indices. Documentation coming soon?</td>
+	 
 	<tr><td>2013-08-14</td>
           <td>algebra</td><td>3.40</td>
 
@@ -80,9 +91,9 @@
 
 
 	<tr><td>2013-04-15</td>
-	  <td>grope</td><td>1.59</td>
+	  <td>explore</td><td>1.59</td>
 
-	  <td>The file where output from a print command is written can be changed from the default grope.o
+	  <td>The file where output from a print command is written can be changed from the default explore.o
 	    to a user-specified file via the <tt>output {filename}</tt> command.  The filename must be all
 	    lowercase.
 	  </td>
@@ -116,10 +127,17 @@
 	  <tr><td>2012-09-14</td>
 	  <td>grepos</td><td>1.64</td>
 
-	  <td>Added <tt>move global|local node {id} to|by {x} {y} {z}</tt> command so user can 
-	    specify exact location of a node in the mesh.
+            <td>Grepos has a node move The syntax is:
+              <tt>move {global|local} node {id} {to|by} {x} {y} {z}</tt>
+              <ul>
+		<li>The <tt>{global|local}</tt> specifies whether the node map is used or not.</li>
+		<li>The <tt>{to|by}</tt> specifies absolute or relative movement.
+		  <ul>
+                    <li>to -- move to that position</li>
+                    <li>by -- delta from current position</li></ul></li></ul>
+	    </td>
 	  </tr>
-
+	  
 	  <tr><td>2012-09-07</td>
 	  <td>grepos</td><td>1.63</td>
 
@@ -210,7 +228,7 @@
 	  </tr>
 
 	  <tr><td>2011-03-18</td>
-	  <td>grope</td><td>1.56</td>
+	  <td>explore</td><td>1.56</td>
 
 	  <td>Add printing of coordinate frames via the "print frames"
 	    or "list frames" command.
@@ -338,7 +356,7 @@
 	  </td>
 	  </tr>
 	  <tr><td>2010-09-10</td>
-	  <td>grope</td><td>1.53</td>
+	  <td>explore</td><td>1.53</td>
 	  <td>The "list block" command will list the names of the
 	  element attributes defined on the block if the names are
 	  defined in the exodus file.
@@ -447,7 +465,7 @@
 	    <td>Added a command for setting block, nodeset, sideset names. Command is "Name BLOCK|NSET|NODESET|SSET|SSIDESET {id} {the_name}"</td>
 	  </tr>
 	  <tr><td>2010-01-21</td>
-	    <td>grope</td><td>1.48</td>
+	    <td>explore</td><td>1.48</td>
 	    <td>Added detection of repeated element face in a sideset to the "check" command.</td>
 	  </tr>
 	  <tr><td>2009-11-17</td>

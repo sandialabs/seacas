@@ -121,7 +121,12 @@ namespace Ioss {
     bool end_mode(State current_state);
 
     // Add a new state at this time, return state number
-    virtual int add_state(double time);
+    virtual int add_state(double time)
+    {
+      IOSS_FUNC_ENTER(m_);
+      return add_state__(time);
+    }
+    virtual int add_state__(double time);
 
     // Get time corresponding to specified state
 
@@ -208,6 +213,7 @@ namespace Ioss {
     bool        add_alias(const std::string &db_name, const std::string &alias);
     bool        add_alias(const GroupingEntity *ge);
     std::string get_alias(const std::string &alias) const;
+    std::string get_alias__(const std::string &alias) const; // Not locked by mutex
 
     const AliasMap &get_alias_map() const;
 
@@ -258,18 +264,17 @@ namespace Ioss {
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
-                                    size_t data_size) const override;
+                                    size_t data_size = 0) const override;
 
     int64_t internal_put_field_data(const Field &field, void *data,
-                                    size_t data_size) const override;
+                                    size_t data_size = 0) const override;
 
   private:
     // Add the name 'alias' as an alias for the database entity with the
     // name 'db_name'. Returns true if alias added; false if problems
     // adding alias. Not protected by mutex -- call internally only.
-    bool        add_alias__(const std::string &db_name, const std::string &alias);
-    bool        add_alias__(const GroupingEntity *ge);
-    std::string get_alias__(const std::string &alias) const;
+    bool add_alias__(const std::string &db_name, const std::string &alias);
+    bool add_alias__(const GroupingEntity *ge);
 
     bool begin_mode__(State new_state);
     bool end_mode__(State current_state);
@@ -341,8 +346,8 @@ inline void Ioss::Region::add_information_records(const std::vector<std::string>
 /** \brief Add an information record (an informative string) to the region's database.
  *
  *  \param[in] info The string to add.
- */ inline void
-Ioss::Region::add_information_record(const std::string &info)
+ */
+inline void Ioss::Region::add_information_record(const std::string &info)
 {
   IOSS_FUNC_ENTER(m_);
   return get_database()->add_information_record(info);
@@ -367,7 +372,7 @@ inline void Ioss::Region::add_qa_record(const std::string &code, const std::stri
 
 /** \brief Get all QA records, each of which consists of 4 strings, from the region's database.
  *
- *  The 4 strings that make up a databse QA record are:
+ *  The 4 strings that make up a database QA record are:
  *
  *  1. A descriptive code name, such as the application that modified the database.
  *

@@ -35,7 +35,7 @@ namespace SEAMS {
     explicit Scanner(Aprepro &aprepro_yyarg, std::istream *in = nullptr,
                      std::ostream *out = nullptr);
     /** Required for virtual functions */
-    virtual ~Scanner();
+    ~Scanner() override;
 
     void add_include_file(const std::string &filename, bool must_exist);
     int  yywrap() override;

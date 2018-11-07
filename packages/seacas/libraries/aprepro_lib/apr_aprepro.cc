@@ -49,8 +49,12 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.03 (2017/11/14)";
+  const char *       version_string = "5.09 (2018/08/01)";
 
+  void output_copyright();
+} // namespace
+
+namespace SEAMS {
   unsigned hash_symbol(const char *symbol)
   {
     unsigned hashval;
@@ -59,10 +63,7 @@ namespace {
     }
     return (hashval % HASHSIZE);
   }
-  void output_copyright();
-} // namespace
 
-namespace SEAMS {
   Aprepro *aprepro; // A global for use in the library.  Clean this up...
   bool     echo = true;
 
@@ -76,7 +77,9 @@ namespace SEAMS {
 
   Aprepro::~Aprepro()
   {
-    outputStream.top()->flush();
+    if (!outputStream.empty()) {
+      outputStream.top()->flush();
+    }
 
     if ((stringScanner != nullptr) && stringScanner != lexer) {
       delete stringScanner;
@@ -124,7 +127,7 @@ namespace SEAMS {
 
   bool Aprepro::parse_file(const std::string &filename)
   {
-    std::ifstream in(filename.c_str());
+    std::ifstream in(filename);
     if (!in.good()) {
       return false;
     }
@@ -268,20 +271,23 @@ namespace SEAMS {
     }
 
     /* See if file exists in current directory (or as specified) */
-    auto pointer = new std::fstream(file.c_str(), smode);
+    auto pointer = new std::fstream(file, smode);
     if ((pointer == nullptr || pointer->bad() || !pointer->good()) &&
         !ap_options.include_path.empty()) {
       /* If there is an include path specified, try opening file there */
       std::string file_path(ap_options.include_path);
       file_path += "/";
       file_path += file;
-      pointer = new std::fstream(file_path.c_str(), smode);
+      delete pointer;
+      pointer = new std::fstream(file_path, smode);
     }
 
     /* If pointer still null, print error message */
     if (pointer == nullptr || pointer->bad() || !pointer->good()) {
       std::string err = "Can't open " + file;
       error(err, false);
+      delete pointer;
+      pointer = nullptr;
       if (!stringInteractive) {
         throw std::runtime_error(err);
       }
@@ -297,7 +303,7 @@ namespace SEAMS {
       smode = std::ios::out;
     }
 
-    auto pointer = new std::fstream(file.c_str(), smode);
+    auto pointer = new std::fstream(file, smode);
 
     if ((pointer == nullptr || pointer->bad() || !pointer->good()) &&
         !ap_options.include_path.empty()) {
@@ -305,7 +311,8 @@ namespace SEAMS {
       std::string file_path(ap_options.include_path);
       file_path += "/";
       file_path += file;
-      pointer = new std::fstream(file_path.c_str(), smode);
+      delete pointer;
+      pointer = new std::fstream(file_path, smode);
     }
     return pointer;
   }
@@ -483,6 +490,7 @@ namespace SEAMS {
           << "                       : If P is path, then optionally prepended to all include "
              "filenames\n"
           << "                       : If P is file, then processed before processing input file\n"
+          << "                       : variables defined in P will be immutable.\n"
           << "        --exit_on or -e: End when 'Exit|EXIT|exit' entered       \n"
           << "           --help or -h: Print this list                         \n"
           << "        --message or -M: Print INFO messages                     \n"
@@ -621,7 +629,7 @@ namespace SEAMS {
       // Handle the case where the variable we want to delete is somewhere
       // in the middle or at the end of the linked list.
       else {
-        // Find the preceeding ptr (singly linked list).
+        // Find the preceding ptr (singly linked list).
         // NOTE: We don't have a check for nullptr here because the fact that
         // ptr != hash_ptr tells us that we must have more than one item in our
         // linked list, in which case hash_ptr->next will not be nullptr until we
@@ -840,7 +848,7 @@ namespace SEAMS {
       history_data hist;
       hist.original     = original;
       hist.substitution = substitution;
-      hist.index        = outputStream.top()->tellp();
+      hist.index        = outputStream.empty() ? std::streampos(0) : outputStream.top()->tellp();
 
       history.push_back(hist);
     }

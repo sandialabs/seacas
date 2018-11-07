@@ -1,42 +1,182 @@
-#!/bin/bash
-EXTRA_ARGS=$@
+#! /usr/bin/env bash
+
+if [ "${TRAVIS}" == "true" ]
+then
+  BUILDDIR=${1:-build}
+  mkdir $BUILDDIR && cd $BUILDDIR
+else
+  EXTRA_ARGS=$@
+fi
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
-ACCESS=$(cd ..; pwd)
-
-TPL=${ACCESS}
-MPI=OFF
-
-### Change this to point to the compilers you want to use
-CC=gcc
-
-### Change this to point to the compilers you want to use
-if [ "$MPI" == "ON" ]
+### If not, then define "ACCESS" to point to the root of the SEACAS source code.
+if [ "$ACCESS" == "" ]
 then
-  CC=mpicc
-else
-  CC=gcc
-# CC=clang
+    ACCESS=$(cd ..; pwd)
 fi
+
+### Set to ON for parallel compile; otherwise OFF for serial (default)
+MPI="${MPI:-OFF}"
+echo "MPI set to ${MPI}"
+
+if [ "${MPI}" == "OFF" ]
+then
+  ### Change this to point to the compilers you want to use
+    ## Travis build (and others) set this to EXTERNAL to set
+    ## CXX, CC, and FC externally.
+  COMPILER=${COMPILER:-gnu}
+
+  if [ "$COMPILER" == "gnu" ]
+  then
+      CXX=g++
+      CC=gcc
+      FC=gfortran
+      CFLAGS="-Wall -Wunused -pedantic"
+      CXXFLAGS="-Wall -Wunused -pedantic"      
+  fi
+  
+  if [ "$COMPILER" == "clang" ]
+  then
+      CXX=clang++
+      CC=clang
+      FC=gfortran-mp-7
+      CFLAGS="-Wall -Wunused -pedantic"
+      CXXFLAGS="-Wall -Wunused -pedantic"
+  fi
+
+  if [ "$COMPILER" == "intel" ]
+  then
+      CXX=icpc
+      CC=icc
+      FC=ifort
+      CFLAGS="-Wall -Wunused"
+      CXXFLAGS="-Wall -Wunused"
+  fi
+
+fi
+
+GENERATOR=${GENERATOR:-"Unix Makefiles"}
+
+# If using an XLF compiler on an IBM system, may need to add the following:
+# -DCMAKE_Fortran_FLAGS="-qfixed=72" \
+# -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
+
+SHARED="${SHARED:-ON}"
+### Switch for Debug or Release build:
+BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
+
+### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
+THREADSAFE=${THREADSAFE:-OFF}
+
+FORTRAN=${FORTRAN:-ON}
+
+### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
+INSTALL_PATH=${ACCESS}
+
+### TPLs -- 
+### Make sure these point to the locations to find the libraries and includes in lib and include
+### subdirectories of the specified paths.
+### For example, netcdf.h should be in ${NETCDF_PATH}/include
+NETCDF_PATH=${ACCESS}
+PNETCDF_PATH=${ACCESS}
+HDF5_PATH=${ACCESS}
+
+function check_enable()
+{
+    local path=$1
+    if [ -e "${path}" ]
+    then
+	echo "ON"
+    else
+	echo "OFF"
+    fi
+}
+
+HAVE_NETCDF=`check_enable "${NETCDF_PATH}/include/netcdf.h"`
+
+### Define to NO to *enable* exodus deprecated functions
+OMIT_DEPRECATED_CODE="NO"
+
+# BUG needs to work with cray too.
+if [ "${MPI}" == "ON" ] && [ "${CRAY}" == "ON" ]
+then
+   MPI_EXEC=`which srun`
+   MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-n"
+   CXX=CC
+   CC=cc
+   FC=ftn
+   MPI_BIN=`dirname \`which ${CC}\``
+elif [ "${MPI}" == "ON" ]
+then
+   if [ "${USE_SRUN}" == "ON" ]
+   then
+       MPI_EXEC=`which srun`
+       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-N"
+       MPI_BIN=`dirname "${MPI_EXEC}"`
+   else
+       MPI_EXEC=`which mpiexec`
+       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC}"
+       MPI_BIN=`dirname "${MPI_EXEC}"`
+   fi
+   CXX=mpicxx
+   CC=mpicc
+   FC=mpif77
+fi
+
+OS=`uname -s`
+if [ "$OS" == "Darwin" ] ; then
+  DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include"
+else
+  DARWIN_OPT=""
+fi
+
+FC=${FC:-gfortran}
 
 rm -f CMakeCache.txt
 
-cmake  \
+cmake -G "${GENERATOR}" \
 -D SEACASProj_ENABLE_SEACASExodus=ON \
+-D SEACASProj_ENABLE_SEACASExodus_for=ON \
+-D SEACASProj_ENABLE_SEACASExoIIv2for32=ON \
 -D SEACASProj_ENABLE_TESTS=ON \
--D CMAKE_INSTALL_PREFIX:PATH=${ACCESS} \
--D BUILD_SHARED_LIBS:BOOL=ON \
+-D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
--D TPL_ENABLE_Netcdf:BOOL=ON \
--D TPL_ENABLE_MPI=${MPI} \
+-D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
+-D CMAKE_CXX_FLAGS=${CXXFLAGS} ${SANITIZER} \
+-D CMAKE_C_FLAGS=${CFLAGS} ${SANITIZER} \
+-D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
+-D CMAKE_INSTALL_PREFIX:PATH=${ACCESS} \
+-D BUILD_SHARED_LIBS:BOOL=${SHARED} \
+-D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
+-D SEACASProj_ENABLE_Fortran=${FORTRAN} \
+-D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
+-D TPL_ENABLE_MPI:BOOL=${MPI} \
+-D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
+-D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 \
--D NetCDF_ROOT:PATH=${TPL} \
--D HDF5_ROOT:PATH=${TPL} \
+${MPI_SYMBOLS} \
+-D NetCDF_ROOT:PATH=${NETCDF_PATH} \
+-D HDF5_ROOT:PATH=${HDF5_PATH} \
 -D HDF5_NO_SYSTEM_PATHS=ON \
+-D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
 \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 $EXTRA_ARGS \
-../
+${ACCESS}
+
+echo ""
+echo "     ACCESS: ${ACCESS}"
+echo "  "
+echo "         CC: ${CC}"
+echo "        CXX: ${CXX}"
+echo "         FC: ${FC}"
+echo "        MPI: ${MPI}"
+echo " THREADSAFE: ${THREADSAFE}"
+echo "  "
+echo "HAVE_NETCDF: ${HAVE_NETCDF}"
+echo ""
+
+
 
 
 

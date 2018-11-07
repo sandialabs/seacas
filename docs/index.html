@@ -131,6 +131,9 @@
           block definition, optional multiple named node and element
           maps, and other cleanups.</b><p>
 
+	  <b>A list of all element types supported by EXODUS (and IOSS) is
+	    provided in <a href="html/element_types.html">Exodus Element Types</a><p>
+		  
           Documentation of the modifications needed to use the
           <b>"large-file"</b> modifications which permit storage of
           models with more than ~30 million elements is found <a
@@ -146,21 +149,21 @@
 
 	  The API was modified in 2012 to permit the storage of more
 	  than 2.1 Billion nodes and/or elements. The changes are
-	  documented in <a href="64-bit-integer.txt">64-bit
+	  documented in <a href="html/index.html#int64">64-bit
 	  integers</a><p>
 
 	  The API now supports names longer (or shorter) than 32
 	  characters. The names include variable names and entity
 	  names. The changes are documented in <a
-	  href="Exodus-Long-Names.txt">Long Names</a><p>
+	  href="Exodus-Long-Names.md">Long Names</a><p>
 
           Polyhedral elements can be stored in exodus. The documentation for this
-	  is in <a href="doc.poly.txt">Polyhedral Element Storage</a><p>
+	  is in <a href="html/polyhedra.html">Polyhedral Element Storage</a><p>
 
 	  All nemesis functions have been added to the exodus api. In most cases, the 
           name of the exodus function is the same as the original nemesis function except 
           that the leading <tt>ne_</tt> has been replaced with <tt>ex_</tt>.  There are a few 
-          exceptions.  See <a href="nemesis-to-exodus-api-mapping.md">Nemesis-To-Exodus-API-Mapping</a> 
+          exceptions.  See <a href="html/nemesis-mapping.html">Nemesis-To-Exodus-API-Mapping</a> 
           for a complete list of functions.<p>
 	</TD>
 
@@ -187,7 +190,7 @@
 	  multiple database formats simultaneously. It is possible to
 	  have the finite element model read from an Exodus database;
 	  two results files being written to an Exodus file with a
-	  third results file being written to an XDMF file; and the
+	  third results file being written to a CGNS file; and the
 	  restart file being written to yet another Exodus file. Each
 	  of these output databases can have a different schedule for
 	  when to write and what data is to be written. The document <a HREF="Ioss-exodus-mapping.pdf">Ioss-exodus-mapping.pdf</a> describes how an Exodus model is mapped into the IOSS representation.
@@ -316,8 +319,9 @@
 	</TR>
 
 	<TR VALIGN=TOP>
-	  <TH VALIGN=TOP><A name="aprepro"
-	  HREF="aprepro.pdf">Aprepro</a></TH>
+	  <TH VALIGN=TOP><A name="aprepro" HREF="aprepro.pdf">Aprepro</a><br><br>
+		  <a href="apr_html/index.html">Doxygen API Documentation</a></TH>
+
 
 	  <TD>Aprepro is an algebraic preprocessor that reads a file
 	  containing both general text and algebraic, string, or
@@ -595,11 +599,11 @@
 	</TR>
 
 	<TR VALIGN=TOP>
-	  <TH VALIGN=TOP><A name="grope" HREF="grope.pdf">Grope</a></TH>
+	  <TH VALIGN=TOP><A name="explore" HREF="explore.pdf">Explore</a></TH>
 
-	  <TD>GROPE is a program that examines the input to a finite
+	  <TD>EXPLORE is a program that examines the input to a finite
 	  element analysis or the output from an analysis in the
-	  EXODUS database format. GROPE allows the user to examine any
+	  EXODUS database format. EXPLORE allows the user to examine any
 	  value in the database. The display can be directed to the
 	  user's terminal or to a print file.</TD>
 
@@ -705,8 +709,5 @@
         <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-
-    
-
   </body>
 </html>

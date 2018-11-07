@@ -8,8 +8,22 @@ else
   EXTRA_ARGS=$@
 fi
 
+### The following assumes you are building in a subdirectory of ACCESS Root
+### If not, then define "ACCESS" to point to the root of the SEACAS source code.
+if [ "$ACCESS" == "" ]
+then
+    ACCESS=$(cd ..; pwd)
+fi
+
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-MPI="${MPI:-OFF}"
+netcdf_parallel=`../bin/nc-config --has-parallel`
+if [ "${netcdf_parallel}" == "yes" ]
+then
+    MPI=ON
+else
+    MPI=OFF
+fi
+
 echo "MPI set to ${MPI}"
 
 if [ "${MPI}" == "OFF" ]
@@ -24,30 +38,49 @@ then
       CXX=g++
       CC=gcc
       FC=gfortran
+      CFLAGS="-Wall -Wunused -pedantic"
+      CXXFLAGS="-Wall -Wunused -pedantic"      
   fi
   
   if [ "$COMPILER" == "clang" ]
   then
       CXX=clang++
       CC=clang
-      FC=gfortran-mp-4.9
+      FC=gfortran-mp-7
+      CFLAGS="-Wall -Wunused -pedantic"
+      CXXFLAGS="-Wall -Wunused -pedantic"
   fi
+
+  if [ "$COMPILER" == "intel" ]
+  then
+      CXX=icpc
+      CC=icc
+      FC=ifort
+      CFLAGS="-Wall -Wunused"
+      CXXFLAGS="-Wall -Wunused"
+  fi
+
 fi
 
+GENERATOR=${GENERATOR:-"Unix Makefiles"}
+
+# If using an XLF compiler on an IBM system, may need to add the following:
+# -DCMAKE_Fortran_FLAGS="-qfixed=72" \
+# -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
+
+SHARED="${SHARED:-ON}"
 ### Switch for Debug or Release build:
 BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
-
-### The following assumes you are building in a subdirectory of ACCESS Root
-### If not, then define "ACCESS" to point to the root of the SEACAS source code.
-ACCESS=$(cd ..; pwd)
 
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then change the "ON"
 ### below to "OFF". It will disable blot and fastq
-HAVE_X11=ON
+HAVE_X11=${X11:-ON}
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-OFF}
+
+FORTRAN=${FORTRAN:-ON}
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
@@ -90,10 +123,28 @@ CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
 ### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
 CUDA=${CUDA:-OFF}
 
-if [ "${MPI}" == "ON" ]
+# BUG needs to work with cray too.
+if [ "${MPI}" == "ON" ] && [ "${CRAY}" == "ON" ]
 then
-   MPI_EXEC=`which mpiexec`
-   MPI_BIN=`dirname "${MPI_EXEC}"`
+   MPI_EXEC=`which srun`
+   MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-n"
+   CXX=CC
+   CC=cc
+   FC=ftn
+   MPI_BIN=`dirname \`which ${CC}\``
+   SHARED=OFF
+elif [ "${MPI}" == "ON" ]
+then
+   if [ "${USE_SRUN}" == "ON" ]
+   then
+       MPI_EXEC=`which srun`
+       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-N"
+       MPI_BIN=`dirname "${MPI_EXEC}"`
+   else
+       MPI_EXEC=`which mpiexec`
+       MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC}"
+       MPI_BIN=`dirname "${MPI_EXEC}"`
+   fi
    CXX=mpicxx
    CC=mpicc
    FC=mpif77
@@ -108,12 +159,14 @@ then
     KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
                     -D TPL_ENABLE_CUDA:Bool=ON \
                     -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} \
+		    -D KOKKOS_ENABLE_DEPRECATED_CODE:BOOL=OFF" \
                     -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   else
     export OMPI_CXX=`which gcc`
     unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
     KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
                     -D SEACASProj_ENABLE_OpenMP:Bool=ON \
+		    -D KOKKOS_ENABLE_DEPRECATED_CODE:BOOL=OFF" \
                     -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   fi
 else
@@ -127,20 +180,36 @@ then
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
     
+OS=`uname -s`
+if [ "$OS" == "Darwin" ] ; then
+  DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/X11/include"
+else
+  DARWIN_OPT=""
+fi
+
+# Only run doxygen if me and on master branch...
+DOXYGEN=OFF
+if [[ "$OS" == "Darwin" && "$MPI" == "OFF" ]] ; then
+    branch=`git branch |grep \* |cut -c3-`
+    USER=`id -nu`
+    if [ "$USER" == "gdsjaar" ] && [ "$branch" == "master" ]; then
+	DOXYGEN=ON
+    fi
+fi
+
 FC=${FC:-gfortran}
 
 rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
-cmake  \
+cmake -G "${GENERATOR}" \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
--D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
--D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
--D CMAKE_MACOSX_RPATH:BOOL=ON \
+-D CMAKE_CXX_FLAGS=${CXXFLAGS} ${SANITIZER} \
+-D CMAKE_C_FLAGS=${CFLAGS} ${SANITIZER} \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
--D BUILD_SHARED_LIBS:BOOL=OFF \
+-D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
 -D SEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
 -D SEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
@@ -149,7 +218,9 @@ cmake  \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
+-D SEACASProj_ENABLE_DOXYGEN:BOOL=${DOXYGEN} \
 \
+-D SEACASProj_ENABLE_Fortran=${FORTRAN} \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
@@ -158,11 +229,12 @@ cmake  \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 -D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
--D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
+${MPI_SYMBOLS} \
 ${KOKKOS_SYMBOLS} \
 ${DW_SYMBOLS} \
+${DARWIN_OPT} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
@@ -173,7 +245,7 @@ ${DW_SYMBOLS} \
 -D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
 \
 $EXTRA_ARGS \
-..
+${ACCESS}
 
 echo ""
 echo "     ACCESS: ${ACCESS}"
@@ -188,6 +260,7 @@ echo "HAVE_NETCDF: ${HAVE_NETCDF}"
 echo " HAVE_MATIO: ${HAVE_MATIO}"
 echo "  HAVE_CGNS: ${HAVE_CGNS}"
 echo "     KOKKOS: ${KOKKOS}"
+echo "    DOXYGEN: ${DOXYGEN}"
 echo ""
 
 if [ "${TRAVIS}" == "true" ]

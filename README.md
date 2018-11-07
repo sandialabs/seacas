@@ -33,10 +33,28 @@ There are a few externally developed third-party libraries (TPL) that
 are required to build SEACAS. You can build the libraries manually as
 detailed in the following section, or you can use the `install-tpl.sh` script which will
 download and install the HDF5, NetCDF, CGNS, MatIO, and (if MPI set)
-PNetCDF libraries.
+PnetCDF libraries.
 
- * To use the script, simply type `./install-tpl.sh`
+* To use the script, simply type `./install-tpl.sh`
+* The default behavior can be modified via a few environment variables:
+ 
+| Variable | Values | Default | Description |
+|----------|:------:|:-------:|-------------|
+| COMPILER | clang, gnu | gnu | What compiler should be used for non-parallel build |
+| JOBS     | {count}|  2      | Number of "jobs" used for simultaneous compiles |
+| DOWNLOAD | YES, NO | YES |  Should TPLs be downloaded. |
+| BUILD    | YES, NO | YES | Should TPLs be built and installed. |
+| FORCE    | YES, NO | NO  | Force downloading and building even if lib is already installed. |
+| SHARED   | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
+| MPI      | ON, OFF | OFF | If ON, then build parallel capability |
+| NEEDS_ZLIB| YES, NO| NO  | If system does not have zlib installed, download and install it. |
+| CGNS     | YES, NO | YES | Should CGNS TPL be built.  |
+| MATIO    | YES, NO | YES | Should matio TPL be built. |
+| GNU_PARALLEL | YES, NO | YES | Should GNU parallel script be built. |
 
+* NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
+* The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
+ 
 ### Download and build dependencies (Third-Party Libraries)
 
 There are a few externally developed third-party libraries (TPL) that
@@ -46,8 +64,8 @@ described in the previous section.
 
  * [Zoltan](#zoltan) -- required, supplied
  * [HDF5](#hdf5) -- optional
- * [NetCDF](#netcdf) -- required with modifications
- * [MatIO](#matio) -- optional
+ * [NetCDF](#netcdf) -- required with possible modifications
+ * [MatIO](#matio) -- optional, required for exo2mat and mat2exo
  * [GNU Parallel](#gnu-parallel) -- optional
  * [CGNS](#cgns) -- experimental optional
  * [DataWarehouse](#data_warehouse) -- optional
@@ -59,7 +77,14 @@ A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zol
 If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library.  
 
 **
-It is recommended at this time that you do *not* use the hdf5-1.10.X release series.  Please use the hdf5-1.8.X releases.
+There are some issues with using HDF5-1.10.0 through HDF5-1.10.2 since
+it will possibly create files which are unreadable by applications
+using an earlier version of the library.  As of HDF5-1.10.3 and later,
+the HDF5 team added an option that makes it possible for the library
+to create files readable by those applications. This flag is currently
+being used by NetCDF, but not CGNS.  Therefore, you should only use
+hdf5-1.10.3 or later if you are only using NetCDF, or if you do not
+need compatability with applications using an HDF5-1.8.X version.
 **
 
 The hdf5 library is used for the netcdf4 capability in netcdf which in
@@ -67,8 +92,10 @@ turn is used by exodus.  The netcdf4 capability is typically used for
 large models (>150 million elements); if you are not planning to
 create or read models of this size, you do not have to build hdf5. 
 
-   * Download HDF5 from <http://www.hdfgroup.org/HDF5/release/obtain5.html> and put it inside `seacas/TPL/hdf5`
-   * untar it
+   * Download HDF5 from either:
+     * <https://www.hdfgroup.org/HDF5/release/obtain5.html> for HDF5-1.10.X or
+     * <https://support.hdfgroup.org/HDF5/release/obtain518.html> for HDF5-1.8.X
+   * Download to `seacas/TPL/hdf5` and untar it
    * `cd` to that directory and enter the command:
     ```
     sh ../runconfigure.sh
@@ -76,14 +103,14 @@ create or read models of this size, you do not have to build hdf5.
    * `make && make install`
 
 #### NetCDF
-The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
+The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required if using verions prior to 4.5.1.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
- * Download the latest netcdf-c release from <http://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
+ * Download the latest netcdf-c release from <https://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
  * `cd TPL/netcdf`
- * `tar zxvf netcdf-4.5.0.tar.gz`
+ * `tar zxvf netcdf-4.6.1.tar.gz`
  * If the version is *prior* to 4.5.1, then you need to modify the
    following defines in
-   seacas/TPL/netcdf/netcdf-4.5.0/include/netcdf.h.  Versions *4.5.1 or
+   seacas/TPL/netcdf/netcdf-4.6.1/include/netcdf.h.  Versions *4.5.1 or
    later* do not check these limits and can be run unmodified.
 
     ```
@@ -92,7 +119,7 @@ The most recent released version is recommended. For use with Exodus, some local
     ```
 
  * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF_4` to `OFF`
- * `cd netcdf-4.5.0` and enter the command:
+ * `cd netcdf-4.6.1` and enter the command:
 
     ```
     mkdir build
@@ -134,7 +161,7 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
  *  `make && make install`
 
 #### CGNS
-Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and install the CGNS library:
+Support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and install the CGNS library:
 
    * Download CGNS via git:
 
@@ -200,10 +227,26 @@ If you only want the exodus library, then follow most of the above instructions 
   * You can either clone entire source tree as above, or you can
 	download a zip file containing only the exodus source (and
 	build-related files).  The url for the zip file is
-	<https://github.com/gsjaardema/seacas/archive/exodus.zip>. 
+	<https://github.com/gsjaardema/seacas/archive/exodus.zip> NOTE: Probably out-of-date and better to just clone entire repository. 
   * You only need the netcdf and optionally hdf5 libraries
   * Use the `cmake-exodus` file instead of `cmake-config`.
   * This will build, by default, a shared exodus library and also install the exodus.py Python interface.
+
+## Trilinos
+
+Although SEACAS is included in Trilinos
+(https://github.com/trilinos/Trilinos), it is also possible to use the
+SEACAS code from this repository to override the possibly older SEACAS
+code in Trilinos.  The steps are to directly pull SEACAS from github
+under Trilinos and then build SEACAS under Trilinos with that version
+using `SEACAS_SOURCE_DIR_OVERRIDE`.  Here is how you do it:
+ 
+```
+$ cd Trilinos/
+$ git clone https://github.com/gsjaardema/seacas.git
+$ cd BUILD/
+$ cmake -DSEACAS_SOURCE_DIR_OVERRIDE:STRING=seacas/packages/seacas -DTrilinos_ENABLE_SEACAS [other options] ..
+```
 
 ## License
 

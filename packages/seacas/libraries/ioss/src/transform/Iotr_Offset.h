@@ -61,7 +61,7 @@ namespace Iotr {
 
   public:
     const Ioss::VariableType *output_storage(const Ioss::VariableType *in) const override;
-    int output_count(int in) const override;
+    int                       output_count(int in) const override;
 
     void set_property(const std::string &name, int value) override;
     void set_property(const std::string &name, double value) override;
@@ -72,8 +72,8 @@ namespace Iotr {
     bool internal_execute(const Ioss::Field &field, void *data) override;
 
   private:
-    int    intOffset;
-    double realOffset;
+    int    intOffset{0};
+    double realOffset{0.0};
   };
 } // namespace Iotr
 

@@ -63,13 +63,16 @@
 #include <string.h>
 /*!
 
-The function ex_open() opens an existing exodus file and returns
+\note The ex_open_par_int() is an internal function called by
+ex_open_par(). The user should call ex_open_par() and not ex_open_par_int().
+
+The function ex_open_par() opens an existing exodus file and returns
 an ID that can subsequently be used to refer to the file, the word
 size of the floating point values stored in the file, and the version
 of the exodus database (returned as a ``float'', regardless of the
 compute or I/O word size). Multiple files may be ``open'' simultaneously.
 
-\return In case of an error, ex_open() returns a negative
+\return In case of an error, ex_open_par() returns a negative
 number. Possible causes of errors include:
   -  The specified file does not exist.
   -  The mode specified is something other than the predefined constant
@@ -108,8 +111,8 @@ returned.
 
 \param[out] version  Returned exodus database version number.
 
-The following opens an exodus file named \file{test.exo} for read
-only, using default settings for compute and I/O word sizes:
+The following opens an exodus file named \file{test.exo} for parallel
+read only, using default settings for compute and I/O word sizes:
 
 ~~~{.c}
 int CPU_word_size,IO_word_size, exoid;
@@ -119,11 +122,13 @@ CPU_word_size = sizeof(float);   \co{float or double}
 IO_word_size = 0;                \co{use what is stored in file}
 
 \comment{open exodus files}
-exoid = ex_open ("test.exo",     \co{filename path}
-                 EX_READ,        \co{access mode = READ}
-                 &CPU_word_size, \co{CPU word size}
-                 &IO_word_size,  \co{IO word size}
-                 &version);      \co{ExodusII library version}
+exoid = ex_open_par ("test.exo",     \co{filename path}
+                     EX_READ,        \co{access mode = READ}
+                     &CPU_word_size, \co{CPU word size}
+                     &IO_word_size,  \co{IO word size}
+                     &version,       \co{ExodusII library version
+                     MPI_COMM_WORLD,
+                     MPI_INFO_NULL);}
 ~~~
  */
 
@@ -138,6 +143,11 @@ struct ncvar /* variable */
   int     natts;
 };
 
+/* NOTE: Do *not* call `ex_open_par_int()` directly.  The public API
+ *       function name is `ex_open_par()` which is a wrapper that
+ *       calls `ex_open_par_int` with an additional argument to make
+ *       sure library and include file are consistent
+ */
 int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float *version,
                     MPI_Comm comm, MPI_Info info, int run_version)
 {
@@ -145,7 +155,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
   int     status, stat_att, stat_dim;
   nc_type att_type = NC_NAT;
   size_t  att_len  = 0;
-  int     nc_mode = 0;
+  int     nc_mode  = 0;
   int     old_fill;
   int     file_wordsize;
   int     dim_str_name;
@@ -153,7 +163,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
   int     is_hdf5      = 0;
   int     is_pnetcdf   = 0;
   int     in_redef     = 0;
-  
+
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
@@ -177,12 +187,12 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
 
   if ((mode & EX_READ) && (mode & EX_WRITE)) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Cannot specify both EX_READ and EX_WRITE");
-    ex_err(__func__, errmsg, EX_BADFILEMODE);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADFILEMODE);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (mode & EX_WRITE) {
-    nc_mode = (NC_WRITE | NC_SHARE | NC_MPIIO);
+    nc_mode = (NC_WRITE | NC_MPIIO);
   }
   else {
     nc_mode = (NC_NOWRITE | NC_SHARE | NC_MPIIO);
@@ -211,81 +221,85 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     if (type == 5) {
 #if NC_HAS_HDF5
       fprintf(stderr,
-	      "EXODUS: ERROR: Attempting to open the netcdf-4 "
-	      "file:\n\t'%s'\n\t failed. The netcdf library supports "
-	      "netcdf-4 so there must be a filesystem or some other "
-	      "issue \n",
-	      path);
+              "EXODUS: ERROR: Attempting to open the netcdf-4 "
+              "file:\n\t'%s'\n\t failed. The netcdf library supports "
+              "netcdf-4 so there must be a filesystem or some other "
+              "issue \n",
+              path);
 #else
       /* This is an hdf5 (netcdf4) file. If NC_HAS_HDF5 is not defined,
-	 then we either don't have hdf5 support in this netcdf version,
-	 OR this is an older netcdf version that doesn't provide that define.
+         then we either don't have hdf5 support in this netcdf version,
+         OR this is an older netcdf version that doesn't provide that define.
 
-	 In either case, we don't have enough information, so we
-	 assume that the netcdf doesn't have netcdf4 capabilities
-	 enabled.  Tell the user...
+         In either case, we don't have enough information, so we
+         assume that the netcdf doesn't have netcdf4 capabilities
+         enabled.  Tell the user...
       */
       fprintf(stderr,
-	      "EXODUS: ERROR: Attempting to open the netcdf-4 "
-	      "file:\n\t'%s'\n\tEither the netcdf library does not "
-	      "support netcdf-4 or there is a filesystem or some "
-	      "other issue \n",
-	      path);
+              "EXODUS: ERROR: Attempting to open the netcdf-4 "
+              "file:\n\t'%s'\n\tEither the netcdf library does not "
+              "support netcdf-4 or there is a filesystem or some "
+              "other issue \n",
+              path);
 #endif
     }
     else if (type == 4) {
-#if defined(NC_64BIT_DATA)
+#if NC_HAS_CDF5
       fprintf(stderr,
-	      "EXODUS: ERROR: Attempting to open the CDF5 "
-	      "file:\n\t'%s'\n\t failed. The netcdf library supports "
-	      "CDF5-type files so there must be a filesystem or some other "
-	      "issue \n",
-	      path);
+              "EXODUS: ERROR: Attempting to open the CDF5 "
+              "file:\n\t'%s'\n\t failed. The netcdf library supports "
+              "CDF5-type files so there must be a filesystem or some other "
+              "issue \n",
+              path);
 #else
       /* This is an cdf5 (64BIT_DATA) file. If NC_64BIT_DATA is not defined,
-	 then we either don't have cdf5 support in this netcdf version,
-	 OR this is an older netcdf version that doesn't provide that define.
+         then we either don't have cdf5 support in this netcdf version,
+         OR this is an older netcdf version that doesn't provide that define.
 
-	 In either case, we don't have enough information, so we
-	 assume that the netcdf doesn't have cdf5 capabilities
-	 enabled.  Tell the user...
+         In either case, we don't have enough information, so we
+         assume that the netcdf doesn't have cdf5 capabilities
+         enabled.  Tell the user...
       */
       fprintf(stderr,
-	      "EXODUS: ERROR: Attempting to open the CDF5 "
-	      "file:\n\t'%s'\n\tEither the netcdf library does not "
-	      "support CDF5 or there is a filesystem or some "
-	      "other issue \n",
-	      path);
+              "EXODUS: ERROR: Attempting to open the CDF5 "
+              "file:\n\t'%s'\n\tEither the netcdf library does not "
+              "support CDF5 or there is a filesystem or some "
+              "other issue \n",
+              path);
 
 #endif
     }
     else if (type == 1 || type == 2) {
 #if NC_HAS_PNETCDF
       fprintf(stderr,
-	      "EXODUS: ERROR: Attempting to open the classic NetCDF "
-	      "file:\n\t'%s'\n\t failed. The netcdf library supports "
-	      "PNetCDF files as required for parallel readinf of this "
-	      "file type, so there must be a filesystem or some other "
-	      "issue \n",
-	      path);
+              "EXODUS: ERROR: Attempting to open the classic NetCDF "
+              "file:\n\t'%s'\n\t failed. The netcdf library supports "
+              "PNetCDF files as required for parallel readinf of this "
+              "file type, so there must be a filesystem or some other "
+              "issue \n",
+              path);
 #else
       /* This is an normal NetCDF format file, for parallel reading, the PNetCDF
-	 library is required but that is not compiled into this version.
+         library is required but that is not compiled into this version.
       */
       fprintf(stderr,
-	      "EXODUS: ERROR: Attempting to open the NetCDF "
-	      "file:\n\t'%s'\n\tThe NetCDF library was not "
-	      "built with PNetCDF support as required for parallel access to this file.\n",
-	      path);
+              "EXODUS: ERROR: Attempting to open the NetCDF "
+              "file:\n\t'%s'\n\tThe NetCDF library was not "
+              "built with PNetCDF support as required for parallel access to this file.\n",
+              path);
 
 #endif
     }
 
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s of type %d read only", path, type);
-    ex_err(__func__, errmsg, status);
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to open %s of type %d for reading. Either the "
+             "file does not exist, or there is a permission or file format "
+             "issue.",
+             path, type);
+    ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
-  
+
   /* File opened correctly */
   int type = 0;
   ex_check_file_type(path, &type);
@@ -295,21 +309,21 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
   else if (type == 1 || type == 2 || type == 4) {
     is_pnetcdf = 1;
   }
-      
+
   if (mode & EX_WRITE) { /* Appending */
     /* turn off automatic filling of netCDF variables */
     if (is_pnetcdf) {
       if ((status = nc_redef(exoid)) != NC_NOERR) {
-	snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
-	ex_err(__func__, errmsg, status);
-	EX_FUNC_LEAVE(EX_FATAL);
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       in_redef = 1;
     }
 
     if ((status = nc_set_fill(exoid, NC_NOFILL, &old_fill)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to set nofill mode in file id %d", exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -317,33 +331,34 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     stat_dim = nc_inq_dimid(exoid, DIM_STR_NAME, &dim_str_name);
     if (stat_att != NC_NOERR || stat_dim != NC_NOERR) {
       if (!in_redef) {
-	if ((status = nc_redef(exoid)) != NC_NOERR) {
-	  snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
-	  ex_err(__func__, errmsg, status);
-	  EX_FUNC_LEAVE(EX_FATAL);
-	}
-	in_redef = 1;
+        if ((status = nc_redef(exoid)) != NC_NOERR) {
+          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode",
+                   exoid);
+          ex_err_fn(exoid, __func__, errmsg, status);
+          EX_FUNC_LEAVE(EX_FATAL);
+        }
+        in_redef = 1;
       }
       if (stat_att != NC_NOERR) {
-	int max_so_far = 32;
-	nc_put_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &max_so_far);
+        int max_so_far = 32;
+        nc_put_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &max_so_far);
       }
 
       /* If the DIM_STR_NAME variable does not exist on the database, we need to
        * add it now. */
       if (stat_dim != NC_NOERR) {
-	/* Not found; set to default value of 32+1. */
-	int max_name = ex_default_max_name_length < 32 ? 32 : ex_default_max_name_length;
-	nc_def_dim(exoid, DIM_STR_NAME, max_name + 1, &dim_str_name);
+        /* Not found; set to default value of 32+1. */
+        int max_name = ex_default_max_name_length < 32 ? 32 : ex_default_max_name_length;
+        nc_def_dim(exoid, DIM_STR_NAME, max_name + 1, &dim_str_name);
       }
     }
 
     if (in_redef) {
       if ((status = nc_enddef(exoid)) != NC_NOERR) {
-	snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
-		 exoid);
-	ex_err(__func__, errmsg, status);
-	EX_FUNC_LEAVE(EX_FATAL);
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
+                 exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       in_redef = 0;
     }
@@ -366,18 +381,17 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
       struct ncvar var;
       nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
 
-      if ((strcmp(var.name, VAR_GLO_VAR) == 0) ||
-	  (strncmp(var.name, "vals_elset_var", 14) == 0) ||
-	  (strncmp(var.name, "vals_sset_var", 13) == 0) ||
-	  (strncmp(var.name, "vals_fset_var", 13) == 0) ||
-	  (strncmp(var.name, "vals_eset_var", 13) == 0) ||
-	  (strncmp(var.name, "vals_nset_var", 13) == 0) ||
-	  (strncmp(var.name, "vals_nod_var", 12) == 0) ||
-	  (strncmp(var.name, "vals_edge_var", 13) == 0) ||
-	  (strncmp(var.name, "vals_face_var", 13) == 0) ||
-	  (strncmp(var.name, "vals_elem_var", 13) == 0) ||
-	  (strcmp(var.name, VAR_WHOLE_TIME) == 0)) {
-	nc_var_par_access(exoid, varid, NC_COLLECTIVE);
+      if ((strcmp(var.name, VAR_GLO_VAR) == 0) || (strncmp(var.name, "vals_elset_var", 14) == 0) ||
+          (strncmp(var.name, "vals_sset_var", 13) == 0) ||
+          (strncmp(var.name, "vals_fset_var", 13) == 0) ||
+          (strncmp(var.name, "vals_eset_var", 13) == 0) ||
+          (strncmp(var.name, "vals_nset_var", 13) == 0) ||
+          (strncmp(var.name, "vals_nod_var", 12) == 0) ||
+          (strncmp(var.name, "vals_edge_var", 13) == 0) ||
+          (strncmp(var.name, "vals_face_var", 13) == 0) ||
+          (strncmp(var.name, "vals_elem_var", 13) == 0) ||
+          (strcmp(var.name, VAR_WHOLE_TIME) == 0)) {
+        nc_var_par_access(exoid, varid, NC_COLLECTIVE);
       }
     }
   } /* End of (mode & EX_WRITE) */
@@ -389,7 +403,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
   if ((status = nc_get_att_float(exoid, NC_GLOBAL, ATT_VERSION, version)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database version for file id: %d",
              exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -397,7 +411,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
   if (*version < 2.0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Unsupported file version %.2f in file id: %d",
              *version, exoid);
-    ex_err(__func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -407,7 +421,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
         NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get file wordsize from file id: %d",
                exoid);
-      ex_err(__func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -439,7 +453,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
              "nc_close() called instead of ex_close() on an open Exodus "
              "file?\n",
              exoid, path);
-    ex_err(__func__, errmsg, EX_BADFILEID);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
     nc_close(exoid);
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -449,7 +463,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
       EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to initialize conversion routines in file id %d", exoid);
-    ex_err(__func__, errmsg, EX_LASTERR);
+    ex_err_fn(exoid, __func__, errmsg, EX_LASTERR);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

@@ -76,8 +76,8 @@ bool Ioss::FieldManager::exists(const std::string &field_name) const
 Ioss::Field Ioss::FieldManager::get(const std::string &field_name) const
 {
   IOSS_FUNC_ENTER(m_);
-  const std::string key = Ioss::Utils::lowercase(field_name);
-  auto iter = fields.find(key);
+  const std::string key  = Ioss::Utils::lowercase(field_name);
+  auto              iter = fields.find(key);
   assert(iter != fields.end());
   return (*iter).second;
 }
@@ -91,8 +91,8 @@ Ioss::Field Ioss::FieldManager::get(const std::string &field_name) const
 const Ioss::Field &Ioss::FieldManager::getref(const std::string &field_name) const
 {
   IOSS_FUNC_ENTER(m_);
-  const std::string key = Ioss::Utils::lowercase(field_name);
-  auto iter = fields.find(key);
+  const std::string key  = Ioss::Utils::lowercase(field_name);
+  auto              iter = fields.find(key);
   assert(iter != fields.end());
   return (*iter).second;
 }
@@ -107,8 +107,8 @@ void Ioss::FieldManager::erase(const std::string &field_name)
 {
   assert(exists(field_name));
   IOSS_FUNC_ENTER(m_);
-  const std::string key = Ioss::Utils::lowercase(field_name);
-  auto iter = fields.find(key);
+  const std::string key  = Ioss::Utils::lowercase(field_name);
+  auto              iter = fields.find(key);
   if (iter != fields.end()) {
     fields.erase(iter);
   }
@@ -123,11 +123,13 @@ void Ioss::FieldManager::erase(const std::string &field_name)
 int Ioss::FieldManager::describe(NameList *names) const
 {
   IOSS_FUNC_ENTER(m_);
-  int                          the_count = 0;
-  FieldMapType::const_iterator I;
-  for (I = fields.begin(); I != fields.end(); ++I) {
+  int the_count = 0;
+  for (auto I = fields.cbegin(); I != fields.cend(); ++I) {
     names->push_back((*I).second.get_name());
     the_count++;
+  }
+  if (the_count > 0) {
+    std::sort(names->begin(), names->end());
   }
   return the_count;
 }
@@ -142,13 +144,15 @@ int Ioss::FieldManager::describe(NameList *names) const
 int Ioss::FieldManager::describe(Ioss::Field::RoleType role, NameList *names) const
 {
   IOSS_FUNC_ENTER(m_);
-  int                          the_count = 0;
-  FieldMapType::const_iterator I;
-  for (I = fields.begin(); I != fields.end(); ++I) {
+  int the_count = 0;
+  for (auto I = fields.cbegin(); I != fields.cend(); ++I) {
     if ((*I).second.get_role() == role) {
       names->push_back((*I).second.get_name());
       the_count++;
     }
+  }
+  if (the_count > 0) {
+    std::sort(names->begin(), names->end());
   }
   return the_count;
 }

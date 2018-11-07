@@ -1,6 +1,9 @@
 var classIoss_1_1SetDecompositionData =
 [
-    [ "SetDecompositionData", "classIoss_1_1SetDecompositionData.html#a2a1f8aba6892747147f3592f3f58075f", null ],
+    [ "SetDecompositionData", "classIoss_1_1SetDecompositionData.html#a55abe5937b86eee7c337976451a90d51", null ],
+    [ "SetDecompositionData", "classIoss_1_1SetDecompositionData.html#aeefca13f16ba8cabd1d87abe2c8c8d4d", null ],
+    [ "SetDecompositionData", "classIoss_1_1SetDecompositionData.html#ad091be2433043b45a8f53e48af667548", null ],
+    [ "~SetDecompositionData", "classIoss_1_1SetDecompositionData.html#a989c64d96a2aeb4697729d3c99b9a8d4", null ],
     [ "df_count", "classIoss_1_1SetDecompositionData.html#a2a872abe4ad7c12b669bca1bfc372151", null ],
     [ "file_count", "classIoss_1_1SetDecompositionData.html#a8549ab86afea5dc1d746fcdbcb426090", null ],
     [ "id", "classIoss_1_1SetDecompositionData.html#acf06a66c293a58c1f94f92b417f5a9fb", null ],
@@ -20,6 +23,7 @@ var classIoss_1_1SetDecompositionData =
     [ "parentBlockIndex", "classIoss_1_1SetDecompositionData.html#ab12690a841c7440434e94abb6ed37528", null ],
     [ "root_", "classIoss_1_1SetDecompositionData.html#a3cbfb610b0bf63e3c7c7dd71b30b6ce6", null ],
     [ "section_", "classIoss_1_1SetDecompositionData.html#abcdafca59d03d5b825cb7c8d35f7da7a", null ],
+    [ "setComm_", "classIoss_1_1SetDecompositionData.html#ad49ecac608fcfc51f3a500e46d38414f", null ],
     [ "topologyType", "classIoss_1_1SetDecompositionData.html#ae275d171a8b8f3220494dc53028865e6", null ],
     [ "zone_", "classIoss_1_1SetDecompositionData.html#acbeb7ab82bb3fcc3a3b67ebbbf4d6344", null ]
 ];

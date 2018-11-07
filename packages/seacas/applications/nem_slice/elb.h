@@ -42,16 +42,10 @@
 #include <string>
 #include <vector>
 
-#define ELB_VERSION "4.16"
+#define ELB_VERSION "4.18"
 #define UTIL_NAME "nem_slice"
 #define ELB_FALSE 0
 #define ELB_TRUE 1
-
-#if __cplusplus > 199711L
-#define TOPTR(x) x.data()
-#else
-#define TOPTR(x) (x.empty() ? nullptr : &x[0])
-#endif
 
 /* Macro for maximum value */
 #ifndef MAX
@@ -60,7 +54,7 @@
 
 /*
  * Constants for memory allocation of graph structures. The smaller these
- * values, the more efficient the code will be, memory wise. Larger values
+ * values, the more memory-efficient the code will be. Larger values
  * will likely speed execution and prevent swap thrashing.
  */
 #define SURND_ALLOC 8
@@ -215,7 +209,10 @@ template <typename INT> struct Mesh_Description
   size_t  num_elems;
   size_t  num_dims;
   size_t  num_el_blks;
-  INT *   eb_cnts;
+  std::vector<INT> eb_cnts;
+  std::vector<INT> eb_ids;
+  std::vector<INT> eb_npe;
+  std::vector<E_Type> eb_type;
   size_t  num_node_sets;
   size_t  num_side_sets;
   size_t  max_np_elem;
@@ -226,7 +223,7 @@ template <typename INT> struct Mesh_Description
   INT **  connect;
 
   Mesh_Description()
-      : num_nodes(0), num_elems(0), num_dims(0), num_el_blks(0), eb_cnts(nullptr), num_node_sets(0),
+      : num_nodes(0), num_elems(0), num_dims(0), num_el_blks(0), num_node_sets(0),
         num_side_sets(0), max_np_elem(0), ns_list_len(0), coords(nullptr), elem_type(nullptr),
         connect(nullptr)
   {

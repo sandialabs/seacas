@@ -39,10 +39,11 @@
 #include "EP_SystemInterface.h"
 #include "smart_assert.h"
 #include <climits>
-#include <cstdlib>
-
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -79,8 +80,9 @@ Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
     fileids_[processor] =
         ex_open(filenames_[processor].c_str(), mode, &cpu_word_size, &io_word_size_var, &version);
     if (fileids_[processor] < 0) {
-      std::cerr << "Cannot open file '" << filenames_[processor] << "' - exiting" << '\n';
-      exit(1);
+      std::ostringstream errmsg;
+      errmsg << "Cannot open file '" << filenames_[processor] << "' - exiting" << '\n';
+      throw std::runtime_error(errmsg.str());
     }
     ex_set_max_name_length(fileids_[processor], maximumNameLength_);
 
@@ -260,7 +262,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
     }
 
     if (((si.debug() & 64) != 0) || p == 0 || p == partCount_ - 1) {
-      std::cout << "[" << cycle << "] Input(" << p << "): '" << name.c_str() << "'" << '\n';
+      std::cout << "[" << cycle << "] Input(" << p << "): '" << name << "'" << '\n';
       if (((si.debug() & 64) == 0) && p == 0) {
         std::cout << "..." << '\n';
       }
@@ -358,7 +360,7 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   return true;
 }
 
-int Excn::ExodusFile::get_free_descriptor_count()
+size_t Excn::ExodusFile::get_free_descriptor_count()
 {
 // Returns maximum number of files that one process can have open
 // at one time. (POSIX)

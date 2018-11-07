@@ -61,6 +61,7 @@ namespace SEAMS {
   double do_dim(double x, double y);
   double do_dist(double x1, double y1, double x2, double y2);
   double do_exp(double x);
+  double do_expm1(double x);
   double do_fabs(double x);
   double do_floor(double x);
   double do_nint(double x);
@@ -168,6 +169,7 @@ namespace SEAMS {
   array *do_make_array(double rows, double cols);
   array *do_identity(double size);
   array *do_transpose(const array *a);
+  array *do_array_from_string(const char *string, const char *delm);
 } // namespace SEAMS
 
 #endif

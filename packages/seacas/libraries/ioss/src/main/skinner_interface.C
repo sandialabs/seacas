@@ -39,12 +39,7 @@
 #include <iostream> // for operator<<, basic_ostream, etc
 #include <string>   // for char_traits, string
 
-Skinner::Interface::Interface()
-    : compose_output("none"), compression_level(0), shuffle(false), debug(false), statistics(false),
-      ints64Bit_(false), netcdf4(false), ignoreFaceIds_(false), noOutput_(false)
-{
-  enroll_options();
-}
+Skinner::Interface::Interface() { enroll_options(); }
 
 Skinner::Interface::~Interface() = default;
 
@@ -70,9 +65,10 @@ void Skinner::Interface::enroll_options()
   options_.enroll("ignore_face_ids", Ioss::GetLongOption::NoValue,
                   "Ignore internal face ids and just use 1..num_face", nullptr);
 
-  options_.enroll("netcdf4", Ioss::GetLongOption::NoValue, "Output database will be a netcdf4 "
-                                                           "hdf5-based file instead of the "
-                                                           "classical netcdf file format",
+  options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
+                  "Output database will be a netcdf4 "
+                  "hdf5-based file instead of the "
+                  "classical netcdf file format",
                   nullptr);
 
   options_.enroll("shuffle", Ioss::GetLongOption::NoValue,
@@ -180,7 +176,7 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("netcdf4") != nullptr) {
-    netcdf4 = true;
+    netcdf4_ = true;
   }
 
   if (options_.retrieve("shuffle") != nullptr) {

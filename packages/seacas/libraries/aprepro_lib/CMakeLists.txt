@@ -56,7 +56,7 @@ if(GENERATE_FLEX_FILES)
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/apr_scanner.cc
                      COMMAND ${FLEX_EXE}
-                     ARGS -o apr_scanner.cc
+                     ARGS -o apr_scanner.cc --noline
 		        ${CMAKE_CURRENT_SOURCE_DIR}/aprepro.ll
                      MAIN_DEPENDENCY aprepro.ll
                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -90,6 +90,20 @@ if(USE_TRIBITS)
     HEADERS	${HEADERS}
     SOURCES ${SOURCES}
   )
+
+if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
+   # add a target to generate API documentation with Doxygen
+   if(SEACASProj_ENABLE_DOXYGEN)
+     find_package(Doxygen)
+     if(DOXYGEN_FOUND)
+       add_custom_command(TARGET aprepro_lib POST_BUILD
+          COMMAND ${DOXYGEN_EXECUTABLE} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+          COMMENT "Generating Aprepro API documentation with Doxygen" VERBATIM
+        )     
+     endif(DOXYGEN_FOUND)
+   endif()
+endif()
 
 if(${CMAKE_PROJECT_NAME}_ENABLE_TESTS)
   add_executable(aprepro_test_app apr_test.cc)

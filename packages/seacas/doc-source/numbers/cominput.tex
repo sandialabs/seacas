@@ -39,7 +39,7 @@ may be abbreviated.
 \newcommand{\okname}{f}
 \ifx\PROGRAM\BLOT \renewcommand{\okname}{t} \fi
 \ifx\PROGRAM\ALGEBRA \renewcommand{\okname}{t} \fi
-\ifx\PROGRAM\GROPE \renewcommand{\okname}{t} \fi
+\ifx\PROGRAM\EXPLORE \renewcommand{\okname}{t} \fi
 \if\okname t
 \item
 Variable names must be fully specified. The blank delimiter creates a
@@ -48,7 +48,7 @@ handles this by deleting all embedded blanks from the input database
 names. For example, the variable name ``\cmd{SIG~R}'' must be entered as
 ``\cmd{SIGR}''. The blank must be deleted in any references to the
 variable.
-\ifx\PROGRAM\GROPE
+\ifx\PROGRAM\EXPLORE
 All database names appear exactly as input in all displays.
 \else
 All database names appear in uppercase without the embedded blanks in
@@ -57,7 +57,7 @@ all displays.
 \fi
 \newcommand{\okrange}{f}
 \ifx\PROGRAM\BLOT \renewcommand{\okrange}{t} \fi
-\ifx\PROGRAM\GROPE \renewcommand{\okrange}{t} \fi
+\ifx\PROGRAM\EXPLORE \renewcommand{\okrange}{t} \fi
 \ifx\PROGRAM\NUMBERS \renewcommand{\okrange}{t} \fi
 \if\okrange t
 \item
@@ -89,7 +89,7 @@ The value of a parameter is represented by the parameter name in
 \newcommand{\okoptpar}{f}
 \ifx\PROGRAM\BLOT \renewcommand{\okoptpar}{t} \fi
 \ifx\PROGRAM\ALGEBRA \renewcommand{\okoptpar}{t} \fi
-\ifx\PROGRAM\GROPE \renewcommand{\okoptpar}{t} \fi
+\ifx\PROGRAM\EXPLORE \renewcommand{\okoptpar}{t} \fi
 \ifx\PROGRAM\NUMBERS \renewcommand{\okoptpar}{t} \fi
 \if\okoptpar t
 \item

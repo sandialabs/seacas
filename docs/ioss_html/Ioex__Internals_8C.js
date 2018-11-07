@@ -8,7 +8,7 @@ var Ioex__Internals_8C =
     [ "define_variables", "Ioex__Internals_8C.html#a7a2b5371ad029afa8b0560a0788b42cb", null ],
     [ "get_max_name_length", "Ioex__Internals_8C.html#a6f367bad8198bf60f14425bacc8556ad", null ],
     [ "get_type", "Ioex__Internals_8C.html#a584658147dc76be7d85c531a8ef9e6e4", null ],
-    [ "max_string_length", "Ioex__Internals_8C.html#af449f73327b50e26d99425ed5a6d92b3", null ],
+    [ "max_string_length", "Ioex__Internals_8C.html#a006b0057dcb91c4fe78cc7b95efac367", null ],
     [ "output_names", "Ioex__Internals_8C.html#a96588464f4001bb15ac2ad8ed3efb160", null ],
     [ "put_id_array", "Ioex__Internals_8C.html#a97c399d159544979f324e07bd2f173b5", null ],
     [ "put_int_array", "Ioex__Internals_8C.html#ab12673581d25b84f67be8eaa9149497f", null ]

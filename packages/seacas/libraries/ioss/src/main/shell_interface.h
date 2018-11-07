@@ -59,8 +59,8 @@ namespace IOShell {
 
     std::vector<std::string> inputFile;
     std::string              outputFile;
-    std::string              inFiletype;
-    std::string              outFiletype;
+    std::string              inFiletype{"unknown"};
+    std::string              outFiletype{"unknown"};
     std::string              groupName;
     std::string              decomp_method;
     std::string              compose_output{"none"};
@@ -73,6 +73,8 @@ namespace IOShell {
     int                      data_storage_type{0};
     int                      compression_level{0};
     int                      serialize_io_size{0};
+    int                      flush_interval{0};
+
     //! If non-zero, then put `split_times` timesteps in each file. Then close file and start new
     //! file.
     // If `split_cyclic == 0`, then filenames will be
@@ -102,6 +104,9 @@ namespace IOShell {
     bool lower_case_variable_names{true};
     bool delete_timesteps{false};
     bool minimize_open_files{false};
+    bool disable_field_recognition{false};
+    bool file_per_state{
+        false}; // Put transient data for each timestep in separate file (EXPERMENTAL)
     char fieldSuffixSeparator{'_'};
   };
 } // namespace IOShell

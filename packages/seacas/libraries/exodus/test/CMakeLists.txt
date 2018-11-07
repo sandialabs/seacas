@@ -79,6 +79,7 @@ IF ( NETCDF_NCDUMP_BINARY )
     testrd_ss
     testrdwt
     testcp
+    testcp_tran
     testcp_nl
     testcpd
     testwt_clb
@@ -99,6 +100,7 @@ IF ( NETCDF_NCDUMP_BINARY )
     rd_wt_mesh
     test-empty
     testwt-compress
+    testwt-results
   )
 
   IF (SEACASExodus_ENABLE_THREADSAFE)
@@ -130,12 +132,14 @@ IF ( NETCDF_NCDUMP_BINARY )
 
   # NOTE: The "LINKER_LANGUAGE CXX" is used to workaround an issue with
   #       the trilinos cmake adding the pamgen and pamgen_extras libraries as
-  #       a dependency.  These are C++ libraries and result in unresolved depedencies
+  #       a dependency.  These are C++ libraries and result in unresolved dependencies
   #       when built with shareable libraries on some platforms....
 
   FOREACH ( testName ${cbind_OLDTESTS} )
     TRIBITS_ADD_EXECUTABLE( ${testName} NOEXEPREFIX NOEXESUFFIX SOURCES ${testName}.c LINKER_LANGUAGE CXX)
   ENDFOREACH ( testName )
+
+  TRIBITS_ADD_EXECUTABLE( testwt-localization NOEXEPREFIX NOEXESUFFIX SOURCES testwt-localization.C LINKER_LANGUAGE CXX)
 
   TRIBITS_ADD_ADVANCED_TEST(
    exodus_unit_tests

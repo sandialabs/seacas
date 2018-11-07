@@ -18,7 +18,7 @@ var classSkinner_1_1Interface =
     [ "inFiletype_", "classSkinner_1_1Interface.html#af68458d40a1158e4117374fdb81fb158", null ],
     [ "inputFile_", "classSkinner_1_1Interface.html#a47e4ecf3cb2829e6e9da353b9c573757", null ],
     [ "ints64Bit_", "classSkinner_1_1Interface.html#a892078d766eba369a7d391b89a45e701", null ],
-    [ "netcdf4", "classSkinner_1_1Interface.html#a2b0e6946f9d891ae407406298a82489b", null ],
+    [ "netcdf4_", "classSkinner_1_1Interface.html#a4669edeeb7e5590d14519a90fd85b85e", null ],
     [ "noOutput_", "classSkinner_1_1Interface.html#acde492c353ff17a6f75a62ff0ad4f71d", null ],
     [ "options_", "classSkinner_1_1Interface.html#ac649abcdabecca95ba6e2cc2a745f5a5", null ],
     [ "outFiletype_", "classSkinner_1_1Interface.html#aed0de43fbbc9a03b1cd0db02054330ba", null ],

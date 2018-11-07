@@ -48,7 +48,7 @@ namespace Ioss {
  *
  *  \param[in] io_database The database associated with the set.
  *  \param[in] my_name The set name.
- *  \param[in] entity_count The number of subentities in the set.
+ *  \param[in] entity_cnt The number of subentities in the set.
  *
  */
 Ioss::EntitySet::EntitySet(Ioss::DatabaseIO *io_database, const std::string &my_name,

@@ -41,8 +41,12 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+#include <functional>
 #include <sstream>
 #include <stdexcept>
+#include <unordered_map>
+#include <utility>
+
 #include <sys/stat.h>
 #ifdef _WIN32
 #include <io.h>
@@ -63,7 +67,25 @@
 #define PI 3.141592653589793238462643
 #endif
 
+namespace SEAMS {
+  unsigned hash_symbol(const char *symbol);
+}
+
 namespace {
+  std::unordered_map<size_t, std::vector<std::string>> tokenized_strings;
+
+  std::vector<std::string> &get_tokenized_strings(const char *string, const char *delm)
+  {
+    // key is address of string + hash of delimiter
+    size_t key = std::hash<std::string>{}(string) + std::hash<std::string>{}(delm);
+    if (tokenized_strings.find(key) == tokenized_strings.end()) {
+      std::string temp       = string;
+      auto        tokens     = SEAMS::tokenize(temp, delm);
+      tokenized_strings[key] = tokens;
+    }
+    return tokenized_strings[key];
+  }
+
   std::random_device rd;
   std::mt19937_64    rng(rd());
 
@@ -82,7 +104,7 @@ namespace SEAMS {
 
   extern SEAMS::Aprepro *aprepro;
 
-#if defined(VMS) || defined(_hpux_) || defined(sun) || defined(__linux__)
+#if defined(VMS) || defined(_hpux_) || defined(sun) || defined(__linux__) || defined(__APPLE__)
 #define HYPOT(x, y) hypot(x, y)
 #else
 #define HYPOT(x, y) do_hypot(x, y)
@@ -96,7 +118,7 @@ namespace SEAMS {
 #define min(x, y) (x) < (y) ? (x) : (y)
 #endif
 
-#if defined(sun) || defined(__linux__)
+#if defined(sun) || defined(__linux__) || defined(__APPLE__)
 #define LOG1P(x) log1p(x)
 #else
 #define LOG1P(x) std::log(1.0 + (x))
@@ -401,6 +423,18 @@ namespace SEAMS {
     return (temp);
   }
 
+  double do_expm1(double x)
+  {
+    reset_error();
+#if defined(__linux__) || defined(__APPLE__)
+    double temp = expm1(x);
+#else
+    double temp = exp(x) - 1.0;
+#endif
+    SEAMS::math_error("exp");
+    return (temp);
+  }
+
   double do_floor(double x)
   {
     reset_error();
@@ -690,16 +724,13 @@ namespace SEAMS {
 
   double do_word_count(char *string, char *delm)
   {
-    std::string temp   = string;
-    auto        tokens = tokenize(temp, delm);
-    return static_cast<double>(tokens.size());
+    return static_cast<double>(get_tokenized_strings(string, delm).size());
   }
 
   double do_find_word(char *word, char *string, char *delm)
   {
+    auto &      tokens = get_tokenized_strings(string, delm);
     std::string sword{word};
-    std::string temp{string};
-    auto        tokens = tokenize(temp, delm);
     for (size_t i = 0; i < tokens.size(); i++) {
       if (tokens[i] == sword) {
         return i + 1;
@@ -710,10 +741,9 @@ namespace SEAMS {
 
   const char *do_get_word(double n, char *string, char *delm)
   {
-    size_t      in     = static_cast<size_t>(n);
-    std::string temp   = string;
-    auto        tokens = tokenize(temp, delm);
+    auto &tokens = get_tokenized_strings(string, delm);
 
+    size_t in = static_cast<size_t>(n);
     if (tokens.size() >= in) {
       char *word = nullptr;
       new_string(tokens[in - 1], &word);
@@ -1076,7 +1106,7 @@ namespace SEAMS {
           auto tokens = tokenize(line, delim);
           for (size_t i = 0; i < static_cast<size_t>(array_data->cols); i++) {
             if (i < tokens.size()) {
-              array_data->data[idx++] = atof(tokens[i].c_str());
+              array_data->data[idx++] = std::stod(tokens[i]);
             }
             else {
               array_data->data[idx++] = 0.0;
@@ -1123,7 +1153,7 @@ namespace SEAMS {
           auto tokens = tokenize(line, delim);
           for (size_t i = 0; i < static_cast<size_t>(array_data->cols); i++) {
             if (i < tokens.size()) {
-              array_data->data[idx++] = atof(tokens[i].c_str());
+              array_data->data[idx++] = std::stod(tokens[i]);
             }
             else {
               array_data->data[idx++] = 0.0;
@@ -1138,4 +1168,16 @@ namespace SEAMS {
     return nullptr;
   }
 
+  array *do_array_from_string(const char *string, const char *delm)
+  {
+    auto tokens     = SEAMS::tokenize(string, delm);
+    auto array_data = new array(tokens.size(), 1);
+
+    int idx = 0;
+    for (const auto &token : tokens) {
+      array_data->data[idx++] = std::stod(token);
+    }
+    assert(idx == array_data->rows);
+    return array_data;
+  }
 } // namespace SEAMS

@@ -31,6 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
 
@@ -63,7 +64,7 @@ int main(int argc, char *argv[])
         aprepro.add_variable(var, value, true); // Make it immutable
       }
       else {
-        double dval = strtod(value.c_str(), nullptr);
+        double dval = std::stod(value);
         aprepro.add_variable(var, dval, true);
       }
     }
@@ -92,9 +93,10 @@ int main(int argc, char *argv[])
     }
   }
   else {
-    std::fstream infile(input_files[0].c_str());
+    std::fstream infile(input_files[0], std::fstream::in);
     if (!infile.good()) {
-      std::cerr << "APREPRO: ERROR: Could not open file: " << input_files[0] << '\n';
+      std::cerr << "APREPRO: ERROR: Could not open file: " << input_files[0] << '\n'
+                << "                Error Code: " << strerror(errno) << '\n';
       return 0;
     }
 
@@ -106,7 +108,7 @@ int main(int argc, char *argv[])
 
       if (result) {
         if (input_files.size() > 1) {
-          std::ofstream ofile(input_files[1].c_str());
+          std::ofstream ofile(input_files[1]);
           if (!quiet) {
             auto comment = aprepro.getsym("_C_")->value.svar;
             ofile << comment << " Algebraic Preprocessor (Aprepro) version " << aprepro.version()

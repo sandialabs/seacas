@@ -1,6 +1,7 @@
 var namespaceIoss =
 [
     [ "Init", "namespaceIoss_1_1Init.html", "namespaceIoss_1_1Init" ],
+    [ "Private", "namespaceIoss_1_1Private.html", "namespaceIoss_1_1Private" ],
     [ "trmclr", "namespaceIoss_1_1trmclr.html", "namespaceIoss_1_1trmclr" ],
     [ "AxisAlignedBoundingBox", "structIoss_1_1AxisAlignedBoundingBox.html", "structIoss_1_1AxisAlignedBoundingBox" ],
     [ "Bar2", "classIoss_1_1Bar2.html", "classIoss_1_1Bar2" ],

@@ -35,7 +35,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Questions? Contact  H. Carter Edwards (hcedwar@sandia.gov)
+// Questions? Contact Christian R. Trott (crtrott@sandia.gov)
 //
 // ************************************************************************
 //@HEADER
@@ -102,11 +102,12 @@ void reduce_enqueue(
 
   typedef Kokkos::Impl::if_c< std::is_same<InvalidType,ReducerType>::value, F, ReducerType> ReducerConditional;
   typedef typename ReducerConditional::type ReducerTypeFwd;
+  typedef typename Kokkos::Impl::if_c< std::is_same<InvalidType, ReducerType>::value, Tag, void >::type TagFwd;
 
-  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd , Tag > ValueTraits ;
-  typedef Kokkos::Impl::FunctorValueInit< ReducerTypeFwd , Tag >   ValueInit ;
-  typedef Kokkos::Impl::FunctorValueJoin< ReducerTypeFwd , Tag >   ValueJoin ;
-  typedef Kokkos::Impl::FunctorFinal< ReducerTypeFwd , Tag >       ValueFinal ;
+  typedef Kokkos::Impl::FunctorValueTraits< ReducerTypeFwd , TagFwd > ValueTraits ;
+  typedef Kokkos::Impl::FunctorValueInit< ReducerTypeFwd , TagFwd >   ValueInit ;
+  typedef Kokkos::Impl::FunctorValueJoin< ReducerTypeFwd , TagFwd >   ValueJoin ;
+  typedef Kokkos::Impl::FunctorFinal< ReducerTypeFwd , TagFwd >       ValueFinal ;
 
   typedef typename ValueTraits::pointer_type   pointer_type ;
   typedef typename ValueTraits::reference_type reference_type ;
@@ -132,15 +133,10 @@ void reduce_enqueue(
       });
       t_idx.barrier.wait();
 
-      // Reduce within a tile using multiple threads.
-// even though buffer.size is always 64, the value 64 must be hard coded below
-// due to a compiler bug
-//      for(std::size_t s = 1; s < buffer.size(); s *= 2)
-      for(std::size_t s = 1; s < 64; s *= 2)
+      for(std::size_t s = 1; s < buffer.size(); s *= 2)
       {
           const std::size_t index = 2 * s * local;
-//          if (index < buffer.size())
-          if (index < 64)
+          if (index < buffer.size())
           {
               buffer.action_at(index, index + s, [&](T* x, T* y)
               {
