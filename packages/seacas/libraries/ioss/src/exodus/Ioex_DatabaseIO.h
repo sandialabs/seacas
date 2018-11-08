@@ -213,11 +213,8 @@ namespace Ioex {
 
     void closeDatabase__() const override { free_file_pointer(); }
 
-  public:
-    // Temporarily made public for use during Salinas transition
-    // to using Ioss
     virtual int get_file_pointer() const = 0; // Open file and set exodusFilePtr.
-  protected:
+
     virtual int free_file_pointer() const; // Close file and set exodusFilePtr.
 
     virtual bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
