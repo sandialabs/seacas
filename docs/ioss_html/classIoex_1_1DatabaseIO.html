@@ -120,8 +120,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9b7fd97683725365f1a086f72e2a49c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16e0b41b033fbd2ce9cca4d9cb142f4a"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#a16e0b41b033fbd2ce9cca4d9cb142f4a">entity_field_support</a> () const override</td></tr>
 <tr class="separator:a16e0b41b033fbd2ce9cca4d9cb142f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0ddcfa1cd90af9397e76e2e80a7ef27"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#af0ddcfa1cd90af9397e76e2e80a7ef27">get_file_pointer</a> () const =0</td></tr>
-<tr class="separator:af0ddcfa1cd90af9397e76e2e80a7ef27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classIoss_1_1DatabaseIO"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classIoss_1_1DatabaseIO')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classIoss_1_1DatabaseIO.html">Ioss::DatabaseIO</a></td></tr>
 <tr class="memitem:a87736d6eb5a3b7dfa3144743067d282e inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a87736d6eb5a3b7dfa3144743067d282e">ok</a> (bool write_message=false, std::string *error_message=nullptr, int *bad_count=nullptr) const</td></tr>
 <tr class="memdesc:a87736d6eb5a3b7dfa3144743067d282e inherit pub_methods_classIoss_1_1DatabaseIO"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check to see if database state is OK.  <a href="classIoss_1_1DatabaseIO.html#a87736d6eb5a3b7dfa3144743067d282e">More...</a><br /></td></tr>
@@ -381,6 +379,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a45ae5ecad3d6383c1248f9b2ad85b8ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17600f7a3af7e82f80ae5ab1b4bca779"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#a17600f7a3af7e82f80ae5ab1b4bca779">closeDatabase__</a> () const override</td></tr>
 <tr class="separator:a17600f7a3af7e82f80ae5ab1b4bca779"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0ddcfa1cd90af9397e76e2e80a7ef27"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#af0ddcfa1cd90af9397e76e2e80a7ef27">get_file_pointer</a> () const =0</td></tr>
+<tr class="separator:af0ddcfa1cd90af9397e76e2e80a7ef27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fc48222b93be96fee8e01d5314d123e"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#a0fc48222b93be96fee8e01d5314d123e">free_file_pointer</a> () const</td></tr>
 <tr class="separator:a0fc48222b93be96fee8e01d5314d123e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74597cacb5f8b3aa935cc91fd05adf81"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#a74597cacb5f8b3aa935cc91fd05adf81">open_input_file</a> (bool write_message, std::string *error_msg, int *bad_count, bool abort_if_error) const =0</td></tr>
@@ -1973,7 +1973,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
