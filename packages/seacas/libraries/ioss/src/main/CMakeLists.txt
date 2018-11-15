@@ -191,8 +191,9 @@ TRIBITS_ADD_ADVANCED_TEST(exodus64_to_unstructured_cgns
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS ${NPROCS}
    TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld 8-block64.cgns
-     OUTPUT_FILE exodus64_to_unstructured_cgns.out
-   TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus64_to_unstructured_cgns.out
+     OUTPUT_FILE exodus64_to_unstructured_cgns.tmp
+   TEST_2 CMND grep ARGS -v Information exodus64_to_unstructured_cgns.tmp OUTPUT_FILE exodus64_to_unstructured_cgns.out
+   TEST_3 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus64_to_unstructured_cgns.out
   COMM mpi serial
   )
 
@@ -201,8 +202,9 @@ TRIBITS_ADD_ADVANCED_TEST(generated32_to_unstructured_cgns
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
    TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld generated32.cgns
-     OUTPUT_FILE generated32_to_unstructured_cgns.out
-   TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/generated_to_unstructured_cgns.gold generated32_to_unstructured_cgns.out
+     OUTPUT_FILE generated32_to_unstructured_cgns.tmp
+   TEST_2 CMND grep ARGS -v Information generated32_to_unstructured_cgns.tmp OUTPUT_FILE generated32_to_unstructured_cgns.out
+   TEST_3 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/generated_to_unstructured_cgns.gold generated32_to_unstructured_cgns.out
   COMM mpi serial
   )
 
@@ -211,8 +213,9 @@ TRIBITS_ADD_ADVANCED_TEST(generated64_to_unstructured_cgns
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
    TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld generated64.cgns
-     OUTPUT_FILE generated64_to_unstructured_cgns.out
-   TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/generated_to_unstructured_cgns.gold generated64_to_unstructured_cgns.out
+     OUTPUT_FILE generated64_to_unstructured_cgns.tmp
+   TEST_2 CMND grep ARGS -v Information generated64_to_unstructured_cgns.tmp OUTPUT_FILE generated64_to_unstructured_cgns.out
+   TEST_3 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/generated_to_unstructured_cgns.gold generated64_to_unstructured_cgns.out
   COMM mpi serial
   )
 
@@ -221,8 +224,9 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_unstructured_cgns
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS ${NPROCS}
    TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld 8-block32.cgns
-     OUTPUT_FILE exodus32_to_unstructured_cgns.out
-   TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus32_to_unstructured_cgns.out
+     OUTPUT_FILE exodus32_to_unstructured_cgns.tmp
+   TEST_2 CMND grep ARGS -v Information exodus32_to_unstructured_cgns.tmp OUTPUT_FILE exodus32_to_unstructured_cgns.out
+   TEST_3 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus32_to_unstructured_cgns.out
   COMM mpi serial
   )
 endif()
