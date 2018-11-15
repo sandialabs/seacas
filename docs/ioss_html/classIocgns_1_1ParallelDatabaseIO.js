@@ -74,8 +74,8 @@ var classIocgns_1_1ParallelDatabaseIO =
     [ "m_elemGlobalImplicitMap", "classIocgns_1_1ParallelDatabaseIO.html#abd5fb56a7a82aa2cecf989e781e90084", null ],
     [ "m_flushInterval", "classIocgns_1_1ParallelDatabaseIO.html#addbfcc8189c8e0ab7807d64db31eebfd", null ],
     [ "m_globalToBlockLocalNodeMap", "classIocgns_1_1ParallelDatabaseIO.html#aea0de732859adf04aa0e4cb3d27cb88e", null ],
+    [ "m_meshType", "classIocgns_1_1ParallelDatabaseIO.html#aa532819f3d0a480f599c2c1fcb7d0428", null ],
     [ "m_timesteps", "classIocgns_1_1ParallelDatabaseIO.html#af376a0705537e820b5bdf11f0c5d367a", null ],
     [ "m_zoneNameMap", "classIocgns_1_1ParallelDatabaseIO.html#adeebce2d5533613a8184732aa8398cff", null ],
-    [ "m_zoneOffset", "classIocgns_1_1ParallelDatabaseIO.html#a686565819afb0ab621555b3ae366fb92", null ],
-    [ "m_zoneType", "classIocgns_1_1ParallelDatabaseIO.html#a006dd78660b6f0fd8d6b39564b622543", null ]
+    [ "m_zoneOffset", "classIocgns_1_1ParallelDatabaseIO.html#a686565819afb0ab621555b3ae366fb92", null ]
 ];

@@ -9,7 +9,7 @@ var classIocgns_1_1Utils =
     [ "add_transient_variables", "classIocgns_1_1Utils.html#ad5b349db022c98769edceed5ab8bbaa4", null ],
     [ "assign_zones_to_procs", "classIocgns_1_1Utils.html#a3c4edee8fc781353cb4fc58588f579c0", null ],
     [ "cgns_error", "classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda", null ],
-    [ "check_zone_type", "classIocgns_1_1Utils.html#a414932c51072ceff45efa3fb56136bef", null ],
+    [ "check_mesh_type", "classIocgns_1_1Utils.html#a303eced538cfd6bc29e7195e492b74c2", null ],
     [ "common_write_meta_data", "classIocgns_1_1Utils.html#a4436c119a691be04b8407f0f69185161", null ],
     [ "finalize_database", "classIocgns_1_1Utils.html#a76cdc50e03a141726776fea60ba1aad1", null ],
     [ "find_solution_index", "classIocgns_1_1Utils.html#a023f147650f0a22fda854f67fcc2e05c", null ],
