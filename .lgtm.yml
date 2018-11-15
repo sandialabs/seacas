@@ -3,6 +3,7 @@ path_classifiers:
     - "cmake"
     - "packages/kokkos"
     - "packages/zoltan"
+    - "packages/seacas/libraries/ioss/src/visualization"
   test:
     - "SEACAS-Test"
   docs:
