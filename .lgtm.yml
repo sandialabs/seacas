@@ -1,0 +1,10 @@
+path_classifiers:
+  external:
+    - "cmake"
+    - "packages/kokkos"
+    - "packages/zoltan"
+  test:
+    - "SEACAS-Test"
+  docs:
+    - "docs"
+    - "packages/seacas/doc-source"
