@@ -158,9 +158,9 @@ namespace {
     // set of trailing digits.
     // Example: Name42 returns 42;  Name_52or_perhaps_3_43 returns 43.
 
-    size_t len   = std::strlen(name);
+    size_t len = std::strlen(name);
     int    val = 0;
-    int    mul   = 1;
+    int    mul = 1;
     for (size_t d = len; d > 0; d--) {
       if (isdigit(name[d - 1])) {
         val += mul * (name[d - 1] - '0');
@@ -204,7 +204,7 @@ namespace {
                      << boco_name << " in family " << fam_name
                      << ". This family was not previously defined at the top-level of the file"
                      << " which is not normal.  Check your file to make sure this does not "
-		     << "indicate a problem with the mesh.\n";
+                     << "indicate a problem with the mesh.\n";
       }
 
       // Need to create a new sideset since didn't see this earlier.
@@ -421,14 +421,10 @@ Ioss::MeshType Iocgns::Utils::check_mesh_type(int cgns_file_ptr)
   }
 
   switch (common_zone_type) {
-  case CG_ZoneTypeUserDefined:
-    return Ioss::MeshType::HYBRID;
-  case CG_Structured:
-    return Ioss::MeshType::STRUCTURED;
-  case CG_Unstructured:
-    return Ioss::MeshType::UNSTRUCTURED;
-  default:
-    return Ioss::MeshType::UNKNOWN;
+  case CG_ZoneTypeUserDefined: return Ioss::MeshType::HYBRID;
+  case CG_Structured: return Ioss::MeshType::STRUCTURED;
+  case CG_Unstructured: return Ioss::MeshType::UNSTRUCTURED;
+  default: return Ioss::MeshType::UNKNOWN;
   }
 }
 
@@ -731,7 +727,8 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   CGERR(cg_base_write(file_ptr, "Base", phys_dimension, phys_dimension, &base));
 
   CGERR(cg_goto(file_ptr, base, "end"));
-  std::string version = "IOSS: CGNS Writer version " + std::string{__DATE__} + ", " + Ioss::Utils::platform_information();
+  std::string version = "IOSS: CGNS Writer version " + std::string{__DATE__} + ", " +
+                        Ioss::Utils::platform_information();
   CGERR(cg_descriptor_write("Information", version.c_str()));
   CGERR(cg_goto(file_ptr, base, "end"));
   CGERR(cg_dataclass_write(CGNS_ENUMV(Dimensional)));
@@ -770,7 +767,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   const auto &element_blocks = region.get_element_blocks();
   validate_blocks(element_blocks);
 
-  size_t      element_count  = 0;
+  size_t element_count = 0;
   for (const auto &eb : element_blocks) {
     int64_t local_count = eb->entity_count();
 #ifdef SEACAS_HAVE_MPI

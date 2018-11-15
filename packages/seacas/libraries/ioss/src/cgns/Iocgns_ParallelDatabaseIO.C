@@ -399,7 +399,7 @@ namespace Iocgns {
     else {
       std::ostringstream errmsg;
       errmsg << "ERROR: CGNS: Mesh is not Unstructured or Structured "
-	"which are the only types currently supported";
+                "which are the only types currently supported";
       IOSS_ERROR(errmsg);
     }
 
