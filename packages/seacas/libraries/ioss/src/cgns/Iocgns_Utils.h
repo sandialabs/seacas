@@ -180,7 +180,7 @@ namespace Iocgns {
                                                       int *cell_center_solution_index, bool is_parallel_io);
     static int           find_solution_index(int cgns_file_ptr, int base, int zone, int step,
                                              CG_GridLocation_t location);
-    static CG_ZoneType_t check_zone_type(int cgns_file_ptr);
+    static Ioss::MeshType      check_mesh_type(int cgns_file_ptr);
     static size_t        common_write_meta_data(int file_ptr, const Ioss::Region &region,
                                                 std::vector<size_t> &zone_offset, bool is_parallel);
     static size_t        resolve_nodes(Ioss::Region &region, int my_processor, bool is_parallel);

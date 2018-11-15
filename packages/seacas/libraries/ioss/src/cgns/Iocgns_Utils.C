@@ -417,7 +417,7 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
   IOSS_ERROR(errmsg);
 }
 
-CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgns_file_ptr)
+Ioss::MeshType Iocgns::Utils::check_mesh_type(int cgns_file_ptr)
 {
   // ========================================================================
   // Get the number of zones (element/structured blocks) in the mesh...
@@ -436,13 +436,28 @@ CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgns_file_ptr)
     }
 
     if (common_zone_type != zone_type) {
+#if IOSS_ENABLE_HYBRID
+      common_zone_type = CG_ZoneTypeUserDefined; // This is how we represent hybrid...
+      break;
+#else
       std::ostringstream errmsg;
       errmsg << "ERROR: CGNS: Zone " << zone << " is not the same zone type as previous zones."
              << " This is currently not allowed or supported (hybrid mesh).";
       IOSS_ERROR(errmsg);
+#endif
     }
   }
-  return common_zone_type;
+
+  switch (common_zone_type) {
+  case CG_ZoneTypeUserDefined:
+    return Ioss::MeshType::HYBRID;
+  case CG_Structured:
+    return Ioss::MeshType::STRUCTURED;
+  case CG_Unstructured:
+    return Ioss::MeshType::UNSTRUCTURED;
+  default:
+    return Ioss::MeshType::UNKNOWN;
+  }
 }
 
 int Iocgns::Utils::get_db_zone(const Ioss::EntityBlock *block)
@@ -729,6 +744,7 @@ namespace {
 size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
                                              std::vector<size_t> &zone_offset, bool is_parallel_io)
 {
+#if !IOSS_ENABLE_HYBRID
   // Make sure mesh is not hybrid...
   if (region.mesh_type() == Ioss::MeshType::HYBRID) {
     std::ostringstream errmsg;
@@ -736,13 +752,15 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
            << " This is currently not allowed or supported.";
     IOSS_ERROR(errmsg);
   }
+#endif
 
   int base           = 0;
   int phys_dimension = region.get_property("spatial_dimension").get_int();
   CGERR(cg_base_write(file_ptr, "Base", phys_dimension, phys_dimension, &base));
 
   CGERR(cg_goto(file_ptr, base, "end"));
-  CGERR(cg_descriptor_write("Information", "IOSS: CGNS Writer version -1"));
+  std::string version = "IOSS: CGNS Writer version " + std::string{__DATE__} + ", " + Ioss::Utils::platform_information();
+  CGERR(cg_descriptor_write("Information", version.c_str()));
   CGERR(cg_goto(file_ptr, base, "end"));
   CGERR(cg_dataclass_write(CGNS_ENUMV(Dimensional)));
   CGERR(cg_units_write(CGNS_ENUMV(MassUnitsUserDefined), CGNS_ENUMV(LengthUnitsUserDefined),
