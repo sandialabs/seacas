@@ -103,21 +103,26 @@ namespace {
 
   bool overlaps(const Range &a, const Range &b) { return a.m_beg <= b.m_end && b.m_beg <= a.m_end; }
 
-  bool bc_overlaps(const Ioss::StructuredBlock *block, const Ioss::BoundaryCondition &bc)
+  Range subset_range(const Range &a, const Range &b)
+  {
+    Range ret(std::max(a.m_beg, b.m_beg), std::min(a.m_end, b.m_end));
+    ret.m_reversed = a.m_reversed || b.m_reversed;
+    return ret;
+  }
+
+  void bc_subset_range(const Ioss::StructuredBlock *block, Ioss::BoundaryCondition &bc)
   {
     Ioss::IJK_t ordinal;
     ordinal[0] = block->get_property("ni").get_int();
     ordinal[1] = block->get_property("nj").get_int();
     ordinal[2] = block->get_property("nk").get_int();
 
-    if (ordinal[0] == 0 && ordinal[1] == 0 && ordinal[2] == 0) {
-      return false;
-    }
-
     Ioss::IJK_t offset;
     offset[0] = block->get_property("offset_i").get_int();
     offset[1] = block->get_property("offset_j").get_int();
     offset[2] = block->get_property("offset_k").get_int();
+
+    // NOTE: Updates the range in bc
 
     // Note that block range is nodes and m_ordinal[] is cells, so need to add 1 to range.
     Range z_i(1 + offset[0], ordinal[0] + offset[0] + 1);
@@ -128,44 +133,11 @@ namespace {
     Range gc_j(bc.m_rangeBeg[1], bc.m_rangeEnd[1]);
     Range gc_k(bc.m_rangeBeg[2], bc.m_rangeEnd[2]);
 
-    return overlaps(z_i, gc_i) && overlaps(z_j, gc_j) && overlaps(z_k, gc_k);
-  }
+    Range gc_ii = subset_range(z_i, gc_i);
+    Range gc_jj = subset_range(z_j, gc_j);
+    Range gc_kk = subset_range(z_k, gc_k);
 
-  Range subset_range(const Range &a, const Range &b)
-  {
-    Range ret(std::max(a.m_beg, b.m_beg), std::min(a.m_end, b.m_end));
-    ret.m_reversed = a.m_reversed || b.m_reversed;
-    return ret;
-  }
-
-  void bc_subset_range(const Ioss::StructuredBlock *block, Ioss::BoundaryCondition &bc)
-  {
-    if (bc_overlaps(block, bc)) {
-      Ioss::IJK_t ordinal;
-      ordinal[0] = block->get_property("ni").get_int();
-      ordinal[1] = block->get_property("nj").get_int();
-      ordinal[2] = block->get_property("nk").get_int();
-
-      Ioss::IJK_t offset;
-      offset[0] = block->get_property("offset_i").get_int();
-      offset[1] = block->get_property("offset_j").get_int();
-      offset[2] = block->get_property("offset_k").get_int();
-
-      // NOTE: Updates the range in bc
-
-      // Note that block range is nodes and m_ordinal[] is cells, so need to add 1 to range.
-      Range z_i(1 + offset[0], ordinal[0] + offset[0] + 1);
-      Range z_j(1 + offset[1], ordinal[1] + offset[1] + 1);
-      Range z_k(1 + offset[2], ordinal[2] + offset[2] + 1);
-
-      Range gc_i(bc.m_rangeBeg[0], bc.m_rangeEnd[0]);
-      Range gc_j(bc.m_rangeBeg[1], bc.m_rangeEnd[1]);
-      Range gc_k(bc.m_rangeBeg[2], bc.m_rangeEnd[2]);
-
-      Range gc_ii = subset_range(z_i, gc_i);
-      Range gc_jj = subset_range(z_j, gc_j);
-      Range gc_kk = subset_range(z_k, gc_k);
-
+    if (overlaps(z_i, gc_i) && overlaps(z_j, gc_j) && overlaps(z_k, gc_k)) {
       bc.m_rangeBeg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
       bc.m_rangeEnd[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
       bc.m_rangeBeg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
@@ -187,18 +159,18 @@ namespace {
     // Example: Name42 returns 42;  Name_52or_perhaps_3_43 returns 43.
 
     size_t len   = std::strlen(name);
-    int    nstep = 0;
+    int    val = 0;
     int    mul   = 1;
     for (size_t d = len; d > 0; d--) {
       if (isdigit(name[d - 1])) {
-        nstep += mul * (name[d - 1] - '0');
+        val += mul * (name[d - 1] - '0');
         mul *= 10;
       }
       else {
         break;
       }
     }
-    return nstep;
+    return val;
   }
 
   ssize_t proc_with_minimum_work(Iocgns::StructuredZoneData *zone, const std::vector<size_t> &work,
@@ -218,7 +190,8 @@ namespace {
     }
     return min_proc;
   }
-  void validate_blocks(const Ioss::StructuredBlockContainer &structured_blocks) {}
+  void validate_blocks(const Ioss::StructuredBlockContainer &blocks) {}
+  void validate_blocks(const Ioss::ElementBlockContainer &blocks) {}
 
   void add_bc_to_block(Ioss::StructuredBlock *block, const std::string &boco_name,
                        const std::string &fam_name, int ibc, cgsize_t *range, CG_BCType_t bocotype,
@@ -231,8 +204,7 @@ namespace {
                      << boco_name << " in family " << fam_name
                      << ". This family was not previously defined at the top-level of the file"
                      << " which is not normal.  Check your file to make sure this does not "
-                        "incdicate a problem "
-                     << "with the mesh.\n";
+		     << "indicate a problem with the mesh.\n";
       }
 
       // Need to create a new sideset since didn't see this earlier.
@@ -796,6 +768,8 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   // generate the node count based on connectivity traversal...
   // Just getting processor element count here...
   const auto &element_blocks = region.get_element_blocks();
+  validate_blocks(element_blocks);
+
   size_t      element_count  = 0;
   for (const auto &eb : element_blocks) {
     int64_t local_count = eb->entity_count();
