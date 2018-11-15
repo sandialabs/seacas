@@ -1251,7 +1251,7 @@ namespace Iocgns {
     m_zoneOffset.resize(num_zones + 1);        // Let's use 1-based zones...
 
     // ========================================================================
-    size_t num_node         = 0;
+    size_t num_node  = 0;
     auto   mesh_type = Utils::check_mesh_type(get_file_pointer());
 
     if (isParallel && mesh_type == Ioss::MeshType::STRUCTURED) {
@@ -1269,7 +1269,7 @@ namespace Iocgns {
         }
 #if IOSS_ENABLE_HYBRID
         else if (mesh_type == Ioss::MeshType::HYBRID) {
-	}
+        }
 #endif
         else {
           std::ostringstream errmsg;

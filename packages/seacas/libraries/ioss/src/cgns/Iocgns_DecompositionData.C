@@ -475,7 +475,8 @@ namespace Iocgns {
 #if IOSS_ENABLE_HYBRID
     else if (mesh_type == Ioss::MeshType::HYBRID) {
       std::ostringstream errmsg;
-      errmsg << "ERROR: CGNS: The mesh type is HYBRID which is not supported for parallel decomposition yet.";
+      errmsg << "ERROR: CGNS: The mesh type is HYBRID which is not supported for parallel "
+                "decomposition yet.";
       IOSS_ERROR(errmsg);
     }
 #endif
