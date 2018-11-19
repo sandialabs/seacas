@@ -9,3 +9,12 @@ path_classifiers:
   docs:
     - "docs"
     - "packages/seacas/doc-source"
+extraction:
+  cpp:
+     prepare:
+        packages: 
+          - hdf5
+          - netcdf
+     configure:
+        command:
+        - ./cmake-travis.sh
