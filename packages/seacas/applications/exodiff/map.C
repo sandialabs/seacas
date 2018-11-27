@@ -1000,7 +1000,7 @@ namespace {
 
     INT i = low == N ? N - 1 : low; // Make sure index falls within array bounds.
 
-    if ((i == 0 || i == (INT)N - 1) && interface.coord_tol.Diff(x[id[i]], x0)) {
+    if (i == 0 && interface.coord_tol.Diff(x[id[i]], x0)) {
       // Could not find an index within tolerance on x coordinate.
       return -1;
     }

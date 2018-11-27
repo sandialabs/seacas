@@ -1,0 +1,20 @@
+path_classifiers:
+  external:
+    - "cmake"
+    - "packages/kokkos"
+    - "packages/zoltan"
+    - "packages/seacas/libraries/ioss/src/visualization"
+  test:
+    - "SEACAS-Test"
+  docs:
+    - "docs"
+    - "packages/seacas/doc-source"
+extraction:
+  cpp:
+     prepare:
+        packages: 
+          - hdf5
+          - netcdf
+     configure:
+        command:
+        - ./cmake-travis.sh

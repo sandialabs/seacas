@@ -40,11 +40,13 @@ check_valid_yes_no FORCE
 SHARED=${SHARED:-YES}
 check_valid_yes_no SHARED
 
-# Enable Burst-Buffer support in PNetCDF?
+# Enable Burst-Buffer support in PnetCDF?
 BB=${BB:-NO}
 check_valid_yes_no BB
 
-# Which TPLS? (HDF5 and NetCDF always, PNetCDF if MPI=ON)
+CRAY=${CRAY:-NO}
+
+# Which TPLS? (HDF5 and NetCDF always, PnetCDF if MPI=ON)
 CGNS=${CGNS:-ON}
 MATIO=${MATIO:-ON}
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
@@ -54,6 +56,12 @@ H5VERSION=${H5VERSION:-V110}
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
 VERBOSE=${VERBOSE:-1}
+
+if [ "${USE_PROXY}" == "YES" ]
+then
+    export http_proxy="http://wwwproxy.sandia.gov:80"
+    export https_proxy="https://wwwproxy.sandia.gov:80"
+fi
 
 pwd
 export ACCESS=`pwd`
@@ -187,7 +195,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version}
-        H5VERSION=${H5VERSION} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
+        CRAY=${CRAY} H5VERSION=${H5VERSION} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
@@ -209,7 +217,7 @@ then
     # PnetCDF currently only builds static library...
     if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libpnetcdf.a ]
     then
-        echo "${txtgrn}+++ PNetCDF${txtrst}"
+        echo "${txtgrn}+++ PnetCDF${txtrst}"
         pnet_version="1.10.0"
 
         cd $ACCESS
@@ -228,7 +236,7 @@ then
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd parallel-netcdf-${pnet_version}
-            BB=${BB} SHARED=${SHARED} bash ../runconfigure.sh
+            CRAY=${CRAY} BB=${BB} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure PnetCDF. exiting.${txtrst}
@@ -249,7 +257,7 @@ then
             fi
         fi
     else
-	echo "${txtylw}+++ PNetCDF already installed.  Skipping download and installation.${txtrst}"
+	echo "${txtylw}+++ PnetCDF already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
@@ -276,7 +284,7 @@ then
         fi
         mkdir build
         cd build
-        SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
+        CRAY=${CRAY} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure cmake for NetCDF. exiting.${txtrst}
@@ -318,7 +326,7 @@ then
                 mkdir build
             fi
             cd build
-            SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
+            CRAY=${CRAY} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure CGNS. exiting.${txtrst}
@@ -357,7 +365,7 @@ then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd matio
             ./autogen.sh
-            SHARED=${SHARED} bash ../runconfigure.sh
+            CRAY=${CRAY} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure MatIO. exiting.${txtrst}

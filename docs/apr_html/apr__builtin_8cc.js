@@ -108,7 +108,6 @@ var apr__builtin_8cc =
     [ "do_transpose", "apr__builtin_8cc.html#ae281320dbd0625fd80bcc66abed12356", null ],
     [ "do_word_count", "apr__builtin_8cc.html#a8c7c911b8d3dcf548afb75166de22de2", null ],
     [ "get_tokenized_strings", "apr__builtin_8cc.html#acf907345185955f17b5cdbf928cde507", null ],
-    [ "hash", "apr__builtin_8cc.html#a166f401eea97dd38846b91ff5e46bf3f", null ],
     [ "hash_symbol", "apr__builtin_8cc.html#afddb8da9d97355e9e1cf1b9aec20afc9", null ],
     [ "reset_error", "apr__builtin_8cc.html#a97223934f027610caeba5b309178b354", null ],
     [ "rng", "apr__builtin_8cc.html#afba54e4ae2d3a2369ed3086a983916fa", null ],

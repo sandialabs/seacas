@@ -33,6 +33,7 @@ var ex__utils_8c =
     [ "ex_name_of_map", "ex__utils_8c.html#abfcb73acccb51722a1fc0488766056a6", null ],
     [ "ex_name_of_object", "ex__utils_8c.html#ace51015c588554746b4729b7d2bf46b0", null ],
     [ "ex_name_var_of_object", "ex__utils_8c.html#a0894055db76f50558ddc808d12dde365", null ],
+    [ "ex_print_config", "ex__utils_8c.html#ac89ad2ce316bb7fecf5fab8c9e447347", null ],
     [ "ex_put_name_internal", "ex__utils_8c.html#a3f4e0a4e971d78c381c95a684f79441c", null ],
     [ "ex_put_names_internal", "ex__utils_8c.html#a97664a4c2e7ae8559477473791cb33df", null ],
     [ "ex_rm_file_item", "ex__utils_8c.html#ad99980f27eda2e60115caca21f6d2930", null ],
