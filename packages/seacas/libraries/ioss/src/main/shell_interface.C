@@ -77,14 +77,34 @@ void IOShell::Interface::enroll_options()
   options_.enroll("version", Ioss::GetLongOption::NoValue, "Print version and exit", nullptr);
 
   options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue,
-                  "Database type for input file: pamgen|generated|exodus. exodus is the default.",
+                  "Database type for input file: generated"
+#if defined(SEACAS_HAVE_PAMGEN)
+                  "|pamgen"
+#endif
+#if defined(SEACAS_HAVE_EXODUS)
+                  "|exodus"
+#endif
+#if defined(SEACAS_HAVE_CGNS)
+                  "|cgns"
+#endif
+#if defined(SEACAS_HAVE_DATAWAREHOUSE)
+                  "|data_warehouse"
+#endif
+                  ".\n\t\tIf not specified, guess from extension or exodus is the default.",
                   "unknown");
 
   options_.enroll("out_type", Ioss::GetLongOption::MandatoryValue,
-                  "Database type for output file: exodus. exodus is the default.", "unknown");
-
+                  "Database type for output file:"
+#if defined(SEACAS_HAVE_EXODUS)
+                  " exodus"
+#endif
+#if defined(SEACAS_HAVE_CGNS)
+                  " cgns"
+#endif
+                  ".\n\t\tIf not specified, guess from extension or exodus is the default.",
+                  "unknown");
   options_.enroll("extract_group", Ioss::GetLongOption::MandatoryValue,
-                  "Write the data from the specified group to the output file.\n", nullptr);
+                  "Write the data from the specified group to the output file.", nullptr);
 
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue, "Use 64-bit integers on output database",
                   nullptr);

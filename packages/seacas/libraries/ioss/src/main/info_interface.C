@@ -96,10 +96,22 @@ void Info::Interface::enroll_options()
                   "_");
 
   options_.enroll("db_type", Ioss::GetLongOption::MandatoryValue,
-                  "Database Type: exodus, generated", "unknown");
-
-  options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue,
-                  "Database Type: exodus, generated (alias for db_type)", nullptr);
+                  "Database Type: generated"
+#if defined(SEACAS_HAVE_PAMGEN)
+                  ", pamgen"
+#endif
+#if defined(SEACAS_HAVE_EXODUS)
+                  ", exodus"
+#endif
+#if defined(SEACAS_HAVE_CGNS)
+                  ", cgns"
+#endif
+#if defined(SEACAS_HAVE_DATAWAREHOUSE)
+                  ", data_warehouse"
+#endif
+                  ".",
+                  "unknown");
+  options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue, "(alias for db_type)", nullptr);
 
   options_.enroll("group_name", Ioss::GetLongOption::MandatoryValue,
                   "List information only for the specified group.", nullptr);
