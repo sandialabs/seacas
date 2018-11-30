@@ -146,9 +146,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a96157c96e4309ff710306e2833e6ffb0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a96157c96e4309ff710306e2833e6ffb0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a96157c96e4309ff710306e2833e6ffb0">global_array_minmax</a> (std::vector&lt; T &gt; &amp;local_minmax, <a class="el" href="classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8f">MinMax</a> which) const</td></tr>
 <tr class="separator:a96157c96e4309ff710306e2833e6ffb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0abd423f33f1082805f2cb350f05254a"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a0abd423f33f1082805f2cb350f05254a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a0abd423f33f1082805f2cb350f05254a">global_array_minmax</a> (T *local_minmax, size_t count, <a class="el" href="classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8f">MinMax</a> which) const</td></tr>
-<tr class="separator:a0abd423f33f1082805f2cb350f05254a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01a8e6aef37054e2e6034bca991493f0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a01a8e6aef37054e2e6034bca991493f0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a01a8e6aef37054e2e6034bca991493f0">global_array_minmax</a> (T *local_minmax, size_t count, <a class="el" href="classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8f">Ioss::ParallelUtils::MinMax</a> which) const</td></tr>
+<tr class="separator:a01a8e6aef37054e2e6034bca991493f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f3637e07494c343d45c15cee5d9c1f9"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a1f3637e07494c343d45c15cee5d9c1f9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a1f3637e07494c343d45c15cee5d9c1f9">gather</a> (T my_value, std::vector&lt; T &gt; &amp;result) const</td></tr>
 <tr class="separator:a1f3637e07494c343d45c15cee5d9c1f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -653,6 +653,9 @@ template&lt;typename T &gt; </div>
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void Ioss::ParallelUtils::global_array_minmax </td>
@@ -672,17 +675,25 @@ template&lt;typename T &gt; </div>
           <td></td><td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a0abd423f33f1082805f2cb350f05254a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0abd423f33f1082805f2cb350f05254a">&#9670;&nbsp;</a></span>global_array_minmax() <span class="overload">[2/2]</span></h2>
+<a id="a01a8e6aef37054e2e6034bca991493f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01a8e6aef37054e2e6034bca991493f0">&#9670;&nbsp;</a></span>global_array_minmax() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void Ioss::ParallelUtils::global_array_minmax </td>
@@ -699,7 +710,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8f">MinMax</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8f">Ioss::ParallelUtils::MinMax</a>&#160;</td>
           <td class="paramname"><em>which</em>&#160;</td>
         </tr>
         <tr>
@@ -708,6 +719,11 @@ template&lt;typename T &gt; </div>
           <td></td><td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>

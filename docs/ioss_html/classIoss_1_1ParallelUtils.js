@@ -21,7 +21,7 @@ var classIoss_1_1ParallelUtils =
     [ "get_environment", "classIoss_1_1ParallelUtils.html#a0d43d77ac84e4fced0019ed266f853eb", null ],
     [ "get_environment", "classIoss_1_1ParallelUtils.html#a06c886198859ab9df710fcc4c14c8362", null ],
     [ "global_array_minmax", "classIoss_1_1ParallelUtils.html#a96157c96e4309ff710306e2833e6ffb0", null ],
-    [ "global_array_minmax", "classIoss_1_1ParallelUtils.html#a0abd423f33f1082805f2cb350f05254a", null ],
+    [ "global_array_minmax", "classIoss_1_1ParallelUtils.html#a01a8e6aef37054e2e6034bca991493f0", null ],
     [ "global_count", "classIoss_1_1ParallelUtils.html#aa792310a4ef6220816784e4063b9e18a", null ],
     [ "global_count", "classIoss_1_1ParallelUtils.html#ae27b5d8ff8333363f2795666545c9d41", null ],
     [ "global_minmax", "classIoss_1_1ParallelUtils.html#a0caf3dea894c98f32b83b705aaa1e360", null ],
