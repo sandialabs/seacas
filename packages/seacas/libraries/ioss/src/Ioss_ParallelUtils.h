@@ -124,43 +124,11 @@ namespace Ioss {
     void global_count(const IntVector &local_counts, IntVector &global_counts) const;
     void global_count(const Int64Vector &local_counts, Int64Vector &global_counts) const;
 
-    template <typename T> T    global_minmax(T local_minmax, MinMax which) const;
-    template <typename T> void global_array_minmax(std::vector<T> &local_minmax, MinMax which) const
-    {
-      if (!local_minmax.empty()) {
-        global_array_minmax(local_minmax.data(), local_minmax.size(), which);
-      }
-    }
-
+    template <typename T> T global_minmax(T local_minmax, MinMax which) const;
     template <typename T>
-    void global_array_minmax(T *local_minmax, size_t count, Ioss::ParallelUtils::MinMax which) const
-    {
-#ifdef SEACAS_HAVE_MPI
-      if (parallel_size() > 1 && count > 0) {
-        if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
-          std::ostringstream errmsg;
-          errmsg << "Attempting mpi while in barrier owned by " << Ioss::SerializeIO::getOwner();
-          IOSS_ERROR(errmsg);
-        }
-
-        std::vector<T> maxout(count);
-        MPI_Op         oper = which_reduction(which);
-
-        const int success =
-            MPI_Allreduce((void *)local_minmax, maxout.data(), static_cast<int>(count),
-                          mpi_type(T()), oper, communicator_);
-        if (success != MPI_SUCCESS) {
-          std::ostringstream errmsg;
-          errmsg << "Ioss::ParallelUtils::global_array_minmax - MPI_Allreduce failed";
-          IOSS_ERROR(errmsg);
-        }
-        // Now copy back into passed in array...
-        for (size_t i = 0; i < count; i++) {
-          local_minmax[i] = maxout[i];
-        }
-      }
-#endif
-    }
+    void global_array_minmax(std::vector<T> &local_minmax, MinMax which) const;
+    template <typename T>
+    void global_array_minmax(T *local_minmax, size_t count, MinMax which) const;
 
     template <typename T> void gather(T my_value, std::vector<T> &result) const;
     template <typename T> void all_gather(T my_value, std::vector<T> &result) const;
