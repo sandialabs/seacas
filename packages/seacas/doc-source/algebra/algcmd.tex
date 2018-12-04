@@ -108,7 +108,7 @@ By default, the entire mesh is written to the output database.
 
 \cmddef{\cmdverb{ZOOM}
    \param{xmin}, \param{xmax}, \param{ymin}, \param{ymax},
-      \param{zmin}, \param{zmax} \nodefault
+      \param{zmin}, \param{zmax} \nodefault [\cmd{OUTSIDE}]
 } {
 \cmd{ZOOM} sets the limits of the mesh to be written to the output
 database. Limits \param{xmin} to \param{xmax} apply to the first
@@ -116,6 +116,10 @@ coordinate, \param{ymin} to \param{ymax} to the second coordinate, and
 \param{zmin} to \param{zmax} to the third coordinate (if any). A node is
 deleted if it is not within the rectangle (or brick) defined by these
 limits. An element is deleted if all of its nodes are deleted.
+
+If \cmd{OUTSIDE} is specified, then all nodes and elements inside the
+zoom box will be deleted unless the element contains nodes that are
+outside the zoom box.
 }
 
 \cmddef{\cmdverb{VISIBLE}
@@ -135,6 +139,31 @@ If there is no parameter, all element blocks are visible. If the first
 parameter is \cmd{ADD} or \cmd{DELETE}, the element blocks listed are
 added to or deleted from the current visible set. Otherwise, only the
 element blocks listed in the command are visible.
+}
+
+\cmddef{\cmdverb{FILTER ELEMENT}
+  \param{variable} \param{lt$|$le$|$ge$|$ne$|$gt$|$ge} \param{value} \cmd{TIME} \param{db\_time}
+}{
+\begin{itemize}
+\item \param{variable} is the name of an element variable on the database.
+\item \param{value} is the value that this variable will be compared against.
+\item \param{lt$|$le$|$ge$|$ne$|$gt$|$ge} is the type of comparison corresponding to: lt -- less than, le == less than or
+		equal, \ldots
+\item \param{db\_time} is the time on the database where the variable
+  will be read. If \param{db\_time} is less than the minimum database time, then the minimum time will be used; if greater than
+  the maximum database time, then the maximum time will be used.
+\end{itemize}
+\cmd{FILTER ELEMENT} will delete all elements that satisfy the specified condition. 
+If the \param{variable} doesn't exist on an element block, then all of the elements in that element block will be retained.
+}
+
+\cmddef{\cmdverb{REMOVE ELEMENT} 
+  [\cmd{GLOBAL} or \cmd{LOCAL}] \param{id$_1$} \param{id$_2$} \ldots\ \param{id$_n$}
+} {
+  \cmd{REMOVE ELEMENT} will remove the elements with the specified
+  global or local id(s). If neither \cmd{GLOBAL} or \cmd{LOCAL} is
+  specified, it will default to local ids. A maximum of 1024 ids may
+  be specified.
 }
 
 \newpage
