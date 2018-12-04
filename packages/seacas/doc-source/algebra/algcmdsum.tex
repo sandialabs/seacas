@@ -33,20 +33,13 @@ Time Step Selection Commands (page~\pageref{cmd:timesel})
 
 \input{../include/timesum}
 
-\cmdsum{\cmd{HISTORY}
-   \cmd{ON} or \cmd{OFF}
-} {
-controls whether history time steps are SEACAS/included in the selected time
-steps.
-}
-
 \bigskip \begin{center}
 Mesh Limiting Commands (page~\pageref{cmd:meshlimit})
 \end{center}
 
 \cmdsum{\cmd{ZOOM}
    \param{xmin}, \param{xmax}, \param{ymin}, \param{ymax},
-      \param{zmin}, \param{zmax}
+      \param{zmin}, \param{zmax} [\cmd{OUTSIDE}]
 } {
 sets the limits of the mesh to be written to the output database.
 }
@@ -56,6 +49,18 @@ sets the limits of the mesh to be written to the output database.
    \param{block\_id$_{1}$}, \param{block\_id$_{2}$}, \ldots\
 } {
 limits the element blocks to be written to the output database.
+}
+
+\cmdsum{\cmd{FILTER ELEMENT}
+  \param{variable} \param{lt$|$le$|$ge$|$ne$|$gt$|$ge} \param{value} \cmd{TIME} \param{db\_time}
+} {
+will delete all elements that satisfy the specified condition. 
+}
+
+\cmdsum{\cmd{REMOVE ELEMENT} 
+  [\cmd{GLOBAL} or \cmd{LOCAL}] \param{id$_1$} \param{id$_2$} \ldots\ \param{id$_n$}
+} {
+  will remove the elements with the specified global or local id(s).
 }
 
 \bigskip \begin{center}

@@ -65,23 +65,24 @@ the types of its parameters. The rules for operand types also apply to
 all function parameters. One special type of function yields a global
 quantity regardless of the parameter type.
 
-Equations that result in a history variable are evaluated for each time
-step. Equations resulting in other types of variables are evaluated only
-for ``whole'' time steps.
-
 The assigned variable can be reassigned, but it must be assigned to the
-same variable type (history, global, nodal or element).
+same variable type (global, nodal or element).
 
 The equations are evaluated in order. The assigned variables are grouped
 by variable type, but are otherwise output in the order they are first
 assigned by the equations.
 
+If there are no timesteps on the input database, a timestep will be
+added to the output database. The equation defining new variable(s)
+can access constants and coordinates.
+
 \section{Restricting the Nodes and/or Elements}
 
 Nodes and/or elements may be deleted from the input database with the
-\cmd{ZOOM} or \cmd{VISIBLE} commands. An input variable is defined for
-all input nodes and/or elements. An output variable is only defined for
-the nodes and/or elements to be output.
+\cmd{ZOOM}, \cmd{VISIBLE}, \cmd{FILTER}, or \cmd{REMOVE} commands. An
+input variable is defined for all input nodes and/or elements. An
+output variable is only defined for the nodes and/or elements to be
+output.
 
 Element variables may be undefined for certain element blocks. This may
 be further restricted with the \cmd{BLOCKS} command. If two or more
