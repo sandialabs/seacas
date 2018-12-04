@@ -32,8 +32,7 @@ x-direction).
 
 \end{itemize}
 
-A time step includes the values for all the variables (history,
-global, nodal, and element).
+A time step includes the values for all the variables (global, nodal, and element).
 
 Each element in the database is assigned to an ``element block''. An
 element block distinguishes a material or an element type (such as a
@@ -103,5 +102,7 @@ If the variable doesn't exist on an element block, then all of the elements in t
   contains nodes that are outside the zoom box. This is
   specified by adding \cmd{OUTSIDE} to the end of the
   \cmd{ZOOM} command line.
+
+\item Removed all mention of history variables which have been removed from \exo{} a long time ago.
 \end{itemize}
 
