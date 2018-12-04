@@ -37,12 +37,9 @@ are assigned in an equation (such as \cmd{X~=~X}) or transferred with a
 \cmd{SAVE} command.
 
 The type of the assigned variable depends on the expression. There are
-four types of ``quantities'' in an expression that are related to the
+three types of ``quantities'' in an expression that are related to the
 variable types:
 \setlength{\itemsep}{\medskipamount} \begin{itemize}
-\item
-History quantities include history variables, constants, and the time
-step time.
 \item
 Global quantities include global variables and nodal or element
 variables for specific nodes or elements.
@@ -53,15 +50,14 @@ the value is limited to a specific node.
 Element quantities include element variables, unless the value is
 limited to a specific element.
 \end{itemize}
-History and global quantities are referred to as ``single-value''
+Global quantities are referred to as ``single-value''
 quantities. Nodal and element quantities are referred to as ``arrays''.
 
 Each part of an expression yields a result of a particular type. The
 types of constants and variables are defined above. The type of an
 arithmetic operation is dependent on the types of its operands. If both
-operands are history quantities, the operation yields a history
-quantity. If the operands are global and/or history quantities, a global
-quantity results. If either operand is an array, the operation type is
+operands are global quantities, the operation yields a global
+quantity. If either operand is an array, the operation type is
 the array type. Thus a nodal quantity and an element quantity cannot
 appear in the same operation. For array operations, the operator is
 applied to each array element. The type of a function is dependent on
@@ -109,7 +105,7 @@ constant.
 
 The variables that may be found in the expression to be evaluated are:
 \setlength{\itemsep}{\smallskipamount} \begin{itemize}
-\item any input database history, global, nodal or element variable,
+\item any input database global, nodal or element variable,
 \item the values for any coordinate,
 \item a reference to a specific nodal or element quantity,
 \item the time associated with each time step, and
@@ -142,8 +138,7 @@ refer to the selected time steps, not the input time steps.
 
 The name ``\cmd{TIME}'' is reserved for the time associated with each
 time step. The output database times are copied from the input database
-unless a value is assigned to the variable \cmd{TIME}. The \cmd{TIME}
-expression must evaluate to a history quantity. \cmd{TIME} may also
+unless a value is assigned to the variable \cmd{TIME}. \cmd{TIME} may also
 appear in the expression, referring to the input or assigned database
 time.
 
