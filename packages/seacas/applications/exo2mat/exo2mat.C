@@ -962,14 +962,14 @@ int main(int argc, char *argv[])
   bool use_cell_arrays = false;
 
   /* process arguments */
-  for (int j = 1; j < argc; j++) {
+  for (int j = 1; j < argc && argv[j][0] == '-'; j++) {
     if (strcmp(argv[j], "-t") == 0) { /* write text file (*.m) */
       del_arg(&argc, argv, j);
       textfile = 1;
       j--;
       continue;
     }
-    if (strcmp(argv[j], "-h") == 0) { /* write help info */
+    if (strcmp(argv[j], "-h") == 0 || strcmp(argv[j], "--help") == 0) { /* write help info */
       del_arg(&argc, argv, j);
       usage();
       exit(1);
@@ -1018,9 +1018,12 @@ int main(int argc, char *argv[])
         return 2;
       }
       j--;
-
       continue;
     }
+    // Unrecognized option...
+    std::cerr << "ERROR: Unrecognized option: '" << argv[j] << "'\n";
+    usage();
+    exit(1);
   }
 
   /* QA Info */
