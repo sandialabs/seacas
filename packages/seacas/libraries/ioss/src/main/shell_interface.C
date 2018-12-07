@@ -174,18 +174,18 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll("linear", Ioss::GetLongOption::NoValue,
-                  "Use the linear method to decompose the input mesh in a parallel run. "
-                  "elements in order first n/p to proc 0, next to proc 1.",
+                  "Use the linear method to decompose the input mesh in a parallel run.\n"
+                  "\t\tElements in order first n/p to proc 0, next to proc 1.",
                   nullptr);
 
   options_.enroll("cyclic", Ioss::GetLongOption::NoValue,
-                  "Use the cyclic method to decompose the input mesh in a parallel run. "
-                  "elements handed out to id % proc_count",
+                  "Use the cyclic method to decompose the input mesh in a parallel run.\n"
+                  "\t\tElements handed out to id % proc_count",
                   nullptr);
 
   options_.enroll("random", Ioss::GetLongOption::NoValue,
                   "Use the random method to decompose the input mesh in a parallel run.\n"
-                  "\t\telements assigned randomly to processors in a way that preserves balance\n"
+                  "\t\tElements assigned randomly to processors in a way that preserves balance\n"
                   "\t\t(do *not* use for a real run)",
                   nullptr);
   options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
@@ -315,7 +315,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("help") != nullptr) {
-    options_.usage();
+    options_.usage(std::cerr);
     std::cerr << "\n\tCan also set options via IO_SHELL_OPTIONS environment variable.";
     std::cerr << "\n\t->->-> Send email to gdsjaar@sandia.gov for io_shell support.<-<-<-\n";
     exit(EXIT_SUCCESS);
