@@ -15,7 +15,7 @@ described in the previous section.
 A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
 
 ## HDF5
-If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library.  
+If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library.
 
 **
 There are some issues with using HDF5-1.10.0 through HDF5-1.10.2 since
@@ -31,7 +31,7 @@ need compatability with applications using an HDF5-1.8.X version.
 The hdf5 library is used for the netcdf4 capability in netcdf which in
 turn is used by exodus.  The netcdf4 capability is typically used for
 large models (>150 million elements); if you are not planning to
-create or read models of this size, you do not have to build hdf5. 
+create or read models of this size, you do not have to build hdf5.
 
    * Download HDF5 from either:
      * <https://www.hdfgroup.org/HDF5/release/obtain5.html> for HDF5-1.10.X or
@@ -78,12 +78,12 @@ The MatIO library is used in the exo2mat and mat2exo programs which convert an e
  * `cd TPL/matio`
  * `git clone https://github.com/tbeu/matio.git`
  * `cd matio` and enter the command:
- 
+
     ```
     ./autogen.sh
     sh ../runconfigure.sh
     ```
-    
+
  * `make && make install`
 
 ## GNU Parallel
@@ -135,5 +135,3 @@ To build SEACAS with an installation of data-warehouse-release and it's TPLs, ad
     -DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATA_WAREHOUSE}           \
     -DDataWarehouse_LIBRARY_DIRS:PATH=${DataWarehouse_PATH}/lib     \
     -DDataWarehouse_INCLUDE_DIRS:PATH=${DataWarehouse_PATH}/include \
-
-

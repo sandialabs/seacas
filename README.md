@@ -32,10 +32,10 @@ cd seacas && export ACCESS=`pwd`
 ### Automatically download and build dependencies (Third-Party Libraries)
 
 There are a few externally developed third-party libraries (TPL) that
-are required to build SEACAS. You can build the libraries manually as
-detailed in the following section, or you can use the `install-tpl.sh` script which will
-download and install the HDF5, NetCDF, CGNS, MatIO, and (if MPI set)
-PnetCDF libraries.
+are required to build SEACAS: HDF5, NetCDF, CGNS, MatIO, and (if MPI
+set) PnetCDF libraries. You can build the libraries using the
+`install-tpl.sh` script, or you can install them manually as
+detailed in [TPL-Manual-Install.md](TPL-Manual-Install.md).
 
 * To use the script, simply type `./install-tpl.sh`
 * The default behavior can be modified via a few environment variables:
@@ -60,13 +60,6 @@ PnetCDF libraries.
 * NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
 * The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
  
-### Manually download and build dependencies (Third-Party Libraries)
-
-See [TPL-Manual-Install.md](TPL-Manual-Install.md) for instructions on
-how to manually download and install the third-party libraries for
-SEACAS. Using the `install-tpl.sh` script described above is
-preferred.
-
 ## Configure, Build, and Install SEACAS
 At this time, you should have all external TPL libraries built and
 installed into `${ACCESS}/lib` and `${ACCESS}/include`. You are now ready
