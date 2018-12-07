@@ -19,6 +19,10 @@ if [ "$COMPILER" == "intel" ]
 then
     export CC=icc
 fi
+if [ "$COMPILER" == "ibm" ]
+then
+    export CC=xlc
+fi
 
 CFLAGS="-I${ACCESS}/include"; export CFLAGS
 CPPFLAGS='-DNDEBUG'; export CPPFLAGS
