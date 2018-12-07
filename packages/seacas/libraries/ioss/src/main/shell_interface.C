@@ -140,8 +140,8 @@ void IOShell::Interface::enroll_options()
 #if defined(PARALLEL_AWARE_EXODUS)
   options_.enroll(
       "compose", Ioss::GetLongOption::MandatoryValue,
-      "Specify the parallel-io method to be used to output a single file in a parallel run. "
-      "Options are default, mpiio, mpiposix, pnetcdf, external",
+      "Specify the parallel-io method to be used to output a single file in a parallel run.\n"
+      "\t\tOptions are default, mpiio, mpiposix, pnetcdf, external",
       nullptr);
 
   options_.enroll(
@@ -184,9 +184,9 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 
   options_.enroll("random", Ioss::GetLongOption::NoValue,
-                  "Use the random method to decompose the input mesh in a parallel run."
-                  "elements assigned randomly to processors in a way that preserves balance (do "
-                  "not use for a real run)",
+                  "Use the random method to decompose the input mesh in a parallel run.\n"
+                  "\t\telements assigned randomly to processors in a way that preserves balance\n"
+                  "\t\t(do *not* use for a real run)",
                   nullptr);
   options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
                   "Number of processors that can perform simultaneous IO operations in "
@@ -286,8 +286,8 @@ void IOShell::Interface::enroll_options()
       nullptr);
 
   options_.enroll("native_variable_names", Ioss::GetLongOption::NoValue,
-                  "Do not lowercase variable names and replace spaces with underscores. Variable "
-                  "names are left as they appear in the input mesh file",
+                  "Do not lowercase variable names and replace spaces with underscores.\n"
+                  "\t\tVariable names are left as they appear in the input mesh file",
                   nullptr);
 
   options_.enroll("delete_timesteps", Ioss::GetLongOption::NoValue,
@@ -316,7 +316,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
-    std::cerr << "\n\tCan also set options via IO_SHELL_OPTIONS environment variable.\n\n";
+    std::cerr << "\n\tCan also set options via IO_SHELL_OPTIONS environment variable.";
     std::cerr << "\n\t->->-> Send email to gdsjaar@sandia.gov for io_shell support.<-<-<-\n";
     exit(EXIT_SUCCESS);
   }
