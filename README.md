@@ -7,6 +7,8 @@
 * [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
 * [Testing](#testing)
 * [Exodus](#exodus)
+* [Trilinos](#trilinos)
+* [SPACK](#spack)
 * [License](#license)
 * [Ubuntu](#ubuntu)
 * [Contact information](#contact-information)
@@ -242,12 +244,32 @@ under Trilinos and then build SEACAS under Trilinos with that version
 using `SEACAS_SOURCE_DIR_OVERRIDE`.  Here is how you do it:
  
 ```
-$ cd Trilinos/
-$ git clone https://github.com/gsjaardema/seacas.git
-$ cd BUILD/
-$ cmake -DSEACAS_SOURCE_DIR_OVERRIDE:STRING=seacas/packages/seacas -DTrilinos_ENABLE_SEACAS [other options] ..
+cd Trilinos/
+git clone https://github.com/gsjaardema/seacas.git
+cd BUILD/
+cmake -DSEACAS_SOURCE_DIR_OVERRIDE:STRING=seacas/packages/seacas -DTrilinos_ENABLE_SEACAS [other options] ..
 ```
 
+## SPACK
+
+The SPACK package manager (https://spack.io/) can be used to install
+SEACAS and all depedent third-party libaries.  There is currently a
+pull-request to add SEACAS to the distributed packages, but until that
+is applied, you can clone spack and apply two patches:
+
+```
+git clone https://github.com/spack/spack.git
+cd spack
+wget https://github.com/gsjaardema/seacas/raw/master/SPACK-Define-seacas-package.patch
+wget https://github.com/gsjaardema/seacas/raw/master/SPACK-CGNS.patch
+git apply SPACK-Define-seacas-package.patch
+git apply SPACK-CGNS.patch
+cd ..
+. spack/share/spack/setup-env.sh
+spack install seacas~mpi   # Serial build (most common)
+```
+
+Enter `spack info seacas` to see information on supported variants and other information about the SEACAS package.
 ## License
 
 SEACAS is licensed under the Modified BSD License.  See the LICENSE  file for details.
