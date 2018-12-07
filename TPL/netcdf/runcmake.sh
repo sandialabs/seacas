@@ -47,6 +47,10 @@ else
   then
       export CC=icc
   fi
+  if [ "$COMPILER" == "ibm" ]
+  then
+      export CC=xlc
+  fi
 
 fi
 

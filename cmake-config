@@ -60,6 +60,13 @@ then
       CXXFLAGS="-Wall -Wunused"
   fi
 
+  if [ "$COMPILER" == "ibm" ]
+  then
+      CXX=xlC
+      CC=xlc
+      FC=xlf
+  fi
+
 fi
 
 GENERATOR=${GENERATOR:-"Unix Makefiles"}
@@ -254,6 +261,7 @@ echo "         CC: ${CC}"
 echo "        CXX: ${CXX}"
 echo "         FC: ${FC}"
 echo "        MPI: ${MPI}"
+echo "     SHARED: ${SHARED}"
 echo " THREADSAFE: ${THREADSAFE}"
 echo "  "
 echo "HAVE_NETCDF: ${HAVE_NETCDF}"
