@@ -95,6 +95,7 @@ if [ $# -gt 0 ]; then
 	echo "   ACCESS       = ${txtgrn}${ACCESS}${txtcyn} (Automatically set to current directory)"
 	echo "   OS           = ${txtgrn}${OS}${txtcyn} (Automatically set)"
 	echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm)"
+	echo "   MPI          = ${MPI} (Parallel Build?)"
 	echo ""
 	echo "   FORCE        = ${FORCE}"
 	echo "   DOWNLOAD     = ${DOWNLOAD}"
