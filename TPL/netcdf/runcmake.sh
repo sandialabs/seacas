@@ -17,6 +17,7 @@ then
   fi
 else
   LD_EXT="a"
+  EXTRA_DEPS="-DNC_EXTRA_DEPS=-ldl"
 fi
 
 export LIBS="-ldl -lz"
@@ -62,17 +63,18 @@ rm -f config.cache
 
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DBUILD_SHARED_LIBS:BOOL=${SHARED} \
-	 -DBUILD_TESTING:BOOL=OFF \
+         -DBUILD_TESTING:BOOL=OFF \
          -DCMAKE_INSTALL_PREFIX=${ACCESS} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
          -DENABLE_NETCDF_4:BOOL=ON \
          -DENABLE_PNETCDF:BOOL=${MPI} \
-	 -DENABLE_CDF5=ON \
+         -DENABLE_CDF5=ON \
          -DENABLE_MMAP:BOOL=ON \
          -DENABLE_DAP:BOOL=OFF \
          -DENABLE_V2_API:BOOL=OFF \
-	 ${LOCAL_ZLIB} \
-	 -DENABLE_CONVERSION_WARNINGS:BOOL=OFF \
+         ${LOCAL_ZLIB} \
+         ${EXTRA_DEPS} \
+         -DENABLE_CONVERSION_WARNINGS:BOOL=OFF \
          -DHDF5_C_LIBRARY:PATH=${ACCESS}/lib/libhdf5.${LD_EXT} \
          -DHDF5_HL_LIBRARY:PATH=${ACCESS}/lib/libhdf5_hl.${LD_EXT} \
          -DHDF5_INCLUDE_DIR:PATH=${ACCESS}/include
