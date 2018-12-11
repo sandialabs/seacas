@@ -19,7 +19,7 @@ matrix:
     - compiler: clang
       env: SANITIZER="-fsanitize=address -fsanitize=memory -fno-omit-frame-pointer -fPIC" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
     - compiler: gcc
-      env: MPI=ON H5VERSION=V18
+      env: MPI=ON H5VERSION=V18 USE_64BIT_INT=ON
     - compiler: clang
       env: MPI=ON THREADSAFE=ON H5VERSION=V18
     - compiler: gcc

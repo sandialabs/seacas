@@ -52,6 +52,7 @@ detailed in [TPL-Manual-Install.md](TPL-Manual-Install.md).
 | CRAY     | YES, NO | NO | Is this a Cray system (special parallel options) |
 | NEEDS_ZLIB| YES, NO| NO  | If system does not have zlib installed, download and install it. |
 | CGNS     | YES, NO | YES | Should CGNS TPL be built.  |
+| USE\_64BIT\_INT | YES, NO | NO | In CGNS, enable 64-bit integers |
 | MATIO    | YES, NO | YES | Should matio TPL be built. |
 | GNU_PARALLEL | YES, NO | YES | Should GNU parallel script be built. |
 | H5VERSION | V110, V18 | V110 | Use HDF5-1.10.X or HDF5-1.8.X |
