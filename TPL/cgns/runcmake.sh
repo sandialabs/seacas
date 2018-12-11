@@ -84,5 +84,6 @@ $EXTRA_ARGS \
 echo ""
 echo "     MPI: ${MPI}"
 echo "COMPILER: ${CC}"
+echo "64BITINT: ${USE_64BIT_INT}"
 echo "  ACCESS: ${ACCESS}"
 echo ""
