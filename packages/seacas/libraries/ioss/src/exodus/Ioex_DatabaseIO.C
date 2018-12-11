@@ -1565,9 +1565,8 @@ namespace Ioex {
       // try changing DIM_STR_NAME value and see if works...)
       if (name_length > (size_t)maximumNameLength) {
         if (myProcessor == 0) {
-          IOSS_WARNING << "WARNING: There are variables names whose length exceeds the current "
-                          "maximum name length set for this database ("
-                       << maximumNameLength << ").\n"
+          IOSS_WARNING << "WARNING: There are variables names whose length (" << name_length << ") exceeds the current "
+	    "maximum name length (" << maximumNameLength << ") set for this database (" << get_filename() << ").\n"
                        << "         You should either reduce the length of the variable name, or "
                           "set the 'MAXIMUM_NAME_LENGTH' property "
                        << "to at least " << name_length
