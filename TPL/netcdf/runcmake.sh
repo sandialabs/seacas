@@ -17,10 +17,9 @@ then
   fi
 else
   LD_EXT="a"
-  EXTRA_DEPS="-DNC_EXTRA_DEPS=-ldl"
+  EXTRA_DEPS="-DNC_EXTRA_DEPS=-ldl\;-lz"
 fi
 
-export LIBS="-ldl -lz"
 NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
