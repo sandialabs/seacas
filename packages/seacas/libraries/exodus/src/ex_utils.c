@@ -1858,6 +1858,16 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int is_para
     is_hdf5 = 1;
   }
 
+  /*
+   * NetCDF has deprecated use of MPIIO and MPIPOSIX and instead rely
+   * on explicitly specifying either NetCDF-4 of PNetCDF output. For
+   * backward-compatibility, we map the MPIIO and MPIPOSIX over to
+   * NetCDF4 which is hdf5-based...
+   */
+  if (is_parallel && ((my_mode & EX_MPIIO) || (my_mode & EX_MPIPOSIX))) {
+    is_hdf5 = 1;
+  }
+
   if (ex_conv_ini(exoid, comp_ws, io_ws, 0, int64_status, is_parallel, is_hdf5, is_pnetcdf) !=
       EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to init conversion routines in file id %d",
