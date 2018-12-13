@@ -67,6 +67,11 @@
 #include <vector>
 
 namespace {
+  void log_time(std::chrono::time_point<std::chrono::high_resolution_clock> &start,
+                std::chrono::time_point<std::chrono::high_resolution_clock> &finish,
+                int current_state, double state_time, bool is_input, bool single_proc_only,
+                const Ioss::ParallelUtils &util);
+
   void log_field(const char *symbol, const Ioss::GroupingEntity *entity, const Ioss::Field &field,
                  bool single_proc_only, const Ioss::ParallelUtils &util);
 
@@ -194,6 +199,7 @@ namespace Ioss {
       overlayCount = properties.get("OVERLAY_COUNT").get_int();
     }
 
+    Utils::check_set_bool_property(properties, "TIME_STATE_INPUT_OUTPUT", m_timeStateInOut);
     {
       bool logging;
       if (Utils::check_set_bool_property(properties, "LOGGING", logging)) {
@@ -351,6 +357,25 @@ namespace Ioss {
     if (get_logging()) {
       log_field(in_out == 1 ? ">" : "<", ge, field, singleProcOnly, util_);
     }
+  }
+
+  bool DatabaseIO::begin_state(int state, double time)
+  {
+    IOSS_FUNC_ENTER(m_);
+    if (m_timeStateInOut) {
+      m_stateStart = std::chrono::high_resolution_clock::now();
+    }
+    return begin_state__(state, time);
+  }
+  bool DatabaseIO::end_state(int state, double time)
+  {
+    IOSS_FUNC_ENTER(m_);
+    bool res = end_state__(state, time);
+    if (m_timeStateInOut) {
+      auto finish = std::chrono::high_resolution_clock::now();
+      log_time(m_stateStart, finish, state, time, is_input(), singleProcOnly, util_);
+    }
+    return res;
   }
 
   // Default versions do nothing...
@@ -1015,6 +1040,49 @@ namespace Ioss {
 namespace {
   struct timeval tp;
   double         initial_time = -1.0;
+
+  void log_time(std::chrono::time_point<std::chrono::high_resolution_clock> &start,
+                std::chrono::time_point<std::chrono::high_resolution_clock> &finish,
+                int current_state, double state_time, bool is_input, bool single_proc_only,
+                const Ioss::ParallelUtils &util)
+  {
+    std::vector<double> all_times;
+    double duration = std::chrono::duration<double, std::milli>(finish - start).count();
+    if (single_proc_only) {
+      all_times.push_back(duration);
+    }
+    else {
+      util.gather(duration, all_times);
+    }
+
+    if (util.parallel_rank() == 0 || single_proc_only) {
+      std::ostringstream strm;
+      strm << "IOSS: Time to " << (is_input ? "read" : "write") << " state " << current_state
+           << " at time " << state_time << " is ";
+
+      double total = 0.0;
+      for (auto &p_time : all_times) {
+        total += p_time;
+      }
+
+      // Now append each processors time onto the stream...
+      if (util.parallel_size() > 4) {
+        auto min_max = std::minmax_element(all_times.cbegin(), all_times.cend());
+        strm << " Min:" << *min_max.first << " Max:" << *min_max.second
+             << " Avg:" << total / all_times.size();
+      }
+      else {
+        char sep = (util.parallel_size() > 1) ? ':' : ' ';
+        for (auto &p_time : all_times) {
+          strm << std::setw(8) << p_time << sep;
+        }
+      }
+      if (util.parallel_size() > 1) {
+        strm << " Total:" << std::setw(8) << total;
+      }
+      std::cout << strm.str() << "(ms)\n";
+    }
+  }
 
   void log_field(const char *symbol, const Ioss::GroupingEntity *entity, const Ioss::Field &field,
                  bool single_proc_only, const Ioss::ParallelUtils &util)
