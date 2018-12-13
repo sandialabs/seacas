@@ -1057,8 +1057,8 @@ namespace {
 
     if (util.parallel_rank() == 0 || single_proc_only) {
       std::ostringstream strm;
-      strm << "IOSS: Time to " << (is_input ? "read" : "write") << " state " << current_state
-           << " at time " << state_time << " is ";
+      strm << "\nIOSS: Time to " << (is_input ? "read " : "write") << " state " << current_state
+           << ", time " << state_time << " is ";
 
       double total = 0.0;
       for (auto &p_time : all_times) {
@@ -1066,10 +1066,13 @@ namespace {
       }
 
       // Now append each processors time onto the stream...
-      if (util.parallel_size() > 4) {
+      if (util.parallel_size() == 1) {
+	strm << total << " (ms)\n";
+      }
+      else if (util.parallel_size() > 4) {
         auto min_max = std::minmax_element(all_times.cbegin(), all_times.cend());
-        strm << " Min:" << *min_max.first << " Max:" << *min_max.second
-             << " Avg:" << total / all_times.size();
+        strm << " Min: " << *min_max.first << "\tMax: " << *min_max.second
+             << "\tAvg: " << total / all_times.size();
       }
       else {
         char sep = (util.parallel_size() > 1) ? ':' : ' ';
@@ -1078,9 +1081,9 @@ namespace {
         }
       }
       if (util.parallel_size() > 1) {
-        strm << " Total:" << std::setw(8) << total;
+        strm << "\tTot: " << total << " (ms)\n";
       }
-      std::cout << strm.str() << "(ms)\n";
+      std::cerr << strm.str();
     }
   }
 
