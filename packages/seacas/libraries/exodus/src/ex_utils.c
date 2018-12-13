@@ -1807,14 +1807,15 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   return nc_mode | pariomode;
 }
 
-int ex_int_populate_header(int exoid, const char *path, int my_mode, int is_parallel, int *comp_ws, int *io_ws)
+int ex_int_populate_header(int exoid, const char *path, int my_mode, int is_parallel, int *comp_ws,
+                           int *io_ws)
 {
   int status;
   int old_fill;
   int lio_ws;
-  int filesiz     = 1;
-  int is_hdf5     = 0;
-  int is_pnetcdf  = 0;
+  int filesiz    = 1;
+  int is_hdf5    = 0;
+  int is_pnetcdf = 0;
 
   float vers;
   char  errmsg[MAX_ERR_LENGTH];
