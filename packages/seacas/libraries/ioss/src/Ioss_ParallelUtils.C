@@ -412,9 +412,6 @@ T Ioss::ParallelUtils::global_minmax(T local_minmax, Ioss::ParallelUtils::MinMax
   return minmax;
 }
 
-template void Ioss::ParallelUtils::global_array_minmax(unsigned long *, unsigned long,
-                                                       MinMax) const;
-
 template void Ioss::ParallelUtils::gather(double, std::vector<double> &) const;
 template void Ioss::ParallelUtils::gather(int, std::vector<int> &) const;
 template void Ioss::ParallelUtils::gather(int64_t, std::vector<int64_t> &) const;
