@@ -101,7 +101,11 @@ void ex_print_config(void)
 #else
   fprintf(stderr, "\tExodus Deprecated Functions Available\n\n");
 #endif
+#if defined(NC_VERSION)
   fprintf(stderr, "\tNetCDF Version %s\n", NC_VERSION);
+#else
+  fprintf(stderr, "\tNetCDF Version < 4.3.3\n", NC_VERSION);
+#endif
 #if NC_HAS_HDF5
   fprintf(stderr, "\tUsing NetCDF with HDF5 enabled\n");
 #endif
