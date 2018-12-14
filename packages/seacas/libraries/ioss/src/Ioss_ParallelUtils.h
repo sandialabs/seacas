@@ -68,10 +68,9 @@ namespace Ioss {
     /*!
      * See if any external properties specified via the
      * IOSS_PROPERTIES environment variable.  If any found, add to
-     * `properties`. If `do_print` then output to cerr which
-     * properties were set
+     * `properties`.
      */
-    void add_environment_properties(Ioss::PropertyManager &properties, bool do_print);
+    void add_environment_properties(Ioss::PropertyManager &properties);
 
     /*!
      * Returns 'true' if 'name' is defined in the environment.
