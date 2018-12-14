@@ -272,7 +272,7 @@ namespace Ioss {
   void ParallelUtils::global_array_minmax(std::vector<T> &local_minmax, MinMax which) const
   {
 #ifdef SEACAS_HAVE_MPI
-    if (parallel_size() > 1 && count > 0) {
+    if (parallel_size() > 1 && !local_minmax.empty()) {
       if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
         std::ostringstream errmsg;
         errmsg << "Attempting mpi while in barrier owned by " << Ioss::SerializeIO::getOwner();
