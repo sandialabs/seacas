@@ -167,7 +167,7 @@ namespace Ioss {
 
     // Check environment variable IOSS_PROPERTIES. If it exists, parse
     // the contents and add to the 'properties' map.
-    util_.add_environment_properties(properties, myProcessor == 0);
+    util_.add_environment_properties(properties);
 
     Utils::check_set_bool_property(properties, "ENABLE_FIELD_RECOGNITION", enableFieldRecognition);
 
@@ -1067,7 +1067,7 @@ namespace {
 
       // Now append each processors time onto the stream...
       if (util.parallel_size() == 1) {
-	strm << total << " (ms)\n";
+        strm << total << " (ms)\n";
       }
       else if (util.parallel_size() > 4) {
         auto min_max = std::minmax_element(all_times.cbegin(), all_times.cend());
