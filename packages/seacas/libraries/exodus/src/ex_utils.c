@@ -82,6 +82,14 @@ struct obj_stats *exoII_nm  = 0;
 static char  ret_string[10 * (MAX_VAR_NAME_LENGTH + 1)];
 static char *cur_string = &ret_string[0];
 
+#if NC_HAS_HDF5
+extern int H5get_libversion(unsigned *, unsigned *, unsigned *);
+#endif
+
+#if NC_HAS_PNETCDF
+extern char *ncmpi_inq_libvers();
+#endif
+
 void ex_print_config(void)
 {
   fprintf(stderr, "\nExodus Configuration Information:\n");
@@ -107,13 +115,20 @@ void ex_print_config(void)
   fprintf(stderr, "\tNetCDF Version < 4.3.3\n", NC_VERSION);
 #endif
 #if NC_HAS_HDF5
-  fprintf(stderr, "\tUsing NetCDF with HDF5 enabled\n");
+  {
+    unsigned major, minor, release;
+    H5get_libversion(&major, &minor, &release);
+    fprintf(stderr, "\tUsing NetCDF with HDF5 enabled (%u.%u.%u)\n", major, minor, release);
+  }
 #endif
 #if NC_HAS_PARALLEL
   fprintf(stderr, "\tUsing NetCDF with parallel IO enabled via HDF5 and/or PnetCDF\n");
 #endif
 #if NC_HAS_PNETCDF
-  fprintf(stderr, "\tUsing NetCDF with parallel IO enabled via PnetCDF\n");
+  {
+    char *libver = nullptr;
+    fprintf(stderr, "\tUsing NetCDF with parallel IO enabled via PnetCDF (%s)\n", libver);
+  }
 #endif
 #if NC_HAS_PARALLEL4
   fprintf(stderr, "\tUsing NetCDF with parallel IO enabled via HDF5\n");
