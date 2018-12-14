@@ -126,7 +126,7 @@ void ex_print_config(void)
 #endif
 #if NC_HAS_PNETCDF
   {
-    char *libver = nullptr;
+    char *libver = NULL;
     fprintf(stderr, "\tUsing NetCDF with parallel IO enabled via PnetCDF (%s)\n", libver);
   }
 #endif
