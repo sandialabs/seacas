@@ -112,7 +112,7 @@ void ex_print_config(void)
 #if defined(NC_VERSION)
   fprintf(stderr, "\tNetCDF Version %s\n", NC_VERSION);
 #else
-  fprintf(stderr, "\tNetCDF Version < 4.3.3\n", NC_VERSION);
+  fprintf(stderr, "\tNetCDF Version < 4.3.3\n");
 #endif
 #if NC_HAS_HDF5
   {
