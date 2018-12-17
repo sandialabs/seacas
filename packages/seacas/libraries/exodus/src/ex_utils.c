@@ -118,32 +118,32 @@ void ex_print_config(void)
   {
     unsigned major, minor, release;
     H5get_libversion(&major, &minor, &release);
-    fprintf(stderr, "\tUsing NetCDF with HDF5 enabled (%u.%u.%u)\n", major, minor, release);
-  }
-#endif
-#if NC_HAS_PARALLEL
-  fprintf(stderr, "\tUsing NetCDF with parallel IO enabled via HDF5 and/or PnetCDF\n");
-#endif
-#if NC_HAS_PNETCDF
-  {
-    char *libver = NULL;
-    fprintf(stderr, "\tUsing NetCDF with parallel IO enabled via PnetCDF (%s)\n", libver);
+    fprintf(stderr, "\t\tHDF5 enabled (%u.%u.%u)\n", major, minor, release);
   }
 #endif
 #if NC_HAS_PARALLEL4
-  fprintf(stderr, "\tUsing NetCDF with parallel IO enabled via HDF5\n");
+  fprintf(stderr, "\t\tparallel IO enabled via HDF5\n");
 #endif
 #if NC_HAS_CDF5
-  fprintf(stderr, "\tUsing NetCDF with CDF5 support\n");
+  fprintf(stderr, "\t\tCDF5 support\n");
+#endif
+#if NC_HAS_PNETCDF
+  {
+    char *libver = ncmpi_inq_libvers();
+    fprintf(stderr, "\t\tparallel IO enabled via PnetCDF (%s)\n", libver);
+  }
+#endif
+#if NC_HAS_PARALLEL
+  fprintf(stderr, "\t\tparallel IO enabled via HDF5 and/or PnetCDF\n");
 #endif
 #if NC_HAS_ERANGE_FILL
-  fprintf(stderr, "\tUsing NetCDF with ERANGE_FILL support\n");
+  fprintf(stderr, "\t\tERANGE_FILL support\n");
 #endif
 #if NC_RELAX_COORD_BOUND
-  fprintf(stderr, "\tUsing NetCDF with RELAX_COORD_BOUND defined\n");
+  fprintf(stderr, "\t\tRELAX_COORD_BOUND defined\n");
 #endif
 #if defined(NC_HAVE_META_H)
-  fprintf(stderr, "\tUsing NetCDF with NC_HAVE_META_H defined\n\n");
+  fprintf(stderr, "\t\tNC_HAVE_META_H defined\n\n");
 #endif
 }
 
