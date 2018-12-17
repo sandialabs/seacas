@@ -1070,9 +1070,9 @@ namespace {
         strm << total << " (ms)\n";
       }
       else if (util.parallel_size() > 4) {
-        auto min_max = std::minmax_element(all_times.cbegin(), all_times.cend());
-        strm << " Min: " << *min_max.first << "\tMax: " << *min_max.second
-             << "\tAvg: " << total / all_times.size();
+	std::sort(all_times.begin(), all_times.end());
+	strm << " Min: " << all_times.front() << "\tMax: " << all_times.back()
+             << "\tMed: " << all_times[all_times.size()/2];
       }
       else {
         char sep = (util.parallel_size() > 1) ? ':' : ' ';
