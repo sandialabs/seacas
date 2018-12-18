@@ -2,7 +2,6 @@ var classIoss_1_1Utils =
 [
     [ "Utils", "classIoss_1_1Utils.html#a7b26e085790c47979ee6fa2b463812c3", null ],
     [ "~Utils", "classIoss_1_1Utils.html#a1fbe21d5a134b19e4c1b30089aab7000", null ],
-    [ "abort", "classIoss_1_1Utils.html#a92cd517559c768c8170bd505ed7b0bb4", null ],
     [ "block_is_omitted", "classIoss_1_1Utils.html#a933214d50c601b1e2f089f9c981f59da", null ],
     [ "calculate_sideblock_membership", "classIoss_1_1Utils.html#afae65fbd0ef9900b0208fa5434fede57", null ],
     [ "case_strcmp", "classIoss_1_1Utils.html#a4345fe52d79d612a6d4779e260e0006b", null ],

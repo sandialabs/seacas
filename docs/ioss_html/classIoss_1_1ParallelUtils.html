@@ -114,8 +114,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a50e51cbf4c649f4105f3769ad53080bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a144a1eb255de9380148f84db69586514"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a144a1eb255de9380148f84db69586514">get_environment</a> (const std::string &amp;name, std::string &amp;value, bool sync_parallel) const</td></tr>
 <tr class="separator:a144a1eb255de9380148f84db69586514"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3440f0dcbbc50140499b13022a45335f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a3440f0dcbbc50140499b13022a45335f">add_environment_properties</a> (<a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;properties, bool do_print)</td></tr>
-<tr class="separator:a3440f0dcbbc50140499b13022a45335f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66ac8857acdf08f232dee3b9442b7b21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a66ac8857acdf08f232dee3b9442b7b21">add_environment_properties</a> (<a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;properties)</td></tr>
+<tr class="separator:a66ac8857acdf08f232dee3b9442b7b21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d43d77ac84e4fced0019ed266f853eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a0d43d77ac84e4fced0019ed266f853eb">get_environment</a> (const std::string &amp;name, int &amp;value, bool sync_parallel) const</td></tr>
 <tr class="separator:a0d43d77ac84e4fced0019ed266f853eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06c886198859ab9df710fcc4c14c8362"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a06c886198859ab9df710fcc4c14c8362">get_environment</a> (const std::string &amp;name, bool sync_parallel) const</td></tr>
@@ -146,9 +146,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a96157c96e4309ff710306e2833e6ffb0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a96157c96e4309ff710306e2833e6ffb0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a96157c96e4309ff710306e2833e6ffb0">global_array_minmax</a> (std::vector&lt; T &gt; &amp;local_minmax, <a class="el" href="classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8f">MinMax</a> which) const</td></tr>
 <tr class="separator:a96157c96e4309ff710306e2833e6ffb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0abd423f33f1082805f2cb350f05254a"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a0abd423f33f1082805f2cb350f05254a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a0abd423f33f1082805f2cb350f05254a">global_array_minmax</a> (T *local_minmax, size_t count, <a class="el" href="classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8f">MinMax</a> which) const</td></tr>
-<tr class="separator:a0abd423f33f1082805f2cb350f05254a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f3637e07494c343d45c15cee5d9c1f9"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a1f3637e07494c343d45c15cee5d9c1f9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a1f3637e07494c343d45c15cee5d9c1f9">gather</a> (T my_value, std::vector&lt; T &gt; &amp;result) const</td></tr>
 <tr class="separator:a1f3637e07494c343d45c15cee5d9c1f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -245,8 +242,8 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a3440f0dcbbc50140499b13022a45335f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3440f0dcbbc50140499b13022a45335f">&#9670;&nbsp;</a></span>add_environment_properties()</h2>
+<a id="a66ac8857acdf08f232dee3b9442b7b21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66ac8857acdf08f232dee3b9442b7b21">&#9670;&nbsp;</a></span>add_environment_properties()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -255,22 +252,12 @@ Private Attributes</h2></td></tr>
           <td class="memname">void Ioss::ParallelUtils::add_environment_properties </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;&#160;</td>
-          <td class="paramname"><em>properties</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>properties</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>do_print</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>See if any external properties specified via the IOSS_PROPERTIES environment variable. If any found, add to <code>properties</code>. If <code>do_print</code> then output to cerr which properties were set </p>
+<p>See if any external properties specified via the IOSS_PROPERTIES environment variable. If any found, add to <code>properties</code>. </p>
 
 </div>
 </div>
@@ -647,62 +634,18 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="a96157c96e4309ff710306e2833e6ffb0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a96157c96e4309ff710306e2833e6ffb0">&#9670;&nbsp;</a></span>global_array_minmax() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a96157c96e4309ff710306e2833e6ffb0">&#9670;&nbsp;</a></span>global_array_minmax()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename T &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void Ioss::ParallelUtils::global_array_minmax </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
           <td class="paramname"><em>local_minmax</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classIoss_1_1ParallelUtils.html#aecb74d2b4f6d42014acf7d607964dd8f">MinMax</a>&#160;</td>
-          <td class="paramname"><em>which</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0abd423f33f1082805f2cb350f05254a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0abd423f33f1082805f2cb350f05254a">&#9670;&nbsp;</a></span>global_array_minmax() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void Ioss::ParallelUtils::global_array_minmax </td>
-          <td>(</td>
-          <td class="paramtype">T *&#160;</td>
-          <td class="paramname"><em>local_minmax</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>count</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

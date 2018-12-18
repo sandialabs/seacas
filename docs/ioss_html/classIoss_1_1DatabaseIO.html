@@ -499,6 +499,10 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a56d169a81de30315f561fae97e8b7ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec6a8e90c689b4c065e617310136419d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#aec6a8e90c689b4c065e617310136419d">blockAdjacenciesCalculated</a> {false}</td></tr>
 <tr class="separator:aec6a8e90c689b4c065e617310136419d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45a873b26ec572aa0b2d06b4af3b44d8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a45a873b26ec572aa0b2d06b4af3b44d8">m_timeStateInOut</a> {false}</td></tr>
+<tr class="separator:a45a873b26ec572aa0b2d06b4af3b44d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a4e4f8389cfde4802aba6046cb3fdf4"><td class="memItemLeft" align="right" valign="top">std::chrono::time_point&lt; std::chrono::high_resolution_clock &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a6a4e4f8389cfde4802aba6046cb3fdf4">m_stateStart</a></td></tr>
+<tr class="separator:a6a4e4f8389cfde4802aba6046cb3fdf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An input or output Database. </p>
@@ -810,9 +814,6 @@ Private Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool Ioss::DatabaseIO::begin_state </td>
@@ -832,11 +833,6 @@ Private Attributes</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>
@@ -1425,9 +1421,6 @@ template&lt;typename T &gt; </div>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool Ioss::DatabaseIO::end_state </td>
@@ -1447,11 +1440,6 @@ template&lt;typename T &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>
@@ -5470,6 +5458,50 @@ template&lt;typename T &gt; </div>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6a4e4f8389cfde4802aba6046cb3fdf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a4e4f8389cfde4802aba6046cb3fdf4">&#9670;&nbsp;</a></span>m_stateStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::time_point&lt;std::chrono::high_resolution_clock&gt; Ioss::DatabaseIO::m_stateStart</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a45a873b26ec572aa0b2d06b4af3b44d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45a873b26ec572aa0b2d06b4af3b44d8">&#9670;&nbsp;</a></span>m_timeStateInOut</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ioss::DatabaseIO::m_timeStateInOut {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

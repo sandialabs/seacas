@@ -12,6 +12,7 @@ var searchData=
   ['local_5ffilename',['local_filename',['../classIoss_1_1Utils.html#a60e19e9db88e2f6dcbfa87c42e5f3e04',1,'Ioss::Utils']]],
   ['log_5ffield',['log_field',['../namespaceanonymous__namespace_02Ioss__DatabaseIO_8C_03.html#a3f5223b8bdd71be3ba720d424ca0bb4e',1,'anonymous_namespace{Ioss_DatabaseIO.C}']]],
   ['log_5fpower_5f2',['log_power_2',['../classIoss_1_1Utils.html#a78ab83fa66bd69d336118e0e72a84241',1,'Ioss::Utils']]],
+  ['log_5ftime',['log_time',['../namespaceanonymous__namespace_02Ioss__DatabaseIO_8C_03.html#a4682dbceb8a9b6f76917d92169a37a57',1,'anonymous_namespace{Ioss_DatabaseIO.C}']]],
   ['logger',['logger',['../structAssert.html#a6707f5538bb0bd13eed019ada6c375e9',1,'Assert']]],
   ['lowercase',['lowercase',['../classIoss_1_1Utils.html#a48106bb99507951b4655783fe6ceb0f8',1,'Ioss::Utils']]]
 ];
