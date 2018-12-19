@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   }
 
   if (argv[1][0] == '-') {
-    if (strcmp(argv[1], "-config") == 0) {
+    if (argv[1][1] == 'c') {
       ex_print_config();
     }
     fn_idx = 2;
@@ -98,8 +98,8 @@ int main(int argc, char *argv[])
       exit(0);
     }
   }
-  /* examine file */
 
+  /* examine file */
   filename = argv[fn_idx]; /* filename path */
 
   fid = fopen(filename, "r");
@@ -128,7 +128,12 @@ int main(int argc, char *argv[])
                   &version);         /* Exodus library version */
 
   if (exoid < 0) {
-    (void)fprintf(stderr, "         %s is not an EXODUS file\n", filename);
+    if (netcdf_based) {
+      (void)fprintf(stderr, "         %s is a NetCDF file, but not a valid EXODUS file\n", filename);
+    }
+    else if (hdf5_based) {
+      (void)fprintf(stderr, "         %s is an HDF5 file, but not a valid EXODUS file.\n", filename);
+    }
     exit(NOT_EXODUSII);
   }
 

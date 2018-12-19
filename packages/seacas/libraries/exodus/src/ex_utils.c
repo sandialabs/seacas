@@ -95,19 +95,19 @@ void ex_print_config(void)
   fprintf(stderr, "\nExodus Configuration Information:\n");
   fprintf(stderr, "\tExodus Version %.2f\n", EX_API_VERS);
 #if defined(HAVE_PARALLEL)
-  fprintf(stderr, "\tExodus Parallel enabled\n");
+  fprintf(stderr, "\t\tParallel enabled\n");
 #else
-  fprintf(stderr, "\tExodus Parallel NOT enabled\n");
+  fprintf(stderr, "\t\tParallel NOT enabled\n");
 #endif
 #if defined(EXODUS_THREADSAFE)
-  fprintf(stderr, "\tExodus Thread Safe enabled\n");
+  fprintf(stderr, "\t\tThread Safe enabled\n");
 #else
-  fprintf(stderr, "\tExodus Thread Safe NOT enabled\n");
+  fprintf(stderr, "\t\tThread Safe NOT enabled\n");
 #endif
 #if defined(SEACAS_HIDE_DEPRECATED_CODE)
-  fprintf(stderr, "\tExodus Deprecated Functions NOT built\n\n");
+  fprintf(stderr, "\t\tDeprecated Functions NOT built\n\n");
 #else
-  fprintf(stderr, "\tExodus Deprecated Functions Available\n\n");
+  fprintf(stderr, "\t\tDeprecated Functions available\n\n");
 #endif
 #if defined(NC_VERSION)
   fprintf(stderr, "\tNetCDF Version %s\n", NC_VERSION);
@@ -125,7 +125,7 @@ void ex_print_config(void)
   fprintf(stderr, "\t\tparallel IO enabled via HDF5\n");
 #endif
 #if NC_HAS_CDF5
-  fprintf(stderr, "\t\tCDF5 support\n");
+  fprintf(stderr, "\t\tCDF5 enabled\n");
 #endif
 #if NC_HAS_PNETCDF
   {
