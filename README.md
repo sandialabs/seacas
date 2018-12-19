@@ -39,7 +39,7 @@ detailed in [TPL-Manual-Install.md](TPL-Manual-Install.md).
 
 * To use the script, simply type `./install-tpl.sh`
 * The default behavior can be modified via a few environment variables:
- 
+
 | Variable | Values | Default | Description |
 |----------|:------:|:-------:|-------------|
 | COMPILER | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build |
@@ -60,7 +60,7 @@ detailed in [TPL-Manual-Install.md](TPL-Manual-Install.md).
 | SUDO     | "" or sudo | "" | If need to be superuser to install |
 * NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
 * The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
- 
+
 ## Configure, Build, and Install SEACAS
 At this time, you should have all external TPL libraries built and
 installed into `${ACCESS}/lib` and `${ACCESS}/include`. You are now ready
@@ -70,7 +70,7 @@ to configure the SEACAS CMake build.
    * `mkdir build`
    * `cd build`
    * edit the `${ACCESS}cmake-config` file and adjust compilers and
-     other settings as needed. 
+     other settings as needed.
    * enter the command `../cmake-config` and cmake should configure everything for the build.
    * `make && make install`
    * If everything works, your applications should be in `${ACCESS}/bin`
@@ -84,7 +84,7 @@ There is also a system-level test that just verifies that the applications can r
  * `cd ../SEACAS-Test`
  * `make clean; make`
 
-This will run through several of the SEACAS applications creating a mesh (exodus file) and then performing various manipulations on the mesh.  If the test runs successfully, there is some hope that everything has built and is running correctly. 
+This will run through several of the SEACAS applications creating a mesh (exodus file) and then performing various manipulations on the mesh.  If the test runs successfully, there is some hope that everything has built and is running correctly.
 
 ## Exodus
 If you only want the exodus library, then follow most of the above instructions with the following exceptions:
@@ -92,7 +92,7 @@ If you only want the exodus library, then follow most of the above instructions 
   * You can either clone entire source tree as above, or you can
 	download a zip file containing only the exodus source (and
 	build-related files).  The url for the zip file is
-	<https://github.com/gsjaardema/seacas/archive/exodus.zip> NOTE: Probably out-of-date and better to just clone entire repository. 
+	<https://github.com/gsjaardema/seacas/archive/exodus.zip> NOTE: Probably out-of-date and better to just clone entire repository.
   * You only need the netcdf and optionally hdf5 libraries
   * Use the `cmake-exodus` file instead of `cmake-config`.
   * This will build, by default, a shared exodus library and also install the exodus.py Python interface.
@@ -105,7 +105,7 @@ SEACAS code from this repository to override the possibly older SEACAS
 code in Trilinos.  The steps are to directly pull SEACAS from github
 under Trilinos and then build SEACAS under Trilinos with that version
 using `SEACAS_SOURCE_DIR_OVERRIDE`.  Here is how you do it:
- 
+
 ```
 cd Trilinos/
 git clone https://github.com/gsjaardema/seacas.git
@@ -116,28 +116,22 @@ cmake -DSEACAS_SOURCE_DIR_OVERRIDE:STRING=seacas/packages/seacas -DTrilinos_ENAB
 ## SPACK
 
 The SPACK package manager (https://spack.io/) can be used to install
-SEACAS and all depedent third-party libaries.  There is currently a
-pull-request to add SEACAS to the distributed packages, but until that
-is applied, you can clone spack and apply two patches:
+SEACAS and all depedent third-party libaries.  SEACAS is a supported
+package in SPACK as of December 2018.
 
 ```
 git clone https://github.com/spack/spack.git
-cd spack
-wget https://github.com/gsjaardema/seacas/raw/master/SPACK-Define-seacas-package.patch
-wget https://github.com/gsjaardema/seacas/raw/master/SPACK-CGNS.patch
-git apply SPACK-Define-seacas-package.patch
-git apply SPACK-CGNS.patch
-cd ..
 . spack/share/spack/setup-env.sh
 spack install seacas~mpi   # Serial build (most common)
 ```
 
 Enter `spack info seacas` to see information on supported variants and other information about the SEACAS package.
+
 ## License
 
 SEACAS is licensed under the Modified BSD License.  See the LICENSE  file for details.
 
-The following externally-developed software routines are used in some of the SEACAS applications and are under 
+The following externally-developed software routines are used in some of the SEACAS applications and are under
 a separate license:
 
 | Routine | Where Used  | License |
@@ -149,7 +143,8 @@ a separate license:
 | [MurmurHash](https://github.com/aappleby/smhasher) | `packages/seacas/libraries/ioss/src/Ioss_FaceGenerator.C` | public domain |
 | [json include file](http://jsoncpp.sourceforge.net) | `packages/seacas/libraries/ioss/src/visualization/` | [MIT](https://opensource.org/licenses/MIT) |
 | [terminal_color](https://github.com/matovitch/trmclr) | `packages/seacas/libraries/suplib_cpp` | [zlib](https://opensource.org/licenses/zlib) |
-
+| [Tessil Hash](https://github.com/Tessil/) | `packages/seacas/libraries/ioss/src/hash` |  [MIT](https://opensource.org/licenses/MIT) |
+| [Catch2](https://github.com/catchorg/Catch2) | `packages/seacas/libraries/ioss/src/catch.hpp` | [Boost](http://www.boost.org/LICENSE_1_0.txt) |
 ## Ubuntu
 There is a [PPA](https://launchpad.net/~nschloe/+archive/ubuntu/seacas-nightly/) available for SEACAS that is updated nightly from SEACAS `master`. Anyone using Ubuntu can now just add the PPA and do
 ```
@@ -165,4 +160,4 @@ to get the SEACAS binaries. You can also install 'libseacas-dev' or 'libseacas0'
 ## Contact information
 
  Greg Sjaardema  (<gsjaardema@gmail.com>, <gdsjaar@sandia.gov>)
-      
+
