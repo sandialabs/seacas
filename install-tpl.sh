@@ -213,14 +213,14 @@ then
 else
     echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
-# =================== INSTALL PNETCDF if parallel build ===============
+# =================== INSTALL PnetCDF if parallel build ===============
 if [ "$MPI" == "ON" ]
 then
     # PnetCDF currently only builds static library...
     if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
-        pnet_version="1.10.0"
+        pnet_version="1.11.0"
 
         cd $ACCESS
         cd TPL/pnetcdf
@@ -229,7 +229,9 @@ then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf parallel-netcdf-${pnet_version}
             rm -f parallel-netcdf-${pnet_version}.tar.gz
-            wget http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-${pnet_version}.tar.gz
+            wget https://parallel-netcdf.github.io/Release/pnetcdf-${pnet_version}.tar.gz
+# Files for versions prior to 1.11.0 are of this form:
+#            wget https://parallel-netcdf.github.io/Release/parallel-netcdf-${pnet_version}.tar.gz
             tar -xzf parallel-netcdf-${pnet_version}.tar.gz
             rm -f parallel-netcdf-${pnet_version}.tar.gz
         fi
