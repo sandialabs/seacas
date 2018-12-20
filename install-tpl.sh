@@ -221,25 +221,25 @@ then
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
         pnet_version="1.11.0"
-
+	pnet_base="pnetcdf"
+	#      pnet_version="1.10.0"
+	#      pnet_base="parallel-netcdf"
         cd $ACCESS
         cd TPL/pnetcdf
         if [ "$DOWNLOAD" == "YES" ]
         then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
-            rm -rf parallel-netcdf-${pnet_version}
-            rm -f parallel-netcdf-${pnet_version}.tar.gz
-            wget https://parallel-netcdf.github.io/Release/pnetcdf-${pnet_version}.tar.gz
-# Files for versions prior to 1.11.0 are of this form:
-#            wget https://parallel-netcdf.github.io/Release/parallel-netcdf-${pnet_version}.tar.gz
-            tar -xzf parallel-netcdf-${pnet_version}.tar.gz
-            rm -f parallel-netcdf-${pnet_version}.tar.gz
+            rm -rf ${pnet_base}-${pnet_version}
+            rm -f ${pnet_base}-${pnet_version}.tar.gz
+            wget https://parallel-netcdf.github.io/Release/${pnet_base}-${pnet_version}.tar.gz
+            tar -xzf ${pnet_base}-${pnet_version}.tar.gz
+            rm -f ${pnet_base}-${pnet_version}.tar.gz
         fi
 
         if [ "$BUILD" == "YES" ]
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd parallel-netcdf-${pnet_version}
+            cd ${pnet_base}-${pnet_version}
             CRAY=${CRAY} BB=${BB} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
