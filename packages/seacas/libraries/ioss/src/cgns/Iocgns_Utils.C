@@ -210,12 +210,7 @@ namespace {
       // Need to create a new sideset since didn't see this earlier.
       auto *db = block->get_database();
       sset     = new Ioss::SideSet(db, fam_name);
-      if (sset == nullptr) {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Could not create sideset named '" << fam_name << "' on block '"
-               << block->name() << "'.\n";
-        IOSS_ERROR(errmsg);
-      }
+
       // Get all previous sidesets to make sure we set a unique id...
       int64_t     max_id   = 0;
       const auto &sidesets = db->get_region()->get_sidesets();

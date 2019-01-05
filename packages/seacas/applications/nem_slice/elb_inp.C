@@ -99,7 +99,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
 {
   int   opt_let, iret, el_blk, wgt, max_dim = 0, i;
   char *sub_opt = nullptr, *value = nullptr, *cptr = nullptr, *cptr2 = nullptr;
-  char  ctemp[1024];
+  char  ctemp[2048];
 
   extern char *optarg;
   extern int   optind;
@@ -1703,13 +1703,10 @@ int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
     }
 
     /* Free up memory */
-    if (nvars > 0) {
-      for (cnt = 0; cnt < nvars; cnt++) {
-        free(var_names[cnt]);
-      }
-
-      free(var_names);
+    for (cnt = 0; cnt < nvars; cnt++) {
+      free(var_names[cnt]);
     }
+    free(var_names);
 
     /*
      * If there is still no valid index then the variable name does
