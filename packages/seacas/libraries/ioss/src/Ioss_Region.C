@@ -1542,8 +1542,7 @@ namespace Ioss {
    */
   GroupingEntity *Region::get_entity(const std::string &my_name) const
   {
-    GroupingEntity *entity = nullptr;
-    entity                 = get_node_block(my_name);
+    GroupingEntity *entity = get_node_block(my_name);
     if (entity != nullptr) {
       return entity;
     }

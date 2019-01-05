@@ -1927,8 +1927,6 @@ namespace {
       size_t degree    = inb->get_property("component_degree").get_int();
       if (options.verbose && rank == 0) {
         std::cerr << " Number of  Coordinates per Node        =" << std::setw(12) << degree << "\n";
-      }
-      if (options.verbose && rank == 0) {
         std::cerr << " Number of             Nodes            =" << std::setw(12) << num_nodes
                   << "\n";
       }
@@ -2565,11 +2563,7 @@ namespace {
   {
     if (options.verbose && rank == 0) {
       std::cerr.setf(std::ios::scientific);
-    }
-    if (options.verbose && rank == 0) {
       std::cerr.setf(std::ios::showpoint);
-    }
-    if (options.verbose && rank == 0) {
       std::cerr << "\r\tTime step " << std::setw(5) << istep << " at time " << std::setprecision(5)
                 << time;
     }

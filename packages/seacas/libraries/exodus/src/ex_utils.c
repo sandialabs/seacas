@@ -94,7 +94,7 @@ void ex_print_config(void)
 {
   fprintf(stderr, "\nExodus Configuration Information:\n");
   fprintf(stderr, "\tExodus Version %.2f\n", EX_API_VERS);
-#if defined(HAVE_PARALLEL)
+#if defined(PARALLEL_AWARE_EXODUS)
   fprintf(stderr, "\t\tParallel enabled\n");
 #else
   fprintf(stderr, "\t\tParallel NOT enabled\n");

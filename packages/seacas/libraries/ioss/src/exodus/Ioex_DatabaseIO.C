@@ -2107,7 +2107,7 @@ namespace {
       return;
     }
 
-    if (!all_attributes_indexed && !some_attributes_indexed) {
+    if (!some_attributes_indexed) {
       // Index was not set for any of the attributes; set them all...
       size_t offset = 1;
       for (const auto &field_name : results_fields) {
