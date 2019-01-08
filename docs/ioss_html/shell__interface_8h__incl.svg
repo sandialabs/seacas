@@ -12,13 +12,16 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="108.6699,-110.5 108.6699,-128.5 238.0537,-128.5 238.0537,-110.5 108.6699,-110.5"/>
 <text text-anchor="middle" x="173.3618" y="-116.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/main/shell_interface.h</text>
+</a>
+</g>
 </g>
 <!-- Node1 -->
 <g id="node2" class="node">
 <title>Node1</title>
-<g id="a_node2"><a xlink:href="Ioss__GetLongOpt_8h.html" target="_top" xlink:title="Ioss_GetLongOpt.h">
+<g id="a_node2"><a xlink:href="Ioss__GetLongOpt_8h.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="0,-55.5 0,-73.5 102.7236,-73.5 102.7236,-55.5 0,-55.5"/>
 <text text-anchor="middle" x="51.3618" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss_GetLongOpt.h</text>
 </a>
@@ -33,8 +36,11 @@
 <!-- Node3 -->
 <g id="node4" class="node">
 <title>Node3</title>
+<g id="a_node4"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="121.1895,-55.5 121.1895,-73.5 165.5342,-73.5 165.5342,-55.5 121.1895,-55.5"/>
 <text text-anchor="middle" x="143.3618" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">iosfwd</text>
+</a>
+</g>
 </g>
 <!-- Node0&#45;&gt;Node3 -->
 <g id="edge3" class="edge">
@@ -45,8 +51,11 @@
 <!-- Node4 -->
 <g id="node5" class="node">
 <title>Node4</title>
+<g id="a_node5"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="183.1353,-55.5 183.1353,-73.5 223.5884,-73.5 223.5884,-55.5 183.1353,-55.5"/>
 <text text-anchor="middle" x="203.3618" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">string</text>
+</a>
+</g>
 </g>
 <!-- Node0&#45;&gt;Node4 -->
 <g id="edge4" class="edge">
@@ -57,8 +66,11 @@
 <!-- Node5 -->
 <g id="node6" class="node">
 <title>Node5</title>
+<g id="a_node6"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="241.7461,-55.5 241.7461,-73.5 284.9775,-73.5 284.9775,-55.5 241.7461,-55.5"/>
 <text text-anchor="middle" x="263.3618" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">vector</text>
+</a>
+</g>
 </g>
 <!-- Node0&#45;&gt;Node5 -->
 <g id="edge5" class="edge">
@@ -69,8 +81,11 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="24.1895,-.5 24.1895,-18.5 78.5342,-18.5 78.5342,-.5 24.1895,-.5"/>
 <text text-anchor="middle" x="51.3618" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">iostream</text>
+</a>
+</g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge2" class="edge">

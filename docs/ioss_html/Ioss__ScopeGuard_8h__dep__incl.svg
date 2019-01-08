@@ -12,13 +12,16 @@
 <!-- Node1 -->
 <g id="node1" class="node">
 <title>Node1</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="51.9878,-55.5 51.9878,-73.5 172.4849,-73.5 172.4849,-55.5 51.9878,-55.5"/>
 <text text-anchor="middle" x="112.2363" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/Ioss_ScopeGuard.h</text>
+</a>
+</g>
 </g>
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="io__shell_8C.html" target="_top" xlink:title="src/main/io_shell.C">
+<g id="a_node2"><a xlink:href="io__shell_8C.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="0,-.5 0,-18.5 100.4727,-18.5 100.4727,-.5 0,-.5"/>
 <text text-anchor="middle" x="50.2363" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/main/io_shell.C</text>
 </a>
@@ -33,7 +36,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="io__shell__ts_8C.html" target="_top" xlink:title="src/main/io_shell_ts.C">
+<g id="a_node3"><a xlink:href="io__shell__ts_8C.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="118.3301,-.5 118.3301,-18.5 232.1426,-18.5 232.1426,-.5 118.3301,-.5"/>
 <text text-anchor="middle" x="175.2363" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/main/io_shell_ts.C</text>
 </a>

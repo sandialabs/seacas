@@ -12,16 +12,19 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-.5 0,-48.5 161.7568,-48.5 161.7568,-.5 0,-.5"/>
 <text text-anchor="start" x="8" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="8" y="-26.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">_hash::hopscotch_bucket</text>
 <text text-anchor="start" x="8" y="-16.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">&lt; ValueType, NeighborhoodSize,</text>
 <text text-anchor="middle" x="80.8784" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> StoreHash &gt;</text>
+</a>
+</g>
 </g>
 <!-- Node1 -->
 <g id="node2" class="node">
 <title>Node1</title>
-<g id="a_node2"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash.html" target="_top" xlink:title="tsl::detail_hopscotch\l_hash::hopscotch_bucket\l_hash\&lt; StoreHash \&gt;">
+<g id="a_node2"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="16.1719,-85.5 16.1719,-123.5 145.585,-123.5 145.585,-85.5 16.1719,-85.5"/>
 <text text-anchor="start" x="24.1719" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="24.1719" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">_hash::hopscotch_bucket</text>

@@ -12,6 +12,7 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-.5 0,-68.5 226.7373,-68.5 226.7373,-.5 0,-.5"/>
 <text text-anchor="start" x="8" y="-56.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="8" y="-46.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">_hash::hopscotch_hash</text>
@@ -19,12 +20,17 @@
 <text text-anchor="start" x="8" y="-26.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> ValueSelect, Hash, KeyEqual,</text>
 <text text-anchor="start" x="8" y="-16.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> Allocator, NeighborhoodSize,</text>
 <text text-anchor="middle" x="113.3687" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> StoreHash, GrowthPolicy, OverflowContainer &gt;</text>
+</a>
+</g>
 </g>
 <!-- Node1 -->
 <g id="node2" class="node">
 <title>Node1</title>
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="26.6963,-105.5 26.6963,-123.5 66.041,-123.5 66.041,-105.5 26.6963,-105.5"/>
 <text text-anchor="middle" x="46.3687" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Hash</text>
+</a>
+</g>
 </g>
 <!-- Node1&#45;&gt;Node0 -->
 <g id="edge1" class="edge">
@@ -35,8 +41,11 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="83.9648,-105.5 83.9648,-123.5 142.7725,-123.5 142.7725,-105.5 83.9648,-105.5"/>
 <text text-anchor="middle" x="113.3687" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">KeyEqual</text>
+</a>
+</g>
 </g>
 <!-- Node2&#45;&gt;Node0 -->
 <g id="edge2" class="edge">
@@ -47,8 +56,11 @@
 <!-- Node3 -->
 <g id="node4" class="node">
 <title>Node3</title>
+<g id="a_node4"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="160.9155,-105.5 160.9155,-123.5 235.8218,-123.5 235.8218,-105.5 160.9155,-105.5"/>
 <text text-anchor="middle" x="198.3687" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">GrowthPolicy</text>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node0 -->
 <g id="edge3" class="edge">

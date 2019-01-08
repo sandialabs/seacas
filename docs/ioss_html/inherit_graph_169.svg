@@ -12,7 +12,7 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="structtsl_1_1detail__robin__hash_1_1make__void.html" target="_top" xlink:title="tsl::detail_robin_hash\l::make_void\&lt; T \&gt;">
+<g id="a_node1"><a xlink:href="structtsl_1_1detail__robin__hash_1_1make__void.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="0,-.5 0,-28.5 110.5068,-28.5 110.5068,-.5 0,-.5"/>
 <text text-anchor="start" x="8" y="-16.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_robin_hash</text>
 <text text-anchor="middle" x="55.2534" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">::make_void&lt; T &gt;</text>

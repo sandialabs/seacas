@@ -12,7 +12,7 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1smallest__type__for__min__bits_3_01MinBits_00_01typename_ed337729a7acb1283fcb8da059540fa5.html" target="_top" xlink:title="tsl::detail_hopscotch\l_hash::smallest_type\l_for_min_bits\&lt; MinBits,\l typename std::enable_if\l\&lt;(MinBits \&gt; 16) &amp;&amp;(MinBits\l\&lt;=32)\&gt;::type \&gt;">
+<g id="a_node1"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1smallest__type__for__min__bits_3_01MinBits_00_01typename_ed337729a7acb1283fcb8da059540fa5.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="0,-.5 0,-68.5 136.0342,-68.5 136.0342,-.5 0,-.5"/>
 <text text-anchor="start" x="8" y="-56.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="8" y="-46.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">_hash::smallest_type</text>

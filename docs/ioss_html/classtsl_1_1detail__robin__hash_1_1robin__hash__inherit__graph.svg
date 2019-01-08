@@ -12,18 +12,24 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="17.1196,-.5 17.1196,-58.5 156.2251,-58.5 156.2251,-.5 17.1196,-.5"/>
 <text text-anchor="start" x="25.1196" y="-46.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_robin_hash</text>
 <text text-anchor="start" x="25.1196" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">::robin_hash&lt; ValueType,</text>
 <text text-anchor="start" x="25.1196" y="-26.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> KeySelect, ValueSelect,</text>
 <text text-anchor="start" x="25.1196" y="-16.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> Hash, KeyEqual, Allocator,</text>
 <text text-anchor="middle" x="86.6724" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> StoreHash, GrowthPolicy &gt;</text>
+</a>
+</g>
 </g>
 <!-- Node1 -->
 <g id="node2" class="node">
 <title>Node1</title>
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="0,-95.5 0,-113.5 39.3447,-113.5 39.3447,-95.5 0,-95.5"/>
 <text text-anchor="middle" x="19.6724" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Hash</text>
+</a>
+</g>
 </g>
 <!-- Node1&#45;&gt;Node0 -->
 <g id="edge1" class="edge">
@@ -34,8 +40,11 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="57.2686,-95.5 57.2686,-113.5 116.0762,-113.5 116.0762,-95.5 57.2686,-95.5"/>
 <text text-anchor="middle" x="86.6724" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">KeyEqual</text>
+</a>
+</g>
 </g>
 <!-- Node2&#45;&gt;Node0 -->
 <g id="edge2" class="edge">
@@ -46,8 +55,11 @@
 <!-- Node3 -->
 <g id="node4" class="node">
 <title>Node3</title>
+<g id="a_node4"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="134.2192,-95.5 134.2192,-113.5 209.1255,-113.5 209.1255,-95.5 134.2192,-95.5"/>
 <text text-anchor="middle" x="171.6724" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">GrowthPolicy</text>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node0 -->
 <g id="edge3" class="edge">

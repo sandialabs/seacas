@@ -12,13 +12,16 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-.5 0,-18.5 84.3545,-18.5 84.3545,-.5 0,-.5"/>
 <text text-anchor="middle" x="42.1772" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioex::IOFactory</text>
+</a>
+</g>
 </g>
 <!-- Node1 -->
 <g id="node2" class="node">
 <title>Node1</title>
-<g id="a_node2"><a xlink:href="classIoss_1_1IOFactory.html" target="_top" xlink:title="The main public user interface for creating Ioss::DatabaseIO objects. ">
+<g id="a_node2"><a xlink:href="classIoss_1_1IOFactory.html" target="_top" xlink:title="The main public user interface for creating Ioss::DatabaseIO objects.">
 <polygon fill="#ffffff" stroke="#000000" points=".2808,-55.5 .2808,-73.5 84.0737,-73.5 84.0737,-55.5 .2808,-55.5"/>
 <text text-anchor="middle" x="42.1772" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::IOFactory</text>
 </a>

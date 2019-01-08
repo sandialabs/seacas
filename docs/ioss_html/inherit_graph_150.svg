@@ -12,7 +12,7 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="classIotr_1_1Initializer.html" target="_top" xlink:title="Iotr::Initializer">
+<g id="a_node1"><a xlink:href="classIotr_1_1Initializer.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="0,-.5 0,-18.5 75.4629,-18.5 75.4629,-.5 0,-.5"/>
 <text text-anchor="middle" x="37.7314" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Iotr::Initializer</text>
 </a>

@@ -58,13 +58,16 @@ var sectionId = 'dynsection-1';
 <!-- Node18 -->
 <g id="node1" class="node">
 <title>Node18</title>
+<g id="a_node1"><a xlink:title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">
 <polygon fill="#bfbfbf" stroke="#000000" points="243.6528,-160.5 243.6528,-178.5 349.6968,-178.5 349.6968,-160.5 243.6528,-160.5"/>
 <text text-anchor="middle" x="296.6748" y="-166.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::GroupingEntity</text>
+</a>
+</g>
 </g>
 <!-- Node20 -->
 <g id="node3" class="node">
 <title>Node20</title>
-<g id="a_node3"><a xlink:href="classIoss_1_1Region.html" target="_top" xlink:title="A grouping entity that contains other grouping entities. ">
+<g id="a_node3"><a xlink:href="classIoss_1_1Region.html" target="_top" xlink:title="A grouping entity that contains other grouping entities.">
 <polygon fill="#ffffff" stroke="#000000" points="318.8818,-95.5 318.8818,-113.5 390.4678,-113.5 390.4678,-95.5 318.8818,-95.5"/>
 <text text-anchor="middle" x="354.6748" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::Region</text>
 </a>
@@ -79,7 +82,7 @@ var sectionId = 'dynsection-1';
 <!-- Node19 -->
 <g id="node2" class="node">
 <title>Node19</title>
-<g id="a_node2"><a xlink:href="classIoss_1_1DatabaseIO.html" target="_top" xlink:title="An input or output Database. ">
+<g id="a_node2"><a xlink:href="classIoss_1_1DatabaseIO.html" target="_top" xlink:title="An input or output Database.">
 <polygon fill="#ffffff" stroke="#000000" points="174.0444,-.5 174.0444,-18.5 267.3052,-18.5 267.3052,-.5 174.0444,-.5"/>
 <text text-anchor="middle" x="220.6748" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::DatabaseIO</text>
 </a>
@@ -102,7 +105,7 @@ var sectionId = 'dynsection-1';
 <!-- Node21 -->
 <g id="node4" class="node">
 <title>Node21</title>
-<g id="a_node4"><a xlink:href="classIoss_1_1Map.html" target="_top" xlink:title="Ioss::Map">
+<g id="a_node4"><a xlink:href="classIoss_1_1Map.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="0,-95.5 0,-113.5 59.3496,-113.5 59.3496,-95.5 0,-95.5"/>
 <text text-anchor="middle" x="29.6748" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::Map</text>
 </a>
@@ -121,7 +124,7 @@ var sectionId = 'dynsection-1';
 <!-- Node22 -->
 <g id="node5" class="node">
 <title>Node22</title>
-<g id="a_node5"><a xlink:href="classIoss_1_1ParallelUtils.html" target="_top" xlink:title="Ioss::ParallelUtils">
+<g id="a_node5"><a xlink:href="classIoss_1_1ParallelUtils.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="77.3301,-95.5 77.3301,-113.5 170.0195,-113.5 170.0195,-95.5 77.3301,-95.5"/>
 <text text-anchor="middle" x="123.6748" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::ParallelUtils</text>
 </a>
@@ -137,7 +140,7 @@ var sectionId = 'dynsection-1';
 <!-- Node23 -->
 <g id="node6" class="node">
 <title>Node23</title>
-<g id="a_node6"><a xlink:href="classIoss_1_1PropertyManager.html" target="_top" xlink:title="A collection of Ioss::Property objects. ">
+<g id="a_node6"><a xlink:href="classIoss_1_1PropertyManager.html" target="_top" xlink:title="A collection of Ioss::Property objects.">
 <polygon fill="#ffffff" stroke="#000000" points="139.0962,-225.5 139.0962,-243.5 256.2534,-243.5 256.2534,-225.5 139.0962,-225.5"/>
 <text text-anchor="middle" x="197.6748" y="-231.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::PropertyManager</text>
 </a>
@@ -160,7 +163,7 @@ var sectionId = 'dynsection-1';
 <!-- Node24 -->
 <g id="node7" class="node">
 <title>Node24</title>
-<g id="a_node7"><a xlink:href="classIoss_1_1ElementTopology.html" target="_top" xlink:title="Represents an element topology. ">
+<g id="a_node7"><a xlink:href="classIoss_1_1ElementTopology.html" target="_top" xlink:title="Represents an element topology.">
 <polygon fill="#ffffff" stroke="#000000" points="408.3696,-95.5 408.3696,-113.5 524.98,-113.5 524.98,-95.5 408.3696,-95.5"/>
 <text text-anchor="middle" x="466.6748" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::ElementTopology</text>
 </a>
@@ -176,7 +179,7 @@ var sectionId = 'dynsection-1';
 <!-- Node25 -->
 <g id="node8" class="node">
 <title>Node25</title>
-<g id="a_node8"><a xlink:href="classIoss_1_1FieldManager.html" target="_top" xlink:title="A collection of Ioss::Field objects. ">
+<g id="a_node8"><a xlink:href="classIoss_1_1FieldManager.html" target="_top" xlink:title="A collection of Ioss::Field objects.">
 <polygon fill="#ffffff" stroke="#000000" points="274.1553,-225.5 274.1553,-243.5 375.1943,-243.5 375.1943,-225.5 274.1553,-225.5"/>
 <text text-anchor="middle" x="324.6748" y="-231.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::FieldManager</text>
 </a>

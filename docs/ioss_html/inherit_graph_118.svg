@@ -12,7 +12,7 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="classIoss_1_1FieldManager.html" target="_top" xlink:title="A collection of Ioss::Field objects. ">
+<g id="a_node1"><a xlink:href="classIoss_1_1FieldManager.html" target="_top" xlink:title="A collection of Ioss::Field objects.">
 <polygon fill="#ffffff" stroke="#000000" points="0,-.5 0,-18.5 101.0391,-18.5 101.0391,-.5 0,-.5"/>
 <text text-anchor="middle" x="50.5195" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::FieldManager</text>
 </a>

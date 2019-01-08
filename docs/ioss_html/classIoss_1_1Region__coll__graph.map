@@ -1,9 +1,10 @@
 <map id="Ioss::Region" name="Ioss::Region">
-<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html" title="An input or output Database. " alt="" coords="266,132,390,157"/>
-<area shape="rect" id="node2" href="$classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ..." alt="" coords="496,219,637,244"/>
-<area shape="rect" id="node4" href="$classIoss_1_1Map.html" title="Ioss::Map" alt="" coords="124,5,203,31"/>
-<area shape="rect" id="node5" href="$classIoss_1_1ParallelUtils.html" title="Ioss::ParallelUtils" alt="" coords="227,5,351,31"/>
-<area shape="rect" id="node6" href="$classIoss_1_1PropertyManager.html" title="A collection of Ioss::Property objects. " alt="" coords="555,5,711,31"/>
-<area shape="rect" id="node7" href="$classIoss_1_1ElementTopology.html" title="Represents an element topology. " alt="" coords="375,5,531,31"/>
-<area shape="rect" id="node8" href="$classIoss_1_1FieldManager.html" title="A collection of Ioss::Field objects. " alt="" coords="702,132,836,157"/>
+<area shape="rect" id="node1" title="A grouping entity that contains other grouping entities." alt="" coords="5,5,101,31"/>
+<area shape="rect" id="node3" href="$classIoss_1_1DatabaseIO.html" title="An input or output Database." alt="" coords="266,132,390,157"/>
+<area shape="rect" id="node2" href="$classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:" alt="" coords="496,219,637,244"/>
+<area shape="rect" id="node4" href="$classIoss_1_1Map.html" title=" " alt="" coords="124,5,203,31"/>
+<area shape="rect" id="node5" href="$classIoss_1_1ParallelUtils.html" title=" " alt="" coords="227,5,351,31"/>
+<area shape="rect" id="node6" href="$classIoss_1_1PropertyManager.html" title="A collection of Ioss::Property objects." alt="" coords="555,5,711,31"/>
+<area shape="rect" id="node7" href="$classIoss_1_1ElementTopology.html" title="Represents an element topology." alt="" coords="375,5,531,31"/>
+<area shape="rect" id="node8" href="$classIoss_1_1FieldManager.html" title="A collection of Ioss::Field objects." alt="" coords="702,132,836,157"/>
 </map>

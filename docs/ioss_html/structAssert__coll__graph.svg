@@ -12,8 +12,11 @@
 <!-- Node1 -->
 <g id="node1" class="node">
 <title>Node1</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="18.3472,-1 18.3472,-19 62.687,-19 62.687,-1 18.3472,-1"/>
 <text text-anchor="middle" x="40.5171" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Assert</text>
+</a>
+</g>
 </g>
 <!-- Node1&#45;&gt;Node1 -->
 <g id="edge1" class="edge">
@@ -26,7 +29,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classassert__context.html" target="_top" xlink:title="assert_context">
+<g id="a_node2"><a xlink:href="classassert__context.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="0,-66.5 0,-84.5 81.0342,-84.5 81.0342,-66.5 0,-66.5"/>
 <text text-anchor="middle" x="40.5171" y="-72.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">assert_context</text>
 </a>

@@ -12,18 +12,24 @@
 <!-- Node2 -->
 <g id="node1" class="node">
 <title>Node2</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-.5 0,-58.5 141.7227,-58.5 141.7227,-.5 0,-.5"/>
 <text text-anchor="start" x="8" y="-46.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="8" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">_hash::has_key_compare</text>
 <text text-anchor="start" x="8" y="-26.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">&lt; T, typename make_void</text>
 <text text-anchor="start" x="8" y="-16.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">&lt; typename T::key_compare</text>
 <text text-anchor="middle" x="70.8613" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> &gt;::type &gt;</text>
+</a>
+</g>
 </g>
 <!-- Node3 -->
 <g id="node2" class="node">
 <title>Node3</title>
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="42.0142,-95.5 42.0142,-113.5 99.7085,-113.5 99.7085,-95.5 42.0142,-95.5"/>
 <text text-anchor="middle" x="70.8613" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">true_type</text>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node2 -->
 <g id="edge1" class="edge">

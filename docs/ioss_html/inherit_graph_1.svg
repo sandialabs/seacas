@@ -12,13 +12,16 @@
 <!-- Node130 -->
 <g id="node1" class="node">
 <title>Node130</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="0,-57.5 0,-75.5 59.916,-75.5 59.916,-57.5 0,-57.5"/>
 <text text-anchor="middle" x="29.958" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">numpunct</text>
+</a>
+</g>
 </g>
 <!-- Node0 -->
 <g id="node2" class="node">
 <title>Node0</title>
-<g id="a_node2"><a xlink:href="structanonymous__namespace_02io__shell_8C_03_1_1my__numpunct.html" target="_top" xlink:title="anonymous_namespace\l\{io_shell.C\}::my_numpunct">
+<g id="a_node2"><a xlink:href="structanonymous__namespace_02io__shell_8C_03_1_1my__numpunct.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="95.916,-104.5 95.916,-132.5 230.8711,-132.5 230.8711,-104.5 95.916,-104.5"/>
 <text text-anchor="start" x="103.916" y="-120.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">anonymous_namespace</text>
 <text text-anchor="middle" x="163.3936" y="-110.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">{io_shell.C}::my_numpunct</text>
@@ -34,7 +37,7 @@
 <!-- Node132 -->
 <g id="node3" class="node">
 <title>Node132</title>
-<g id="a_node3"><a xlink:href="structanonymous__namespace_02io__shell__ts_8C_03_1_1my__numpunct.html" target="_top" xlink:title="anonymous_namespace\l\{io_shell_ts.C\}::my\l_numpunct">
+<g id="a_node3"><a xlink:href="structanonymous__namespace_02io__shell__ts_8C_03_1_1my__numpunct.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="100.9136,-47.5 100.9136,-85.5 225.8735,-85.5 225.8735,-47.5 100.9136,-47.5"/>
 <text text-anchor="start" x="108.9136" y="-73.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">anonymous_namespace</text>
 <text text-anchor="start" x="108.9136" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">{io_shell_ts.C}::my</text>
@@ -51,7 +54,7 @@
 <!-- Node133 -->
 <g id="node4" class="node">
 <title>Node133</title>
-<g id="a_node4"><a xlink:href="structanonymous__namespace_02skinner_8C_03_1_1my__numpunct.html" target="_top" xlink:title="anonymous_namespace\l\{skinner.C\}::my_numpunct">
+<g id="a_node4"><a xlink:href="structanonymous__namespace_02skinner_8C_03_1_1my__numpunct.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="97.0269,-.5 97.0269,-28.5 229.7603,-28.5 229.7603,-.5 97.0269,-.5"/>
 <text text-anchor="start" x="105.0269" y="-16.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">anonymous_namespace</text>
 <text text-anchor="middle" x="163.3936" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">{skinner.C}::my_numpunct</text>

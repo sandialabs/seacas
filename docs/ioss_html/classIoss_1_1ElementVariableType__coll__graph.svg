@@ -12,13 +12,16 @@
 <!-- Node53 -->
 <g id="node1" class="node">
 <title>Node53</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-.5 0,-18.5 134.2178,-18.5 134.2178,-.5 0,-.5"/>
 <text text-anchor="middle" x="67.1089" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::ElementVariableType</text>
+</a>
+</g>
 </g>
 <!-- Node54 -->
 <g id="node2" class="node">
 <title>Node54</title>
-<g id="a_node2"><a xlink:href="classIoss_1_1VariableType.html" target="_top" xlink:title="A generic variable type. ">
+<g id="a_node2"><a xlink:href="classIoss_1_1VariableType.html" target="_top" xlink:title="A generic variable type.">
 <polygon fill="#ffffff" stroke="#000000" points="18.3423,-55.5 18.3423,-73.5 115.8755,-73.5 115.8755,-55.5 18.3423,-55.5"/>
 <text text-anchor="middle" x="67.1089" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::VariableType</text>
 </a>

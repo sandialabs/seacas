@@ -1,10 +1,10 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classIotr_1_1Factory.html" title="Iotr::Factory" alt="" coords="5,153,98,179"/>
-<area shape="rect" id="node2" href="$classIotr_1_1MinMax__Factory.html" title="Iotr::MinMax_Factory" alt="" coords="149,5,295,31"/>
-<area shape="rect" id="node3" href="$classIotr_1_1Offset3D__Factory.html" title="Iotr::Offset3D_Factory" alt="" coords="146,55,298,80"/>
-<area shape="rect" id="node4" href="$classIotr_1_1Offset__Factory.html" title="Iotr::Offset_Factory" alt="" coords="154,104,290,129"/>
-<area shape="rect" id="node5" href="$classIotr_1_1Scale3D__Factory.html" title="Iotr::Scale3D_Factory" alt="" coords="147,153,297,179"/>
-<area shape="rect" id="node6" href="$classIotr_1_1Scale__Factory.html" title="Iotr::Scale_Factory" alt="" coords="155,203,289,228"/>
-<area shape="rect" id="node7" href="$classIotr_1_1Tensor__Factory.html" title="Iotr::Tensor_Factory" alt="" coords="152,252,292,277"/>
-<area shape="rect" id="node8" href="$classIotr_1_1VM__Factory.html" title="Iotr::VM_Factory" alt="" coords="162,301,282,327"/>
+<area shape="rect" id="node1" href="$classIotr_1_1Factory.html" title=" " alt="" coords="5,153,98,179"/>
+<area shape="rect" id="node2" href="$classIotr_1_1MinMax__Factory.html" title=" " alt="" coords="149,5,295,31"/>
+<area shape="rect" id="node3" href="$classIotr_1_1Offset3D__Factory.html" title=" " alt="" coords="146,55,298,80"/>
+<area shape="rect" id="node4" href="$classIotr_1_1Offset__Factory.html" title=" " alt="" coords="154,104,290,129"/>
+<area shape="rect" id="node5" href="$classIotr_1_1Scale3D__Factory.html" title=" " alt="" coords="147,153,297,179"/>
+<area shape="rect" id="node6" href="$classIotr_1_1Scale__Factory.html" title=" " alt="" coords="155,203,289,228"/>
+<area shape="rect" id="node7" href="$classIotr_1_1Tensor__Factory.html" title=" " alt="" coords="152,252,292,277"/>
+<area shape="rect" id="node8" href="$classIotr_1_1VM__Factory.html" title=" " alt="" coords="162,301,282,327"/>
 </map>
