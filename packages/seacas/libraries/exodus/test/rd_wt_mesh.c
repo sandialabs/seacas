@@ -163,9 +163,6 @@ int main(int argc, char **argv)
   realtyp *y_coords = NULL;
   realtyp *z_coords = NULL;
   int      ndim;
-#ifdef PARALLEL_AWARE_EXODUS
-  MPI_Info new_mpi_info_object;
-#endif
 
   /*
    *	Initialize Stuff

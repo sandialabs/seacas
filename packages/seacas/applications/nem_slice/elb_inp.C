@@ -49,7 +49,9 @@
 #include "scopeguard.h"
 #include <cstddef> // for size_t
 #include <cstdio>  // for nullptr, sprintf, printf, etc
+#ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 500
+#endif
 #include <cstdlib>    // for malloc, exit, free
 #include <cstring>    // for strcmp, strstr, strchr, etc
 #include <exodusII.h> // for ex_close, EX_READ, etc
