@@ -106,8 +106,8 @@ EX_errval_t *ex_errval = NULL;
 #else
 int exerrval = 0; /* clear initial global error code value */
 
-static char last_pname[MAX_ERR_LENGTH];
-static char last_errmsg[MAX_ERR_LENGTH];
+static char last_pname[MAX_ERR_LENGTH + 1];
+static char last_errmsg[MAX_ERR_LENGTH + 1];
 static int  last_err_num;
 
 #define EX_PNAME last_pname
