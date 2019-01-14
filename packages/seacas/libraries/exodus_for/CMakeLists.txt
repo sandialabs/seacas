@@ -1,4 +1,5 @@
 INCLUDE(FortranSettings)
+INCLUDE(InstallSymlink)
 
 TRIBITS_SUBPACKAGE(Exodus_for)
 
