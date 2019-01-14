@@ -11,6 +11,6 @@ var ex__err_8c =
     [ "ex_strerror", "ex__err_8c.html#aa1cdf87b4af74c54b772410d09b3b358", null ],
     [ "exerrval", "ex__err_8c.html#a2afcad8a32ffecb9237121f272c06ad6", null ],
     [ "last_err_num", "ex__err_8c.html#a6f0854983303eaa2c002253ecdfa9c96", null ],
-    [ "last_errmsg", "ex__err_8c.html#a2a0e0896867bc77688b1132f46c9560b", null ],
-    [ "last_pname", "ex__err_8c.html#a3230c26677217e81ea20d6bf30276e8a", null ]
+    [ "last_errmsg", "ex__err_8c.html#a880c8369cce3e921b336dba3a3bdfac9", null ],
+    [ "last_pname", "ex__err_8c.html#a416eb50a7427c45f6dfc8a54b2855d0d", null ]
 ];

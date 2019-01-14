@@ -25,6 +25,7 @@ var searchData=
   ['ex_5fprepare_5fconn',['EX_PREPARE_CONN',['../ex__put__concat__all__blocks_8c.html#a675f50c820b0abcc8d6d0c06b31a9566',1,'ex_put_concat_all_blocks.c']]],
   ['ex_5fqsort_5fcutoff',['EX_QSORT_CUTOFF',['../ex__utils_8c.html#ad80acff89f02005080373bf6cf4ff468',1,'ex_utils.c']]],
   ['ex_5ftrue',['EX_TRUE',['../exodusII_8h.html#a71568c8efa7c2435227c5d2a13b7a6c4',1,'exodusII.h']]],
+  ['ex_5funused',['EX_UNUSED',['../exodusII__int_8h.html#a5e1888937cb4d3958176f144bbdda001',1,'exodusII_int.h']]],
   ['ex_5fvers',['EX_VERS',['../exodusII_8h.html#a2d5e98bf5604721ad61b71685b68ef7e',1,'exodusII.h']]],
   ['ex_5fwarn',['EX_WARN',['../exodusII_8h.html#a8c5681d9b1d7a31149f2dfacce00b5e6',1,'exodusII.h']]],
   ['ex_5fwrite_5fconn',['EX_WRITE_CONN',['../ex__put__conn_8c.html#ad13821dc1e272e6b8265bc7456cbf887',1,'ex_put_conn.c']]],

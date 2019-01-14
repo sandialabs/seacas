@@ -103,6 +103,7 @@ var exodusII__int_8h =
     [ "EX_FUNC_LEAVE", "exodusII__int_8h.html#a828b2811a2c2d9f0d3c48d34d599a03f", null ],
     [ "EX_FUNC_VOID", "exodusII__int_8h.html#a09635b1caed4a00e97d09cdc40c01808", null ],
     [ "EX_GRP_ID_MASK", "exodusII__int_8h.html#a9c24166e1a0fc0fb5db5c1c80114c816", null ],
+    [ "EX_UNUSED", "exodusII__int_8h.html#a5e1888937cb4d3958176f144bbdda001", null ],
     [ "EXODUS_DEFAULT_SIZE", "exodusII__int_8h.html#abad20b8c0ded668f506f2d23ea8bf7c5", null ],
     [ "MAX_VAR_NAME_LENGTH", "exodusII__int_8h.html#a50bd85ce2ed14f876d5f8faac0adba86", null ],
     [ "ST_ZU", "exodusII__int_8h.html#a17777b878561658aa7c69f0882ce6ecf", null ],
