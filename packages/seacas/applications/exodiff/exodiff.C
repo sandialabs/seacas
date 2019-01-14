@@ -553,9 +553,6 @@ namespace {
 
     // Get node and element number maps which map internal implicit ids into
     // global ids...
-    // For now, assume that both files have the same map. At some point, need
-    // to actually use the maps to build the correspondence map from one file
-    // to the next...
     const INT *node_id_map = nullptr;
     const INT *elem_id_map = nullptr;
     if (!interface.ignore_maps) {
@@ -564,7 +561,17 @@ namespace {
       node_id_map = file1.Get_Node_Map();
       elem_id_map = file1.Get_Elmt_Map();
       if (!interface.summary_flag) {
-        Compare_Maps(file1, file2, node_map, elmt_map, interface.map_flag == PARTIAL);
+        bool diff = Compare_Maps(file1, file2, node_map, elmt_map, interface.map_flag == PARTIAL);
+        if (diff && (interface.map_flag == FILE_ORDER)) {
+          std::cerr << "exodiff: Exiting due to node/element mismatch with `-match_file_order` "
+                       "option enabled.\n";
+          if (interface.exit_status_switch) {
+            exit(2);
+          }
+          else {
+            exit(1);
+          }
+        }
       }
     }
     else {
