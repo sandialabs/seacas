@@ -1,5 +1,8 @@
 INCLUDE(FortranSettings)
-INCLUDE(InstallSymlink)
+
+if (SEACASExodus_ENABLE_STATIC)
+INCLUDE(InstallSymLink)
+endif()
 
 TRIBITS_SUBPACKAGE(Exodus_for)
 
@@ -19,23 +22,22 @@ SET(HEADERS include/exodusII.inc )
 TRIBITS_ADD_LIBRARY(
   exodus_for
   HEADERS ${HEADERS}
-  SOURCES ${SOURCES}
+  SOURCES ${SOURCES} 
   )
 
-if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
-  if (BUILD_SHARED_LIBS)
-    ADD_LIBRARY(
-      exodus_for_static
-      STATIC
-      ${SOURCES}
-    )
-    set_target_properties(exodus_for_static PROPERTIES OUTPUT_NAME exodus_for)
-    INSTALL(TARGETS exodus_for_static DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-  endif()
+# Many users of the SEACAS installations still want a static exodus library...
+if (SEACASExodus_ENABLE_STATIC)
+   ADD_LIBRARY(
+           exodus_for_static
+           STATIC
+           ${SOURCES}
+   )
+   set_target_properties(exodus_for_static PROPERTIES OUTPUT_NAME exodus_for)
+   INSTALL(TARGETS exodus_for_static DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
-  # For backwards compatibility, the Fortran exodus library was called libexoIIv2for.a
-  # Create a symbolic link from libexodus_for.a to libexoIIv2for.a -- do only for static lib
-  InstallSymLink(libexodus_for.a ${CMAKE_INSTALL_PREFIX}/lib/libexoIIv2for.a)
+   # For backwards compatibility, the Fortran exodus library was called libexoIIv2for.a
+   # Create a symbolic link from libexodus_for.a to libexoIIv2for.a -- do only for static lib
+   InstallSymLink(libexodus_for.a ${CMAKE_INSTALL_PREFIX}/lib/libexoIIv2for.a)
 endif()
 
 TRIBITS_ADD_TEST_DIRECTORIES(test)
