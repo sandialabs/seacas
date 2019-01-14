@@ -455,6 +455,10 @@ void SystemInterface::enroll_options()
                   "There is a compiled limit of 1000 exodus names.\n"
                   "\t\tThis option allows the maximum number to be changed.",
                   "1000");
+  options_.enroll(
+      "max_warnings", GetLongOption::MandatoryValue,
+      "Maximum number of warnings to output during element/node matching process.  Default 100.",
+      "100");
   options_.enroll("use_old_floor", GetLongOption::NoValue,
                   "use the older definition of the floor tolerance.\n"
                   "\t\tOLD: ignore if |a-b| < floor.\n"
@@ -863,6 +867,15 @@ bool SystemInterface::parse_options(int argc, char **argv)
       if (tmp > 0) {
         Set_Max_Names(tmp);
       }
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("max_warnings");
+    if (temp != nullptr) {
+      errno        = 0;
+      max_warnings = atoi(temp);
+      SMART_ASSERT(errno == 0);
     }
   }
 

@@ -1216,7 +1216,7 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
                       << node_id_map2[node_map[i]] << " in file2.\n";
             diff = true;
             warn_count++;
-            if (warn_count > 100) {
+            if (warn_count >= interface.max_warnings) {
               std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
               break;
             }
@@ -1236,7 +1236,7 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
                     << " in file2.\n";
           diff = true;
           warn_count++;
-          if (warn_count > 100) {
+          if (warn_count >= interface.max_warnings) {
             std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
             break;
           }
@@ -1259,7 +1259,7 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
                       << elem_id_map2[elmt_map[i]] << " in file2.\n";
             diff = true;
             warn_count++;
-            if (warn_count > 100) {
+            if (warn_count >= interface.max_warnings) {
               std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
               break;
             }
@@ -1279,7 +1279,7 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
                     << " in file2.\n";
           diff = true;
           warn_count++;
-          if (warn_count > 100) {
+          if (warn_count >= interface.max_warnings) {
             std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
             break;
           }
