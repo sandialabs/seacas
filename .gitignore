@@ -120,4 +120,6 @@ TPL/parallel/parallel-*.tar.bz2
 TPL/hdf5/hdf5-*.tar.bz2
 TPL/pnetcdf/parallel-netcdf-*.tar.gz
 TPL/pnetcdf/parallel-netcdf-*/
+TPL/pnetcdf/pnetcdf-*.tar.gz
+TPL/pnetcdf/pnetcdf-*/
 build/
