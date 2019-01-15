@@ -318,7 +318,17 @@ then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf CGNS
             git clone https://github.com/cgns/CGNS
-            cd CGNS; git am ../CGNS-parallel.patch; cd ..
+	    if [ "$MPI" == "ON" ]
+	    then
+		cd CGNS
+		git am ../CGNS-parallel.patch
+		if [[ $? != 0 ]]
+		then
+		    echo 1>&2 ${txtred}couldn\'t patch CGNS for SNL parallel changes. exiting.${txtrst}
+		    exit 1
+		fi
+		cd ..
+	    fi
         fi
 
         if [ "$BUILD" == "YES" ]

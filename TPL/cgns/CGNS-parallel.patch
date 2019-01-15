@@ -371,11 +371,7 @@ index aec0b4da..9fca6b5d 100644
 From 54eeec5db003727a536cc0d38353ac63dc8a4b9a Mon Sep 17 00:00:00 2001
 From: gsjaardema <gsjaardema@gmail.com>
 Date: Thu, 21 Jun 2018 08:46:03 -0400
-Subject: [PATCH 4/4] Protect collective metadata call; better file existance
- check
-
-The `H5Pset_all_coll_metadata_ops()` function should only be called
-for parallel files, so check that format == PARALLEL.
+Subject: [PATCH 4/4] Better file existance check
 
 When checking if any files are open to close properties and free MTA,
 don't sum the file id, just do a count instead.  Avoids potential
@@ -390,19 +386,8 @@ diff --git a/src/adfh/ADFH.c b/src/adfh/ADFH.c
 index 3b1c1871..42c81e24 100644
 --- a/src/adfh/ADFH.c
 +++ b/src/adfh/ADFH.c
-@@ -2212,7 +2212,9 @@ void ADFH_Database_Open(const char   *name,
-     }
- #ifdef BUILD_PARALLEL
- #if HDF5_HAVE_COLL_METADATA
--    H5Pset_all_coll_metadata_ops( g_propfileopen, 1 );
-+    if (0 == strcmp(fmt, "PARALLEL")) {
-+      H5Pset_all_coll_metadata_ops( g_propfileopen, 1 );
-+    }
- #endif
- #endif
-     if (mode == ADFH_MODE_RDO) {
-@@ -2456,9 +2458,13 @@ void ADFH_Database_Close(const double  root,
- 
+@@ -2385,9 +2385,13 @@ void ADFH_Database_Close(const double  root,
+
    ADFH_DEBUG(("ADFH_Database_Close 1"));
    idx=0;
 -  for (n = 0; n < ADFH_MAXIMUM_FILES; n++)  idx+=mta_root->g_files[n];
@@ -414,6 +399,6 @@ index 3b1c1871..42c81e24 100644
    /* if no more files open, close properties and free MTA */
 -  if (!idx) {
 +  if (idx == 0) {
- #if !defined(HDF5_PRE_1_8)
      H5Pclose(mta_root->g_proplink);
      H5Pclose(mta_root->g_propgroupcreate);
+     H5Pclose(mta_root->g_propdataset);
