@@ -175,12 +175,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                                                                                                    \
       /*    leave define mode  */                                                                  \
                                                                                                    \
-      if ((status = nc_enddef(exoid)) != NC_NOERR) {                                               \
-        snprintf(errmsg, MAX_ERR_LENGTH,                                                           \
-                 "ERROR: failed to complete %s variable %s definition "                            \
-                 "to file id %d",                                                                  \
-                 ex_name_of_object(var_type), VVAR(var_index, obj_id_ndx), exoid);                 \
-        ex_err_fn(exoid, __func__, errmsg, status);                                                \
+      if ((status = ex_leavedef(exoid, __func__)) != NC_NOERR) {                                   \
         EX_FUNC_LEAVE(EX_FATAL);                                                                   \
       }                                                                                            \
     }                                                                                              \
@@ -291,10 +286,6 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
 
 /* Fatal error: exit definition mode and return */
 error_ret:
-  if ((status = nc_enddef(exoid)) != NC_NOERR) /* exit define mode */
-  {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-  }
+  ex_leavedef(exoid, __func__);
   EX_FUNC_LEAVE(EX_FATAL);
 }
