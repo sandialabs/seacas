@@ -53,7 +53,6 @@
 
 #include "exodusII.h"     // for ex_err, EXERRVAL, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
-#include "netcdf.h"       // for NC_NOERR, nc_def_var, etc
 #include <assert.h>       // for assert
 #include <stdio.h>
 #include <string.h> // for strchr

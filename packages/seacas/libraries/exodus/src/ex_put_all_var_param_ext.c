@@ -47,7 +47,6 @@
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex_get_dimension, etc
-#include "netcdf.h"       // for NC_NOERR, nc_def_var, etc
 #include <inttypes.h>     // for PRId64
 #include <stddef.h>       // for size_t
 #include <stdio.h>
