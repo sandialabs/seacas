@@ -61,9 +61,7 @@ int ex_create_group(int parent_id, const char *group_name)
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  if ((status = nc_enddef(parent_id)) != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
+  if ((status = ex_leavedef(parent_id, __func__)) != NC_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(exoid);

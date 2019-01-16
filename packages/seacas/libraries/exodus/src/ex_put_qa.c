@@ -170,10 +170,7 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
       }
 
       /*   leave define mode  */
-      if ((status = nc_enddef(rootid)) != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
-                 rootid);
-        ex_err_fn(exoid, __func__, errmsg, status);
+      if ((status = ex_leavedef(rootid, __func__)) != NC_NOERR) {
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
@@ -225,9 +222,6 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
 
 /* Fatal error: exit definition mode and return */
 error_ret:
-  if ((status = nc_enddef(rootid)) != NC_NOERR) { /* exit define mode */
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", rootid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-  }
+  ex_leavedef(rootid, __func__);
   EX_FUNC_LEAVE(EX_FATAL);
 }

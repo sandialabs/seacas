@@ -122,10 +122,7 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
   }
 
   /* leave define mode */
-  if ((status = nc_enddef(exoid)) != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to complete coordinate frame definition in file id %d", exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
+  if ((status = ex_leavedef(exoid, __func__)) != NC_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -174,10 +171,6 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
   EX_FUNC_LEAVE(EX_NOERR);
 
 error_ret:
-  if ((status = nc_enddef(exoid)) != NC_NOERR) { /* exit define mode */
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete frame definition for file id %d",
-             exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-  }
+  ex_leavedef(exoid, __func__);
   EX_FUNC_LEAVE(EX_FATAL);
 }

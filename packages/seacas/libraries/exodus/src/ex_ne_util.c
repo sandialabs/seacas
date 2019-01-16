@@ -64,20 +64,6 @@
 /* Global variables */
 char *ne_ret_string;
 
-int ex_leavedef(int exoid, const char *call_rout)
-{
-  char errmsg[MAX_ERR_LENGTH];
-  int  status;
-
-  if ((status = nc_enddef(exoid)) != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to end define mode for file id %d", exoid);
-    ex_err_fn(exoid, call_rout, errmsg, status);
-
-    return (EX_FATAL);
-  }
-  return (EX_NOERR);
-}
-
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/

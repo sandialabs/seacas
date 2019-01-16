@@ -226,11 +226,8 @@ int ex_put_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, cons
     }
     ex_compress_variable(exoid, varid, 1);
 
-    if ((status = nc_enddef(exoid)) != NC_NOERR) { /* exit define mode */
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d",
-               exoid);
-      ex_err_fn(exoid, __func__, errmsg, status);
-      varid = -1; /* force early exit */
+    if ((status = ex_leavedef(exoid, __func__)) != NC_NOERR) { /* exit define mode */
+      varid = -1;                                              /* force early exit */
     }
 
     if (varid == -1) { /* we couldn't define variable and have prepared error message. */
