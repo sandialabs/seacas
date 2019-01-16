@@ -35,7 +35,6 @@
 
 #include "exodusII.h" // for exoptval, MAX_ERR_LENGTH, etc
 #include "exodusII_int.h"
-#include "netcdf.h" // for NC_EAXISTYPE, NC_EBADDIM, etc
 #include <stdio.h>  // for fprintf, stderr, fflush
 #include <stdlib.h> // for exit
 #include <string.h> // for strcpy

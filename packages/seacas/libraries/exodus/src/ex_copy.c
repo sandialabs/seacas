@@ -35,7 +35,6 @@
 
 #include "exodusII.h"     // for EX_FATAL, exerrval, ex_err, etc
 #include "exodusII_int.h" // for ex_get_counter_list, etc
-#include "netcdf.h"       // for NC_NOERR, nc_inq_varid, etc
 #include <assert.h>       // for assert
 #include <stddef.h>       // for size_t
 #include <stdint.h>       // for int64_t

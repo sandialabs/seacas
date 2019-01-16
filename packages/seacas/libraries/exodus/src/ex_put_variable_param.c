@@ -35,7 +35,6 @@
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex_compress_variable, etc
-#include "netcdf.h"       // for NC_NOERR, nc_def_var, etc
 #include <stdio.h>
 
 /*! \cond INTERNAL */
