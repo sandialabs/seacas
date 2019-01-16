@@ -104,7 +104,9 @@ A circle or sphere element has no sides.
 
 -------------------------
 \section bar Bar, Truss, Beam 
-The element name for this element type can be "bar", "beam", "truss"
+The element name for this element type can be "bar", "beam", "truss".
+For the "beam", the boundaries are the "top" and "bottom" edges; for
+the "bar" or "truss", the boundaries are the end nodes.
 
 ![Bar2](../topology/bar2.png)
 ![Bar3](../topology/bar3.png)
