@@ -8,6 +8,8 @@ var annotated_dup =
     [ "anonymous_namespace{Iocgns_Utils.C}", "namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html", "namespaceanonymous__namespace_02Iocgns__Utils_8C_03" ],
     [ "anonymous_namespace{Ioss_Bar2.C}", "namespaceanonymous__namespace_02Ioss__Bar2_8C_03.html", "namespaceanonymous__namespace_02Ioss__Bar2_8C_03" ],
     [ "anonymous_namespace{Ioss_Bar3.C}", "namespaceanonymous__namespace_02Ioss__Bar3_8C_03.html", "namespaceanonymous__namespace_02Ioss__Bar3_8C_03" ],
+    [ "anonymous_namespace{Ioss_Beam2.C}", "namespaceanonymous__namespace_02Ioss__Beam2_8C_03.html", "namespaceanonymous__namespace_02Ioss__Beam2_8C_03" ],
+    [ "anonymous_namespace{Ioss_Beam3.C}", "namespaceanonymous__namespace_02Ioss__Beam3_8C_03.html", "namespaceanonymous__namespace_02Ioss__Beam3_8C_03" ],
     [ "anonymous_namespace{Ioss_Edge2.C}", "namespaceanonymous__namespace_02Ioss__Edge2_8C_03.html", "namespaceanonymous__namespace_02Ioss__Edge2_8C_03" ],
     [ "anonymous_namespace{Ioss_Edge2D2.C}", "namespaceanonymous__namespace_02Ioss__Edge2D2_8C_03.html", "namespaceanonymous__namespace_02Ioss__Edge2D2_8C_03" ],
     [ "anonymous_namespace{Ioss_Edge2D3.C}", "namespaceanonymous__namespace_02Ioss__Edge2D3_8C_03.html", "namespaceanonymous__namespace_02Ioss__Edge2D3_8C_03" ],

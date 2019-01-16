@@ -1,8 +1,10 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,171,87,196"/>
-<area shape="rect" id="node2" href="$structtsl_1_1detail__hopscotch__hash_1_1has__is__transparent.html" title=" " alt="" coords="148,5,326,57"/>
-<area shape="rect" id="node3" href="$structtsl_1_1detail__hopscotch__hash_1_1has__key__compare.html" title=" " alt="" coords="150,81,324,133"/>
-<area shape="rect" id="node4" href="$structtsl_1_1detail__hopscotch__hash_1_1is__power__of__two__policy.html" title=" " alt="" coords="154,157,319,209"/>
-<area shape="rect" id="node5" href="$structtsl_1_1detail__robin__hash_1_1has__is__transparent.html" title=" " alt="" coords="162,233,312,285"/>
-<area shape="rect" id="node6" href="$structtsl_1_1detail__robin__hash_1_1is__power__of__two__policy.html" title=" " alt="" coords="135,309,338,348"/>
+<area shape="rect" id="node1" href="$classScopeGuardImplBase.html" title=" " alt="" coords="5,193,157,219"/>
+<area shape="rect" id="node2" href="$classObjScopeGuardImpl0.html" title=" " alt="" coords="217,5,366,44"/>
+<area shape="rect" id="node3" href="$classObjScopeGuardImpl1.html" title=" " alt="" coords="217,68,366,107"/>
+<area shape="rect" id="node4" href="$classObjScopeGuardImpl2.html" title=" " alt="" coords="205,131,378,169"/>
+<area shape="rect" id="node5" href="$classScopeGuardImpl0.html" title=" " alt="" coords="211,193,371,219"/>
+<area shape="rect" id="node6" href="$classScopeGuardImpl1.html" title=" " alt="" coords="216,243,367,281"/>
+<area shape="rect" id="node7" href="$classScopeGuardImpl2.html" title=" " alt="" coords="216,305,367,344"/>
+<area shape="rect" id="node8" href="$classScopeGuardImpl3.html" title=" " alt="" coords="216,368,367,407"/>
 </map>
