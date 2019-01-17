@@ -30,6 +30,7 @@ var ex__utils_8c =
     [ "ex_iqsort", "ex__utils_8c.html#a1777a8149e2810dbe0d070a109fcf361", null ],
     [ "ex_iqsort64", "ex__utils_8c.html#aac19ba1b27495467de816438a5f60f25", null ],
     [ "ex_large_model", "ex__utils_8c.html#aa8231cf6c15bb76730fd5903a3ad5777", null ],
+    [ "ex_leavedef", "ex__utils_8c.html#ab86e9f8fb7fe52a0ae98204946e77f35", null ],
     [ "ex_name_of_map", "ex__utils_8c.html#abfcb73acccb51722a1fc0488766056a6", null ],
     [ "ex_name_of_object", "ex__utils_8c.html#ace51015c588554746b4729b7d2bf46b0", null ],
     [ "ex_name_var_of_object", "ex__utils_8c.html#a0894055db76f50558ddc808d12dde365", null ],
