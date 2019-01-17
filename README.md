@@ -42,6 +42,7 @@ detailed in [TPL-Manual-Install.md](TPL-Manual-Install.md).
 
 | Variable | Values | Default | Description |
 |----------|:------:|:-------:|-------------|
+| INSTALL_PATH | path to install | pwd | Root of install path; default is current location |
 | COMPILER | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build |
 | JOBS     | {count}|  2      | Number of "jobs" used for simultaneous compiles |
 | FORCE    | YES, NO | NO  | Force downloading and building even if lib is already installed. |
@@ -74,7 +75,7 @@ to configure the SEACAS CMake build.
    * enter the command `../cmake-config` and cmake should configure everything for the build.
    * `make && make install`
    * If everything works, your applications should be in `${ACCESS}/bin`
-
+   * To install in a different location, do `INSTALL_PATH={path_to_install} ../cmake-config`
 ## Testing
 There are a few unit tests for zoltan, exodus, and aprepro that can be run via `make test` if you configured with `-D SEACASProj_ENABLE_TESTS=ON`.
 

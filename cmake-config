@@ -90,7 +90,7 @@ THREADSAFE=${THREADSAFE:-OFF}
 FORTRAN=${FORTRAN:-ON}
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
-INSTALL_PATH=${ACCESS}
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 ### TPLs -- 
 ### Make sure these point to the locations to find the libraries and includes in lib and include
@@ -255,20 +255,21 @@ $EXTRA_ARGS \
 ${ACCESS}
 
 echo ""
-echo "     ACCESS: ${ACCESS}"
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo "  "
-echo "         CC: ${CC}"
-echo "        CXX: ${CXX}"
-echo "         FC: ${FC}"
-echo "        MPI: ${MPI}"
-echo "     SHARED: ${SHARED}"
-echo " THREADSAFE: ${THREADSAFE}"
+echo "          CC: ${CC}"
+echo "         CXX: ${CXX}"
+echo "          FC: ${FC}"
+echo "         MPI: ${MPI}"
+echo "      SHARED: ${SHARED}"
+echo "  THREADSAFE: ${THREADSAFE}"
 echo "  "
-echo "HAVE_NETCDF: ${HAVE_NETCDF}"
-echo " HAVE_MATIO: ${HAVE_MATIO}"
-echo "  HAVE_CGNS: ${HAVE_CGNS}"
-echo "     KOKKOS: ${KOKKOS}"
-echo "    DOXYGEN: ${DOXYGEN}"
+echo " HAVE_NETCDF: ${HAVE_NETCDF}"
+echo "  HAVE_MATIO: ${HAVE_MATIO}"
+echo "   HAVE_CGNS: ${HAVE_CGNS}"
+echo "      KOKKOS: ${KOKKOS}"
+echo "     DOXYGEN: ${DOXYGEN}"
 echo ""
 
 if [ "${TRAVIS}" == "true" ]

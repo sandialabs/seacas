@@ -5,6 +5,7 @@ if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 MPI="${MPI:-OFF}"
 if [ "$MPI" == "ON" ]
@@ -37,11 +38,11 @@ fi
 
 rm -f config.cache
 CC="${CC}"; export CC
-CFLAGS="-I${ACCESS}/include"; export CFLAGS
+CFLAGS="-I${INSTALL_PATH}/include"; export CFLAGS
 CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 
 # Find hdf5 library...
-LDFLAGS="-L${ACCESS}/lib"; export LDFLAGS
+LDFLAGS="-L${INSTALL_PATH}/lib"; export LDFLAGS
 if [ "$CRAY" == "ON" ]
 then
     USE_SHARED="--disable-shared"
@@ -55,10 +56,11 @@ else
     fi
 fi
 
-./configure --with-hdf5=${ACCESS} --enable-mat73 ${USE_SHARED} --prefix=${ACCESS} $1
+./configure --with-hdf5=${INSTALL_PATH} --enable-mat73 ${USE_SHARED} --prefix=${INSTALL_PATH} $1
 
 echo ""
-echo "     MPI: ${MPI}"
-echo "COMPILER: ${CC}"
-echo "  ACCESS: ${ACCESS}"
+echo "         MPI: ${MPI}"
+echo "    COMPILER: ${CC}"
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo ""

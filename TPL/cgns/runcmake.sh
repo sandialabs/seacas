@@ -13,6 +13,7 @@ if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 SHARED="${SHARED:-ON}"
 
@@ -44,7 +45,7 @@ else
   fi
 fi
 
-CFLAGS="-I${ACCESS}/include"; export CFLAGS
+CFLAGS="-I${INSTALL_PATH}/include"; export CFLAGS
 CPPFLAGS="-DNDEBUG"; export CPPFLAGS
 OS=`uname -s`
 
@@ -58,9 +59,9 @@ if [ "$OS" == "Darwin" ] ; then
   else
       LD_EXT="a"
   fi
-  LIB="-DHDF5_LIBRARY:PATH=${ACCESS}/lib/libhdf5.${LD_EXT} -DHDF5_LIBRARIES:PATH=${ACCESS}/lib/libhdf5.${LD_EXT}"
+  LIB="-DHDF5_LIBRARY:PATH=${INSTALL_PATH}/lib/libhdf5.${LD_EXT} -DHDF5_LIBRARIES:PATH=${INSTALL_PATH}/lib/libhdf5.${LD_EXT}"
 else
-  LIB="-DHDF5_LIBRARY:PATH=${ACCESS}/lib"
+  LIB="-DHDF5_LIBRARY:PATH=${INSTALL_PATH}/lib"
 fi
 
 cmake \
@@ -68,22 +69,23 @@ ${RPATH} \
 -D CGNS_BUILD_SHARED:BOOL=${SHARED} \
 -D CGNS_ENABLE_HDF5:BOOL=ON \
 ${LIB} \
--D HDF5_ROOT=${ACCESS} \
+-D HDF5_ROOT=${INSTALL_PATH} \
 -D HDF5_NEED_ZLIB:BOOL=ON \
 -D CGNS_ENABLE_64BIT:BOOL=${USE_64BIT_INT} \
 -D CGNS_ENABLE_SCOPING:BOOL=ON \
 -D CGNS_ENABLE_FORTRAN:BOOL=OFF \
 -D CGNS_ENABLE_PARALLEL:BOOL=${MPI} \
--D CMAKE_PREFIX_PATH:PATH=${ACCESS}/lib \
--D CMAKE_INSTALL_PREFIX:PATH=${ACCESS} \
+-D CMAKE_PREFIX_PATH:PATH=${INSTALL_PATH}/lib \
+-D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
 -D HDF5_NEED_MPI:BOOL=${MPI} \
 -D HDF5_IS_PARALLEL:BOOL=${MPI} \
 $EXTRA_ARGS \
 ..
 
 echo ""
-echo "     MPI: ${MPI}"
-echo "COMPILER: ${CC}"
-echo "64BITINT: ${USE_64BIT_INT}"
-echo "  ACCESS: ${ACCESS}"
+echo "         MPI: ${MPI}"
+echo "    COMPILER: ${CC}"
+echo "    64BITINT: ${USE_64BIT_INT}"
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo ""
