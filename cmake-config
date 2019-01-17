@@ -15,8 +15,11 @@ then
     ACCESS=$(cd ..; pwd)
 fi
 
+### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
+
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-netcdf_parallel=`../bin/nc-config --has-parallel`
+netcdf_parallel=`$INSTALL_PATH/bin/nc-config --has-parallel`
 if [ "${netcdf_parallel}" == "yes" ]
 then
     MPI=ON
@@ -89,19 +92,16 @@ THREADSAFE=${THREADSAFE:-OFF}
 
 FORTRAN=${FORTRAN:-ON}
 
-### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
-INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
-
 ### TPLs -- 
 ### Make sure these point to the locations to find the libraries and includes in lib and include
 ### subdirectories of the specified paths.
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
-NETCDF_PATH=${ACCESS}
-PNETCDF_PATH=${ACCESS}
-MATIO_PATH=${ACCESS}
-HDF5_PATH=${ACCESS}
-CGNS_PATH=${ACCESS}
-DATAWAREHOUSE_PATH=${ACCESS}
+NETCDF_PATH=${INSTALL_PATH}
+PNETCDF_PATH=${INSTALL_PATH}
+MATIO_PATH=${INSTALL_PATH}
+HDF5_PATH=${INSTALL_PATH}
+CGNS_PATH=${INSTALL_PATH}
+DATAWAREHOUSE_PATH=${INSTALL_PATH}
 
 function check_enable()
 {
