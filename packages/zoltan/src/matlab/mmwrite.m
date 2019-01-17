@@ -265,7 +265,7 @@ else
      end
   elseif ( strcmp(mattype,'pattern') )
      err = -2
-     disp('Pattern type inconsistent with dense matrix')
+     disp('Pattern type inconsistant with dense matrix')
   else
      err = -2
      disp('Unknown matrix type:')

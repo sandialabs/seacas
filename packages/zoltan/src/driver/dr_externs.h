@@ -44,49 +44,38 @@
  * @HEADER
  */
 
+#ifndef _DR_EXTERNS_H
+#define _DR_EXTERNS_H
 
-#ifndef _DR_ERR_CONST_H_
-#define _DR_ERR_CONST_H_
+#include "dr_const.h"
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
 extern "C" {
 #endif
 
+/* Global variables for driver */
+extern int Debug_Driver;
+extern int Debug_Chaco_Input;
+extern int Number_Iterations;
+extern int Driver_Action;
+extern int Chaco_In_Assign_Inv;
+extern struct Test_Flags Test;
+extern struct Output_Flags Output;
+extern double Total_Partition_Time;
 
-#define MAX_ERR_MSG 1024
+#define DEBUG_TRACE_START(proc,yo) \
+  if (((proc) == 0 && Debug_Driver > 1) || (Debug_Driver > 2))  \
+    printf("%d DRIVER ENTERING %s\n", (proc), yo);
+#define DEBUG_TRACE_END(proc,yo) \
+  if (((proc) == 0 && Debug_Driver > 1) || (Debug_Driver > 2))  \
+    printf("%d DRIVER LEAVING %s\n", (proc), yo);
+#define DEBUG_TRACE_DETAIL(proc,yo,str) \
+  if (Debug_Driver > 2) \
+    printf("%d DRIVER %s: %s\n", proc,yo, str);
 
-/* Structure to store an error message */
-struct error_message
-{
-  int   level;
-  char *err_mesg;
-  int   line_no;
-  char *filename;
-};
-
-typedef struct error_message ERROR_MSG;
-typedef struct error_message *ERROR_MSG_PTR;
-
-
-/* Macro used in the code to add an error message */
-#define Gen_Error(a,b) (error_add(a, b, __FILE__, __LINE__))
-
-/* Function prototype for error functions */
-extern
-void error_add(
-  int   level,
-  const char *message,	/* The message to add to the error list */
-  const char *filename,	/* The filename in which the error occured */
-  int   line		/* The line number in filename where the error
-                         * was reported */
-  );
-
-extern
-void error_report(int proc);
 
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif
-
-#endif /* _DR_ERR_CONST_H_ */
+#endif /* _DR_EXTERNS_H */

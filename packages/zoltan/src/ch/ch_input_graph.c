@@ -55,6 +55,7 @@
 #include <stdlib.h>
 #include "ch_input_const.h"
 #include "dr_const.h"
+#include "dr_externs.h"
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -290,7 +291,7 @@ float   **eweights 		/* edge weight list data */
     			found_flag = TRUE;
     		}
     		if (found_flag) {
-    		    printf("WARNING: Multiple occurrences of edge (%d,%d) ignored\n",
+    		    printf("WARNING: Multiple occurences of edge (%d,%d) ignored\n",
     			vertex, neighbor);
     		    skip_flag = TRUE;
     		    if (!ignore_me) {

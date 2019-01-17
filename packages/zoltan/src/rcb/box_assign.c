@@ -142,7 +142,7 @@ int            *numparts)       /* number of parts in part list */
         if (rcb->Tran.Target_Dim > 0){
           /* 
            * Degenerate geometry, transform box to the lower dimensional
-           * space that the partitioning occurred in.  Our new box may
+           * space that the partitioning occured in.  Our new box may
            * encompass more parts, but it won't miss any.
            */
           Zoltan_Transform_Box(box.lo, box.hi, rcb->Tran.Transformation, 
