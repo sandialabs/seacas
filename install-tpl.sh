@@ -65,6 +65,7 @@ fi
 
 pwd
 export ACCESS=`pwd`
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
 then
@@ -120,7 +121,7 @@ fi
 
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libz.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libz.${LD_EXT} ]
     then
 	echo "${txtgrn}+++ ZLIB${txtrst}"
         zlib_version="1.2.11"
@@ -147,7 +148,7 @@ then
 	    else
 		USE_SHARED="--static"
 	    fi
-            ./configure --prefix=${ACCESS}
+            ./configure --prefix=${INSTALL_PATH}
             if [[ $? != 0 ]]
             then
 		echo 1>&2 ${txtred}couldn\'t configure zlib. exiting.${txtrst}
@@ -166,7 +167,7 @@ then
 fi
 
 # =================== BUILD HDF5 ===============
-if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libhdf5.${LD_EXT} ]
+if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
     if [ "${H5VERSION}" == "V18" ]
@@ -217,7 +218,7 @@ fi
 if [ "$MPI" == "ON" ]
 then
     # PnetCDF currently only builds static library...
-    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libpnetcdf.a ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
         pnet_version="1.11.0"
@@ -266,7 +267,7 @@ then
 fi
 
 # =================== INSTALL NETCDF ===============
-if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libnetcdf.${LD_EXT} ]
+if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
 then
     echo "${txtgrn}+++ NetCDF${txtrst}"
     cd $ACCESS
@@ -308,7 +309,7 @@ fi
 # =================== INSTALL CGNS ===============
 if [ "$CGNS" == "ON" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libcgns.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
     then
         echo "${txtgrn}+++ CGNS${txtrst}"
         cd $ACCESS
@@ -362,7 +363,7 @@ fi
 # =================== INSTALL MATIO  ===============
 if [ "$MATIO" == "ON" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libmatio.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
 	echo "${txtgrn}+++ MatIO${txtrst}"
 	cd $ACCESS
@@ -400,7 +401,7 @@ fi
 # =================== INSTALL PARALLEL  ===============
 if [ "$GNU_PARALLEL" == "ON" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/bin/env_parallel ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/bin/env_parallel ]
     then
 	echo "${txtgrn}+++ GNU Parallel${txtrst}"
         cd $ACCESS

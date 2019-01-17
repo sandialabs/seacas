@@ -5,13 +5,14 @@ if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 H5VERSION=${H5VERSION:-V110}
 
 NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
-   ZLIB_ON_OFF="--with-zlib=${ACCESS}"
+   ZLIB_ON_OFF="--with-zlib=${INSTALL_PATH}"
 fi
    
 MPI="${MPI:-OFF}"
@@ -71,13 +72,14 @@ fi
 
 if [ "${H5VERSION}" == "V18" ]
 then
-    ./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
+    ./configure --prefix=${INSTALL_PATH} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
 else
-    ./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
+    ./configure --prefix=${INSTALL_PATH} ${ZLIB_ON_OFF} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
 fi
 
 echo ""
-echo "     MPI: ${MPI}"
-echo "COMPILER: ${CC}"
-echo "  ACCESS: ${ACCESS}"
+echo "         MPI: ${MPI}"
+echo "    COMPILER: ${CC}"
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo ""

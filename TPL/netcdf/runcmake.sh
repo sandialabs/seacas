@@ -5,6 +5,7 @@ if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 SHARED="${SHARED:-ON}"
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
@@ -23,7 +24,7 @@ fi
 NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
-   LOCAL_ZLIB="-DZLIB_INCLUDE_DIR:PATH=${ACCESS}/include -DZLIB_LIBRARY:FILEPATH=${ACCESS}/lib/libz.${LD_EXT}"
+   LOCAL_ZLIB="-DZLIB_INCLUDE_DIR:PATH=${INSTALL_PATH}/include -DZLIB_LIBRARY:FILEPATH=${INSTALL_PATH}/lib/libz.${LD_EXT}"
 fi
 
 MPI="${MPI:-OFF}"
@@ -63,7 +64,7 @@ rm -f config.cache
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DBUILD_SHARED_LIBS:BOOL=${SHARED} \
          -DBUILD_TESTING:BOOL=OFF \
-         -DCMAKE_INSTALL_PREFIX=${ACCESS} \
+         -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
          -DENABLE_NETCDF_4:BOOL=ON \
          -DENABLE_PNETCDF:BOOL=${MPI} \
@@ -74,12 +75,13 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          ${LOCAL_ZLIB} \
          ${EXTRA_DEPS} \
          -DENABLE_CONVERSION_WARNINGS:BOOL=OFF \
-         -DHDF5_C_LIBRARY:PATH=${ACCESS}/lib/libhdf5.${LD_EXT} \
-         -DHDF5_HL_LIBRARY:PATH=${ACCESS}/lib/libhdf5_hl.${LD_EXT} \
-         -DHDF5_INCLUDE_DIR:PATH=${ACCESS}/include
+         -DHDF5_C_LIBRARY:PATH=${INSTALL_PATH}/lib/libhdf5.${LD_EXT} \
+         -DHDF5_HL_LIBRARY:PATH=${INSTALL_PATH}/lib/libhdf5_hl.${LD_EXT} \
+         -DHDF5_INCLUDE_DIR:PATH=${INSTALL_PATH}/include
 
 echo ""
-echo "     MPI: ${MPI}"
-echo "COMPILER: ${CC}"
-echo "  ACCESS: ${ACCESS}"
+echo "         MPI: ${MPI}"
+echo "    COMPILER: ${CC}"
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo ""
