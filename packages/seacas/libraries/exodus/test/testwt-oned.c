@@ -59,14 +59,14 @@ int main(int argc, char **argv)
   int  node_list[100];
   int  ebids[10], nsids[10];
   int  num_qa_rec, num_info;
-  int  num_glo_vars, num_nod_vars, num_ele_vars, num_nset_vars;
+  int  num_nod_vars, num_ele_vars, num_nset_vars;
   int *truth_tab;
   int  whole_time_step, num_time_steps;
   int  CPU_word_size, IO_word_size;
   int  prop_array[2];
 
   int    elem_list[1], side_list[1];
-  float *glob_var_vals, *nodal_var_vals, *elem_var_vals;
+  float *nodal_var_vals, *elem_var_vals;
   float *nset_var_vals;
   float  time_value;
   float  x[100];
