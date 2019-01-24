@@ -498,6 +498,7 @@ MACRO(ENABLE_ONLY_MODIFIED_PACKAGES)
       COMMAND ${PYTHON_EXECUTABLE}
         ${${PROJECT_NAME}_TRIBITS_DIR}/ci_support/get-tribits-packages-from-files-list.py
         --files-list-file=${MODIFIED_FILES_FILE_NAME}
+        --project-dir=${TRIBITS_PROJECT_ROOT}
         --deps-xml-file=${CTEST_BINARY_DIRECTORY}/${${PROJECT_NAME}_PACKAGE_DEPS_XML_FILE_NAME}
       OUTPUT_VARIABLE MODIFIED_PACKAGES_LIST
       OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -506,6 +507,7 @@ MACRO(ENABLE_ONLY_MODIFIED_PACKAGES)
     SET(MODIFIED_PACKAGES_LIST)
   ENDIF()
 
+  SPLIT("${MODIFIED_PACKAGES_LIST}" "," MODIFIED_PACKAGES_LIST)
   PRINT_VAR(MODIFIED_PACKAGES_LIST)
 
   #
@@ -900,6 +902,7 @@ FUNCTION(TRIBITS_GET_FAILED_PACKAGES_FROM_FAILED_TESTS
           OUTPUT_VARIABLE  FAILED_PACKAGES
     OUTPUT_STRIP_TRAILING_WHITESPACE
     )
+  SPLIT("${FAILED_PACKAGES}" "," FAILED_PACKAGES)
   SET(${FAILED_PACKAGES_OUT} "${FAILED_PACKAGES}" PARENT_SCOPE)
 ENDFUNCTION()
 
@@ -1288,6 +1291,10 @@ MACRO(TRIBITS_CTEST_ALL_AT_ONCE)
     "\n*** Configure, build, test and submit results all-at-once for all enabled packages ..."
     "\n***")
 
+  SET(AAO_CONFIGURE_FAILED FALSE)
+  SET(AAO_BUILD_FAILED FALSE)
+  SET(AAO_INSTALL_FAILED FALSE)
+
   #
   # A) Define mapping from labels to subprojects and gather configure arguments
   #
@@ -1303,14 +1310,23 @@ MACRO(TRIBITS_CTEST_ALL_AT_ONCE)
   TRIBITS_FWD_CMAKE_CONFIG_ARGS_0()
   IF (${PROJECT_NAME}_ENABLE_ALL_PACKAGES)
     LIST(APPEND CONFIGURE_OPTIONS
-      "-D${PROJECT_NAME}_ENABLE_ALL_PACKAGES=ON"
-      )
+      "-D${PROJECT_NAME}_ENABLE_ALL_PACKAGES=ON" )
+    FOREACH(TRIBITS_PACKAGE ${${PROJECT_NAME}_EXCLUDE_PACKAGES})
+      LIST(APPEND CONFIGURE_OPTIONS
+        "-D${PROJECT_NAME}_ENABLE_${TRIBITS_PACKAGE}=OFF" )
+    ENDFOREACH()
+    # NOTE: Above we have to explicitly set disables for the excluded pacakges
+    # since we are pssing in ${PROJECT_NAME}_ENABLE_ALL_PACKAGES=ON.  This is
+    # effectively the "black-listing" approach.
   ELSE()
     FOREACH(TRIBITS_PACKAGE ${${PROJECT_NAME}_PACKAGES_TO_DIRECTLY_TEST})
       LIST(APPEND CONFIGURE_OPTIONS
-         "-D${PROJECT_NAME}_ENABLE_${TRIBITS_PACKAGE}=ON"
-        )
+         "-D${PROJECT_NAME}_ENABLE_${TRIBITS_PACKAGE}=ON" )
     ENDFOREACH()
+    # NOTE: Above we don't have to consider the packages excluded in
+    # ${PROJECT_NAME}_EXCLUDE_PACKAGES because they are not enabled ad this
+    # point and therefore no in ${PROJECT_NAME}_PACKAGES_TO_DIRECTLY_TEST.
+    # This is effectively the "white-listing" approach.
   ENDIF()
   LIST(APPEND CONFIGURE_OPTIONS
     "-D${PROJECT_NAME}_ENABLE_TESTS:BOOL=ON")
@@ -1351,6 +1367,7 @@ MACRO(TRIBITS_CTEST_ALL_AT_ONCE)
     IF (NOT "${CONFIGURE_RETURN_VAL}" EQUAL "0")
       MESSAGE("Configure FAILED!")
       SET(AAO_CONFIGURE_PASSED FALSE)
+      SET(AAO_CONFIGURE_FAILED TRUE)
     ELSE()
       MESSAGE("Configure PASSED!")
       SET(AAO_CONFIGURE_PASSED TRUE)
@@ -1411,6 +1428,7 @@ MACRO(TRIBITS_CTEST_ALL_AT_ONCE)
   
     IF (NOT "${BUILD_ALL_NUM_ERRORS}" EQUAL "0")
       MESSAGE("Build FAILED!")
+      SET(AAO_BUILD_FAILED TRUE)
     ELSE()
       MESSAGE("Build PASSED!")
     ENDIF()
@@ -1418,6 +1436,36 @@ MACRO(TRIBITS_CTEST_ALL_AT_ONCE)
     # Submit the build for all target
     IF (CTEST_DO_SUBMIT)
       TRIBITS_CTEST_SUBMIT( PARTS build )
+    ENDIF()
+
+    IF (CTEST_DO_INSTALL)
+
+      MESSAGE("")
+      MESSAGE("Installing (i.e. building target 'install') ...")
+      MESSAGE("")
+
+      CTEST_BUILD(
+        BUILD "${CTEST_BINARY_DIRECTORY}"
+        TARGET install
+        RETURN_VALUE  BUILD_INSTALL_RETURN_VAL
+        NUMBER_ERRORS  BUILD_INSTALL_NUM_ERRORS
+        )
+      MESSAGE("Build install output:"
+        " BUILD_INSTALL_NUM_ERRORS='${BUILD_INSTALL_NUM_ERRORS}',"
+        "BUILD_INSTALL_RETURN_VAL='${BUILD_INSTALL_RETURN_VAL}'" )
+
+      IF (NOT "${BUILD_INSTALL_NUM_ERRORS}" EQUAL "0")
+        MESSAGE("Install FAILED!")
+        SET(AAO_INSTALL_FAILED TRUE)
+      ELSE()
+        MESSAGE("Install PASSED!")
+      ENDIF()
+
+      # Submit the build for all target
+      IF (CTEST_DO_SUBMIT)
+        TRIBITS_CTEST_SUBMIT( PARTS build )
+      ENDIF()
+
     ENDIF()
 
   ELSE()
@@ -1570,7 +1618,7 @@ MACRO(TRIBITS_CTEST_ALL_AT_ONCE)
   # G) Determine final pass/fail by gathering list of failing packages
   #
 
-  IF (NOT AAO_CONFIGURE_PASSED)
+  IF (AAO_CONFIGURE_FAILED OR AAO_BUILD_FAILED OR AAO_INSTALL_FAILED)
     IF (${PROJECT_NAME}_ENABLE_ALL_PACKAGES)
       # Special value "ALL_PACAKGES" so that it will trigger enabling all
       # packages on the next CI iteration!
@@ -1579,6 +1627,20 @@ MACRO(TRIBITS_CTEST_ALL_AT_ONCE)
       # Specific packages were selected to be tested so fail all of them!
       SET(${PROJECT_NAME}_FAILED_PACKAGES  ${${PROJECT_NAME}_PACKAGES_TO_DIRECTLY_TEST})
     ENDIF()
+    # NOTE: With the all-at-once appraoch, there is no way to determine which
+    # packages have build or install failures given the current CTEST_BUILD()
+    # command.  And since some build targets don't get used in tests, we can't
+    # look at what packages have test failures in order to know that a build
+    # failure will cause a test failure.  And in the case of install failures,
+    # those will never cause test failures.  Therefore, if there are any build
+    # or install failures, we just have to assume that any tested package
+    # could have failed.  Hense, we set the above just like for a (global)
+    # configure failures.  Perhaps we couild read the generated *.xml files to
+    # figure that out but that is not worth the work righ now.  The only bad
+    # consequence of this is that a CI build would end up building and testing
+    # every package even if only one dowstream package had a build failure,
+    # for example.  That is just one of the downsides of the all-at-once
+    # appraoch vs the package-by-package appraoch.
   ELSEIF (FAILED_TEST_LOG_FILE)
     TRIBITS_GET_FAILED_PACKAGES_FROM_FAILED_TESTS("${FAILED_TEST_LOG_FILE}"
       ${PROJECT_NAME}_FAILED_PACKAGES )
