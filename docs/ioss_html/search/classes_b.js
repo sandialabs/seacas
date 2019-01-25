@@ -2,6 +2,8 @@ var searchData=
 [
   ['make_5fvoid',['make_void',['../structtsl_1_1detail__hopscotch__hash_1_1make__void.html',1,'tsl::detail_hopscotch_hash::make_void&lt; T &gt;'],['../structtsl_1_1detail__robin__hash_1_1make__void.html',1,'tsl::detail_robin_hash::make_void&lt; T &gt;']]],
   ['map',['Map',['../classIoss_1_1Map.html',1,'Ioss']]],
+  ['matrix_5f22',['Matrix_22',['../classIoss_1_1Matrix__22.html',1,'Ioss']]],
+  ['matrix_5f33',['Matrix_33',['../classIoss_1_1Matrix__33.html',1,'Ioss']]],
   ['mesh',['Mesh',['../classIoex_1_1Mesh.html',1,'Ioex']]],
   ['meshcopyoptions',['MeshCopyOptions',['../structIoss_1_1MeshCopyOptions.html',1,'Ioss']]],
   ['minmax',['MinMax',['../classIotr_1_1MinMax.html',1,'Iotr']]],
