@@ -346,7 +346,6 @@ element attributes, node sets, side sets, and object properties.
 @example ../test/testwt-oned.c
 @example ../test/rd_wt_mesh.c
 @example ../test/test-empty.c
-@example ../test/test.exo_c
 @example ../test/test_nemesis.c
 @example ../test/test_ts_errval.c
 @example ../test/test_ts_files.c
