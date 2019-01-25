@@ -34,6 +34,10 @@
 
 #include <Ioss_Bar2.h>
 #include <Ioss_Bar3.h>
+#if !defined(BUILT_IN_SIERRA)
+#include <Ioss_Beam2.h>
+#include <Ioss_Beam3.h>
+#endif
 #include <Ioss_Hex20.h>
 #include <Ioss_Hex27.h>
 #include <Ioss_Hex8.h>
@@ -1023,6 +1027,14 @@ CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
   else if (name == Ioss::Bar3::name) {
     topo = CG_BAR_3;
   }
+#if !defined(BUILT_IN_SIERRA)
+  else if (name == Ioss::Beam2::name) {
+    topo = CG_BAR_2;
+  }
+  else if (name == Ioss::Beam3::name) {
+    topo = CG_BAR_3;
+  }
+#endif
   else if (name == Ioss::Tri3::name) {
     topo = CG_TRI_3;
   }
