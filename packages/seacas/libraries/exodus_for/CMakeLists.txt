@@ -22,7 +22,7 @@ SET(HEADERS include/exodusII.inc )
 TRIBITS_ADD_LIBRARY(
   exodus_for
   HEADERS ${HEADERS}
-  SOURCES ${SOURCES} 
+  SOURCES ${SOURCES}
   )
 
 # Many users of the SEACAS installations still want a static exodus library...
