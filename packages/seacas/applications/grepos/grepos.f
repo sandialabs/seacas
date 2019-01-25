@@ -1277,6 +1277,12 @@ C     number element blocks, and truth table.
 10010 FORMAT (/, 4X, A,
      &     ' time steps have been written to the output database')
 
+      CALL MDDEL ('VARGL')
+      CALL MDDEL ('VARNP')
+      CALL MDDEL ('VAREL')
+      CALL MDDEL ('VARNS')
+      CALL MDDEL ('VARSS')
+
       GO TO 50
  40   CONTINUE
       CALL MEMERR
