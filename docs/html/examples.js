@@ -7,7 +7,6 @@ var examples =
     [ "/test/rd_wt_mesh.c", "_2test_2rd_wt_mesh_8c-example.html", null ],
     [ "/test/ReadEdgeFace.c", "_2test_2ReadEdgeFace_8c-example.html", null ],
     [ "/test/test-empty.c", "_2test_2test-empty_8c-example.html", null ],
-    [ "/test/test.exo_c", "_2test_2test_8exo_c-example.html", null ],
     [ "/test/test_nemesis.c", "_2test_2test_nemesis_8c-example.html", null ],
     [ "/test/test_ts_errval.c", "_2test_2test_ts_errval_8c-example.html", null ],
     [ "/test/test_ts_files.c", "_2test_2test_ts_files_8c-example.html", null ],

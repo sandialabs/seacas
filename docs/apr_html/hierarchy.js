@@ -17,7 +17,9 @@ var hierarchy =
     [ "SEAMS::Parser::by_type", "structSEAMS_1_1Parser_1_1by__type.html", null ],
     [ "SEAMS::file_rec", "structSEAMS_1_1file__rec.html", null ],
     [ "FlexLexer", "classFlexLexer.html", [
-      [ "yyFlexLexer", "classyyFlexLexer.html", null ]
+      [ "SEAMSFlexLexer", "classSEAMSFlexLexer.html", [
+        [ "SEAMS::Scanner", "classSEAMS_1_1Scanner.html", null ]
+      ] ]
     ] ],
     [ "SEAMS::history_data", "structSEAMS_1_1history__data.html", null ],
     [ "init", "structinit.html", null ],
@@ -34,9 +36,6 @@ var hierarchy =
     [ "SEAMS::Parser", "classSEAMS_1_1Parser.html", null ],
     [ "runtime_error", null, [
       [ "SEAMS::Parser::syntax_error", "structSEAMS_1_1Parser_1_1syntax__error.html", null ]
-    ] ],
-    [ "SEAMSFlexLexer", null, [
-      [ "SEAMS::Scanner", "classSEAMS_1_1Scanner.html", null ]
     ] ],
     [ "SEAMS::Parser::semantic_type", "unionSEAMS_1_1Parser_1_1semantic__type.html", null ],
     [ "SEAMS::Stats", "classSEAMS_1_1Stats.html", null ],

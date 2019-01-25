@@ -392,7 +392,7 @@ class tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, 
 <p>ValueType is what will be stored by <code><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html">robin_hash</a></code> (usually <code>std::pair&lt;Key, T&gt;</code> for map and <code>Key</code> for set).</p>
 <p><code>KeySelect</code> should be a <code>FunctionObject</code> which takes a <code>ValueType</code> in parameter and returns a reference to the key.</p>
 <p><code>ValueSelect</code> should be a <code>FunctionObject</code> which takes a <code>ValueType</code> in parameter and returns a reference to the value. <code>ValueSelect</code> should be void if there is no value (in a set for example).</p>
-<p>The strong exception guarantee only holds if the expression <code>std::is_nothrow_swappable&lt;ValueType&gt;::value &amp;&amp; std::is_nothrow_move_constructible&lt;ValueType&gt;::value</code> is true.</p>
+<p>The strong exception guarantee only holds if the expression <code>std::is_nothrow_swappable&lt;ValueType&gt;\:\:value &amp;&amp; std::is_nothrow_move_constructible&lt;ValueType&gt;\:\:value</code> is true.</p>
 <p>Behaviour is undefined if the destructor of <code>ValueType</code> throws. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="aeda2cef10fe15ff7953e6aa0433ada6a"></a>

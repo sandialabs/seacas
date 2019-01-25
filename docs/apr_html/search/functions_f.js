@@ -3,6 +3,7 @@ var searchData=
   ['save_5fhistory_5fstring',['save_history_string',['../classSEAMS_1_1Scanner.html#a1b41cf025596a1160e781b7064bb0f3e',1,'SEAMS::Scanner']]],
   ['scanner',['Scanner',['../classSEAMS_1_1Scanner.html#a2a87008376ed7808f84051274579778f',1,'SEAMS::Scanner']]],
   ['seamsalloc',['SEAMSalloc',['../apr__scanner_8cc.html#a66b61d62c93709f63dedf341220dc955',1,'apr_scanner.cc']]],
+  ['seamsflexlexer',['SEAMSFlexLexer',['../classSEAMSFlexLexer.html#af2516314e94dafc325067896639c0fb1',1,'SEAMSFlexLexer']]],
   ['seamsfree',['SEAMSfree',['../apr__scanner_8cc.html#af844507128ff1f4c4605f7adf787c6df',1,'apr_scanner.cc']]],
   ['seamsrealloc',['SEAMSrealloc',['../apr__scanner_8cc.html#ad4a3ff3a58be20fa74dfe21847ae0930',1,'apr_scanner.cc']]],
   ['set_5fdebug',['set_debug',['../classSEAMS_1_1Scanner.html#a3a5331cc2963c19ed790c56105d3145e',1,'SEAMS::Scanner::set_debug()'],['../classFlexLexer.html#a1da05b19b783fd94e8a65cb4ee02dec8',1,'FlexLexer::set_debug()']]],
@@ -18,7 +19,7 @@ var searchData=
   ['string_5finteractive',['string_interactive',['../classSEAMS_1_1Aprepro.html#acb32593883b914d09a0f9dd7cceaf3dc',1,'SEAMS::Aprepro']]],
   ['succ',['succ',['../apr__test_8cc.html#ad15723334fab77cc43861210acda2d36',1,'succ(double i):&#160;apr_test.cc'],['../strings_8cc.html#ad15723334fab77cc43861210acda2d36',1,'succ(double i):&#160;strings.cc']]],
   ['switch_5fhandler',['switch_handler',['../classSEAMS_1_1Scanner.html#ab5f6e36a6047342f7a1a98bae4d8a69e',1,'SEAMS::Scanner']]],
-  ['switch_5fstreams',['switch_streams',['../classFlexLexer.html#a926d7e3ea6ba9136de57939a42b3f630',1,'FlexLexer::switch_streams()'],['../classyyFlexLexer.html#a675e56c4c060ace4bc97f26df0ece1f5',1,'yyFlexLexer::switch_streams()']]],
+  ['switch_5fstreams',['switch_streams',['../classFlexLexer.html#a926d7e3ea6ba9136de57939a42b3f630',1,'FlexLexer::switch_streams()'],['../classSEAMSFlexLexer.html#a6310f4df9e67fcbbb6b2f3753681861c',1,'SEAMSFlexLexer::switch_streams()']]],
   ['symrec',['symrec',['../structSEAMS_1_1symrec.html#a80e2e9959da0126e73e65eb7b60e08c0',1,'SEAMS::symrec::symrec(const char *my_name, int my_type, bool is_internal=false)'],['../structSEAMS_1_1symrec.html#af938c33794233ad04280eea974ddf4f1',1,'SEAMS::symrec::symrec(const std::string &amp;my_name, int my_type, bool is_internal=false)']]],
   ['syntax_5ferror',['syntax_error',['../structSEAMS_1_1Parser_1_1syntax__error.html#a90e21cb773633f2b5e85254db9bc98c6',1,'SEAMS::Parser::syntax_error']]]
 ];
