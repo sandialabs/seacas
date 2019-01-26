@@ -425,8 +425,9 @@ C              Reserve scratch arrays for ZMESS
 
 C              Delete scratch arrays
             CALL MDDEL ('LTNNN')
-            CALL MDDEL ('NEWIX')
             CALL MDDEL ('IXESS')
+            CALL MDDEL ('NEWSD')
+            CALL MDDEL ('NEWIX')
             CALL MDSTAT(NERR, MEM)
             IF (NERR .GT. 0) THEN
               CALL MEMERR
@@ -879,6 +880,10 @@ c         CALL NCSNC (NDBOUT, IERR)
       CALL MDDEL ('VARVAL')
       CALL MDDEL ('IXELB')
       CALL MDDEL ('IXELBO')
+      if (iszoom .or. isfilter .or. (nelblk .ne. nelbo)) then
+        call mddel ('IXNODE')
+        CALL MDdel ('IXELEM')
+      end if
       CALL MDSTAT(NERR, MEM)
       IF (NERR .GT. 0) THEN
         CALL MEMERR
