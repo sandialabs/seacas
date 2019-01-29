@@ -458,8 +458,8 @@ namespace {
       std::cout << "exodiff: Number of names in file 1 (" << max << ") is larger than "
                 << "current limit of " << interface.max_number_of_names
                 << ".  To increase, use \"-maxnames <int>\" on the command "
-	"line or \"MAX NAMES <int>\" in the command file.  "
-	"Aborting...\n";
+                   "line or \"MAX NAMES <int>\" in the command file.  "
+                   "Aborting...\n";
       exit(1);
     }
 
@@ -487,8 +487,8 @@ namespace {
         std::cout << "exodiff: Number of names in file 2 (" << max << ") is larger than "
                   << "current limit of " << interface.max_number_of_names
                   << ".  To increase, use \"-maxnames <int>\" on the command "
-	  "line or \"MAX NAMES <int>\" in the command file.  "
-	  "Aborting...\n";
+                     "line or \"MAX NAMES <int>\" in the command file.  "
+                     "Aborting...\n";
         exit(1);
       }
     }
@@ -530,27 +530,28 @@ namespace {
     }
     else if (interface.map_flag == USE_FILE_IDS) {
       if (!interface.ignore_maps) {
-	// Node/element X in file 1 matches node/element X in file 2 no matter what order they are in
-	Compute_FileId_Maps(node_map, elmt_map, file1, file2);
+        // Node/element X in file 1 matches node/element X in file 2 no matter what order they are
+        // in
+        Compute_FileId_Maps(node_map, elmt_map, file1, file2);
       }
       else {
-	size_t num_nodes = file1.Num_Nodes();
-	node_map = new INT[num_nodes];
-	std::iota(node_map, node_map + num_nodes, 0);
+        size_t num_nodes = file1.Num_Nodes();
+        node_map         = new INT[num_nodes];
+        std::iota(node_map, node_map + num_nodes, 0);
 
-	size_t num_elem = file1.Num_Elmts();
-	elmt_map = new INT[num_elem];
-	std::iota(elmt_map, elmt_map + num_elem, 0);
+        size_t num_elem = file1.Num_Elmts();
+        elmt_map        = new INT[num_elem];
+        std::iota(elmt_map, elmt_map + num_elem, 0);
       }
     }
     else if (interface.map_flag == FILE_ORDER) {
       // Match by implicit ordering... IDs in that ordering must match (checked later)
       size_t num_nodes = file1.Num_Nodes();
-      node_map = new INT[num_nodes];
+      node_map         = new INT[num_nodes];
       std::iota(node_map, node_map + num_nodes, 0);
 
       size_t num_elem = file1.Num_Elmts();
-      elmt_map = new INT[num_elem];
+      elmt_map        = new INT[num_elem];
       std::iota(elmt_map, elmt_map + num_elem, 0);
     }
     else {
@@ -1147,7 +1148,8 @@ bool Invalid_Values(const double *values, size_t count)
 bool Equal_Values(const double *values, size_t count, double *value)
 {
   SMART_ASSERT(values != nullptr);
-  return (std::adjacent_find(values, values + count, std::not_equal_to<double>()) == values + count);
+  return (std::adjacent_find(values, values + count, std::not_equal_to<double>()) ==
+          values + count);
 }
 
 template <typename INT>
