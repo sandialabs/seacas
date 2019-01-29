@@ -35,6 +35,7 @@
 #include <cfloat>
 #include <cstdlib>
 #include <iomanip>
+#include <numeric>
 
 #include "ED_SystemInterface.h"
 #include "Tolerance.h"
