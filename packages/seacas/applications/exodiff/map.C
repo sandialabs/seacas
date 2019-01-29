@@ -31,6 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+#include <algorithm>
 #include <cfloat>
 #include <cstdlib>
 #include <iomanip>
@@ -68,22 +69,16 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
 
   // Load global ids (0-offset) into id array.
   auto id = new INT[num_elmts];
-  {
-    for (size_t e = 0; e < num_elmts; ++e) {
-      id[e] = e;
-    }
-  }
+  std::iota(id, id + num_elmts, 0);
 
   // Get map storage.
   node_map = new INT[num_nodes];
   SMART_ASSERT(node_map != nullptr);
-  {
-    for (size_t i = 0; i < num_nodes; ++i) {
-      node_map[i] = -1;
-    }
-  }
+  std::fill(node_map, node_map + num_nodes, -1);
+
   elmt_map = new INT[num_elmts];
   SMART_ASSERT(elmt_map != nullptr);
+  std::fill(elmt_map, elmt_map + num_elmts, -1);
 
   // Create storage for midpoints.
   double *x2 = nullptr, *y2 = nullptr, *z2 = nullptr;
@@ -393,27 +388,16 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
 
   // Load global ids (0-offset) into id array.
   auto id2 = new INT[num_elmts2];
-  {
-    for (size_t e = 0; e < num_elmts2; ++e) {
-      id2[e] = e;
-    }
-  }
+  std::iota(id2, id2 + num_elmts2, 0);
 
   // Get map storage.
   node_map = new INT[num_nodes1];
   SMART_ASSERT(node_map != nullptr);
-  {
-    for (size_t i = 0; i < num_nodes1; ++i) {
-      node_map[i] = -1;
-    }
-  }
+  std::fill(node_map, node_map + num_nodes1, -1);
+
   elmt_map = new INT[num_elmts1];
   SMART_ASSERT(elmt_map != nullptr);
-  {
-    for (size_t i = 0; i < num_elmts1; ++i) {
-      elmt_map[i] = -1;
-    }
-  }
+  std::fill(elmt_map, elmt_map + num_elmts1, -1);
 
   // Create storage for midpoints.
   double *x2 = nullptr, *y2 = nullptr, *z2 = nullptr;
@@ -826,37 +810,6 @@ void Dump_Maps(const INT *node_map, const INT *elmt_map, ExoII_Read<INT> &file1)
   std::cout << "===\n";
 }
 
-template <typename INT>
-bool Check_Maps(const INT *node_map, const INT *elmt_map, const ExoII_Read<INT> &file1,
-                const ExoII_Read<INT> &file2)
-{
-  if (file1.Num_Nodes() != file2.Num_Nodes()) {
-    return false;
-  }
-
-  if (file1.Num_Elmts() != file2.Num_Elmts()) {
-    return false;
-  }
-
-  if (node_map != nullptr) {
-    for (size_t ijk = 0; ijk < file1.Num_Nodes(); ++ijk) {
-      if ((INT)ijk != node_map[ijk]) {
-        return false;
-      }
-    }
-  }
-
-  if (elmt_map != nullptr) {
-    for (size_t ijk = 0; ijk < file1.Num_Elmts(); ++ijk) {
-      if ((INT)ijk != elmt_map[ijk]) {
-        return false;
-      }
-    }
-  }
-  // All maps are one-to-one; Don't need to map nodes or elements...
-  return true;
-}
-
 namespace {
   template <typename INT>
   void Compute_Node_Map(INT *&node_map, ExoII_Read<INT> &file1, ExoII_Read<INT> &file2)
@@ -867,18 +820,13 @@ namespace {
     // elements.
 
     size_t num_nodes = file1.Num_Nodes();
-    auto   mapped_2  = new INT[num_nodes];
+    std::vector<INT> mapped_2(num_nodes, -1);
 
     // Cannot ignore the comparisons, so make sure the coord_tol_type
     // is not -1 which is "ignore"
     TOLERANCE_TYPE_enum save_tolerance_type = interface.coord_tol.type;
     if (save_tolerance_type == IGNORE) {
       interface.coord_tol.type = ABSOLUTE;
-    }
-
-    // Initialize...
-    for (size_t i = 0; i < num_nodes; i++) {
-      mapped_2[i] = -1;
     }
 
     // Find unmapped nodes in file2; count the unmapped nodes in file_1.
@@ -898,7 +846,7 @@ namespace {
     // unmapped node will have a '-1' entry in 'node_map' and a file2
     // unmapped node will have a '-1' entry in 'mapped_2'.  Reuse the
     // 'mapped_2' array to hold the list.
-    auto   mapped_1 = new INT[count_1];
+    std::vector<INT> mapped_1(count_1);
     size_t count_2  = 0;
     count_1         = 0;
     for (size_t i = 0; i < num_nodes; i++) {
@@ -962,11 +910,6 @@ namespace {
             << count_1 - matched << " unmatched nodes remaining.\n");
       exit(1);
     }
-
-    // Free memory and return.
-    delete[] mapped_1;
-    delete[] mapped_2;
-
     interface.coord_tol.type = save_tolerance_type;
   }
 
@@ -1097,9 +1040,7 @@ template <typename INT> double Find_Min_Coord_Sep(ExoII_Read<INT> &file)
   const double *z = (double *)file.Z_Coords();
 
   auto indx = new INT[num_nodes];
-  for (size_t i = 0; i < num_nodes; i++) {
-    indx[i] = i;
-  }
+  std::iota(indx, indx + num_nodes, 0);
 
   // Find coordinate with largest range...
   const double *r     = x;
@@ -1124,7 +1065,6 @@ template <typename INT> double Find_Min_Coord_Sep(ExoII_Read<INT> &file)
   index_qsort(r, indx, num_nodes);
 
   double min = DBL_MAX;
-  ;
   switch (file.Dimension()) {
   case 1: {
     for (size_t i = 0; i < num_nodes; i++) {
@@ -1306,8 +1246,6 @@ template void   Compute_Partial_Maps(int *&node_map, int *&elmt_map, ExoII_Read<
 template void   Compute_FileId_Maps(int *&node_map, int *&elmt_map, ExoII_Read<int> &file1,
                                     ExoII_Read<int> &file2);
 template void   Dump_Maps(const int *node_map, const int *elmt_map, ExoII_Read<int> &file1);
-template bool   Check_Maps(const int *node_map, const int *elmt_map, const ExoII_Read<int> &file1,
-                           const ExoII_Read<int> &file2);
 template double Find_Min_Coord_Sep(ExoII_Read<int> &file);
 
 template void Compute_Maps(int64_t *&node_map, int64_t *&elmt_map, ExoII_Read<int64_t> &file1,
@@ -1321,6 +1259,4 @@ template void   Compute_FileId_Maps(int64_t *&node_map, int64_t *&elmt_map,
                                     ExoII_Read<int64_t> &file1, ExoII_Read<int64_t> &file2);
 template void   Dump_Maps(const int64_t *node_map, const int64_t *elmt_map,
                           ExoII_Read<int64_t> &file1);
-template bool   Check_Maps(const int64_t *node_map, const int64_t *elmt_map,
-                           const ExoII_Read<int64_t> &file1, const ExoII_Read<int64_t> &file2);
 template double Find_Min_Coord_Sep(ExoII_Read<int64_t> &file);

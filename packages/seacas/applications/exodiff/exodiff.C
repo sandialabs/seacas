@@ -46,6 +46,7 @@
 #define ST_ZU "%lu"
 #endif
 
+#include <algorithm>
 #include <cfloat>
 #include <cmath>
 #include <cstdio>
@@ -457,8 +458,8 @@ namespace {
       std::cout << "exodiff: Number of names in file 1 (" << max << ") is larger than "
                 << "current limit of " << interface.max_number_of_names
                 << ".  To increase, use \"-maxnames <int>\" on the command "
-                   "line or \"MAX NAMES <int>\" in the command file.  "
-                   "Aborting...\n";
+	"line or \"MAX NAMES <int>\" in the command file.  "
+	"Aborting...\n";
       exit(1);
     }
 
@@ -486,8 +487,8 @@ namespace {
         std::cout << "exodiff: Number of names in file 2 (" << max << ") is larger than "
                   << "current limit of " << interface.max_number_of_names
                   << ".  To increase, use \"-maxnames <int>\" on the command "
-                     "line or \"MAX NAMES <int>\" in the command file.  "
-                     "Aborting...\n";
+	  "line or \"MAX NAMES <int>\" in the command file.  "
+	  "Aborting...\n";
         exit(1);
       }
     }
@@ -520,29 +521,44 @@ namespace {
     // into file2.  Similarly with elmt_map.
     INT *node_map = nullptr;
     INT *elmt_map = nullptr;
-    if (interface.map_flag != FILE_ORDER) {
-      if (interface.map_flag == PARTIAL) {
-        Compute_Partial_Maps(node_map, elmt_map, file1, file2);
-      }
-      else if (interface.map_flag == USE_FILE_IDS) {
-        Compute_FileId_Maps(node_map, elmt_map, file1, file2);
-      }
-      else if (interface.map_flag == DISTANCE) {
-        Compute_Maps(node_map, elmt_map, file1, file2);
+    if (interface.map_flag == DISTANCE) {
+      Compute_Maps(node_map, elmt_map, file1, file2);
+    }
+    else if (interface.map_flag == PARTIAL) {
+      // Same as distance, but ok if not all nodes/elements are matched
+      Compute_Partial_Maps(node_map, elmt_map, file1, file2);
+    }
+    else if (interface.map_flag == USE_FILE_IDS) {
+      if (!interface.ignore_maps) {
+	// Node/element X in file 1 matches node/element X in file 2 no matter what order they are in
+	Compute_FileId_Maps(node_map, elmt_map, file1, file2);
       }
       else {
-        ERROR("Invalid map option.\n");
-      }
+	size_t num_nodes = file1.Num_Nodes();
+	node_map = new INT[num_nodes];
+	std::iota(node_map, node_map + num_nodes, 0);
 
-      if (interface.dump_mapping) {
-        Dump_Maps(node_map, elmt_map, file1);
+	size_t num_elem = file1.Num_Elmts();
+	elmt_map = new INT[num_elem];
+	std::iota(elmt_map, elmt_map + num_elem, 0);
       }
-      if (Check_Maps(node_map, elmt_map, file1, file2)) {
-        if (interface.map_flag == DISTANCE) {
-          std::cout << "exodiff: INFO .. Map option is not needed.\n";
-        }
-        interface.map_flag = FILE_ORDER;
-      }
+    }
+    else if (interface.map_flag == FILE_ORDER) {
+      // Match by implicit ordering... IDs in that ordering must match (checked later)
+      size_t num_nodes = file1.Num_Nodes();
+      node_map = new INT[num_nodes];
+      std::iota(node_map, node_map + num_nodes, 0);
+
+      size_t num_elem = file1.Num_Elmts();
+      elmt_map = new INT[num_elem];
+      std::iota(elmt_map, elmt_map + num_elem, 0);
+    }
+    else {
+      ERROR("Invalid map option.\n");
+    }
+
+    if (interface.dump_mapping) {
+      Dump_Maps(node_map, elmt_map, file1);
     }
 
     bool diff_flag = false; // Set to 'true' to indicate files contain diffs
@@ -575,16 +591,15 @@ namespace {
       }
     }
     else {
+      // Ignoring the maps from the file, so create a dummy
+      // map to make logic later in program consistent.
       node_id_map  = new INT[file1.Num_Nodes()];
       INT *tmp_map = const_cast<INT *>(node_id_map);
-      for (size_t i = 0; i < file1.Num_Nodes(); i++) {
-        tmp_map[i] = i + 1;
-      }
+      std::iota(tmp_map, tmp_map + file1.Num_Nodes(), 1);
+
       elem_id_map = new INT[file1.Num_Elmts()];
       tmp_map     = const_cast<INT *>(elem_id_map);
-      for (size_t i = 0; i < file1.Num_Elmts(); i++) {
-        tmp_map[i] = i + 1;
-      }
+      std::iota(tmp_map, tmp_map + file1.Num_Elmts(), 1);
     }
 
     int out_file_id = -1;
@@ -1132,19 +1147,7 @@ bool Invalid_Values(const double *values, size_t count)
 bool Equal_Values(const double *values, size_t count, double *value)
 {
   SMART_ASSERT(values != nullptr);
-
-  bool all_same = true;
-  if (count > 0) {
-    *value = values[0];
-  }
-
-  for (size_t i = 1; i < count; i++) {
-    if (values[i] != *value) {
-      all_same = false;
-      break;
-    }
-  }
-  return all_same;
+  return (std::adjacent_find(values, values + count, std::not_equal_to<double>()) == values + count);
 }
 
 template <typename INT>
