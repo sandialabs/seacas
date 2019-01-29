@@ -356,8 +356,7 @@ void SystemInterface::enroll_options()
                   "Match element blocks, nodesets, and sidesets by name instead of by id.",
                   nullptr);
   options_.enroll("show_unmatched", GetLongOption::NoValue,
-		  "If the -partial switch used, print the elements that did not match.",
-		  nullptr);
+                  "If the -partial switch used, print the elements that did not match.", nullptr);
   options_.enroll("dumpmap", GetLongOption::NoValue,
                   "If the -map switch used, print the resulting node and element maps.", nullptr);
   options_.enroll("nsmap", GetLongOption::NoValue,

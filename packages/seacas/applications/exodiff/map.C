@@ -819,7 +819,7 @@ namespace {
     // case if there are 'free' nodes which are not connected to any
     // elements.
 
-    size_t num_nodes = file1.Num_Nodes();
+    size_t           num_nodes = file1.Num_Nodes();
     std::vector<INT> mapped_2(num_nodes, -1);
 
     // Cannot ignore the comparisons, so make sure the coord_tol_type
@@ -847,8 +847,8 @@ namespace {
     // unmapped node will have a '-1' entry in 'mapped_2'.  Reuse the
     // 'mapped_2' array to hold the list.
     std::vector<INT> mapped_1(count_1);
-    size_t count_2  = 0;
-    count_1         = 0;
+    size_t           count_2 = 0;
+    count_1                  = 0;
     for (size_t i = 0; i < num_nodes; i++) {
       if (node_map[i] == -1) {
         mapped_1[count_1++] = i;
