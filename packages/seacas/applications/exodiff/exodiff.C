@@ -46,7 +46,6 @@
 #define ST_ZU "%lu"
 #endif
 
-#include <algorithm>
 #include <cfloat>
 #include <cmath>
 #include <cstdio>
@@ -55,6 +54,7 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <numeric>
 
 #include "ED_SystemInterface.h"
 #include "ED_Version.h"
