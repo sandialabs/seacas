@@ -349,17 +349,17 @@ void SystemInterface::enroll_options()
                   "\t\tmaps in the two files.",
                   nullptr);
   options_.enroll("match_file_order", GetLongOption::NoValue,
-                  "Invokes a matching algorithm using the node and element position\n"
-                  "\t\torder in the two files.",
+                  "Verifies that node and element ids match and are in same order\n"
+                  "\t\tin the two files.",
                   nullptr);
   options_.enroll("match_by_name", GetLongOption::NoValue,
                   "Match element blocks, nodesets, and sidesets by name instead of by id.",
                   nullptr);
-  options_.enroll(
-      "show_unmatched", GetLongOption::NoValue,
-      "If the -partial switch is given, this prints out the elements that did not match.", nullptr);
+  options_.enroll("show_unmatched", GetLongOption::NoValue,
+		  "If the -partial switch used, print the elements that did not match.",
+		  nullptr);
   options_.enroll("dumpmap", GetLongOption::NoValue,
-                  "If the -map switch is given, this prints out the resulting map.", nullptr);
+                  "If the -map switch used, print the resulting node and element maps.", nullptr);
   options_.enroll("nsmap", GetLongOption::NoValue,
                   "Creates a map between the nodeset nodes in the two files\n"
                   "\t\tif they include the same nodes, but are in different order.",
