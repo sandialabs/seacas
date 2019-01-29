@@ -72,7 +72,10 @@ txtrst=$(tput sgr0)       # Text reset
 
 cycles=-1
 
-ACCESS=@ACCESSDIR@
+if [ "$ACCESS" == "" ]
+then
+    ACCESS=@ACCESSDIR@
+fi
 EPU=${ACCESS}/bin/epu
 PARALLEL=${ACCESS}/bin/parallel
 SEQ="seq -w"

@@ -101,7 +101,10 @@ function abspath() {
 }
 
 codename=blot
-ACCESS=@ACCESSDIR@
+if [ "$ACCESS" == "" ]
+then
+    ACCESS=@ACCESSDIR@
+fi
 sep=@SEPARATOR@
 
 # Text color variables
