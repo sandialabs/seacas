@@ -76,7 +76,10 @@ echo ""
 }
 
 codename=fastq
-ACCESS=@ACCESSDIR@
+if [ "$ACCESS" == "" ]
+then
+    ACCESS=@ACCESSDIR@
+fi
 sep=@SEPARATOR@
 
 # Text color variables
