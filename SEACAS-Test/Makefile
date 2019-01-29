@@ -110,11 +110,11 @@ conjoin:
 	$(EXODIFF) -stat -pedantic conjoin-out.e gold.g
 
 exodiff_partial:
-	$(EXODIFF)  -p 8-block.e 1-block.e
-	$(EXODIFF)  -p 8-block.e 4-block.e
-	$(EXODIFF)  -p 1-block.e 8-block.e
-	$(EXODIFF)  -p 4-block.e 8-block.e
-	$(EXODIFF)  -p 1-block.e 4-block.e
+	$(EXODIFF)  -p 8-block.es 1-block.es
+	$(EXODIFF)  -p 8-block.es 4-block.es
+	$(EXODIFF)  -p 1-block.es 8-block.es
+	$(EXODIFF)  -p 4-block.es 8-block.es
+	$(EXODIFF)  -p 1-block.es 4-block.es
 ############################# Default Rules#####################
 # Dependencies:
 base_o.g: common.h
