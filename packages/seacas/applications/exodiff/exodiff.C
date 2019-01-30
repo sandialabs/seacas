@@ -46,6 +46,7 @@
 #define ST_ZU "%lu"
 #endif
 
+#include <algorithm>
 #include <cfloat>
 #include <cmath>
 #include <cstdio>
