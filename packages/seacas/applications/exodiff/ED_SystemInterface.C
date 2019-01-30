@@ -99,43 +99,41 @@ namespace {
       return;
     }
     const char *tokens = option.c_str();
-    if (tokens != nullptr) {
-      if (strchr(tokens, ':') != nullptr) {
-        // The string contains a separator
+    if (strchr(tokens, ':') != nullptr) {
+      // The string contains a separator
 
-        int vals[3];
-        vals[0] = start;
-        vals[1] = stop;
-        vals[2] = increment;
+      int vals[3];
+      vals[0] = start;
+      vals[1] = stop;
+      vals[2] = increment;
 
-        int j = 0;
-        for (auto &val : vals) {
-          // Parse 'i'th field
-          char tmp_str[128];
-          ;
-          int k = 0;
+      int j = 0;
+      for (auto &val : vals) {
+        // Parse 'i'th field
+        char tmp_str[128];
+        ;
+        int k = 0;
 
-          while (tokens[j] != '\0' && tokens[j] != ':') {
-            tmp_str[k++] = tokens[j++];
-          }
-
-          tmp_str[k] = '\0';
-          if (strlen(tmp_str) > 0) {
-            val = strtol(tmp_str, nullptr, 0);
-          }
-
-          if (tokens[j++] == '\0') {
-            break; // Reached end of string
-          }
+        while (tokens[j] != '\0' && tokens[j] != ':') {
+          tmp_str[k++] = tokens[j++];
         }
-        start     = vals[0];
-        stop      = vals[1];
-        increment = vals[2];
+
+        tmp_str[k] = '\0';
+        if (strlen(tmp_str) > 0) {
+          val = strtol(tmp_str, nullptr, 0);
+        }
+
+        if (tokens[j++] == '\0') {
+          break; // Reached end of string
+        }
       }
-      else {
-        // Does not contain a separator, min == max
-        start = stop = strtol(tokens, nullptr, 0);
-      }
+      start     = vals[0];
+      stop      = vals[1];
+      increment = vals[2];
+    }
+    else {
+      // Does not contain a separator, min == max
+      start = stop = strtol(tokens, nullptr, 0);
     }
   }
 

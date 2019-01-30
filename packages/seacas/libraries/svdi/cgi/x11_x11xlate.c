@@ -2063,9 +2063,6 @@ static void xctx(anything **params, int num_surfaces, anything **surf_list)
       break;
     }
 
-    x = *(float *)params[1];
-    y = *(float *)params[2];
-
     /* set SVDI foreground color if needed */
     set_foreground_color(cur_state, cur_state->text_color);
 
@@ -3372,20 +3369,19 @@ static void xccsm(anything **params, int num_surfaces, anything **surf_list)
 /* COLOR TABLE */
 static void xcct(anything **params, int num_surfaces, anything **surf_list)
 {
-  int   i;                   /* index for loop on surfaces */
-  int   j, k;                /* indices for looping */
-  int   starti;              /* starting color index */
-  int   num_cols;            /* number of colors in color list */
-  int   tmp_array[3];        /* temp array used for setting bg color */
-  float color_array[256][3]; /* used for setting SVDI color table */
-  int   num_set;             /* number of colors being set, for SVDI */
-  int   maxindex;            /* max color index to set */
-  int   indx_ptr;            /* for keeping track of color indices */
-  int   index1, index2;      /* defines a range of indices to set */
-  int   first;               /* marks first time through loop */
-  int   one = 1;
+  int        i;                   /* index for loop on surfaces */
+  int        j, k;                /* indices for looping */
+  int        starti;              /* starting color index */
+  int        num_cols;            /* number of colors in color list */
+  int        tmp_array[3];        /* temp array used for setting bg color */
+  float      color_array[256][3]; /* used for setting SVDI color table */
+  int        num_set;             /* number of colors being set, for SVDI */
+  int        maxindex;            /* max color index to set */
+  int        indx_ptr;            /* for keeping track of color indices */
+  int        index1, index2;      /* defines a range of indices to set */
+  static int first = TRUE;        /* marks first time through loop */
+  int        one   = 1;
 
-  first = TRUE;
   /* starting color index and number of colors */
   starti   = *(int *)params[1];
   num_cols = *(int *)params[2];
