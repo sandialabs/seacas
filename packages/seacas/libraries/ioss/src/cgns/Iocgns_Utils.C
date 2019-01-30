@@ -1664,8 +1664,6 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
 
   bool has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
 
-  cgsize_t dim[2] = {32, (cgsize_t)timesteps.size()};
-
   // Create a lambda to avoid code duplication for similar treatment
   // of structured blocks and element blocks.
   auto ziter = [=](Ioss::EntityBlock *block) {
@@ -1693,6 +1691,7 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
       }
     }
 
+    cgsize_t dim[2] = {32, (cgsize_t)timesteps.size()};
     if (has_cell_center_fields || has_nodal_fields) {
       CGCHECK(cg_ziter_write(cgns_file_ptr, base, zone, "ZoneIterativeData"));
       CGCHECK(cg_goto(cgns_file_ptr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
