@@ -12,7 +12,10 @@ var searchData=
   ['set_5ferror_5fstreams',['set_error_streams',['../classSEAMS_1_1Aprepro.html#a81fa3be725377b47666482fd4783133f',1,'SEAMS::Aprepro']]],
   ['set_5foption',['set_option',['../classSEAMS_1_1Aprepro.html#a71039386241d1fc5f547af6d1c6eecaf',1,'SEAMS::Aprepro']]],
   ['set_5ftype',['set_type',['../namespaceSEAMS.html#ae2c8c3ec3f1af162b2677fc4eef2f67c',1,'SEAMS']]],
-  ['stack_5fsymbol_5ftype',['stack_symbol_type',['../structSEAMS_1_1Parser_1_1stack__symbol__type.html#af4644fa4e25fbdf591c8ccd12be394a8',1,'SEAMS::Parser::stack_symbol_type::stack_symbol_type()'],['../structSEAMS_1_1Parser_1_1stack__symbol__type.html#ac6522822e76a01b7007b96b9e1e11040',1,'SEAMS::Parser::stack_symbol_type::stack_symbol_type(state_type s, symbol_type &amp;sym)']]],
+  ['size',['size',['../classSEAMS_1_1Parser_1_1stack.html#a4f94e5096208473cda08426f99a0d277',1,'SEAMS::Parser::stack']]],
+  ['slice',['slice',['../classSEAMS_1_1Parser_1_1stack_1_1slice.html#aae27d78c00996378a28eac4ddc1c1b96',1,'SEAMS::Parser::stack::slice']]],
+  ['stack',['stack',['../classSEAMS_1_1Parser_1_1stack.html#af1a7219a53798dbf9e0d8ae6e6cc24dc',1,'SEAMS::Parser::stack::stack(size_type n=200)'],['../classSEAMS_1_1Parser_1_1stack.html#accc8ee92e8700b68d8e4c01bc71f21e3',1,'SEAMS::Parser::stack::stack(const stack &amp;)']]],
+  ['stack_5fsymbol_5ftype',['stack_symbol_type',['../structSEAMS_1_1Parser_1_1stack__symbol__type.html#af4644fa4e25fbdf591c8ccd12be394a8',1,'SEAMS::Parser::stack_symbol_type::stack_symbol_type()'],['../structSEAMS_1_1Parser_1_1stack__symbol__type.html#a55e15e3412386f2be31940fcb71c7dec',1,'SEAMS::Parser::stack_symbol_type::stack_symbol_type(YY_RVREF(stack_symbol_type) that)'],['../structSEAMS_1_1Parser_1_1stack__symbol__type.html#a1ab2d81171d72a826cd81b215355b5cf',1,'SEAMS::Parser::stack_symbol_type::stack_symbol_type(state_type s, YY_MOVE_REF(symbol_type) sym)']]],
   ['state_5fis_5fimmutable',['state_is_immutable',['../classSEAMS_1_1Aprepro.html#a5d028beb608570c87d41c1bcb42f58f4',1,'SEAMS::Aprepro']]],
   ['statistics',['statistics',['../classSEAMS_1_1Aprepro.html#a6c271fa53d065ce13d607af77e971503',1,'SEAMS::Aprepro']]],
   ['stats',['Stats',['../classSEAMS_1_1Stats.html#ac3e4cf0177fd919d35eb8e38eab23e1d',1,'SEAMS::Stats']]],
@@ -21,5 +24,5 @@ var searchData=
   ['switch_5fhandler',['switch_handler',['../classSEAMS_1_1Scanner.html#ab5f6e36a6047342f7a1a98bae4d8a69e',1,'SEAMS::Scanner']]],
   ['switch_5fstreams',['switch_streams',['../classFlexLexer.html#a926d7e3ea6ba9136de57939a42b3f630',1,'FlexLexer::switch_streams()'],['../classSEAMSFlexLexer.html#a6310f4df9e67fcbbb6b2f3753681861c',1,'SEAMSFlexLexer::switch_streams()']]],
   ['symrec',['symrec',['../structSEAMS_1_1symrec.html#a80e2e9959da0126e73e65eb7b60e08c0',1,'SEAMS::symrec::symrec(const char *my_name, int my_type, bool is_internal=false)'],['../structSEAMS_1_1symrec.html#af938c33794233ad04280eea974ddf4f1',1,'SEAMS::symrec::symrec(const std::string &amp;my_name, int my_type, bool is_internal=false)']]],
-  ['syntax_5ferror',['syntax_error',['../structSEAMS_1_1Parser_1_1syntax__error.html#a90e21cb773633f2b5e85254db9bc98c6',1,'SEAMS::Parser::syntax_error']]]
+  ['syntax_5ferror',['syntax_error',['../structSEAMS_1_1Parser_1_1syntax__error.html#a90e21cb773633f2b5e85254db9bc98c6',1,'SEAMS::Parser::syntax_error::syntax_error(const std::string &amp;m)'],['../structSEAMS_1_1Parser_1_1syntax__error.html#a40855cb7a42717c63c8552d598ec36d9',1,'SEAMS::Parser::syntax_error::syntax_error(const syntax_error &amp;s)']]]
 ];

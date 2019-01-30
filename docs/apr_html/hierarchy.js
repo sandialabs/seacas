@@ -14,7 +14,11 @@ var hierarchy =
         [ "SEAMS::Parser::stack_symbol_type", "structSEAMS_1_1Parser_1_1stack__symbol__type.html", null ]
       ] ]
     ] ],
-    [ "SEAMS::Parser::by_type", "structSEAMS_1_1Parser_1_1by__type.html", null ],
+    [ "SEAMS::Parser::by_type", "structSEAMS_1_1Parser_1_1by__type.html", [
+      [ "SEAMS::Parser::basic_symbol< by_type >", "structSEAMS_1_1Parser_1_1basic__symbol.html", [
+        [ "SEAMS::Parser::symbol_type", "structSEAMS_1_1Parser_1_1symbol__type.html", null ]
+      ] ]
+    ] ],
     [ "SEAMS::file_rec", "structSEAMS_1_1file__rec.html", null ],
     [ "FlexLexer", "classFlexLexer.html", [
       [ "SEAMSFlexLexer", "classSEAMSFlexLexer.html", [
@@ -38,6 +42,9 @@ var hierarchy =
       [ "SEAMS::Parser::syntax_error", "structSEAMS_1_1Parser_1_1syntax__error.html", null ]
     ] ],
     [ "SEAMS::Parser::semantic_type", "unionSEAMS_1_1Parser_1_1semantic__type.html", null ],
+    [ "SEAMS::Parser::stack< T, S >::slice", "classSEAMS_1_1Parser_1_1stack_1_1slice.html", null ],
+    [ "SEAMS::Parser::stack< T, S >", "classSEAMS_1_1Parser_1_1stack.html", null ],
+    [ "SEAMS::Parser::stack< stack_symbol_type >", "classSEAMS_1_1Parser_1_1stack.html", null ],
     [ "SEAMS::Stats", "classSEAMS_1_1Stats.html", null ],
     [ "str_a_init", "structstr__a__init.html", null ],
     [ "str_c_init", "structstr__c__init.html", null ],

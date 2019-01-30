@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['token',['token',['../apr__scanner_8cc.html#abd858285d1c22e0606b219c7014947c8',1,'apr_scanner.cc']]],
-  ['token_5fnumber_5ftype',['token_number_type',['../classSEAMS_1_1Parser.html#a053d6a8c959b6b18321c704fa7f9c0af',1,'SEAMS::Parser']]],
-  ['token_5ftype',['token_type',['../classSEAMS_1_1Parser.html#a579d87833763c91a20fa882f8b595afc',1,'SEAMS::Parser::token_type()'],['../apr__scanner_8cc.html#a8c7a82e7b2f12d4179a4a9a7ea35db72',1,'token_type():&#160;apr_scanner.cc']]]
+  ['kind_5ftype',['kind_type',['../structSEAMS_1_1Parser_1_1by__type.html#a54f0b03908231825693ebde3ce837ffb',1,'SEAMS::Parser::by_type::kind_type()'],['../structSEAMS_1_1Parser_1_1by__state.html#a85dc7a282286e77e74e1aaedd827bb4b',1,'SEAMS::Parser::by_state::kind_type()']]]
 ];

@@ -1,0 +1,5 @@
+<map id="SEAMS::Parser::symbol_type" name="SEAMS::Parser::symbol_type">
+<area shape="rect" id="node1" title="&quot;External&quot; symbols: returned by the scanner." alt="" coords="5,165,202,191"/>
+<area shape="rect" id="node2" href="$structSEAMS_1_1Parser_1_1basic__symbol.html" title=" " alt="" coords="27,79,180,117"/>
+<area shape="rect" id="node3" href="$structSEAMS_1_1Parser_1_1by__type.html" title="Type access provider for token (enum) based symbols." alt="" coords="19,5,188,31"/>
+</map>
