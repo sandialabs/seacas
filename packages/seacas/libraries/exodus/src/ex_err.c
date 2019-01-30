@@ -207,17 +207,16 @@ void ex_err_fn(int exoid, const char *module_name, const char *message, int err_
       char *path = NULL;
       if (pathlen > 0) {
         path = malloc(pathlen + 1);
-        nc_inq_path(exoid, NULL, path);
-        fprintf(stderr, "    exerrval = %d in file '%s'\n", EX_ERR_NUM, path);
-        free(path);
-      }
-      else {
-        fprintf(stderr, "    exerrval = %d\n", EX_ERR_NUM);
+        if (path != NULL) {
+          nc_inq_path(exoid, NULL, path);
+          fprintf(stderr, "    in file '%s'", path);
+          free(path);
+        }
       }
     }
-    else {
-      fprintf(stderr, "    exerrval = %d\n", EX_ERR_NUM);
-    }
+
+    fprintf(stderr, "    exerrval = %d\n", EX_ERR_NUM);
+
     if (EX_ERR_NUM < 0) {
       fprintf(stderr, "\t%s\n", ex_strerror(EX_ERR_NUM));
     }

@@ -229,61 +229,54 @@ namespace {
       db->get_region()->add(sset);
     }
 
-    if (sset != nullptr) {
-      Ioss::IJK_t range_beg{{(int)std::min(range[0], range[3]), (int)std::min(range[1], range[4]),
-                             (int)std::min(range[2], range[5])}};
+    assert(sset != nullptr);
 
-      Ioss::IJK_t range_end{{(int)std::max(range[0], range[3]), (int)std::max(range[1], range[4]),
-                             (int)std::max(range[2], range[5])}};
+    Ioss::IJK_t range_beg{{(int)std::min(range[0], range[3]), (int)std::min(range[1], range[4]),
+                           (int)std::min(range[2], range[5])}};
 
-      // Determine overlap of surface with block (in parallel, a block may
-      // be split among multiple processors and the block face this is applied
-      // to may not exist on this decomposed block)
-      auto        bc   = Ioss::BoundaryCondition(boco_name, fam_name, range_beg, range_end);
-      std::string name = std::string(boco_name) + "/" + block->name();
+    Ioss::IJK_t range_end{{(int)std::max(range[0], range[3]), (int)std::max(range[1], range[4]),
+                           (int)std::max(range[2], range[5])}};
 
-      bc_subset_range(block, bc);
-      if (!is_parallel_io && !bc.is_valid()) {
-        bc.m_rangeBeg = {{0, 0, 0}};
-        bc.m_rangeEnd = {{0, 0, 0}};
-      }
-      block->m_boundaryConditions.push_back(bc);
-      auto sb =
-          new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,
-                              block->m_boundaryConditions.back().get_face_count());
-      sb->set_parent_block(block);
-      sset->add(sb);
+    // Determine overlap of surface with block (in parallel, a block may
+    // be split among multiple processors and the block face this is applied
+    // to may not exist on this decomposed block)
+    auto        bc   = Ioss::BoundaryCondition(boco_name, fam_name, range_beg, range_end);
+    std::string name = std::string(boco_name) + "/" + block->name();
 
-      int base = block->get_property("base").get_int();
-      int zone = block->get_property("zone").get_int();
-      sb->property_add(Ioss::Property("base", base));
-      sb->property_add(Ioss::Property("zone", zone));
-      sb->property_add(Ioss::Property("section", ibc + 1));
-      sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
-      sb->property_add(Ioss::Property(
-          "guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
+    bc_subset_range(block, bc);
+    if (!is_parallel_io && !bc.is_valid()) {
+      bc.m_rangeBeg = {{0, 0, 0}};
+      bc.m_rangeEnd = {{0, 0, 0}};
+    }
+    block->m_boundaryConditions.push_back(bc);
+    auto sb = new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,
+                                  block->m_boundaryConditions.back().get_face_count());
+    sb->set_parent_block(block);
+    sset->add(sb);
 
-      // Set a property on the sideset specifying the boundary condition type (bocotype)
-      // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.
-      if (sset->property_exists("bc_type")) {
-        // Check that the 'bocotype' value matches the value of the property.
-        auto old_bocotype = sset->get_property("bc_type").get_int();
-        if (old_bocotype != bocotype && bocotype != CG_FamilySpecified) {
-          IOSS_WARNING << "On sideset " << sset->name()
-                       << ", the boundary condition type was previously set to " << old_bocotype
-                       << " which does not match the current value of " << bocotype
-                       << ". It will keep the old value.\n";
-        }
-      }
-      else {
-        sset->property_add(Ioss::Property("bc_type", (int)bocotype));
+    int base = block->get_property("base").get_int();
+    int zone = block->get_property("zone").get_int();
+    sb->property_add(Ioss::Property("base", base));
+    sb->property_add(Ioss::Property("zone", zone));
+    sb->property_add(Ioss::Property("section", ibc + 1));
+    sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
+    sb->property_add(Ioss::Property(
+        "guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
+
+    // Set a property on the sideset specifying the boundary condition type (bocotype)
+    // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.
+    if (sset->property_exists("bc_type")) {
+      // Check that the 'bocotype' value matches the value of the property.
+      auto old_bocotype = sset->get_property("bc_type").get_int();
+      if (old_bocotype != bocotype && bocotype != CG_FamilySpecified) {
+        IOSS_WARNING << "On sideset " << sset->name()
+                     << ", the boundary condition type was previously set to " << old_bocotype
+                     << " which does not match the current value of " << bocotype
+                     << ". It will keep the old value.\n";
       }
     }
     else {
-      std::ostringstream errmsg;
-      errmsg << "ERROR: CGNS: StructuredBlock '" << block->name()
-             << "' Did not find matching sideset with name '" << boco_name << "'";
-      IOSS_ERROR(errmsg);
+      sset->property_add(Ioss::Property("bc_type", (int)bocotype));
     }
   }
 

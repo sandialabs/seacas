@@ -82,16 +82,13 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
   std::fill(elmt_map, elmt_map + num_elmts, -1);
 
   // Create storage for midpoints.
-  double *x2 = nullptr, *y2 = nullptr, *z2 = nullptr;
-  x2 = new double[num_elmts];
-  SMART_ASSERT(x2 != nullptr);
+  double *x2 = new double[num_elmts];
+  double *y2 = nullptr, *z2 = nullptr;
   if (dim > 1) {
     y2 = new double[num_elmts];
-    SMART_ASSERT(y2 != nullptr);
   }
   if (dim > 2) {
     z2 = new double[num_elmts];
-    SMART_ASSERT(z2 != nullptr);
   }
 
   // Load coordinates for file 2 and get pointers to them.
@@ -354,18 +351,14 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
   file2.Free_Nodal_Coordinates();
   file2.Free_Elmt_Blocks();
 
-  if (x2 != nullptr) {
-    delete[] x2;
-  }
+  delete[] x2;
   if (y2 != nullptr) {
     delete[] y2;
   }
   if (z2 != nullptr) {
     delete[] z2;
   }
-  if (id != nullptr) {
-    delete[] id;
-  }
+  delete[] id;
 
   interface.coord_tol.type = save_tolerance_type;
 }
@@ -401,16 +394,13 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
   std::fill(elmt_map, elmt_map + num_elmts1, -1);
 
   // Create storage for midpoints.
-  double *x2 = nullptr, *y2 = nullptr, *z2 = nullptr;
-  x2 = new double[num_elmts2];
-  SMART_ASSERT(x2 != nullptr);
+  double *x2 = new double[num_elmts2];
+  double *y2 = nullptr, *z2 = nullptr;
   if (dim > 1) {
     y2 = new double[num_elmts2];
-    SMART_ASSERT(y2 != nullptr);
   }
   if (dim > 2) {
     z2 = new double[num_elmts2];
-    SMART_ASSERT(z2 != nullptr);
   }
 
   // Load coordinates for file 2 and get pointers to them.
@@ -647,18 +637,14 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
   file2.Free_Nodal_Coordinates();
   file2.Free_Elmt_Blocks();
 
-  if (x2 != nullptr) {
-    delete[] x2;
-  }
+  delete[] x2;
   if (y2 != nullptr) {
     delete[] y2;
   }
   if (z2 != nullptr) {
     delete[] z2;
   }
-  if (id2 != nullptr) {
-    delete[] id2;
-  }
+  delete[] id2;
 
   interface.coord_tol.type = save_tolerance_type;
 }
