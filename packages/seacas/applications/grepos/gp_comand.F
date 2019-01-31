@@ -152,7 +152,7 @@ C     --   Sets ROT3D, ROTMAT, ROTCEN of /XYZROT/
       SAVE FIRST
 
       CHARACTER*(mxstln) MYNAME
-      CHARACTER*(mxstln) CMDTBL(39), LISTBL(14)
+      CHARACTER*(mxstln) CMDTBL(41), LISTBL(15)
       SAVE CMDTBL, LISTBL
 C     --CMDTBL - the valid commands table
 
@@ -167,12 +167,13 @@ C     --changing the table.
      6  'SMOOTH  ',  'SWAP    ', 'USERSUBROUTINE', 'SNAP    ',
      7  'MOVE    ',  'WARP    ', 'EXECUTE ', 'COMBINE ', 'CENTROIDS',
      8  'UNDELETE',  'KEEP    ', 'EQUIVALENCE', 'DEFORM  ',
-     9  'ELEMENTIZE','ROTATE  ', 'MERGE   ', '        ' /
+     9  'ELEMENTIZE','ROTATE  ', 'MERGE   ', 'TMIN    ', 'TMAX     ',
+     $  '        ' /
 
       DATA LISTBL /
      *  'SSETS   ', 'SIDESETS', 'NSETS   ', 'NODESETS', 'VARS    ',
      *  'VARIABLE', 'BLOCKS  ', 'MATERIAL', 'COMMANDS', 'INFORMATION',
-     *  'QA      ', 'TIMES   ', 'NAMES   ', '        '/
+     *  'QA      ', 'TIMES   ', 'STEPS   ', 'NAMES   ', '        '/
 
       DATA MYNAME /'GREPOS'/
       DATA FIRST  /.TRUE./
@@ -1006,7 +1007,7 @@ C=======================================================================
           IF ((NQAREC .GT. 0) .OR. (NINFO .GT. 0)) THEN
             CALL DBPQA ('*', NQAREC, QAREC, NINFO, INFREC)
           END IF
-        ELSE IF (LISTYP .EQ. 'TIMES') THEN
+        ELSE IF (LISTYP .EQ. 'TIMES' .OR. LISTYP .EQ. 'STEPS') THEN
           if (nsteps .eq. 0) then
             CALL PRTERR ('CMDSPEC', 'No timesteps on database')
           else
@@ -1791,6 +1792,29 @@ C========================================================================
         VERB = ' '
 
 C========================================================================
+      ELSE IF (VERB .EQ. 'TMIN') then
+         call ffreal (ifld, intyp, rfield,
+     $    'Minimum Time', 0, tmin, *345)
+         do itim = 1, nsteps
+            if (times(itim) .lt. tmin) then
+               itimst(itim) = 1
+            end if
+         end do
+ 345     continue
+        VERB = ' '
+C========================================================================
+      ELSE IF (VERB .EQ. 'TMAX') then
+         call ffreal (ifld, intyp, rfield,
+     $    'Maximum Time', 0, tmax, *346)
+         do itim = 1, nsteps
+            if (times(itim) .gt. tmax) then
+               itimst(itim) = 1
+            end if
+         end do
+ 346     continue
+        VERB = ' '
+C========================================================================
+
       ELSE IF (VERB .EQ. 'SMOOTH') then
         SMOOTH = .TRUE.
         call ffreal (ifld, intyp, rfield,
