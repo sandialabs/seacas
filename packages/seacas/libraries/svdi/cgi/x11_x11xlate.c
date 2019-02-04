@@ -3369,18 +3369,17 @@ static void xccsm(anything **params, int num_surfaces, anything **surf_list)
 /* COLOR TABLE */
 static void xcct(anything **params, int num_surfaces, anything **surf_list)
 {
-  int        i;                   /* index for loop on surfaces */
-  int        j, k;                /* indices for looping */
-  int        starti;              /* starting color index */
-  int        num_cols;            /* number of colors in color list */
-  int        tmp_array[3];        /* temp array used for setting bg color */
-  float      color_array[256][3]; /* used for setting SVDI color table */
-  int        num_set;             /* number of colors being set, for SVDI */
-  int        maxindex;            /* max color index to set */
-  int        indx_ptr;            /* for keeping track of color indices */
-  int        index1, index2;      /* defines a range of indices to set */
-  static int first = TRUE;        /* marks first time through loop */
-  int        one   = 1;
+  int   i;                   /* index for loop on surfaces */
+  int   j, k;                /* indices for looping */
+  int   starti;              /* starting color index */
+  int   num_cols;            /* number of colors in color list */
+  int   tmp_array[3];        /* temp array used for setting bg color */
+  float color_array[256][3]; /* used for setting SVDI color table */
+  int   num_set;             /* number of colors being set, for SVDI */
+  int   maxindex;            /* max color index to set */
+  int   indx_ptr;            /* for keeping track of color indices */
+  int   index1, index2;      /* defines a range of indices to set */
+  int   one = 1;
 
   /* starting color index and number of colors */
   starti   = *(int *)params[1];
@@ -3402,15 +3401,12 @@ static void xcct(anything **params, int num_surfaces, anything **surf_list)
   /* convert rgb to lie between 0. and 1. */
   /* ...only do this once */
 
-  if (first) {
-    int *iparam = (int *)params[3];
-    k           = 0;
-    for (j = starti; j < starti + num_cols; j++) {
-      color_array[j][0] = (float)iparam[k++] / 255.;
-      color_array[j][1] = (float)iparam[k++] / 255.;
-      color_array[j][2] = (float)iparam[k++] / 255.;
-    }
-    first = FALSE;
+  int *iparam = (int *)params[3];
+  k           = 0;
+  for (j = starti; j < starti + num_cols; j++) {
+    color_array[j][0] = (float)iparam[k++] / 255.;
+    color_array[j][1] = (float)iparam[k++] / 255.;
+    color_array[j][2] = (float)iparam[k++] / 255.;
   }
 
   /* loop through surfaces */
