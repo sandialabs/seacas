@@ -12,8 +12,11 @@
 <!-- Node1 -->
 <g id="node1" class="node">
 <title>Node1</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-16 0,-34 141.0684,-34 141.0684,-16 0,-16"/>
 <text text-anchor="middle" x="70.5342" y="-22" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Iocgns::StructuredZoneData</text>
+</a>
+</g>
 </g>
 <!-- Node1&#45;&gt;Node1 -->
 <g id="edge1" class="edge">

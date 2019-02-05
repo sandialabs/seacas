@@ -12,14 +12,20 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-55.5 0,-73.5 142.1621,-73.5 142.1621,-55.5 0,-55.5"/>
 <text text-anchor="middle" x="71.0811" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/Ioss_CoordinateFrame.h</text>
+</a>
+</g>
 </g>
 <!-- Node1 -->
 <g id="node2" class="node">
 <title>Node1</title>
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="17.6304,-.5 17.6304,-18.5 62.5317,-18.5 62.5317,-.5 17.6304,-.5"/>
 <text text-anchor="middle" x="40.0811" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">cstdint</text>
+</a>
+</g>
 </g>
 <!-- Node0&#45;&gt;Node1 -->
 <g id="edge1" class="edge">
@@ -30,8 +36,11 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="80.4653,-.5 80.4653,-18.5 123.6968,-18.5 123.6968,-.5 80.4653,-.5"/>
 <text text-anchor="middle" x="102.0811" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">vector</text>
+</a>
+</g>
 </g>
 <!-- Node0&#45;&gt;Node2 -->
 <g id="edge2" class="edge">

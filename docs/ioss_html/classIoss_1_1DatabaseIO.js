@@ -156,6 +156,8 @@ var classIoss_1_1DatabaseIO =
     [ "isParallel", "classIoss_1_1DatabaseIO.html#aea8f55d83b4ae9599f443ba49f0a219a", null ],
     [ "isParallelConsistent", "classIoss_1_1DatabaseIO.html#a4119cb674590e0162b5c6da79f22eebe", null ],
     [ "lowerCaseVariableNames", "classIoss_1_1DatabaseIO.html#aa3a83f9f43da8caf28ec7cc4b55ef5bc", null ],
+    [ "m_stateStart", "classIoss_1_1DatabaseIO.html#a6a4e4f8389cfde4802aba6046cb3fdf4", null ],
+    [ "m_timeStateInOut", "classIoss_1_1DatabaseIO.html#a45a873b26ec572aa0b2d06b4af3b44d8", null ],
     [ "myProcessor", "classIoss_1_1DatabaseIO.html#a1c53cb32bfb7940d689ead8c42deab8f", null ],
     [ "nodeCount", "classIoss_1_1DatabaseIO.html#ae53a675e757ae1c5c6176a313e0ccade", null ],
     [ "nodeMap", "classIoss_1_1DatabaseIO.html#a4d9f58f4670a4a98009661f3cf964e2c", null ],

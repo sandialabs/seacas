@@ -12,8 +12,11 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
+<g id="a_node1"><a xlink:title="A collection of elements having the same topology.">
 <polygon fill="#bfbfbf" stroke="#000000" points="2.5049,-.5 2.5049,-18.5 103.5391,-18.5 103.5391,-.5 2.5049,-.5"/>
 <text text-anchor="middle" x="53.022" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::ElementBlock</text>
+</a>
+</g>
 </g>
 <!-- Node1 -->
 <g id="node2" class="node">
@@ -33,7 +36,7 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
-<g id="a_node3"><a xlink:href="classIoss_1_1GroupingEntity.html" target="_top" xlink:title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ...">
+<g id="a_node3"><a xlink:href="classIoss_1_1GroupingEntity.html" target="_top" xlink:title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">
 <polygon fill="#ffffff" stroke="#000000" points="0,-110.5 0,-128.5 106.0439,-128.5 106.0439,-110.5 0,-110.5"/>
 <text text-anchor="middle" x="53.022" y="-116.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::GroupingEntity</text>
 </a>

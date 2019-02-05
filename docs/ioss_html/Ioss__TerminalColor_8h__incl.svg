@@ -12,14 +12,20 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="82.707,-55.5 82.707,-73.5 208.1943,-73.5 208.1943,-55.5 82.707,-55.5"/>
 <text text-anchor="middle" x="145.4507" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">src/Ioss_TerminalColor.h</text>
+</a>
+</g>
 </g>
 <!-- Node1 -->
 <g id="node2" class="node">
 <title>Node1</title>
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="0,-.5 0,-18.5 44.9014,-18.5 44.9014,-.5 0,-.5"/>
 <text text-anchor="middle" x="22.4507" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">cstdint</text>
+</a>
+</g>
 </g>
 <!-- Node0&#45;&gt;Node1 -->
 <g id="edge1" class="edge">
@@ -30,8 +36,11 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="63.064,-.5 63.064,-18.5 101.8374,-18.5 101.8374,-.5 63.064,-.5"/>
 <text text-anchor="middle" x="82.4507" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">limits</text>
+</a>
+</g>
 </g>
 <!-- Node0&#45;&gt;Node2 -->
 <g id="edge2" class="edge">
@@ -42,8 +51,11 @@
 <!-- Node3 -->
 <g id="node4" class="node">
 <title>Node3</title>
+<g id="a_node4"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="119.3892,-.5 119.3892,-18.5 171.5122,-18.5 171.5122,-.5 119.3892,-.5"/>
 <text text-anchor="middle" x="145.4507" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">ostream</text>
+</a>
+</g>
 </g>
 <!-- Node0&#45;&gt;Node3 -->
 <g id="edge3" class="edge">
@@ -54,8 +66,11 @@
 <!-- Node4 -->
 <g id="node5" class="node">
 <title>Node4</title>
+<g id="a_node5"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="189.6699,-.5 189.6699,-18.5 241.2314,-18.5 241.2314,-.5 189.6699,-.5"/>
 <text text-anchor="middle" x="215.4507" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">sstream</text>
+</a>
+</g>
 </g>
 <!-- Node0&#45;&gt;Node4 -->
 <g id="edge4" class="edge">
@@ -66,8 +81,11 @@
 <!-- Node5 -->
 <g id="node6" class="node">
 <title>Node5</title>
+<g id="a_node6"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="259.2241,-.5 259.2241,-18.5 299.6772,-18.5 299.6772,-.5 259.2241,-.5"/>
 <text text-anchor="middle" x="279.4507" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">string</text>
+</a>
+</g>
 </g>
 <!-- Node0&#45;&gt;Node5 -->
 <g id="edge5" class="edge">

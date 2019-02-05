@@ -15,8 +15,11 @@ then
     ACCESS=$(cd ..; pwd)
 fi
 
+### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
+
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-netcdf_parallel=`../bin/nc-config --has-parallel`
+netcdf_parallel=`$INSTALL_PATH/bin/nc-config --has-parallel`
 if [ "${netcdf_parallel}" == "yes" ]
 then
     MPI=ON
@@ -60,6 +63,13 @@ then
       CXXFLAGS="-Wall -Wunused"
   fi
 
+  if [ "$COMPILER" == "ibm" ]
+  then
+      CXX=xlC
+      CC=xlc
+      FC=xlf
+  fi
+
 fi
 
 GENERATOR=${GENERATOR:-"Unix Makefiles"}
@@ -82,19 +92,16 @@ THREADSAFE=${THREADSAFE:-OFF}
 
 FORTRAN=${FORTRAN:-ON}
 
-### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
-INSTALL_PATH=${ACCESS}
-
 ### TPLs -- 
 ### Make sure these point to the locations to find the libraries and includes in lib and include
 ### subdirectories of the specified paths.
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
-NETCDF_PATH=${ACCESS}
-PNETCDF_PATH=${ACCESS}
-MATIO_PATH=${ACCESS}
-HDF5_PATH=${ACCESS}
-CGNS_PATH=${ACCESS}
-DATAWAREHOUSE_PATH=${ACCESS}
+NETCDF_PATH=${INSTALL_PATH}
+PNETCDF_PATH=${INSTALL_PATH}
+MATIO_PATH=${INSTALL_PATH}
+HDF5_PATH=${INSTALL_PATH}
+CGNS_PATH=${INSTALL_PATH}
+DATAWAREHOUSE_PATH=${INSTALL_PATH}
 
 function check_enable()
 {
@@ -248,19 +255,21 @@ $EXTRA_ARGS \
 ${ACCESS}
 
 echo ""
-echo "     ACCESS: ${ACCESS}"
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo "  "
-echo "         CC: ${CC}"
-echo "        CXX: ${CXX}"
-echo "         FC: ${FC}"
-echo "        MPI: ${MPI}"
-echo " THREADSAFE: ${THREADSAFE}"
+echo "          CC: ${CC}"
+echo "         CXX: ${CXX}"
+echo "          FC: ${FC}"
+echo "         MPI: ${MPI}"
+echo "      SHARED: ${SHARED}"
+echo "  THREADSAFE: ${THREADSAFE}"
 echo "  "
-echo "HAVE_NETCDF: ${HAVE_NETCDF}"
-echo " HAVE_MATIO: ${HAVE_MATIO}"
-echo "  HAVE_CGNS: ${HAVE_CGNS}"
-echo "     KOKKOS: ${KOKKOS}"
-echo "    DOXYGEN: ${DOXYGEN}"
+echo " HAVE_NETCDF: ${HAVE_NETCDF}"
+echo "  HAVE_MATIO: ${HAVE_MATIO}"
+echo "   HAVE_CGNS: ${HAVE_CGNS}"
+echo "      KOKKOS: ${KOKKOS}"
+echo "     DOXYGEN: ${DOXYGEN}"
 echo ""
 
 if [ "${TRAVIS}" == "true" ]

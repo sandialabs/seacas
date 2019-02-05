@@ -12,14 +12,17 @@
 <!-- Node2 -->
 <g id="node1" class="node">
 <title>Node2</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-.5 0,-28.5 129.3838,-28.5 129.3838,-.5 0,-.5"/>
 <text text-anchor="start" x="8" y="-16.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">ObjScopeGuardImpl2</text>
 <text text-anchor="middle" x="64.6919" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">&lt; Obj, MemFun, P1, P2 &gt;</text>
+</a>
+</g>
 </g>
 <!-- Node3 -->
 <g id="node2" class="node">
 <title>Node3</title>
-<g id="a_node2"><a xlink:href="classScopeGuardImplBase.html" target="_top" xlink:title="ScopeGuardImplBase">
+<g id="a_node2"><a xlink:href="classScopeGuardImplBase.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="7.7759,-65.5 7.7759,-83.5 121.6079,-83.5 121.6079,-65.5 7.7759,-65.5"/>
 <text text-anchor="middle" x="64.6919" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">ScopeGuardImplBase</text>
 </a>

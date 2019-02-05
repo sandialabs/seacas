@@ -5,6 +5,7 @@ if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 COMPILER="${COMPILER:-gnu}"
 if [ "$COMPILER" == "gnu" ]
@@ -19,15 +20,20 @@ if [ "$COMPILER" == "intel" ]
 then
     export CC=icc
 fi
+if [ "$COMPILER" == "ibm" ]
+then
+    export CC=xlc
+fi
 
-CFLAGS="-I${ACCESS}/include"; export CFLAGS
+CFLAGS="-I${INSTALL_PATH}/include"; export CFLAGS
 CPPFLAGS='-DNDEBUG'; export CPPFLAGS
-LDFLAGS="-L${ACCESS}/lib"; export LDFLAGS
+LDFLAGS="-L${INSTALL_PATH}/lib"; export LDFLAGS
 
 rm -f config.cache
-./configure --prefix=${ACCESS} $1
+./configure --prefix=${INSTALL_PATH} $1
 
 echo ""
-echo "COMPILER: ${CC}"
-echo "  ACCESS: ${ACCESS}"
+echo "    COMPILER: ${CC}"
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo ""

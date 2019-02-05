@@ -1,7 +1,7 @@
 var apr__parser_8cc =
 [
     [ "YY_", "apr__parser_8cc.html#a86f079016f11f0600f4259f3f03f8d43", null ],
-    [ "YY_NULLPTR", "apr__parser_8cc.html#a5a6c82f7ce4ad9cc8c6c08b7a2de5b84", null ],
+    [ "YY_EXCEPTIONS", "apr__parser_8cc.html#a50c42b07435bf2867d707c84388133bf", null ],
     [ "YY_REDUCE_PRINT", "apr__parser_8cc.html#a49ad456240785266cadae498ddae9310", null ],
     [ "YY_STACK_PRINT", "apr__parser_8cc.html#a56e528a4079b5c725f0fcbe184414bf5", null ],
     [ "YY_SYMBOL_PRINT", "apr__parser_8cc.html#a4b71a422d1f0f6b0f93e6cfbe988d9ed", null ],
@@ -15,5 +15,6 @@ var apr__parser_8cc =
     [ "yylex", "apr__parser_8cc.html#a5611300548b2030d86b6ab9168132b88", null ],
     [ "yylex", "apr__parser_8cc.html#a5611300548b2030d86b6ab9168132b88", null ],
     [ "YYRECOVERING", "apr__parser_8cc.html#ad860e18ca4b79fc589895b531bdb7948", null ],
+    [ "YYUSE", "apr__parser_8cc.html#a33c61e326f5675cc74eb9e1a6906595c", null ],
     [ "reset_error", "apr__parser_8cc.html#af0841fd60e700c2b6ba9c5700889d83b", null ]
 ];

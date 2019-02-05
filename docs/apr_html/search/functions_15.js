@@ -6,5 +6,6 @@ var searchData=
   ['_7eflexlexer',['~FlexLexer',['../classFlexLexer.html#a513c4982ef52db6d43151becbf3fe05a',1,'FlexLexer']]],
   ['_7eparser',['~Parser',['../classSEAMS_1_1Parser.html#a360cc6ecd4cec21962190e8e05748d44',1,'SEAMS::Parser']]],
   ['_7escanner',['~Scanner',['../classSEAMS_1_1Scanner.html#a65156dbce74ddbc8f7feebf02e912955',1,'SEAMS::Scanner']]],
-  ['_7eyyflexlexer',['~yyFlexLexer',['../classyyFlexLexer.html#a99b1ef9d7dcd7c203151f9fc02e44722',1,'yyFlexLexer']]]
+  ['_7eseamsflexlexer',['~SEAMSFlexLexer',['../classSEAMSFlexLexer.html#ad0699742c1468843955b9f75d57062d9',1,'SEAMSFlexLexer']]],
+  ['_7esyntax_5ferror',['~syntax_error',['../structSEAMS_1_1Parser_1_1syntax__error.html#a4e03c9bb35096287c9be575b9c8491dd',1,'SEAMS::Parser::syntax_error']]]
 ];

@@ -448,7 +448,7 @@ namespace Ioex {
 
     size_t num_qa_records = qaRecords.size() / 4;
 
-    bool i_write = (usingParallelIO && myProcessor == 0) || !usingParallelIO;
+    bool i_write = myProcessor == 0 || !usingParallelIO;
     if (i_write) {
       auto qa = new qa_element[num_qa_records + 1];
       for (size_t i = 0; i < num_qa_records + 1; i++) {
@@ -516,7 +516,7 @@ namespace Ioex {
   // common
   void DatabaseIO::put_info()
   {
-    bool i_write = (usingParallelIO && myProcessor == 0) || !usingParallelIO;
+    bool i_write = myProcessor == 0 || !usingParallelIO;
 
     // dump info records, include the product_registry
     // See if the input file was specified as a property on the database...
@@ -1565,9 +1565,11 @@ namespace Ioex {
       // try changing DIM_STR_NAME value and see if works...)
       if (name_length > (size_t)maximumNameLength) {
         if (myProcessor == 0) {
-          IOSS_WARNING << "WARNING: There are variables names whose length exceeds the current "
-                          "maximum name length set for this database ("
-                       << maximumNameLength << ").\n"
+          IOSS_WARNING << "WARNING: There are variables names whose length (" << name_length
+                       << ") exceeds the current "
+                          "maximum name length ("
+                       << maximumNameLength << ") set for this database (" << get_filename()
+                       << ").\n"
                        << "         You should either reduce the length of the variable name, or "
                           "set the 'MAXIMUM_NAME_LENGTH' property "
                        << "to at least " << name_length
@@ -2105,7 +2107,7 @@ namespace {
       return;
     }
 
-    if (!all_attributes_indexed && !some_attributes_indexed) {
+    if (!some_attributes_indexed) {
       // Index was not set for any of the attributes; set them all...
       size_t offset = 1;
       for (const auto &field_name : results_fields) {

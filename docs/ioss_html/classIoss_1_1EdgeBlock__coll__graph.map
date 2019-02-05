@@ -1,11 +1,12 @@
 <map id="Ioss::EdgeBlock" name="Ioss::EdgeBlock">
+<area shape="rect" id="node1" title="A collection of element edges with the same topology." alt="" coords="6,305,123,331"/>
 <area shape="rect" id="node2" href="$classIoss_1_1EntityBlock.html" title="Base class for all &#39;block&#39;&#45;type grouping entities, which means all members of the block are similar o..." alt="" coords="5,179,124,204"/>
-<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ..." alt="" coords="557,92,698,117"/>
-<area shape="rect" id="node5" href="$classIoss_1_1Region.html" title="A grouping entity that contains other grouping entities. " alt="" coords="699,179,794,204"/>
-<area shape="rect" id="node4" href="$classIoss_1_1DatabaseIO.html" title="An input or output Database. " alt="" coords="492,305,616,331"/>
-<area shape="rect" id="node6" href="$classIoss_1_1Map.html" title="Ioss::Map" alt="" coords="335,179,414,204"/>
-<area shape="rect" id="node7" href="$classIoss_1_1ParallelUtils.html" title="Ioss::ParallelUtils" alt="" coords="438,179,561,204"/>
-<area shape="rect" id="node8" href="$classIoss_1_1PropertyManager.html" title="A collection of Ioss::Property objects. " alt="" coords="736,5,892,31"/>
-<area shape="rect" id="node9" href="$classIoss_1_1ElementTopology.html" title="Represents an element topology. " alt="" coords="40,92,196,117"/>
-<area shape="rect" id="node10" href="$classIoss_1_1FieldManager.html" title="A collection of Ioss::Field objects. " alt="" coords="560,5,695,31"/>
+<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:" alt="" coords="557,92,698,117"/>
+<area shape="rect" id="node5" href="$classIoss_1_1Region.html" title="A grouping entity that contains other grouping entities." alt="" coords="699,179,794,204"/>
+<area shape="rect" id="node4" href="$classIoss_1_1DatabaseIO.html" title="An input or output Database." alt="" coords="492,305,616,331"/>
+<area shape="rect" id="node6" href="$classIoss_1_1Map.html" title=" " alt="" coords="335,179,414,204"/>
+<area shape="rect" id="node7" href="$classIoss_1_1ParallelUtils.html" title=" " alt="" coords="438,179,561,204"/>
+<area shape="rect" id="node8" href="$classIoss_1_1PropertyManager.html" title="A collection of Ioss::Property objects." alt="" coords="736,5,892,31"/>
+<area shape="rect" id="node9" href="$classIoss_1_1ElementTopology.html" title="Represents an element topology." alt="" coords="40,92,196,117"/>
+<area shape="rect" id="node10" href="$classIoss_1_1FieldManager.html" title="A collection of Ioss::Field objects." alt="" coords="560,5,695,31"/>
 </map>

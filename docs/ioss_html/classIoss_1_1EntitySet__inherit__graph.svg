@@ -12,13 +12,16 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
+<g id="a_node1"><a xlink:title="Base class for all &#39;set&#39;&#45;type grouping entities, which means that members of the set are not necessar...">
 <polygon fill="#bfbfbf" stroke="#000000" points="153.1724,-55.5 153.1724,-73.5 233.0884,-73.5 233.0884,-55.5 153.1724,-55.5"/>
 <text text-anchor="middle" x="193.1304" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::EntitySet</text>
+</a>
+</g>
 </g>
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
-<g id="a_node3"><a xlink:href="classIoss_1_1EdgeSet.html" target="_top" xlink:title="A collection of element edges. ">
+<g id="a_node3"><a xlink:href="classIoss_1_1EdgeSet.html" target="_top" xlink:title="A collection of element edges.">
 <polygon fill="#ffffff" stroke="#000000" points="0,-.5 0,-18.5 78.2607,-18.5 78.2607,-.5 0,-.5"/>
 <text text-anchor="middle" x="39.1304" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::EdgeSet</text>
 </a>
@@ -33,7 +36,7 @@
 <!-- Node3 -->
 <g id="node4" class="node">
 <title>Node3</title>
-<g id="a_node4"><a xlink:href="classIoss_1_1ElementSet.html" target="_top" xlink:title="A collection of elements. ">
+<g id="a_node4"><a xlink:href="classIoss_1_1ElementSet.html" target="_top" xlink:title="A collection of elements.">
 <polygon fill="#ffffff" stroke="#000000" points="96.335,-.5 96.335,-18.5 187.9258,-18.5 187.9258,-.5 96.335,-.5"/>
 <text text-anchor="middle" x="142.1304" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::ElementSet</text>
 </a>
@@ -48,7 +51,7 @@
 <!-- Node4 -->
 <g id="node5" class="node">
 <title>Node4</title>
-<g id="a_node5"><a xlink:href="classIoss_1_1FaceSet.html" target="_top" xlink:title="A collection of element faces. ">
+<g id="a_node5"><a xlink:href="classIoss_1_1FaceSet.html" target="_top" xlink:title="A collection of element faces.">
 <polygon fill="#ffffff" stroke="#000000" points="205.5615,-.5 205.5615,-18.5 282.6992,-18.5 282.6992,-.5 205.5615,-.5"/>
 <text text-anchor="middle" x="244.1304" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::FaceSet</text>
 </a>
@@ -63,7 +66,7 @@
 <!-- Node5 -->
 <g id="node6" class="node">
 <title>Node5</title>
-<g id="a_node6"><a xlink:href="classIoss_1_1NodeSet.html" target="_top" xlink:title="A collection of nodes. ">
+<g id="a_node6"><a xlink:href="classIoss_1_1NodeSet.html" target="_top" xlink:title="A collection of nodes.">
 <polygon fill="#ffffff" stroke="#000000" points="300.7241,-.5 300.7241,-18.5 379.5366,-18.5 379.5366,-.5 300.7241,-.5"/>
 <text text-anchor="middle" x="340.1304" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::NodeSet</text>
 </a>
@@ -78,7 +81,7 @@
 <!-- Node1 -->
 <g id="node2" class="node">
 <title>Node1</title>
-<g id="a_node2"><a xlink:href="classIoss_1_1GroupingEntity.html" target="_top" xlink:title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ...">
+<g id="a_node2"><a xlink:href="classIoss_1_1GroupingEntity.html" target="_top" xlink:title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">
 <polygon fill="#ffffff" stroke="#000000" points="140.1084,-110.5 140.1084,-128.5 246.1523,-128.5 246.1523,-110.5 140.1084,-110.5"/>
 <text text-anchor="middle" x="193.1304" y="-116.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::GroupingEntity</text>
 </a>

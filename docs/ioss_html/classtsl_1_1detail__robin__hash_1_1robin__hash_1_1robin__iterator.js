@@ -10,7 +10,7 @@ var classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator =
     [ "robin_iterator", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html#a862a0a45e286de338c07e0984a46c132", null ],
     [ "robin_iterator", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html#ad1b214e88638f03f36e0debbe0048629", null ],
     [ "key", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html#a8258d1ca5b1a039991ed591208a8e1cc", null ],
-    [ "operator*", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html#a1cca763bd956955cf69677cf21798a48", null ],
+    [ "operator *", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html#a4838d9fbd23d5082a22f7a093a1a9dab", null ],
     [ "operator++", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html#acd5ad8d7a40b9c0121c649ec272930a7", null ],
     [ "operator++", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html#a3b75d06ce894ce951b8469fc72f534e2", null ],
     [ "operator->", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html#aee4b23b321f08602ebc67d881f147a6c", null ],

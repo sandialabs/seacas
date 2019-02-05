@@ -128,7 +128,9 @@ namespace {
     std::array<int, 3>               offset{{0, 0, 0}};
     std::bitset<6>                   face_adj;
 
+#ifdef SEACAS_HAVE_MPI
     bool split() const { return face_adj.any(); }
+#endif
   };
 
   std::pair<std::string, int> decompose_name(const std::string &name, bool is_parallel)
@@ -2183,7 +2185,10 @@ namespace Iocgns {
       if (role == Ioss::Field::MESH) {
         // Handle the MESH fields required for a CGNS file model.
         // (The 'genesis' portion)
-        if (field.get_name() == "connectivity") {
+        if (field.get_name() == "ids") {
+          // Ignored...
+        }
+        else if (field.get_name() == "connectivity") {
           // This blocks zone has not been defined.
           // Get the "node block" for this element block...
           int element_nodes = eb->topology()->number_nodes();
@@ -2339,10 +2344,13 @@ namespace Iocgns {
     cgsize_t              num_to_get = field.verify(data_size);
 
     if (role == Ioss::Field::MESH) {
-      if (field.get_name() == "mesh_model_coordinates" ||
-          field.get_name() == "mesh_model_coordinates_x" ||
-          field.get_name() == "mesh_model_coordinates_y" ||
-          field.get_name() == "mesh_model_coordinates_z") {
+      if (field.get_name() == "ids") {
+        // Ignored...
+      }
+      else if (field.get_name() == "mesh_model_coordinates" ||
+               field.get_name() == "mesh_model_coordinates_x" ||
+               field.get_name() == "mesh_model_coordinates_y" ||
+               field.get_name() == "mesh_model_coordinates_z") {
         double *rdata = static_cast<double *>(data);
 
         if (field.get_name() == "mesh_model_coordinates") {

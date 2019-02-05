@@ -12,16 +12,22 @@
 <!-- Node2 -->
 <g id="node1" class="node">
 <title>Node2</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-.5 0,-38.5 112.4502,-38.5 112.4502,-.5 0,-.5"/>
 <text text-anchor="start" x="8" y="-26.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_robin_hash</text>
 <text text-anchor="start" x="8" y="-16.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">::has_is_transparent&lt;</text>
 <text text-anchor="middle" x="56.2251" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> T, typename &gt;</text>
+</a>
+</g>
 </g>
 <!-- Node3 -->
 <g id="node2" class="node">
 <title>Node3</title>
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="15.9839,-75.5 15.9839,-93.5 96.4663,-93.5 96.4663,-75.5 15.9839,-75.5"/>
 <text text-anchor="middle" x="56.2251" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">std::false_type</text>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node2 -->
 <g id="edge1" class="edge">

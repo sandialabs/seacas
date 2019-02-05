@@ -380,8 +380,8 @@ int Zoltan_HG_Create_Mirror (
 
 
 /****************************************************************************/
-/* check that (hindex, hvertex) and (vindex, vedge) are consistent mappings */
-/* returns ZOLTAN_WARN if not consistent, returns ZOLTAN_OK otherwise */
+/* check that (hindex, hvertex) and (vindex, vedge) are consistant mappings */
+/* returns ZOLTAN_WARN if not consistant, returns ZOLTAN_OK otherwise */
 
 int Zoltan_HG_Check (
   ZZ *zz,

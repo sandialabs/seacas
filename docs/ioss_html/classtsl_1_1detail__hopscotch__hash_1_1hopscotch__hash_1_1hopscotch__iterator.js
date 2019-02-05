@@ -11,7 +11,7 @@ var classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterato
     [ "hopscotch_iterator", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html#a3ea0dfe258f4e07bec92171ca0eb4b4a", null ],
     [ "hopscotch_iterator", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html#a819cb0d94ff70ef6aa4e53a073f4bc12", null ],
     [ "key", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html#abb5845be9135dd3b58d2c0557f6dbf66", null ],
-    [ "operator*", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html#a9b233d98055897516dd6c2956fbd0258", null ],
+    [ "operator *", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html#a8bef8512c8e6938faa50b44d3b0b02e0", null ],
     [ "operator++", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html#a293837d5690a3c2bab8b690ed8e50b59", null ],
     [ "operator++", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html#a6b6948cffe4bcd5129b79fb9f76608c5", null ],
     [ "operator->", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html#a9c89b655f731a4360c60a19e4b243933", null ],
