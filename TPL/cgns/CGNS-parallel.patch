@@ -151,22 +151,6 @@ index fecb730..ecc14ee 100644
          ADFH_Move_Child(pid, id, new_pid, &ierr);
          if (ierr > 0) return set_error(ierr);
      }
-@@ -1247,6 +1261,7 @@ int cgio_copy_node (int cgio_num_inp, double id_inp,
-     }
- #ifdef BUILD_HDF5
-     else if (input->type == CGIO_FILE_HDF5) {
-+        pcg_mpi_initialized = cgio->mpi_initialized;
-         ADFH_Get_Label(id_inp, label, &ierr);
-         if (ierr > 0) return set_error(ierr);
-         ADFH_Get_Data_Type(id_inp, data_type, &ierr);
-@@ -1289,6 +1304,7 @@ int cgio_copy_node (int cgio_num_inp, double id_inp,
-     }
- #ifdef BUILD_HDF5
-     else if (output->type == CGIO_FILE_HDF5) {
-+        pcg_mpi_initialized = cgio->mpi_initialized;
-         ADFH_Set_Label(id_out, label, &ierr);
-         if (ierr <= 0) {
-             ADFH_Put_Dimension_Information(id_out, data_type, ndims,
 @@ -1318,6 +1334,7 @@ int cgio_release_id (int cgio_num, double id)
      if ((cgio = get_cgnsio(cgio_num, 0)) == NULL)
          return get_error();
