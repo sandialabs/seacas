@@ -49,7 +49,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.09 (2018/08/01)";
+  const char *       version_string = "5.10 (2019/02/07)";
 
   void output_copyright();
 } // namespace
@@ -519,9 +519,7 @@ namespace SEAMS {
         var = putsym(sym_name, type, internal);
       }
       else {
-        if (var->type != (int)type) {
-          var->type = (int)type;
-        }
+        var->type = immutable ? Parser::token::IMMSVAR : Parser::token::SVAR;
       }
       var->value.svar = sym_value;
     }
@@ -540,9 +538,7 @@ namespace SEAMS {
         var = putsym(sym_name, type, internal);
       }
       else {
-        if (var->type != (int)type) {
-          var->type = (int)type;
-        }
+        var->type = immutable ? Parser::token::IMMVAR : Parser::token::VAR;
       }
       var->value.var = sym_value;
     }
@@ -560,9 +556,7 @@ namespace SEAMS {
         var = putsym(sym_name, type, false);
       }
       else {
-        if (var->type != (int)type) {
-          var->type = (int)type;
-        }
+        var->type = Parser::token::AVAR;
       }
       var->value.avar = value;
     }
