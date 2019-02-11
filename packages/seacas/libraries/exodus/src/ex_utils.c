@@ -1729,7 +1729,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
     else if (my_mode & EX_PNETCDF) {
       pariomode = NC_PNETCDF;
       /* See if client specified 64-bit or not... */
-      if ((int64_status & EX_ALL_INT64_DB) != 0) {
+      if ((my_mode & EX_64BIT_DATA) || (int64_status & EX_ALL_INT64_DB)) {
         tmp_mode = EX_64BIT_DATA;
       }
       else {
