@@ -197,8 +197,8 @@ namespace Iogn {
     if (( glob_node_count > two_billion || glob_elem_count > two_billion) && int_byte_size_api() == 4) {
       std::ostringstream errmsg;
       errmsg << "The node count is " <<  glob_node_count << " and the element count is " << glob_elem_count
-	     << " which exceeds the capacity of the 32-bit integers which are being requested by the client."
-	     << " This size mesh requires 64-bit integers which can be requested by setting the `INTEGER_SIZE_API=8` property.";
+	     << " which exceeds the capacity\nof the 32-bit integers (" << two_billion << ") which are being requested by the client.\n"
+	     << "This mesh requires 64-bit integers which can be requested by setting the `INTEGER_SIZE_API=8` property.";
       IOSS_ERROR(errmsg);
     }
 
