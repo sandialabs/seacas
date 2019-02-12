@@ -1522,7 +1522,7 @@ void ex_compress_variable(int exoid, int varid, int type)
     int deflate_level = file->compression_level;
     int compress      = 1;
     int shuffle       = file->shuffle;
-    if (deflate_level > 0 && (file->file_type == 2 || file->file_type == 3)) {
+    if (deflate_level > 0 && file->is_hdf5) {
       if (type != 3) { /* Do not try to compress character data */
 	nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
       }
