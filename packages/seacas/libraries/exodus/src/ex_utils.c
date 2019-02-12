@@ -1731,7 +1731,12 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
         tmp_mode = EX_64BIT_DATA;
       }
       else {
-        tmp_mode = EX_64BIT_OFFSET;
+	if (my_mode & EX_64BIT_DATA) {
+	  tmp_mode = EX_64BIT_DATA;
+	}
+	else {
+	  tmp_mode = EX_64BIT_OFFSET;
+	}
       }
 #if !NC_HAS_PNETCDF
       snprintf(errmsg, MAX_ERR_LENGTH,
