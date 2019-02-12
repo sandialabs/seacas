@@ -1,5 +1,9 @@
 #! /usr/bin/env bash
 
+# CMake config file to build ONLY the exodus libraries (C, Fortran, Fortran-32, and Python interface)
+# By default, Will build both static and shared version of the C API.
+# If only want shared, then run with "sh STATIC=OFF ../cmake-exodus"
+
 if [ "${TRAVIS}" == "true" ]
 then
   BUILDDIR=${1:-build}
@@ -15,8 +19,18 @@ then
     ACCESS=$(cd ..; pwd)
 fi
 
+### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
+
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-MPI="${MPI:-OFF}"
+netcdf_parallel=`$INSTALL_PATH/bin/nc-config --has-parallel`
+if [ "${netcdf_parallel}" == "yes" ]
+then
+    MPI=ON
+else
+    MPI=OFF
+fi
+
 echo "MPI set to ${MPI}"
 
 if [ "${MPI}" == "OFF" ]
@@ -39,7 +53,7 @@ then
   then
       CXX=clang++
       CC=clang
-      FC=gfortran-mp-7
+      FC=gfortran
       CFLAGS="-Wall -Wunused -pedantic"
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
@@ -53,7 +67,16 @@ then
       CXXFLAGS="-Wall -Wunused"
   fi
 
+  if [ "$COMPILER" == "ibm" ]
+  then
+      CXX=xlC
+      CC=xlc
+      FC=xlf
+  fi
+
 fi
+
+STATIC=${STATIC:-ON}
 
 GENERATOR=${GENERATOR:-"Unix Makefiles"}
 
@@ -70,16 +93,13 @@ THREADSAFE=${THREADSAFE:-OFF}
 
 FORTRAN=${FORTRAN:-ON}
 
-### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
-INSTALL_PATH=${ACCESS}
-
 ### TPLs -- 
 ### Make sure these point to the locations to find the libraries and includes in lib and include
 ### subdirectories of the specified paths.
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
-NETCDF_PATH=${ACCESS}
-PNETCDF_PATH=${ACCESS}
-HDF5_PATH=${ACCESS}
+NETCDF_PATH=${INSTALL_PATH}
+PNETCDF_PATH=${INSTALL_PATH}
+HDF5_PATH=${INSTALL_PATH}
 
 function check_enable()
 {
@@ -106,6 +126,7 @@ then
    CC=cc
    FC=ftn
    MPI_BIN=`dirname \`which ${CC}\``
+   SHARED=OFF
 elif [ "${MPI}" == "ON" ]
 then
    if [ "${USE_SRUN}" == "ON" ]
@@ -125,7 +146,7 @@ fi
 
 OS=`uname -s`
 if [ "$OS" == "Darwin" ] ; then
-  DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include"
+  DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON"
 else
   DARWIN_OPT=""
 fi
@@ -134,20 +155,25 @@ FC=${FC:-gfortran}
 
 rm -f CMakeCache.txt
 
+###------------------------------------------------------------------------
 cmake -G "${GENERATOR}" \
--D SEACASProj_ENABLE_SEACASExodus=ON \
--D SEACASProj_ENABLE_SEACASExodus_for=ON \
--D SEACASProj_ENABLE_SEACASExoIIv2for32=ON \
--D SEACASProj_ENABLE_TESTS=ON \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D CMAKE_CXX_FLAGS=${CXXFLAGS} ${SANITIZER} \
 -D CMAKE_C_FLAGS=${CFLAGS} ${SANITIZER} \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
--D CMAKE_INSTALL_PREFIX:PATH=${ACCESS} \
 -D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
+-D SEACASProj_ENABLE_SEACASExodus=ON \
+-D SEACASProj_ENABLE_SEACASExodus_for=${FORTRAN} \
+-D SEACASProj_ENABLE_SEACASExoIIv2for32=${FORTRAN} \
+-D SEACASProj_ENABLE_TESTS=ON \
+-D SEACASExodus_ENABLE_STATIC:BOOL=${STATIC} \
+-D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
+-D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
+-D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
+\
 -D SEACASProj_ENABLE_Fortran=${FORTRAN} \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
@@ -155,25 +181,29 @@ cmake -G "${GENERATOR}" \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 \
 ${MPI_SYMBOLS} \
+${DARWIN_OPT} \
+\
+-D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
 -D HDF5_NO_SYSTEM_PATHS=ON \
 -D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
 \
--D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 $EXTRA_ARGS \
 ${ACCESS}
 
 echo ""
-echo "     ACCESS: ${ACCESS}"
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo "  "
-echo "         CC: ${CC}"
-echo "        CXX: ${CXX}"
-echo "         FC: ${FC}"
-echo "        MPI: ${MPI}"
-echo " THREADSAFE: ${THREADSAFE}"
+echo "          CC: ${CC}"
+echo "         CXX: ${CXX}"
+echo "          FC: ${FC}"
+echo "         MPI: ${MPI}"
+echo "      SHARED: ${SHARED}"
+echo "  THREADSAFE: ${THREADSAFE}"
 echo "  "
-echo "HAVE_NETCDF: ${HAVE_NETCDF}"
+echo " HAVE_NETCDF: ${HAVE_NETCDF}"
 echo ""
 
 
