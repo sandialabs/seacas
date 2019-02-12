@@ -410,7 +410,7 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
   case EX_OPT_COMPRESSION_TYPE: /* Currently not used. GZip by default */ break;
   case EX_OPT_COMPRESSION_LEVEL: /* 0 (disabled/fastest) ... 9 (best/slowest) */
     /* Check whether file type supports compression... */
-    if (file->file_type == 2 || file->file_type == 3) {
+    if (file->is_hdf5) {
       int value = option_value;
       if (value > 9) {
         value = 9;
