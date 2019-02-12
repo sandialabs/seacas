@@ -446,9 +446,6 @@ namespace {
     else if (interface.compose_output != "none") {
       properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
       properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
-      if (interface.compose_output != "default") {
-        properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
-      }
     }
 
     if (interface.file_per_state) {

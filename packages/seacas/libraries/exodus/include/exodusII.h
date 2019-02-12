@@ -631,10 +631,6 @@ EXODUS_EXPORT int     ex_set_int64_status(int exoid, int mode);
 
 EXODUS_EXPORT void ex_print_config(void);
 
-/** Note that the max name length setting is global at this time; not specific
- * to a particular database; however, the exoid option is passed to give
- * flexibility in the future to implement this on a database-by-database basis.
- */
 EXODUS_EXPORT int ex_set_max_name_length(int exoid, int length);
 
 EXODUS_EXPORT int ex_set_option(int exoid, ex_option_type option, int option_value);
