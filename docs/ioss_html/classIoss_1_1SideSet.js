@@ -5,6 +5,7 @@ var classIoss_1_1SideSet =
     [ "add", "classIoss_1_1SideSet.html#abeaee6e47909229b7ee51f5567255ed8", null ],
     [ "block_count", "classIoss_1_1SideSet.html#ae427effe8fea274ffecad576c0539f0d", null ],
     [ "block_membership", "classIoss_1_1SideSet.html#a96b977141d6eba017e57c18cc5674cdc", null ],
+    [ "contains_string", "classIoss_1_1SideSet.html#a551279b702d3d6e63009f3186bd8579d", null ],
     [ "get_block", "classIoss_1_1SideSet.html#a5f42722d1ea4dede687ff3ee35b6d749", null ],
     [ "get_implicit_property", "classIoss_1_1SideSet.html#a278b00795c51137a6d4674895fb88243", null ],
     [ "get_side_block", "classIoss_1_1SideSet.html#af8c49c609f08b6814b5c2068ae9d2084", null ],

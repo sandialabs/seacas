@@ -123,6 +123,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a273dfa0981592996efabc8c2ce5d8fd3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1EdgeBlock.html#a273dfa0981592996efabc8c2ce5d8fd3">short_type_string</a> () const override</td></tr>
 <tr class="memdesc:a273dfa0981592996efabc8c2ce5d8fd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a short name of the particular type of entity.  <a href="#a273dfa0981592996efabc8c2ce5d8fd3">More...</a><br /></td></tr>
 <tr class="separator:a273dfa0981592996efabc8c2ce5d8fd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbe2c824b5f97b8a0a1df0b69b047c91"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1EdgeBlock.html#adbe2c824b5f97b8a0a1df0b69b047c91">contains_string</a> () const override</td></tr>
+<tr class="memdesc:adbe2c824b5f97b8a0a1df0b69b047c91"><td class="mdescLeft">&#160;</td><td class="mdescRight">What does this entity contain.  <a href="#adbe2c824b5f97b8a0a1df0b69b047c91">More...</a><br /></td></tr>
+<tr class="separator:adbe2c824b5f97b8a0a1df0b69b047c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade0e014fbc921c772ae1d2d9fbcd47c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f">EntityType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1EdgeBlock.html#ade0e014fbc921c772ae1d2d9fbcd47c1">type</a> () const override</td></tr>
 <tr class="memdesc:ade0e014fbc921c772ae1d2d9fbcd47c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the EntityType, which indicates the particular type of <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">GroupingEntity</a> this is.  <a href="#ade0e014fbc921c772ae1d2d9fbcd47c1">More...</a><br /></td></tr>
 <tr class="separator:ade0e014fbc921c772ae1d2d9fbcd47c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -370,6 +373,36 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="adbe2c824b5f97b8a0a1df0b69b047c91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbe2c824b5f97b8a0a1df0b69b047c91">&#9670;&nbsp;</a></span>contains_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::EdgeBlock::contains_string </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>What does this entity contain. </p>
+<dl class="section return"><dt>Returns</dt><dd>The name of the thing this entitiy contains. </dd></dl>
+
+<p>Implements <a class="el" href="classIoss_1_1GroupingEntity.html#ab20e24730ccc508eaceb7fc192fbab33">Ioss::GroupingEntity</a>.</p>
+
+</div>
+</div>
 <a id="a328af21ba2c62bcfa866e4422a3b5bbf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a328af21ba2c62bcfa866e4422a3b5bbf">&#9670;&nbsp;</a></span>get_implicit_property()</h2>
 
