@@ -90,6 +90,9 @@ def getExodusVersion():
             return int(fields[2])
     return 0
 
+if sys.version_info[0] >= 3:
+    raise Exception("Cannot use Python 3 yet.  Must use Python 2.X")
+
 ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
 if os.uname()[0] == 'Darwin':
     EXODUS_SO = ACCESS + "/lib/libexodus.dylib"
