@@ -260,7 +260,7 @@ def ex_entity_type(varType):
     # search dictionary for the requested code
     if varType in entity_dictionary:
         return entity_dictionary[varType]
-    # none found, must be invalid`
+    # none found, must be invalid
     return -1  # EX_INVALID
 
 # init params struct
