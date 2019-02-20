@@ -2,6 +2,7 @@ var classIoex_1_1SuperElement =
 [
     [ "SuperElement", "classIoex_1_1SuperElement.html#a441858d4cb5645641c6272aa99b8f0bd", null ],
     [ "~SuperElement", "classIoex_1_1SuperElement.html#a6078053f110de56ce018d98bcaadadeb", null ],
+    [ "contains_string", "classIoex_1_1SuperElement.html#a3bf69006d2d21df03b668238c5115038", null ],
     [ "get_implicit_property", "classIoex_1_1SuperElement.html#abef77dfb3de9214545e0d53653e847a1", null ],
     [ "internal_get_field_data", "classIoex_1_1SuperElement.html#acc3c1cb58f203266d55639885e3376d9", null ],
     [ "internal_put_field_data", "classIoex_1_1SuperElement.html#aad6081305495c0b03428c7fe8c14416f", null ],

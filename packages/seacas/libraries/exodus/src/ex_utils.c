@@ -1522,8 +1522,10 @@ void ex_compress_variable(int exoid, int varid, int type)
     int deflate_level = file->compression_level;
     int compress      = 1;
     int shuffle       = file->shuffle;
-    if (!file->is_parallel && deflate_level > 0 && (file->file_type == 2 || file->file_type == 3)) {
-      nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
+    if (deflate_level > 0 && file->is_hdf5) {
+      if (type != 3) { /* Do not try to compress character data */
+	nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
+      }
     }
 #if defined(PARALLEL_AWARE_EXODUS)
     if (type != 3 && file->is_parallel && file->is_hdf5) {
@@ -1727,11 +1729,16 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
     else if (my_mode & EX_PNETCDF) {
       pariomode = NC_PNETCDF;
       /* See if client specified 64-bit or not... */
-      if ((int64_status & EX_ALL_INT64_DB) != 0) {
+      if ((my_mode & EX_64BIT_DATA) || (int64_status & EX_ALL_INT64_DB)) {
         tmp_mode = EX_64BIT_DATA;
       }
       else {
-        tmp_mode = EX_64BIT_OFFSET;
+	if (my_mode & EX_64BIT_DATA) {
+	  tmp_mode = EX_64BIT_DATA;
+	}
+	else {
+	  tmp_mode = EX_64BIT_OFFSET;
+	}
       }
 #if !NC_HAS_PNETCDF
       snprintf(errmsg, MAX_ERR_LENGTH,

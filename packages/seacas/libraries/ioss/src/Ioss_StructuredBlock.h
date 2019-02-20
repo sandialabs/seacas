@@ -121,6 +121,7 @@ namespace Ioss {
 
     std::string type_string() const override { return "StructuredBlock"; }
     std::string short_type_string() const override { return "structuredblock"; }
+    std::string contains_string() const override { return "Cell"; }
     EntityType  type() const override { return STRUCTUREDBLOCK; }
 
     const Ioss::NodeBlock &get_node_block() const { return m_nodeBlock; }

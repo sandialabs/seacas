@@ -1,5 +1,6 @@
 var io__info_8C =
 [
+    [ "my_numpunct", "structanonymous__namespace_02io__info_8C_03_1_1my__numpunct.html", "structanonymous__namespace_02io__info_8C_03_1_1my__numpunct" ],
     [ "element_volume", "io__info_8C.html#a03ddc25a97c9a6c9647a9c15c5a6d5d9", null ],
     [ "file_info", "io__info_8C.html#a2490e4c9376ac4ca365a2eb8ae055587", null ],
     [ "group_info", "io__info_8C.html#a171e4e43a1ff528e9f9b62bb08816863", null ],
