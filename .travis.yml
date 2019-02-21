@@ -61,6 +61,7 @@ install:
     else
       brew install cmake || brew upgrade cmake
     fi
+  - cd -
   - cmake --version
   - ./cmake-config
 
