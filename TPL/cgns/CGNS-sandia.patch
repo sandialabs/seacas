@@ -1,18 +1,36 @@
-From ea0d84f86de77208a4995331e3eacb35f8c923a1 Mon Sep 17 00:00:00 2001
-From: Greg Sjaardema <gsjaardema@gmail.com>
-Date: Mon, 4 Feb 2019 10:11:09 -0700
-Subject: [PATCH] Modifications to CGNS develop for Sandia use
+From 5fc8067ed72a7803143ff608291c367c56a75a44 Mon Sep 17 00:00:00 2001
+From: Greg Sjaardema <gdsjaar@sandia.gov>
+Date: Thu, 21 Feb 2019 09:19:39 -0700
+Subject: [PATCH] Sandia-local patch for parallel and version compatibility
 
+* Version compatibility
 * Proof-of-concept for allowing file-per-processor and single-file parallel output
 ---
+ src/adfh/ADFH.c |  7 +++++--
  src/cgns_io.c   | 48 ++++++++++++++++++++++++++++++++++++++++++++----
- 2 files changed, 50 insertions(+), 6 deletions(-)
+ 2 files changed, 49 insertions(+), 6 deletions(-)
 
+diff --git a/src/adfh/ADFH.c b/src/adfh/ADFH.c
+index 7f8e9ba..3b514c3 100644
+--- a/src/adfh/ADFH.c
++++ b/src/adfh/ADFH.c
+@@ -2061,5 +2061,9 @@ void ADFH_Database_Open(const char   *name,
+   /*  H5Pset_latest_format(fapl, 1); */
+   /* Performance patch applied by KSH on 2009.05.18 */
+   H5Pset_libver_bounds(g_propfileopen,
++#if H5_VERSION_GE(1,10,3)
++		       H5F_LIBVER_V18, H5F_LIBVER_V18);
++#else
+ 		       H5F_LIBVER_LATEST, H5F_LIBVER_LATEST);
++#endif
+   /* open the file */
+
+ #ifdef BUILD_PARALLEL
 diff --git a/src/cgns_io.c b/src/cgns_io.c
 index b787ef6..73da785 100644
 --- a/src/cgns_io.c
 +++ b/src/cgns_io.c
-@@ -48,12 +48,12 @@ char hdf5_access[64] = "NATIVE";
+@@ -48,11 +48,11 @@ char hdf5_access[64] = "NATIVE";
  #ifdef MEM_DEBUG
  #include "cg_malloc.h"
  #endif
@@ -25,23 +43,23 @@ index b787ef6..73da785 100644
 -int pcg_mpi_initialized;
  MPI_Info pcg_mpi_info;
  #endif
- 
-@@ -69,6 +69,7 @@ MPI_Info pcg_mpi_info;
+
+@@ -69,5 +69,6 @@ MPI_Info pcg_mpi_info;
  typedef struct {
      int type;
      int mode;
 +    int mpi_initialized;
      double rootid;
  } cgns_io;
- 
-@@ -587,7 +588,7 @@ int cgio_check_file (const char *filename, int *file_type)
- 
+
+@@ -587,5 +588,5 @@ int cgio_check_file (const char *filename, int *file_type)
+
  #ifdef BUILD_PARALLEL
      /* don't overload the file system by having all the processors doing a read */
 -    if(pcg_mpi_comm_rank == 0) {
 +    if(!pcg_mpi_initialized || pcg_mpi_comm_rank == 0) {
  #endif
- 
+
        fp = fopen(filename, "rb");
 @@ -803,6 +804,11 @@ int cgio_open_file (const char *filename, int file_mode,
      }
@@ -55,15 +73,15 @@ index b787ef6..73da785 100644
      iolist[n].rootid = rootid;
      *cgio_num = n + 1;
      num_open++;
-@@ -814,8 +820,8 @@ int cgio_open_file (const char *filename, int file_mode,
- 
+@@ -814,5 +820,5 @@ int cgio_open_file (const char *filename, int file_mode,
+
  int cgio_close_file (int cgio_num)
  {
 -    int ierr;
 -    cgns_io *cgio;
 +    int ierr = 0;
 +    cgns_io *cgio = NULL;
- 
+
      if ((cgio = get_cgnsio(cgio_num, 0)) == NULL)
          return get_error();
 @@ -826,6 +832,7 @@ int cgio_close_file (int cgio_num)
@@ -338,6 +356,5 @@ index b787ef6..73da785 100644
          ADFH_Write_Data(id, s_start, s_end, s_stride, m_data_type, m_num_dims,
              m_dims, m_start, m_end, m_stride, (const char *)data, &ierr);
          if (ierr > 0) return set_error(ierr);
--- 
-2.20.1
-
+--
+2.4.0.rc3.16.g0ab00b9

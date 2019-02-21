@@ -125,7 +125,7 @@ then
     then
 	echo "${txtgrn}+++ ZLIB${txtrst}"
         zlib_version="1.2.11"
-					 
+
 	cd $ACCESS
 	cd TPL
 	if [ "$DOWNLOAD" == "YES" ]
@@ -137,7 +137,7 @@ then
             tar -xzf zlib-${zlib_version}.tar.gz
             rm -rf zlib-${zlib_version}.tar.gz
 	fi
-	
+
 	if [ "$BUILD" == "YES" ]
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
@@ -319,18 +319,15 @@ then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf CGNS
             git clone https://github.com/cgns/CGNS
-	    if [ "$MPI" == "ON" ]
+	    cd CGNS
+	    git am ../CGNS-sandia.patch
+	    if [[ $? != 0 ]]
 	    then
-		cd CGNS
-		git am ../CGNS-parallel.patch
-		if [[ $? != 0 ]]
-		then
-		    echo 1>&2 ${txtred}couldn\'t patch CGNS for SNL parallel changes. exiting.${txtrst}
-		    exit 1
-		fi
-		cd ..
+		echo 1>&2 ${txtred}couldn\'t patch CGNS for SNL-suggested changes. exiting.${txtrst}
+		exit 1
 	    fi
-        fi
+	    cd ..
+	fi
 
         if [ "$BUILD" == "YES" ]
         then
@@ -374,7 +371,7 @@ then
             rm -rf matio
             git clone https://github.com/tbeu/matio.git
 	fi
-	
+
 	if [ "$BUILD" == "YES" ]
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
