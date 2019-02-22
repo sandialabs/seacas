@@ -70,8 +70,13 @@ void Ioss::Beam3::factory()
 
 Ioss::Beam3::Beam3() : Ioss::ElementTopology(Ioss::Beam3::name, "Beam_3")
 {
+  Ioss::ElementTopology::alias(Ioss::Beam3::name, "Rod_3_3D");
+  Ioss::ElementTopology::alias(Ioss::Beam3::name, "rod3");
+  Ioss::ElementTopology::alias(Ioss::Beam3::name, "rod3d3");
+  Ioss::ElementTopology::alias(Ioss::Beam3::name, "truss3");
   Ioss::ElementTopology::alias(Ioss::Beam3::name, "beam3");
-  Ioss::ElementTopology::alias(Ioss::Beam3::name, "BEAM_3");
+  Ioss::ElementTopology::alias(Ioss::Beam3::name, "Rod_3_2D");
+  Ioss::ElementTopology::alias(Ioss::Beam3::name, "rod2d3");
 }
 
 Ioss::Beam3::~Beam3() = default;
