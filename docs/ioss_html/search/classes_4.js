@@ -13,7 +13,7 @@ var searchData=
   ['elementvariabletype',['ElementVariableType',['../classIoss_1_1ElementVariableType.html',1,'Ioss']]],
   ['elemset',['ElemSet',['../structIoex_1_1ElemSet.html',1,'Ioex']]],
   ['entityblock',['EntityBlock',['../structIodw_1_1meta_1_1EntityBlock.html',1,'Iodw::meta::EntityBlock'],['../classIoss_1_1EntityBlock.html',1,'Ioss::EntityBlock']]],
-  ['entityset',['EntitySet',['../structIodw_1_1meta_1_1EntitySet.html',1,'Iodw::meta::EntitySet'],['../classIoss_1_1EntitySet.html',1,'Ioss::EntitySet']]],
+  ['entityset',['EntitySet',['../classIoss_1_1EntitySet.html',1,'Ioss::EntitySet'],['../structIodw_1_1meta_1_1EntitySet.html',1,'Iodw::meta::EntitySet']]],
   ['etregistry',['ETRegistry',['../classIoss_1_1ETRegistry.html',1,'Ioss']]],
   ['exodusdata',['ExodusData',['../structIogn_1_1ExodusData.html',1,'Iogn']]],
   ['exodusmesh',['ExodusMesh',['../classIogn_1_1ExodusMesh.html',1,'Iogn']]]

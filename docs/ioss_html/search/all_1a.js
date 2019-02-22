@@ -1,8 +1,6 @@
 var searchData=
 [
   ['_7eassert',['~Assert',['../structAssert.html#af9011a637bfaa99605af4b775be54e07',1,'Assert']]],
-  ['_7ebar2',['~Bar2',['../classIoss_1_1Bar2.html#afee249600979d358917a52693e1cfacc',1,'Ioss::Bar2']]],
-  ['_7ebar3',['~Bar3',['../classIoss_1_1Bar3.html#a97d048563f1bf8959361cedd1819964b',1,'Ioss::Bar3']]],
   ['_7ebeam2',['~Beam2',['../classIoss_1_1Beam2.html#af693df4633c4d96f818603258d02fee9',1,'Ioss::Beam2']]],
   ['_7ebeam3',['~Beam3',['../classIoss_1_1Beam3.html#acbfab4f2dd83a0e12e39ee300fa2c1d4',1,'Ioss::Beam3']]],
   ['_7ebucket_5fentry',['~bucket_entry',['../classtsl_1_1detail__robin__hash_1_1bucket__entry.html#a5d702ef39639b66dedbe78d450915e80',1,'tsl::detail_robin_hash::bucket_entry']]],
@@ -74,6 +72,8 @@ var searchData=
   ['_7eshellline2d3',['~ShellLine2D3',['../classIoss_1_1ShellLine2D3.html#a8b7adc82a250ac9318b97cf92c93b7b6',1,'Ioss::ShellLine2D3']]],
   ['_7esideset',['~SideSet',['../classIoss_1_1SideSet.html#aa2c407be09b017577f6a5c4821227012',1,'Ioss::SideSet']]],
   ['_7esphere',['~Sphere',['../classIoss_1_1Sphere.html#a4b2dbd7de93da07a91f87210840cbc98',1,'Ioss::Sphere']]],
+  ['_7espring2',['~Spring2',['../classIoss_1_1Spring2.html#aa4dc0403dc145b7051a337e0e5888917',1,'Ioss::Spring2']]],
+  ['_7espring3',['~Spring3',['../classIoss_1_1Spring3.html#af5a5ac6d252d2ae6a8aefe136fb223ea',1,'Ioss::Spring3']]],
   ['_7estream_5fholder',['~stream_holder',['../structanonymous__namespace_02Ioss__SmartAssert_8C_03_1_1stream__holder.html#a8cddb7ade15b0f46ee1efad2ac2a8a30',1,'anonymous_namespace{Ioss_SmartAssert.C}::stream_holder']]],
   ['_7estructuredblock',['~StructuredBlock',['../classIoss_1_1StructuredBlock.html#a0371175e0164118aa0bde47426ac72af',1,'Ioss::StructuredBlock']]],
   ['_7esuper',['~Super',['../classIoss_1_1Super.html#a902405be401efebb5a7f73de3e764da0',1,'Ioss::Super']]],
