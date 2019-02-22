@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['bar2',['Bar2',['../classIoss_1_1Bar2.html#a0f14d72fd13cb8b486c1b3fd7b31b520',1,'Ioss::Bar2::Bar2(const Bar2 &amp;)=delete'],['../classIoss_1_1Bar2.html#a2765887dd1e8481c4867b1fb2c08ce4d',1,'Ioss::Bar2::Bar2()']]],
-  ['bar3',['Bar3',['../classIoss_1_1Bar3.html#a7357cb98e70f2437bc9d942c72a74853',1,'Ioss::Bar3::Bar3(const Bar3 &amp;)=delete'],['../classIoss_1_1Bar3.html#ad166d50fe7e10e838365284cf0f71286',1,'Ioss::Bar3::Bar3()']]],
   ['basename',['basename',['../classIoss_1_1FileInfo.html#a3999c96b72ab41961a6e9043f729e840',1,'Ioss::FileInfo::basename()'],['../classIoss_1_1GetLongOption.html#ac401beaa611c764c9dd25b0784576837',1,'Ioss::GetLongOption::basename()']]],
   ['bc_5fsubset_5frange',['bc_subset_range',['../namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#ab655cb4bf7fe82089505620b49823dba',1,'anonymous_namespace{Iocgns_Utils.C}']]],
   ['beam2',['Beam2',['../classIoss_1_1Beam2.html#a927a9dd75c46a435c2fc1c8db410a098',1,'Ioss::Beam2::Beam2(const Beam2 &amp;)=delete'],['../classIoss_1_1Beam2.html#a9a4d25552fe92358e15cf6f67aaf7d2b',1,'Ioss::Beam2::Beam2()']]],

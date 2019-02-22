@@ -2057,8 +2057,9 @@ namespace {
       }
       if (options.verbose && rank == 0) {
         std::cerr << " Number of " << std::right << std::setw(20) << (*blocks.begin())->type_string()
-                  << "s            =" << std::setw(14) << blocks.size() << "\t"
-                  << "Length of entity list   =" << std::setw(14) << total_entities << "\n";
+                  << "s =" << std::setw(14) << blocks.size() << "\n"
+                  << " Number of " << std::right << std::setw(20) << (*blocks.begin())->contains_string()
+		  << "s =" << std::setw(14) << total_entities << "\n";
       }
       if (options.debug && rank == 0) {
         std::cerr << '\n';

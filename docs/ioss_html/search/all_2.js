@@ -1,8 +1,6 @@
 var searchData=
 [
   ['background',['Background',['../structIoss_1_1trmclr_1_1Background.html',1,'Ioss::trmclr::Background'],['../namespaceIoss_1_1trmclr.html#a6beb49fa7d01006e009b410089c92f9ba46fec4b7125cb78a9a348a243ceefdd7',1,'Ioss::trmclr::BACKGROUND()']]],
-  ['bar2',['Bar2',['../classIoss_1_1Bar2.html',1,'Ioss::Bar2'],['../classIoss_1_1Bar2.html#a0f14d72fd13cb8b486c1b3fd7b31b520',1,'Ioss::Bar2::Bar2(const Bar2 &amp;)=delete'],['../classIoss_1_1Bar2.html#a2765887dd1e8481c4867b1fb2c08ce4d',1,'Ioss::Bar2::Bar2()']]],
-  ['bar3',['Bar3',['../classIoss_1_1Bar3.html',1,'Ioss::Bar3'],['../classIoss_1_1Bar3.html#a7357cb98e70f2437bc9d942c72a74853',1,'Ioss::Bar3::Bar3(const Bar3 &amp;)=delete'],['../classIoss_1_1Bar3.html#ad166d50fe7e10e838365284cf0f71286',1,'Ioss::Bar3::Bar3()']]],
   ['basename',['basename',['../classIoss_1_1FileInfo.html#a3999c96b72ab41961a6e9043f729e840',1,'Ioss::FileInfo::basename()'],['../classIoss_1_1GetLongOption.html#ac401beaa611c764c9dd25b0784576837',1,'Ioss::GetLongOption::basename()']]],
   ['basetype',['baseType',['../classIoss_1_1CompositeVariableType.html#ac5ceb689a30e2ba798300dbb41576465',1,'Ioss::CompositeVariableType']]],
   ['basictype',['BasicType',['../classIoss_1_1Field.html#a43f29f9ba05cb45ed893455c76526c3e',1,'Ioss::Field::BasicType()'],['../classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614',1,'Ioss::Property::BasicType()']]],

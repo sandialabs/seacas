@@ -439,7 +439,17 @@ namespace {
       properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interface.shuffle)));
     }
 
-    if (interface.compose_output == "external") {
+    if (interface.compose_output == "default") {
+      if (interface.outFiletype == "cgns") {
+	properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
+	properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
+      }
+      else {
+	properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
+	properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
+      }
+    }
+    else if (interface.compose_output == "external") {
       properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
       properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
     }
@@ -463,6 +473,8 @@ namespace {
     if (interface.inputFile.size() > 1) {
       properties.add(Ioss::Property("ENABLE_FILE_GROUPS", 1));
     }
+	properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
+	properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
 
     if (interface.debug) {
       properties.add(Ioss::Property("LOGGING", 1));

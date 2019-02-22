@@ -32,12 +32,8 @@
 
 #include <cgns/Iocgns_Defines.h>
 
-#include <Ioss_Bar2.h>
-#include <Ioss_Bar3.h>
-#if !defined(BUILT_IN_SIERRA)
 #include <Ioss_Beam2.h>
 #include <Ioss_Beam3.h>
-#endif
 #include <Ioss_Hex20.h>
 #include <Ioss_Hex27.h>
 #include <Ioss_Hex8.h>
@@ -48,6 +44,8 @@
 #include <Ioss_Quad4.h>
 #include <Ioss_Quad8.h>
 #include <Ioss_Quad9.h>
+#include <Ioss_Spring2.h>
+#include <Ioss_Spring3.h>
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Tet10.h>
 #include <Ioss_Tet4.h>
@@ -982,8 +980,8 @@ std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
   std::string topology = "unknown";
   switch (type) {
   case CG_NODE: topology = Ioss::Node::name; break;
-  case CG_BAR_2: topology = Ioss::Bar2::name; break;
-  case CG_BAR_3: topology = Ioss::Bar3::name; break;
+  case CG_BAR_2: topology = Ioss::Beam2::name; break;
+  case CG_BAR_3: topology = Ioss::Beam3::name; break;
   case CG_TRI_3: topology = Ioss::Tri3::name; break;
   case CG_TRI_6: topology = Ioss::Tri6::name; break;
   case CG_QUAD_4: topology = Ioss::Quad4::name; break;
@@ -1014,20 +1012,18 @@ CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
   if (name == Ioss::Node::name) {
     topo = CG_NODE;
   }
-  else if (name == Ioss::Bar2::name) {
+  else if (name == Ioss::Spring2::name) {
     topo = CG_BAR_2;
   }
-  else if (name == Ioss::Bar3::name) {
+  else if (name == Ioss::Spring3::name) {
     topo = CG_BAR_3;
   }
-#if !defined(BUILT_IN_SIERRA)
   else if (name == Ioss::Beam2::name) {
     topo = CG_BAR_2;
   }
   else if (name == Ioss::Beam3::name) {
     topo = CG_BAR_3;
   }
-#endif
   else if (name == Ioss::Tri3::name) {
     topo = CG_TRI_3;
   }
