@@ -477,10 +477,10 @@ namespace Iocgns {
       // This isn't currently working since CGNS currently has chunking
       // disabled for HDF5 files and compression requires chunking.
       if (!is_input()) {
-	if (properties.exists("COMPRESSION_LEVEL")) {
-	  int comp = properties.get("COMPRESSION_LEVEL").get_int();
-	  cg_configure(CG_CONFIG_HDF5_COMPRESS, (void*)comp);
-	}
+        if (properties.exists("COMPRESSION_LEVEL")) {
+          int comp = properties.get("COMPRESSION_LEVEL").get_int();
+          cg_configure(CG_CONFIG_HDF5_COMPRESS, (void*)comp);
+        }
       }
 #endif
     }
@@ -1349,6 +1349,7 @@ namespace Iocgns {
       std::vector<size_t> I_nodes(node_count);
       for (size_t i = 0; i < I_map->size(); i++) {
         auto global     = I_map->map()[i + 1] - 1;
+        assert(global < node_count);
         I_nodes[global] = i + 1;
       }
       for (auto J = I + 1; J != blocks.end(); J++) {
@@ -1358,6 +1359,7 @@ namespace Iocgns {
         std::vector<cgsize_t> point_list_donor;
         for (size_t i = 0; i < J_map->size(); i++) {
           auto global = J_map->map()[i + 1] - 1;
+          assert(global < node_count);
           if (I_nodes[global] > 0) {
             // Have a match between nodes used by two different blocks,
             // They are adjacent...
