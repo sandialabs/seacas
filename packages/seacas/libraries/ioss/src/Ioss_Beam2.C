@@ -70,10 +70,22 @@ void Ioss::Beam2::factory()
 
 Ioss::Beam2::Beam2() : Ioss::ElementTopology(Ioss::Beam2::name, "Beam_2")
 {
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "Rod_2_3D");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "rod2");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "rod");
   Ioss::ElementTopology::alias(Ioss::Beam2::name, "beam2");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "bar");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "bar2");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "truss");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "truss2");
   Ioss::ElementTopology::alias(Ioss::Beam2::name, "beam");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "rod3d2");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "Rod_2_2D");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "rod2d2");
   Ioss::ElementTopology::alias(Ioss::Beam2::name, "beam-r");
   Ioss::ElementTopology::alias(Ioss::Beam2::name, "beam-r2");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "line");
+  Ioss::ElementTopology::alias(Ioss::Beam2::name, "line2");
   Ioss::ElementTopology::alias(Ioss::Beam2::name, "BEAM_2");
 }
 
