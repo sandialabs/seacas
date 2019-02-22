@@ -473,8 +473,6 @@ namespace {
     if (interface.inputFile.size() > 1) {
       properties.add(Ioss::Property("ENABLE_FILE_GROUPS", 1));
     }
-	properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
-	properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
 
     if (interface.debug) {
       properties.add(Ioss::Property("LOGGING", 1));
