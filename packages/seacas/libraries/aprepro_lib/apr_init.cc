@@ -323,6 +323,13 @@ namespace SEAMS {
        "variable delim."},
       {nullptr, nullptr, nullptr, nullptr}};
 
+  array_ddd_init array_ddd_fncts[] = {
+      {"linear_array", do_linear_array, "linear_array(init, final, count)",
+       "Create a 1D array of 'count' rows. Values linearly spaced from 'init' to 'final'."},
+      {"make_array", do_make_array_init, "make_array(rows, cols, init=0)",
+       "Create a 2D array of size 'rows' by 'cols' initialized to 'init'. 0 if not specified."},
+      {nullptr, nullptr, nullptr, nullptr}};
+
   array_dd_init array_dd_fncts[] = {
       {"make_array", do_make_array, "make_array(rows, cols)",
        "Create a 2D array of size 'rows' by 'cols' initialized to zero."},
@@ -399,8 +406,9 @@ namespace SEAMS {
     internal_init_table(array_c_fncts,      arrfnct_c,      SYMBOL_TYPE::ARRAY_FUNCTION);
     internal_init_table(array_cc_fncts,     arrfnct_cc,     SYMBOL_TYPE::ARRAY_FUNCTION);
     internal_init_table(array_cd_fncts,     arrfnct_cd,     SYMBOL_TYPE::ARRAY_FUNCTION);
-    internal_init_table(array_dd_fncts,     arrfnct_dd,     SYMBOL_TYPE::ARRAY_FUNCTION);
     internal_init_table(array_d_fncts,      arrfnct_d,      SYMBOL_TYPE::ARRAY_FUNCTION);
+    internal_init_table(array_dd_fncts,     arrfnct_dd,     SYMBOL_TYPE::ARRAY_FUNCTION);
+    internal_init_table(array_ddd_fncts,    arrfnct_ddd,    SYMBOL_TYPE::ARRAY_FUNCTION);
     internal_init_table(array_a_fncts,      arrfnct_a,      SYMBOL_TYPE::ARRAY_FUNCTION);
     // clang-format on
 
