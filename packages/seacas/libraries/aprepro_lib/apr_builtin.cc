@@ -1034,6 +1034,16 @@ namespace SEAMS {
     return array_data;
   }
 
+  array *do_make_array_init(double rows, double cols, double init)
+  {
+    auto array_data = new array(rows, cols);
+    int  isize      = (int)rows * int(cols);
+    for (int i = 0; i < isize; i++) {
+      array_data->data[i] = init;
+    }
+    return array_data;
+  }
+
   array *do_identity(double size)
   {
     int  i;
@@ -1042,6 +1052,20 @@ namespace SEAMS {
 
     for (i = 0; i < isize; i++) {
       array_data->data[i * isize + i] = 1.0;
+    }
+    return array_data;
+  }
+
+  array *do_linear_array(double init, double final, double count)
+  {
+    // Create 1D array with `count` rows and 1 column.
+    // Values are linearly spaced from `init` to `final`
+    int  isize      = count;
+    auto array_data = new array(count, 1);
+
+    double inc = (final - init) / (count - 1);
+    for (int i = 0; i < isize; i++) {
+      array_data->data[i] = init + (double)i * inc;
     }
     return array_data;
   }
