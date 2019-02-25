@@ -1,9 +1,9 @@
 <map id="SEAMS::Parser::stack_symbol_type" name="SEAMS::Parser::stack_symbol_type">
-<area shape="rect" id="node1" title="&quot;Internal&quot; symbol: element of the stack." alt="" coords="36,520,190,559"/>
-<area shape="rect" id="node2" href="$structSEAMS_1_1Parser_1_1basic__symbol.html" title=" " alt="" coords="36,432,190,471"/>
-<area shape="rect" id="node3" href="$structSEAMS_1_1Parser_1_1by__state.html" title="Type access provider for state based symbols." alt="" coords="5,345,178,371"/>
-<area shape="rect" id="node4" href="$unionSEAMS_1_1Parser_1_1semantic__type.html" title="Symbol semantic values." alt="" coords="202,345,410,371"/>
-<area shape="rect" id="node5" href="$structSEAMS_1_1symrec.html" title=" " alt="" coords="315,259,433,284"/>
-<area shape="rect" id="node6" href="$structSEAMS_1_1symrec_1_1value.html" title=" " alt="" coords="306,172,464,197"/>
+<area shape="rect" id="node1" title="&quot;Internal&quot; symbol: element of the stack." alt="" coords="36,533,190,572"/>
+<area shape="rect" id="node2" href="$structSEAMS_1_1Parser_1_1basic__symbol.html" title=" " alt="" coords="36,445,190,484"/>
+<area shape="rect" id="node3" href="$structSEAMS_1_1Parser_1_1by__state.html" title="Type access provider for state based symbols." alt="" coords="5,359,178,384"/>
+<area shape="rect" id="node4" href="$unionSEAMS_1_1Parser_1_1semantic__type.html" title="Symbol semantic values." alt="" coords="202,359,410,384"/>
+<area shape="rect" id="node5" href="$structSEAMS_1_1symrec.html" title=" " alt="" coords="315,272,433,297"/>
+<area shape="rect" id="node6" href="$structSEAMS_1_1symrec_1_1value.html" title=" " alt="" coords="306,185,464,211"/>
 <area shape="rect" id="node7" href="$structSEAMS_1_1array.html" title=" " alt="" coords="237,5,343,31"/>
 </map>

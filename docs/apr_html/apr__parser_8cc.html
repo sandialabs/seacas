@@ -94,16 +94,16 @@ $(document).ready(function(){initNavTree('apr__parser_8cc.html','');});
 <div class="title">apr_parser.cc File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="apr__array_8h_source.html">apr_array.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="aprepro_8h_source.html">aprepro.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="apr__util_8h_source.html">apr_util.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="aprepro_8h_source.html">aprepro.h</a>&quot;</code><br />
-<code>#include &lt;cerrno&gt;</code><br />
-<code>#include &lt;cfenv&gt;</code><br />
-<code>#include &lt;cmath&gt;</code><br />
-<code>#include &lt;cstdio&gt;</code><br />
-<code>#include &lt;cstring&gt;</code><br />
+<code>#include &quot;<a class="el" href="apr__array_8h_source.html">apr_array.h</a>&quot;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cerrno&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;cstdio&gt;</code><br />
+<code>#include &lt;cfenv&gt;</code><br />
 <code>#include &quot;<a class="el" href="aprepro__parser_8h_source.html">aprepro_parser.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="apr__scanner_8h_source.html">apr_scanner.h</a>&quot;</code><br />
 </div><table class="memberdecls">
@@ -124,9 +124,9 @@ Macros</h2></td></tr>
 <tr class="separator:a86f079016f11f0600f4259f3f03f8d43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50c42b07435bf2867d707c84388133bf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a50c42b07435bf2867d707c84388133bf">YY_EXCEPTIONS</a>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:a50c42b07435bf2867d707c84388133bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33c61e326f5675cc74eb9e1a6906595c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a33c61e326f5675cc74eb9e1a6906595c">YYUSE</a>(E)&#160;&#160;&#160;((void)(E))</td></tr>
+<tr class="memitem:a33c61e326f5675cc74eb9e1a6906595c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a33c61e326f5675cc74eb9e1a6906595c">YYUSE</a>(E)&#160;&#160;&#160;((void) (E))</td></tr>
 <tr class="separator:a33c61e326f5675cc74eb9e1a6906595c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3649de2ba01c20b4c9ec72bdc71b2956"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a3649de2ba01c20b4c9ec72bdc71b2956">YYCDEBUG</a></td></tr>
+<tr class="memitem:a3649de2ba01c20b4c9ec72bdc71b2956"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a3649de2ba01c20b4c9ec72bdc71b2956">YYCDEBUG</a>&#160;&#160;&#160;<a class="el" href="apr__scanner_8cc.html#ad4a65b873df5c05570846b5413b41dfd">if</a> (yydebug_) (*yycdebug_)</td></tr>
 <tr class="separator:a3649de2ba01c20b4c9ec72bdc71b2956"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b71a422d1f0f6b0f93e6cfbe988d9ed"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a4b71a422d1f0f6b0f93e6cfbe988d9ed">YY_SYMBOL_PRINT</a>(Title,  Symbol)</td></tr>
 <tr class="separator:a4b71a422d1f0f6b0f93e6cfbe988d9ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,7 +136,7 @@ Macros</h2></td></tr>
 <tr class="separator:a56e528a4079b5c725f0fcbe184414bf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20bf055e53dc4fd5afddfd752a4d1adb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a20bf055e53dc4fd5afddfd752a4d1adb">yyerrok</a>&#160;&#160;&#160;(yyerrstatus_ = 0)</td></tr>
 <tr class="separator:a20bf055e53dc4fd5afddfd752a4d1adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5035d59933b3f5388c44f596145db047"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a5035d59933b3f5388c44f596145db047">yyclearin</a>&#160;&#160;&#160;(yyla.clear())</td></tr>
+<tr class="memitem:a5035d59933b3f5388c44f596145db047"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a5035d59933b3f5388c44f596145db047">yyclearin</a>&#160;&#160;&#160;(yyla.clear ())</td></tr>
 <tr class="separator:a5035d59933b3f5388c44f596145db047"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6c7a65b580c214b2ea832fd7bdd472e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#aa6c7a65b580c214b2ea832fd7bdd472e">YYACCEPT</a>&#160;&#160;&#160;goto yyacceptlab</td></tr>
 <tr class="separator:aa6c7a65b580c214b2ea832fd7bdd472e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,7 +146,7 @@ Macros</h2></td></tr>
 <tr class="separator:af1eef6197be78122699013d0784acc80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad860e18ca4b79fc589895b531bdb7948"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#ad860e18ca4b79fc589895b531bdb7948">YYRECOVERING</a>()&#160;&#160;&#160;(!!yyerrstatus_)</td></tr>
 <tr class="separator:ad860e18ca4b79fc589895b531bdb7948"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5678224066e7b61a101000279b4bb0be"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a5678224066e7b61a101000279b4bb0be">YYCASE_</a>(N,  S)&#160;&#160;&#160;case N: yyformat = S; break</td></tr>
+<tr class="memitem:a5678224066e7b61a101000279b4bb0be"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__parser_8cc.html#a5678224066e7b61a101000279b4bb0be">YYCASE_</a>(N,  S)</td></tr>
 <tr class="separator:a5678224066e7b61a101000279b4bb0be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -202,7 +202,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                                             \</div><div class="line">    if (yydebug_)                                                                                  \</div><div class="line">      yy_reduce_print_(Rule);                                                                      \</div><div class="line">  } <span class="keywordflow">while</span> (<span class="keyword">false</span>)</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                  \</div><div class="line">    if (yydebug_)                       \</div><div class="line">      yy_reduce_print_ (Rule);          \</div><div class="line">  } <span class="keywordflow">while</span> (<span class="keyword">false</span>)</div></div><!-- fragment -->
 </div>
 </div>
 <a id="a56e528a4079b5c725f0fcbe184414bf5"></a>
@@ -219,7 +219,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                                             \</div><div class="line">    if (yydebug_)                                                                                  \</div><div class="line">      yystack_print_();                                                                            \</div><div class="line">  } <span class="keywordflow">while</span> (<span class="keyword">false</span>)</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                  \</div><div class="line">    if (yydebug_)                       \</div><div class="line">      yystack_print_ ();                \</div><div class="line">  } <span class="keywordflow">while</span> (<span class="keyword">false</span>)</div></div><!-- fragment -->
 </div>
 </div>
 <a id="a4b71a422d1f0f6b0f93e6cfbe988d9ed"></a>
@@ -247,7 +247,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                                             \</div><div class="line">    if (yydebug_) {                                                                                \</div><div class="line">      *yycdebug_ &lt;&lt; Title &lt;&lt; <span class="charliteral">&#39; &#39;</span>;                                                                  \</div><div class="line">      yy_print_(*yycdebug_, Symbol);                                                               \</div><div class="line">      *yycdebug_ &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;                                                                          \</div><div class="line">    }                                                                                              \</div><div class="line">  } <span class="keywordflow">while</span> (<span class="keyword">false</span>)</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                          \</div><div class="line">    if (yydebug_)                               \</div><div class="line">    {                                           \</div><div class="line">      *yycdebug_ &lt;&lt; Title &lt;&lt; <span class="charliteral">&#39; &#39;</span>;               \</div><div class="line">      yy_print_ (*yycdebug_, Symbol);           \</div><div class="line">      *yycdebug_ &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;                       \</div><div class="line">    }                                           \</div><div class="line">  } <span class="keywordflow">while</span> (<span class="keyword">false</span>)</div></div><!-- fragment -->
 </div>
 </div>
 <a id="a3bcde0b05b9aa4ec5169092d9d211dbd"></a>
@@ -299,11 +299,11 @@ Functions</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;case N: yyformat = S; break</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">case</span> N:                               \</div><div class="line">          yyformat = S;                       \</div><div class="line">        break</div></div><!-- fragment -->
 </div>
 </div>
 <a id="a3649de2ba01c20b4c9ec72bdc71b2956"></a>
@@ -313,11 +313,11 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define YYCDEBUG</td>
+          <td class="memname">#define YYCDEBUG&#160;&#160;&#160;<a class="el" href="apr__scanner_8cc.html#ad4a65b873df5c05570846b5413b41dfd">if</a> (yydebug_) (*yycdebug_)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> (yydebug_)                                                                                    \</div><div class="line">  (*yycdebug_)</div></div><!-- fragment -->
+
 </div>
 </div>
 <a id="a5035d59933b3f5388c44f596145db047"></a>
@@ -327,7 +327,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define yyclearin&#160;&#160;&#160;(yyla.clear())</td>
+          <td class="memname">#define yyclearin&#160;&#160;&#160;(yyla.clear ())</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -418,7 +418,7 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">E</td><td>)</td>
-          <td>&#160;&#160;&#160;((void)(E))</td>
+          <td>&#160;&#160;&#160;((void) (E))</td>
         </tr>
       </table>
 </div><div class="memdoc">

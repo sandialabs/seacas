@@ -9,6 +9,7 @@ var hierarchy =
     [ "array_cd_init", "structarray__cd__init.html", null ],
     [ "array_d_init", "structarray__d__init.html", null ],
     [ "array_dd_init", "structarray__dd__init.html", null ],
+    [ "array_ddd_init", "structarray__ddd__init.html", null ],
     [ "SEAMS::Parser::by_state", "structSEAMS_1_1Parser_1_1by__state.html", [
       [ "SEAMS::Parser::basic_symbol< by_state >", "structSEAMS_1_1Parser_1_1basic__symbol.html", [
         [ "SEAMS::Parser::stack_symbol_type", "structSEAMS_1_1Parser_1_1stack__symbol__type.html", null ]

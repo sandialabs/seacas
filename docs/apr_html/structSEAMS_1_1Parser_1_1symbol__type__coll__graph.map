@@ -1,9 +1,9 @@
 <map id="SEAMS::Parser::symbol_type" name="SEAMS::Parser::symbol_type">
-<area shape="rect" id="node1" title="&quot;External&quot; symbols: returned by the scanner." alt="" coords="13,520,210,545"/>
-<area shape="rect" id="node2" href="$structSEAMS_1_1Parser_1_1basic__symbol.html" title=" " alt="" coords="34,432,188,471"/>
-<area shape="rect" id="node3" href="$structSEAMS_1_1Parser_1_1by__type.html" title="Type access provider for token (enum) based symbols." alt="" coords="5,345,174,371"/>
-<area shape="rect" id="node4" href="$unionSEAMS_1_1Parser_1_1semantic__type.html" title="Symbol semantic values." alt="" coords="198,345,406,371"/>
-<area shape="rect" id="node5" href="$structSEAMS_1_1symrec.html" title=" " alt="" coords="311,259,429,284"/>
-<area shape="rect" id="node6" href="$structSEAMS_1_1symrec_1_1value.html" title=" " alt="" coords="302,172,459,197"/>
+<area shape="rect" id="node1" title="&quot;External&quot; symbols: returned by the scanner." alt="" coords="13,533,210,559"/>
+<area shape="rect" id="node2" href="$structSEAMS_1_1Parser_1_1basic__symbol.html" title=" " alt="" coords="34,445,188,484"/>
+<area shape="rect" id="node3" href="$structSEAMS_1_1Parser_1_1by__type.html" title="Type access provider for token (enum) based symbols." alt="" coords="5,359,174,384"/>
+<area shape="rect" id="node4" href="$unionSEAMS_1_1Parser_1_1semantic__type.html" title="Symbol semantic values." alt="" coords="198,359,406,384"/>
+<area shape="rect" id="node5" href="$structSEAMS_1_1symrec.html" title=" " alt="" coords="311,272,429,297"/>
+<area shape="rect" id="node6" href="$structSEAMS_1_1symrec_1_1value.html" title=" " alt="" coords="302,185,459,211"/>
 <area shape="rect" id="node7" href="$structSEAMS_1_1array.html" title=" " alt="" coords="233,5,339,31"/>
 </map>

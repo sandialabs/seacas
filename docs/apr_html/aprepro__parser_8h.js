@@ -11,6 +11,7 @@ var aprepro__parser_8h =
     [ "stack_symbol_type", "structSEAMS_1_1Parser_1_1stack__symbol__type.html", "structSEAMS_1_1Parser_1_1stack__symbol__type" ],
     [ "stack", "classSEAMS_1_1Parser_1_1stack.html", "classSEAMS_1_1Parser_1_1stack" ],
     [ "slice", "classSEAMS_1_1Parser_1_1stack_1_1slice.html", "classSEAMS_1_1Parser_1_1stack_1_1slice" ],
+    [ "SEAMSDEBUG", "aprepro__parser_8h.html#ad0c3b8e74e8238d51382951896813d5d", null ],
     [ "YY_ATTRIBUTE", "aprepro__parser_8h.html#a9b07478214400ec2e160dffd1d945266", null ],
     [ "YY_ATTRIBUTE_PURE", "aprepro__parser_8h.html#ad1405f082b8df6353a9d53c9709c4d03", null ],
     [ "YY_ATTRIBUTE_UNUSED", "aprepro__parser_8h.html#ab312a884bd41ff11bbd1aa6c1a0e1b0a", null ],
@@ -27,6 +28,5 @@ var aprepro__parser_8h =
     [ "YY_NOTHROW", "aprepro__parser_8h.html#af3672105a94e399b66c50d40fb6de643", null ],
     [ "YY_NULLPTR", "aprepro__parser_8h.html#a5a6c82f7ce4ad9cc8c6c08b7a2de5b84", null ],
     [ "YY_RVREF", "aprepro__parser_8h.html#a136a1225ab9f41786793cf23145b58dd", null ],
-    [ "YYDEBUG", "aprepro__parser_8h.html#a853b3bfad6d2b2ff693dce81182e0c2e", null ],
     [ "YYUSE", "aprepro__parser_8h.html#a33c61e326f5675cc74eb9e1a6906595c", null ]
 ];

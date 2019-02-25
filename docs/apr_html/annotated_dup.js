@@ -7,6 +7,7 @@ var annotated_dup =
     [ "array_cd_init", "structarray__cd__init.html", "structarray__cd__init" ],
     [ "array_d_init", "structarray__d__init.html", "structarray__d__init" ],
     [ "array_dd_init", "structarray__dd__init.html", "structarray__dd__init" ],
+    [ "array_ddd_init", "structarray__ddd__init.html", "structarray__ddd__init" ],
     [ "FlexLexer", "classFlexLexer.html", "classFlexLexer" ],
     [ "init", "structinit.html", "structinit" ],
     [ "init_a", "structinit__a.html", "structinit__a" ],

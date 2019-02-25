@@ -46,6 +46,7 @@ var files_dup =
       [ "array_c_init", "structarray__c__init.html", "structarray__c__init" ],
       [ "array_cc_init", "structarray__cc__init.html", "structarray__cc__init" ],
       [ "array_cd_init", "structarray__cd__init.html", "structarray__cd__init" ],
+      [ "array_ddd_init", "structarray__ddd__init.html", "structarray__ddd__init" ],
       [ "array_dd_init", "structarray__dd__init.html", "structarray__dd__init" ],
       [ "array_d_init", "structarray__d__init.html", "structarray__d__init" ],
       [ "array_a_init", "structarray__a__init.html", "structarray__a__init" ],
