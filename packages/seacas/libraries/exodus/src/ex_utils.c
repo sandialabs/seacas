@@ -1524,7 +1524,7 @@ void ex_compress_variable(int exoid, int varid, int type)
     int shuffle       = file->shuffle;
     if (deflate_level > 0 && file->is_hdf5) {
       if (type != 3) { /* Do not try to compress character data */
-	nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
+        nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
       }
     }
 #if defined(PARALLEL_AWARE_EXODUS)
@@ -1566,7 +1566,8 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   int pariomode = 0;
 
   /* Contains a 1 in all bits corresponding to file modes */
-  static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4 | EX_PNETCDF;
+  static unsigned int all_modes =
+      EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4 | EX_PNETCDF;
 
   if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
     int run_version_major = run_version / 100;
@@ -1736,12 +1737,12 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
         tmp_mode = EX_64BIT_DATA;
       }
       else {
-	if (my_mode & EX_64BIT_DATA) {
-	  tmp_mode = EX_64BIT_DATA;
-	}
-	else {
-	  tmp_mode = EX_64BIT_OFFSET;
-	}
+        if (my_mode & EX_64BIT_DATA) {
+          tmp_mode = EX_64BIT_DATA;
+        }
+        else {
+          tmp_mode = EX_64BIT_OFFSET;
+        }
       }
 #if !NC_HAS_PNETCDF
       snprintf(errmsg, MAX_ERR_LENGTH,

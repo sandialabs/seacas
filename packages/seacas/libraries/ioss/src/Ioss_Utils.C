@@ -1927,8 +1927,7 @@ namespace {
       size_t degree    = inb->get_property("component_degree").get_int();
       if (options.verbose && rank == 0) {
         std::cerr << " Number of  Coordinates per Node =" << std::setw(14) << degree << "\n";
-        std::cerr << " Number of                 Nodes =" << std::setw(14) << num_nodes
-                  << "\n";
+        std::cerr << " Number of                 Nodes =" << std::setw(14) << num_nodes << "\n";
       }
       auto nb = new Ioss::NodeBlock(output_region.get_database(), name, num_nodes, degree);
       output_region.add(nb);
@@ -2024,10 +2023,12 @@ namespace {
         transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (options.verbose && rank == 0) {
-        std::cerr << " Number of " << std::right << std::setw(20) << (*blocks.begin())->type_string()
-                  << "s =" << std::setw(14) << blocks.size() << "\n"
-                  << " Number of " << std::right << std::setw(20) << (*blocks.begin())->contains_string()
-		  << "s =" << std::setw(14) << total_entities << "\n";
+        std::cerr << " Number of " << std::right << std::setw(20)
+                  << (*blocks.begin())->type_string() << "s =" << std::setw(14) << blocks.size()
+                  << "\n"
+                  << " Number of " << std::right << std::setw(20)
+                  << (*blocks.begin())->contains_string() << "s =" << std::setw(14)
+                  << total_entities << "\n";
       }
       if (options.debug && rank == 0) {
         std::cerr << '\n';
@@ -2056,10 +2057,12 @@ namespace {
         transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (options.verbose && rank == 0) {
-        std::cerr << " Number of " << std::right << std::setw(20) << (*blocks.begin())->type_string()
-                  << "s =" << std::setw(14) << blocks.size() << "\n"
-                  << " Number of " << std::right << std::setw(20) << (*blocks.begin())->contains_string()
-		  << "s =" << std::setw(14) << total_entities << "\n";
+        std::cerr << " Number of " << std::right << std::setw(20)
+                  << (*blocks.begin())->type_string() << "s =" << std::setw(14) << blocks.size()
+                  << "\n"
+                  << " Number of " << std::right << std::setw(20)
+                  << (*blocks.begin())->contains_string() << "s =" << std::setw(14)
+                  << total_entities << "\n";
       }
       if (options.debug && rank == 0) {
         std::cerr << '\n';
@@ -2131,9 +2134,9 @@ namespace {
     }
     if (options.verbose && rank == 0 && !fss.empty()) {
       std::cerr << " Number of " << std::right << std::setw(20) << (*fss.begin())->type_string()
-		<< "s =" << std::setw(14) << fss.size() << "\n"
-		<< " Number of " << std::right << std::setw(20) << (*fss.begin())->contains_string()
-		<< "s =" << std::setw(14) << total_sides << "\n";
+                << "s =" << std::setw(14) << fss.size() << "\n"
+                << " Number of " << std::right << std::setw(20) << (*fss.begin())->contains_string()
+                << "s =" << std::setw(14) << total_sides << "\n";
     }
     if (options.debug && rank == 0) {
       std::cerr << '\n';
