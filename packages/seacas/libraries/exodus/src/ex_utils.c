@@ -1566,7 +1566,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   int pariomode = 0;
 
   /* Contains a 1 in all bits corresponding to file modes */
-  static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4;
+  static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4 | EX_PNETCDF;
 
   if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
     int run_version_major = run_version / 100;
@@ -1653,6 +1653,9 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
 #if NC_HAS_CDF5
     else if (my_mode & EX_64BIT_DATA) {
       ; /* Do nothing, already set */
+    }
+    else if (my_mode & EX_PNETCDF) {
+      my_mode |= EX_64BIT_DATA;
     }
 #endif
     else {

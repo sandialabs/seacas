@@ -99,6 +99,7 @@ $(document).ready(function(){initNavTree('apr__aprepro_8cc.html','');});
 <code>#include &quot;<a class="el" href="apr__stats_8h_source.html">apr_stats.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="aprepro_8h_source.html">aprepro.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="aprepro__parser_8h_source.html">aprepro_parser.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="terminal__color_8h_source.html">terminal_color.h</a>&quot;</code><br />
 <code>#include &lt;climits&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
@@ -109,6 +110,7 @@ $(document).ready(function(){initNavTree('apr__aprepro_8cc.html','');});
 <code>#include &lt;stack&gt;</code><br />
 <code>#include &lt;stdexcept&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;unistd.h&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -131,16 +133,16 @@ Macros</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:ad9ce072d71e737f995472c04521ef52c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02apr__aprepro_8cc_03.html#ad9ce072d71e737f995472c04521ef52c">anonymous_namespace{apr_aprepro.cc}::output_copyright</a> ()</td></tr>
 <tr class="separator:ad9ce072d71e737f995472c04521ef52c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afddb8da9d97355e9e1cf1b9aec20afc9"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#afddb8da9d97355e9e1cf1b9aec20afc9">SEAMS::hash_symbol</a> (const char *symbol)</td></tr>
-<tr class="separator:afddb8da9d97355e9e1cf1b9aec20afc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad12df308cb43ad0061ad06f13fa3ba6b"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02apr__aprepro_8cc_03.html#ad12df308cb43ad0061ad06f13fa3ba6b">anonymous_namespace{apr_aprepro.cc}::hash_symbol</a> (const char *symbol)</td></tr>
+<tr class="separator:ad12df308cb43ad0061ad06f13fa3ba6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a3ccb605d7abf7abff225f663dc92d0e3"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02apr__aprepro_8cc_03.html#a3ccb605d7abf7abff225f663dc92d0e3">anonymous_namespace{apr_aprepro.cc}::HASHSIZE</a> = 5939</td></tr>
 <tr class="separator:a3ccb605d7abf7abff225f663dc92d0e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1527f21f00b21b4c88dc471caadaa36"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02apr__aprepro_8cc_03.html#ac1527f21f00b21b4c88dc471caadaa36">anonymous_namespace{apr_aprepro.cc}::version_string</a> = &quot;5.10 (2019/02/07)&quot;</td></tr>
+<tr class="memitem:ac1527f21f00b21b4c88dc471caadaa36"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02apr__aprepro_8cc_03.html#ac1527f21f00b21b4c88dc471caadaa36">anonymous_namespace{apr_aprepro.cc}::version_string</a> = &quot;5.11 (2019/02/27)&quot;</td></tr>
 <tr class="separator:ac1527f21f00b21b4c88dc471caadaa36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a832dd1dbbc0adeb2151b2213e7d89a03"><td class="memItemLeft" align="right" valign="top">Aprepro *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a832dd1dbbc0adeb2151b2213e7d89a03">SEAMS::aprepro</a></td></tr>
+<tr class="memitem:a832dd1dbbc0adeb2151b2213e7d89a03"><td class="memItemLeft" align="right" valign="top">Aprepro *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a832dd1dbbc0adeb2151b2213e7d89a03">SEAMS::aprepro</a> = nullptr</td></tr>
 <tr class="separator:a832dd1dbbc0adeb2151b2213e7d89a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e89e5ccba182fda8796e9988d051098"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a9e89e5ccba182fda8796e9988d051098">SEAMS::echo</a> = true</td></tr>
 <tr class="separator:a9e89e5ccba182fda8796e9988d051098"><td class="memSeparator" colspan="2">&#160;</td></tr>

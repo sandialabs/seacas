@@ -18,6 +18,7 @@ var apr__init_8cc =
     [ "array_cd_fncts", "apr__init_8cc.html#af5b19b30f4f8238185188592bb9a0277", null ],
     [ "array_d_fncts", "apr__init_8cc.html#af3c23c4808b7718d7808071e1184192e", null ],
     [ "array_dd_fncts", "apr__init_8cc.html#af41f15ad87ed07c7bf685ad1cbf34d49", null ],
+    [ "array_ddd_fncts", "apr__init_8cc.html#a099eb84ff4ef8e2cafdad2ec810f58ee", null ],
     [ "string_a_fncts", "apr__init_8cc.html#a62ebcd6fb0a0bf4a7a6a27c4eaa93d3d", null ],
     [ "string_c_fncts", "apr__init_8cc.html#a010d027bd9863c43406d49b4db898b59", null ],
     [ "string_cc_fncts", "apr__init_8cc.html#a5c1e52d8f3a7a1ad93dcb12a2cb236c7", null ],

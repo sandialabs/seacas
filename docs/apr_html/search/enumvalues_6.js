@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['immsvar',['IMMSVAR',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82aae69ba3feb9b09d2009337985f17b43a',1,'SEAMS::Parser::token']]],
-  ['immutable_5fstring_5fvariable',['IMMUTABLE_STRING_VARIABLE',['../classSEAMS_1_1Aprepro.html#a91d58145137592e549991a00b8e9448dac5db0d31da162aeeaa58cd962666e138',1,'SEAMS::Aprepro']]],
-  ['immutable_5fvariable',['IMMUTABLE_VARIABLE',['../classSEAMS_1_1Aprepro.html#a91d58145137592e549991a00b8e9448da3abb1a6d975f231d388de08b75b03210',1,'SEAMS::Aprepro']]],
-  ['immvar',['IMMVAR',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a43ac22143ca7f8445869c0e570c4b83b',1,'SEAMS::Parser::token']]],
-  ['inc',['INC',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a6b10d41cb0f9b75008c3b47f575087d7',1,'SEAMS::Parser::token']]]
+  ['ge',['GE',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a55a905482d48f84e81fda83de443f8b6',1,'SEAMS::Parser::token']]],
+  ['green',['GREEN',['../structtrmclr_1_1Foreground.html#add2640fff4af2ff8c047db518188fb58a23eaacfa5f461971f5e0f361a4c32586',1,'trmclr::Foreground::GREEN()'],['../structtrmclr_1_1Background.html#aa96259e93f51806dbf9b4016f45dbfaaa22dd2f094726e007b5eb334dd2dc4502',1,'trmclr::Background::GREEN()']]],
+  ['gt',['GT',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a1d29dc08d2f2e70aa1a3bd18e9284703',1,'SEAMS::Parser::token']]]
 ];

@@ -27,9 +27,11 @@ var NAVTREE =
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
-        [ "All", "namespacemembers.html", null ],
+        [ "All", "namespacemembers.html", "namespacemembers_dup" ],
         [ "Functions", "namespacemembers_func.html", null ],
-        [ "Variables", "namespacemembers_vars.html", null ]
+        [ "Variables", "namespacemembers_vars.html", null ],
+        [ "Enumerations", "namespacemembers_enum.html", null ],
+        [ "Enumerator", "namespacemembers_eval.html", null ]
       ] ]
     ] ],
     [ "Classes", "annotated.html", [
@@ -62,10 +64,11 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "FlexLexer_8h.html",
-"apr__getline__int_8h.html#a018cd9a8fff5f0c6ccfcd8267c8ef0c4",
-"apr__util_8cc.html#a2c2abc9c294b90872b4e2278f744e119",
-"classSEAMS_1_1Parser.html#afc8842b7c219a7a8d59cb4e53c50326d",
-"structSEAMS_1_1aprepro__options.html#a2e2dd92197d6667bdb8705e07af30b99"
+"apr__builtin_8h_source.html",
+"apr__util_8cc.html#a0774cfa499e3a94a7ce6b6a07709b231",
+"classSEAMS_1_1Parser.html#aeb5c98c4351b517cd73a2523da0a9641",
+"structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a8a5ccfed179fa1c6577199983c6b0015",
+"structtrmclr_1_1Background.html#aa96259e93f51806dbf9b4016f45dbfaaa608238101aa2dc7020999b9aad773158"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

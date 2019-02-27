@@ -9,5 +9,6 @@ var searchData=
   ['clear_5fresults',['clear_results',['../classSEAMS_1_1Aprepro.html#a86ec111c1081cdf0e17bb7b77e552162',1,'SEAMS::Aprepro']]],
   ['comment',['comment',['../namespaceSEAMS_1_1anonymous__namespace_02apr__units_8cc_03.html#a6771b8f4b4e92fa65594a32fd5cedb1d',1,'SEAMS::anonymous_namespace{apr_units.cc}']]],
   ['concat_5fstring',['concat_string',['../namespaceSEAMS.html#a41353d3d45d86d0c6f8a723a29701b8a',1,'SEAMS']]],
-  ['conv_5fstring',['conv_string',['../namespaceSEAMS.html#aedae771561608a98dc74ca400ed3b7b8',1,'SEAMS::conv_string(const char *string)'],['../namespaceSEAMS.html#a19c836a774b99479ca97f4b8ed654c07',1,'SEAMS::conv_string(char *string)']]]
+  ['conv_5fstring',['conv_string',['../namespaceSEAMS.html#aedae771561608a98dc74ca400ed3b7b8',1,'SEAMS::conv_string(const char *string)'],['../namespaceSEAMS.html#a19c836a774b99479ca97f4b8ed654c07',1,'SEAMS::conv_string(char *string)']]],
+  ['cyan',['cyan',['../namespacetrmclr.html#a3df9d59301daa56cb0833e93ab8bc6fa',1,'trmclr']]]
 ];
