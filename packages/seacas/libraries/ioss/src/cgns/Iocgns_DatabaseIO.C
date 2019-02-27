@@ -1336,7 +1336,7 @@ namespace Iocgns {
     // least 1 "side" (face 3D or edge 2D).
     // Currently, assuming they are adjacent if they share at least one node...
 
-    size_t node_count = get_region()->get_property("node_count").get_int();
+    int64_t node_count = get_region()->get_property("node_count").get_int();
 
     const auto &blocks = get_region()->get_element_blocks();
     for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
@@ -1348,7 +1348,7 @@ namespace Iocgns {
       // Flag all nodes used by this block...
       std::vector<size_t> I_nodes(node_count);
       for (size_t i = 0; i < I_map->size(); i++) {
-        auto global     = I_map->map()[i + 1] - 1;
+        auto global = I_map->map()[i + 1] - 1;
         assert(global < node_count);
         I_nodes[global] = i + 1;
       }
