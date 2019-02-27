@@ -172,7 +172,7 @@ then
     echo "${txtgrn}+++ HDF5${txtrst}"
     if [ "${H5VERSION}" == "V18" ]
     then
-	hdf_version="1.8.20"
+	hdf_version="1.8.21"
     else
 	hdf_version="1.10.4"
     fi
