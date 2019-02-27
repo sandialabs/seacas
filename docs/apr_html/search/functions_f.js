@@ -20,6 +20,7 @@ var searchData=
   ['statistics',['statistics',['../classSEAMS_1_1Aprepro.html#a6c271fa53d065ce13d607af77e971503',1,'SEAMS::Aprepro']]],
   ['stats',['Stats',['../classSEAMS_1_1Stats.html#ac3e4cf0177fd919d35eb8e38eab23e1d',1,'SEAMS::Stats']]],
   ['string_5finteractive',['string_interactive',['../classSEAMS_1_1Aprepro.html#acb32593883b914d09a0f9dd7cceaf3dc',1,'SEAMS::Aprepro']]],
+  ['style',['Style',['../structtrmclr_1_1Style.html#ac20eb00e5a27bfd94cf125e94608f3e7',1,'trmclr::Style']]],
   ['succ',['succ',['../apr__test_8cc.html#ad15723334fab77cc43861210acda2d36',1,'succ(double i):&#160;apr_test.cc'],['../strings_8cc.html#ad15723334fab77cc43861210acda2d36',1,'succ(double i):&#160;strings.cc']]],
   ['switch_5fhandler',['switch_handler',['../classSEAMS_1_1Scanner.html#ab5f6e36a6047342f7a1a98bae4d8a69e',1,'SEAMS::Scanner']]],
   ['switch_5fstreams',['switch_streams',['../classFlexLexer.html#a926d7e3ea6ba9136de57939a42b3f630',1,'FlexLexer::switch_streams()'],['../classSEAMSFlexLexer.html#a6310f4df9e67fcbbb6b2f3753681861c',1,'SEAMSFlexLexer::switch_streams()']]],

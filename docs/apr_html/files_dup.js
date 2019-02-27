@@ -53,5 +53,6 @@ var files_dup =
       [ "var_init", "structvar__init.html", "structvar__init" ],
       [ "svar_init", "structsvar__init.html", "structsvar__init" ]
     ] ],
-    [ "strings.cc", "strings_8cc.html", "strings_8cc" ]
+    [ "strings.cc", "strings_8cc.html", "strings_8cc" ],
+    [ "terminal_color.h", "terminal__color_8h.html", "terminal__color_8h" ]
 ];

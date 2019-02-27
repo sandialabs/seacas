@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['magenta',['magenta',['../namespacetrmclr.html#a87195018207ae60756c9e7f9d716f540',1,'trmclr']]],
   ['main',['main',['../apr__test_8cc.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;apr_test.cc'],['../strings_8cc.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;strings.cc']]],
   ['math_5ferror',['math_error',['../namespaceSEAMS.html#af028977ba40c76ef326936906fe9b0e0',1,'SEAMS::math_error(const SEAMS::Aprepro &amp;apr, const char *function)'],['../namespaceSEAMS.html#a15b05eb7930a143bdb17dfeb860ec129',1,'SEAMS::math_error(const char *function)']]],
   ['mean',['mean',['../classSEAMS_1_1Stats.html#a1259e4c80165367ba2c1691f80b67e31',1,'SEAMS::Stats']]],

@@ -1,21 +1,13 @@
 var searchData=
 [
-  ['parse',['parse',['../classSEAMS_1_1Parser.html#a2e60c223b1bf222ccb96b6b44ecffc42',1,'SEAMS::Parser']]],
-  ['parse_5ffile',['parse_file',['../classSEAMS_1_1Aprepro.html#ac3bad8c2e5b5530165a88ff383aa1a85',1,'SEAMS::Aprepro']]],
-  ['parse_5fstream',['parse_stream',['../classSEAMS_1_1Aprepro.html#a6136a7ee9e9c85a2a960e24823ea3a45',1,'SEAMS::Aprepro']]],
-  ['parse_5fstring',['parse_string',['../classSEAMS_1_1Aprepro.html#ae399b0b54f90fb4743ba583dd6bee337',1,'SEAMS::Aprepro']]],
-  ['parse_5fstring_5finteractive',['parse_string_interactive',['../classSEAMS_1_1Aprepro.html#ab2beb99b38b27a86216f614b8d6c19ee',1,'SEAMS::Aprepro']]],
-  ['parse_5fstrings',['parse_strings',['../classSEAMS_1_1Aprepro.html#a6026be3e1d19761f02a4e02da0682350',1,'SEAMS::Aprepro']]],
-  ['parseerrorcount',['parseErrorCount',['../classSEAMS_1_1Aprepro.html#a3e9a9f2debef2a47851980ba4b4d529b',1,'SEAMS::Aprepro']]],
-  ['parser',['Parser',['../classSEAMS_1_1Parser.html',1,'SEAMS::Parser'],['../classSEAMS_1_1Scanner.html#ab80291af9c262f63b83fa9c16f12014d',1,'SEAMS::Scanner::Parser()'],['../classSEAMS_1_1Parser.html#acb222dc77eb897f536701acbc0fc10a4',1,'SEAMS::Parser::Parser(class Aprepro &amp;aprepro_yyarg)'],['../classSEAMS_1_1Parser.html#af80c699ec96b7b1909398cf368457308',1,'SEAMS::Parser::Parser(const Parser &amp;)']]],
-  ['parsing',['PARSING',['../apr__scanner_8cc.html#aa42f240490ba928861c2fd75aae18726',1,'apr_scanner.cc']]],
-  ['parsing_5fresults',['parsing_results',['../classSEAMS_1_1Aprepro.html#ab807a34d81260cbcc9bcb050d9427866',1,'SEAMS::Aprepro']]],
-  ['parsingresults',['parsingResults',['../classSEAMS_1_1Aprepro.html#a98536d77f391fbb28a5448ca9166cd24',1,'SEAMS::Aprepro']]],
-  ['pathopen',['pathopen',['../namespaceSEAMS.html#abc0de3998134653bfab9b0e15213d6fe',1,'SEAMS']]],
-  ['pi',['PI',['../apr__builtin_8cc.html#a598a3330b3c21701223ee0ca14316eca',1,'PI():&#160;apr_builtin.cc'],['../namespaceSEAMS_1_1anonymous__namespace_02apr__units_8cc_03.html#a1fdc6ec0bab3d1a1153dc83a15206f3d',1,'SEAMS::anonymous_namespace{apr_units.cc}::PI()']]],
-  ['plu',['PLU',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a5cdaa6bd38522739bab58636dd40e741',1,'SEAMS::Parser::token']]],
-  ['pop',['pop',['../classSEAMS_1_1Parser_1_1stack.html#a2fffe51eb686522178536b0b460abf83',1,'SEAMS::Parser::stack']]],
-  ['pow',['POW',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a6740663faf34ad8a9c33cdac9a90f4ea',1,'SEAMS::Parser::token']]],
-  ['push',['push',['../classSEAMS_1_1Parser_1_1stack.html#a7cc58e3811186172ff0797806bd44481',1,'SEAMS::Parser::stack']]],
-  ['putsym',['putsym',['../classSEAMS_1_1Aprepro.html#a99d76312239bd0aaafb62a73c26edf69',1,'SEAMS::Aprepro']]]
+  ['one_5fbased_5findex',['one_based_index',['../structSEAMS_1_1aprepro__options.html#a21f8e18b3dfe7458353bef49fe35b8bb',1,'SEAMS::aprepro_options']]],
+  ['open_5ffile',['open_file',['../classSEAMS_1_1Aprepro.html#adf9f4ca4007141eba22adeb8adf37c6b',1,'SEAMS::Aprepro']]],
+  ['operator_20uint32_5ft',['operator uint32_t',['../structtrmclr_1_1Style.html#a5d716bb0cebd6ebf76f3a55a1e0a3607',1,'trmclr::Style']]],
+  ['operator_28_29',['operator()',['../classSEAMS_1_1Parser.html#afeb3f6140dce46fd65a4a215ea6b4a70',1,'SEAMS::Parser']]],
+  ['operator_3c_3c',['operator&lt;&lt;',['../namespacetrmclr.html#a84af409f7ea20b44e5f02c355918a7a5',1,'trmclr']]],
+  ['operator_3d',['operator=',['../structSEAMS_1_1Parser_1_1basic__symbol.html#ae3507396abbf389ad3ba77fef8017a37',1,'SEAMS::Parser::basic_symbol::operator=()'],['../classSEAMS_1_1Parser.html#aa433929a7584c39c7d20753ebf704e3b',1,'SEAMS::Parser::operator=()'],['../structSEAMS_1_1Parser_1_1stack__symbol__type.html#a704865cd54f87e0d90ed54012700e58c',1,'SEAMS::Parser::stack_symbol_type::operator=()'],['../classSEAMS_1_1Parser_1_1stack.html#aa9d26b0e840f1b8dac5f31e11b44b79d',1,'SEAMS::Parser::stack::operator=()']]],
+  ['operator_5b_5d',['operator[]',['../classSEAMS_1_1Parser_1_1stack.html#aa1fbe68278f7e242140892d15721aa95',1,'SEAMS::Parser::stack::operator[](size_type i)'],['../classSEAMS_1_1Parser_1_1stack.html#acb1318466ec6549da1119f88b01cdcf0',1,'SEAMS::Parser::stack::operator[](int i)'],['../classSEAMS_1_1Parser_1_1stack.html#af36e3d5e550f52f4596c633c7391002e',1,'SEAMS::Parser::stack::operator[](size_type i) const'],['../classSEAMS_1_1Parser_1_1stack.html#a3aa7efc53740db9e6dd01e08d19fe9ac',1,'SEAMS::Parser::stack::operator[](int i) const'],['../classSEAMS_1_1Parser_1_1stack_1_1slice.html#a28ebf526bab84f02a6679fc6698ad683',1,'SEAMS::Parser::stack::slice::operator[]()']]],
+  ['original',['original',['../structSEAMS_1_1history__data.html#aff85214c598e103286357a6c8f7131e3',1,'SEAMS::history_data']]],
+  ['output_5fcopyright',['output_copyright',['../namespaceanonymous__namespace_02apr__aprepro_8cc_03.html#ad9ce072d71e737f995472c04521ef52c',1,'anonymous_namespace{apr_aprepro.cc}']]],
+  ['outputstream',['outputStream',['../classSEAMS_1_1Aprepro.html#a5b9d51de085bb62b355d588b29074887',1,'SEAMS::Aprepro']]]
 ];

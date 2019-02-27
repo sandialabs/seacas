@@ -15,6 +15,7 @@ var searchData=
   ['str_5fd_5finit',['str_d_init',['../structstr__d__init.html',1,'']]],
   ['str_5fdcc_5finit',['str_dcc_init',['../structstr__dcc__init.html',1,'']]],
   ['str_5finit',['str_init',['../structstr__init.html',1,'']]],
+  ['style',['Style',['../structtrmclr_1_1Style.html',1,'trmclr']]],
   ['svar_5finit',['svar_init',['../structsvar__init.html',1,'']]],
   ['symbol_5ftype',['symbol_type',['../structSEAMS_1_1Parser_1_1symbol__type.html',1,'SEAMS::Parser']]],
   ['symrec',['symrec',['../structSEAMS_1_1symrec.html',1,'SEAMS']]],

@@ -1,6 +1,7 @@
 var annotated_dup =
 [
     [ "SEAMS", "namespaceSEAMS.html", "namespaceSEAMS" ],
+    [ "trmclr", "namespacetrmclr.html", "namespacetrmclr" ],
     [ "array_a_init", "structarray__a__init.html", "structarray__a__init" ],
     [ "array_c_init", "structarray__c__init.html", "structarray__c__init" ],
     [ "array_cc_init", "structarray__cc__init.html", "structarray__cc__init" ],
