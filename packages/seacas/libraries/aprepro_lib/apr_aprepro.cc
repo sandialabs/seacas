@@ -54,9 +54,7 @@ namespace {
   const char *       version_string = "5.11 (2019/02/27)";
 
   void output_copyright();
-} // namespace
 
-namespace SEAMS {
   unsigned hash_symbol(const char *symbol)
   {
     unsigned hashval;
@@ -65,9 +63,11 @@ namespace SEAMS {
     }
     return (hashval % HASHSIZE);
   }
+} // namespace
 
-  Aprepro *aprepro; // A global for use in the library.  Clean this up...
-  bool     echo = true;
+namespace SEAMS {
+  Aprepro *aprepro = nullptr; // A global for use in the library.  Clean this up...
+  bool     echo    = true;
 
   Aprepro::Aprepro()
   {
