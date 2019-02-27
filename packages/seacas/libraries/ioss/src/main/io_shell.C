@@ -441,12 +441,12 @@ namespace {
 
     if (interface.compose_output == "default") {
       if (interface.outFiletype == "cgns") {
-	properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
-	properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
+        properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
+        properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
       }
       else {
-	properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
-	properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
+        properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
+        properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
       }
     }
     else if (interface.compose_output == "external") {

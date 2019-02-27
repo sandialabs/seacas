@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
   // but some clients use it, so need to make sure it compiles
   // correctly.
   Ioss::GroupingEntity *entity = new Ioss::NullEntity();
-  std::cout << "\nThe null entity type is " << entity->type_string()
-	    << " and it contains " << entity->contains_string() << "\n";
+  std::cout << "\nThe null entity type is " << entity->type_string() << " and it contains "
+            << entity->contains_string() << "\n";
 
   OUTPUT << "\n" << argv[0];
   if (err_count == 0) {
