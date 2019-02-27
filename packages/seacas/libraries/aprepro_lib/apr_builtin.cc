@@ -67,10 +67,6 @@
 #define PI 3.141592653589793238462643
 #endif
 
-namespace SEAMS {
-  unsigned hash_symbol(const char *symbol);
-}
-
 namespace {
   std::unordered_map<size_t, std::vector<std::string>> tokenized_strings;
 
