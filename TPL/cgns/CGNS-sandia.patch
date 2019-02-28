@@ -6,26 +6,9 @@ Subject: [PATCH] SANDIA-specific patches
 * Proof-of-concept for allowing file-per-processor and single-file parallel output
 * Set HDF5 libver for compatability with HDF5-1.8.x clients
 ---
- src/adfh/ADFH.c |  4 ++++
  src/cgns_io.c   | 48 ++++++++++++++++++++++++++++++++++++++++++++----
  2 files changed, 48 insertions(+), 4 deletions(-)
 
-diff --git a/src/adfh/ADFH.c b/src/adfh/ADFH.c
-index 7f8e9ba..13fbdac 100644
---- a/src/adfh/ADFH.c
-+++ b/src/adfh/ADFH.c
-@@ -2061,7 +2061,11 @@ void ADFH_Database_Open(const char   *name,
-   /*  H5Pset_latest_format(fapl, 1); */
-   /* Performance patch applied by KSH on 2009.05.18 */
-   H5Pset_libver_bounds(g_propfileopen,
-+#if H5_VERSION_GE(1,10,2)
-+		       H5F_LIBVER_V18, H5F_LIBVER_V18);
-+#else
- 		       H5F_LIBVER_LATEST, H5F_LIBVER_LATEST);
-+#endif
-   /* open the file */
- 
- #ifdef BUILD_PARALLEL
 diff --git a/src/cgns_io.c b/src/cgns_io.c
 index b787ef6..73da785 100644
 --- a/src/cgns_io.c
