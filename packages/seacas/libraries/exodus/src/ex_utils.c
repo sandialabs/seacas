@@ -1566,8 +1566,9 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   int pariomode = 0;
 
   /* Contains a 1 in all bits corresponding to file modes */
+  /* Do not include EX_64BIT_DATA in this list */
   static unsigned int all_modes =
-      EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4 | EX_PNETCDF;
+      EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_NETCDF4 | EX_PNETCDF;
 
   if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
     int run_version_major = run_version / 100;
@@ -1609,6 +1610,12 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   }
 #endif
 
+  /* EX_64_BIT_DATA is 64-bit integer version of EX_PNETCDF.  If
+     EX_64_BIT_DATA and EX_PNETCDF is not set, then set EX_PNETCDF... */
+  if (my_mode & EX_64BIT_DATA) {
+    my_mode |= EX_PNETCDF;
+  }
+
   /* Check that one and only one format mode is specified... */
   {
     unsigned int set_modes = all_modes & my_mode;
@@ -1623,7 +1630,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "EXODUS: ERROR: More than 1 file format "
                  "(EX_NORMAL_MODEL, EX_LARGE_MODEL, EX_64BIT_OFFSET, "
-                 "EX_64BIT_DATA, or EX_NETCDF4)\nwas specified in the "
+                 "or EX_NETCDF4)\nwas specified in the "
                  "mode argument of the ex_create call. Only a single "
                  "format can be specified.\n");
         ex_err(__func__, errmsg, EX_BADPARAM);
