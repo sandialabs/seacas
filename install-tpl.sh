@@ -174,7 +174,7 @@ then
     then
 	hdf_version="1.8.21"
     else
-	hdf_version="1.10.4"
+	hdf_version="1.10.5"
     fi
 
     cd $ACCESS
@@ -232,7 +232,7 @@ then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf ${pnet_base}-${pnet_version}
             rm -f ${pnet_base}-${pnet_version}.tar.gz
-            wget https://parallel-netcdf.github.io/Release/${pnet_base}-${pnet_version}.tar.gz
+            wget --no-check-certificate https://parallel-netcdf.github.io/Release/${pnet_base}-${pnet_version}.tar.gz
             tar -xzf ${pnet_base}-${pnet_version}.tar.gz
             rm -f ${pnet_base}-${pnet_version}.tar.gz
         fi
