@@ -64,6 +64,7 @@
 #include <cgns/Iocgns_Utils.h>
 
 #include <cgnsconfig.h>
+#include <cgnstypes.h>
 #if CG_BUILD_PARALLEL
 #include <pcgnslib.h>
 #else
@@ -2144,12 +2145,12 @@ void Iocgns::Utils::show_config()
 #else
 #error "Not defined..."
 #endif
-#if defined HDF5_HAVE_COLL_METADATA
+#if HDF5_HAVE_COLL_METADATA
   std::cerr << "\t\tUsing HDF5 Collective Metadata.\n";
 #else
   std::cerr << "\t\tHDF5 Collective Metadata NOT Available.\n";
 #endif
-#if defined HDF5_HAVE_MULTI_DATASET
+#if HDF5_HAVE_MULTI_DATASET
   std::cerr << "\t\tHDF5 Multi-Dataset Available.\n";
 #else
   std::cerr << "\t\tHDF5 Multi-Dataset NOT Available.\n";
