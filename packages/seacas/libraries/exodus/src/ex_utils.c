@@ -92,7 +92,6 @@ extern char *ncmpi_inq_libvers();
 
 void ex_print_config(void)
 {
-  fprintf(stderr, "\nExodus Configuration Information:\n");
   fprintf(stderr, "\tExodus Version %.2f\n", EX_API_VERS);
 #if defined(PARALLEL_AWARE_EXODUS)
   fprintf(stderr, "\t\tParallel enabled\n");
@@ -143,8 +142,14 @@ void ex_print_config(void)
   fprintf(stderr, "\t\tRELAX_COORD_BOUND defined\n");
 #endif
 #if defined(NC_HAVE_META_H)
-  fprintf(stderr, "\t\tNC_HAVE_META_H defined\n\n");
+  fprintf(stderr, "\t\tNC_HAVE_META_H defined\n");
 #endif
+#if defined(NC_HAS_NC2)
+  fprintf(stderr, "\t\tAPI Version 2 support enabled\n");
+#else
+  fprintf(stderr, "\t\tAPI Version 2 support NOT enabled\n");
+#endif
+  fprintf(stderr, "\n");
 }
 
 int ex_check_file_type(const char *path, int *type)
@@ -1567,8 +1572,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
 
   /* Contains a 1 in all bits corresponding to file modes */
   /* Do not include EX_64BIT_DATA in this list */
-  static unsigned int all_modes =
-      EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_NETCDF4 | EX_PNETCDF;
+  static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_NETCDF4 | EX_PNETCDF;
 
   if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
     int run_version_major = run_version / 100;

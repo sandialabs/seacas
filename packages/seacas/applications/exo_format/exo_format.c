@@ -91,6 +91,7 @@ int main(int argc, char *argv[])
 
   if (argv[1][0] == '-') {
     if (argv[1][1] == 'c') {
+      fprintf(stderr, "\nExodus Configuration Information:\n");
       ex_print_config();
     }
     fn_idx = 2;
