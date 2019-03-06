@@ -113,6 +113,9 @@ void ex_print_config(void)
 #else
   fprintf(stderr, "\tNetCDF Version < 4.3.3\n");
 #endif
+#if NC_HAS_CDF5
+  fprintf(stderr, "\t\tCDF5 enabled\n");
+#endif
 #if NC_HAS_HDF5
   {
     unsigned major, minor, release;
@@ -120,20 +123,17 @@ void ex_print_config(void)
     fprintf(stderr, "\t\tHDF5 enabled (%u.%u.%u)\n", major, minor, release);
   }
 #endif
+#if NC_HAS_PARALLEL
+  fprintf(stderr, "\t\tparallel IO enabled via HDF5 and/or PnetCDF\n");
+#endif
 #if NC_HAS_PARALLEL4
   fprintf(stderr, "\t\tparallel IO enabled via HDF5\n");
-#endif
-#if NC_HAS_CDF5
-  fprintf(stderr, "\t\tCDF5 enabled\n");
 #endif
 #if NC_HAS_PNETCDF
   {
     char *libver = ncmpi_inq_libvers();
     fprintf(stderr, "\t\tparallel IO enabled via PnetCDF (%s)\n", libver);
   }
-#endif
-#if NC_HAS_PARALLEL
-  fprintf(stderr, "\t\tparallel IO enabled via HDF5 and/or PnetCDF\n");
 #endif
 #if NC_HAS_ERANGE_FILL
   fprintf(stderr, "\t\tERANGE_FILL support\n");
