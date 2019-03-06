@@ -2114,3 +2114,45 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
   }
   return new_zone_id;
 }
+
+#ifdef CG_BUILD_HDF5
+extern "C" int H5get_libversion(unsigned *, unsigned *, unsigned *);
+#endif
+
+void Iocgns::Utils::show_config()
+{
+  std::cerr << "\tCGNS Library Version: " << CGNS_DOTVERS << "\n";
+#if CG_BUILD_64BIT
+  std::cerr << "\t\tDefault integer size is 64-bit.\n";
+#else
+  std::cerr << "\t\tDefault integer size is 32-bit.\n";
+#endif
+#if defined(CGNS_SCOPE_ENUMS)
+  std::cerr << "\t\tScoped Enums enabled\n";
+#else
+  std::cerr << "\t\tScoped Enums NOT enabled\n";
+#endif
+#if CG_BUILD_PARALLEL
+  std::cerr << "\t\tParallel enabled\n";
+#else
+  std::cerr << "\t\tParallel NOT enabled\n";
+#endif
+#if CG_BUILD_HDF5
+  unsigned major, minor, release;
+  H5get_libversion(&major, &minor, &release);
+  std::cerr << "\t\tHDF5 enabled (" << major << "." << minor << "." << release << ")\n";
+#else
+#error "Not defined..."
+#endif
+#if defined HDF5_HAVE_COLL_METADATA
+  std::cerr << "\t\tUsing HDF5 Collective Metadata.\n";
+#else
+  std::cerr << "\t\tHDF5 Collective Metadata NOT Available.\n";
+#endif
+#if defined HDF5_HAVE_MULTI_DATASET
+  std::cerr << "\t\tHDF5 Multi-Dataset Available.\n";
+#else
+  std::cerr << "\t\tHDF5 Multi-Dataset NOT Available.\n";
+#endif
+  std::cerr << "\n";
+}
