@@ -7,5 +7,7 @@ var classIoss_1_1IOFactory =
     [ "create", "classIoss_1_1IOFactory.html#aacc8a34e4361eae14cb5dd2c4c7614f4", null ],
     [ "describe", "classIoss_1_1IOFactory.html#ac6a0e3b2b3ce1db1012305d09b8795b1", null ],
     [ "make_IO", "classIoss_1_1IOFactory.html#adfb4d2f81aa33957ccb29cafbc65cd62", null ],
-    [ "registry", "classIoss_1_1IOFactory.html#a8f26688aabfc730890100ea8a6491586", null ]
+    [ "registry", "classIoss_1_1IOFactory.html#a8f26688aabfc730890100ea8a6491586", null ],
+    [ "show_config", "classIoss_1_1IOFactory.html#ac137c41a5bbc6ecc53aebcb693218b7d", null ],
+    [ "show_configuration", "classIoss_1_1IOFactory.html#a2d6c5fafa4d43523390333086d65aa29", null ]
 ];

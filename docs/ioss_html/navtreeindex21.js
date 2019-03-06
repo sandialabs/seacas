@@ -1,5 +1,12 @@
 var NAVTREEINDEX21 =
 {
+"classIotr_1_1VM__Factory.html#ad48708ef8c9958025bd1530944ac6565":[3,0,77,15,2],
+"classIotr_1_1VectorMagnitude.html":[3,0,77,14],
+"classIotr_1_1VectorMagnitude.html#a4b5368c008f38a659f6b8e2761e4b696":[3,0,77,14,0],
+"classIotr_1_1VectorMagnitude.html#a6ded94634361fd180aff1277a9be5424":[3,0,77,14,2],
+"classIotr_1_1VectorMagnitude.html#a9d558fd320c672d26e3808e976169ce6":[3,0,77,14,1],
+"classIotr_1_1VectorMagnitude.html#a9ebea45f78e4413aa1f91c8412a95ddb":[3,0,77,14,3],
+"classIotr_1_1VectorMagnitude.html#af6d16e13e3347230c971274fb376666e":[3,0,77,14,4],
 "classIovs_1_1DatabaseIO.html":[3,0,78,0],
 "classIovs_1_1DatabaseIO.html#a01e496a858814c69d72b2edad991cac4":[3,0,78,0,42],
 "classIovs_1_1DatabaseIO.html#a0244a1b90005fb5c460e01473963fd36":[3,0,78,0,66],
@@ -242,12 +249,5 @@ var NAVTREEINDEX21 =
 "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash_3_01true_01_4.html#a7338847e39124967a213ff6ae830242f":[3,0,80,0,6,2],
 "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash_3_01true_01_4.html#aa87e1637d47fda965e551bc7f300deb0":[3,0,80,0,6,3],
 "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash_3_01true_01_4.html#af4836a860b81281e2a57fa8bd584043a":[3,0,80,0,6,0],
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash_3_01true_01_4.html#af59deb8dac37f0483736100f8db4e829":[3,0,80,0,6,1],
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html":[3,0,80,0,7],
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a01a9d2a460625106225573c81af4a2c7":[3,0,80,0,7,33],
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a01bee282ee613d9b1a3d856dfb02020b":[3,0,80,0,7,55],
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a0210c11fc981502287be8d78afe04fdf":[3,0,80,0,7,127],
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a02592d0570aae41d4c2e1671df945c46":[3,0,80,0,7,79],
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a02e3b57b5df13a5982f85036d3dab033":[3,0,80,0,7,72],
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a04dd825aea9cacd1ab8c541c31045e09":[3,0,80,0,7,64]
+"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash_3_01true_01_4.html#af59deb8dac37f0483736100f8db4e829":[3,0,80,0,6,1]
 };

@@ -15,7 +15,8 @@ var classInfo_1_1Interface =
     [ "ints_64_bit", "classInfo_1_1Interface.html#a1d3aae5ee849cc36d89c65d1d2d28382", null ],
     [ "list_groups", "classInfo_1_1Interface.html#a53b90f7f24a383149eee2510a95fc199", null ],
     [ "parse_options", "classInfo_1_1Interface.html#ae768280a4dbfbfdde0220e3627dd507a", null ],
-    [ "summary", "classInfo_1_1Interface.html#a6499b1f83fd09bae621c74064f4a7fa5", null ],
+    [ "show_config", "classInfo_1_1Interface.html#a121fa73ae291384b44f41b7a0b725afc", null ],
+    [ "summary", "classInfo_1_1Interface.html#ab747e114f66a6d10d96fef8446d74b0a", null ],
     [ "surface_split_scheme", "classInfo_1_1Interface.html#ad9c990dc73f0e9396539e80a1f79ea67", null ],
     [ "type", "classInfo_1_1Interface.html#a51b7e1049b964541b84a9e4d16dbbd01", null ],
     [ "use_generic_names", "classInfo_1_1Interface.html#a8bcec63137cb60c1aebe08247e29bdba", null ],
@@ -32,7 +33,8 @@ var classInfo_1_1Interface =
     [ "ints64Bit_", "classInfo_1_1Interface.html#a8dc2787480c64fd37a68cf842ec8b3d4", null ],
     [ "listGroups_", "classInfo_1_1Interface.html#a358c4a5b77606b1c94149c6b0bde2eda", null ],
     [ "options_", "classInfo_1_1Interface.html#a997f21c5884a0ab43a6345e9fb80a057", null ],
-    [ "summary_", "classInfo_1_1Interface.html#a75eafd8179c0a1d2c6fa99862fe48691", null ],
+    [ "showConfig_", "classInfo_1_1Interface.html#a3739bb0faa93e4b452d928440b582a8e", null ],
+    [ "summary_", "classInfo_1_1Interface.html#a7a38ab519f00870700da056eb422c8a8", null ],
     [ "surfaceSplitScheme_", "classInfo_1_1Interface.html#a7b956ff3df5431577f3a77fd891293df", null ],
     [ "useGenericNames_", "classInfo_1_1Interface.html#ab272d699c58a2668810663854bb0535f", null ]
 ];
