@@ -2620,7 +2620,14 @@ namespace Iocgns {
         CGCHECKM(cg_parent_data_write(get_file_pointer(), base, zone, sect, TOPTR(parent)));
         return num_to_get;
       }
-
+      else if (field.get_name() == "distribution_factors") {
+	static bool warning_output = false;
+	if (!warning_output) {
+	  std::cerr << "IOSS: WARNING: For CGNS output, the sideset distribution factors are not output.\n";
+	  warning_output = true;
+	}
+	return 0;
+      }
       num_to_get = Ioss::Utils::field_warning(sb, field, "output");
     }
     else {
@@ -2632,7 +2639,7 @@ namespace Iocgns {
   int64_t DatabaseIO::put_field_internal(const Ioss::SideSet *ss, const Ioss::Field &field,
                                          void * /* data */, size_t /* data_size */) const
   {
-    return Ioss::Utils::field_warning(ss, field, "output");
+    return 0;
   }
   int64_t DatabaseIO::put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
                                          void * /* data */, size_t /* data_size */) const
