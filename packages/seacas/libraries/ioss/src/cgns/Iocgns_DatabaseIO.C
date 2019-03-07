@@ -383,7 +383,7 @@ namespace {
 #endif
 
   size_t handle_block_ids(const Ioss::EntityBlock *eb, Ioss::Map &entity_map,
-			  void *ids, size_t num_to_get)
+			  void *ids, size_t num_to_get, const Ioss::Field::BasicType &size)
   {
     /*!
      * CGNS doesn't support element global ids, so the only use of this
@@ -427,11 +427,11 @@ namespace {
     // processed, this reduces to the range 'eb_offset..eb_offset+my_element_count'
 
     int64_t eb_offset = eb->get_offset();
-    if (CG_SIZEOF_SIZE == 32) {
-      entity_map.set_map(static_cast<int *>(ids), num_to_get, eb_offset, true);
+    if (size == Ioss::Field::INT64) {
+      entity_map.set_map(static_cast<int64_t *>(ids), num_to_get, eb_offset, true);
     }
     else {
-      entity_map.set_map(static_cast<int64_t *>(ids), num_to_get, eb_offset, true);
+      entity_map.set_map(static_cast<int *>(ids), num_to_get, eb_offset, true);
     }
 
     return num_to_get;
@@ -2236,7 +2236,7 @@ namespace Iocgns {
         // (The 'genesis' portion)
         if (field.get_name() == "ids") {
 	  elemMap.set_size(elementCount);
-	  handle_block_ids(eb, elemMap, data, num_to_get);
+	  handle_block_ids(eb, elemMap, data, num_to_get, field.get_type());
         }
         else if (field.get_name() == "connectivity") {
           // This blocks zone has not been defined.
