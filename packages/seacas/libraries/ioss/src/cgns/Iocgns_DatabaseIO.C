@@ -211,9 +211,7 @@ namespace {
       block->m_zoneConnectivity.back().m_donorProcessor = donorname_proc.second;
     }
   }
-#endif
 
-#ifdef SEACAS_HAVE_MPI
   int adjacent_block(const SBlock &b, int ijk, std::map<int, int> &proc_block_map)
   {
     // Find a block the the 'left|right|up|down|front|back' (ijk) of blocks[br]
@@ -301,9 +299,7 @@ namespace {
     }
     return face;
   }
-#endif
 
-#ifdef SEACAS_HAVE_MPI
   bool generate_inter_proc_adjacency(int cgns_file_ptr, int base, int zone, int myProcessor,
                                      const std::string &zone_name, std::vector<int> &adjacency)
   {
@@ -360,9 +356,6 @@ namespace {
     }
   }
 
-#endif
-
-#ifdef SEACAS_HAVE_MPI
   void add_empty_bc(Ioss::SideSet *sset, Ioss::StructuredBlock *block, int base, int zone, int face,
                     const std::string &fam_name, const std::string &boco_name)
   {
@@ -389,6 +382,60 @@ namespace {
   }
 #endif
 
+  size_t handle_block_ids(const Ioss::EntityBlock *eb, Ioss::Map &entity_map,
+			  void *ids, size_t num_to_get)
+  {
+    /*!
+     * CGNS doesn't support element global ids, so the only use of this
+     * routine is the case where we may be translating from a mesh that
+     * *does* support global ids and we will then need to map those
+     * global ids back to local ids in, for example, the sideset element list.
+     *
+     * There will be two maps the 'entity_map.map' map is a 'direct lookup'
+     * map which maps current local position to global id and the
+     * 'entity_map.reverse' is an associative lookup which maps the
+     * global id to 'original local'.  There is also a
+     * 'entity_map.reorder' which is direct lookup and maps current local
+     * position to original local.
+
+     * The ids coming in are the global ids; their position is the
+     * local id -1 (That is, data[0] contains the global id of local
+     * element 1 in this element block).  The 'model-local' id is
+     * given by eb_offset + 1 + position:
+     *
+     * int local_position = entity_map.reverse[ElementMap[i+1]]
+     * (the entity_map.map and entity_map.reverse are 1-based)
+     *
+     * But, this assumes 1..numel elements are being output at the same
+     * time; we are actually outputting a blocks worth of elements at a
+     * time, so we need to consider the block offsets.
+     * So... local-in-block position 'i' is index 'eb_offset+i' in
+     * 'entity_map.map' and the 'local_position' within the element
+     * blocks data arrays is 'local_position-eb_offset'.  With this, the
+     * position within the data array of this element block is:
+     *
+     * int eb_position =
+     * entity_map.reverse[entity_map.map[eb_offset+i+1]]-eb_offset-1
+     *
+     * NOTE: the maps are built an element block at a time...
+     */
+
+    // Overwrite this portion of the 'entity_map.map', but keep other
+    // parts as they were.  We are adding elements starting at position
+    // 'eb_offset+offset' and ending at
+    // 'eb_offset+offset+num_to_get'. If the entire block is being
+    // processed, this reduces to the range 'eb_offset..eb_offset+my_element_count'
+
+    int64_t eb_offset = eb->get_offset();
+    if (CG_SIZEOF_SIZE == 32) {
+      entity_map.set_map(static_cast<int *>(ids), num_to_get, eb_offset, true);
+    }
+    else {
+      entity_map.set_map(static_cast<int64_t *>(ids), num_to_get, eb_offset, true);
+    }
+
+    return num_to_get;
+  }
 } // namespace
 
 namespace Iocgns {
@@ -2188,7 +2235,8 @@ namespace Iocgns {
         // Handle the MESH fields required for a CGNS file model.
         // (The 'genesis' portion)
         if (field.get_name() == "ids") {
-          // Ignored...
+	  elemMap.set_size(elementCount);
+	  handle_block_ids(eb, elemMap, data, num_to_get);
         }
         else if (field.get_name() == "connectivity") {
           // This blocks zone has not been defined.
@@ -2550,8 +2598,9 @@ namespace Iocgns {
           int *  idata = reinterpret_cast<int *>(data);
           size_t j     = 0;
           for (ssize_t i = 0; i < num_to_get; i++) {
-            parent[num_to_get * 0 + i] = idata[j++] - offset; // Element
-            parent[num_to_get * 2 + i] = idata[j++];
+            cgsize_t element = elemMap.global_to_local(idata[j++]) - offset;
+            parent[num_to_get * 0 + i] = element;
+            parent[num_to_get * 2 + i] = idata[j++]; // side
           }
           // Adjust face numbers to IOSS convention instead of CGNS convention...
           Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
@@ -2560,7 +2609,8 @@ namespace Iocgns {
           int64_t *idata = reinterpret_cast<int64_t *>(data);
           size_t   j     = 0;
           for (ssize_t i = 0; i < num_to_get; i++) {
-            parent[num_to_get * 0 + i] = idata[j++] - offset; // Element
+	    cgsize_t element = elemMap.global_to_local(idata[j++]) - offset;
+            parent[num_to_get * 0 + i] = element; // Element
             parent[num_to_get * 2 + i] = idata[j++];
           }
           // Adjust face numbers to IOSS convention instead of CGNS convention...
