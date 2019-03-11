@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
   // Make sure Ioss::NullEntity works.  Not used in IOSS iteself,
   // but some clients use it, so need to make sure it compiles
   // correctly.
-  Ioss::GroupingEntity *entity = new Ioss::NullEntity();
+  std::unique_ptr<Ioss::NullEntity> entity{new Ioss::NullEntity()};
   std::cout << "\nThe null entity type is " << entity->type_string() << " and it contains "
             << entity->contains_string() << "\n";
 
