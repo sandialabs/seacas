@@ -444,6 +444,18 @@ namespace Iopx {
     // more node than others. For small models, assume we can handle
     // at least 10000 nodes.
     //    size_t max_size = std::max(10000, (nodeCount / 2) * 2 * 3 *sizeof(double) / sizeof(INT));
+    size_t one = 1;
+    if (nodelist_size >= one << 31) {
+      if (m_processor == 0) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: The sum of the nodeset node counts is larger than 2.1 Billion "
+               << " which cannot be correctly handled with the current IOSS decomposition "
+               << " implementation.\n"
+               << "       Contact gdsjaar@sandia.gov for more details.\n";
+        std::cerr << errmsg.str();
+      }
+      exit(EXIT_FAILURE);
+    }
 
     bool subsetting = false; // nodelist_size > max_size;
 
@@ -466,7 +478,7 @@ namespace Iopx {
       }
 
       // Broadcast this data to all other processors...
-      MPI_Bcast(TOPTR(nodelist), sizeof(INT) * nodelist.size(), MPI_BYTE, root, comm_);
+      MPI_Bcast(TOPTR(nodelist), nodelist.size(), Ioss::mpi_type(INT(0)), root, comm_);
 
       // Each processor now has a complete list of all nodes in all
       // nodesets.  Determine which of these are owned by the current
@@ -594,6 +606,19 @@ namespace Iopx {
     // at least 10000 nodes.
     //    size_t max_size = std::max(10000, (nodeCount / 2) * 2 * 3 *sizeof(double) / sizeof(INT));
 
+    size_t one = 1;
+    if (elemlist_size >= one << 31) {
+      if (m_processor == 0) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: The sum of the sideset element counts is larger than 2.1 Billion "
+               << " which cannot be correctly handled with the current IOSS decomposition "
+               << " implementation.\n"
+               << "       Contact gdsjaar@sandia.gov for more details.\n";
+        std::cerr << errmsg.str();
+      }
+      exit(EXIT_FAILURE);
+    }
+
     bool subsetting = false; // elemlist_size > max_size;
 
     if (subsetting) {
@@ -615,7 +640,9 @@ namespace Iopx {
       }
 
       // Broadcast this data to all other processors...
-      MPI_Bcast(TOPTR(elemlist), sizeof(INT) * elemlist.size(), MPI_BYTE, root, comm_);
+      m_decomposition.show_progress("\tBroadcast elemlist begin");
+      MPI_Bcast(TOPTR(elemlist), elemlist.size(), Ioss::mpi_type(INT(0)), root, comm_);
+      m_decomposition.show_progress("\tBroadcast elemlist end");
 
       // Each processor now has a complete list of all elems in all
       // sidesets.
@@ -652,8 +679,10 @@ namespace Iopx {
         }
 
         std::vector<int> has_elems(set_count * m_processorCount);
+	m_decomposition.show_progress("\tMPI_Allgather begin");
         MPI_Allgather(TOPTR(has_elems_local), has_elems_local.size(), MPI_INT, TOPTR(has_elems),
                       has_elems_local.size(), MPI_INT, comm_);
+	m_decomposition.show_progress("\tMPI_Allgather end");
 
         for (size_t i = 0; i < set_count; i++) {
           side_sets[i].hasEntities.resize(m_processorCount);
@@ -726,7 +755,9 @@ namespace Iopx {
       }
 
       // Tell other processors
+      m_decomposition.show_progress("\tBroadcast df_valcon begin");
       MPI_Bcast(TOPTR(df_valcon), df_valcon.size(), MPI_DOUBLE, root, comm_);
+      m_decomposition.show_progress("\tBroadcast df_valcon end");
       for (size_t i = 0; i < set_count; i++) {
         side_sets[i].distributionFactorValue         = df_valcon[3 * i + 0];
         side_sets[i].distributionFactorConstant      = (df_valcon[3 * i + 1] == 1.0);
@@ -761,7 +792,9 @@ namespace Iopx {
         }
 
         // Broadcast this data to all other processors...
+	m_decomposition.show_progress("\tBroadcast nodes_per_face begin");
         MPI_Bcast(TOPTR(nodes_per_face), nodes_per_face.size(), MPI_INT, root, comm_);
+	m_decomposition.show_progress("\tBroadcast nodes_per_face end");
 
         // Each processor now has a list of the number of nodes per
         // face for all sidesets that have a variable number. This can
