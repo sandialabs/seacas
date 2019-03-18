@@ -1600,6 +1600,9 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
 
     output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
+    if (memory_stats) {
+      dbi->util().progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
+    }
 
     if (options.verbose && rank == 0) {
       std::cerr << "Maximum Field size = " << max_field_size << " bytes.\n";
@@ -1608,6 +1611,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     if (options.verbose && rank == 0) {
       std::cerr << "Resize finished...\n";
     }
+
     if (options.debug && rank == 0) {
       std::cerr << "TRANSFERRING MESH FIELD DATA ... " << '\n';
     }
