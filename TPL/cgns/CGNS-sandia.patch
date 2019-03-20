@@ -1,4 +1,4 @@
-From e4a8c91f268fabed7e6c8b10258900c8cf601262 Mon Sep 17 00:00:00 2001
+From a033149ebaa3dd04fe89dddaa128b6006b64ff42 Mon Sep 17 00:00:00 2001
 From: Greg Sjaardema <gsjaardema@gmail.com>
 Date: Mon, 4 Feb 2019 10:11:09 -0700
 Subject: [PATCH] SANDIA-specific patches
@@ -6,14 +6,14 @@ Subject: [PATCH] SANDIA-specific patches
 * Proof-of-concept for allowing file-per-processor and single-file parallel output
 * Compact Storage Rev patch
 ---
- src/adfh/ADFH.c      | 29 +++++++++++++++++++++++-
+ src/adfh/ADFH.c      | 29 ++++++++++++++++++++++-
  src/adfh/ADFH.h      |  1 +
- src/cgns_internals.c | 19 ++++++++++++++--
- src/cgns_io.c        | 52 ++++++++++++++++++++++++++++++++++++++-----
+ src/cgns_internals.c | 19 +++++++++++++--
+ src/cgns_io.c        | 56 ++++++++++++++++++++++++++++++++++++++------
  src/cgns_io.h        |  4 ++++
- src/cgnslib.c        | 53 +++++++++++++++++++++++++++++++++++++++-----
+ src/cgnslib.c        | 53 +++++++++++++++++++++++++++++++++++++----
  src/cgnslib.h        |  6 +++++
- 7 files changed, 151 insertions(+), 13 deletions(-)
+ 7 files changed, 153 insertions(+), 15 deletions(-)
 
 diff --git a/src/adfh/ADFH.c b/src/adfh/ADFH.c
 index 3ef506e..79d978d 100644
@@ -206,7 +206,7 @@ index 1d2dee0..70a7911 100644
          cgi_error("Rind_t already defined under %s",posit->label);
          (*ier) = CG_ERROR;
 diff --git a/src/cgns_io.c b/src/cgns_io.c
-index 1d8a194..40ee5e2 100644
+index 1d8a194..8b5107b 100644
 --- a/src/cgns_io.c
 +++ b/src/cgns_io.c
 @@ -50,12 +50,12 @@ char hdf5_access[64] = "NATIVE";
@@ -309,7 +309,7 @@ index 1d8a194..40ee5e2 100644
          ADFH_Create(pid, name, id, &ierr);
          if (ierr > 0) return set_error(ierr);
      }
-@@ -1132,6 +1145,7 @@ int cgio_new_node (int cgio_num, double pid, const char *name,
+@@ -1132,12 +1145,13 @@ int cgio_new_node (int cgio_num, double pid, const char *name,
      }
  #if CG_BUILD_HDF5
      else if (cgio->type == CGIO_FILE_HDF5) {
@@ -317,6 +317,13 @@ index 1d8a194..40ee5e2 100644
          ADFH_Create(pid, name, id, &ierr);
          if (ierr > 0) return set_error(ierr);
          ADFH_Set_Label(*id, label, &ierr);
+         if (ierr > 0) return set_error(ierr);
+         if (data_type != NULL && strcmp(data_type, "MT")) {
+-            ADFH_Put_Dimension_Information(*id, data_type, ndims, dims, &ierr);
++            ADFH_Put_Dimension_Information(*id, data_type, ndims, dims, HDF5storage_type, &ierr);
+             if (ierr > 0) return set_error(ierr);
+             if (data != NULL) {
+                 ADFH_Write_All_Data(*id, NULL, (const char *)data, &ierr);
 @@ -1169,6 +1183,7 @@ int cgio_delete_node (int cgio_num, double pid, double id)
      }
  #if CG_BUILD_HDF5
@@ -502,14 +509,16 @@ index 1d8a194..40ee5e2 100644
          ADFH_Set_Label(id, label, &ierr);
          if (ierr > 0) return set_error(ierr);
      }
-@@ -1918,6 +1954,7 @@ int cgio_set_dimensions (int cgio_num, double id,
+@@ -1918,7 +1954,8 @@ int cgio_set_dimensions (int cgio_num, double id,
      }
  #if CG_BUILD_HDF5
      else if (cgio->type == CGIO_FILE_HDF5) {
+-        ADFH_Put_Dimension_Information(id, data_type, num_dims, dims, &ierr);
 +        pcg_mpi_initialized = cgio->mpi_initialized;
-         ADFH_Put_Dimension_Information(id, data_type, num_dims, dims, &ierr);
++        ADFH_Put_Dimension_Information(id, data_type, num_dims, dims, HDF5storage_type, &ierr);
          if (ierr > 0) return set_error(ierr);
      }
+ #endif
 @@ -1946,6 +1983,7 @@ int cgio_write_all_data (int cgio_num, double id,
      }
  #if CG_BUILD_HDF5
