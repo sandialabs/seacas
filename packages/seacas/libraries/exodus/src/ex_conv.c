@@ -481,3 +481,32 @@ int ex_is_parallel(int exoid)
   /* Stored as 1 for parallel, 0 for serial or file-per-processor */
   EX_FUNC_LEAVE(file->is_parallel);
 }
+
+/*! ex_set_parallel() sets the parallel setting for a file.
+ * returns 1 (true) or 0 (false) depending on the current setting.
+ * Do not use this unless you know what you are doing and why you
+ * are doing it.  One use is if calling ex_get_partial_set() in a
+ * serial mode (proc 0 only) on a file opened in parallel.
+ * Make sure to reset the value to original value after done with
+ * special case...
+ * \param exoid  integer which uniquely identifies the file of interest.
+ * \param is_parallel 1 if parallel, 0 if serial.
+ */
+int ex_set_parallel(int exoid, int is_parallel)
+{
+  EX_FUNC_ENTER();
+  int old_value = 0;
+  struct ex_file_item *file = ex_find_file_item(exoid);
+
+  if (!file) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d", exoid);
+    ex_err(__func__, errmsg, EX_BADFILEID);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  old_value = file->is_parallel;
+  file->is_parallel = is_parallel;
+  /* Stored as 1 for parallel, 0 for serial or file-per-processor */
+  EX_FUNC_LEAVE(old_value);
+}
