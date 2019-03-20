@@ -1634,7 +1634,7 @@ EXODUS_EXPORT int exerrval; /**< shared error return value                */
 
 EXODUS_EXPORT char *ex_name_of_object(ex_entity_type obj_type);
 EXODUS_EXPORT ex_entity_type ex_var_type_to_ex_entity_type(char var_type);
-EXODUS_EXPORT int   ex_set_parallel(int exoid, int is_parallel);
+EXODUS_EXPORT int            ex_set_parallel(int exoid, int is_parallel);
 
 /* Should be internal use only, but was in external include file for
    nemesis and some codes are using the function

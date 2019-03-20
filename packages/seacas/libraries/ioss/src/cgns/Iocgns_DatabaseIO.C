@@ -382,8 +382,8 @@ namespace {
   }
 #endif
 
-  size_t handle_block_ids(const Ioss::EntityBlock *eb, Ioss::Map &entity_map,
-			  void *ids, size_t num_to_get, const Ioss::Field::BasicType &size)
+  size_t handle_block_ids(const Ioss::EntityBlock *eb, Ioss::Map &entity_map, void *ids,
+                          size_t num_to_get, const Ioss::Field::BasicType &size)
   {
     /*!
      * CGNS doesn't support element global ids, so the only use of this
@@ -2235,8 +2235,8 @@ namespace Iocgns {
         // Handle the MESH fields required for a CGNS file model.
         // (The 'genesis' portion)
         if (field.get_name() == "ids") {
-	  elemMap.set_size(elementCount);
-	  handle_block_ids(eb, elemMap, data, num_to_get, field.get_type());
+          elemMap.set_size(elementCount);
+          handle_block_ids(eb, elemMap, data, num_to_get, field.get_type());
         }
         else if (field.get_name() == "connectivity") {
           // This blocks zone has not been defined.
@@ -2598,7 +2598,7 @@ namespace Iocgns {
           int *  idata = reinterpret_cast<int *>(data);
           size_t j     = 0;
           for (ssize_t i = 0; i < num_to_get; i++) {
-            cgsize_t element = elemMap.global_to_local(idata[j++]) - offset;
+            cgsize_t element           = elemMap.global_to_local(idata[j++]) - offset;
             parent[num_to_get * 0 + i] = element;
             parent[num_to_get * 2 + i] = idata[j++]; // side
           }
@@ -2609,7 +2609,7 @@ namespace Iocgns {
           int64_t *idata = reinterpret_cast<int64_t *>(data);
           size_t   j     = 0;
           for (ssize_t i = 0; i < num_to_get; i++) {
-	    cgsize_t element = elemMap.global_to_local(idata[j++]) - offset;
+            cgsize_t element           = elemMap.global_to_local(idata[j++]) - offset;
             parent[num_to_get * 0 + i] = element; // Element
             parent[num_to_get * 2 + i] = idata[j++];
           }
@@ -2621,12 +2621,13 @@ namespace Iocgns {
         return num_to_get;
       }
       else if (field.get_name() == "distribution_factors") {
-	static bool warning_output = false;
-	if (!warning_output) {
-	  std::cerr << "IOSS: WARNING: For CGNS output, the sideset distribution factors are not output.\n";
-	  warning_output = true;
-	}
-	return 0;
+        static bool warning_output = false;
+        if (!warning_output) {
+          std::cerr << "IOSS: WARNING: For CGNS output, the sideset distribution factors are not "
+                       "output.\n";
+          warning_output = true;
+        }
+        return 0;
       }
       num_to_get = Ioss::Utils::field_warning(sb, field, "output");
     }
