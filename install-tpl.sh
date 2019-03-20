@@ -320,7 +320,9 @@ then
             rm -rf CGNS
             git clone https://github.com/cgns/CGNS
 	    cd CGNS
+	    echo "${txtblu}"
 	    git am ../CGNS-sandia.patch
+	    echo "${txtrst}"
 	    if [[ $? != 0 ]]
 	    then
 		echo 1>&2 ${txtred}couldn\'t patch CGNS for SNL-suggested changes. exiting.${txtrst}
