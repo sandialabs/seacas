@@ -713,6 +713,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   }
 #endif
 
+  region.get_database()->util().progress("\tEnter common_write_meta_data");
   int base           = 0;
   int phys_dimension = region.get_property("spatial_dimension").get_int();
   CGERR(cg_base_write(file_ptr, "Base", phys_dimension, phys_dimension, &base));
@@ -728,6 +729,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
                        CGNS_ENUMV(AngleUnitsUserDefined)))
 
   // Output the sidesets as Family_t nodes
+  region.get_database()->util().progress("\tOutput Sidesets");
   const auto &sidesets = region.get_sidesets();
   for (const auto &ss : sidesets) {
     int fam = 0;
@@ -755,6 +757,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   // NOTE: Element Block zone write is deferred to put_field_internal so can
   // generate the node count based on connectivity traversal...
   // Just getting processor element count here...
+  region.get_database()->util().progress("\tElement Blocks");
   const auto &element_blocks = region.get_element_blocks();
   validate_blocks(element_blocks);
 
@@ -774,6 +777,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     element_count += (size_t)local_count;
   }
 
+  region.get_database()->util().progress("\tStructured Blocks");
   const auto &structured_blocks = region.get_structured_blocks();
   validate_blocks(structured_blocks);
 
@@ -821,6 +825,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     sb->property_update("base", base);
   }
 
+  region.get_database()->util().progress("\tMapping sb_name to zone");
   if (is_parallel_io || !is_parallel) { // Only for single file output or serial...
     // Create a vector for mapping from sb_name to zone -- used to update zgc instances
     std::map<std::string, int> sb_zone;
@@ -843,10 +848,12 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     }
   }
 
+  region.get_database()->util().progress("\tConsolidate zgc");
   if (is_parallel_io) {
     consolidate_zgc(region);
   }
 
+  region.get_database()->util().progress("\tStructured Block Loop");
   for (const auto &sb : structured_blocks) {
     if (!is_parallel_io && !sb->is_active()) {
       continue;
@@ -864,6 +871,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     // Instead of requiring that of the caller, do the union in this routine.
     // TODO: Calculate it outside of the loop...
     // Need to handle possible range == 0,0,0.  Only affects the beg data...
+    region.get_database()->util().progress("\t\tBoundary Conditions");
     std::vector<cgsize_t> bc_range(sb->m_boundaryConditions.size() * 6);
     size_t                idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
@@ -919,6 +927,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       idx += 6;
     }
     // Transfer Zone Grid Connectivity...
+    region.get_database()->util().progress("\t\tZone Grid Connectivity");
     std::set<std::string>
         zgc_names; // Used to detect duplicate zgc names in parallel but non-parallel-io case
     for (const auto &zgc : sb->m_zoneConnectivity) {
@@ -973,6 +982,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       }
     }
   }
+  region.get_database()->util().progress("\tReturn from common_write_meta_data");
   return element_count;
 }
 
