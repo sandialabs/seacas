@@ -445,7 +445,7 @@ namespace Iopx {
     // at least 10000 nodes.
 
     // TODO: Consolidate this code with `get_sideset_data`
-    size_t node_memory = (decomp_node_count() / 2) * 2 * 3 * sizeof(double) / sizeof(INT);
+    size_t node_memory = ((decomp_node_count() + 1) / 2) * 2 * 3 * sizeof(double) / sizeof(INT);
     size_t max_size    = std::max((size_t)100000, node_memory);
     if (1.05 * max_size > nodelist_size) {
       max_size = nodelist_size;
@@ -636,13 +636,13 @@ namespace Iopx {
 
     // Calculate the max "buffer" size usable for storing sideset
     // elemlists. This is basically the space used to store the file
-    // decomposition nodal coordinates. The "nodeCount/2*2" is to
+    // decomposition nodal coordinates. The "(nodeCount+1)/2*2" is to
     // equalize the nodeCount among processors since some procs have 1
     // more node than others. For small models, assume we can handle
-    // at least 100,000 nodes.
+    // at least 100,000 elements.
 
     // TODO: Consolidate this code with `get_nodeset_data`
-    size_t node_memory = (decomp_node_count() / 2) * 2 * 3 * sizeof(double) / sizeof(INT);
+    size_t node_memory = ((decomp_node_count() + 1) / 2) * 2 * 3 * sizeof(double) / sizeof(INT);
     size_t max_size    = std::max((size_t)100000, node_memory);
     if (1.05 * max_size > elemlist_size) {
       max_size = elemlist_size;
