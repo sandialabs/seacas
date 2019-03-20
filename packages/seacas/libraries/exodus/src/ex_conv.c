@@ -495,8 +495,8 @@ int ex_is_parallel(int exoid)
 int ex_set_parallel(int exoid, int is_parallel)
 {
   EX_FUNC_ENTER();
-  int old_value = 0;
-  struct ex_file_item *file = ex_find_file_item(exoid);
+  int                  old_value = 0;
+  struct ex_file_item *file      = ex_find_file_item(exoid);
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
@@ -505,7 +505,7 @@ int ex_set_parallel(int exoid, int is_parallel)
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  old_value = file->is_parallel;
+  old_value         = file->is_parallel;
   file->is_parallel = is_parallel;
   /* Stored as 1 for parallel, 0 for serial or file-per-processor */
   EX_FUNC_LEAVE(old_value);

@@ -446,15 +446,15 @@ namespace Iopx {
 
     // TODO: Consolidate this code with `get_sideset_data`
     size_t node_memory = (decomp_node_count() / 2) * 2 * 3 * sizeof(double) / sizeof(INT);
-    size_t max_size = std::max((size_t)100000, node_memory);
+    size_t max_size    = std::max((size_t)100000, node_memory);
     if (1.05 * max_size > nodelist_size) {
       max_size = nodelist_size;
     }
     else {
       // Adjust so incremental reads are all about same size...
       // Reduces size of largest broadcast...
-      int splits = (2*nodelist_size-1) / max_size;
-      max_size = (nodelist_size+1) / splits;
+      int splits = (2 * nodelist_size - 1) / max_size;
+      max_size   = (nodelist_size + 1) / splits;
     }
 
     size_t one = 1;
@@ -472,65 +472,66 @@ namespace Iopx {
 
     std::vector<INT> nodelist(max_size);
 
-    int old_par_setting = ex_set_parallel(filePtr, 0);
-    size_t offset = 0; // What position are we filling in nodelist.
-    ssize_t remain = max_size; // Amount of space left in nodelist.
-    size_t ibeg = 0;
-    size_t total_read = 0;
-    for (size_t i=0; i < set_count; i++) {
-      size_t set_offset = 0; // Offset into current set
+    int     old_par_setting = ex_set_parallel(filePtr, 0);
+    size_t  offset          = 0;        // What position are we filling in nodelist.
+    ssize_t remain          = max_size; // Amount of space left in nodelist.
+    size_t  ibeg            = 0;
+    size_t  total_read      = 0;
+    for (size_t i = 0; i < set_count; i++) {
+      size_t  set_offset    = 0; // Offset into current set
       ssize_t nodes_to_read = sets[i].num_entry;
       do {
-	ssize_t to_read = std::min(remain, nodes_to_read);
-	if (m_processor == root) {
+        ssize_t to_read = std::min(remain, nodes_to_read);
+        if (m_processor == root) {
 #if IOSS_DEBUG_OUTPUT
-	  std::cerr << "Nodeset " << sets[i].id << " reading " << to_read << " nodes from offset " << set_offset + 1
-		    << "\n";
+          std::cerr << "Nodeset " << sets[i].id << " reading " << to_read << " nodes from offset "
+                    << set_offset + 1 << "\n";
 #endif
-	  // Read the nodelists on root processor.
-	  ex_get_partial_set(filePtr, EX_NODE_SET, sets[i].id, set_offset + 1, to_read, &nodelist[offset], nullptr);
-	}
-	total_read += to_read;
-	nodes_to_read -= to_read;
-	remain -= to_read;
-	offset += to_read;
-	if (remain == 0 || total_read == nodelist_size) {
-	  // nodelist is full at this point...
-	  // * Broadcast data to other processors
-	  // * Each procesor extracts the nodes it manages.
-	  m_decomposition.show_progress("\tBroadcast nodelist begin");
-	  MPI_Bcast(TOPTR(nodelist), nodelist.size(), Ioss::mpi_type(INT(0)), root, comm_);
-	  m_decomposition.show_progress("\tBroadcast nodelist end");
+          // Read the nodelists on root processor.
+          ex_get_partial_set(filePtr, EX_NODE_SET, sets[i].id, set_offset + 1, to_read,
+                             &nodelist[offset], nullptr);
+        }
+        total_read += to_read;
+        nodes_to_read -= to_read;
+        remain -= to_read;
+        offset += to_read;
+        if (remain == 0 || total_read == nodelist_size) {
+          // nodelist is full at this point...
+          // * Broadcast data to other processors
+          // * Each procesor extracts the nodes it manages.
+          m_decomposition.show_progress("\tBroadcast nodelist begin");
+          MPI_Bcast(TOPTR(nodelist), nodelist.size(), Ioss::mpi_type(INT(0)), root, comm_);
+          m_decomposition.show_progress("\tBroadcast nodelist end");
 
-	  // Each processor now has same list of nodes in nodesets (i_beg ... i)
-	  // Determine which of these are owned by the current
-	  // processor...
-	  offset = 0;  // Just got new list of nodes; starting at beginning.
-	  for (size_t j = ibeg; j <= i; j++) {
-	    size_t ns_beg = offset;
-	    size_t num_in_this_set = sets[j].num_entry - set_offset;
-	    size_t ns_end = std::min(ns_beg + num_in_this_set, max_size);
+          // Each processor now has same list of nodes in nodesets (i_beg ... i)
+          // Determine which of these are owned by the current
+          // processor...
+          offset = 0; // Just got new list of nodes; starting at beginning.
+          for (size_t j = ibeg; j <= i; j++) {
+            size_t ns_beg          = offset;
+            size_t num_in_this_set = sets[j].num_entry - set_offset;
+            size_t ns_end          = std::min(ns_beg + num_in_this_set, max_size);
 
-	    for (size_t n = ns_beg; n < ns_end; n++) {
-	      INT node = nodelist[n];
-	      // See if node owned by this processor...
-	      if (i_own_node(node)) {
-		// Save node in this processors nodelist for this set.
-		// The saved data is this nodes location in the global
-		// nodelist for this set.
-		node_sets[j].entitylist_map.push_back(n - offset + set_offset);
-	      }
-	    }
-	    offset = ns_end;
-	    if (i != ibeg) {
-	      set_offset = 0;
-	    }
-	  }
-	  remain = max_size;
-	  offset = 0;
-	  ibeg = i;
-	}
-	set_offset += to_read;
+            for (size_t n = ns_beg; n < ns_end; n++) {
+              INT node = nodelist[n];
+              // See if node owned by this processor...
+              if (i_own_node(node)) {
+                // Save node in this processors nodelist for this set.
+                // The saved data is this nodes location in the global
+                // nodelist for this set.
+                node_sets[j].entitylist_map.push_back(n - offset + set_offset);
+              }
+            }
+            offset = ns_end;
+            if (i != ibeg) {
+              set_offset = 0;
+            }
+          }
+          remain = max_size;
+          offset = 0;
+          ibeg   = i;
+        }
+        set_offset += to_read;
 
       } while (nodes_to_read > 0);
     }
@@ -542,26 +543,26 @@ namespace Iopx {
     {
       std::vector<int> has_nodes_local(set_count);
       for (size_t i = 0; i < set_count; i++) {
-	has_nodes_local[i] = node_sets[i].entitylist_map.empty() ? 0 : 1;
+        has_nodes_local[i] = node_sets[i].entitylist_map.empty() ? 0 : 1;
       }
 
       std::vector<int> has_nodes(set_count * m_processorCount);
       MPI_Allgather(TOPTR(has_nodes_local), has_nodes_local.size(), MPI_INT, TOPTR(has_nodes),
-		    has_nodes_local.size(), MPI_INT, comm_);
+                    has_nodes_local.size(), MPI_INT, comm_);
 
       for (size_t i = 0; i < set_count; i++) {
-	node_sets[i].hasEntities.resize(m_processorCount);
-	node_sets[i].root_ = m_processorCount;
-	int count          = 0;
-	for (int p = 0; p < m_processorCount; p++) {
-	  if (p < node_sets[i].root_ && has_nodes[p * set_count + i] != 0) {
-	    node_sets[i].root_ = p;
-	  }
-	  node_sets[i].hasEntities[p] = has_nodes[p * set_count + i];
-	  count += has_nodes[p * set_count + i];
-	}
-	int color = node_sets[i].hasEntities[m_processor] ? 1 : MPI_UNDEFINED;
-	MPI_Comm_split(comm_, color, m_processor, &node_sets[i].setComm_);
+        node_sets[i].hasEntities.resize(m_processorCount);
+        node_sets[i].root_ = m_processorCount;
+        int count          = 0;
+        for (int p = 0; p < m_processorCount; p++) {
+          if (p < node_sets[i].root_ && has_nodes[p * set_count + i] != 0) {
+            node_sets[i].root_ = p;
+          }
+          node_sets[i].hasEntities[p] = has_nodes[p * set_count + i];
+          count += has_nodes[p * set_count + i];
+        }
+        int color = node_sets[i].hasEntities[m_processor] ? 1 : MPI_UNDEFINED;
+        MPI_Comm_split(comm_, color, m_processor, &node_sets[i].setComm_);
       }
     }
 
@@ -572,19 +573,19 @@ namespace Iopx {
     std::vector<double> df_valcon(2 * set_count);
     if (m_processor == root) {
       for (size_t i = 0; i < set_count; i++) {
-	df_valcon[2 * i + 0] = 1.0;
-	df_valcon[2 * i + 1] = 1;
-	if (sets[i].num_distribution_factor > 0) {
-	  std::vector<double> df(sets[i].num_distribution_factor);
-	  ex_get_set_dist_fact(filePtr, EX_NODE_SET, sets[i].id, TOPTR(df));
-	  double val       = df[0];
-	  df_valcon[2 * i] = val;
-	  for (int64_t j = 1; j < sets[i].num_distribution_factor; j++) {
-	    if (val != df[j]) {
-	      df_valcon[2 * i + 1] = 0;
-	    }
-	  }
-	}
+        df_valcon[2 * i + 0] = 1.0;
+        df_valcon[2 * i + 1] = 1;
+        if (sets[i].num_distribution_factor > 0) {
+          std::vector<double> df(sets[i].num_distribution_factor);
+          ex_get_set_dist_fact(filePtr, EX_NODE_SET, sets[i].id, TOPTR(df));
+          double val       = df[0];
+          df_valcon[2 * i] = val;
+          for (int64_t j = 1; j < sets[i].num_distribution_factor; j++) {
+            if (val != df[j]) {
+              df_valcon[2 * i + 1] = 0;
+            }
+          }
+        }
       }
     }
 
@@ -609,18 +610,18 @@ namespace Iopx {
 
     side_sets.resize(set_count);
 
-    std::vector<ex_set>           sets(set_count);
+    std::vector<ex_set> sets(set_count);
     {
-      std::vector<INT>              ids(set_count);
+      std::vector<INT> ids(set_count);
       ex_get_ids(filePtr, EX_SIDE_SET, TOPTR(ids));
 
       for (size_t i = 0; i < set_count; i++) {
-	side_sets[i].id_                 = ids[i];
-	sets[i].id                       = ids[i];
-	sets[i].type                     = EX_SIDE_SET;
-	sets[i].entry_list               = nullptr;
-	sets[i].extra_list               = nullptr;
-	sets[i].distribution_factor_list = nullptr;
+        side_sets[i].id_                 = ids[i];
+        sets[i].id                       = ids[i];
+        sets[i].type                     = EX_SIDE_SET;
+        sets[i].entry_list               = nullptr;
+        sets[i].extra_list               = nullptr;
+        sets[i].distribution_factor_list = nullptr;
       }
     }
 
@@ -642,21 +643,21 @@ namespace Iopx {
 
     // TODO: Consolidate this code with `get_nodeset_data`
     size_t node_memory = (decomp_node_count() / 2) * 2 * 3 * sizeof(double) / sizeof(INT);
-    size_t max_size = std::max((size_t)100000, node_memory);
+    size_t max_size    = std::max((size_t)100000, node_memory);
     if (1.05 * max_size > elemlist_size) {
       max_size = elemlist_size;
     }
     else {
       // Adjust so incremental reads are all about same size...
       // Reduces size of largest broadcast...
-      int splits = (2*elemlist_size-1) / max_size;
-      max_size = (elemlist_size+1) / splits;
+      int splits = (2 * elemlist_size - 1) / max_size;
+      max_size   = (elemlist_size + 1) / splits;
     }
 
     size_t one = 1;
     if (elemlist_size >= one << 31) {
       if (m_processor == 0) {
-	// Due to MPI_Bcast size exceeding size of int in some communication for a sideset.
+        // Due to MPI_Bcast size exceeding size of int in some communication for a sideset.
         std::ostringstream errmsg;
         errmsg << "ERROR: The sum of the sideset element counts is larger than 2.1 Billion "
                << " which cannot be correctly handled with the current IOSS decomposition "
@@ -669,66 +670,67 @@ namespace Iopx {
 
     std::vector<INT> elemlist(max_size);
 
-    int old_par_setting = ex_set_parallel(filePtr, 0);
-    size_t offset = 0; // What position are we filling in elemlist.
-    ssize_t remain = max_size; // Amount of space left in elemlist.
-    size_t ibeg = 0;
-    size_t total_read = 0;
-    for (size_t i=0; i < set_count; i++) {
-      size_t set_offset = 0; // Offset into current set
+    int     old_par_setting = ex_set_parallel(filePtr, 0);
+    size_t  offset          = 0;        // What position are we filling in elemlist.
+    ssize_t remain          = max_size; // Amount of space left in elemlist.
+    size_t  ibeg            = 0;
+    size_t  total_read      = 0;
+    for (size_t i = 0; i < set_count; i++) {
+      size_t  set_offset    = 0; // Offset into current set
       ssize_t elems_to_read = sets[i].num_entry;
       do {
-	ssize_t to_read = std::min(remain, elems_to_read);
-	if (m_processor == root) {
+        ssize_t to_read = std::min(remain, elems_to_read);
+        if (m_processor == root) {
 #if IOSS_DEBUG_OUTPUT
-	  std::cerr << "Sideset " << sets[i].id << " reading " << to_read << " elements from offset " << set_offset + 1
-		    << "\n";
+          std::cerr << "Sideset " << sets[i].id << " reading " << to_read
+                    << " elements from offset " << set_offset + 1 << "\n";
 #endif
-	  // Read the elemlists on root processor.
-	  ex_get_partial_set(filePtr, EX_SIDE_SET, sets[i].id, set_offset + 1, to_read, &elemlist[offset], nullptr);
-	}
-	total_read += to_read;
-	elems_to_read -= to_read;
-	remain -= to_read;
-	offset += to_read;
-	if (remain == 0 || total_read == elemlist_size) {
-	  // elemlist is full at this point or we have read all data...
-	  // * Broadcast data to other processors
-	  // * Each procesor extracts the elements it manages.
-	  m_decomposition.show_progress("\tBroadcast elemlist begin");
-	  MPI_Bcast(TOPTR(elemlist), elemlist.size(), Ioss::mpi_type(INT(0)), root, comm_);
-	  m_decomposition.show_progress("\tBroadcast elemlist end");
+          // Read the elemlists on root processor.
+          ex_get_partial_set(filePtr, EX_SIDE_SET, sets[i].id, set_offset + 1, to_read,
+                             &elemlist[offset], nullptr);
+        }
+        total_read += to_read;
+        elems_to_read -= to_read;
+        remain -= to_read;
+        offset += to_read;
+        if (remain == 0 || total_read == elemlist_size) {
+          // elemlist is full at this point or we have read all data...
+          // * Broadcast data to other processors
+          // * Each procesor extracts the elements it manages.
+          m_decomposition.show_progress("\tBroadcast elemlist begin");
+          MPI_Bcast(TOPTR(elemlist), elemlist.size(), Ioss::mpi_type(INT(0)), root, comm_);
+          m_decomposition.show_progress("\tBroadcast elemlist end");
 
-	  // Each processor now has same list of elems in sidesets (i_beg ... i)
-	  // sidesets.
-	  // Determine which of these are owned by the current
-	  // processor...
-	  offset = 0;  // Just got new list of elements; starting at beginning.
-	  for (size_t j = ibeg; j <= i; j++) {
-	    size_t ss_beg = offset;
-	    size_t num_in_this_set = sets[j].num_entry - set_offset;
-	    size_t ss_end = std::min(ss_beg + num_in_this_set, max_size);
+          // Each processor now has same list of elems in sidesets (i_beg ... i)
+          // sidesets.
+          // Determine which of these are owned by the current
+          // processor...
+          offset = 0; // Just got new list of elements; starting at beginning.
+          for (size_t j = ibeg; j <= i; j++) {
+            size_t ss_beg          = offset;
+            size_t num_in_this_set = sets[j].num_entry - set_offset;
+            size_t ss_end          = std::min(ss_beg + num_in_this_set, max_size);
 
-	    for (size_t n = ss_beg; n < ss_end; n++) {
-	      INT elem = elemlist[n];
-	      // See if elem owned by this processor...
-	      if (i_own_elem(elem)) {
-		// Save elem in this processors elemlist for this set.
-		// The saved data is this elems location in the global
-		// elemlist for this set.
-		side_sets[j].entitylist_map.push_back(n - offset + set_offset);
-	      }
-	    }
-	    offset = ss_end;
-	    if (i != ibeg) {
-	      set_offset = 0;
-	    }
-	  }
-	  remain = max_size;
-	  offset = 0;
-	  ibeg = i;
-	}
-	set_offset += to_read;
+            for (size_t n = ss_beg; n < ss_end; n++) {
+              INT elem = elemlist[n];
+              // See if elem owned by this processor...
+              if (i_own_elem(elem)) {
+                // Save elem in this processors elemlist for this set.
+                // The saved data is this elems location in the global
+                // elemlist for this set.
+                side_sets[j].entitylist_map.push_back(n - offset + set_offset);
+              }
+            }
+            offset = ss_end;
+            if (i != ibeg) {
+              set_offset = 0;
+            }
+          }
+          remain = max_size;
+          offset = 0;
+          ibeg   = i;
+        }
+        set_offset += to_read;
 
       } while (elems_to_read > 0);
     }
@@ -740,28 +742,28 @@ namespace Iopx {
     {
       std::vector<int> has_elems_local(set_count);
       for (size_t i = 0; i < set_count; i++) {
-	has_elems_local[i] = side_sets[i].entitylist_map.empty() ? 0 : 1;
+        has_elems_local[i] = side_sets[i].entitylist_map.empty() ? 0 : 1;
       }
 
       std::vector<int> has_elems(set_count * m_processorCount);
       m_decomposition.show_progress("\tMPI_Allgather begin");
       MPI_Allgather(TOPTR(has_elems_local), has_elems_local.size(), MPI_INT, TOPTR(has_elems),
-		    has_elems_local.size(), MPI_INT, comm_);
+                    has_elems_local.size(), MPI_INT, comm_);
       m_decomposition.show_progress("\tMPI_Allgather end");
 
       for (size_t i = 0; i < set_count; i++) {
-	side_sets[i].hasEntities.resize(m_processorCount);
-	side_sets[i].root_ = m_processorCount;
-	int count          = 0;
-	for (int p = 0; p < m_processorCount; p++) {
-	  if (p < side_sets[i].root_ && has_elems[p * set_count + i] != 0) {
-	    side_sets[i].root_ = p;
-	  }
-	  side_sets[i].hasEntities[p] = has_elems[p * set_count + i];
-	  count += has_elems[p * set_count + i];
-	}
-	int color = side_sets[i].hasEntities[m_processor] ? 1 : MPI_UNDEFINED;
-	MPI_Comm_split(comm_, color, m_processor, &side_sets[i].setComm_);
+        side_sets[i].hasEntities.resize(m_processorCount);
+        side_sets[i].root_ = m_processorCount;
+        int count          = 0;
+        for (int p = 0; p < m_processorCount; p++) {
+          if (p < side_sets[i].root_ && has_elems[p * set_count + i] != 0) {
+            side_sets[i].root_ = p;
+          }
+          side_sets[i].hasEntities[p] = has_elems[p * set_count + i];
+          count += has_elems[p * set_count + i];
+        }
+        int color = side_sets[i].hasEntities[m_processor] ? 1 : MPI_UNDEFINED;
+        MPI_Comm_split(comm_, color, m_processor, &side_sets[i].setComm_);
       }
     }
 
@@ -779,46 +781,46 @@ namespace Iopx {
 
     if (m_processor == root) {
       for (size_t i = 0; i < set_count; i++) {
-	df_valcon[3 * i + 0] = 1.0;
-	df_valcon[3 * i + 1] = 1;
-	df_valcon[3 * i + 2] = 0;
-	if (sets[i].num_distribution_factor > 0) {
-	  std::vector<double> df(sets[i].num_distribution_factor);
-	  // TODO: For large sideset, split into multiple reads to avoid
-	  //       peaking the memory
-	  ex_get_set_dist_fact(filePtr, EX_SIDE_SET, sets[i].id, TOPTR(df));
-	  double val       = df[0];
-	  df_valcon[3 * i] = val;
-	  for (int64_t j = 1; j < sets[i].num_distribution_factor; j++) {
-	    if (val != df[j]) {
-	      df_valcon[3 * i + 1] = 0;
-	      break;
-	    }
-	  }
-	  Ioss::Utils::clear(df);
-	  if (df_valcon[3 * i + 1] == 1.0) { // df are constant.
-	    df_valcon[3 * i + 2] = 0.0;
-	  }
-	  else {
+        df_valcon[3 * i + 0] = 1.0;
+        df_valcon[3 * i + 1] = 1;
+        df_valcon[3 * i + 2] = 0;
+        if (sets[i].num_distribution_factor > 0) {
+          std::vector<double> df(sets[i].num_distribution_factor);
+          // TODO: For large sideset, split into multiple reads to avoid
+          //       peaking the memory
+          ex_get_set_dist_fact(filePtr, EX_SIDE_SET, sets[i].id, TOPTR(df));
+          double val       = df[0];
+          df_valcon[3 * i] = val;
+          for (int64_t j = 1; j < sets[i].num_distribution_factor; j++) {
+            if (val != df[j]) {
+              df_valcon[3 * i + 1] = 0;
+              break;
+            }
+          }
+          Ioss::Utils::clear(df);
+          if (df_valcon[3 * i + 1] == 1.0) { // df are constant.
+            df_valcon[3 * i + 2] = 0.0;
+          }
+          else {
 
-	    // To determine the size of the df field on the
-	    // ioss-decomp sidesets, need to know how many nodes per
-	    // side there are for all sides in the sideset.  Here we
-	    // check to see if it is a constant number to avoid
-	    // communicating the entire list for all sidesets.  If not
-	    // constant, then we will have to communicate.
-	    std::vector<int> nodes_per_face(side_sets[i].file_count());
-	    ex_get_side_set_node_count(filePtr, sets[i].id, TOPTR(nodes_per_face));
-	    int nod_per_face = nodes_per_face[0];
-	    for (size_t j = 1; j < nodes_per_face.size(); j++) {
-	      if (nodes_per_face[j] != nod_per_face) {
-		nod_per_face = -1;
-		break;
-	      }
-	    }
-	    df_valcon[3 * i + 2] = static_cast<double>(nod_per_face);
-	  }
-	}
+            // To determine the size of the df field on the
+            // ioss-decomp sidesets, need to know how many nodes per
+            // side there are for all sides in the sideset.  Here we
+            // check to see if it is a constant number to avoid
+            // communicating the entire list for all sidesets.  If not
+            // constant, then we will have to communicate.
+            std::vector<int> nodes_per_face(side_sets[i].file_count());
+            ex_get_side_set_node_count(filePtr, sets[i].id, TOPTR(nodes_per_face));
+            int nod_per_face = nodes_per_face[0];
+            for (size_t j = 1; j < nodes_per_face.size(); j++) {
+              if (nodes_per_face[j] != nod_per_face) {
+                nod_per_face = -1;
+                break;
+              }
+            }
+            df_valcon[3 * i + 2] = static_cast<double>(nod_per_face);
+          }
+        }
       }
     }
 
@@ -838,11 +840,11 @@ namespace Iopx {
     size_t count = 0;
     for (size_t i = 0; i < set_count; i++) {
       if (side_sets[i].distributionFactorValsPerEntity < 0) {
-	count += side_sets[i].file_count();
+        count += side_sets[i].file_count();
       }
       else {
-	side_sets[i].distributionFactorCount =
-	  side_sets[i].ioss_count() * side_sets[i].distributionFactorValsPerEntity;
+        side_sets[i].distributionFactorCount =
+            side_sets[i].ioss_count() * side_sets[i].distributionFactorValsPerEntity;
       }
     }
 
@@ -850,13 +852,13 @@ namespace Iopx {
       // At least 1 sideset has variable number of nodes per side...
       std::vector<int> nodes_per_face(count); // not INT
       if (m_processor == root) {
-	offset = 0;
-	for (size_t i = 0; i < set_count; i++) {
-	  if (side_sets[i].distributionFactorValsPerEntity < 0) {
-	    ex_get_side_set_node_count(filePtr, sets[i].id, &nodes_per_face[offset]);
-	    offset += side_sets[i].file_count();
-	  }
-	}
+        offset = 0;
+        for (size_t i = 0; i < set_count; i++) {
+          if (side_sets[i].distributionFactorValsPerEntity < 0) {
+            ex_get_side_set_node_count(filePtr, sets[i].id, &nodes_per_face[offset]);
+            offset += side_sets[i].file_count();
+          }
+        }
       }
 
       // Broadcast this data to all other processors...
@@ -869,15 +871,15 @@ namespace Iopx {
       // be used to determine the df field size on the ioss_decomp.
       offset = 0;
       for (size_t i = 0; i < set_count; i++) {
-	if (side_sets[i].distributionFactorValsPerEntity < 0) {
-	  int *npf = &nodes_per_face[offset];
-	  offset += side_sets[i].file_count();
-	  size_t my_count = 0;
-	  for (size_t j = 0; j < side_sets[i].ioss_count(); j++) {
-	    my_count += npf[side_sets[i].entitylist_map[j]];
-	  }
-	  side_sets[i].distributionFactorCount = my_count;
-	}
+        if (side_sets[i].distributionFactorValsPerEntity < 0) {
+          int *npf = &nodes_per_face[offset];
+          offset += side_sets[i].file_count();
+          size_t my_count = 0;
+          for (size_t j = 0; j < side_sets[i].ioss_count(); j++) {
+            my_count += npf[side_sets[i].entitylist_map[j]];
+          }
+          side_sets[i].distributionFactorCount = my_count;
+        }
       }
     }
     ex_set_parallel(filePtr, old_par_setting);
