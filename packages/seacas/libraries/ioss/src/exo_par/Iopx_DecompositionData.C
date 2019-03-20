@@ -476,6 +476,7 @@ namespace Iopx {
     size_t offset = 0; // What position are we filling in nodelist.
     ssize_t remain = max_size; // Amount of space left in nodelist.
     size_t ibeg = 0;
+    size_t total_read = 0;
     for (size_t i=0; i < set_count; i++) {
       size_t set_offset = 0; // Offset into current set
       ssize_t nodes_to_read = sets[i].num_entry;
@@ -489,10 +490,11 @@ namespace Iopx {
 	  // Read the nodelists on root processor.
 	  ex_get_partial_set(filePtr, EX_NODE_SET, sets[i].id, set_offset + 1, to_read, &nodelist[offset], nullptr);
 	}
+	total_read += to_read;
 	nodes_to_read -= to_read;
 	remain -= to_read;
 	offset += to_read;
-	if (remain == 0) {
+	if (remain == 0 || total_read == nodelist_size) {
 	  // nodelist is full at this point...
 	  // * Broadcast data to other processors
 	  // * Each procesor extracts the nodes it manages.
@@ -671,6 +673,7 @@ namespace Iopx {
     size_t offset = 0; // What position are we filling in elemlist.
     ssize_t remain = max_size; // Amount of space left in elemlist.
     size_t ibeg = 0;
+    size_t total_read = 0;
     for (size_t i=0; i < set_count; i++) {
       size_t set_offset = 0; // Offset into current set
       ssize_t elems_to_read = sets[i].num_entry;
@@ -684,11 +687,12 @@ namespace Iopx {
 	  // Read the elemlists on root processor.
 	  ex_get_partial_set(filePtr, EX_SIDE_SET, sets[i].id, set_offset + 1, to_read, &elemlist[offset], nullptr);
 	}
+	total_read += to_read;
 	elems_to_read -= to_read;
 	remain -= to_read;
 	offset += to_read;
-	if (remain == 0) {
-	  // elemlist is full at this point...
+	if (remain == 0 || total_read == elemlist_size) {
+	  // elemlist is full at this point or we have read all data...
 	  // * Broadcast data to other processors
 	  // * Each procesor extracts the elements it manages.
 	  m_decomposition.show_progress("\tBroadcast elemlist begin");
