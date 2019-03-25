@@ -283,6 +283,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
+	git checkout v4.6.3
         if [ -d build ]
         then
             rm -rf build
