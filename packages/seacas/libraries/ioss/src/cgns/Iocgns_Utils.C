@@ -871,7 +871,9 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     // Instead of requiring that of the caller, do the union in this routine.
     // TODO: Calculate it outside of the loop...
     // Need to handle possible range == 0,0,0.  Only affects the beg data...
-    region.get_database()->util().progress("\t\tBoundary Conditions");
+    if (is_parallel_io) {
+      region.get_database()->util().progress("\t\tBoundary Conditions");
+    }
     std::vector<cgsize_t> bc_range(sb->m_boundaryConditions.size() * 6);
     size_t                idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
@@ -927,7 +929,9 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       idx += 6;
     }
     // Transfer Zone Grid Connectivity...
-    region.get_database()->util().progress("\t\tZone Grid Connectivity");
+    if (is_parallel_io) {
+      region.get_database()->util().progress("\t\tZone Grid Connectivity");
+    }
     std::set<std::string>
         zgc_names; // Used to detect duplicate zgc names in parallel but non-parallel-io case
     for (const auto &zgc : sb->m_zoneConnectivity) {
