@@ -304,9 +304,8 @@ namespace Iopx {
                                         bool abort_if_error) const
   {
     // Check for valid exodus_file_ptr (valid >= 0; invalid < 0)
-    int global_file_ptr = exodusFilePtr;
     assert(isParallel);
-    global_file_ptr = util().global_minmax(exodusFilePtr, Ioss::ParallelUtils::DO_MIN);
+    int global_file_ptr = util().global_minmax(exodusFilePtr, Ioss::ParallelUtils::DO_MIN);
 
     if (global_file_ptr < 0) {
       if (write_message || error_msg != nullptr || bad_count != nullptr) {
@@ -769,7 +768,7 @@ namespace Iopx {
     }
 
     Ioss::Region *this_region = get_region();
-    for (int i = 0; i < timestep_count; i++) {
+    for (int i = 0; i < max_step; i++) {
       if (tsteps[i] <= last_time) {
         this_region->add_state(tsteps[i] * timeScaleFactor);
       }

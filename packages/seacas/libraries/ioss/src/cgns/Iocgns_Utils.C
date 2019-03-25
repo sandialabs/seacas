@@ -2004,8 +2004,6 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
         continue;
       }
 
-      work_average = zone->work() / (double)split_cnt;
-
       std::vector<std::pair<int, Iocgns::StructuredZoneData *>> active;
       active.push_back(std::make_pair(split_cnt, zone));
       do {
