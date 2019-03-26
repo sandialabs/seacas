@@ -30,6 +30,8 @@ matrix:
       env: CGNS=OFF MPI=ON H5VERSION=V18
     - compiler: gcc
       env: FORTRAN=OFF
+    - compiler: gcc
+      env: ADIOS2=ON
 
 before_install:
   # C++14
