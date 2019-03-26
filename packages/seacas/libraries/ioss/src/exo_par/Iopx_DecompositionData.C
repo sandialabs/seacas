@@ -416,8 +416,8 @@ namespace Iopx {
     else {
       // Adjust so incremental reads are all about same size...
       // Reduces size of largest broadcast...
-      int splits = (2 * entitylist_size - 1) / max_size;
-      max_size   = (entitylist_size + 1) / splits;
+      int splits = (entitylist_size + max_size - 1) / max_size;
+      max_size   = (entitylist_size + splits - 1) / splits;
     }
 
     size_t one = 1;
