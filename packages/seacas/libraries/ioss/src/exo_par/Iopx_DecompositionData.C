@@ -370,7 +370,7 @@ namespace Iopx {
   }
 
   template <typename INT>
-    void DecompositionData<INT>::get_common_set_data(int filePtr, ex_entity_type set_type, 
+    void DecompositionData<INT>::get_common_set_data(int filePtr, ex_entity_type set_type,
 						     std::vector<Ioss::SetDecompositionData> &entity_sets,
 						     const std::string &set_type_name)
   {
@@ -492,7 +492,7 @@ namespace Iopx {
           }
           remain = max_size;
           offset = 0;
-          ibeg   = i;
+          ibeg = (entitys_to_read == 0) ? i+1 : i;
         }
         set_offset += to_read;
 
@@ -529,7 +529,7 @@ namespace Iopx {
       }
     }
   }
-  
+
   template <typename INT>
   void DecompositionData<INT>::get_nodeset_data(int filePtr, size_t set_count)
   {
