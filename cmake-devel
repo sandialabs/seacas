@@ -67,7 +67,7 @@ BUILD_TYPE="${BUILD_TYPE:-DEBUG}"
 ### which provides X11/Xlib.h and the libX11, then change the "ON"
 ### below to "OFF". It will disable blot and fastq
 HAVE_X11=${X11:-ON}
-
+HAVE_X11=OFF
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-OFF}
 
@@ -86,6 +86,7 @@ MATIO_PATH=${ACCESS}
 HDF5_PATH=${ACCESS}
 CGNS_PATH=${ACCESS}
 DATAWAREHOUSE_PATH=${ACCESS}
+ADIOS2_PATH=${ACCESS}
 
 function check_enable()
 {
@@ -102,6 +103,7 @@ HAVE_NETCDF=`check_enable "${NETCDF_PATH}/include/netcdf.h"`
 HAVE_MATIO=`check_enable "${MATIO_PATH}/include/matio.h"`
 HAVE_CGNS=`check_enable "${CGNS_PATH}/include/cgnslib.h"`
 HAVE_DATAWAREHOUSE=OFF
+HAVE_ADIOS2=`check_enable "${ADIOS2_PATH}/include/adios2.h"`
 
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
@@ -249,6 +251,8 @@ cmake  \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
+-D TPL_ENABLE_ADIOS2:BOOL=${HAVE_ADIOS2} \
+-D TPL_ENABLE_gtest:BOOL=${GTEST} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
@@ -284,6 +288,7 @@ echo "  "
 echo "HAVE_NETCDF: ${HAVE_NETCDF}"
 echo " HAVE_MATIO: ${HAVE_MATIO}"
 echo "  HAVE_CGNS: ${HAVE_CGNS}"
+echo "HAVE_ADIOS2: ${HAVE_ADIOS2}"
 echo "     KOKKOS: ${KOKKOS}"
 echo ""
 
