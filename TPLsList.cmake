@@ -53,6 +53,7 @@
 #
 
 SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
+  gtest           "cmake/TPLs/"    EX
   Zlib            "cmake/TPLs/"    SS
   HDF5            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   Pnetcdf         "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
@@ -66,4 +67,5 @@ SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
   X11             "cmake/TPLs/"    SS
   DLlib           "cmake/TPLs/"    ST
   CUDA            "cmake/TPLs/"    SS
+  ADIOS2          "${SEACAS_SOURCE_DIR}/cmake/tpls/FindTPLADIOS2.cmake"    EX
   )
