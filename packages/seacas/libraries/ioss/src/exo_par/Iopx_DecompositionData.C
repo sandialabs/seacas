@@ -434,23 +434,23 @@ namespace Iopx {
     }
 
     std::vector<INT> entitylist(max_size);
+    std::vector<INT> set_entities_read(set_count);
 
     size_t  offset          = 0;        // What position are we filling in entitylist.
     ssize_t remain          = max_size; // Amount of space left in entitylist.
     size_t  ibeg            = 0;
     size_t  total_read      = 0;
     for (size_t i = 0; i < set_count; i++) {
-      size_t  set_offset    = 0; // Offset into current set
       ssize_t entitys_to_read = sets[i].num_entry;
       do {
         ssize_t to_read = std::min(remain, entitys_to_read);
         if (m_processor == root) {
 #if IOSS_DEBUG_OUTPUT
           std::cerr << set_type_name << " " << sets[i].id << " reading " << to_read << " entities from offset "
-                    << set_offset + 1 << "\n";
+                    << set_entities_read[i] + 1 << "\n";
 #endif
           // Read the entitylists on root processor.
-          ex_get_partial_set(filePtr, set_type, sets[i].id, set_offset + 1, to_read,
+          ex_get_partial_set(filePtr, set_type, sets[i].id, set_entities_read[i] + 1, to_read,
                              &entitylist[offset], nullptr);
         }
         total_read += to_read;
@@ -470,6 +470,7 @@ namespace Iopx {
           // processor...
           offset = 0; // Just got new list of entitys; starting at beginning.
           for (size_t j = ibeg; j <= i; j++) {
+	    size_t set_offset = set_entities_read[j];
             size_t ns_beg          = offset;
             size_t num_in_this_set = sets[j].num_entry - set_offset;
             size_t ns_end          = std::min(ns_beg + num_in_this_set, max_size);
@@ -486,16 +487,12 @@ namespace Iopx {
               }
             }
             offset = ns_end;
-            if (i != ibeg) {
-              set_offset = 0;
-            }
-          }
+	    set_entities_read[j] += ns_end - ns_beg;
+	  }
           remain = max_size;
           offset = 0;
           ibeg = (entitys_to_read == 0) ? i+1 : i;
-        }
-        set_offset += to_read;
-
+	}
       } while (entitys_to_read > 0);
     }
 
