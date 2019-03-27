@@ -1839,8 +1839,15 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
 
   /*
    * set error handling mode to no messages, non-fatal errors
+   * unless specified differently via environment.
    */
-  ex_opts(exoptval); /* call required to set ncopts first time through */
+  {
+    char *option = getenv("EXODUS_VERBOSE");
+    if (option != NULL) {
+      exoptval = EX_VERBOSE;
+    }
+    ex_opts(exoptval); /* call required to set ncopts first time through */
+  }
 
   if (my_mode & EX_CLOBBER) {
     nc_mode |= NC_CLOBBER;
