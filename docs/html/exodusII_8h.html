@@ -943,6 +943,8 @@ Functions</h2></td></tr>
 <tr class="separator:ace51015c588554746b4729b7d2bf46b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e68f6c347848990e7f9eafee4a27dda"><td class="memItemLeft" align="right" valign="top"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a2e68f6c347848990e7f9eafee4a27dda">ex_var_type_to_ex_entity_type</a> (char var_type)</td></tr>
 <tr class="separator:a2e68f6c347848990e7f9eafee4a27dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9a0caef233c3321be24ecd4c9d51578"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#ab9a0caef233c3321be24ecd4c9d51578">ex_set_parallel</a> (int exoid, int is_parallel)</td></tr>
+<tr class="separator:ab9a0caef233c3321be24ecd4c9d51578"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9efac3df1091721626eb2d92c7373b4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#ad9efac3df1091721626eb2d92c7373b4">ex_get_idx</a> (int exoid, const char *ne_var_name, int64_t *my_index, int pos)</td></tr>
 <tr class="separator:ad9efac3df1091721626eb2d92c7373b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -4596,7 +4598,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000024">Deprecated:</a></b></dt><dd>Use <a class="el" href="exodusII_8h.html#ab9c3df1cde3713d7964695cab12b2816">ex_get_partial_num_map()</a>(exoid, EX_NODE_MAP, start_ent, num_ents, node_map) instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000024">Deprecated:</a></b></dt><dd>Use <a class="el" href="exodusII_8h.html#adae17da907ad55a12bd475a3984777a4">ex_get_partial_id_map()</a>(exoid, EX_NODE_MAP, start_ent, num_ents, node_map) instead </dd></dl>
 
 </div>
 </div>
@@ -6521,7 +6523,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>writes the set entry list and set extra list for a single set </p><dl class="params"><dt>Parameters</dt><dd>
+<p>reads a portion of the set entry list and set extra list for a single set </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
     <tr><td class="paramname">set_type</td><td>set type </td></tr>
@@ -14111,6 +14113,41 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a13">/test/create_mesh.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a9">/test/testwt-compress.c</a>, and <a class="el" href="_2test_2testwt-long-name_8c-example.html#a7">/test/testwt-long-name.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="ab9a0caef233c3321be24ecd4c9d51578"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9a0caef233c3321be24ecd4c9d51578">&#9670;&nbsp;</a></span>ex_set_parallel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_set_parallel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>is_parallel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="ex__conv_8c.html#ab9a0caef233c3321be24ecd4c9d51578">ex_set_parallel()</a> sets the parallel setting for a file. returns 1 (true) or 0 (false) depending on the current setting. Do not use this unless you know what you are doing and why you are doing it. One use is if calling <a class="el" href="exodusII_8h.html#a63115d5d368817b48f51328ec87ce206">ex_get_partial_set()</a> in a serial mode (proc 0 only) on a file opened in parallel. Make sure to reset the value to original value after done with special case... </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>integer which uniquely identifies the file of interest. </td></tr>
+    <tr><td class="paramname">is_parallel</td><td>1 if parallel, 0 if serial. </td></tr>
+  </table>
+  </dd>
 </dl>
 
 </div>

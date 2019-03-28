@@ -126,6 +126,8 @@ Functions</h2></td></tr>
 <tr class="separator:aa3e1ca507ddc8a0d3ed14235e618fe34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4794be6082193f2d9f02c07db041c9e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__conv_8c.html#a4794be6082193f2d9f02c07db041c9e1">ex_is_parallel</a> (int exoid)</td></tr>
 <tr class="separator:a4794be6082193f2d9f02c07db041c9e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9a0caef233c3321be24ecd4c9d51578"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__conv_8c.html#ab9a0caef233c3321be24ecd4c9d51578">ex_set_parallel</a> (int exoid, int is_parallel)</td></tr>
+<tr class="separator:ab9a0caef233c3321be24ecd4c9d51578"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -430,6 +432,41 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9a0caef233c3321be24ecd4c9d51578"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9a0caef233c3321be24ecd4c9d51578">&#9670;&nbsp;</a></span>ex_set_parallel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_set_parallel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>is_parallel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="ex__conv_8c.html#ab9a0caef233c3321be24ecd4c9d51578">ex_set_parallel()</a> sets the parallel setting for a file. returns 1 (true) or 0 (false) depending on the current setting. Do not use this unless you know what you are doing and why you are doing it. One use is if calling <a class="el" href="exodusII_8h.html#a63115d5d368817b48f51328ec87ce206">ex_get_partial_set()</a> in a serial mode (proc 0 only) on a file opened in parallel. Make sure to reset the value to original value after done with special case... </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>integer which uniquely identifies the file of interest. </td></tr>
+    <tr><td class="paramname">is_parallel</td><td>1 if parallel, 0 if serial. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

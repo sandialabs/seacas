@@ -10,6 +10,7 @@ var ex__conv_8c =
     [ "ex_is_parallel", "ex__conv_8c.html#a4794be6082193f2d9f02c07db041c9e1", null ],
     [ "ex_set_int64_status", "ex__conv_8c.html#a8be8ae9fd499756ab2dcb94ca4df7743", null ],
     [ "ex_set_option", "ex__conv_8c.html#ab9398d414e1316177db89782ed2a08c4", null ],
+    [ "ex_set_parallel", "ex__conv_8c.html#ab9a0caef233c3321be24ecd4c9d51578", null ],
     [ "nc_flt_code", "ex__conv_8c.html#a0bcb99c4a23dde165c0a75e9acfb3d55", null ],
     [ "file_list", "ex__conv_8c.html#a24d92cdd9e11962bd034e077ef1f78c2", null ]
 ];
