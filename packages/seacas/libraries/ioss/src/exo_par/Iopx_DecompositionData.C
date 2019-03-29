@@ -406,8 +406,6 @@ namespace Iopx {
     // equalize the nodeCount among processors since some procs have 1
     // more node than others. For small models, assume we can handle
     // at least 10000 entities.
-
-    // TODO: Consolidate this code with `get_sideset_data`
     size_t node_memory = ((decomp_node_count() + 1) / 2) * 2 * 3 * sizeof(double) / sizeof(INT);
     size_t max_size    = std::max((size_t)100000, node_memory);
     if (1.05 * max_size > entitylist_size) {
@@ -1371,15 +1369,63 @@ namespace Iopx {
 
     if (m_processor == set.root_) {
       // Read the nodeset data from the file..
+      // KLUGE: Unknown why, but the following calls to ex_get_set are unable to handle a count() * int_size > 2.1 billion.
+      // when run on a parallel file.  This works fine in a serial run, but in parallel even though only a single processor
+      // is calling the routine, it fails.
+      const size_t max_size = 250000000;
       if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
         file_data.resize(set.file_count());
-        ierr = ex_get_set(filePtr, type, id, TOPTR(file_data), nullptr);
+	if (set.file_count() < max_size) {
+	  ierr = ex_get_set(filePtr, type, id, TOPTR(file_data), nullptr);
+	  if (ierr < 0) {
+	    Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+	  }
+	}
+	else {
+	  size_t iter  = (set.file_count() + max_size - 1) / max_size;
+	  size_t count = (set.file_count() + iter - 1 ) / iter;
+	  int old_par_setting = ex_set_parallel(filePtr, 0);
+	  size_t start = 1;
+	  for (size_t i = 0; i < iter; i++) {
+	    if ((start + count - 1) > set.file_count()) {
+	      count = set.file_count() - start + 1;
+	    }
+	    ierr = ex_get_partial_set(filePtr, type, id, start, count, &file_data[start-1], nullptr);
+	    if (ierr < 0) {
+	      Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+	    }
+	    start += count;
+	  }
+	  ex_set_parallel(filePtr, old_par_setting);
+	}
       }
       else if (field.get_name() == "sides") {
         // SideSet only...
         if (type == EX_SIDE_SET) {
           file_data.resize(set.file_count());
-          ierr = ex_get_set(filePtr, type, id, nullptr, TOPTR(file_data));
+	  if (set.file_count() < max_size) {
+	    ierr = ex_get_set(filePtr, type, id, nullptr, TOPTR(file_data));
+	    if (ierr < 0) {
+	      Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+	    }
+	  }
+	  else {
+	    size_t iter  = (set.file_count() + max_size - 1) / max_size;
+	    size_t count = (set.file_count() + iter - 1 ) / iter;
+	    int old_par_setting = ex_set_parallel(filePtr, 0);
+	    size_t start = 1;
+	    for (size_t i = 0; i < iter; i++) {
+	      if ((start + count - 1) > set.file_count()) {
+		count = set.file_count() - start + 1;
+	      }
+	      ierr = ex_get_partial_set(filePtr, type, id, start, count, nullptr, &file_data[start-1]);
+	      if (ierr < 0) {
+		Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+	      }
+	      start += count;
+	    }
+	    ex_set_parallel(filePtr, old_par_setting);
+	  }
         }
         else {
           return -1;
@@ -1393,6 +1439,9 @@ namespace Iopx {
         set_param[0].extra_list               = nullptr;
         set_param[0].distribution_factor_list = nullptr;
         ierr                                  = ex_get_sets(filePtr, 1, set_param);
+	if (ierr < 0) {
+	  Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+	}
 
         if (set_param[0].num_distribution_factor == 0) {
           // This should have been caught above.
@@ -1403,6 +1452,9 @@ namespace Iopx {
             file_data.resize(set_param[0].num_distribution_factor);
             set_param[0].distribution_factor_list = TOPTR(file_data);
             ierr                                  = ex_get_sets(filePtr, 1, set_param);
+	    if (ierr < 0) {
+	      Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+	    }
           }
           else {
             assert(1 == 0 && "Internal error -- should not be here -- sset df");
@@ -1413,10 +1465,7 @@ namespace Iopx {
         assert(1 == 0 && "Unrecognized field name in get_set_mesh_var");
       }
     }
-
-    if (ierr >= 0) {
-      communicate_set_data(TOPTR(file_data), ioss_data, set, 1);
-    }
+    communicate_set_data(TOPTR(file_data), ioss_data, set, 1);
 
     // Map global 0-based index to local 1-based index.
     if (field.get_name() == "ids" || field.get_name() == "ids_raw") {

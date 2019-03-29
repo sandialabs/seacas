@@ -1299,19 +1299,19 @@ namespace Iopx {
                                    Ioss::Field::MESH, number_sides);
 
             Ioss::IntVector e32(number_sides);
-            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, TOPTR(e32));
-            std::copy(e32.begin(), e32.end(), sides.begin());
             decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, TOPTR(e32));
             std::copy(e32.begin(), e32.end(), element.begin());
+            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, TOPTR(e32));
+            std::copy(e32.begin(), e32.end(), sides.begin());
           }
           else {
             Ioss::Field side_field("sides", Ioss::Field::INT64, IOSS_SCALAR(), Ioss::Field::MESH,
                                    number_sides);
             Ioss::Field elem_field("ids_raw", Ioss::Field::INT64, IOSS_SCALAR(), Ioss::Field::MESH,
                                    number_sides);
-            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, TOPTR(sides));
             decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field,
                                      TOPTR(element));
+            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, TOPTR(sides));
           }
 
           if (!blockOmissions.empty() || !blockInclusions.empty()) {
