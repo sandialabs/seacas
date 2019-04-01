@@ -71,6 +71,7 @@
 #include "Ioss_FaceBlock.h"
 #include "Ioss_FaceSet.h"
 #include "Ioss_Field.h"
+#include "Ioss_FileInfo.h"
 #include "Ioss_Hex8.h"
 #include "Ioss_IOFactory.h"
 #include "Ioss_NodeBlock.h"
@@ -488,12 +489,26 @@ namespace Iocgns {
           (!is_input() && properties.exists("MEMORY_WRITE"))) {
         strcpy(hdf5_access, "PARALLEL");
       }
-      int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
-      if (!is_input() && m_cgnsFilePtr == -2) {
-        // Writing multiple steps with a "flush" (cg_close() / cg_open())
-        mode = CG_MODE_MODIFY;
-      }
+
       CGCHECKM(cg_set_file_type(CG_FILE_HDF5));
+
+      int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
+      if (!is_input()) {
+	if (m_cgnsFilePtr == -2) {
+	  // Writing multiple steps with a "flush" (cg_close() / cg_open())
+	  mode = CG_MODE_MODIFY;
+	}
+	else {
+	  // Check whether appending to existing file...
+	  if (open_create_behavior() == Ioss::DB_APPEND) {
+	    // Append to file if it already exists -- See if the file exists.
+	    Ioss::FileInfo file = Ioss::FileInfo(decoded_filename());
+	    if (file.exists()) {
+	      mode = CG_MODE_MODIFY;
+	    }
+	  }
+	}
+      }
 
 #ifdef SEACAS_HAVE_MPI
       // Kluge to get fpp and dof CGNS working at same time.

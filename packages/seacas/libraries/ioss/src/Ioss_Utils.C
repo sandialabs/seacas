@@ -1726,7 +1726,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       Ioss::Utils::clear(data_pool.data);
       return;
     }
-  } // appending
+  } // !appending
 
   if (options.debug && rank == 0) {
     std::cerr << "DEFINING TRANSIENT FIELDS ... " << '\n';
