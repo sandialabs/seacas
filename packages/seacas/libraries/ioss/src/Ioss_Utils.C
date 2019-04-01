@@ -1538,7 +1538,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 {
   DataPool data_pool;
 
-  bool              memory_stats = options.memory_statistics;
   Ioss::DatabaseIO *dbi          = region.get_database();
 
   int rank = dbi->util().parallel_rank();
@@ -1550,9 +1549,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     if (options.debug && rank == 0) {
       std::cerr << "DEFINING MODEL ... \n";
     }
-    if (memory_stats) {
-      dbi->util().progress("DEFINING MODEL");
-    }
+    dbi->progress("DEFINING MODEL");
     if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
       if (options.verbose && rank == 0) {
         std::cerr << "ERROR: Could not put output region into define model state\n";
@@ -1595,14 +1592,10 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     if (options.debug && rank == 0) {
       std::cerr << "END STATE_DEFINE_MODEL... " << '\n';
     }
-    if (memory_stats) {
-      dbi->util().progress("END STATE_DEFINE_MODEL");
-    }
+    dbi->progress("END STATE_DEFINE_MODEL");
 
     output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
-    if (memory_stats) {
-      dbi->util().progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
-    }
+    dbi->progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
 
     if (options.verbose && rank == 0) {
       std::cerr << "Maximum Field size = " << max_field_size << " bytes.\n";
@@ -1615,9 +1608,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     if (options.debug && rank == 0) {
       std::cerr << "TRANSFERRING MESH FIELD DATA ... " << '\n';
     }
-    if (memory_stats) {
-      dbi->util().progress("TRANSFERRING MESH FIELD DATA ... ");
-    }
+    dbi->progress("TRANSFERRING MESH FIELD DATA ... ");
 
     // Model defined, now fill in the model data...
     output_region.begin_mode(Ioss::STATE_MODEL);
@@ -1728,9 +1719,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     if (options.debug && rank == 0) {
       std::cerr << "END STATE_MODEL... " << '\n';
     }
-    if (memory_stats) {
-      dbi->util().progress("END STATE_MODEL... ");
-    }
+    dbi->progress("END STATE_MODEL... ");
     output_region.end_mode(Ioss::STATE_MODEL);
 
     if (options.delete_timesteps) {
@@ -1742,9 +1731,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   if (options.debug && rank == 0) {
     std::cerr << "DEFINING TRANSIENT FIELDS ... " << '\n';
   }
-  if (memory_stats) {
-    dbi->util().progress("DEFINING TRANSIENT FIELDS ... ");
-  }
+  dbi->progress("DEFINING TRANSIENT FIELDS ... ");
 
   if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
     if (options.verbose && rank == 0) {
@@ -1808,18 +1795,14 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     if (options.debug && rank == 0) {
       std::cerr << "END STATE_DEFINE_TRANSIENT... " << '\n';
     }
-    if (memory_stats) {
-      dbi->util().progress("END STATE_DEFINE_TRANSIENT... ");
-    }
+    dbi->progress("END STATE_DEFINE_TRANSIENT... ");
     output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
   }
 
   if (options.debug && rank == 0) {
     std::cerr << "TRANSFERRING TRANSIENT FIELDS ... " << '\n';
   }
-  if (memory_stats) {
-    dbi->util().progress("TRANSFERRING TRANSIENT FIELDS... ");
-  }
+  dbi->progress("TRANSFERRING TRANSIENT FIELDS... ");
 
   output_region.begin_mode(Ioss::STATE_TRANSIENT);
   // Get the timesteps from the input database.  Step through them
@@ -1909,9 +1892,8 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   if (options.debug && rank == 0) {
     std::cerr << "END STATE_TRANSIENT... " << '\n';
   }
-  if (memory_stats) {
-    dbi->util().progress("END STATE_TRANSIENT ... ");
-  }
+  dbi->progress("END STATE_TRANSIENT ... ");
+
   output_region.end_mode(Ioss::STATE_TRANSIENT);
   Ioss::Utils::clear(data_pool.data);
 }

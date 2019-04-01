@@ -199,6 +199,7 @@ namespace Ioss {
       overlayCount = properties.get("OVERLAY_COUNT").get_int();
     }
 
+    Utils::check_set_bool_property(properties, "ENABLE_TRACING", m_enableTracing);
     Utils::check_set_bool_property(properties, "TIME_STATE_INPUT_OUTPUT", m_timeStateInOut);
     {
       bool logging;
