@@ -66,6 +66,7 @@
 #include "Ioss_ElementTopology.h"
 #include "Ioss_EntityType.h"
 #include "Ioss_Field.h"
+#include "Ioss_FileInfo.h"
 #include "Ioss_IOFactory.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_ParallelUtils.h"
@@ -313,7 +314,19 @@ namespace Iocgns {
   void ParallelDatabaseIO::closeDatabase__() const
   {
     if (m_cgnsFilePtr != -1) {
+      bool do_timer = false;
+      Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+      double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+
       CGCHECKM(cgp_close(m_cgnsFilePtr));
+
+      if (do_timer) {
+        double t_end    = Ioss::Utils::timer();
+        double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
+        if (myProcessor == 0) {
+          std::cerr << "File Close Time = " << duration << "\n";
+        }
+      }
     }
     m_cgnsFilePtr = -1;
   }
