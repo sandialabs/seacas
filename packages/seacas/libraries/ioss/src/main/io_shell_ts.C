@@ -207,9 +207,9 @@ int main(int argc, char *argv[])
   OUTPUT << '\n';
 
 #ifdef SEACAS_HAVE_KOKKOS
-  OUTPUT << "Kokkos default execution space configuration:" << std::endl;
+  OUTPUT << "Kokkos default execution space configuration:\n";
   Kokkos::DefaultExecutionSpace::print_configuration(std::cout, false);
-  OUTPUT << std::endl;
+  OUTPUT << "\n";
 #endif
 
   file_copy(interface);
