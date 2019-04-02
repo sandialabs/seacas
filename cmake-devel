@@ -67,7 +67,7 @@ BUILD_TYPE="${BUILD_TYPE:-DEBUG}"
 ### which provides X11/Xlib.h and the libX11, then change the "ON"
 ### below to "OFF". It will disable blot and fastq
 HAVE_X11=${X11:-ON}
-HAVE_X11=OFF
+
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-OFF}
 
