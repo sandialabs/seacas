@@ -1517,7 +1517,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_elem_blk(int ex
       printf("\t\tLocal_block_ID globals.Proc_Num_Elem_In_Blk Nodes_Per_Elem_In_Blk\n");
       printf("\t\t----------------------------------------------------\n");
       for (int i = 0; i < globals.Proc_Num_Elem_Blk[iproc]; i++)
-        printf("\t\t\t %d   \t   %d \t\t   %d\n", i, globals.Proc_Num_Elem_In_Blk[iproc][i],
+        printf("\t\t\t %d   \t   %d \t\t   %ld\n", i, globals.Proc_Num_Elem_In_Blk[iproc][i],
                globals.Proc_Nodes_Per_Elem[iproc][i]);
       printf("\t\t----------------------------------------------------\n");
       print_line("-", 79);
