@@ -370,19 +370,20 @@ namespace Iopx {
   }
 
   template <typename INT>
-    void DecompositionData<INT>::get_common_set_data(int filePtr, ex_entity_type set_type,
-						     std::vector<Ioss::SetDecompositionData> &entity_sets,
-						     const std::string &set_type_name)
+  void
+  DecompositionData<INT>::get_common_set_data(int filePtr, ex_entity_type set_type,
+                                              std::vector<Ioss::SetDecompositionData> &entity_sets,
+                                              const std::string &set_type_name)
   {
-    int root = 0; // Root processor that reads all entityset bulk data (entitylists)
+    int    root      = 0; // Root processor that reads all entityset bulk data (entitylists)
     size_t set_count = entity_sets.size();
 
-    std::vector<ex_set>           sets(set_count);
-    std::vector<INT>              ids(set_count);
+    std::vector<ex_set> sets(set_count);
+    std::vector<INT>    ids(set_count);
     ex_get_ids(filePtr, set_type, TOPTR(ids));
 
     for (size_t i = 0; i < set_count; i++) {
-      entity_sets[i].id_                 = ids[i];
+      entity_sets[i].id_               = ids[i];
       sets[i].id                       = ids[i];
       sets[i].type                     = set_type;
       sets[i].entry_list               = nullptr;
@@ -396,7 +397,7 @@ namespace Iopx {
     size_t entitylist_size = 0;
     for (size_t i = 0; i < set_count; i++) {
       entitylist_size += sets[i].num_entry;
-      entity_sets[i].fileCount = sets[i].num_entry;
+      entity_sets[i].fileCount               = sets[i].num_entry;
       entity_sets[i].distributionFactorCount = sets[i].num_distribution_factor;
     }
 
@@ -422,7 +423,8 @@ namespace Iopx {
     if (entitylist_size >= one << 31) {
       if (m_processor == 0) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: The sum of the " << set_type_name << " entity counts is larger than 2.1 Billion "
+        errmsg << "ERROR: The sum of the " << set_type_name
+               << " entity counts is larger than 2.1 Billion "
                << " which cannot be correctly handled with the current IOSS decomposition "
                << " implementation.\n"
                << "       Contact gdsjaar@sandia.gov for more details.\n";
@@ -434,18 +436,18 @@ namespace Iopx {
     std::vector<INT> entitylist(max_size);
     std::vector<INT> set_entities_read(set_count);
 
-    size_t  offset          = 0;        // What position are we filling in entitylist.
-    ssize_t remain          = max_size; // Amount of space left in entitylist.
-    size_t  ibeg            = 0;
-    size_t  total_read      = 0;
+    size_t  offset     = 0;        // What position are we filling in entitylist.
+    ssize_t remain     = max_size; // Amount of space left in entitylist.
+    size_t  ibeg       = 0;
+    size_t  total_read = 0;
     for (size_t i = 0; i < set_count; i++) {
       ssize_t entitys_to_read = sets[i].num_entry;
       do {
         ssize_t to_read = std::min(remain, entitys_to_read);
         if (m_processor == root) {
 #if IOSS_DEBUG_OUTPUT
-          std::cerr << set_type_name << " " << sets[i].id << " reading " << to_read << " entities from offset "
-                    << set_entities_read[i] + 1 << "\n";
+          std::cerr << set_type_name << " " << sets[i].id << " reading " << to_read
+                    << " entities from offset " << set_entities_read[i] + 1 << "\n";
 #endif
           // Read the entitylists on root processor.
           ex_get_partial_set(filePtr, set_type, sets[i].id, set_entities_read[i] + 1, to_read,
@@ -468,7 +470,7 @@ namespace Iopx {
           // processor...
           offset = 0; // Just got new list of entitys; starting at beginning.
           for (size_t j = ibeg; j <= i; j++) {
-	    size_t set_offset = set_entities_read[j];
+            size_t set_offset      = set_entities_read[j];
             size_t ns_beg          = offset;
             size_t num_in_this_set = sets[j].num_entry - set_offset;
             size_t ns_end          = std::min(ns_beg + num_in_this_set, max_size);
@@ -476,7 +478,7 @@ namespace Iopx {
             for (size_t n = ns_beg; n < ns_end; n++) {
               INT entity = entitylist[n];
               // See if entity owned by this processor...
-	      bool owned = (set_type == EX_NODE_SET) ? i_own_node(entity) : i_own_elem(entity);
+              bool owned = (set_type == EX_NODE_SET) ? i_own_node(entity) : i_own_elem(entity);
               if (owned) {
                 // Save entity in this processors entitylist for this set.
                 // The saved data is this entitys location in the global
@@ -485,12 +487,12 @@ namespace Iopx {
               }
             }
             offset = ns_end;
-	    set_entities_read[j] += ns_end - ns_beg;
-	  }
+            set_entities_read[j] += ns_end - ns_beg;
+          }
           remain = max_size;
           offset = 0;
-          ibeg = (entitys_to_read == 0) ? i+1 : i;
-	}
+          ibeg   = (entitys_to_read == 0) ? i + 1 : i;
+        }
       } while (entitys_to_read > 0);
     }
 
@@ -511,7 +513,7 @@ namespace Iopx {
       for (size_t i = 0; i < set_count; i++) {
         entity_sets[i].hasEntities.resize(m_processorCount);
         entity_sets[i].root_ = m_processorCount;
-        int count          = 0;
+        int count            = 0;
         for (int p = 0; p < m_processorCount; p++) {
           if (p < entity_sets[i].root_ && has_entitys[p * set_count + i] != 0) {
             entity_sets[i].root_ = p;
@@ -566,8 +568,8 @@ namespace Iopx {
     //       (3*globNodeCount/procCount*sizeof(double)/sizeof(INT)) or
     //       less.
 
-    int root = 0; // Root processor that reads all nodeset bulk data (nodelists)
-    int     old_par_setting = ex_set_parallel(filePtr, 0);
+    int root            = 0; // Root processor that reads all nodeset bulk data (nodelists)
+    int old_par_setting = ex_set_parallel(filePtr, 0);
 
     node_sets.resize(set_count);
     get_common_set_data(filePtr, EX_NODE_SET, node_sets, "NodeSet");
@@ -610,8 +612,8 @@ namespace Iopx {
   {
     m_decomposition.show_progress(__func__);
 
-    int root = 0; // Root processor that reads all sideset bulk data (nodelists)
-    int     old_par_setting = ex_set_parallel(filePtr, 0);
+    int root            = 0; // Root processor that reads all sideset bulk data (nodelists)
+    int old_par_setting = ex_set_parallel(filePtr, 0);
 
     side_sets.resize(set_count);
     get_common_set_data(filePtr, EX_SIDE_SET, side_sets, "SideSet");
@@ -1369,63 +1371,65 @@ namespace Iopx {
 
     if (m_processor == set.root_) {
       // Read the nodeset data from the file..
-      // KLUGE: Unknown why, but the following calls to ex_get_set are unable to handle a count() * int_size > 2.1 billion.
-      // when run on a parallel file.  This works fine in a serial run, but in parallel even though only a single processor
-      // is calling the routine, it fails.
+      // KLUGE: Unknown why, but the following calls to ex_get_set are unable to handle a count() *
+      // int_size > 2.1 billion. when run on a parallel file.  This works fine in a serial run, but
+      // in parallel even though only a single processor is calling the routine, it fails.
       const size_t max_size = 250000000;
       if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
         file_data.resize(set.file_count());
-	if (set.file_count() < max_size) {
-	  ierr = ex_get_set(filePtr, type, id, TOPTR(file_data), nullptr);
-	  if (ierr < 0) {
-	    Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
-	  }
-	}
-	else {
-	  size_t iter  = (set.file_count() + max_size - 1) / max_size;
-	  size_t count = (set.file_count() + iter - 1 ) / iter;
-	  int old_par_setting = ex_set_parallel(filePtr, 0);
-	  size_t start = 1;
-	  for (size_t i = 0; i < iter; i++) {
-	    if ((start + count - 1) > set.file_count()) {
-	      count = set.file_count() - start + 1;
-	    }
-	    ierr = ex_get_partial_set(filePtr, type, id, start, count, &file_data[start-1], nullptr);
-	    if (ierr < 0) {
-	      Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
-	    }
-	    start += count;
-	  }
-	  ex_set_parallel(filePtr, old_par_setting);
-	}
+        if (set.file_count() < max_size) {
+          ierr = ex_get_set(filePtr, type, id, TOPTR(file_data), nullptr);
+          if (ierr < 0) {
+            Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+          }
+        }
+        else {
+          size_t iter            = (set.file_count() + max_size - 1) / max_size;
+          size_t count           = (set.file_count() + iter - 1) / iter;
+          int    old_par_setting = ex_set_parallel(filePtr, 0);
+          size_t start           = 1;
+          for (size_t i = 0; i < iter; i++) {
+            if ((start + count - 1) > set.file_count()) {
+              count = set.file_count() - start + 1;
+            }
+            ierr =
+                ex_get_partial_set(filePtr, type, id, start, count, &file_data[start - 1], nullptr);
+            if (ierr < 0) {
+              Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+            }
+            start += count;
+          }
+          ex_set_parallel(filePtr, old_par_setting);
+        }
       }
       else if (field.get_name() == "sides") {
         // SideSet only...
         if (type == EX_SIDE_SET) {
           file_data.resize(set.file_count());
-	  if (set.file_count() < max_size) {
-	    ierr = ex_get_set(filePtr, type, id, nullptr, TOPTR(file_data));
-	    if (ierr < 0) {
-	      Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
-	    }
-	  }
-	  else {
-	    size_t iter  = (set.file_count() + max_size - 1) / max_size;
-	    size_t count = (set.file_count() + iter - 1 ) / iter;
-	    int old_par_setting = ex_set_parallel(filePtr, 0);
-	    size_t start = 1;
-	    for (size_t i = 0; i < iter; i++) {
-	      if ((start + count - 1) > set.file_count()) {
-		count = set.file_count() - start + 1;
-	      }
-	      ierr = ex_get_partial_set(filePtr, type, id, start, count, nullptr, &file_data[start-1]);
-	      if (ierr < 0) {
-		Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
-	      }
-	      start += count;
-	    }
-	    ex_set_parallel(filePtr, old_par_setting);
-	  }
+          if (set.file_count() < max_size) {
+            ierr = ex_get_set(filePtr, type, id, nullptr, TOPTR(file_data));
+            if (ierr < 0) {
+              Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+            }
+          }
+          else {
+            size_t iter            = (set.file_count() + max_size - 1) / max_size;
+            size_t count           = (set.file_count() + iter - 1) / iter;
+            int    old_par_setting = ex_set_parallel(filePtr, 0);
+            size_t start           = 1;
+            for (size_t i = 0; i < iter; i++) {
+              if ((start + count - 1) > set.file_count()) {
+                count = set.file_count() - start + 1;
+              }
+              ierr = ex_get_partial_set(filePtr, type, id, start, count, nullptr,
+                                        &file_data[start - 1]);
+              if (ierr < 0) {
+                Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+              }
+              start += count;
+            }
+            ex_set_parallel(filePtr, old_par_setting);
+          }
         }
         else {
           return -1;
@@ -1439,9 +1443,9 @@ namespace Iopx {
         set_param[0].extra_list               = nullptr;
         set_param[0].distribution_factor_list = nullptr;
         ierr                                  = ex_get_sets(filePtr, 1, set_param);
-	if (ierr < 0) {
-	  Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
-	}
+        if (ierr < 0) {
+          Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+        }
 
         if (set_param[0].num_distribution_factor == 0) {
           // This should have been caught above.
@@ -1452,9 +1456,9 @@ namespace Iopx {
             file_data.resize(set_param[0].num_distribution_factor);
             set_param[0].distribution_factor_list = TOPTR(file_data);
             ierr                                  = ex_get_sets(filePtr, 1, set_param);
-	    if (ierr < 0) {
-	      Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
-	    }
+            if (ierr < 0) {
+              Ioex::exodus_error(filePtr, __LINE__, __func__, __FILE__);
+            }
           }
           else {
             assert(1 == 0 && "Internal error -- should not be here -- sset df");

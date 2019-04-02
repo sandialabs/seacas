@@ -486,7 +486,7 @@ namespace Ioss {
     void progress(const std::string &output) const
     {
       if (m_enableTracing) {
-	util().progress(output);
+        util().progress(output);
       }
     }
 
