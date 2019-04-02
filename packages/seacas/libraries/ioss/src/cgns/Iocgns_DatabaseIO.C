@@ -494,20 +494,20 @@ namespace Iocgns {
 
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
       if (!is_input()) {
-	if (m_cgnsFilePtr == -2) {
-	  // Writing multiple steps with a "flush" (cg_close() / cg_open())
-	  mode = CG_MODE_MODIFY;
-	}
-	else {
-	  // Check whether appending to existing file...
-	  if (open_create_behavior() == Ioss::DB_APPEND) {
-	    // Append to file if it already exists -- See if the file exists.
-	    Ioss::FileInfo file = Ioss::FileInfo(decoded_filename());
-	    if (file.exists()) {
-	      mode = CG_MODE_MODIFY;
-	    }
-	  }
-	}
+        if (m_cgnsFilePtr == -2) {
+          // Writing multiple steps with a "flush" (cg_close() / cg_open())
+          mode = CG_MODE_MODIFY;
+        }
+        else {
+          // Check whether appending to existing file...
+          if (open_create_behavior() == Ioss::DB_APPEND) {
+            // Append to file if it already exists -- See if the file exists.
+            Ioss::FileInfo file = Ioss::FileInfo(decoded_filename());
+            if (file.exists()) {
+              mode = CG_MODE_MODIFY;
+            }
+          }
+        }
       }
 
 #ifdef SEACAS_HAVE_MPI
@@ -1067,7 +1067,7 @@ namespace Iocgns {
       int zone = 1;
 #endif
       for (const auto &sb : blocks) {
-        assert(sb->get_property("zone").get_int() == zone++);
+        assert(sb->get_property("zone").get_int() == zone++); // Modification of zone OK in assert
         my_offsets.push_back(sb->get_property("offset_i").get_int());
         my_offsets.push_back(sb->get_property("offset_j").get_int());
         my_offsets.push_back(sb->get_property("offset_k").get_int());

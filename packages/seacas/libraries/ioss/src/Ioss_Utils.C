@@ -1538,7 +1538,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 {
   DataPool data_pool;
 
-  Ioss::DatabaseIO *dbi          = region.get_database();
+  Ioss::DatabaseIO *dbi = region.get_database();
 
   int rank = dbi->util().parallel_rank();
 
@@ -2582,7 +2582,7 @@ namespace {
         for (size_t n = 0; n < ids.size(); n++) {
           INT id = ids[n];
           if (my_data[id - 1] == my_processor) {
-            owned++;
+            ++owned;
           }
         }
         ns->property_add(Ioss::Property("locally_owned_count", owned));
