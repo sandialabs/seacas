@@ -30,7 +30,6 @@ fi
 
 CFLAGS="-I${INSTALL_PATH}/include"; export CFLAGS
 CPPFLAGS="-DNDEBUG"; export CPPFLAGS
-OS=`uname -s`
 
 rm -f CMakeCache.txt
 
