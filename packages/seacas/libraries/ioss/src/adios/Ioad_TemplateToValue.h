@@ -35,13 +35,12 @@
 
 namespace Ioad {
 
-template <typename T> constexpr Ioss::Field::BasicType template_to_basic_type() noexcept;
+  template <typename T> constexpr Ioss::Field::BasicType template_to_basic_type() noexcept;
 
-// Only implement for a few specialized classes on purpose. No generic implementation.
-template <typename T> constexpr char const *get_entity_type() noexcept;
+  // Only implement for a few specialized classes on purpose. No generic implementation.
+  template <typename T> constexpr char const *get_entity_type() noexcept;
 
-template <class T>
-inline std::string GetType() noexcept;
+  template <class T> inline std::string GetType() noexcept;
 
 } // namespace Ioad
 

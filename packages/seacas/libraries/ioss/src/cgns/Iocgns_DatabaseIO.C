@@ -112,9 +112,8 @@ namespace {
   struct SBlock
   {
     SBlock() = default;
-    SBlock(char *names, int *data)
+    SBlock(char *names, int *data) : name(std::string{names})
     {
-      name    = std::string{names};
       int idx = 0;
       proc    = data[idx++];
       unpack(idx, data, range.data(), 3);

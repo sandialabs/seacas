@@ -370,13 +370,13 @@ namespace Ioad {
     adios_wrapper.DefineMetaVariable<std::string>(Var_type_meta, encoded_name);
   }
 
-  template <typename T, typename >
+  template <typename T, typename>
   void DatabaseIO::define_entity_meta_variables(const std::string &encoded_name)
   {
     adios_wrapper.DefineMetaVariable<std::string>(Topology_meta, encoded_name);
   }
 
-  template <typename T, typename , typename >
+  template <typename T, typename, typename>
   void DatabaseIO::define_entity_meta_variables(const std::string &encoded_name)
   {
     // no op
