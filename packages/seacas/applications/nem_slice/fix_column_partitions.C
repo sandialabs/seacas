@@ -306,7 +306,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
     typename std::vector<INT>::iterator it = below_list.begin();
     while (it != below_list.end()) {
       colelems.push_back(*it);
-      it++;
+      ++it;
     }
 
     // Make all the other elements in the column be on the same
