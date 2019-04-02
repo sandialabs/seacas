@@ -1,4 +1,5 @@
 # SEACAS  [[Documentation](http://gsjaardema.github.io/seacas/)]
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c82efc90be9943e08b71e2d16abaa370)](https://app.codacy.com/app/gsjaardema/seacas?utm_source=github.com&utm_medium=referral&utm_content=gsjaardema/seacas&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/gsjaardema/seacas.svg?branch=master)](https://travis-ci.org/gsjaardema/seacas)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
 
