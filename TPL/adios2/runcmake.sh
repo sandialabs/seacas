@@ -14,24 +14,35 @@ INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 SHARED="${SHARED:-ON}"
 
-if [ "$MPI" == "ON" ]
+if [ "$MPI" == "ON" ] && [ "$CRAY" = "ON" ]
 then
+  export CC=cc
+  export CXX=cxx
+elif [ "$MPI" == "ON" ]
+then
+  export CC=mpicc
+  export CXX=mpicxx
+else
   COMPILER="${COMPILER:-gnu}"
   if [ "$COMPILER" == "gnu" ]
   then
       export CC=gcc
+      export CXX=g++
   fi
   if [ "$COMPILER" == "clang" ]
   then
       export CC=clang
+      export CXX=clang++
   fi
   if [ "$COMPILER" == "intel" ]
   then
       export CC=icc
+      export CXX=icpc
   fi
   if [ "$COMPILER" == "ibm" ]
   then
       export CC=xlc
+      export CXX=xlC
   fi
 fi
 
@@ -55,6 +66,7 @@ $EXTRA_ARGS \
 echo ""
 echo "         MPI: ${MPI}"
 echo "    COMPILER: ${CC}"
+echo "C++ COMPILER: ${CXX}"
 echo "      ACCESS: ${ACCESS}"
 echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo ""
