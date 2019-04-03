@@ -42,9 +42,9 @@ then
       CC=gcc
       FC=gfortran
       CFLAGS="-Wall -Wunused -pedantic"
-      CXXFLAGS="-Wall -Wunused -pedantic"      
+      CXXFLAGS="-Wall -Wunused -pedantic"
   fi
-  
+
   if [ "$COMPILER" == "clang" ]
   then
       CXX=clang++
@@ -92,7 +92,7 @@ THREADSAFE=${THREADSAFE:-OFF}
 
 FORTRAN=${FORTRAN:-ON}
 
-### TPLs -- 
+### TPLs --
 ### Make sure these point to the locations to find the libraries and includes in lib and include
 ### subdirectories of the specified paths.
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
@@ -103,6 +103,7 @@ HDF5_PATH=${INSTALL_PATH}
 CGNS_PATH=${INSTALL_PATH}
 DATAWAREHOUSE_PATH=${INSTALL_PATH}
 ADIOS2_PATH=${INSTALL_PATH}
+GTEST_PATH=${INSTALL_PATH}
 
 function check_enable()
 {
@@ -120,6 +121,7 @@ HAVE_MATIO=`check_enable "${MATIO_PATH}/include/matio.h"`
 HAVE_CGNS=`check_enable "${CGNS_PATH}/include/cgnslib.h"`
 HAVE_DATAWAREHOUSE=OFF
 HAVE_ADIOS2=`check_enable "${ADIOS2_PATH}/include/adios2.h"`
+HAVE_GTEST=`check_enable "${GTEST_PATH}/include/gtest/gtest.h"`
 
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
@@ -188,7 +190,7 @@ then
                 -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
-    
+
 OS=`uname -s`
 if [ "$OS" == "Darwin" ] ; then
   DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/X11/include"
@@ -234,7 +236,7 @@ cmake -G "${GENERATOR}" \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
 -D TPL_ENABLE_ADIOS2:BOOL=${HAVE_ADIOS2} \
--D TPL_ENABLE_gtest:BOOL=${GTEST} \
+-D TPL_ENABLE_gtest:BOOL=${HAVE_GTEST} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
@@ -262,19 +264,20 @@ echo ""
 echo "      ACCESS: ${ACCESS}"
 echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo "  "
-echo "          CC: ${CC}"
-echo "         CXX: ${CXX}"
-echo "          FC: ${FC}"
-echo "         MPI: ${MPI}"
-echo "      SHARED: ${SHARED}"
-echo "  THREADSAFE: ${THREADSAFE}"
-echo "  "
-echo " HAVE_NETCDF: ${HAVE_NETCDF}"
-echo "  HAVE_MATIO: ${HAVE_MATIO}"
-echo "   HAVE_CGNS: ${HAVE_CGNS}"
-echo " HAVE_ADIOS2: ${HAVE_ADIOS2}"
-echo "      KOKKOS: ${KOKKOS}"
-echo "     DOXYGEN: ${DOXYGEN}"
+echo "         CC: ${CC}"
+echo "        CXX: ${CXX}"
+echo "         FC: ${FC}"
+echo "        MPI: ${MPI}"
+echo "     SHARED: ${SHARED}"
+echo " THREADSAFE: ${THREADSAFE}"
+echo " "
+echo "     NETCDF: ${HAVE_NETCDF}"
+echo "      MATIO: ${HAVE_MATIO}"
+echo "       CGNS: ${HAVE_CGNS}"
+echo "     ADIOS2: ${HAVE_ADIOS2}"
+echo "      GTEST: ${HAVE_GTEST}"
+echo "     KOKKOS: ${KOKKOS}"
+echo "    DOXYGEN: ${DOXYGEN}"
 echo ""
 
 if [ "${TRAVIS}" == "true" ]
@@ -282,4 +285,3 @@ then
   make -j2
   cd ${ACCESS}
 fi
-
