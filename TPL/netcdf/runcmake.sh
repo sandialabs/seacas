@@ -10,7 +10,7 @@ INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 SHARED="${SHARED:-ON}"
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
-  OS=`uname -s`
+  OS=$(uname -s)
   if [ "$OS" = "Darwin" ] ; then
     LD_EXT="dylib"
   else

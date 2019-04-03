@@ -19,7 +19,7 @@ fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-netcdf_parallel=`$INSTALL_PATH/bin/nc-config --has-parallel`
+netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
 if [ "${netcdf_parallel}" == "yes" ]
 then
     MPI=ON
@@ -116,12 +116,12 @@ function check_enable()
     fi
 }
 
-HAVE_NETCDF=`check_enable "${NETCDF_PATH}/include/netcdf.h"`
-HAVE_MATIO=`check_enable "${MATIO_PATH}/include/matio.h"`
-HAVE_CGNS=`check_enable "${CGNS_PATH}/include/cgnslib.h"`
+HAVE_NETCDF=$(check_enable "${NETCDF_PATH}/include/netcdf.h")
+HAVE_MATIO=$(check_enable "${MATIO_PATH}/include/matio.h")
+HAVE_CGNS=$(check_enable "${CGNS_PATH}/include/cgnslib.h")
 HAVE_DATAWAREHOUSE=OFF
-HAVE_ADIOS2=`check_enable "${ADIOS2_PATH}/include/adios2.h"`
-HAVE_GTEST=`check_enable "${GTEST_PATH}/include/gtest/gtest.h"`
+HAVE_ADIOS2=$(check_enable "${ADIOS2_PATH}/include/adios2.h")
+HAVE_GTEST=$(check_enable "${GTEST_PATH}/include/gtest/gtest.h")
 
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
@@ -137,24 +137,24 @@ CUDA=${CUDA:-OFF}
 # BUG needs to work with cray too.
 if [ "${MPI}" == "ON" ] && [ "${CRAY}" == "ON" ]
 then
-   MPI_EXEC=`which srun`
+   MPI_EXEC=$(which srun)
    MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-n"
    CXX=CC
    CC=cc
    FC=ftn
-   MPI_BIN=`dirname \`which ${CC}\``
+   MPI_BIN=$(dirname $(which ${CC}))
    SHARED=OFF
 elif [ "${MPI}" == "ON" ]
 then
    if [ "${USE_SRUN}" == "ON" ]
    then
-       MPI_EXEC=`which srun`
+       MPI_EXEC=$(which srun)
        MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC} -D MPI_EXEC_NUMPROCS_FLAG=-N"
-       MPI_BIN=`dirname "${MPI_EXEC}"`
+       MPI_BIN=$(dirname "${MPI_EXEC}")
    else
-       MPI_EXEC=`which mpiexec`
+       MPI_EXEC=$(which mpiexec)
        MPI_SYMBOLS="-D MPI_EXEC=${MPI_EXEC}"
-       MPI_BIN=`dirname "${MPI_EXEC}"`
+       MPI_BIN=$(dirname "${MPI_EXEC}")
    fi
    CXX=mpicxx
    CC=mpicc
@@ -173,7 +173,7 @@ then
 		    -D KOKKOS_ENABLE_DEPRECATED_CODE:BOOL=OFF" \
                     -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   else
-    export OMPI_CXX=`which gcc`
+    export OMPI_CXX=$(which gcc)
     unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
     KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
                     -D SEACASProj_ENABLE_OpenMP:Bool=ON \
@@ -191,7 +191,7 @@ then
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
 
-OS=`uname -s`
+OS=$(uname -s)
 if [ "$OS" == "Darwin" ] ; then
   DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/X11/include"
 else
@@ -201,8 +201,8 @@ fi
 # Only run doxygen if me and on master branch...
 DOXYGEN=OFF
 if [[ "$OS" == "Darwin" && "$MPI" == "OFF" ]] ; then
-    branch=`git branch |grep \* |cut -c3-`
-    USER=`id -nu`
+    branch=$(git branch |grep \* |cut -c3-)
+    USER=$(id -nu)
     if [ "$USER" == "gdsjaar" ] && [ "$branch" == "master" ]; then
 	DOXYGEN=ON
     fi

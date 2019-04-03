@@ -66,7 +66,7 @@ then
 fi
 
 pwd
-export ACCESS=`pwd`
+export ACCESS=$(pwd)
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
@@ -79,7 +79,7 @@ then
     CC=mpicc; export CC
 fi
 
-OS=`uname -s`
+OS=$(uname -s)
 if [ "$SHARED" == "YES" ]
 then
     if [ "$OS" == "Darwin" ] ; then
