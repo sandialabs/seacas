@@ -46,7 +46,7 @@ The Exodus model is created via the following calls:
 * Output the initial information.  Since the model contains faces and
   a face block, the "extended" version of the `ex_put_init_ext()` call must be used:
 
-  ~~~~{.c}
+  ~~~~C
   ex_init_params par;
   strcpy( par.title, "This is the title" );
   par.num_dim = 3;
@@ -74,7 +74,7 @@ The Exodus model is created via the following calls:
 
 * Define the face block.
 
-~~~~{.c}
+~~~~C
    block_name = "face_block_1";
    num_face_in_block[0] = 15;
    num_total_nodes_per_blk[0] = 58;
@@ -90,7 +90,7 @@ The Exodus model is created via the following calls:
 * Output the face connectivity for "face_block_1".
   The data for the face connectivity is listed above; a portion is shown below...
 
-~~~~{.c}
+~~~~C
    connect = (int *) calloc(num_total_nodes_per_blk[0], sizeof(int));
    i = 0
    connect[i++] = 5;
@@ -128,7 +128,7 @@ The Exodus model is created via the following calls:
 
 * Output the number of nodes per face count for "face_block_1":
 
-~~~~{.c}
+~~~~C
    j = 0;
    nnpe[ 1] = 3;   /* Face 1 */
    nnpe[ 2] = 3;
@@ -152,7 +152,7 @@ The Exodus model is created via the following calls:
 * The face block is now fully defined; now define the nfaced element
   block which uses these faces.
 
-~~~~{.c}
+~~~~C
    block_name = "nfaced_1";
 
    num_elem_in_block = 3;
@@ -177,7 +177,7 @@ The Exodus model is created via the following calls:
 
 * Write the face connectivity:
 
-~~~~{.c}
+~~~~C
    /* write element-face connectivity */
    connect = (int *) calloc(num_total_faces_per_blk, sizeof(int));
 
@@ -208,7 +208,7 @@ The Exodus model is created via the following calls:
 
 * Output the number of faces per element count for "nfaced_1":
 
-~~~~{.c}
+~~~~C
    nnpe[1] = 5;  /* Number of faces per element 1 */
    nnpe[2] = 5;  /* Number of faces per element 2 */
    nnpe[3] = 7;  /* Number of faces per element 3 */
