@@ -32,6 +32,8 @@ matrix:
       env: FORTRAN=OFF
     - compiler: gcc
       env: ADIOS2=ON
+    - compiler: gcc
+      env: MPI=ON ADIOS2=ON
 
 before_install:
   # C++14
@@ -42,8 +44,7 @@ before_install:
   - sudo apt-get -y install gfortran-6
   - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-6 90
   - sudo apt-get -y install libz-dev
-  - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
-  - if [ -n "$MPI" ]; then sudo apt-get -y install libopenmpi-dev; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install -q mpich libmpich-dev; fi
   - GNU_PARALLEL=OFF ./install-tpl.sh 
 
 before_script:
