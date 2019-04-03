@@ -82,7 +82,7 @@ namespace Ioad {
     return stringified_sblock_names;
   }
 
-  std::string encode_field_name(std::vector<std::string> &names)
+  std::string encode_field_name(std::vector<std::string> names)
   {
     std::string encoded_name;
     size_t      count = 0;
