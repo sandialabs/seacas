@@ -227,6 +227,3 @@ The Exodus model is created via the following calls:
   [testwt-nfaced.c](../test/testwt-nfaced.c) and [testrd-nfaced](../test/testrd-nfaced.c) files.
 
 * These changes are in Exodus version v4.93 and later.
-
-
-

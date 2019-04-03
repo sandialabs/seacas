@@ -3,18 +3,18 @@
 [![Build Status](https://travis-ci.org/gsjaardema/seacas.svg?branch=master)](https://travis-ci.org/gsjaardema/seacas)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
 
-  * [Get the sources](#get-the-sources)
-  * [Build instructions](#build-instructions)
-  * [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
-  * [Testing](#testing)
-  * [Exodus](#exodus)
-  * [Trilinos](#trilinos)
-  * [SPACK](#spack)
-  * [License](#license)
-  * [Ubuntu](#ubuntu)
-  * [Contact information](#contact-information)
-  * For information on building with MPI, see [README-PARALLEL.md](README-PARALLEL.md)
-  * NOTE: The old imake-based build has been removed.
+* [Get the sources](#get-the-sources)
+* [Build instructions](#build-instructions)
+* [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
+* [Testing](#testing)
+* [Exodus](#exodus)
+* [Trilinos](#trilinos)
+* [SPACK](#spack)
+* [License](#license)
+* [Ubuntu](#ubuntu)
+* [Contact information](#contact-information)
+* For information on building with MPI, see [README-PARALLEL.md](README-PARALLEL.md)
+* NOTE: The old imake-based build has been removed.
 
 ## Get the sources
 ```
@@ -68,37 +68,36 @@ At this time, you should have all external TPL libraries built and
 installed into `${ACCESS}/lib` and `${ACCESS}/include`. You are now ready
 to configure the SEACAS CMake build.
 
-  * `cd $ACCESS`
-  * `mkdir build`
-  * `cd build`
-  * edit the `${ACCESS}cmake-config` file and adjust compilers and
-    other settings as needed.
-  * enter the command `../cmake-config` and cmake should configure everything for the build.
-  * `make && make install`
-  * If everything works, your applications should be in `${ACCESS}/bin`
-  * To install in a different location, do `INSTALL_PATH={path_to_install} ../cmake-config`
+* `cd $ACCESS`
+* `mkdir build`
+* `cd build`
+* edit the `${ACCESS}cmake-config` file and adjust compilers and other settings as needed.
+* enter the command `../cmake-config` and cmake should configure everything for the build.
+* `make && make install`
+* If everything works, your applications should be in `${ACCESS}/bin`
+* To install in a different location, do `INSTALL_PATH={path_to_install} ../cmake-config`
 
 ## Testing
 There are a few unit tests for zoltan, exodus, and aprepro that can be run via `make test` if you configured with `-D SEACASProj_ENABLE_TESTS=ON`.
 
 There is also a system-level test that just verifies that the applications can read and write exodus files correctly.  This test runs off of the installed applications.  To run do:
 
- * `make install`
- * `cd ../SEACAS-Test`
- * `make clean; make`
+* `make install`
+* `cd ../SEACAS-Test`
+* `make clean; make`
 
 This will run through several of the SEACAS applications creating a mesh (exodus file) and then performing various manipulations on the mesh.  If the test runs successfully, there is some hope that everything has built and is running correctly.
 
 ## Exodus
 If you only want the exodus library, then follow most of the above instructions with the following exceptions:
 
-  * You can either clone entire source tree as above, or you can
+* You can either clone entire source tree as above, or you can
 	download a zip file containing only the exodus source (and
 	build-related files).  The url for the zip file is
 	<https://github.com/gsjaardema/seacas/archive/exodus.zip> NOTE: Probably out-of-date and better to just clone entire repository.
-  * You only need the netcdf and optionally hdf5 libraries
-  * Use the `cmake-exodus` file instead of `cmake-config`.
-  * This will build, by default, a shared exodus library and also install the exodus.py Python interface.
+* You only need the netcdf and optionally hdf5 libraries
+* Use the `cmake-exodus` file instead of `cmake-config`.
+* This will build, by default, a shared exodus library and also install the exodus.py Python interface.
 
 ## Trilinos
 
