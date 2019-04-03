@@ -83,11 +83,11 @@ namespace Ioad {
 
   std::string stringify_side_block_names(const Ioss::SideBlockContainer &sblocks);
 
-  std::string encode_field_name(std::vector<std::string> names);
+  std::string encode_field_name(std::vector<std::string> &names);
 
-  std::string encode_sideblock_name(std::string type_string, std::string name);
+  std::string encode_sideblock_name(const std::string &type_string, const std::string &name);
 
-  bool is_sideblock_name(std::string name);
+  bool is_sideblock_name(const std::string &name);
 
   bool use_transformed_storage(const Ioss::Field &field, const std::string &entity_type,
                                const std::string &field_name);

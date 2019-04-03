@@ -3,18 +3,18 @@
 [![Build Status](https://travis-ci.org/gsjaardema/seacas.svg?branch=master)](https://travis-ci.org/gsjaardema/seacas)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
 
-* [Get the sources](#get-the-sources)
-* [Build instructions](#build-instructions)
-* [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
-* [Testing](#testing)
-* [Exodus](#exodus)
-* [Trilinos](#trilinos)
-* [SPACK](#spack)
-* [License](#license)
-* [Ubuntu](#ubuntu)
-* [Contact information](#contact-information)
-* For information on building with MPI, see [README-PARALLEL.md](README-PARALLEL.md)
-* NOTE: The old imake-based build has been removed.
+  * [Get the sources](#get-the-sources)
+  * [Build instructions](#build-instructions)
+  * [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
+  * [Testing](#testing)
+  * [Exodus](#exodus)
+  * [Trilinos](#trilinos)
+  * [SPACK](#spack)
+  * [License](#license)
+  * [Ubuntu](#ubuntu)
+  * [Contact information](#contact-information)
+  * For information on building with MPI, see [README-PARALLEL.md](README-PARALLEL.md)
+  * NOTE: The old imake-based build has been removed.
 
 ## Get the sources
 ```
@@ -38,45 +38,46 @@ set) PnetCDF libraries. You can build the libraries using the
 `install-tpl.sh` script, or you can install them manually as
 detailed in [TPL-Manual-Install.md](TPL-Manual-Install.md).
 
-* To use the script, simply type `./install-tpl.sh`
-* The default behavior can be modified via a few environment variables:
+  * To use the script, simply type `./install-tpl.sh`
+  * The default behavior can be modified via a few environment variables:
 
-| Variable | Values | Default | Description |
-|----------|:------:|:-------:|-------------|
-| INSTALL_PATH | path to install | pwd | Root of install path; default is current location |
-| COMPILER | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build |
-| JOBS     | {count}|  2      | Number of "jobs" used for simultaneous compiles |
-| FORCE    | YES, NO | NO  | Force downloading and building even if lib is already installed. |
-| DOWNLOAD | YES, NO | YES |  Should TPLs be downloaded. |
-| BUILD    | YES, NO | YES | Should TPLs be built and installed. |
-| SHARED   | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
-| MPI      | ON, OFF | OFF | If ON, then build parallel capability |
-| CRAY     | YES, NO | NO | Is this a Cray system (special parallel options) |
-| NEEDS_ZLIB| YES, NO| NO  | If system does not have zlib installed, download and install it. |
-| CGNS     | YES, NO | YES | Should CGNS TPL be built.  |
+| Variable        | Values          | Default | Description |
+|-----------------|:---------------:|:-------:|-------------|
+| INSTALL_PATH    | path to install | pwd | Root of install path; default is current location |
+| COMPILER        | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build |
+| JOBS            | {count}|  2      | Number of "jobs" used for simultaneous compiles |
+| FORCE           | YES, NO | NO  | Force downloading and building even if lib is already installed. |
+| DOWNLOAD        | YES, NO | YES |  Should TPLs be downloaded. |
+| BUILD           | YES, NO | YES | Should TPLs be built and installed. |
+| SHARED          | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
+| MPI             | ON, OFF | OFF | If ON, then build parallel capability |
+| CRAY            | YES, NO | NO | Is this a Cray system (special parallel options) |
+| NEEDS_ZLIB      | YES, NO| NO  | If system does not have zlib installed, download and install it. |
+| CGNS            | YES, NO | YES | Should CGNS TPL be built.  |
 | USE\_64BIT\_INT | YES, NO | NO | In CGNS, enable 64-bit integers |
-| MATIO    | YES, NO | YES | Should matio TPL be built. |
-| GNU_PARALLEL | YES, NO | YES | Should GNU parallel script be built. |
-| H5VERSION | V110, V18 | V110 | Use HDF5-1.10.X or HDF5-1.8.X |
-| JOBS     | # | 2 | Used in `make -j #` |
-| SUDO     | "" or sudo | "" | If need to be superuser to install |
-* NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
-* The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
+| MATIO           | YES, NO | YES | Should matio TPL be built. |
+| GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
+| H5VERSION       | V110, V18 | V110 | Use HDF5-1.10.X or HDF5-1.8.X |
+| JOBS            | # | 2 | Used in `make -j #` |
+| SUDO            | "" or sudo | "" | If need to be superuser to install |
+  * NOTE: The `DOWNLOAD` and `BUILD` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
+  * The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
 
 ## Configure, Build, and Install SEACAS
 At this time, you should have all external TPL libraries built and
 installed into `${ACCESS}/lib` and `${ACCESS}/include`. You are now ready
 to configure the SEACAS CMake build.
 
-   * `cd $ACCESS`
-   * `mkdir build`
-   * `cd build`
-   * edit the `${ACCESS}cmake-config` file and adjust compilers and
-     other settings as needed.
-   * enter the command `../cmake-config` and cmake should configure everything for the build.
-   * `make && make install`
-   * If everything works, your applications should be in `${ACCESS}/bin`
-   * To install in a different location, do `INSTALL_PATH={path_to_install} ../cmake-config`
+  * `cd $ACCESS`
+  * `mkdir build`
+  * `cd build`
+  * edit the `${ACCESS}cmake-config` file and adjust compilers and
+    other settings as needed.
+  * enter the command `../cmake-config` and cmake should configure everything for the build.
+  * `make && make install`
+  * If everything works, your applications should be in `${ACCESS}/bin`
+  * To install in a different location, do `INSTALL_PATH={path_to_install} ../cmake-config`
+
 ## Testing
 There are a few unit tests for zoltan, exodus, and aprepro that can be run via `make test` if you configured with `-D SEACASProj_ENABLE_TESTS=ON`.
 

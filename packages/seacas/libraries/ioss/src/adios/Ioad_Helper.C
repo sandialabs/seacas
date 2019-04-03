@@ -67,12 +67,7 @@ namespace Ioad {
                                        [&](std::string property_name) -> bool {
                                          Ioss::Property property =
                                              entity_block->get_property(property_name);
-                                         if (property.is_invalid() || property.is_implicit()) {
-                                           return true;
-                                         }
-                                         else {
-                                           return false;
-                                         }
+                                         return (property.is_invalid() || property.is_implicit());
                                        }),
                         property_list.end());
     return property_list;
@@ -87,12 +82,12 @@ namespace Ioad {
     return stringified_sblock_names;
   }
 
-  std::string encode_field_name(std::vector<std::string> names)
+  std::string encode_field_name(std::vector<std::string> &names)
   {
     std::string encoded_name;
     size_t      count = 0;
     for (std::vector<std::string>::iterator it = names.begin(); it != names.end() - 1;
-         it++, count++) {
+         ++it, ++count) {
       encoded_name += *it + Name_separator;
     }
     // sentinel value to avoid having to test if the string is empty or not.
@@ -100,27 +95,21 @@ namespace Ioad {
     return encoded_name + names[count];
   }
 
-  std::string encode_sideblock_name(std::string type_string, std::string name)
+  std::string encode_sideblock_name(const std::string &type_string, const std::string &name)
   {
     return encode_field_name({type_string, name, sideblock_names});
   }
 
-  bool is_sideblock_name(std::string name)
+  bool is_sideblock_name(const std::string &name)
   {
     size_t pos = name.find(sideblock_names);
-    if (pos == 0) {
-      return true;
-    }
-    return false;
+    return (pos == 0);
   }
 
   bool use_transformed_storage(const Ioss::Field &field, const std::string &entity_type,
                                const std::string &field_name)
   {
-    if (field.get_role() == Ioss::Field::RoleType::TRANSIENT ||
-        find_field_in_mapset(entity_type, field_name, Use_transformed_storage_map)) {
-      return true;
-    }
-    return false;
+    return (field.get_role() == Ioss::Field::RoleType::TRANSIENT ||
+            find_field_in_mapset(entity_type, field_name, Use_transformed_storage_map));
   }
 } // namespace Ioad
