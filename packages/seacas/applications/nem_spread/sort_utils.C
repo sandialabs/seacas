@@ -307,7 +307,7 @@ template <typename INT> void gds_qsort(INT v[], size_t N)
   gds_isort(v, N);
 
 #if defined(DEBUG_QSORT)
-  fprintf(stderr, "Checking sort of %d values\n", N + 1);
+  fprintf(stderr, "Checking sort of " ST_ZU " values\n", (size_t)N + 1);
   for (size_t i = 1; i < N; i++) {
     assert(v[i - 1] <= v[i]);
   }
