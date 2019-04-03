@@ -34,17 +34,19 @@ large models (>150 million elements); if you are not planning to
 create or read models of this size and do not want compression
 support, you do not have to build hdf5.
 
-   * Download HDF5 from http://www.hdfgroup.org/HDF5/release/obtain5.html
+   * Download HDF5 from <http://www.hdfgroup.org/HDF5/release/obtain5.html>
    * untar it, creating a directory will will refer to as `hdf5-X.X.X`
    * `cd` to that directory and enter the command:
-     * Serial:
+      * Serial:
     ```
     ./configure --prefix=${WHERE_TO_INSTALL} --enable-shared --enable-production --enable-debug=no --enable-static-exec
     ```
-     * Parallel:
+
+      * Parallel:
     ```
     CC=mpicc ./configure --prefix=${WHERE_TO_INSTALL} --enable-shared --enable-production --enable-debug=no --enable-static-exec --enable-parallel
     ```
+
    * `make && make install`
 
 #### Parallel-NetCDF
@@ -52,19 +54,24 @@ support, you do not have to build hdf5.
   auto-decomposition support of the Ioss library, you will need the
   parallel-netcdf library, also known as pnetcdf.
 
-  * Download http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.6.1.tar.gz
+  * Download <http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.6.1.tar.gz>
+
   * `tar zxvf parallel-netcdf-1.6.1.tar.gz`
+
   * `cd` to the `parallel-netcdf-1.6.1` directory and enter the command:
   ```
   CC=mpicc ./configure --disable-fortran --prefix ${WHERE_TO_INSTALL}
   ```
+
   * `make && make install`
 
 #### NetCDF
 The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
- * Download the latest netcdf-c release from http://www.unidata.ucar.edu/downloads/netcdf/index.jsp
+ * Download the latest netcdf-c release from <http://www.unidata.ucar.edu/downloads/netcdf/index.jsp>
+
  * `tar zxvf netcdf-4.5.0.tar.gz`  (or whatever the latest version is)
+
  * If the version is *prior* to 4.5.1, then you need to modify the
    following defines in
    seacas/TPL/netcdf/netcdf-4.5.0/include/netcdf.h.  Versions *4.5.1 or
@@ -117,7 +124,9 @@ The most recent released version is recommended. For use with Exodus, some local
 The MatIO library is used in the `exo2mat` and `mat2exo` programs which convert an exodus file to and from a MATLAB binary file.  To use this do:
 
  * Download matio via git:
+
  * `git clone https://github.com/tbeu/matio.git`
+
  * `cd matio` and enter the command:
     ```
     ./autogen.sh

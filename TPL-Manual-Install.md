@@ -36,7 +36,9 @@ create or read models of this size, you do not have to build hdf5.
    * Download HDF5 from either:
      * <https://www.hdfgroup.org/HDF5/release/obtain5.html> for HDF5-1.10.X or
      * <https://support.hdfgroup.org/HDF5/release/obtain518.html> for HDF5-1.8.X
+
    * Download to `seacas/TPL/hdf5` and untar it
+
    * `cd` to that directory and enter the command:
     ```
     sh ../runconfigure.sh
@@ -47,8 +49,11 @@ create or read models of this size, you do not have to build hdf5.
 The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required if using verions prior to 4.5.1.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
  * Download the latest netcdf-c release from <https://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
+
  * `cd TPL/netcdf`
+
  * `tar zxvf netcdf-4.6.1.tar.gz`
+
  * If the version is *prior* to 4.5.1, then you need to modify the
    following defines in
    seacas/TPL/netcdf/netcdf-4.6.1/include/netcdf.h.  Versions *4.5.1 or
@@ -59,7 +64,9 @@ The most recent released version is recommended. For use with Exodus, some local
     #define NC_MAX_VARS     524288   /* max variables per file */
     ```
 
- * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF_4` to `OFF`
+ * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF
+_4` to `OFF`
+
  * `cd netcdf-4.6.1` and enter the command:
 
     ```
@@ -70,13 +77,15 @@ The most recent released version is recommended. For use with Exodus, some local
 
  * `make && make install`
 
-
 ## MatIO
 The MatIO library is used in the exo2mat and mat2exo programs which convert an exodus file to and from a MATLAB binary file.  To use this do:
 
  * Download matio via git:
+
  * `cd TPL/matio`
+
  * `git clone https://github.com/tbeu/matio.git`
+
  * `cd matio` and enter the command:
 
     ```

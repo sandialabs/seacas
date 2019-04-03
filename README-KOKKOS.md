@@ -9,7 +9,7 @@ You will need the following library if you want to use Kokkos with CUDA as the b
 
 * [CUDA](#cuda)
 
-#### CUDA
+### CUDA
 
   * CUDA is already installed on many platforms. In many cases, typing something like `module load cuda` should be sufficient. Loading the module would typically set environment variables, such as CUDA_ROOT.
   * If installing yourself, see www.nvidia.com/object/cuda_home_new.html
@@ -55,5 +55,3 @@ Finally, build and install
 make
 make install
 ```
-
-

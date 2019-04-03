@@ -18,13 +18,12 @@ In addition, the HDF5 and NetCDF libraries need to be compiled with parallel cap
 For all of the libraries, there should exist a
 `TPL/{lib_name}/runconfigure.sh` file.  You can look at this file and make any changes needed; then cd to the library source directory, do `../runconfigure.sh` and it will hopefully correctly configure the library.
 
-#### ParMetis (Includes metis)
+### ParMetis (Includes metis)
 
-  * Download http://glaros.dtc.umn.edu/gkhome/fetch/sw/parmetis/parmetis-4.0.3.tar.gz
+  * Download <http://glaros.dtc.umn.edu/gkhome/fetch/sw/parmetis/parmetis-4.0.3.tar.gz>
   * `cd TPL/metis`
   * `tar zxvf parmetis-4.0.3.tar.gz`
-  * edit `parmetis-4.0.3/metis/include/metis.h` and change `IDXTYPEWIDTH`
-and `REALTYPEWIDTH` to 64
+  * edit `parmetis-4.0.3/metis/include/metis.h` and change `IDXTYPEWIDTH` and `REALTYPEWIDTH` to 64
   * cd to the parmetis directory and enter the command:
 
     ```
@@ -32,8 +31,8 @@ and `REALTYPEWIDTH` to 64
 	make && make install
     ```
   
-#### Parallel-NetCDF
-  * Download http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.10.0.tar.gz
+### Parallel-NetCDF
+  * Download <http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.10.0.tar.gz>
   * `cd TPL/pnetcdf`
   * `tar zxvf parallel-netcdf-1.10.0.tar.gz`
   * NOTE: If using version 1.9.0 or later, the changes below are not required.
@@ -51,7 +50,7 @@ and `REALTYPEWIDTH` to 64
 	make && make install
     ```
 
-#### HDF5
+### HDF5
   * `cd` to the hdf5 source directory and enter the command:
    
     ```
@@ -59,7 +58,7 @@ and `REALTYPEWIDTH` to 64
 	make && make install
     ```
 
-#### NetCDF
+### NetCDF
   * Make the modifications to include/netcdf.h as documented in README.md
   * `cd netcdf-4.6.1` and enter the command:
  
