@@ -1131,12 +1131,12 @@ namespace SEAMS {
 
   array *do_csv_array2(const char *filename, const char *comment)
   {
-    const char *  delim = ",\t ";
-    std::fstream *file  = aprepro->open_file(filename, "r");
+    std::fstream *file = aprepro->open_file(filename, "r");
     if (file != nullptr) {
 
-      size_t rows = 0;
-      size_t cols = 0;
+      size_t      rows  = 0;
+      size_t      cols  = 0;
+      const char *delim = ",\t ";
 
       std::string line;
       while (std::getline(*file, line)) {
