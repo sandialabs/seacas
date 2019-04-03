@@ -17,7 +17,7 @@ A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zol
 ## HDF5
 If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library.
 
-**
+### WARNING
 There are some issues with using HDF5-1.10.0 through HDF5-1.10.2 since
 it will possibly create files which are unreadable by applications
 using an earlier version of the library.  As of HDF5-1.10.3 and later,
@@ -26,7 +26,7 @@ to create files readable by those applications. This flag is currently
 being used by NetCDF, but not CGNS.  Therefore, you should only use
 hdf5-1.10.3 or later if you are only using NetCDF, or if you do not
 need compatability with applications using an HDF5-1.8.X version.
-**
+
 
 The hdf5 library is used for the netcdf4 capability in netcdf which in
 turn is used by exodus.  The netcdf4 capability is typically used for
@@ -114,12 +114,12 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
 Support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and install the CGNS library:
 
    * Download CGNS via git:
-
-    ```
-    cd TPL/cgns
-    git clone https://github.com/CGNS/CGNS.git
-    ```
-   * Build using CMake.
+     ```bash
+     cd TPL/cgns
+     git clone https://github.com/CGNS/CGNS.git
+     ```
+ 
+  * Build using CMake.
      * Modify `TPL/cgns/runconfigure.sh` to meet your environment
      * `cd CGNS`
      * `mkdir build`
@@ -127,20 +127,40 @@ Support for CGNS in the IOSS library is being added.  To use this capability, yo
      * `../../runconfigure.sh`
      * `make && make install`
 ## DataWarehouse
-The Data Warehouse is a collection of data management tools that Sandia is currently developing to improve how datasets migrate between memory and storage resources in a distributed system. While the software is currently only available internally to Sandia, there will be an open source release of the tools during Fall of 2017. The Data Warehouse extensions to SEACAS are intended to serve as a placeholder for the upcoming release and are not intended for use by external developers at this time.
+The Data Warehouse is a collection of data management tools that
+Sandia is currently developing to improve how datasets migrate between
+memory and storage resources in a distributed system. While the
+software is currently only available internally to Sandia, there will
+be an open source release of the tools during Fall of 2017. The Data
+Warehouse extensions to SEACAS are intended to serve as a placeholder
+for the upcoming release and are not intended for use by external
+developers at this time.
 
-The repository [data-warehouse-release](https://gitlab.sandia.gov/nessie-dev/data-warehouse-release) is a superbuild for the Data Warehouse tools and was created to make the build process as easy as possible. It includes the files INSTALL.md and INSTALL_TPL.md which contain instructions for building Data Warehouse and it's TPLs: Boost, googletest, libfabric, and libhio (optional). These builds are straightforward so a "runconfigure.sh" script is left to the end-user. Note that it's possible to supply your own build of these tools. Following the SEACAS pattern for building TPLs:
+The repository
+[data-warehouse-release](https://gitlab.sandia.gov/nessie-dev/data-warehouse-release)
+is a superbuild for the Data Warehouse tools and was created to make
+the build process as easy as possible. It includes the files
+INSTALL.md and INSTALL_TPL.md which contain instructions for building
+Data Warehouse and it's TPLs: Boost, googletest, libfabric, and libhio
+(optional). These builds are straightforward so a "runconfigure.sh"
+script is left to the end-user. Note that it's possible to supply your
+own build of these tools. Following the SEACAS pattern for building
+TPLs:
 
-
+```bash
     cd TPL
     git clone git@gitlab.sandia.gov:nessie-dev/data-warehouse-release.git
     follow the instructions in INSTALL_TPL.md and then INSTALL.md
     consider installing data-warehouse-release and it's TPLs to the directory set in  the $ACCESS env. var.
-
-
-To build SEACAS with an installation of data-warehouse-release and it's TPLs, add the following lines to the list of cmake command arguments as found in the top-level _cmake-config_ file. Where DataWarehouse_PATH in environment variable that contains the path to the top-level install directory for the Data Warehouse, and HAVE_DATA_WAREHOUSE={ON|OFF} is a variable defined in _cmake-config_.
-
-
+```
+To build SEACAS with an installation of data-warehouse-release and
+it's TPLs, add the following lines to the list of cmake command
+arguments as found in the top-level `cmake-config` file. Where
+DataWarehouse_PATH in environment variable that contains the path to
+the top-level install directory for the Data Warehouse, and
+HAVE_DATA_WAREHOUSE={ON|OFF} is a variable defined in `cmake-config`.
+```bash
     -DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATA_WAREHOUSE}           \
     -DDataWarehouse_LIBRARY_DIRS:PATH=${DataWarehouse_PATH}/lib     \
     -DDataWarehouse_INCLUDE_DIRS:PATH=${DataWarehouse_PATH}/include \
+```

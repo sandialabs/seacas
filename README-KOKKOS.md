@@ -44,14 +44,14 @@ If using CUDA as the backend, OpenMP can still be enabled.
 ```
 
 * If using CUDA as the Kokkos backend, some envionment variables need to be set. These can be set in your configure script, but then be sure to source the script rather than just running it so that your environment is correct when running `make`.
-```
-export OMPI_CXX=<SEACAS-source-directory>/packages/kokkos/config/nvcc_wrapper
-export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
-```
+  ```bash
+  export OMPI_CXX=<SEACAS-source-directory>/packages/kokkos/config/nvcc_wrapper
+  export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
+  ```
 
 Finally, build and install
 
-```
+```bash
 make
 make install
 ```

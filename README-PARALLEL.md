@@ -21,9 +21,13 @@ For all of the libraries, there should exist a
 ### ParMetis (Includes metis)
 
   * Download <http://glaros.dtc.umn.edu/gkhome/fetch/sw/parmetis/parmetis-4.0.3.tar.gz>
+
   * `cd TPL/metis`
+
   * `tar zxvf parmetis-4.0.3.tar.gz`
+
   * edit `parmetis-4.0.3/metis/include/metis.h` and change `IDXTYPEWIDTH` and `REALTYPEWIDTH` to 64
+
   * cd to the parmetis directory and enter the command:
 
     ```
@@ -33,9 +37,13 @@ For all of the libraries, there should exist a
   
 ### Parallel-NetCDF
   * Download <http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.10.0.tar.gz>
+
   * `cd TPL/pnetcdf`
+
   * `tar zxvf parallel-netcdf-1.10.0.tar.gz`
+
   * NOTE: If using version 1.9.0 or later, the changes below are not required.
+
   * Make the same modifications to the defines in `src/lib/pnetcdf.h` that are modified for NetCDF:
   
     ```
@@ -45,7 +53,7 @@ For all of the libraries, there should exist a
 
   * `cd` to the parallel-netcdf source directory and enter the command:
    
-    ```
+    ```bash
 	sh ../runconfigure.sh
 	make && make install
     ```
@@ -53,16 +61,17 @@ For all of the libraries, there should exist a
 ### HDF5
   * `cd` to the hdf5 source directory and enter the command:
    
-    ```
+    ```bash
     MPI=ON sh ../runconfigure.sh
 	make && make install
     ```
 
 ### NetCDF
   * Make the modifications to include/netcdf.h as documented in README.md
+
   * `cd netcdf-4.6.1` and enter the command:
  
-    ```
+    ```bash
 	mkdir build
 	cd build
 	MPI=ON sh ../../runcmake.sh
@@ -76,10 +85,9 @@ script, change `MPI` to `ON` and then continue.
 If using your own cmake script or directly calling cmake, specify the
 correct mpi-aware compilers 
 
-```
+```bash
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} 
 -D CMAKE_C_COMPILER:FILEPATH=${CC} 
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} 
 -D TPL_ENABLE_MPI:BOOL=ON
 ```
-
