@@ -40,12 +40,12 @@ support, you do not have to build hdf5.
 
    * `cd` to that directory and enter the command:
      * Serial:
-       ```
+       ```bash
        ./configure --prefix=${WHERE_TO_INSTALL} --enable-shared --enable-production --enable-debug=no --enable-static-exec
        ```
 
      * Parallel:
-       ```
+       ```bash
        CC=mpicc ./configure --prefix=${WHERE_TO_INSTALL} --enable-shared --enable-production --enable-debug=no --enable-static-exec --enable-parallel
        ```
 
@@ -61,7 +61,7 @@ support, you do not have to build hdf5.
   * `tar zxvf parallel-netcdf-1.6.1.tar.gz`
 
   * `cd` to the `parallel-netcdf-1.6.1` directory and enter the command:
-    ```
+    ```bash
     CC=mpicc ./configure --disable-fortran --prefix ${WHERE_TO_INSTALL}
     ```
 
@@ -87,7 +87,7 @@ The most recent released version is recommended. For use with Exodus, some local
  * `cd netcdf-4.6.3` and enter the command:
 
     * serial
-      ```
+      ```bash
       CFLAGS="-I${WHERE_TO_INSTALL}/include" \
       CPPFLAGS="-DNDEBUG" LDFLAGS="-L${WHERE_TO_INSTALL}/lib" \
       ./configure --enable-netcdf-4  \
@@ -96,7 +96,7 @@ The most recent released version is recommended. For use with Exodus, some local
       ```
 
     * parallel
-      ```
+      ```bash
       CC='mpicc' CFLAGS="-I${WHERE_TO_INSTALL}/include" \
       CPPFLAGS="-DNDEBUG" LDFLAGS="-L${WHERE_TO_INSTALL}/lib" \
       ./configure --enable-netcdf-4  --enable-pnetcdf \

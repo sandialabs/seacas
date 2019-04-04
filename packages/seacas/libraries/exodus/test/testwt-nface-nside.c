@@ -51,7 +51,6 @@ int main(int argc, char **argv)
   int  num_face_in_block[10], num_total_faces_per_blk[10];
   int  num_node_sets, error;
   int  i, j, k, m, *connect;
-  int  node_list[100];
   int  bids[10], nnpe[10];
   int  num_qa_rec, num_info;
   int  num_glo_vars, num_nod_vars, num_ele_vars;

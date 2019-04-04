@@ -795,7 +795,7 @@ namespace {
 
   void *transfer_fields_ts(void *varg)
   {
-    param *arg           = (param *)varg;
+    param *arg           = static_cast<param *>(varg);
     auto   entity        = arg->entity;
     auto   output_region = arg->output_region;
     auto   interface     = arg->interface;
