@@ -153,8 +153,10 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
                Bor_Elem_Num, Node_Comm_Num, Elem_Comm_Num, Title);
 
   /* Allocate memory for the communication map arrays */
-  globals.N_Comm_Map = (NODE_COMM_MAP<INT> **)malloc(Proc_Info[2] * sizeof(NODE_COMM_MAP<INT> *));
-  globals.E_Comm_Map = (ELEM_COMM_MAP<INT> **)malloc(Proc_Info[2] * sizeof(ELEM_COMM_MAP<INT> *));
+  globals.N_Comm_Map =
+      static_cast<NODE_COMM_MAP<INT> **>(malloc(Proc_Info[2] * sizeof(NODE_COMM_MAP<INT> *)));
+  globals.E_Comm_Map =
+      static_cast<ELEM_COMM_MAP<INT> **>(malloc(Proc_Info[2] * sizeof(ELEM_COMM_MAP<INT> *)));
   if (!globals.N_Comm_Map || !globals.E_Comm_Map) {
     fprintf(stderr, "ERROR: Insufficient memory!\n");
     exit(1);
