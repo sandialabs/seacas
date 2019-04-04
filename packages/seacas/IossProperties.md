@@ -79,7 +79,6 @@ PARALLEL\_IO\_MODE | netcdf4, hdf5, pnetcdf | mpiio and mpiposix are deprecated 
   SHOW\_LEGEND          | \[on]/off  | Should a legend be printed at the beginning of the output showing the field names for each column of data.
   SHOW\_TIME\_FIELD      | on/\[off]  | Should the current analysis time be output as the first field.
 
-
 ## Experimental
 
  Property              | Value  | Description

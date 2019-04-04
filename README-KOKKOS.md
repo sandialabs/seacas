@@ -20,7 +20,7 @@ otherwise.  If you are using the `cmake-config-kokkos` script, change `MPI` to
 `ON` or `OFF` as appropriate, change `CUDA` to `ON` or `OFF`
 as appropriate, and then source the configure script.
 
-```
+```bash
 source cmake-config-kokkos
 ```
 
@@ -31,13 +31,13 @@ If using your own cmake script or directly calling cmake, be sure to do the foll
 * If using OpenMP as the Kokkos backend, enable OpenMP and disable Pthread.
 If using CUDA as the backend, OpenMP can still be enabled.
 
-```
+```bash
 -D SEACASProj_ENABLE_OpenMP:Bool=ON
 -D TPL_ENABLE_Pthread:Bool=OFF
 ```
 
 * If using CUDA as the Kokkos backend, enable CUDA, set the CUDA root directory, and disable Pthread.
-```
+```bash
 -D TPL_ENABLE_CUDA:Bool=ON
 -D CUDA_TOOLKIT_ROOT_DIR:Path=${CUDA_PATH}
 -D TPL_ENABLE_Pthread:Bool=OFF

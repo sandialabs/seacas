@@ -104,7 +104,6 @@ int main(int argc, char *argv[])
 
   std::string in_type  = "exodusII";
   std::string out_type = "exodusII";
-  std::string ss_type  = "exodusII";
 
   Globals globals;
 
