@@ -10,7 +10,7 @@ int main(int argc, char **argv)
   int  i, j;
   int *elem_map, *connect, *node_list, *node_ctr_list, *elem_list, *side_list;
   int *ids;
-  int *node_ind, num_qa_rec, num_info;
+  int  num_qa_rec, num_info;
   int  num_glo_vars, num_nod_vars, num_ele_vars;
   int  num_nset_vars, num_sset_vars;
   int *truth_tab;

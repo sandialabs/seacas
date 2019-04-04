@@ -1856,7 +1856,7 @@ YY_DECL
       YY_RULE_SETUP
       {
         BEGIN(GET_FILENAME);
-        file_must_exist = !true;
+        file_must_exist = false;
       }
       YY_BREAK
     case 49:

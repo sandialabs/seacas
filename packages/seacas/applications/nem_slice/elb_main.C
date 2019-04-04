@@ -422,7 +422,7 @@ template <typename INT> int internal_main(int argc, char *argv[], INT /* dummy *
 
 #ifdef PRINT_VERT
   for (size_t cnt = 0; cnt < problem.num_vertices; cnt++)
-    printf("element = %i, proc = %i\n", cnt, lb.vertex2proc[cnt]);
+    printf("element = %lu, proc = %i\n", cnt, lb.vertex2proc[cnt]);
 #endif
 
   /*
