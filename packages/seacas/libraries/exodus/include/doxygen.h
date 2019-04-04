@@ -341,7 +341,6 @@ element attributes, node sets, side sets, and object properties.
 
 @example ../test/CreateEdgeFace.c
 @example ../test/ExoIICTests.cxx
-@example ../test/MakeTestData.c
 @example ../test/ReadEdgeFace.c
 @example ../test/create_mesh.c
 @example ../test/testwt-oned.c

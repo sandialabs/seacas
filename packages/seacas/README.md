@@ -79,7 +79,7 @@ The most recent released version is recommended. For use with Exodus, some local
    seacas/TPL/netcdf/netcdf-4.6.3/include/netcdf.h.  Versions *4.5.1 or
    later* do not check these limits and can be run unmodified.
 
-    ```
+    ```c
     #define NC_MAX_DIMS     65536    /* max dimensions per file */
     #define NC_MAX_VARS     524288   /* max variables per file */
     ```
@@ -107,7 +107,7 @@ The most recent released version is recommended. For use with Exodus, some local
  * Check the results of the configure and make sure that the listings
    under features are similar to:
 
-   ```
+   ```bash
    # Features
    --------
    NetCDF-2 API:	no
@@ -131,12 +131,12 @@ The MatIO library is used in the `exo2mat` and `mat2exo` programs which convert 
  * `git clone https://github.com/tbeu/matio.git`
 
  * `cd matio` and enter the command:
-    ```
-    ./autogen.sh
-    # The -L is to find the hdf5 library...
-    export LDFLAGS="-L${WHERE_TO_INSTALL}/lib"
-    ./configure --with-hdf5=${WHERE_TO_INSTALL} --enable-mat73 --enable-shared --prefix=${WHERE_TO_INSTALL}
-    ```
+   ```bash
+   ./autogen.sh
+   # The -L is to find the hdf5 library...
+   export LDFLAGS="-L${WHERE_TO_INSTALL}/lib"
+   ./configure --with-hdf5=${WHERE_TO_INSTALL} --enable-mat73 --enable-shared --prefix=${WHERE_TO_INSTALL}
+   ```
 
  * `make && make install`
 
