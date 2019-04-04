@@ -27,7 +27,6 @@ being used by NetCDF, but not CGNS.  Therefore, you should only use
 hdf5-1.10.3 or later if you are only using NetCDF, or if you do not
 need compatability with applications using an HDF5-1.8.X version.
 
-
 The hdf5 library is used for the netcdf4 capability in netcdf which in
 turn is used by exodus.  The netcdf4 capability is typically used for
 large models (>150 million elements); if you are not planning to
@@ -40,9 +39,10 @@ create or read models of this size, you do not have to build hdf5.
    * Download to `seacas/TPL/hdf5` and untar it
 
    * `cd` to that directory and enter the command:
-    ```
-    sh ../runconfigure.sh
-    ```
+     ```
+     sh ../runconfigure.sh
+     ```
+
    * `make && make install`
 
 ## NetCDF
@@ -100,25 +100,24 @@ The MatIO library is used in the exo2mat and mat2exo programs which convert an e
 GNU Parallel is a shell tool for executing jobs in parallel using one or more computers. A job is typically a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, or a list of tables.  In SEACAS, this is only used by epup which runs multiple epu jobs concurrently.  To build:
 
  * Download the most recent version of the library from <ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2>.
-
-    ```
-    cd TPL/parallel
-    tar jxvf /path/to/parallel-latest.tar.bz2
-    cd parallel-20150522
-    sh ../runconfigure.sh
-    ```
+   ```
+   cd TPL/parallel
+   tar jxvf /path/to/parallel-latest.tar.bz2
+   cd parallel-20150522
+   sh ../runconfigure.sh
+   ```
 
  *  `make && make install`
 
 ## CGNS
 Support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and install the CGNS library:
 
-   * Download CGNS via git:
-     ```bash
-     cd TPL/cgns
-     git clone https://github.com/CGNS/CGNS.git
-     ```
- 
+  * Download CGNS via git:
+    ```bash
+    cd TPL/cgns
+    git clone https://github.com/CGNS/CGNS.git
+    ```
+
   * Build using CMake.
      * Modify `TPL/cgns/runconfigure.sh` to meet your environment
      * `cd CGNS`
@@ -126,6 +125,7 @@ Support for CGNS in the IOSS library is being added.  To use this capability, yo
      * `cd build`
      * `../../runconfigure.sh`
      * `make && make install`
+
 ## DataWarehouse
 The Data Warehouse is a collection of data management tools that
 Sandia is currently developing to improve how datasets migrate between

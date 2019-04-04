@@ -57,8 +57,6 @@ int main(int argc, char *argv[])
     exit(EXIT_SUCCESS);
   }
 
-  std::string in_type = "exodusII";
-
   codename   = argv[0];
   size_t ind = codename.find_last_of('/', codename.size());
   if (ind != std::string::npos) {

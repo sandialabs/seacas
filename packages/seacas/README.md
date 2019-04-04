@@ -39,15 +39,15 @@ support, you do not have to build hdf5.
    * untar it, creating a directory will will refer to as `hdf5-X.X.X`
 
    * `cd` to that directory and enter the command:
-       * Serial:
-    ```
-    ./configure --prefix=${WHERE_TO_INSTALL} --enable-shared --enable-production --enable-debug=no --enable-static-exec
-    ```
+     * Serial:
+       ```
+       ./configure --prefix=${WHERE_TO_INSTALL} --enable-shared --enable-production --enable-debug=no --enable-static-exec
+       ```
 
-       * Parallel:
-    ```
-    CC=mpicc ./configure --prefix=${WHERE_TO_INSTALL} --enable-shared --enable-production --enable-debug=no --enable-static-exec --enable-parallel
-    ```
+     * Parallel:
+       ```
+       CC=mpicc ./configure --prefix=${WHERE_TO_INSTALL} --enable-shared --enable-production --enable-debug=no --enable-static-exec --enable-parallel
+       ```
 
    * `make && make install`
 
@@ -86,23 +86,23 @@ The most recent released version is recommended. For use with Exodus, some local
 
  * `cd netcdf-4.6.3` and enter the command:
 
-     * serial
-     ```
-     CFLAGS="-I${WHERE_TO_INSTALL}/include" \
-     CPPFLAGS="-DNDEBUG" LDFLAGS="-L${WHERE_TO_INSTALL}/lib" \
-     ./configure --enable-netcdf-4  \
-       --disable-fsync --prefix ${WHERE_TO_INSTALL} \
-       --disable-dap --disable-v2
-     ```
+    * serial
+      ```
+      CFLAGS="-I${WHERE_TO_INSTALL}/include" \
+      CPPFLAGS="-DNDEBUG" LDFLAGS="-L${WHERE_TO_INSTALL}/lib" \
+      ./configure --enable-netcdf-4  \
+        --disable-fsync --prefix ${WHERE_TO_INSTALL} \
+        --disable-dap --disable-v2
+      ```
 
-     * parallel
-     ```
-     CC='mpicc' CFLAGS="-I${WHERE_TO_INSTALL}/include" \
-     CPPFLAGS="-DNDEBUG" LDFLAGS="-L${WHERE_TO_INSTALL}/lib" \
-     ./configure --enable-netcdf-4  --enable-pnetcdf \
-       --disable-fsync --prefix ${WHERE_TO_INSTALL} \
-       --disable-dap --disable-v2
-     ```
+    * parallel
+      ```
+      CC='mpicc' CFLAGS="-I${WHERE_TO_INSTALL}/include" \
+      CPPFLAGS="-DNDEBUG" LDFLAGS="-L${WHERE_TO_INSTALL}/lib" \
+      ./configure --enable-netcdf-4  --enable-pnetcdf \
+        --disable-fsync --prefix ${WHERE_TO_INSTALL} \
+        --disable-dap --disable-v2
+      ```
 
  * Check the results of the configure and make sure that the listings
    under features are similar to:
@@ -145,8 +145,8 @@ The Data Warehouse is a collection of data management tools that Sandia is curre
 
 The repository [data-warehouse-release](https://gitlab.sandia.gov/nessie-dev/data-warehouse-release) is a superbuild for the Data Warehouse tools and was created to make the build process as easy as possible. It includes the files INSTALL.md and INSTALL_TPL.md which contain instructions for building Data Warehouse and it's TPLs: Boost, googletest, libfabric, and libhio (optional). These builds are straightforward so a "runconfigure.sh" script is left to the end-user. Note that it's possible to supply your own build of these tools. Following the SEACAS pattern for building TPLs:
 
-    * cd TPL
-    * git clone git@gitlab.sandia.gov:nessie-dev/data-warehouse-release.git
+    * `cd TPL`
+    * `git clone git@gitlab.sandia.gov:nessie-dev/data-warehouse-release.git`
     * follow the instructions in INSTALL_TPL.md and then INSTALL.md
     * consider installing data-warehouse-release and it's TPLs to the directory set in  the $ACCESS env. var.
 
@@ -180,10 +180,7 @@ The relavant defines for SEACAS are listed below:
 ```
 
 If you are using a NetCDF version prior to 4.3 and NetCDF was compiled
-with parallel enabled, then you also need to add:
-```
-  -D TPL_Netcdf_PARALLEL:BOOL=ON
-```
+with parallel enabled, then you also need to add `-D TPL_Netcdf_PARALLEL:BOOL=ON`
 This is automatically determined for NetCDF-4.3 and later.
 
 ## Testing

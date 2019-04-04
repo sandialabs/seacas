@@ -7,12 +7,11 @@ int main(int argc, char **argv)
 {
   int  exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
   int  num_side_sets, error;
-  int  i, j, k, node_ctr;
+  int  i, j, k;
   int *elem_map, *connect, *node_list, *node_ctr_list, *elem_list, *side_list;
   int *ids;
-  int *num_nodes_per_set, *num_elem_per_set;
-  int *num_df_per_set;
-  int *node_ind, *elem_ind, *df_ind, num_qa_rec, num_info;
+  int *num_nodes_per_set;
+  int *node_ind, *elem_ind, num_qa_rec, num_info;
   int  num_glo_vars, num_nod_vars, num_ele_vars;
   int  num_nset_vars, num_sset_vars;
   int *truth_tab;
@@ -20,7 +19,7 @@ int main(int argc, char **argv)
   int *num_elem_in_block, *num_nodes_per_elem, *num_attr;
   int  num_nodes_in_set, num_elem_in_set;
   int  num_sides_in_set, num_df_in_set;
-  int  list_len, elem_list_len, node_list_len, df_list_len;
+  int  list_len, elem_list_len, df_list_len;
   int  node_num, time_step, var_index, beg_time, end_time, elem_num;
   int  CPU_word_size, IO_word_size;
   int  num_props, prop_value, *prop_values;
@@ -67,8 +66,8 @@ int main(int argc, char **argv)
   printf("EXODUSII Library API; version %4.2f (%d)\n", version, idum);
 
   /* read database parameters */
-  error = ex_get_init(exoid, title, &num_dim, &num_nodes, &num_elem, &num_elem_blk, &num_node_sets,
-                      &num_side_sets);
+  ex_get_init(exoid, title, &num_dim, &num_nodes, &num_elem, &num_elem_blk, &num_node_sets,
+              &num_side_sets);
 
   printf("database parameters:\n");
   printf("title =  '%s'\n", title);
@@ -87,7 +86,7 @@ int main(int argc, char **argv)
   else
     z = 0;
 
-  error = ex_get_coord(exoid, x, y, z);
+  ex_get_coord(exoid, x, y, z);
   free(x);
   free(y);
   if (num_dim >= 3)
@@ -97,14 +96,14 @@ int main(int argc, char **argv)
     coord_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
   }
 
-  error = ex_get_coord_names(exoid, coord_names);
+  ex_get_coord_names(exoid, coord_names);
 
   for (i = 0; i < num_dim; i++)
     free(coord_names[i]);
 
   {
     int num_attrs = 0;
-    error         = ex_get_attr_param(exoid, EX_NODAL, 0, &num_attrs);
+    ex_get_attr_param(exoid, EX_NODAL, 0, &num_attrs);
     if (num_attrs > 0) {
       for (j = 0; j < num_attrs; j++) {
         attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
@@ -114,7 +113,7 @@ int main(int argc, char **argv)
       if (error == 0) {
         attrib = (float *)calloc(num_nodes, sizeof(float));
         for (j = 0; j < num_attrs; j++) {
-          error = ex_get_one_attr(exoid, EX_NODAL, 0, j + 1, attrib);
+          ex_get_one_attr(exoid, EX_NODAL, 0, j + 1, attrib);
           free(attrib_names[j]);
         }
         free(attrib);
@@ -123,11 +122,8 @@ int main(int argc, char **argv)
   }
 
   /* read element order map */
-
   elem_map = (int *)calloc(num_elem, sizeof(int));
-
-  error = ex_get_map(exoid, elem_map);
-
+  ex_get_map(exoid, elem_map);
   free(elem_map);
 
   /* read element block parameters */
@@ -137,20 +133,20 @@ int main(int argc, char **argv)
     num_nodes_per_elem = (int *)calloc(num_elem_blk, sizeof(int));
     num_attr           = (int *)calloc(num_elem_blk, sizeof(int));
 
-    error = ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
+    ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
 
     for (i = 0; i < num_elem_blk; i++) {
       block_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    error = ex_get_names(exoid, EX_ELEM_BLOCK, block_names);
+    ex_get_names(exoid, EX_ELEM_BLOCK, block_names);
 
     for (i = 0; i < num_elem_blk; i++) {
       ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
       /* 'name' should equal 'block_names[i]' at this point */
 
-      error = ex_get_elem_block(exoid, ids[i], elem_type, &(num_elem_in_block[i]),
-                                &(num_nodes_per_elem[i]), &(num_attr[i]));
+      ex_get_elem_block(exoid, ids[i], elem_type, &(num_elem_in_block[i]), &(num_nodes_per_elem[i]),
+                        &(num_attr[i]));
       free(block_names[i]);
     }
 
@@ -160,11 +156,11 @@ int main(int argc, char **argv)
       prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    error = ex_get_prop_names(exoid, EX_ELEM_BLOCK, prop_names);
+    ex_get_prop_names(exoid, EX_ELEM_BLOCK, prop_names);
 
     for (i = 1; i < num_props; i++) { /* Prop 1 is id; skip that here */
       for (j = 0; j < num_elem_blk; j++) {
-        error = ex_get_prop(exoid, EX_ELEM_BLOCK, ids[j], prop_names[i], &prop_value);
+        ex_get_prop(exoid, EX_ELEM_BLOCK, ids[j], prop_names[i], &prop_value);
       }
     }
 
@@ -177,7 +173,7 @@ int main(int argc, char **argv)
     if (num_elem_in_block[i] > 0) {
       connect = (int *)calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
 
-      error = ex_get_conn(exoid, EX_ELEM_BLOCK, ids[i], connect, 0, 0);
+      ex_get_conn(exoid, EX_ELEM_BLOCK, ids[i], connect, 0, 0);
       free(connect);
     }
   }
@@ -185,14 +181,14 @@ int main(int argc, char **argv)
   /* read element block attributes */
   for (i = 0; i < num_elem_blk; i++) {
     if (num_elem_in_block[i] > 0) {
-      for (j            = 0; j < num_attr[i]; j++)
+      for (j = 0; j < num_attr[i]; j++)
         attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
 
       attrib = (float *)calloc(num_attr[i] * num_elem_in_block[i], sizeof(float));
       error  = ex_get_attr(exoid, EX_ELEM_BLOCK, ids[i], attrib);
 
       if (error == 0) {
-        error = ex_get_attr_names(exoid, EX_ELEM_BLOCK, ids[i], attrib_names);
+        ex_get_attr_names(exoid, EX_ELEM_BLOCK, ids[i], attrib_names);
       }
       free(attrib);
       for (j = 0; j < num_attr[i]; j++)
@@ -210,29 +206,29 @@ int main(int argc, char **argv)
   if (num_node_sets > 0) {
     ids = (int *)calloc(num_node_sets, sizeof(int));
 
-    error = ex_get_ids(exoid, EX_NODE_SET, ids);
+    ex_get_ids(exoid, EX_NODE_SET, ids);
 
     for (i = 0; i < num_node_sets; i++) {
       nset_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
     /* Get all nodeset names in one call */
-    error = ex_get_names(exoid, EX_NODE_SET, nset_names);
+    ex_get_names(exoid, EX_NODE_SET, nset_names);
 
     for (i = 0; i < num_node_sets; i++) {
       /* Can also get the names one at a time... */
       ex_get_name(exoid, EX_NODE_SET, ids[i], name);
       /* 'name' should equal 'block_names[i]' at this point */
 
-      error = ex_get_set_param(exoid, EX_NODE_SET, ids[i], &num_nodes_in_set, &num_df_in_set);
+      ex_get_set_param(exoid, EX_NODE_SET, ids[i], &num_nodes_in_set, &num_df_in_set);
       free(nset_names[i]);
       node_list = (int *)calloc(num_nodes_in_set, sizeof(int));
       dist_fact = (float *)calloc(num_nodes_in_set, sizeof(float));
 
-      error = ex_get_set(exoid, EX_NODE_SET, ids[i], node_list, 0);
+      ex_get_set(exoid, EX_NODE_SET, ids[i], node_list, 0);
 
       if (num_df_in_set > 0) {
-        error = ex_get_set_dist_fact(exoid, EX_NODE_SET, ids[i], dist_fact);
+        ex_get_set_dist_fact(exoid, EX_NODE_SET, ids[i], dist_fact);
       }
 
       free(node_list);
@@ -240,17 +236,17 @@ int main(int argc, char **argv)
 
       {
         int num_attrs = 0;
-        error         = ex_get_attr_param(exoid, EX_NODE_SET, ids[i], &num_attrs);
+        ex_get_attr_param(exoid, EX_NODE_SET, ids[i], &num_attrs);
         if (num_attrs > 0) {
           for (j = 0; j < num_attrs; j++) {
             attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
           }
-          error = ex_get_attr_names(exoid, EX_NODE_SET, ids[i], attrib_names);
 
+          error = ex_get_attr_names(exoid, EX_NODE_SET, ids[i], attrib_names);
           if (error == 0) {
             attrib = (float *)calloc(num_nodes_in_set, sizeof(float));
             for (j = 0; j < num_attrs; j++) {
-              error = ex_get_one_attr(exoid, EX_NODE_SET, ids[i], j + 1, attrib);
+              ex_get_one_attr(exoid, EX_NODE_SET, ids[i], j + 1, attrib);
               free(attrib_names[j]);
             }
             free(attrib);
@@ -268,10 +264,10 @@ int main(int argc, char **argv)
     }
     prop_values = (int *)calloc(num_node_sets, sizeof(int));
 
-    error = ex_get_prop_names(exoid, EX_NODE_SET, prop_names);
+    ex_get_prop_names(exoid, EX_NODE_SET, prop_names);
 
     for (i = 0; i < num_props; i++) {
-      error = ex_get_prop_array(exoid, EX_NODE_SET, prop_names[i], prop_values);
+      ex_get_prop_array(exoid, EX_NODE_SET, prop_names[i], prop_values);
     }
     for (i = 0; i < num_props; i++)
       free(prop_names[i]);
@@ -295,7 +291,7 @@ int main(int argc, char **argv)
       ns_specs.sets_dist_fact  = (float *)calloc(list_len, sizeof(float));
       ns_specs.sets_extra_list = NULL;
 
-      error = ex_get_concat_sets(exoid, EX_NODE_SET, &ns_specs);
+      ex_get_concat_sets(exoid, EX_NODE_SET, &ns_specs);
     }
   }
 
@@ -303,17 +299,17 @@ int main(int argc, char **argv)
   if (num_side_sets > 0) {
     ids = (int *)calloc(num_side_sets, sizeof(int));
 
-    error = ex_get_ids(exoid, EX_SIDE_SET, ids);
+    ex_get_ids(exoid, EX_SIDE_SET, ids);
     for (i = 0; i < num_side_sets; i++) {
       sset_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    error = ex_get_names(exoid, EX_SIDE_SET, sset_names);
+    ex_get_names(exoid, EX_SIDE_SET, sset_names);
 
     for (i = 0; i < num_side_sets; i++) {
       ex_get_name(exoid, EX_SIDE_SET, ids[i], name);
 
-      error = ex_get_set_param(exoid, EX_SIDE_SET, ids[i], &num_sides_in_set, &num_df_in_set);
+      ex_get_set_param(exoid, EX_SIDE_SET, ids[i], &num_sides_in_set, &num_df_in_set);
       free(sset_names[i]);
 
       /* Note: The # of elements is same as # of sides!  */
@@ -324,11 +320,11 @@ int main(int argc, char **argv)
       node_list       = (int *)calloc(num_elem_in_set * 21, sizeof(int));
       dist_fact       = (float *)calloc(num_df_in_set, sizeof(float));
 
-      error = ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
-      error = ex_get_side_set_node_list(exoid, ids[i], node_ctr_list, node_list);
+      ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
+      ex_get_side_set_node_list(exoid, ids[i], node_ctr_list, node_list);
 
       if (num_df_in_set > 0) {
-        error = ex_get_set_dist_fact(exoid, EX_SIDE_SET, ids[i], dist_fact);
+        ex_get_set_dist_fact(exoid, EX_SIDE_SET, ids[i], dist_fact);
       }
 
       free(elem_list);
@@ -345,11 +341,11 @@ int main(int argc, char **argv)
       prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    error = ex_get_prop_names(exoid, EX_SIDE_SET, prop_names);
+    ex_get_prop_names(exoid, EX_SIDE_SET, prop_names);
 
     for (i = 0; i < num_props; i++) {
       for (j = 0; j < num_side_sets; j++) {
-        error = ex_get_prop(exoid, EX_SIDE_SET, ids[j], prop_names[i], &prop_value);
+        ex_get_prop(exoid, EX_SIDE_SET, ids[j], prop_names[i], &prop_value);
       }
     }
     for (i = 0; i < num_props; i++)
@@ -360,7 +356,6 @@ int main(int argc, char **argv)
 
     if (num_side_sets > 0) {
       elem_list_len = ex_inquire_int(exoid, EX_INQ_SS_ELEM_LEN);
-      node_list_len = ex_inquire_int(exoid, EX_INQ_SS_NODE_LEN);
       df_list_len   = ex_inquire_int(exoid, EX_INQ_SS_DF_LEN);
     }
 
@@ -380,7 +375,7 @@ int main(int argc, char **argv)
       ss_specs.sets_extra_list     = (int *)calloc(elem_list_len, sizeof(int));
       ss_specs.sets_dist_fact      = (float *)calloc(df_list_len, sizeof(float));
 
-      error = ex_get_concat_sets(exoid, EX_SIDE_SET, &ss_specs);
+      ex_get_concat_sets(exoid, EX_SIDE_SET, &ss_specs);
     }
   }
   /* end of concatenated side set read */
@@ -394,7 +389,7 @@ int main(int argc, char **argv)
     }
   }
 
-  error = ex_get_qa(exoid, qa_record);
+  ex_get_qa(exoid, qa_record);
 
   /* read information records */
   num_info = ex_inquire_int(exoid, EX_INQ_INFO);
@@ -402,20 +397,20 @@ int main(int argc, char **argv)
     info[i] = (char *)calloc((MAX_LINE_LENGTH + 1), sizeof(char));
   }
 
-  error = ex_get_info(exoid, info);
+  ex_get_info(exoid, info);
 
   for (i = 0; i < num_info; i++) {
     free(info[i]);
   }
 
   /* read global variables parameters and names */
-  error = ex_get_variable_param(exoid, EX_GLOBAL, &num_glo_vars);
+  ex_get_variable_param(exoid, EX_GLOBAL, &num_glo_vars);
 
   for (i = 0; i < num_glo_vars; i++) {
     var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
   }
 
-  error = ex_get_variable_names(exoid, EX_GLOBAL, num_glo_vars, var_names);
+  ex_get_variable_names(exoid, EX_GLOBAL, num_glo_vars, var_names);
 
   for (i = 0; i < num_glo_vars; i++) {
     free(var_names[i]);
@@ -424,13 +419,13 @@ int main(int argc, char **argv)
   /* read nodal variables parameters and names */
   num_nod_vars = 0;
   if (num_nodes > 0) {
-    error = ex_get_variable_param(exoid, EX_NODAL, &num_nod_vars);
+    ex_get_variable_param(exoid, EX_NODAL, &num_nod_vars);
 
     for (i = 0; i < num_nod_vars; i++) {
       var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    error = ex_get_variable_names(exoid, EX_NODAL, num_nod_vars, var_names);
+    ex_get_variable_names(exoid, EX_NODAL, num_nod_vars, var_names);
     for (i = 0; i < num_nod_vars; i++) {
       free(var_names[i]);
     }
@@ -439,13 +434,13 @@ int main(int argc, char **argv)
   /* read element variables parameters and names */
   num_ele_vars = 0;
   if (num_elem > 0) {
-    error = ex_get_variable_param(exoid, EX_ELEM_BLOCK, &num_ele_vars);
+    ex_get_variable_param(exoid, EX_ELEM_BLOCK, &num_ele_vars);
 
     for (i = 0; i < num_ele_vars; i++) {
       var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    error = ex_get_variable_names(exoid, EX_ELEM_BLOCK, num_ele_vars, var_names);
+    ex_get_variable_names(exoid, EX_ELEM_BLOCK, num_ele_vars, var_names);
     for (i = 0; i < num_ele_vars; i++) {
       free(var_names[i]);
     }
@@ -454,7 +449,7 @@ int main(int argc, char **argv)
     if (num_ele_vars > 0) {
       truth_tab = (int *)calloc((num_elem_blk * num_ele_vars), sizeof(int));
 
-      error = ex_get_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars, truth_tab);
+      ex_get_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars, truth_tab);
       free(truth_tab);
     }
   }
@@ -462,14 +457,14 @@ int main(int argc, char **argv)
   /* read nodeset variables parameters and names */
   num_nset_vars = 0;
   if (num_node_sets > 0) {
-    error = ex_get_variable_param(exoid, EX_NODE_SET, &num_nset_vars);
+    ex_get_variable_param(exoid, EX_NODE_SET, &num_nset_vars);
 
     if (num_nset_vars > 0) {
       for (i = 0; i < num_nset_vars; i++) {
         var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
 
-      error = ex_get_variable_names(exoid, EX_NODE_SET, num_nset_vars, var_names);
+      ex_get_variable_names(exoid, EX_NODE_SET, num_nset_vars, var_names);
 
       for (i = 0; i < num_nset_vars; i++) {
         free(var_names[i]);
@@ -479,7 +474,7 @@ int main(int argc, char **argv)
       if (num_nset_vars > 0) {
         truth_tab = (int *)calloc((num_node_sets * num_nset_vars), sizeof(int));
 
-        error = ex_get_truth_table(exoid, EX_NODE_SET, num_node_sets, num_nset_vars, truth_tab);
+        ex_get_truth_table(exoid, EX_NODE_SET, num_node_sets, num_nset_vars, truth_tab);
         free(truth_tab);
       }
     }
@@ -488,14 +483,14 @@ int main(int argc, char **argv)
   /* read sideset variables parameters and names */
   num_sset_vars = 0;
   if (num_side_sets > 0) {
-    error = ex_get_variable_param(exoid, EX_SIDE_SET, &num_sset_vars);
+    ex_get_variable_param(exoid, EX_SIDE_SET, &num_sset_vars);
 
     if (num_sset_vars > 0) {
       for (i = 0; i < num_sset_vars; i++) {
         var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
 
-      error = ex_get_variable_names(exoid, EX_SIDE_SET, num_sset_vars, var_names);
+      ex_get_variable_names(exoid, EX_SIDE_SET, num_sset_vars, var_names);
 
       for (i = 0; i < num_sset_vars; i++) {
         free(var_names[i]);
@@ -505,7 +500,7 @@ int main(int argc, char **argv)
       if (num_sset_vars > 0) {
         truth_tab = (int *)calloc((num_side_sets * num_sset_vars), sizeof(int));
 
-        error = ex_get_truth_table(exoid, EX_SIDE_SET, num_side_sets, num_sset_vars, truth_tab);
+        ex_get_truth_table(exoid, EX_SIDE_SET, num_side_sets, num_sset_vars, truth_tab);
         free(truth_tab);
       }
     }
@@ -516,19 +511,19 @@ int main(int argc, char **argv)
 
   /* read time value at one time step */
   time_step = 3;
-  error     = ex_get_time(exoid, time_step, &time_value);
+  ex_get_time(exoid, time_step, &time_value);
 
   /* read time values at all time steps */
   time_values = (float *)calloc(num_time_steps, sizeof(float));
 
-  error = ex_get_all_times(exoid, time_values);
+  ex_get_all_times(exoid, time_values);
 
   free(time_values);
 
   /* read all global variables at one time step */
   var_values = (float *)calloc(num_glo_vars, sizeof(float));
 
-  error = ex_get_var(exoid, time_step, EX_GLOBAL, 1, 0, num_glo_vars, var_values);
+  ex_get_var(exoid, time_step, EX_GLOBAL, 1, 0, num_glo_vars, var_values);
   free(var_values);
 
   /* read a single global variable through time */
@@ -538,21 +533,21 @@ int main(int argc, char **argv)
 
   var_values = (float *)calloc(num_time_steps, sizeof(float));
 
-  error = ex_get_var_time(exoid, EX_GLOBAL, var_index, 1, beg_time, end_time, var_values);
+  ex_get_var_time(exoid, EX_GLOBAL, var_index, 1, beg_time, end_time, var_values);
   free(var_values);
 
   /* read a nodal variable at one time step */
   if (num_nodes > 0) {
     var_values = (float *)calloc(num_nodes, sizeof(float));
 
-    error = ex_get_var(exoid, time_step, EX_NODAL, var_index, 1, num_nodes, var_values);
+    ex_get_var(exoid, time_step, EX_NODAL, var_index, 1, num_nodes, var_values);
     free(var_values);
 
     /* read a nodal variable through time */
     var_values = (float *)calloc(num_time_steps, sizeof(float));
 
     node_num = 1;
-    error = ex_get_var_time(exoid, EX_NODAL, var_index, node_num, beg_time, end_time, var_values);
+    ex_get_var_time(exoid, EX_NODAL, var_index, node_num, beg_time, end_time, var_values);
     free(var_values);
   }
 
@@ -560,14 +555,14 @@ int main(int argc, char **argv)
   if (num_elem_blk > 0) {
     ids = (int *)calloc(num_elem_blk, sizeof(int));
 
-    error = ex_get_elem_blk_ids(exoid, ids);
+    ex_get_elem_blk_ids(exoid, ids);
 
     for (i = 0; i < num_elem_blk; i++) {
       if (num_elem_in_block[i] > 0) {
         var_values = (float *)calloc(num_elem_in_block[i], sizeof(float));
 
-        error = ex_get_var(exoid, time_step, EX_ELEM_BLOCK, var_index, ids[i], num_elem_in_block[i],
-                           var_values);
+        ex_get_var(exoid, time_step, EX_ELEM_BLOCK, var_index, ids[i], num_elem_in_block[i],
+                   var_values);
 
         free(var_values);
       }
@@ -581,9 +576,7 @@ int main(int argc, char **argv)
 
     var_index = 2;
     elem_num  = 2;
-    error =
-        ex_get_var_time(exoid, EX_ELEM_BLOCK, var_index, elem_num, beg_time, end_time, var_values);
-
+    ex_get_var_time(exoid, EX_ELEM_BLOCK, var_index, elem_num, beg_time, end_time, var_values);
     free(var_values);
   }
 
@@ -592,8 +585,8 @@ int main(int argc, char **argv)
     for (i = 0; i < num_side_sets; i++) {
       var_values = (float *)calloc(ss_specs.num_entries_per_set[i], sizeof(float));
 
-      error = ex_get_var(exoid, time_step, EX_SIDE_SET, var_index, ss_specs.sets_ids[i],
-                         ss_specs.num_entries_per_set[i], var_values);
+      ex_get_var(exoid, time_step, EX_SIDE_SET, var_index, ss_specs.sets_ids[i],
+                 ss_specs.num_entries_per_set[i], var_values);
 
       free(var_values);
     }
@@ -604,12 +597,12 @@ int main(int argc, char **argv)
     for (i = 0; i < num_node_sets; i++) {
       var_values = (float *)calloc(ns_specs.num_entries_per_set[i], sizeof(float));
 
-      error = ex_get_var(exoid, time_step, EX_NODE_SET, var_index, ns_specs.sets_ids[i],
-                         ns_specs.num_entries_per_set[i], var_values);
+      ex_get_var(exoid, time_step, EX_NODE_SET, var_index, ns_specs.sets_ids[i],
+                 ns_specs.num_entries_per_set[i], var_values);
 
       free(var_values);
     }
   }
-  error = ex_close(exoid);
+  ex_close(exoid);
   return 0;
 }

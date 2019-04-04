@@ -219,6 +219,7 @@ The Exodus model is created via the following calls:
 * That's all; the rest of the calls are the same as normal Exodus except:
 
   * There is a similar `ex_get_entity_count_per_polyhedra()` function for read.
+
   * The `ex_get_block()` functions return the total number of nodes or
     faces for all faces or element for "nfaced" and "nsided" blocks
     and not the number per element

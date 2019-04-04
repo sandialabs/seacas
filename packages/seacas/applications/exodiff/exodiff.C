@@ -1718,8 +1718,7 @@ template <typename INT>
 bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
                   int out_file_id, const INT *id_map, std::vector<MinMaxData> &mm_ns, double *vals)
 {
-  std::string serr;
-  bool        diff_flag = false;
+  bool diff_flag = false;
 
   if (out_file_id >= 0) {
     SMART_ASSERT(vals != nullptr);
@@ -1895,8 +1894,7 @@ template <typename INT>
 bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, const TimeInterp &t2,
                   int out_file_id, const INT *id_map, std::vector<MinMaxData> &mm_ss, double *vals)
 {
-  std::string serr;
-  bool        diff_flag = false;
+  bool diff_flag = false;
 
   if (out_file_id >= 0) {
     SMART_ASSERT(vals != nullptr);
@@ -2069,8 +2067,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
 template <typename INT>
 bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *id_map)
 {
-  std::string serr;
-  bool        diff_flag = false;
+  bool diff_flag = false;
 
   std::string name        = "Distribution Factors";
   int         name_length = name.length();
