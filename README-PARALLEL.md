@@ -29,8 +29,7 @@ For all of the libraries, there should exist a
   * edit `parmetis-4.0.3/metis/include/metis.h` and change `IDXTYPEWIDTH` and `REALTYPEWIDTH` to 64
 
   * cd to the parmetis directory and enter the command:
-
-    ```
+    ```bash
     MPI=ON sh ../runconfigure.sh
 	make && make install
     ```

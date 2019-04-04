@@ -39,7 +39,7 @@ create or read models of this size, you do not have to build hdf5.
    * Download to `seacas/TPL/hdf5` and untar it
 
    * `cd` to that directory and enter the command:
-     ```
+     ```bash
      sh ../runconfigure.sh
      ```
 
@@ -58,22 +58,20 @@ The most recent released version is recommended. For use with Exodus, some local
    following defines in
    seacas/TPL/netcdf/netcdf-4.6.1/include/netcdf.h.  Versions *4.5.1 or
    later* do not check these limits and can be run unmodified.
-
-    ```
-    #define NC_MAX_DIMS     65536    /* max dimensions per file */
-    #define NC_MAX_VARS     524288   /* max variables per file */
-    ```
+   ```c
+   #define NC_MAX_DIMS     65536    /* max dimensions per file */
+   #define NC_MAX_VARS     524288   /* max variables per file */
+   ```
 
  * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF
 _4` to `OFF`
 
  * `cd netcdf-4.6.1` and enter the command:
-
-    ```
-    mkdir build
-    cd build
-	sh ../../runcmake.sh
-    ```
+   ```bash
+   mkdir build
+   cd build
+   sh ../../runcmake.sh
+   ```
 
  * `make && make install`
 
@@ -87,11 +85,10 @@ The MatIO library is used in the exo2mat and mat2exo programs which convert an e
  * `git clone https://github.com/tbeu/matio.git`
 
  * `cd matio` and enter the command:
-
-    ```
-    ./autogen.sh
-    sh ../runconfigure.sh
-    ```
+   ```bash
+   ./autogen.sh
+   sh ../runconfigure.sh
+   ```
 
  * `make && make install`
 
@@ -100,7 +97,7 @@ The MatIO library is used in the exo2mat and mat2exo programs which convert an e
 GNU Parallel is a shell tool for executing jobs in parallel using one or more computers. A job is typically a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, or a list of tables.  In SEACAS, this is only used by epup which runs multiple epu jobs concurrently.  To build:
 
  * Download the most recent version of the library from <ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2>.
-   ```
+   ```bash
    cd TPL/parallel
    tar jxvf /path/to/parallel-latest.tar.bz2
    cd parallel-20150522
