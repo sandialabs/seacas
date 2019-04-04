@@ -316,10 +316,6 @@ bool test_element(const std::string &type)
   //
   if (element->parametric_dimension() == 3) {
     for (int i = 1; i <= nf; i++) {
-
-      // Nodes defining face...
-      std::vector<int> face_con = element->face_connectivity(i);
-
       unsigned int fncn           = element->face_type(i)->number_corner_nodes();
       unsigned int num_edges_face = element->number_edges_face(i);
       if (fncn != num_edges_face) {

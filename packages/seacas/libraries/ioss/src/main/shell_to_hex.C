@@ -311,7 +311,6 @@ namespace {
   {
     const Ioss::NodeBlockContainer &         nbs = region.get_node_blocks();
     Ioss::NodeBlockContainer::const_iterator i   = nbs.begin();
-    int                                      id  = 1;
     while (i != nbs.end()) {
       const std::string &name = (*i)->name();
       if (debug) {
@@ -327,7 +326,6 @@ namespace {
       auto nb = new Ioss::NodeBlock(output_region.get_database(), name, 2 * num_nodes, degree);
       output_region.add(nb);
       ++i;
-      ++id;
     }
     if (debug) {
       std::cerr << '\n';

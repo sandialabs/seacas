@@ -161,7 +161,7 @@ void F2C(negii)(int *idne, int *nproc, int *nproc_in_f, char *ftype, int *ierr, 
   if (ftypelen != 1) {
 #if defined(EXODUS_STRING_LENGTH_WARNING)
     char errmsg[MAX_ERR_LENGTH];
-    sprintf(errmsg, "Warning: file type string length is %d in file id %d\n", ftypelen, *idne);
+    sprintf(errmsg, "Warning: file type string length is %lu in file id %d\n", ftypelen, *idne);
     ex_err(__func__, errmsg, EX_MSG);
 #endif
     slen = ftypelen;

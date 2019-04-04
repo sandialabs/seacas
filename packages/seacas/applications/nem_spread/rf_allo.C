@@ -166,7 +166,7 @@ void *array_alloc(const char *file, int lineno, int numdim, ...)
   dim[0].off   = 0;
   for (int i = 1; i < numdim; i++) {
     dim[i].index = va_arg(va, size_t);
-    if (dim[i].index <= 0) {
+    if (dim[i].index == 0) {
       fprintf(stderr,
               "WARNING: %s (%s: %d) called with dimension %d == 0, "
               " will return nullptr\n",

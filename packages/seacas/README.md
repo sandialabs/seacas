@@ -61,9 +61,9 @@ support, you do not have to build hdf5.
   * `tar zxvf parallel-netcdf-1.6.1.tar.gz`
 
   * `cd` to the `parallel-netcdf-1.6.1` directory and enter the command:
-  ```
-  CC=mpicc ./configure --disable-fortran --prefix ${WHERE_TO_INSTALL}
-  ```
+    ```
+    CC=mpicc ./configure --disable-fortran --prefix ${WHERE_TO_INSTALL}
+    ```
 
   * `make && make install`
 
@@ -145,13 +145,14 @@ The Data Warehouse is a collection of data management tools that Sandia is curre
 
 The repository [data-warehouse-release](https://gitlab.sandia.gov/nessie-dev/data-warehouse-release) is a superbuild for the Data Warehouse tools and was created to make the build process as easy as possible. It includes the files INSTALL.md and INSTALL_TPL.md which contain instructions for building Data Warehouse and it's TPLs: Boost, googletest, libfabric, and libhio (optional). These builds are straightforward so a "runconfigure.sh" script is left to the end-user. Note that it's possible to supply your own build of these tools. Following the SEACAS pattern for building TPLs:
 
-    * `cd TPL`
-    * `git clone git@gitlab.sandia.gov:nessie-dev/data-warehouse-release.git`
-    * follow the instructions in INSTALL_TPL.md and then INSTALL.md
-    * consider installing data-warehouse-release and it's TPLs to the directory set in  the $ACCESS env. var.
+ * `cd TPL`
+ * `git clone git@gitlab.sandia.gov:nessie-dev/data-warehouse-release.git`
+ * follow the instructions in INSTALL_TPL.md and then INSTALL.md
+ * consider installing data-warehouse-release and it's TPLs to the directory set in  the $ACCESS env. var.
 
 To build SEACAS with an installation of data-warehouse-release and it's TPLs, add the following lines to the list of cmake command arguments as found in the top-level `cmake-config` file. Where DataWarehouse_PATH in environment variable that contains the path to the top-level install directory for the Data Warehouse, and HAVE_DATA_WAREHOUSE={ON|OFF} is a variable defined in `cmake-config`.
-```
+
+```bash
     -DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATAWAREHOUSE}           \
     -DDataWarehouse_LIBRARY_DIRS:PATH=${DataWarehouse_PATH}/lib     \
     -DDataWarehouse_INCLUDE_DIRS:PATH=${DataWarehouse_PATH}/include \
@@ -162,9 +163,8 @@ At this time, you should have all external TPL libraries built and
 installed into `${WHERE_TO_INSTALL}/lib` and `${WHERE_TO_INSTALL}/include`. You are now ready
 to configure the SEACAS portion of the Trilinos cmake build.
 
-The relavant defines for SEACAS are listed below:
-
-```
+The relavant defines for SEACAS are:
+```bash
   -D Trilinos_ENABLE_SEACAS:BOOL=ON
   -D TPL_ENABLE_Netcdf:BOOL=ON
   -D Netcdf_LIBRARY_DIRS:PATH=${WHERE_TO_INSTALL}/lib
