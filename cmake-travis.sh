@@ -20,7 +20,7 @@ ACCESS=$(cd ..; pwd)
 HAVE_X11=ON
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
-THREADSAFES=${THREADSAFE:-OFF}
+THREADSAFE=${THREADSAFE:-OFF}
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}

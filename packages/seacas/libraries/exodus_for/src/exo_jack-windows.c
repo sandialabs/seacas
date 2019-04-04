@@ -398,6 +398,7 @@ void F2C(EXGQA)(int *idexo, char *qa_record, int *ierr, int qa_recordlen)
       *(sptr + iii) = malloc((slen + 1) * sizeof(char));
       if (*(sptr + iii) == 0) {
         *ierr = EX_MEMFAIL;
+        free(sptr);
         return;
       }
       iii++; /* bump char array pointer */
@@ -408,14 +409,15 @@ void F2C(EXGQA)(int *idexo, char *qa_record, int *ierr, int qa_recordlen)
   /* do ExodusII C call to get qa records */
   if (ex_get_qa(*idexo, (void *)sptr) == EX_FATAL) {
     *ierr = EX_FATAL;
-    return;
   }
-  iii = 0;                               /* offset counter */
-  for (i = 0; i < num_qa_records; i++) { /* string copy loop */
-    for (ii = 0; ii < alen; ii++) {
-      /* copy fortran string into allocated space */
-      ex_fcdcpy(qa_record + iii * qa_recordlen, slen, *(sptr + iii));
-      iii++; /* bump char array pointer */
+  if (*ierr != EX_FATAL) {
+    iii = 0;                               /* offset counter */
+    for (i = 0; i < num_qa_records; i++) { /* string copy loop */
+      for (ii = 0; ii < alen; ii++) {
+        /* copy fortran string into allocated space */
+        ex_fcdcpy(qa_record + iii * qa_recordlen, slen, *(sptr + iii));
+        iii++; /* bump char array pointer */
+      }
     }
   }
 
@@ -2369,7 +2371,7 @@ void F2C(EXGII)(int *idne, int *nproc, int *nproc_in_f, char *ftype, int *ierr, 
   if (ftypelen != 1) {
 #if defined(EXODUS_STRING_LENGTH_WARNING)
     char errmsg[MAX_ERR_LENGTH];
-    sprintf(errmsg, "Warning: file type string length is %d in file id %d\n", ftypelen, *idne);
+    sprintf(errmsg, "Warning: file type string length is %lu in file id %d\n", ftypelen, *idne);
     ex_err(__func__, errmsg, EX_MSG);
 #endif
     slen = ftypelen;

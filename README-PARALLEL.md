@@ -45,14 +45,12 @@ For all of the libraries, there should exist a
   * NOTE: If using version 1.9.0 or later, the changes below are not required.
 
   * Make the same modifications to the defines in `src/lib/pnetcdf.h` that are modified for NetCDF:
-  
-    ```
+    ```c
     #define NC_MAX_DIMS     65536    /* max dimensions per file */
     #define NC_MAX_VARS     524288   /* max variables per file */
     ```
 
   * `cd` to the parallel-netcdf source directory and enter the command:
-   
     ```bash
 	sh ../runconfigure.sh
 	make && make install

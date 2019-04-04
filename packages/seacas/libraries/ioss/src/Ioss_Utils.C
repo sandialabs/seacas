@@ -1903,7 +1903,6 @@ namespace {
                           const Ioss::MeshCopyOptions &options, int rank)
   {
     const auto &nbs = region.get_node_blocks();
-    size_t      id  = 1;
     for (const auto &inb : nbs) {
       const std::string &name = inb->name();
       if (options.debug && rank == 0) {
@@ -1940,7 +1939,6 @@ namespace {
 
       transfer_fields(inb, nb, Ioss::Field::MESH);
       transfer_fields(inb, nb, Ioss::Field::ATTRIBUTE);
-      ++id;
     }
     if (options.debug && rank == 0) {
       std::cerr << '\n';
