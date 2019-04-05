@@ -179,8 +179,8 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
     else {
 
       /* Always allocate at least one and initialize the counts to 0 */
-      globals.N_Comm_Map[iproc] = (NODE_COMM_MAP<INT> *)malloc(
-          PEX_MAX(1, globals.Num_N_Comm_Maps[iproc]) * sizeof(NODE_COMM_MAP<INT>));
+      globals.N_Comm_Map[iproc] = static_cast<NODE_COMM_MAP<INT> *>(
+          malloc(PEX_MAX(1, globals.Num_N_Comm_Maps[iproc]) * sizeof(NODE_COMM_MAP<INT>)));
       if (globals.N_Comm_Map[iproc] == nullptr && globals.Num_N_Comm_Maps[iproc] > 0) {
         fprintf(stderr, "%s: ERROR. Insufficient memory for nodal comm. map!\n", yo);
         exit(1);
@@ -190,8 +190,8 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_lb_info()
         ((globals.N_Comm_Map[iproc]) + ijump)->node_cnt = 0;
       }
 
-      globals.E_Comm_Map[iproc] = (ELEM_COMM_MAP<INT> *)malloc(
-          PEX_MAX(1, globals.Num_E_Comm_Maps[iproc]) * sizeof(ELEM_COMM_MAP<INT>));
+      globals.E_Comm_Map[iproc] = static_cast<ELEM_COMM_MAP<INT> *>(
+          malloc(PEX_MAX(1, globals.Num_E_Comm_Maps[iproc]) * sizeof(ELEM_COMM_MAP<INT>)));
       if (globals.E_Comm_Map[iproc] == nullptr && globals.Num_E_Comm_Maps[iproc] > 0) {
         fprintf(stderr, "%s: ERROR. Insufficient memory for elemental comm. map!\n", yo);
         exit(1);
