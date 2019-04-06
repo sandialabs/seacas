@@ -31,7 +31,7 @@ For all of the libraries, there should exist a
   * cd to the parmetis directory and enter the command:
     ```bash
     MPI=ON sh ../runconfigure.sh
-	make && make install
+        make && make install
     ```
   
 ### Parallel-NetCDF
@@ -51,8 +51,8 @@ For all of the libraries, there should exist a
 
   * `cd` to the parallel-netcdf source directory and enter the command:
     ```bash
-	sh ../runconfigure.sh
-	make && make install
+        sh ../runconfigure.sh
+        make && make install
     ```
 
 ### HDF5
@@ -60,7 +60,7 @@ For all of the libraries, there should exist a
    
     ```bash
     MPI=ON sh ../runconfigure.sh
-	make && make install
+        make && make install
     ```
 
 ### NetCDF
@@ -69,10 +69,10 @@ For all of the libraries, there should exist a
   * `cd netcdf-4.6.1` and enter the command:
  
     ```bash
-	mkdir build
-	cd build
-	MPI=ON sh ../../runcmake.sh
-	make && make install
+        mkdir build
+        cd build
+        MPI=ON sh ../../runcmake.sh
+        make && make install
     ```
 
 ## Configure, Build, and Install SEACAS
