@@ -320,6 +320,7 @@ then
             git clone https://github.com/cgns/CGNS
 	    cd CGNS
 	    echo "${txtblu}"
+	    git checkout CompactStorageRev
 	    git am ../CGNS-sandia.patch
 	    echo "${txtrst}"
 	    if [[ $? != 0 ]]
