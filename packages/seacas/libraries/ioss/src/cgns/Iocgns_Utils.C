@@ -1627,35 +1627,20 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
   int zone = get_db_zone(block);
 
   // Called by Parallel run reading single file only.
-  // The 'cgns_file_ptr' is for the serial file on processor 0.
-  // Read all CGNS data on processor 0 and then broadcast to other processors.
   // Data needed:
   // * boco_name (CGNS_MAX_NAME_LENGTH + 1 chars)
   // * fam_name  (CGNS_MAX_NAME_LENGTH + 1 chars)
   // * data     (cgsize_t * 7) (bocotype + range[6])
 
   int num_bcs = 0;
-  int rank    = block->get_database()->util().parallel_rank();
-  if (rank == 0) {
-    CGCHECKNP(cg_nbocos(cgns_file_ptr, base, zone, &num_bcs));
-  }
-
-#ifdef SEACAS_HAVE_MPI
-  int proc = block->get_database()->util().parallel_size();
-  if (proc > 1) {
-    MPI_Bcast(&num_bcs, 1, MPI_INT, 0, block->get_database()->util().communicator());
-  }
-#endif
+  CGCHECKNP(cg_nbocos(cgns_file_ptr, base, zone, &num_bcs));
 
   std::vector<int>  bc_data(7 * num_bcs);
   std::vector<char> bc_names(2 * (CGNS_MAX_NAME_LENGTH + 1) * num_bcs);
 
-  if (rank == 0) {
-    int      off_data = 0;
-    int      off_name = 0;
-    cgsize_t range[6];
 
     for (int ibc = 0; ibc < num_bcs; ibc++) {
+      cgsize_t          range[6];
       char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
       char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
       CG_BCType_t       bocotype;
@@ -1681,50 +1666,6 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
 
       CGCHECKNP(cg_boco_read(cgns_file_ptr, base, zone, ibc + 1, range, nullptr));
 
-      Ioss::Utils::copy_string(&bc_names[off_name], boco_name, CGNS_MAX_NAME_LENGTH + 1);
-      off_name += (CGNS_MAX_NAME_LENGTH + 1);
-      Ioss::Utils::copy_string(&bc_names[off_name], fam_name, CGNS_MAX_NAME_LENGTH + 1);
-      off_name += (CGNS_MAX_NAME_LENGTH + 1);
-
-      bc_data[off_data++] = bocotype;
-      bc_data[off_data++] = range[0];
-      bc_data[off_data++] = range[1];
-      bc_data[off_data++] = range[2];
-      bc_data[off_data++] = range[3];
-      bc_data[off_data++] = range[4];
-      bc_data[off_data++] = range[5];
-    }
-  }
-
-#ifdef SEACAS_HAVE_MPI
-  // Broadcast data to other processors...
-  if (proc > 1) {
-    MPI_Bcast(bc_names.data(), (int)bc_names.size(), MPI_BYTE, 0,
-              block->get_database()->util().communicator());
-    MPI_Bcast(bc_data.data(), (int)bc_data.size(), MPI_INT, 0,
-              block->get_database()->util().communicator());
-  }
-#endif
-
-  // Now just unpack the data and run through the same calculations on all processors.
-  int off_data = 0;
-  int off_name = 0;
-  for (int ibc = 0; ibc < num_bcs; ibc++) {
-    cgsize_t range[6];
-
-    CG_BCType_t bocotype = (CG_BCType_t)bc_data[off_data++];
-    range[0]             = bc_data[off_data++];
-    range[1]             = bc_data[off_data++];
-    range[2]             = bc_data[off_data++];
-    range[3]             = bc_data[off_data++];
-    range[4]             = bc_data[off_data++];
-    range[5]             = bc_data[off_data++];
-
-    std::string boco_name{&bc_names[off_name]};
-    off_name += (CGNS_MAX_NAME_LENGTH + 1);
-    std::string fam_name{&bc_names[off_name]};
-    off_name += (CGNS_MAX_NAME_LENGTH + 1);
-
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
     {
@@ -1742,7 +1683,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
 
     bool is_parallel_io = true;
     add_bc_to_block(block, boco_name, fam_name, ibc, range, bocotype, is_parallel_io);
-  }
+    }
 }
 
 void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                    cgns_file_ptr,
