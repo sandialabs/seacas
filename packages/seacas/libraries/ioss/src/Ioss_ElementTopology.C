@@ -100,7 +100,7 @@ Ioss::ElementTopology *Ioss::ElementTopology::factory(const std::string &type, b
 
   if (iter == registry().end()) {
     std::string base1 = "super";
-    if (ltype.find(base1) == 0) {
+    if (ltype.compare(0, 5, base1) == 0) {
       // A super element can have a varying number of nodes.  Create
       // an IO element type for this super element. The node count
       // should be encoded in the 'type' as 'super42' for a 42-node

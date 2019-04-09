@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['nc_5ffloat_5fwordsize',['NC_FLOAT_WORDSIZE',['../ex__conv_8c.html#ad496620435dc522e8908edff46c3a2c0',1,'ex_conv.c']]],
-  ['nc_5fint64',['NC_INT64',['../ex__put__loadbal__param__cc_8c.html#a8fe8ec701fdf28231954b552bd7c402c',1,'ex_put_loadbal_param_cc.c']]],
-  ['nemesis_5fapi_5fversion',['NEMESIS_API_VERSION',['../exodusII_8h.html#a931e965a07b4cab183cd07a96a8026c8',1,'exodusII.h']]],
-  ['nemesis_5fapi_5fversion_5fnodot',['NEMESIS_API_VERSION_NODOT',['../exodusII_8h.html#a291efdb1234ed9adc27df6e46384579a',1,'exodusII.h']]],
-  ['nemesis_5ffile_5fversion',['NEMESIS_FILE_VERSION',['../exodusII_8h.html#a8c33048e27dc3baf49a0299e3df033b2',1,'exodusII.h']]]
+  ['magic_5fnumber_5flen',['MAGIC_NUMBER_LEN',['../ex__utils_8c.html#ac9417fa0bdbbdb8ed8ab47ef644a4097',1,'ex_utils.c']]],
+  ['max_5fvar_5fname_5flength',['MAX_VAR_NAME_LENGTH',['../exodusII__int_8h.html#a50bd85ce2ed14f876d5f8faac0adba86',1,'exodusII_int.h']]]
 ];

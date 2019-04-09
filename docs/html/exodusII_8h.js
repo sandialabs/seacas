@@ -438,6 +438,7 @@ var exodusII_8h =
     [ "ex_set_int64_status", "exodusII_8h.html#a8be8ae9fd499756ab2dcb94ca4df7743", null ],
     [ "ex_set_max_name_length", "exodusII_8h.html#a3126c6db205970eaa43de2b0eac0bf87", null ],
     [ "ex_set_option", "exodusII_8h.html#ab9398d414e1316177db89782ed2a08c4", null ],
+    [ "ex_set_parallel", "exodusII_8h.html#ab9a0caef233c3321be24ecd4c9d51578", null ],
     [ "ex_strerror", "exodusII_8h.html#aa1cdf87b4af74c54b772410d09b3b358", null ],
     [ "ex_update", "exodusII_8h.html#afffa0ac5ec86658fb22ed6af7f5530cc", null ],
     [ "ex_var_type_to_ex_entity_type", "exodusII_8h.html#a2e68f6c347848990e7f9eafee4a27dda", null ],

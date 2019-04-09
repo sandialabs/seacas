@@ -158,11 +158,14 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
   EX_FUNC_ENTER();
 
   /* check to make sure machine word sizes are sane */
-  if ((sizeof(float) != 4 && sizeof(float) != 8) || (sizeof(double) != 4 && sizeof(double) != 8)) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported compute word size for file id: %d", exoid);
-    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
-    EX_FUNC_LEAVE(EX_FATAL);
-  }
+/* If the following line causes a compile-time error, then there is a problem
+ * which will cause exodus to not work correctly on this platform.
+ *
+ * Contact Greg Sjaardema, gdsjaar@sandia.gov for asisstance.
+ */
+#define CT_ASSERT(e) extern char(*ct_assert(void))[sizeof(char[1 - 2 * !(e)])]
+  CT_ASSERT((sizeof(float) == 4 || sizeof(float) == 8) &&
+            (sizeof(double) == 4 || sizeof(double) == 8));
 
   /* check to see if requested word sizes are valid */
   if (!*io_wordsize) {

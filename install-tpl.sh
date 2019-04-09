@@ -8,9 +8,9 @@ txtred=$(tput setaf 1)    # Red
 txtgrn=$(tput setaf 2)    # Green
 txtylw=$(tput setaf 3)    # Yellow
 txtblu=$(tput setaf 4)    # Blue
-txtpur=$(tput setaf 5)    # Purple
+#txtpur=$(tput setaf 5)    # Purple
 txtcyn=$(tput setaf 6)    # Cyan
-txtwht=$(tput setaf 7)    # White
+#txtwht=$(tput setaf 7)    # White
 txtrst=$(tput sgr0)       # Text reset
 
 # Which compiler to use?
@@ -52,6 +52,8 @@ MATIO=${MATIO:-ON}
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
 H5VERSION=${H5VERSION:-V110}
+ADIOS2=${ADIOS2:-OFF}
+GTEST=${GTEST:-ON}
 
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
@@ -64,7 +66,7 @@ then
 fi
 
 pwd
-export ACCESS=`pwd`
+export ACCESS=$(pwd)
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
@@ -77,7 +79,7 @@ then
     CC=mpicc; export CC
 fi
 
-OS=`uname -s`
+OS=$(uname -s)
 if [ "$SHARED" == "YES" ]
 then
     if [ "$OS" == "Darwin" ] ; then
@@ -110,6 +112,8 @@ if [ $# -gt 0 ]; then
 	echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
 	echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
 	echo "   BB           = ${BB}"
+	echo "   ADIOS2       = ${ADIOS2}"
+	echo "   GTEST        = ${GTEST}"
 	echo ""
 	echo "   SUDO         = ${SUDO}"
 	echo "   JOBS         = ${JOBS}"
@@ -142,12 +146,6 @@ then
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd zlib-${zlib_version}
-	    if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
-	    then
-		USE_SHARED=""
-	    else
-		USE_SHARED="--static"
-	    fi
             ./configure --prefix=${INSTALL_PATH}
             if [[ $? != 0 ]]
             then
@@ -283,6 +281,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
+	git checkout v4.6.3
         if [ -d build ]
         then
             rm -rf build
@@ -394,6 +393,96 @@ then
 	fi
     else
 	echo "${txtylw}+++ MatIO already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
+# =================== INSTALL ADIOS2  ===============
+if [ "$ADIOS2" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2.${LD_EXT} ]
+    then
+        echo "${txtgrn}+++ ADIOS2${txtrst}"
+        cd $ACCESS
+        cd TPL/adios2
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf ADIOS2
+            git clone https://github.com/ornladios/ADIOS2.git
+        fi
+
+        if [ "$BUILD" == "YES" ]
+        then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd ADIOS2
+	    git checkout 8c2135169ad534c30c503ad2bb8be0507facf63b
+            if [ -d build ]
+            then
+                rm -rf build
+            fi
+            mkdir build
+            cd build
+            SHARED=${SHARED} MPI=${MPI} bash -x ../../runcmake.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure cmake for ADIOS2. exiting.${txtrst}
+                exit 1
+            fi
+
+            make -j${JOBS} && ${SUDO} make "VERBOSE=${VERBOSE}" install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build ADIOS2. exiting.${txtrst}
+                exit 1
+            fi
+        fi
+    else
+        echo "${txtylw}+++ ADIOS2 already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
+# =================== INSTALL gtest  ===============
+if [ "$GTEST" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libgtest.${LD_EXT} ]
+    then
+        echo "${txtgrn}+++ gtest${txtrst}"
+        cd $ACCESS
+        cd TPL/gtest
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf gtest
+            git clone https://github.com/google/googletest.git
+        fi
+
+        if [ "$BUILD" == "YES" ]
+        then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd googletest
+	    git checkout release-1.8.1
+            if [ -d build ]
+            then
+                rm -rf build
+            fi
+            mkdir build
+            cd build
+            SHARED=${SHARED} bash -x ../../runcmake.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure cmake for gtest. exiting.${txtrst}
+                exit 1
+            fi
+
+            make -j${JOBS} && ${SUDO} make "VERBOSE=${VERBOSE}" install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build gtest. exiting.${txtrst}
+                exit 1
+            fi
+        fi
+    else
+        echo "${txtylw}+++ gtest already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 

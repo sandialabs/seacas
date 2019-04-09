@@ -6,6 +6,7 @@ var ex__utils_8c =
     [ "ex_catstr2", "ex__utils_8c.html#aa992f34cd15bcad5c1aa37e863000eec", null ],
     [ "ex_check_file_type", "ex__utils_8c.html#a278917a76c0c7c81a24390bc18af7cad", null ],
     [ "ex_compress_variable", "ex__utils_8c.html#ae240484d9a735c54d1192cde3ab82b5a", null ],
+    [ "ex_copy_string", "ex__utils_8c.html#af1f4f3b83e65c1415d915910a48463ea", null ],
     [ "ex_dim_num_entries_in_object", "ex__utils_8c.html#a5e9669d5fae0139cd3c29dfd6fea9f6f", null ],
     [ "ex_dim_num_objects", "ex__utils_8c.html#a8ece0f3ebc9d7e1b2e293bbb3aa3827c", null ],
     [ "ex_get_counter_list", "ex__utils_8c.html#ac2f5220894707b3d4470e95ef6fdad08", null ],

@@ -962,12 +962,9 @@ namespace SEAMS {
       }
     }
 
-    auto tmpstr = new char[len + 1];
-    std::strncpy(tmpstr, start, len);
-    tmpstr[len] = '\0';
-    char *tmp;
-    new_string(tmpstr, &tmp);
-    delete[] tmpstr;
+    std::string tmpstr(start, 0, len);
+    char *      tmp;
+    new_string(tmpstr.c_str(), &tmp);
     return tmp;
   }
 
@@ -1131,12 +1128,12 @@ namespace SEAMS {
 
   array *do_csv_array2(const char *filename, const char *comment)
   {
-    const char *  delim = ",\t ";
-    std::fstream *file  = aprepro->open_file(filename, "r");
+    std::fstream *file = aprepro->open_file(filename, "r");
     if (file != nullptr) {
 
-      size_t rows = 0;
-      size_t cols = 0;
+      size_t      rows  = 0;
+      size_t      cols  = 0;
+      const char *delim = ",\t ";
 
       std::string line;
       while (std::getline(*file, line)) {

@@ -44,6 +44,7 @@
 
 #include <ctype.h>
 #include <errno.h>
+#include <inttypes.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -275,7 +276,7 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
   for (i = 0; i < num_entity; i++) {
     if (names != NULL && *names != NULL && *names[i] != '\0') {
       found_name = 1;
-      strncpy(&int_names[idx], names[i], name_length - 1);
+      ex_copy_string(&int_names[idx], names[i], name_length - 1);
       int_names[idx + name_length - 1] = '\0';
       length                           = strlen(names[i]) + 1;
       if (length > name_length) {
@@ -1415,7 +1416,7 @@ void ex_iqsort64(int64_t v[], int64_t iv[], int64_t N)
   ex_int_iisort64(v, iv, N);
 
 #if defined(DEBUG_QSORT)
-  fprintf(stderr, "Checking sort of %d values\n", N + 1);
+  fprintf(stderr, "Checking sort of %" PRId64 " values\n", N + 1);
   int i;
   for (i = 1; i < N; i++) {
     assert(v[iv[i - 1]] <= v[iv[i]]);
@@ -1839,8 +1840,15 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
 
   /*
    * set error handling mode to no messages, non-fatal errors
+   * unless specified differently via environment.
    */
-  ex_opts(exoptval); /* call required to set ncopts first time through */
+  {
+    char *option = getenv("EXODUS_VERBOSE");
+    if (option != NULL) {
+      exoptval = EX_VERBOSE;
+    }
+    ex_opts(exoptval); /* call required to set ncopts first time through */
+  }
 
   if (my_mode & EX_CLOBBER) {
     nc_mode |= NC_CLOBBER;
@@ -2008,4 +2016,15 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int is_para
   return (EX_FATAL);
 }
 return EX_NOERR;
+}
+
+/* Safer than strncpy -- guarantees null termination */
+char *ex_copy_string(char *dest, char const *source, size_t elements)
+{
+  char *d;
+  for (d = dest; d + 1 < dest + elements && *source; d++, source++) {
+    *d = *source;
+  }
+  *d = '\0';
+  return d;
 }

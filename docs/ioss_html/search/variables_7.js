@@ -2,6 +2,7 @@ var searchData=
 [
   ['ge',['ge',['../unionIoss_1_1Property_1_1Data.html#a1c76bd7354214ca251591aa756292ef0',1,'Ioss::Property::Data']]],
   ['glob_5frange',['glob_range',['../structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1SBlock.html#a8fccd2084f9c863d7183fa2e35e471d2',1,'anonymous_namespace{Iocgns_DatabaseIO.C}::SBlock']]],
+  ['global_5fsize',['global_size',['../structIoad_1_1DatabaseIO_1_1BlockInfoType.html#a3b71d87bcd62362847daab9c4f50a414',1,'Ioad::DatabaseIO::BlockInfoType']]],
   ['globalcatalystiossdlhandle',['globalCatalystIossDlHandle',['../namespaceIovs.html#aeb6f645c6b1c39afe0a6c15aefa12b57',1,'Iovs']]],
   ['globalcount',['globalCount',['../classIoss_1_1BlockDecompositionData.html#af4e46ce5328ef03d9beba5f708d3dd5e',1,'Ioss::BlockDecompositionData']]],
   ['globalelementblocks',['globalElementBlocks',['../structIoex_1_1CommunicationMetaData.html#acd714a503017ddafb403465c9bf66d2a',1,'Ioex::CommunicationMetaData']]],
@@ -16,6 +17,8 @@ var searchData=
   ['globalnumberofelementssurface1',['globalNumberOfElementsSurface1',['../structIogn_1_1DashSurfaceData.html#ac9285ccbb7ac6abc03d2fe1af1b72a3c',1,'Iogn::DashSurfaceData']]],
   ['globalnumberofelementssurface2',['globalNumberOfElementsSurface2',['../structIogn_1_1DashSurfaceData.html#a7f79ce0c3ad2a0baa4e8fbf5855650a0',1,'Iogn::DashSurfaceData']]],
   ['globalnumberofnodes',['globalNumberOfNodes',['../structIogn_1_1ExodusData.html#a5e04e4d8f74f9b229523f87f74a5000a',1,'Iogn::ExodusData::globalNumberOfNodes()'],['../structIogn_1_1DashSurfaceData.html#a92a27f89603b264ea930597df66539a8',1,'Iogn::DashSurfaceData::globalNumberOfNodes()']]],
+  ['globals_5fentity_5fname',['globals_entity_name',['../namespaceIoad.html#a5056cbe2e2f7cf5efba5e63087ae801b',1,'Ioad']]],
+  ['globals_5fentity_5ftype',['globals_entity_type',['../namespaceIoad.html#a34864efb8f6e497d7986a2aa944af754',1,'Ioad']]],
   ['globalsidesets',['globalSideSets',['../structIoex_1_1CommunicationMetaData.html#a1b1fa78d3b46156e73a29b647d6400be',1,'Ioex::CommunicationMetaData']]],
   ['globalvalues',['globalValues',['../classIoex_1_1DatabaseIO.html#a7d24a9796bb5f68a3682547c888a2d8c',1,'Ioex::DatabaseIO']]],
   ['groupname',['groupName',['../classIOShell_1_1Interface.html#a46c43fa5a8c60d30bc46374b9c1f46ff',1,'IOShell::Interface']]],

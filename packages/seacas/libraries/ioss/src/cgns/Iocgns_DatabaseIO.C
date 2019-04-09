@@ -71,6 +71,7 @@
 #include "Ioss_FaceBlock.h"
 #include "Ioss_FaceSet.h"
 #include "Ioss_Field.h"
+#include "Ioss_FileInfo.h"
 #include "Ioss_Hex8.h"
 #include "Ioss_IOFactory.h"
 #include "Ioss_NodeBlock.h"
@@ -111,9 +112,8 @@ namespace {
   struct SBlock
   {
     SBlock() = default;
-    SBlock(char *names, int *data)
+    SBlock(char *names, int *data) : name(std::string{names})
     {
-      name    = std::string{names};
       int idx = 0;
       proc    = data[idx++];
       unpack(idx, data, range.data(), 3);
@@ -486,14 +486,28 @@ namespace Iocgns {
     if (m_cgnsFilePtr < 0) {
       if ((is_input() && properties.exists("MEMORY_READ")) ||
           (!is_input() && properties.exists("MEMORY_WRITE"))) {
-        strcpy(hdf5_access, "PARALLEL");
+        Ioss::Utils::copy_string(hdf5_access, "PARALLEL", 64);
       }
-      int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
-      if (!is_input() && m_cgnsFilePtr == -2) {
-        // Writing multiple steps with a "flush" (cg_close() / cg_open())
-        mode = CG_MODE_MODIFY;
-      }
+
       CGCHECKM(cg_set_file_type(CG_FILE_HDF5));
+
+      int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
+      if (!is_input()) {
+        if (m_cgnsFilePtr == -2) {
+          // Writing multiple steps with a "flush" (cg_close() / cg_open())
+          mode = CG_MODE_MODIFY;
+        }
+        else {
+          // Check whether appending to existing file...
+          if (open_create_behavior() == Ioss::DB_APPEND) {
+            // Append to file if it already exists -- See if the file exists.
+            Ioss::FileInfo file = Ioss::FileInfo(decoded_filename());
+            if (file.exists()) {
+              mode = CG_MODE_MODIFY;
+            }
+          }
+        }
+      }
 
 #ifdef SEACAS_HAVE_MPI
       // Kluge to get fpp and dof CGNS working at same time.
@@ -504,7 +518,7 @@ namespace Iocgns {
       check_valid_file_open(ierr);
       if ((is_input() && properties.exists("MEMORY_READ")) ||
           (!is_input() && properties.exists("MEMORY_WRITE"))) {
-        strcpy(hdf5_access, "NATIVE");
+        Ioss::Utils::copy_string(hdf5_access, "NATIVE", 64);
       }
 
       if (properties.exists("INTEGER_SIZE_API")) {
@@ -673,7 +687,7 @@ namespace Iocgns {
 
       zone_data[id++] = proc;
       pack(id, zone_data, &size[3], 3); // Packing 3,4,5
-      strncpy(&zone_names[in], zone_name.c_str(), CGNS_MAX_NAME_LENGTH);
+      Ioss::Utils::copy_string(&zone_names[in], zone_name.c_str(), CGNS_MAX_NAME_LENGTH);
       in += CGNS_MAX_NAME_LENGTH + 1;
       zone_id_map[zone_name] = zone;
 
@@ -809,7 +823,7 @@ namespace Iocgns {
           int         idx   = off + b * proc_count;
           const auto &block = resolved_blocks[idx];
           if (off == 0) {
-            strncpy(&all_names[in], block.name.c_str(), CGNS_MAX_NAME_LENGTH);
+            Ioss::Utils::copy_string(&all_names[in], block.name.c_str(), CGNS_MAX_NAME_LENGTH);
             in += CGNS_MAX_NAME_LENGTH + 1;
           }
           all_data[id++] = block.proc;
@@ -888,7 +902,7 @@ namespace Iocgns {
       for (size_t ibc = 0; ibc < num_bc; ibc++) {
         std::string name = block->m_boundaryConditions[ibc].m_famName + "/" +
                            block->m_boundaryConditions[ibc].m_bcName;
-        strncpy(&bc_names[in_bc], name.c_str(), CGNS_MAX_NAME_LENGTH);
+        Ioss::Utils::copy_string(&bc_names[in_bc], name.c_str(), CGNS_MAX_NAME_LENGTH);
         in_bc += CGNS_MAX_NAME_LENGTH + 1;
       }
       std::vector<char> all_bc_names;
@@ -908,7 +922,7 @@ namespace Iocgns {
         bc_names.resize(tot_names * (CGNS_MAX_NAME_LENGTH + 1));
         in_bc = 0;
         for (const auto &name : bc) {
-          strncpy(&bc_names[in_bc], name.c_str(), CGNS_MAX_NAME_LENGTH);
+          Ioss::Utils::copy_string(&bc_names[in_bc], name.c_str(), CGNS_MAX_NAME_LENGTH);
           in_bc += CGNS_MAX_NAME_LENGTH + 1;
         }
       }
@@ -1052,7 +1066,7 @@ namespace Iocgns {
       int zone = 1;
 #endif
       for (const auto &sb : blocks) {
-        assert(sb->get_property("zone").get_int() == zone++);
+        assert(sb->get_property("zone").get_int() == zone++); // Modification of zone OK in assert
         my_offsets.push_back(sb->get_property("offset_i").get_int());
         my_offsets.push_back(sb->get_property("offset_j").get_int());
         my_offsets.push_back(sb->get_property("offset_k").get_int());
