@@ -34,6 +34,8 @@ matrix:
       env: ADIOS2=ON
     - compiler: gcc
       env: MPI=ON ADIOS2=ON
+    - compiler: clang
+      env: APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF
 
 before_install:
   # C++14

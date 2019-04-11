@@ -18,6 +18,11 @@ fi
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
+### Possible subset of what is built ---
+APPLICATIONS=${APPLICATIONS:-ON}
+LEGACY=${LEGACY:-ON}
+FORTRAN=${FORTRAN:-ON}
+
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
 if [ "${netcdf_parallel}" == "yes" ]
@@ -72,6 +77,63 @@ then
 
 fi
 
+if [ "${APPLICATIONS}" == "ON" ] && [ "${LEGACY}" == "ON" ]
+then
+     SUBSET_OPTIONS="-DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
+                     -DSEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
+                     -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON"
+else
+     SUBSET_OPTIONS="-DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=OFF \
+                     -DSEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=OFF \
+		     -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=OFF \
+                     -DSEACASProj_ENABLE_SEACASIoss:BOOL=ON \
+		     -DSEACASProj_ENABLE_SEACASExodus:BOOL=ON \
+		     -DSEACASProj_ENABLE_SEACASExodus_for:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASExoIIv2for32:BOOL=ON"
+
+if [ "${APPLICATIONS}" == "ON" ]
+then
+     SUBSET_OPTIONS="${SUBSET_OPTIONS} \
+                     -DSEACASProj_ENABLE_SEACASAprepro:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASAprepro_lib:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASConjoin:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASEjoin:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASEpu:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASExo2mat:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASExo_format:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASExodiff:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASMat2exo:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASNemslice:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASNemspread:BOOL=ON"
+
+     if [ "${FORTRAN}" == "ON" ]
+	then
+	    SUBSET_OPTIONS="${SUBSET_OPTIONS} \
+            		  -DSEACASProj_ENABLE_SEACASExplore:BOOL=ON \
+			  -DSEACASProj_ENABLE_SEACASGrepos:BOOL=ON"
+     fi
+
+elif [ "${LEGACY}" == "ON" ] && [ "${FORTRAN}" == "ON" ]
+then
+     SUBSET_OPTIONS="${SUBSET_OPTIONS} \
+                     -DSEACASProj_ENABLE_SEACASAlgebra:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASBlot:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASEx1ex2v2:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASEx2ex1v2:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASExomatlab:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASExotec2:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASExotxt:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASFastq:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASGen3D:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASGenshell:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASGjoin:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASMapvar:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASMapvar-kd:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASNemesis:BOOL=ON \
+                     -DSEACASProj_ENABLE_SEACASTxtexo:BOOL=ON"
+fi
+fi
+
 GENERATOR=${GENERATOR:-"Unix Makefiles"}
 
 # If using an XLF compiler on an IBM system, may need to add the following:
@@ -90,7 +152,6 @@ HAVE_X11=${X11:-ON}
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-OFF}
 
-FORTRAN=${FORTRAN:-ON}
 
 ### TPLs --
 ### Make sure these point to the locations to find the libraries and includes in lib and include
@@ -222,9 +283,7 @@ cmake -G "${GENERATOR}" \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
 -D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
--D SEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
--D SEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
--D SEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
+${SUBSET_OPTIONS} \
 -D SEACASProj_ENABLE_TESTS=ON \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
