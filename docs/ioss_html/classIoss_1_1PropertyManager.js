@@ -10,5 +10,5 @@ var classIoss_1_1PropertyManager =
     [ "exists", "classIoss_1_1PropertyManager.html#a798ebd15c511dc029050e0d707de283f", null ],
     [ "get", "classIoss_1_1PropertyManager.html#ab9b0abf6f5acb6bd9f5e34e984f840a6", null ],
     [ "operator=", "classIoss_1_1PropertyManager.html#a97720d6bb2d72a750ae82ec02f00e5b9", null ],
-    [ "properties", "classIoss_1_1PropertyManager.html#a65839db9a25b580ec5fdc8c4d4a8308a", null ]
+    [ "m_properties", "classIoss_1_1PropertyManager.html#a52770ccff14a196bdfee9ce03de4960f", null ]
 ];

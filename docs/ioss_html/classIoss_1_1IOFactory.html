@@ -105,7 +105,7 @@ $(document).ready(function(){initNavTree('classIoss_1_1IOFactory.html','');});
 <div class="dynheader">
 Inheritance diagram for Ioss::IOFactory:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1IOFactory__inherit__graph.svg" width="298" height="382"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1IOFactory__inherit__graph.svg" width="298" height="431"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -124,6 +124,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a5ee0077157270d9b88148a0ae63b971c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1IOFactory.html#a5ee0077157270d9b88148a0ae63b971c">clean</a> ()</td></tr>
 <tr class="memdesc:a5ee0077157270d9b88148a0ae63b971c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empty method.  <a href="#a5ee0077157270d9b88148a0ae63b971c">More...</a><br /></td></tr>
 <tr class="separator:a5ee0077157270d9b88148a0ae63b971c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d6c5fafa4d43523390333086d65aa29"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1IOFactory.html#a2d6c5fafa4d43523390333086d65aa29">show_configuration</a> ()</td></tr>
+<tr class="separator:a2d6c5fafa4d43523390333086d65aa29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -131,6 +133,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a623a721215c8032ccdcde06a379637fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfb4d2f81aa33957ccb29cafbc65cd62"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classIoss_1_1DatabaseIO.html">DatabaseIO</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1IOFactory.html#adfb4d2f81aa33957ccb29cafbc65cd62">make_IO</a> (const std::string &amp;filename, <a class="el" href="namespaceIoss.html#a4ec41517502e82a7291184cd7b68b34f">DatabaseUsage</a> db_usage, <a class="el" href="Ioss__CodeTypes_8h.html#a161d2f0d69c09838316e4ea9a74f02d7">MPI_Comm</a> communicator, const <a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;properties) const =0</td></tr>
 <tr class="separator:adfb4d2f81aa33957ccb29cafbc65cd62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac137c41a5bbc6ecc53aebcb693218b7d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1IOFactory.html#ac137c41a5bbc6ecc53aebcb693218b7d">show_config</a> () const</td></tr>
+<tr class="separator:ac137c41a5bbc6ecc53aebcb693218b7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
@@ -409,7 +413,7 @@ Static Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classIogs_1_1IOFactory.html#aae6db274c5d4f146ca50b4ad2679e95b">Iogs::IOFactory</a>, <a class="el" href="classIogn_1_1IOFactory.html#a40e5178c58ee47278e5834961cd2445e">Iogn::IOFactory</a>, <a class="el" href="classIohb_1_1IOFactory.html#ad56f59e03b21fbeabe99904ac286c436">Iohb::IOFactory</a>, <a class="el" href="classIodw_1_1IOFactory.html#a6183a8d8d8528f6c46713aa57ef08aee">Iodw::IOFactory</a>, <a class="el" href="classIopg_1_1IOFactory.html#a838f1c54b70d62c07cd8eaaaa9ad5e4d">Iopg::IOFactory</a>, <a class="el" href="classIovs_1_1IOFactory.html#a24c5ec85bb9a3bf563d1ce2ade9192bf">Iovs::IOFactory</a>, <a class="el" href="classIocgns_1_1IOFactory.html#a833164e7b5e93694dec89d979ae506bd">Iocgns::IOFactory</a>, and <a class="el" href="classIoex_1_1IOFactory.html#a43fbbfb8e5cb7eece277281824b22989">Ioex::IOFactory</a>.</p>
+<p>Implemented in <a class="el" href="classIogs_1_1IOFactory.html#aae6db274c5d4f146ca50b4ad2679e95b">Iogs::IOFactory</a>, <a class="el" href="classIogn_1_1IOFactory.html#a40e5178c58ee47278e5834961cd2445e">Iogn::IOFactory</a>, <a class="el" href="classIohb_1_1IOFactory.html#ad56f59e03b21fbeabe99904ac286c436">Iohb::IOFactory</a>, <a class="el" href="classIodw_1_1IOFactory.html#a6183a8d8d8528f6c46713aa57ef08aee">Iodw::IOFactory</a>, <a class="el" href="classIopg_1_1IOFactory.html#a838f1c54b70d62c07cd8eaaaa9ad5e4d">Iopg::IOFactory</a>, <a class="el" href="classIovs_1_1IOFactory.html#a24c5ec85bb9a3bf563d1ce2ade9192bf">Iovs::IOFactory</a>, <a class="el" href="classIocgns_1_1IOFactory.html#a833164e7b5e93694dec89d979ae506bd">Iocgns::IOFactory</a>, <a class="el" href="classIoad_1_1IOFactory.html#afffbe4125b8cb69fe863dc86c1a6692b">Ioad::IOFactory</a>, and <a class="el" href="classIoex_1_1IOFactory.html#a43fbbfb8e5cb7eece277281824b22989">Ioex::IOFactory</a>.</p>
 
 </div>
 </div>
@@ -432,6 +436,58 @@ Static Private Member Functions</h2></td></tr>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac137c41a5bbc6ecc53aebcb693218b7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac137c41a5bbc6ecc53aebcb693218b7d">&#9670;&nbsp;</a></span>show_config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Ioss::IOFactory::show_config </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classIocgns_1_1IOFactory.html#a3a00ddb2e03651dbd8127b5d1c6b23d9">Iocgns::IOFactory</a>, and <a class="el" href="classIoex_1_1IOFactory.html#afab71c577f77214d025fe85ea905f1ad">Ioex::IOFactory</a>.</p>
+
+</div>
+</div>
+<a id="a2d6c5fafa4d43523390333086d65aa29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d6c5fafa4d43523390333086d65aa29">&#9670;&nbsp;</a></span>show_configuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::IOFactory::show_configuration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

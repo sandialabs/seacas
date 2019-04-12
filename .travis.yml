@@ -11,8 +11,7 @@ before_install:
   - sudo apt-get -y install gfortran-6
   - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-6 90
   - sudo apt-get -y install libz-dev
-  - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
-  - if [ -n "$MPI" ]; then sudo apt-get -y install libopenmpi-dev; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install -q mpich libmpich-dev; fi
   - GNU_PARALLEL=OFF ./install-tpl.sh 
   - DEPS_DIR="${HOME}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}

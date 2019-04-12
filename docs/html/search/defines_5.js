@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['magic_5fnumber_5flen',['MAGIC_NUMBER_LEN',['../ex__utils_8c.html#ac9417fa0bdbbdb8ed8ab47ef644a4097',1,'ex_utils.c']]],
-  ['max_5fvar_5fname_5flength',['MAX_VAR_NAME_LENGTH',['../exodusII__int_8h.html#a50bd85ce2ed14f876d5f8faac0adba86',1,'exodusII_int.h']]]
+  ['f2c',['F2C',['../exo__jack-windows_8c.html#ab713ce6160b9b906693aefd1a736ac04',1,'F2C():&#160;exo_jack-windows.c'],['../exo__jack_8c.html#aaf8abcba35fc60782c8c651483fc8d5b',1,'F2C():&#160;exo_jack.c']]]
 ];

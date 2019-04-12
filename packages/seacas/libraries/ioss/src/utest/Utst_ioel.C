@@ -34,6 +34,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -63,9 +64,9 @@ int main(int argc, char *argv[])
   // Make sure Ioss::NullEntity works.  Not used in IOSS iteself,
   // but some clients use it, so need to make sure it compiles
   // correctly.
-  Ioss::GroupingEntity *entity = new Ioss::NullEntity();
-  std::cout << "\nThe null entity type is " << entity->type_string()
-	    << " and it contains " << entity->contains_string() << "\n";
+  std::unique_ptr<Ioss::NullEntity> entity{new Ioss::NullEntity()};
+  std::cout << "\nThe null entity type is " << entity->type_string() << " and it contains "
+            << entity->contains_string() << "\n";
 
   OUTPUT << "\n" << argv[0];
   if (err_count == 0) {
@@ -315,10 +316,6 @@ bool test_element(const std::string &type)
   //
   if (element->parametric_dimension() == 3) {
     for (int i = 1; i <= nf; i++) {
-
-      // Nodes defining face...
-      std::vector<int> face_con = element->face_connectivity(i);
-
       unsigned int fncn           = element->face_type(i)->number_corner_nodes();
       unsigned int num_edges_face = element->number_edges_face(i);
       if (fncn != num_edges_face) {
@@ -340,7 +337,7 @@ bool test_element(const std::string &type)
           // Not implemented in all elements yet...
           std::vector<int> edge_conn = element->edge_connectivity(face_edge_conn[j] + 1);
           // Check that first two nodes in 'edge_conn' match
-          // corresponding nodes in 'face_con'
+          // corresponding nodes in 'face_conn'
           if ((edge_conn[0] != face_conn[j] && edge_conn[1] != face_conn[j]) ||
               (edge_conn[0] != face_conn[(j + 1) % fncn] &&
                edge_conn[1] != face_conn[(j + 1) % fncn])) {

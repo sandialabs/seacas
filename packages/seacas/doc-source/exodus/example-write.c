@@ -7,7 +7,7 @@ int main(int argc, char **argv)
   int  exoid, num_dim, num_nodes, num_elem, num_elem_blk;
   int  num_elem_in_block[10], num_nodes_per_elem[10];
   int  num_face_in_sset[10], num_nodes_in_nset[10];
-  int  num_node_sets, num_side_sets, error;
+  int  num_node_sets, num_side_sets;
   int  i, j, k, m, *elem_map, *connect;
   int  node_list[100], elem_list[100], side_list[100];
   int  ebids[10], ssids[10], nsids[10];
@@ -49,8 +49,8 @@ int main(int argc, char **argv)
   num_node_sets = 2;
   num_side_sets = 5;
 
-  error = ex_put_init(exoid, "This is a test", num_dim, num_nodes, num_elem, num_elem_blk,
-                      num_node_sets, num_side_sets);
+  ex_put_init(exoid, "This is a test", num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets,
+              num_side_sets);
 
   /* write nodal coordinates values and names to database */
 
@@ -167,23 +167,23 @@ int main(int argc, char **argv)
   y[32] = 10.0;
   z[32] = 10.0;
 
-  error = ex_put_coord(exoid, x, y, z);
+  ex_put_coord(exoid, x, y, z);
 
   coord_names[0] = "x";
   coord_names[1] = "y";
   coord_names[2] = "z";
 
-  error = ex_put_coord_names(exoid, coord_names);
+  ex_put_coord_names(exoid, coord_names);
 
   /* Add nodal attributes */
-  error = ex_put_attr_param(exoid, EX_NODAL, 0, 2);
+  ex_put_attr_param(exoid, EX_NODAL, 0, 2);
 
-  error = ex_put_one_attr(exoid, EX_NODAL, 0, 1, x);
-  error = ex_put_one_attr(exoid, EX_NODAL, 0, 2, y);
+  ex_put_one_attr(exoid, EX_NODAL, 0, 1, x);
+  ex_put_one_attr(exoid, EX_NODAL, 0, 2, y);
 
   attrib_names[0] = "Node_attr_1";
   attrib_names[1] = "Node_attr_2";
-  error           = ex_put_attr_names(exoid, EX_NODAL, 0, attrib_names);
+  ex_put_attr_names(exoid, EX_NODAL, 0, attrib_names);
 
   /* write element order map */
 
@@ -193,7 +193,7 @@ int main(int argc, char **argv)
     elem_map[i - 1] = i;
   }
 
-  error = ex_put_map(exoid, elem_map);
+  ex_put_map(exoid, elem_map);
   free(elem_map);
 
   /* write element block parameters */
@@ -229,38 +229,35 @@ int main(int argc, char **argv)
   ebids[5] = 15;
   ebids[6] = 16;
 
-  error =
-      ex_put_elem_block(exoid, ebids[0], "quad", num_elem_in_block[0], num_nodes_per_elem[0], 1);
-  error =
-      ex_put_elem_block(exoid, ebids[1], "quad", num_elem_in_block[1], num_nodes_per_elem[1], 1);
-  error = ex_put_elem_block(exoid, ebids[2], "hex", num_elem_in_block[2], num_nodes_per_elem[2], 1);
-  error =
-      ex_put_elem_block(exoid, ebids[3], "tetra", num_elem_in_block[3], num_nodes_per_elem[3], 1);
+  ex_put_elem_block(exoid, ebids[0], "quad", num_elem_in_block[0], num_nodes_per_elem[0], 1);
+  ex_put_elem_block(exoid, ebids[1], "quad", num_elem_in_block[1], num_nodes_per_elem[1], 1);
+  ex_put_elem_block(exoid, ebids[2], "hex", num_elem_in_block[2], num_nodes_per_elem[2], 1);
+  ex_put_elem_block(exoid, ebids[3], "tetra", num_elem_in_block[3], num_nodes_per_elem[3], 1);
 
   /* Use alternative function to do same thing... */
-  error = ex_put_block(exoid, EX_ELEM_BLOCK, ebids[4], "wedge", num_elem_in_block[4],
-                       num_nodes_per_elem[4], 0, 0, 1);
-  error = ex_put_block(exoid, EX_ELEM_BLOCK, ebids[5], "tetra", num_elem_in_block[5],
-                       num_nodes_per_elem[5], 0, 0, 1);
-  error = ex_put_block(exoid, EX_ELEM_BLOCK, ebids[6], "tri", num_elem_in_block[6],
-                       num_nodes_per_elem[6], 0, 0, 1);
+  ex_put_block(exoid, EX_ELEM_BLOCK, ebids[4], "wedge", num_elem_in_block[4], num_nodes_per_elem[4],
+               0, 0, 1);
+  ex_put_block(exoid, EX_ELEM_BLOCK, ebids[5], "tetra", num_elem_in_block[5], num_nodes_per_elem[5],
+               0, 0, 1);
+  ex_put_block(exoid, EX_ELEM_BLOCK, ebids[6], "tri", num_elem_in_block[6], num_nodes_per_elem[6],
+               0, 0, 1);
 
   /* Write element block names */
-  error = ex_put_names(exoid, EX_ELEM_BLOCK, block_names);
+  ex_put_names(exoid, EX_ELEM_BLOCK, block_names);
 
   /* write element block properties */
 
   /*               12345678901234567890123456789012 */
   prop_names[0] = "MATERIAL_PROPERTY_LONG_NAME_32CH";
   prop_names[1] = "DENSITY";
-  error         = ex_put_prop_names(exoid, EX_ELEM_BLOCK, 2, prop_names);
-  error         = ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[0], prop_names[0], 10);
-  error         = ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[1], prop_names[0], 20);
-  error         = ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[2], prop_names[0], 30);
-  error         = ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[3], prop_names[0], 40);
-  error         = ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[4], prop_names[0], 50);
-  error         = ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[5], prop_names[0], 60);
-  error         = ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[6], prop_names[0], 70);
+  ex_put_prop_names(exoid, EX_ELEM_BLOCK, 2, prop_names);
+  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[0], prop_names[0], 10);
+  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[1], prop_names[0], 20);
+  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[2], prop_names[0], 30);
+  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[3], prop_names[0], 40);
+  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[4], prop_names[0], 50);
+  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[5], prop_names[0], 60);
+  ex_put_prop(exoid, EX_ELEM_BLOCK, ebids[6], prop_names[0], 70);
 
   /* write element connectivity */
   connect    = (int *)calloc(8, sizeof(int));
@@ -268,13 +265,13 @@ int main(int argc, char **argv)
   connect[1] = 2;
   connect[2] = 3;
   connect[3] = 4;
-  error      = ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[0], connect, 0, 0);
+  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[0], connect, 0, 0);
 
   connect[0] = 5;
   connect[1] = 6;
   connect[2] = 7;
   connect[3] = 8;
-  error      = ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[1], connect, 0, 0);
+  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[1], connect, 0, 0);
 
   connect[0] = 9;
   connect[1] = 10;
@@ -284,13 +281,13 @@ int main(int argc, char **argv)
   connect[5] = 14;
   connect[6] = 15;
   connect[7] = 16;
-  error      = ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[2], connect, 0, 0);
+  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[2], connect, 0, 0);
 
   connect[0] = 17;
   connect[1] = 18;
   connect[2] = 19;
   connect[3] = 20;
-  error      = ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[3], connect, 0, 0);
+  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[3], connect, 0, 0);
 
   connect[0] = 21;
   connect[1] = 22;
@@ -298,7 +295,7 @@ int main(int argc, char **argv)
   connect[3] = 24;
   connect[4] = 25;
   connect[5] = 26;
-  error      = ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[4], connect, 0, 0);
+  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[4], connect, 0, 0);
 
   connect[0] = 17;
   connect[1] = 18;
@@ -308,32 +305,32 @@ int main(int argc, char **argv)
   connect[5] = 28;
   connect[6] = 30;
   connect[7] = 29;
-  error      = ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[5], connect, 0, 0);
+  ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[5], connect, 0, 0);
 
   /* Use "old" API function just to show syntax */
   connect[0] = 31;
   connect[1] = 32;
   connect[2] = 33;
-  error      = ex_put_elem_conn(exoid, ebids[6], connect);
+  ex_put_elem_conn(exoid, ebids[6], connect);
 
   free(connect);
 
   /* write element block attributes */
   attrib[0] = 3.14159;
-  error     = ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[0], attrib);
-  error     = ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[0], attrib);
+  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[0], attrib);
+  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[0], attrib);
 
   attrib[0] = 6.14159;
-  error     = ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[1], attrib);
-  error     = ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[2], attrib);
-  error     = ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[3], attrib);
-  error     = ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[4], attrib);
-  error     = ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[5], attrib);
-  error     = ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[6], attrib);
+  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[1], attrib);
+  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[2], attrib);
+  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[3], attrib);
+  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[4], attrib);
+  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[5], attrib);
+  ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[6], attrib);
 
   attrib_names[0] = "THICKNESS";
   for (i = 0; i < 7; i++) {
-    error = ex_put_attr_names(exoid, EX_ELEM_BLOCK, ebids[i], attrib_names);
+    ex_put_attr_names(exoid, EX_ELEM_BLOCK, ebids[i], attrib_names);
   }
 
   /* write individual node sets */
@@ -343,57 +340,53 @@ int main(int argc, char **argv)
   nsids[0] = 20;
   nsids[1] = 21;
 
-  error = ex_put_set_param(exoid, EX_NODE_SET, nsids[0], 5, 5);
+  ex_put_set_param(exoid, EX_NODE_SET, nsids[0], 5, 5);
 
   node_list[0] = 100;
   node_list[1] = 101;
   node_list[2] = 102;
   node_list[3] = 103;
   node_list[4] = 104;
-  error        = ex_put_set(exoid, EX_NODE_SET, nsids[0], node_list, 0);
+  ex_put_set(exoid, EX_NODE_SET, nsids[0], node_list, 0);
 
   dist_fact[0] = 1.0;
   dist_fact[1] = 2.0;
   dist_fact[2] = 3.0;
   dist_fact[3] = 4.0;
   dist_fact[4] = 5.0;
-  error        = ex_put_set_dist_fact(exoid, EX_NODE_SET, nsids[0], dist_fact);
+  ex_put_set_dist_fact(exoid, EX_NODE_SET, nsids[0], dist_fact);
 
-  error = ex_put_set_param(exoid, EX_NODE_SET, nsids[1], 3, 3);
+  ex_put_set_param(exoid, EX_NODE_SET, nsids[1], 3, 3);
 
   node_list[0] = 200;
   node_list[1] = 201;
   node_list[2] = 202;
-  error        = ex_put_set(exoid, EX_NODE_SET, nsids[1], node_list, 0);
+  ex_put_set(exoid, EX_NODE_SET, nsids[1], node_list, 0);
 
   dist_fact[0] = 1.1;
   dist_fact[1] = 2.1;
   dist_fact[2] = 3.1;
-  error        = ex_put_set_dist_fact(exoid, EX_NODE_SET, nsids[1], dist_fact);
+  ex_put_set_dist_fact(exoid, EX_NODE_SET, nsids[1], dist_fact);
 
   /* Write node set names */
   nset_names[0] = "nset_1";
   nset_names[1] = "nset_2";
 
-  error = ex_put_names(exoid, EX_NODE_SET, nset_names);
-  error = ex_put_prop(exoid, EX_NODE_SET, nsids[0], "FACE", 4);
-  error = ex_put_prop(exoid, EX_NODE_SET, nsids[1], "FACE", 5);
+  ex_put_names(exoid, EX_NODE_SET, nset_names);
+  ex_put_prop(exoid, EX_NODE_SET, nsids[0], "FACE", 4);
+  ex_put_prop(exoid, EX_NODE_SET, nsids[1], "FACE", 5);
 
   prop_array[0] = 1000;
   prop_array[1] = 2000;
 
-  error = ex_put_prop_array(exoid, EX_NODE_SET, "VELOCITY", prop_array);
+  ex_put_prop_array(exoid, EX_NODE_SET, "VELOCITY", prop_array);
 
   /* Add nodeset attributes */
-  error = ex_put_attr_param(exoid, EX_NODE_SET, nsids[0], 1);
-  error = ex_put_attr(exoid, EX_NODE_SET, nsids[0], x);
+  ex_put_attr_param(exoid, EX_NODE_SET, nsids[0], 1);
+  ex_put_attr(exoid, EX_NODE_SET, nsids[0], x);
 
   attrib_names[0] = "Nodeset_attribute";
-  error           = ex_put_attr_names(exoid, EX_NODE_SET, nsids[0], attrib_names);
-  if (error) {
-    ex_close(exoid);
-    exit(-1);
-  }
+  ex_put_attr_names(exoid, EX_NODE_SET, nsids[0], attrib_names);
 
   /* write individual side sets */
   num_face_in_sset[0] = 2;
@@ -409,7 +402,7 @@ int main(int argc, char **argv)
   ssids[4] = 34;
 
   /* side set #1  - quad */
-  error = ex_put_set_param(exoid, EX_SIDE_SET, ssids[0], 2, 4);
+  ex_put_set_param(exoid, EX_SIDE_SET, ssids[0], 2, 4);
 
   elem_list[0] = 2;
   elem_list[1] = 2;
@@ -420,11 +413,11 @@ int main(int argc, char **argv)
   dist_fact[2] = 30.2;
   dist_fact[3] = 30.3;
 
-  error = ex_put_set(exoid, EX_SIDE_SET, 30, elem_list, side_list);
-  error = ex_put_set_dist_fact(exoid, EX_SIDE_SET, 30, dist_fact);
+  ex_put_set(exoid, EX_SIDE_SET, 30, elem_list, side_list);
+  ex_put_set_dist_fact(exoid, EX_SIDE_SET, 30, dist_fact);
 
   /* side set #2  - quad, spanning 2 elements  */
-  error = ex_put_set_param(exoid, EX_SIDE_SET, 31, 2, 4);
+  ex_put_set_param(exoid, EX_SIDE_SET, 31, 2, 4);
 
   elem_list[0] = 1;
   elem_list[1] = 2;
@@ -435,11 +428,11 @@ int main(int argc, char **argv)
   dist_fact[2] = 31.2;
   dist_fact[3] = 31.3;
 
-  error = ex_put_set(exoid, EX_SIDE_SET, 31, elem_list, side_list);
-  error = ex_put_set_dist_fact(exoid, EX_SIDE_SET, 31, dist_fact);
+  ex_put_set(exoid, EX_SIDE_SET, 31, elem_list, side_list);
+  ex_put_set_dist_fact(exoid, EX_SIDE_SET, 31, dist_fact);
 
   /* side set #3  - hex */
-  error = ex_put_set_param(exoid, EX_SIDE_SET, 32, 7, 0);
+  ex_put_set_param(exoid, EX_SIDE_SET, 32, 7, 0);
 
   elem_list[0] = 3;
   elem_list[1] = 3;
@@ -457,10 +450,10 @@ int main(int argc, char **argv)
   side_list[5] = 1;
   side_list[6] = 6;
 
-  error = ex_put_set(exoid, EX_SIDE_SET, 32, elem_list, side_list);
+  ex_put_set(exoid, EX_SIDE_SET, 32, elem_list, side_list);
 
   /* side set #4  - tetras */
-  error = ex_put_set_param(exoid, EX_SIDE_SET, 33, 8, 0);
+  ex_put_set_param(exoid, EX_SIDE_SET, 33, 8, 0);
 
   elem_list[0] = 4;
   elem_list[1] = 4;
@@ -480,10 +473,10 @@ int main(int argc, char **argv)
   side_list[6] = 3;
   side_list[7] = 4;
 
-  error = ex_put_set(exoid, EX_SIDE_SET, 33, elem_list, side_list);
+  ex_put_set(exoid, EX_SIDE_SET, 33, elem_list, side_list);
 
   /* side set #5  - wedges and tris */
-  error = ex_put_set_param(exoid, EX_SIDE_SET, 34, 10, 0);
+  ex_put_set_param(exoid, EX_SIDE_SET, 34, 10, 0);
 
   elem_list[0] = 5;
   elem_list[1] = 5;
@@ -507,7 +500,7 @@ int main(int argc, char **argv)
   side_list[8] = 4;
   side_list[9] = 5;
 
-  error = ex_put_set(exoid, EX_SIDE_SET, 34, elem_list, side_list);
+  ex_put_set(exoid, EX_SIDE_SET, 34, elem_list, side_list);
 
   /* Write side set names */
   sset_names[0] = "sset_1";
@@ -516,9 +509,9 @@ int main(int argc, char **argv)
   sset_names[3] = "sset_4";
   sset_names[4] = "sset_5";
 
-  error = ex_put_names(exoid, EX_SIDE_SET, sset_names);
-  error = ex_put_prop(exoid, EX_SIDE_SET, 30, "COLOR", 100);
-  error = ex_put_prop(exoid, EX_SIDE_SET, 31, "COLOR", 101);
+  ex_put_names(exoid, EX_SIDE_SET, sset_names);
+  ex_put_prop(exoid, EX_SIDE_SET, 30, "COLOR", 100);
+  ex_put_prop(exoid, EX_SIDE_SET, 31, "COLOR", 101);
 
   /* write QA records; test empty and just blank-filled records */
   num_qa_rec = 2;
@@ -532,7 +525,7 @@ int main(int argc, char **argv)
   qa_record[1][2] = "";
   qa_record[1][3] = "                        ";
 
-  error = ex_put_qa(exoid, num_qa_rec, qa_record);
+  ex_put_qa(exoid, num_qa_rec, qa_record);
 
   /* write information records; test empty and just blank-filled records */
   num_info = 3;
@@ -541,45 +534,45 @@ int main(int argc, char **argv)
   info[1] = "";
   info[2] = "                                     ";
 
-  error = ex_put_info(exoid, num_info, info);
+  ex_put_info(exoid, num_info, info);
 
   /* write results variables parameters and names */
   num_glo_vars = 1;
   var_names[0] = "glo_vars";
-  error        = ex_put_variable_param(exoid, EX_GLOBAL, num_glo_vars);
-  error        = ex_put_variable_names(exoid, EX_GLOBAL, num_glo_vars, var_names);
+  ex_put_variable_param(exoid, EX_GLOBAL, num_glo_vars);
+  ex_put_variable_names(exoid, EX_GLOBAL, num_glo_vars, var_names);
 
   num_nod_vars = 2;
   /*              12345678901234567890123456789012 */
   var_names[0] = "node_variable_a_very_long_name_0";
   var_names[1] = "nod_var1";
 
-  error = ex_put_variable_param(exoid, EX_NODAL, num_nod_vars);
-  error = ex_put_variable_names(exoid, EX_NODAL, num_nod_vars, var_names);
+  ex_put_variable_param(exoid, EX_NODAL, num_nod_vars);
+  ex_put_variable_names(exoid, EX_NODAL, num_nod_vars, var_names);
 
   num_ele_vars = 3;
   var_names[0] = "ele_var0";
   var_names[1] = "ele_var1";
   var_names[2] = "ele_var2";
 
-  error = ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_ele_vars);
-  error = ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_ele_vars, var_names);
+  ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_ele_vars);
+  ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_ele_vars, var_names);
 
   num_nset_vars = 3;
   var_names[0]  = "ns_var0";
   var_names[1]  = "ns_var1";
   var_names[2]  = "ns_var2";
 
-  error = ex_put_variable_param(exoid, EX_NODE_SET, num_nset_vars);
-  error = ex_put_variable_names(exoid, EX_NODE_SET, num_nset_vars, var_names);
+  ex_put_variable_param(exoid, EX_NODE_SET, num_nset_vars);
+  ex_put_variable_names(exoid, EX_NODE_SET, num_nset_vars, var_names);
 
   num_sset_vars = 3;
   var_names[0]  = "ss_var0";
   var_names[1]  = "ss_var1";
   var_names[2]  = "ss_var2";
 
-  error = ex_put_variable_param(exoid, EX_SIDE_SET, num_sset_vars);
-  error = ex_put_variable_names(exoid, EX_SIDE_SET, num_sset_vars, var_names);
+  ex_put_variable_param(exoid, EX_SIDE_SET, num_sset_vars);
+  ex_put_variable_names(exoid, EX_SIDE_SET, num_sset_vars, var_names);
 
   /* write element variable truth table */
   truth_tab = (int *)calloc((num_elem_blk * num_ele_vars), sizeof(int));
@@ -591,7 +584,7 @@ int main(int argc, char **argv)
     }
   }
 
-  error = ex_put_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars, truth_tab);
+  ex_put_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars, truth_tab);
   free(truth_tab);
 
   /* for each time step, write the analysis results;
@@ -613,21 +606,21 @@ int main(int argc, char **argv)
     time_value = (float)(i + 1) / 100.;
 
     /* write time value */
-    error = ex_put_time(exoid, whole_time_step, &time_value);
+    ex_put_time(exoid, whole_time_step, &time_value);
 
     /* write global variables */
     for (j = 0; j < num_glo_vars; j++) {
       glob_var_vals[j] = (float)(j + 2) * time_value;
     }
 
-    error = ex_put_var(exoid, whole_time_step, EX_GLOBAL, 1, 0, num_glo_vars, glob_var_vals);
+    ex_put_var(exoid, whole_time_step, EX_GLOBAL, 1, 0, num_glo_vars, glob_var_vals);
 
     /* write nodal variables */
     for (k = 1; k <= num_nod_vars; k++) {
       for (j = 0; j < num_nodes; j++) {
         nodal_var_vals[j] = (float)k + ((float)(j + 1) * time_value);
       }
-      error = ex_put_var(exoid, whole_time_step, EX_NODAL, k, 1, num_nodes, nodal_var_vals);
+      ex_put_var(exoid, whole_time_step, EX_NODAL, k, 1, num_nodes, nodal_var_vals);
     }
 
     /* write element variables */
@@ -636,8 +629,8 @@ int main(int argc, char **argv)
         for (m = 0; m < num_elem_in_block[j]; m++) {
           elem_var_vals[m] = (float)(k + 1) + (float)(j + 2) + ((float)(m + 1) * time_value);
         }
-        error = ex_put_var(exoid, whole_time_step, EX_ELEM_BLOCK, k, ebids[j], num_elem_in_block[j],
-                           elem_var_vals);
+        ex_put_var(exoid, whole_time_step, EX_ELEM_BLOCK, k, ebids[j], num_elem_in_block[j],
+                   elem_var_vals);
       }
     }
 
@@ -647,8 +640,8 @@ int main(int argc, char **argv)
         for (m = 0; m < num_face_in_sset[j]; m++) {
           sset_var_vals[m] = (float)(k + 2) + (float)(j + 3) + ((float)(m + 1) * time_value);
         }
-        error = ex_put_var(exoid, whole_time_step, EX_SIDE_SET, k, ssids[j], num_face_in_sset[j],
-                           sset_var_vals);
+        ex_put_var(exoid, whole_time_step, EX_SIDE_SET, k, ssids[j], num_face_in_sset[j],
+                   sset_var_vals);
       }
     }
 
@@ -658,8 +651,8 @@ int main(int argc, char **argv)
         for (m = 0; m < num_nodes_in_nset[j]; m++) {
           nset_var_vals[m] = (float)(k + 3) + (float)(j + 4) + ((float)(m + 1) * time_value);
         }
-        error = ex_put_var(exoid, whole_time_step, EX_NODE_SET, k, nsids[j], num_nodes_in_nset[j],
-                           nset_var_vals);
+        ex_put_var(exoid, whole_time_step, EX_NODE_SET, k, nsids[j], num_nodes_in_nset[j],
+                   nset_var_vals);
       }
     }
 
@@ -668,7 +661,7 @@ int main(int argc, char **argv)
     /* update the data file; this should be done at the end of every
      * time step to ensure that no data is lost if the analysis dies
      */
-    error = ex_update(exoid);
+    ex_update(exoid);
   }
   free(glob_var_vals);
   free(nodal_var_vals);
@@ -677,6 +670,6 @@ int main(int argc, char **argv)
   free(nset_var_vals);
 
   /* close the EXODUS files */
-  error = ex_close(exoid);
+  ex_close(exoid);
   return 0;
 }

@@ -3,7 +3,6 @@ var examples =
     [ "/test/create_mesh.c", "_2test_2create_mesh_8c-example.html", null ],
     [ "/test/CreateEdgeFace.c", "_2test_2CreateEdgeFace_8c-example.html", null ],
     [ "/test/ExoIICTests.cxx", "_2test_2ExoIICTests_8cxx-example.html", null ],
-    [ "/test/MakeTestData.c", "_2test_2MakeTestData_8c-example.html", null ],
     [ "/test/rd_wt_mesh.c", "_2test_2rd_wt_mesh_8c-example.html", null ],
     [ "/test/ReadEdgeFace.c", "_2test_2ReadEdgeFace_8c-example.html", null ],
     [ "/test/test-empty.c", "_2test_2test-empty_8c-example.html", null ],

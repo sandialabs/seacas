@@ -89,7 +89,7 @@
 	<TR VALIGN=TOP>
 	  <TH VALIGN=TOP><A NAME="changes" HREF="changes.html">Recent Changes</a></TH>
 
-	  <TD>Documents changes to the SEACAS applications and libraries that may not yet 
+	  <TD>Documents changes to the SEACAS applications and libraries that may not yet
 	  be covered in the documentation.</TD>
 
 	</TR>
@@ -123,7 +123,7 @@
 	  binary file that is written and read via C, C++, or Fortran
 	  library routines which comprise the Application Programming
 	  Interface. (exodus is based on netcdf)<p>
-	    
+
           <b>Draft documentation of the "new" API is found <a
           href="exodusII-new.pdf">here.</a> The new version includes
           support for names, nodeset variables, sideset variables,
@@ -133,7 +133,7 @@
 
 	  <b>A list of all element types supported by EXODUS (and IOSS) is
 	    provided in <a href="html/element_types.html">Exodus Element Types</a><p>
-		  
+
           Documentation of the modifications needed to use the
           <b>"large-file"</b> modifications which permit storage of
           models with more than ~30 million elements is found <a
@@ -160,10 +160,10 @@
           Polyhedral elements can be stored in exodus. The documentation for this
 	  is in <a href="html/polyhedra.html">Polyhedral Element Storage</a><p>
 
-	  All nemesis functions have been added to the exodus api. In most cases, the 
-          name of the exodus function is the same as the original nemesis function except 
-          that the leading <tt>ne_</tt> has been replaced with <tt>ex_</tt>.  There are a few 
-          exceptions.  See <a href="html/nemesis-mapping.html">Nemesis-To-Exodus-API-Mapping</a> 
+	  All nemesis functions have been added to the exodus api. In most cases, the
+          name of the exodus function is the same as the original nemesis function except
+          that the leading <tt>ne_</tt> has been replaced with <tt>ex_</tt>.  There are a few
+          exceptions.  See <a href="html/nemesis-mapping.html">Nemesis-To-Exodus-API-Mapping</a>
           for a complete list of functions.<p>
 	</TD>
 
@@ -219,10 +219,10 @@
 	  input/output formats and appropriate settings for a variety
 	  of code parameters are discussed in detail and some
 	  suggestions on algorithm selection are offered.<p>
-		  
+
 		  <font color="red">NOTE:</font> The <tt>short *assignment</tt> argument to the interface function
 		has been changed to <tt>int *assignment</tt> to permit decompositions
-                with more than 32,768 processors.<p>There are also now a <tt>CHACO_VERSION_MAJOR</tt>, 
+                with more than 32,768 processors.<p>There are also now a <tt>CHACO_VERSION_MAJOR</tt>,
 		<tt>CHACO_VERSION_MINOR</tt>, <tt>CHACO_VERSION_PATCH</tt> defines in chaco.h.
 	</TD>
 
@@ -244,7 +244,7 @@
 	  structure. However, the NetCDF library also allows
 	  direct-access storage and retrieval of data by variable name
 	  and index and therefore is useful only for disk-resident (or
-	  memory-resident) files.<p> 
+	  memory-resident) files.<p>
 
 	  Netcdf information is available from <a
 	  href="http://www.unidata.ucar.edu/software/netcdf/docs/">Unidata</a>.<p>
@@ -612,22 +612,36 @@
 	<TR VALIGN=TOP>
 	  <TH VALIGN=TOP><A name="mapvar" HREF="mapvar.pdf">Mapvar</a></TH>
 
-	  <TD>MAPVAR is designed to transfer solution results from one
-	  finite element mesh to another. MAPVAR draws heavily from
-	  the structure and coding of MERLIN II, but it employs a new
-	  finite element data base, EXODUS [3], and offers enhanced
-	  speed and new capabilities not available in MERLIN II. In
-	  keeping with the MERLIN II documentation, the computational
-	  algorithms used in MAPVAR are described. User instructions
-	  are presented. Example problems are included to demonstrate
-	  the operation of the code and the effects of various input
-	  options.</TD>
+	  <TD>NOTE: MAPVAR is buggy and cannot correctly handle the mapping
+	    of nodal variables in a mesh with multiple element blocks and
+	    multiple timesteps.  It should work OK if there is only a single
+	    timestep; however, there may be an issue with nodes shared
+	    between multiple element blocks.  Element variable interpolation
+	    should be OK in all cases.<br>
+
+	    MAPVAR is designed to transfer solution results from one
+	    finite element mesh to another. MAPVAR draws heavily from
+	    the structure and coding of MERLIN II, but it employs a new
+	    finite element data base, EXODUS [3], and offers enhanced
+	    speed and new capabilities not available in MERLIN II. In
+	    keeping with the MERLIN II documentation, the computational
+	    algorithms used in MAPVAR are described. User instructions
+	    are presented. Example problems are included to demonstrate
+	    the operation of the code and the effects of various input
+	    options.</TD>
 	</TR>
 
 	<TR VALIGN=TOP>
 	  <TH VALIGN=TOP><A name="mapvar-kd" HREF="mapvar.pdf">Mapvar-kd</a></TH>
 
-	  <TD>mapvar-kd is almost exactly the same as mapvar except
+	  <TD>NOTE: MAPVAR is buggy and cannot correctly handle the mapping
+	    of nodal variables in a mesh with multiple element blocks and
+	    multiple timesteps.  It should work OK if there is only a single
+	    timestep; however, there may be an issue with nodes shared
+	    between multiple element blocks.  Element variable interpolation
+	    should be OK in all cases.<br>
+
+	  mapvar-kd is almost exactly the same as mapvar except
 	  that it uses a KD algorithm for the internal search.  It is
 	  much faster than mapvar in certain situations, and should
 	  never be slower.</TD>

@@ -22,7 +22,7 @@ FC=${FC:-gfortran}
 HAVE_X11=ON
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
-THREADSAFES=${THREADSAFE:-OFF}
+THREADSAFE=${THREADSAFE:-OFF}
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
@@ -49,9 +49,9 @@ function check_enable()
     fi
 }
 
-HAVE_NETCDF=`check_enable "${NETCDF_PATH}/include/netcdf.h"`
-HAVE_MATIO=`check_enable "${MATIO_PATH}/include/matio.h"`
-HAVE_CGNS=`check_enable "${CGNS_PATH}/include/cgnslib.h"`
+HAVE_NETCDF=$(check_enable "${NETCDF_PATH}/include/netcdf.h")
+HAVE_MATIO=$(check_enable "${MATIO_PATH}/include/matio.h")
+HAVE_CGNS=$(check_enable "${CGNS_PATH}/include/cgnslib.h")
 HAVE_DATAWAREHOUSE=OFF
 
 ### Define to NO to *enable* exodus deprecated functions
@@ -67,8 +67,8 @@ CUDA=${CUDA:-OFF}
 
 if [ "${MPI}" == "ON" ]
 then
-   MPI_EXEC=`which mpiexec`
-   MPI_BIN=`dirname "${MPI_EXEC}"`
+   MPI_EXEC=$(which mpiexec)
+   MPI_BIN=$(dirname "${MPI_EXEC}")
    CXX=mpicxx
    CC=mpicc
    FC=mpif77
@@ -85,7 +85,7 @@ then
                     -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} \
                     -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   else
-    export OMPI_CXX=`which gcc`
+    export OMPI_CXX=$(which gcc)
     unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
     KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
                     -D SEACASProj_ENABLE_OpenMP:Bool=ON \

@@ -24,7 +24,7 @@ for array_type in array_types:
       times = e.get_times()
       for time in times:
         print "time = ", time
-        
+
     blocks = e.get_elem_blk_ids()
     for block in blocks:
       print "block id = ", block
@@ -37,7 +37,7 @@ for array_type in array_types:
     coordinates = e.get_coords()
     print "Local Node Id 1 has coordinates:", coordinates[0][0], coordinates[1][0], coordinates[2][0]
     nn = (e.num_nodes() - 1)
-    print "Local Node Id", e.num_nodes(), "has coordinates:", coordinates[0][nn], coordinates[1][nn], coordinates[2][nn] 
+    print "Local Node Id", e.num_nodes(), "has coordinates:", coordinates[0][nn], coordinates[1][nn], coordinates[2][nn]
     print "Side Set Variable Names"
     ssVarNames = e.get_side_set_variable_names()
     for name in ssVarNames:
@@ -79,7 +79,7 @@ if exo_copy.num_times() > 0:
     times = exo_copy.get_times()
     for time in times:
         print "time = ", time
-        
+
     blocks = exo_copy.get_elem_blk_ids()
     for block in blocks:
         print "block id = ", block
@@ -92,14 +92,14 @@ if exo_copy.num_times() > 0:
         coordinates = exo_copy.get_coords()
         print "Local Node Id 1 has coordinates:", coordinates[0][0], coordinates[1][0], coordinates[2][0]
         nn = (exo_copy.num_nodes() - 1)
-        print "Local Node Id", exo_copy.num_nodes(), "has coordinates:", coordinates[0][nn], coordinates[1][nn], coordinates[2][nn] 
+        print "Local Node Id", exo_copy.num_nodes(), "has coordinates:", coordinates[0][nn], coordinates[1][nn], coordinates[2][nn]
         print "Side Set Variable Names"
         ssVarNames = exo_copy.get_side_set_variable_names()
     for name in ssVarNames:
         print "ssvar = " + name
         print "Side Set Cosa Variable Values"
         step = 1
-                        
+
         if exo_copy.num_times() > 0:
             for time in times:
                 print "time = ", time
@@ -107,5 +107,5 @@ if exo_copy.num_times() > 0:
             for ssval in ssvals:
                 print "value =", ssval
                 step += 1
-                                    
+
 exo_copy.close()
