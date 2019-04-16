@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+! /usr/bin/env bash
 
 # Text color variables
 if [[ $TERM != *"xterm"* ]]; then
@@ -25,6 +25,15 @@ function check_valid_yes_no()
 fi
 }
 
+function check_valid_on_off()
+{
+    local var=$1
+    if ! [ "${!var}" == "ON" ] && ! [ "${!var}" == "OFF" ]; then
+    echo "${txtred}Invalid value for $var (${!var}) -- Must be ON or OFF${txtrst}"
+    exit 1
+fi
+}
+
 #By default, download and then install.
 DOWNLOAD=${DOWNLOAD:-YES}
 check_valid_yes_no DOWNLOAD
@@ -45,21 +54,35 @@ BB=${BB:-NO}
 check_valid_yes_no BB
 
 CRAY=${CRAY:-NO}
+check_valid_yes_no CRAY
 
 # Which TPLS? (HDF5 and NetCDF always, PnetCDF if MPI=ON)
 CGNS=${CGNS:-ON}
+check_valid_on_off CGNS
+
 MATIO=${MATIO:-ON}
+check_valid_on_off MATIO
+
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
+check_valid_on_off GNU_PARALLEL
+
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
+check_valid_yes_no NEEDS_ZLIB
+
 H5VERSION=${H5VERSION:-V110}
 ADIOS2=${ADIOS2:-OFF}
+check_valid_on_off ADIOS2
+
 GTEST=${GTEST:-${ADIOS2}}
 
 MPI=${MPI:-OFF}
+check_valid_on_off MPI
+
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
 VERBOSE=${VERBOSE:-1}
 USE_PROXY=${USE_PROXY:-NO}
+check_valid_yes_no USE_PROXY
 
 if [ "${USE_PROXY}" == "YES" ]
 then
