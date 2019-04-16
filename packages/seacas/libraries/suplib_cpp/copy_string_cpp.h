@@ -3,15 +3,13 @@
 #include <copy_string.h>
 #include <string>
 
-template <size_t size>
-void copy_string(char (&output)[size], const char* source)
+template <size_t size> void copy_string(char (&output)[size], const char *source)
 {
   // Copy the string — don’t copy too many bytes.
   copy_string(output, source, size);
 }
 
-template <size_t size>
-void copy_string(char (&output)[size], const std::string &source)
+template <size_t size> void copy_string(char (&output)[size], const std::string &source)
 {
   // Copy the string — don’t copy too many bytes.
   copy_string(output, source.c_str(), size);
