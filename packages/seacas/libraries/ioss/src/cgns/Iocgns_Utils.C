@@ -317,9 +317,9 @@ namespace {
         for (const auto &field_name : fields) {
           const Ioss::Field &field = block->get_fieldref(field_name);
           std::string        type  = field.raw_storage()->name();
-          Ioss::Utils::copy_string(&fld_names[offset], field_name.c_str(), CGNS_MAX_NAME_LENGTH);
+          Ioss::Utils::copy_string(&fld_names[offset], field_name.c_str(), CGNS_MAX_NAME_LENGTH + 1);
           offset += CGNS_MAX_NAME_LENGTH + 1;
-          Ioss::Utils::copy_string(&fld_names[offset], type.c_str(), CGNS_MAX_NAME_LENGTH);
+          Ioss::Utils::copy_string(&fld_names[offset], type.c_str(), CGNS_MAX_NAME_LENGTH + 1);
           offset += CGNS_MAX_NAME_LENGTH + 1;
         }
       }
@@ -1519,7 +1519,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
         CGCHECKNP(cg_famname_read(fam_name));
       }
       else {
-        Ioss::Utils::copy_string(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
+        Ioss::Utils::copy_string(fam_name, boco_name);
       }
 
       CGCHECKNP(cg_boco_read(cgns_file_ptr, base, zone, ibc + 1, range, nullptr));
@@ -1621,7 +1621,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
       CGCHECKNP(cg_famname_read(fam_name));
     }
     else {
-      Ioss::Utils::copy_string(fam_name, boco_name, CGNS_MAX_NAME_LENGTH);
+      Ioss::Utils::copy_string(fam_name, boco_name);
     }
 
     CGCHECKNP(cg_boco_read(cgns_file_ptr, base, zone, ibc + 1, range, nullptr));
@@ -1778,12 +1778,12 @@ void Iocgns::Utils::add_transient_variables(int cgns_file_ptr, const std::vector
       int field_count = 0;
       CGCHECK(cg_nfields(cgns_file_ptr, b, z, sol, &field_count));
 
-      char **field_names = Ioss::Utils::get_name_array(field_count, CGNS_MAX_NAME_LENGTH + 1);
+      char **field_names = Ioss::Utils::get_name_array(field_count, CGNS_MAX_NAME_LENGTH);
       for (int field = 1; field <= field_count; field++) {
         CG_DataType_t data_type;
         char          field_name[CGNS_MAX_NAME_LENGTH + 1];
         CGCHECK(cg_field_info(cgns_file_ptr, b, z, sol, field, &data_type, field_name));
-        Ioss::Utils::copy_string(field_names[field - 1], field_name, CGNS_MAX_NAME_LENGTH);
+        Ioss::Utils::copy_string(field_names[field - 1], field_name, CGNS_MAX_NAME_LENGTH + 1);
       }
 
       // Convert raw field names into composite fields (a_x, a_y, a_z ==> 3D vector 'a')
