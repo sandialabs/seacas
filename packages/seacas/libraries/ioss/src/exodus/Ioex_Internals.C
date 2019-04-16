@@ -183,7 +183,7 @@ EdgeBlock::EdgeBlock(const Ioss::EdgeBlock &other)
     el_type = other.get_property("original_topology_type").get_string();
   }
 
-  Ioss::Utils::copy_string(elType, el_type.c_str(), max_string_length());
+  Ioss::Utils::copy_string(elType, el_type);
   procOffset = 0;
 }
 
@@ -195,7 +195,7 @@ EdgeBlock &EdgeBlock::operator=(const EdgeBlock &other)
   nodesPerEntity = other.nodesPerEntity;
   attributeCount = other.attributeCount;
   procOffset     = other.procOffset;
-  Ioss::Utils::copy_string(elType, other.elType, max_string_length());
+  Ioss::Utils::copy_string(elType, other.elType);
   return *this;
 }
 
@@ -231,7 +231,7 @@ FaceBlock::FaceBlock(const Ioss::FaceBlock &other)
     el_type = other.get_property("original_topology_type").get_string();
   }
 
-  Ioss::Utils::copy_string(elType, el_type.c_str(), max_string_length());
+  Ioss::Utils::copy_string(elType, el_type);
   procOffset = 0;
 }
 
@@ -244,7 +244,7 @@ FaceBlock &FaceBlock::operator=(const FaceBlock &other)
   edgesPerEntity = other.edgesPerEntity;
   attributeCount = other.attributeCount;
   procOffset     = other.procOffset;
-  Ioss::Utils::copy_string(elType, other.elType, max_string_length());
+  Ioss::Utils::copy_string(elType, other.elType);
   return *this;
 }
 
@@ -289,7 +289,7 @@ ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
     el_type = other.get_property("original_topology_type").get_string();
   }
 
-  Ioss::Utils::copy_string(elType, el_type.c_str(), max_string_length());
+  Ioss::Utils::copy_string(elType, el_type);
 
   // Fixup an exodusII kluge.  For triangular elements, the same
   // name is used for 2D elements and 3D shell elements.  Convert
@@ -297,7 +297,7 @@ ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
   // stays the same, the 3D name becomes 'trishell#'
   // Here, we need to map back to the 'triangle' name...
   if (std::strncmp(elType, "trishell", 8) == 0) {
-    Ioss::Utils::copy_string(elType, "triangle", max_string_length());
+    Ioss::Utils::copy_string(elType, "triangle");
   }
   procOffset = 0;
 }
@@ -313,7 +313,7 @@ ElemBlock &ElemBlock::operator=(const ElemBlock &other)
   attributeCount = other.attributeCount;
   offset_        = other.offset_;
   procOffset     = other.procOffset;
-  Ioss::Utils::copy_string(elType, other.elType, max_string_length());
+  Ioss::Utils::copy_string(elType, other.elType);
   return *this;
 }
 
