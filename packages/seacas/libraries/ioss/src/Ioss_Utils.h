@@ -166,6 +166,17 @@ namespace Ioss {
 
     static char *copy_string(char *dest, char const *source, size_t elements);
 
+    template <size_t size> static void copy_string(char (&output)[size], const std::string &source)
+    {
+      copy_string(output, source.c_str(), size);
+    }
+
+    template <size_t size> static void copy_string(char (&output)[size], const char *source)
+    {
+      // Copy the string — don’t copy too many bytes.
+      copy_string(output, source, size);
+    }
+
     template <typename T> static void clear(std::vector<T> &vec)
     {
       vec.clear();
