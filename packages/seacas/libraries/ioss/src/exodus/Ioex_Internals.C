@@ -88,9 +88,8 @@ namespace {
   int conditional_define_variable(int exodusFilePtr, const char *var, int dimid, int *varid,
                                   nc_type type);
 
-  constexpr size_t max_string_length() { return MAX_STR_LENGTH; }
-  int              put_int_array(int exoid, const char *var_type, const std::vector<int> &array);
-  int              put_id_array(int exoid, const char *var_type, const std::vector<entity_id> &ids);
+  int put_int_array(int exoid, const char *var_type, const std::vector<int> &array);
+  int put_id_array(int exoid, const char *var_type, const std::vector<entity_id> &ids);
   int define_coordinate_vars(int exodusFilePtr, int64_t nodes, int node_dim, int dimension,
                              int dim_dim, int str_dim);
   template <typename T>
