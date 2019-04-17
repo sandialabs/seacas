@@ -35,9 +35,10 @@
 #include "nem_spread.h"     // for NemSpread
 #include "ps_pario_const.h" // for PIO_Info, Parallel_IO
 #include "rf_io_const.h"    // for ExoFile, Exo_LB_File, etc
-#include <cstdio>           // for fprintf, stderr
-#include <cstring>          // for strlen, strcpy
-#include <exodusII.h>       // for ex_close, ex_open, EX_READ
+#include <copy_string_cpp.h>
+#include <cstdio>     // for fprintf, stderr
+#include <cstring>    // for strlen
+#include <exodusII.h> // for ex_close, ex_open, EX_READ
 
 template int NemSpread<double, int>::check_inp(void);
 template int NemSpread<float, int>::check_inp(void);
@@ -97,7 +98,7 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
   /* check to see if there is a separate restart file */
   if (Restart_Info.Flag > 0) {
     if (strlen(Exo_Res_File) <= 0) {
-      strcpy(Exo_Res_File, ExoFile); /* if not use the input FEM file */
+      copy_string(Exo_Res_File, ExoFile); /* if not use the input FEM file */
     }
   }
 
@@ -142,7 +143,7 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
 
   /* default for nem_spread is to stage the writes */
   if (strlen(PIO_Info.Staged_Writes) <= 0) {
-    strcpy(PIO_Info.Staged_Writes, "yes");
+    copy_string(PIO_Info.Staged_Writes, "yes");
   }
 
   if (strlen(PIO_Info.Par_Dsk_Root) <= 0) {
