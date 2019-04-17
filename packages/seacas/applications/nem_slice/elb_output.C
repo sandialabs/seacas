@@ -40,10 +40,11 @@
 #include "elb_output.h"
 #include "elb_util.h" // for gds_qsort, qsort2, in_list, etc
 #include "scopeguard.h"
+#include <copy_string_cpp.h>
 #include <cstddef>    // for size_t, nullptr
 #include <cstdio>     // for printf, sprintf, fprintf, etc
 #include <cstdlib>    // for free, malloc, realloc
-#include <cstring>    // for strcat, strcpy, strlen, etc
+#include <cstring>    // for strcat, strlen, etc
 #include <ctime>      // for asctime, localtime, time, etc
 #include <exodusII.h> // for ex_close, ex_opts, etc
 #include <iostream>
@@ -128,16 +129,16 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
 
   /* Create the title */
   if (problem->type == NODAL) {
-    strcpy(method1, "nodal");
+    copy_string(method1, "nodal");
   }
   else {
-    strcpy(method1, "elemental");
+    copy_string(method1, "elemental");
   }
 
   sprintf(title, "nem_slice %s load balance file", method1);
 
-  strcpy(method1, "method1: ");
-  strcpy(method2, "method2: ");
+  copy_string(method1, "method1: ");
+  copy_string(method2, "method2: ");
 
   switch (lb->type) {
   case MULTIKL:
@@ -196,7 +197,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   time_t time_val = time(nullptr);
   char * ct_ptr   = asctime(localtime(&time_val));
   char   tm_date[30];
-  strcpy(tm_date, ct_ptr);
+  copy_string(tm_date, ct_ptr);
 
   /* Break string with null characters */
   tm_date[3]  = '\0';
@@ -209,8 +210,8 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
 
   sprintf(qa_date, "%s %s %s", &tm_date[8], &tm_date[4], &tm_date[20]);
   sprintf(qa_time, "%s", &tm_date[11]);
-  strcpy(qa_name, UTIL_NAME);
-  strcpy(qa_vers, ELB_VERSION);
+  copy_string(qa_name, UTIL_NAME);
+  copy_string(qa_vers, ELB_VERSION);
 
   if (qa_date[strlen(qa_date) - 1] == '\n') {
     qa_date[strlen(qa_date) - 1] = '\0';
@@ -220,10 +221,10 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
     lqa_record[i2] = reinterpret_cast<char *>(array_alloc(1, MAX_STR_LENGTH + 1, sizeof(char)));
   }
 
-  strcpy(lqa_record[0], qa_name);
-  strcpy(lqa_record[1], qa_vers);
-  strcpy(lqa_record[2], qa_date);
-  strcpy(lqa_record[3], qa_time);
+  copy_string(lqa_record[0], qa_name, MAX_STR_LENGTH + 1);
+  copy_string(lqa_record[1], qa_vers, MAX_STR_LENGTH + 1);
+  copy_string(lqa_record[2], qa_date, MAX_STR_LENGTH + 1);
+  copy_string(lqa_record[3], qa_time, MAX_STR_LENGTH + 1);
 
   printf("QA Record:\n");
   for (int i2 = 0; i2 < 4; i2++) {
@@ -490,7 +491,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
   vis_file_name += "-vis.exoII";
 
   /* Generate the title for the file */
-  strcpy(title, UTIL_NAME);
+  copy_string(title, UTIL_NAME);
   strcat(title, " ");
   strcat(title, ELB_VERSION);
   strcat(title, " load balance visualization file");

@@ -69,7 +69,7 @@ int read_mesh_file_name(const char *filename)
     /* skip any line that is a comment */
     if ((inp_line[0] != '#') && (inp_line[0] != '\n')) {
 
-      strcpy(inp_copy, inp_line);
+      copy_string(inp_copy, inp_line);
       clean_string(inp_line, " \t");
       char *cptr = strtok(inp_line, "\t=");
       /****** The input ExodusII file name ******/
@@ -121,7 +121,7 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
     /* skip any line that is a comment */
     if ((inp_line[0] != '#') && (inp_line[0] != '\n')) {
 
-      strcpy(inp_copy, inp_line);
+      copy_string(inp_copy, inp_line);
       clean_string(inp_line, " \t");
       cptr = strtok(inp_line, "\t=");
       /****** The input ExodusII file name ******/
@@ -487,10 +487,10 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
             PIO_Info.NoSubdirectory = 1;
           }
           else if (strstr(cptr, "stage_off")) {
-            strcpy(PIO_Info.Staged_Writes, "no");
+            copy_string(PIO_Info.Staged_Writes, "no");
           }
           else if (strstr(cptr, "stage_on")) {
-            strcpy(PIO_Info.Staged_Writes, "yes");
+            copy_string(PIO_Info.Staged_Writes, "yes");
           }
 
           cptr = strtok(nullptr, ",");
