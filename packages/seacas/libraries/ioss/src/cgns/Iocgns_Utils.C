@@ -533,7 +533,7 @@ namespace {
                         &snd_zgc_name](const std::vector<Ioss::ZoneConnectivity> &zgc) {
       for (const auto &z : zgc) {
         if (!z.is_from_decomp() && z.is_active()) {
-          Ioss::Utils::copy_string(&snd_zgc_name[off_name], z.m_connectionName., BYTE_PER_NAME);
+          Ioss::Utils::copy_string(&snd_zgc_name[off_name], z.m_connectionName, BYTE_PER_NAME);
           off_cnt++;
           off_name += BYTE_PER_NAME;
 
