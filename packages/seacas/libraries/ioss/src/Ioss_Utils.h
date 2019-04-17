@@ -164,7 +164,12 @@ namespace Ioss {
 #endif
     }
 
-    static char *copy_string(char *dest, char const *source, size_t elements);
+    static void copy_string(char *dest, char const *source, size_t elements);
+
+    static void copy_string(char *dest, const std::string &source, size_t elements)
+    {
+      copy_string(dest, source.c_str(), elements);
+    }
 
     template <size_t size> static void copy_string(char (&output)[size], const std::string &source)
     {
