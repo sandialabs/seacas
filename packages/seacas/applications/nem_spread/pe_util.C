@@ -38,7 +38,7 @@
 #include "rf_io_const.h"    // for Debug_Flag, MAX_FNL
 #include <cstdio>           // for sprintf, fprintf, printf, etc
 #include <cstdlib>          // for exit
-#include <cstring>          // for strcat, strcpy, strlen, etc
+#include <cstring>          // for strcat, strlen, etc
 #include <sstream>
 #include <string>
 
