@@ -607,9 +607,9 @@ namespace {
       assert(off_name % count == 0 && off_name / count == BYTE_PER_NAME);
 
 #if IOSS_DEBUG_OUTPUT
-      std::cerr << "ZGC_CONSOLIDATE: Before consolidation:\n";
+      std::cerr << "ZGC_CONSOLIDATE: Before consolidation: (" << zgc.size() << ")\n";
       for (const auto & z : zgc) {
-	std::cerr << z << "\n";
+	std::cerr << "\tOZ " << z.m_ownerZone << z << "\n";
       }
 #endif
 
@@ -631,14 +631,14 @@ namespace {
 		zgc[j].m_ownerZone = -1;
 		zgc[j].m_donorZone = -1;
 	      }
-	    }
-	    else {
-	      // We have a bad zgc -- name and owner_zone match, but not donor_zone.
-	      std::ostringstream errmsg;
-	      errmsg << "ERROR: CGNS: Found zgc named " << zgc[i].m_connectionName << " on zone " << owner_zone 
-		     << " which has two different donor zones: " 
-		     << donor_zone << " and " << zgc[j].m_donorZone << "\n";
-	      IOSS_ERROR(errmsg);
+	      else {
+		// We have a bad zgc -- name and owner_zone match, but not donor_zone.
+		std::ostringstream errmsg;
+		errmsg << "ERROR: CGNS: Found zgc named " << zgc[i].m_connectionName << " on zone " << owner_zone
+		       << " which has two different donor zones: "
+		       << donor_zone << " and " << zgc[j].m_donorZone << "\n";
+		IOSS_ERROR(errmsg);
+	      }
 	    }
           }
         }
@@ -668,9 +668,9 @@ namespace {
       assert(off_name % count == 0 && off_name / count == BYTE_PER_NAME);
 
 #if IOSS_DEBUG_OUTPUT
-      std::cerr << "ZGC_CONSOLIDATE: After consolidation:\n";
+      std::cerr << "ZGC_CONSOLIDATE: After consolidation: (" << zgc.size() << ")\n";
       for (const auto & z : zgc) {
-	std::cerr << z << "\n";
+	std::cerr << "\tOZ " << z.m_ownerZone << z << "\n";
       }
 #endif
     } // End of processor 0 only processing...
