@@ -317,9 +317,9 @@ namespace {
         for (const auto &field_name : fields) {
           const Ioss::Field &field = block->get_fieldref(field_name);
           std::string        type  = field.raw_storage()->name();
-          Ioss::Utils::copy_string(&fld_names[offset], field_name.c_str(), CGNS_MAX_NAME_LENGTH + 1);
+          Ioss::Utils::copy_string(&fld_names[offset], field_name, CGNS_MAX_NAME_LENGTH + 1);
           offset += CGNS_MAX_NAME_LENGTH + 1;
-          Ioss::Utils::copy_string(&fld_names[offset], type.c_str(), CGNS_MAX_NAME_LENGTH + 1);
+          Ioss::Utils::copy_string(&fld_names[offset], type, CGNS_MAX_NAME_LENGTH + 1);
           offset += CGNS_MAX_NAME_LENGTH + 1;
         }
       }
@@ -533,8 +533,7 @@ namespace {
                         &snd_zgc_name](const std::vector<Ioss::ZoneConnectivity> &zgc) {
       for (const auto &z : zgc) {
         if (!z.is_from_decomp() && z.is_active()) {
-          Ioss::Utils::copy_string(&snd_zgc_name[off_name], z.m_connectionName.c_str(),
-                                   BYTE_PER_NAME);
+          Ioss::Utils::copy_string(&snd_zgc_name[off_name], z.m_connectionName., BYTE_PER_NAME);
           off_cnt++;
           off_name += BYTE_PER_NAME;
 
@@ -1697,7 +1696,7 @@ void Iocgns::Utils::finalize_database(int cgns_file_ptr, const std::vector<doubl
     for (size_t state = 0; state < timesteps.size(); state++) {
       // This name is the "postfix" or common portion of all FlowSolution names...
       std::string name = base_type + std::to_string(state + 1);
-      Ioss::Utils::copy_string(&names[state * 32], name.c_str(), 32);
+      Ioss::Utils::copy_string(&names[state * 32], name, 32);
       for (size_t i = name.size(); i < 32; i++) {
         names[state * 32 + i] = ' ';
       }
