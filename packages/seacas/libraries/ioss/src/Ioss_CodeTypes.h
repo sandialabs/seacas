@@ -118,4 +118,6 @@ using Kokkos_Complex = Kokkos::complex<double>;
 #endif
 #endif
 
+#ifndef IOSS_DEBUG_OUTPUT
 #define IOSS_DEBUG_OUTPUT 0
+#endif
