@@ -55,7 +55,7 @@
 
 #include "add_to_log.h"
 #include "adler.h"
-#include "copy_string.h"
+#include "copy_string_cpp.h"
 #include "smart_assert.h"
 #include <exodusII.h>
 
@@ -969,8 +969,7 @@ namespace {
 	 << " (Part " << global_times[i].partNumber+1
 	 << ", step "  << global_times[i].localStepNumber+1 << ")  File: "
 	 << interface.inputFiles_[global_times[i].partNumber];
-      copy_string(info_records[num_info_records+1+i], os.str().c_str(), MAX_LINE_LENGTH + 1);
-      info_records[num_info_records+1+i][MAX_LINE_LENGTH] = '\0';
+      copy_string(info_records[num_info_records+1+i], os.str(), MAX_LINE_LENGTH + 1);
     }
 #endif
 
@@ -1202,7 +1201,7 @@ namespace {
           blocks[p][b].nodesPerElement = block_param.num_nodes_per_entry;
           blocks[p][b].attributeCount  = block_param.num_attribute;
           blocks[p][b].offset_         = block_param.num_entry;
-          copy_string(blocks[p][b].elType, block_param.topology, MAX_STR_LENGTH + 1);
+          copy_string(blocks[p][b].elType, block_param.topology);
 
           // NOTE: This is not correct, but fixed below.
           glob_blocks[b].elementCount += block_param.num_entry;
@@ -1216,7 +1215,7 @@ namespace {
           }
 
           glob_blocks[b].position_ = b;
-          copy_string(glob_blocks[b].elType, block_param.topology, MAX_STR_LENGTH + 1);
+          copy_string(glob_blocks[b].elType, block_param.topology);
         }
 
         if (block_param.num_attribute > 0 && glob_blocks[b].attributeNames.empty()) {

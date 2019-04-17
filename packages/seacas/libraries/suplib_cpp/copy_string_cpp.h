@@ -14,4 +14,9 @@ template <size_t size> void copy_string(char (&output)[size], const std::string 
   // Copy the string — don’t copy too many bytes.
   copy_string(output, source.c_str(), size);
 }
+
+inline void copy_string(char *dest, const std::string &source, size_t elements)
+{
+  copy_string(dest, source.c_str(), elements);
+}
 #endif
