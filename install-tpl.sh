@@ -1,4 +1,4 @@
-! /usr/bin/env bash
+#! /usr/bin/env bash
 
 # Text color variables
 if [[ $TERM != *"xterm"* ]]; then
