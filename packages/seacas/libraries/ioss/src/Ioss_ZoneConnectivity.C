@@ -68,6 +68,7 @@ namespace Ioss {
     transform += "] ";
 #endif
 
+#if 1
     os << "\t\t" << zgc.m_donorName << "[P" << zgc.m_donorProcessor << "]:\tDZ " << zgc.m_donorZone
        << "\tName '" << zgc.m_connectionName << "' shares " << zgc.get_shared_node_count()
        << " nodes.\n\t\t\t\t      Range: [" << zgc.m_ownerRangeBeg[0] << ".."
@@ -88,6 +89,22 @@ namespace Ioss {
        << zgc.m_donorRangeEnd[1] - zgc.m_donorOffset[1] << ", "
        << zgc.m_donorRangeBeg[2] - zgc.m_donorOffset[2] << ".."
        << zgc.m_donorRangeEnd[2] - zgc.m_donorOffset[2] << "]";
+#else
+    // Formats similar to what is needed for Utst_structured_decomp test
+    os << "zones.back()->m_zoneConnectivity.emplace_back(\n"
+       << "\"" << zgc.m_connectionName << "\", zones.back()->m_zone, \"zone" << zgc.m_donorZone
+       << "\", " << zgc.m_donorZone << ", "
+       << "Ioss::IJK_t{{" << zgc.m_transform[0] << ", " << zgc.m_transform[1] << ", "
+       << zgc.m_transform[2] << "}},\n"
+       << "Ioss::IJK_t{{" << zgc.m_ownerRangeBeg[0] << ", " << zgc.m_ownerRangeBeg[1] << ", "
+       << zgc.m_ownerRangeBeg[2] << "}}, "
+       << "Ioss::IJK_t{{" << zgc.m_ownerRangeEnd[0] << ", " << zgc.m_ownerRangeEnd[1] << ", "
+       << zgc.m_ownerRangeEnd[2] << "}},\n"
+       << "Ioss::IJK_t{{" << zgc.m_donorRangeBeg[0] << ", " << zgc.m_donorRangeBeg[1] << ", "
+       << zgc.m_donorRangeBeg[2] << "}}, "
+       << "Ioss::IJK_t{{" << zgc.m_donorRangeEnd[0] << ", " << zgc.m_donorRangeEnd[1] << ", "
+       << zgc.m_donorRangeEnd[2] << "}});\n";
+#endif
     return os;
   }
 
