@@ -45,11 +45,11 @@
 #include "ps_pario_const.h" // for Parallel_IO
 #include "rf_allo.h"        // for safe_free
 #include "rf_format.h"
-#include "rf_io.h"  // for ExoFile, Debug_Flag, etc
-#include <cstdint>  // for int64_t
-#include <cstdio>   // for printf, fprintf, stderr, etc
-#include <cstdlib>  // for exit
-#include <cstring>  // for strcpy
+#include "rf_io.h" // for ExoFile, Debug_Flag, etc
+#include <cstdint> // for int64_t
+#include <cstdio>  // for printf, fprintf, stderr, etc
+#include <cstdlib> // for exit
+#include <cstring>
 #include <unistd.h> // for getopt, optarg, optind
 
 #if defined(__STRICT_ANSI__)
