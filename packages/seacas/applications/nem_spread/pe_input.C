@@ -518,7 +518,6 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
               return 0;
             }
             copy_string(PIO_Info.Par_Dsk_Root, cptr2);
-            PIO_Info.Par_Dsk_Root[MAX_FNL - 1] = '\0';
           }
           if (strstr(cptr, "subdir")) {
             cptr2 = strchr(cptr, '=');
@@ -533,7 +532,6 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
               return 0;
             }
             copy_string(PIO_Info.Par_Dsk_SubDirec, cptr2);
-            PIO_Info.Par_Dsk_SubDirec[MAX_FNL - 1] = '\0';
             if (PIO_Info.Par_Dsk_SubDirec[strlen(PIO_Info.Par_Dsk_SubDirec) - 1] != '/') {
               strcat(PIO_Info.Par_Dsk_SubDirec, "/");
             }
