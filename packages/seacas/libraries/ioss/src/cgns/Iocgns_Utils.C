@@ -608,8 +608,8 @@ namespace {
 
 #if IOSS_DEBUG_OUTPUT
       std::cerr << "ZGC_CONSOLIDATE: Before consolidation: (" << zgc.size() << ")\n";
-      for (const auto & z : zgc) {
-	std::cerr << "\tOZ " << z.m_ownerZone << z << "\n";
+      for (const auto &z : zgc) {
+        std::cerr << "\tOZ " << z.m_ownerZone << z << "\n";
       }
 #endif
 
@@ -622,24 +622,24 @@ namespace {
           for (size_t j = i + 1; j < zgc.size(); j++) {
             if (zgc[j].m_connectionName == zgc[i].m_connectionName &&
                 zgc[j].m_ownerZone == owner_zone) {
-	      if (zgc[j].m_donorZone == donor_zone) {
-		// Found another instance of the "same" zgc...  Union the ranges
-		union_zgc_range(zgc[i], zgc[j]);
-		assert(zgc[i].is_valid());
+              if (zgc[j].m_donorZone == donor_zone) {
+                // Found another instance of the "same" zgc...  Union the ranges
+                union_zgc_range(zgc[i], zgc[j]);
+                assert(zgc[i].is_valid());
 
-		// Flag the 'j' instance so it is processed only this time.
-		zgc[j].m_ownerZone = -1;
-		zgc[j].m_donorZone = -1;
-	      }
-	      else {
-		// We have a bad zgc -- name and owner_zone match, but not donor_zone.
-		std::ostringstream errmsg;
-		errmsg << "ERROR: CGNS: Found zgc named " << zgc[i].m_connectionName << " on zone " << owner_zone
-		       << " which has two different donor zones: "
-		       << donor_zone << " and " << zgc[j].m_donorZone << "\n";
-		IOSS_ERROR(errmsg);
-	      }
-	    }
+                // Flag the 'j' instance so it is processed only this time.
+                zgc[j].m_ownerZone = -1;
+                zgc[j].m_donorZone = -1;
+              }
+              else {
+                // We have a bad zgc -- name and owner_zone match, but not donor_zone.
+                std::ostringstream errmsg;
+                errmsg << "ERROR: CGNS: Found zgc named " << zgc[i].m_connectionName << " on zone "
+                       << owner_zone << " which has two different donor zones: " << donor_zone
+                       << " and " << zgc[j].m_donorZone << "\n";
+                IOSS_ERROR(errmsg);
+              }
+            }
           }
         }
       }
@@ -669,8 +669,8 @@ namespace {
 
 #if IOSS_DEBUG_OUTPUT
       std::cerr << "ZGC_CONSOLIDATE: After consolidation: (" << zgc.size() << ")\n";
-      for (const auto & z : zgc) {
-	std::cerr << "\tOZ " << z.m_ownerZone << z << "\n";
+      for (const auto &z : zgc) {
+        std::cerr << "\tOZ " << z.m_ownerZone << z << "\n";
       }
 #endif
     } // End of processor 0 only processing...
@@ -988,25 +988,25 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
                   break;
                 }
               }
-	      if (connect_name == zgc.m_connectionName) {
-		for (char c1 = 'A'; c1 <= 'Z'; c1++) {
-		  for (char c2 = 'A'; c2 <= 'Z'; c2++) {
-		    std::string potential = connect_name + c1 + c2;
-		    iter                  = zgc_names.insert(potential);
-		    if (iter.second) {
-		      connect_name = potential;
-		      break;
-		    }
-		  }
-		}
-		if (connect_name == zgc.m_connectionName) {
-		  std::ostringstream errmsg;
-		  errmsg << "ERROR: CGNS: Duplicate ZGC Name '" << zgc.m_connectionName
-			 << "' on zone '" << sb->name() << "', processor "
-			 << zgc.m_ownerProcessor << "\n";
-		  IOSS_ERROR(errmsg);
-		}
-	      }
+              if (connect_name == zgc.m_connectionName) {
+                for (char c1 = 'A'; c1 <= 'Z'; c1++) {
+                  for (char c2 = 'A'; c2 <= 'Z'; c2++) {
+                    std::string potential = connect_name + c1 + c2;
+                    iter                  = zgc_names.insert(potential);
+                    if (iter.second) {
+                      connect_name = potential;
+                      break;
+                    }
+                  }
+                }
+                if (connect_name == zgc.m_connectionName) {
+                  std::ostringstream errmsg;
+                  errmsg << "ERROR: CGNS: Duplicate ZGC Name '" << zgc.m_connectionName
+                         << "' on zone '" << sb->name() << "', processor " << zgc.m_ownerProcessor
+                         << "\n";
+                  IOSS_ERROR(errmsg);
+                }
+              }
             }
           }
           donor_name += "_proc-";
