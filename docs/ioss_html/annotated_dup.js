@@ -65,6 +65,7 @@ var annotated_dup =
     [ "anonymous_namespace{shell_to_hex.C}", "namespaceanonymous__namespace_02shell__to__hex_8C_03.html", "namespaceanonymous__namespace_02shell__to__hex_8C_03" ],
     [ "anonymous_namespace{skinner.C}", "namespaceanonymous__namespace_02skinner_8C_03.html", "namespaceanonymous__namespace_02skinner_8C_03" ],
     [ "anonymous_namespace{sphgen.C}", "namespaceanonymous__namespace_02sphgen_8C_03.html", "namespaceanonymous__namespace_02sphgen_8C_03" ],
+    [ "anonymous_namespace{struc_to_unstruc.C}", "namespaceanonymous__namespace_02struc__to__unstruc_8C_03.html", "namespaceanonymous__namespace_02struc__to__unstruc_8C_03" ],
     [ "Info", "namespaceInfo.html", "namespaceInfo" ],
     [ "Ioad", "namespaceIoad.html", "namespaceIoad" ],
     [ "Iocgns", "namespaceIocgns.html", "namespaceIocgns" ],
