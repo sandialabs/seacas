@@ -131,26 +131,26 @@ namespace {
           }
         }
 
-	// In Iocgns::Utils::common_write_meta_data, there is code to make
-	// sure that the zgc.m_connectionName  is unique for all zgc instances on
-	// a zone / processor pair (if !parallel_io which is file-per-processor)
-	// The uniquification appends a letter from 'A' to 'Z' to the name
-	// If the name is still not unique, repeats process with 'AA' to 'ZZ'
-	// Make sure that there are not more than 26 + 26*26 + 1 instances of the same
-	// name on a zone to ensure that this works...
+        // In Iocgns::Utils::common_write_meta_data, there is code to make
+        // sure that the zgc.m_connectionName  is unique for all zgc instances on
+        // a zone / processor pair (if !parallel_io which is file-per-processor)
+        // The uniquification appends a letter from 'A' to 'Z' to the name
+        // If the name is still not unique, repeats process with 'AA' to 'ZZ'
+        // Make sure that there are not more than 26 + 26*26 + 1 instances of the same
+        // name on a zone to ensure that this works...
         for (auto &zone : zones) {
           if (zone->is_active()) {
-	    std::map<std::string, int> zgc_map;
+            std::map<std::string, int> zgc_map;
             for (const auto &zgc : zone->m_zoneConnectivity) {
               if (zgc.is_active() && !zgc.is_from_decomp()) {
-		zgc_map[zgc.m_connectionName]++;
+                zgc_map[zgc.m_connectionName]++;
               }
             }
-	    for (const auto &kk : zgc_map) {
-	      CHECK(kk.second < 26 * 26 + 26 + 1);
-	    }
+            for (const auto &kk : zgc_map) {
+              CHECK(kk.second < 26 * 26 + 26 + 1);
+            }
           }
-        }	//
+        } //
 
         // Zone Grid Connectivity from_decomp instances must be symmetric...
         // The GUID encodes the id and the processor,
