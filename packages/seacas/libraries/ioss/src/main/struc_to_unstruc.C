@@ -61,6 +61,13 @@
 
 namespace {
 
+  struct my_numpunct : std::numpunct<char>
+  {
+  protected:
+    char        do_thousands_sep() const override { return ','; }
+    std::string do_grouping() const override { return "\3"; }
+  };
+
   int rank = 0;
 
   void show_step(int istep, double time);
@@ -110,6 +117,9 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
+
+  std::cout.imbue(std::locale(std::locale(), new my_numpunct));
+  std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
 
   Ioss::Init::Initializer io;
   std::string             in_file = argv[1];
