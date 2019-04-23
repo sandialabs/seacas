@@ -1604,7 +1604,7 @@ int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
   /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
   if (weight->exo_filename.length() > 0) {
     /* Check that a variable name and/or index was specified. */
-    if (strlen(weight->exo_varname.c_str()) == 0 && weight->exo_vindx <= 0) {
+    if (weight->exo_varname.empty() && weight->exo_vindx <= 0) {
       Gen_Error(0, "FATAL: must specify an index and/or a name for weighting"
                    " variable");
       return 0;
@@ -1686,7 +1686,7 @@ int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
      * index. If a variable name AND an index were specified then make
      * sure they match.
      */
-    if (strlen(weight->exo_varname.c_str()) > 0) {
+    if (!weight->exo_varname.empty()) {
       for (cnt = 0; cnt < nvars; cnt++) {
         if (strcmp(var_names[cnt], weight->exo_varname.c_str()) == 0) {
           tmp_vindx = cnt + 1;
