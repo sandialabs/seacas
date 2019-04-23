@@ -1171,7 +1171,7 @@ void Ioss::Utils::input_file(const std::string &file_name, std::vector<std::stri
   // function as sierra::Env::input() except this is for a single
   // processor and the sierra::Env::input() is for parallel...
 
-  if (file_name.length() != 0) {
+  if (!file_name.empty()) {
     // Open the file and read into the vector...
     std::string   input_line;
     std::ifstream infile(file_name);
@@ -2244,7 +2244,7 @@ namespace {
         max_field_size = field.get_size();
       }
       if (field_name != "ids" && !oge->field_exists(field_name) &&
-          (prefix.length() == 0 ||
+          (prefix.empty() ||
            std::strncmp(prefix.c_str(), field_name.c_str(), prefix.length()) == 0)) {
         // If the field does not already exist, add it to the output node block
         oge->field_add(field);
@@ -2279,7 +2279,7 @@ namespace {
       if (field_name == "ids") {
         continue;
       }
-      if ((prefix.length() == 0 ||
+      if ((prefix.empty() ||
            std::strncmp(prefix.c_str(), field_name.c_str(), prefix.length()) == 0)) {
         assert(oge->field_exists(field_name));
         transfer_field_data_internal(ige, oge, pool, field_name, options);

@@ -44,7 +44,6 @@
 #include <cstddef>       // for size_t
 #include <cstdio>        // for fprintf, stderr, nullptr, etc
 #include <cstdlib>       // for exit, free, malloc
-#include <cstring>       // for strrchr, memset, etc
 #include <string>
 #include <unistd.h> // for sysconf, _SC_OPEN_MAX
 #include <vector>   // for vector
