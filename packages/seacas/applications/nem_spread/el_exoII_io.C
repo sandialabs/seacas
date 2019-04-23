@@ -51,7 +51,6 @@
 #include <cstddef>             // for size_t
 #include <cstdio>              // for printf, fprintf, stderr
 #include <cstdlib>             // for exit, free
-#include <cstring>             // for strrchr, strlen
 #include <iostream>            // for operator<<, cerr, ostream, etc
 #include <string>              // for string
 #include <vector>              // for vector
