@@ -988,25 +988,26 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
                   break;
                 }
               }
-              if (connect_name == zgc.m_connectionName) {
-                for (char c1 = 'A'; c1 <= 'Z'; c1++) {
-                  for (char c2 = 'A'; c2 <= 'Z'; c2++) {
-                    std::string potential = connect_name + c1 + c2;
-                    iter                  = zgc_names.insert(potential);
-                    if (iter.second) {
-                      connect_name = potential;
-                      break;
-                    }
-                  }
-                }
-                if (connect_name == zgc.m_connectionName) {
-                  std::ostringstream errmsg;
-                  errmsg << "ERROR: CGNS: Duplicate ZGC Name '" << zgc.m_connectionName
-                         << "' on zone '" << sb->name() << "', processor " << zgc.m_ownerProcessor
-                         << "\n";
-                  IOSS_ERROR(errmsg);
-                }
-              }
+	      if (connect_name == zgc.m_connectionName) {
+		bool done = false;
+		for (char c1 = 'A'; c1 <= 'Z' && !done; c1++) {
+		  for (char c2 = 'A'; c2 <= 'Z' && !done; c2++) {
+		    std::string potential = connect_name + c1 + c2;
+		    iter                  = zgc_names.insert(potential);
+		    if (iter.second) {
+		      connect_name = potential;
+		      done = true;
+		    }
+		  }
+		}
+		if (connect_name == zgc.m_connectionName) {
+		  std::ostringstream errmsg;
+		  errmsg << "ERROR: CGNS: Duplicate ZGC Name '" << zgc.m_connectionName
+			 << "' on zone '" << sb->name() << "', processor "
+			 << zgc.m_ownerProcessor << "\n";
+		  IOSS_ERROR(errmsg);
+		}
+	      }
             }
           }
           donor_name += "_proc-";
