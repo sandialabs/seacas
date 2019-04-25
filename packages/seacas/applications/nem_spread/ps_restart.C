@@ -451,8 +451,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
     for (int iproc = Proc_Info[4]; iproc < Proc_Info[4] + Proc_Info[5]; iproc++) {
 
       if (open_file_count < Proc_Info[5]) {
-        std::string Parallel_File_Name =
-            gen_par_filename(cTemp.c_str(), Proc_Ids[iproc], Proc_Info[0]);
+        std::string Parallel_File_Name = gen_par_filename(cTemp, Proc_Ids[iproc], Proc_Info[0]);
 
         /* Open the parallel Exodus II file for writing */
         cpu_ws   = io_ws;
