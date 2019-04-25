@@ -80,9 +80,9 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
                   Problem_Description *problem, Mesh_Description<INT> *mesh,
                   LB_Description<INT> *lb, Sphere_Info *sphere)
 {
-  int  exoid;
-  char title[MAX_LINE_LENGTH + 1], method1[MAX_LINE_LENGTH + 1];
-  char method2[MAX_LINE_LENGTH + 1];
+  int         exoid;
+  std::string method1{}, method2{};
+  char        title[MAX_LINE_LENGTH + 1];
 
   int cpu_ws = sizeof(float);
   int io_ws  = sizeof(float);
@@ -129,45 +129,45 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
 
   /* Create the title */
   if (problem->type == NODAL) {
-    copy_string(method1, "nodal");
+    method1 = "nodal";
   }
   else {
-    copy_string(method1, "elemental");
+    method1 = "elemental";
   }
 
-  sprintf(title, "nem_slice %s load balance file", method1);
+  sprintf(title, "nem_slice %s load balance file", method1.c_str());
 
-  copy_string(method1, "method1: ");
-  copy_string(method2, "method2: ");
+  method1 = "method1: ";
+  method2 = "method2: ";
 
   switch (lb->type) {
   case MULTIKL:
-    strcat(method1, "Multilevel-KL decomposition");
-    strcat(method2, "With Kernighan-Lin refinement");
+    method1 += "Multilevel-KL decomposition";
+    method2 += "With Kernighan-Lin refinement";
     break;
-  case SPECTRAL: strcat(method1, "Spectral decomposition"); break;
-  case INERTIAL: strcat(method1, "Inertial decomposition"); break;
-  case ZPINCH: strcat(method1, "ZPINCH decomposition"); break;
-  case BRICK: strcat(method1, "BRICK decomposition"); break;
-  case ZOLTAN_RCB: strcat(method1, "RCB decomposition"); break;
-  case ZOLTAN_RIB: strcat(method1, "RIB decomposition"); break;
-  case ZOLTAN_HSFC: strcat(method1, "HSFC decomposition"); break;
-  case LINEAR: strcat(method1, "Linear decomposition"); break;
-  case RANDOM: strcat(method1, "Random decomposition"); break;
-  case SCATTERED: strcat(method1, "Scattered decomposition"); break;
+  case SPECTRAL: method1 += "Spectral decomposition"; break;
+  case INERTIAL: method1 += "Inertial decomposition"; break;
+  case ZPINCH: method1 += "ZPINCH decomposition"; break;
+  case BRICK: method1 += "BRICK decomposition"; break;
+  case ZOLTAN_RCB: method1 += "RCB decomposition"; break;
+  case ZOLTAN_RIB: method1 += "RIB decomposition"; break;
+  case ZOLTAN_HSFC: method1 += "HSFC decomposition"; break;
+  case LINEAR: method1 += "Linear decomposition"; break;
+  case RANDOM: method1 += "Random decomposition"; break;
+  case SCATTERED: method1 += "Scattered decomposition"; break;
   }
 
   if (lb->refine == KL_REFINE && lb->type != MULTIKL) {
-    strcat(method2, "with Kernighan-Lin refinement");
+    method2 += "with Kernighan-Lin refinement";
   }
   else if (lb->type != MULTIKL) {
-    strcat(method2, "no refinement");
+    method2 += "no refinement";
   }
 
   switch (lb->num_sects) {
-  case 1: strcat(method1, " via bisection"); break;
-  case 2: strcat(method1, " via quadrasection"); break;
-  case 3: strcat(method1, " via octasection"); break;
+  case 1: method1 += " via bisection"; break;
+  case 2: method1 += " via quadrasection"; break;
+  case 3: method1 += " via octasection"; break;
   }
 
   /* Do some sorting */
@@ -186,45 +186,24 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   /* Output the info records */
   char *info[3];
   info[0] = title;
-  info[1] = method1;
-  info[2] = method2;
+  info[1] = const_cast<char *>(method1.c_str());
+  info[2] = const_cast<char *>(method2.c_str());
 
   if (ex_put_info(exoid, 3, info) < 0) {
     Gen_Error(0, "warning: output of info records failed");
   }
 
   /* Generate a QA record for the utility */
-  time_t time_val = time(nullptr);
-  char * ct_ptr   = asctime(localtime(&time_val));
-  char   tm_date[30];
-  copy_string(tm_date, ct_ptr);
+  char lqa_record[4][MAX_STR_LENGTH + 1];
 
-  /* Break string with null characters */
-  tm_date[3]  = '\0';
-  tm_date[7]  = '\0';
-  tm_date[10] = '\0';
-  tm_date[19] = '\0';
+  copy_string(lqa_record[0], UTIL_NAME, MAX_STR_LENGTH + 1);
+  copy_string(lqa_record[1], ELB_VERSION, MAX_STR_LENGTH + 1);
 
-  char qa_date[15], qa_time[10], qa_name[MAX_STR_LENGTH];
-  char qa_vers[10];
+  time_t     calendar_time = time(nullptr);
+  struct tm *local_time    = localtime(&calendar_time);
 
-  sprintf(qa_date, "%s %s %s", &tm_date[8], &tm_date[4], &tm_date[20]);
-  sprintf(qa_time, "%s", &tm_date[11]);
-  copy_string(qa_name, UTIL_NAME);
-  copy_string(qa_vers, ELB_VERSION);
-
-  if (qa_date[strlen(qa_date) - 1] == '\n') {
-    qa_date[strlen(qa_date) - 1] = '\0';
-  }
-  char **lqa_record = reinterpret_cast<char **>(array_alloc(1, 4, sizeof(char *)));
-  for (int i2 = 0; i2 < 4; i2++) {
-    lqa_record[i2] = reinterpret_cast<char *>(array_alloc(1, MAX_STR_LENGTH + 1, sizeof(char)));
-  }
-
-  copy_string(lqa_record[0], qa_name, MAX_STR_LENGTH + 1);
-  copy_string(lqa_record[1], qa_vers, MAX_STR_LENGTH + 1);
-  copy_string(lqa_record[2], qa_date, MAX_STR_LENGTH + 1);
-  copy_string(lqa_record[3], qa_time, MAX_STR_LENGTH + 1);
+  strftime(lqa_record[3], MAX_STR_LENGTH, "%H:%M:%S", local_time);
+  strftime(lqa_record[2], MAX_STR_LENGTH, "%Y/%m/%d", local_time);
 
   printf("QA Record:\n");
   for (int i2 = 0; i2 < 4; i2++) {
@@ -235,13 +214,6 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
     Gen_Error(0, "fatal: unable to output QA records");
     return 0;
   }
-
-  /* free up memory */
-  for (int i2 = 0; i2 < 4; i2++) {
-    free(lqa_record[i2]);
-  }
-
-  free(lqa_record);
 
   /* Output the the initial Nemesis global information */
   if (ex_put_init_global(exoid, mesh->num_nodes, mesh->num_elems, mesh->num_el_blks, 0, 0) < 0) {
