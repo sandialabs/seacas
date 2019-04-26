@@ -1995,6 +1995,7 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
 
   int num_splits = std::accumulate(splits.begin(), splits.end(), 0);
   int diff       = proc_count - num_splits;
+  bool adjustment_needed = diff > 0;
 
   while (diff != 0) {
     // Adjust splits so sum is equal to proc_count.
@@ -2029,17 +2030,19 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
   double min_avg      = avg_work / load_balance;
   double max_avg      = avg_work * load_balance;
   bool   adaptive_avg = true;
-  for (size_t i = 0; i < zones.size(); i++) {
-    auto   zone = zones[i];
-    double work = zone->work();
-    if (splits[i] == 0) {
-      adaptive_avg = false;
-      break;
-    }
-    double zone_avg = work / (double)splits[i];
-    if (zone_avg < min_avg || zone_avg > max_avg) {
-      adaptive_avg = false;
-      break;
+  if (!adjustment_needed) {
+    for (size_t i = 0; i < zones.size(); i++) {
+      auto   zone = zones[i];
+      double work = zone->work();
+      if (splits[i] == 0) {
+	adaptive_avg = false;
+	break;
+      }
+      double zone_avg = work / (double)splits[i];
+      if (zone_avg < min_avg || zone_avg > max_avg) {
+	adaptive_avg = false;
+	break;
+      }
     }
   }
 
