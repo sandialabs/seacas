@@ -6,6 +6,7 @@ described in the previous section.
  * [Zoltan](#zoltan) -- required, supplied
  * [HDF5](#hdf5) -- optional
  * [NetCDF](#netcdf) -- required with possible modifications
+ * [Kokkos](#kokkos) -- optional
  * [MatIO](#matio) -- optional, required for exo2mat and mat2exo
  * [GNU Parallel](#gnu-parallel) -- optional
  * [CGNS](#cgns) -- experimental optional
@@ -72,6 +73,26 @@ _4` to `OFF`
    cd build
    sh ../../runcmake.sh
    ```
+
+ * `make && make install`
+
+## Kokkos
+The most recent released version is recommended. 
+
+ * Download the latest Kokkos release from <https://github.com/kokkos/kokkos/releases> and put it inside `seacas/TPL/kokkos`
+
+ * `cd TPL/kokkos`
+
+ * `tar zxvf 2.8.0.tar.gz`
+
+ * `cd kokkos-2.8.0` and enter the command:
+   ```bash
+   mkdir build
+   cd build
+   sh ../../runcmake.sh
+   ```
+
+ * The default `runcmake.sh` will only build the `serial` device. Modify build options to tailor for your system as documented in the Kokkos documentation.
 
  * `make && make install`
 

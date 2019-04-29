@@ -69,6 +69,9 @@ check_valid_on_off GNU_PARALLEL
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
 check_valid_yes_no NEEDS_ZLIB
 
+KOKKOS=${KOKKOS:-OFF}
+check_valid_on_off KOKKOS
+
 H5VERSION=${H5VERSION:-V110}
 ADIOS2=${ADIOS2:-OFF}
 check_valid_on_off ADIOS2
@@ -136,6 +139,7 @@ if [ $# -gt 0 ]; then
 	echo "   MATIO        = ${MATIO}"
 	echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
 	echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
+	echo "   KOKKOS       = ${KOKKOS}"
 	echo "   BB           = ${BB}"
 	echo "   ADIOS2       = ${ADIOS2}"
 	echo "   GTEST        = ${GTEST}"
@@ -418,6 +422,54 @@ then
 	fi
     else
 	echo "${txtylw}+++ MatIO already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
+# =================== INSTALL KOKKOS  ===============
+if [ "$KOKKOS" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkos.${LD_EXT} ]
+    then
+	kokkos_version="2.8.00"
+	echo "${txtgrn}+++ KOKKOS${txtrst}"
+	cd $ACCESS
+	cd TPL/kokkos
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf kokkos
+	    wget --no-check-certificate https://github.com/kokkos/kokkos/archive/${kokkos_version}.tar.gz
+            tar -jxf ${kokkos_version}.tar.gz
+            rm -f ${kokkos_version}.tar.gz
+	    ln -s kokkos-${kokkos_version} kokkos
+	fi
+
+	if [ "$BUILD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd kokkos-${kokkos_version}
+            if [ -d build ]
+            then
+                rm -rf build
+            fi
+            mkdir build
+            cd build
+            CUDA=${CUDA} SHARED=${SHARED} MPI=${MPI} bash ../../runcmake.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure cmake for KOKKOS. exiting.${txtrst}
+                exit 1
+            fi
+
+            make -j${JOBS} && ${SUDO} make "VERBOSE=${VERBOSE}" install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build KOKKOS. exiting.${txtrst}
+                exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ KOKKOS already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
