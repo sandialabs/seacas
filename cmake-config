@@ -141,6 +141,7 @@ GENERATOR=${GENERATOR:-"Unix Makefiles"}
 # -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
 
 SHARED="${SHARED:-ON}"
+
 ### Switch for Debug or Release build:
 BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
 
@@ -151,7 +152,6 @@ HAVE_X11=${X11:-ON}
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-OFF}
-
 
 ### TPLs --
 ### Make sure these point to the locations to find the libraries and includes in lib and include
@@ -165,6 +165,7 @@ CGNS_PATH=${INSTALL_PATH}
 DATAWAREHOUSE_PATH=${INSTALL_PATH}
 ADIOS2_PATH=${INSTALL_PATH}
 GTEST_PATH=${INSTALL_PATH}
+KOKKOS_PATH=${INSTALL_PATH}
 
 function check_enable()
 {
@@ -183,17 +184,10 @@ HAVE_CGNS=$(check_enable "${CGNS_PATH}/include/cgnslib.h")
 HAVE_DATAWAREHOUSE=OFF
 HAVE_ADIOS2=$(check_enable "${ADIOS2_PATH}/include/adios2.h")
 HAVE_GTEST=$(check_enable "${GTEST_PATH}/include/gtest/gtest.h")
+HAVE_KOKKOS=$(check_enable "${KOKKOS_PATH}/include/Kokkos_Core.hpp")
 
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
-
-### Set to ON to use Kokkos in the Ioss library; otherwise OFF (default)
-KOKKOS=${KOKKOS:-OFF}
-
-CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
-
-### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
-CUDA=${CUDA:-OFF}
 
 # BUG needs to work with cray too.
 if [ "${MPI}" == "ON" ] && [ "${CRAY}" == "ON" ]
@@ -222,37 +216,34 @@ then
    FC=mpif77
 fi
 
-if [ "$KOKKOS" == "ON" ]
+OS=$(uname -s)
+if [ "$SHARED" == "ON" ]
 then
-  if [ "$CUDA" == "ON" ]
-  then
-    export "OMPI_CXX=${SEACAS_SRC_DIR}/packages/kokkos/config/nvcc_wrapper"
-    export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
-    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
-                    -D TPL_ENABLE_CUDA:Bool=ON \
-                    -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} \
-		    -D KOKKOS_ENABLE_DEPRECATED_CODE:BOOL=OFF" \
-                    -D Kokkos_ENABLE_Pthread:BOOL=OFF"
-  else
-    export OMPI_CXX=$(which gcc)
-    unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
-    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
-                    -D SEACASProj_ENABLE_OpenMP:Bool=ON \
-		    -D KOKKOS_ENABLE_DEPRECATED_CODE:BOOL=OFF" \
-                    -D Kokkos_ENABLE_Pthread:BOOL=OFF"
-  fi
+    if [ "$OS" == "Darwin" ] ; then
+	LD_EXT="dylib"
+    else
+	LD_EXT="so"
+    fi
 else
-  KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
+    LD_EXT="a"
 fi
 
-if [ "HAVE_DATAWAREHOUSE" == "ON" ]
+if [ "${HAVE_KOKKOS}" == "ON" ]
+then
+    KOKKOS_SYMBOLS="-DKOKKOS_ROOT:PATH=${KOKKOS_PATH} \
+                    -DKOKKOS_SRC_PATH:PATH=${INSTALL_PATH}/TPL/kokkos/kokkos \
+		    -DTPL_Kokkos_LIBRARY_DIRS:PATH=${KOKKOS_PATH}/lib \
+		    -DTPL_Kokkos_INCLUDE_DIRS:PATH=${KOKKOS_PATH}/include \
+		    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkos.${LD_EXT}"
+fi
+
+if [ "${HAVE_DATAWAREHOUSE}" == "ON" ]
 then
     DW_SYMBOLS="-DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATAWAREHOUSE} \
                 -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
 
-OS=$(uname -s)
 if [ "$OS" == "Darwin" ] ; then
   DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/X11/include"
 else
@@ -289,6 +280,7 @@ ${SUBSET_OPTIONS} \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 -D SEACASProj_ENABLE_DOXYGEN:BOOL=${DOXYGEN} \
+-D SEACASProj_ENABLE_Kokkos:BOOL=${HAVE_KOKKOS} \
 \
 -D SEACASProj_ENABLE_Fortran=${FORTRAN} \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
@@ -303,8 +295,8 @@ ${SUBSET_OPTIONS} \
 -D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
-${MPI_SYMBOLS} \
 ${KOKKOS_SYMBOLS} \
+${MPI_SYMBOLS} \
 ${DW_SYMBOLS} \
 ${DARWIN_OPT} \
 \
@@ -333,9 +325,9 @@ echo " "
 echo "     NETCDF: ${HAVE_NETCDF}"
 echo "      MATIO: ${HAVE_MATIO}"
 echo "       CGNS: ${HAVE_CGNS}"
+echo "     KOKKOS: ${HAVE_KOKKOS}"
 echo "     ADIOS2: ${HAVE_ADIOS2}"
 echo "      GTEST: ${HAVE_GTEST}"
-echo "     KOKKOS: ${KOKKOS}"
 echo "    DOXYGEN: ${DOXYGEN}"
 echo ""
 
