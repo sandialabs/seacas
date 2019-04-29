@@ -111,8 +111,11 @@ SNTools.project
 *ioss.doxygen.warn
 *ioss.tags
 TPL/cgns/CGNS/
+TPL/data-warehouse-release
 TPL/hdf5/hdf5-*.tar.bz2/
 TPL/hdf5/hdf5-*/
+TPL/kokkos/kokkos
+TPL/kokkos/kokkos-*
 TPL/matio/matio/
 TPL/netcdf/netcdf-c/
 TPL/parallel/parallel-*/

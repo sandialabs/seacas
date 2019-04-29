@@ -33,10 +33,11 @@ cd seacas && export ACCESS=`pwd`
 ### Automatically download and build dependencies (Third-Party Libraries)
 
 There are a few externally developed third-party libraries (TPL) that
-are required to build SEACAS: HDF5, NetCDF, CGNS, MatIO, and (if MPI
-set) PnetCDF libraries. You can build the libraries using the
-`install-tpl.sh` script, or you can install them manually as
-detailed in [TPL-Manual-Install.md](TPL-Manual-Install.md).
+are required (or optional) to build SEACAS: HDF5, NetCDF, CGNS, MatIO,
+Kokkos, and (if MPI set) PnetCDF libraries. You can build the
+libraries using the `install-tpl.sh` script, or you can install them
+manually as detailed in
+[TPL-Manual-Install.md](TPL-Manual-Install.md).
 
   * To use the script, simply type `./install-tpl.sh`
   * The default behavior can be modified via a few environment variables:
@@ -51,11 +52,12 @@ detailed in [TPL-Manual-Install.md](TPL-Manual-Install.md).
 | BUILD           | YES, NO | YES | Should TPLs be built and installed. |
 | SHARED          | YES, NO | YES | Build shared libraries is YES, archive (.a) if NO |
 | MPI             | ON, OFF | OFF | If ON, then build parallel capability |
-| CRAY            | YES, NO | NO | Is this a Cray system (special parallel options) |
-| NEEDS_ZLIB      | YES, NO| NO  | If system does not have zlib installed, download and install it. |
+| CRAY            | YES, NO | NO  | Is this a Cray system (special parallel options) |
+| NEEDS_ZLIB      | YES, NO | NO  | If system does not have zlib installed, download and install it. |
 | CGNS            | YES, NO | YES | Should CGNS TPL be built.  |
-| USE\_64BIT\_INT | YES, NO | NO | In CGNS, enable 64-bit integers |
+| USE\_64BIT\_INT | YES, NO | NO  | In CGNS, enable 64-bit integers |
 | MATIO           | YES, NO | YES | Should matio TPL be built. |
+| KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
 | H5VERSION       | V110, V18 | V110 | Use HDF5-1.10.X or HDF5-1.8.X |
 | JOBS            | # | 2 | Used in `make -j #` |
