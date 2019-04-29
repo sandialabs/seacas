@@ -439,7 +439,7 @@ then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf kokkos
 	    wget --no-check-certificate https://github.com/kokkos/kokkos/archive/${kokkos_version}.tar.gz
-            tar -jxf ${kokkos_version}.tar.gz
+            tar -zxf ${kokkos_version}.tar.gz
             rm -f ${kokkos_version}.tar.gz
 	    ln -s kokkos-${kokkos_version} kokkos
 	fi
