@@ -1,7 +1,6 @@
 var annotated_dup =
 [
     [ "anonymous_namespace{cth_pressure_map.C}", "namespaceanonymous__namespace_02cth__pressure__map_8C_03.html", "namespaceanonymous__namespace_02cth__pressure__map_8C_03" ],
-    [ "anonymous_namespace{io_info.C}", "namespaceanonymous__namespace_02io__info_8C_03.html", "namespaceanonymous__namespace_02io__info_8C_03" ],
     [ "anonymous_namespace{io_shell.C}", "namespaceanonymous__namespace_02io__shell_8C_03.html", "namespaceanonymous__namespace_02io__shell_8C_03" ],
     [ "anonymous_namespace{io_shell_ts.C}", "namespaceanonymous__namespace_02io__shell__ts_8C_03.html", "namespaceanonymous__namespace_02io__shell__ts_8C_03" ],
     [ "anonymous_namespace{Iocgns_DatabaseIO.C}", "namespaceanonymous__namespace_02Iocgns__DatabaseIO_8C_03.html", "namespaceanonymous__namespace_02Iocgns__DatabaseIO_8C_03" ],
