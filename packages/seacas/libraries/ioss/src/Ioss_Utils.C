@@ -41,6 +41,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <fmt/format.h>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -1608,11 +1609,11 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     dbi->progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
 
     if (options.verbose && rank == 0) {
-      std::cerr << "Maximum Field size = " << max_field_size << " bytes.\n";
+      fmt::print(stderr, "Maximum Field size = {:n} bytes.\n", max_field_size);
     }
     data_pool.data.resize(max_field_size);
     if (options.verbose && rank == 0) {
-      std::cerr << "Resize finished...\n";
+      fmt::print(stderr, "Resize finished...\n");
     }
 
     if (options.debug && rank == 0) {
@@ -1745,8 +1746,8 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
   if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
     if (options.verbose && rank == 0) {
-      std::cerr << "\n Number of time steps on database     =" << std::setw(14)
-                << region.get_property("state_count").get_int() << "\n\n";
+      fmt::print(stderr, "\nNumber of time steps on database = {}\n\n",
+                 region.get_property("state_count").get_int());
     }
 
     output_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
@@ -1921,8 +1922,8 @@ namespace {
       size_t num_nodes = inb->entity_count();
       size_t degree    = inb->get_property("component_degree").get_int();
       if (options.verbose && rank == 0) {
-        std::cerr << " Number of  Coordinates per Node =" << std::setw(14) << degree << "\n";
-        std::cerr << " Number of                 Nodes =" << std::setw(14) << num_nodes << "\n";
+        fmt::print(stderr, " Number of Coordinates per Node = {:14n}\n", degree);
+        fmt::print(stderr, " Number of Nodes                = {:14n}\n", num_nodes);
       }
       auto nb = new Ioss::NodeBlock(output_region.get_database(), name, num_nodes, degree);
       output_region.add(nb);
@@ -2017,12 +2018,10 @@ namespace {
         transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (options.verbose && rank == 0) {
-        std::cerr << " Number of " << std::right << std::setw(20)
-                  << (*blocks.begin())->type_string() << "s =" << std::setw(14) << blocks.size()
-                  << "\n"
-                  << " Number of " << std::right << std::setw(20)
-                  << (*blocks.begin())->contains_string() << "s =" << std::setw(14)
-                  << total_entities << "\n";
+        fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*blocks.begin())->type_string() + "s",
+                   blocks.size());
+        fmt::print(stderr, " Number of {:20s} = {:14n}\n",
+                   (*blocks.begin())->contains_string() + "s", total_entities);
       }
       if (options.debug && rank == 0) {
         std::cerr << '\n';
@@ -2051,12 +2050,10 @@ namespace {
         transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (options.verbose && rank == 0) {
-        std::cerr << " Number of " << std::right << std::setw(20)
-                  << (*blocks.begin())->type_string() << "s =" << std::setw(14) << blocks.size()
-                  << "\n"
-                  << " Number of " << std::right << std::setw(20)
-                  << (*blocks.begin())->contains_string() << "s =" << std::setw(14)
-                  << total_entities << "\n";
+        fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*blocks.begin())->type_string() + "s",
+                   blocks.size());
+        fmt::print(stderr, " Number of {:20s} = {:14n}\n",
+                   (*blocks.begin())->contains_string() + "s", total_entities);
       }
       if (options.debug && rank == 0) {
         std::cerr << '\n';
@@ -2127,10 +2124,10 @@ namespace {
       output_region.add(surf);
     }
     if (options.verbose && rank == 0 && !fss.empty()) {
-      std::cerr << " Number of " << std::right << std::setw(20) << (*fss.begin())->type_string()
-                << "s =" << std::setw(14) << fss.size() << "\n"
-                << " Number of " << std::right << std::setw(20) << (*fss.begin())->contains_string()
-                << "s =" << std::setw(14) << total_sides << "\n";
+      fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*fss.begin())->type_string() + "s",
+                 fss.size());
+      fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*fss.begin())->contains_string() + "s",
+                 total_sides);
     }
     if (options.debug && rank == 0) {
       std::cerr << '\n';
@@ -2158,9 +2155,9 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        std::cerr << " Number of " << std::right << std::setw(20) << (*sets.begin())->type_string()
-                  << "s            =" << std::setw(14) << sets.size() << "\t"
-                  << "Length of entity list   =" << std::setw(14) << total_entities << "\n";
+        fmt::print(stderr, " Number of {:20s} = {:14n}", (*sets.begin())->type_string() + "s",
+                   sets.size());
+        fmt::print(stderr, "\tLength of entity list = {:14n}\n", total_entities);
       }
       if (options.debug && rank == 0) {
         std::cerr << '\n';
@@ -2562,10 +2559,7 @@ namespace {
   void show_step(int istep, double time, const Ioss::MeshCopyOptions &options, int rank)
   {
     if (options.verbose && rank == 0) {
-      std::cerr.setf(std::ios::scientific);
-      std::cerr.setf(std::ios::showpoint);
-      std::cerr << "\r\tTime step " << std::setw(5) << istep << " at time " << std::setprecision(5)
-                << time;
+      fmt::print(stderr, "\r\tTime step {:5d} at time {:10.5e}", istep, time);
     }
   }
 

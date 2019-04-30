@@ -32,6 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "fmt/format.h"
 #include "io_info.h"
 
 // ========================================================================
@@ -63,8 +64,7 @@ int main(int argc, char *argv[])
     codename = codename.substr(ind + 1, codename.size());
   }
 
-  OUTPUT << "Input:    '" << interface.filename() << "', Type: " << interface.type() << '\n';
-  OUTPUT << '\n';
+  fmt::print("Input: '{}', Type: {}\n\n", interface.filename(), interface.type());
 
   if (interface.list_groups()) {
     Ioss::io_info_group_info(interface);
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     Ioss::io_info_file_info(interface);
   }
 
-  OUTPUT << "\n" << codename << " execution successful.\n";
+  fmt::print("\n{} execution successful.\n", codename);
 #ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
