@@ -99,8 +99,7 @@ namespace Ioss {
                "zones.back()->m_zoneConnectivity.emplace_back(\n"
                "\"{0}\", zones.back()->m_zone, \"zone{1}\", {1}, "
                "Ioss::IJK_t{{{2}, {3}, {4}}}, Ioss::IJK_t{{{5}, {6}, {7}}},  Ioss::IJK_t{{{8}, "
-               "{9}, {10}}}, "
-               "Ioss::IJK_t{{{11}, {12}, {13}}}, Ioss::IJK_t{{{14}, {15}, {16}}});",
+               "{9}, {10}}}, Ioss::IJK_t{{{11}, {12}, {13}}}, Ioss::IJK_t{{{14}, {15}, {16}}});",
                zgc.m_connectionName, zgc.m_donorZone, zgc.m_transform[0], zgc.m_transform[1],
                zgc.m_transform[2], zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeBeg[1],
                zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[0], zgc.m_ownerRangeEnd[1],
