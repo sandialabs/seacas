@@ -419,6 +419,61 @@ Ioss::MeshType Iocgns::Utils::check_mesh_type(int cgns_file_ptr)
   }
 }
 
+void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Region *region,
+					    int myProcessor)
+{
+  // If an output file is closed/opened, make sure that the zones in the Region
+  // match the zones on the database (file). CGNS likes to sort the zones, so they
+  // might be in a different order after reopening.  Update the 'db_zone_id' property...
+  int num_zones = 0;
+  int base      = 1;
+  CGCHECK(cg_nzones(cgns_file_ptr, base, &num_zones));
+
+  // Read each zone and put names in a map indexed by zone id.
+  // Then iterate all of the region's structured blocks and element blocks
+  // and make sure that the zone exists in the map and then update the 'db_zone'
+  std::map<std::string, int> zones;
+
+  for (int zone = 1; zone <= num_zones; zone++) {
+    cgsize_t size[9];
+    char     zname[CGNS_MAX_NAME_LENGTH + 1];
+    CGCHECK(cg_zone_read(cgns_file_ptr, base, zone, zname, size));
+    zones[std::string(zname)] = zone;
+  }
+
+  const auto &sblocks = region->get_structured_blocks();
+  for (const auto &block : sblocks) {
+    const std::string &name = block->name();
+    auto iter = zones.find(name);
+    if (iter != zones.end()) {
+      auto db_zone = (*iter).second;
+      block->property_update("db_zone", db_zone);
+    }
+    else {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: CGNS: Structured Block " << name
+	     << " was not found on the CGNS database on processor " << myProcessor;
+      IOSS_ERROR(errmsg);
+    }
+  }
+
+  const auto &eblocks = region->get_element_blocks();
+  for (const auto &block : eblocks) {
+    const std::string &name = block->name();
+    auto iter = zones.find(name);
+    if (iter != zones.end()) {
+      auto db_zone = (*iter).second;
+      block->property_update("db_zone", db_zone);
+    }
+    else {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: CGNS: Element Block " << name
+	     << " was not found on the CGNS database on processor " << myProcessor;
+      IOSS_ERROR(errmsg);
+    }
+  }
+}
+
 int Iocgns::Utils::get_db_zone(const Ioss::EntityBlock *block)
 {
   // Returns the zone of the entity as it appears on the cgns database.
