@@ -194,16 +194,37 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   }
 
   /* Generate a QA record for the utility */
-  char lqa_record[4][MAX_STR_LENGTH + 1];
+  time_t time_val = time(nullptr);
+  char * ct_ptr   = asctime(localtime(&time_val));
+  char   tm_date[30];
+  copy_string(tm_date, ct_ptr);
 
-  copy_string(lqa_record[0], UTIL_NAME, MAX_STR_LENGTH + 1);
-  copy_string(lqa_record[1], ELB_VERSION, MAX_STR_LENGTH + 1);
+  /* Break string with null characters */
+  tm_date[3]  = '\0';
+  tm_date[7]  = '\0';
+  tm_date[10] = '\0';
+  tm_date[19] = '\0';
 
-  time_t     calendar_time = time(nullptr);
-  struct tm *local_time    = localtime(&calendar_time);
+  char qa_date[15], qa_time[10], qa_name[MAX_STR_LENGTH];
+  char qa_vers[10];
 
-  strftime(lqa_record[3], MAX_STR_LENGTH, "%H:%M:%S", local_time);
-  strftime(lqa_record[2], MAX_STR_LENGTH, "%Y/%m/%d", local_time);
+  sprintf(qa_date, "%s %s %s", &tm_date[8], &tm_date[4], &tm_date[20]);
+  sprintf(qa_time, "%s", &tm_date[11]);
+  copy_string(qa_name, UTIL_NAME);
+  copy_string(qa_vers, ELB_VERSION);
+
+  if (qa_date[strlen(qa_date) - 1] == '\n') {
+    qa_date[strlen(qa_date) - 1] = '\0';
+  }
+  char **lqa_record = reinterpret_cast<char **>(array_alloc(1, 4, sizeof(char *)));
+  for (int i2 = 0; i2 < 4; i2++) {
+    lqa_record[i2] = reinterpret_cast<char *>(array_alloc(1, MAX_STR_LENGTH + 1, sizeof(char)));
+  }
+
+  copy_string(lqa_record[0], qa_name, MAX_STR_LENGTH + 1);
+  copy_string(lqa_record[1], qa_vers, MAX_STR_LENGTH + 1);
+  copy_string(lqa_record[2], qa_date, MAX_STR_LENGTH + 1);
+  copy_string(lqa_record[3], qa_time, MAX_STR_LENGTH + 1);
 
   printf("QA Record:\n");
   for (int i2 = 0; i2 < 4; i2++) {
@@ -214,6 +235,13 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
     Gen_Error(0, "fatal: unable to output QA records");
     return 0;
   }
+
+  /* free up memory */
+  for (int i2 = 0; i2 < 4; i2++) {
+    free(lqa_record[i2]);
+  }
+
+  free(lqa_record);
 
   /* Output the the initial Nemesis global information */
   if (ex_put_init_global(exoid, mesh->num_nodes, mesh->num_elems, mesh->num_el_blks, 0, 0) < 0) {
