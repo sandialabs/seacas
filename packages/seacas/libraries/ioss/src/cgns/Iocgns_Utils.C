@@ -57,6 +57,7 @@
 #include <Ioss_Wedge18.h>
 #include <Ioss_Wedge6.h>
 
+#include <tokenize.h>
 #include <numeric>
 #include <set>
 
@@ -77,6 +78,29 @@
   }
 
 namespace {
+  std::pair<std::string, int> decompose_name(const std::string &name, bool is_parallel)
+  {
+    int         proc = 0;
+    std::string zname{name};
+
+    if (is_parallel) {
+      // Name should/might be of the form `basename_proc-#`.  Strip
+      // off the `_proc-#` portion and return just the basename.
+      auto tokens = Ioss::tokenize(zname, "_");
+      zname       = tokens[0];
+      if (tokens.size() >= 2) {
+        size_t idx = tokens.size() - 1;
+        if (tokens[idx].substr(0, 5) == "proc-") {
+          auto ptoken = Ioss::tokenize(tokens[idx], "-");
+          proc        = std::stoi(ptoken[1]);
+          idx--;
+          zname = tokens[idx];
+        }
+      }
+    }
+    return std::make_pair(zname, proc);
+  }
+
   int power_2(int count)
   {
     // Return the maximum power of two which is less than or equal to 'count'
@@ -420,7 +444,7 @@ Ioss::MeshType Iocgns::Utils::check_mesh_type(int cgns_file_ptr)
 }
 
 void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Region *region,
-					    int myProcessor)
+					    int myProcessor, bool is_parallel)
 {
   // If an output file is closed/opened, make sure that the zones in the Region
   // match the zones on the database (file). CGNS likes to sort the zones, so they
@@ -438,7 +462,8 @@ void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Regio
     cgsize_t size[9];
     char     zname[CGNS_MAX_NAME_LENGTH + 1];
     CGCHECK(cg_zone_read(cgns_file_ptr, base, zone, zname, size));
-    zones[std::string(zname)] = zone;
+    auto name_proc = decompose_name(std::string(zname), is_parallel);
+    zones[name_proc.first] = zone;
   }
 
   const auto &sblocks = region->get_structured_blocks();
