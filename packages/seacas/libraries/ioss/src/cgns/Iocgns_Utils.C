@@ -443,17 +443,19 @@ void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Regio
 
   const auto &sblocks = region->get_structured_blocks();
   for (const auto &block : sblocks) {
-    const std::string &name = block->name();
-    auto iter = zones.find(name);
-    if (iter != zones.end()) {
-      auto db_zone = (*iter).second;
-      block->property_update("db_zone", db_zone);
-    }
-    else {
-      std::ostringstream errmsg;
-      errmsg << "ERROR: CGNS: Structured Block " << name
-	     << " was not found on the CGNS database on processor " << myProcessor;
-      IOSS_ERROR(errmsg);
+    if (block->is_active()) {
+      const std::string &name = block->name();
+      auto iter = zones.find(name);
+      if (iter != zones.end()) {
+	auto db_zone = (*iter).second;
+	block->property_update("db_zone", db_zone);
+      }
+      else {
+	std::ostringstream errmsg;
+	errmsg << "ERROR: CGNS: Structured Block " << name
+	       << " was not found on the CGNS database on processor " << myProcessor;
+	IOSS_ERROR(errmsg);
+      }
     }
   }
 
