@@ -285,7 +285,7 @@ namespace Iocgns {
       }
 
       if (mode == CG_MODE_MODIFY) {
-        Utils::update_db_zone_property(m_cgnsFilePtr, get_region(), myProcessor, false);
+        Utils::update_db_zone_property(m_cgnsFilePtr, get_region(), myProcessor, true, true);
       }
 #if 0
       // This isn't currently working since CGNS currently has chunking
@@ -609,6 +609,7 @@ namespace Iocgns {
 
         block->property_add(Ioss::Property("base", base));
         block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
+        block->property_add(Ioss::Property("db_zone", zone->m_adam->m_zone));
         block->property_add(Ioss::Property("id", zone->m_adam->m_zone));
         int64_t guid = util().generate_guid(zone->m_adam->m_zone);
         block->property_add(Ioss::Property("guid", guid));
@@ -1010,7 +1011,7 @@ namespace Iocgns {
     // For HDF5 files, it looks like we need to close the database between
     // writes if we want to have a valid database for external access or
     // to protect against a crash corrupting the file.
-    Utils::finalize_database(get_file_pointer(), m_timesteps, get_region(), myProcessor, false);
+    Utils::finalize_database(get_file_pointer(), m_timesteps, get_region(), myProcessor, true);
     closeDatabase__();
     m_cgnsFilePtr = -2; // Tell openDatabase__ that we want to append
   }
@@ -2002,7 +2003,7 @@ namespace Iocgns {
   {
     Ioss::Field::RoleType role = field.get_role();
     cgsize_t              base = sb->get_property("base").get_int();
-    cgsize_t              zone = sb->get_property("zone").get_int();
+    cgsize_t              zone = Iocgns::Utils::get_db_zone(sb);
 
     cgsize_t num_to_get = field.verify(data_size);
 

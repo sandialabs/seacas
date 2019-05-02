@@ -444,7 +444,7 @@ Ioss::MeshType Iocgns::Utils::check_mesh_type(int cgns_file_ptr)
 }
 
 void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Region *region,
-                                            int myProcessor, bool is_parallel)
+                                            int myProcessor, bool is_parallel, bool is_parallel_io)
 {
   // If an output file is closed/opened, make sure that the zones in the Region
   // match the zones on the database (file). CGNS likes to sort the zones, so they
@@ -462,13 +462,13 @@ void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Regio
     cgsize_t size[9];
     char     zname[CGNS_MAX_NAME_LENGTH + 1];
     CGCHECK(cg_zone_read(cgns_file_ptr, base, zone, zname, size));
-    auto name_proc         = decompose_name(std::string(zname), is_parallel);
+    auto name_proc         = decompose_name(std::string(zname), is_parallel && !is_parallel_io);
     zones[name_proc.first] = zone;
   }
 
   const auto &sblocks = region->get_structured_blocks();
   for (const auto &block : sblocks) {
-    if (block->is_active()) {
+    if (is_parallel_io || block->is_active()) {
       const std::string &name = block->name();
       auto               iter = zones.find(name);
       if (iter != zones.end()) {
