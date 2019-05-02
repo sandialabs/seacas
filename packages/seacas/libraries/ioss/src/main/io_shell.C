@@ -288,6 +288,7 @@ namespace {
       options.maximum_time      = interface.maximum_time;
       options.data_storage_type = interface.data_storage_type;
       options.delay             = interface.timestep_delay;
+      options.reverse           = interface.reverse;
 
       size_t ts_count = 0;
       if (region.property_exists("state_count") &&
