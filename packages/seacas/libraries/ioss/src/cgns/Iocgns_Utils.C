@@ -827,6 +827,23 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   CGERR(cg_goto(file_ptr, base, "end"));
   std::string version = "IOSS: CGNS Writer version " + std::string{__DATE__} + ", " +
                         Ioss::Utils::platform_information();
+
+#ifdef SEACAS_HAVE_MPI
+  if (is_parallel_io) {
+    // Need to make sure the version string is the same on all
+    // processors since they are all writing to the same file.  There
+    // was a difficult to track bug in which the
+    // platform_information() contained different node info ("ser9"
+    // and "ser43") on certain ranks which caused an HDF5 failure way
+    // downstream -- basically at file close.
+    char tmp[2048];
+    Ioss::Utils::copy_string(tmp, version.c_str(), 2048);
+    MPI_Bcast(tmp, (int)version.size()+1, MPI_BYTE, 0,
+              region.get_database()->util().communicator());
+    version = std::string{tmp};
+  }
+#endif
+
   CGERR(cg_descriptor_write("Information", version.c_str()));
   CGERR(cg_goto(file_ptr, base, "end"));
   CGERR(cg_dataclass_write(CGNS_ENUMV(Dimensional)));
