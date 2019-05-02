@@ -57,9 +57,9 @@
 #include <Ioss_Wedge18.h>
 #include <Ioss_Wedge6.h>
 
-#include <tokenize.h>
 #include <numeric>
 #include <set>
+#include <tokenize.h>
 
 #include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>
@@ -444,7 +444,7 @@ Ioss::MeshType Iocgns::Utils::check_mesh_type(int cgns_file_ptr)
 }
 
 void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Region *region,
-					    int myProcessor, bool is_parallel)
+                                            int myProcessor, bool is_parallel)
 {
   // If an output file is closed/opened, make sure that the zones in the Region
   // match the zones on the database (file). CGNS likes to sort the zones, so they
@@ -462,7 +462,7 @@ void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Regio
     cgsize_t size[9];
     char     zname[CGNS_MAX_NAME_LENGTH + 1];
     CGCHECK(cg_zone_read(cgns_file_ptr, base, zone, zname, size));
-    auto name_proc = decompose_name(std::string(zname), is_parallel);
+    auto name_proc         = decompose_name(std::string(zname), is_parallel);
     zones[name_proc.first] = zone;
   }
 
@@ -470,16 +470,16 @@ void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Regio
   for (const auto &block : sblocks) {
     if (block->is_active()) {
       const std::string &name = block->name();
-      auto iter = zones.find(name);
+      auto               iter = zones.find(name);
       if (iter != zones.end()) {
-	auto db_zone = (*iter).second;
-	block->property_update("db_zone", db_zone);
+        auto db_zone = (*iter).second;
+        block->property_update("db_zone", db_zone);
       }
       else {
-	std::ostringstream errmsg;
-	errmsg << "ERROR: CGNS: Structured Block " << name
-	       << " was not found on the CGNS database on processor " << myProcessor;
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Structured Block " << name
+               << " was not found on the CGNS database on processor " << myProcessor;
+        IOSS_ERROR(errmsg);
       }
     }
   }
@@ -487,7 +487,7 @@ void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Regio
   const auto &eblocks = region->get_element_blocks();
   for (const auto &block : eblocks) {
     const std::string &name = block->name();
-    auto iter = zones.find(name);
+    auto               iter = zones.find(name);
     if (iter != zones.end()) {
       auto db_zone = (*iter).second;
       block->property_update("db_zone", db_zone);
@@ -495,7 +495,7 @@ void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Regio
     else {
       std::ostringstream errmsg;
       errmsg << "ERROR: CGNS: Element Block " << name
-	     << " was not found on the CGNS database on processor " << myProcessor;
+             << " was not found on the CGNS database on processor " << myProcessor;
       IOSS_ERROR(errmsg);
     }
   }
@@ -1070,26 +1070,26 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
                   break;
                 }
               }
-	      if (connect_name == zgc.m_connectionName) {
-		bool done = false;
-		for (char c1 = 'A'; c1 <= 'Z' && !done; c1++) {
-		  for (char c2 = 'A'; c2 <= 'Z' && !done; c2++) {
-		    std::string potential = connect_name + c1 + c2;
-		    iter                  = zgc_names.insert(potential);
-		    if (iter.second) {
-		      connect_name = potential;
-		      done = true;
-		    }
-		  }
-		}
-		if (connect_name == zgc.m_connectionName) {
-		  std::ostringstream errmsg;
-		  errmsg << "ERROR: CGNS: Duplicate ZGC Name '" << zgc.m_connectionName
-			 << "' on zone '" << sb->name() << "', processor "
-			 << zgc.m_ownerProcessor << "\n";
-		  IOSS_ERROR(errmsg);
-		}
-	      }
+              if (connect_name == zgc.m_connectionName) {
+                bool done = false;
+                for (char c1 = 'A'; c1 <= 'Z' && !done; c1++) {
+                  for (char c2 = 'A'; c2 <= 'Z' && !done; c2++) {
+                    std::string potential = connect_name + c1 + c2;
+                    iter                  = zgc_names.insert(potential);
+                    if (iter.second) {
+                      connect_name = potential;
+                      done         = true;
+                    }
+                  }
+                }
+                if (connect_name == zgc.m_connectionName) {
+                  std::ostringstream errmsg;
+                  errmsg << "ERROR: CGNS: Duplicate ZGC Name '" << zgc.m_connectionName
+                         << "' on zone '" << sb->name() << "', processor " << zgc.m_ownerProcessor
+                         << "\n";
+                  IOSS_ERROR(errmsg);
+                }
+              }
             }
           }
           donor_name += "_proc-";
@@ -2075,8 +2075,8 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
     splits[i] = splits[i] == 0 ? 1 : splits[i];
   }
 
-  int num_splits = std::accumulate(splits.begin(), splits.end(), 0);
-  int diff       = proc_count - num_splits;
+  int  num_splits        = std::accumulate(splits.begin(), splits.end(), 0);
+  int  diff              = proc_count - num_splits;
   bool adjustment_needed = diff > 0;
 
   while (diff != 0) {
@@ -2117,13 +2117,13 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
       auto   zone = zones[i];
       double work = zone->work();
       if (splits[i] == 0) {
-	adaptive_avg = false;
-	break;
+        adaptive_avg = false;
+        break;
       }
       double zone_avg = work / (double)splits[i];
       if (zone_avg < min_avg || zone_avg > max_avg) {
-	adaptive_avg = false;
-	break;
+        adaptive_avg = false;
+        break;
       }
     }
   }

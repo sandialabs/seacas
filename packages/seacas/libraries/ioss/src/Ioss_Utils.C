@@ -2036,41 +2036,41 @@ namespace {
     if (!blocks.empty()) {
       size_t total_entities = 0;
       if (options.reverse) {
-	// Defines the CGNS zones in the reverse order they
-	// were read from the input mesh.  This is used in
-	// testing to verify that we handle zone reordering
-	// correctly.
-	for (int i=blocks.size()-1; i >= 0; i--) {
-	  const auto &iblock = blocks[i];
-	  const std::string &name = iblock->name();
-	  if (options.debug && rank == 0) {
-	    std::cerr << name << ", ";
-	  }
-	  size_t count = iblock->entity_count();
-	  total_entities += count;
+        // Defines the CGNS zones in the reverse order they
+        // were read from the input mesh.  This is used in
+        // testing to verify that we handle zone reordering
+        // correctly.
+        for (int i = blocks.size() - 1; i >= 0; i--) {
+          const auto &       iblock = blocks[i];
+          const std::string &name   = iblock->name();
+          if (options.debug && rank == 0) {
+            std::cerr << name << ", ";
+          }
+          size_t count = iblock->entity_count();
+          total_entities += count;
 
-	  auto block = iblock->clone(output_region.get_database());
-	  output_region.add(block);
-	  transfer_properties(iblock, block);
-	  transfer_fields(iblock, block, Ioss::Field::MESH);
-	  transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
-	}
+          auto block = iblock->clone(output_region.get_database());
+          output_region.add(block);
+          transfer_properties(iblock, block);
+          transfer_fields(iblock, block, Ioss::Field::MESH);
+          transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
+        }
       }
       else {
-	for (const auto &iblock : blocks) {
-	  const std::string &name = iblock->name();
-	  if (options.debug && rank == 0) {
-	    std::cerr << name << ", ";
-	  }
-	  size_t count = iblock->entity_count();
-	  total_entities += count;
+        for (const auto &iblock : blocks) {
+          const std::string &name = iblock->name();
+          if (options.debug && rank == 0) {
+            std::cerr << name << ", ";
+          }
+          size_t count = iblock->entity_count();
+          total_entities += count;
 
-	  auto block = iblock->clone(output_region.get_database());
-	  output_region.add(block);
-	  transfer_properties(iblock, block);
-	  transfer_fields(iblock, block, Ioss::Field::MESH);
-	  transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
-	}
+          auto block = iblock->clone(output_region.get_database());
+          output_region.add(block);
+          transfer_properties(iblock, block);
+          transfer_fields(iblock, block, Ioss::Field::MESH);
+          transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
+        }
       }
 
       if (options.verbose && rank == 0) {

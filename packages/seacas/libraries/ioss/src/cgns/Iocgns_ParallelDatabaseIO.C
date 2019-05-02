@@ -285,7 +285,7 @@ namespace Iocgns {
       }
 
       if (mode == CG_MODE_MODIFY) {
-	Utils::update_db_zone_property(m_cgnsFilePtr, get_region(), myProcessor, false);
+        Utils::update_db_zone_property(m_cgnsFilePtr, get_region(), myProcessor, false);
       }
 #if 0
       // This isn't currently working since CGNS currently has chunking

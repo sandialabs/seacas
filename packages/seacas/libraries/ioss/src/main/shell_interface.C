@@ -329,9 +329,9 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     exit(0);
   }
 
-  ints_64_bit = (options_.retrieve("64-bit") != nullptr);
-  ints_32_bit = (options_.retrieve("32-bit") != nullptr);
-  reals_32_bit= (options_.retrieve("float") != nullptr);
+  ints_64_bit  = (options_.retrieve("64-bit") != nullptr);
+  ints_32_bit  = (options_.retrieve("32-bit") != nullptr);
+  reals_32_bit = (options_.retrieve("float") != nullptr);
 
   if (options_.retrieve("netcdf4") != nullptr) {
     netcdf4 = true;
@@ -419,16 +419,16 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     decomp_method = "EXTERNAL";
   }
 
-  minimize_open_files = (options_.retrieve("minimize_open_files") != nullptr);
-  debug = (options_.retrieve("debug") != nullptr);
-  file_per_state = (options_.retrieve("file_per_state") != nullptr);
-  reverse = (options_.retrieve("reverse") != nullptr);
-  quiet = (options_.retrieve("quiet") != nullptr);
-  statistics = (options_.retrieve("statistics") != nullptr);
-  memory_statistics = (options_.retrieve("memory_statistics") != nullptr);
-  in_memory_read = (options_.retrieve("memory_read") != nullptr);
-  in_memory_write = (options_.retrieve("memory_write") != nullptr);
-  delete_timesteps = (options_.retrieve("delete_timesteps") != nullptr);
+  minimize_open_files       = (options_.retrieve("minimize_open_files") != nullptr);
+  debug                     = (options_.retrieve("debug") != nullptr);
+  file_per_state            = (options_.retrieve("file_per_state") != nullptr);
+  reverse                   = (options_.retrieve("reverse") != nullptr);
+  quiet                     = (options_.retrieve("quiet") != nullptr);
+  statistics                = (options_.retrieve("statistics") != nullptr);
+  memory_statistics         = (options_.retrieve("memory_statistics") != nullptr);
+  in_memory_read            = (options_.retrieve("memory_read") != nullptr);
+  in_memory_write           = (options_.retrieve("memory_write") != nullptr);
+  delete_timesteps          = (options_.retrieve("delete_timesteps") != nullptr);
   lower_case_variable_names = (options_.retrieve("native_variable_names") == nullptr);
   disable_field_recognition = (options_.retrieve("disable_field_recognition") != nullptr);
 
