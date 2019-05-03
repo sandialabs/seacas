@@ -118,7 +118,10 @@ void SystemInterface::enroll_options()
                   "Maximum distance between two nodes to be considered colocated.", nullptr);
 
   options_.enroll("offset", GetLongOption::MandatoryValue,
-                  "Comma-separated x,y,z offset for coordinates of second mesh.", nullptr);
+                  "Comma-separated x,y,z offset for coordinates of second and subsequent meshes.\n"
+                  "\t\tThe offset will be multiplied by the part number-1 so:\n"
+                  "\t\tP1: no offset; P2: 1x, 1y, 1z; P3: 2x, 2y, 2z; P(n+1): nx, ny, nz",
+                  nullptr);
 
   options_.enroll("steps", GetLongOption::MandatoryValue,
                   "Specify subset of timesteps to transfer to output file.\n"
