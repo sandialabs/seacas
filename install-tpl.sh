@@ -248,7 +248,7 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
-        pnet_version="1.11.0"
+        pnet_version="1.11.1"
 	pnet_base="pnetcdf"
 	#      pnet_version="1.11.1"
 	#      pnet_base="parallel-netcdf"
