@@ -23,7 +23,7 @@ class formatbuf : public std::basic_streambuf<Char> {
   basic_buffer<Char> &buffer_;
 
  public:
-  formatbuf(basic_buffer<Char> &buffer) : buffer_(buffer) {}
+  formatbuf(basic_buffer<Char> &buf) : buffer_(buf) {}
 
  protected:
   // The put-area is actually always empty. This makes the implementation
@@ -74,26 +74,26 @@ class is_streamable {
 // Write the content of buf to os.
 template <typename Char>
 void write(std::basic_ostream<Char> &os, basic_buffer<Char> &buf) {
-  const Char *data = buf.data();
+  const Char *buf_data = buf.data();
   typedef std::make_unsigned<std::streamsize>::type UnsignedStreamSize;
   UnsignedStreamSize size = buf.size();
   UnsignedStreamSize max_size =
       internal::to_unsigned((std::numeric_limits<std::streamsize>::max)());
   do {
     UnsignedStreamSize n = size <= max_size ? size : max_size;
-    os.write(data, static_cast<std::streamsize>(n));
-    data += n;
+    os.write(buf_data, static_cast<std::streamsize>(n));
+    buf_data += n;
     size -= n;
   } while (size != 0);
 }
 
 template <typename Char, typename T>
-void format_value(basic_buffer<Char> &buffer, const T &value) {
-  internal::formatbuf<Char> format_buf(buffer);
+void format_value(basic_buffer<Char> &buf, const T &value) {
+  internal::formatbuf<Char> format_buf(buf);
   std::basic_ostream<Char> output(&format_buf);
   output.exceptions(std::ios_base::failbit | std::ios_base::badbit);
   output << value;
-  buffer.resize(buffer.size());
+  buf.resize(buf.size());
 }
 }  // namespace internal
 
