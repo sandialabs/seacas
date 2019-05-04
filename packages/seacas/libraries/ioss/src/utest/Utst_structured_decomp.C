@@ -910,6 +910,7 @@ TEST_CASE("LotsOfZones", "[LotsOfZones]")
   }
   cleanup(zones);
 }
+#if 0
 TEST_CASE("herron-dutton", "[herron-dutton_zgc]")
 {
   int                                       zone = 1;
@@ -44601,3 +44602,4 @@ TEST_CASE("Rocket-1496", "[rocket-1496_zgc]")
   }
   cleanup(zones);
 }
+#endif
