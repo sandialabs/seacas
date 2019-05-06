@@ -111,6 +111,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a66b786e71ca42daeea6f887227210b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34010e9b0618c248e1df20ff38800bda"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda">cgns_error</a> (int cgnsid, const char *file, const char *function, int lineno, int processor)</td></tr>
 <tr class="separator:a34010e9b0618c248e1df20ff38800bda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a939c57c37f74ae2290e906a723c4290e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a939c57c37f74ae2290e906a723c4290e">update_db_zone_property</a> (int cgns_file_ptr, const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, int myProcessor, bool is_parallel, bool is_parallel_io)</td></tr>
+<tr class="separator:a939c57c37f74ae2290e906a723c4290e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad75ee7ac23c7c75a2a266f35cd73d364"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ad75ee7ac23c7c75a2a266f35cd73d364">get_db_zone</a> (const <a class="el" href="classIoss_1_1EntityBlock.html">Ioss::EntityBlock</a> *block)</td></tr>
 <tr class="separator:ad75ee7ac23c7c75a2a266f35cd73d364"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9c598aeee7b2aa7a9c8f210616239a2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ad9c598aeee7b2aa7a9c8f210616239a2">set_field_index</a> (const <a class="el" href="classIoss_1_1Field.html">Ioss::Field</a> &amp;field, size_t <a class="el" href="classIocgns_1_1Utils.html#a66b786e71ca42daeea6f887227210b8c">index</a>, CG_GridLocation_t location)</td></tr>
@@ -1164,6 +1166,60 @@ template&lt;typename INT &gt; </div>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a939c57c37f74ae2290e906a723c4290e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a939c57c37f74ae2290e906a723c4290e">&#9670;&nbsp;</a></span>update_db_zone_property()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::Utils::update_db_zone_property </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cgns_file_ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *&#160;</td>
+          <td class="paramname"><em>region</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>myProcessor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_parallel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_parallel_io</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
