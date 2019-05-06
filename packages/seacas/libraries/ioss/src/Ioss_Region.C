@@ -432,21 +432,21 @@ namespace Ioss {
         strm,
         "\n Database: {}\n"
         " Mesh Type = {}\n\n"
-        " Number of coordinates per node   = {12d}\n"
-        " Number of nodes                  = {12d}\n"
-        " Number of edges                  = {12d}\n"
-        " Number of faces                  = {12d}\n"
-        " Number of elements               = {12d}\n"
-        " Number of node blocks            = {12d}\n"
-        " Number of edge blocks            = {12d}\n"
-        " Number of face blocks            = {12d}\n"
-        " Number of element blocks         = {12d}\n"
-        " Number of structured blocks      = {12d}\n"
-        " Number of node sets              = {12d}\n"
-        " Number of edge sets              = {12d}\n"
-        " Number of face sets              = {12d}\n"
-        " Number of element sets           = {12d}\n"
-        " Number of element side sets      = {12d}\n\n",
+        " Number of coordinates per node   = {:12d}\n"
+        " Number of nodes                  = {:12d}\n"
+        " Number of edges                  = {:12d}\n"
+        " Number of faces                  = {:12d}\n"
+        " Number of elements               = {:12d}\n"
+        " Number of node blocks            = {:12d}\n"
+        " Number of edge blocks            = {:12d}\n"
+        " Number of face blocks            = {:12d}\n"
+        " Number of element blocks         = {:12d}\n"
+        " Number of structured blocks      = {:12d}\n"
+        " Number of node sets              = {:12d}\n"
+        " Number of edge sets              = {:12d}\n"
+        " Number of face sets              = {:12d}\n"
+        " Number of element sets           = {:12d}\n"
+        " Number of element side sets      = {:12d}\n\n",
         get_database()->get_filename(), mesh_type_string(),
         get_property("spatial_dimension").get_int(), get_property("node_count").get_int(),
         get_property("edge_count").get_int(), get_property("face_count").get_int(),
@@ -458,11 +458,11 @@ namespace Ioss {
         get_property("element_set_count").get_int(), get_property("side_set_count").get_int());
 
     if (do_transient && get_property("state_count").get_int() > 0) {
-      fmt::print(strm, " Number of global variables       = {12d}\n", field_count());
+      fmt::print(strm, " Number of global variables       = {:12d}\n", field_count());
       {
         Ioss::NameList names;
         nodeBlocks[0]->field_describe(Ioss::Field::TRANSIENT, &names);
-        fmt::print(strm, " Number of nodal variables        = {12d}\n", names.size());
+        fmt::print(strm, " Number of nodal variables        = {:12d}\n", names.size());
       }
 
       {
@@ -472,7 +472,7 @@ namespace Ioss {
           block->field_describe(Ioss::Field::TRANSIENT, &names);
         }
         Ioss::Utils::uniquify(names);
-        fmt::print(strm, " Number of element variables      = {12d}\n", names.size());
+        fmt::print(strm, " Number of element variables      = {:12d}\n", names.size());
       }
 
       {
@@ -482,7 +482,7 @@ namespace Ioss {
           block->field_describe(Ioss::Field::TRANSIENT, &names);
         }
         Ioss::Utils::uniquify(names);
-        fmt::print(strm, " Number of structured block vars  = {12d}\n", names.size());
+        fmt::print(strm, " Number of structured block vars  = {:12d}\n", names.size());
       }
 
       {
@@ -492,7 +492,7 @@ namespace Ioss {
           block->field_describe(Ioss::Field::TRANSIENT, &names);
         }
         Ioss::Utils::uniquify(names);
-        fmt::print(strm, " Number of nodeset variables      = {12d}\n", names.size());
+        fmt::print(strm, " Number of nodeset variables      = {:12d}\n", names.size());
       }
 
       {
@@ -506,9 +506,9 @@ namespace Ioss {
         }
 
         Ioss::Utils::uniquify(names);
-        fmt::print(" Number of sideset variables      = {12d}\n", names.size());
+        fmt::print(" Number of sideset variables      = {:12d}\n", names.size());
       }
-      fmt::print(strm, "\n Number of database time steps    = {12d}\n",
+      fmt::print(strm, "\n Number of database time steps    = {:12d}\n",
                  get_property("state_count").get_int());
     }
   }
