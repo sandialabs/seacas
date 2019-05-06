@@ -117,6 +117,12 @@ void SystemInterface::enroll_options()
   options_.enroll("tolerance", GetLongOption::MandatoryValue,
                   "Maximum distance between two nodes to be considered colocated.", nullptr);
 
+  options_.enroll(
+      "block_prefix", GetLongOption::MandatoryValue,
+      "Prefix used on the input block names of second and subsequent meshes to make them"
+      " unique.  Default is 'p'.  Example: block1, p1_block1, p2_block1.",
+      "p");
+
   options_.enroll("offset", GetLongOption::MandatoryValue,
                   "Comma-separated x,y,z offset for coordinates of second and subsequent meshes.\n"
                   "\t\tThe offset will be multiplied by the part number-1 so:\n"
@@ -279,6 +285,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
       outputName_ = temp;
     }
   }
+
+  blockPrefix_ = std::string(options_.retrieve("block_prefix"));
 
   {
     const char *temp = options_.retrieve("offset");
