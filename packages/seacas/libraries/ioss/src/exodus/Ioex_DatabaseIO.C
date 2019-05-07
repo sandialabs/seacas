@@ -50,6 +50,7 @@
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
+#include <fmt/format.h>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -1709,10 +1710,8 @@ namespace Ioex {
         // higher-order storage type.
 
         for (int i = 0; i < attribute_count; i++) {
-          int writ = ::snprintf(names[i], maximumNameLength + 1, "attribute_%d", i + 1);
-          if (writ > maximumNameLength) {
-            names[i][maximumNameLength] = '\0';
-          }
+          std::string tmp = fmt::format("attribute_{}", i + 1);
+          Ioss::Utils::copy_string(names[i], tmp, maximumNameLength + 1);
         }
       }
       else {
