@@ -77,7 +77,6 @@
 #include "Ioss_SideSet.h"
 #include "Ioss_State.h"
 #include "Ioss_StructuredBlock.h"
-#include "Ioss_TerminalColor.h"
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 

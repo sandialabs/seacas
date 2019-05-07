@@ -37,7 +37,6 @@
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
-#include <Ioss_TerminalColor.h>
 #include <Ioss_Utils.h>
 #include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>
