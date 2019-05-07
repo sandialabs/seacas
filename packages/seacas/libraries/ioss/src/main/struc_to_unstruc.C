@@ -114,20 +114,21 @@ int main(int argc, char *argv[])
 
   if (argc <= 2) {
     if (rank == 0) {
-      fmt::print(std::cerr, "ERROR: Syntax is {} {{structured_input}} {{unstructured_output}}\n", argv[0]);
+      fmt::print(std::cerr, "ERROR: Syntax is {} {{structured_input}} {{unstructured_output}}\n",
+                 argv[0]);
     }
     return EXIT_FAILURE;
   }
 
   Ioss::Init::Initializer io;
-  std::string             in_file = argv[1];
+  std::string             in_file  = argv[1];
   std::string             out_file = argv[2];
 
   if (rank == 0) {
-    fmt::print(std::cerr, 
-	       "Structured Input:    '{}'\n"
-	       "Unstructured Output: '{}'\n\n", 
-	       in_file, out_file);
+    fmt::print(std::cerr,
+               "Structured Input:    '{}'\n"
+               "Unstructured Output: '{}'\n\n",
+               in_file, out_file);
   }
   double begin = Ioss::Utils::timer();
   create_unstructured(in_file, out_file);
@@ -159,7 +160,7 @@ namespace {
     if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
       int myProcessor = region.get_database()->util().parallel_rank();
       if (myProcessor == 0) {
-	fmt::print(std::cerr, "\nERROR: The input mesh is not of type STRUCTURED.\n");
+        fmt::print(std::cerr, "\nERROR: The input mesh is not of type STRUCTURED.\n");
       }
       return;
     }
@@ -187,7 +188,7 @@ namespace {
 
     if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
       if (rank == 0) {
-	fmt::print(std::cerr, "ERROR: Could not put output region into define model state\n");
+        fmt::print(std::cerr, "ERROR: Could not put output region into define model state\n");
       }
       std::exit(EXIT_FAILURE);
     }
@@ -208,8 +209,8 @@ namespace {
 
     if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
       if (rank == 0) {
-	fmt::print(std::cerr, "\n Number of time steps on database     = {:12n}\n\n",
-		   region.get_property("state_count").get_int());
+        fmt::print(std::cerr, "\n Number of time steps on database     = {:12n}\n\n",
+                   region.get_property("state_count").get_int());
       }
 
       output_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
@@ -416,7 +417,7 @@ namespace {
               }
 
 #if IOSS_DEBUG_OUTPUT
-	      fmt::print(std::cerr, "{}\n", bc);
+              fmt::print(std::cerr, "{}\n", bc);
 #endif
               auto parent_face = face_map[bc.which_face()];
               elem_side.reserve(bc.get_face_count() * 2);
@@ -504,13 +505,14 @@ namespace {
       auto block = new Ioss::ElementBlock(output_region.get_database(), name, type, count);
       output_region.add(block);
 #if IOSS_DEBUG_OUTPUT
-      fmt::print(std::cerr, "P[{}] Created Element Block '{}' with {} elements.\n", 
-		 rank, name, count);
+      fmt::print(std::cerr, "P[{}] Created Element Block '{}' with {} elements.\n", rank, name,
+                 count);
 #endif
       total_entities += count;
     }
-    fmt::print("P[{}] Number of Element Blocks       = {:12n}, Number of elements (cells) = {:12n}\n",
-	       rank, blocks.size(), total_entities);
+    fmt::print(
+        "P[{}] Number of Element Blocks       = {:12n}, Number of elements (cells) = {:12n}\n",
+        rank, blocks.size(), total_entities);
   }
 
   void transfer_sidesets(Ioss::Region &region, Ioss::Region &output_region)
@@ -539,8 +541,9 @@ namespace {
       }
       output_region.add(surf);
     }
-    fmt::print("P[{}] Number of SideSets             = {:12n}, Number of cell faces       = {:12n}\n",
-	       rank, ssets.size(), total_sides);
+    fmt::print(
+        "P[{}] Number of SideSets             = {:12n}, Number of cell faces       = {:12n}\n",
+        rank, ssets.size(), total_sides);
   }
 
   void show_step(int istep, double time)
