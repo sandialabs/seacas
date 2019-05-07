@@ -269,7 +269,6 @@ void Ioss::Utils::check_non_null(void *ptr, const char *type, const std::string 
 std::string Ioss::Utils::decode_filename(const std::string &filename, int processor,
                                          int num_processors)
 {
-  std::string decoded_filename(filename);
   // Current format for per-processor file names is:
   // PREFIX/basename.num_proc.cur_proc
   // the 'cur_proc' field is padded to be the same width as
@@ -280,22 +279,8 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   std::string num_proc   = std::to_string(num_processors);
   size_t      proc_width = num_proc.length();
 
-  // Create a std::string containing the current processor number
-  std::string cur_proc  = std::to_string(processor);
-  size_t      cur_width = cur_proc.length();
-
-  // Build the filename
-  decoded_filename += ".";
-  decoded_filename += num_proc;
-  decoded_filename += ".";
-
-  // Now, pad with zeros so that 'cur_proc' portion is same
-  // width as 'num_proc' portion.
-  while (cur_width++ < proc_width) {
-    decoded_filename += "0";
-  }
-
-  decoded_filename += cur_proc;
+  std::string decoded_filename =
+      fmt::format("{}.{}.{:0{}}", filename, num_processors, processor, proc_width);
   return decoded_filename;
 }
 
