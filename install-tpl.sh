@@ -250,8 +250,6 @@ then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
         pnet_version="1.11.1"
 	pnet_base="pnetcdf"
-	#      pnet_version="1.11.1"
-	#      pnet_base="parallel-netcdf"
         cd $ACCESS
         cd TPL/pnetcdf
         if [ "$DOWNLOAD" == "YES" ]

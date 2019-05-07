@@ -252,7 +252,8 @@ int main(int argc, char *argv[])
       }
 
       // Generate a name for the region based on the part number...
-      std::string name = "p" + std::to_string(p + 1);
+      std::string prefix = interface.block_prefix();
+      std::string name   = prefix + std::to_string(p + 1);
       // NOTE: region owns database pointer at this time...
       part_mesh[p] = new Ioss::Region(dbi[p], name);
 
