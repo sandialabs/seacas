@@ -510,7 +510,7 @@ void Ioss::ParallelUtils::progress(const std::string &output) const
   if (parallel_rank() == 0) {
     auto                          now  = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff = now - start;
-    fmt::print(std::cerr, " [{.2f}] ({}MiB  {}MiB  {}MiB)\t{}\n", diff.count(), min / MiB,
+    fmt::print(std::cerr, " [{:.2f}] ({}MiB  {}MiB  {}MiB)\t{}\n", diff.count(), min / MiB,
                max / MiB, avg / MiB, output);
   }
 }
