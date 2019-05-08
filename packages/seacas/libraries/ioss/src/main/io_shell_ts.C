@@ -181,7 +181,6 @@ int main(int argc, char *argv[])
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
-  std::cout.imbue(std::locale(std::locale(), new my_numpunct));
   std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
 
 #ifdef SEACAS_HAVE_KOKKOS
@@ -208,7 +207,7 @@ int main(int argc, char *argv[])
 
 #ifdef SEACAS_HAVE_KOKKOS
   OUTPUT << "Kokkos default execution space configuration:\n";
-  Kokkos::DefaultExecutionSpace::print_configuration(std::cout, false);
+  Kokkos::DefaultExecutionSpace::print_configuration(std::cerr, false);
   OUTPUT << "\n";
 #endif
 

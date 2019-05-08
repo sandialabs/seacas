@@ -1139,11 +1139,9 @@ namespace {
       }
 #endif
       if (util.parallel_rank() == 0 || single_proc_only) {
-        std::ostringstream strm;
         gettimeofday(&tp, nullptr);
         double time_now = static_cast<double>(tp.tv_sec) + (1.e-6) * tp.tv_usec;
-        fmt::print(strm, "{} [{:.3f}]\n", symbol, time_now - initial_time);
-        std::cout << strm.str();
+        fmt::print("{} [{:.3f}]\n", symbol, time_now - initial_time);
       }
     }
   }
