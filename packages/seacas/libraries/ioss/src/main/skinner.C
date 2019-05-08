@@ -85,7 +85,13 @@ int main(int argc, char *argv[])
 #endif
 
   Skinner::Interface interface;
-  interface.parse_options(argc, argv);
+  bool               success = interface.parse_options(argc, argv);
+  if (!success) {
+#ifdef SEACAS_HAVE_MPI
+    MPI_Finalize();
+#endif
+    return EXIT_FAILURE;
+  }
 
   codename   = argv[0];
   size_t ind = codename.find_last_of('/', codename.size());
@@ -210,7 +216,7 @@ namespace {
     size_t my_rank = region.get_database()->parallel_rank();
     if (my_rank == 0) {
       fmt::print(
-          "Face count = {:n}\tInterior = {:n}\tBoundary = {:n}\tShared   = {:n}\tError = {:n}\n"
+          "Face count = {:n}\tInterior = {:n}\tBoundary = {:n}\tShared = {:n}\tError = {:n}\n"
           "Total Time = {} ms\t{} faces/second\n\n",
           interior + boundary - pboundary / 2, interior - pboundary / 2, boundary, pboundary, error,
           std::chrono::duration<double, std::milli>(duration).count(),
