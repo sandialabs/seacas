@@ -57,6 +57,7 @@
 #include <Ioss_Wedge18.h>
 #include <Ioss_Wedge6.h>
 
+#include <fmt/ostream.h>
 #include <numeric>
 #include <set>
 #include <tokenize.h>
@@ -689,9 +690,9 @@ namespace {
       assert(off_name % count == 0 && off_name / count == BYTE_PER_NAME);
 
 #if IOSS_DEBUG_OUTPUT
-      std::cerr << "ZGC_CONSOLIDATE: Before consolidation: (" << zgc.size() << ")\n";
+      fmt::print(std::cerr, "ZGC_CONSOLIDATE: Before consolidation: ({})\n", zgc.size());
       for (const auto &z : zgc) {
-        std::cerr << "\tOZ " << z.m_ownerZone << z << "\n";
+        fmt::print(std::cerr, "\tOZ {}{}\n", z.m_ownerZone, z);
       }
 #endif
 
@@ -750,9 +751,9 @@ namespace {
       assert(off_name % count == 0 && off_name / count == BYTE_PER_NAME);
 
 #if IOSS_DEBUG_OUTPUT
-      std::cerr << "ZGC_CONSOLIDATE: After consolidation: (" << zgc.size() << ")\n";
+      fmt::print(std::cerr, "ZGC_CONSOLIDATE: After consolidation: ({})\n", zgc.size());
       for (const auto &z : zgc) {
-        std::cerr << "\tOZ " << z.m_ownerZone << z << "\n";
+        fmt::print(std::cerr, "\tOZ {}{}\n", z.m_ownerZone, z);
       }
 #endif
     } // End of processor 0 only processing...
@@ -1159,8 +1160,8 @@ std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
   case CG_HEXA_20: topology = Ioss::Hex20::name; break;
   case CG_HEXA_27: topology = Ioss::Hex27::name; break;
   default:
-    std::cerr << "WARNING: Found topology of type " << cg_ElementTypeName(type)
-              << " which is not currently supported.\n";
+    fmt::print(std::cerr, "WARNING: Found topology of type {} which is not currently supported.\n",
+               cg_ElementTypeName(type));
     topology = Ioss::Unknown::name;
   }
   return topology;
@@ -1233,8 +1234,8 @@ CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
     topo = CG_HEXA_27;
   }
   else {
-    std::cerr << "WARNING: Found topology of type " << name
-              << " which is not currently supported.\n";
+    fmt::print(std::cerr, "WARNING: Found topology of type {} which is not currently supported.\n",
+               name);
   }
   return topo;
 }
@@ -1344,8 +1345,10 @@ int Iocgns::Utils::find_solution_index(int cgns_file_ptr, int base, int zone, in
     return step;
   }
 
-  std::cerr << "WARNING: CGNS: Could not find valid solution index for step " << step << ", zone "
-            << zone << ", and location " << GridLocationName[location] << "\n";
+  fmt::print(
+      std::cerr,
+      "WARNING: CGNS: Could not find valid solution index for step {}, zone {}, and location {}\n",
+      step, zone, GridLocationName[location]);
   return 0;
 }
 
@@ -1364,8 +1367,8 @@ void Iocgns::Utils::add_sidesets(int cgns_file_ptr, Ioss::DatabaseIO *db)
 
 #if IOSS_DEBUG_OUTPUT
     if (db->parallel_rank() == 0) {
-      std::cerr << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
-                << num_geo << " geometry references\n";
+      fmt::print(std::cerr, "Family {} named {} has {} BC, and {} geometry references.\n", family,
+                 name, num_bc, num_geo);
     }
 #endif
     if (num_bc > 0) {
@@ -1586,8 +1589,8 @@ Iocgns::Utils::resolve_processor_shared_nodes(Ioss::Region &region, int my_proce
       }
     }
 #if IOSS_DEBUG_OUTPUT
-    std::cerr << "P" << my_processor << ", Block " << owner_block->name()
-              << " Shared Nodes: " << shared_nodes[owner_zone].size() << "\n";
+    fmt::print(std::cerr, "P{}, Block {} Shared Nodes: {}\n", my_processor, owner_block->name(),
+               shared_nodes[owner_zone].size());
 #endif
   }
   return shared_nodes;
@@ -1718,10 +1721,11 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
       int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
                        (range[2] == range[5] ? 1 : 0);
       if (same_count != 1) {
-        std::cerr << "WARNING: CGNS: Skipping Boundary Condition '" << boco_name << "' on block '"
-                  << block->name() << "'. It is applied to "
-                  << (same_count == 2 ? "an edge" : "a vertex")
-                  << ". This code only supports surfaces.\n";
+        fmt::print(
+            std::cerr,
+            "WARNING: CGNS: Skipping Boundary Condition '{}' on block '{}'. It is applied to "
+            "{}. This code only supports surfaces.\n",
+            boco_name, block->name(), (same_count == 2 ? "an edge" : "a vertex"));
         continue;
       }
     }
@@ -1775,10 +1779,10 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
     int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
                      (range[2] == range[5] ? 1 : 0);
     if (same_count != 1) {
-      std::cerr << "WARNING: CGNS: Skipping Boundary Condition '" << boco_name << "' on block '"
-                << block->name() << "'. It is applied to "
-                << (same_count == 2 ? "an edge" : "a vertex")
-                << ". This code only supports surfaces.\n";
+      fmt::print(std::cerr,
+                 "WARNING: CGNS: Skipping Boundary Condition '{}' on block '{}'. It is applied to "
+                 "{}. This code only supports surfaces.\n",
+                 boco_name, block->name(), (same_count == 2 ? "an edge" : "a vertex"));
       continue;
     }
 
@@ -2282,38 +2286,37 @@ extern "C" int H5get_libversion(unsigned *, unsigned *, unsigned *);
 
 void Iocgns::Utils::show_config()
 {
-  std::cerr << "\tCGNS Library Version: " << CGNS_DOTVERS << "\n";
+  fmt::print(std::cerr, "\tCGNS Library Version: {}\n", CGNS_DOTVERS);
 #if CG_BUILD_64BIT
-  std::cerr << "\t\tDefault integer size is 64-bit.\n";
+  fmt::print(std::cerr, "\t\tDefault integer size is 64-bit.\n");
 #else
-  std::cerr << "\t\tDefault integer size is 32-bit.\n";
+  fmt::print(std::cerr, "\t\tDefault integer size is 32-bit.\n");
 #endif
 #if defined(CGNS_SCOPE_ENUMS)
-  std::cerr << "\t\tScoped Enums enabled\n";
+  fmt::print(std::cerr, "\t\tScoped Enums enabled\n");
 #else
-  std::cerr << "\t\tScoped Enums NOT enabled\n";
+  fmt::print(std::cerr, "\t\tScoped Enums NOT enabled\n");
 #endif
 #if CG_BUILD_PARALLEL
-  std::cerr << "\t\tParallel enabled\n";
+  fmt::print(std::cerr, "\t\tParallel enabled\n");
 #else
-  std::cerr << "\t\tParallel NOT enabled\n";
+  fmt::print(std::cerr, "\t\tParallel NOT enabled\n");
 #endif
 #if CG_BUILD_HDF5
   unsigned major, minor, release;
   H5get_libversion(&major, &minor, &release);
-  std::cerr << "\t\tHDF5 enabled (" << major << "." << minor << "." << release << ")\n";
+  fmt::print(std::cerr, "\t\tHDF5 enabled ({}.{}.{})\n", major, minor, release);
 #else
 #error "Not defined..."
 #endif
 #if HDF5_HAVE_COLL_METADATA
-  std::cerr << "\t\tUsing HDF5 Collective Metadata.\n";
+  fmt::print(std::cerr, "\t\tUsing HDF5 Collective Metadata.\n");
 #else
-  std::cerr << "\t\tHDF5 Collective Metadata NOT Available.\n";
+  fmt::print(std::cerr, "\t\tHDF5 Collective Metadata NOT Available.\n");
 #endif
 #if HDF5_HAVE_MULTI_DATASET
-  std::cerr << "\t\tHDF5 Multi-Dataset Available.\n";
+  fmt::print(std::cerr, "\t\tHDF5 Multi-Dataset Available.\n\n");
 #else
-  std::cerr << "\t\tHDF5 Multi-Dataset NOT Available.\n";
+  fmt::print(std::cerr, "\t\tHDF5 Multi-Dataset NOT Available.\n\n");
 #endif
-  std::cerr << "\n";
 }

@@ -42,6 +42,7 @@
 #include <cstring>
 #include <ctime>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -260,8 +261,9 @@ void Ioss::Utils::check_non_null(void *ptr, const char *type, const std::string 
 {
   if (ptr == nullptr) {
     std::ostringstream errmsg;
-    errmsg << "INTERNAL ERROR: Could not find " << type << " '" << name << "'."
-           << " Something is wrong in " << func << ". Please report.\n";
+    fmt::print(errmsg,
+               "INTERNAL ERROR: Could not find {} '{}'. Something is wrong in {}. Please report.\n",
+               type, name, func);
     IOSS_ERROR(errmsg);
   }
 }
@@ -276,8 +278,7 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   // Examples: basename.8.1, basename.64.03, basename.128.001
 
   // Create a std::string containing the total number of processors
-  std::string num_proc   = std::to_string(num_processors);
-  size_t      proc_width = num_proc.length();
+  size_t proc_width = std::floor(std::log10(num_processors)) + 1;
 
   std::string decoded_filename =
       fmt::format("{}.{}.{:0{}}", filename, num_processors, processor, proc_width);
@@ -313,11 +314,7 @@ std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int6
   // Sierra   stores these as std::strings. The string is created by
   // concatenating the type, the character '_' and the id.
 
-  std::string id_string   = std::to_string(id);
-  std::string entity_name = entity_type;
-  entity_name += "_";
-  entity_name += id_string;
-  return entity_name;
+  return fmt::format("{}_{}", entity_type, id);
 }
 
 char **Ioss::Utils::get_name_array(size_t count, int size)
@@ -445,8 +442,8 @@ std::string Ioss::Utils::local_filename(const std::string &relative_filename,
 int Ioss::Utils::field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
                                const std::string &inout)
 {
-  IOSS_WARNING << ge->type_string() << " '" << ge->name() << "'. Unknown " << inout << " field '"
-               << field.get_name() << "'\n";
+  fmt::print(IOSS_WARNING, "{} '{}'. Unknown {} field '{}'\n", ge->type_string(), ge->name(), inout,
+             field.get_name());
   return -4;
 }
 
@@ -865,17 +862,9 @@ std::string Ioss::Utils::platform_information()
   {
   };
   uname(&sys_info);
-
-  std::string info = "Node: ";
-  info += sys_info.nodename;
-  info += ", OS: ";
-  info += sys_info.sysname;
-  info += " ";
-  info += sys_info.release;
-  info += ", ";
-  info += sys_info.version;
-  info += ", Machine: ";
-  info += sys_info.machine;
+  std::string info =
+      fmt::format("Node: {0}, OS: {1} {2}, {3}, Machine: {4}", sys_info.nodename, sys_info.sysname,
+                  sys_info.release, sys_info.version, sys_info.machine);
 #else
   std::string info = "Node: Unknown, OS: Unknown, Machine: Unknown";
 #endif
@@ -1024,8 +1013,7 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &            face_is_
 
   if (number_sides > 0 && (element == nullptr || sides == nullptr)) {
     std::ostringstream errmsg;
-    errmsg << "INTERNAL ERROR: null element or sides pointer passed to "
-           << "Ioss::Utils::calculate_sideblock_membership function.";
+    fmt::print(errmsg, "INTERNAL ERROR: null element or sides pointer passed to {}.", __func__);
     IOSS_ERROR(errmsg);
   }
 
@@ -1256,8 +1244,10 @@ bool Ioss::Utils::check_set_bool_property(const Ioss::PropertyManager &propertie
       }
       else {
         std::ostringstream errmsg;
-        errmsg << "ERROR: Unrecognized value found for " << prop_name << ". Found '" << yesno
-               << "' which is not one of TRUE|FALSE|YES|NO|ON|OFF";
+        fmt::print(errmsg,
+                   "ERROR: Unrecognized value found for {}. "
+                   "Found '{}' which is not one of TRUE|FALSE|YES|NO|ON|OFF",
+                   prop_name, yesno);
         IOSS_ERROR(errmsg);
       }
     }
