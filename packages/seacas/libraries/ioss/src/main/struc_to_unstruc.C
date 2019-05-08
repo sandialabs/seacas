@@ -112,6 +112,8 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
 
+  codename = Ioss::FileInfo(argv[0]).basename();
+
   if (argc <= 2) {
     if (rank == 0) {
       fmt::print(std::cerr, "ERROR: Syntax is {} {{structured_input}} {{unstructured_output}}\n",

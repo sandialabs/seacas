@@ -50,6 +50,7 @@
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_ElementBlock.h"
 #include "Ioss_FaceGenerator.h"
+#include "Ioss_FileInfo.h"
 #include "Ioss_IOFactory.h"
 #include "Ioss_NodeBlock.h"
 #include "Ioss_ParallelUtils.h"
@@ -73,7 +74,7 @@ namespace {
 
   template <typename INT> void skinner(Skinner::Interface &interface, INT /*dummy*/);
   std::string                  codename;
-  std::string                  version = "0.6";
+  std::string                  version = "0.8";
 } // namespace
 
 int main(int argc, char *argv[])
@@ -84,6 +85,8 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
+  codename = Ioss::FileInfo(argv[0]).basename();
+
   Skinner::Interface interface;
   bool               success = interface.parse_options(argc, argv);
   if (!success) {
@@ -91,12 +94,6 @@ int main(int argc, char *argv[])
     MPI_Finalize();
 #endif
     return EXIT_FAILURE;
-  }
-
-  codename   = argv[0];
-  size_t ind = codename.find_last_of('/', codename.size());
-  if (ind != std::string::npos) {
-    codename = codename.substr(ind + 1, codename.size());
   }
 
   Ioss::Init::Initializer io;
@@ -316,6 +313,9 @@ namespace {
 
     // NOTE: 'output_region' owns 'dbo' pointer at this time
     Ioss::Region output_region(dbo, "skin");
+    output_region.property_add(Ioss::Property(std::string("code_name"), codename));
+    output_region.property_add(Ioss::Property(std::string("code_version"), version));
+
     output_region.begin_mode(Ioss::STATE_DEFINE_MODEL);
 
     Ioss::NodeBlock *nbo =

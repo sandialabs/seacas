@@ -43,6 +43,7 @@
 #include <ctime>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/time.h>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -239,21 +240,18 @@ namespace {
  */
 void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t length)
 {
-  time_t     calendar_time = time(nullptr);
-  struct tm *local_time    = localtime(&calendar_time);
-
-  strftime(time_string, length, "%H:%M:%S", local_time);
-  time_string[8] = '\0';
-
-  if (length == 8) {
-    const char *fmt = "%y/%m/%d";
-    strftime(date_string, length, fmt, local_time);
-    date_string[8] = '\0';
+  time_t      calendar_time = time(nullptr);
+  auto *      lt            = std::localtime(&calendar_time);
+  std::string time          = fmt::format("{:%H:%M:%S}", *lt);
+  std::string date;
+  if (length >= 10) {
+    date = fmt::format("{:%Y/%m/%d}", *lt);
   }
-  else if (length >= 10) {
-    strftime(date_string, length, "%Y/%m/%d", local_time);
-    date_string[10] = '\0';
+  else {
+    date = fmt::format("{:%y/%m/%d}", *lt);
   }
+  copy_string(time_string, time, 9);
+  copy_string(date_string, date, length + 1);
 }
 
 void Ioss::Utils::check_non_null(void *ptr, const char *type, const std::string &name,
