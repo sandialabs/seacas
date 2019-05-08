@@ -1780,10 +1780,7 @@ namespace Ioex {
           if (attribute_count == block->get_property("topology_node_count").get_int()) {
             att_name = "nodal_thickness";
 
-            std::string storage = "Real[";
-            storage += std::to_string(attribute_count);
-            storage += "]";
-
+            std::string storage = fmt::format("Real[{}]", attribute_count);
             block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage,
                                          Ioss::Field::ATTRIBUTE, my_element_count, 1));
           }
@@ -1886,10 +1883,8 @@ namespace Ioex {
         if (unknown_attributes > 0) {
           att_name = "extra_attribute_";
           att_name += std::to_string(unknown_attributes);
-          std::string storage = "Real[";
-          storage += std::to_string(unknown_attributes);
-          storage += "]";
-          size_t index = attribute_count - unknown_attributes + 1;
+          std::string storage = fmt::format("Real[{}]", unknown_attributes);
+          size_t      index   = attribute_count - unknown_attributes + 1;
           block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage, Ioss::Field::ATTRIBUTE,
                                        my_element_count, index));
         }
@@ -1898,9 +1893,7 @@ namespace Ioex {
       // Always create a field called "attribute" containing data
       // for all attributes on the mesh
       std::string att_name = "attribute"; // Default
-      std::string storage  = "Real[";
-      storage += std::to_string(attribute_count);
-      storage += "]";
+      std::string storage  = fmt::format("Real[{}]", attribute_count);
 
       block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage, Ioss::Field::ATTRIBUTE,
                                    my_element_count, 1));
