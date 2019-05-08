@@ -2,7 +2,6 @@ var namespaceIoss =
 [
     [ "Init", "namespaceIoss_1_1Init.html", "namespaceIoss_1_1Init" ],
     [ "Private", "namespaceIoss_1_1Private.html", "namespaceIoss_1_1Private" ],
-    [ "trmclr", "namespaceIoss_1_1trmclr.html", "namespaceIoss_1_1trmclr" ],
     [ "Asym_Tensor_01", "classIoss_1_1Asym__Tensor__01.html", "classIoss_1_1Asym__Tensor__01" ],
     [ "Asym_Tensor_02", "classIoss_1_1Asym__Tensor__02.html", "classIoss_1_1Asym__Tensor__02" ],
     [ "Asym_Tensor_03", "classIoss_1_1Asym__Tensor__03.html", "classIoss_1_1Asym__Tensor__03" ],

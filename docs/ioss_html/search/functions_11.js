@@ -18,7 +18,6 @@ var searchData=
   ['read_5fss_5ftransient_5ffield',['read_ss_transient_field',['../classIofx_1_1DatabaseIO.html#af00fc1da27acfd5313aa155616056852',1,'Iofx::DatabaseIO::read_ss_transient_field()'],['../classIopx_1_1DatabaseIO.html#a997cef4956a2eebd02e920ea410f8d63',1,'Iopx::DatabaseIO::read_ss_transient_field()']]],
   ['read_5ftransient_5ffield',['read_transient_field',['../classIofx_1_1DatabaseIO.html#a6bc6fdd6909ea35cf53370749083c4ca',1,'Iofx::DatabaseIO::read_transient_field()'],['../classIopx_1_1DatabaseIO.html#a06337d04e8b56b3cbc3032894f0973f5',1,'Iopx::DatabaseIO::read_transient_field()']]],
   ['really_5fdelete_5fdatabase',['really_delete_database',['../classIoss_1_1GroupingEntity.html#af27bee6de570e447fa867fcaffdcefa7',1,'Ioss::GroupingEntity']]],
-  ['red',['red',['../namespaceIoss_1_1trmclr.html#aec51cdaa449e31251f0991c99dd24984',1,'Ioss::trmclr']]],
   ['redefine',['Redefine',['../classIoex_1_1Redefine.html#a32831e30cab39b337c8874707c2afe67',1,'Ioex::Redefine::Redefine(int exoid)'],['../classIoex_1_1Redefine.html#ade71847cdd6d4c6549a6332aa8427d36',1,'Ioex::Redefine::Redefine(const Redefine &amp;from)=delete']]],
   ['refholder',['RefHolder',['../classRefHolder.html#a62f2e4fcf3a6f190560dbdfcfe61932e',1,'RefHolder']]],
   ['region',['Region',['../classIoss_1_1Region.html#aedc2f80eb34a79f822967aa60acd1df6',1,'Ioss::Region']]],

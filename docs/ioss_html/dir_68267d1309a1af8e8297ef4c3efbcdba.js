@@ -371,7 +371,6 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
       [ "Super", "classIoss_1_1Super.html", "classIoss_1_1Super" ]
     ] ],
     [ "Ioss_SurfaceSplit.h", "Ioss__SurfaceSplit_8h.html", "Ioss__SurfaceSplit_8h" ],
-    [ "Ioss_TerminalColor.h", "Ioss__TerminalColor_8h.html", "Ioss__TerminalColor_8h" ],
     [ "Ioss_Tet10.C", "Ioss__Tet10_8C.html", [
       [ "St_Tet10", "classIoss_1_1St__Tet10.html", "classIoss_1_1St__Tet10" ],
       [ "Constants", "structanonymous__namespace_02Ioss__Tet10_8C_03_1_1Constants.html", "structanonymous__namespace_02Ioss__Tet10_8C_03_1_1Constants" ]

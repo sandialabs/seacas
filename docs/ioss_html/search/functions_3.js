@@ -108,6 +108,5 @@ var searchData=
   ['create_5funstructured_5fblock',['create_unstructured_block',['../classIocgns_1_1DatabaseIO.html#a53d6e1283b2da2fa8f863c0eb9859141',1,'Iocgns::DatabaseIO']]],
   ['create_5fzone_5fdata',['create_zone_data',['../namespaceanonymous__namespace_02Iocgns__DecompositionData_8C_03.html#a35f8943e156aa5b457c7eab84868b7b7',1,'anonymous_namespace{Iocgns_DecompositionData.C}']]],
   ['created',['created',['../classIoss_1_1FileInfo.html#a6d9eb07f2276873625d5ee6d35d6d359',1,'Ioss::FileInfo']]],
-  ['cross',['cross',['../classvector3d.html#ad180c0f7803c3d625a907ead05837978',1,'vector3d']]],
-  ['cyan',['cyan',['../namespaceIoss_1_1trmclr.html#a5a383c2ca3cb55c09f3422cb11c533f9',1,'Ioss::trmclr']]]
+  ['cross',['cross',['../classvector3d.html#ad180c0f7803c3d625a907ead05837978',1,'vector3d']]]
 ];
