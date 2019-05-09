@@ -34,5 +34,5 @@
 #define IOSS_IOCGNS_DEFINES_H
 
 #define CGNS_MAX_NAME_LENGTH 255
-
+#define IOSS_ENABLE_HYBRID 1
 #endif

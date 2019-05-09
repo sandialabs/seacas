@@ -1049,6 +1049,17 @@ namespace Iocgns {
     Utils::add_structured_boundary_conditions(get_file_pointer(), block, false);
   }
 
+  size_t DatabaseIO::finalize_hybrid_unstructured_blocks()
+  {
+    size_t node = 0;
+    const auto &blocks = get_region()->get_element_blocks();
+    for (const auto &b : blocks) {
+      int zone = Iocgns::Utils::get_db_zone(b);
+      node += m_blockLocalNodeMap[zone].size();
+    }
+    return node;
+  }
+
   size_t DatabaseIO::finalize_structured_blocks()
   {
     const auto &blocks = get_region()->get_structured_blocks();
@@ -1109,8 +1120,10 @@ namespace Iocgns {
   void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node)
   {
     cgsize_t size[9];
-    char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
-    CGCHECKM(cg_zone_read(get_file_pointer(), base, zone, zone_name, size));
+    char     db_name[CGNS_MAX_NAME_LENGTH + 1];
+    CGCHECKM(cg_zone_read(get_file_pointer(), base, zone, db_name, size));
+    std::string zone_name{db_name};
+
     m_zoneNameMap[zone_name] = zone;
 
     size_t total_block_nodes = size[0];
@@ -1140,10 +1153,15 @@ namespace Iocgns {
         if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList ||
             donor_ptset_type != CG_PointListDonor) {
           std::ostringstream errmsg;
-          errmsg << "ERROR: CGNS: Zone " << zone
-                 << " adjacency data is not correct type. Require Abutting1to1 and PointList."
-                 << connect_type << "\t" << ptset_type << "\t" << donor_ptset_type;
-          IOSS_ERROR(errmsg);
+	  fmt::print(errmsg,
+		     "ERROR: CGNS: Zone {} adjacency data is not correct type. Require Abutting1to1 and PointList. {}\t{}\t{}\n",
+		     zone, connect_type, ptset_type, donor_ptset_type);
+#if IOSS_ENABLE_HYBRID
+	  std::cerr << errmsg.str();
+	  continue;
+#else
+	  IOSS_ERROR(errmsg);
+#endif
         }
 
         // Verify data consistency...
@@ -1162,6 +1180,7 @@ namespace Iocgns {
 #if IOSS_DEBUG_OUTPUT
           fmt::print("Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
 #endif
+#if 0
           std::vector<cgsize_t> points(npnts);
           std::vector<cgsize_t> donors(npnts);
 
@@ -1176,6 +1195,9 @@ namespace Iocgns {
             cgsize_t donor       = donors[j];
             block_map[point - 1] = donor_map[donor - 1];
           }
+#else
+          fmt::print(stderr, "\n\nFIX THE NODE SHARING FOR HYBRID!!!\n\n");
+#endif
         }
       }
     }
@@ -1205,6 +1227,34 @@ namespace Iocgns {
     // define elements.  Some define boundary conditions...
     Ioss::ElementBlock *eblock = nullptr;
 
+    // See if there are multiple element blocks in this zone...
+    int num_block = 0;
+    for (int is = 1; is <= num_sections && num_elem > 0; is++) {
+      char             section_name[CGNS_MAX_NAME_LENGTH + 1];
+      CG_ElementType_t e_type;
+      cgsize_t         el_start    = 0;
+      cgsize_t         el_end      = 0;
+      int              num_bndry   = 0;
+      int              parent_flag = 0;
+
+      // Get the type of elements in this section...
+      CGCHECKM(cg_section_read(get_file_pointer(), base, zone, is, section_name, &e_type, &el_start,
+                               &el_end, &num_bndry, &parent_flag));
+
+      cgsize_t num_entity = el_end - el_start + 1;
+      if (parent_flag == 0) {
+	num_block++;
+	assert(num_block == is);
+        num_elem -= num_entity;
+      }
+    }
+
+    if (num_block > 1) {
+      fmt::print(stderr, "WARNING: Multiple element blocks ({}) in zone '{}' ({}). This is not tested very much.\n",
+		 num_block, zone_name, zone);
+    }
+
+    // Now create the blocks (and sidesets)...
     for (int is = 1; is <= num_sections; is++) {
       char             section_name[CGNS_MAX_NAME_LENGTH + 1];
       CG_ElementType_t e_type;
@@ -1219,14 +1269,20 @@ namespace Iocgns {
 
       cgsize_t num_entity = el_end - el_start + 1;
 
-      if (parent_flag == 0 && num_elem > 0) {
-        num_elem -= num_entity;
+      if (parent_flag == 0) {
+	std::string block_name{zone_name};
         std::string element_topo = Utils::map_cgns_to_topology_type(e_type);
+
+	if (num_block > 1) {
+	  // Multiple element blocks in the same zone.  Need to modify name to avoid name collision...
+	  block_name = fmt::format("{}_{}", zone_name, element_topo);
+	}
+
 #if IOSS_DEBUG_OUTPUT
         fmt::print("Added block {}: CGNS topology = '{}', IOSS topology = '{}' with {} elements\n",
-                   zone_name, cg_ElementTypeName(e_type), element_topo, num_entity);
+                   block_name, cg_ElementTypeName(e_type), element_topo, num_entity);
 #endif
-        eblock = new Ioss::ElementBlock(this, zone_name, element_topo, num_entity);
+        eblock = new Ioss::ElementBlock(this, block_name, element_topo, num_entity);
         eblock->property_add(Ioss::Property("base", base));
         eblock->property_add(Ioss::Property("zone", zone));
         eblock->property_add(Ioss::Property("db_zone", zone));
@@ -1236,7 +1292,6 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("node_count", (int64_t)total_block_nodes));
         eblock->property_add(Ioss::Property("original_block_order", zone));
 
-        assert(is == 1); // For now, assume each zone has only a single element block.
         bool added = get_region()->add(eblock);
         if (!added) {
           delete eblock;
@@ -1325,14 +1380,27 @@ namespace Iocgns {
         }
 #if IOSS_ENABLE_HYBRID
         else if (mesh_type == Ioss::MeshType::HYBRID) {
+	  CG_ZoneType_t zone_type;
+	  CGCHECKM(cg_zone_type(get_file_pointer(), base, zone, &zone_type));
+	  if (zone_type == CG_Structured) {
+	    create_structured_block(base, zone, num_node);
+	  }
+	  else if (zone_type == CG_Unstructured) {
+	    create_unstructured_block(base, zone, num_node);
+	  }
+	  else {
+	    std::ostringstream errmsg;
+	    fmt::print(errmsg, "ERROR: CGNS: Zone {} is not of type Unstructured or Structured "
+		       "which are the only types currently supported", zone);
+	    IOSS_ERROR(errmsg);
+	  }
         }
 #endif
         else {
-          std::ostringstream errmsg;
-          errmsg << "ERROR: CGNS: Zone " << zone
-                 << " is not of type Unstructured or Structured "
-                    "which are the only types currently supported";
-          IOSS_ERROR(errmsg);
+	  std::ostringstream errmsg;
+	  fmt::print(errmsg, "ERROR: CGNS: Zone {} is not of type Unstructured or Structured "
+		     "which are the only types currently supported", zone);
+	  IOSS_ERROR(errmsg);
         }
       }
     }
@@ -1340,6 +1408,13 @@ namespace Iocgns {
     if (mesh_type == Ioss::MeshType::STRUCTURED || mesh_type == Ioss::MeshType::HYBRID) {
       num_node = finalize_structured_blocks();
     }
+#if IOSS_ENABLE_HYBRID
+    if (mesh_type == Ioss::MeshType::HYBRID) {
+      // Need to add the nodes which are in the Unstructured blocks...
+      // (Currently not resolving shared nodes)
+      num_node += finalize_hybrid_unstructured_blocks();
+    }
+#endif
 
     char basename[CGNS_MAX_NAME_LENGTH + 1];
     int  cell_dimension = 0;
