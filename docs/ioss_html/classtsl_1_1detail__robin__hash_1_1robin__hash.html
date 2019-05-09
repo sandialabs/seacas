@@ -282,10 +282,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a12e7548cfc9b9c514e20982d7e995f1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa125fc16f518d067351bfa6fe968ccce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#aa125fc16f518d067351bfa6fe968ccce">max_load_factor</a> (float ml)</td></tr>
 <tr class="separator:aa125fc16f518d067351bfa6fe968ccce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a254521cd5e0a7cd35a63f9a858c0f4a2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a254521cd5e0a7cd35a63f9a858c0f4a2">rehash</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#adda293c49b4383de44cfe90428b53abe">size_type</a> <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a915500ff4656b6b8719a15d31f7ab56b">count</a>)</td></tr>
-<tr class="separator:a254521cd5e0a7cd35a63f9a858c0f4a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f19d2f3b2ab0e73393983b77887f8da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a8f19d2f3b2ab0e73393983b77887f8da">reserve</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#adda293c49b4383de44cfe90428b53abe">size_type</a> <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a915500ff4656b6b8719a15d31f7ab56b">count</a>)</td></tr>
-<tr class="separator:a8f19d2f3b2ab0e73393983b77887f8da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c0788056e69f3b493b6f6feb64fd759"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a4c0788056e69f3b493b6f6feb64fd759">rehash</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#adda293c49b4383de44cfe90428b53abe">size_type</a> my_count)</td></tr>
+<tr class="separator:a4c0788056e69f3b493b6f6feb64fd759"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae28c7b9fea587003fd86224faa0218f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#ae28c7b9fea587003fd86224faa0218f6">reserve</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#adda293c49b4383de44cfe90428b53abe">size_type</a> my_count)</td></tr>
+<tr class="separator:ae28c7b9fea587003fd86224faa0218f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38ad0d7af051e5580f92bad7021880ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a0b9227d7a66492cef157cd8c9dc8e319">hasher</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a38ad0d7af051e5580f92bad7021880ab">hash_function</a> () const</td></tr>
 <tr class="separator:a38ad0d7af051e5580f92bad7021880ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04b60bd4bb6950d15c9313f3f5f44ea8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a2c4de138a046875ad6861b9ec3e1259e">key_equal</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a04b60bd4bb6950d15c9313f3f5f44ea8">key_eq</a> () const</td></tr>
@@ -358,8 +358,8 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:ad4f24cb6a5f6a11022598d325b99265e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a342c8ac949a7a3a6503d012c8ecafbb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a342c8ac949a7a3a6503d012c8ecafbb8">insert_value_impl</a> (std::size_t ibucket, <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#ac8dcb93f0312a72b6eeab127cddf27af">distance_type</a> dist_from_ideal_bucket, <a class="el" href="namespacetsl_1_1detail__robin__hash.html#a2cbfbac638bc4acedda5558419aeb228">truncated_hash_type</a> hash, <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a7040c9dfa801bb5b4e8c0333a8df43f0">value_type</a> &amp;value)</td></tr>
 <tr class="separator:a342c8ac949a7a3a6503d012c8ecafbb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc8d0051564d4a1c2cbbd988dc302aca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#acc8d0051564d4a1c2cbbd988dc302aca">rehash_impl</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#adda293c49b4383de44cfe90428b53abe">size_type</a> <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a915500ff4656b6b8719a15d31f7ab56b">count</a>)</td></tr>
-<tr class="separator:acc8d0051564d4a1c2cbbd988dc302aca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ce4fc68194682edd47bbc1313b6bd09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a6ce4fc68194682edd47bbc1313b6bd09">rehash_impl</a> (<a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#adda293c49b4383de44cfe90428b53abe">size_type</a> my_count)</td></tr>
+<tr class="separator:a6ce4fc68194682edd47bbc1313b6bd09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3a475673587fa831b96f1a24738bfe5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#ae3a475673587fa831b96f1a24738bfe5">insert_value_on_rehash</a> (std::size_t ibucket, <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#ac8dcb93f0312a72b6eeab127cddf27af">distance_type</a> dist_from_ideal_bucket, <a class="el" href="namespacetsl_1_1detail__robin__hash.html#a2cbfbac638bc4acedda5558419aeb228">truncated_hash_type</a> hash, <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a7040c9dfa801bb5b4e8c0333a8df43f0">value_type</a> &amp;&amp;value)</td></tr>
 <tr class="separator:ae3a475673587fa831b96f1a24738bfe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec6a75c9119fad87b38e6ed9bcef2f81"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#aec6a75c9119fad87b38e6ed9bcef2f81">rehash_on_extreme_load</a> ()</td></tr>
@@ -2929,8 +2929,8 @@ template&lt;class K , class U  = ValueSelect, typename std::enable_if&lt; has_ma
 
 </div>
 </div>
-<a id="a254521cd5e0a7cd35a63f9a858c0f4a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a254521cd5e0a7cd35a63f9a858c0f4a2">&#9670;&nbsp;</a></span>rehash()</h2>
+<a id="a4c0788056e69f3b493b6f6feb64fd759"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c0788056e69f3b493b6f6feb64fd759">&#9670;&nbsp;</a></span>rehash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2944,7 +2944,7 @@ template&lt;class ValueType, class KeySelect, class ValueSelect, class Hash, cla
           <td class="memname">void <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html">tsl::detail_robin_hash::robin_hash</a>&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;::rehash </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#adda293c49b4383de44cfe90428b53abe">size_type</a>&#160;</td>
-          <td class="paramname"><em>count</em></td><td>)</td>
+          <td class="paramname"><em>my_count</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -2957,8 +2957,8 @@ template&lt;class ValueType, class KeySelect, class ValueSelect, class Hash, cla
 
 </div>
 </div>
-<a id="acc8d0051564d4a1c2cbbd988dc302aca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc8d0051564d4a1c2cbbd988dc302aca">&#9670;&nbsp;</a></span>rehash_impl()</h2>
+<a id="a6ce4fc68194682edd47bbc1313b6bd09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ce4fc68194682edd47bbc1313b6bd09">&#9670;&nbsp;</a></span>rehash_impl()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2972,7 +2972,7 @@ template&lt;class ValueType, class KeySelect, class ValueSelect, class Hash, cla
           <td class="memname">void <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html">tsl::detail_robin_hash::robin_hash</a>&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;::rehash_impl </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#adda293c49b4383de44cfe90428b53abe">size_type</a>&#160;</td>
-          <td class="paramname"><em>count</em></td><td>)</td>
+          <td class="paramname"><em>my_count</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -3014,8 +3014,8 @@ template&lt;class ValueType, class KeySelect, class ValueSelect, class Hash, cla
 
 </div>
 </div>
-<a id="a8f19d2f3b2ab0e73393983b77887f8da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8f19d2f3b2ab0e73393983b77887f8da">&#9670;&nbsp;</a></span>reserve()</h2>
+<a id="ae28c7b9fea587003fd86224faa0218f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae28c7b9fea587003fd86224faa0218f6">&#9670;&nbsp;</a></span>reserve()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3029,7 +3029,7 @@ template&lt;class ValueType, class KeySelect, class ValueSelect, class Hash, cla
           <td class="memname">void <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html">tsl::detail_robin_hash::robin_hash</a>&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;::reserve </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#adda293c49b4383de44cfe90428b53abe">size_type</a>&#160;</td>
-          <td class="paramname"><em>count</em></td><td>)</td>
+          <td class="paramname"><em>my_count</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
