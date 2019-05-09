@@ -506,9 +506,9 @@ class basic_printf_context :
    appropriate lifetimes.
    \endrst
    */
-  basic_printf_context(OutputIt out, basic_string_view<char_type> format_str,
+  basic_printf_context(OutputIt it_out, basic_string_view<char_type> format_str,
                        basic_format_args<basic_printf_context> args)
-    : base(out, format_str, args) {}
+    : base(it_out, format_str, args) {}
 
   using base::parse_context;
   using base::out;
