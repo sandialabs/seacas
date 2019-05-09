@@ -374,8 +374,8 @@ class printf_arg_formatter:
     \endrst
    */
   printf_arg_formatter(internal::basic_buffer<char_type> &buffer,
-                       format_specs &spec, context_type &ctx)
-    : base(back_insert_range<internal::basic_buffer<char_type>>(buffer), &spec,
+                       format_specs &my_spec, context_type &ctx)
+    : base(back_insert_range<internal::basic_buffer<char_type>>(buffer), &my_spec,
            ctx.locale()),
       context_(ctx) {}
 
@@ -507,8 +507,8 @@ class basic_printf_context :
    \endrst
    */
   basic_printf_context(OutputIt it_out, basic_string_view<char_type> format_str,
-                       basic_format_args<basic_printf_context> args)
-    : base(it_out, format_str, args) {}
+                       basic_format_args<basic_printf_context> my_args)
+    : base(it_out, format_str, my_args) {}
 
   using base::parse_context;
   using base::out;
@@ -629,11 +629,11 @@ void basic_printf_context<OutputIt, Char, AF>::format() {
       }
     }
 
-    format_arg arg = get_arg(it, arg_index);
-    if (spec.has(HASH_FLAG) && visit_format_arg(internal::is_zero_int(), arg))
+    format_arg fmt_arg = get_arg(it, arg_index);
+    if (spec.has(HASH_FLAG) && visit_format_arg(internal::is_zero_int(), fmt_arg))
       spec.flags = static_cast<uint_least8_t>(spec.flags & (~internal::to_unsigned<int>(HASH_FLAG)));
     if (spec.fill_ == '0') {
-      if (arg.is_arithmetic())
+      if (fmt_arg.is_arithmetic())
         spec.align_ = ALIGN_NUMERIC;
       else
         spec.fill_ = ' ';  // Ignore '0' flag for non-numeric types.
@@ -644,24 +644,24 @@ void basic_printf_context<OutputIt, Char, AF>::format() {
     switch (*it++) {
     case 'h':
       if (*it == 'h')
-        convert_arg<signed char>(arg, *++it);
+        convert_arg<signed char>(fmt_arg, *++it);
       else
-        convert_arg<short>(arg, *it);
+        convert_arg<short>(fmt_arg, *it);
       break;
     case 'l':
       if (*it == 'l')
-        convert_arg<long long>(arg, *++it);
+        convert_arg<long long>(fmt_arg, *++it);
       else
-        convert_arg<long>(arg, *it);
+        convert_arg<long>(fmt_arg, *it);
       break;
     case 'j':
-      convert_arg<intmax_t>(arg, *it);
+      convert_arg<intmax_t>(fmt_arg, *it);
       break;
     case 'z':
-      convert_arg<std::size_t>(arg, *it);
+      convert_arg<std::size_t>(fmt_arg, *it);
       break;
     case 't':
-      convert_arg<std::ptrdiff_t>(arg, *it);
+      convert_arg<std::ptrdiff_t>(fmt_arg, *it);
       break;
     case 'L':
       // printf produces garbage when 'L' is omitted for long double, no
@@ -669,14 +669,14 @@ void basic_printf_context<OutputIt, Char, AF>::format() {
       break;
     default:
       --it;
-      convert_arg<void>(arg, *it);
+      convert_arg<void>(fmt_arg, *it);
     }
 
     // Parse type.
     if (!*it)
       FMT_THROW(format_error("invalid format string"));
     spec.type = static_cast<char>(*it++);
-    if (arg.is_integral()) {
+    if (fmt_arg.is_integral()) {
       // Normalize type.
       switch (spec.type) {
       case 'i': case 'u':
@@ -685,7 +685,7 @@ void basic_printf_context<OutputIt, Char, AF>::format() {
       case 'c':
         // TODO: handle wchar_t better?
         visit_format_arg(
-              internal::char_converter<basic_printf_context>(arg), arg);
+              internal::char_converter<basic_printf_context>(fmt_arg), fmt_arg);
         break;
       }
     }
@@ -693,7 +693,7 @@ void basic_printf_context<OutputIt, Char, AF>::format() {
     start = it;
 
     // Format argument.
-    visit_format_arg(AF(buffer, spec, *this), arg);
+    visit_format_arg(AF(buffer, spec, *this), fmt_arg);
   }
   buffer.append(pointer_from(start), pointer_from(it));
 }
@@ -713,7 +713,7 @@ typedef basic_format_args<wprintf_context> wprintf_args;
 /**
   \rst
   Constructs an `~fmt::format_arg_store` object that contains references to
-  arguments and can be implicitly converted to `~fmt::printf_args`. 
+  arguments and can be implicitly converted to `~fmt::printf_args`.
   \endrst
  */
 template<typename... Args>
@@ -723,7 +723,7 @@ inline format_arg_store<printf_context, Args...>
 /**
   \rst
   Constructs an `~fmt::format_arg_store` object that contains references to
-  arguments and can be implicitly converted to `~fmt::wprintf_args`. 
+  arguments and can be implicitly converted to `~fmt::wprintf_args`.
   \endrst
  */
 template<typename... Args>
