@@ -500,8 +500,8 @@ namespace tsl {
     void min_load_factor(float ml) { m_ht.min_load_factor(ml); }
     void max_load_factor(float ml) { m_ht.max_load_factor(ml); }
 
-    void rehash(size_type count) { m_ht.rehash(count); }
-    void reserve(size_type count) { m_ht.reserve(count); }
+    void rehash(size_type my_count) { m_ht.rehash(my_count); }
+    void reserve(size_type my_count) { m_ht.reserve(my_count); }
 
     /*
      * Observers
