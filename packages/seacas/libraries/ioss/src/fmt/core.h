@@ -1003,17 +1003,17 @@ class context_base {
   typedef Char char_type;
   typedef basic_format_arg<Context> format_arg;
 
-  context_base(OutputIt out, basic_string_view<char_type> format_str,
+  context_base(OutputIt it_out, basic_string_view<char_type> format_str,
                basic_format_args<Context> ctx_args,
                locale_ref loc = locale_ref())
-  : parse_context_(format_str), out_(out), args_(ctx_args), loc_(loc) {}
+  : parse_context_(format_str), out_(it_out), args_(ctx_args), loc_(loc) {}
 
   // Returns the argument with specified index.
   format_arg do_get_arg(unsigned arg_id) {
-    format_arg arg = args_.get(arg_id);
-    if (!arg)
+    format_arg my_arg = args_.get(arg_id);
+    if (!my_arg)
       parse_context_.on_error("argument index out of range");
-    return arg;
+    return my_arg;
   }
 
   // Checks if manual indexing is used and returns the argument with
@@ -1110,10 +1110,10 @@ class basic_format_context :
    Constructs a ``basic_format_context`` object. References to the arguments are
    stored in the object so make sure they have appropriate lifetimes.
    */
-  basic_format_context(OutputIt out, basic_string_view<char_type> format_str,
+  basic_format_context(OutputIt it_out, basic_string_view<char_type> format_str,
                        basic_format_args<basic_format_context> ctx_args,
                        internal::locale_ref loc = internal::locale_ref())
-    : base(out, format_str, ctx_args, loc) {}
+    : base(it_out, format_str, ctx_args, loc) {}
 
   format_arg next_arg() {
     return this->do_get_arg(this->parse_context().next_arg_id());
