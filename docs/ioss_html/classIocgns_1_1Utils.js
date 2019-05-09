@@ -26,6 +26,7 @@ var classIocgns_1_1Utils =
     [ "resolve_processor_shared_nodes", "classIocgns_1_1Utils.html#a703a9f8e127ab053e74143ae965a6196", null ],
     [ "set_field_index", "classIocgns_1_1Utils.html#ad9c598aeee7b2aa7a9c8f210616239a2", null ],
     [ "show_config", "classIocgns_1_1Utils.html#a86f09b01938ea51b0685461593b529ba", null ],
+    [ "update_db_zone_property", "classIocgns_1_1Utils.html#a939c57c37f74ae2290e906a723c4290e", null ],
     [ "write_flow_solution_metadata", "classIocgns_1_1Utils.html#a55d3993836a0030b5fee5a28449cf9e0", null ],
     [ "CG_CELL_CENTER_FIELD_ID", "classIocgns_1_1Utils.html#a9402e65b938d9acd7db253d843c3cfd4", null ],
     [ "CG_VERTEX_FIELD_ID", "classIocgns_1_1Utils.html#a14f045649fb992aefcd9b5fbfe0988c1", null ]

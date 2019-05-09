@@ -19,6 +19,5 @@ var searchData=
   ['iovs',['Iovs',['../namespaceIovs.html',1,'']]],
   ['meta',['meta',['../namespaceIodw_1_1meta.html',1,'Iodw']]],
   ['private',['Private',['../namespaceIoss_1_1Private.html',1,'Ioss']]],
-  ['trmclr',['trmclr',['../namespaceIoss_1_1trmclr.html',1,'Ioss']]],
   ['utils',['Utils',['../namespaceIodw_1_1Utils.html',1,'Iodw']]]
 ];

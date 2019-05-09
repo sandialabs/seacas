@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include "copy_string.h"
+#include "copy_string_cpp.h"
 #include "exodusII.h"       // for ex_close, etc
 #include "nem_spread.h"     // for NemSpread, second, etc
 #include "pe_common.h"      // for PEX_MAX
@@ -45,7 +45,7 @@
 #include <cstddef>          // for size_t
 #include <cstdio>           // for fprintf, printf, nullptr, etc
 #include <cstdlib>          // for exit, free, malloc
-#include <cstring>          // for strcpy, strlen, memset, etc
+#include <cstring>          // for strlen, memset, etc
 #include <ctime>            // for asctime, localtime, time, etc
 #include <vector>           // for vector
 template <typename INT> struct ELEM_COMM_MAP;
@@ -475,8 +475,8 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
   strftime(qa_date, MAX_STR_LENGTH, "%Y/%m/%d", localtime(&date_time));
   strftime(qa_time, MAX_STR_LENGTH, "%H:%M:%S", localtime(&date_time));
 
-  copy_string(qa_name, UTIL_NAME, MAX_STR_LENGTH);
-  copy_string(qa_vers, VER_STR, MAX_STR_LENGTH);
+  copy_string(qa_name, UTIL_NAME);
+  copy_string(qa_vers, VER_STR);
 
   if (qa_date[strlen(qa_date) - 1] == '\n') {
     qa_date[strlen(qa_date) - 1] = '\0';
@@ -554,7 +554,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
   cTitle[0] = '\0';
 
   if (proc_for == 0) {
-    copy_string(cTitle, GeomTitle, MAX_LINE_LENGTH);
+    copy_string(cTitle, GeomTitle);
   }
   else {
     sprintf(cTitle, "Parallel Mesh File for Processor %d", proc_for);

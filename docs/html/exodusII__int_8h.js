@@ -309,7 +309,6 @@ var exodusII__int_8h =
     [ "ex_compress_variable", "exodusII__int_8h.html#ae240484d9a735c54d1192cde3ab82b5a", null ],
     [ "ex_conv_exit", "exodusII__int_8h.html#a83b103def944ee4eef727b743eb7eb0b", null ],
     [ "ex_conv_ini", "exodusII__int_8h.html#af60c05ed71d7bb4655cc22e301f89575", null ],
-    [ "ex_copy_string", "exodusII__int_8h.html#af1f4f3b83e65c1415d915910a48463ea", null ],
     [ "ex_dim_num_entries_in_object", "exodusII__int_8h.html#a26bd6d9a069e0d7160844525f1314c47", null ],
     [ "ex_dim_num_objects", "exodusII__int_8h.html#a8ece0f3ebc9d7e1b2e293bbb3aa3827c", null ],
     [ "ex_find_file_item", "exodusII__int_8h.html#a6ba223e1397bc8b1bb7ab311ea761feb", null ],

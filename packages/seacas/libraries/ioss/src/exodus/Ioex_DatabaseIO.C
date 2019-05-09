@@ -50,6 +50,7 @@
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
+#include <fmt/format.h>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -460,10 +461,10 @@ namespace Ioex {
       {
         int j = 0;
         for (size_t i = 0; i < num_qa_records; i++) {
-          Ioss::Utils::copy_string(qa[i].qa_record[0][0], qaRecords[j++].c_str(), MAX_STR_LENGTH);
-          Ioss::Utils::copy_string(qa[i].qa_record[0][1], qaRecords[j++].c_str(), MAX_STR_LENGTH);
-          Ioss::Utils::copy_string(qa[i].qa_record[0][2], qaRecords[j++].c_str(), MAX_STR_LENGTH);
-          Ioss::Utils::copy_string(qa[i].qa_record[0][3], qaRecords[j++].c_str(), MAX_STR_LENGTH);
+          Ioss::Utils::copy_string(qa[i].qa_record[0][0], qaRecords[j++], MAX_STR_LENGTH + 1);
+          Ioss::Utils::copy_string(qa[i].qa_record[0][1], qaRecords[j++], MAX_STR_LENGTH + 1);
+          Ioss::Utils::copy_string(qa[i].qa_record[0][2], qaRecords[j++], MAX_STR_LENGTH + 1);
+          Ioss::Utils::copy_string(qa[i].qa_record[0][3], qaRecords[j++], MAX_STR_LENGTH + 1);
         }
       }
 
@@ -480,10 +481,8 @@ namespace Ioex {
         version = get_region()->get_property("code_version").get_string();
       }
 
-      Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][0], codename.c_str(),
-                               MAX_STR_LENGTH + 1);
-      Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][1], version.c_str(),
-                               MAX_STR_LENGTH + 1);
+      Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][0], codename, MAX_STR_LENGTH + 1);
+      Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][1], version, MAX_STR_LENGTH + 1);
 
       int ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, qa[0].qa_record);
       if (ierr < 0) {
@@ -532,19 +531,18 @@ namespace Ioex {
           total_lines, max_line_length); // 'total_lines' pointers to char buffers
 
       int i = 0;
-      Ioss::Utils::copy_string(info[i++], Ioss::Utils::platform_information().c_str(),
-                               max_line_length);
+      Ioss::Utils::copy_string(info[i++], Ioss::Utils::platform_information(), max_line_length + 1);
 
-      Ioss::Utils::copy_string(info[i++], Ioex::Version(), max_line_length);
+      Ioss::Utils::copy_string(info[i++], Ioex::Version(), max_line_length + 1);
 
       // Copy input file lines into 'info' array...
       for (size_t j = 0; j < input_lines.size(); j++, i++) {
-        Ioss::Utils::copy_string(info[i], input_lines[j].c_str(), max_line_length);
+        Ioss::Utils::copy_string(info[i], input_lines[j], max_line_length + 1);
       }
 
       // Copy "information_records" property data ...
       for (size_t j = 0; j < informationRecords.size(); j++, i++) {
-        Ioss::Utils::copy_string(info[i], informationRecords[j].c_str(), max_line_length);
+        Ioss::Utils::copy_string(info[i], informationRecords[j], max_line_length + 1);
       }
 
       int ierr = ex_put_info(get_file_pointer(), total_lines, info);
@@ -1087,10 +1085,10 @@ namespace Ioex {
     // Title...
     if (get_region()->property_exists("title")) {
       std::string title_str = get_region()->get_property("title").get_string();
-      Ioss::Utils::copy_string(the_title, title_str.c_str(), max_line_length);
+      Ioss::Utils::copy_string(the_title, title_str);
     }
     else {
-      Ioss::Utils::copy_string(the_title, "IOSS Default Title", max_line_length);
+      Ioss::Utils::copy_string(the_title, "IOSS Default Title");
     }
 
     Ioex::Mesh mesh(spatialDimension, the_title, !usingParallelIO);
@@ -1553,16 +1551,16 @@ namespace Ioex {
       // have already created the output database and populated the set/block names. At this point,
       // it is too late to change the size of the names stored on the output database... (I think...
       // try changing DIM_STR_NAME value and see if works...)
-      if (name_length > (size_t)maximumNameLength) {
+      if (name_length > static_cast<size_t>(maximumNameLength)) {
         if (myProcessor == 0) {
           IOSS_WARNING << "WARNING: There are variables names whose length (" << name_length
                        << ") exceeds the current "
                           "maximum name length ("
-                       << maximumNameLength << ") set for this database (" << get_filename()
-                       << ").\n"
+                       << maximumNameLength << ")\n         set for this database ("
+                       << get_filename() << ").\n"
                        << "         You should either reduce the length of the variable name, or "
-                          "set the 'MAXIMUM_NAME_LENGTH' property "
-                       << "to at least " << name_length
+                          "set the 'MAXIMUM_NAME_LENGTH' property\n"
+                       << "         to at least " << name_length
                        << ".\n         Contact gdsjaar@sandia.gov for more information.\n\n";
         }
       }
@@ -1712,10 +1710,8 @@ namespace Ioex {
         // higher-order storage type.
 
         for (int i = 0; i < attribute_count; i++) {
-          int writ = ::snprintf(names[i], maximumNameLength + 1, "attribute_%d", i + 1);
-          if (writ > maximumNameLength) {
-            names[i][maximumNameLength] = '\0';
-          }
+          std::string tmp = fmt::format("attribute_{}", i + 1);
+          Ioss::Utils::copy_string(names[i], tmp, maximumNameLength + 1);
         }
       }
       else {
@@ -1784,10 +1780,7 @@ namespace Ioex {
           if (attribute_count == block->get_property("topology_node_count").get_int()) {
             att_name = "nodal_thickness";
 
-            std::string storage = "Real[";
-            storage += std::to_string(attribute_count);
-            storage += "]";
-
+            std::string storage = fmt::format("Real[{}]", attribute_count);
             block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage,
                                          Ioss::Field::ATTRIBUTE, my_element_count, 1));
           }
@@ -1890,10 +1883,8 @@ namespace Ioex {
         if (unknown_attributes > 0) {
           att_name = "extra_attribute_";
           att_name += std::to_string(unknown_attributes);
-          std::string storage = "Real[";
-          storage += std::to_string(unknown_attributes);
-          storage += "]";
-          size_t index = attribute_count - unknown_attributes + 1;
+          std::string storage = fmt::format("Real[{}]", unknown_attributes);
+          size_t      index   = attribute_count - unknown_attributes + 1;
           block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage, Ioss::Field::ATTRIBUTE,
                                        my_element_count, index));
         }
@@ -1902,9 +1893,7 @@ namespace Ioex {
       // Always create a field called "attribute" containing data
       // for all attributes on the mesh
       std::string att_name = "attribute"; // Default
-      std::string storage  = "Real[";
-      storage += std::to_string(attribute_count);
-      storage += "]";
+      std::string storage  = fmt::format("Real[{}]", attribute_count);
 
       block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage, Ioss::Field::ATTRIBUTE,
                                    my_element_count, 1));

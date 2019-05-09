@@ -83,8 +83,7 @@ int ex_put_init(int exoid, const char *title, int64_t num_dim, int64_t num_nodes
 {
   ex_init_params par;
 
-  ex_copy_string(par.title, title, 80);
-  par.title[80] = '\0';
+  ex_copy_string(par.title, title, MAX_LINE_LENGTH + 1);
 
   par.num_dim       = num_dim;
   par.num_nodes     = num_nodes;

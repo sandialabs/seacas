@@ -11,7 +11,7 @@
 #include <cstring>
 
 #include "ED_Version.h"
-#include "copy_string.h"
+#include "copy_string_cpp.h"
 #include "stringx.h"
 #include <SL_tokenize.h>
 
@@ -1266,10 +1266,10 @@ void SystemInterface::Parse_Command_File()
         Check_Parsed_Names(glob_var_names, glob_var_do_all_flag);
 
         if (!xline.empty()) {
-          copy_string(line, xline.c_str(), 255);
+          copy_string(line, xline);
         }
         else {
-          strcpy(line, "");
+          copy_string(line, "");
         }
 
         continue;
@@ -1282,10 +1282,10 @@ void SystemInterface::Parse_Command_File()
         Check_Parsed_Names(node_var_names, node_var_do_all_flag);
 
         if (!xline.empty()) {
-          copy_string(line, xline.c_str(), 255);
+          copy_string(line, xline);
         }
         else {
-          strcpy(line, "");
+          copy_string(line, "");
         }
 
         continue;
@@ -1298,10 +1298,10 @@ void SystemInterface::Parse_Command_File()
         Check_Parsed_Names(elmt_var_names, elmt_var_do_all_flag);
 
         if (!xline.empty()) {
-          copy_string(line, xline.c_str(), 255);
+          copy_string(line, xline);
         }
         else {
-          strcpy(line, "");
+          copy_string(line, "");
         }
 
         continue;
@@ -1314,10 +1314,10 @@ void SystemInterface::Parse_Command_File()
         Check_Parsed_Names(ns_var_names, ns_var_do_all_flag);
 
         if (!xline.empty()) {
-          copy_string(line, xline.c_str(), 255);
+          copy_string(line, xline);
         }
         else {
-          strcpy(line, "");
+          copy_string(line, "");
         }
 
         continue;
@@ -1330,10 +1330,10 @@ void SystemInterface::Parse_Command_File()
         Check_Parsed_Names(ss_var_names, ss_var_do_all_flag);
 
         if (!xline.empty()) {
-          copy_string(line, xline.c_str(), 255);
+          copy_string(line, xline);
         }
         else {
-          strcpy(line, "");
+          copy_string(line, "");
         }
 
         continue;
@@ -1430,10 +1430,10 @@ void SystemInterface::Parse_Command_File()
         Check_Parsed_Names(elmt_att_names, elmt_att_do_all_flag);
 
         if (!xline.empty()) {
-          copy_string(line, xline.c_str(), 255);
+          copy_string(line, xline);
         }
         else {
-          strcpy(line, "");
+          copy_string(line, "");
         }
 
         continue;

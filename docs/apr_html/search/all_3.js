@@ -20,6 +20,7 @@ var searchData=
   ['concat_5fstring',['concat_string',['../namespaceSEAMS.html#a41353d3d45d86d0c6f8a723a29701b8a',1,'SEAMS']]],
   ['const_5fiterator',['const_iterator',['../classSEAMS_1_1Parser_1_1stack.html#ae65dd6e3b77fefe4d0213093389d1579',1,'SEAMS::Parser::stack']]],
   ['conv_5fstring',['conv_string',['../namespaceSEAMS.html#aedae771561608a98dc74ca400ed3b7b8',1,'SEAMS::conv_string(const char *string)'],['../namespaceSEAMS.html#a19c836a774b99479ca97f4b8ed654c07',1,'SEAMS::conv_string(char *string)']]],
+  ['copy_5fstring',['copy_string',['../namespaceanonymous__namespace_02apr__util_8cc_03.html#ad654db4b411275026f8ded8d5144e5cc',1,'anonymous_namespace{apr_util.cc}::copy_string(char *dest, const char *source, long int elements)'],['../namespaceanonymous__namespace_02apr__util_8cc_03.html#ad6cd715f7752222febff9ad4c321b7a8',1,'anonymous_namespace{apr_util.cc}::copy_string(char *dest, const std::string &amp;source, long int elements)']]],
   ['curr_5findex',['curr_index',['../apr__scanner_8cc.html#accf9b292c5dce70026d58801522ebb7d',1,'apr_scanner.cc']]],
   ['cyan',['CYAN',['../structtrmclr_1_1Foreground.html#add2640fff4af2ff8c047db518188fb58ab93c1d50edeef7564b030bbc66741a17',1,'trmclr::Foreground::CYAN()'],['../structtrmclr_1_1Background.html#aa96259e93f51806dbf9b4016f45dbfaaa86dac566f9350fd01193c1b54d553110',1,'trmclr::Background::CYAN()'],['../namespacetrmclr.html#a3df9d59301daa56cb0833e93ab8bc6fa',1,'trmclr::cyan()']]]
 ];
