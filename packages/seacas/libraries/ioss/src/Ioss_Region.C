@@ -428,25 +428,77 @@ namespace Ioss {
   void Region::output_summary(std::ostream &strm, bool do_transient)
   {
     IOSS_FUNC_ENTER(m_);
+
+    int64_t                               total_cells = 0;
+    const Ioss::StructuredBlockContainer &sbs         = get_structured_blocks();
+    for (auto sb : sbs) {
+      int64_t num_cell = sb->get_property("cell_count").get_int();
+      total_cells += num_cell;
+    }
+
+    const Ioss::NodeSetContainer &nss            = get_nodesets();
+    int64_t                       total_ns_nodes = 0;
+    for (auto ns : nss) {
+      int64_t count = ns->entity_count();
+      total_ns_nodes += count;
+    }
+
+    const auto &ess            = get_edgesets();
+    int64_t     total_es_edges = 0;
+    for (auto es : ess) {
+      int64_t count = es->entity_count();
+      total_es_edges += count;
+    }
+
+    const auto &fss            = get_facesets();
+    int64_t     total_fs_faces = 0;
+    for (auto fs : fss) {
+      int64_t count = fs->entity_count();
+      total_fs_faces += count;
+    }
+
+    const auto &els               = get_elementsets();
+    int64_t     total_es_elements = 0;
+    for (auto es : els) {
+      int64_t count = es->entity_count();
+      total_es_elements += count;
+    }
+
+    const Ioss::SideSetContainer &sss         = get_sidesets();
+    int64_t                       total_sides = 0;
+    for (auto fs : sss) {
+      const Ioss::SideBlockContainer &fbs = fs->get_side_blocks();
+      for (auto fb : fbs) {
+        int64_t num_side = fb->entity_count();
+        total_sides += num_side;
+      }
+    }
+
     fmt::print(
         strm,
-        "\n Database: {}\n"
-        " Mesh Type = {}\n\n"
-        " Number of coordinates per node   = {:12d}\n"
-        " Number of nodes                  = {:12d}\n"
-        " Number of edges                  = {:12d}\n"
-        " Number of faces                  = {:12d}\n"
-        " Number of elements               = {:12d}\n"
-        " Number of node blocks            = {:12d}\n"
-        " Number of edge blocks            = {:12d}\n"
-        " Number of face blocks            = {:12d}\n"
-        " Number of element blocks         = {:12d}\n"
-        " Number of structured blocks      = {:12d}\n"
-        " Number of node sets              = {:12d}\n"
-        " Number of edge sets              = {:12d}\n"
-        " Number of face sets              = {:12d}\n"
-        " Number of element sets           = {:12d}\n"
-        " Number of element side sets      = {:12d}\n\n",
+        "\n Database: {0}\n"
+        " Mesh Type = {1}\n\n"
+        " Number of spatial dimensions = {2:10n}\n"
+        " Number of node blocks        = {7:10n}\t"
+        " Number of nodes              = {3:14n}\n"
+        " Number of edge blocks        = {8:10n}\t"
+        " Number of edges              = {4:14n}\n"
+        " Number of face blocks        = {9:10n}\t"
+        " Number of faces              = {5:14n}\n"
+        " Number of element blocks     = {10:10n}\t"
+        " Number of elements           = {6:14n}\n"
+        " Number of structured blocks  = {11:10n}\t"
+        " Number of cells              = {17:14n}\n"
+        " Number of node sets          = {12:10n}\t"
+        " Length of node list          = {18:14n}\n"
+        " Number of edge sets          = {13:10n}\t"
+        " Length of edge list          = {19:14n}\n"
+        " Number of face sets          = {14:10n}\t"
+        " Length of face list          = {20:14n}\n"
+        " Number of element sets       = {15:10n}\t"
+        " Length of element list       = {21:14n}\n"
+        " Number of element side sets  = {16:10n}\t"
+        " Length of element sides      = {22:14n}\n\n",
         get_database()->get_filename(), mesh_type_string(),
         get_property("spatial_dimension").get_int(), get_property("node_count").get_int(),
         get_property("edge_count").get_int(), get_property("face_count").get_int(),
@@ -455,14 +507,16 @@ namespace Ioss {
         get_property("element_block_count").get_int(),
         get_property("structured_block_count").get_int(), get_property("node_set_count").get_int(),
         get_property("edge_set_count").get_int(), get_property("face_set_count").get_int(),
-        get_property("element_set_count").get_int(), get_property("side_set_count").get_int());
+        get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
+        total_cells, total_ns_nodes, total_es_edges, total_fs_faces, total_es_elements,
+        total_sides);
 
     if (do_transient && get_property("state_count").get_int() > 0) {
-      fmt::print(strm, " Number of global variables       = {:12d}\n", field_count());
+      fmt::print(strm, " Number of global variables       = {:10n}\n", field_count());
       {
         Ioss::NameList names;
         nodeBlocks[0]->field_describe(Ioss::Field::TRANSIENT, &names);
-        fmt::print(strm, " Number of nodal variables        = {:12d}\n", names.size());
+        fmt::print(strm, " Number of nodal variables        = {:10n}\n", names.size());
       }
 
       {
@@ -472,7 +526,7 @@ namespace Ioss {
           block->field_describe(Ioss::Field::TRANSIENT, &names);
         }
         Ioss::Utils::uniquify(names);
-        fmt::print(strm, " Number of element variables      = {:12d}\n", names.size());
+        fmt::print(strm, " Number of element variables      = {:10n}\n", names.size());
       }
 
       {
@@ -482,7 +536,7 @@ namespace Ioss {
           block->field_describe(Ioss::Field::TRANSIENT, &names);
         }
         Ioss::Utils::uniquify(names);
-        fmt::print(strm, " Number of structured block vars  = {:12d}\n", names.size());
+        fmt::print(strm, " Number of structured block vars  = {:10n}\n", names.size());
       }
 
       {
@@ -492,7 +546,7 @@ namespace Ioss {
           block->field_describe(Ioss::Field::TRANSIENT, &names);
         }
         Ioss::Utils::uniquify(names);
-        fmt::print(strm, " Number of nodeset variables      = {:12d}\n", names.size());
+        fmt::print(strm, " Number of nodeset variables      = {:10n}\n", names.size());
       }
 
       {
@@ -506,9 +560,9 @@ namespace Ioss {
         }
 
         Ioss::Utils::uniquify(names);
-        fmt::print(" Number of sideset variables      = {:12d}\n", names.size());
+        fmt::print(" Number of sideset variables      = {:10n}\n", names.size());
       }
-      fmt::print(strm, "\n Number of database time steps    = {:12d}\n",
+      fmt::print(strm, "\n Number of database time steps    = {:10n}\n",
                  get_property("state_count").get_int());
     }
   }

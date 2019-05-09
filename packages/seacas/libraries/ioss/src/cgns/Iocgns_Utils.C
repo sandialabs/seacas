@@ -228,11 +228,14 @@ namespace {
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
     if (sset == nullptr) {
       if (block->get_database()->parallel_rank() == 0) {
-        IOSS_WARNING << "On block " << block->name() << ", found the boundary condition named "
-                     << boco_name << " in family " << fam_name
-                     << ". This family was not previously defined at the top-level of the file"
-                     << " which is not normal.  Check your file to make sure this does not "
-                     << "indicate a problem with the mesh.\n";
+        fmt::print(
+            IOSS_WARNING,
+            "WARNING: On block '{}', found the boundary condition named '{}' in family '{}'.\n"
+            "         This family was not previously defined at the top-level of the file"
+            " which is not normal.\n"
+            "         Check your file to make sure this does not "
+            "indicate a problem with the mesh.\n",
+            block->name(), boco_name, fam_name);
       }
 
       // Need to create a new sideset since didn't see this earlier.
