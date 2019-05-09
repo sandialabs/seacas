@@ -39,7 +39,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "1.0";
+  std::string version = "1.05";
 } // namespace
 
 int main(int argc, char *argv[])

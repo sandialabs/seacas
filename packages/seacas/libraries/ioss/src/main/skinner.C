@@ -74,7 +74,7 @@ namespace {
 
   template <typename INT> void skinner(Skinner::Interface &interface, INT /*dummy*/);
   std::string                  codename;
-  std::string                  version = "0.8";
+  std::string                  version = "0.9";
 } // namespace
 
 int main(int argc, char *argv[])
@@ -163,6 +163,7 @@ namespace {
 
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");
+    region.output_summary(std::cerr, false);
 
     Ioss::FaceGenerator face_generator(region);
 #ifdef SEACAS_HAVE_MPI
