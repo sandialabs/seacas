@@ -63,11 +63,14 @@
 #include <set>
 #include <string>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <tokenize.h>
 #include <utility>
 #include <vector>
 
 namespace {
+  auto initial_time = std::chrono::high_resolution_clock::now();
+
   void log_time(std::chrono::time_point<std::chrono::high_resolution_clock> &start,
                 std::chrono::time_point<std::chrono::high_resolution_clock> &finish,
                 int current_state, double state_time, bool is_input, bool single_proc_only,
@@ -1034,12 +1037,8 @@ namespace Ioss {
   }
 } // namespace Ioss
 
-#include <sys/time.h>
 
 namespace {
-  struct timeval tp;
-  double         initial_time = -1.0;
-
   void log_time(std::chrono::time_point<std::chrono::high_resolution_clock> &start,
                 std::chrono::time_point<std::chrono::high_resolution_clock> &finish,
                 int current_state, double state_time, bool is_input, bool single_proc_only,
@@ -1089,11 +1088,6 @@ namespace {
   void log_field(const char *symbol, const Ioss::GroupingEntity *entity, const Ioss::Field &field,
                  bool single_proc_only, const Ioss::ParallelUtils &util)
   {
-    if (initial_time < 0.0) {
-      gettimeofday(&tp, nullptr);
-      initial_time = static_cast<double>(tp.tv_sec) + (1.e-6) * tp.tv_usec;
-    }
-
     if (entity != nullptr) {
       std::vector<int64_t> all_sizes;
       if (single_proc_only) {
@@ -1106,9 +1100,9 @@ namespace {
       if (util.parallel_rank() == 0 || single_proc_only) {
         const std::string &name = entity->name();
         std::ostringstream strm;
-        gettimeofday(&tp, nullptr);
-        double time_now = static_cast<double>(tp.tv_sec) + (1.e-6) * tp.tv_usec;
-        fmt::print(strm, "{} [{:.3f}]\t", symbol, time_now - initial_time);
+	auto now  = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> diff = now - initial_time;
+        fmt::print(strm, "{} [{:.3f}]\t", symbol, diff.count());
 
         int64_t total = 0;
         for (auto &p_size : all_sizes) {
@@ -1139,9 +1133,9 @@ namespace {
       }
 #endif
       if (util.parallel_rank() == 0 || single_proc_only) {
-        gettimeofday(&tp, nullptr);
-        double time_now = static_cast<double>(tp.tv_sec) + (1.e-6) * tp.tv_usec;
-        fmt::print("{} [{:.3f}]\n", symbol, time_now - initial_time);
+	auto time_now  = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> diff = time_now - initial_time;
+        fmt::print("{} [{:.3f}]\n", symbol, diff.count());
       }
     }
   }
