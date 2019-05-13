@@ -36,6 +36,7 @@
 #include <Ioss_Utils.h>
 #include <algorithm>
 #include <cassert>
+#include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -52,6 +53,8 @@
 #endif
 
 namespace {
+  auto initial_time = std::chrono::high_resolution_clock::now();
+
 #ifdef SEACAS_HAVE_MPI
   MPI_Op which_reduction(Ioss::ParallelUtils::MinMax which)
   {
@@ -496,21 +499,16 @@ void Ioss::ParallelUtils::all_gather(std::vector<T> &my_values, std::vector<T> &
 #endif
 }
 
-#include <chrono>
-#include <iomanip>
-
 void Ioss::ParallelUtils::progress(const std::string &output) const
 {
   int64_t MiB = 1024 * 1024;
   int64_t min = 0, max = 0, avg = 0;
   memory_stats(min, max, avg);
 
-  static auto start = std::chrono::high_resolution_clock::now();
-
   if (parallel_rank() == 0) {
     auto                          now  = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> diff = now - start;
-    fmt::print(std::cerr, " [{:.2f}] ({}MiB  {}MiB  {}MiB)\t{}\n", diff.count(), min / MiB,
+    std::chrono::duration<double> diff = now - initial_time;
+    fmt::print(std::cerr, "  [{:.3f}] ({}MiB  {}MiB  {}MiB)\t{}\n", diff.count(), min / MiB,
                max / MiB, avg / MiB, output);
   }
 }
