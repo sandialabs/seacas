@@ -60,33 +60,34 @@
 #error "Could not include cgnslib.h"
 #endif
 
-#include "Ioss_CommSet.h"
-#include "Ioss_DBUsage.h"
-#include "Ioss_DatabaseIO.h"
-#include "Ioss_EdgeBlock.h"
-#include "Ioss_EdgeSet.h"
-#include "Ioss_ElementBlock.h"
-#include "Ioss_ElementSet.h"
-#include "Ioss_ElementTopology.h"
-#include "Ioss_EntityType.h"
-#include "Ioss_FaceBlock.h"
-#include "Ioss_FaceSet.h"
-#include "Ioss_Field.h"
-#include "Ioss_FileInfo.h"
-#include "Ioss_Hex8.h"
-#include "Ioss_IOFactory.h"
-#include "Ioss_NodeBlock.h"
-#include "Ioss_NodeSet.h"
-#include "Ioss_ParallelUtils.h"
-#include "Ioss_Property.h"
-#include "Ioss_Quad4.h"
-#include "Ioss_Region.h"
-#include "Ioss_SideBlock.h"
-#include "Ioss_SideSet.h"
-#include "Ioss_State.h"
-#include "Ioss_StructuredBlock.h"
-#include "Ioss_Utils.h"
-#include "Ioss_VariableType.h"
+#include <Ioss_CommSet.h>
+#include <Ioss_DBUsage.h>
+#include <Ioss_DatabaseIO.h>
+#include <Ioss_EdgeBlock.h>
+#include <Ioss_EdgeSet.h>
+#include <Ioss_ElementBlock.h>
+#include <Ioss_ElementSet.h>
+#include <Ioss_ElementTopology.h>
+#include <Ioss_EntityType.h>
+#include <Ioss_FaceBlock.h>
+#include <Ioss_FaceSet.h>
+#include <Ioss_Field.h>
+#include <Ioss_FileInfo.h>
+#include <Ioss_Hex8.h>
+#include <Ioss_IOFactory.h>
+#include <Ioss_MeshType.h>
+#include <Ioss_NodeBlock.h>
+#include <Ioss_NodeSet.h>
+#include <Ioss_ParallelUtils.h>
+#include <Ioss_Property.h>
+#include <Ioss_Quad4.h>
+#include <Ioss_Region.h>
+#include <Ioss_SideBlock.h>
+#include <Ioss_SideSet.h>
+#include <Ioss_State.h>
+#include <Ioss_StructuredBlock.h>
+#include <Ioss_Utils.h>
+#include <Ioss_VariableType.h>
 
 extern char hdf5_access[64];
 
@@ -1051,7 +1052,7 @@ namespace Iocgns {
 
   size_t DatabaseIO::finalize_hybrid_unstructured_blocks()
   {
-    size_t node = 0;
+    size_t      node   = 0;
     const auto &blocks = get_region()->get_element_blocks();
     for (const auto &b : blocks) {
       int zone = Iocgns::Utils::get_db_zone(b);
@@ -1153,14 +1154,15 @@ namespace Iocgns {
         if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList ||
             donor_ptset_type != CG_PointListDonor) {
           std::ostringstream errmsg;
-	  fmt::print(errmsg,
-		     "ERROR: CGNS: Zone {} adjacency data is not correct type. Require Abutting1to1 and PointList. {}\t{}\t{}\n",
-		     zone, connect_type, ptset_type, donor_ptset_type);
+          fmt::print(errmsg,
+                     "ERROR: CGNS: Zone {} adjacency data is not correct type. Require "
+                     "Abutting1to1 and PointList. {}\t{}\t{}\n",
+                     zone, connect_type, ptset_type, donor_ptset_type);
 #if IOSS_ENABLE_HYBRID
-	  std::cerr << errmsg.str();
-	  continue;
+          std::cerr << errmsg.str();
+          continue;
 #else
-	  IOSS_ERROR(errmsg);
+          IOSS_ERROR(errmsg);
 #endif
         }
 
@@ -1180,24 +1182,25 @@ namespace Iocgns {
 #if IOSS_DEBUG_OUTPUT
           fmt::print("Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
 #endif
-#if 0
-          std::vector<cgsize_t> points(npnts);
-          std::vector<cgsize_t> donors(npnts);
-
-          CGCHECKM(cg_conn_read(get_file_pointer(), base, zone, i + 1, TOPTR(points),
-                                donor_datatype, TOPTR(donors)));
-
-          // Fill in entries in m_blockLocalNodeMap for the shared nodes...
-          auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
-          auto &block_map = m_blockLocalNodeMap[zone];
-          for (int j = 0; j < npnts; j++) {
-            cgsize_t point       = points[j];
-            cgsize_t donor       = donors[j];
-            block_map[point - 1] = donor_map[donor - 1];
+          if (get_region()->mesh_type() == Ioss::MeshType::HYBRID) {
+            fmt::print(stderr, "\n\nFIX THE NODE SHARING FOR HYBRID!!!\n\n");
           }
-#else
-          fmt::print(stderr, "\n\nFIX THE NODE SHARING FOR HYBRID!!!\n\n");
-#endif
+          else {
+            std::vector<cgsize_t> points(npnts);
+            std::vector<cgsize_t> donors(npnts);
+
+            CGCHECKM(cg_conn_read(get_file_pointer(), base, zone, i + 1, TOPTR(points),
+                                  donor_datatype, TOPTR(donors)));
+
+            // Fill in entries in m_blockLocalNodeMap for the shared nodes...
+            auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
+            auto &block_map = m_blockLocalNodeMap[zone];
+            for (int j = 0; j < npnts; j++) {
+              cgsize_t point       = points[j];
+              cgsize_t donor       = donors[j];
+              block_map[point - 1] = donor_map[donor - 1];
+            }
+          }
         }
       }
     }
@@ -1243,15 +1246,17 @@ namespace Iocgns {
 
       cgsize_t num_entity = el_end - el_start + 1;
       if (parent_flag == 0) {
-	num_block++;
-	assert(num_block == is);
+        num_block++;
+        assert(num_block == is);
         num_elem -= num_entity;
       }
     }
 
     if (num_block > 1) {
-      fmt::print(stderr, "WARNING: Multiple element blocks ({}) in zone '{}' ({}). This is not tested very much.\n",
-		 num_block, zone_name, zone);
+      fmt::print(stderr,
+                 "WARNING: Multiple element blocks ({}) in zone '{}' ({}). This is not tested very "
+                 "much.\n",
+                 num_block, zone_name, zone);
     }
 
     // Now create the blocks (and sidesets)...
@@ -1270,13 +1275,14 @@ namespace Iocgns {
       cgsize_t num_entity = el_end - el_start + 1;
 
       if (parent_flag == 0) {
-	std::string block_name{zone_name};
+        std::string block_name{zone_name};
         std::string element_topo = Utils::map_cgns_to_topology_type(e_type);
 
-	if (num_block > 1) {
-	  // Multiple element blocks in the same zone.  Need to modify name to avoid name collision...
-	  block_name = fmt::format("{}_{}", zone_name, element_topo);
-	}
+        if (num_block > 1) {
+          // Multiple element blocks in the same zone.  Need to modify name to avoid name
+          // collision...
+          block_name = fmt::format("{}_{}", zone_name, element_topo);
+        }
 
 #if IOSS_DEBUG_OUTPUT
         fmt::print("Added block {}: CGNS topology = '{}', IOSS topology = '{}' with {} elements\n",
@@ -1380,27 +1386,31 @@ namespace Iocgns {
         }
 #if IOSS_ENABLE_HYBRID
         else if (mesh_type == Ioss::MeshType::HYBRID) {
-	  CG_ZoneType_t zone_type;
-	  CGCHECKM(cg_zone_type(get_file_pointer(), base, zone, &zone_type));
-	  if (zone_type == CG_Structured) {
-	    create_structured_block(base, zone, num_node);
-	  }
-	  else if (zone_type == CG_Unstructured) {
-	    create_unstructured_block(base, zone, num_node);
-	  }
-	  else {
-	    std::ostringstream errmsg;
-	    fmt::print(errmsg, "ERROR: CGNS: Zone {} is not of type Unstructured or Structured "
-		       "which are the only types currently supported", zone);
-	    IOSS_ERROR(errmsg);
-	  }
+          CG_ZoneType_t zone_type;
+          CGCHECKM(cg_zone_type(get_file_pointer(), base, zone, &zone_type));
+          if (zone_type == CG_Structured) {
+            create_structured_block(base, zone, num_node);
+          }
+          else if (zone_type == CG_Unstructured) {
+            create_unstructured_block(base, zone, num_node);
+          }
+          else {
+            std::ostringstream errmsg;
+            fmt::print(errmsg,
+                       "ERROR: CGNS: Zone {} is not of type Unstructured or Structured "
+                       "which are the only types currently supported",
+                       zone);
+            IOSS_ERROR(errmsg);
+          }
         }
 #endif
         else {
-	  std::ostringstream errmsg;
-	  fmt::print(errmsg, "ERROR: CGNS: Zone {} is not of type Unstructured or Structured "
-		     "which are the only types currently supported", zone);
-	  IOSS_ERROR(errmsg);
+          std::ostringstream errmsg;
+          fmt::print(errmsg,
+                     "ERROR: CGNS: Zone {} is not of type Unstructured or Structured "
+                     "which are the only types currently supported",
+                     zone);
+          IOSS_ERROR(errmsg);
         }
       }
     }
