@@ -286,7 +286,12 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
 
-  blockPrefix_ = std::string(options_.retrieve("block_prefix"));
+  {
+    const char *temp = options_.retrieve("block_prefix");
+    if (temp != nullptr) {
+      blockPrefix_ = temp;
+    }
+  }
 
   {
     const char *temp = options_.retrieve("offset");
