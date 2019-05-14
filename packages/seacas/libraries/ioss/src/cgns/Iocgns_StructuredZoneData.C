@@ -345,7 +345,6 @@ namespace Iocgns {
 #if IOSS_DEBUG_OUTPUT
     if (rank == 0) {
       fmt::print(OUTPUT,
-<<<<<<< HEAD
                  "\nSplit Zone {} ({}) Adam {} ({}) with intervals {} {} {}, work = {}, offset {} "
                  "{} {} along ordinal {} with ratio {}\n"
                  "\tChild 1: Zone {} ({}) Adam {} ({}) with intervals {} {} {}, work = {}, offset "
@@ -361,19 +360,6 @@ namespace Iocgns {
                  m_child2->m_adam->m_name, m_child2->m_adam->m_zone, m_child2->m_ordinal[0],
                  m_child2->m_ordinal[1], m_child2->m_ordinal[2], m_child2->work(),
                  m_child2->m_offset[0], m_child2->m_offset[1], m_child2->m_offset[2]);
-=======
-		 "\nSplit Zone {} ({}) Adam {} ({}) with intervals {} {} {}, work = {}, offset {} {} {} along ordinal {} with ratio {}\n"
-		 "\tChild 1: Zone {} ({}) Adam {} ({}) with intervals {} {} {}, work = {}, offset {} {} {}\n"
-		 "\tChild 2: Zone {} ({}) Adam {} ({}) with intervals {} {} {}, work = {}, offset {} {} {}\n",
-		 m_name, m_zone, m_adam->m_name, m_adam->m_zone, m_ordinal[0], m_ordinal[1], m_ordinal[2], work(), 
-		 m_offset[0], m_offset[1], m_offset[2], ordinal, ratio, 
-		 m_child1->m_name, m_child1->m_zone, m_child1->m_adam->m_name, m_child1->m_adam->m_zone,
-		 m_child1->m_ordinal[0], m_child1->m_ordinal[1], m_child1->m_ordinal[2], m_child1->work(), 
-		 m_child1->m_offset[0], m_child1->m_offset[1], m_child1->m_offset[2],
-		 m_child2->m_name, m_child2->m_zone, m_child2->m_adam->m_name, m_child2->m_adam->m_zone,
-		 m_child2->m_ordinal[0], m_child2->m_ordinal[1], m_child2->m_ordinal[2], m_child2->work(), 
-		 m_child2->m_offset[0], m_child2->m_offset[1], m_child2->m_offset[2]);
->>>>>>> IOSS: More conversion to fmt::print
     }
 #endif
 
