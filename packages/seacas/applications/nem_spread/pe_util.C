@@ -187,25 +187,24 @@ std::string gen_par_filename(const std::string &scalar_fname, int proc_for, int 
    * file used by this processor.
    */
   if (PIO_Info.NoSubdirectory == 1) {
-    par_filename =
-        std::string(PIO_Info.Par_Dsk_Root) + std::string(PIO_Info.Par_Dsk_SubDirec) + par_filename;
+    par_filename = PIO_Info.Par_Dsk_Root + PIO_Info.Par_Dsk_SubDirec + par_filename;
   }
   else {
     if (PIO_Info.Zeros != 0) {
       ctrlID = PIO_Info.RDsk_List[proc_for][0];
       if (ctrlID <= 9) {
-        par_filename = std::string(PIO_Info.Par_Dsk_Root) + "0" + std::to_string(ctrlID) + "/" +
-                       std::string(PIO_Info.Par_Dsk_SubDirec) + par_filename;
+        par_filename = PIO_Info.Par_Dsk_Root + "0" + std::to_string(ctrlID) + "/" +
+                       PIO_Info.Par_Dsk_SubDirec + par_filename;
       }
       else {
-        par_filename = std::string(PIO_Info.Par_Dsk_Root) + std::to_string(ctrlID) + "/" +
-                       std::string(PIO_Info.Par_Dsk_SubDirec) + par_filename;
+        par_filename = PIO_Info.Par_Dsk_Root + std::to_string(ctrlID) + "/" +
+                       PIO_Info.Par_Dsk_SubDirec + par_filename;
       }
     }
     else {
       ctrlID       = PIO_Info.RDsk_List[proc_for][0];
-      par_filename = std::string(PIO_Info.Par_Dsk_Root) + std::to_string(ctrlID) + "/" +
-                     std::string(PIO_Info.Par_Dsk_SubDirec) + par_filename;
+      par_filename = PIO_Info.Par_Dsk_Root + std::to_string(ctrlID) + "/" +
+                     PIO_Info.Par_Dsk_SubDirec + par_filename;
     }
   }
   if (Debug_Flag >= 4) {

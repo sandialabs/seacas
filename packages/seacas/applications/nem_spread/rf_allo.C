@@ -223,7 +223,7 @@ static void *smalloc(size_t n, char *filename, int lineno)
     fprintf(stderr,
             "%s (from %s,%d) Out of space - number of bytes "
             "requested = " ST_ZU "\n",
-            yo, filename, lineno, (unsigned long)n);
+            yo, filename, lineno, n);
     exit(0);
   }
 
