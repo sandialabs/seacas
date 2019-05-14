@@ -979,8 +979,7 @@ namespace Ioex {
     step         = get_database_step(step);
     size_t count = globalValues.size();
     if (count > 0) {
-      int ierr = ex_put_var(get_file_pointer(), step, EX_GLOBAL, 1, 0, count,
-                            (double *)TOPTR(globalValues));
+      int ierr = ex_put_var(get_file_pointer(), step, EX_GLOBAL, 1, 0, count, globalValues.data());
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
