@@ -838,8 +838,8 @@ namespace SEAMS {
       }
     }
 
-    hash_ratio = hash_ratio / (static_cast<float>(entries) / HASHSIZE *
-                               static_cast<float>(entries + 2.0 * HASHSIZE - 1.0));
+    hash_ratio = hash_ratio / (static_cast<double>(entries) / HASHSIZE *
+                               static_cast<double>(entries + 2.0 * HASHSIZE - 1.0));
     (*output) << entries << " entries in " << HASHSIZE << " element hash table, " << lengths[0]
               << " (" << (static_cast<double>(lengths[0]) / HASHSIZE) * 100.0 << "%) empty.\n"
               << "Hash ratio = " << hash_ratio << "\n"
