@@ -158,7 +158,7 @@ int read_exo_weights(Problem_Description *prob, Weight_Description<INT> *weight)
 
   /* now translate the values to be greater than 1 and convert to ints */
   for (int cnt = 0; cnt < weight->nvals; cnt++) {
-    values[cnt] += 1.0 - minval;
+    values[cnt] += 1.0f - minval;
     weight->vertices[cnt] = roundfloat(values[cnt]);
   }
   return 1;

@@ -28,9 +28,9 @@ template <typename Char>
 std::basic_string<Char> vformat(
     const std::locale &loc, basic_string_view<Char> format_str,
     basic_format_args<typename buffer_context<Char>::type> args) {
-  basic_memory_buffer<Char> buffer;
-  internal::vformat_to(loc, buffer, format_str, args);
-  return fmt::to_string(buffer);
+  basic_memory_buffer<Char> my_buffer;
+  internal::vformat_to(loc, my_buffer, format_str, args);
+  return fmt::to_string(my_buffer);
 }
 }
 

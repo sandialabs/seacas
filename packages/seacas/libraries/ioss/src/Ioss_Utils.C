@@ -42,6 +42,8 @@
 #include <cstring>
 #include <ctime>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/time.h>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -238,21 +240,18 @@ namespace {
  */
 void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t length)
 {
-  time_t     calendar_time = time(nullptr);
-  struct tm *local_time    = localtime(&calendar_time);
-
-  strftime(time_string, length, "%H:%M:%S", local_time);
-  time_string[8] = '\0';
-
-  if (length == 8) {
-    const char *fmt = "%y/%m/%d";
-    strftime(date_string, length, fmt, local_time);
-    date_string[8] = '\0';
+  time_t      calendar_time = time(nullptr);
+  auto *      lt            = std::localtime(&calendar_time);
+  std::string time          = fmt::format("{:%H:%M:%S}", *lt);
+  std::string date;
+  if (length >= 10) {
+    date = fmt::format("{:%Y/%m/%d}", *lt);
   }
-  else if (length >= 10) {
-    strftime(date_string, length, "%Y/%m/%d", local_time);
-    date_string[10] = '\0';
+  else {
+    date = fmt::format("{:%y/%m/%d}", *lt);
   }
+  copy_string(time_string, time, 9);
+  copy_string(date_string, date, length + 1);
 }
 
 void Ioss::Utils::check_non_null(void *ptr, const char *type, const std::string &name,
@@ -260,8 +259,9 @@ void Ioss::Utils::check_non_null(void *ptr, const char *type, const std::string 
 {
   if (ptr == nullptr) {
     std::ostringstream errmsg;
-    errmsg << "INTERNAL ERROR: Could not find " << type << " '" << name << "'."
-           << " Something is wrong in " << func << ". Please report.\n";
+    fmt::print(errmsg,
+               "INTERNAL ERROR: Could not find {} '{}'. Something is wrong in {}. Please report.\n",
+               type, name, func);
     IOSS_ERROR(errmsg);
   }
 }
@@ -269,7 +269,6 @@ void Ioss::Utils::check_non_null(void *ptr, const char *type, const std::string 
 std::string Ioss::Utils::decode_filename(const std::string &filename, int processor,
                                          int num_processors)
 {
-  std::string decoded_filename(filename);
   // Current format for per-processor file names is:
   // PREFIX/basename.num_proc.cur_proc
   // the 'cur_proc' field is padded to be the same width as
@@ -277,25 +276,10 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   // Examples: basename.8.1, basename.64.03, basename.128.001
 
   // Create a std::string containing the total number of processors
-  std::string num_proc   = std::to_string(num_processors);
-  size_t      proc_width = num_proc.length();
+  size_t proc_width = std::floor(std::log10(num_processors)) + 1;
 
-  // Create a std::string containing the current processor number
-  std::string cur_proc  = std::to_string(processor);
-  size_t      cur_width = cur_proc.length();
-
-  // Build the filename
-  decoded_filename += ".";
-  decoded_filename += num_proc;
-  decoded_filename += ".";
-
-  // Now, pad with zeros so that 'cur_proc' portion is same
-  // width as 'num_proc' portion.
-  while (cur_width++ < proc_width) {
-    decoded_filename += "0";
-  }
-
-  decoded_filename += cur_proc;
+  std::string decoded_filename =
+      fmt::format("{}.{}.{:0{}}", filename, num_processors, processor, proc_width);
   return decoded_filename;
 }
 
@@ -328,11 +312,7 @@ std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int6
   // Sierra   stores these as std::strings. The string is created by
   // concatenating the type, the character '_' and the id.
 
-  std::string id_string   = std::to_string(id);
-  std::string entity_name = entity_type;
-  entity_name += "_";
-  entity_name += id_string;
-  return entity_name;
+  return fmt::format("{}_{}", entity_type, id);
 }
 
 char **Ioss::Utils::get_name_array(size_t count, int size)
@@ -460,8 +440,8 @@ std::string Ioss::Utils::local_filename(const std::string &relative_filename,
 int Ioss::Utils::field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
                                const std::string &inout)
 {
-  IOSS_WARNING << ge->type_string() << " '" << ge->name() << "'. Unknown " << inout << " field '"
-               << field.get_name() << "'\n";
+  fmt::print(IOSS_WARNING, "{} '{}'. Unknown {} field '{}'\n", ge->type_string(), ge->name(), inout,
+             field.get_name());
   return -4;
 }
 
@@ -880,17 +860,9 @@ std::string Ioss::Utils::platform_information()
   {
   };
   uname(&sys_info);
-
-  std::string info = "Node: ";
-  info += sys_info.nodename;
-  info += ", OS: ";
-  info += sys_info.sysname;
-  info += " ";
-  info += sys_info.release;
-  info += ", ";
-  info += sys_info.version;
-  info += ", Machine: ";
-  info += sys_info.machine;
+  std::string info =
+      fmt::format("Node: {0}, OS: {1} {2}, {3}, Machine: {4}", sys_info.nodename, sys_info.sysname,
+                  sys_info.release, sys_info.version, sys_info.machine);
 #else
   std::string info = "Node: Unknown, OS: Unknown, Machine: Unknown";
 #endif
@@ -1039,8 +1011,7 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &            face_is_
 
   if (number_sides > 0 && (element == nullptr || sides == nullptr)) {
     std::ostringstream errmsg;
-    errmsg << "INTERNAL ERROR: null element or sides pointer passed to "
-           << "Ioss::Utils::calculate_sideblock_membership function.";
+    fmt::print(errmsg, "INTERNAL ERROR: null element or sides pointer passed to {}.", __func__);
     IOSS_ERROR(errmsg);
   }
 
@@ -1271,8 +1242,10 @@ bool Ioss::Utils::check_set_bool_property(const Ioss::PropertyManager &propertie
       }
       else {
         std::ostringstream errmsg;
-        errmsg << "ERROR: Unrecognized value found for " << prop_name << ". Found '" << yesno
-               << "' which is not one of TRUE|FALSE|YES|NO|ON|OFF";
+        fmt::print(errmsg,
+                   "ERROR: Unrecognized value found for {}. "
+                   "Found '{}' which is not one of TRUE|FALSE|YES|NO|ON|OFF",
+                   prop_name, yesno);
         IOSS_ERROR(errmsg);
       }
     }
@@ -1541,7 +1514,7 @@ int Ioss::Utils::log_power_2(uint64_t value)
   value |= value >> 8;
   value |= value >> 16;
   value |= value >> 32;
-  return tab64[((uint64_t)((value - (value >> 1)) * 0x07EDD5E59A4E28C2)) >> 58];
+  return tab64[(((value - (value >> 1)) * 0x07EDD5E59A4E28C2)) >> 58];
 }
 
 void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_region,
