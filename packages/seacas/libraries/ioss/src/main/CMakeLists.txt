@@ -357,6 +357,18 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_fields
   COMM mpi serial
   )
 
+TRIBITS_ADD_ADVANCED_TEST(structured_cgns_append
+   TEST_0 EXEC io_shell ARGS --Maximum_Time=0.25 ${CMAKE_CURRENT_SOURCE_DIR}/test/multiple_zones_fields.cgns append_fields-out.cgns
+     NUM_MPI_PROCS 1-4
+     NOEXEPREFIX NOEXESUFFIX
+   TEST_1 EXEC io_shell ARGS --Minimum_Time=0.26 --append_after_time=0.25 ${CMAKE_CURRENT_SOURCE_DIR}/test/multiple_zones_fields.cgns append_fields-out.cgns
+     NUM_MPI_PROCS 1-4
+     NOEXEPREFIX NOEXESUFFIX
+   TEST_2 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/test/multiple_zones_fields.cgns append_fields-out.cgns
+     NUM_MPI_PROCS 1
+  COMM mpi serial
+  )
+
 TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_reordered_zones_fields
    TEST_0 EXEC io_shell ARGS --reverse --flush_interval 1 ${CMAKE_CURRENT_SOURCE_DIR}/test/multiple_zones_fields.cgns multiple_zones_fields-out.cgns
      NUM_MPI_PROCS 1-4
