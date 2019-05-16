@@ -333,7 +333,7 @@ namespace Ioss {
   {
     if (decodedFilename.empty()) {
       if (isParallel) {
-        decodedFilename = util().decode_filename(get_filename(), isParallel);
+        decodedFilename = util().decode_filename(get_filename(), isParallel && !usingParallelIO);
       }
       else if (properties.exists("processor_count") && properties.exists("my_processor")) {
         int proc_count  = properties.get("processor_count").get_int();
