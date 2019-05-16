@@ -134,7 +134,7 @@ namespace {
   };
 
   unsigned int debug_level = 0;
-  const float  FILL_VALUE  = FLT_MAX;
+  const double FILL_VALUE  = FLT_MAX;
   int          rank        = 0;
   std::string  tsFormat    = "[%H:%M:%S] ";
 
@@ -1077,8 +1077,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   }
 
   // Time steps for output file
-  int    time_step_out     = 0;
-  double min_time_to_write = -DBL_MAX;
+  int time_step_out     = 0;
+  T   sentinel          = static_cast<T>(-FLT_MAX);
+  T   min_time_to_write = sentinel;
 
   if (interface.append()) {
     // See how many steps already exist on the output database
@@ -1127,12 +1128,12 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         continue;
       }
 
-      if (min_time_to_write != -DBL_MAX) {
+      if (min_time_to_write != sentinel) {
         if (rank == 0) {
           std::cout << "\tAppend Mode: Skipping " << time_step - (ts_min - 1)
                     << " input steps to align times with already written steps on output file.\n\n";
         }
-        min_time_to_write = -DBL_MAX;
+        min_time_to_write = sentinel;
       }
 
       error = ex_put_time(ExodusFile::output(), time_step_out, &time_val);
@@ -1524,15 +1525,16 @@ namespace {
                            const std::vector<std::vector<INT>> &local_node_to_global,
                            T /* float_or_double */)
   {
+    T FillValue = static_cast<T>(FILL_VALUE);
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
     std::vector<T> x(global.nodeCount);
     std::vector<T> y(global.nodeCount);
     std::vector<T> z(global.nodeCount);
 
     if (debug_level & 8) {
-      std::fill(x.begin(), x.end(), FILL_VALUE);
-      std::fill(y.begin(), y.end(), FILL_VALUE);
-      std::fill(z.begin(), z.end(), FILL_VALUE);
+      std::fill(x.begin(), x.end(), FillValue);
+      std::fill(y.begin(), y.end(), FillValue);
+      std::fill(z.begin(), z.end(), FillValue);
     }
 
     int error = 0;
@@ -1578,7 +1580,8 @@ namespace {
                        std::vector<T> &x, std::vector<T> &y, std::vector<T> &z)
   {
     SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
-    int            error = 0;
+    T              FillValue = static_cast<T>(FILL_VALUE);
+    int            error     = 0;
     std::vector<T> local_x(num_nodes);
     std::vector<T> local_y(num_nodes);
     std::vector<T> local_z(num_nodes);
@@ -1594,7 +1597,7 @@ namespace {
       if (debug_level & 8) {
         for (size_t i = 0; i < num_nodes; i++) {
           size_t node = local_node_to_global[proc][i];
-          if (x[node] != FILL_VALUE && y[node] != FILL_VALUE && z[node] != FILL_VALUE) {
+          if (x[node] != FillValue && y[node] != FillValue && z[node] != FillValue) {
             if (x[node] != local_x[i] || y[node] != local_y[i] || z[node] != local_z[i]) {
               std::ios::fmtflags f(std::cerr.flags());
               std::cerr << "\nWARNING: Node " << node + 1
@@ -1626,7 +1629,7 @@ namespace {
       if (debug_level & 8) {
         for (size_t i = 0; i < num_nodes; i++) {
           size_t node = local_node_to_global[proc][i];
-          if (x[node] != FILL_VALUE && y[node] != FILL_VALUE) {
+          if (x[node] != FillValue && y[node] != FillValue) {
             if (x[node] != local_x[i] || y[node] != local_y[i]) {
               std::ios::fmtflags f(std::cerr.flags());
               std::cerr << "\nWARNING: Node " << node + 1
@@ -1654,7 +1657,7 @@ namespace {
       if (debug_level & 8) {
         for (size_t i = 0; i < num_nodes; i++) {
           size_t node = local_node_to_global[proc][i];
-          if (x[node] != FILL_VALUE && y[node] != FILL_VALUE) {
+          if (x[node] != FillValue && y[node] != FillValue) {
             if (x[node] != local_x[i]) {
               std::ios::fmtflags f(std::cerr.flags());
               std::cerr << "\nWARNING: Node " << node + 1

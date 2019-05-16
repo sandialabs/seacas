@@ -424,8 +424,8 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 {
   SMART_ASSERT(sizeof(T) == Excn::ExodusFile::io_word_size());
 
-  const T alive      = interface.alive_value();
-  size_t  part_count = interface.inputFiles_.size();
+  const double alive      = interface.alive_value();
+  size_t       part_count = interface.inputFiles_.size();
 
   auto mytitle = new char[MAX_LINE_LENGTH + 1];
   memset(mytitle, '\0', MAX_LINE_LENGTH + 1);
@@ -487,7 +487,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
   // Get database times...  Save mapping from time step to part providing that time step.
   std::vector<TimeStepMap<T>> global_times;
 
-  T t_min = FLT_MAX;
+  double t_min = FLT_MAX;
   for (size_t p = part_count; p > 0; p--) {
 
     Excn::ExodusFile id(p - 1);

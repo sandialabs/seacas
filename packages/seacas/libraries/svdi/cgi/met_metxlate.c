@@ -797,10 +797,10 @@ static void xcvdcx(anything **params, int num_surfaces, anything **surf_list)
 
     /* store the values in the state list */
     /* default integer precision is 16 - check range */
-    if (*(float *)params[1] > 32767. || *(float *)params[2] > 32767. ||
-        *(float *)params[3] > 32767. || *(float *)params[4] > 32767. ||
-        *(float *)params[1] < -32767. || *(float *)params[2] < -32767. ||
-        *(float *)params[3] < -32767. || *(float *)params[4] < -32767.) {
+    if (*(float *)params[1] > 32767.0f || *(float *)params[2] > 32767.0f ||
+        *(float *)params[3] > 32767.0f || *(float *)params[4] > 32767.0f ||
+        *(float *)params[1] < -32767.0f || *(float *)params[2] < -32767.0f ||
+        *(float *)params[3] < -32767.0f || *(float *)params[4] < -32767.0f) {
       /* error 1:-103 VDC Extent out of range.  Function ignored */
       report_error(cur_state, 1, -103, *(short *)params[0]);
       return;
@@ -1220,10 +1220,10 @@ static void xcqd(anything **params, anything **surf_list)
     /* display type */
     qdc_index = 2;
     vdiqdc(&qdc_index, &value);
-    if (value == 0.) {
+    if (value == 0.0f) {
       dev_descrip.display_type = CVECT;
     }
-    else if (value == 1.) {
+    else if (value == 1.0f) {
       dev_descrip.display_type = CRAST;
     }
     else {
@@ -1233,7 +1233,7 @@ static void xcqd(anything **params, anything **surf_list)
     /* background color capability */
     qdc_index = 32;
     vdiqdc(&qdc_index, &value);
-    dev_descrip.bcolor_cap = (value == 1.0) ? CYES : CNO;
+    dev_descrip.bcolor_cap = (value == 1.0f) ? CYES : CNO;
 
     /* dynamic modification for background color */
     dev_descrip.dynamic_mod_bg = CIRG;
@@ -1318,10 +1318,10 @@ static void xclf(anything **params, anything **surf_list)
     case CPM_FN: ((int *)params[5])[i] = CSYES; break;
     case CTX_FN: ((int *)params[5])[i] = CSYES; break;
     case CPG_FN:
-      if (poly_support == -1.) {
+      if (poly_support == -1.0f) {
         vdiqdc(&qdc_index, &poly_support);
       }
-      if (poly_support < 3.) {
+      if (poly_support < 3.0f) {
         ((int *)params[5])[i] = CSNO;
       }
       else {
@@ -2160,13 +2160,13 @@ static void xcpg(anything **params, int num_surfaces, anything **surf_list)
   static float vdi_polymax  = -1.; /* store SVDI polygon max value */
 
   /* find out SVDI support for polygons. */
-  if (poly_support == -1.) {
+  if (poly_support == -1.0f) {
     qdc_index = 24;
     vdiqdc(&qdc_index, &poly_support);
   }
 
   /* get and store max polygon points from SVDI */
-  if (vdi_polymax == -1.) {
+  if (vdi_polymax == -1.0f) {
     qdc_index = 25;
     vdiqdc(&qdc_index, &vdi_polymax);
   }
@@ -2218,7 +2218,7 @@ static void xcpg(anything **params, int num_surfaces, anything **surf_list)
       /* if hollow or if no polygon support, draw the border lines.
          if solid, call vdpoly */
       if ((cur_state->interior_style == CHOLLO) || /* hallow OR   */
-          (poly_support < 3.)) {                   /*no poly supp */
+          (poly_support < 3.0f)) {                 /*no poly supp */
 
         vdiqos(&temp_array[1]); /* make sure line style is solid */
         if (temp_array[4] != 0) {
@@ -2538,9 +2538,9 @@ static void xcca(anything **params, int num_surfaces, anything **surf_list)
           /* store as much info as possible before calling vdpixl */
           for (k = 0; k < ny1; k++) {
             for (j = 0; j < nx1; j++) {
-              rarray[count] = (float)cells[index++] / 255.;
-              garray[count] = (float)cells[index++] / 255.;
-              barray[count] = (float)cells[index++] / 255.;
+              rarray[count] = (float)cells[index++] / 255.0f;
+              garray[count] = (float)cells[index++] / 255.0f;
+              barray[count] = (float)cells[index++] / 255.0f;
               count++;
             } /* end for j */
 
@@ -2573,9 +2573,9 @@ static void xcca(anything **params, int num_surfaces, anything **surf_list)
           /* store as much info as possible before calling vdpixl */
           for (k = 0; k < ny1; k++) {
             for (j = 0; j < nx1; j++) {
-              rarray[count] = (float)cells[index] / 255.;
-              garray[count] = (float)cells[index + 1] / 255.;
-              barray[count] = (float)cells[index + 2] / 255.;
+              rarray[count] = (float)cells[index] / 255.0f;
+              garray[count] = (float)cells[index + 1] / 255.0f;
+              barray[count] = (float)cells[index + 2] / 255.0f;
               index         = index - 3;
               count++;
             } /* end for j */
@@ -2642,7 +2642,7 @@ static void xcpxa(anything **params, int num_surfaces, anything **surf_list)
   pxclrs   = (int *)params[9];
 
   /* find (and save) the number of pixels in full NDC space */
-  if (x_pixels == -1. && y_pixels == -1.) {
+  if (x_pixels == -1.0f && y_pixels == -1.0f) {
     vdstrv(&zero, &dev_descrip.xndc_max, &zero, &dev_descrip.yndc_max);
     qrs_index = 2;
     vdiqrs(&qrs_index, temp_array);
@@ -2917,9 +2917,9 @@ static void xcpxa(anything **params, int num_surfaces, anything **surf_list)
           /* store as much info as possible before calling vdpixl */
           for (k = 0; k < ny1; k++) {
             for (j = 0; j < nx1; j++) {
-              rarray[count] = (float)pxclrs[index++] / 255.;
-              garray[count] = (float)pxclrs[index++] / 255.;
-              barray[count] = (float)pxclrs[index++] / 255.;
+              rarray[count] = (float)pxclrs[index++] / 255.0f;
+              garray[count] = (float)pxclrs[index++] / 255.0f;
+              barray[count] = (float)pxclrs[index++] / 255.0f;
               count++;
             } /* end for j */
 
@@ -2952,9 +2952,9 @@ static void xcpxa(anything **params, int num_surfaces, anything **surf_list)
           /* store as much info as possible before calling vdpixl */
           for (k = 0; k < ny1; k++) {
             for (j = 0; j < nx1; j++) {
-              rarray[count] = (float)pxclrs[index] / 255.;
-              garray[count] = (float)pxclrs[index + 1] / 255.;
-              barray[count] = (float)pxclrs[index + 2] / 255.;
+              rarray[count] = (float)pxclrs[index] / 255.0f;
+              garray[count] = (float)pxclrs[index + 1] / 255.0f;
+              barray[count] = (float)pxclrs[index + 2] / 255.0f;
               index         = index - 3;
               count++;
             } /* end for j */
@@ -3415,9 +3415,9 @@ static void xcct(anything **params, int num_surfaces, anything **surf_list)
     if (first) {
       k = 0;
       for (j = starti; j < starti + num_cols; j++) {
-        color_array[j][0] = (float)((int *)params[3])[k++] / 255.;
-        color_array[j][1] = (float)((int *)params[3])[k++] / 255.;
-        color_array[j][2] = (float)((int *)params[3])[k++] / 255.;
+        color_array[j][0] = (float)((int *)params[3])[k++] / 255.0f;
+        color_array[j][1] = (float)((int *)params[3])[k++] / 255.0f;
+        color_array[j][2] = (float)((int *)params[3])[k++] / 255.0f;
       }
       first = FALSE;
     }
@@ -4535,13 +4535,13 @@ static void init_state(surf_statelist *surf_state)
 
     /* set the current surface color table */
     vdiqco(&one, &dev_descrip.index_array[surf_state->bg_index], tmp_array, &dev_descrip.col_mode);
-    surf_state->color_table[0].r = (int)(tmp_array[0][0] * 255.);
-    surf_state->color_table[0].g = (int)(tmp_array[0][1] * 255.);
-    surf_state->color_table[0].b = (int)(tmp_array[0][2] * 255.);
+    surf_state->color_table[0].r = (int)(tmp_array[0][0] * 255.0f);
+    surf_state->color_table[0].g = (int)(tmp_array[0][1] * 255.0f);
+    surf_state->color_table[0].b = (int)(tmp_array[0][2] * 255.0f);
     vdiqco(&one, &dev_descrip.index_array[surf_state->fg_index], tmp_array, &dev_descrip.col_mode);
-    surf_state->color_table[1].r = (int)(tmp_array[0][0] * 255.);
-    surf_state->color_table[1].g = (int)(tmp_array[0][1] * 255.);
-    surf_state->color_table[1].b = (int)(tmp_array[0][2] * 255.);
+    surf_state->color_table[1].r = (int)(tmp_array[0][0] * 255.0f);
+    surf_state->color_table[1].g = (int)(tmp_array[0][1] * 255.0f);
+    surf_state->color_table[1].b = (int)(tmp_array[0][2] * 255.0f);
   } /* end if vector SVDI */
 
   else { /* raster SVDI */
@@ -4552,12 +4552,12 @@ static void init_state(surf_statelist *surf_state)
            &surf_state->fg_index);
 
     /* set the current surface color table */
-    surf_state->color_table[0].r = (int)(dev_descrip.att_array[8] * 255.);
-    surf_state->color_table[0].g = (int)(dev_descrip.att_array[9] * 255.);
-    surf_state->color_table[0].b = (int)(dev_descrip.att_array[10] * 255.);
-    surf_state->color_table[1].r = (int)(dev_descrip.att_array[11] * 255.);
-    surf_state->color_table[1].g = (int)(dev_descrip.att_array[12] * 255.);
-    surf_state->color_table[1].b = (int)(dev_descrip.att_array[13] * 255.);
+    surf_state->color_table[0].r = (int)(dev_descrip.att_array[8] * 255.0f);
+    surf_state->color_table[0].g = (int)(dev_descrip.att_array[9] * 255.0f);
+    surf_state->color_table[0].b = (int)(dev_descrip.att_array[10] * 255.0f);
+    surf_state->color_table[1].r = (int)(dev_descrip.att_array[11] * 255.0f);
+    surf_state->color_table[1].g = (int)(dev_descrip.att_array[12] * 255.0f);
+    surf_state->color_table[1].b = (int)(dev_descrip.att_array[13] * 255.0f);
   } /* end else raster SVDI */
 
   /* set/reset the SVDI attribute array */
@@ -4927,14 +4927,14 @@ static void set_foreground_color(surf_statelist *surf_state, int *colors)
 
       /* does foreground need to be updated? */
       /* -- i need to check this out - might need to store as int */
-      if (colors[0] != (int)(cur_state->vdi_attrib.fg_rgb[0] * 255.) ||
-          colors[1] != (int)(cur_state->vdi_attrib.fg_rgb[1] * 255.) ||
-          colors[2] != (int)(cur_state->vdi_attrib.fg_rgb[2] * 255.)) {
+      if (colors[0] != (int)(cur_state->vdi_attrib.fg_rgb[0] * 255.0f) ||
+          colors[1] != (int)(cur_state->vdi_attrib.fg_rgb[1] * 255.0f) ||
+          colors[2] != (int)(cur_state->vdi_attrib.fg_rgb[2] * 255.0f)) {
 
     /* update att_array */
-    cur_state->vdi_attrib.fg_rgb[0] = (float)colors[0] / 255.;
-    cur_state->vdi_attrib.fg_rgb[1] = (float)colors[1] / 255.;
-    cur_state->vdi_attrib.fg_rgb[2] = (float)colors[2] / 255.;
+    cur_state->vdi_attrib.fg_rgb[0] = (float)colors[0] / 255.0f;
+    cur_state->vdi_attrib.fg_rgb[1] = (float)colors[1] / 255.0f;
+    cur_state->vdi_attrib.fg_rgb[2] = (float)colors[2] / 255.0f;
 
     /* set new foreground color */
     vdfrgb(&cur_state->vdi_attrib.fg_rgb[0], &cur_state->vdi_attrib.fg_rgb[1],
@@ -4959,14 +4959,14 @@ static void set_background_color(surf_statelist *surf_state, int *colors)
 
   /* does background need to be updated */
   /* --background color is saved in att_array, even for vector */
-  if (colors[0] != (int)(cur_state->vdi_attrib.bg_rgb[0] * 255.) ||
-      colors[1] != (int)(cur_state->vdi_attrib.bg_rgb[1] * 255.) ||
-      colors[2] != (int)(cur_state->vdi_attrib.bg_rgb[2] * 255.)) {
+  if (colors[0] != (int)(cur_state->vdi_attrib.bg_rgb[0] * 255.0f) ||
+      colors[1] != (int)(cur_state->vdi_attrib.bg_rgb[1] * 255.0f) ||
+      colors[2] != (int)(cur_state->vdi_attrib.bg_rgb[2] * 255.0f)) {
 
     /* store new values in att_array */
-    cur_state->vdi_attrib.bg_rgb[0] = (float)colors[0] / 255.;
-    cur_state->vdi_attrib.bg_rgb[1] = (float)colors[1] / 255.;
-    cur_state->vdi_attrib.bg_rgb[2] = (float)colors[2] / 255.;
+    cur_state->vdi_attrib.bg_rgb[0] = (float)colors[0] / 255.0f;
+    cur_state->vdi_attrib.bg_rgb[1] = (float)colors[1] / 255.0f;
+    cur_state->vdi_attrib.bg_rgb[2] = (float)colors[2] / 255.0f;
 
     /* set the cgi state color table - index 0 */
     cur_state->color_table[0].r = colors[0];
