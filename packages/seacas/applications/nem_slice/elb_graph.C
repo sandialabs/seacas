@@ -373,7 +373,7 @@ namespace {
                     iret = in_list(entry, (graph->nadj) - (graph->start[cnt]),
                                    &graph->adj[graph->start[cnt]]);
                     assert(iret >= 0);
-                    weight->edges[iret + (graph->start[cnt])] += 1.0;
+                    weight->edges[iret + (graph->start[cnt])] += 1.0f;
                   }
                 }
               }
@@ -726,7 +726,7 @@ namespace {
                         }
                       }
                       else if (weight->type & EDGE_WGT) {
-                        weight->edges[iret + (graph->start[cnt])] += 1.0;
+                        weight->edges[iret + (graph->start[cnt])] += 1.0f;
                       }
                     }
                   } /* End: if(ecnt != entry) */

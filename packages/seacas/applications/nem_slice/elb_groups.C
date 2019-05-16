@@ -244,7 +244,7 @@ int get_group_info(Machine_Description *machine, Problem_Description *prob,
     nproc = ilog2i(machine->procs_per_box);
   }
   for (int i = 0; i < prob->num_groups; i++) {
-    nprocg[i] = int((nproc * (nelemg[i] + .5)) / static_cast<float>(prob->num_vertices));
+    nprocg[i] = int((nproc * (nelemg[i] + 0.5f)) / static_cast<float>(prob->num_vertices));
     if (nelemg[i] && !nprocg[i]) {
       nprocg[i] = 1;
     }

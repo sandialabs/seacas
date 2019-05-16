@@ -124,7 +124,7 @@ namespace {
   template <typename T> bool approx_equal(T v1, T v2, T offset)
   {
 #if 1
-    static const T tolerance = 100.0 * std::numeric_limits<float>::epsilon();
+    static const T tolerance = 100.0f * std::numeric_limits<float>::epsilon();
     double         d1        = std::fabs(v1 - v2);
     double         d2        = std::fabs((v1 - offset) + (v2 - offset)) * tolerance;
     return d1 <= d2;

@@ -2334,7 +2334,8 @@ namespace {
     /* Compute maximum z for each slice, using uniform partition of zmin - zmax */
     std::vector<double> slice_max_z(nslice);
     for (i = 0; i < nslice; i++) {
-      slice_max_z[i] = zmin + static_cast<double>(i + 1) * dz / static_cast<double>(nslice);
+      slice_max_z[i] =
+          static_cast<double>(zmin) + static_cast<double>(i + 1) * dz / static_cast<double>(nslice);
     }
 
     /* Compute maximum angle for each wedge, using uniform partition of 2*M_PI */
@@ -2348,14 +2349,15 @@ namespace {
 
       /* Compute the z slice that the element is in. */
       if (dz > 0.) {
-        slice = static_cast<int>(nslice * (z[i] - zmin) / dz);
+        slice =
+            static_cast<int>(nslice * (static_cast<double>(z[i]) - static_cast<double>(zmin)) / dz);
         if (slice == nslice) {
           slice--; /* Handles z[i] == zmax correctly */
         }
 
         /* Move dots within epsilon of upper end of slice into next slice */
         /* This step reduces jagged edges due to roundoff in coordinate values */
-        if (slice != nslice - 1 && z[i] > (slice_max_z[slice] - epsilon)) {
+        if (slice != nslice - 1 && static_cast<double>(z[i]) > (slice_max_z[slice] - epsilon)) {
           slice++;
         }
       }
@@ -2364,8 +2366,8 @@ namespace {
       }
 
       /* Compute polar coordinate theta in x,y-plane for the element. */
-      if (x[i] == 0.) {
-        if (y[i] >= 0.) {
+      if (x[i] == 0.0f) {
+        if (y[i] >= 0.0f) {
           theta = M_PI_2;
         }
         else {
@@ -2376,10 +2378,10 @@ namespace {
         theta = std::atan2(y[i], x[i]); /* In range -M_PI_2 to M_PI_2 */
 
         /* Convert to range 0 to 2*M_PI */
-        if (x[i] < 0.) {
+        if (x[i] < 0.0f) {
           theta += M_PI;
         }
-        else if (y[i] < 0.) {
+        else if (y[i] < 0.0f) {
           theta += 2 * M_PI;
         }
       }
@@ -2436,7 +2438,7 @@ namespace {
        using uniform partition of dmax - dmin */
     slices_d.reserve(nslices_d);
     for (i = 0; i < nslices_d; i++) {
-      slices_d.push_back(*dmin +
+      slices_d.push_back(static_cast<double>(*dmin) +
                          static_cast<double>(i + 1) * *delta / static_cast<double>(nslices_d));
     }
   }
@@ -2458,14 +2460,14 @@ namespace {
     double epsilon = 5e-06; /* tolerance that allows a point to be in subdomain*/
 
     if (delta > 0.) {
-      d_slice = static_cast<int>(nslices_d * (d - dmin) / delta);
+      d_slice = static_cast<int>(nslices_d * static_cast<double>((d - dmin)) / delta);
       if (d_slice == nslices_d) {
         d_slice--; /* Handles d == dmax correctly */
       }
 
       /* Move dots within epsilon of upper end of slice into next slice */
       /* This step reduces jagged edges due to roundoff in coordinate values */
-      if (d_slice != nslices_d - 1 && d > (slices_d[d_slice] - epsilon)) {
+      if (d_slice != nslices_d - 1 && static_cast<double>(d) > (slices_d[d_slice] - epsilon)) {
         d_slice++;
       }
     }
@@ -2747,7 +2749,7 @@ namespace {
     }
 
     /* Call partitioner */
-    printf("Using Zoltan version %f, method %s\n", ver, method);
+    printf("Using Zoltan version %f, method %s\n", static_cast<double>(ver), method);
     ierr = Zoltan_LB_Partition(zz, &changes, &zngid_ent, &znlid_ent, &dummy0, &dummy1, &dummy2,
                                &dummy3, &dummy4, &znobj, &zgids, &zlids, &zprocs, &zparts);
     if (ierr != 0) {
@@ -2769,8 +2771,8 @@ namespace {
 
   End:
     /* Clean up */
-    (void)Zoltan_LB_Free_Part(&zgids, &zlids, &zprocs, &zparts);
-    (void)Zoltan_Destroy(&zz);
+    Zoltan_LB_Free_Part(&zgids, &zlids, &zprocs, &zparts);
+    Zoltan_Destroy(&zz);
     if (ierr != 0) {
       MPI_Finalize();
       exit(-1);
@@ -2836,10 +2838,10 @@ namespace {
     }
 
     printf("CNT STATS:  min = %d  max = %d  avg = %f\n", min, max,
-           static_cast<float>(sum) / static_cast<float>(npart));
+           static_cast<double>(sum) / static_cast<double>(npart));
     if (wgt != nullptr) {
       printf("WGT STATS:  min = %d  max = %d  avg = %f\n", minwgt, maxwgt,
-             static_cast<float>(sumwgt) / static_cast<float>(npart));
+             static_cast<double>(sumwgt) / static_cast<double>(npart));
     }
   }
 } // namespace

@@ -892,16 +892,16 @@ template <typename INT> void ExoII_Read<INT>::Display(std::ostream &s) const
     }
   }
 
-  if (io_word_size || db_version > 0.0 || api_version > 0.0) {
+  if (io_word_size || db_version > 0.0f || api_version > 0.0f) {
     s << separator << '\n';
   }
   if (io_word_size) {
     s << "                  file's data size = " << io_word_size << " bytes\n";
   }
-  if (db_version > 0.0) {
+  if (db_version > 0.0f) {
     s << "           Exodus database version = " << db_version << '\n';
   }
-  if (api_version > 0.0) {
+  if (api_version > 0.0f) {
     s << "            Exodus library version = " << api_version << '\n';
   }
   s << separator << '\n';

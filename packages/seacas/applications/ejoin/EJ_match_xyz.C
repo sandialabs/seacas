@@ -285,7 +285,7 @@ namespace {
                                std::fabs(j_coord[3 * jj + 1] - i_coord[3 * ii + 1]),
                                std::fabs(j_coord[3 * jj + 2] - i_coord[3 * ii + 2]));
 
-        if (float(distance) <= epsilon) {
+        if (float(distance) <= float(epsilon)) {
           if (distance < dmin) {
             dmin      = distance;
             node_dmin = j;
@@ -326,10 +326,10 @@ namespace {
     std::cout << "\nNumber of nodes matched                   = " << match << "\n";
     std::cout << "Number of comparisons                     = " << compare << "\n";
     std::cout << "Tolerance used for matching               = " << epsilon << "\n";
-    if (dismax > -FLT_MAX) {
+    if (dismax > double(-FLT_MAX)) {
       std::cout << "Maximum distance between matched nodes    = " << dismax << "\n";
     }
-    if (g_dismin < FLT_MAX) {
+    if (g_dismin < double(FLT_MAX)) {
       std::cout << "Minimum distance between nonmatched nodes = " << g_dismin << "\n";
     }
     std::cout << "\n";
