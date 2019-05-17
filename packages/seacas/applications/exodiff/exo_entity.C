@@ -33,7 +33,8 @@
 
 #include "ED_SystemInterface.h" // for ERROR
 #include "exo_entity.h"
-#include "exodusII.h"     // for ex_get_var, EX_INVALID_ID, etc
+#include "exodusII.h" // for ex_get_var, EX_INVALID_ID, etc
+#include "fmt/color.h"
 #include "smart_assert.h" // for SMART_ASSERT
 #include "stringx.h"      // for to_lower
 #include <cstdint>        // for int64_t
@@ -419,16 +420,16 @@ void Exo_Entity::internal_load_params()
         attributeNames.push_back(name);
       }
       else if (static_cast<int>(std::strlen(names[vg])) > name_size) {
-        std::cerr << trmclr::red << "exodiff: ERROR: " << label()
-                  << " attribute names appear corrupt\n"
-                  << "                A length is 0 or greater than "
-                  << "name_size(" << name_size << ")\n"
-                  << "                Here are the names that I received from"
-                  << " a call to ex_get_attr_names(...):\n";
+        fmt::print(stderr, fmt::v5::fg(fmt::color::red),
+                   "exodiff: ERROR: {} attribute names appear corrupt\n"
+                   "                A length is 0 or greater than name_size({})\n"
+                   "                Here are the names that I received from"
+                   " a call to ex_get_attr_names(...):\n",
+                   label(), name_size);
         for (int k = 1; k <= numAttr; ++k) {
-          std::cerr << "\t\t" << k << ") \"" << names[k - 1] << "\"\n";
+          fmt::print(stderr, fmt::v5::fg(fmt::color::red), "\t\t{}) \"{}\"\n", k, names[k - 1]);
         }
-        std::cerr << "                 Aborting...\n" << trmclr::normal;
+        fmt::print(stderr, fmt::v5::fg(fmt::color::red), "                 Aborting...\n");
         exit(1);
       }
       else {

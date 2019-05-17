@@ -33,18 +33,17 @@
 
 #include "ED_SystemInterface.h" // for ERROR, SystemInterface, etc
 #include "exoII_read.h"
-#include "exo_block.h"      // for Exo_Block
-#include "exodusII.h"       // for ex_init_params, ex_opts, etc
-#include "node_set.h"       // for Node_Set
-#include "smart_assert.h"   // for SMART_ASSERT, Assert, etc
-#include "stringx.h"        // for chop_whitespace
-#include "terminal_color.h" // for operator<<, normal, red
-#include "util.h"           // for free_name_array, etc
-#include <algorithm>        // for copy
-#include <cstdint>          // for int64_t
-#include <cstdio>           // for fclose, FILE, fopen
-#include <cstdlib>          // for exit
-#include <cstring>          // for strlen
+#include "exo_block.h"    // for Exo_Block
+#include "exodusII.h"     // for ex_init_params, ex_opts, etc
+#include "node_set.h"     // for Node_Set
+#include "smart_assert.h" // for SMART_ASSERT, Assert, etc
+#include "stringx.h"      // for chop_whitespace
+#include "util.h"         // for free_name_array, etc
+#include <algorithm>      // for copy
+#include <cstdint>        // for int64_t
+#include <cstdio>         // for fclose, FILE, fopen
+#include <cstdlib>        // for exit
+#include <cstring>        // for strlen
 #include <iostream>
 #include <iostream> // for operator<<, basic_ostream, etc
 #include <set>      // for set

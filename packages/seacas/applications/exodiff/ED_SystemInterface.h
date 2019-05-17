@@ -35,7 +35,6 @@
 
 #include "GetLongOpt.h" // for GetLongOption
 #include "Tolerance.h"  // for Tolerance, etc
-#include "terminal_color.h"
 #include "util.h"
 #include <cmath>
 #include <string>  // for string
