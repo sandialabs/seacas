@@ -39,10 +39,11 @@
 #include "elb_err.h"  // for Gen_Error, error_lev
 #include "elb_output.h"
 #include "elb_util.h" // for gds_qsort, qsort2, in_list, etc
+#include "fmt/ostream.h"
+#include "fmt/time.h"
 #include "scopeguard.h"
 #include <copy_string_cpp.h>
 #include <cstddef>    // for size_t, nullptr
-#include <cstdio>     // for printf, sprintf, fprintf, etc
 #include <cstdlib>    // for free, malloc, realloc
 #include <cstring>    // for strcat, strlen, etc
 #include <ctime>      // for asctime, localtime, time, etc
@@ -82,12 +83,12 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
 {
   int         exoid;
   std::string method1{}, method2{};
-  char        title[MAX_LINE_LENGTH + 1];
+  std::string title;
 
   int cpu_ws = sizeof(float);
   int io_ws  = sizeof(float);
 
-  printf("Outputting load balance to file %s\n", nemI_out_file.c_str());
+  fmt::print("Outputting load balance to file {}\n", nemI_out_file.c_str());
 
   /* Create the load balance file */
   /* Attempt to create a netcdf4-format file; if it fails, then assume
@@ -135,7 +136,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
     method1 = "elemental";
   }
 
-  sprintf(title, "nem_slice %s load balance file", method1.c_str());
+  title = fmt::format("nem_slice {} load balance file", method1.c_str());
 
   method1 = "method1: ";
   method2 = "method2: ";
@@ -185,7 +186,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
 
   /* Output the info records */
   char *info[3];
-  info[0] = title;
+  info[0] = const_cast<char *>(title.c_str());
   info[1] = const_cast<char *>(method1.c_str());
   info[2] = const_cast<char *>(method2.c_str());
 
@@ -194,28 +195,19 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   }
 
   /* Generate a QA record for the utility */
-  time_t time_val = time(nullptr);
-  char * ct_ptr   = asctime(localtime(&time_val));
-  char   tm_date[30];
-  copy_string(tm_date, ct_ptr);
-
-  /* Break string with null characters */
-  tm_date[3]  = '\0';
-  tm_date[7]  = '\0';
-  tm_date[10] = '\0';
-  tm_date[19] = '\0';
+  time_t      time_val = time(nullptr);
+  auto *      lt       = std::localtime(&time_val);
+  std::string time     = fmt::format("{:%H:%M:%S}", *lt);
+  std::string date     = fmt::format("{:%Y/%m/%d}", *lt);
 
   char qa_date[15], qa_time[10], qa_name[MAX_STR_LENGTH];
   char qa_vers[10];
 
-  sprintf(qa_date, "%s %s %s", &tm_date[8], &tm_date[4], &tm_date[20]);
-  sprintf(qa_time, "%s", &tm_date[11]);
+  copy_string(qa_time, time);
+  copy_string(qa_date, date);
   copy_string(qa_name, UTIL_NAME);
   copy_string(qa_vers, ELB_VERSION);
 
-  if (qa_date[strlen(qa_date) - 1] == '\n') {
-    qa_date[strlen(qa_date) - 1] = '\0';
-  }
   char **lqa_record = reinterpret_cast<char **>(array_alloc(1, 4, sizeof(char *)));
   for (int i2 = 0; i2 < 4; i2++) {
     lqa_record[i2] = reinterpret_cast<char *>(array_alloc(1, MAX_STR_LENGTH + 1, sizeof(char)));
@@ -226,9 +218,9 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
   copy_string(lqa_record[2], qa_date, MAX_STR_LENGTH + 1);
   copy_string(lqa_record[3], qa_time, MAX_STR_LENGTH + 1);
 
-  printf("QA Record:\n");
+  fmt::print("QA Record:\n");
   for (int i2 = 0; i2 < 4; i2++) {
-    printf("\t%s\n", lqa_record[i2]);
+    fmt::print("\t{}\n", lqa_record[i2]);
   }
 
   if (ex_put_qa(exoid, 1, reinterpret_cast<char *(*)[4]>(&lqa_record[0])) < 0) {
@@ -481,7 +473,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
 {
   int exid_vis, exid_inp;
 
-  char        title[MAX_LINE_LENGTH + 1];
+  std::string title;
   const char *coord_names[] = {"X", "Y", "Z"};
 
   /*-----------------------------Execution Begins------------------------------*/
@@ -491,10 +483,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
   vis_file_name += "-vis.exoII";
 
   /* Generate the title for the file */
-  copy_string(title, UTIL_NAME);
-  strcat(title, " ");
-  strcat(title, ELB_VERSION);
-  strcat(title, " load balance visualization file");
+  title = fmt::format("{} {}  load balance visualization file", UTIL_NAME, ELB_VERSION);
 
   /*
    * If the vis technique is to be by element block then calculate the
@@ -509,7 +498,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
   }
 
   /* Create the ExodusII file */
-  std::cout << "Outputting load balance visualization file " << vis_file_name.c_str() << "\n";
+  fmt::print("Outputting load balance visualization file {}\n", vis_file_name.c_str());
   int cpu_ws = 0;
   int io_ws  = 0;
   int mode   = EX_CLOBBER;
@@ -581,7 +570,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
 
   if (acc_vis == ELB_TRUE) {
     /* Output the initial information */
-    if (ex_put_init(exid_vis, title, mesh->num_dims, mesh->num_nodes, mesh->num_elems,
+    if (ex_put_init(exid_vis, title.c_str(), mesh->num_dims, mesh->num_nodes, mesh->num_elems,
                     vis_nelem_blks, 0, 0) < 0) {
       Gen_Error(0, "fatal: unable to output initial params to vis file");
       return 0;

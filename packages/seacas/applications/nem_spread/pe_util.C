@@ -33,10 +33,10 @@
  *
  */
 
+#include "fmt/ostream.h"
 #include "ps_pario_const.h" // for Parallel_IO, PIO_Info
 #include "rf_allo.h"        // for array_alloc
 #include "rf_io_const.h"    // for Debug_Flag
-#include <cstdio>           // for sprintf, fprintf, printf, etc
 #include <cstdlib>          // for exit
 #include <cstring>          // for strlen, etc
 #include <sstream>
@@ -63,8 +63,6 @@ void gen_disk_map(struct Parallel_IO *pio_info, int proc_info[], int /*proc*/, i
  * processor has an identical list.
  */
 {
-  char yo[] = "gen_disk_map";
-
   int iproc, proc_id, ctrl_id;
   /*------------------------ EXECUTION BEGINS ------------------------------*/
 
@@ -72,7 +70,7 @@ void gen_disk_map(struct Parallel_IO *pio_info, int proc_info[], int /*proc*/, i
   pio_info->RDsk_List =
       reinterpret_cast<int **>(array_alloc(__FILE__, __LINE__, 2, proc_info[0], 2, sizeof(int)));
   if ((pio_info->RDsk_List) == nullptr) {
-    fprintf(stderr, "%s: ERROR, insufficient memory\n", yo);
+    fmt::print(stderr, "{}: ERROR, insufficient memory\n", __func__);
     exit(1);
   }
 
@@ -208,7 +206,7 @@ std::string gen_par_filename(const std::string &scalar_fname, int proc_for, int 
     }
   }
   if (Debug_Flag >= 4) {
-    printf("Parallel file name: %s\n", par_filename.c_str());
+    fmt::print("Parallel file name: {}\n", par_filename.c_str());
   }
 
   return par_filename;
