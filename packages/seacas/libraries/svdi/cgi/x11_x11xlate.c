@@ -4758,7 +4758,7 @@ static void set_mapping(surf_statelist *surf_state)
 
 /* set_clipping */
 /* Set up the clip region. */
-static void set_clipping(surf_statelist *cur_state)
+static void set_clipping(surf_statelist *my_cur_state)
 {
   point clip1, clip2; /* temp clip values */
   clip1.x = clip1.y = clip2.x = clip2.y = 0;
@@ -4766,32 +4766,32 @@ static void set_clipping(surf_statelist *cur_state)
   /* The clip region depends on clip indicator and drawing surface
    * clip indicator.
    */
-  switch (cur_state->clip_indicator) {
+  switch (my_cur_state->clip_indicator) {
   case CON:
 
     /* VDC clipping is on */
-    switch (cur_state->ds_clip_indicator) {
+    switch (my_cur_state->ds_clip_indicator) {
 
     case CDCOFF: /* view surface clipping off */
 
       /* map the effective clip rectangle to NDC */
-      cur_state->clip_on = TRUE;
-      clip1.x            = cur_state->eff_clip_rect1.x * cur_state->xscale + cur_state->xoffset;
-      clip1.y            = cur_state->eff_clip_rect1.y * cur_state->yscale + cur_state->yoffset;
-      clip2.x            = cur_state->eff_clip_rect2.x * cur_state->xscale + cur_state->xoffset;
-      clip2.y            = cur_state->eff_clip_rect2.y * cur_state->yscale + cur_state->yoffset;
+      my_cur_state->clip_on = TRUE;
+      clip1.x = my_cur_state->eff_clip_rect1.x * my_cur_state->xscale + my_cur_state->xoffset;
+      clip1.y = my_cur_state->eff_clip_rect1.y * my_cur_state->yscale + my_cur_state->yoffset;
+      clip2.x = my_cur_state->eff_clip_rect2.x * my_cur_state->xscale + my_cur_state->xoffset;
+      clip2.y = my_cur_state->eff_clip_rect2.y * my_cur_state->yscale + my_cur_state->yoffset;
 
       break; /* end case CDCOFF */
 
     case CVPORT: /* clip at viewport */
 
       /* map the effective clip rectangle to NDC */
-      cur_state->clip_on = TRUE;
+      my_cur_state->clip_on = TRUE;
 
-      clip1.x = cur_state->eff_clip_rect1.x * cur_state->xscale + cur_state->xoffset;
-      clip1.y = cur_state->eff_clip_rect1.y * cur_state->yscale + cur_state->yoffset;
-      clip2.x = cur_state->eff_clip_rect2.x * cur_state->xscale + cur_state->xoffset;
-      clip2.y = cur_state->eff_clip_rect2.y * cur_state->yscale + cur_state->yoffset;
+      clip1.x = my_cur_state->eff_clip_rect1.x * my_cur_state->xscale + my_cur_state->xoffset;
+      clip1.y = my_cur_state->eff_clip_rect1.y * my_cur_state->yscale + my_cur_state->yoffset;
+      clip2.x = my_cur_state->eff_clip_rect2.x * my_cur_state->xscale + my_cur_state->xoffset;
+      clip2.y = my_cur_state->eff_clip_rect2.y * my_cur_state->yscale + my_cur_state->yoffset;
 
       break; /* end case CVPORT */
 
@@ -4799,12 +4799,12 @@ static void set_clipping(surf_statelist *cur_state)
 
       /* map the effective clip rectangle to NDC and intersect it
          with the max NDC space */
-      cur_state->clip_on = TRUE;
+      my_cur_state->clip_on = TRUE;
 
-      clip1.x = cur_state->eff_clip_rect1.x * cur_state->xscale + cur_state->xoffset;
-      clip1.y = cur_state->eff_clip_rect1.y * cur_state->yscale + cur_state->yoffset;
-      clip2.x = cur_state->eff_clip_rect2.x * cur_state->xscale + cur_state->xoffset;
-      clip2.y = cur_state->eff_clip_rect2.y * cur_state->yscale + cur_state->yoffset;
+      clip1.x = my_cur_state->eff_clip_rect1.x * my_cur_state->xscale + my_cur_state->xoffset;
+      clip1.y = my_cur_state->eff_clip_rect1.y * my_cur_state->yscale + my_cur_state->yoffset;
+      clip2.x = my_cur_state->eff_clip_rect2.x * my_cur_state->xscale + my_cur_state->xoffset;
+      clip2.y = my_cur_state->eff_clip_rect2.y * my_cur_state->yscale + my_cur_state->yoffset;
 
       clip1.x = max(min(clip1.x, clip2.x), 0.0);
       clip1.y = max(min(clip1.y, clip2.y), 0.0);
@@ -4824,32 +4824,32 @@ static void set_clipping(surf_statelist *cur_state)
   case COFF:
 
     /* VDC clipping is off */
-    switch (cur_state->ds_clip_indicator) {
+    switch (my_cur_state->ds_clip_indicator) {
 
     case CDCOFF: /* display surface clipping off */
 
       /* no clip */
-      cur_state->clip_on = FALSE;
+      my_cur_state->clip_on = FALSE;
       break; /* end case CDCOFF */
 
     case CVPORT: /* clip at viewport */
 
       /* clip at NDC effective viewport  */
-      cur_state->clip_on = TRUE;
-      clip1.x            = cur_state->eff_vp1.x * dev_descrip.xndc_max;
-      clip1.y            = cur_state->eff_vp1.y * dev_descrip.yndc_max;
-      clip2.x            = cur_state->eff_vp2.x * dev_descrip.xndc_max;
-      clip2.y            = cur_state->eff_vp2.y * dev_descrip.yndc_max;
+      my_cur_state->clip_on = TRUE;
+      clip1.x               = my_cur_state->eff_vp1.x * dev_descrip.xndc_max;
+      clip1.y               = my_cur_state->eff_vp1.y * dev_descrip.yndc_max;
+      clip2.x               = my_cur_state->eff_vp2.x * dev_descrip.xndc_max;
+      clip2.y               = my_cur_state->eff_vp2.y * dev_descrip.yndc_max;
       break; /* end case CVPORT */
 
     case CDCREC: /* clip at display surface */
 
       /* clip at max NDC space */
-      cur_state->clip_on = TRUE;
-      clip1.x            = 0.0;
-      clip1.y            = 0.0;
-      clip2.x            = dev_descrip.xndc_max;
-      clip2.y            = dev_descrip.yndc_max;
+      my_cur_state->clip_on = TRUE;
+      clip1.x               = 0.0;
+      clip1.y               = 0.0;
+      clip2.x               = dev_descrip.xndc_max;
+      clip2.y               = dev_descrip.yndc_max;
       break; /* end case CDCREC */
 
     default:
@@ -4870,11 +4870,11 @@ static void set_clipping(surf_statelist *cur_state)
    * the clipping window, and clipmax is the maximum. This is done
    * so that the clipping algorithms work correctly with mirroring.
    */
-  if (cur_state->clip_on) {
-    cur_state->clipmin.x = min(clip1.x, clip2.x);
-    cur_state->clipmax.x = max(clip1.x, clip2.x);
-    cur_state->clipmin.y = min(clip1.y, clip2.y);
-    cur_state->clipmax.y = max(clip1.y, clip2.y);
+  if (my_cur_state->clip_on) {
+    my_cur_state->clipmin.x = min(clip1.x, clip2.x);
+    my_cur_state->clipmax.x = max(clip1.x, clip2.x);
+    my_cur_state->clipmin.y = min(clip1.y, clip2.y);
+    my_cur_state->clipmax.y = max(clip1.y, clip2.y);
   }
 } /* end set_clipping */
 
