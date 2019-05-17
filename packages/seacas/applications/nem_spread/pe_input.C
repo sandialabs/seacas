@@ -38,12 +38,13 @@
 /*--------------------------------------------------------------------------*/
 
 #include "copy_string_cpp.h"
+#include "fmt/ostream.h"
 #include "nem_spread.h"
 #include "ps_pario_const.h" // for PIO_Info, Parallel_IO, etc
 #include "rf_allo.h"        // for array_alloc
 #include "rf_io_const.h"    // for ExoFile, etc
 #include "scopeguard.h"
-#include <cstdio>  // for fprintf, nullptr, stderr, etc
+#include <cstdio>  // for nullptr, stderr, etc
 #include <cstdlib> // for exit, realloc
 #include <cstring> // for strtok, strchr, strstr, etc
 #include <rf_allo.h>
@@ -102,8 +103,6 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
  */
 {
   /* local declarations */
-  static const char *yo = "read_pexoII_info";
-
   FILE *file_cmd = nullptr;
   char  inp_line[MAX_INPUT_STR_LN + 1];
   char  inp_copy[MAX_INPUT_STR_LN + 1];
@@ -164,10 +163,10 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
           cptr = strtok(nullptr, "\t=");
           strip_string(cptr, " \t\n");
           if (sscanf(cptr, "%d", &(spreader.Proc_Info[0])) != 1) {
-            fprintf(stderr,
-                    "%s: ERROR, can\'t interpret int for number of"
-                    " Processors.\n",
-                    yo);
+            fmt::print(stderr,
+                       "{}: ERROR, can\'t interpret int for number of"
+                       " Processors.\n",
+                       __func__);
             exit(1);
           }
         }
@@ -200,7 +199,7 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
           cptr = strtok(nullptr, "\t=");
           strip_string(cptr, " \t\n");
           if (sscanf(cptr, "%d", &Debug_Flag) != 1) {
-            fprintf(stderr, "%s: ERROR, can\'t interpret int for Debug_Flag\n", yo);
+            fmt::print(stderr, "{}: ERROR, can\'t interpret int for Debug_Flag\n", __func__);
             exit(1);
           }
         }
@@ -258,7 +257,7 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
           else if (strstr(cptr, "block")) {
             cptr2 = strchr(cptr, '=');
             if (cptr2 == nullptr) {
-              fprintf(stderr, "fatal: must specify a value with \"block\"");
+              fmt::print(stderr, "fatal: must specify a value with \"block\"");
               exit(1);
             }
             cptr2++;
@@ -268,13 +267,13 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
             /* "{" defines the beginning of the group designator */
             cptr2 = strchr(cptr, '{');
             if (cptr2 == nullptr) {
-              fprintf(stderr, "fatal: list start designator \"{\" not found");
+              fmt::print(stderr, "fatal: list start designator \"{\" not found");
               exit(1);
             }
             cptr2++;
             cptr3 = strchr(cptr, '}');
             if (cptr3 == nullptr) {
-              fprintf(stderr, "fatal: list end designator \"}\" not found");
+              fmt::print(stderr, "fatal: list end designator \"}\" not found");
               exit(1);
             }
             *cptr3 = '\0';
@@ -315,7 +314,7 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
             }
           }
           else {
-            fprintf(stderr, "warning: unknown restart info suboption %s", cptr);
+            fmt::print(stderr, "warning: unknown restart info suboption {}", cptr);
             exit(1);
           }
           cptr = strtok(nullptr, ",");
@@ -335,70 +334,70 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
           if (strstr(cptr, "nodal")) {
             cptr2 = strchr(cptr, '=');
             if (cptr2 == nullptr) {
-              fprintf(stderr, "Error: integer value must be specified for"
-                              " reserve space.\n");
+              fmt::print(stderr, "Error: integer value must be specified for"
+                                 " reserve space.\n");
               return 0;
             }
             cptr2++;
             icnt = sscanf(cptr2, "%d", &Num_Nod_Var);
             if ((icnt <= 0) || (Num_Nod_Var < 0)) {
-              fprintf(stderr, "Error: Invalid value for nodal variable\n");
+              fmt::print(stderr, "Error: Invalid value for nodal variable\n");
               return 0;
             }
           }
           else if (strstr(cptr, "elemental")) {
             cptr2 = strchr(cptr, '=');
             if (cptr2 == nullptr) {
-              fprintf(stderr, "Error: integer value must be specified for"
-                              " reserve space.\n");
+              fmt::print(stderr, "Error: integer value must be specified for"
+                                 " reserve space.\n");
               return 0;
             }
             cptr2++;
             icnt = sscanf(cptr2, "%d", &Num_Elem_Var);
             if ((icnt <= 0) || (Num_Elem_Var < 0)) {
-              fprintf(stderr, "Error: Invalid value for elemental variable\n");
+              fmt::print(stderr, "Error: Invalid value for elemental variable\n");
               return 0;
             }
           }
           else if (strstr(cptr, "global")) {
             cptr2 = strchr(cptr, '=');
             if (cptr2 == nullptr) {
-              fprintf(stderr, "Error: integer value must be specified for"
-                              " reserve space.\n");
+              fmt::print(stderr, "Error: integer value must be specified for"
+                                 " reserve space.\n");
               return 0;
             }
             cptr2++;
             icnt = sscanf(cptr2, "%d", &Num_Glob_Var);
             if ((icnt <= 0) || (Num_Glob_Var < 0)) {
-              fprintf(stderr, "Error: Invalid value for global variable\n");
+              fmt::print(stderr, "Error: Invalid value for global variable\n");
               return 0;
             }
           }
           else if (strstr(cptr, "nodeset")) {
             cptr2 = strchr(cptr, '=');
             if (cptr2 == nullptr) {
-              fprintf(stderr, "Error: integer value must be specified for"
-                              " reserve space.\n");
+              fmt::print(stderr, "Error: integer value must be specified for"
+                                 " reserve space.\n");
               return 0;
             }
             cptr2++;
             icnt = sscanf(cptr2, "%d", &Num_Nset_Var);
             if ((icnt <= 0) || (Num_Nset_Var < 0)) {
-              fprintf(stderr, "Error: Invalid value for nodeset variable\n");
+              fmt::print(stderr, "Error: Invalid value for nodeset variable\n");
               return 0;
             }
           }
           else if (strstr(cptr, "sideset")) {
             cptr2 = strchr(cptr, '=');
             if (cptr2 == nullptr) {
-              fprintf(stderr, "Error: integer value must be specified for"
-                              " reserve space.\n");
+              fmt::print(stderr, "Error: integer value must be specified for"
+                                 " reserve space.\n");
               return 0;
             }
             cptr2++;
             icnt = sscanf(cptr2, "%d", &Num_Sset_Var);
             if ((icnt <= 0) || (Num_Sset_Var < 0)) {
-              fprintf(stderr, "Error: Invalid value for sideset variable\n");
+              fmt::print(stderr, "Error: Invalid value for sideset variable\n");
               return 0;
             }
           }
@@ -419,21 +418,21 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
 
         /* the first sub-option must be "number" */
         if (!strstr(cptr, "number")) {
-          fprintf(stderr, "Error: First sup-option for disk info must be "
-                          "\"number\"\n");
+          fmt::print(stderr, "Error: First sup-option for disk info must be "
+                             "\"number\"\n");
           return 0;
         }
 
         cptr2 = strchr(cptr, '=');
         if (cptr2 == nullptr) {
-          fprintf(stderr, "Error: integer value must be specified for"
-                          " reserve space.\n");
+          fmt::print(stderr, "Error: integer value must be specified for"
+                             " reserve space.\n");
           return 0;
         }
         cptr2++;
         icnt = sscanf(cptr2, "%d", &(PIO_Info.Num_Dsk_Ctrlrs));
         if ((icnt <= 0) || (PIO_Info.Num_Dsk_Ctrlrs <= 0)) {
-          fprintf(stderr, "Error: Invalid value for # of raid controllers\n");
+          fmt::print(stderr, "Error: Invalid value for # of raid controllers\n");
           return 0;
         }
 
@@ -453,7 +452,7 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
             /* "{" defines the beginning of the list */
             cptr = strchr(cptr, '{');
             if (cptr == nullptr) {
-              fprintf(stderr, "Error: disk list must be specified\n");
+              fmt::print(stderr, "Error: disk list must be specified\n");
               return 0;
             }
             cptr++;
@@ -471,14 +470,14 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
           else if (strstr(cptr, "offset")) {
             cptr2 = strchr(cptr, '=');
             if (cptr2 == nullptr) {
-              fprintf(stderr, "Error: value must be specified with the "
-                              "\"offset\" option.\n");
+              fmt::print(stderr, "Error: value must be specified with the "
+                                 "\"offset\" option.\n");
               return 0;
             }
             cptr2++;
             icnt = sscanf(cptr2, "%d", &(PIO_Info.PDsk_Add_Fact));
             if ((icnt <= 0) || (PIO_Info.PDsk_Add_Fact < 0)) {
-              fprintf(stderr, "Error: Invalid value for offset\n");
+              fmt::print(stderr, "Error: Invalid value for offset\n");
               return 0;
             }
           }
@@ -510,13 +509,13 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
           if (strstr(cptr, "root")) {
             cptr2 = strchr(cptr, '=');
             if (cptr2 == nullptr) {
-              fprintf(stderr, "fatal: must specify a path with \"root\"");
+              fmt::print(stderr, "fatal: must specify a path with \"root\"");
               return 0;
             }
             cptr2++;
             if (strlen(cptr2) == 0) {
-              fprintf(stderr, "fatal: invalid path name specified with"
-                              " \"root\"");
+              fmt::print(stderr, "fatal: invalid path name specified with"
+                                 " \"root\"");
               return 0;
             }
             PIO_Info.Par_Dsk_Root = std::string(cptr2);
@@ -524,13 +523,13 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
           if (strstr(cptr, "subdir")) {
             cptr2 = strchr(cptr, '=');
             if (cptr2 == nullptr) {
-              fprintf(stderr, "fatal: must specify a path with \"subdir\"");
+              fmt::print(stderr, "fatal: must specify a path with \"subdir\"");
               return 0;
             }
             cptr2++;
             if (strlen(cptr2) == 0) {
-              fprintf(stderr, "fatal: invalid path name specified with"
-                              " \"subdir\"");
+              fmt::print(stderr, "fatal: invalid path name specified with"
+                                 " \"subdir\"");
               return 0;
             }
             PIO_Info.Par_Dsk_SubDirec = std::string(cptr2);
