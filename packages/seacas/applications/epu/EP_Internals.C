@@ -344,39 +344,50 @@ bool Excn::Internals<INT>::check_meta_data(const Mesh &mesh, const std::vector<B
 
   bool matches = true;
   if (mesh.dimensionality != init_data.num_dim) {
-    std::cerr << "ERROR: (EPU) original mesh dimensionality (" << mesh.dimensionality
-              << ") does not match current dimensionality (" << init_data.num_dim << ")\n";
+    fmt::print(stderr,
+               "ERROR: (EPU) original mesh dimensionality ({}) does not match current "
+               "dimensionality ({})\n",
+               mesh.dimensionality, init_data.num_dim);
     matches = false;
   }
 
   if (mesh.nodeCount != init_data.num_nodes) {
-    std::cerr << "ERROR: (EPU) original mesh node count (" << mesh.nodeCount
-              << ") does not match current node count (" << init_data.num_nodes << ")\n";
+    fmt::print(
+        stderr,
+        "ERROR: (EPU) original mesh node count ({}) does not match current node count ({})\n",
+        mesh.nodeCount, init_data.num_nodes);
     matches = false;
   }
 
   if (mesh.elementCount != init_data.num_elem) {
-    std::cerr << "ERROR: (EPU) original mesh element count (" << mesh.elementCount
-              << ") does not match current element count (" << init_data.num_elem << ")\n";
+    fmt::print(
+        stderr,
+        "ERROR: (EPU) original mesh element count ({}) does not match current element count ({})\n",
+        mesh.elementCount, init_data.num_elem);
     matches = false;
   }
 
   if (mesh.blockCount != init_data.num_elem_blk) {
-    std::cerr << "ERROR: (EPU) original mesh element block count (" << mesh.blockCount
-              << ") does not match current element block count (" << init_data.num_elem_blk
-              << ")\n";
+    fmt::print(stderr,
+               "ERROR: (EPU) original mesh element block count ({}) does not match current element "
+               "block count ({})\n",
+               mesh.blockCount, init_data.num_elem_blk);
     matches = false;
   }
 
   if (mesh.nodesetCount != init_data.num_node_sets) {
-    std::cerr << "ERROR: (EPU) original mesh nodeset count (" << mesh.nodesetCount
-              << ") does not match current nodeset count (" << init_data.num_node_sets << ")\n";
+    fmt::print(
+        stderr,
+        "ERROR: (EPU) original mesh nodeset count ({}) does not match current nodeset count ({})\n",
+        mesh.nodesetCount, init_data.num_node_sets);
     matches = false;
   }
 
   if (mesh.sidesetCount != init_data.num_side_sets) {
-    std::cerr << "ERROR: (EPU) original mesh sideset count (" << mesh.sidesetCount
-              << ") does not match current sideset count (" << init_data.num_side_sets << ")\n";
+    fmt::print(
+        stderr,
+        "ERROR: (EPU) original mesh sideset count ({}) does not match current sideset count ({})\n",
+        mesh.sidesetCount, init_data.num_side_sets);
     matches = false;
   }
 
