@@ -112,17 +112,17 @@ void logger(const char *message)
 
 void usage()
 {
-  std::cout << "exo2mat [options] exodus_file_name.\n"
-            << "   the exodus_file_name is required (exodus only).\n"
-            << "   Options:\n"
-            << "   -t    write a text (.m) file rather than a binary .mat\n"
-            << "   -o    output file name (rather than auto generate)\n"
-            << "   -c    use cell arrays for transient variables.\n"
-            << "   -v5   output version 5 mat file\n"
-            << "   -v73  output version 7.3 mat file (hdf5-based) [default]\n"
-            << "   -v7.3 output version 7.3 mat file (hdf5-based)\n"
-            << " ** note **\n"
-            << "Binary files are written by default on all platforms.\n";
+  fmt::print("exo2mat [options] exodus_file_name.\n"
+             "   the exodus_file_name is required (exodus only).\n"
+             "   Options:\n"
+             "   -t    write a text (.m) file rather than a binary .mat\n"
+             "   -o    output file name (rather than auto generate)\n"
+             "   -c    use cell arrays for transient variables.\n"
+             "   -v5   output version 5 mat file\n"
+             "   -v73  output version 7.3 mat file (hdf5-based) [default]\n"
+             "   -v7.3 output version 7.3 mat file (hdf5-based)\n"
+             " ** note **\n"
+             "Binary files are written by default on all platforms.\n");
 }
 
 /* put a string into an m file. If the string has
@@ -1012,7 +1012,7 @@ int main(int argc, char *argv[])
       if (argv[j] != nullptr) {
         oname = argv[j];
         del_arg(&argc, argv, j);
-        std::cout << "output file: " << oname << "\n";
+        fmt::print("output file: {}\n", oname);
       }
       else {
         std::cerr << "ERROR: Invalid output file specification.\n";
@@ -1088,7 +1088,7 @@ int main(int argc, char *argv[])
   }
 
   /* print */
-  std::cout << "\ttranslating " << argv[1] << " to " << filename << "...\n";
+  fmt::print("\ttranslating {} to {}...\n", argv[1], filename);
 
   /* read database parameters */
   char *line = reinterpret_cast<char *>(calloc((MAX_LINE_LENGTH + 1), sizeof(char)));
@@ -1351,7 +1351,7 @@ int main(int argc, char *argv[])
 
   delete_exodus_names(str2, nstr2);
 
-  std::cout << "done...\n";
+  fmt::print("done...\n");
 
   /* exit status */
   add_to_log("exo2mat", 0);

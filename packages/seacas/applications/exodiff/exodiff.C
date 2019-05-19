@@ -615,7 +615,7 @@ namespace {
       }
     }
     else if (interface.summary_flag) {
-      std::cout << "\n# ==============================================================\n";
+      fmt::print("\n# ==============================================================\n");
       if (!interface.ignore_maps) {
         fmt::print("#  NOTE: All node and element ids are reported as global ids.\n\n");
       }
