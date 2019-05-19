@@ -191,7 +191,8 @@ namespace Ioex {
       if (status == NC_NOERR) {
         if (proc_info[0] != processor_count && proc_info[0] > 1) {
           fmt::print(IOSS_WARNING,
-                     "Processor decomposition count in file ({}) does not match current processor "
+                     "WARNING: Processor decomposition count in file ({}) does not match current "
+                     "processor "
                      "count ({}).\n",
                      proc_info[0], processor_count);
           matches = false;
@@ -199,9 +200,9 @@ namespace Ioex {
         if (proc_info[1] != processor_id) {
           fmt::print(
               IOSS_WARNING,
-              "This file was originally written on processor {}, but is now being read on "
-              "processor {}."
-              " This may cause problems if there is any processor-dependent data on the file.\n",
+              "WARNING: This file was originally written on processor {}, but is now being read on "
+              "processor {}.\n"
+              "This may cause problems if there is any processor-dependent data on the file.\n",
               proc_info[1], processor_id);
           matches = false;
         }
