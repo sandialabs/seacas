@@ -69,7 +69,7 @@ Excn::ExodusFile::ExodusFile(size_t which) : myLocation_(which)
     fileids_[which] = ex_open(filenames_[which].c_str(), EX_READ | exodusMode_, &cpu_word_size,
                               &io_wrd_size, &version);
     if (fileids_[which] < 0) {
-      std::cerr << "Cannot open file '" << filenames_[which] << "' - exiting" << '\n';
+      std::cerr << "Cannot open file '" << filenames_[which] << "' - exiting\n";
       exit(1);
     }
     ex_set_max_name_length(fileids_[which], maximumNameLength_);
@@ -148,7 +148,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
       int io_wrd_size   = 0;
       int exoid = ex_open(filenames_[p].c_str(), EX_READ, &cpu_word_size, &io_wrd_size, &version);
       if (exoid < 0) {
-        std::cerr << "Cannot open file '" << filenames_[p] << "'" << '\n';
+        std::cerr << "Cannot open file '" << filenames_[p] << "'\n";
         return false;
       }
 
@@ -177,14 +177,14 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
 
       fileids_[p] = ex_open(filenames_[p].c_str(), mode, &cpuWordSize_, &io_wrd_size, &version);
       if (fileids_[p] < 0) {
-        std::cerr << "Cannot open file '" << filenames_[p] << "'" << '\n';
+        std::cerr << "Cannot open file '" << filenames_[p] << "'\n";
         return false;
       }
 
       SMART_ASSERT(ioWordSize_ == io_wrd_size)(ioWordSize_)(io_wrd_size);
     }
 
-    std::cout << "Part " << p + 1 << ": '" << name << "'" << '\n';
+    std::cout << "Part " << p + 1 << ": '" << name << "'\n";
   }
 
   maximumNameLength_ = overall_max_name_length;
@@ -213,10 +213,10 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si)
     mode |= EX_NETCDF4;
   }
 
-  std::cout << "Output:   '" << outputFilename_ << "'" << '\n';
+  std::cout << "Output:   '" << outputFilename_ << "'\n";
   outputId_ = ex_create(outputFilename_.c_str(), mode, &cpuWordSize_, &ioWordSize_);
   if (outputId_ < 0) {
-    std::cerr << "Cannot open file '" << outputFilename_ << "'" << '\n';
+    std::cerr << "Cannot open file '" << outputFilename_ << "'\n";
     return false;
   }
 
