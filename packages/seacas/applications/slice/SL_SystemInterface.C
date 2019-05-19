@@ -87,7 +87,7 @@ void SystemInterface::enroll_options()
   options_.enroll("processors", GetLongOption::MandatoryValue,
                   "Number of processors to decompose the mesh for", "1");
 
-  options_.enroll("debug", GetLongOption::MandatoryValue, "Debug level: 0, 1, 2", "0");
+  options_.enroll("debug", GetLongOption::MandatoryValue, "Debug level: 0, 1, 2, 4 or'd", "0");
 
   options_.enroll("input_type", GetLongOption::MandatoryValue,
                   "File format for input mesh file (default = exodus)", "exodusii");
@@ -95,7 +95,7 @@ void SystemInterface::enroll_options()
   options_.enroll("method", GetLongOption::MandatoryValue,
                   "Decomposition method\n"
                   "\t\t'linear'   : #elem/#proc to each processor\n"
-                  "\t\t'scattered': Shuffle elements to each processor\n"
+                  "\t\t'scattered': Shuffle elements to each processor (cyclic)\n"
                   "\t\t'random'   : Random distribution of elements, maintains balance\n"
                   "\t\t'rb'       : Metis multilevel recursive bisection\n"
                   "\t\t'kway'     : Metis multilevel k-way graph partitioning\n"
@@ -177,8 +177,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
-    std::cerr << "\n\tCan also set options via SLICE_OPTIONS environment variable.\n";
-    std::cerr << "\n\t->->-> Send email to gdsjaar@sandia.gov for slice support.<-<-<-\n";
+    std::cerr << "\n\t   Can also set options via SLICE_OPTIONS environment variable.\n";
+    std::cerr << "\n\t->->-> Send email to gsjaardema@gmail.com for slice support.<-<-<-\n";
     exit(EXIT_SUCCESS);
   }
 
@@ -413,8 +413,7 @@ void SystemInterface::dump(std::ostream & /*unused*/) const {}
 
 void SystemInterface::show_version()
 {
-  std::cout << "Slice"
-            << "\n"
+  std::cout << "Slice\n"
             << "\t(A code for decomposing finite element meshes for running parallel analyses.)\n"
             << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
 }
