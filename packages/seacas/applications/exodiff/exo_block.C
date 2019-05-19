@@ -185,43 +185,5 @@ template <typename INT> int Exo_Block<INT>::Check_State() const
 
   return 1;
 }
-
-template <typename INT> void Exo_Block<INT>::Display_Stats(std::ostream &s) const
-{
-  s << "Exo_Block<INT>::Display()  block id = " << id_ << '\n'
-    << "                  element type = " << elmt_type << '\n'
-    << "               number of elmts = " << numEntity << '\n'
-    << "      number of nodes per elmt = " << num_nodes_per_elmt << '\n'
-    << "          number of attributes = " << attr_count() << '\n'
-    << "           number of variables = " << var_count() << '\n';
-}
-
-template <typename INT> void Exo_Block<INT>::Display(std::ostream &s) const
-{
-  SMART_ASSERT(Check_State());
-
-  s << "Exo_Block<INT>::Display()  block id = " << id_ << '\n'
-    << "                  element type = " << elmt_type << '\n'
-    << "               number of elmts = " << numEntity << '\n'
-    << "      number of nodes per elmt = " << num_nodes_per_elmt << '\n'
-    << "          number of attributes = " << attr_count() << '\n'
-    << "           number of variables = " << var_count() << '\n';
-
-  if (conn) {
-    size_t index = 0;
-    s << "       connectivity = ";
-    for (size_t e = 0; e < numEntity; ++e) {
-      if (e != 0) {
-        s << "                      ";
-      }
-      s << "(" << (e + 1) << ") ";
-      for (int n = 0; n < num_nodes_per_elmt; ++n) {
-        s << conn[index++] << " ";
-      }
-      s << '\n';
-    }
-  }
-}
-
 template class Exo_Block<int>;
 template class Exo_Block<int64_t>;

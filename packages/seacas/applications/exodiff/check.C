@@ -48,13 +48,6 @@
 
 namespace {
 
-  void Error(const std::string &x)
-  {
-    std::ostringstream out;
-    out << "exodiff: ERROR: " << x;
-    ERR_OUT(out);
-  }
-
   template <typename INT>
   bool Check_Nodal(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *node_map,
                    const INT *id_map, bool check_only);

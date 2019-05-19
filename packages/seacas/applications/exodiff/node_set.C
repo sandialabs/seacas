@@ -161,15 +161,6 @@ template <typename INT> void Node_Set<INT>::Free_Distribution_Factors() const
   }
 }
 
-template <typename INT> void Node_Set<INT>::Display(std::ostream &s)
-{
-  Check_State();
-  s << "Node_Set<INT>::Display_Stats()  Exodus node set ID = " << id_ << '\n'
-    << "                              number of nodes = " << numEntity << '\n'
-    << "               number of distribution factors = " << num_dist_factors << '\n'
-    << "                          number of variables = " << var_count() << '\n';
-}
-
 template <typename INT> int Node_Set<INT>::Check_State() const
 {
   SMART_ASSERT(id_ >= EX_INVALID_ID);
