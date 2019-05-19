@@ -267,16 +267,6 @@ std::pair<INT, INT> Side_Set<INT>::Distribution_Factor_Range(size_t side) const
   return std::make_pair(dfIndex[side_index], dfIndex[side_index + 1]);
 }
 
-template <typename INT> void Side_Set<INT>::Display(std::ostream &s) const
-{
-  SMART_ASSERT(Check_State());
-
-  s << "Side_Set<INT>::Display()  Exodus side set ID = " << id_ << '\n'
-    << "                        number of sides = " << numEntity << '\n'
-    << "         number of distribution factors = " << num_dist_factors << '\n'
-    << "                    number of variables = " << var_count() << '\n';
-}
-
 template <typename INT> int Side_Set<INT>::Check_State() const
 {
   SMART_ASSERT(id_ >= EX_INVALID_ID);

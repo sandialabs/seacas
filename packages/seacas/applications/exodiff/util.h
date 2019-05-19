@@ -37,10 +37,12 @@
 
 #include <fmt/color.h>
 #include <sstream>
+#include <string>
 
 char **get_name_array(int size, int length);
 void   free_name_array(char **names, int size);
 
+void Error(const std::string &x);
 void ERR_OUT(std::ostringstream &buf);
 void DIFF_OUT(std::ostringstream &buf, fmt::internal::color_type color = fmt::color::red);
 void DIFF_OUT(const std::string &buf, fmt::internal::color_type color = fmt::color::red);

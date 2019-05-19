@@ -72,6 +72,13 @@ namespace {
   }
 } // namespace
 
+void Error(const std::string &x)
+{
+  std::ostringstream out;
+  out << "exodiff: ERROR: " << x;
+  ERR_OUT(out);
+}
+
 void ERR_OUT(std::ostringstream &buf)
 {
   if (cerr_out()) {
