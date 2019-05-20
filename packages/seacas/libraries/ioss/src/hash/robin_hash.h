@@ -230,8 +230,8 @@ namespace tsl {
       void set_as_last_bucket() noexcept { m_last_bucket = true; }
 
       template <typename... Args>
-      void set_value_of_empty_bucket(distance_type my_dist_from_ideal_bucket, truncated_hash_type hash,
-                                     Args &&... value_type_args)
+      void set_value_of_empty_bucket(distance_type       my_dist_from_ideal_bucket,
+                                     truncated_hash_type hash, Args &&... value_type_args)
       {
         tsl_rh_assert(my_dist_from_ideal_bucket >= 0);
         tsl_rh_assert(empty());
@@ -298,8 +298,8 @@ namespace tsl {
      * example).
      *
      * The strong exception guarantee only holds if the expression
-     * `std::is_nothrow_swappable<ValueType>::value &&
-     * std::is_nothrow_move_constructible<ValueType>::value` is true.
+     * `std::is_nothrow_swappable<ValueType>\:\:value &&
+     *  std::is_nothrow_move_constructible<ValueType>\:\:value` is true.
      *
      * Behaviour is undefined if the destructor of `ValueType` throws.
      */

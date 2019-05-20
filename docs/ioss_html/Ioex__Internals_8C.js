@@ -1,6 +1,5 @@
 var Ioex__Internals_8C =
 [
-    [ "__STDC_FORMAT_MACROS", "Ioex__Internals_8C.html#aacbb9e1f38be71e22df1584a37c56693", null ],
     [ "conditional_define_variable", "Ioex__Internals_8C.html#adb453af0d0f658b741fdfe48f102dc13", null ],
     [ "define_coordinate_vars", "Ioex__Internals_8C.html#a54a2d8c5302cbdb4793a912d1a16e3c9", null ],
     [ "define_netcdf_vars", "Ioex__Internals_8C.html#a855c1fd2bc0c8212e4da4aad5150d7e1", null ],
