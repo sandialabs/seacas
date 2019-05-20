@@ -40,11 +40,10 @@
 #include "smart_assert.h" // for SMART_ASSERT
 #include "stringx.h"      // for find_string, etc
 #include "util.h"
-#include <cstddef>  // for size_t
-#include <cstdio>   // for nullptr
-#include <iostream> // for operator<<, basic_ostream, etc
-#include <string>   // for string, char_traits, etc
-#include <vector>   // for vector
+#include <cstddef> // for size_t
+#include <cstdio>  // for nullptr
+#include <string>  // for string, char_traits, etc
+#include <vector>  // for vector
 template <typename INT> class ExoII_Read;
 
 namespace {
@@ -461,7 +460,7 @@ namespace {
           int                idx1 = find_string(var_names1, name, interface.nocase_var_names);
           int                idx2 = find_string(var_names2, name, interface.nocase_var_names);
           if (idx1 < 0 || idx2 < 0) {
-            ERROR(fmt::format("Unable to find variable named '{}' on database.\n", name));
+            Error(fmt::format("Unable to find variable named '{}' on database.\n", name));
             exit(1);
           }
 

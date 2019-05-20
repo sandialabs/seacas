@@ -43,13 +43,6 @@
 
 #define DEFAULT_MAX_NUMBER_OF_NAMES 1000
 
-#define ERROR(x)                                                                                   \
-  do {                                                                                             \
-    std::ostringstream out;                                                                        \
-    out << "exodiff: ERROR: " << x;                                                                \
-    ERR_OUT(out);                                                                                  \
-  } while (0)
-
 class SystemInterface
 {
 public:

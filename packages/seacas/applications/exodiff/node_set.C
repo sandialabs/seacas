@@ -31,13 +31,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "ED_SystemInterface.h" // for ERROR, SystemInterface, etc
+#include "ED_SystemInterface.h" // for SystemInterface, etc
 #include "exodusII.h"           // for ex_set, etc
-#include "iqsort.h"             // for index_qsort
+#include "fmt/format.h"
+#include "iqsort.h" // for index_qsort
 #include "node_set.h"
 #include "smart_assert.h" // for SMART_ASSERT
 #include <cstdlib>        // for exit
-#include <iostream>       // for operator<<, ostream, etc
 #include <vector>         // for vector
 
 template <typename INT>
@@ -184,7 +184,7 @@ template <typename INT> void Node_Set<INT>::entity_load_params()
   int err = ex_get_sets(fileId, 1, &sets[0]);
 
   if (err < 0) {
-    ERROR("Failed to get nodeset parameters for nodeset " << id_ << ". !  Aborting...\n");
+    Error(fmt::format("Failed to get nodeset parameters for nodeset {}. !  Aborting...\n", id_));
     exit(1);
   }
 

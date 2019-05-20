@@ -600,7 +600,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
   else {
-    ERROR("no files specified\n\n");
+    Error("no files specified\n\n");
     return false;
   }
 
@@ -1019,7 +1019,7 @@ void SystemInterface::Parse_Command_File()
           }
         }
         else {
-          ERROR(" expected an integer "
+          Error(" expected an integer "
                 "after the \"MAX NAMES\" keyword.  "
                 "Aborting...\n");
           exit(1);
@@ -1483,7 +1483,7 @@ namespace {
         def_tol.type = RELATIVE;
         tok          = extract_token(xline, " \n\t=,");
         if (tok == "floor" || tok == "") {
-          ERROR(" Input file specifies a tolerance type "
+          Error(" Input file specifies a tolerance type "
                 "but no tolerance\n");
           exit(1);
         }
@@ -1495,7 +1495,7 @@ namespace {
         def_tol.type = ABSOLUTE;
         tok          = extract_token(xline, " \n\t=,");
         if (tok == "floor" || tok == "") {
-          ERROR("Input file specifies a tolerance type "
+          Error("Input file specifies a tolerance type "
                 "but no tolerance\n");
           exit(1);
         }
@@ -1507,7 +1507,7 @@ namespace {
         def_tol.type = COMBINED;
         tok          = extract_token(xline, " \n\t=,");
         if (tok == "floor" || tok == "") {
-          ERROR("Input file specifies a tolerance type "
+          Error("Input file specifies a tolerance type "
                 "but no tolerance\n");
           exit(1);
         }
@@ -1519,7 +1519,7 @@ namespace {
         def_tol.type = ULPS_FLOAT;
         tok          = extract_token(xline, " \n\t=,");
         if (tok == "floor" || tok == "") {
-          ERROR("Input file specifies a tolerance type "
+          Error("Input file specifies a tolerance type "
                 "but no tolerance\n");
           exit(1);
         }
@@ -1531,7 +1531,7 @@ namespace {
         def_tol.type = ULPS_DOUBLE;
         tok          = extract_token(xline, " \n\t=,");
         if (tok == "floor" || tok == "") {
-          ERROR("Input file specifies a tolerance type "
+          Error("Input file specifies a tolerance type "
                 "but no tolerance\n");
           exit(1);
         }
@@ -1543,7 +1543,7 @@ namespace {
         def_tol.type = EIGEN_REL;
         tok          = extract_token(xline, " \n\t=,");
         if (tok == "floor" || tok == "") {
-          ERROR("Input file specifies a tolerance type "
+          Error("Input file specifies a tolerance type "
                 "but no tolerance\n");
           exit(1);
         }
@@ -1555,7 +1555,7 @@ namespace {
         def_tol.type = EIGEN_ABS;
         tok          = extract_token(xline, " \n\t=,");
         if (tok == "floor" || tok == "") {
-          ERROR("Input file specifies a tolerance type "
+          Error("Input file specifies a tolerance type "
                 "but no tolerance\n");
           exit(1);
         }
@@ -1567,7 +1567,7 @@ namespace {
         def_tol.type = EIGEN_COM;
         tok          = extract_token(xline, " \n\t=,");
         if (tok == "floor" || tok == "") {
-          ERROR("Input file specifies a tolerance type "
+          Error("Input file specifies a tolerance type "
                 "but no tolerance\n");
           exit(1);
         }
@@ -1585,7 +1585,7 @@ namespace {
       if (abbreviation(tok, "floor", 3)) {
         tok = extract_token(xline, " \n\t=,");
         if (tok == "" || tok[0] == '#') {
-          ERROR("Floor specified but couldn't find value\n");
+          Error("Floor specified but couldn't find value\n");
           exit(1);
         }
         def_tol.floor = To_Double(tok);
