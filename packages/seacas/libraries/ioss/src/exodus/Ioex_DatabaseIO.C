@@ -50,6 +50,7 @@
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
+#include <fmt/format.h>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -978,8 +979,7 @@ namespace Ioex {
     step         = get_database_step(step);
     size_t count = globalValues.size();
     if (count > 0) {
-      int ierr = ex_put_var(get_file_pointer(), step, EX_GLOBAL, 1, 0, count,
-                            (double *)TOPTR(globalValues));
+      int ierr = ex_put_var(get_file_pointer(), step, EX_GLOBAL, 1, 0, count, globalValues.data());
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -1709,10 +1709,8 @@ namespace Ioex {
         // higher-order storage type.
 
         for (int i = 0; i < attribute_count; i++) {
-          int writ = ::snprintf(names[i], maximumNameLength + 1, "attribute_%d", i + 1);
-          if (writ > maximumNameLength) {
-            names[i][maximumNameLength] = '\0';
-          }
+          std::string tmp = fmt::format("attribute_{}", i + 1);
+          Ioss::Utils::copy_string(names[i], tmp, maximumNameLength + 1);
         }
       }
       else {
@@ -1781,10 +1779,7 @@ namespace Ioex {
           if (attribute_count == block->get_property("topology_node_count").get_int()) {
             att_name = "nodal_thickness";
 
-            std::string storage = "Real[";
-            storage += std::to_string(attribute_count);
-            storage += "]";
-
+            std::string storage = fmt::format("Real[{}]", attribute_count);
             block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage,
                                          Ioss::Field::ATTRIBUTE, my_element_count, 1));
           }
@@ -1887,10 +1882,8 @@ namespace Ioex {
         if (unknown_attributes > 0) {
           att_name = "extra_attribute_";
           att_name += std::to_string(unknown_attributes);
-          std::string storage = "Real[";
-          storage += std::to_string(unknown_attributes);
-          storage += "]";
-          size_t index = attribute_count - unknown_attributes + 1;
+          std::string storage = fmt::format("Real[{}]", unknown_attributes);
+          size_t      index   = attribute_count - unknown_attributes + 1;
           block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage, Ioss::Field::ATTRIBUTE,
                                        my_element_count, index));
         }
@@ -1899,9 +1892,7 @@ namespace Ioex {
       // Always create a field called "attribute" containing data
       // for all attributes on the mesh
       std::string att_name = "attribute"; // Default
-      std::string storage  = "Real[";
-      storage += std::to_string(attribute_count);
-      storage += "]";
+      std::string storage  = fmt::format("Real[{}]", attribute_count);
 
       block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage, Ioss::Field::ATTRIBUTE,
                                    my_element_count, 1));

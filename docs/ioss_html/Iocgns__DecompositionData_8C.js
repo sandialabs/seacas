@@ -1,7 +1,6 @@
 var Iocgns__DecompositionData_8C =
 [
-    [ "OUTPUT", "Iocgns__DecompositionData_8C.html#a61a3c9a18380aafb6e430e79bf596557", null ],
-    [ "create_zone_data", "Iocgns__DecompositionData_8C.html#a35f8943e156aa5b457c7eab84868b7b7", null ],
+    [ "create_zone_data", "Iocgns__DecompositionData_8C.html#a75b6e982d7090ce3ee4047a341cea3c3", null ],
     [ "set_line_decomposition", "Iocgns__DecompositionData_8C.html#aedce96795998d11c42162028437b089c", null ],
     [ "zoltan_geom", "Iocgns__DecompositionData_8C.html#a8ae85191420383fc8774e13893cc41dc", null ],
     [ "zoltan_num_dim", "Iocgns__DecompositionData_8C.html#ad4acd6d2cceb01825a082e8d9fa803c5", null ],

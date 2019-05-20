@@ -53,9 +53,6 @@
 
 namespace {
   int rank = 0;
-#define OUTPUT                                                                                     \
-  if (rank == 0)                                                                                   \
-  std::cerr
 
   // ZOLTAN Callback functions...
 

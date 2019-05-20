@@ -90,9 +90,6 @@ int main(int argc, char *argv[])
   Kokkos::ScopeGuard kokkos(argc, argv);
 #endif
 
-  std::cout.imbue(std::locale(std::locale(), new my_numpunct));
-  std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
-
   IOShell::Interface interface;
   bool               success = interface.parse_options(argc, argv);
   if (!success) {

@@ -63,11 +63,14 @@
 #include <set>
 #include <string>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <tokenize.h>
 #include <utility>
 #include <vector>
 
 namespace {
+  auto initial_time = std::chrono::high_resolution_clock::now();
+
   void log_time(std::chrono::time_point<std::chrono::high_resolution_clock> &start,
                 std::chrono::time_point<std::chrono::high_resolution_clock> &finish,
                 int current_state, double state_time, bool is_input, bool single_proc_only,
@@ -330,7 +333,7 @@ namespace Ioss {
   {
     if (decodedFilename.empty()) {
       if (isParallel) {
-        decodedFilename = util().decode_filename(get_filename(), isParallel);
+        decodedFilename = util().decode_filename(get_filename(), isParallel && !usingParallelIO);
       }
       else if (properties.exists("processor_count") && properties.exists("my_processor")) {
         int proc_count  = properties.get("processor_count").get_int();
@@ -817,10 +820,8 @@ namespace Ioss {
       assert(result != MPI_SUCCESS || non_zero == req_cnt);
 
       if (result != MPI_SUCCESS) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: MPI_Irecv error on processor {} in {}", util().parallel_rank(),
-                   __func__);
-        std::cerr << errmsg.str();
+        fmt::print(std::cerr, "ERROR: MPI_Irecv error on processor {} in {}",
+                   util().parallel_rank(), __func__);
       }
 
       int local_error  = (MPI_SUCCESS == result) ? 0 : 1;
@@ -847,10 +848,8 @@ namespace Ioss {
       assert(result != MPI_SUCCESS || non_zero == req_cnt);
 
       if (result != MPI_SUCCESS) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: MPI_Rsend error on processor {} in {}", util().parallel_rank(),
-                   __func__);
-        std::cerr << errmsg.str();
+        fmt::print(std::cerr, "ERROR: MPI_Rsend error on processor {} in {}",
+                   util().parallel_rank(), __func__);
       }
 
       local_error  = (MPI_SUCCESS == result) ? 0 : 1;
@@ -866,10 +865,8 @@ namespace Ioss {
       result = MPI_Waitall(req_cnt, TOPTR(request), TOPTR(status));
 
       if (result != MPI_SUCCESS) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: MPI_Waitall error on processor {} in {}", util().parallel_rank(),
-                   __func__);
-        std::cerr << errmsg.str();
+        fmt::print(std::cerr, "ERROR: MPI_Waitall error on processor {} in {}",
+                   util().parallel_rank(), __func__);
       }
 
       // Unpack the data and update the inv_con arrays for boundary
@@ -1034,12 +1031,7 @@ namespace Ioss {
   }
 } // namespace Ioss
 
-#include <sys/time.h>
-
 namespace {
-  struct timeval tp;
-  double         initial_time = -1.0;
-
   void log_time(std::chrono::time_point<std::chrono::high_resolution_clock> &start,
                 std::chrono::time_point<std::chrono::high_resolution_clock> &finish,
                 int current_state, double state_time, bool is_input, bool single_proc_only,
@@ -1076,11 +1068,11 @@ namespace {
       else {
         char sep = (util.parallel_size() > 1) ? ':' : ' ';
         for (auto &p_time : all_times) {
-          fmt::print("{:8d}{}", p_time, sep);
+          fmt::print(strm, "{:8d}{}", p_time, sep);
         }
       }
       if (util.parallel_size() > 1) {
-        fmt::print("\tTot: {} (ms)\n", total);
+        fmt::print(strm, "\tTot: {} (ms)\n", total);
       }
       std::cerr << strm.str();
     }
@@ -1089,11 +1081,6 @@ namespace {
   void log_field(const char *symbol, const Ioss::GroupingEntity *entity, const Ioss::Field &field,
                  bool single_proc_only, const Ioss::ParallelUtils &util)
   {
-    if (initial_time < 0.0) {
-      gettimeofday(&tp, nullptr);
-      initial_time = static_cast<double>(tp.tv_sec) + (1.e-6) * tp.tv_usec;
-    }
-
     if (entity != nullptr) {
       std::vector<int64_t> all_sizes;
       if (single_proc_only) {
@@ -1104,11 +1091,11 @@ namespace {
       }
 
       if (util.parallel_rank() == 0 || single_proc_only) {
-        const std::string &name = entity->name();
-        std::ostringstream strm;
-        gettimeofday(&tp, nullptr);
-        double time_now = static_cast<double>(tp.tv_sec) + (1.e-6) * tp.tv_usec;
-        fmt::print(strm, "{} [{:.3f}]\t", symbol, time_now - initial_time);
+        const std::string &           name = entity->name();
+        std::ostringstream            strm;
+        auto                          now  = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> diff = now - initial_time;
+        fmt::print(strm, "{} [{:.3f}]\t", symbol, diff.count());
 
         int64_t total = 0;
         for (auto &p_size : all_sizes) {
@@ -1129,7 +1116,7 @@ namespace {
           fmt::print(strm, " T:{:8d}", total);
         }
         fmt::print(strm, "\t{}/{}\n", name, field.get_name());
-        std::cout << strm.str();
+        std::cerr << strm.str();
       }
     }
     else {
@@ -1139,11 +1126,9 @@ namespace {
       }
 #endif
       if (util.parallel_rank() == 0 || single_proc_only) {
-        std::ostringstream strm;
-        gettimeofday(&tp, nullptr);
-        double time_now = static_cast<double>(tp.tv_sec) + (1.e-6) * tp.tv_usec;
-        fmt::print(strm, "{} [{:.3f}]\n", symbol, time_now - initial_time);
-        std::cout << strm.str();
+        auto                          time_now = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> diff     = time_now - initial_time;
+        fmt::print("{} [{:.3f}]\n", symbol, diff.count());
       }
     }
   }

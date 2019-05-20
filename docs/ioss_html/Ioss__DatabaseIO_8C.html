@@ -120,20 +120,22 @@ $(document).ready(function(){initNavTree('Ioss__DatabaseIO_8C.html','');});
 <code>#include &lt;cfloat&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;fmt/ostream.h&gt;</code><br />
 <code>#include &lt;iomanip&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;iterator&gt;</code><br />
 <code>#include &lt;set&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;sys/stat.h&gt;</code><br />
+<code>#include &lt;sys/time.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="tokenize_8h_source.html">tokenize.h</a>&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;sys/time.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Ioss_DatabaseIO.C:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Ioss__DatabaseIO_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Ioss__DatabaseIO_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -162,10 +164,8 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:ae3b8f9e58aa27a729abc35b862620a9d"><td class="memItemLeft" align="right" valign="top">struct timeval&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__DatabaseIO_8C_03.html#ae3b8f9e58aa27a729abc35b862620a9d">anonymous_namespace{Ioss_DatabaseIO.C}::tp</a></td></tr>
-<tr class="separator:ae3b8f9e58aa27a729abc35b862620a9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a250f87383ef85af6a4a07660a421335b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__DatabaseIO_8C_03.html#a250f87383ef85af6a4a07660a421335b">anonymous_namespace{Ioss_DatabaseIO.C}::initial_time</a> = -1.0</td></tr>
-<tr class="separator:a250f87383ef85af6a4a07660a421335b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b5e1172efa0e2d5d497e0dea0a894c4"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__DatabaseIO_8C_03.html#a8b5e1172efa0e2d5d497e0dea0a894c4">anonymous_namespace{Ioss_DatabaseIO.C}::initial_time</a> = std::chrono::high_resolution_clock::now()</td></tr>
+<tr class="separator:a8b5e1172efa0e2d5d497e0dea0a894c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -171,7 +171,6 @@ var searchData=
   ['get_5freduction_5ffield',['get_reduction_field',['../classIoex_1_1DatabaseIO.html#a18a87fd245372a8b8b44d6b6a6787ba0',1,'Ioex::DatabaseIO']]],
   ['get_5fregion',['get_region',['../classIoss_1_1DatabaseIO.html#ac7cb8bf7c8175fa0546a2bd965570e7c',1,'Ioss::DatabaseIO']]],
   ['get_5frole',['get_role',['../classIoss_1_1Field.html#aade689a336549e6d96d931e7ba73503d',1,'Ioss::Field']]],
-  ['get_5fserial_5ffile_5fpointer',['get_serial_file_pointer',['../classIocgns_1_1ParallelDatabaseIO.html#ad21c9e3d0e832cc137bb3d21554775ce',1,'Iocgns::ParallelDatabaseIO']]],
   ['get_5fset_5fattr',['get_set_attr',['../classIopx_1_1DecompositionData.html#a39bf928ca24bcdabd630903466887ddb',1,'Iopx::DecompositionData']]],
   ['get_5fset_5fmesh_5fdouble',['get_set_mesh_double',['../classIopx_1_1DecompositionDataBase.html#aad0063a919217ef56870ea4d76d72b1d',1,'Iopx::DecompositionDataBase']]],
   ['get_5fset_5fmesh_5fvar',['get_set_mesh_var',['../classIopx_1_1DecompositionDataBase.html#a9e32656ad93e46f723db259bc4fc0e27',1,'Iopx::DecompositionDataBase::get_set_mesh_var()'],['../classIopx_1_1DecompositionData.html#a3c8d13493f568666399ccae0a94d5132',1,'Iopx::DecompositionData::get_set_mesh_var()']]],
@@ -257,10 +256,8 @@ var searchData=
   ['globals_5fentity_5ftype',['globals_entity_type',['../namespaceIoad.html#a34864efb8f6e497d7986a2aa944af754',1,'Ioad']]],
   ['globalsidesets',['globalSideSets',['../structIoex_1_1CommunicationMetaData.html#a1b1fa78d3b46156e73a29b647d6400be',1,'Ioex::CommunicationMetaData']]],
   ['globalvalues',['globalValues',['../classIoex_1_1DatabaseIO.html#a7d24a9796bb5f68a3682547c888a2d8c',1,'Ioex::DatabaseIO']]],
-  ['green',['GREEN',['../structIoss_1_1trmclr_1_1Foreground.html#a7712591c720f5319dc922f46b80b959aa59087aa17dc073c4d8d2b4c49edd5dec',1,'Ioss::trmclr::Foreground::GREEN()'],['../structIoss_1_1trmclr_1_1Background.html#a0ae610a20611939d24afd1489d854334ab5b0c6a81cf85826cc30efc2dc09feb4',1,'Ioss::trmclr::Background::GREEN()'],['../namespaceIoss_1_1trmclr.html#ad523aa3a9b49f92d3b7166a5e676bfa1',1,'Ioss::trmclr::green()']]],
   ['group_5finfo',['group_info',['../namespaceanonymous__namespace_02io__info_8C_03.html#a171e4e43a1ff528e9f9b62bb08816863',1,'anonymous_namespace{io_info.C}']]],
   ['groupingentity',['GroupingEntity',['../classIoss_1_1GroupingEntity.html',1,'Ioss::GroupingEntity'],['../structIodw_1_1meta_1_1GroupingEntity.html',1,'Iodw::meta::GroupingEntity'],['../classIoss_1_1GroupingEntity.html#a31bff1067f10fbec1dc386cd0a9d050b',1,'Ioss::GroupingEntity::GroupingEntity()=default'],['../classIoss_1_1GroupingEntity.html#acb7142728e96a35ac40d94a646ff5c96',1,'Ioss::GroupingEntity::GroupingEntity(DatabaseIO *io_database, const std::string &amp;my_name, int64_t entity_count)'],['../classIoss_1_1GroupingEntity.html#a4a7c6f4ca464b9f334f11e5c484e3431',1,'Ioss::GroupingEntity::GroupingEntity(const GroupingEntity &amp;)=delete']]],
   ['groupname',['groupName',['../classIOShell_1_1Interface.html#a46c43fa5a8c60d30bc46374b9c1f46ff',1,'IOShell::Interface::groupName()'],['../classInfo_1_1Interface.html#a62d95325c23c24c85e9e53e5a1798c9e',1,'Info::Interface::groupname()']]],
-  ['groupname_5f',['groupname_',['../classInfo_1_1Interface.html#a742073e4982e0c59ef4cd7551b090e5a',1,'Info::Interface']]],
-  ['grow_5fon_5fhigh_5fload',['grow_on_high_load',['../classtsl_1_1detail__robin__hash_1_1robin__hash.html#ab9a61d96e3e7f7dcb21d84dee190a4e0',1,'tsl::detail_robin_hash::robin_hash']]]
+  ['groupname_5f',['groupname_',['../classInfo_1_1Interface.html#a742073e4982e0c59ef4cd7551b090e5a',1,'Info::Interface']]]
 ];

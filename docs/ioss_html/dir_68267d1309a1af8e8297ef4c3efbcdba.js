@@ -213,7 +213,7 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "Ioss_NullEntity.h", "Ioss__NullEntity_8h.html", [
       [ "NullEntity", "classIoss_1_1NullEntity.html", "classIoss_1_1NullEntity" ]
     ] ],
-    [ "Ioss_ParallelUtils.C", "Ioss__ParallelUtils_8C.html", null ],
+    [ "Ioss_ParallelUtils.C", "Ioss__ParallelUtils_8C.html", "Ioss__ParallelUtils_8C" ],
     [ "Ioss_ParallelUtils.h", "Ioss__ParallelUtils_8h.html", [
       [ "ParallelUtils", "classIoss_1_1ParallelUtils.html", "classIoss_1_1ParallelUtils" ]
     ] ],
@@ -371,7 +371,6 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
       [ "Super", "classIoss_1_1Super.html", "classIoss_1_1Super" ]
     ] ],
     [ "Ioss_SurfaceSplit.h", "Ioss__SurfaceSplit_8h.html", "Ioss__SurfaceSplit_8h" ],
-    [ "Ioss_TerminalColor.h", "Ioss__TerminalColor_8h.html", "Ioss__TerminalColor_8h" ],
     [ "Ioss_Tet10.C", "Ioss__Tet10_8C.html", [
       [ "St_Tet10", "classIoss_1_1St__Tet10.html", "classIoss_1_1St__Tet10" ],
       [ "Constants", "structanonymous__namespace_02Ioss__Tet10_8C_03_1_1Constants.html", "structanonymous__namespace_02Ioss__Tet10_8C_03_1_1Constants" ]

@@ -77,7 +77,6 @@
 #include "Ioss_SideSet.h"
 #include "Ioss_State.h"
 #include "Ioss_StructuredBlock.h"
-#include "Ioss_TerminalColor.h"
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
@@ -276,7 +275,7 @@ namespace Iocgns {
         set_int_byte_size_api(Ioss::USE_INT64_API);
       }
 
-      if (mode == CG_MODE_MODIFY) {
+      if (mode == CG_MODE_MODIFY && get_region() != nullptr) {
         Utils::update_db_zone_property(m_cgnsFilePtr, get_region(), myProcessor, true, true);
       }
 #if 0
@@ -448,11 +447,9 @@ namespace Iocgns {
       // See if there is an Ioss::SideSet with a matching name...
       Ioss::SideSet *ioss_sset = get_region()->get_sideset(sset.name());
       if (ioss_sset != nullptr) {
-        auto        zone = decomp->m_zones[sset.zone()];
-        std::string block_name(zone.m_name);
-        block_name += "/";
-        block_name += sset.name();
-        std::string face_topo = sset.topologyType;
+        auto        zone       = decomp->m_zones[sset.zone()];
+        std::string block_name = fmt::format("{}/{}", zone.m_name, sset.name());
+        std::string face_topo  = sset.topologyType;
 #if IOSS_DEBUG_OUTPUT
         fmt::print(std::cerr, "Processor {}: Added sideblock {} of topo {} with {} faces\n",
                    myProcessor, block_name, face_topo, sset.ioss_count());
@@ -883,10 +880,8 @@ namespace Iocgns {
               point_list_donor.push_back(pnt.second);
             }
 
-            int         gc_idx = 0;
-            std::string name   = (*I)->name();
-            name += "_to_";
-            name += (*J)->name();
+            int         gc_idx  = 0;
+            std::string name    = fmt::format("{}_to_{}", (*I)->name(), (*J)->name());
             const auto &d1_name = (*J)->name();
 
             CGCHECKM(cg_conn_write(get_file_pointer(), base, zone, name.c_str(), CG_Vertex,
@@ -895,9 +890,7 @@ namespace Iocgns {
                                    CG_PointListDonor, CG_DataTypeNull, point_list_donor.size(),
                                    point_list_donor.data(), &gc_idx));
 
-            name = (*J)->name();
-            name += "_to_";
-            name += (*I)->name();
+            name                = fmt::format("{}_to_{}", (*J)->name(), (*I)->name());
             const auto &d2_name = (*I)->name();
 
             CGCHECKM(cg_conn_write(get_file_pointer(), base, dzone, name.c_str(), CG_Vertex,

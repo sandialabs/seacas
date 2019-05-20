@@ -170,7 +170,6 @@ var searchData=
   ['get_5freduction_5ffield',['get_reduction_field',['../classIoex_1_1DatabaseIO.html#a18a87fd245372a8b8b44d6b6a6787ba0',1,'Ioex::DatabaseIO']]],
   ['get_5fregion',['get_region',['../classIoss_1_1DatabaseIO.html#ac7cb8bf7c8175fa0546a2bd965570e7c',1,'Ioss::DatabaseIO']]],
   ['get_5frole',['get_role',['../classIoss_1_1Field.html#aade689a336549e6d96d931e7ba73503d',1,'Ioss::Field']]],
-  ['get_5fserial_5ffile_5fpointer',['get_serial_file_pointer',['../classIocgns_1_1ParallelDatabaseIO.html#ad21c9e3d0e832cc137bb3d21554775ce',1,'Iocgns::ParallelDatabaseIO']]],
   ['get_5fset_5fattr',['get_set_attr',['../classIopx_1_1DecompositionData.html#a39bf928ca24bcdabd630903466887ddb',1,'Iopx::DecompositionData']]],
   ['get_5fset_5fmesh_5fdouble',['get_set_mesh_double',['../classIopx_1_1DecompositionDataBase.html#aad0063a919217ef56870ea4d76d72b1d',1,'Iopx::DecompositionDataBase']]],
   ['get_5fset_5fmesh_5fvar',['get_set_mesh_var',['../classIopx_1_1DecompositionDataBase.html#a9e32656ad93e46f723db259bc4fc0e27',1,'Iopx::DecompositionDataBase::get_set_mesh_var()'],['../classIopx_1_1DecompositionData.html#a3c8d13493f568666399ccae0a94d5132',1,'Iopx::DecompositionData::get_set_mesh_var()']]],
@@ -233,9 +232,7 @@ var searchData=
   ['global_5fnode_5fcount',['global_node_count',['../classIocgns_1_1DecompositionDataBase.html#ab897a77ed5cf37c71adb0e8d59691485',1,'Iocgns::DecompositionDataBase::global_node_count()'],['../classIocgns_1_1DecompositionData.html#a1cbaedad61244ded1d7492bd2be21b8e',1,'Iocgns::DecompositionData::global_node_count()'],['../classIopx_1_1DecompositionDataBase.html#ac08e58b4961e1e431255e00b48af1958',1,'Iopx::DecompositionDataBase::global_node_count()'],['../classIopx_1_1DecompositionData.html#a1edf62bc9d121e635ba33537bd68cd0e',1,'Iopx::DecompositionData::global_node_count()'],['../classIoss_1_1Decomposition.html#ae3c46aa6999b2983debf60a4b6cf64c3',1,'Ioss::Decomposition::global_node_count()']]],
   ['global_5fto_5flocal',['global_to_local',['../classIoss_1_1Map.html#ab5b9f9efc6c50d676989ae6660bff073',1,'Ioss::Map']]],
   ['global_5fto_5flocal_5f_5f',['global_to_local__',['../classIoss_1_1Map.html#a55c6c524120ed668b0dce6281944353a',1,'Ioss::Map']]],
-  ['green',['green',['../namespaceIoss_1_1trmclr.html#ad523aa3a9b49f92d3b7166a5e676bfa1',1,'Ioss::trmclr']]],
   ['group_5finfo',['group_info',['../namespaceanonymous__namespace_02io__info_8C_03.html#a171e4e43a1ff528e9f9b62bb08816863',1,'anonymous_namespace{io_info.C}']]],
   ['groupingentity',['GroupingEntity',['../classIoss_1_1GroupingEntity.html#a31bff1067f10fbec1dc386cd0a9d050b',1,'Ioss::GroupingEntity::GroupingEntity()=default'],['../classIoss_1_1GroupingEntity.html#acb7142728e96a35ac40d94a646ff5c96',1,'Ioss::GroupingEntity::GroupingEntity(DatabaseIO *io_database, const std::string &amp;my_name, int64_t entity_count)'],['../classIoss_1_1GroupingEntity.html#a4a7c6f4ca464b9f334f11e5c484e3431',1,'Ioss::GroupingEntity::GroupingEntity(const GroupingEntity &amp;)=delete']]],
-  ['groupname',['groupname',['../classInfo_1_1Interface.html#a62d95325c23c24c85e9e53e5a1798c9e',1,'Info::Interface']]],
-  ['grow_5fon_5fhigh_5fload',['grow_on_high_load',['../classtsl_1_1detail__robin__hash_1_1robin__hash.html#ab9a61d96e3e7f7dcb21d84dee190a4e0',1,'tsl::detail_robin_hash::robin_hash']]]
+  ['groupname',['groupname',['../classInfo_1_1Interface.html#a62d95325c23c24c85e9e53e5a1798c9e',1,'Info::Interface']]]
 ];

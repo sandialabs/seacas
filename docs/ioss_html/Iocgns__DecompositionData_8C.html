@@ -88,7 +88,6 @@ $(document).ready(function(){initNavTree('Iocgns__DecompositionData_8C.html','')
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -100,10 +99,11 @@ $(document).ready(function(){initNavTree('Iocgns__DecompositionData_8C.html','')
 <code>#include &lt;<a class="el" href="Ioss__ParallelUtils_8h_source.html">Ioss_ParallelUtils.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__SmartAssert_8h_source.html">Ioss_SmartAssert.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__StructuredBlock_8h_source.html">Ioss_StructuredBlock.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioss__TerminalColor_8h_source.html">Ioss_TerminalColor.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__Utils_8h_source.html">Ioss_Utils.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Iocgns__DecompositionData_8h_source.html">cgns/Iocgns_DecompositionData.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Iocgns__Utils_8h_source.html">cgns/Iocgns_Utils.h</a>&gt;</code><br />
+<code>#include &lt;fmt/color.h&gt;</code><br />
+<code>#include &lt;fmt/ostream.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="tokenize_8h_source.html">tokenize.h</a>&gt;</code><br />
 <code>#include &lt;cgnsconfig.h&gt;</code><br />
 <code>#include &lt;pcgnslib.h&gt;</code><br />
@@ -114,7 +114,8 @@ $(document).ready(function(){initNavTree('Iocgns__DecompositionData_8C.html','')
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Iocgns_DecompositionData.C:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Iocgns__DecompositionData_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Iocgns__DecompositionData_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -124,11 +125,6 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespaceIocgns"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIocgns.html">Iocgns</a></td></tr>
 <tr class="memdesc:namespaceIocgns"><td class="mdescLeft">&#160;</td><td class="mdescRight">A namespace for the CGNS database format. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:a61a3c9a18380aafb6e430e79bf596557"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Iocgns__DecompositionData_8C.html#a61a3c9a18380aafb6e430e79bf596557">OUTPUT</a></td></tr>
-<tr class="separator:a61a3c9a18380aafb6e430e79bf596557"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -140,8 +136,8 @@ Functions</h2></td></tr>
 <tr class="separator:a3ee30ebbc3c24a2c3e44ff706ab0e4f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ae85191420383fc8774e13893cc41dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__DecompositionData_8C_03.html#a8ae85191420383fc8774e13893cc41dc">anonymous_namespace{Iocgns_DecompositionData.C}::zoltan_geom</a> (void *data, int ngid_ent, int nlid_ent, int nobj, ZOLTAN_ID_PTR gids, ZOLTAN_ID_PTR lids, int ndim, double *geom, int *ierr)</td></tr>
 <tr class="separator:a8ae85191420383fc8774e13893cc41dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35f8943e156aa5b457c7eab84868b7b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__DecompositionData_8C_03.html#a35f8943e156aa5b457c7eab84868b7b7">anonymous_namespace{Iocgns_DecompositionData.C}::create_zone_data</a> (int cgnsSerFilePtr, int cgns_file_ptr, std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones, <a class="el" href="Ioss__CodeTypes_8h.html#a161d2f0d69c09838316e4ea9a74f02d7">MPI_Comm</a> comm)</td></tr>
-<tr class="separator:a35f8943e156aa5b457c7eab84868b7b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75b6e982d7090ce3ee4047a341cea3c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__DecompositionData_8C_03.html#a75b6e982d7090ce3ee4047a341cea3c3">anonymous_namespace{Iocgns_DecompositionData.C}::create_zone_data</a> (int cgns_file_ptr, std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones, <a class="el" href="Ioss__CodeTypes_8h.html#a161d2f0d69c09838316e4ea9a74f02d7">MPI_Comm</a> comm)</td></tr>
+<tr class="separator:a75b6e982d7090ce3ee4047a341cea3c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedce96795998d11c42162028437b089c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__DecompositionData_8C_03.html#aedce96795998d11c42162028437b089c">anonymous_namespace{Iocgns_DecompositionData.C}::set_line_decomposition</a> (int cgns_file_ptr, const std::string &amp;line_decomposition, std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones)</td></tr>
 <tr class="separator:aedce96795998d11c42162028437b089c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -150,22 +146,6 @@ Variables</h2></td></tr>
 <tr class="memitem:a5400bad9f8a8c5031aef72e04b9099a8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__DecompositionData_8C_03.html#a5400bad9f8a8c5031aef72e04b9099a8">anonymous_namespace{Iocgns_DecompositionData.C}::rank</a> = 0</td></tr>
 <tr class="separator:a5400bad9f8a8c5031aef72e04b9099a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a61a3c9a18380aafb6e430e79bf596557"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61a3c9a18380aafb6e430e79bf596557">&#9670;&nbsp;</a></span>OUTPUT</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define OUTPUT</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> (<a class="code" href="namespaceanonymous__namespace_02Iocgns__DecompositionData_8C_03.html#a5400bad9f8a8c5031aef72e04b9099a8">rank</a> == 0)                                                                                   \</div><div class="line">  std::cerr</div><div class="ttc" id="namespaceanonymous__namespace_02Iocgns__DecompositionData_8C_03_html_a5400bad9f8a8c5031aef72e04b9099a8"><div class="ttname"><a href="namespaceanonymous__namespace_02Iocgns__DecompositionData_8C_03.html#a5400bad9f8a8c5031aef72e04b9099a8">anonymous_namespace{Iocgns_DecompositionData.C}::rank</a></div><div class="ttdeci">int rank</div><div class="ttdef"><b>Definition:</b> Iocgns_DecompositionData.C:54</div></div>
-</div><!-- fragment -->
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

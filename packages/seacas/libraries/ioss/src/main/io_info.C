@@ -455,11 +455,11 @@ namespace {
         if (!summary) {
           std::string fbtype  = fb->get_property("topology_type").get_string();
           std::string partype = fb->get_property("parent_topology_type").get_string();
-          fmt::print("\t\t{}, {} {} sides, parent topology: {}", name(fb), num_side, fbtype,
+          fmt::print("\t\t{}, {:10n} {} sides, parent topology: {}", name(fb), num_side, fbtype,
                      partype);
           if (fb->parent_block() != nullptr) {
             const auto *parent = fb->parent_block();
-            fmt::print(",\tparent block: '{}' ({})\n", parent->name(), parent->type_string());
+            fmt::print(",\tparent: '{}' ({})\n", parent->name(), parent->type_string());
           }
           info_df(fb, "\n\t\t\t");
           if (interface.adjacencies()) {
@@ -506,7 +506,6 @@ namespace {
       fmt::print(" Number of nodal point sets   ={:12n}\t", nss.size());
       fmt::print(" Length of node list        ={:14n}\n", total_nodes);
     }
-    fmt::print("\n");
   }
 
   void info_edgesets(Ioss::Region &region, bool summary)

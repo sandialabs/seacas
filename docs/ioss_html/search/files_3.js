@@ -218,7 +218,6 @@ var searchData=
   ['ioss_5fsuper_2ec',['Ioss_Super.C',['../Ioss__Super_8C.html',1,'']]],
   ['ioss_5fsuper_2eh',['Ioss_Super.h',['../Ioss__Super_8h.html',1,'']]],
   ['ioss_5fsurfacesplit_2eh',['Ioss_SurfaceSplit.h',['../Ioss__SurfaceSplit_8h.html',1,'']]],
-  ['ioss_5fterminalcolor_2eh',['Ioss_TerminalColor.h',['../Ioss__TerminalColor_8h.html',1,'']]],
   ['ioss_5ftet10_2ec',['Ioss_Tet10.C',['../Ioss__Tet10_8C.html',1,'']]],
   ['ioss_5ftet10_2eh',['Ioss_Tet10.h',['../Ioss__Tet10_8h.html',1,'']]],
   ['ioss_5ftet11_2ec',['Ioss_Tet11.C',['../Ioss__Tet11_8C.html',1,'']]],

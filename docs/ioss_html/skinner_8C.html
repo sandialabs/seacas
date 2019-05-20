@@ -89,7 +89,6 @@ $(document).ready(function(){initNavTree('skinner_8C.html','');});
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -101,6 +100,7 @@ $(document).ready(function(){initNavTree('skinner_8C.html','');});
 <code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
 <code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;fmt/format.h&gt;</code><br />
 <code>#include &lt;functional&gt;</code><br />
 <code>#include &lt;iomanip&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
@@ -114,6 +114,7 @@ $(document).ready(function(){initNavTree('skinner_8C.html','');});
 <code>#include &quot;<a class="el" href="Ioss__DatabaseIO_8h_source.html">Ioss_DatabaseIO.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Ioss__ElementBlock_8h_source.html">Ioss_ElementBlock.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Ioss__FaceGenerator_8h_source.html">Ioss_FaceGenerator.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Ioss__FileInfo_8h_source.html">Ioss_FileInfo.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Ioss__IOFactory_8h_source.html">Ioss_IOFactory.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Ioss__NodeBlock_8h_source.html">Ioss_NodeBlock.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Ioss__ParallelUtils_8h_source.html">Ioss_ParallelUtils.h</a>&quot;</code><br />
@@ -125,7 +126,8 @@ $(document).ready(function(){initNavTree('skinner_8C.html','');});
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for skinner.C:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="skinner_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="skinner_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -137,11 +139,6 @@ Classes</h2></td></tr>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceanonymous__namespace_02skinner_8C_03"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02skinner_8C_03.html">anonymous_namespace{skinner.C}</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:a61a3c9a18380aafb6e430e79bf596557"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skinner_8C.html#a61a3c9a18380aafb6e430e79bf596557">OUTPUT</a>&#160;&#160;&#160;std::cout</td></tr>
-<tr class="separator:a61a3c9a18380aafb6e430e79bf596557"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -155,24 +152,9 @@ Functions</h2></td></tr>
 Variables</h2></td></tr>
 <tr class="memitem:a90ec0e098fc16dfc900a43f7069513a3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02skinner_8C_03.html#a90ec0e098fc16dfc900a43f7069513a3">anonymous_namespace{skinner.C}::codename</a></td></tr>
 <tr class="separator:a90ec0e098fc16dfc900a43f7069513a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af3693f53a100020de6e7f48fbcca74f7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02skinner_8C_03.html#af3693f53a100020de6e7f48fbcca74f7">anonymous_namespace{skinner.C}::version</a> = &quot;0.6&quot;</td></tr>
+<tr class="memitem:af3693f53a100020de6e7f48fbcca74f7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02skinner_8C_03.html#af3693f53a100020de6e7f48fbcca74f7">anonymous_namespace{skinner.C}::version</a> = &quot;0.9&quot;</td></tr>
 <tr class="separator:af3693f53a100020de6e7f48fbcca74f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a61a3c9a18380aafb6e430e79bf596557"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61a3c9a18380aafb6e430e79bf596557">&#9670;&nbsp;</a></span>OUTPUT</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define OUTPUT&#160;&#160;&#160;std::cout</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a0ddf1224851353fc92bfbff6f499fa97"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0ddf1224851353fc92bfbff6f499fa97">&#9670;&nbsp;</a></span>main()</h2>

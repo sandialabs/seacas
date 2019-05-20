@@ -1,7 +1,6 @@
 var struc__to__unstruc_8C =
 [
     [ "my_numpunct", "structanonymous__namespace_02struc__to__unstruc_8C_03_1_1my__numpunct.html", "structanonymous__namespace_02struc__to__unstruc_8C_03_1_1my__numpunct" ],
-    [ "OUTPUT", "struc__to__unstruc_8C.html#a61a3c9a18380aafb6e430e79bf596557", null ],
     [ "create_unstructured", "struc__to__unstruc_8C.html#a1f676fd5f6a957f657aee10356750a70", null ],
     [ "main", "struc__to__unstruc_8C.html#a0ddf1224851353fc92bfbff6f499fa97", null ],
     [ "output_sidesets", "struc__to__unstruc_8C.html#af3f63f14be0e1889bd15e7a681fe5dd5", null ],
