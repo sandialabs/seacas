@@ -32,6 +32,7 @@
 //
 
 #include "fmt/color.h"
+#include "fmt/ostream.h"
 #include "util.h"
 #include <cstring> // for nullptr, memset
 #include <iostream>
@@ -75,7 +76,7 @@ namespace {
 void Error(const std::string &x)
 {
   std::ostringstream out;
-  out << "exodiff: ERROR: " << x;
+  fmt::print(out, "exodiff: ERROR: {}", x);
   ERR_OUT(out);
 }
 
