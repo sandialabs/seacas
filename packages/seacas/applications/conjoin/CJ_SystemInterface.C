@@ -8,9 +8,8 @@
 #include <cstddef> // for size_t
 #include <cstdlib> // for exit, strtol, EXIT_SUCCESS, etc
 #include <fmt/format.h>
-#include <iostream> // for operator<<, basic_ostream, etc
-#include <utility>  // for pair, make_pair
-#include <vector>   // for vector
+#include <utility> // for pair, make_pair
+#include <vector>  // for vector
 
 namespace {
   void parse_variable_names(const char *tokens, StringIdVector *variable_list);
@@ -133,16 +132,18 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   // Get options from environment variable also...
   char *options = getenv("CONJOIN_OPTIONS");
   if (options != nullptr) {
-    std::cerr
-        << "\nThe following options were specified via the CONJOIN_OPTIONS environment variable:\n"
-        << "\t" << options << "\n\n";
+    fmt::print(
+        stderr,
+        "\nThe following options were specified via the CONJOIN_OPTIONS environment variable:\n"
+        "\t{}\n\n",
+        options);
     options_.parse(options, options_.basename(*argv));
   }
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
-    std::cerr << "\n\tCan also set options via CONJOIN_OPTIONS environment variable.\n";
-    std::cerr << "\n\t->->-> Send email to gdsjaar@sandia.gov for conjoin support.<-<-<-\n";
+    fmt::print(stderr, "\n\tCan also set options via CONJOIN_OPTIONS environment variable.\n"
+                       "\n\t->->-> Send email to gdsjaar@sandia.gov for conjoin support.<-<-<-\n");
     exit(EXIT_SUCCESS);
   }
 
@@ -166,8 +167,10 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
         aliveValue_ = value;
       }
       else {
-        std::cerr << "\nInvalid value specified for node and element status."
-                  << "\nValid values are '1' or '0'.  Found '" << value << "'\n";
+        fmt::print(stderr,
+                   "\nInvalid value specified for node and element status."
+                   "\nValid values are '1' or '0'.  Found '{}'\n",
+                   value);
         exit(EXIT_FAILURE);
       }
     }
@@ -295,7 +298,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     }
   }
   else {
-    std::cerr << "\nERROR: no files specified\n\n";
+    fmt::print(stderr, "\nERROR: no files specified\n\n");
     return false;
   }
   return true;
@@ -305,10 +308,11 @@ void Excn::SystemInterface::dump(std::ostream & /*unused*/) const {}
 
 void Excn::SystemInterface::show_version()
 {
-  std::cout
-      << qainfo[0] << "\n"
-      << "\t(A code for sequentially appending Exodus II databases. Supersedes conex and conex2.)\n"
-      << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
+  fmt::print(
+      "{}\n"
+      "\t(A code for sequentially appending Exodus II databases. Supersedes conex and conex2.)\n"
+      "\t(Version: {}) Modified: {}\n",
+      qainfo[0], qainfo[1], qainfo[2]);
 }
 
 namespace {

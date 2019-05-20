@@ -45,10 +45,9 @@
 #include <cstdlib> // for exit, strtod, EXIT_SUCCESS, etc
 #include <cstring> // for strcmp
 #include <fmt/format.h>
-#include <iosfwd>   // for ostream
-#include <iostream> // for operator<<, basic_ostream, etc
-#include <utility>  // for pair, make_pair
-#include <vector>   // for vector
+#include <iosfwd>  // for ostream
+#include <utility> // for pair, make_pair
+#include <vector>  // for vector
 
 namespace {
   void parse_variable_names(const char *tokens, StringIdVector *variable_list);
@@ -130,16 +129,18 @@ bool SystemInterface::parse_options(int argc, char **argv)
   // Get options from environment variable also...
   char *options = getenv("exomatlab");
   if (options != nullptr) {
-    std::cerr << "\nThe following options were specified via the EXOMATLAB_OPTIONS environment "
-                 "variable:\n"
-              << "\t" << options << "\n\n";
+    fmt::print(stderr,
+               "\nThe following options were specified via the EXOMATLAB_OPTIONS environment "
+               "variable:\n\t{}\n\n",
+               options);
     options_.parse(options, options_.basename(*argv));
   }
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
-    std::cerr << "\n\tCan also set options via EXOMATLAB_OPTIONS environment variable.\n";
-    std::cerr << "\n\t->->-> Send email to gdsjaar@sandia.gov for exomatlab support.<-<-<-\n";
+    fmt::print(stderr,
+               "\n\tCan also set options via EXOMATLAB_OPTIONS environment variable.\n"
+               "\n\t->->-> Send email to gdsjaar@sandia.gov for exomatlab support.<-<-<-\n");
 
     exit(EXIT_SUCCESS);
   }
@@ -229,7 +230,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
   else {
     options_.usage();
-    std::cerr << "\nERROR: no files specified\n\n";
+    fmt::print(stderr, "\nERROR: no files specified\n\n");
     return false;
   }
   return true;
@@ -237,9 +238,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
 void SystemInterface::show_version()
 {
-  std::cout << qainfo[0] << "\n"
-            << "\t(A code for outputting exodusII global variable data for use in matlab.)\n"
-            << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
+  fmt::print("{}\n"
+             "\t(A code for outputting exodusII global variable data for use in matlab.)\n"
+             "\t(Version: {}) Modified: {}\n",
+             qainfo[0], qainfo[2], qainfo[1]);
 }
 
 namespace {

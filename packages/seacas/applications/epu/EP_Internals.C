@@ -51,9 +51,8 @@
 #include <fmt/ostream.h>
 #include <smart_assert.h> // for SMART_ASSERT
 
-#include <iostream> // for operator<<, basic_ostream, etc
-#include <string>   // for string, basic_string
-#include <vector>   // for vector
+#include <string> // for string, basic_string
+#include <vector> // for vector
 
 #ifdef _WIN32
 #include <Shlwapi.h>

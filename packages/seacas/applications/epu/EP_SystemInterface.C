@@ -43,7 +43,6 @@
 #include <cstdlib> // for strtol, abs, exit, strtoul, etc
 #include <cstring> // for strchr, strlen
 #include <fmt/ostream.h>
-#include <iostream> // for operator<<, basic_ostream, etc
 #include <sstream>
 #include <stdexcept>
 #include <string>  // for string, char_traits, etc

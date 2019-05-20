@@ -116,7 +116,7 @@ template <typename INT> int internal_main(int argc, char *argv[], INT /* dummy *
 
 int main(int argc, char *argv[])
 {
-  fmt::print(std::cerr, "Beginning nem_slice execution.\n");
+  fmt::print(stderr, "Beginning nem_slice execution.\n");
 
   double start_time = get_time();
 
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
     int   cpu_ws = 0;
     int   io_ws  = 0;
     float vers   = 00.0;
-    fmt::print(std::cerr, "Input Mesh File = '{}\n", mesh_file_name);
+    fmt::print(stderr, "Input Mesh File = '{}\n", mesh_file_name);
     int exoid = ex_open(mesh_file_name, EX_READ, &cpu_ws, &io_ws, &vers);
     if (exoid < 0) {
       std::string error("fatal: unable to open input ExodusII file ");
@@ -168,19 +168,19 @@ int main(int argc, char *argv[])
 
   int status;
   if (int32com && (int64db != 0)) {
-    fmt::print(std::cerr,
+    fmt::print(stderr,
                "Forcing 32-bit integer mode for decomposition even though database is 64-bit.\n");
     status = internal_main(argc, argv, int(0));
   }
   else if ((int64db != 0) || int64com) {
-    fmt::print(std::cerr,
+    fmt::print(stderr,
                "Using 64-bit integer mode for decomposition...\n"
                "NOTE: Only 'linear' and 'scattered' methods are supported for 64-bit models\n");
 
     status = internal_main(argc, argv, int64_t(0));
   }
   else {
-    fmt::print(std::cerr, "Using 32-bit integer mode for decomposition...\n");
+    fmt::print(stderr, "Using 32-bit integer mode for decomposition...\n");
     status = internal_main(argc, argv, int(0));
   }
 
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 
   /* Get ending time */
   double end_time = get_time();
-  fmt::print(std::cerr, "The entire load balance took {} seconds.\n", end_time - start_time);
+  fmt::print(stderr, "The entire load balance took {} seconds.\n", end_time - start_time);
   add_to_log(argv[0], end_time - start_time);
   return status;
 }
@@ -413,7 +413,7 @@ template <typename INT> int internal_main(int argc, char *argv[], INT /* dummy *
     fmt::print("Time to generate load balance: {}s\n", time2 - time1);
   }
   catch (const std::exception &e) {
-    fmt::print(std::cerr, "NEM_SLICE: Exception in generate_loadbal: {}\n", e.what());
+    fmt::print(stderr, "NEM_SLICE: Exception in generate_loadbal: {}\n", e.what());
   }
 
   /* free up memory */
