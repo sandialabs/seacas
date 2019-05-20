@@ -64,7 +64,6 @@
 #include <cstdio>          // for sprintf, printf, fprintf, etc
 #include <cstring>         // for strtok, memcpy, strlen, etc
 #include <exodusII.h>      // for ex_put_variable_param, etc
-#include <iostream>        // for operator<<, basic_ostream, etc
 #include <numeric>         // for accumulate
 #include <smart_assert.h>
 #include <string> // for char_traits, string
@@ -133,11 +132,11 @@ int main(int argc, char *argv[])
   line += ext;
   int exo_file = ex_create(line.c_str(), EX_CLOBBER, &cpu_word_size, &io_word_size);
   if (exo_file < 0) {
-    std::cerr << "MAT2EXO: error creating " << line << "\n";
+    fmt::print(stderr, "MAT2EXO: error creating '{}'\n", line);
     exit(1);
   }
 
-  std::cerr << "translating " << argv[1] << " to " << line << "\n";
+  fmt::print(stderr, "translating '{}' to '{}'\n", argv[1], line);
 
   int num_axes         = matGetInt("naxes");
   int num_nodes        = matGetInt("nnodes");

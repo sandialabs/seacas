@@ -10,10 +10,9 @@
 #include <cstdlib> // for exit, strtod, strtoul, abs, etc
 #include <cstring> // for strchr, strlen
 #include <fmt/format.h>
-#include <iosfwd>   // for ostream
-#include <iostream> // for operator<<, basic_ostream, etc
-#include <utility>  // for pair, make_pair
-#include <vector>   // for vector
+#include <iosfwd>  // for ostream
+#include <utility> // for pair, make_pair
+#include <vector>  // for vector
 
 namespace {
   int case_strcmp(const std::string &s1, const std::string &s2)
@@ -206,8 +205,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
-    std::cerr << "\n\tCan also set options via EJOIN_OPTIONS environment variable.\n";
-    std::cerr << "\n\t->->-> Send email to gdsjaar@sandia.gov for ejoin support.<-<-<-\n";
+    fmt::print(stderr, "\n\tCan also set options via EJOIN_OPTIONS environment variable.\n"
+                       "\n\t->->-> Send email to gdsjaar@sandia.gov for ejoin support.<-<-<-\n");
     exit(EXIT_SUCCESS);
   }
 
@@ -231,7 +230,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
     }
   }
   else {
-    std::cerr << "\nERROR: no files specified\n\n";
+    fmt::print(stderr, "\nERROR: no files specified\n\n");
     return false;
   }
 
@@ -244,9 +243,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
   // Get options from environment variable also...
   char *options = getenv("EJOIN_OPTIONS");
   if (options != nullptr) {
-    std::cerr
-        << "\nThe following options were specified via the EJOIN_OPTIONS environment variable:\n"
-        << "\t" << options << "\n\n";
+    fmt::print(
+        stderr,
+        "\nThe following options were specified via the EJOIN_OPTIONS environment variable:\n"
+        "\t{}\n\n",
+        options);
     options_.parse(options, options_.basename(*argv));
   }
 
@@ -519,10 +520,10 @@ void SystemInterface::parse_step_option(const char *tokens)
 
 void SystemInterface::show_version()
 {
-  std::cout << "EJoin"
-            << "\n"
-            << "\t(A code for merging Exodus II databases; with or without results data.)\n"
-            << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
+  fmt::print("EJoin\n"
+             "\t(A code for merging Exodus II databases; with or without results data.)\n"
+             "\t(Version: {}) Modified: {}\n",
+             qainfo[2], qainfo[1]);
 }
 
 namespace {
@@ -585,7 +586,8 @@ namespace {
       // At this point, var_list should contain 1,2,or 3 strings
       // corresponding to the x, y, and z coordinate offsets.
       if (var_list.size() != 3) {
-        std::cerr << "ERROR: Incorrect number of offset components specified--3 required.\n\n";
+        fmt::print(stderr,
+                   "ERROR: Incorrect number of offset components specified--3 required.\n\n");
         offset->x = offset->y = offset->z = 0.0;
         return;
       }
@@ -646,9 +648,10 @@ namespace {
           list->push_back(part_num);
         }
         else {
-          std::cerr << "ERROR: Bad syntax (" << part
-                    << ") specifying part number. Use 'p'+ part_number\n"
-                    << "       For example -info_records p1,p2,p7\n";
+          fmt::print(stderr,
+                     "ERROR: Bad syntax ({}) specifying part number. Use 'p'+ part_number\n"
+                     "       For example -info_records p1,p2,p7\n",
+                     part);
           exit(EXIT_FAILURE);
         }
         ++I;
@@ -690,13 +693,15 @@ namespace {
     while (I != part_block_list.end()) {
       StringVector part_block = SLIB::tokenize(*I, ":");
       if (part_block.empty() || (part_block[0][0] != 'p' && part_block[0][0] != 'P')) {
-        std::cerr << "ERROR: Bad syntax specifying the part number.  Use 'p' + part number\n"
-                  << "       For example -omit_blocks p1:1:2:3,p2:2:3:4\n";
+        fmt::print(stderr, "ERROR: Bad syntax specifying the part number.  Use 'p' + part number\n"
+                           "       For example -omit_blocks p1:1:2:3,p2:2:3:4\n");
         exit(EXIT_FAILURE);
       }
       if (require_ids && part_block.size() == 1) {
-        std::cerr << "ERROR: No block ids were found following the part specification.\n"
-                  << "       for part " << part_block[0] << "\n";
+        fmt::print(stderr,
+                   "ERROR: No block ids were found following the part specification.\n"
+                   "       for part {}\n",
+                   part_block[0]);
         exit(EXIT_FAILURE);
       }
 

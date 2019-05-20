@@ -51,7 +51,6 @@
 #include <cstddef>             // for size_t
 #include <cstdio>              // for stderr
 #include <cstdlib>             // for exit, free
-#include <iostream>            // for operator<<, cerr, ostream, etc
 #include <string>              // for string
 #include <vector>              // for vector
 template <typename T, typename INT> class Globals;
@@ -408,7 +407,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
         (char ***)array_alloc(__FILE__, __LINE__, 1, globals.Num_Elem_Blk, sizeof(char **));
   }
   else {
-    std::cerr << "ERROR, globals.Num_Elem_Blk = " << globals.Num_Elem_Blk << "\n";
+    fmt::print(stderr, "ERROR, globals.Num_Elem_Blk = {}\n", globals.Num_Elem_Blk);
     exit(1);
   }
 
@@ -970,11 +969,12 @@ void NemSpread<T, INT>::read_coord(int exoid, int max_name_length)
     // If not, output a warning and disable the map.
     for (size_t i = 0; i < globals.Num_Node; i++) {
       if (global_node_ids[i] <= 0) {
-        std::cerr << "---------------------------------------------------------------------\n"
-                  << "ERROR: Local node " << i + 1 << " has a global id of " << global_node_ids[i]
-                  << " which is invalid.\n"
-                  << "       All global ids must be greater than 0. The map will be ignored.\n"
-                  << "---------------------------------------------------------------------\n";
+        fmt::print(stderr,
+                   "---------------------------------------------------------------------\n"
+                   "ERROR: Local node {:n} has a global id of {:n} which is invalid.\n"
+                   "       All global ids must be greater than 0. The map will be ignored.\n"
+                   "---------------------------------------------------------------------\n",
+                   i + 1, global_node_ids[i]);
         sequential = 1; // Map is invalid, ignore it.
         break;
       }
@@ -1096,7 +1096,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::extract_elem_blk()
       }
     }
     else {
-      std::cerr << "ERROR globals.Num_Elem_Blk = " << globals.Num_Elem_Blk << "\n";
+      fmt::print(stderr, "ERROR globals.Num_Elem_Blk = {}\n", globals.Num_Elem_Blk);
       exit(1);
     }
 

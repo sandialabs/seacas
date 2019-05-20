@@ -179,8 +179,8 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
-    std::cerr << "\n\t   Can also set options via SLICE_OPTIONS environment variable.\n";
-    std::cerr << "\n\t->->-> Send email to gsjaardema@gmail.com for slice support.<-<-<-\n";
+    fmt::print(stderr, "\n\t   Can also set options via SLICE_OPTIONS environment variable.\n");
+    fmt::print(stderr, "\n\t->->-> Send email to gsjaardema@gmail.com for slice support.<-<-<-\n");
     exit(EXIT_SUCCESS);
   }
 
@@ -198,7 +198,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
     inputFile_ = argv[option_index++];
   }
   else {
-    std::cerr << "\nERROR: no input mesh file specified\n\n";
+    fmt::print(stderr, "\nERROR: no input mesh file specified\n\n");
     return false;
   }
 
@@ -212,9 +212,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
   // Get options from environment variable also...
   char *options = getenv("SLICE_OPTIONS");
   if (options != nullptr) {
-    std::cerr
-        << "\nThe following options were specified via the SLICE_OPTIONS environment variable:\n"
-        << "\t" << options << "\n\n";
+    fmt::print(
+        stderr,
+        "\nThe following options were specified via the SLICE_OPTIONS environment variable:\n"
+        "\t{}\n\n",
+        options);
     options_.parse(options, options_.basename(*argv));
   }
 
@@ -250,8 +252,9 @@ bool SystemInterface::parse_options(int argc, char **argv)
         decompFile_ = temp;
       }
       else {
-        std::cerr << "\nThe 'file' decompositon method was specified, but no element "
-                     "to processor mapping file was specified via the -decomposition_file option\n";
+        fmt::print(stderr,
+                   "\nThe 'file' decompositon method was specified, but no element "
+                   "to processor mapping file was specified via the -decomposition_file option\n");
         return false;
       }
     }
@@ -383,9 +386,10 @@ void SystemInterface::dump(std::ostream & /*unused*/) const {}
 
 void SystemInterface::show_version()
 {
-  std::cout << "Slice\n"
-            << "\t(A code for decomposing finite element meshes for running parallel analyses.)\n"
-            << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
+  fmt::print("Slice\n"
+             "\t(A code for decomposing finite element meshes for running parallel analyses.)\n"
+             "\t(Version: {}) Modified: {}\n",
+             qainfo[2], qainfo[1]);
 }
 
 namespace {
@@ -497,13 +501,13 @@ namespace {
       StringVector part_block;
       part_block = SLIB::tokenize(*I, ":");
       if (part_block.empty() || (part_block[0][0] != 'p' && part_block[0][0] != 'P')) {
-	std::cerr << "ERROR: Bad syntax specifying the part number.  Use 'p' + part number\n"
-		  << "       For example -omit_blocks p1:1:2:3,p2:2:3:4\n";
+	fmt::print(stderr, "ERROR: Bad syntax specifying the part number.  Use 'p' + part number\n"
+		   "       For example -omit_blocks p1:1:2:3,p2:2:3:4\n");
 	exit(EXIT_FAILURE);
       }
       if (require_ids && part_block.size() == 1) {
-	std::cerr << "ERROR: No block ids were found following the part specification.\n"
-		  << "       for part " << part_block[0] << "\n";
+	fmt::print(stderr, "ERROR: No block ids were found following the part specification.\n"
+		   "       for part {}\n", part_block[0]);
 	exit(EXIT_FAILURE);
       }
 

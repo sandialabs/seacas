@@ -50,7 +50,6 @@
 #include <cstdlib>    // for free, malloc
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <iostream> // for operator<<, basic_ostream, etc
 #include <sstream>
 #include <vector> // for vector
 
@@ -95,7 +94,7 @@ int generate_graph(Problem_Description *problem, Mesh_Description<INT> *mesh,
     return 0;
   }
   double time2 = get_time();
-  fmt::print(std::cerr, "Time to find surrounding elements: {}s\n", time2 - time1);
+  fmt::print(stderr, "Time to find surrounding elements: {}s\n", time2 - time1);
 
   /* Find the adjacency, if required */
   if (problem->alloc_graph == ELB_TRUE) {
@@ -104,7 +103,7 @@ int generate_graph(Problem_Description *problem, Mesh_Description<INT> *mesh,
       return 0;
     }
     time1 = get_time();
-    fmt::print(std::cerr, "Time to find the adjacency: {}s\n", time2 - time1);
+    fmt::print(stderr, "Time to find the adjacency: {}s\n", time2 - time1);
   }
   return 1;
 }
@@ -151,8 +150,7 @@ namespace {
     size_t v_size  = sizeof(std::vector<INT>);
     size_t vv_size = sizeof(std::vector<std::vector<INT>>);
     size_t total   = vv_size + mesh->num_nodes * v_size + sur_elem_total_size * sizeof(INT);
-    fmt::print(std::cerr,
-               "\ttotal size of reverse connectivity array: {:n} entries ({:n} bytes).\n",
+    fmt::print(stderr, "\ttotal size of reverse connectivity array: {:n} entries ({:n} bytes).\n",
                sur_elem_total_size, total);
     vec_free(last_element);
 
@@ -174,7 +172,7 @@ namespace {
     graph->sur_elem.resize(mesh->num_nodes);
     for (size_t ncnt = 0; ncnt < mesh->num_nodes; ncnt++) {
       if (surround_count[ncnt] == 0) {
-        fmt::print(std::cerr, "WARNING: Node = {} has no elements\n", ncnt + 1);
+        fmt::print(stderr, "WARNING: Node = {} has no elements\n", ncnt + 1);
       }
       else {
         graph->sur_elem[ncnt].reserve(surround_count[ncnt]);
@@ -184,7 +182,7 @@ namespace {
     }
     double time2 = get_time();
 
-    fmt::print(std::cerr,
+    fmt::print(stderr,
                "\tmemory allocated...({} seconds)\n"
                "\tmax of {} elements per node\n",
                time2 - time1, graph->max_nsur);
