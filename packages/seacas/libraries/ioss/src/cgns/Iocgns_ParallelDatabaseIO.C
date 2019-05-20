@@ -307,7 +307,7 @@ namespace Iocgns {
       if (myProcessor == 0 && (is_input() || open_create_behavior() == Ioss::DB_APPEND)) {
         auto init           = pcg_mpi_initialized;
         pcg_mpi_initialized = 0;
-	// Even if appending, the serial file is only read, not written, so CG_MODE_READ is ok.
+        // Even if appending, the serial file is only read, not written, so CG_MODE_READ is ok.
         cg_open(get_filename().c_str(), CG_MODE_READ, &m_cgnsSerFilePtr);
         pcg_mpi_initialized = init;
         assert(m_cgnsSerFilePtr >= 0);
