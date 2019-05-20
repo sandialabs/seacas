@@ -107,7 +107,7 @@ std::string time_stamp(const std::string &format)
 void logger(const char *message)
 {
   const std::string tsFormat = "[%H:%M:%S] ";
-  std::clog << time_stamp(tsFormat) << ": " << message << "\n";
+  fmt::print(std::clog, "{}: {}\n", time_stamp(tsFormat), message);
 }
 
 void usage()
@@ -1015,14 +1015,14 @@ int main(int argc, char *argv[])
         fmt::print("output file: {}\n", oname);
       }
       else {
-        std::cerr << "ERROR: Invalid output file specification.\n";
+        fmt::print(stderr, "ERROR: Invalid output file specification.\n");
         return 2;
       }
       j--;
       continue;
     }
     // Unrecognized option...
-    std::cerr << "ERROR: Unrecognized option: '" << argv[j] << "'\n";
+    fmt::print(stderr, "ERROR: Unrecognized option: '{}'\n", argv[j]);
     usage();
     exit(1);
   }
@@ -1055,7 +1055,7 @@ int main(int argc, char *argv[])
   if (textfile != 0) {
     m_file = fopen(filename.c_str(), "w");
     if (m_file == nullptr) {
-      std::cerr << "ERROR: Unable to open " << filename << "\n";
+      fmt::print(stderr, "ERROR: Unable to open '{}'\n", filename);
       exit(1);
     }
   }
@@ -1068,7 +1068,7 @@ int main(int argc, char *argv[])
     }
 
     if (mat_file == nullptr) {
-      std::cerr << "ERROR: Unable to create matlab file " << filename << "\n";
+      fmt::print(stderr, "ERROR: Unable to create matlab file '{}'\n", filename);
       exit(1);
     }
   }
@@ -1083,7 +1083,7 @@ int main(int argc, char *argv[])
   float exo_version;
   int   exo_file = ex_open(argv[1], EX_READ, &cpu_word_size, &io_word_size, &exo_version);
   if (exo_file < 0) {
-    std::cerr << "ERROR: Cannot open " << argv[1] << "\n";
+    fmt::print(stderr, "ERROR: Cannot open '{}'\n", argv[1]);
     exit(1);
   }
 
