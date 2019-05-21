@@ -316,7 +316,7 @@ namespace Iopx {
     INT tmp_sum = (INT)sum;
     if ((size_t)tmp_sum != sum) {
       fmt::print(
-          std::cerr,
+          stderr,
           "ERROR: The decomposition of this mesh requires 64-bit integers, but is being\n"
           "       run with 32-bit integer code. Please rerun with the property INTEGER_SIZE_API\n"
           "       set to 8. The details of how to do this vary with the code that is being run.\n"
