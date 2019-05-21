@@ -2636,7 +2636,7 @@ namespace Iocgns {
         static bool warning_output = false;
         if (!warning_output) {
           fmt::print(
-              std::cerr,
+              stderr,
               "IOSS: WARNING: For CGNS output, the sideset distribution factors are not output.\n");
           warning_output = true;
         }

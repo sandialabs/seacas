@@ -1358,7 +1358,7 @@ int Iocgns::Utils::find_solution_index(int cgns_file_ptr, int base, int zone, in
   }
 
   fmt::print(
-      std::cerr,
+      stderr,
       "WARNING: CGNS: Could not find valid solution index for step {}, zone {}, and location {}\n",
       step, zone, GridLocationName[location]);
   return 0;
@@ -1736,7 +1736,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
                        (range[2] == range[5] ? 1 : 0);
       if (same_count != 1) {
         fmt::print(
-            std::cerr,
+            stderr,
             "WARNING: CGNS: Skipping Boundary Condition '{}' on block '{}'. It is applied to "
             "{}. This code only supports surfaces.\n",
             boco_name, block->name(), (same_count == 2 ? "an edge" : "a vertex"));

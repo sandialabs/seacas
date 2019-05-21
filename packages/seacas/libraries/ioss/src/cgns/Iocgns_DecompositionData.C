@@ -522,7 +522,7 @@ namespace Iocgns {
     auto num_active = m_structuredZones.size();
     if (rank == 0) {
       fmt::print(
-          std::cerr,
+          stderr,
           "Decomposing structured mesh with {} zones for {} processors.\nAverage workload is {}, "
           "Load Balance Threshold is {}, Work range {} to {}\n",
           num_active, m_decomposition.m_processorCount, avg_work, m_loadBalanceThreshold,
@@ -647,7 +647,7 @@ namespace Iocgns {
           auto zone_node_count =
               (zone->m_ordinal[0] + 1) * (zone->m_ordinal[1] + 1) * (zone->m_ordinal[2] + 1);
           fmt::print(
-              std::cerr,
+              stderr,
               "Zone {}({}) assigned to processor {}, Adam zone = {}, Cells = {}, Nodes = {}\n",
               zone->m_name, zone->m_zone, zone->m_proc, zone->m_adam->m_zone, zone->work(),
               zone_node_count);
@@ -664,7 +664,7 @@ namespace Iocgns {
     if (rank == 0) {
       int z = 1;
       fmt::print(
-          std::cerr,
+          stderr,
           "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax     work\n");
       auto tmp_zone(m_structuredZones);
       std::sort(tmp_zone.begin(), tmp_zone.end(),
@@ -1045,7 +1045,7 @@ namespace Iocgns {
     if ((size_t)tmp_sum != sum) {
       if (rank == 0) {
         fmt::print(
-            std::cerr,
+            stderr,
             "ERROR: The decomposition of this mesh requires 64-bit integers, but is being\n"
             "       run with 32-bit integer code. Please rerun with the property INTEGER_SIZE_API\n"
             "       set to 8. The details of how to do this vary with the code that is being run.\n"
@@ -1242,7 +1242,7 @@ namespace Iocgns {
 #if IOSS_DEBUG_OUTPUT
       if (rank == 0) {
         fmt::print(
-            std::cerr,
+            stderr,
             "{}: reading {} nodes from zone {} starting at {} with an offset of {} ending at {}\n",
             m_decomposition.m_processor, count, zone, start, offset, finish);
       }
