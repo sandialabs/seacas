@@ -883,6 +883,42 @@ TEST_CASE("bc-257x129x2", "[bc-257x129x2]")
   cleanup(zones);
 }
 
+TEST_CASE("carnes-mesh", "[carnes-mesh]")
+{
+  std::vector<Iocgns::StructuredZoneData *> zones;
+
+  // Failing for decomposition on 64 processors
+  int zone = 1;
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "66x2x200"));
+  zones.back()->m_lineOrdinal = 2;
+
+  double load_balance_tolerance = 1.5;
+
+  for (size_t proc_count = 4; proc_count <= 64; proc_count += 4) {
+    std::string name = "Carnes_ProcCount_" + std::to_string(proc_count);
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+  }
+  cleanup(zones);
+}
+
+TEST_CASE("carnes-blunt-wedge", "[carnes-blunt-wedge]")
+{
+  std::vector<Iocgns::StructuredZoneData *> zones;
+
+  // Failing for decomposition on 64 processors
+  int zone = 1;
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "80x74x1"));
+  zones.back()->m_lineOrdinal = 1;
+
+  double load_balance_tolerance = 1.75;
+
+  for (size_t proc_count = 4; proc_count <= 64; proc_count += 4) {
+    std::string name = "Carnes_BW_ProcCount_" + std::to_string(proc_count);
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+  }
+  cleanup(zones);
+}
+
 TEST_CASE("64GiElem", "[64GiElem]")
 {
   std::vector<Iocgns::StructuredZoneData *> zones;
