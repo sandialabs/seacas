@@ -1,3 +1,5 @@
+#include <Ioss_GetLongOpt.h>
+
 #include <Ionit_Initializer.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
@@ -31,6 +33,76 @@
 #include "fmt/format.h"
 #include "vector3d.h"
 
+namespace {
+  class Interface
+  {
+  public:
+    bool parse_options(int argc, char **argv)
+    {
+      int option_index = options_.parse(argc, argv);
+      if (option_index < 1) {
+	return false;
+      }
+
+      if (options_.retrieve("help") != nullptr) {
+	options_.usage(std::cerr);
+	exit(EXIT_SUCCESS);
+      }
+
+      {
+	const char *temp = options_.retrieve("processors");
+	if (temp != nullptr) {
+	  proc_count = std::stoi(temp);
+	}
+      }
+
+      {
+	const char *temp = options_.retrieve("ordinal");
+	if (temp != nullptr) {
+	  ordinal = std::stoi(temp);
+	  if (ordinal < 1 || ordinal > 2) {
+	    fmt::print("ERROR: Invalid ordinal specified ({}). Must be 0, 1, or 2.\n", ordinal);
+	    exit(EXIT_FAILURE);
+	  }
+	}
+      }
+
+      {
+	const char *temp = options_.retrieve("load_balance");
+	if (temp != nullptr) {
+	  load_balance = std::stod(temp);
+	}
+      }
+
+      if (option_index < argc) {
+	filename = argv[option_index];
+      }
+      else {
+	fmt::print("ERROR: Need to specify filename.\n");
+	return false;
+      }
+      return true;
+    }
+
+    Interface()
+    {
+      options_.usage("[options] input_file");
+      options_.enroll("help", Ioss::GetLongOption::NoValue, "Print this summary and exit", nullptr);
+      options_.enroll("processors", Ioss::GetLongOption::MandatoryValue, "Number of processors.",
+		      nullptr);
+      options_.enroll("ordinal", Ioss::GetLongOption::MandatoryValue, "Ordinal not to split (0,1,2).",
+		      nullptr);
+      options_.enroll("load_balance", Ioss::GetLongOption::MandatoryValue, "Max ratio of processor work to average.",
+		      nullptr);
+
+    }
+    Ioss::GetLongOption options_;
+    int proc_count{0};
+    int ordinal{-1};
+    double load_balance{1.4};
+    std::string filename;
+  };
+}
 namespace {
   std::string codename;
   std::string version = "0.9";
@@ -224,6 +296,12 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
 #endif
 
+  Interface interface;
+  bool success = interface.parse_options(argc, argv);
+  if (!success) {
+    exit(EXIT_FAILURE);
+  }
+
   std::string in_type  = "cgns";
 
   codename   = argv[0];
@@ -233,43 +311,10 @@ int main(int argc, char *argv[])
   }
 
   Ioss::Init::Initializer io;
-  std::string input_file;
-  int ordinal = -1;
-  int proc_count = 0;
-  double load_balance = 1.4;
 
-  // Skip past any options...
-  int i = 1;
-
-  while (i < argc && argv[i][0] == '-') {
-    if (std::strcmp("--ordinal", argv[i]) == 0) {
-      i++;
-      ordinal = std::stoi(argv[i++]);
-    }
-    else if (std::strcmp("--processors", argv[i]) == 0) {
-      i++;
-      proc_count = std::stoi(argv[i++]);
-    }
-    else if (std::strcmp("--load_balance", argv[i]) == 0) {
-      i++;
-      load_balance = std::stod(argv[i++]);
-    }
-
-    // Found an option.  See if it has an argument...
-    else if (i + 1 < argc && argv[i + 1][0] == '-') {
-      // No argument, another option
-      i++;
-    }
-    else {
-      // Skip the argument...
-      i += 2;
-    }
-  }
-
-  std::string cgns_file   = Ioss::Utils::local_filename(argv[i++], in_type, "");
   Ioss::PropertyManager properties;
   Ioss::DatabaseIO *dbi =
-    Ioss::IOFactory::create(in_type, cgns_file, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
+    Ioss::IOFactory::create(in_type, interface.filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
   if (dbi == nullptr || !dbi->ok()) {
     std::cerr << "ERROR: Could not open database '" << cgns_file << "' of type '" << in_type
 	      << "'\n";
@@ -296,12 +341,12 @@ int main(int argc, char *argv[])
     std::string format = fmt::format("{}x{}x{}", ni, nj, nk);
     fmt::print("Adding zone with {}\n", format);
     zones.push_back(new Iocgns::StructuredZoneData(zone++, format));
-    if (ordinal >= 0) {
-      zones.back()->m_lineOrdinal = ordinal;
+    if (interface.ordinal >= 0) {
+      zones.back()->m_lineOrdinal = interface.ordinal;
     }
   }
 
   region.output_summary(std::cout, false);
-  check_split_assign(zones, load_balance, proc_count);
+  check_split_assign(zones, interface.load_balance, interface.proc_count);
   cleanup(zones);
 }
