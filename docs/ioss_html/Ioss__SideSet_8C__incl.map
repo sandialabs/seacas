@@ -1,5 +1,5 @@
 <map id="src/Ioss_SideSet.C" name="src/Ioss_SideSet.C">
-<area shape="rect" id="node1" title=" " alt="" coords="1718,5,1853,31"/>
+<area shape="rect" id="node1" title=" " alt="" coords="1743,5,1878,31"/>
 <area shape="rect" id="node2" href="$Ioss__DatabaseIO_8h.html" title=" " alt="" coords="1180,372,1316,397"/>
 <area shape="rect" id="node6" title=" " alt="" coords="1919,739,1983,764"/>
 <area shape="rect" id="node8" title=" " alt="" coords="3450,739,3504,764"/>
@@ -12,6 +12,7 @@
 <area shape="rect" id="node35" href="$Ioss__GroupingEntity_8h.html" title=" " alt="" coords="2090,299,2241,324"/>
 <area shape="rect" id="node42" href="$Ioss__SideBlock_8h.html" title=" " alt="" coords="3354,79,3478,104"/>
 <area shape="rect" id="node45" href="$Ioss__SideSet_8h.html" title=" " alt="" coords="1848,225,1960,251"/>
+<area shape="rect" id="node46" title=" " alt="" coords="4166,79,4269,104"/>
 <area shape="rect" id="node3" href="$Ioss__BoundingBox_8h.html" title=" " alt="" coords="2896,445,3040,471"/>
 <area shape="rect" id="node4" href="$Ioss__CodeTypes_8h.html" title=" " alt="" coords="2702,665,2834,691"/>
 <area shape="rect" id="node7" title=" " alt="" coords="1287,739,1347,764"/>
