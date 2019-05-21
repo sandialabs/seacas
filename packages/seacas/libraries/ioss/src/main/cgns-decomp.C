@@ -1,5 +1,3 @@
-#include <Ioss_GetLongOpt.h>
-
 #include <Ionit_Initializer.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
@@ -12,8 +10,8 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <set>
 #include <numeric>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -21,6 +19,7 @@
 
 #undef NDEBUG
 #include "Ioss_DatabaseIO.h"
+#include "Ioss_GetLongOpt.h"
 #include "Ioss_IOFactory.h"
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
@@ -41,45 +40,45 @@ namespace {
     {
       int option_index = options_.parse(argc, argv);
       if (option_index < 1) {
-	return false;
+        return false;
       }
 
       if (options_.retrieve("help") != nullptr) {
-	options_.usage(std::cerr);
-	exit(EXIT_SUCCESS);
+        options_.usage(std::cerr);
+        exit(EXIT_SUCCESS);
       }
 
       {
-	const char *temp = options_.retrieve("processors");
-	if (temp != nullptr) {
-	  proc_count = std::stoi(temp);
-	}
+        const char *temp = options_.retrieve("processors");
+        if (temp != nullptr) {
+          proc_count = std::stoi(temp);
+        }
       }
 
       {
-	const char *temp = options_.retrieve("ordinal");
-	if (temp != nullptr) {
-	  ordinal = std::stoi(temp);
-	  if (ordinal < 1 || ordinal > 2) {
-	    fmt::print("ERROR: Invalid ordinal specified ({}). Must be 0, 1, or 2.\n", ordinal);
-	    exit(EXIT_FAILURE);
-	  }
-	}
+        const char *temp = options_.retrieve("ordinal");
+        if (temp != nullptr) {
+          ordinal = std::stoi(temp);
+          if (ordinal < 1 || ordinal > 2) {
+            fmt::print("ERROR: Invalid ordinal specified ({}). Must be 0, 1, or 2.\n", ordinal);
+            exit(EXIT_FAILURE);
+          }
+        }
       }
 
       {
-	const char *temp = options_.retrieve("load_balance");
-	if (temp != nullptr) {
-	  load_balance = std::stod(temp);
-	}
+        const char *temp = options_.retrieve("load_balance");
+        if (temp != nullptr) {
+          load_balance = std::stod(temp);
+        }
       }
 
       if (option_index < argc) {
-	filename = argv[option_index];
+        filename = argv[option_index];
       }
       else {
-	fmt::print("ERROR: Need to specify filename.\n");
-	return false;
+        fmt::print("ERROR: Need to specify filename.\n");
+        return false;
       }
       return true;
     }
@@ -89,20 +88,19 @@ namespace {
       options_.usage("[options] input_file");
       options_.enroll("help", Ioss::GetLongOption::NoValue, "Print this summary and exit", nullptr);
       options_.enroll("processors", Ioss::GetLongOption::MandatoryValue, "Number of processors.",
-		      nullptr);
-      options_.enroll("ordinal", Ioss::GetLongOption::MandatoryValue, "Ordinal not to split (0,1,2).",
-		      nullptr);
-      options_.enroll("load_balance", Ioss::GetLongOption::MandatoryValue, "Max ratio of processor work to average.",
-		      nullptr);
-
+                      nullptr);
+      options_.enroll("ordinal", Ioss::GetLongOption::MandatoryValue,
+                      "Ordinal not to split (0,1,2).", nullptr);
+      options_.enroll("load_balance", Ioss::GetLongOption::MandatoryValue,
+                      "Max ratio of processor work to average.", nullptr);
     }
     Ioss::GetLongOption options_;
-    int proc_count{0};
-    int ordinal{-1};
-    double load_balance{1.4};
-    std::string filename;
+    int                 proc_count{0};
+    int                 ordinal{-1};
+    double              load_balance{1.4};
+    std::string         filename;
   };
-}
+} // namespace
 namespace {
   std::string codename;
   std::string version = "0.9";
@@ -162,7 +160,7 @@ namespace {
 
     double avg_work = total_work / (double)proc_count;
     {
-      size_t zcount = zones.size();
+      size_t zcount   = zones.size();
       double max_work = avg_work * load_balance_tolerance * max_toler;
 
       Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
@@ -174,40 +172,44 @@ namespace {
       }
 
       for (size_t i = 0; i < zones.size(); i++) {
-        SMART_ASSERT(zones[i]->m_zone == i + 1)(zones[i]->m_zone)(i+1);
+        SMART_ASSERT(zones[i]->m_zone == i + 1)(zones[i]->m_zone)(i + 1);
       }
 
       {
         std::vector<size_t> work_vector(proc_count);
         Iocgns::Utils::assign_zones_to_procs(zones, work_vector);
 
-	// Print work/processor map...
-	std::vector<size_t> proc_work(proc_count);
+        // Print work/processor map...
+        std::vector<size_t> proc_work(proc_count);
 
-	fmt::print("\nDecomposition for {} zones over {} processors; Total work = {:n}, Average = {:.2f}\n",
-		   zcount, proc_count, (size_t)total_work, avg_work);
+        fmt::print("\nDecomposition for {} zones over {} processors; Total work = {:n}, Average = "
+                   "{:.2f}\n",
+                   zcount, proc_count, (size_t)total_work, avg_work);
 
-	for (const auto zone : zones) {
-	  if (zone->is_active()) {
-	    fmt::print("\tZone {},\tProc: {:4}\tOrdinal: {}x{}x{}\tWork: {:n}\n",
-		       zone->m_name, zone->m_proc, zone->m_ordinal[0], zone->m_ordinal[1],
-		       zone->m_ordinal[2], zone->work());
-	    proc_work[zone->m_proc] += zone->work();
-	  }
-	}
+        for (const auto zone : zones) {
+          if (zone->is_active()) {
+            fmt::print("\tZone {},\tProc: {:4}\tOrdinal: {}x{}x{}\tWork: {:n}\n", zone->m_name,
+                       zone->m_proc, zone->m_ordinal[0], zone->m_ordinal[1], zone->m_ordinal[2],
+                       zone->work());
+            proc_work[zone->m_proc] += zone->work();
+          }
+        }
 
-	auto v1 = *std::min_element(proc_work.begin(), proc_work.end());
-	auto v2 = *std::max_element(proc_work.begin(), proc_work.end());
+        auto v1 = *std::min_element(proc_work.begin(), proc_work.end());
+        auto v2 = *std::max_element(proc_work.begin(), proc_work.end());
 
-	if (v1 == v2) {
-	  fmt::print("\nWork on all processors is {:n}\n\n", v1);
-	}
-	else {
-	  fmt::print("\nWork per processor. Minimum = {:n}, Maximum = {:n}, Ratio = {}\n\n", v1, v2, (double)(v2)/v1);
-	  for (size_t i=0; i < proc_work.size(); i++) {
-	    fmt::print("\tProcessor {}, work = {:n}\n", i, proc_work[i]);
-	  }
-	}
+        if (v1 == v2) {
+          fmt::print("\nWork on all processors is {:n}\n\n", v1);
+        }
+        else {
+          fmt::print("\nWork per processor: Minimum = {:n}, Maximum = {:n}, Ratio = {}\n\n", v1, v2,
+                     (double)(v2) / v1);
+          for (size_t i = 0; i < proc_work.size(); i++) {
+            fmt::print("\tProcessor {}, work = {:n}\n", i, proc_work[i]);
+          }
+        }
+
+        // Validate decomposition...
 
         // Each active zone must be on a processor
         for (const auto zone : zones) {
@@ -220,7 +222,7 @@ namespace {
         double min_work = avg_work / load_balance_tolerance * min_toler;
         for (auto work : work_vector) {
           SMART_ASSERT(work >= min_work)(work)(min_work);
-          SMART_ASSERT(work <= max_work * max_toler)(work)(max_work*max_toler);
+          SMART_ASSERT(work <= max_work * max_toler)(work)(max_work * max_toler);
         }
 
         // A processor cannot have more than one zone with the same adam zone
@@ -297,12 +299,12 @@ int main(int argc, char *argv[])
 #endif
 
   Interface interface;
-  bool success = interface.parse_options(argc, argv);
+  bool      success = interface.parse_options(argc, argv);
   if (!success) {
     exit(EXIT_FAILURE);
   }
 
-  std::string in_type  = "cgns";
+  std::string in_type = "cgns";
 
   codename   = argv[0];
   size_t ind = codename.find_last_of('/', codename.size());
@@ -313,11 +315,10 @@ int main(int argc, char *argv[])
   Ioss::Init::Initializer io;
 
   Ioss::PropertyManager properties;
-  Ioss::DatabaseIO *dbi =
-    Ioss::IOFactory::create(in_type, interface.filename, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
+  Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(in_type, interface.filename, Ioss::READ_RESTART,
+                                                  (MPI_Comm)MPI_COMM_WORLD, properties);
   if (dbi == nullptr || !dbi->ok()) {
-    std::cerr << "ERROR: Could not open database '" << cgns_file << "' of type '" << in_type
-	      << "'\n";
+    fmt::print("ERROR: Could not open database '{}' of type '{}'\n", interface.filename, in_type);
     std::exit(EXIT_FAILURE);
   }
 
@@ -326,18 +327,18 @@ int main(int argc, char *argv[])
 
   // Get the structured blocks...
   std::vector<Iocgns::StructuredZoneData *> zones;
-  int zone = 1;
+  int                                       zone = 1;
 
-  const auto &blocks         = region.get_structured_blocks();
+  const auto &blocks = region.get_structured_blocks();
   if (blocks.empty()) {
     fmt::print("ERROR: There are no structured blocks on the mesh.\n");
     return EXIT_FAILURE;
   }
 
   for (auto iblock : blocks) {
-    size_t ni = iblock->get_property("ni").get_int();
-    size_t nj = iblock->get_property("nj").get_int();
-    size_t nk = iblock->get_property("nk").get_int();
+    size_t      ni     = iblock->get_property("ni").get_int();
+    size_t      nj     = iblock->get_property("nj").get_int();
+    size_t      nk     = iblock->get_property("nk").get_int();
     std::string format = fmt::format("{}x{}x{}", ni, nj, nk);
     fmt::print("Adding zone with {}\n", format);
     zones.push_back(new Iocgns::StructuredZoneData(zone++, format));
