@@ -42,7 +42,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <map>
 #include <sstream>
 #include <string>
@@ -175,7 +175,7 @@ const Ioss::VariableType *Ioss::VariableType::factory(const std::string &raw_nam
     }
     else {
       std::ostringstream errmsg;
-      errmsg << "ERROR: The variable type '" << raw_name << "' is not supported.\n";
+      fmt::print(errmsg, "ERROR: The variable type '{}' is not supported.\n", raw_name);
       IOSS_ERROR(errmsg);
     }
   }
@@ -326,9 +326,10 @@ std::string Ioss::VariableType::numeric_label(int which, int ncomp, const std::s
 {
   if (ncomp >= 100000) {
     std::ostringstream errmsg;
-    errmsg << "ERROR: Variable '" << name << "' has " << ncomp
-           << " components which is larger than the current maximum"
-           << " of 100,000. Please contact developer.\n";
+    fmt::print(errmsg,
+               "ERROR: Variable '{}' has {:n} components which is larger than the current maximum"
+               " of 100,000. Please contact developer.\n",
+               name, ncomp);
     IOSS_ERROR(errmsg);
   }
 

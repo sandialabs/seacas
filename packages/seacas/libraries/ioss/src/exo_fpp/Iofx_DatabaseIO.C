@@ -303,7 +303,7 @@ namespace Iofx {
     if (do_timer) {
       double t_end    = Ioss::Utils::timer();
       double duration = t_end - t_begin;
-      fmt::print(std::cerr, "File Open Time = {}\n", duration);
+      fmt::print(stderr, "File Open Time = {}\n", duration);
     }
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);

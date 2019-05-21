@@ -40,7 +40,7 @@ namespace Ioss {
 
   Tracer::Tracer(const char *function)
   {
-    fmt::print(std::cerr, "Entering Function: {} at level {}\n", function, ++level);
+    fmt::print(stderr, "Entering Function: {} at level {}\n", function, ++level);
     assert(level == 1);
   }
 

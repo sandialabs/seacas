@@ -170,10 +170,10 @@ namespace Iopx {
     generate_adjacency_list(filePtr, m_decomposition);
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(std::cerr, "Processor {} has {} elements; offset = {}\n", m_processor,
+    fmt::print(stderr, "Processor {} has {} elements; offset = {}\n", m_processor,
                decomp_elem_count(), decomp_elem_offset());
-    fmt::print(std::cerr, "Processor {} has {} nodes; offset = {}\n", m_processor,
-               decomp_node_count(), decomp_node_offset());
+    fmt::print(stderr, "Processor {} has {} nodes; offset = {}\n", m_processor, decomp_node_count(),
+               decomp_node_offset());
 #endif
 
     if (m_decomposition.needs_centroids()) {
@@ -239,7 +239,7 @@ namespace Iopx {
       pu.hwm_memory_stats(min, max, avg);
       int64_t MiB = 1024 * 1024;
       if (m_processor == 0) {
-        fmt::print(std::cerr, "\n\tHigh Water Memory at end of Decomposition: {}M  {}M  {}M\n",
+        fmt::print(stderr, "\n\tHigh Water Memory at end of Decomposition: {}M  {}M  {}M\n",
                    min / MiB, max / MiB, avg / MiB);
       }
     }
@@ -301,7 +301,7 @@ namespace Iopx {
     // can cause hard to track down problems...
     if (decomposition.m_globalElementCount != decomposition.m_fileBlockIndex[block_count]) {
       if (m_processor == 0) {
-        fmt::print(std::cerr,
+        fmt::print(stderr,
                    "ERROR: The sum of the element counts in each element block gives a total of {} "
                    "elements.\n"
                    "       This does not match the total element count of {} which indicates a "
@@ -348,7 +348,7 @@ namespace Iopx {
         std::vector<INT> connectivity(overlap * element_nodes);
         size_t           blk_start = std::max(b_start, p_start) - b_start + 1;
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(std::cerr, "Processor {} has {} elements on element block {}\n", m_processor,
+        fmt::print(stderr, "Processor {} has {} elements on element block {}\n", m_processor,
                    overlap, id);
 #endif
         ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, blk_start, overlap, TOPTR(connectivity),
@@ -420,7 +420,7 @@ namespace Iopx {
     size_t one = 1;
     if (entitylist_size >= one << 31) {
       if (m_processor == 0) {
-        fmt::print(std::cerr,
+        fmt::print(stderr,
                    "ERROR: The sum of the {} entity counts is larger than 2.1 Billion "
                    " which cannot be correctly handled with the current IOSS decomposition "
                    "implementation.\n"
@@ -443,7 +443,7 @@ namespace Iopx {
         ssize_t to_read = std::min(remain, entitys_to_read);
         if (m_processor == root) {
 #if IOSS_DEBUG_OUTPUT
-          fmt::print(std::cerr, "{} {} reading {} entities from offset {}\n", set_type_name,
+          fmt::print(stderr, "{} {} reading {} entities from offset {}\n", set_type_name,
                      sets[i].id, to_read, set_entities_read[i] + 1);
 #endif
           // Read the entitylists on root processor.
@@ -1038,13 +1038,13 @@ namespace Iopx {
     }
 
     if (type != EX_NODE_SET && type != EX_SIDE_SET) {
-      fmt::print(std::cerr,
+      fmt::print(stderr,
                  "ERROR: Invalid set type specified in get_decomp_set. Only node set or side set "
                  "supported\n");
     }
     else {
       std::string typestr = type == EX_NODE_SET ? "node set" : "side set";
-      fmt::print(std::cerr, "ERROR: Count not find {} {}\n", typestr, id);
+      fmt::print(stderr, "ERROR: Count not find {} {}\n", typestr, id);
     }
     exit(EXIT_FAILURE);
     return node_sets[0];
@@ -1596,7 +1596,7 @@ namespace Iopx {
                             comm_, &status);
 
       if (result != MPI_SUCCESS) {
-        fmt::print(std::cerr,
+        fmt::print(stderr,
                    "ERROR: MPI_Recv error on processor {} receiving nodes_per_face sideset data",
                    m_processor);
       }
@@ -1637,7 +1637,7 @@ namespace Iopx {
           MPI_Recv(TOPTR(file_data), file_data.size(), MPI_DOUBLE, set.root_, 333, comm_, &status);
 
       if (result != MPI_SUCCESS) {
-        fmt::print(std::cerr,
+        fmt::print(stderr,
                    "ERROR: MPI_Recv error on processor {} receiving nodes_per_face sideset data",
                    m_processor);
       }
