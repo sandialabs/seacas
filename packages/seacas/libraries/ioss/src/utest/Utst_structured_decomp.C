@@ -87,12 +87,12 @@ namespace {
         Iocgns::Utils::assign_zones_to_procs(zones, work_vector);
 
 #if 0
-	fmt::print(std::cerr, "\nDecomposition for {} processors; Total work = {:n}, Average = {}\n",
+	fmt::print(stderr, "\nDecomposition for {} processors; Total work = {:n}, Average = {}\n",
 		   proc_count, (size_t)total_work, avg_work);
 
 	  for (const auto zone : zones) {
 	    if (zone->is_active()) {
-	      fmt::print(std::cerr, "Zone {}\tProc: {}\tOrdinal: {}x{}x{}\tWork: {:n}\n",
+	      fmt::print(stderr, "Zone {}\tProc: {}\tOrdinal: {}x{}x{}\tWork: {:n}\n",
 			 zone->m_name, zone->m_proc, zone->m_ordinal[0], zone->m_ordinal[1], 
 			 zone->m_ordinal[2], zone->work());
 	    }

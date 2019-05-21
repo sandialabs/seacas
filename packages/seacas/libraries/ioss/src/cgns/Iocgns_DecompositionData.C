@@ -181,7 +181,7 @@ namespace {
 
 #if IOSS_DEBUG_OUTPUT
           if (rank == 0) {
-            fmt::print(std::cerr, "Adding zgc {} to {} donor: {}\n", connectname, zone_name,
+            fmt::print(stderr, "Adding zgc {} to {} donor: {}\n", connectname, zone_name,
                        donorname);
           }
 #endif
@@ -419,7 +419,7 @@ namespace {
               zone->m_lineOrdinal = ordinal;
 #if IOSS_DEBUG_OUTPUT
               if (rank == 0) {
-                fmt::print(std::cerr, "Setting line ordinal to {} on {} for surface: {}\n",
+                fmt::print(stderr, "Setting line ordinal to {} on {} for surface: {}\n",
                            zone->m_lineOrdinal, zone->m_name, boconame);
               }
 #endif
@@ -532,7 +532,7 @@ namespace Iocgns {
 
     if (avg_work < 1.0) {
       if (rank == 0) {
-        fmt::print(std::cerr, "ERROR: Model size too small to distribute over {} processors.\n",
+        fmt::print(stderr, "ERROR: Model size too small to distribute over {} processors.\n",
                    m_decomposition.m_processorCount);
       }
       std::exit(EXIT_FAILURE);
@@ -540,9 +540,9 @@ namespace Iocgns {
 
 #if IOSS_DEBUG_OUTPUT
     if (rank == 0) {
-      fmt::print(std::cerr,
+      fmt::print(stderr,
                  "========================================================================\n");
-      fmt::print(std::cerr, "Pre-Splitting:\n");
+      fmt::print(stderr, "Pre-Splitting:\n");
     }
 #endif
     // Split all blocks where block->work() > avg_work * m_loadBalanceThreshold
@@ -552,7 +552,7 @@ namespace Iocgns {
     // At this point, there should be no zone with block->work() > avg_work * m_loadBalanceThreshold
 #if IOSS_DEBUG_OUTPUT
     if (rank == 0) {
-      fmt::print(std::cerr,
+      fmt::print(stderr,
                  "========================================================================\n");
     }
 #endif
@@ -567,7 +567,7 @@ namespace Iocgns {
         double workload_ratio = double(work_vector[i]) / double(avg_work);
 #if IOSS_DEBUG_OUTPUT
         if (rank == 0) {
-          fmt::print(std::cerr, "\nProcessor {} work: {}, workload ratio: {}", i, work_vector[i],
+          fmt::print(stderr, "\nProcessor {} work: {}, workload ratio: {}", i, work_vector[i],
                      workload_ratio);
         }
 #endif
@@ -578,7 +578,7 @@ namespace Iocgns {
       }
 #if IOSS_DEBUG_OUTPUT
       if (rank == 0) {
-        fmt::print(std::cerr, "\n\nWorkload threshold exceeded on {} processors.\n", px);
+        fmt::print(stderr, "\n\nWorkload threshold exceeded on {} processors.\n", px);
       }
 #endif
       bool single_zone = m_structuredZones.size() == 1;
@@ -620,8 +620,8 @@ namespace Iocgns {
       auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
                                   [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
       if (rank == 0) {
-        fmt::print(std::cerr, "Number of active zones = {}, average work = {}\n", active, avg_work);
-        fmt::print(std::cerr,
+        fmt::print(stderr, "Number of active zones = {}, average work = {}\n", active, avg_work);
+        fmt::print(stderr,
                    "========================================================================\n");
       }
 #endif
@@ -653,7 +653,7 @@ namespace Iocgns {
               zone_node_count);
           auto zgcs = zone->m_zoneConnectivity;
           for (auto &zgc : zgcs) {
-            fmt::print(std::cerr, "{}\n", zgc);
+            fmt::print(stderr, "{}\n", zgc);
           }
         }
 #endif
@@ -674,7 +674,7 @@ namespace Iocgns {
 
       for (auto &zone : tmp_zone) {
         if (zone->is_active()) {
-          fmt::print(std::cerr, "{:6d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}\n", z++,
+          fmt::print(stderr, "{:6d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}\n", z++,
                      zone->m_proc, zone->m_adam->m_zone, zone->m_offset[0] + 1,
                      zone->m_ordinal[0] + zone->m_offset[0] + 1, zone->m_offset[1] + 1,
                      zone->m_ordinal[1] + zone->m_offset[1] + 1, zone->m_offset[2] + 1,
@@ -766,7 +766,7 @@ namespace Iocgns {
 
 #if IOSS_DEBUG_OUTPUT
     if (rank == 0) {
-      fmt::print(std::cerr,
+      fmt::print(stderr,
                  "Processor {0} has {1} elements; offset = {2}\n"
                  "Processor {0} has {3} nodes; offset = {4}.\n",
                  m_decomposition.m_processor, decomp_elem_count(), decomp_elem_offset(),
@@ -892,7 +892,7 @@ namespace Iocgns {
         if (dz != zone) {
 #if IOSS_DEBUG_OUTPUT
           if (m_decomposition.m_processor == 0) {
-            fmt::print(std::cerr, "Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
+            fmt::print(stderr, "Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
           }
 #endif
           // The 'ids' in 'points' and 'donors' will be zone-local 1-based.
@@ -915,7 +915,7 @@ namespace Iocgns {
             m_zoneSharedMap.insert({point, donor});
 #if IOSS_DEBUG_OUTPUT
             if (m_decomposition.m_processor == 0) {
-              fmt::print(std::cerr, "Inserted {} to {}\n", point, donor);
+              fmt::print(stderr, "Inserted {} to {}\n", point, donor);
             }
 #endif
           }
@@ -1081,7 +1081,7 @@ namespace Iocgns {
       blk_end                         = blk_end < 0 ? 0 : blk_end;
 #if IOSS_DEBUG_OUTPUT
       if (rank == 0) {
-        fmt::print(std::cerr, "Processor {} has {} elements on element block {}\t({} to {})\n",
+        fmt::print(stderr, "Processor {} has {} elements on element block {}\t({} to {})\n",
                    m_decomposition.m_processor, overlap, block.name(), blk_start, blk_end);
       }
 #endif

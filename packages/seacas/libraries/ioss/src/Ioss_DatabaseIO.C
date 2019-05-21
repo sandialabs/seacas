@@ -820,8 +820,8 @@ namespace Ioss {
       assert(result != MPI_SUCCESS || non_zero == req_cnt);
 
       if (result != MPI_SUCCESS) {
-        fmt::print(std::cerr, "ERROR: MPI_Irecv error on processor {} in {}",
-                   util().parallel_rank(), __func__);
+        fmt::print(stderr, "ERROR: MPI_Irecv error on processor {} in {}", util().parallel_rank(),
+                   __func__);
       }
 
       int local_error  = (MPI_SUCCESS == result) ? 0 : 1;
@@ -848,8 +848,8 @@ namespace Ioss {
       assert(result != MPI_SUCCESS || non_zero == req_cnt);
 
       if (result != MPI_SUCCESS) {
-        fmt::print(std::cerr, "ERROR: MPI_Rsend error on processor {} in {}",
-                   util().parallel_rank(), __func__);
+        fmt::print(stderr, "ERROR: MPI_Rsend error on processor {} in {}", util().parallel_rank(),
+                   __func__);
       }
 
       local_error  = (MPI_SUCCESS == result) ? 0 : 1;
@@ -857,16 +857,15 @@ namespace Ioss {
 
       if (global_error != 0) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: MPI_Rsend error on some processor "
-               << "in " << __func__;
+        fmt::print(errmsg, "ERROR: MPI_Rsend error on some processor in {}", __func__);
         IOSS_ERROR(errmsg);
       }
 
       result = MPI_Waitall(req_cnt, TOPTR(request), TOPTR(status));
 
       if (result != MPI_SUCCESS) {
-        fmt::print(std::cerr, "ERROR: MPI_Waitall error on processor {} in {}",
-                   util().parallel_rank(), __func__);
+        fmt::print(stderr, "ERROR: MPI_Waitall error on processor {} in {}", util().parallel_rank(),
+                   __func__);
       }
 
       // Unpack the data and update the inv_con arrays for boundary
