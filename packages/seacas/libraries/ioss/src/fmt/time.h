@@ -18,29 +18,33 @@ FMT_BEGIN_NAMESPACE
 // Usage: f FMT_NOMACRO()
 #define FMT_NOMACRO
 
-namespace internal{
-inline null<> localtime_r FMT_NOMACRO(...) { return null<>(); }
-inline null<> localtime_s(...) { return null<>(); }
-inline null<> gmtime_r(...) { return null<>(); }
-inline null<> gmtime_s(...) { return null<>(); }
-}  // namespace internal
+namespace internal {
+  inline null<> localtime_r FMT_NOMACRO(...) { return null<>(); }
+  inline null<>             localtime_s(...) { return null<>(); }
+  inline null<>             gmtime_r(...) { return null<>(); }
+  inline null<>             gmtime_s(...) { return null<>(); }
+} // namespace internal
 
 // Thread-safe replacement for std::localtime
-inline std::tm localtime(std::time_t time) {
-  struct dispatcher {
+inline std::tm localtime(std::time_t time)
+{
+  struct dispatcher
+  {
     std::time_t time_;
-    std::tm tm_;
+    std::tm     tm_;
 
-    dispatcher(std::time_t t): time_(t) {}
+    dispatcher(std::time_t t) : time_(t) {}
 
-    bool run() {
+    bool run()
+    {
       using namespace fmt::internal;
       return handle(localtime_r(&time_, &tm_));
     }
 
     bool handle(std::tm *tm) { return tm != FMT_NULL; }
 
-    bool handle(internal::null<>) {
+    bool handle(internal::null<>)
+    {
       using namespace fmt::internal;
       return fallback(localtime_s(&tm_, &time_));
     }
@@ -48,10 +52,12 @@ inline std::tm localtime(std::time_t time) {
     bool fallback(int res) { return res == 0; }
 
 #if !FMT_MSC_VER
-    bool fallback(internal::null<>) {
+    bool fallback(internal::null<>)
+    {
       using namespace fmt::internal;
       std::tm *tm = std::localtime(&time_);
-      if (tm) tm_ = *tm;
+      if (tm)
+        tm_ = *tm;
       return tm != FMT_NULL;
     }
 #endif
@@ -64,21 +70,25 @@ inline std::tm localtime(std::time_t time) {
 }
 
 // Thread-safe replacement for std::gmtime
-inline std::tm gmtime(std::time_t time) {
-  struct dispatcher {
+inline std::tm gmtime(std::time_t time)
+{
+  struct dispatcher
+  {
     std::time_t time_;
-    std::tm tm_;
+    std::tm     tm_;
 
-    dispatcher(std::time_t t): time_(t) {}
+    dispatcher(std::time_t t) : time_(t) {}
 
-    bool run() {
+    bool run()
+    {
       using namespace fmt::internal;
       return handle(gmtime_r(&time_, &tm_));
     }
 
     bool handle(std::tm *tm) { return tm != FMT_NULL; }
 
-    bool handle(internal::null<>) {
+    bool handle(internal::null<>)
+    {
       using namespace fmt::internal;
       return fallback(gmtime_s(&tm_, &time_));
     }
@@ -86,9 +96,11 @@ inline std::tm gmtime(std::time_t time) {
     bool fallback(int res) { return res == 0; }
 
 #if !FMT_MSC_VER
-    bool fallback(internal::null<>) {
+    bool fallback(internal::null<>)
+    {
       std::tm *tm = std::gmtime(&time_);
-      if (tm) tm_ = *tm;
+      if (tm)
+        tm_ = *tm;
       return tm != FMT_NULL;
     }
 #endif
@@ -101,21 +113,22 @@ inline std::tm gmtime(std::time_t time) {
 }
 
 namespace internal {
-inline std::size_t strftime(char *str, std::size_t count, const char *format,
-                            const std::tm *time) {
-  return std::strftime(str, count, format, time);
-}
+  inline std::size_t strftime(char *str, std::size_t count, const char *format, const std::tm *time)
+  {
+    return std::strftime(str, count, format, time);
+  }
 
-inline std::size_t strftime(wchar_t *str, std::size_t count,
-                            const wchar_t *format, const std::tm *time) {
-  return std::wcsftime(str, count, format, time);
-}
-}
+  inline std::size_t strftime(wchar_t *str, std::size_t count, const wchar_t *format,
+                              const std::tm *time)
+  {
+    return std::wcsftime(str, count, format, time);
+  }
+} // namespace internal
 
-template <typename Char>
-struct formatter<std::tm, Char> {
-  template <typename ParseContext>
-  auto parse(ParseContext &ctx) -> decltype(ctx.begin()) {
+template <typename Char> struct formatter<std::tm, Char>
+{
+  template <typename ParseContext> auto parse(ParseContext &ctx) -> decltype(ctx.begin())
+  {
     auto it = ctx.begin();
     if (it != ctx.end() && *it == ':')
       ++it;
@@ -129,13 +142,13 @@ struct formatter<std::tm, Char> {
   }
 
   template <typename FormatContext>
-  auto format(const std::tm &tm, FormatContext &ctx) -> decltype(ctx.out()) {
+  auto format(const std::tm &tm, FormatContext &ctx) -> decltype(ctx.out())
+  {
     basic_memory_buffer<Char> buf;
-    std::size_t start = buf.size();
+    std::size_t               start = buf.size();
     for (;;) {
-      std::size_t size = buf.capacity() - start;
-      std::size_t count =
-        internal::strftime(&buf[start], size, &tm_format[0], &tm);
+      std::size_t size  = buf.capacity() - start;
+      std::size_t count = internal::strftime(&buf[start], size, &tm_format[0], &tm);
       if (count != 0) {
         buf.resize(start + count);
         break;
@@ -157,4 +170,4 @@ struct formatter<std::tm, Char> {
 };
 FMT_END_NAMESPACE
 
-#endif  // FMT_TIME_H_
+#endif // FMT_TIME_H_
