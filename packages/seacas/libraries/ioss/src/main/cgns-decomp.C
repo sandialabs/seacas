@@ -16,16 +16,15 @@
 
 #undef NDEBUG
 #include <Ioss_CodeTypes.h>
-#include <Ioss_Utils.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_GetLongOpt.h>
 #include <Ioss_IOFactory.h>
 #include <Ioss_Property.h>
 #include <Ioss_Region.h>
-#include <Ioss_SmartAssert.h>
 #include <Ioss_ScopeGuard.h>
-#include <Ioss_ZoneConnectivity.h>
+#include <Ioss_SmartAssert.h>
 #include <Ioss_Utils.h>
+#include <Ioss_ZoneConnectivity.h>
 
 #include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>
@@ -53,6 +52,12 @@ namespace {
         if (temp != nullptr) {
           proc_count = std::stoi(temp);
         }
+        else {
+          fmt::print(
+              "\nERROR: Processor count must be specified with '-processors $<val>' option.\n");
+          options_.usage(std::cerr);
+          exit(EXIT_FAILURE);
+        }
       }
 
       {
@@ -60,7 +65,7 @@ namespace {
         if (temp != nullptr) {
           ordinal = std::stoi(temp);
           if (ordinal < 1 || ordinal > 2) {
-            fmt::print("ERROR: Invalid ordinal specified ({}). Must be 0, 1, or 2.\n", ordinal);
+            fmt::print("\nERROR: Invalid ordinal specified ({}). Must be 0, 1, or 2.\n", ordinal);
             exit(EXIT_FAILURE);
           }
         }
@@ -77,9 +82,11 @@ namespace {
         filename = argv[option_index];
       }
       else {
-        fmt::print("ERROR: Need to specify filename.\n");
+        fmt::print(stderr, "\nERROR: Filename missing.\n");
+        options_.usage(std::cerr);
         return false;
       }
+
       return true;
     }
 
@@ -150,8 +157,8 @@ namespace {
     }
   }
 
-  void decompose(std::vector<Iocgns::StructuredZoneData *> &zones,
-                          double load_balance_tolerance, size_t proc_count)
+  void decompose(std::vector<Iocgns::StructuredZoneData *> &zones, double load_balance_tolerance,
+                 size_t proc_count)
 
   {
     size_t proc_width = std::floor(std::log10(proc_count)) + 1;
@@ -160,7 +167,7 @@ namespace {
                         [](double a, Iocgns::StructuredZoneData *b) { return a + b->work(); });
 
     size_t work_width = std::floor(std::log10(total_work)) + 1;
-    work_width += (work_width-1)/3; // for the commas...
+    work_width += (work_width - 1) / 3; // for the commas...
 
     double avg_work = total_work / (double)proc_count;
     {
@@ -172,8 +179,8 @@ namespace {
       for (const auto zone : zones) {
         if (zone->is_active()) {
           if (zone->work() > max_work) {
-            fmt::print("WARNING: Work on zone {} ({:n}) exceeds max_work ({}).\n", zone->m_name,
-                       zone->work(), max_work);
+            fmt::print("WARNING: Work on zone {} ({:n}) exceeds max_work ({:n}).\n", zone->m_name,
+                       zone->work(), (size_t)max_work);
           }
         }
       }
@@ -204,33 +211,37 @@ namespace {
           }
         }
 
-	//=======================================================================
-	fmt::print("\n");
+        //=======================================================================
+        fmt::print("\n");
         for (const auto adam_zone : zones) {
           if (adam_zone->m_parent == nullptr) {
-	    if (adam_zone->m_child1 == nullptr) {
-	      // Unsplit...
-	      fmt::print("\tZone {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n} (unsplit)\n", adam_zone->m_name,
-			 name_len, adam_zone->m_proc, proc_width,
-			 fmt::format("{}x{}x{}", adam_zone->m_ordinal[0], adam_zone->m_ordinal[1], adam_zone->m_ordinal[2]),
-			 adam_zone->work(), work_width);
-	    }
-	    else {
-	      fmt::print("\tZone: {:{}} is decomposed. \tOrdinal: {:^12}\tWork: {:{}n}\n",
-			 adam_zone->m_name, name_len, fmt::format("{}x{}x{}", adam_zone->m_ordinal[0], adam_zone->m_ordinal[1], adam_zone->m_ordinal[2]),
-			     adam_zone->work(), work_width);
-	      for (const auto zone : zones) {
-		if (zone->is_active() && zone->m_adam == adam_zone) {
-		  fmt::print("\t      {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n}\n", zone->m_name,
-			     name_len, zone->m_proc, proc_width,
-			     fmt::format("{}x{}x{}", zone->m_ordinal[0], zone->m_ordinal[1], zone->m_ordinal[2]),
-			     zone->work(), work_width);
-		}
-	      }
-	    }
-	  }
-	}
-	//=======================================================================
+            if (adam_zone->m_child1 == nullptr) {
+              // Unsplit...
+              fmt::print("\tZone {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n} (unsplit)\n",
+                         adam_zone->m_name, name_len, adam_zone->m_proc, proc_width,
+                         fmt::format("{}x{}x{}", adam_zone->m_ordinal[0], adam_zone->m_ordinal[1],
+                                     adam_zone->m_ordinal[2]),
+                         adam_zone->work(), work_width);
+            }
+            else {
+              fmt::print("\tZone: {:{}} is decomposed. \tOrdinal: {:^12}\tWork: {:{}n}\n",
+                         adam_zone->m_name, name_len,
+                         fmt::format("{}x{}x{}", adam_zone->m_ordinal[0], adam_zone->m_ordinal[1],
+                                     adam_zone->m_ordinal[2]),
+                         adam_zone->work(), work_width);
+              for (const auto zone : zones) {
+                if (zone->is_active() && zone->m_adam == adam_zone) {
+                  fmt::print("\t      {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n}\n",
+                             zone->m_name, name_len, zone->m_proc, proc_width,
+                             fmt::format("{}x{}x{}", zone->m_ordinal[0], zone->m_ordinal[1],
+                                         zone->m_ordinal[2]),
+                             zone->work(), work_width);
+                }
+              }
+            }
+          }
+        }
+        //=======================================================================
 
         for (const auto zone : zones) {
           if (zone->is_active()) {
@@ -240,17 +251,21 @@ namespace {
 
         auto v1 = *std::min_element(proc_work.begin(), proc_work.end());
         auto v2 = *std::max_element(proc_work.begin(), proc_work.end());
-	auto delta = (v2 - v1);
         if (v1 == v2) {
           fmt::print("\nWork on all processors is {:n}\n\n", v1);
         }
         else {
+          int max_star = 40;
+          int min_star = max_star * ((double)v1 / (double)(v2));
+          int delta    = max_star - min_star;
+
           fmt::print("\nWork per processor: Minimum = {:n}, Maximum = {:n}, Ratio = {}\n\n", v1, v2,
                      (double)(v2) / v1);
           for (size_t i = 0; i < proc_work.size(); i++) {
-	    int star_cnt = (proc_work[i] - v1) * (20.0 / delta) + 1;
-	    std::string stars(star_cnt, '*');
-            fmt::print("\tProcessor {:{}}, work = {:{}n}\t{}\n", i, proc_width, proc_work[i], work_width, stars);
+            int         star_cnt = (double)(proc_work[i] - v1) / (v2 - v1) * delta + min_star;
+            std::string stars(star_cnt, '*');
+            fmt::print("\tProcessor {:{}}, work = {:{}n}\t{}\n", i, proc_width, proc_work[i],
+                       work_width, stars);
           }
         }
 
@@ -357,7 +372,7 @@ int main(int argc, char *argv[])
   Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(in_type, interface.filename, Ioss::READ_RESTART,
                                                   (MPI_Comm)MPI_COMM_WORLD, properties);
   if (dbi == nullptr || !dbi->ok()) {
-    fmt::print("ERROR: Could not open database '{}' of type '{}'\n", interface.filename, in_type);
+    fmt::print("\nERROR: Could not open database '{}' of type '{}'\n", interface.filename, in_type);
     std::exit(EXIT_FAILURE);
   }
 
@@ -367,16 +382,16 @@ int main(int argc, char *argv[])
   // Get the structured blocks...
   const auto &blocks = region.get_structured_blocks();
   if (blocks.empty()) {
-    fmt::print("ERROR: There are no structured blocks on the mesh.\n");
+    fmt::print("\nERROR: There are no structured blocks on the mesh.\n");
     return EXIT_FAILURE;
   }
 
   std::vector<Iocgns::StructuredZoneData *> zones;
   for (auto iblock : blocks) {
-    size_t      ni     = iblock->get_property("ni").get_int();
-    size_t      nj     = iblock->get_property("nj").get_int();
-    size_t      nk     = iblock->get_property("nk").get_int();
-    size_t      zone   = iblock->get_property("zone").get_int();
+    size_t ni   = iblock->get_property("ni").get_int();
+    size_t nj   = iblock->get_property("nj").get_int();
+    size_t nk   = iblock->get_property("nk").get_int();
+    size_t zone = iblock->get_property("zone").get_int();
 
     zones.push_back(new Iocgns::StructuredZoneData(iblock->name(), zone, ni, nj, nk));
     if (interface.ordinal >= 0) {
