@@ -951,7 +951,8 @@ TEST_CASE("LotsOfZones", "[LotsOfZones]")
   }
   cleanup(zones);
 }
-#if 1
+// Disable these tests on NVCC. It tries to optimize and takes forever to build...
+#ifndef __NVCC__
 TEST_CASE("herron-dutton", "[herron-dutton_zgc]")
 {
   int                                       zone = 1;
