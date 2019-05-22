@@ -2106,7 +2106,12 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
     auto   zone = zones[i];
     double work = zone->work();
     total_work += work;
-    splits[i] = int(std::round(work / avg_work));
+    if (load_balance <= 1.2) {
+      splits[i] = int(std::ceil(work / avg_work));
+    }
+    else {
+      splits[i] = int(std::round(work / avg_work + 0.2));
+    }
     splits[i] = splits[i] == 0 ? 1 : splits[i];
   }
 
@@ -2127,9 +2132,8 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
       if (splits[i] == 0) {
         continue;
       }
-      double zone_avg = work / (double)splits[i];
       if ((splits[i] + step) > 0) {
-        double delta = std::abs(zone_avg - work / (double)(splits[i] + step));
+        double delta = std::abs(avg_work - work / (double)(splits[i] + step));
         if (delta < min_delta) {
           min_delta = delta;
           min_z     = i;
@@ -2139,7 +2143,6 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
     splits[min_z] += step;
     diff -= step;
   }
-
   assert(diff == 0);
   assert(std::accumulate(splits.begin(), splits.end(), 0) == proc_count);
 

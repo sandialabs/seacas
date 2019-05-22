@@ -93,7 +93,7 @@ namespace {
 	  for (const auto zone : zones) {
 	    if (zone->is_active()) {
 	      fmt::print(stderr, "Zone {}\tProc: {}\tOrdinal: {}x{}x{}\tWork: {:n}\n",
-			 zone->m_name, zone->m_proc, zone->m_ordinal[0], zone->m_ordinal[1], 
+			 zone->m_name, zone->m_proc, zone->m_ordinal[0], zone->m_ordinal[1],
 			 zone->m_ordinal[2], zone->work());
 	    }
 	  }
@@ -331,7 +331,7 @@ TEST_CASE("farmer plenum", "[farmer_plenum]")
 
   for (size_t proc_count = 2; proc_count < 20; proc_count++) {
     std::string name = "Plenum_ProcCount_" + std::to_string(proc_count);
-    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.75); }
   }
   cleanup(zones);
 }
