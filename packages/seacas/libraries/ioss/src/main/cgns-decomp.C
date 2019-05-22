@@ -154,6 +154,7 @@ namespace {
                           double load_balance_tolerance, size_t proc_count, double min_toler = 0.9,
                           double max_toler = 1.0)
   {
+    size_t proc_width = std::floor(std::log10(proc_count)) + 1;
     double total_work =
         std::accumulate(zones.begin(), zones.end(), 0.0,
                         [](double a, Iocgns::StructuredZoneData *b) { return a + b->work(); });
@@ -167,7 +168,10 @@ namespace {
 
       for (const auto zone : zones) {
         if (zone->is_active()) {
-          SMART_ASSERT(zone->work() <= max_work)(zone->work())(max_work);
+          if (zone->work() > max_work) {
+            fmt::print("WARNING: Work on zone {} ({:n}) exceeds max_work ({}).\n", zone->m_name,
+                       zone->work(), max_work);
+          }
         }
       }
 
@@ -183,14 +187,25 @@ namespace {
         std::vector<size_t> proc_work(proc_count);
 
         fmt::print("\nDecomposition for {} zones over {} processors; Total work = {:n}, Average = "
-                   "{:.2f}\n",
-                   zcount, proc_count, (size_t)total_work, avg_work);
+                   "{:n}\n",
+                   zcount, proc_count, (size_t)total_work, (size_t)avg_work);
+
+        // Get max name length for all zones...
+        size_t name_len = 0;
+        for (const auto zone : zones) {
+          if (zone->is_active()) {
+            auto len = zone->m_name.length();
+            if (len > name_len) {
+              name_len = len;
+            }
+          }
+        }
 
         for (const auto zone : zones) {
           if (zone->is_active()) {
-            fmt::print("\tZone {},\tProc: {:4}\tOrdinal: {}x{}x{}\tWork: {:n}\n", zone->m_name,
-                       zone->m_proc, zone->m_ordinal[0], zone->m_ordinal[1], zone->m_ordinal[2],
-                       zone->work());
+            fmt::print("\tZone {:{}}\t  Proc: {:{}}\tOrdinal: {}x{}x{}\tWork: {:n}\n", zone->m_name,
+                       name_len, zone->m_proc, proc_width, zone->m_ordinal[0], zone->m_ordinal[1],
+                       zone->m_ordinal[2], zone->work());
             proc_work[zone->m_proc] += zone->work();
           }
         }
@@ -205,7 +220,7 @@ namespace {
           fmt::print("\nWork per processor: Minimum = {:n}, Maximum = {:n}, Ratio = {}\n\n", v1, v2,
                      (double)(v2) / v1);
           for (size_t i = 0; i < proc_work.size(); i++) {
-            fmt::print("\tProcessor {}, work = {:n}\n", i, proc_work[i]);
+            fmt::print("\tProcessor {:{}}, work = {:n}\n", i, proc_width, proc_work[i]);
           }
         }
 
