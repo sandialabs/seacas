@@ -988,30 +988,31 @@ namespace internal {
   // thousands_sep is a functor that is called after writing each char to
   // add a thousands separator if necessary.
   template <typename UInt, typename Char, typename ThousandsSep>
-  inline Char *format_decimal(Char *buffer, UInt value, int num_digits, ThousandsSep thousands_sep)
+  inline Char *format_decimal(Char *my_buffer, UInt value, int num_digits,
+                              ThousandsSep thousands_sep)
   {
     FMT_ASSERT(num_digits >= 0, "invalid digit count");
-    buffer += num_digits;
-    Char *end = buffer;
+    my_buffer += num_digits;
+    Char *end = my_buffer;
     while (value >= 100) {
       // Integer division is slow so do it for a group of two digits instead
       // of for every digit. The idea comes from the talk by Alexandrescu
       // "Three Optimization Tips for C++". See speed-test for a comparison.
       unsigned index = static_cast<unsigned>((value % 100) * 2);
       value /= 100;
-      *--buffer = static_cast<Char>(data::DIGITS[index + 1]);
-      thousands_sep(buffer);
-      *--buffer = static_cast<Char>(data::DIGITS[index]);
-      thousands_sep(buffer);
+      *--my_buffer = static_cast<Char>(data::DIGITS[index + 1]);
+      thousands_sep(my_buffer);
+      *--my_buffer = static_cast<Char>(data::DIGITS[index]);
+      thousands_sep(my_buffer);
     }
     if (value < 10) {
-      *--buffer = static_cast<Char>('0' + value);
+      *--my_buffer = static_cast<Char>('0' + value);
       return end;
     }
     unsigned index = static_cast<unsigned>(value * 2);
-    *--buffer      = static_cast<Char>(data::DIGITS[index + 1]);
-    thousands_sep(buffer);
-    *--buffer = static_cast<Char>(data::DIGITS[index]);
+    *--my_buffer   = static_cast<Char>(data::DIGITS[index + 1]);
+    thousands_sep(my_buffer);
+    *--my_buffer = static_cast<Char>(data::DIGITS[index]);
     return end;
   }
 
@@ -1023,9 +1024,9 @@ namespace internal {
     // Buffer should be large enough to hold all digits (<= digits10 + 1).
     enum { max_size = std::numeric_limits<UInt>::digits10 + 1 };
     FMT_ASSERT(ThousandsSep::size <= 1, "invalid separator");
-    char_type buffer[max_size + max_size / 3];
-    auto      end = format_decimal(buffer, value, num_digits, sep);
-    return internal::copy_str<OutChar>(buffer, end, out);
+    char_type my_buffer[max_size + max_size / 3];
+    auto      end = format_decimal(my_buffer, value, num_digits, sep);
+    return internal::copy_str<OutChar>(my_buffer, end, out);
   }
 
   template <typename OutChar, typename It, typename UInt>
@@ -1035,14 +1036,15 @@ namespace internal {
   }
 
   template <unsigned BASE_BITS, typename Char, typename UInt>
-  inline Char *format_uint(Char *buffer, UInt value, int num_digits, bool upper = false)
+  inline Char *format_uint(Char *my_buffer, UInt value, int num_digits, bool upper = false)
   {
-    buffer += num_digits;
-    Char *end = buffer;
+    my_buffer += num_digits;
+    Char *end = my_buffer;
     do {
       const char *digits = upper ? "0123456789ABCDEF" : "0123456789abcdef";
       unsigned    digit  = (value & ((1 << BASE_BITS) - 1));
-      *--buffer = static_cast<Char>(BASE_BITS < 4 ? static_cast<char>('0' + digit) : digits[digit]);
+      *--my_buffer =
+          static_cast<Char>(BASE_BITS < 4 ? static_cast<char>('0' + digit) : digits[digit]);
     } while ((value >>= BASE_BITS) != 0);
     return end;
   }
@@ -1052,9 +1054,9 @@ namespace internal {
   {
     // Buffer should be large enough to hold all digits (digits / BASE_BITS + 1)
     // and null.
-    char buffer[std::numeric_limits<UInt>::digits / BASE_BITS + 2];
-    format_uint<BASE_BITS>(buffer, value, num_digits, upper);
-    return internal::copy_str<Char>(buffer, buffer + num_digits, out);
+    char my_buffer[std::numeric_limits<UInt>::digits / BASE_BITS + 2];
+    format_uint<BASE_BITS>(my_buffer, value, num_digits, upper);
+    return internal::copy_str<Char>(my_buffer, my_buffer + num_digits, out);
   }
 
 #ifndef _WIN32
@@ -2575,9 +2577,9 @@ private:
   {
     size_t            n;
     char              sign;
-    internal::buffer &buffer;
+    internal::buffer &my_buffer;
 
-    size_t size() const { return buffer.size() + (sign ? 1 : 0); }
+    size_t size() const { return my_buffer.size() + (sign ? 1 : 0); }
     size_t width() const { return size(); }
 
     template <typename It> void operator()(It &&it)
@@ -2586,7 +2588,7 @@ private:
         *it++ = static_cast<char_type>(sign);
         --n;
       }
-      it = internal::copy_str<char_type>(buffer.begin(), buffer.end(), it);
+      it = internal::copy_str<char_type>(my_buffer.begin(), my_buffer.end(), it);
     }
   };
 
@@ -2779,16 +2781,16 @@ void basic_writer<Range>::write_double(T value, const format_specs &spec)
   if (internal::fputil::isinfinity(value))
     return write_inf_or_nan(handler.upper ? "INF" : "inf");
 
-  memory_buffer buffer;
+  memory_buffer my_buffer;
   bool          use_grisu = FMT_USE_GRISU && sizeof(T) <= sizeof(double) && spec.type != 'a' &&
                    spec.type != 'A' &&
-                   internal::grisu2_format(static_cast<double>(value), buffer, spec);
+                   internal::grisu2_format(static_cast<double>(value), my_buffer, spec);
   if (!use_grisu) {
     format_specs normalized_spec(spec);
     normalized_spec.type = handler.type;
-    internal::sprintf_format(value, buffer, normalized_spec);
+    internal::sprintf_format(value, my_buffer, normalized_spec);
   }
-  size_t     n  = buffer.size();
+  size_t     n  = my_buffer.size();
   align_spec as = spec;
   if (spec.align() == ALIGN_NUMERIC) {
     if (sign) {
@@ -2806,7 +2808,7 @@ void basic_writer<Range>::write_double(T value, const format_specs &spec)
     if (sign)
       ++n;
   }
-  write_padded(as, double_writer{n, sign, buffer});
+  write_padded(as, double_writer{n, sign, my_buffer});
 }
 
 // Reports a system error without throwing an exception.
@@ -2946,28 +2948,28 @@ public:
 // Formats a decimal integer value writing into buffer and returns
 // a pointer to the end of the formatted string. This function doesn't
 // write a terminating null character.
-template <typename T> inline void format_decimal(char *&buffer, T value)
+template <typename T> inline void format_decimal(char *&my_buffer, T value)
 {
   typedef typename internal::int_traits<T>::main_type main_type;
   main_type                                           abs_value = static_cast<main_type>(value);
   if (internal::is_negative(value)) {
-    *buffer++ = '-';
-    abs_value = 0 - abs_value;
+    *my_buffer++ = '-';
+    abs_value    = 0 - abs_value;
   }
   if (abs_value < 100) {
     if (abs_value < 10) {
-      *buffer++ = static_cast<char>('0' + abs_value);
+      *my_buffer++ = static_cast<char>('0' + abs_value);
       return;
     }
     unsigned index = static_cast<unsigned>(abs_value * 2);
-    *buffer++      = internal::data::DIGITS[index];
-    *buffer++      = internal::data::DIGITS[index + 1];
+    *my_buffer++   = internal::data::DIGITS[index];
+    *my_buffer++   = internal::data::DIGITS[index + 1];
     return;
   }
   int num_digits = internal::count_digits(abs_value);
-  internal::format_decimal<char>(internal::make_checked(buffer, internal::to_unsigned(num_digits)),
-                                 abs_value, num_digits);
-  buffer += num_digits;
+  internal::format_decimal<char>(
+      internal::make_checked(my_buffer, internal::to_unsigned(num_digits)), abs_value, num_digits);
+  my_buffer += num_digits;
 }
 
 // Formatter of objects of type T.
@@ -3459,9 +3461,9 @@ inline std::basic_string<Char>
 internal::vformat(basic_string_view<Char>                                format_str,
                   basic_format_args<typename buffer_context<Char>::type> args)
 {
-  basic_memory_buffer<Char> buffer;
-  internal::vformat_to(buffer, format_str, args);
-  return fmt::to_string(buffer);
+  basic_memory_buffer<Char> my_buffer;
+  internal::vformat_to(my_buffer, format_str, args);
+  return fmt::to_string(my_buffer);
 }
 
 /**
