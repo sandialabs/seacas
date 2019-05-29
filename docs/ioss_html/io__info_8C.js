@@ -6,7 +6,6 @@ var io__info_8C =
     [ "hex_volume", "io__info_8C.html#ad4110d98fb11ba76e97b6444896c3967", null ],
     [ "id", "io__info_8C.html#af2fab5f0f368666f9c7a83a18e745130", null ],
     [ "info_aliases", "io__info_8C.html#afdb9a0405ae48d65c2059564489c71f5", null ],
-    [ "info_commsets", "io__info_8C.html#a7135fe337b53f492fcbbe52a5ee69b17", null ],
     [ "info_coordinate_frames", "io__info_8C.html#aa6a00d56377e1c7c770ff39f587f538e", null ],
     [ "info_df", "io__info_8C.html#a421bfcd14a946c37c043e44a4acc1430", null ],
     [ "info_edgeblock", "io__info_8C.html#a9698fb8ddfdc891270155a8944e64f5f", null ],
