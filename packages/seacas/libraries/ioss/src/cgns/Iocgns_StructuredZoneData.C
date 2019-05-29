@@ -36,8 +36,6 @@
 #include <fmt/ostream.h>
 #include <tokenize.h>
 
-#define OUTPUT std::cerr
-
 namespace {
   struct Range
   {
@@ -343,7 +341,7 @@ namespace Iocgns {
 
 #if IOSS_DEBUG_OUTPUT
     if (rank == 0) {
-      fmt::print(OUTPUT,
+      fmt::print(stderr,
                  "\nSplit Zone {} ({}) Adam {} ({}) with intervals {} {} {}, work = {}, offset {} "
                  "{} {} along ordinal {} with ratio {}\n"
                  "\tChild 1: Zone {} ({}) Adam {} ({}) with intervals {} {} {}, work = {}, offset "
