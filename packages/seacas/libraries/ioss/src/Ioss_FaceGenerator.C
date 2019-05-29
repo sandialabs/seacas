@@ -55,9 +55,9 @@
 //#define USE_RANDOM
 
 #if defined(__GNUC__) && __GNUC__ >= 7
- #define FALL_THROUGH [[gnu::fallthrough]]
+#define FALL_THROUGH [[gnu::fallthrough]]
 #else
- #define FALL_THROUGH ((void)0)
+#define FALL_THROUGH ((void)0)
 #endif /* __GNUC__ >= 7 */
 
 namespace {
@@ -426,12 +426,12 @@ namespace {
     const unsigned char *data2 = reinterpret_cast<const unsigned char *>(data);
 
     switch (len & 7) {
-    case 7: h ^= uint64_t(data2[6]) << 48; FALL_THROUGH; 
-    case 6: h ^= uint64_t(data2[5]) << 40; FALL_THROUGH; 
-    case 5: h ^= uint64_t(data2[4]) << 32; FALL_THROUGH; 
-    case 4: h ^= uint64_t(data2[3]) << 24; FALL_THROUGH; 
-    case 3: h ^= uint64_t(data2[2]) << 16; FALL_THROUGH; 
-    case 2: h ^= uint64_t(data2[1]) << 8;  FALL_THROUGH; 
+    case 7: h ^= uint64_t(data2[6]) << 48; FALL_THROUGH;
+    case 6: h ^= uint64_t(data2[5]) << 40; FALL_THROUGH;
+    case 5: h ^= uint64_t(data2[4]) << 32; FALL_THROUGH;
+    case 4: h ^= uint64_t(data2[3]) << 24; FALL_THROUGH;
+    case 3: h ^= uint64_t(data2[2]) << 16; FALL_THROUGH;
+    case 2: h ^= uint64_t(data2[1]) << 8; FALL_THROUGH;
     case 1: h ^= uint64_t(data2[0]); h *= m;
     };
 

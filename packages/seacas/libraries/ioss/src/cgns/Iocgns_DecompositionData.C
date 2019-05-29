@@ -599,8 +599,7 @@ namespace Iocgns {
             // is on a proc where the threshold was exceeded.
             // if so, split the block and set exceeds[proc] to false;
             // Exit the loop when num_split >= px.
-            auto children =
-                zone->split(new_zone_id, zone->work() / 2.0, rank);
+            auto children = zone->split(new_zone_id, zone->work() / 2.0, rank);
             if (children.first != nullptr && children.second != nullptr) {
               zone_new.push_back(children.first);
               zone_new.push_back(children.second);

@@ -115,14 +115,10 @@ Functions</h2></td></tr>
 <tr class="separator:ad34a15db9e66cdfa0364c5b46becf6c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af38cfc06f8a6742dda73059955c1216f"><td class="memItemLeft" align="right" valign="top">ssize_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#af38cfc06f8a6742dda73059955c1216f">proc_with_minimum_work</a> (<a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> *zone, const std::vector&lt; size_t &gt; &amp;work, std::set&lt; std::pair&lt; int, int &gt;&gt; &amp;proc_adam_map)</td></tr>
 <tr class="separator:af38cfc06f8a6742dda73059955c1216f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58730d099fd02dbe9308661bd06bd215"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a58730d099fd02dbe9308661bd06bd215">validate_blocks</a> (const <a class="el" href="namespaceIoss.html#ac6d9b5dfaf7eb587cbd2b6b32262cbe3">Ioss::StructuredBlockContainer</a> &amp;blocks)</td></tr>
-<tr class="separator:a58730d099fd02dbe9308661bd06bd215"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5eea2d4880cd0c331ad02dece4e2a101"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a5eea2d4880cd0c331ad02dece4e2a101">validate_blocks</a> (const <a class="el" href="namespaceIoss.html#a3b4b5511cc449211e303de0c5c063922">Ioss::ElementBlockContainer</a> &amp;blocks)</td></tr>
-<tr class="separator:a5eea2d4880cd0c331ad02dece4e2a101"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cc9a7da58d1b8d94b1fb5b78e6222e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a7cc9a7da58d1b8d94b1fb5b78e6222e6">add_bc_to_block</a> (<a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *block, const std::string &amp;boco_name, const std::string &amp;fam_name, int ibc, cgsize_t *range, CG_BCType_t bocotype, bool is_parallel_io)</td></tr>
 <tr class="separator:a7cc9a7da58d1b8d94b1fb5b78e6222e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad39473b0d87565783abdd7389d05aaed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#ad39473b0d87565783abdd7389d05aaed">sync_transient_variables_fpp</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, int myProcessor)</td></tr>
-<tr class="separator:ad39473b0d87565783abdd7389d05aaed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c54bc0484fe7e8e600447952b9a745d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a4c54bc0484fe7e8e600447952b9a745d">sync_transient_variables_fpp</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region)</td></tr>
+<tr class="separator:a4c54bc0484fe7e8e600447952b9a745d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a397d516e435535ef9fae83c788a399db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a397d516e435535ef9fae83c788a399db">consolidate_zgc</a> (const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region)</td></tr>
 <tr class="separator:a397d516e435535ef9fae83c788a399db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -385,8 +381,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad39473b0d87565783abdd7389d05aaed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad39473b0d87565783abdd7389d05aaed">&#9670;&nbsp;</a></span>sync_transient_variables_fpp()</h2>
+<a id="a4c54bc0484fe7e8e600447952b9a745d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c54bc0484fe7e8e600447952b9a745d">&#9670;&nbsp;</a></span>sync_transient_variables_fpp()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -395,53 +391,7 @@ Functions</h2></td></tr>
           <td class="memname">void anonymous_namespace{Iocgns_Utils.C}::sync_transient_variables_fpp </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *&#160;</td>
-          <td class="paramname"><em>region</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>myProcessor</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a58730d099fd02dbe9308661bd06bd215"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a58730d099fd02dbe9308661bd06bd215">&#9670;&nbsp;</a></span>validate_blocks() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void anonymous_namespace{Iocgns_Utils.C}::validate_blocks </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespaceIoss.html#ac6d9b5dfaf7eb587cbd2b6b32262cbe3">Ioss::StructuredBlockContainer</a> &amp;&#160;</td>
-          <td class="paramname"><em>blocks</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a5eea2d4880cd0c331ad02dece4e2a101"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5eea2d4880cd0c331ad02dece4e2a101">&#9670;&nbsp;</a></span>validate_blocks() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void anonymous_namespace{Iocgns_Utils.C}::validate_blocks </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespaceIoss.html#a3b4b5511cc449211e303de0c5c063922">Ioss::ElementBlockContainer</a> &amp;&#160;</td>
-          <td class="paramname"><em>blocks</em></td><td>)</td>
+          <td class="paramname"><em>region</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
