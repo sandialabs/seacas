@@ -186,8 +186,7 @@ namespace {
     assert(zgc.is_valid());
   }
 
-  void propogate_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *child,
-                     int ordinal, int rank)
+  void propogate_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *child)
   {
     for (auto zgc : parent->m_zoneConnectivity) {
       if (!zgc.is_from_decomp() || zgc_overlaps(child, zgc)) {
@@ -264,7 +263,7 @@ namespace Iocgns {
   // Split this StructuredZone along the largest ordinal
   // into two children and return the created zones.
   std::pair<StructuredZoneData *, StructuredZoneData *>
-  StructuredZoneData::split(int zone_id, double avg_work, double balance, int rank)
+  StructuredZoneData::split(int zone_id, double avg_work, int rank)
   {
     assert(is_active());
     double ratio = avg_work / work();
@@ -368,8 +367,8 @@ namespace Iocgns {
 
     // Propagate parent ZoneGridConnectivities to appropriate children.
     // Split if needed...
-    propogate_zgc(this, m_child1, ordinal, rank);
-    propogate_zgc(this, m_child2, ordinal, rank);
+    propogate_zgc(this, m_child1);
+    propogate_zgc(this, m_child2);
 
     return std::make_pair(m_child1, m_child2);
   }

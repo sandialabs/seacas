@@ -218,9 +218,6 @@ namespace {
     }
     return min_proc;
   }
-  void validate_blocks(const Ioss::StructuredBlockContainer &blocks) {}
-  void validate_blocks(const Ioss::ElementBlockContainer &blocks) {}
-
   void add_bc_to_block(Ioss::StructuredBlock *block, const std::string &boco_name,
                        const std::string &fam_name, int ibc, cgsize_t *range, CG_BCType_t bocotype,
                        bool is_parallel_io)
@@ -307,7 +304,7 @@ namespace {
     }
   }
 
-  void sync_transient_variables_fpp(Ioss::Region *region, int myProcessor)
+  void sync_transient_variables_fpp(Ioss::Region *region)
   {
     // With an fpp read, certain blocks may only be on certain
     // processors -- This consistency is addressed elsewhere; however,
@@ -895,7 +892,6 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   // Just getting processor element count here...
   region.get_database()->progress("\tElement Blocks");
   const auto &element_blocks = region.get_element_blocks();
-  validate_blocks(element_blocks);
 
   size_t element_count = 0;
   for (const auto &eb : element_blocks) {
@@ -915,7 +911,6 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 
   region.get_database()->progress("\tStructured Blocks");
   const auto &structured_blocks = region.get_structured_blocks();
-  validate_blocks(structured_blocks);
 
   // If `is_parallel` and `!is_parallel_io`, then writing file-per-processor
   bool is_parallel = region.get_database()->util().parallel_size() > 1;
@@ -1997,7 +1992,7 @@ void Iocgns::Utils::add_transient_variables(int cgns_file_ptr, const std::vector
     }
     bool is_parallel = region->get_database()->util().parallel_size() > 1;
     if (is_parallel && !is_parallel_io) {
-      sync_transient_variables_fpp(region, myProcessor);
+      sync_transient_variables_fpp(region);
     }
   }
 }
@@ -2196,7 +2191,7 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
               work_average = zone->work() / (double(split_cnt) / double(max_power_2));
             }
 
-            auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
+            auto children = zone->split(new_zone_id, work_average, proc_rank);
             if (children.first != nullptr && children.second != nullptr) {
               new_zones.push_back(children.first);
               new_zones.push_back(children.second);
@@ -2231,7 +2226,7 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
         // which will be < avg_work.
         double mod_work = work - avg_work * split_cnt;
         if (mod_work > max_avg - avg_work) {
-          auto children = zone->split(new_zone_id, mod_work, load_balance, proc_rank);
+          auto children = zone->split(new_zone_id, mod_work, proc_rank);
           if (children.first != nullptr && children.second != nullptr) {
             new_zones.push_back(children.first);
             new_zones.push_back(children.second);
@@ -2269,7 +2264,7 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
               if (max_power_2 == split_cnt) {
                 max_power_2 /= 2;
               }
-              auto children = zone->split(new_zone_id, work_average, load_balance, proc_rank);
+              auto children = zone->split(new_zone_id, work_average, proc_rank);
               if (children.first != nullptr && children.second != nullptr) {
                 new_zones.push_back(children.first);
                 new_zones.push_back(children.second);
