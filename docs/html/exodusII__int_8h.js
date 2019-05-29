@@ -106,6 +106,7 @@ var exodusII__int_8h =
     [ "EX_UNUSED", "exodusII__int_8h.html#a5e1888937cb4d3958176f144bbdda001", null ],
     [ "EXODUS_DEFAULT_SIZE", "exodusII__int_8h.html#abad20b8c0ded668f506f2d23ea8bf7c5", null ],
     [ "MAX_VAR_NAME_LENGTH", "exodusII__int_8h.html#a50bd85ce2ed14f876d5f8faac0adba86", null ],
+    [ "snprintf_nowarn", "exodusII__int_8h.html#a425a38fe3982a78848b6f9532df5d61f", null ],
     [ "ST_ZU", "exodusII__int_8h.html#a17777b878561658aa7c69f0882ce6ecf", null ],
     [ "VAR_ATTRIB", "exodusII__int_8h.html#a1a7aa536636f576a552f76a1635e116a", null ],
     [ "VAR_BOR_E_STAT", "exodusII__int_8h.html#acd2657049173bbd3aee6485c7caf2fcf", null ],

@@ -23,5 +23,5 @@ var classIoss_1_1Hex20 =
     [ "shape", "classIoss_1_1Hex20.html#a8bc0d0210f4133eb7656dc5f46b024e7", null ],
     [ "spatial_dimension", "classIoss_1_1Hex20.html#a48c4b0bea5a162958a739687608918e2", null ],
     [ "instance_", "classIoss_1_1Hex20.html#a5fb3a7baf7401118e5600023e4a582f4", null ],
-    [ "name", "classIoss_1_1Hex20.html#addba5fa73a010088ac78c92fe0ebcd59", null ]
+    [ "name", "classIoss_1_1Hex20.html#a9c6c4e60e9573e296f422a826ae7d0f7", null ]
 ];
