@@ -81,6 +81,8 @@
 #define snprintf _snprintf
 #endif
 
+#define snprintf_nowarn(...) (snprintf(__VA_ARGS__) < 0 ? abort() : (void)0)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
