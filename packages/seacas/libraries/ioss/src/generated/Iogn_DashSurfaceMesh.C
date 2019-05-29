@@ -308,7 +308,9 @@ namespace Iogn {
 
   int64_t ExodusMesh::nodeset_node_count_proc(int64_t /*id*/) const { return 0; }
 
-  int64_t ExodusMesh::sideset_side_count_proc(int64_t /*id*/) const { return 0; }
+  int64_t ExodusMesh::sideset_side_count_proc(int64_t id) const { 
+      return mExodusData.sidesetConnectivity[id-1].size(); 
+  }
 
   int64_t ExodusMesh::communication_node_count_proc() const
   {
@@ -349,9 +351,12 @@ namespace Iogn {
 
   void ExodusMesh::sideset_elem_sides(int64_t setId, Ioss::Int64Vector &elem_sides) const
   {
-    elem_sides.resize(mExodusData.sidesetConnectivity[setId - 1].size());
-    elem_sides.insert(elem_sides.begin(), mExodusData.sidesetConnectivity[setId - 1].begin(),
-                      mExodusData.sidesetConnectivity[setId - 1].end());
+      elem_sides.clear();
+      const std::vector<int>& curSideData = mExodusData.sidesetConnectivity[setId - 1];
+      for(int i=0; i<curSideData.size(); ++i) {
+          elem_sides.push_back(curSideData[i]/10);
+          elem_sides.push_back(curSideData[i]%10);
+      }
   }
 
   std::vector<std::string> ExodusMesh::sideset_touching_blocks(int64_t setId) const
