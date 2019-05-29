@@ -135,8 +135,7 @@ namespace {
                          const Ioss::MeshCopyOptions &options, int rank);
   void transfer_commsets(Ioss::Region &region, Ioss::Region &output_region,
                          const Ioss::MeshCopyOptions &options, int rank);
-  void transfer_coordinate_frames(Ioss::Region &region, Ioss::Region &output_region,
-                                  const Ioss::MeshCopyOptions &options, int rank);
+  void transfer_coordinate_frames(Ioss::Region &region, Ioss::Region &output_region);
 
   template <typename T>
   void transfer_fields(const std::vector<T *> &entities, Ioss::Region &output_region,
@@ -1572,7 +1571,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     transfer_sidesets(region, output_region, options, rank);
     transfer_commsets(region, output_region, options, rank);
 
-    transfer_coordinate_frames(region, output_region, options, rank);
+    transfer_coordinate_frames(region, output_region);
 
     if (options.debug && rank == 0) {
       fmt::print(stderr, "END STATE_DEFINE_MODEL...\n");
@@ -2214,8 +2213,7 @@ namespace {
     }
   }
 
-  void transfer_coordinate_frames(Ioss::Region &region, Ioss::Region &output_region,
-                                  const Ioss::MeshCopyOptions &options, int rank)
+  void transfer_coordinate_frames(Ioss::Region &region, Ioss::Region &output_region)
   {
     const Ioss::CoordinateFrameContainer &cf = region.get_coordinate_frames();
     for (const auto &frame : cf) {

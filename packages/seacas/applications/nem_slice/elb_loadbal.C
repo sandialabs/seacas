@@ -945,14 +945,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
 cleanup:
   if (problem->read_coords == ELB_TRUE) {
     switch (mesh->num_dims) {
-    case 1:
-      if (y_node_ptr) {
-        free(y_node_ptr); /* fall through */
-      }
-    case 2:
-      if (z_node_ptr) {
-        free(z_node_ptr);
-      }
+    case 1: free(y_node_ptr); __attribute__((fallthrough));
+    case 2: free(z_node_ptr);
     }
   }
 
