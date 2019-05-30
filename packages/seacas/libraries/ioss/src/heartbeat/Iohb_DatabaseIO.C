@@ -378,6 +378,13 @@ namespace Iohb {
     return -1;
   }
 
+  int64_t DatabaseIO::get_field_internal(const Ioss::StructuredBlock * /* sb */,
+                                         const Ioss::Field & /* field */, void * /* data */,
+                                         size_t /* data_size */) const
+  {
+    return -1;
+  }
+
   int64_t DatabaseIO::get_field_internal(const Ioss::NodeSet * /* ns */,
                                          const Ioss::Field & /* field */, void * /* data */,
                                          size_t /* data_size */) const
@@ -421,8 +428,9 @@ namespace Iohb {
     return -1;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::Region *region, const Ioss::Field &field,
-                                         void *data, size_t data_size) const
+  int64_t DatabaseIO::put_field_internal(const Ioss::Region * /* region */,
+                                         const Ioss::Field &field, void *data,
+                                         size_t data_size) const
   {
     initialize();
     Ioss::Field::RoleType role       = field.get_role();
@@ -557,6 +565,13 @@ namespace Iohb {
     return -1;
   }
   int64_t DatabaseIO::put_field_internal(const Ioss::CommSet * /* cs */,
+                                         const Ioss::Field & /* field */, void * /* data */,
+                                         size_t /* data_size */) const
+  {
+    return -1;
+  }
+
+  int64_t DatabaseIO::put_field_internal(const Ioss::StructuredBlock * /* sb */,
                                          const Ioss::Field & /* field */, void * /* data */,
                                          size_t /* data_size */) const
   {

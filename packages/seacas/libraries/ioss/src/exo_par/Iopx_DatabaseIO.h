@@ -118,8 +118,9 @@ namespace Iopx {
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-                               void *data, size_t data_size) const override
+    int64_t get_field_internal(const Ioss::StructuredBlock * /* sb */,
+                               const Ioss::Field & /* field */, void * /* data */,
+                               size_t /* data_size */) const override
     {
       return -1;
     }
@@ -162,8 +163,9 @@ namespace Iopx {
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-                               void *data, size_t data_size) const override
+    int64_t put_field_internal(const Ioss::StructuredBlock * /* sb */,
+                               const Ioss::Field & /* field */, void * /* data */,
+                               size_t /* data_size */) const override
     {
       return -1;
     }

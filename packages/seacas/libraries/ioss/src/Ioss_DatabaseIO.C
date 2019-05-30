@@ -333,7 +333,7 @@ namespace Ioss {
   {
     if (decodedFilename.empty()) {
       if (isParallel) {
-        decodedFilename = util().decode_filename(get_filename(), isParallel);
+        decodedFilename = util().decode_filename(get_filename(), isParallel && !usingParallelIO);
       }
       else if (properties.exists("processor_count") && properties.exists("my_processor")) {
         int proc_count  = properties.get("processor_count").get_int();
@@ -820,10 +820,8 @@ namespace Ioss {
       assert(result != MPI_SUCCESS || non_zero == req_cnt);
 
       if (result != MPI_SUCCESS) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: MPI_Irecv error on processor {} in {}", util().parallel_rank(),
+        fmt::print(stderr, "ERROR: MPI_Irecv error on processor {} in {}", util().parallel_rank(),
                    __func__);
-        std::cerr << errmsg.str();
       }
 
       int local_error  = (MPI_SUCCESS == result) ? 0 : 1;
@@ -850,10 +848,8 @@ namespace Ioss {
       assert(result != MPI_SUCCESS || non_zero == req_cnt);
 
       if (result != MPI_SUCCESS) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: MPI_Rsend error on processor {} in {}", util().parallel_rank(),
+        fmt::print(stderr, "ERROR: MPI_Rsend error on processor {} in {}", util().parallel_rank(),
                    __func__);
-        std::cerr << errmsg.str();
       }
 
       local_error  = (MPI_SUCCESS == result) ? 0 : 1;
@@ -861,18 +857,15 @@ namespace Ioss {
 
       if (global_error != 0) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: MPI_Rsend error on some processor "
-               << "in " << __func__;
+        fmt::print(errmsg, "ERROR: MPI_Rsend error on some processor in {}", __func__);
         IOSS_ERROR(errmsg);
       }
 
       result = MPI_Waitall(req_cnt, TOPTR(request), TOPTR(status));
 
       if (result != MPI_SUCCESS) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "ERROR: MPI_Waitall error on processor {} in {}", util().parallel_rank(),
+        fmt::print(stderr, "ERROR: MPI_Waitall error on processor {} in {}", util().parallel_rank(),
                    __func__);
-        std::cerr << errmsg.str();
       }
 
       // Unpack the data and update the inv_con arrays for boundary
@@ -1037,7 +1030,6 @@ namespace Ioss {
   }
 } // namespace Ioss
 
-
 namespace {
   void log_time(std::chrono::time_point<std::chrono::high_resolution_clock> &start,
                 std::chrono::time_point<std::chrono::high_resolution_clock> &finish,
@@ -1075,11 +1067,11 @@ namespace {
       else {
         char sep = (util.parallel_size() > 1) ? ':' : ' ';
         for (auto &p_time : all_times) {
-          fmt::print("{:8d}{}", p_time, sep);
+          fmt::print(strm, "{:8d}{}", p_time, sep);
         }
       }
       if (util.parallel_size() > 1) {
-        fmt::print("\tTot: {} (ms)\n", total);
+        fmt::print(strm, "\tTot: {} (ms)\n", total);
       }
       std::cerr << strm.str();
     }
@@ -1098,10 +1090,10 @@ namespace {
       }
 
       if (util.parallel_rank() == 0 || single_proc_only) {
-        const std::string &name = entity->name();
-        std::ostringstream strm;
-	auto now  = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> diff = now - initial_time;
+        const std::string &           name = entity->name();
+        std::ostringstream            strm;
+        auto                          now  = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> diff = now - initial_time;
         fmt::print(strm, "{} [{:.3f}]\t", symbol, diff.count());
 
         int64_t total = 0;
@@ -1123,7 +1115,7 @@ namespace {
           fmt::print(strm, " T:{:8d}", total);
         }
         fmt::print(strm, "\t{}/{}\n", name, field.get_name());
-        std::cout << strm.str();
+        std::cerr << strm.str();
       }
     }
     else {
@@ -1133,8 +1125,8 @@ namespace {
       }
 #endif
       if (util.parallel_rank() == 0 || single_proc_only) {
-	auto time_now  = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> diff = time_now - initial_time;
+        auto                          time_now = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> diff     = time_now - initial_time;
         fmt::print("{} [{:.3f}]\n", symbol, diff.count());
       }
     }

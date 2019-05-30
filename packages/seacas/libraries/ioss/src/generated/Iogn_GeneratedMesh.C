@@ -40,7 +40,7 @@
 #include <cstring> // for memcpy
 #include <fmt/ostream.h>
 #include <generated/Iogn_GeneratedMesh.h>
-#include <iostream> // for operator<<, basic_ostream, etc
+#include <iostream>
 #include <numeric>
 #include <string>
 #include <string>      // for string, operator==, etc
@@ -79,7 +79,7 @@ namespace Iogn {
 
     if (numX <= 0 || numY <= 0 || numZ <= 0) {
       if (myProcessor == 0) {
-        fmt::print(std::cerr,
+        fmt::print(stderr,
                    "ERROR: (Iogn::GeneratedMesh::GeneratedMesh)\n"
                    "       All interval counts must be greater than 0.\n"
                    "       numX = {}, numY = {}, numZ = {}\n",
@@ -105,7 +105,7 @@ namespace Iogn {
   {
     if (processorCount > numZ) {
       if (myProcessor == 0) {
-        fmt::print(std::cerr,
+        fmt::print(stderr,
                    "ERROR: (Iogn::GeneratedMesh::initialize)\n"
                    "       The number of mesh intervals in the Z direction ({})\n"
                    "       must be at least as large as the number of processors ({}).\n"
@@ -186,7 +186,7 @@ namespace Iogn {
     // desired bounding box.
     if (numX == 0 || numY == 0 || numZ == 0) {
       if (myProcessor == 0) {
-        fmt::print(std::cerr,
+        fmt::print(stderr,
                    "ERROR: (Iogn::GeneratedMesh::set_bbox)\n"
                    "       All interval counts must be greater than 0.\n"
                    "       numX = {}, numY = {}, numZ = {}\n",
@@ -240,7 +240,7 @@ namespace Iogn {
           case 'Y': add_shell_block(PY); break;
           case 'z': add_shell_block(MZ); break;
           case 'Z': add_shell_block(PZ); break;
-          default: std::cerr << "ERROR: Unrecognized shell location option '" << opt << "'.";
+          default: fmt::print(stderr, "ERROR: Unrecognized shell location option '{}'.", opt);
           }
         }
       }
@@ -256,7 +256,7 @@ namespace Iogn {
           case 'Y': add_nodeset(PY); break;
           case 'z': add_nodeset(MZ); break;
           case 'Z': add_nodeset(PZ); break;
-          default: std::cerr << "ERROR: Unrecognized nodeset location option '" << opt << "'.";
+          default: fmt::print(stderr, "ERROR: Unrecognized nodeset location option '{}'.", opt);
           }
         }
       }
@@ -272,7 +272,7 @@ namespace Iogn {
           case 'Y': add_sideset(PY); break;
           case 'z': add_sideset(MZ); break;
           case 'Z': add_sideset(PZ); break;
-          default: std::cerr << "ERROR: Unrecognized sideset location option '" << opt << "'.";
+          default: fmt::print(stderr, "ERROR: Unrecognized sideset location option '{}'.", opt);
           }
         }
       }
@@ -363,22 +363,22 @@ namespace Iogn {
       }
 
       else if (option[0] == "help") {
-        std::cerr << "\nValid Options for GeneratedMesh parameter string:\n"
-                  << "\tIxJxK -- specifies intervals; must be first option. Ex: 4x10x12\n"
-                  << "\toffset:xoff, yoff, zoff\n"
-                  << "\tscale: xscl, yscl, zscl\n"
-                  << "\tzdecomp:n1,n2,n3,...,n#proc\n"
-                  << "\tbbox: xmin, ymin, zmin, xmax, ymax, zmax\n"
-                  << "\trotate: axis,angle,axis,angle,...\n"
-                  << "\tshell:xXyYzZ (specifies which plane to apply shell)\n"
-                  << "\tnodeset:xXyYzZ (specifies which plane to apply nodeset)\n"
-                  << "\tsideset:xXyYzZ (specifies which plane to apply sideset)\n"
-                  << "\ttets (split each hex into 6 tets)\n"
-                  << "\tvariables:type,count,...  "
-                     "type=global|element|node|nodal|nodeset|sideset|surface\n"
-                  << "\ttimes:count (number of timesteps to generate)\n"
-                  << "\tshow -- show mesh parameters\n"
-                  << "\thelp -- show this list\n\n";
+        fmt::print(stderr, "\nValid Options for GeneratedMesh parameter string:\n"
+                           "\tIxJxK -- specifies intervals; must be first option. Ex: 4x10x12\n"
+                           "\toffset:xoff, yoff, zoff\n"
+                           "\tscale: xscl, yscl, zscl\n"
+                           "\tzdecomp:n1,n2,n3,...,n#proc\n"
+                           "\tbbox: xmin, ymin, zmin, xmax, ymax, zmax\n"
+                           "\trotate: axis,angle,axis,angle,...\n"
+                           "\tshell:xXyYzZ (specifies which plane to apply shell)\n"
+                           "\tnodeset:xXyYzZ (specifies which plane to apply nodeset)\n"
+                           "\tsideset:xXyYzZ (specifies which plane to apply sideset)\n"
+                           "\ttets (split each hex into 6 tets)\n"
+                           "\tvariables:type,count,...  "
+                           "type=global|element|node|nodal|nodeset|sideset|surface\n"
+                           "\ttimes:count (number of timesteps to generate)\n"
+                           "\tshow -- show mesh parameters\n"
+                           "\thelp -- show this list\n\n");
       }
 
       else if (option[0] == "show") {
@@ -386,7 +386,7 @@ namespace Iogn {
       }
 
       else {
-        std::cerr << "ERROR: Unrecognized option '" << option[0] << "'.  It will be ignored.\n";
+        fmt::print(stderr, "ERROR: Unrecognized option '{}'.  It will be ignored.\n", option[0]);
       }
     }
   }
@@ -394,7 +394,7 @@ namespace Iogn {
   void GeneratedMesh::show_parameters() const
   {
     if (myProcessor == 0) {
-      fmt::print(std::cerr,
+      fmt::print(stderr,
                  "\nMesh Parameters:\n"
                  "\tIntervals: {} by {} by {}\n"
                  "\tX = {} * (0..{}) + {}\tRange: {} <= X <= {}\n"
@@ -412,7 +412,7 @@ namespace Iogn {
                  timestep_count());
 
       if (doRotation) {
-        fmt::print(std::cerr, "\tRotation Matrix: \n\t");
+        fmt::print(stderr, "\tRotation Matrix: \n\t");
         for (auto &elem : rotmat) {
           for (double jj : elem) {
             fmt::print("{:14.e}\t", jj);
@@ -1494,9 +1494,11 @@ namespace Iogn {
       variableCount[Ioss::SIDEBLOCK] = count;
     }
     else {
-      std::cerr << "ERROR: (Iogn::GeneratedMesh::set_variable_count)\n"
-                << "       Unrecognized variable type '" << type << "'. Valid types are:\n"
-                << "       global, element, node, nodal, nodeset, surface, sideset.\n";
+      fmt::print(stderr,
+                 "ERROR: (Iogn::GeneratedMesh::set_variable_count)\n"
+                 "       Unrecognized variable type '{}'. Valid types are:\n"
+                 "       global, element, node, nodal, nodeset, surface, sideset.\n",
+                 type);
     }
   }
 
@@ -1527,8 +1529,8 @@ namespace Iogn {
       n3 = 2;
     }
     else {
-      std::cerr << "\nInvalid axis specification '" << axis
-                << "'. Valid options are 'x', 'y', or 'z'\n";
+      fmt::print(stderr, "\nInvalid axis specification '{}'. Valid options are 'x', 'y', or 'z'\n",
+                 axis);
       return;
     }
 

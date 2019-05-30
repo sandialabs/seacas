@@ -122,9 +122,9 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:aa18e08d59faa100114b77fe55900ec49"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a>&#160;&#160;&#160;7.19f</td></tr>
+<tr class="memitem:aa18e08d59faa100114b77fe55900ec49"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a>&#160;&#160;&#160;7.20f</td></tr>
 <tr class="separator:aa18e08d59faa100114b77fe55900ec49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54e92e59ab8df2901302fd50bc103fbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>&#160;&#160;&#160;719</td></tr>
+<tr class="memitem:a54e92e59ab8df2901302fd50bc103fbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>&#160;&#160;&#160;720</td></tr>
 <tr class="separator:a54e92e59ab8df2901302fd50bc103fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d5e98bf5604721ad61b71685b68ef7e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a2d5e98bf5604721ad61b71685b68ef7e">EX_VERS</a>&#160;&#160;&#160;<a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a></td></tr>
 <tr class="separator:a2d5e98bf5604721ad61b71685b68ef7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -965,7 +965,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define EX_API_VERS&#160;&#160;&#160;7.19f</td>
+          <td class="memname">#define EX_API_VERS&#160;&#160;&#160;7.20f</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -979,7 +979,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define EX_API_VERS_NODOT&#160;&#160;&#160;719</td>
+          <td class="memname">#define EX_API_VERS_NODOT&#160;&#160;&#160;720</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -3074,7 +3074,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000008">Deprecated:</a></b></dt><dd>Use <a class="el" href="exodusII_8h.html#abc6e9887581be7b2966db32d998ca648">ex_get_block()</a>(exoid, EX_ELEM_BLOCK, elem_blk_id, elem_type, num_elem_this_blk, num_nodes_per_elem, num_attr) instead</dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000008">Deprecated:</a></b></dt><dd>Use <a class="el" href="exodusII_8h.html#abc6e9887581be7b2966db32d998ca648">ex_get_block()</a>(exoid, EX_ELEM_BLOCK, elem_blk_id, elem_type, num_elem_this_blk, num_nodes_per_elem, NULL, NULL, num_attr) instead</dd></dl>
 <p>The function <a class="el" href="ex__get__elem__block_8c.html#a2bdff0dfe973883505562aa65cea357b">ex_get_elem_block()</a> reads the parameters used to describe an element block. IDs of all element blocks stored can be determined by calling <a class="el" href="exodusII_8h.html#a93999c6ef6831cc64be11f7ae6053a3f">ex_get_elem_blk_ids()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__get__elem__block_8c.html#a2bdff0dfe973883505562aa65cea357b">ex_get_elem_block()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>

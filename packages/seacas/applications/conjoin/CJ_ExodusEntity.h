@@ -36,6 +36,7 @@
 #include <copy_string_cpp.h>
 #include <cstring>
 #include <exodusII.h>
+#include <fmt/ostream.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -83,9 +84,9 @@ namespace Excn {
     Block() { copy_string(elType, ""); }
 
     Block(const Block &other)
-        : name_(other.name_), id(other.id), elementCount(other.elementCount),
-          nodesPerElement(other.nodesPerElement), attributeCount(other.attributeCount),
-          offset_(other.offset_), position_(other.position_)
+        : truthTable(other.truthTable), attributeNames(other.attributeNames), name_(other.name_),
+          id(other.id), elementCount(other.elementCount), nodesPerElement(other.nodesPerElement),
+          attributeCount(other.attributeCount), offset_(other.offset_), position_(other.position_)
     {
       copy_string(elType, other.elType);
     }
@@ -107,6 +108,8 @@ namespace Excn {
 
     Block &operator=(const Block &other)
     {
+      truthTable      = other.truthTable;
+      attributeNames  = other.attributeNames;
       id              = other.id;
       elementCount    = other.elementCount;
       nodesPerElement = other.nodesPerElement;
@@ -140,17 +143,17 @@ namespace Excn {
 
     void dump() const
     {
-      std::cerr << "NodeSet " << id << ", Name: " << name_ << ", " << nodeCount << " nodes, "
-                << dfCount << " df,\torder = " << position_ << "\n";
+      fmt::print(stderr, "NodeSet {}, Name: '{}', {:n} nodes, {:n} df,\torder = {}\n", id, name_,
+                 nodeCount, dfCount, position_);
     }
 
     void dump_order() const
     {
       dump();
       for (size_t i = 0; i < nodeCount; i++) {
-        std::cerr << nodeOrderMap[i] << ", ";
+        fmt::print(stderr, "{}, ", nodeOrderMap[i]);
       }
-      std::cerr << "\n";
+      fmt::print(stderr, "\n");
     }
   };
 
@@ -179,8 +182,8 @@ namespace Excn {
 
     void dump() const
     {
-      std::cerr << "SideSet " << id << ", Name: " << name_ << ", " << sideCount << " sides, "
-                << dfCount << " df\toffset = " << offset_ << ", order = " << position_ << "\n";
+      fmt::print(stderr, "SideSet {}, Name: '{}', {:n} sides, {:n} df\toffset = {}, order = {}\n",
+                 id, name_, sideCount, dfCount, offset_, position_);
     }
   };
 

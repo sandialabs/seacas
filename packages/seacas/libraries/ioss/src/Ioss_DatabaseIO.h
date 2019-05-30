@@ -625,7 +625,8 @@ namespace Ioss {
     mutable std::vector<std::vector<bool>> blockAdjacency;
 
   private:
-    virtual bool ok__(bool write_message, std::string *error_message, int *bad_count) const
+    virtual bool ok__(bool /* write_message */, std::string * /* error_message */,
+                      int *bad_count) const
     {
       if (bad_count != nullptr) {
         *bad_count = 0;
@@ -655,8 +656,8 @@ namespace Ioss {
     virtual void closeDatabase__() const {}
     virtual void flush_database__() const {}
 
-    virtual bool open_group__(const std::string &group_name) { return false; }
-    virtual bool create_subgroup__(const std::string &group_name) { return false; }
+    virtual bool open_group__(const std::string & /* group_name */) { return false; }
+    virtual bool create_subgroup__(const std::string & /* group_name */) { return false; }
     virtual bool begin__(Ioss::State state) = 0;
     virtual bool end__(Ioss::State state)   = 0;
 
@@ -669,8 +670,8 @@ namespace Ioss {
     void get_block_adjacencies__(const Ioss::ElementBlock *eb,
                                  std::vector<std::string> &block_adjacency) const;
 
-    virtual void compute_block_membership__(Ioss::SideBlock *         efblock,
-                                            std::vector<std::string> &block_membership) const
+    virtual void compute_block_membership__(Ioss::SideBlock * /* efblock */,
+                                            std::vector<std::string> & /* block_membership */) const
     {
     }
 
