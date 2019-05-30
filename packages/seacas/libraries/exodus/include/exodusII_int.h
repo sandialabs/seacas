@@ -58,6 +58,10 @@
 #include <inttypes.h>
 #endif
 
+#include <assert.h>
+#include <ctype.h>
+#include <string.h>
+
 #ifndef __APPLE__
 #if defined __STDC__ || defined __cplusplus
 #include <stdlib.h>

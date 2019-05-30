@@ -35,10 +35,6 @@
 
 #include "exodusII.h"     // for ex_block, ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
-#include <stddef.h>       // for size_t
-#include <stdio.h>
-#include <stdlib.h> // for free, malloc
-#include <string.h> // for NULL, strlen
 
 /*!
  * writes the parameters used to describe an element/face/edge block

@@ -35,8 +35,6 @@
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_id_lkup, etc
-#include <stddef.h>       // for size_t
-#include <stdio.h>
 
 /*! write out the connectivity array */
 int ex_int_write_conn(int exoid, ex_entity_id blk_id, const char *type, int var_id,
