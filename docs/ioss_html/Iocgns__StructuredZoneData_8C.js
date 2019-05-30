@@ -1,7 +1,6 @@
 var Iocgns__StructuredZoneData_8C =
 [
     [ "Range", "structanonymous__namespace_02Iocgns__StructuredZoneData_8C_03_1_1Range.html", "structanonymous__namespace_02Iocgns__StructuredZoneData_8C_03_1_1Range" ],
-    [ "OUTPUT", "Iocgns__StructuredZoneData_8C.html#a61a3c9a18380aafb6e430e79bf596557", null ],
     [ "add_proc_split_zgc", "Iocgns__StructuredZoneData_8C.html#abf60da6791fe6ad50b719adf147cef0c", null ],
     [ "overlaps", "Iocgns__StructuredZoneData_8C.html#a283239da311b91306f5c9eb73cc3c9e2", null ],
     [ "propogate_zgc", "Iocgns__StructuredZoneData_8C.html#ac9b06919906e8c767005338f35ef6f76", null ],

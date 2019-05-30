@@ -95,12 +95,6 @@ $(document).ready(function(){initNavTree('ex__copy_8c.html','');});
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="exodusII_8h_source.html">exodusII.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="exodusII__int_8h_source.html">exodusII_int.h</a>&quot;</code><br />
-<code>#include &lt;assert.h&gt;</code><br />
-<code>#include &lt;stddef.h&gt;</code><br />
-<code>#include &lt;stdint.h&gt;</code><br />
-<code>#include &lt;stdio.h&gt;</code><br />
-<code>#include &lt;stdlib.h&gt;</code><br />
-<code>#include &lt;string.h&gt;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
@@ -139,7 +133,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != NC_NOERR) {                                                                     \</div><div class="line">    fprintf(stderr, <span class="stringliteral">&quot;Error calling %s\n&quot;</span>, <a class="code" href="ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea">TOSTRING</a>(funcall));                                      \</div><div class="line">    EX_FUNC_LEAVE(<a class="code" href="exodusII_8h.html#a9188682d7a4c71e360f4f11f81fca38b">EX_FATAL</a>);                                                                       \</div><div class="line">  }</div><div class="ttc" id="exodusII_8h_html_a9188682d7a4c71e360f4f11f81fca38b"><div class="ttname"><a href="exodusII_8h.html#a9188682d7a4c71e360f4f11f81fca38b">EX_FATAL</a></div><div class="ttdeci">#define EX_FATAL</div><div class="ttdef"><b>Definition:</b> exodusII.h:1672</div></div>
-<div class="ttc" id="ex__copy_8c_html_a9063e80f8777300c93afde6e6f4c9cea"><div class="ttname"><a href="ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea">TOSTRING</a></div><div class="ttdeci">#define TOSTRING(x)</div><div class="ttdef"><b>Definition:</b> ex_copy.c:46</div></div>
+<div class="ttc" id="ex__copy_8c_html_a9063e80f8777300c93afde6e6f4c9cea"><div class="ttname"><a href="ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea">TOSTRING</a></div><div class="ttdeci">#define TOSTRING(x)</div><div class="ttdef"><b>Definition:</b> ex_copy.c:40</div></div>
 </div><!-- fragment --><dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a39">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2ReadEdgeFace_8c-example.html#a36">/test/ReadEdgeFace.c</a>, <a class="el" href="_2test_2testwt-localization_8C-example.html#a5">/test/testwt-localization.C</a>, and <a class="el" href="_2test_2testwt-oned_8c-example.html#a7">/test/testwt-oned.c</a>.</dd>
 </dl>
 
@@ -160,7 +154,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != NC_NOERR) {                                                                     \</div><div class="line">    fprintf(stderr, <span class="stringliteral">&quot;Error calling %s\n&quot;</span>, <a class="code" href="ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea">TOSTRING</a>(funcall));                                      \</div><div class="line">    goto err_ret;                                                                                  \</div><div class="line">  }</div><div class="ttc" id="ex__copy_8c_html_a9063e80f8777300c93afde6e6f4c9cea"><div class="ttname"><a href="ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea">TOSTRING</a></div><div class="ttdeci">#define TOSTRING(x)</div><div class="ttdef"><b>Definition:</b> ex_copy.c:46</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != NC_NOERR) {                                                                     \</div><div class="line">    fprintf(stderr, <span class="stringliteral">&quot;Error calling %s\n&quot;</span>, <a class="code" href="ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea">TOSTRING</a>(funcall));                                      \</div><div class="line">    goto err_ret;                                                                                  \</div><div class="line">  }</div><div class="ttc" id="ex__copy_8c_html_a9063e80f8777300c93afde6e6f4c9cea"><div class="ttname"><a href="ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea">TOSTRING</a></div><div class="ttdeci">#define TOSTRING(x)</div><div class="ttdef"><b>Definition:</b> ex_copy.c:40</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -180,7 +174,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span> ((funcall) != NC_NOERR) {                                                                     \</div><div class="line">    fprintf(stderr, <span class="stringliteral">&quot;Error calling %s\n&quot;</span>, <a class="code" href="ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea">TOSTRING</a>(funcall));                                      \</div><div class="line">    return (<a class="code" href="exodusII_8h.html#a9188682d7a4c71e360f4f11f81fca38b">EX_FATAL</a>);                                                                             \</div><div class="line">  }</div><div class="ttc" id="exodusII_8h_html_a9188682d7a4c71e360f4f11f81fca38b"><div class="ttname"><a href="exodusII_8h.html#a9188682d7a4c71e360f4f11f81fca38b">EX_FATAL</a></div><div class="ttdeci">#define EX_FATAL</div><div class="ttdef"><b>Definition:</b> exodusII.h:1672</div></div>
-<div class="ttc" id="ex__copy_8c_html_a9063e80f8777300c93afde6e6f4c9cea"><div class="ttname"><a href="ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea">TOSTRING</a></div><div class="ttdeci">#define TOSTRING(x)</div><div class="ttdef"><b>Definition:</b> ex_copy.c:46</div></div>
+<div class="ttc" id="ex__copy_8c_html_a9063e80f8777300c93afde6e6f4c9cea"><div class="ttname"><a href="ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea">TOSTRING</a></div><div class="ttdeci">#define TOSTRING(x)</div><div class="ttdef"><b>Definition:</b> ex_copy.c:40</div></div>
 </div><!-- fragment -->
 </div>
 </div>

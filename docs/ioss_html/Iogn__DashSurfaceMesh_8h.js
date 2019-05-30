@@ -10,6 +10,7 @@ var Iogn__DashSurfaceMesh_8h =
     [ "SPATIAL_DIMENSION", "Iogn__DashSurfaceMesh_8h.html#a8700a960ec861c8b51b7cf6a10a61048ab0eec185a7ad53877e982d7984215333", null ],
     [ "NUM_NODES_PER_QUAD_FACE", "Iogn__DashSurfaceMesh_8h.html#a8700a960ec861c8b51b7cf6a10a61048a636816913aea029066080d5d36896ddd", null ],
     [ "Topology", "Iogn__DashSurfaceMesh_8h.html#a05c78571e9bf222ffa337fa31ed95006", [
+      [ "Beam2", "Iogn__DashSurfaceMesh_8h.html#a05c78571e9bf222ffa337fa31ed95006a7174327b7d198fca7194a9913617bc8b", null ],
       [ "Shell4", "Iogn__DashSurfaceMesh_8h.html#a05c78571e9bf222ffa337fa31ed95006a8325bc7391489b0ab010caa5dd552e0b", null ],
       [ "Hex8", "Iogn__DashSurfaceMesh_8h.html#a05c78571e9bf222ffa337fa31ed95006a616a85e990891690c32ea92e9a3cce0d", null ]
     ] ],

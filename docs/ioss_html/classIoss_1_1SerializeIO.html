@@ -109,8 +109,8 @@ Collaboration diagram for Ioss::SerializeIO:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae1d58115cd0b1c71bff49bd9808695e2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SerializeIO.html#ae1d58115cd0b1c71bff49bd9808695e2">SerializeIO</a> (const <a class="el" href="classIoss_1_1DatabaseIO.html">DatabaseIO</a> *database_io, int manual_owner_processor=-1)</td></tr>
-<tr class="separator:ae1d58115cd0b1c71bff49bd9808695e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9af29aa7a2087ce0f54486bc523021ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SerializeIO.html#a9af29aa7a2087ce0f54486bc523021ca">SerializeIO</a> (const <a class="el" href="classIoss_1_1DatabaseIO.html">DatabaseIO</a> *database_io)</td></tr>
+<tr class="separator:a9af29aa7a2087ce0f54486bc523021ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a951fb89f5276dfbf2014ba2bdc7ee746"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SerializeIO.html#a951fb89f5276dfbf2014ba2bdc7ee746">SerializeIO</a> (const <a class="el" href="classIoss_1_1SerializeIO.html">SerializeIO</a> &amp;from)=delete</td></tr>
 <tr class="separator:a951fb89f5276dfbf2014ba2bdc7ee746"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96be9284fa7789718eab720272dd7434"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1SerializeIO.html">SerializeIO</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SerializeIO.html#a96be9284fa7789718eab720272dd7434">operator=</a> (const <a class="el" href="classIoss_1_1SerializeIO.html">SerializeIO</a> &amp;from)=delete</td></tr>
@@ -178,8 +178,8 @@ Static Private Attributes</h2></td></tr>
 <p>In the case where the constructor is called, and the sentry is already active and owned by the processes group, the constructor and destrutor simply fall through since the serialization is already in place at a higher level.</p>
 <p>The MPI </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ae1d58115cd0b1c71bff49bd9808695e2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae1d58115cd0b1c71bff49bd9808695e2">&#9670;&nbsp;</a></span>SerializeIO() <span class="overload">[1/2]</span></h2>
+<a id="a9af29aa7a2087ce0f54486bc523021ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9af29aa7a2087ce0f54486bc523021ca">&#9670;&nbsp;</a></span>SerializeIO() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -191,18 +191,8 @@ Static Private Attributes</h2></td></tr>
           <td class="memname">Ioss::SerializeIO::SerializeIO </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classIoss_1_1DatabaseIO.html">DatabaseIO</a> *&#160;</td>
-          <td class="paramname"><em>database_io</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>database_io</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>manual_owner_processor</em> = <code>-1</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
