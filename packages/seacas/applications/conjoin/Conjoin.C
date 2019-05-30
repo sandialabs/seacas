@@ -940,8 +940,8 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
 namespace {
   template <typename T>
-  void get_put_qa(int id, int id_out, const std::vector<TimeStepMap<T>> &global_times,
-                  Excn::SystemInterface &interface)
+  void get_put_qa(int id, int id_out, const std::vector<TimeStepMap<T>> & /*global_times*/,
+                  Excn::SystemInterface & /*interface*/)
   {
     // NOTE: Assuming info and QA records for all parts
     int error = 0;

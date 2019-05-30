@@ -250,7 +250,7 @@ namespace Iocgns {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(std::cerr, "File Open Time = {}\n", duration);
+          fmt::print(stderr, "File Open Time = {}\n", duration);
         }
       }
 
@@ -305,7 +305,7 @@ namespace Iocgns {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(std::cerr, "File Close Time = {}\n", duration);
+          fmt::print(stderr, "File Close Time = {}\n", duration);
         }
       }
     }
@@ -336,7 +336,7 @@ namespace Iocgns {
     }
   }
 
-  int64_t ParallelDatabaseIO::node_global_to_local__(int64_t global, bool must_exist) const
+  int64_t ParallelDatabaseIO::node_global_to_local__(int64_t global, bool /* must_exist */) const
   {
     // TODO: Fix
     return global;
@@ -435,7 +435,7 @@ namespace Iocgns {
       eblock->property_add(Ioss::Property("original_block_order", i++));
       get_region()->add(eblock);
 #if IOSS_DEBUG_OUTPUT
-      fmt::print(std::cerr, "Added block {}, IOSS topology = '{}' with {} element.\n", block.name(),
+      fmt::print(stderr, "Added block {}, IOSS topology = '{}' with {} element.\n", block.name(),
                  element_topo, block.ioss_count());
 #endif
     }
@@ -451,7 +451,7 @@ namespace Iocgns {
         std::string block_name = fmt::format("{}/{}", zone.m_name, sset.name());
         std::string face_topo  = sset.topologyType;
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(std::cerr, "Processor {}: Added sideblock {} of topo {} with {} faces\n",
+        fmt::print(stderr, "Processor {}: Added sideblock {} of topo {} with {} faces\n",
                    myProcessor, block_name, face_topo, sset.ioss_count());
 #endif
         const auto &block = decomp->m_elementBlocks[sset.parentBlockIndex];
@@ -582,7 +582,7 @@ namespace Iocgns {
         block->property_add(Ioss::Property("guid", guid));
 
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(std::cerr, "Added block {}, Structured with ID = {}, GUID = {}\n", block_name,
+        fmt::print(stderr, "Added block {}, Structured with ID = {}, GUID = {}\n", block_name,
                    zone->m_adam->m_zone, guid);
 #endif
       }
@@ -845,17 +845,17 @@ namespace Iocgns {
             common = intersect(I_nodes, J_nodes);
 
 #if IOSS_DEBUG_OUTPUT
-            fmt::print(std::cerr, "Zone {}: {}, Donor Zone {}: {} Common: {}\n\t", zone,
+            fmt::print(stderr, "Zone {}: {}, Donor Zone {}: {} Common: {}\n\t", zone,
                        I_nodes.size(), dzone, J_nodes.size(), common.size());
 
             for (const auto &p : common) {
-              fmt::print(std::cerr, "{}, ", p.first);
+              fmt::print(stderr, "{}, ", p.first);
             }
-            fmt::print(std::cerr, "\n\t");
+            fmt::print(stderr, "\n\t");
             for (const auto &p : common) {
-              fmt::print(std::cerr, "{}, ", p.second);
+              fmt::print(stderr, "{}, ", p.second);
             }
-            fmt::print(std::cerr, "\n");
+            fmt::print(stderr, "\n");
 #endif
           }
 
@@ -935,7 +935,7 @@ namespace Iocgns {
     return true;
   }
 
-  bool ParallelDatabaseIO::begin_state__(int state, double time)
+  bool ParallelDatabaseIO::begin_state__(int state, double /* time */)
   {
     if (is_input()) {
       return true;
@@ -1550,9 +1550,9 @@ namespace Iocgns {
     return num_to_get;
   }
 
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Region *region,
-                                                 const Ioss::Field &field, void *data,
-                                                 size_t data_size) const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Region */* region */,
+                                                 const Ioss::Field &/* field */, void */* data */,
+                                                 size_t /* data_size */) const
   {
     return -1;
   }
@@ -2248,8 +2248,8 @@ namespace Iocgns {
   {
     return -1;
   }
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
-                                                 void *data, size_t data_size) const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet */* cs */, const Ioss::Field &/* field*/,
+                                                 void */*data*/, size_t /*data_size*/) const
   {
     return -1;
   }

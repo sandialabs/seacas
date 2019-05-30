@@ -143,7 +143,29 @@ GENERATOR=${GENERATOR:-"Unix Makefiles"}
 SHARED="${SHARED:-ON}"
 
 ### Switch for Debug or Release build:
+### Check that both `DEBUG` and `BUILD_TYPE` are not set
+if [ ! -z ${DEBUG+x} ] && [ ! -z ${BUILD_TYPE+x} ]
+then
+    echo "ERROR: Both DEBUG and BUILD_TYPE are set. Only one is allowed."
+    exit
+fi
+
 BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
+
+if [ ! -z ${DEBUG+x} ]
+then
+    if [ "${DEBUG}" == "ON" ] 
+    then
+	BUILD_TYPE="DEBUG"
+    elif [ "${DEBUG}" == "OFF" ] 
+    then
+	BUILD_TYPE="RELEASE"
+    else
+	echo "ERROR: Invalid value for DEBUG ('$DEBUG'). Must be 'ON' or 'OFF'."
+	exit
+    fi
+fi
+
 
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then change the "ON"
@@ -320,6 +342,7 @@ echo "        CXX: ${CXX}"
 echo "         FC: ${FC}"
 echo "        MPI: ${MPI}"
 echo "     SHARED: ${SHARED}"
+echo " BUILD_TYPE: ${BUILD_TYPE}"
 echo " THREADSAFE: ${THREADSAFE}"
 echo " "
 echo "     NETCDF: ${HAVE_NETCDF}"

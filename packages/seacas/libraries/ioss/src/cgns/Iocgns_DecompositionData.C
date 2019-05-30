@@ -75,7 +75,7 @@ namespace {
     return zdata->decomp_elem_count();
   }
 
-  void zoltan_obj_list(void *data, int ngid_ent, int nlid_ent, ZOLTAN_ID_PTR gids,
+  void zoltan_obj_list(void *data, int ngid_ent, int /* nlid_ent */, ZOLTAN_ID_PTR gids,
                        ZOLTAN_ID_PTR lids, int wdim, float *wgts, int *ierr)
   {
     // Return list of object IDs, both local and global.
@@ -110,8 +110,8 @@ namespace {
     return;
   }
 
-  void zoltan_geom(void *data, int ngid_ent, int nlid_ent, int nobj, ZOLTAN_ID_PTR gids,
-                   ZOLTAN_ID_PTR lids, int ndim, double *geom, int *ierr)
+  void zoltan_geom(void *data, int /* ngid_ent */, int /* nlid_ent */, int /* nobj */, ZOLTAN_ID_PTR /* gids */,
+                   ZOLTAN_ID_PTR /* lids */, int /* ndim */, double *geom, int *ierr)
   {
     // Return coordinates for objects.
     Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
@@ -180,7 +180,7 @@ namespace {
 
 #if IOSS_DEBUG_OUTPUT
           if (rank == 0) {
-            fmt::print(std::cerr, "Adding zgc {} to {} donor: {}\n", connectname, zone_name,
+            fmt::print(stderr, "Adding zgc {} to {} donor: {}\n", connectname, zone_name,
                        donorname);
           }
 #endif
@@ -310,7 +310,7 @@ namespace {
               zone->m_lineOrdinal = ordinal;
 #if IOSS_DEBUG_OUTPUT
               if (rank == 0) {
-                fmt::print(std::cerr, "Setting line ordinal to {} on {} for surface: {}\n",
+                fmt::print(stderr, "Setting line ordinal to {} on {} for surface: {}\n",
                            zone->m_lineOrdinal, zone->m_name, boconame);
               }
 #endif
@@ -339,7 +339,7 @@ namespace Iocgns {
   template <typename INT>
   DecompositionData<INT>::DecompositionData(const Ioss::PropertyManager &props,
                                             MPI_Comm                     communicator)
-      : DecompositionDataBase(communicator), m_decomposition(props, communicator)
+      : DecompositionDataBase(), m_decomposition(props, communicator)
   {
     rank = m_decomposition.m_processor;
 
@@ -412,7 +412,7 @@ namespace Iocgns {
     auto num_active = m_structuredZones.size();
     if (rank == 0) {
       fmt::print(
-          std::cerr,
+          stderr,
           "Decomposing structured mesh with {} zones for {} processors.\nAverage workload is {}, "
           "Load Balance Threshold is {}, Work range {} to {}\n",
           num_active, m_decomposition.m_processorCount, avg_work, m_loadBalanceThreshold,
@@ -422,7 +422,7 @@ namespace Iocgns {
 
     if (avg_work < 1.0) {
       if (rank == 0) {
-        fmt::print(std::cerr, "ERROR: Model size too small to distribute over {} processors.\n",
+        fmt::print(stderr, "ERROR: Model size too small to distribute over {} processors.\n",
                    m_decomposition.m_processorCount);
       }
       std::exit(EXIT_FAILURE);
@@ -430,9 +430,9 @@ namespace Iocgns {
 
 #if IOSS_DEBUG_OUTPUT
     if (rank == 0) {
-      fmt::print(std::cerr,
+      fmt::print(stderr,
                  "========================================================================\n");
-      fmt::print(std::cerr, "Pre-Splitting:\n");
+      fmt::print(stderr, "Pre-Splitting:\n");
     }
 #endif
     // Split all blocks where block->work() > avg_work * m_loadBalanceThreshold
@@ -442,7 +442,7 @@ namespace Iocgns {
     // At this point, there should be no zone with block->work() > avg_work * m_loadBalanceThreshold
 #if IOSS_DEBUG_OUTPUT
     if (rank == 0) {
-      fmt::print(std::cerr,
+      fmt::print(stderr,
                  "========================================================================\n");
     }
 #endif
@@ -457,7 +457,7 @@ namespace Iocgns {
         double workload_ratio = double(work_vector[i]) / double(avg_work);
 #if IOSS_DEBUG_OUTPUT
         if (rank == 0) {
-          fmt::print(std::cerr, "\nProcessor {} work: {}, workload ratio: {}", i, work_vector[i],
+          fmt::print(stderr, "\nProcessor {} work: {}, workload ratio: {}", i, work_vector[i],
                      workload_ratio);
         }
 #endif
@@ -468,7 +468,7 @@ namespace Iocgns {
       }
 #if IOSS_DEBUG_OUTPUT
       if (rank == 0) {
-        fmt::print(std::cerr, "\n\nWorkload threshold exceeded on {} processors.\n", px);
+        fmt::print(stderr, "\n\nWorkload threshold exceeded on {} processors.\n", px);
       }
 #endif
       bool single_zone = m_structuredZones.size() == 1;
@@ -489,8 +489,7 @@ namespace Iocgns {
             // is on a proc where the threshold was exceeded.
             // if so, split the block and set exceeds[proc] to false;
             // Exit the loop when num_split >= px.
-            auto children =
-                zone->split(new_zone_id, zone->work() / 2.0, m_loadBalanceThreshold, rank);
+            auto children = zone->split(new_zone_id, zone->work() / 2.0, rank);
             if (children.first != nullptr && children.second != nullptr) {
               zone_new.push_back(children.first);
               zone_new.push_back(children.second);
@@ -510,8 +509,8 @@ namespace Iocgns {
       auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
                                   [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
       if (rank == 0) {
-        fmt::print(std::cerr, "Number of active zones = {}, average work = {}\n", active, avg_work);
-        fmt::print(std::cerr,
+        fmt::print(stderr, "Number of active zones = {}, average work = {}\n", active, avg_work);
+        fmt::print(stderr,
                    "========================================================================\n");
       }
 #endif
@@ -537,13 +536,13 @@ namespace Iocgns {
           auto zone_node_count =
               (zone->m_ordinal[0] + 1) * (zone->m_ordinal[1] + 1) * (zone->m_ordinal[2] + 1);
           fmt::print(
-              std::cerr,
+              stderr,
               "Zone {}({}) assigned to processor {}, Adam zone = {}, Cells = {}, Nodes = {}\n",
               zone->m_name, zone->m_zone, zone->m_proc, zone->m_adam->m_zone, zone->work(),
               zone_node_count);
           auto zgcs = zone->m_zoneConnectivity;
           for (auto &zgc : zgcs) {
-            fmt::print(std::cerr, "{}\n", zgc);
+            fmt::print(stderr, "{}\n", zgc);
           }
         }
 #endif
@@ -554,7 +553,7 @@ namespace Iocgns {
     if (rank == 0) {
       int z = 1;
       fmt::print(
-          std::cerr,
+          stderr,
           "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax     work\n");
       auto tmp_zone(m_structuredZones);
       std::sort(tmp_zone.begin(), tmp_zone.end(),
@@ -564,7 +563,7 @@ namespace Iocgns {
 
       for (auto &zone : tmp_zone) {
         if (zone->is_active()) {
-          fmt::print(std::cerr, "{:6d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}\n", z++,
+          fmt::print(stderr, "{:6d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}\n", z++,
                      zone->m_proc, zone->m_adam->m_zone, zone->m_offset[0] + 1,
                      zone->m_ordinal[0] + zone->m_offset[0] + 1, zone->m_offset[1] + 1,
                      zone->m_ordinal[1] + zone->m_offset[1] + 1, zone->m_offset[2] + 1,
@@ -656,7 +655,7 @@ namespace Iocgns {
 
 #if IOSS_DEBUG_OUTPUT
     if (rank == 0) {
-      fmt::print(std::cerr,
+      fmt::print(stderr,
                  "Processor {0} has {1} elements; offset = {2}\n"
                  "Processor {0} has {3} nodes; offset = {4}.\n",
                  m_decomposition.m_processor, decomp_elem_count(), decomp_elem_offset(),
@@ -782,7 +781,7 @@ namespace Iocgns {
         if (dz != zone) {
 #if IOSS_DEBUG_OUTPUT
           if (m_decomposition.m_processor == 0) {
-            fmt::print(std::cerr, "Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
+            fmt::print(stderr, "Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
           }
 #endif
           // The 'ids' in 'points' and 'donors' will be zone-local 1-based.
@@ -805,7 +804,7 @@ namespace Iocgns {
             m_zoneSharedMap.insert({point, donor});
 #if IOSS_DEBUG_OUTPUT
             if (m_decomposition.m_processor == 0) {
-              fmt::print(std::cerr, "Inserted {} to {}\n", point, donor);
+              fmt::print(stderr, "Inserted {} to {}\n", point, donor);
             }
 #endif
           }
@@ -935,7 +934,7 @@ namespace Iocgns {
     if ((size_t)tmp_sum != sum) {
       if (rank == 0) {
         fmt::print(
-            std::cerr,
+            stderr,
             "ERROR: The decomposition of this mesh requires 64-bit integers, but is being\n"
             "       run with 32-bit integer code. Please rerun with the property INTEGER_SIZE_API\n"
             "       set to 8. The details of how to do this vary with the code that is being run.\n"
@@ -971,7 +970,7 @@ namespace Iocgns {
       blk_end                         = blk_end < 0 ? 0 : blk_end;
 #if IOSS_DEBUG_OUTPUT
       if (rank == 0) {
-        fmt::print(std::cerr, "Processor {} has {} elements on element block {}\t({} to {})\n",
+        fmt::print(stderr, "Processor {} has {} elements on element block {}\t({} to {})\n",
                    m_decomposition.m_processor, overlap, block.name(), blk_start, blk_end);
       }
 #endif
@@ -1132,7 +1131,7 @@ namespace Iocgns {
 #if IOSS_DEBUG_OUTPUT
       if (rank == 0) {
         fmt::print(
-            std::cerr,
+            stderr,
             "{}: reading {} nodes from zone {} starting at {} with an offset of {} ending at {}\n",
             m_decomposition.m_processor, count, zone, start, offset, finish);
       }
@@ -1278,10 +1277,12 @@ namespace Iocgns {
     communicate_set_data(TOPTR(element_side), ioss_data, sset, 2);
   }
 
+#ifndef DOXYGEN_SKIP_THIS
   template void DecompositionData<int>::get_block_connectivity(int filePtr, int *data,
                                                                int blk_seq) const;
   template void DecompositionData<int64_t>::get_block_connectivity(int filePtr, int64_t *data,
                                                                    int blk_seq) const;
+#endif
 
   template <typename INT>
   void DecompositionData<INT>::get_block_connectivity(int filePtr, INT *data, int blk_seq) const
@@ -1311,12 +1312,14 @@ namespace Iocgns {
     communicate_block_data(TOPTR(file_conn), data, blk, (size_t)blk.nodesPerEntity);
   }
 
+#ifndef DOXYGEN_SKIP_THIS
   template void DecompositionData<int>::get_element_field(int filePtr, int solution_index,
                                                           int blk_seq, int field_index,
                                                           double *data) const;
   template void DecompositionData<int64_t>::get_element_field(int filePtr, int solution_index,
                                                               int blk_seq, int field_index,
                                                               double *data) const;
+#endif
 
   template <typename INT>
   void DecompositionData<INT>::get_element_field(int filePtr, int solution_index, int blk_seq,
@@ -1341,12 +1344,14 @@ namespace Iocgns {
     }
   }
 
+#ifndef DOXYGEN_SKIP_THIS
   template void DecompositionDataBase::communicate_node_data(int *file_data, int *ioss_data,
                                                              size_t comp_count) const;
   template void DecompositionDataBase::communicate_node_data(int64_t *file_data, int64_t *ioss_data,
                                                              size_t comp_count) const;
   template void DecompositionDataBase::communicate_node_data(double *file_data, double *ioss_data,
                                                              size_t comp_count) const;
+#endif
 
   template <typename T>
   void DecompositionDataBase::communicate_node_data(T *file_data, T *ioss_data,
@@ -1365,6 +1370,7 @@ namespace Iocgns {
     }
   }
 
+#ifndef DOXYGEN_SKIP_THIS
   template void DecompositionDataBase::communicate_element_data(int *file_data, int *ioss_data,
                                                                 size_t comp_count) const;
   template void DecompositionDataBase::communicate_element_data(int64_t *file_data,
@@ -1373,6 +1379,7 @@ namespace Iocgns {
   template void DecompositionDataBase::communicate_element_data(double *file_data,
                                                                 double *ioss_data,
                                                                 size_t  comp_count) const;
+#endif
 
   template <typename T>
   void DecompositionDataBase::communicate_element_data(T *file_data, T *ioss_data,

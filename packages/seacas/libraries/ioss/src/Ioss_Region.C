@@ -183,7 +183,7 @@ namespace {
                  " {} not consistently defined on all processors.\n\t\t"
                  "Check that name and id matches across processors.\n",
                  (count == 1 ? "is" : "are"));
-      std::cerr << errmsg.str();
+      fmt::print(stderr, "{}", errmsg.str());
     }
   }
 
@@ -767,7 +767,7 @@ namespace Ioss {
       // Check that time is increasing...
       if (!warning_output) {
         fmt::print(IOSS_WARNING,
-                   "IOSS WARNING: Current time {} is not greater than previous time {} in\n{}\n. "
+                   "IOSS WARNING: Current time {} is not greater than previous time {} in\n\t{}.\n"
                    "This may cause problems in applications that assume monotonically increasing "
                    "time values.\n",
                    time, stateTimes.back(), get_database()->get_filename());

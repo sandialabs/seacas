@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 
   if (argc <= 2) {
     if (rank == 0) {
-      fmt::print(std::cerr, "ERROR: Syntax is {} {{structured_input}} {{unstructured_output}}\n",
+      fmt::print(stderr, "ERROR: Syntax is {} {{structured_input}} {{unstructured_output}}\n",
                  argv[0]);
     }
     return EXIT_FAILURE;
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
   std::string             out_file = argv[2];
 
   if (rank == 0) {
-    fmt::print(std::cerr,
+    fmt::print(stderr,
                "Structured Input:    '{}'\n"
                "Unstructured Output: '{}'\n\n",
                in_file, out_file);
@@ -137,8 +137,8 @@ int main(int argc, char *argv[])
   double end = Ioss::Utils::timer();
 
   if (rank == 0) {
-    fmt::print(std::cerr, "\n\tElapsed time = {} seconds.\n", end - begin);
-    fmt::print(std::cerr, "\n{} execution successful.\n", codename);
+    fmt::print(stderr, "\n\tElapsed time = {} seconds.\n", end - begin);
+    fmt::print(stderr, "\n{} execution successful.\n", codename);
   }
 #ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
@@ -162,7 +162,7 @@ namespace {
     if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
       int myProcessor = region.get_database()->util().parallel_rank();
       if (myProcessor == 0) {
-        fmt::print(std::cerr, "\nERROR: The input mesh is not of type STRUCTURED.\n");
+        fmt::print(stderr, "\nERROR: The input mesh is not of type STRUCTURED.\n");
       }
       return;
     }
@@ -190,7 +190,7 @@ namespace {
 
     if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
       if (rank == 0) {
-        fmt::print(std::cerr, "ERROR: Could not put output region into define model state\n");
+        fmt::print(stderr, "ERROR: Could not put output region into define model state\n");
       }
       std::exit(EXIT_FAILURE);
     }
@@ -211,7 +211,7 @@ namespace {
 
     if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
       if (rank == 0) {
-        fmt::print(std::cerr, "\n Number of time steps on database     = {:12n}\n\n",
+        fmt::print(stderr, "\n Number of time steps on database     = {:12n}\n\n",
                    region.get_property("state_count").get_int());
       }
 
@@ -419,7 +419,7 @@ namespace {
               }
 
 #if IOSS_DEBUG_OUTPUT
-              fmt::print(std::cerr, "{}\n", bc);
+              fmt::print(stderr, "{}\n", bc);
 #endif
               auto parent_face = face_map[bc.which_face()];
               elem_side.reserve(bc.get_face_count() * 2);
@@ -507,8 +507,7 @@ namespace {
       auto block = new Ioss::ElementBlock(output_region.get_database(), name, type, count);
       output_region.add(block);
 #if IOSS_DEBUG_OUTPUT
-      fmt::print(std::cerr, "P[{}] Created Element Block '{}' with {} elements.\n", rank, name,
-                 count);
+      fmt::print(stderr, "P[{}] Created Element Block '{}' with {} elements.\n", rank, name, count);
 #endif
       total_entities += count;
     }
@@ -551,7 +550,7 @@ namespace {
   void show_step(int istep, double time)
   {
     if (rank == 0) {
-      fmt::print(std::cerr, "     Time step {:5d} at time {:.5e}\n", istep, time);
+      fmt::print(stderr, "     Time step {:5d} at time {:.5e}\n", istep, time);
     }
   }
 

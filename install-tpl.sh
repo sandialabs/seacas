@@ -193,6 +193,10 @@ then
     fi
 fi
 
+# Check that cmake and git exist at the beginning instead of erroring out later on...
+command -v cmake >/dev/null 2>&1 || { echo >&2 "${txtred}---cmake is required, but is not currently in path.  Aborting.${txtrst}"; exit 1; }
+command -v git   >/dev/null 2>&1 || { echo >&2 "${txtred}---git is required, but is not currently in path.  Aborting.${txtrst}"; exit 1; }
+
 # =================== BUILD HDF5 ===============
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then

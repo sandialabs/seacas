@@ -27,6 +27,13 @@ TRIBITS_ADD_EXECUTABLE(
   NOEXESUFFIX
   SOURCES struc_to_unstruc.C
   )
+
+TRIBITS_ADD_EXECUTABLE(
+  cgns-decomp
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES cgns-decomp.C
+  )
 ENDIF()
 
 TRIBITS_ADD_EXECUTABLE(
@@ -139,6 +146,7 @@ ENDIF()
 install_executable(cth_pressure_map)
 IF (TPL_ENABLE_CGNS)
 install_executable(struc_to_unstruc)
+install_executable(cgns-decomp)
 ENDIF()
 install_executable(io_shell)
 install_executable(shell_to_hex)

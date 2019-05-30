@@ -87,13 +87,13 @@ namespace {
         Iocgns::Utils::assign_zones_to_procs(zones, work_vector);
 
 #if 0
-	fmt::print(std::cerr, "\nDecomposition for {} processors; Total work = {:n}, Average = {}\n",
+	fmt::print(stderr, "\nDecomposition for {} processors; Total work = {:n}, Average = {}\n",
 		   proc_count, (size_t)total_work, avg_work);
 
 	  for (const auto zone : zones) {
 	    if (zone->is_active()) {
-	      fmt::print(std::cerr, "Zone {}\tProc: {}\tOrdinal: {}x{}x{}\tWork: {:n}\n",
-			 zone->m_name, zone->m_proc, zone->m_ordinal[0], zone->m_ordinal[1], 
+	      fmt::print(stderr, "Zone {}\tProc: {}\tOrdinal: {}x{}x{}\tWork: {:n}\n",
+			 zone->m_name, zone->m_proc, zone->m_ordinal[0], zone->m_ordinal[1],
 			 zone->m_ordinal[2], zone->work());
 	    }
 	  }
@@ -331,7 +331,7 @@ TEST_CASE("farmer plenum", "[farmer_plenum]")
 
   for (size_t proc_count = 2; proc_count < 20; proc_count++) {
     std::string name = "Plenum_ProcCount_" + std::to_string(proc_count);
-    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.75); }
   }
   cleanup(zones);
 }
@@ -883,6 +883,42 @@ TEST_CASE("bc-257x129x2", "[bc-257x129x2]")
   cleanup(zones);
 }
 
+TEST_CASE("carnes-mesh", "[carnes-mesh]")
+{
+  std::vector<Iocgns::StructuredZoneData *> zones;
+
+  // Failing for decomposition on 64 processors
+  int zone = 1;
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "66x2x200"));
+  zones.back()->m_lineOrdinal = 2;
+
+  double load_balance_tolerance = 1.5;
+
+  for (size_t proc_count = 4; proc_count <= 64; proc_count += 4) {
+    std::string name = "Carnes_ProcCount_" + std::to_string(proc_count);
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+  }
+  cleanup(zones);
+}
+
+TEST_CASE("carnes-blunt-wedge", "[carnes-blunt-wedge]")
+{
+  std::vector<Iocgns::StructuredZoneData *> zones;
+
+  // Failing for decomposition on 64 processors
+  int zone = 1;
+  zones.push_back(new Iocgns::StructuredZoneData(zone++, "80x74x1"));
+  zones.back()->m_lineOrdinal = 1;
+
+  double load_balance_tolerance = 1.75;
+
+  for (size_t proc_count = 4; proc_count <= 64; proc_count += 4) {
+    std::string name = "Carnes_BW_ProcCount_" + std::to_string(proc_count);
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count); }
+  }
+  cleanup(zones);
+}
+
 TEST_CASE("64GiElem", "[64GiElem]")
 {
   std::vector<Iocgns::StructuredZoneData *> zones;
@@ -915,7 +951,8 @@ TEST_CASE("LotsOfZones", "[LotsOfZones]")
   }
   cleanup(zones);
 }
-#if 1
+// Disable these tests on NVCC. It tries to optimize and takes forever to build...
+#ifndef __NVCC__
 TEST_CASE("herron-dutton", "[herron-dutton_zgc]")
 {
   int                                       zone = 1;
