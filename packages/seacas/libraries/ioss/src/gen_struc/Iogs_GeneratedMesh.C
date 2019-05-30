@@ -48,8 +48,8 @@
 #include <vector>      // for vector
 
 namespace Iogs {
-  GeneratedMesh::GeneratedMesh(int64_t num_x, int64_t num_y, int64_t num_z, int proc_count,
-                               int my_proc)
+  GeneratedMesh::GeneratedMesh(int64_t /*num_x */, int64_t /* num_y */, int64_t /* num_z */,
+                               int proc_count, int my_proc)
       : processorCount(proc_count), myProcessor(my_proc)
   {
     initialize();
@@ -740,7 +740,7 @@ namespace Iogs {
     }
   }
 
-  void GeneratedMesh::coordinates(int component, int zone, double *xyz) const
+  void GeneratedMesh::coordinates(int component, int /* zone */, double *xyz) const
   {
     assert(!doRotation);
     /* create global coordinates */
