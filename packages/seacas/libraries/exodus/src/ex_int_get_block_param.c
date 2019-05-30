@@ -33,9 +33,8 @@
  *
  */
 
-#include <ctype.h>    // for toupper
-#include <inttypes.h> // for PRId64
-#include <stddef.h>   // for size_t
+#include <ctype.h>  // for toupper
+#include <stddef.h> // for size_t
 #include <stdio.h>
 #include <string.h>    // for strncmp, strlen
 #include <sys/types.h> // for int64_t
