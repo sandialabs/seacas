@@ -4239,21 +4239,21 @@ int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids,
 {
   elemMap.set_size(elementCount);
   size_t offset = eb->get_offset();
-  return handle_block_ids(eb, EX_ELEM_MAP, elemMap, ids, num_to_get, offset, 0);
+  return handle_block_ids(eb, EX_ELEM_MAP, elemMap, ids, num_to_get, offset);
 }
 
 int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t num_to_get) const
 {
   faceMap.set_size(faceCount);
   size_t offset = eb->get_offset();
-  return handle_block_ids(eb, EX_FACE_MAP, faceMap, ids, num_to_get, offset, 0);
+  return handle_block_ids(eb, EX_FACE_MAP, faceMap, ids, num_to_get, offset);
 }
 
 int64_t DatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids, size_t num_to_get) const
 {
   edgeMap.set_size(edgeCount);
   size_t offset = eb->get_offset();
-  return handle_block_ids(eb, EX_EDGE_MAP, edgeMap, ids, num_to_get, offset, 0);
+  return handle_block_ids(eb, EX_EDGE_MAP, edgeMap, ids, num_to_get, offset);
 }
 
 void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Ioss::Field &field,

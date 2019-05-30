@@ -616,7 +616,7 @@ namespace Ioex {
   // common
   size_t DatabaseIO::handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
                                       Ioss::Map &entity_map, void *ids, size_t num_to_get,
-                                      size_t offset, size_t count) const
+                                      size_t offset) const
   {
     /*!
      * NOTE: "element" is generic for "element", "face", or "edge"
