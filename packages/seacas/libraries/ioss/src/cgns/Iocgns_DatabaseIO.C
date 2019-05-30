@@ -644,7 +644,7 @@ namespace Iocgns {
 
   int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
 
-  void DatabaseIO::create_structured_block_fpp(int base, int num_zones, size_t &num_node)
+  void DatabaseIO::create_structured_block_fpp(int base, int num_zones, size_t &/* num_node */)
   {
     assert(isParallel);
 #ifdef SEACAS_HAVE_MPI
@@ -1485,7 +1485,7 @@ namespace Iocgns {
     return true;
   }
 
-  bool DatabaseIO::begin_state__(int state, double time)
+  bool DatabaseIO::begin_state__(int state, double /* time */)
   {
     if (is_input()) {
       return true;
@@ -2650,7 +2650,7 @@ namespace Iocgns {
     return num_to_get;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::SideSet *ss, const Ioss::Field &field,
+  int64_t DatabaseIO::put_field_internal(const Ioss::SideSet */* ss */, const Ioss::Field & /* field */,
                                          void * /* data */, size_t /* data_size */) const
   {
     return 0;

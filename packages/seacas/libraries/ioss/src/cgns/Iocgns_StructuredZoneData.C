@@ -339,8 +339,8 @@ namespace Iocgns {
     m_child2->m_splitOrdinal = ordinal;
     m_child2->m_sibling      = m_child1;
 
-#if IOSS_DEBUG_OUTPUT
     if (rank == 0) {
+#if IOSS_DEBUG_OUTPUT
       fmt::print(stderr,
                  "\nSplit Zone {} ({}) Adam {} ({}) with intervals {} {} {}, work = {}, offset {} "
                  "{} {} along ordinal {} with ratio {}\n"
@@ -357,8 +357,8 @@ namespace Iocgns {
                  m_child2->m_adam->m_name, m_child2->m_adam->m_zone, m_child2->m_ordinal[0],
                  m_child2->m_ordinal[1], m_child2->m_ordinal[2], m_child2->work(),
                  m_child2->m_offset[0], m_child2->m_offset[1], m_child2->m_offset[2]);
-    }
 #endif
+    }
 
     // Add ZoneGridConnectivity instance to account for split...
     add_proc_split_zgc(this, m_child1, m_child2, ordinal);

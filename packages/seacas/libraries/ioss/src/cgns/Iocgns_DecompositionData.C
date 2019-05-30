@@ -75,7 +75,7 @@ namespace {
     return zdata->decomp_elem_count();
   }
 
-  void zoltan_obj_list(void *data, int ngid_ent, int nlid_ent, ZOLTAN_ID_PTR gids,
+  void zoltan_obj_list(void *data, int ngid_ent, int /* nlid_ent */, ZOLTAN_ID_PTR gids,
                        ZOLTAN_ID_PTR lids, int wdim, float *wgts, int *ierr)
   {
     // Return list of object IDs, both local and global.
@@ -110,8 +110,8 @@ namespace {
     return;
   }
 
-  void zoltan_geom(void *data, int ngid_ent, int nlid_ent, int nobj, ZOLTAN_ID_PTR gids,
-                   ZOLTAN_ID_PTR lids, int ndim, double *geom, int *ierr)
+  void zoltan_geom(void *data, int /* ngid_ent */, int /* nlid_ent */, int /* nobj */, ZOLTAN_ID_PTR /* gids */,
+                   ZOLTAN_ID_PTR /* lids */, int /* ndim */, double *geom, int *ierr)
   {
     // Return coordinates for objects.
     Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
@@ -448,7 +448,7 @@ namespace Iocgns {
   template <typename INT>
   DecompositionData<INT>::DecompositionData(const Ioss::PropertyManager &props,
                                             MPI_Comm                     communicator)
-      : DecompositionDataBase(communicator), m_decomposition(props, communicator)
+      : DecompositionDataBase(), m_decomposition(props, communicator)
   {
     rank = m_decomposition.m_processor;
 
