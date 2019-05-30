@@ -644,9 +644,11 @@ namespace Iocgns {
 
   int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
 
-  void DatabaseIO::create_structured_block_fpp(int base, int num_zones, size_t &/* num_node */)
+  void DatabaseIO::create_structured_block_fpp(int base, int num_zones, size_t & /* num_node */)
   {
     assert(isParallel);
+    PAR_UNUSED(base);
+    PAR_UNUSED(num_zones);
 #ifdef SEACAS_HAVE_MPI
     // Each processor may have a different set of zones.  This routine
     // will sync the information such that at return, each procesosr
@@ -2650,8 +2652,9 @@ namespace Iocgns {
     return num_to_get;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::SideSet */* ss */, const Ioss::Field & /* field */,
-                                         void * /* data */, size_t /* data_size */) const
+  int64_t DatabaseIO::put_field_internal(const Ioss::SideSet * /* ss */,
+                                         const Ioss::Field & /* field */, void * /* data */,
+                                         size_t /* data_size */) const
   {
     return 0;
   }
