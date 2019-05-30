@@ -52,9 +52,6 @@
 
 #include "exodusII.h"     // for ex_err, ex_name_of_object, etc
 #include "exodusII_int.h" // for ex_check_valid_file_id, etc
-#include <stddef.h>       // for size_t
-#include <stdint.h>       // for int64_t
-#include <stdio.h>        // for snprintf
 
 /*!
  * writes the attributes for an edge/face/element block

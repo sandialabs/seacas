@@ -35,12 +35,6 @@
 
 #include "exodusII.h"     // for EX_FATAL, exerrval, ex_err, etc
 #include "exodusII_int.h" // for ex_get_counter_list, etc
-#include <assert.h>       // for assert
-#include <stddef.h>       // for size_t
-#include <stdint.h>       // for int64_t
-#include <stdio.h>        // for fprintf, stderr, snprintf
-#include <stdlib.h>       // for free, calloc, malloc
-#include <string.h>       // for strcmp, strncmp, NULL
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)

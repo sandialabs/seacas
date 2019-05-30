@@ -40,7 +40,6 @@
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_id_lkup, etc
-#include <stdio.h>
 
 /*!
  * reads in the number of entities (nodes/faces) per polyhedra
