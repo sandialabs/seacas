@@ -2029,6 +2029,130 @@ int Iocgns::Utils::get_step_times(int cgns_file_ptr, std::vector<double> &timest
   return num_timesteps;
 }
 
+void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &zones,
+                                    int proc_count, int rank, double load_balance_threshold,
+                                    bool verbose)
+{
+  size_t work = 0;
+  for (const auto &z : zones) {
+    work += z->work();
+    assert(z->is_active());
+  }
+
+  double avg_work = (double)work / proc_count;
+
+  if (verbose) {
+    auto num_active = zones.size();
+    if (rank == 0) {
+      fmt::print(
+          stderr,
+          "Decomposing structured mesh with {} zones for {} processors.\nAverage workload is {:n}, "
+          "Load Balance Threshold is {}, Work range {:n} to {:n}\n",
+          num_active, proc_count, (size_t)avg_work, load_balance_threshold,
+          (size_t)(avg_work / load_balance_threshold), (size_t)(avg_work * load_balance_threshold));
+    }
+  }
+
+  if (avg_work < 1.0) {
+    if (rank == 0) {
+      fmt::print(stderr, "ERROR: Model size too small to distribute over {} processors.\n",
+                 proc_count);
+    }
+    std::exit(EXIT_FAILURE);
+  }
+
+  if (verbose) {
+    if (rank == 0) {
+      fmt::print(stderr,
+                 "========================================================================\n");
+      fmt::print(stderr, "Pre-Splitting: (Average = {:n}, LB Threshold = {}\n", (size_t)avg_work,
+                 load_balance_threshold);
+    }
+  }
+  // Split all blocks where block->work() > avg_work * load_balance_threshold
+  size_t new_zone_id = Utils::pre_split(zones, avg_work, load_balance_threshold, rank, proc_count);
+
+  // At this point, there should be no zone with block->work() > avg_work * load_balance_threshold
+  if (verbose) {
+    if (rank == 0) {
+      fmt::print(stderr,
+                 "========================================================================\n");
+    }
+  }
+  size_t num_split = 0;
+  size_t px        = 0;
+  do {
+    std::vector<size_t> work_vector(proc_count);
+    Utils::assign_zones_to_procs(zones, work_vector);
+
+    // Calculate workload ratio for each processor...
+    px = 0; // Number of processors where workload ratio exceeds threshold.
+    std::vector<bool> exceeds(proc_count);
+    for (size_t i = 0; i < work_vector.size(); i++) {
+      double workload_ratio = double(work_vector[i]) / avg_work;
+      if (verbose) {
+        if (rank == 0) {
+          fmt::print(stderr, "\nProcessor {} work: {:n}, workload ratio: {}", i, work_vector[i],
+                     workload_ratio);
+        }
+      }
+      if (workload_ratio > load_balance_threshold) {
+        exceeds[i] = true;
+        px++;
+      }
+    }
+    if (verbose) {
+      if (rank == 0) {
+        fmt::print(stderr, "\n\nWorkload threshold exceeded on {} processors.\n", px);
+      }
+    }
+    bool single_zone = zones.size() == 1;
+    if (single_zone) {
+      auto active = std::count_if(zones.begin(), zones.end(),
+                                  [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
+      if (active >= proc_count) {
+        px = 0;
+      }
+    }
+    num_split = 0;
+    if (px > 0) {
+      auto zone_new(zones);
+      for (auto zone : zones) {
+        if (zone->is_active() && exceeds[zone->m_proc]) {
+          // Since 'zones' is sorted from most work to least,
+          // we just iterate zones and check whether the zone
+          // is on a proc where the threshold was exceeded.
+          // if so, split the block and set exceeds[proc] to false;
+          // Exit the loop when num_split >= px.
+          auto children = zone->split(new_zone_id, zone->work() / 2.0, rank);
+          if (children.first != nullptr && children.second != nullptr) {
+            zone_new.push_back(children.first);
+            zone_new.push_back(children.second);
+
+            new_zone_id += 2;
+            exceeds[zone->m_proc] = false;
+            num_split++;
+            if (num_split >= px) {
+              break;
+            }
+          }
+        }
+      }
+      std::swap(zone_new, zones);
+    }
+    if (verbose) {
+      auto active = std::count_if(zones.begin(), zones.end(),
+                                  [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
+      if (rank == 0) {
+        fmt::print(stderr, "Number of active zones = {}, average work = {:n}\n", active,
+                   (size_t)avg_work);
+        fmt::print(stderr,
+                   "========================================================================\n");
+      }
+    }
+  } while (px > 0 && num_split > 0);
+}
+
 void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &all_zones,
                                           std::vector<size_t> &                      work_vector)
 {

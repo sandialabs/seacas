@@ -208,6 +208,8 @@ namespace Iocgns {
                                         char suffix_separator, int myProcessor,
                                         bool is_parallel_io);
 
+    static void   decompose_model(std::vector<Iocgns::StructuredZoneData *> &zones, int proc_count,
+                                  int rank, double load_balance_threshold, bool verbose);
     static size_t pre_split(std::vector<Iocgns::StructuredZoneData *> &zones, double avg_work,
                             double load_balance, int proc_rank, int proc_count);
     static void   assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &zones,

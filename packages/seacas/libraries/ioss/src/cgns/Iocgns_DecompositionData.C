@@ -110,8 +110,9 @@ namespace {
     return;
   }
 
-  void zoltan_geom(void *data, int /* ngid_ent */, int /* nlid_ent */, int /* nobj */, ZOLTAN_ID_PTR /* gids */,
-                   ZOLTAN_ID_PTR /* lids */, int /* ndim */, double *geom, int *ierr)
+  void zoltan_geom(void *data, int /* ngid_ent */, int /* nlid_ent */, int /* nobj */,
+                   ZOLTAN_ID_PTR /* gids */, ZOLTAN_ID_PTR /* lids */, int /* ndim */, double *geom,
+                   int *ierr)
   {
     // Return coordinates for objects.
     Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
@@ -508,123 +509,14 @@ namespace Iocgns {
       set_line_decomposition(filePtr, m_lineDecomposition, m_structuredZones);
     }
 
-    size_t work = 0;
-    for (const auto &z : m_structuredZones) {
-      work += z->work();
-      assert(z->is_active());
-    }
-
-    size_t px        = 0;
-    size_t num_split = 0;
-    double avg_work  = (double)work / m_decomposition.m_processorCount;
-
+    // Do the processor decomposition.
 #if IOSS_DEBUG_OUTPUT
-    auto num_active = m_structuredZones.size();
-    if (rank == 0) {
-      fmt::print(
-          stderr,
-          "Decomposing structured mesh with {} zones for {} processors.\nAverage workload is {}, "
-          "Load Balance Threshold is {}, Work range {} to {}\n",
-          num_active, m_decomposition.m_processorCount, avg_work, m_loadBalanceThreshold,
-          avg_work / m_loadBalanceThreshold, avg_work * m_loadBalanceThreshold);
-    }
+    bool verbose = true;
+#else
+    bool verbose = false;
 #endif
-
-    if (avg_work < 1.0) {
-      if (rank == 0) {
-        fmt::print(stderr, "ERROR: Model size too small to distribute over {} processors.\n",
-                   m_decomposition.m_processorCount);
-      }
-      std::exit(EXIT_FAILURE);
-    }
-
-#if IOSS_DEBUG_OUTPUT
-    if (rank == 0) {
-      fmt::print(stderr,
-                 "========================================================================\n");
-      fmt::print(stderr, "Pre-Splitting:\n");
-    }
-#endif
-    // Split all blocks where block->work() > avg_work * m_loadBalanceThreshold
-    size_t new_zone_id = Utils::pre_split(m_structuredZones, avg_work, m_loadBalanceThreshold, rank,
-                                          m_decomposition.m_processorCount);
-
-    // At this point, there should be no zone with block->work() > avg_work * m_loadBalanceThreshold
-#if IOSS_DEBUG_OUTPUT
-    if (rank == 0) {
-      fmt::print(stderr,
-                 "========================================================================\n");
-    }
-#endif
-    do {
-      std::vector<size_t> work_vector(m_decomposition.m_processorCount);
-      Utils::assign_zones_to_procs(m_structuredZones, work_vector);
-
-      // Calculate workload ratio for each processor...
-      px = 0; // Number of processors where workload ratio exceeds threshold.
-      std::vector<bool> exceeds(m_decomposition.m_processorCount);
-      for (size_t i = 0; i < work_vector.size(); i++) {
-        double workload_ratio = double(work_vector[i]) / double(avg_work);
-#if IOSS_DEBUG_OUTPUT
-        if (rank == 0) {
-          fmt::print(stderr, "\nProcessor {} work: {}, workload ratio: {}", i, work_vector[i],
-                     workload_ratio);
-        }
-#endif
-        if (workload_ratio > m_loadBalanceThreshold) {
-          exceeds[i] = true;
-          px++;
-        }
-      }
-#if IOSS_DEBUG_OUTPUT
-      if (rank == 0) {
-        fmt::print(stderr, "\n\nWorkload threshold exceeded on {} processors.\n", px);
-      }
-#endif
-      bool single_zone = m_structuredZones.size() == 1;
-      if (single_zone) {
-        auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
-                                    [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
-        if (active >= m_decomposition.m_processorCount) {
-          px = 0;
-        }
-      }
-      num_split = 0;
-      if (px > 0) {
-        auto zone_new(m_structuredZones);
-        for (auto zone : m_structuredZones) {
-          if (zone->is_active() && exceeds[zone->m_proc]) {
-            // Since 'zones' is sorted from most work to least,
-            // we just iterate zones and check whether the zone
-            // is on a proc where the threshold was exceeded.
-            // if so, split the block and set exceeds[proc] to false;
-            // Exit the loop when num_split >= px.
-            auto children = zone->split(new_zone_id, zone->work() / 2.0, rank);
-            if (children.first != nullptr && children.second != nullptr) {
-              zone_new.push_back(children.first);
-              zone_new.push_back(children.second);
-
-              new_zone_id += 2;
-              exceeds[zone->m_proc] = false;
-              num_split++;
-              if (num_split >= px) {
-                break;
-              }
-            }
-          }
-        }
-        std::swap(zone_new, m_structuredZones);
-      }
-#if IOSS_DEBUG_OUTPUT
-      auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
-                                  [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
-      if (rank == 0) {
-        fmt::print(stderr, "Number of active zones = {}, average work = {}\n", active, avg_work);
-        fmt::print(stderr,
-                   "========================================================================\n");
-      }
-#endif
-    } while (px > 0 && num_split > 0);
+    Utils::decompose_model(m_structuredZones, m_decomposition.m_processorCount, rank,
+                           m_loadBalanceThreshold, verbose);
 
     std::sort(m_structuredZones.begin(), m_structuredZones.end(),
               [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
@@ -673,7 +565,7 @@ namespace Iocgns {
 
       for (auto &zone : tmp_zone) {
         if (zone->is_active()) {
-          fmt::print(stderr, "{:6d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}\n", z++,
+          fmt::print(stderr, "{:6d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8n}\n", z++,
                      zone->m_proc, zone->m_adam->m_zone, zone->m_offset[0] + 1,
                      zone->m_ordinal[0] + zone->m_offset[0] + 1, zone->m_offset[1] + 1,
                      zone->m_ordinal[1] + zone->m_offset[1] + 1, zone->m_offset[2] + 1,
