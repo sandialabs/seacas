@@ -87,8 +87,8 @@ namespace {
         Iocgns::Utils::assign_zones_to_procs(zones, work_vector);
 
 #if 0
-	fmt::print(stderr, "\nDecomposition for {} processors; Total work = {:n}, Average = {}\n",
-		   proc_count, (size_t)total_work, avg_work);
+	fmt::print(stderr, "\nDecomposition for {} processors; Total work = {:n}, Average = {:n}\n",
+		   proc_count, (size_t)total_work, (size_t)avg_work);
 
 	  for (const auto zone : zones) {
 	    if (zone->is_active()) {

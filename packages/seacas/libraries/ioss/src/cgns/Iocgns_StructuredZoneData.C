@@ -312,7 +312,7 @@ namespace Iocgns {
 
     m_child1->m_name             = m_name + "_c1";
     m_child1->m_ordinal          = m_ordinal;
-    m_child1->m_ordinal[ordinal] = size_t((double)m_child1->m_ordinal[ordinal] * ratio + 0.5);
+    m_child1->m_ordinal[ordinal] = m_ordinal[ordinal] * ratio;
     if (m_child1->m_ordinal[ordinal] == 0) {
       m_child1->m_ordinal[ordinal] = 1;
     }
@@ -341,22 +341,24 @@ namespace Iocgns {
 
     if (rank == 0) {
 #if IOSS_DEBUG_OUTPUT
-      fmt::print(stderr,
-                 "\nSplit Zone {} ({}) Adam {} ({}) with intervals {:>12},\twork = {:12n}, offset {} "
-                 "{} {} along ordinal {} with ratio {}\n"
-                 "\tChild 1: Zone {} ({}) with intervals {:>12},\twork = {:12n}, offset "
-                 "{} {} {}\n"
-                 "\tChild 2: Zone {} ({}) with intervals {:>12},\twork = {:12n}, offset "
-                 "{} {} {}\n",
-                 m_name, m_zone, m_adam->m_name, m_adam->m_zone, fmt::format("{} {} {}", m_ordinal[0], m_ordinal[1],
-									     m_ordinal[2]), work(), m_offset[0], m_offset[1], m_offset[2], ordinal, ratio,
-                 m_child1->m_name, m_child1->m_zone, 
-                 fmt::format("{} {} {}", m_child1->m_ordinal[0], m_child1->m_ordinal[1],
-			     m_child1->m_ordinal[2]), m_child1->work(), m_child1->m_offset[0],
-                 m_child1->m_offset[1], m_child1->m_offset[2], m_child2->m_name, m_child2->m_zone,
-                 fmt::format("{} {} {}", m_child2->m_ordinal[0],
-			     m_child2->m_ordinal[1], m_child2->m_ordinal[2]), m_child2->work(),
-                 m_child2->m_offset[0], m_child2->m_offset[1], m_child2->m_offset[2]);
+      fmt::print(
+          stderr,
+          "\nSplit Zone {} ({}) Adam {} ({}) with intervals {:>12},\twork = {:12n}, offset {} "
+          "{} {} along ordinal {} with ratio {}\n"
+          "\tChild 1: Zone {} ({}) with intervals {:>12},\twork = {:12n}, offset "
+          "{} {} {}\n"
+          "\tChild 2: Zone {} ({}) with intervals {:>12},\twork = {:12n}, offset "
+          "{} {} {}\n",
+          m_name, m_zone, m_adam->m_name, m_adam->m_zone,
+          fmt::format("{} {} {}", m_ordinal[0], m_ordinal[1], m_ordinal[2]), work(), m_offset[0],
+          m_offset[1], m_offset[2], ordinal, ratio, m_child1->m_name, m_child1->m_zone,
+          fmt::format("{} {} {}", m_child1->m_ordinal[0], m_child1->m_ordinal[1],
+                      m_child1->m_ordinal[2]),
+          m_child1->work(), m_child1->m_offset[0], m_child1->m_offset[1], m_child1->m_offset[2],
+          m_child2->m_name, m_child2->m_zone,
+          fmt::format("{} {} {}", m_child2->m_ordinal[0], m_child2->m_ordinal[1],
+                      m_child2->m_ordinal[2]),
+          m_child2->work(), m_child2->m_offset[0], m_child2->m_offset[1], m_child2->m_offset[2]);
 #endif
     }
 
