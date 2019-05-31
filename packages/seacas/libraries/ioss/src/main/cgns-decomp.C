@@ -29,6 +29,7 @@
 #include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>
 
+#include <fmt/color.h>
 #include <fmt/format.h>
 
 namespace {
@@ -46,6 +47,8 @@ namespace {
         options_.usage(std::cerr);
         exit(EXIT_SUCCESS);
       }
+
+      verbose = options_.retrieve("verbose") != nullptr;
 
       {
         const char *temp = options_.retrieve("processors");
@@ -100,17 +103,20 @@ namespace {
                       "Ordinal not to split (0,1,2).", nullptr);
       options_.enroll("load_balance", Ioss::GetLongOption::MandatoryValue,
                       "Max ratio of processor work to average.", nullptr);
+      options_.enroll("verbose", Ioss::GetLongOption::NoValue,
+                      "Print additional decomposition information", nullptr);
     }
     Ioss::GetLongOption options_;
     int                 proc_count{0};
     int                 ordinal{-1};
     double              load_balance{1.4};
     std::string         filename;
+    bool                verbose{false};
   };
 } // namespace
 namespace {
   std::string codename;
-  std::string version = "0.9";
+  std::string version = "0.91";
 
   void cleanup(std::vector<Iocgns::StructuredZoneData *> &zones)
   {
@@ -158,9 +164,10 @@ namespace {
   }
 
   void decompose(std::vector<Iocgns::StructuredZoneData *> &zones, double load_balance_tolerance,
-                 size_t proc_count)
+                 size_t proc_count, bool verbose)
 
   {
+    // Get some information just to make output look better.  Not part of actual decomposition.
     size_t proc_width = std::floor(std::log10(proc_count)) + 1;
     double total_work =
         std::accumulate(zones.begin(), zones.end(), 0.0,
@@ -169,177 +176,190 @@ namespace {
     size_t work_width = std::floor(std::log10(total_work)) + 1;
     work_width += (work_width - 1) / 3; // for the commas...
 
-    double avg_work = total_work / (double)proc_count;
-    {
-      size_t zcount   = zones.size();
-      double max_work = avg_work * load_balance_tolerance;
+    // Find maximum ordinal to get width... (makes output look better)
+    int max_ordinal = 0;
+    for (const auto zone : zones) {
+      if (zone->is_active()) {
+        max_ordinal =
+            std::max({max_ordinal, zone->m_ordinal[0], zone->m_ordinal[1], zone->m_ordinal[2]});
+      }
+    }
+    size_t ord_width = std::floor(std::log10(max_ordinal)) + 1;
+    double avg_work  = total_work / (double)proc_count;
+    size_t zcount    = zones.size();
 
-      Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+    // ========================================================================
+    // Now, do the processor decomposition.
+    Iocgns::Utils::decompose_model(zones, proc_count, 0, load_balance_tolerance, verbose);
+    // ========================================================================
 
-      for (const auto zone : zones) {
-        if (zone->is_active()) {
-          if (zone->work() > max_work) {
-            fmt::print("WARNING: Work on zone {} ({:n}) exceeds max_work ({:n}).\n", zone->m_name,
-                       zone->work(), (size_t)max_work);
-          }
+    // Print work/processor map...
+    std::vector<size_t> proc_work(proc_count);
+
+    fmt::print("\nDecomposition for {} zones over {} processors; Total work = {:n}; Average = "
+               "{:n}\n",
+               zcount, proc_count, (size_t)total_work, (size_t)avg_work);
+
+    // Get max name length for all zones...
+    size_t name_len = 0;
+    for (const auto zone : zones) {
+      if (zone->is_active()) {
+        auto len = zone->m_name.length();
+        if (len > name_len) {
+          name_len = len;
         }
       }
+    }
 
-      for (size_t i = 0; i < zones.size(); i++) {
-        SMART_ASSERT(zones[i]->m_zone == (int)i + 1)(zones[i]->m_zone)(i + 1);
-      }
-
-      {
-        std::vector<size_t> work_vector(proc_count);
-        Iocgns::Utils::assign_zones_to_procs(zones, work_vector);
-
-        // Print work/processor map...
-        std::vector<size_t> proc_work(proc_count);
-
-        fmt::print("\nDecomposition for {} zones over {} processors; Total work = {:n}, Average = "
-                   "{:n}\n",
-                   zcount, proc_count, (size_t)total_work, (size_t)avg_work);
-
-        // Get max name length for all zones...
-        size_t name_len = 0;
-        for (const auto zone : zones) {
-          if (zone->is_active()) {
-            auto len = zone->m_name.length();
-            if (len > name_len) {
-              name_len = len;
-            }
-          }
-        }
-
-        //=======================================================================
-        fmt::print("\n");
-        for (const auto adam_zone : zones) {
-          if (adam_zone->m_parent == nullptr) {
-            if (adam_zone->m_child1 == nullptr) {
-              // Unsplit...
-              fmt::print("\tZone {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n} (unsplit)\n",
-                         adam_zone->m_name, name_len, adam_zone->m_proc, proc_width,
-                         fmt::format("{}x{}x{}", adam_zone->m_ordinal[0], adam_zone->m_ordinal[1],
-                                     adam_zone->m_ordinal[2]),
-                         adam_zone->work(), work_width);
-            }
-            else {
-              fmt::print("\tZone: {:{}} is decomposed. \tOrdinal: {:^12}\tWork: {:{}n}\n",
-                         adam_zone->m_name, name_len,
-                         fmt::format("{}x{}x{}", adam_zone->m_ordinal[0], adam_zone->m_ordinal[1],
-                                     adam_zone->m_ordinal[2]),
-                         adam_zone->work(), work_width);
-              for (const auto zone : zones) {
-                if (zone->is_active() && zone->m_adam == adam_zone) {
-                  fmt::print("\t      {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n}\n",
-                             zone->m_name, name_len, zone->m_proc, proc_width,
-                             fmt::format("{}x{}x{}", zone->m_ordinal[0], zone->m_ordinal[1],
-                                         zone->m_ordinal[2]),
-                             zone->work(), work_width);
-                }
-              }
-            }
-          }
-        }
-        //=======================================================================
-
-        for (const auto zone : zones) {
-          if (zone->is_active()) {
-            proc_work[zone->m_proc] += zone->work();
-          }
-        }
-
-        auto v1 = *std::min_element(proc_work.begin(), proc_work.end());
-        auto v2 = *std::max_element(proc_work.begin(), proc_work.end());
-        if (v1 == v2) {
-          fmt::print("\nWork on all processors is {:n}\n\n", v1);
+    //=======================================================================
+    fmt::print("\n");
+    for (const auto adam_zone : zones) {
+      if (adam_zone->m_parent == nullptr) {
+        if (adam_zone->m_child1 == nullptr) {
+          // Unsplit...
+          fmt::print("\tZone {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n} (unsplit)\n",
+                     adam_zone->m_name, name_len, adam_zone->m_proc, proc_width,
+                     fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, adam_zone->m_ordinal[0],
+                                 adam_zone->m_ordinal[1], adam_zone->m_ordinal[2]),
+                     adam_zone->work(), work_width);
         }
         else {
-          int max_star = 40;
-          int min_star = max_star * ((double)v1 / (double)(v2));
-          int delta    = max_star - min_star;
-
-          fmt::print("\nWork per processor: Minimum = {:n}, Maximum = {:n}, Ratio = {}\n\n", v1, v2,
-                     (double)(v2) / v1);
-          for (size_t i = 0; i < proc_work.size(); i++) {
-            int         star_cnt = (double)(proc_work[i] - v1) / (v2 - v1) * delta + min_star;
-            std::string stars(star_cnt, '*');
-            fmt::print("\tProcessor {:{}}, work = {:{}n}\t{}\n", i, proc_width, proc_work[i],
-                       work_width, stars);
-          }
-        }
-
-        // Validate decomposition...
-
-        // Each active zone must be on a processor
-        for (const auto zone : zones) {
-          if (zone->is_active()) {
-            SMART_ASSERT(zone->m_proc >= 0)(zone->m_proc);
-          }
-        }
-
-        // A processor cannot have more than one zone with the same adam zone
-        std::set<std::pair<int, int>> proc_adam_map;
-        for (const auto zone : zones) {
-          if (zone->is_active()) {
-            auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
-            SMART_ASSERT(success.second);
-          }
-        }
-
-        // Zone Grid Connectivity Checks:
-        update_zgc_data(zones, proc_count);
-
-        // Zone Grid Connectivity instances can't connect to themselves...
-        for (auto &zone : zones) {
-          if (zone->is_active()) {
-            for (const auto &zgc : zone->m_zoneConnectivity) {
-              if (zgc.is_active()) {
-                SMART_ASSERT(zgc.m_ownerZone != zgc.m_donorZone)(zgc.m_ownerZone)(zgc.m_donorZone);
-                SMART_ASSERT(zgc.m_ownerGUID != zgc.m_donorGUID)(zgc.m_ownerGUID)(zgc.m_donorGUID);
-              }
+          fmt::print("\tZone: {:{}} is decomposed. \tOrdinal: {:^12}\tWork: {:{}n}\n",
+                     adam_zone->m_name, name_len,
+                     fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, adam_zone->m_ordinal[0],
+                                 adam_zone->m_ordinal[1], adam_zone->m_ordinal[2]),
+                     adam_zone->work(), work_width);
+          for (const auto zone : zones) {
+            if (zone->is_active() && zone->m_adam == adam_zone) {
+              fmt::print("\t      {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n}\n",
+                         zone->m_name, name_len, zone->m_proc, proc_width,
+                         fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, zone->m_ordinal[0],
+                                     zone->m_ordinal[1], zone->m_ordinal[2]),
+                         zone->work(), work_width);
             }
           }
         }
+      }
+    }
+    //=======================================================================
 
-        // In Iocgns::Utils::common_write_meta_data, there is code to make
-        // sure that the zgc.m_connectionName  is unique for all zgc instances on
-        // a zone / processor pair (if !parallel_io which is file-per-processor)
-        // The uniquification appends a letter from 'A' to 'Z' to the name
-        // If the name is still not unique, repeats process with 'AA' to 'ZZ'
-        // Make sure that there are not more than 26 + 26*26 + 1 instances of the same
-        // name on a zone to ensure that this works...
-        for (auto &zone : zones) {
-          if (zone->is_active()) {
-            std::map<std::string, int> zgc_map;
-            for (const auto &zgc : zone->m_zoneConnectivity) {
-              if (zgc.is_active() && !zgc.is_from_decomp()) {
-                zgc_map[zgc.m_connectionName]++;
-              }
-            }
-            for (const auto &kk : zgc_map) {
-              SMART_ASSERT(kk.second < 26 * 26 + 26 + 1)(kk.second);
+    for (const auto zone : zones) {
+      if (zone->is_active()) {
+        proc_work[zone->m_proc] += zone->work();
+      }
+    }
+
+    auto v1 = *std::min_element(proc_work.begin(), proc_work.end());
+    auto v2 = *std::max_element(proc_work.begin(), proc_work.end());
+    if (v1 == v2) {
+      fmt::print("\nWork on all processors is {:n}\n\n", v1);
+    }
+    else {
+      int max_star = 40;
+      int min_star = max_star * ((double)v1 / (double)(v2));
+      int delta    = max_star - min_star;
+
+      fmt::print("\nWork per processor: Minimum = {:n}, Maximum = {:n}, Ratio = {}\n\n", v1, v2,
+                 (double)(v2) / v1);
+      for (size_t i = 0; i < proc_work.size(); i++) {
+        int         star_cnt = (double)(proc_work[i] - v1) / (v2 - v1) * delta + min_star;
+        std::string stars(star_cnt, '*');
+        if (proc_work[i] == v2) {
+          fmt::print(fg(fmt::color::red), "\tProcessor {:{}}, work = {:{}n}\t{}\n", i, proc_width,
+                     proc_work[i], work_width, stars);
+        }
+        else if (proc_work[i] == v1) {
+          fmt::print(fg(fmt::color::green), "\tProcessor {:{}}, work = {:{}n}\t{}\n", i, proc_width,
+                     proc_work[i], work_width, stars);
+        }
+        else {
+          fmt::print("\tProcessor {:{}}, work = {:{}n}\t{}\n", i, proc_width, proc_work[i],
+                     work_width, stars);
+        }
+        if (verbose) {
+          for (const auto zone : zones) {
+            if ((size_t)zone->m_proc == i) {
+              auto pct = int(100.0 * (double)zone->work() / proc_work[i] + 0.5);
+              fmt::print("\t      {:{}} {:{}n}\t{:3}%\t{:^12}\n", zone->m_name, name_len,
+                         zone->work(), work_width, pct,
+                         fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, zone->m_ordinal[0],
+                                     zone->m_ordinal[1], zone->m_ordinal[2]));
             }
           }
-        } //
+          fmt::print("\n");
+        }
+      }
 
-        // Zone Grid Connectivity from_decomp instances must be symmetric...
-        // The GUID encodes the id and the processor,
-        std::map<std::pair<size_t, size_t>, int> is_symm;
-        for (auto &zone : zones) {
-          if (zone->is_active()) {
-            for (const auto &zgc : zone->m_zoneConnectivity) {
-              if (zgc.is_active() && zgc.is_from_decomp()) {
-                is_symm[std::make_pair(std::min(zgc.m_ownerGUID, zgc.m_donorGUID),
-                                       std::max(zgc.m_ownerGUID, zgc.m_donorGUID))]++;
-              }
+      // Validate decomposition...
+
+      // Each active zone must be on a processor
+      for (const auto zone : zones) {
+        if (zone->is_active()) {
+          SMART_ASSERT(zone->m_proc >= 0)(zone->m_proc);
+        }
+      }
+
+      // A processor cannot have more than one zone with the same adam zone
+      std::set<std::pair<int, int>> proc_adam_map;
+      for (const auto zone : zones) {
+        if (zone->is_active()) {
+          auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
+          SMART_ASSERT(success.second);
+        }
+      }
+
+      // Zone Grid Connectivity Checks:
+      update_zgc_data(zones, proc_count);
+
+      // Zone Grid Connectivity instances can't connect to themselves...
+      for (auto &zone : zones) {
+        if (zone->is_active()) {
+          for (const auto &zgc : zone->m_zoneConnectivity) {
+            if (zgc.is_active()) {
+              SMART_ASSERT(zgc.m_ownerZone != zgc.m_donorZone)(zgc.m_ownerZone)(zgc.m_donorZone);
+              SMART_ASSERT(zgc.m_ownerGUID != zgc.m_donorGUID)(zgc.m_ownerGUID)(zgc.m_donorGUID);
             }
           }
         }
-        // Iterate `is_symm` and make sure all entries == 2
-        for (const auto &item : is_symm) {
-          SMART_ASSERT(item.second == 2);
+      }
+
+      // In Iocgns::Utils::common_write_meta_data, there is code to make
+      // sure that the zgc.m_connectionName  is unique for all zgc instances on
+      // a zone / processor pair (if !parallel_io which is file-per-processor)
+      // The uniquification appends a letter from 'A' to 'Z' to the name
+      // If the name is still not unique, repeats process with 'AA' to 'ZZ'
+      // Make sure that there are not more than 26 + 26*26 + 1 instances of the same
+      // name on a zone to ensure that this works...
+      for (auto &zone : zones) {
+        if (zone->is_active()) {
+          std::map<std::string, int> zgc_map;
+          for (const auto &zgc : zone->m_zoneConnectivity) {
+            if (zgc.is_active() && !zgc.is_from_decomp()) {
+              zgc_map[zgc.m_connectionName]++;
+            }
+          }
+          for (const auto &kk : zgc_map) {
+            SMART_ASSERT(kk.second < 26 * 26 + 26 + 1)(kk.second);
+          }
         }
+      } //
+
+      // Zone Grid Connectivity from_decomp instances must be symmetric...
+      // The GUID encodes the id and the processor,
+      std::map<std::pair<size_t, size_t>, int> is_symm;
+      for (auto &zone : zones) {
+        if (zone->is_active()) {
+          for (const auto &zgc : zone->m_zoneConnectivity) {
+            if (zgc.is_active() && zgc.is_from_decomp()) {
+              is_symm[std::make_pair(std::min(zgc.m_ownerGUID, zgc.m_donorGUID),
+                                     std::max(zgc.m_ownerGUID, zgc.m_donorGUID))]++;
+            }
+          }
+        }
+      }
+      // Iterate `is_symm` and make sure all entries == 2
+      for (const auto &item : is_symm) {
+        SMART_ASSERT(item.second == 2);
       }
     }
   }
@@ -400,6 +420,6 @@ int main(int argc, char *argv[])
   }
 
   region.output_summary(std::cout, false);
-  decompose(zones, interface.load_balance, interface.proc_count);
+  decompose(zones, interface.load_balance, interface.proc_count, interface.verbose);
   cleanup(zones);
 }
