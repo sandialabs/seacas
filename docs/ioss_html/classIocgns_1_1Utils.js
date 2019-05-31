@@ -11,6 +11,7 @@ var classIocgns_1_1Utils =
     [ "cgns_error", "classIocgns_1_1Utils.html#a34010e9b0618c248e1df20ff38800bda", null ],
     [ "check_mesh_type", "classIocgns_1_1Utils.html#a303eced538cfd6bc29e7195e492b74c2", null ],
     [ "common_write_meta_data", "classIocgns_1_1Utils.html#a4436c119a691be04b8407f0f69185161", null ],
+    [ "decompose_model", "classIocgns_1_1Utils.html#a00710fb5205a3489fc07482a546bc807", null ],
     [ "finalize_database", "classIocgns_1_1Utils.html#a76cdc50e03a141726776fea60ba1aad1", null ],
     [ "find_solution_index", "classIocgns_1_1Utils.html#a023f147650f0a22fda854f67fcc2e05c", null ],
     [ "get_db_zone", "classIocgns_1_1Utils.html#ad75ee7ac23c7c75a2a266f35cd73d364", null ],

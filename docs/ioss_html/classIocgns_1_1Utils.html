@@ -154,6 +154,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a30682459cf58facf7cf19855e895b3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5b349db022c98769edceed5ab8bbaa4"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ad5b349db022c98769edceed5ab8bbaa4">add_transient_variables</a> (int cgns_file_ptr, const std::vector&lt; double &gt; &amp;timesteps, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, bool enable_field_recognition, char suffix_separator, int myProcessor, bool is_parallel_io)</td></tr>
 <tr class="separator:ad5b349db022c98769edceed5ab8bbaa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00710fb5205a3489fc07482a546bc807"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a00710fb5205a3489fc07482a546bc807">decompose_model</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones, int proc_count, int rank, double load_balance_threshold, bool verbose)</td></tr>
+<tr class="separator:a00710fb5205a3489fc07482a546bc807"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a614430c8ae9237b0083fdbf447cd339a"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a614430c8ae9237b0083fdbf447cd339a">pre_split</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones, double avg_work, double load_balance, int proc_rank, int proc_count)</td></tr>
 <tr class="separator:a614430c8ae9237b0083fdbf447cd339a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03b71b4c7df8008663f71453cc7d4266"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a03b71b4c7df8008663f71453cc7d4266">assign_zones_to_procs</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones, std::vector&lt; size_t &gt; &amp;work_vector)</td></tr>
@@ -584,6 +586,60 @@ Static Public Attributes</h2></td></tr>
           <td></td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>is_parallel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a00710fb5205a3489fc07482a546bc807"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00710fb5205a3489fc07482a546bc807">&#9670;&nbsp;</a></span>decompose_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::Utils::decompose_model </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>zones</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>proc_count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>load_balance_threshold</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>verbose</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
