@@ -61,6 +61,12 @@ namespace {
                           double load_balance_tolerance, size_t proc_count, double min_toler = 0.9,
                           double max_toler = 1.0)
   {
+#if IOSS_DEBUG_OUTPUT
+    bool verbose = true;
+#else
+    bool verbose = false;
+#endif
+
     double total_work =
         std::accumulate(zones.begin(), zones.end(), 0.0,
                         [](double a, Iocgns::StructuredZoneData *b) { return a + b->work(); });
@@ -68,7 +74,7 @@ namespace {
     double avg_work = total_work / (double)proc_count;
     SECTION("split_zones")
     {
-      Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count);
+      Iocgns::Utils::pre_split(zones, avg_work, load_balance_tolerance, 0, proc_count, verbose);
 
       double max_work = avg_work * load_balance_tolerance * max_toler;
       for (const auto zone : zones) {
@@ -84,7 +90,7 @@ namespace {
       SECTION("assign_to_procs")
       {
         std::vector<size_t> work_vector(proc_count);
-        Iocgns::Utils::assign_zones_to_procs(zones, work_vector);
+        Iocgns::Utils::assign_zones_to_procs(zones, work_vector, verbose);
 
 #if 0
 	fmt::print(stderr, "\nDecomposition for {} processors; Total work = {:n}, Average = {:n}\n",

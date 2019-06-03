@@ -1,3 +1,38 @@
+// Copyright(C) 2019 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//
+//     * Redistributions in binary form must reproduce the above
+//       copyright notice, this list of conditions and the following
+//       disclaimer in the documentation and/or other materials provided
+//       with the distribution.
+//
+//     * Neither the name of NTESS nor the names of its
+//       contributors may be used to endorse or promote products derived
+//       from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+// Make asserts active even in non-debug build
+#undef NDEBUG
+
 #include <Ionit_Initializer.h>
 #include <algorithm>
 #include <cstddef>
@@ -14,7 +49,6 @@
 #include <utility>
 #include <vector>
 
-#undef NDEBUG
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_GetLongOpt.h>
@@ -116,7 +150,7 @@ namespace {
 } // namespace
 namespace {
   std::string codename;
-  std::string version = "0.91";
+  std::string version = "0.92";
 
   void cleanup(std::vector<Iocgns::StructuredZoneData *> &zones)
   {
@@ -217,7 +251,7 @@ namespace {
       if (adam_zone->m_parent == nullptr) {
         if (adam_zone->m_child1 == nullptr) {
           // Unsplit...
-          fmt::print("\tZone {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n} (unsplit)\n",
+          fmt::print("\tZone: {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n} (unsplit)\n",
                      adam_zone->m_name, name_len, adam_zone->m_proc, proc_width,
                      fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, adam_zone->m_ordinal[0],
                                  adam_zone->m_ordinal[1], adam_zone->m_ordinal[2]),
@@ -264,17 +298,18 @@ namespace {
       for (size_t i = 0; i < proc_work.size(); i++) {
         int         star_cnt = (double)(proc_work[i] - v1) / (v2 - v1) * delta + min_star;
         std::string stars(star_cnt, '*');
+	std::string format = "\tProcessor {:{}}, work = {:{}n}  ({:.2f})\t{}\n";
         if (proc_work[i] == v2) {
-          fmt::print(fg(fmt::color::red), "\tProcessor {:{}}, work = {:{}n}\t{}\n", i, proc_width,
-                     proc_work[i], work_width, stars);
+          fmt::print(fg(fmt::color::red), format, i, proc_width,
+                     proc_work[i], work_width, proc_work[i] / avg_work, stars);
         }
         else if (proc_work[i] == v1) {
-          fmt::print(fg(fmt::color::green), "\tProcessor {:{}}, work = {:{}n}\t{}\n", i, proc_width,
-                     proc_work[i], work_width, stars);
+          fmt::print(fg(fmt::color::green), format, i, proc_width,
+                     proc_work[i], work_width, proc_work[i] / avg_work, stars);
         }
         else {
-          fmt::print("\tProcessor {:{}}, work = {:{}n}\t{}\n", i, proc_width, proc_work[i],
-                     work_width, stars);
+          fmt::print(format, i, proc_width, proc_work[i],
+                     work_width, proc_work[i] / avg_work, stars);
         }
         if (verbose) {
           for (const auto zone : zones) {

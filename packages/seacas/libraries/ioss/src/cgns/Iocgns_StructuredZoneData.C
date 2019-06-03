@@ -33,6 +33,7 @@
 #include <Ioss_CodeTypes.h>
 #include <algorithm>
 #include <cgns/Iocgns_StructuredZoneData.h>
+#include <fmt/color.h>
 #include <fmt/ostream.h>
 #include <tokenize.h>
 
@@ -261,7 +262,7 @@ namespace Iocgns {
   // Split this StructuredZone along the largest ordinal
   // into two children and return the created zones.
   std::pair<StructuredZoneData *, StructuredZoneData *>
-  StructuredZoneData::split(int zone_id, double avg_work, int rank)
+  StructuredZoneData::split(int zone_id, double avg_work, int rank, bool verbose)
   {
     assert(is_active());
     double ratio = avg_work / work();
@@ -339,19 +340,21 @@ namespace Iocgns {
     m_child2->m_splitOrdinal = ordinal;
     m_child2->m_sibling      = m_child1;
 
-    if (rank == 0) {
-#if IOSS_DEBUG_OUTPUT
+    if (rank == 0 && verbose) {
+      fmt::print(stderr, fg(fmt::color::cyan),
+          "\nSplit Zone {} ({}) Adam {} ({}) with intervals {:>12},\twork = {:12n}, offset {} "
+          "{} {}, ordinal {}, ratio {:.3f}\n",
+          m_name, m_zone, m_adam->m_name, m_adam->m_zone,
+          fmt::format("{} {} {}", m_ordinal[0], m_ordinal[1], m_ordinal[2]), work(), m_offset[0],
+          m_offset[1], m_offset[2], ordinal, ratio);
+
       fmt::print(
           stderr,
-          "\nSplit Zone {} ({}) Adam {} ({}) with intervals {:>12},\twork = {:12n}, offset {} "
-          "{} {} along ordinal {} with ratio {}\n"
           "\tChild 1: Zone {} ({}) with intervals {:>12},\twork = {:12n}, offset "
           "{} {} {}\n"
           "\tChild 2: Zone {} ({}) with intervals {:>12},\twork = {:12n}, offset "
           "{} {} {}\n",
-          m_name, m_zone, m_adam->m_name, m_adam->m_zone,
-          fmt::format("{} {} {}", m_ordinal[0], m_ordinal[1], m_ordinal[2]), work(), m_offset[0],
-          m_offset[1], m_offset[2], ordinal, ratio, m_child1->m_name, m_child1->m_zone,
+	  m_child1->m_name, m_child1->m_zone,
           fmt::format("{} {} {}", m_child1->m_ordinal[0], m_child1->m_ordinal[1],
                       m_child1->m_ordinal[2]),
           m_child1->work(), m_child1->m_offset[0], m_child1->m_offset[1], m_child1->m_offset[2],
@@ -359,7 +362,6 @@ namespace Iocgns {
           fmt::format("{} {} {}", m_child2->m_ordinal[0], m_child2->m_ordinal[1],
                       m_child2->m_ordinal[2]),
           m_child2->work(), m_child2->m_offset[0], m_child2->m_offset[1], m_child2->m_offset[2]);
-#endif
     }
 
     // Add ZoneGridConnectivity instance to account for split...
