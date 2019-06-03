@@ -2070,7 +2070,8 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
     }
   }
   // Split all blocks where block->work() > avg_work * load_balance_threshold
-  size_t new_zone_id = Utils::pre_split(zones, avg_work, load_balance_threshold, rank, proc_count, verbose);
+  size_t new_zone_id =
+      Utils::pre_split(zones, avg_work, load_balance_threshold, rank, proc_count, verbose);
 
   // At this point, there should be no zone with block->work() > avg_work * load_balance_threshold
   if (verbose) {
@@ -2091,8 +2092,8 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
     for (size_t i = 0; i < work_vector.size(); i++) {
       double workload_ratio = double(work_vector[i]) / avg_work;
       if (verbose && rank == 0) {
-          fmt::print(stderr, "\nProcessor {} work: {:n}, workload ratio: {}", i, work_vector[i],
-                     workload_ratio);
+        fmt::print(stderr, "\nProcessor {} work: {:n}, workload ratio: {}", i, work_vector[i],
+                   workload_ratio);
       }
       if (workload_ratio > load_balance_threshold) {
         exceeds[i] = true;
@@ -2100,7 +2101,7 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
       }
     }
     if (verbose && rank == 0) {
-        fmt::print(stderr, "\n\nWorkload threshold exceeded on {} processors.\n", px);
+      fmt::print(stderr, "\n\nWorkload threshold exceeded on {} processors.\n", px);
     }
     bool single_zone = zones.size() == 1;
     if (single_zone) {
@@ -2150,7 +2151,7 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
 }
 
 void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &all_zones,
-                                          std::vector<size_t> &                      work_vector, bool verbose)
+                                          std::vector<size_t> &work_vector, bool verbose)
 {
   for (auto &zone : all_zones) {
     zone->m_proc = -1;
@@ -2159,12 +2160,12 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
   // Sort zones based on work.  Most work first.. Filtered to active only...
   std::vector<Iocgns::StructuredZoneData *> zones;
   std::copy_if(all_zones.begin(), all_zones.end(), std::back_inserter(zones),
-	       [](Iocgns::StructuredZoneData *z) { return z->is_active(); });
+               [](Iocgns::StructuredZoneData *z) { return z->is_active(); });
 
   std::sort(zones.begin(), zones.end(),
-	    [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
-	      return a->work() > b->work();
-	    });
+            [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
+              return a->work() > b->work();
+            });
 
   std::set<std::pair<int, int>> proc_adam_map;
 
@@ -2176,6 +2177,12 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
   for (; i < work_vector.size(); i++) {
     auto &zone   = zones[i];
     zone->m_proc = i;
+    if (verbose) {
+      fmt::print(
+          stderr,
+          "Assigning zone '{}' with work {:n} to processor {}. Changing work from {:n} to {:n}\n",
+          zone->m_name, zone->work(), zone->m_proc, work_vector[i], zone->work() + work_vector[i]);
+    }
     work_vector[i] += zone->work();
     proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, zone->m_proc));
   }
@@ -2191,13 +2198,20 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
     if (proc >= 0) {
       auto success = proc_adam_map.insert(std::make_pair(zone->m_adam->m_zone, proc));
       if (success.second) {
-	zone->m_proc = proc;
-	work_vector[proc] += zone->work();
+        zone->m_proc = proc;
+        if (verbose) {
+          fmt::print(stderr,
+                     "Assigning zone '{}' with work {:n} to processor {}. Changing work from {:n} "
+                     "to {:n}\n",
+                     zone->m_name, zone->work(), zone->m_proc, work_vector[proc],
+                     zone->work() + work_vector[proc]);
+        }
+        work_vector[proc] += zone->work();
       }
       else {
-	std::ostringstream errmsg;
-	fmt::print(errmsg, "IOCGNS error: Could not assign zones to processors in {}", __func__);
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        fmt::print(errmsg, "IOCGNS error: Could not assign zones to processors in {}", __func__);
+        IOSS_ERROR(errmsg);
       }
     }
     else {
@@ -2408,7 +2422,7 @@ size_t Iocgns::Utils::pre_split(std::vector<Iocgns::StructuredZoneData *> &zones
   if (zones.size() < (size_t)proc_count && load_balance > 1.05) {
     // Tighten up the load_balance factor to get some decomposition going...
     double new_load_balance = (1.0 + load_balance) / 2.0;
-    new_zone_id             = pre_split(zones, avg_work, new_load_balance, proc_rank, proc_count, verbose);
+    new_zone_id = pre_split(zones, avg_work, new_load_balance, proc_rank, proc_count, verbose);
   }
   return new_zone_id;
 }
