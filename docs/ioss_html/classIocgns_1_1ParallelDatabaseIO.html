@@ -1588,6 +1588,9 @@ Additional Inherited Members</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">int Iocgns::ParallelDatabaseIO::get_file_pointer </td>
@@ -1596,7 +1599,15 @@ Additional Inherited Members</h2></td></tr>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+<p>For the database types that support it, return an integer <code>handle</code> through which a client can directly access the underlying file. Please use sparingly and with discretion. Basically, a kluge </p>
+
+<p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#a009607cca86df2f61da6aea3ef27abfa">Ioss::DatabaseIO</a>.</p>
 
 </div>
 </div>
