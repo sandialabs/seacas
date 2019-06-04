@@ -92,6 +92,7 @@ namespace Iopx {
     DatabaseIO &operator=(const DatabaseIO &from) = delete;
     ~DatabaseIO();
 
+    int  get_file_pointer() const override; // Open file and set exodusFilePtr.
     bool needs_shared_node_information() const override { return true; }
 
   private:
@@ -175,7 +176,6 @@ namespace Iopx {
     int64_t get_Xset_field_internal(ex_entity_type type, const Ioss::EntitySet *ns,
                                     const Ioss::Field &field, void *data, size_t data_size) const;
 
-    int get_file_pointer() const override; // Open file and set exodusFilePtr.
     int free_file_pointer() const override;
 
     int64_t read_nodal_coordinates();
