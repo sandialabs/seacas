@@ -2029,6 +2029,128 @@ int Iocgns::Utils::get_step_times(int cgns_file_ptr, std::vector<double> &timest
   return num_timesteps;
 }
 
+void Iocgns::Utils::set_line_decomposition(int cgns_file_ptr, const std::string &line_decomposition,
+                                           std::vector<Iocgns::StructuredZoneData *> &zones,
+                                           int rank, bool verbose)
+{
+  // The "line_decomposition" string is a list of 0 or more BC
+  // (Family) names.  For all structured zones which this BC
+  // touches, the ordinal of the face (i,j,k) will be set such that
+  // a parallel decomposition will not split the zone along this
+  // ordinal.  For example, if the BC "wall1" has the definition
+  // [1->1, 1->5, 1->8], then it is on the constant 'i' face of the
+  // zone and therefore, the zone will *not* be split along the 'i'
+  // ordinal.
+
+  // Get names of all valid 'bcs' on the mesh
+  int base         = 1;
+  int num_families = 0;
+  CGCHECKNP(cg_nfamilies(cgns_file_ptr, base, &num_families));
+
+  std::vector<std::string> families;
+  families.reserve(num_families);
+  for (int family = 1; family <= num_families; family++) {
+    char name[CGNS_MAX_NAME_LENGTH + 1];
+    int  num_bc  = 0;
+    int  num_geo = 0;
+    CGCHECKNP(cg_family_read(cgns_file_ptr, base, family, name, &num_bc, &num_geo));
+    if (num_bc > 0) {
+      Ioss::Utils::fixup_name(name);
+      families.push_back(name);
+    }
+  }
+
+  // Slit into fields using the commas as delimiters
+  auto bcs = Ioss::tokenize(line_decomposition, ",");
+  for (auto &bc : bcs) {
+    Ioss::Utils::fixup_name(bc);
+    if (std::find(families.begin(), families.end(), bc) == families.end()) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: CGNS: The family/bc name '{}' specified as a line decomposition surface "
+                 "does not exist on this CGNS file.\n"
+                 "             Valid names are: ",
+                 bc);
+      for (const auto &fam : families) {
+        fmt::print(errmsg, "'{}', ", fam);
+      }
+      IOSS_ERROR(errmsg);
+    }
+  }
+
+  for (auto zone : zones) {
+    // Read BCs applied to this zone and see if they match any of
+    // the BCs in 'bcs' list.  If so, determine the face the BC is
+    // applied to and set the m_lineOrdinal to the ordinal
+    // perpendicular to this face.
+    int izone = zone->m_zone;
+    int num_bcs;
+    CGCHECKNP(cg_nbocos(cgns_file_ptr, base, izone, &num_bcs));
+
+    for (int ibc = 0; ibc < num_bcs; ibc++) {
+      char              boconame[CGNS_MAX_NAME_LENGTH + 1];
+      CG_BCType_t       bocotype;
+      CG_PointSetType_t ptset_type;
+      cgsize_t          npnts;
+      cgsize_t          NormalListSize;
+      CG_DataType_t     NormalDataType;
+      int               ndataset;
+
+      // All we really want from this is 'boconame'
+      CGCHECKNP(cg_boco_info(cgns_file_ptr, base, izone, ibc + 1, boconame, &bocotype, &ptset_type,
+                             &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+
+      if (bocotype == CG_FamilySpecified) {
+        // Need to get boconame from cg_famname_read
+        CGCHECKNP(
+            cg_goto(cgns_file_ptr, base, "Zone_t", izone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
+        CGCHECKNP(cg_famname_read(boconame));
+      }
+
+      Ioss::Utils::fixup_name(boconame);
+      if (std::find(bcs.begin(), bcs.end(), boconame) != bcs.end()) {
+        cgsize_t range[6];
+        CGCHECKNP(cg_boco_read(cgns_file_ptr, base, izone, ibc + 1, range, nullptr));
+
+        // There are some BC that are applied on an edge or a vertex;
+        // Don't want those, so filter them out at this time...
+        bool i = range[0] == range[3];
+        bool j = range[1] == range[4];
+        bool k = range[2] == range[5];
+
+        int sum = (i ? 1 : 0) + (j ? 1 : 0) + (k ? 1 : 0);
+        // Only set m_lineOrdinal if only a single ordinal selected.
+        if (sum == 1) {
+          int ordinal = -1;
+          if (i) {
+            ordinal = 0;
+          }
+          else if (j) {
+            ordinal = 1;
+          }
+          else if (k) {
+            ordinal = 2;
+          }
+          if (zone->m_lineOrdinal == -1) {
+            zone->m_lineOrdinal = ordinal;
+            if (verbose && rank == 0) {
+              fmt::print(stderr, "Setting line ordinal to {} on {} for surface: {}\n",
+                         zone->m_lineOrdinal, zone->m_name, boconame);
+            }
+          }
+          else if (zone->m_lineOrdinal != ordinal && rank == 0) {
+            fmt::print(
+                IOSS_WARNING,
+                "CGNS: Zone {0} named {1} has multiple line decomposition ordinal "
+                "specifications. Both ordinal {2} and {3} have been specified.  Keeping {3}\n",
+                izone, zone->m_name, ordinal, zone->m_lineOrdinal);
+          }
+        }
+      }
+    }
+  }
+}
+
 void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &zones,
                                     int proc_count, int rank, double load_balance_threshold,
                                     bool verbose)

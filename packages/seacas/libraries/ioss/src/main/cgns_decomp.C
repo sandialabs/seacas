@@ -109,6 +109,13 @@ namespace {
       }
 
       {
+        const char *temp = options_.retrieve("line_decomposition");
+        if (temp != nullptr) {
+          line_decomposition = temp;
+        }
+      }
+
+      {
         const char *temp = options_.retrieve("load_balance");
         if (temp != nullptr) {
           load_balance = std::stod(temp);
@@ -135,6 +142,13 @@ namespace {
                       nullptr);
       options_.enroll("ordinal", Ioss::GetLongOption::MandatoryValue,
                       "Ordinal not to split (0,1,2).", nullptr);
+      options_.enroll("line_decomposition", Ioss::GetLongOption::MandatoryValue,
+                      "list of 1 or more BC (Family) names.\n"
+                      "\t\tFor all structured zones which this BC touches, the ordinal of the face "
+                      "(i,j,k) will\n"
+                      "\t\tbe set such that a parallel decomposition will not split the zone along "
+                      "this ordinal.",
+                      nullptr);
       options_.enroll("load_balance", Ioss::GetLongOption::MandatoryValue,
                       "Max ratio of processor work to average.", nullptr);
       options_.enroll("verbose", Ioss::GetLongOption::NoValue,
@@ -144,13 +158,14 @@ namespace {
     int                 proc_count{0};
     int                 ordinal{-1};
     double              load_balance{1.4};
-    std::string         filename;
+    std::string         filename{};
+    std::string         line_decomposition{};
     bool                verbose{false};
   };
 } // namespace
 namespace {
   std::string codename;
-  std::string version = "0.92";
+  std::string version = "0.93";
 
   void cleanup(std::vector<Iocgns::StructuredZoneData *> &zones)
   {
@@ -298,18 +313,18 @@ namespace {
       for (size_t i = 0; i < proc_work.size(); i++) {
         int         star_cnt = (double)(proc_work[i] - v1) / (v2 - v1) * delta + min_star;
         std::string stars(star_cnt, '*');
-	std::string format = "\tProcessor {:{}}, work = {:{}n}  ({:.2f})\t{}\n";
+        std::string format = "\tProcessor {:{}}, work = {:{}n}  ({:.2f})\t{}\n";
         if (proc_work[i] == v2) {
-          fmt::print(fg(fmt::color::red), format, i, proc_width,
-                     proc_work[i], work_width, proc_work[i] / avg_work, stars);
+          fmt::print(fg(fmt::color::red), format, i, proc_width, proc_work[i], work_width,
+                     proc_work[i] / avg_work, stars);
         }
         else if (proc_work[i] == v1) {
-          fmt::print(fg(fmt::color::green), format, i, proc_width,
-                     proc_work[i], work_width, proc_work[i] / avg_work, stars);
+          fmt::print(fg(fmt::color::green), format, i, proc_width, proc_work[i], work_width,
+                     proc_work[i] / avg_work, stars);
         }
         else {
-          fmt::print(format, i, proc_width, proc_work[i],
-                     work_width, proc_work[i] / avg_work, stars);
+          fmt::print(format, i, proc_width, proc_work[i], work_width, proc_work[i] / avg_work,
+                     stars);
         }
         if (verbose) {
           for (const auto zone : zones) {
@@ -453,8 +468,13 @@ int main(int argc, char *argv[])
       zones.back()->m_lineOrdinal = interface.ordinal;
     }
   }
+  Iocgns::Utils::set_line_decomposition(dbi->get_file_pointer(), interface.line_decomposition,
+                                        zones, 0, interface.verbose);
 
   region.output_summary(std::cout, false);
+
+  // Actually do the decompostion...
   decompose(zones, interface.load_balance, interface.proc_count, interface.verbose);
+
   cleanup(zones);
 }
