@@ -306,6 +306,32 @@ namespace Iohb {
         new_this->showLabels   = false;
         new_this->tsFormat     = "";
       }
+      else if (fileFormat == CSV) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = ", ";
+        new_this->tsFormat     = "";
+      }
+      else if (fileFormat == TS_CSV) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = ", ";
+      }
+      else if (fileFormat == TEXT) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = "\t";
+        new_this->tsFormat     = "";
+      }
+      else if (fileFormat == TS_TEXT) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = "\t";
+      }
 
       if (showLegend) {
         new_this->legend_ = new Layout(false, precision_, separator_, fieldWidth_);
