@@ -86,6 +86,15 @@ namespace {
         exit(EXIT_SUCCESS);
       }
 
+      {
+        const std::string temp = options_.retrieve("output");
+        if (!temp.empty()) {
+          histogram            = temp.find("h") != std::string::npos;
+          work_per_processor   = temp.find("w") != std::string::npos;
+          zone_proc_assignment = temp.find("z") != std::string::npos;
+          verbose              = temp.find("v") != std::string::npos;
+        }
+      }
       verbose = options_.retrieve("verbose") != nullptr;
 
       if (options_.retrieve("output") != nullptr) {
