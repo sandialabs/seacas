@@ -469,8 +469,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a6d052ad14dd56bd3f30a69f37b5383b5 inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b72198fe1372d112bb3a47f0c074488 inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#a7b72198fe1372d112bb3a47f0c074488">set_maximum_symbol_length</a> (int requested_symbol_size) override</td></tr>
 <tr class="separator:a7b72198fe1372d112bb3a47f0c074488 inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa69c42ac2504d621a7d31dec2f008daa inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#aa69c42ac2504d621a7d31dec2f008daa">handle_block_ids</a> (const <a class="el" href="classIoss_1_1EntityBlock.html">Ioss::EntityBlock</a> *eb, ex_entity_type map_type, <a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> &amp;entity_map, void *ids, size_t num_to_get, size_t offset, size_t count) const</td></tr>
-<tr class="separator:aa69c42ac2504d621a7d31dec2f008daa inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9c5958722b9423b879bafcfdea8b34c inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#ae9c5958722b9423b879bafcfdea8b34c">handle_block_ids</a> (const <a class="el" href="classIoss_1_1EntityBlock.html">Ioss::EntityBlock</a> *eb, ex_entity_type map_type, <a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> &amp;entity_map, void *ids, size_t num_to_get, size_t offset) const</td></tr>
+<tr class="separator:ae9c5958722b9423b879bafcfdea8b34c inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0c9d4a2c627e17553289eff4b33eae7 inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#af0c9d4a2c627e17553289eff4b33eae7">compute_block_membership__</a> (<a class="el" href="classIoss_1_1SideBlock.html">Ioss::SideBlock</a> *efblock, std::vector&lt; std::string &gt; &amp;block_membership) const override</td></tr>
 <tr class="separator:af0c9d4a2c627e17553289eff4b33eae7 inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe352cc13bca60b4bc70df3a32213aee inherit pro_methods_classIoex_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#afe352cc13bca60b4bc70df3a32213aee">int_byte_size_db</a> () const override</td></tr>
@@ -1752,6 +1752,7 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>For the database types that support it, return an integer <code>handle</code> through which a client can directly access the underlying file. Please use sparingly and with discretion. Basically, a kluge </p>
 
 <p>Implements <a class="el" href="classIoex_1_1DatabaseIO.html#af0ddcfa1cd90af9397e76e2e80a7ef27">Ioex::DatabaseIO</a>.</p>
 

@@ -274,7 +274,7 @@ var hierarchy =
     [ "Skinner::Interface", "classSkinner_1_1Interface.html", null ],
     [ "Info::Interface", "classInfo_1_1Interface.html", null ],
     [ "IOShell::Interface", "classIOShell_1_1Interface.html", null ],
-    [ "anonymous_namespace{cgns-decomp.C}::Interface", "classanonymous__namespace_02cgns-decomp_8C_03_1_1Interface.html", null ],
+    [ "anonymous_namespace{cgns_decomp.C}::Interface", "classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html", null ],
     [ "Ioex::Internals", "classIoex_1_1Internals.html", null ],
     [ "IO", null, [
       [ "Ioad::AdiosWrapper", "classIoad_1_1AdiosWrapper.html", null ]

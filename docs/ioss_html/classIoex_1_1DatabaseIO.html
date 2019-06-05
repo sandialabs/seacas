@@ -312,8 +312,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a6d052ad14dd56bd3f30a69f37b5383b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b72198fe1372d112bb3a47f0c074488"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#a7b72198fe1372d112bb3a47f0c074488">set_maximum_symbol_length</a> (int requested_symbol_size) override</td></tr>
 <tr class="separator:a7b72198fe1372d112bb3a47f0c074488"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa69c42ac2504d621a7d31dec2f008daa"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#aa69c42ac2504d621a7d31dec2f008daa">handle_block_ids</a> (const <a class="el" href="classIoss_1_1EntityBlock.html">Ioss::EntityBlock</a> *eb, ex_entity_type map_type, <a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> &amp;entity_map, void *ids, size_t num_to_get, size_t offset, size_t count) const</td></tr>
-<tr class="separator:aa69c42ac2504d621a7d31dec2f008daa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9c5958722b9423b879bafcfdea8b34c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#ae9c5958722b9423b879bafcfdea8b34c">handle_block_ids</a> (const <a class="el" href="classIoss_1_1EntityBlock.html">Ioss::EntityBlock</a> *eb, ex_entity_type map_type, <a class="el" href="classIoss_1_1Map.html">Ioss::Map</a> &amp;entity_map, void *ids, size_t num_to_get, size_t offset) const</td></tr>
+<tr class="separator:ae9c5958722b9423b879bafcfdea8b34c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0c9d4a2c627e17553289eff4b33eae7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#af0c9d4a2c627e17553289eff4b33eae7">compute_block_membership__</a> (<a class="el" href="classIoss_1_1SideBlock.html">Ioss::SideBlock</a> *efblock, std::vector&lt; std::string &gt; &amp;block_membership) const override</td></tr>
 <tr class="separator:af0c9d4a2c627e17553289eff4b33eae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe352cc13bca60b4bc70df3a32213aee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html#afe352cc13bca60b4bc70df3a32213aee">int_byte_size_db</a> () const override</td></tr>
@@ -1589,7 +1589,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#a7edbb85b0c0ac62a80b2899256658dbb">Ioss::DatabaseIO</a>.</p>
 
-<p>Implemented in <a class="el" href="classIopx_1_1DatabaseIO.html#a2e07ca70f10661c838d7db548c24c021">Iopx::DatabaseIO</a>, and <a class="el" href="classIofx_1_1DatabaseIO.html#a54b4be724e3805227f2f9991780d9bc3">Iofx::DatabaseIO</a>.</p>
+<p>Implemented in <a class="el" href="classIopx_1_1DatabaseIO.html#a487f31d782dbd040b44f1c06eaf40cee">Iopx::DatabaseIO</a>, and <a class="el" href="classIofx_1_1DatabaseIO.html#a54b4be724e3805227f2f9991780d9bc3">Iofx::DatabaseIO</a>.</p>
 
 </div>
 </div>
@@ -1979,6 +1979,9 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>For the database types that support it, return an integer <code>handle</code> through which a client can directly access the underlying file. Please use sparingly and with discretion. Basically, a kluge </p>
+
+<p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#a009607cca86df2f61da6aea3ef27abfa">Ioss::DatabaseIO</a>.</p>
 
 <p>Implemented in <a class="el" href="classIopx_1_1DatabaseIO.html#aa866153bcca94af0b7140d16466b28c4">Iopx::DatabaseIO</a>, and <a class="el" href="classIofx_1_1DatabaseIO.html#a8212f6de9aaec63d0b3511726e6ff4c5">Iofx::DatabaseIO</a>.</p>
 
@@ -2086,8 +2089,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aa69c42ac2504d621a7d31dec2f008daa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa69c42ac2504d621a7d31dec2f008daa">&#9670;&nbsp;</a></span>handle_block_ids()</h2>
+<a id="ae9c5958722b9423b879bafcfdea8b34c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9c5958722b9423b879bafcfdea8b34c">&#9670;&nbsp;</a></span>handle_block_ids()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2129,13 +2132,7 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>offset</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>count</em>&#160;</td>
+          <td class="paramname"><em>offset</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2951,7 +2948,7 @@ template&lt;typename T &gt; </div>
 
 <p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#afa164e8bfb4caacf61a5a63ab7d35c6b">Ioss::DatabaseIO</a>.</p>
 
-<p>Implemented in <a class="el" href="classIopx_1_1DatabaseIO.html#ab36ad24cdd2fb4be4cf2e85e2ac42f52">Iopx::DatabaseIO</a>, and <a class="el" href="classIofx_1_1DatabaseIO.html#aaa6925a8a8522624962a1c092c9f8d88">Iofx::DatabaseIO</a>.</p>
+<p>Implemented in <a class="el" href="classIopx_1_1DatabaseIO.html#a02a87808c97d27470261758842cc7e31">Iopx::DatabaseIO</a>, and <a class="el" href="classIofx_1_1DatabaseIO.html#aaa6925a8a8522624962a1c092c9f8d88">Iofx::DatabaseIO</a>.</p>
 
 </div>
 </div>

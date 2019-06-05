@@ -88,7 +88,7 @@ local installed-end-user-files =
   blot_xcps
   blot_cps
   blot_met
-  cgns-decomp
+  cgns_decomp
   fastq_x11
   fastq_pst
   fastq_xcps
@@ -1691,9 +1691,9 @@ exe io_shell
     <tag>@sierra-exec-tag
   ;
 
-exe cgns-decomp
+exe cgns_decomp
   :
-    $(seacas-root)/libraries/ioss/src/main/cgns-decomp.C
+    $(seacas-root)/libraries/ioss/src/main/cgns_decomp.C
     ioinit
     /mpi//mpi
   :

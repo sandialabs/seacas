@@ -88,6 +88,9 @@ namespace Iofx {
     DatabaseIO &operator=(const DatabaseIO &from) = delete;
     ~DatabaseIO() override{};
 
+    // Kluge -- a few applications need access so can diretly access exodus API
+    int get_file_pointer() const override; // Open file and set exodusFilePtr.
+
   private:
     void get_step_times__() override;
 
@@ -165,10 +168,6 @@ namespace Iofx {
                                     const Ioss::Field &field, void *data, size_t data_size) const;
     int64_t get_Xset_field_internal(ex_entity_type type, const Ioss::EntitySet *ns,
                                     const Ioss::Field &field, void *data, size_t data_size) const;
-
-  public:
-    // Kluge -- a few applications need access so can diretly access exodus API
-    int get_file_pointer() const override; // Open file and set exodusFilePtr.
 
   private:
     int64_t read_nodal_coordinates();

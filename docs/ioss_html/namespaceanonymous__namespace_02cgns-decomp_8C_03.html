@@ -108,14 +108,14 @@ Functions</h2></td></tr>
 <tr class="separator:a9663fd79b604fbecb1796f806b4a9543"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0100f77a75ad7f94374312073f4916bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02cgns-decomp_8C_03.html#a0100f77a75ad7f94374312073f4916bb">update_zgc_data</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones, int proc_count)</td></tr>
 <tr class="separator:a0100f77a75ad7f94374312073f4916bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ad80cfdcf9c9e8d3de03197096c50c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02cgns-decomp_8C_03.html#a4ad80cfdcf9c9e8d3de03197096c50c4">decompose</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones, double load_balance_tolerance, size_t proc_count)</td></tr>
-<tr class="separator:a4ad80cfdcf9c9e8d3de03197096c50c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79f82cd771abb336f83dc1be48a41373"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02cgns-decomp_8C_03.html#a79f82cd771abb336f83dc1be48a41373">decompose</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones, double load_balance_tolerance, size_t proc_count, bool verbose)</td></tr>
+<tr class="separator:a79f82cd771abb336f83dc1be48a41373"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:ad1bec53ea05fc7ee5f07f588e2d78cd3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02cgns-decomp_8C_03.html#ad1bec53ea05fc7ee5f07f588e2d78cd3">codename</a></td></tr>
 <tr class="separator:ad1bec53ea05fc7ee5f07f588e2d78cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73a930fcbe5fda28828f29ed7145f5a4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02cgns-decomp_8C_03.html#a73a930fcbe5fda28828f29ed7145f5a4">version</a> = &quot;0.9&quot;</td></tr>
+<tr class="memitem:a73a930fcbe5fda28828f29ed7145f5a4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02cgns-decomp_8C_03.html#a73a930fcbe5fda28828f29ed7145f5a4">version</a> = &quot;0.91&quot;</td></tr>
 <tr class="separator:a73a930fcbe5fda28828f29ed7145f5a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -137,8 +137,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a4ad80cfdcf9c9e8d3de03197096c50c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4ad80cfdcf9c9e8d3de03197096c50c4">&#9670;&nbsp;</a></span>decompose()</h2>
+<a id="a79f82cd771abb336f83dc1be48a41373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79f82cd771abb336f83dc1be48a41373">&#9670;&nbsp;</a></span>decompose()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -159,7 +159,13 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>proc_count</em>&#160;</td>
+          <td class="paramname"><em>proc_count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>verbose</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -255,7 +261,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::string anonymous_namespace{cgns-decomp.C}::version = &quot;0.9&quot;</td>
+          <td class="memname">std::string anonymous_namespace{cgns-decomp.C}::version = &quot;0.91&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">

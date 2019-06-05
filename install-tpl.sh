@@ -16,6 +16,12 @@ txtrst=$(tput sgr0)       # Text reset
 # Which compiler to use?
 export COMPILER=${COMPILER:-gnu}
 
+function check_exec()
+{
+    local var=$1
+    command -v ${var} >/dev/null 2>&1 || { echo >&2 "${txtred}---${var} is required, but is not currently in path.  Aborting TPL Install.${txtrst}"; exit 1; }
+}
+
 function check_valid_yes_no()
 {
     local var=$1
@@ -152,6 +158,11 @@ if [ $# -gt 0 ]; then
     fi
 fi
 
+# Check that cmake, git, wget exist at the beginning instead of erroring out later on...
+check_exec cmake
+check_exec git
+check_exec wget
+
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libz.${LD_EXT} ]
@@ -192,10 +203,6 @@ then
 	echo "${txtylw}+++ ZLIB already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
-
-# Check that cmake and git exist at the beginning instead of erroring out later on...
-command -v cmake >/dev/null 2>&1 || { echo >&2 "${txtred}---cmake is required, but is not currently in path.  Aborting.${txtrst}"; exit 1; }
-command -v git   >/dev/null 2>&1 || { echo >&2 "${txtred}---git is required, but is not currently in path.  Aborting.${txtrst}"; exit 1; }
 
 # =================== BUILD HDF5 ===============
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
@@ -392,6 +399,11 @@ fi
 # =================== INSTALL MATIO  ===============
 if [ "$MATIO" == "ON" ]
 then
+    # Check that aclocal, automake, autoconf exist...
+    check_exec aclocal
+    check_exec automake
+    check_exec autoconf
+
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
 	echo "${txtgrn}+++ MatIO${txtrst}"
