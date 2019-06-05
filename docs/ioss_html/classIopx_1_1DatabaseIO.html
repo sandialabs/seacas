@@ -118,6 +118,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af07bc9874e38dad5a5f64d2d895ae356"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94cc420b15d4b320ed24b5dbd1645c76"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIopx_1_1DatabaseIO.html#a94cc420b15d4b320ed24b5dbd1645c76">~DatabaseIO</a> ()</td></tr>
 <tr class="separator:a94cc420b15d4b320ed24b5dbd1645c76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa866153bcca94af0b7140d16466b28c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIopx_1_1DatabaseIO.html#aa866153bcca94af0b7140d16466b28c4">get_file_pointer</a> () const override</td></tr>
+<tr class="separator:aa866153bcca94af0b7140d16466b28c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a707b2d8db6a36c153a21cbf6003f1d6c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIopx_1_1DatabaseIO.html#a707b2d8db6a36c153a21cbf6003f1d6c">needs_shared_node_information</a> () const override</td></tr>
 <tr class="memdesc:a707b2d8db6a36c153a21cbf6003f1d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the database needs information about process ownership of nodes.  <a href="#a707b2d8db6a36c153a21cbf6003f1d6c">More...</a><br /></td></tr>
 <tr class="separator:a707b2d8db6a36c153a21cbf6003f1d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -366,8 +368,6 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:ac4c1249be1086d90e5aeb7a366393fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16fed3bceda7d77bf7f53e4988be5fcc"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIopx_1_1DatabaseIO.html#a16fed3bceda7d77bf7f53e4988be5fcc">get_Xset_field_internal</a> (ex_entity_type type, const <a class="el" href="classIoss_1_1EntitySet.html">Ioss::EntitySet</a> *ns, const <a class="el" href="classIoss_1_1Field.html">Ioss::Field</a> &amp;field, void *data, size_t data_size) const</td></tr>
 <tr class="separator:a16fed3bceda7d77bf7f53e4988be5fcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa866153bcca94af0b7140d16466b28c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIopx_1_1DatabaseIO.html#aa866153bcca94af0b7140d16466b28c4">get_file_pointer</a> () const override</td></tr>
-<tr class="separator:aa866153bcca94af0b7140d16466b28c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32a6c290cb2d3bb24eef497f7ca2a2b3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIopx_1_1DatabaseIO.html#a32a6c290cb2d3bb24eef497f7ca2a2b3">free_file_pointer</a> () const override</td></tr>
 <tr class="separator:a32a6c290cb2d3bb24eef497f7ca2a2b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabac54519c54e2a4c482b0da359a9433"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIopx_1_1DatabaseIO.html#aabac54519c54e2a4c482b0da359a9433">read_nodal_coordinates</a> ()</td></tr>
@@ -1782,7 +1782,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
