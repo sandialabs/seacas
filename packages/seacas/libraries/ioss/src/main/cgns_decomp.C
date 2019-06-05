@@ -274,6 +274,7 @@ namespace {
       fmt::print("\t{:{}n}..{:{}n} ({:{}n}):\t{}\n", w1, work_width, w2, work_width, histogram[i],
                  proc_width, stars);
     }
+    fmt::print("\n");
   }
 
   void decompose(std::vector<Iocgns::StructuredZoneData *> &zones, const Interface &interface)
@@ -312,7 +313,7 @@ namespace {
     std::vector<size_t> proc_work(proc_count);
 
     fmt::print("\nDecomposition for {} zones over {:n} processors; Total work = {:n}; Average = "
-               "{:n}\n",
+               "{:n} (goal)\n",
                zcount, proc_count, (size_t)total_work, (size_t)avg_work);
 
     // Get max name length for all zones...
@@ -368,34 +369,35 @@ namespace {
       }
     }
 
-    auto v1 = *std::min_element(proc_work.begin(), proc_work.end());
-    auto v2 = *std::max_element(proc_work.begin(), proc_work.end());
+    auto min_work = *std::min_element(proc_work.begin(), proc_work.end());
+    auto max_work = *std::max_element(proc_work.begin(), proc_work.end());
     {
       auto pw_copy(proc_work);
       std::nth_element(pw_copy.begin(), pw_copy.begin() + pw_copy.size() / 2, pw_copy.end());
 
       fmt::print(
-          "\nWork per processor: Minimum = {:n}, Maximum = {:n}, Median = {:n}, Ratio = {}\n\n", v1,
-          v2, pw_copy[pw_copy.size() / 2], (double)(v2) / v1);
+          "\nWork per processor: Minimum = {:n}, Maximum = {:n}, Median = {:n}, Ratio = {}\n\n",
+          min_work, max_work, pw_copy[pw_copy.size() / 2], (double)(max_work) / min_work);
     }
     if (interface.work_per_processor) {
-      if (v1 == v2) {
-        fmt::print("\nWork on all processors is {:n}\n\n", v1);
+      if (min_work == max_work) {
+        fmt::print("\nWork on all processors is {:n}\n\n", min_work);
       }
       else {
         int max_star = 40;
-        int min_star = max_star * ((double)v1 / (double)(v2));
+        int min_star = max_star * ((double)min_work / (double)(max_work));
         int delta    = max_star - min_star;
 
         for (size_t i = 0; i < proc_work.size(); i++) {
-          int         star_cnt = (double)(proc_work[i] - v1) / (v2 - v1) * delta + min_star;
+          int star_cnt =
+              (double)(proc_work[i] - min_work) / (max_work - min_work) * delta + min_star;
           std::string stars(star_cnt, '*');
           std::string format = "\tProcessor {:{}}, work = {:{}n}  ({:.2f})\t{}\n";
-          if (proc_work[i] == v2) {
+          if (proc_work[i] == max_work) {
             fmt::print(fg(fmt::color::red), format, i, proc_width, proc_work[i], work_width,
                        proc_work[i] / avg_work, stars);
           }
-          else if (proc_work[i] == v1) {
+          else if (proc_work[i] == min_work) {
             fmt::print(fg(fmt::color::green), format, i, proc_width, proc_work[i], work_width,
                        proc_work[i] / avg_work, stars);
           }
@@ -423,6 +425,28 @@ namespace {
       output_histogram(proc_work);
     }
 
+    // Calculate "nodal inflation" -- number of new surface nodes created...
+    auto nodal_work =
+        std::accumulate(zones.begin(), zones.end(), 0, [](size_t a, Iocgns::StructuredZoneData *b) {
+          return a + (b->m_parent == nullptr ? b->node_count() : 0);
+        });
+
+    auto new_nodal_work =
+        std::accumulate(zones.begin(), zones.end(), 0, [](size_t a, Iocgns::StructuredZoneData *b) {
+          return a + (b->is_active() ? b->node_count() : 0);
+        });
+
+    auto delta = new_nodal_work - nodal_work;
+    fmt::print("Nodal Inflation:\n\tOriginal Node Count = {:n}, Decomposed Node Count = {:n}, "
+               "Created = {:n}, Ratio = {:.2f}\n\n",
+               nodal_work, new_nodal_work, delta, (double)new_nodal_work / nodal_work);
+
+    // Imbalance penalty -- max work / avg work.  If perfect balance, then all processors would have
+    // "avg_work" work to do. With current decomposition, every processor has to wait until
+    // "max_work" is done.  Penalty = max_work / avg_work.
+    fmt::print("Imbalance Penalty:\n\tMaximum Work = {:n}, Average Work = {:n}, Penalty (max/avg) "
+               "= {:.2f}\n\n",
+               max_work, (size_t)avg_work, (double)max_work / avg_work);
     // Validate decomposition...
 
     // Each active zone must be on a processor
