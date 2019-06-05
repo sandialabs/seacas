@@ -152,6 +152,12 @@ namespace Ioss {
      */
     std::string get_filename() const { return DBFilename; }
 
+    /** For the database types that support it, return an integer `handle`
+     * through which a client can directly access the underlying file.
+     * Please use sparingly and with discretion. Basically, a kluge
+     */
+    virtual int get_file_pointer() const { return 0; }
+
     /** \brief Get a file-per-processor filename associated with the database.
      *
      * \ returns The file-per-processor name for a file on this processor.

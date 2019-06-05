@@ -1,9 +1,0 @@
-<map id="tsl::robin_map&lt; Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;" name="tsl::robin_map&lt; Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="914,60,1064,125"/>
-<area shape="rect" id="node2" href="$classtsl_1_1detail__robin__hash_1_1robin__hash.html" title=" " alt="" coords="581,53,833,132"/>
-<area shape="rect" id="node3" title=" " alt="" coords="347,5,399,31"/>
-<area shape="rect" id="node4" title=" " alt="" coords="334,55,412,80"/>
-<area shape="rect" id="node5" title=" " alt="" coords="323,104,423,129"/>
-<area shape="rect" id="node6" href="$classtsl_1_1detail__robin__hash_1_1bucket__entry.html" title=" " alt="" coords="282,153,464,205"/>
-<area shape="rect" id="node7" href="$classtsl_1_1detail__robin__hash_1_1bucket__entry__hash.html" title=" " alt="" coords="5,160,233,199"/>
-</map>

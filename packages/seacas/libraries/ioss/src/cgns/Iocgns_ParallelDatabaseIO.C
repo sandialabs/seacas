@@ -1550,8 +1550,8 @@ namespace Iocgns {
     return num_to_get;
   }
 
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Region */* region */,
-                                                 const Ioss::Field &/* field */, void */* data */,
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Region * /* region */,
+                                                 const Ioss::Field & /* field */, void * /* data */,
                                                  size_t /* data_size */) const
   {
     return -1;
@@ -2248,8 +2248,9 @@ namespace Iocgns {
   {
     return -1;
   }
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet */* cs */, const Ioss::Field &/* field*/,
-                                                 void */*data*/, size_t /*data_size*/) const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet * /* cs */,
+                                                 const Ioss::Field & /* field*/, void * /*data*/,
+                                                 size_t /*data_size*/) const
   {
     return -1;
   }

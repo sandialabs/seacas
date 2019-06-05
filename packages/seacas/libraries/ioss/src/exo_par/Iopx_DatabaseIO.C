@@ -787,10 +787,11 @@ namespace Iopx {
           // a warning if there is a corrupt step on processor
           // 0... Need better warnings which won't overload in the
           // worst case...
-          fmt::print(IOSS_WARNING,
-                     "Skipping step {} at time {} in database file\n\t{}.\nThe data for that step "
-                     "is possibly corrupt.\n",
-                     i + 1, tsteps[i], get_filename());
+          fmt::print(
+              IOSS_WARNING,
+              "Skipping step {:n} at time {} in database file\n\t{}.\nThe data for that step "
+              "is possibly corrupt.\n",
+              i + 1, tsteps[i], get_filename());
         }
       }
     }
@@ -3890,7 +3891,7 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
 
       if (ierr < 0) {
         std::ostringstream extra_info;
-        fmt::print(extra_info, "Outputting component {} of field '{}' at step {} on {} '{}'.", i,
+        fmt::print(extra_info, "Outputting component {} of field '{}' at step {:n} on {} '{}'.", i,
                    field_name, step, ge->type_string(), ge->name());
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__, extra_info.str());
       }

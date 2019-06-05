@@ -106,7 +106,7 @@ namespace Iocgns {
     size_t work() const { return (size_t)m_ordinal[0] * m_ordinal[1] * m_ordinal[2]; }
 
     std::pair<StructuredZoneData *, StructuredZoneData *> split(int zone_id, double avg_work,
-                                                                int rank);
+                                                                int rank, bool verbose);
     void resolve_zgc_split_donor(std::vector<Iocgns::StructuredZoneData *> &zones);
     void update_zgc_processor(std::vector<Iocgns::StructuredZoneData *> &zones);
   };
