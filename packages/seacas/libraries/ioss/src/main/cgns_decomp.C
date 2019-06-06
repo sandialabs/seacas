@@ -228,225 +228,8 @@ namespace {
     }
   }
 
-  void output_histogram(const std::vector<size_t> &proc_work)
+  void validate_decomposition(std::vector<Iocgns::StructuredZoneData *> &zones, int proc_count)
   {
-    fmt::print("Work-per-processor Histogram\n\n");
-    std::array<size_t, 16> histogram{};
-
-    auto wmin = *std::min_element(proc_work.begin(), proc_work.end());
-    auto wmax = *std::max_element(proc_work.begin(), proc_work.end());
-
-    size_t hist_size = std::min(size_t(16), (wmax - wmin));
-    hist_size        = std::min(hist_size, proc_work.size());
-
-    if (hist_size <= 1) {
-      fmt::print("Work is the same on all processors; no histogram possible.\n");
-      return;
-    }
-
-    auto delta = double(wmax + 1 - wmin) / hist_size;
-    for (const auto &pw : proc_work) {
-      auto bin = size_t(double(pw - wmin) / delta);
-      SMART_ASSERT(bin < hist_size)(bin)(hist_size);
-      histogram[bin]++;
-    }
-
-    size_t proc_width = Ioss::Utils::number_width(proc_work.size(), true);
-    size_t work_width = Ioss::Utils::number_width(wmax, true);
-
-    fmt::print("\t{:^{}} {:^{}}\n", "Work Range", 2 * work_width + 2, "#", proc_width);
-    auto hist_max = *std::max_element(histogram.begin(), histogram.end());
-    for (size_t i = 0; i < hist_size; i++) {
-      int         max_star = 50;
-      int         star_cnt = ((double)histogram[i] / hist_max * max_star);
-      std::string stars(star_cnt, '*');
-      for (int j = 9; j < star_cnt;) {
-        stars[j] = '|';
-        j += 10;
-      }
-      if (histogram[i] > 0 && star_cnt == 0) {
-        stars = '.';
-      }
-      size_t w1 = wmin + size_t(i * delta);
-      size_t w2 = wmin + size_t((i + 1) * delta);
-      fmt::print("\t{:{}n}..{:{}n} ({:{}n}):\t{}\n", w1, work_width, w2, work_width, histogram[i],
-                 proc_width, stars);
-    }
-    fmt::print("\n");
-  }
-
-  void decompose(std::vector<Iocgns::StructuredZoneData *> &zones, const Interface &interface)
-  {
-    size_t proc_count             = interface.proc_count;
-    bool   verbose                = interface.verbose;
-    double load_balance_tolerance = interface.load_balance;
-
-    // Get some information just to make output look better.  Not part of actual decomposition.
-    size_t proc_width = std::floor(std::log10(proc_count)) + 1;
-    double total_work =
-        std::accumulate(zones.begin(), zones.end(), 0.0,
-                        [](double a, Iocgns::StructuredZoneData *b) { return a + b->work(); });
-
-    // Get some information just to make output look better.  Not part of actual decomposition.
-    size_t proc_width = Ioss::Utils::number_width(proc_count, false);
-    size_t work_width = Ioss::Utils::number_width((size_t)total_work, true);
-
-    // Find maximum ordinal to get width... (makes output look better)
-    int max_ordinal = 0;
-    for (const auto zone : zones) {
-      if (zone->is_active()) {
-        max_ordinal =
-            std::max({max_ordinal, zone->m_ordinal[0], zone->m_ordinal[1], zone->m_ordinal[2]});
-      }
-    }
-    size_t ord_width = Ioss::Utils::number_width(max_ordinal, false);
-    double avg_work  = total_work / (double)proc_count;
-    size_t zcount    = zones.size();
-
-    // ========================================================================
-    // Now, do the processor decomposition.
-    Iocgns::Utils::decompose_model(zones, proc_count, 0, load_balance_tolerance, verbose);
-    // ========================================================================
-
-    // Print work/processor map...
-    std::vector<size_t> proc_work(proc_count);
-
-    fmt::print("\nDecomposition for {} zones over {:n} processors; Total work = {:n}; Average = "
-               "{:n} (goal)\n",
-               zcount, proc_count, (size_t)total_work, (size_t)avg_work);
-
-    // Get max name length for all zones...
-    size_t name_len = 0;
-    for (const auto zone : zones) {
-      if (zone->is_active()) {
-        auto len = zone->m_name.length();
-        if (len > name_len) {
-          name_len = len;
-        }
-      }
-    }
-
-    if (interface.zone_proc_assignment) {
-      // Output Zone->Processor assignment info
-      fmt::print("\n");
-      for (const auto adam_zone : zones) {
-        if (adam_zone->m_parent == nullptr) {
-          if (adam_zone->m_child1 == nullptr) {
-            // Unsplit...
-            fmt::print("\tZone: {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n} (unsplit)\n",
-                       adam_zone->m_name, name_len, adam_zone->m_proc, proc_width,
-                       fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width,
-                                   adam_zone->m_ordinal[0], adam_zone->m_ordinal[1],
-                                   adam_zone->m_ordinal[2]),
-                       adam_zone->work(), work_width);
-          }
-          else {
-            fmt::print("\tZone: {:{}} is decomposed. \tOrdinal: {:^12}\tWork: {:{}n}\n",
-                       adam_zone->m_name, name_len,
-                       fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width,
-                                   adam_zone->m_ordinal[0], adam_zone->m_ordinal[1],
-                                   adam_zone->m_ordinal[2]),
-                       adam_zone->work(), work_width);
-            for (const auto zone : zones) {
-              if (zone->is_active() && zone->m_adam == adam_zone) {
-                fmt::print("\t      {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n}\n",
-                           zone->m_name, name_len, zone->m_proc, proc_width,
-                           fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, zone->m_ordinal[0],
-                                       zone->m_ordinal[1], zone->m_ordinal[2]),
-                           zone->work(), work_width);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    // Output Processor Work information
-    for (const auto zone : zones) {
-      if (zone->is_active()) {
-        proc_work[zone->m_proc] += zone->work();
-      }
-    }
-
-    auto min_work = *std::min_element(proc_work.begin(), proc_work.end());
-    auto max_work = *std::max_element(proc_work.begin(), proc_work.end());
-    {
-      auto pw_copy(proc_work);
-      std::nth_element(pw_copy.begin(), pw_copy.begin() + pw_copy.size() / 2, pw_copy.end());
-
-      fmt::print(
-          "\nWork per processor: Minimum = {:n}, Maximum = {:n}, Median = {:n}, Ratio = {}\n\n",
-          min_work, max_work, pw_copy[pw_copy.size() / 2], (double)(max_work) / min_work);
-    }
-    if (interface.work_per_processor) {
-      if (min_work == max_work) {
-        fmt::print("\nWork on all processors is {:n}\n\n", min_work);
-      }
-      else {
-        int max_star = 40;
-        int min_star = max_star * ((double)min_work / (double)(max_work));
-        int delta    = max_star - min_star;
-
-        for (size_t i = 0; i < proc_work.size(); i++) {
-          int star_cnt =
-              (double)(proc_work[i] - min_work) / (max_work - min_work) * delta + min_star;
-          std::string stars(star_cnt, '*');
-          std::string format = "\tProcessor {:{}}, work = {:{}n}  ({:.2f})\t{}\n";
-          if (proc_work[i] == max_work) {
-            fmt::print(fg(fmt::color::red), format, i, proc_width, proc_work[i], work_width,
-                       proc_work[i] / avg_work, stars);
-          }
-          else if (proc_work[i] == min_work) {
-            fmt::print(fg(fmt::color::green), format, i, proc_width, proc_work[i], work_width,
-                       proc_work[i] / avg_work, stars);
-          }
-          else {
-            fmt::print(format, i, proc_width, proc_work[i], work_width, proc_work[i] / avg_work,
-                       stars);
-          }
-          if (verbose) {
-            for (const auto zone : zones) {
-              if ((size_t)zone->m_proc == i) {
-                auto pct = int(100.0 * (double)zone->work() / proc_work[i] + 0.5);
-                fmt::print("\t      {:{}} {:{}n}\t{:3}%\t{:^12}\n", zone->m_name, name_len,
-                           zone->work(), work_width, pct,
-                           fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, zone->m_ordinal[0],
-                                       zone->m_ordinal[1], zone->m_ordinal[2]));
-              }
-            }
-            fmt::print("\n");
-          }
-        }
-      }
-    }
-    // Output Histogram...
-    if (interface.histogram) {
-      output_histogram(proc_work);
-    }
-
-    // Calculate "nodal inflation" -- number of new surface nodes created...
-    auto nodal_work =
-        std::accumulate(zones.begin(), zones.end(), 0, [](size_t a, Iocgns::StructuredZoneData *b) {
-          return a + (b->m_parent == nullptr ? b->node_count() : 0);
-        });
-
-    auto new_nodal_work =
-        std::accumulate(zones.begin(), zones.end(), 0, [](size_t a, Iocgns::StructuredZoneData *b) {
-          return a + (b->is_active() ? b->node_count() : 0);
-        });
-
-    auto delta = new_nodal_work - nodal_work;
-    fmt::print("Nodal Inflation:\n\tOriginal Node Count = {:n}, Decomposed Node Count = {:n}, "
-               "Created = {:n}, Ratio = {:.2f}\n\n",
-               nodal_work, new_nodal_work, delta, (double)new_nodal_work / nodal_work);
-
-    // Imbalance penalty -- max work / avg work.  If perfect balance, then all processors would have
-    // "avg_work" work to do. With current decomposition, every processor has to wait until
-    // "max_work" is done.  Penalty = max_work / avg_work.
-    fmt::print("Imbalance Penalty:\n\tMaximum Work = {:n}, Average Work = {:n}, Penalty (max/avg) "
-               "= {:.2f}\n\n",
-               max_work, (size_t)avg_work, (double)max_work / avg_work);
-    // Validate decomposition...
 
     // Each active zone must be on a processor
     for (const auto zone : zones) {
@@ -518,6 +301,221 @@ namespace {
       SMART_ASSERT(item.second == 2);
     }
   }
+
+  void output_histogram(const std::vector<size_t> &proc_work)
+  {
+    fmt::print("Work-per-processor Histogram\n\n");
+    std::array<size_t, 16> histogram{};
+
+    auto wmin = *std::min_element(proc_work.begin(), proc_work.end());
+    auto wmax = *std::max_element(proc_work.begin(), proc_work.end());
+
+    size_t hist_size = std::min(size_t(16), (wmax - wmin));
+    hist_size        = std::min(hist_size, proc_work.size());
+
+    if (hist_size <= 1) {
+      fmt::print("Work is the same on all processors; no histogram possible.\n");
+      return;
+    }
+
+    auto delta = double(wmax + 1 - wmin) / hist_size;
+    for (const auto &pw : proc_work) {
+      auto bin = size_t(double(pw - wmin) / delta);
+      SMART_ASSERT(bin < hist_size)(bin)(hist_size);
+      histogram[bin]++;
+    }
+
+    size_t proc_width = Ioss::Utils::number_width(proc_work.size(), true);
+    size_t work_width = Ioss::Utils::number_width(wmax, true);
+
+    fmt::print("\t{:^{}} {:^{}}\n", "Work Range", 2 * work_width + 2, "#", proc_width);
+    auto hist_max = *std::max_element(histogram.begin(), histogram.end());
+    for (size_t i = 0; i < hist_size; i++) {
+      int         max_star = 50;
+      int         star_cnt = ((double)histogram[i] / hist_max * max_star);
+      std::string stars(star_cnt, '*');
+      for (int j = 9; j < star_cnt;) {
+        stars[j] = '|';
+        j += 10;
+      }
+      if (histogram[i] > 0 && star_cnt == 0) {
+        stars = '.';
+      }
+      size_t w1 = wmin + size_t(i * delta);
+      size_t w2 = wmin + size_t((i + 1) * delta);
+      fmt::print("\t{:{}n}..{:{}n} ({:{}n}):\t{}\n", w1, work_width, w2, work_width, histogram[i],
+                 proc_width, stars);
+    }
+    fmt::print("\n");
+  }
+  void describe_decomposition(std::vector<Iocgns::StructuredZoneData *> &zones,
+                              const Interface &                          interface)
+  {
+    size_t proc_count = interface.proc_count;
+    bool   verbose    = interface.verbose;
+
+    // ========================================================================
+    // Output information about decomposition...
+    double total_work = std::accumulate(zones.begin(), zones.end(), 0.0,
+                                        [](double a, Iocgns::StructuredZoneData *b) {
+                                          return a + (b->m_parent == nullptr ? b->work() : 0);
+                                        });
+
+    // Get some information just to make output look better.  Not part of actual decomposition.
+    size_t proc_width = Ioss::Utils::number_width(proc_count, false);
+    size_t work_width = Ioss::Utils::number_width((size_t)total_work, true);
+
+    // Find maximum ordinal to get width... (makes output look better)
+    int max_ordinal = 0;
+    for (const auto zone : zones) {
+      if (zone->is_active()) {
+        max_ordinal =
+            std::max({max_ordinal, zone->m_ordinal[0], zone->m_ordinal[1], zone->m_ordinal[2]});
+      }
+    }
+    size_t ord_width = Ioss::Utils::number_width(max_ordinal, false);
+    double avg_work  = total_work / (double)proc_count;
+    size_t zcount    = zones.size();
+
+    // Print work/processor map...
+    fmt::print("\nDecomposition for {} zones over {:n} processors; Total work = {:n}; Average = "
+               "{:n} (goal)\n",
+               zcount, proc_count, (size_t)total_work, (size_t)avg_work);
+
+    // Get max name length for all zones...
+    size_t name_len = 0;
+    for (const auto zone : zones) {
+      if (zone->is_active()) {
+        auto len = zone->m_name.length();
+        if (len > name_len) {
+          name_len = len;
+        }
+      }
+    }
+
+    if (interface.zone_proc_assignment) {
+      // Output Zone->Processor assignment info
+      fmt::print("\n");
+      for (const auto adam_zone : zones) {
+        if (adam_zone->m_parent == nullptr) {
+          if (adam_zone->m_child1 == nullptr) {
+            // Unsplit...
+            fmt::print("\tZone: {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n} (unsplit)\n",
+                       adam_zone->m_name, name_len, adam_zone->m_proc, proc_width,
+                       fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width,
+                                   adam_zone->m_ordinal[0], adam_zone->m_ordinal[1],
+                                   adam_zone->m_ordinal[2]),
+                       adam_zone->work(), work_width);
+          }
+          else {
+            fmt::print("\tZone: {:{}} is decomposed. \tOrdinal: {:^12}\tWork: {:{}n}\n",
+                       adam_zone->m_name, name_len,
+                       fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width,
+                                   adam_zone->m_ordinal[0], adam_zone->m_ordinal[1],
+                                   adam_zone->m_ordinal[2]),
+                       adam_zone->work(), work_width);
+            for (const auto zone : zones) {
+              if (zone->is_active() && zone->m_adam == adam_zone) {
+                fmt::print("\t      {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n}\n",
+                           zone->m_name, name_len, zone->m_proc, proc_width,
+                           fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, zone->m_ordinal[0],
+                                       zone->m_ordinal[1], zone->m_ordinal[2]),
+                           zone->work(), work_width);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Output Processor Work information
+    std::vector<size_t> proc_work(proc_count);
+    for (const auto zone : zones) {
+      if (zone->is_active()) {
+        proc_work[zone->m_proc] += zone->work();
+      }
+    }
+
+    auto min_work = *std::min_element(proc_work.begin(), proc_work.end());
+    auto max_work = *std::max_element(proc_work.begin(), proc_work.end());
+    {
+      auto pw_copy(proc_work);
+      std::nth_element(pw_copy.begin(), pw_copy.begin() + pw_copy.size() / 2, pw_copy.end());
+
+      fmt::print(
+          "\nWork per processor: Minimum = {:n}, Maximum = {:n}, Median = {:n}, Ratio = {}\n\n",
+          min_work, max_work, pw_copy[pw_copy.size() / 2], (double)(max_work) / min_work);
+    }
+    if (interface.work_per_processor) {
+      if (min_work == max_work) {
+        fmt::print("\nWork on all processors is {:n}\n\n", min_work);
+      }
+      else {
+        int max_star = 40;
+        int min_star = max_star * ((double)min_work / (double)(max_work));
+        int delta    = max_star - min_star;
+
+        for (size_t i = 0; i < proc_work.size(); i++) {
+          int star_cnt =
+              (double)(proc_work[i] - min_work) / (max_work - min_work) * delta + min_star;
+          std::string stars(star_cnt, '*');
+          std::string format = "\tProcessor {:{}}, work = {:{}n}  ({:.2f})\t{}\n";
+          if (proc_work[i] == max_work) {
+            fmt::print(fg(fmt::color::red), format, i, proc_width, proc_work[i], work_width,
+                       proc_work[i] / avg_work, stars);
+          }
+          else if (proc_work[i] == min_work) {
+            fmt::print(fg(fmt::color::green), format, i, proc_width, proc_work[i], work_width,
+                       proc_work[i] / avg_work, stars);
+          }
+          else {
+            fmt::print(format, i, proc_width, proc_work[i], work_width, proc_work[i] / avg_work,
+                       stars);
+          }
+          if (verbose) {
+            for (const auto zone : zones) {
+              if ((size_t)zone->m_proc == i) {
+                auto pct = int(100.0 * (double)zone->work() / proc_work[i] + 0.5);
+                fmt::print("\t      {:{}} {:{}n}\t{:3}%\t{:^12}\n", zone->m_name, name_len,
+                           zone->work(), work_width, pct,
+                           fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, zone->m_ordinal[0],
+                                       zone->m_ordinal[1], zone->m_ordinal[2]));
+              }
+            }
+            fmt::print("\n");
+          }
+        }
+      }
+    }
+
+    // Output Histogram...
+    if (interface.histogram) {
+      output_histogram(proc_work);
+    }
+
+    // Calculate "nodal inflation" -- number of new surface nodes created...
+    auto nodal_work =
+        std::accumulate(zones.begin(), zones.end(), 0, [](size_t a, Iocgns::StructuredZoneData *b) {
+          return a + (b->m_parent == nullptr ? b->node_count() : 0);
+        });
+
+    auto new_nodal_work =
+        std::accumulate(zones.begin(), zones.end(), 0, [](size_t a, Iocgns::StructuredZoneData *b) {
+          return a + (b->is_active() ? b->node_count() : 0);
+        });
+
+    auto delta = new_nodal_work - nodal_work;
+    fmt::print("Nodal Inflation:\n\tOriginal Node Count = {:n}, Decomposed Node Count = {:n}, "
+               "Created = {:n}, Ratio = {:.2f}\n\n",
+               nodal_work, new_nodal_work, delta, (double)new_nodal_work / nodal_work);
+
+    // Imbalance penalty -- max work / avg work.  If perfect balance, then all processors would have
+    // "avg_work" work to do. With current decomposition, every processor has to wait until
+    // "max_work" is done.  Penalty = max_work / avg_work.
+    fmt::print("Imbalance Penalty:\n\tMaximum Work = {:n}, Average Work = {:n}, Penalty (max/avg) "
+               "= {:.2f}\n\n",
+               max_work, (size_t)avg_work, (double)max_work / avg_work);
+  }
 } // namespace
 
 int main(int argc, char *argv[])
@@ -578,8 +576,12 @@ int main(int argc, char *argv[])
 
   region.output_summary(std::cout, false);
 
-  // Actually do the decompostion...
-  decompose(zones, interface);
+  Iocgns::Utils::decompose_model(zones, interface.proc_count, 0, interface.load_balance,
+                                 interface.verbose);
+
+  describe_decomposition(zones, interface);
+
+  validate_decomposition(zones, interface.proc_count);
 
   cleanup(zones);
 }
