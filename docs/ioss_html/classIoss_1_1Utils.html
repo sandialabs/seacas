@@ -130,6 +130,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a65686647761a8ee32e4a4d4e866d196f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a65686647761a8ee32e4a4d4e866d196f"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a65686647761a8ee32e4a4d4e866d196f">clear</a> (std::vector&lt; T &gt; &amp;vec)</td></tr>
 <tr class="separator:a65686647761a8ee32e4a4d4e866d196f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a875232ab39ecaf79b1b668d28fb590d6"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a875232ab39ecaf79b1b668d28fb590d6">number_width</a> (const size_t number, bool use_commas=false)</td></tr>
+<tr class="separator:a875232ab39ecaf79b1b668d28fb590d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f3b2d6a6ac736d341fee8db95c6fc4b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a4f3b2d6a6ac736d341fee8db95c6fc4b">power_2</a> (int count)</td></tr>
 <tr class="separator:a4f3b2d6a6ac736d341fee8db95c6fc4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2754e2aa699821549432f2c32305e91e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
@@ -1622,6 +1624,43 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The converted string. </dd></dl>
+
+</div>
+</div>
+<a id="a875232ab39ecaf79b1b668d28fb590d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a875232ab39ecaf79b1b668d28fb590d6">&#9670;&nbsp;</a></span>number_width()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int Ioss::Utils::number_width </td>
+          <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>number</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>use_commas</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the number of digits required to print the number. If <code>use_commas</code> is specified, then the width will be adjusted to account for the comma used every 3 digits. (1,234,567,890 would return 13) Typically used with the <code>fmt::print()</code> functions as: <code>fmt::print("{:{}n}", number, number_width(number,true))</code> <code>fmt::print("{:{}d}", number, number_width(number,false))</code> </p>
 
 </div>
 </div>
