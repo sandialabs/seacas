@@ -274,7 +274,7 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   // Examples: basename.8.1, basename.64.03, basename.128.001
 
   // Create a std::string containing the total number of processors
-  size_t proc_width = std::floor(std::log10(num_processors)) + 1;
+  size_t proc_width = number_width(num_processors);
 
   std::string decoded_filename =
       fmt::format("{}.{}.{:0{}}", filename, num_processors, processor, proc_width);

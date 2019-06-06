@@ -251,10 +251,8 @@ namespace {
       histogram[bin]++;
     }
 
-    size_t work_width = std::floor(std::log10(wmax)) + 1;
-    work_width += work_width / 3;
-    size_t proc_width = std::floor(std::log10(proc_work.size())) + 1;
-    proc_width += proc_width / 3;
+    size_t proc_width = Ioss::Utils::number_width(proc_work.size(), true);
+    size_t work_width = Ioss::Utils::number_width(wmax, true);
 
     fmt::print("\t{:^{}} {:^{}}\n", "Work Range", 2 * work_width + 2, "#", proc_width);
     auto hist_max = *std::max_element(histogram.begin(), histogram.end());
@@ -289,8 +287,9 @@ namespace {
         std::accumulate(zones.begin(), zones.end(), 0.0,
                         [](double a, Iocgns::StructuredZoneData *b) { return a + b->work(); });
 
-    size_t work_width = std::floor(std::log10(total_work)) + 1;
-    work_width += (work_width - 1) / 3; // for the commas...
+    // Get some information just to make output look better.  Not part of actual decomposition.
+    size_t proc_width = Ioss::Utils::number_width(proc_count, false);
+    size_t work_width = Ioss::Utils::number_width((size_t)total_work, true);
 
     // Find maximum ordinal to get width... (makes output look better)
     int max_ordinal = 0;
@@ -300,7 +299,7 @@ namespace {
             std::max({max_ordinal, zone->m_ordinal[0], zone->m_ordinal[1], zone->m_ordinal[2]});
       }
     }
-    size_t ord_width = std::floor(std::log10(max_ordinal)) + 1;
+    size_t ord_width = Ioss::Utils::number_width(max_ordinal, false);
     double avg_work  = total_work / (double)proc_count;
     size_t zcount    = zones.size();
 
