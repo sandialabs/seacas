@@ -302,7 +302,7 @@ namespace {
     }
   }
 
-  void output_histogram(const std::vector<size_t> &proc_work)
+  void output_histogram(const std::vector<size_t> &proc_work, size_t avg_work, size_t median)
   {
     fmt::print("Work-per-processor Histogram\n\n");
     std::array<size_t, 16> histogram{};
@@ -314,7 +314,7 @@ namespace {
     hist_size        = std::min(hist_size, proc_work.size());
 
     if (hist_size <= 1) {
-      fmt::print("Work is the same on all processors; no histogram possible.\n");
+      fmt::print("Work is the same on all processors; no histogram possible.\n\n");
       return;
     }
 
@@ -341,10 +341,20 @@ namespace {
       if (histogram[i] > 0 && star_cnt == 0) {
         stars = '.';
       }
-      size_t w1 = wmin + size_t(i * delta);
-      size_t w2 = wmin + size_t((i + 1) * delta);
-      fmt::print("\t{:{}n}..{:{}n} ({:{}n}):\t{}\n", w1, work_width, w2, work_width, histogram[i],
-                 proc_width, stars);
+      size_t      w1 = wmin + size_t(i * delta);
+      size_t      w2 = wmin + size_t((i + 1) * delta);
+      std::string postfix;
+      if (w1 <= avg_work && avg_work < w2) {
+        postfix += "average";
+      }
+      if (w1 <= median && median < w2) {
+        if (!postfix.empty()) {
+          postfix += ", ";
+        }
+        postfix += "median";
+      }
+      fmt::print("\t{:{}n}..{:{}n} ({:{}n}):\t{:{}}  {}\n", w1, work_width, w2, work_width,
+                 histogram[i], proc_width, stars, max_star, postfix);
     }
     fmt::print("\n");
   }
@@ -436,15 +446,16 @@ namespace {
       }
     }
 
-    auto min_work = *std::min_element(proc_work.begin(), proc_work.end());
-    auto max_work = *std::max_element(proc_work.begin(), proc_work.end());
+    auto   min_work = *std::min_element(proc_work.begin(), proc_work.end());
+    auto   max_work = *std::max_element(proc_work.begin(), proc_work.end());
+    size_t median   = 0;
     {
       auto pw_copy(proc_work);
       std::nth_element(pw_copy.begin(), pw_copy.begin() + pw_copy.size() / 2, pw_copy.end());
-
+      median = pw_copy[pw_copy.size() / 2];
       fmt::print(
-          "\nWork per processor: Minimum = {:n}, Maximum = {:n}, Median = {:n}, Ratio = {}\n\n",
-          min_work, max_work, pw_copy[pw_copy.size() / 2], (double)(max_work) / min_work);
+          "\nWork per processor:\n\tMinimum = {:n}, Maximum = {:n}, Median = {:n}, Ratio = {}\n\n",
+          min_work, max_work, median, (double)(max_work) / min_work);
     }
     if (interface.work_per_processor) {
       if (min_work == max_work) {
@@ -490,7 +501,7 @@ namespace {
 
     // Output Histogram...
     if (interface.histogram) {
-      output_histogram(proc_work);
+      output_histogram(proc_work, (size_t)avg_work, median);
     }
 
     // Calculate "nodal inflation" -- number of new surface nodes created...
