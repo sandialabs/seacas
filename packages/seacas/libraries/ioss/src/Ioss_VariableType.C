@@ -216,7 +216,7 @@ namespace Ioss {
       // This indicates a "component" variable type that is
       // constructed "on-the-fly" for use in Sierra
       //
-      size_t width = std::floor(std::log10(size)) + 1;
+      size_t width = Ioss::Utils::number_width(size);
       for (size_t i = 0; i < size; i++) {
         std::string digits = fmt::format("{:0{}}", i + 1, width);
         if (std::strcmp(&suffices[i].m_data[0], digits.c_str()) != 0) {
@@ -332,7 +332,7 @@ namespace Ioss {
       IOSS_ERROR(errmsg);
     }
 
-    size_t      width  = std::floor(std::log10(ncomp)) + 1;
+    size_t      width  = Ioss::Utils::number_width(ncomp);
     std::string digits = fmt::format("{:0{}}", which, width);
     return digits;
   }
