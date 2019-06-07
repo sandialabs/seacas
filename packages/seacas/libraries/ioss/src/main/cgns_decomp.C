@@ -89,6 +89,7 @@ namespace {
           work_per_processor   = temp.find("w") != std::string::npos;
           zone_proc_assignment = temp.find("z") != std::string::npos;
           verbose              = temp.find("v") != std::string::npos;
+          communication_map    = temp.find("c") != std::string::npos;
         }
       }
       verbose = options_.retrieve("verbose") != nullptr;
@@ -162,10 +163,10 @@ namespace {
                       "Max ratio of processor work to average.", nullptr);
       options_.enroll("verbose", Ioss::GetLongOption::NoValue,
                       "Print additional decomposition information", nullptr);
-      options_.enroll(
-          "output", Ioss::GetLongOption::MandatoryValue,
-          "What is printed: z=zone-proc assignment, h=histogram, w=work-per-processor, v=verbose.",
-          "zhw");
+      options_.enroll("output", Ioss::GetLongOption::MandatoryValue,
+                      "What is printed: z=zone-proc assignment, h=histogram, w=work-per-processor, "
+                      "c=comm map, v=verbose.",
+                      "zhwc");
     }
     Ioss::GetLongOption options_;
     int                 proc_count{0};
@@ -177,11 +178,12 @@ namespace {
     bool                histogram{true};
     bool                work_per_processor{true};
     bool                zone_proc_assignment{true};
+    bool                communication_map{true};
   };
 } // namespace
 namespace {
   std::string codename;
-  std::string version = "0.94";
+  std::string version = "0.95";
 
   void cleanup(std::vector<Iocgns::StructuredZoneData *> &zones)
   {
@@ -247,9 +249,6 @@ namespace {
       }
     }
 
-    // Zone Grid Connectivity Checks:
-    update_zgc_data(zones, proc_count);
-
     // Zone Grid Connectivity instances can't connect to themselves...
     for (auto &zone : zones) {
       if (zone->is_active()) {
@@ -299,6 +298,66 @@ namespace {
     // Iterate `is_symm` and make sure all entries == 2
     for (const auto &item : is_symm) {
       SMART_ASSERT(item.second == 2);
+    }
+  }
+
+  void output_communications(std::vector<Iocgns::StructuredZoneData *> &zones, int proc_count)
+  {
+    fmt::print("Communication Map: [] is from decomposition; () is from zone-to-zone; omits "
+               "on-proc communication.\n");
+    for (const auto &adam_zone : zones) {
+      if (adam_zone->m_parent == nullptr) {
+        std::vector<std::pair<int, int>> comms;
+
+        // Iterate children (or self) of the adam_zone.
+        for (const auto zone : zones) {
+          if (zone->is_active() && zone->m_adam == adam_zone) {
+            for (auto &zgc : zone->m_zoneConnectivity) {
+              int p1 = zgc.m_ownerProcessor;
+              int p2 = zgc.m_donorProcessor;
+              if (p1 != p2) {
+                int pmin = std::min(p1, p2);
+                int pmax = std::max(p1, p2);
+                if (zgc.is_from_decomp()) {
+                  comms.emplace_back(pmin, -pmax);
+                }
+                else {
+                  comms.emplace_back(pmin, pmax);
+                }
+              }
+            }
+          }
+        }
+
+        Ioss::Utils::uniquify(comms);
+
+        int pw = Ioss::Utils::number_width(proc_count, false);
+        // Assume line width = 100, calculate output / line --
+        int npl  = 100 / (4 + 2 * pw);
+        npl      = npl < 1 ? 1 : npl;
+        int line = 0;
+
+        fmt::print("\tZone '{}' ({}):\n\t\t", adam_zone->m_name, comms.size());
+        for (const auto &proc : comms) {
+          if (proc.second < 0) {
+            // From decompostion
+            fmt::print(fg(fmt::color::yellow), "[{:{}}->{:{}}]  ", proc.first, pw, -proc.second,
+                       pw);
+          }
+          else {
+            // Zone to Zone
+            fmt::print("({:{}}->{:{}})  ", proc.first, pw, proc.second, pw);
+          }
+          if (++line >= npl) {
+            fmt::print("\n\t\t");
+            line = 0;
+          }
+        }
+        fmt::print("\n");
+        if (line > 0) {
+          fmt::print("\n");
+        }
+      }
     }
   }
 
@@ -504,6 +563,11 @@ namespace {
       output_histogram(proc_work, (size_t)avg_work, median);
     }
 
+    // Communication Information (proc X communicates with proc Z)
+    if (interface.communication_map) {
+      output_communications(zones, proc_count);
+    }
+
     // Calculate "nodal inflation" -- number of new surface nodes created...
     auto nodal_work =
         std::accumulate(zones.begin(), zones.end(), 0, [](size_t a, Iocgns::StructuredZoneData *b) {
@@ -581,6 +645,7 @@ int main(int argc, char *argv[])
     if (interface.ordinal >= 0) {
       zones.back()->m_lineOrdinal = interface.ordinal;
     }
+    zones.back()->m_zoneConnectivity = iblock->m_zoneConnectivity;
   }
   Iocgns::Utils::set_line_decomposition(dbi->get_file_pointer(), interface.line_decomposition,
                                         zones, 0, interface.verbose);
@@ -589,6 +654,7 @@ int main(int argc, char *argv[])
 
   Iocgns::Utils::decompose_model(zones, interface.proc_count, 0, interface.load_balance,
                                  interface.verbose);
+  update_zgc_data(zones, interface.proc_count);
 
   describe_decomposition(zones, interface);
 
