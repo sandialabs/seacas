@@ -1,23 +1,23 @@
 C Copyright (C) 2009-2017 National Technology & Engineering Solutions
 C of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C NTESS, the U.S. Government retains certain rights in this software.
-C 
+C
 C Redistribution and use in source and binary forms, with or without
 C modification, are permitted provided that the following conditions are
 C met:
-C 
+C
 C     * Redistributions of source code must retain the above copyright
 C       notice, this list of conditions and the following disclaimer.
-C 
+C
 C     * Redistributions in binary form must reproduce the above
 C       copyright notice, this list of conditions and the following
 C       disclaimer in the documentation and/or other materials provided
 C       with the distribution.
-C 
+C
 C     * Neither the name of NTESS nor the names of its
 C       contributors may be used to endorse or promote products derived
 C       from this software without specific prior written permission.
-C 
+C
 C THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 C "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 C LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -29,9 +29,9 @@ C DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-C 
+C
 
-C $Id: pltlax.F,v 1.4 2000/10/25 13:36:38 gdsjaar Exp $ 
+C $Id: pltlax.F,v 1.4 2000/10/25 13:36:38 gdsjaar Exp $
 C $Log: pltlax.F,v $
 C Revision 1.4  2000/10/25 13:36:38  gdsjaar
 C Modified intrinsic functions to use generic versions to avoid warnings on SGI 64-bit compiles
@@ -50,7 +50,7 @@ C file to .F files and add the necessary code to the Imakefile.
 C
 C Revision 1.1  1993/07/16 16:48:34  gdsjaar
 C Changed plt to library rather than single source file.
-C 
+C
 C=======================================================================
       SUBROUTINE PLTLAX(X,Y,XLENG,YLENG,TYPE,MINEXP,MAXEXP,LABEL,UNITS)
       REAL DEVCAP(23)
@@ -312,7 +312,7 @@ C=======================================================================
 
          END IF
 
- 2590    GO TO 2580
+         GO TO 2580
 
  2600    CONTINUE
          IF (PLTNER(XNEW,X+XLENG) .AND. NUMSZM.GT.0.0 .AND.
@@ -709,7 +709,7 @@ C=======================================================================
 
          END IF
 
- 2640    GO TO 2630
+        GO TO 2630
 
  2650    CONTINUE
          IF (PLTNER(YNEW,Y+YLENG) .AND. NUMSIZ.GT.0.0 .AND.
@@ -869,7 +869,7 @@ C=======================================================================
          CALL SIORPT('PLTLAX','Invalid axis type - '//TTYPE,2)
       END IF
 
- 2560 IF (.NOT. (.TRUE.)) GO TO 2550
+      IF (.NOT. (.TRUE.)) GO TO 2550
  2570 CONTINUE
       CALL PLTRET
       CALL PLTRED

@@ -1,23 +1,23 @@
 C    Copyright(C) 2014-2017 National Technology & Engineering Solutions of
 C    Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
-C    
+C
 C    Redistribution and use in source and binary forms, with or without
 C    modification, are permitted provided that the following conditions are
 C    met:
-C    
+C
 C    * Redistributions of source code must retain the above copyright
 C       notice, this list of conditions and the following disclaimer.
-C    
+C
 C    * Redistributions in binary form must reproduce the above
 C      copyright notice, this list of conditions and the following
 C      disclaimer in the documentation and/or other materials provided
 C      with the distribution.
-C    
+C
 C    * Neither the name of NTESS nor the names of its
 C      contributors may be used to endorse or promote products derived
 C      from this software without specific prior written permission.
-C    
+C
 C    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 C    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 C    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -29,7 +29,7 @@ C    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 C    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-C    
+C
 
 C $Id: mesh.f,v 1.15 2005/06/23 20:18:44 gdsjaar Exp $
       SUBROUTINE MESH (A, IA, MP, ML, MS, MR, MSC, MA, MCOM, ICOM, JCOM,
@@ -106,10 +106,8 @@ C
       CHARACTER*72 SCHEME, DEFSCH, TITLE, DEV1*3, CIN(MCOM)
       CHARACTER*2048 FNAME
       CHARACTER*80 NUMBER, HOLD, VERSN*10
-      CHARACTER*8 NAMEHI(MAXNAM), NAMEGL(MAXNAM)
-      CHARACTER*8 NAMENV(MAXNAM), NAMEEV(MAXNAM)
 C
-      LOGICAL OPTIM, STEP, ERR, END, ALPHA, THREE, EIGHT, NINE
+      LOGICAL OPTIM, STEP, ERR, ALPHA, THREE, EIGHT, NINE
       LOGICAL AXIS, AREACG, LABE, LABO, LABN, LABNB, LABSB, LABM, LABW
       LOGICAL ADDLNK, BATCH, VAXVMS, WROTE, HARDPL, LGROUP
       LOGICAL REMESH, LONG
@@ -117,7 +115,7 @@ C
 C
       CHARACTER*8 CDUMH, CDUMS
       INTEGER CMPSIZ
-      
+
       NPREGN = 0
       IZ = 0
       ADDLNK = .FALSE.
@@ -636,7 +634,7 @@ C
             else
               isbars = .false.
             end if
-            
+
             CALL RENUM (NPNODE, NPELEM, MXNFLG, MXSFLG, NPNBC, NPSBC,
      &         NPWTS, NPREGN, MP, ML, MS, MR, MSC, MAXKXN, NNUID, NNXK,
      &         MXLPS, IUNIT, NNN, KKK, N(28), N(2), N(11), N(13),
@@ -841,7 +839,7 @@ C ... See if user-specified output word size EXT05
             read(hold,'(i1)',ERR=25)iows
             goto 26
  25         continue
-            
+
             call exparm (cdumh, cdums, idum, iows, idum, idum)
  26         continue
 
@@ -1040,24 +1038,6 @@ C
          CALL HELP_FQ (12)
       END IF
       GOTO 100
-  280 CONTINUE
-      CALL MESAGE (' ')
-      CALL MESAGE ('**********************************************')
-      CALL MESAGE ('* END OF FILE ENCOUNTERED WHILE READING DATA *')
-      CALL MESAGE ('*           NO DATA HAS BEEN INPUT           *')
-      CALL MESAGE ('**********************************************')
-      KKK = 0
-      GOTO 100
-C
-  290 CONTINUE
-      CALL MESAGE (' ')
-      CALL MESAGE ('**********************************************')
-      CALL MESAGE ('*   ERROR ENCOUNTERED WHILE READING DATA     *')
-      CALL MESAGE ('*           NO DATA HAS BEEN INPUT           *')
-      CALL MESAGE ('**********************************************')
-      KKK = 0
-      GOTO 100
-C
 C
 10000 FORMAT (' REGION NO:', I5, ' IS NOT IN THE DATABASE', /,
      &   ' THUS NO SIZE CAN BE ENTERED')

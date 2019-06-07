@@ -8,5 +8,7 @@ var searchData=
   ['array_5fcc_5finit',['array_cc_init',['../structarray__cc__init.html',1,'']]],
   ['array_5fcd_5finit',['array_cd_init',['../structarray__cd__init.html',1,'']]],
   ['array_5fd_5finit',['array_d_init',['../structarray__d__init.html',1,'']]],
-  ['array_5fdd_5finit',['array_dd_init',['../structarray__dd__init.html',1,'']]]
+  ['array_5fdd_5finit',['array_dd_init',['../structarray__dd__init.html',1,'']]],
+  ['array_5fddd_5finit',['array_ddd_init',['../structarray__ddd__init.html',1,'']]],
+  ['attribute',['Attribute',['../structtrmclr_1_1Attribute.html',1,'trmclr']]]
 ];

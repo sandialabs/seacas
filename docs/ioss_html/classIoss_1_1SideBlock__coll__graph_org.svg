@@ -12,8 +12,11 @@
 <!-- Node3 -->
 <g id="node1" class="node">
 <title>Node3</title>
+<g id="a_node1"><a xlink:title="A collection of element sides having the same topology.">
 <polygon fill="#bfbfbf" stroke="#000000" points="24.7556,-.5 24.7556,-18.5 109.1198,-18.5 109.1198,-.5 24.7556,-.5"/>
 <text text-anchor="middle" x="66.9377" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::SideBlock</text>
+</a>
+</g>
 </g>
 <!-- Node4 -->
 <g id="node2" class="node">
@@ -40,7 +43,7 @@
 <!-- Node5 -->
 <g id="node3" class="node">
 <title>Node5</title>
-<g id="a_node3"><a xlink:href="classIoss_1_1GroupingEntity.html" target="_top" xlink:title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ...">
+<g id="a_node3"><a xlink:href="classIoss_1_1GroupingEntity.html" target="_top" xlink:title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">
 <polygon fill="#ffffff" stroke="#000000" points="582.9157,-160.5 582.9157,-178.5 688.9597,-178.5 688.9597,-160.5 582.9157,-160.5"/>
 <text text-anchor="middle" x="635.9377" y="-166.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::GroupingEntity</text>
 </a>
@@ -55,7 +58,7 @@
 <!-- Node7 -->
 <g id="node5" class="node">
 <title>Node7</title>
-<g id="a_node5"><a xlink:href="classIoss_1_1Region.html" target="_top" xlink:title="A grouping entity that contains other grouping entities. ">
+<g id="a_node5"><a xlink:href="classIoss_1_1Region.html" target="_top" xlink:title="A grouping entity that contains other grouping entities.">
 <polygon fill="#ffffff" stroke="#000000" points="703.1447,-95.5 703.1447,-113.5 774.7307,-113.5 774.7307,-95.5 703.1447,-95.5"/>
 <text text-anchor="middle" x="738.9377" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::Region</text>
 </a>
@@ -70,7 +73,7 @@
 <!-- Node13 -->
 <g id="node11" class="node">
 <title>Node13</title>
-<g id="a_node11"><a xlink:href="classIoss_1_1SideSet.html" target="_top" xlink:title="A collection of element sides. ">
+<g id="a_node11"><a xlink:href="classIoss_1_1SideSet.html" target="_top" xlink:title="A collection of element sides.">
 <polygon fill="#ffffff" stroke="#000000" points="337.4773,-95.5 337.4773,-113.5 412.3982,-113.5 412.3982,-95.5 337.4773,-95.5"/>
 <text text-anchor="middle" x="374.9377" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::SideSet</text>
 </a>
@@ -85,7 +88,7 @@
 <!-- Node6 -->
 <g id="node4" class="node">
 <title>Node6</title>
-<g id="a_node4"><a xlink:href="classIoss_1_1DatabaseIO.html" target="_top" xlink:title="An input or output Database. ">
+<g id="a_node4"><a xlink:href="classIoss_1_1DatabaseIO.html" target="_top" xlink:title="An input or output Database.">
 <polygon fill="#ffffff" stroke="#000000" points="548.3073,-.5 548.3073,-18.5 641.5681,-18.5 641.5681,-.5 548.3073,-.5"/>
 <text text-anchor="middle" x="594.9377" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::DatabaseIO</text>
 </a>
@@ -108,7 +111,7 @@
 <!-- Node8 -->
 <g id="node6" class="node">
 <title>Node8</title>
-<g id="a_node6"><a xlink:href="classIoss_1_1Map.html" target="_top" xlink:title="Ioss::Map">
+<g id="a_node6"><a xlink:href="classIoss_1_1Map.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="430.2629,-95.5 430.2629,-113.5 489.6125,-113.5 489.6125,-95.5 430.2629,-95.5"/>
 <text text-anchor="middle" x="459.9377" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::Map</text>
 </a>
@@ -127,7 +130,7 @@
 <!-- Node9 -->
 <g id="node7" class="node">
 <title>Node9</title>
-<g id="a_node7"><a xlink:href="classIoss_1_1ParallelUtils.html" target="_top" xlink:title="Ioss::ParallelUtils">
+<g id="a_node7"><a xlink:href="classIoss_1_1ParallelUtils.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="507.593,-95.5 507.593,-113.5 600.2824,-113.5 600.2824,-95.5 507.593,-95.5"/>
 <text text-anchor="middle" x="553.9377" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::ParallelUtils</text>
 </a>
@@ -143,7 +146,7 @@
 <!-- Node10 -->
 <g id="node8" class="node">
 <title>Node10</title>
-<g id="a_node8"><a xlink:href="classIoss_1_1PropertyManager.html" target="_top" xlink:title="A collection of Ioss::Property objects. ">
+<g id="a_node8"><a xlink:href="classIoss_1_1PropertyManager.html" target="_top" xlink:title="A collection of Ioss::Property objects.">
 <polygon fill="#ffffff" stroke="#000000" points="724.3591,-225.5 724.3591,-243.5 841.5163,-243.5 841.5163,-225.5 724.3591,-225.5"/>
 <text text-anchor="middle" x="782.9377" y="-231.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::PropertyManager</text>
 </a>
@@ -166,7 +169,7 @@
 <!-- Node11 -->
 <g id="node9" class="node">
 <title>Node11</title>
-<g id="a_node9"><a xlink:href="classIoss_1_1ElementTopology.html" target="_top" xlink:title="Represents an element topology. ">
+<g id="a_node9"><a xlink:href="classIoss_1_1ElementTopology.html" target="_top" xlink:title="Represents an element topology.">
 <polygon fill="#ffffff" stroke="#000000" points="78.6325,-160.5 78.6325,-178.5 195.2429,-178.5 195.2429,-160.5 78.6325,-160.5"/>
 <text text-anchor="middle" x="136.9377" y="-166.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::ElementTopology</text>
 </a>
@@ -196,7 +199,7 @@
 <!-- Node12 -->
 <g id="node10" class="node">
 <title>Node12</title>
-<g id="a_node10"><a xlink:href="classIoss_1_1FieldManager.html" target="_top" xlink:title="A collection of Ioss::Field objects. ">
+<g id="a_node10"><a xlink:href="classIoss_1_1FieldManager.html" target="_top" xlink:title="A collection of Ioss::Field objects.">
 <polygon fill="#ffffff" stroke="#000000" points="585.4182,-225.5 585.4182,-243.5 686.4572,-243.5 686.4572,-225.5 585.4182,-225.5"/>
 <text text-anchor="middle" x="635.9377" y="-231.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::FieldManager</text>
 </a>

@@ -43,12 +43,13 @@
 #include <Ioss_PropertyManager.h> // for PropertyManager
 #include <Ioss_State.h>           // for State, State::STATE_INVALID
 #include <Ioss_SurfaceSplit.h>    // for SurfaceSplitType
-#include <cstddef>                // for size_t, nullptr
-#include <cstdint>                // for int64_t
-#include <map>                    // for map
-#include <string>                 // for string
-#include <utility>                // for pair
-#include <vector>                 // for vector
+#include <chrono>
+#include <cstddef> // for size_t, nullptr
+#include <cstdint> // for int64_t
+#include <map>     // for map
+#include <string>  // for string
+#include <utility> // for pair
+#include <vector>  // for vector
 
 namespace Ioss {
   class CommSet;
@@ -187,6 +188,12 @@ namespace Ioss {
      */
     std::string get_filename() const { return DBFilename; }
 
+    /** For the database types that support it, return an integer `handle`
+     * through which a client can directly access the underlying file.
+     * Please use sparingly and with discretion. Basically, a kluge
+     */
+    virtual int get_file_pointer() const { return 0; }
+
     /** \brief Get a file-per-processor filename associated with the database.
      *
      * \ returns The file-per-processor name for a file on this processor.
@@ -322,16 +329,9 @@ namespace Ioss {
       return end__(state);
     }
 
-    bool begin_state(Region *region, int state, double time)
-    {
-      IOSS_FUNC_ENTER(m_);
-      return begin_state__(region, state, time);
-    }
-    bool end_state(Region *region, int state, double time)
-    {
-      IOSS_FUNC_ENTER(m_);
-      return end_state__(region, state, time);
-    }
+    bool begin_state(int state, double time);
+    bool end_state(int state, double time);
+
     // Metadata-related functions.
     void read_meta_data()
     {
@@ -540,6 +540,13 @@ namespace Ioss {
     int  parallel_size() const { return util().parallel_size(); }
     bool is_parallel() const { return isParallel; }
 
+    void progress(const std::string &output) const
+    {
+      if (m_enableTracing) {
+        util().progress(output);
+      }
+    }
+
   protected:
     DatabaseIO(Region *region, std::string filename, Ioss::DatabaseUsage db_usage,
                MPI_Comm communicator, const Ioss::PropertyManager &props);
@@ -692,7 +699,8 @@ namespace Ioss {
     mutable std::vector<std::vector<bool>> blockAdjacency;
 
   private:
-    virtual bool ok__(bool write_message, std::string *error_message, int *bad_count) const
+    virtual bool ok__(bool /* write_message */, std::string * /* error_message */,
+                      int *bad_count) const
     {
       if (bad_count != nullptr) {
         *bad_count = 0;
@@ -718,22 +726,27 @@ namespace Ioss {
       elemMap.release_memory();
     }
 
-    virtual bool open_group__(const std::string &group_name) { return false; }
-    virtual bool create_subgroup__(const std::string &group_name) { return false; }
+    virtual void openDatabase__() const {}
+    virtual void closeDatabase__() const {}
+    virtual void flush_database__() const {}
+
+    virtual bool open_group__(const std::string & /* group_name */) { return false; }
+    virtual bool create_subgroup__(const std::string & /* group_name */) { return false; }
+
     virtual bool begin__(Ioss::State state) = 0;
     virtual bool end__(Ioss::State state)   = 0;
 
     virtual void read_meta_data__() = 0;
     virtual void get_step_times__() {}
 
-    virtual bool begin_state__(Region *region, int state, double time);
-    virtual bool end_state__(Region *region, int state, double time);
+    virtual bool begin_state__(int state, double time);
+    virtual bool end_state__(int state, double time);
 
     void get_block_adjacencies__(const Ioss::ElementBlock *eb,
                                  std::vector<std::string> &block_adjacency) const;
 
-    virtual void compute_block_membership__(Ioss::SideBlock *         efblock,
-                                            std::vector<std::string> &block_membership) const
+    virtual void compute_block_membership__(Ioss::SideBlock * /* efblock */,
+                                            std::vector<std::string> & /* block_membership */) const
     {
     }
 
@@ -833,6 +846,11 @@ namespace Ioss {
                                      // names on database.
     mutable bool blockAdjacenciesCalculated{false}; // True if the lazy creation of
     // block adjacencies has been calculated.
+
+    bool m_timeStateInOut{false};
+    bool m_enableTracing{false};
+    std::chrono::time_point<std::chrono::high_resolution_clock>
+        m_stateStart; // Used for optional output step timing.
   };
 } // namespace Ioss
 #endif

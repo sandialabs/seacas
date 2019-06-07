@@ -126,8 +126,8 @@ namespace Ioex {
 
     void open_state_file(int state);
 
-    bool begin_state__(Ioss::Region *region, int state, double time) override;
-    bool end_state__(Ioss::Region *region, int state, double time) override;
+    bool begin_state__(int state, double time) override;
+    bool end_state__(int state, double time) override;
     void get_step_times__() override = 0;
 
     int maximum_symbol_length() const override { return maximumNameLength; }
@@ -142,8 +142,8 @@ namespace Ioex {
     }
 
     size_t handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
-                            Ioss::Map &entity_map, void *ids, size_t num_to_get, size_t offset,
-                            size_t count) const;
+                            Ioss::Map &entity_map, void *ids, size_t num_to_get,
+                            size_t offset) const;
 
     void compute_block_membership__(Ioss::SideBlock *         efblock,
                                     std::vector<std::string> &block_membership) const override;
@@ -217,11 +217,8 @@ namespace Ioex {
       closeDW();
     }
 
-  public:
-    // Temporarily made public for use during Salinas transition
-    // to using Ioss
     virtual int get_file_pointer() const = 0; // Open file and set exodusFilePtr.
-  protected:
+
     virtual int free_file_pointer() const; // Close file and set exodusFilePtr.
 
     virtual bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
@@ -319,7 +316,7 @@ namespace Ioex {
     // active nodes for each nodeset.  If the nodeset is not reduced in size,
     // the map's vector will be empty for that nodeset. If the vector is not
     // empty, then some nodes on that nodeset are only connected to omitted elements.
-    mutable std::map<std::string, Ioss::Int64Vector> activeNodesetNodesIndex;
+    mutable std::map<std::string, Ioss::Int64Vector> activeNodeSetNodesIndex;
 
     time_t timeLastFlush{0};
     int    flushInterval{1};

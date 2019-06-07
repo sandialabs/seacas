@@ -60,6 +60,8 @@ var searchData=
   ['array_5fd_5finit',['array_d_init',['../structarray__d__init.html',1,'']]],
   ['array_5fdd_5ffncts',['array_dd_fncts',['../namespaceSEAMS.html#af41f15ad87ed07c7bf685ad1cbf34d49',1,'SEAMS']]],
   ['array_5fdd_5finit',['array_dd_init',['../structarray__dd__init.html',1,'']]],
+  ['array_5fddd_5ffncts',['array_ddd_fncts',['../namespaceSEAMS.html#a099eb84ff4ef8e2cafdad2ec810f58ee',1,'SEAMS']]],
+  ['array_5fddd_5finit',['array_ddd_init',['../structarray__ddd__init.html',1,'']]],
   ['array_5ffunction',['ARRAY_FUNCTION',['../classSEAMS_1_1Aprepro.html#a91d58145137592e549991a00b8e9448da755d477a0d17484fffa3a269bd723881',1,'SEAMS::Aprepro']]],
   ['array_5finterpolate',['array_interpolate',['../namespaceSEAMS.html#af7de01f34f8e3d40ae323dcad46135b2',1,'SEAMS']]],
   ['array_5fmult',['array_mult',['../namespaceSEAMS.html#ab202dc3d898933d0253266045261ffc1',1,'SEAMS']]],
@@ -73,6 +75,8 @@ var searchData=
   ['arrfnct_5fcd',['arrfnct_cd',['../structSEAMS_1_1symrec_1_1value.html#a46d35f38f528e52b37f7bfebbc1b2404',1,'SEAMS::symrec::value']]],
   ['arrfnct_5fd',['arrfnct_d',['../structSEAMS_1_1symrec_1_1value.html#a5107e44c0d6901333acfe15f0e569bd2',1,'SEAMS::symrec::value']]],
   ['arrfnct_5fdd',['arrfnct_dd',['../structSEAMS_1_1symrec_1_1value.html#a78cbc837c4b217c9080922c20964fb20',1,'SEAMS::symrec::value']]],
+  ['arrfnct_5fddd',['arrfnct_ddd',['../structSEAMS_1_1symrec_1_1value.html#a59212482ef9c31833fdefdfb4a4ec052',1,'SEAMS::symrec::value']]],
   ['arrval',['arrval',['../unionSEAMS_1_1Parser_1_1semantic__type.html#a83a0542629fd37300270f70063704786',1,'SEAMS::Parser::semantic_type']]],
-  ['avar',['avar',['../structSEAMS_1_1symrec_1_1value.html#a68d351256d6437e94af29299f17e559b',1,'SEAMS::symrec::value::avar()'],['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82aeb79e28b63fb0c599c3a5986e1639bc1',1,'SEAMS::Parser::token::AVAR()']]]
+  ['attribute',['Attribute',['../structtrmclr_1_1Attribute.html',1,'trmclr::Attribute'],['../namespacetrmclr.html#a3d4b31b4bb69c315a75868d562b5feb6a62800974f0e42f278c643cb7500e66cd',1,'trmclr::ATTRIBUTE()']]],
+  ['avar',['AVAR',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82aeb79e28b63fb0c599c3a5986e1639bc1',1,'SEAMS::Parser::token::AVAR()'],['../structSEAMS_1_1symrec_1_1value.html#a68d351256d6437e94af29299f17e559b',1,'SEAMS::symrec::value::avar()']]]
 ];

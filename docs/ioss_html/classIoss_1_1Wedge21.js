@@ -23,5 +23,5 @@ var classIoss_1_1Wedge21 =
     [ "parametric_dimension", "classIoss_1_1Wedge21.html#a70d4262df45d51f124b3ad6b44f20c81", null ],
     [ "shape", "classIoss_1_1Wedge21.html#a90ca76b22ffdb5197cf4d0b93f03561b", null ],
     [ "spatial_dimension", "classIoss_1_1Wedge21.html#a3af8cf3641f679b84f960e4c5ecd383b", null ],
-    [ "name", "classIoss_1_1Wedge21.html#abee37c7e4e5614bdd9e9a8bf41909369", null ]
+    [ "name", "classIoss_1_1Wedge21.html#a413d6ad116ae38cc6d5aa93bc91fab65", null ]
 ];

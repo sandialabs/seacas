@@ -1,8 +1,20 @@
 <map id="src/generated/Iogn_DashSurfaceMesh.h" name="src/generated/Iogn_DashSurfaceMesh.h">
-<area shape="rect" id="node2" href="$Ioss__Hex8_8h.html" title="Ioss_Hex8.h" alt="" coords="209,92,304,117"/>
-<area shape="rect" id="node13" href="$Ioss__Shell4_8h.html" title="Ioss_Shell4.h" alt="" coords="328,92,430,117"/>
-<area shape="rect" id="node15" href="$Iogn__GeneratedMesh_8h.html" title="generated/Iogn_Generated\lMesh.h" alt="" coords="396,165,578,204"/>
-<area shape="rect" id="node3" href="$Ioss__CodeTypes_8h.html" title="Ioss_CodeTypes.h" alt="" coords="293,252,425,277"/>
-<area shape="rect" id="node11" href="$Ioss__ElementTopology_8h.html" title="Ioss_ElementTopology.h" alt="" coords="73,172,239,197"/>
-<area shape="rect" id="node16" href="$Ioss__EntityType_8h.html" title="Ioss_EntityType.h" alt="" coords="549,252,676,277"/>
+<area shape="rect" id="node1" title=" " alt="" coords="385,5,534,44"/>
+<area shape="rect" id="node2" href="$Ioss__Hex8_8h.html" title=" " alt="" coords="116,92,211,117"/>
+<area shape="rect" id="node5" title=" " alt="" coords="514,325,578,351"/>
+<area shape="rect" id="node6" title=" " alt="" coords="684,325,744,351"/>
+<area shape="rect" id="node7" title=" " alt="" coords="87,325,141,351"/>
+<area shape="rect" id="node8" title=" " alt="" coords="5,325,63,351"/>
+<area shape="rect" id="node13" href="$Ioss__Shell4_8h.html" title=" " alt="" coords="235,92,337,117"/>
+<area shape="rect" id="node14" href="$Ioss__Beam2_8h.html" title=" " alt="" coords="361,92,467,117"/>
+<area shape="rect" id="node15" title=" " alt="" coords="927,92,1005,117"/>
+<area shape="rect" id="node16" href="$Iogn__GeneratedMesh_8h.html" title=" " alt="" coords="414,165,596,204"/>
+<area shape="rect" id="node18" title=" " alt="" coords="751,252,803,277"/>
+<area shape="rect" id="node3" href="$Ioss__CodeTypes_8h.html" title=" " alt="" coords="295,252,427,277"/>
+<area shape="rect" id="node11" href="$Ioss__ElementTopology_8h.html" title=" " alt="" coords="73,172,238,197"/>
+<area shape="rect" id="node4" title=" " alt="" coords="438,325,489,351"/>
+<area shape="rect" id="node9" title=" " alt="" coords="260,325,414,351"/>
+<area shape="rect" id="node10" title=" " alt="" coords="165,325,236,351"/>
+<area shape="rect" id="node12" title=" " alt="" coords="123,252,170,277"/>
+<area shape="rect" id="node17" href="$Ioss__EntityType_8h.html" title=" " alt="" coords="551,252,677,277"/>
 </map>

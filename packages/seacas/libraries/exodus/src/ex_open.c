@@ -54,8 +54,6 @@
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
-#include <stddef.h>       // for size_t
-#include <stdio.h>
 /*!
 
 \note The ex_open_int() is an internal function called by
@@ -232,7 +230,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
 #endif
       }
       else if (type == 4) {
-#if defined(NC_64BIT_DATA)
+#if NC_HAS_CDF5
         fprintf(stderr,
                 "EXODUS: ERROR: Attempting to open the CDF5 "
                 "file:\n\t'%s'\n\t failed. The netcdf library supports "
@@ -323,10 +321,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
           EX_FUNC_LEAVE(EX_FATAL);
         }
       }
-      if ((status = nc_enddef(exoid)) != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to complete definition in file id %d named %s", exoid, path);
-        ex_err_fn(exoid, __func__, errmsg, status);
+      if ((status = ex_leavedef(exoid, __func__)) != NC_NOERR) {
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }

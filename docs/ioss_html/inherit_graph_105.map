@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structIoss_1_1AxisAlignedBoundingBox.html" title="Ioss::AxisAlignedBoundingBox" alt="" coords="5,5,208,31"/>
+<area shape="rect" id="node1" href="$classIogn_1_1GeneratedMesh.html" title=" " alt="" coords="5,31,156,56"/>
+<area shape="rect" id="node2" href="$classIogn_1_1DashSurfaceMesh.html" title=" " alt="" coords="204,5,368,31"/>
+<area shape="rect" id="node3" href="$classIogn_1_1ExodusMesh.html" title=" " alt="" coords="220,55,352,80"/>
 </map>

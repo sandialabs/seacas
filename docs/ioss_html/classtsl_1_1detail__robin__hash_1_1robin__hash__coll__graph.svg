@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 642;
+var viewWidth = 579;
 var viewHeight = 158;
 var sectionId = 'dynsection-1';
 </script>
@@ -54,57 +54,69 @@ var sectionId = 'dynsection-1';
 <svg id="graph" class="graph">
 <g id="viewport">
 <title>tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-154 638.4277,-154 638.4277,4 -4,4"/>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-154 574.5117,-154 574.5117,4 -4,4"/>
 <!-- Node4 -->
 <g id="node1" class="node">
 <title>Node4</title>
-<polygon fill="#bfbfbf" stroke="#000000" points="495.3223,-55.5 495.3223,-113.5 634.4277,-113.5 634.4277,-55.5 495.3223,-55.5"/>
-<text text-anchor="start" x="503.3223" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_robin_hash</text>
-<text text-anchor="start" x="503.3223" y="-91.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">::robin_hash&lt; ValueType,</text>
-<text text-anchor="start" x="503.3223" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> KeySelect, ValueSelect,</text>
-<text text-anchor="start" x="503.3223" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> Hash, KeyEqual, Allocator,</text>
-<text text-anchor="middle" x="564.875" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> StoreHash, GrowthPolicy &gt;</text>
+<g id="a_node1"><a xlink:title=" ">
+<polygon fill="#bfbfbf" stroke="#000000" points="431.4063,-55.5 431.4063,-113.5 570.5117,-113.5 570.5117,-55.5 431.4063,-55.5"/>
+<text text-anchor="start" x="439.4063" y="-101.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_robin_hash</text>
+<text text-anchor="start" x="439.4063" y="-91.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">::robin_hash&lt; ValueType,</text>
+<text text-anchor="start" x="439.4063" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> KeySelect, ValueSelect,</text>
+<text text-anchor="start" x="439.4063" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> Hash, KeyEqual, Allocator,</text>
+<text text-anchor="middle" x="500.959" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> StoreHash, GrowthPolicy &gt;</text>
+</a>
+</g>
 </g>
 <!-- Node5 -->
 <g id="node2" class="node">
 <title>Node5</title>
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="256.2349,-131.5 256.2349,-149.5 295.5796,-149.5 295.5796,-131.5 256.2349,-131.5"/>
 <text text-anchor="middle" x="275.9072" y="-137.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Hash</text>
+</a>
+</g>
 </g>
 <!-- Node5&#45;&gt;Node4 -->
 <g id="edge1" class="edge">
 <title>Node5&#45;&gt;Node4</title>
-<path fill="none" stroke="#8b1a1a" d="M305.7615,-136.5085C345.2293,-131.0265 416.8432,-120.3683 477.3223,-107.5 483.1635,-106.2571 489.1998,-104.8765 495.2444,-103.4263"/>
-<polygon fill="#8b1a1a" stroke="#8b1a1a" points="305.1805,-133.0553 295.7497,-137.8835 306.133,-139.9902 305.1805,-133.0553"/>
+<path fill="none" stroke="#8b1a1a" d="M305.899,-133.4965C333.7841,-126.9388 376.4607,-116.7852 413.4063,-107.5 419.1982,-106.0444 425.1997,-104.5141 431.221,-102.9635"/>
+<polygon fill="#8b1a1a" stroke="#8b1a1a" points="304.9147,-130.1323 295.9788,-135.8244 306.514,-136.9472 304.9147,-130.1323"/>
 </g>
 <!-- Node6 -->
 <g id="node3" class="node">
 <title>Node6</title>
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="246.5034,-94.5 246.5034,-112.5 305.311,-112.5 305.311,-94.5 246.5034,-94.5"/>
 <text text-anchor="middle" x="275.9072" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">KeyEqual</text>
+</a>
+</g>
 </g>
 <!-- Node6&#45;&gt;Node4 -->
 <g id="edge2" class="edge">
 <title>Node6&#45;&gt;Node4</title>
-<path fill="none" stroke="#8b1a1a" d="M315.6899,-100.8842C361.9177,-97.8447 439.0292,-92.7745 495.2492,-89.078"/>
-<polygon fill="#8b1a1a" stroke="#8b1a1a" points="315.2226,-97.4073 305.4739,-101.556 315.682,-104.3922 315.2226,-97.4073"/>
+<path fill="none" stroke="#8b1a1a" d="M315.6102,-100.1481C347.5716,-97.4497 393.2732,-93.5914 431.2972,-90.3812"/>
+<polygon fill="#8b1a1a" stroke="#8b1a1a" points="314.9989,-96.6871 305.3288,-101.0161 315.5878,-103.6623 314.9989,-96.6871"/>
 </g>
 <!-- Node7 -->
 <g id="node4" class="node">
 <title>Node7</title>
+<g id="a_node4"><a xlink:title=" ">
 <polygon fill="#ffffff" stroke="#bfbfbf" points="238.4541,-57.5 238.4541,-75.5 313.3604,-75.5 313.3604,-57.5 238.4541,-57.5"/>
 <text text-anchor="middle" x="275.9072" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">GrowthPolicy</text>
+</a>
+</g>
 </g>
 <!-- Node7&#45;&gt;Node4 -->
 <g id="edge3" class="edge">
 <title>Node7&#45;&gt;Node4</title>
-<path fill="none" stroke="#8b1a1a" d="M323.5353,-69.4668C370.232,-72.3756 441.9484,-76.8428 495.0798,-80.1524"/>
-<polygon fill="#8b1a1a" stroke="#8b1a1a" points="323.5868,-65.9633 313.3885,-68.8347 323.1515,-72.9498 323.5868,-65.9633"/>
+<path fill="none" stroke="#8b1a1a" d="M323.7705,-70.3282C355.0421,-72.8293 396.3994,-76.1372 431.2924,-78.928"/>
+<polygon fill="#8b1a1a" stroke="#8b1a1a" points="323.8231,-66.8213 313.5758,-69.5128 323.2649,-73.799 323.8231,-66.8213"/>
 </g>
 <!-- Node8 -->
 <g id="node5" class="node">
 <title>Node8</title>
-<g id="a_node5"><a xlink:href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html" target="_top" xlink:title="tsl::detail_robin_hash\l::bucket_entry\&lt; ValueType,\l StoreHash \&gt;">
+<g id="a_node5"><a xlink:href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="207.541,-.5 207.541,-38.5 344.2734,-38.5 344.2734,-.5 207.541,-.5"/>
 <text text-anchor="start" x="215.541" y="-26.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_robin_hash</text>
 <text text-anchor="start" x="215.541" y="-16.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">::bucket_entry&lt; ValueType,</text>
@@ -115,14 +127,14 @@ var sectionId = 'dynsection-1';
 <!-- Node8&#45;&gt;Node4 -->
 <g id="edge4" class="edge">
 <title>Node8&#45;&gt;Node4</title>
-<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M354.7029,-32.2452C392.0765,-38.8301 437.225,-47.5683 477.3223,-57.5 483.1894,-58.9532 489.2439,-60.57 495.3008,-62.2696"/>
-<polygon fill="#9a32cd" stroke="#9a32cd" points="354.831,-28.7148 344.3785,-30.4458 353.629,-35.6108 354.831,-28.7148"/>
-<text text-anchor="middle" x="419.7979" y="-59.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> m_first_or_empty_bucket</text>
+<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M351.5971,-41.3609C377.2752,-48.7774 405.8298,-57.0246 431.0377,-64.3052"/>
+<polygon fill="#9a32cd" stroke="#9a32cd" points="352.4881,-37.9753 341.9095,-38.563 350.5457,-44.7004 352.4881,-37.9753"/>
+<text text-anchor="middle" x="387.8398" y="-59.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> m_buckets</text>
 </g>
 <!-- Node9 -->
 <g id="node6" class="node">
 <title>Node9</title>
-<g id="a_node6"><a xlink:href="classtsl_1_1detail__robin__hash_1_1bucket__entry__hash.html" target="_top" xlink:title="tsl::detail_robin_hash\l::bucket_entry_hash\&lt; StoreHash \&gt;">
+<g id="a_node6"><a xlink:href="classtsl_1_1detail__robin__hash_1_1bucket__entry__hash.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="0,-5.5 0,-33.5 170.541,-33.5 170.541,-5.5 0,-5.5"/>
 <text text-anchor="start" x="8" y="-21.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_robin_hash</text>
 <text text-anchor="middle" x="85.2705" y="-11.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">::bucket_entry_hash&lt; StoreHash &gt;</text>

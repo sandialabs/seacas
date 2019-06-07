@@ -11,5 +11,6 @@ var robin__hash_8h =
     [ "robin_hash", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", "classtsl_1_1detail__robin__hash_1_1robin__hash" ],
     [ "robin_iterator", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator" ],
     [ "robin_iterator", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator" ],
-    [ "truncated_hash_type", "robin__hash_8h.html#a2cbfbac638bc4acedda5558419aeb228", null ]
+    [ "truncated_hash_type", "robin__hash_8h.html#a2cbfbac638bc4acedda5558419aeb228", null ],
+    [ "clamp", "robin__hash_8h.html#a4e211f15453efe94c646a3075d909f64", null ]
 ];

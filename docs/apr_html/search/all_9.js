@@ -48,5 +48,6 @@ var searchData=
   ['internal_5finit_5ftable',['internal_init_table',['../apr__init_8cc.html#a162c11d145051cb824ac806b67654dba',1,'apr_init.cc']]],
   ['is_5fdirectory',['is_directory',['../namespaceSEAMS.html#a4007090c9cdfec53d0191ee4d8432cb1',1,'SEAMS']]],
   ['iscollectingloop',['isCollectingLoop',['../classSEAMS_1_1Aprepro.html#ab8eca6bacdb5c2e65743300847629698',1,'SEAMS::Aprepro']]],
-  ['isinternal',['isInternal',['../structSEAMS_1_1symrec.html#a4974812b2f80ce659b1a80cf3860d400',1,'SEAMS::symrec']]]
+  ['isinternal',['isInternal',['../structSEAMS_1_1symrec.html#a4974812b2f80ce659b1a80cf3860d400',1,'SEAMS::symrec']]],
+  ['iterator',['iterator',['../classSEAMS_1_1Parser_1_1stack.html#aaf64125a292806aafb2f5a6c91c11c7e',1,'SEAMS::Parser::stack']]]
 ];

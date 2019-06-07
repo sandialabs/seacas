@@ -1,2 +1,5 @@
 <map id="SEAMS::Scanner" name="SEAMS::Scanner">
+<area shape="rect" id="node1" title=" " alt="" coords="6,152,131,177"/>
+<area shape="rect" id="node2" href="$classSEAMSFlexLexer.html" title=" " alt="" coords="5,79,132,104"/>
+<area shape="rect" id="node3" href="$classFlexLexer.html" title=" " alt="" coords="29,5,109,31"/>
 </map>

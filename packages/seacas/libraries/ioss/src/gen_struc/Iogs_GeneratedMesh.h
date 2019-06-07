@@ -89,7 +89,7 @@ namespace Iogs {
        Node Count (total)    = 1287
        Element Count (total) = 1152
        Block Count           = 3
-       Sideset Count         = 3
+       SideSet Count         = 3
        \endcode
 
        - sideset -- argument = xXyYzZ which specifies whether there is
@@ -238,7 +238,7 @@ namespace Iogs {
      */
     virtual int64_t sideset_side_count_proc(int64_t id) const;
 
-    Ioss::IJK_t block_range(int64_t id) const
+    Ioss::IJK_t block_range(int64_t /* id */) const
     {
       return Ioss::IJK_t{{(int)numX, (int)numY, (int)numZ}};
     }

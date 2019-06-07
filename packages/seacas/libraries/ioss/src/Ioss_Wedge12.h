@@ -44,7 +44,7 @@ namespace Ioss {
   {
 
   public:
-    static constexpr auto name = "wedge12";
+    static const char *name;
 
     static void factory();
     ~Wedge12() override;

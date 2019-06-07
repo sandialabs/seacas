@@ -1,9 +1,10 @@
 <map id="Ioss::EntityBlock" name="Ioss::EntityBlock">
-<area shape="rect" id="node3" href="$classIoss_1_1EdgeBlock.html" title="A collection of element edges with the same topology. " alt="" coords="377,5,494,31"/>
-<area shape="rect" id="node4" href="$classIoss_1_1ElementBlock.html" title="A collection of elements having the same topology. " alt="" coords="368,55,503,80"/>
-<area shape="rect" id="node5" href="$classIoss_1_1FaceBlock.html" title="A collection of element faces with the same topology. " alt="" coords="378,104,493,129"/>
-<area shape="rect" id="node6" href="$classIoss_1_1NodeBlock.html" title="A collection of all nodes in the region. " alt="" coords="377,153,494,179"/>
-<area shape="rect" id="node7" href="$classIoss_1_1SideBlock.html" title="A collection of element sides having the same topology. " alt="" coords="379,203,492,228"/>
-<area shape="rect" id="node8" href="$classIoss_1_1StructuredBlock.html" title="A structured zone – i,j,k. " alt="" coords="362,252,509,277"/>
-<area shape="rect" id="node2" href="$classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ..." alt="" coords="5,129,147,155"/>
+<area shape="rect" id="node1" title="Base class for all &#39;block&#39;&#45;type grouping entities, which means all members of the block are similar o..." alt="" coords="195,129,314,155"/>
+<area shape="rect" id="node3" href="$classIoss_1_1EdgeBlock.html" title="A collection of element edges with the same topology." alt="" coords="377,5,494,31"/>
+<area shape="rect" id="node4" href="$classIoss_1_1ElementBlock.html" title="A collection of elements having the same topology." alt="" coords="368,55,503,80"/>
+<area shape="rect" id="node5" href="$classIoss_1_1FaceBlock.html" title="A collection of element faces with the same topology." alt="" coords="378,104,493,129"/>
+<area shape="rect" id="node6" href="$classIoss_1_1NodeBlock.html" title="A collection of all nodes in the region." alt="" coords="377,153,494,179"/>
+<area shape="rect" id="node7" href="$classIoss_1_1SideBlock.html" title="A collection of element sides having the same topology." alt="" coords="379,203,492,228"/>
+<area shape="rect" id="node8" href="$classIoss_1_1StructuredBlock.html" title="A structured zone – i,j,k." alt="" coords="362,252,509,277"/>
+<area shape="rect" id="node2" href="$classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:" alt="" coords="5,129,147,155"/>
 </map>

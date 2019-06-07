@@ -46,11 +46,13 @@ var files_dup =
       [ "array_c_init", "structarray__c__init.html", "structarray__c__init" ],
       [ "array_cc_init", "structarray__cc__init.html", "structarray__cc__init" ],
       [ "array_cd_init", "structarray__cd__init.html", "structarray__cd__init" ],
+      [ "array_ddd_init", "structarray__ddd__init.html", "structarray__ddd__init" ],
       [ "array_dd_init", "structarray__dd__init.html", "structarray__dd__init" ],
       [ "array_d_init", "structarray__d__init.html", "structarray__d__init" ],
       [ "array_a_init", "structarray__a__init.html", "structarray__a__init" ],
       [ "var_init", "structvar__init.html", "structvar__init" ],
       [ "svar_init", "structsvar__init.html", "structsvar__init" ]
     ] ],
-    [ "strings.cc", "strings_8cc.html", "strings_8cc" ]
+    [ "strings.cc", "strings_8cc.html", "strings_8cc" ],
+    [ "terminal_color.h", "terminal__color_8h.html", "terminal__color_8h" ]
 ];

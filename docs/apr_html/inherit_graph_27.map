@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structSEAMS_1_1Parser_1_1by__type.html" title="Type access provider for token (enum) based symbols. " alt="" coords="5,5,174,31"/>
+<area shape="rect" id="node1" href="$structSEAMS_1_1Parser_1_1by__state.html" title="Type access provider for state based symbols." alt="" coords="5,12,178,37"/>
+<area shape="rect" id="node2" href="$structSEAMS_1_1Parser_1_1basic__symbol.html" title=" " alt="" coords="226,5,379,44"/>
+<area shape="rect" id="node3" href="$structSEAMS_1_1Parser_1_1stack__symbol__type.html" title="&quot;Internal&quot; symbol: element of the stack." alt="" coords="427,5,580,44"/>
 </map>

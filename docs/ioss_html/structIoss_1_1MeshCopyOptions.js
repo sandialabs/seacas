@@ -8,5 +8,6 @@ var structIoss_1_1MeshCopyOptions =
     [ "maximum_time", "structIoss_1_1MeshCopyOptions.html#a3fb1036a0278542d6f8341ed39f1e1ed", null ],
     [ "memory_statistics", "structIoss_1_1MeshCopyOptions.html#aa0fe21d58fece15a33366f5b39414ff7", null ],
     [ "minimum_time", "structIoss_1_1MeshCopyOptions.html#a58e5e3cf2b8d91fed8e31a0ccc6c7a17", null ],
+    [ "reverse", "structIoss_1_1MeshCopyOptions.html#a5cd2a4b3cce1d898aaa16ebefbf363b1", null ],
     [ "verbose", "structIoss_1_1MeshCopyOptions.html#aaf51f54f274e24589adecac085e30d4e", null ]
 ];

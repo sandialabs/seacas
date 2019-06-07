@@ -33,7 +33,7 @@
 #ifndef ED_Version_h
 #define ED_Version_h
 
-static std::string version("2.93");
-static std::string verdate("2018-10-18");
+static std::string version("3.00");
+static std::string verdate("2019-05-17");
 
 #endif // ED_Version_h

@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['green',['GREEN',['../structIoss_1_1trmclr_1_1Foreground.html#a7712591c720f5319dc922f46b80b959aa59087aa17dc073c4d8d2b4c49edd5dec',1,'Ioss::trmclr::Foreground::GREEN()'],['../structIoss_1_1trmclr_1_1Background.html#a0ae610a20611939d24afd1489d854334ab5b0c6a81cf85826cc30efc2dc09feb4',1,'Ioss::trmclr::Background::GREEN()']]]
+  ['hex',['HEX',['../namespaceIoss.html#acc1610b8e37168350b478a07112dffcfa58c9566f3c750ce7147b045fdd14202b',1,'Ioss']]],
+  ['hex8',['Hex8',['../namespaceIogn.html#a05c78571e9bf222ffa337fa31ed95006a616a85e990891690c32ea92e9a3cce0d',1,'Iogn']]],
+  ['hybrid',['HYBRID',['../namespaceIoss.html#aa4d4cdd26c26124cb15aad084f4de822a3bf07fe8ac3883060b1558113ba248d4',1,'Ioss']]]
 ];

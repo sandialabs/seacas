@@ -14,6 +14,8 @@ var searchData=
   ['pathopen',['pathopen',['../namespaceSEAMS.html#abc0de3998134653bfab9b0e15213d6fe',1,'SEAMS']]],
   ['pi',['PI',['../apr__builtin_8cc.html#a598a3330b3c21701223ee0ca14316eca',1,'PI():&#160;apr_builtin.cc'],['../namespaceSEAMS_1_1anonymous__namespace_02apr__units_8cc_03.html#a1fdc6ec0bab3d1a1153dc83a15206f3d',1,'SEAMS::anonymous_namespace{apr_units.cc}::PI()']]],
   ['plu',['PLU',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a5cdaa6bd38522739bab58636dd40e741',1,'SEAMS::Parser::token']]],
+  ['pop',['pop',['../classSEAMS_1_1Parser_1_1stack.html#a2fffe51eb686522178536b0b460abf83',1,'SEAMS::Parser::stack']]],
   ['pow',['POW',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a6740663faf34ad8a9c33cdac9a90f4ea',1,'SEAMS::Parser::token']]],
+  ['push',['push',['../classSEAMS_1_1Parser_1_1stack.html#a7cc58e3811186172ff0797806bd44481',1,'SEAMS::Parser::stack']]],
   ['putsym',['putsym',['../classSEAMS_1_1Aprepro.html#a99d76312239bd0aaafb62a73c26edf69',1,'SEAMS::Aprepro']]]
 ];

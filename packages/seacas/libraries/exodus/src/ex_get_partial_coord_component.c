@@ -35,11 +35,6 @@
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_comp_ws, etc
-#include "netcdf.h"       // for NC_NOERR, etc
-#include <inttypes.h>     // for PRId64
-#include <stddef.h>       // for size_t
-#include <stdio.h>
-#include <sys/types.h> // for int64_t
 
 /*!
  * reads the coordinates of some of the nodes in the model for the specified component

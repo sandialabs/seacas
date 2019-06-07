@@ -37,5 +37,6 @@ var searchData=
   ['gl_5ftab_5fhook',['gl_tab_hook',['../apr__getline__int_8h.html#ad140e5005d9a7f75cdb83ab73260a7c0',1,'apr_getline_int.h']]],
   ['gl_5ftab_5fhook_5fproc',['gl_tab_hook_proc',['../apr__getline__int_8h.html#a44089eac49c8819475a20739cb88b21a',1,'apr_getline_int.h']]],
   ['gl_5fwin_5fgetpass',['gl_win_getpass',['../apr__getline__int_8h.html#a04577171d2b5771c9135453872c4f878',1,'apr_getline_int.h']]],
+  ['green',['GREEN',['../structtrmclr_1_1Foreground.html#add2640fff4af2ff8c047db518188fb58a23eaacfa5f461971f5e0f361a4c32586',1,'trmclr::Foreground::GREEN()'],['../structtrmclr_1_1Background.html#aa96259e93f51806dbf9b4016f45dbfaaa22dd2f094726e007b5eb334dd2dc4502',1,'trmclr::Background::GREEN()'],['../namespacetrmclr.html#ab7246ef4a6d62c1069d7c70a2050cae0',1,'trmclr::green()']]],
   ['gt',['GT',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a1d29dc08d2f2e70aa1a3bd18e9284703',1,'SEAMS::Parser::token']]]
 ];

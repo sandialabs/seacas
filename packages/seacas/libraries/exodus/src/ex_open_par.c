@@ -55,12 +55,9 @@
 #include "exodusII.h"
 #if defined(PARALLEL_AWARE_EXODUS)
 
-#include "exodusII.h"     // for ex_err, etc
-#include "exodusII_int.h" // for EX_FATAL, etc
-#include <mpi.h>          // for MPI_Comm, MPI_Info, etc
-#include <stddef.h>       // for size_t
-#include <stdio.h>
-#include <string.h>
+#include "exodusII.h"
+#include "exodusII_int.h"
+#include <mpi.h>
 /*!
 
 \note The ex_open_par_int() is an internal function called by
@@ -187,7 +184,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
 
   if ((mode & EX_READ) && (mode & EX_WRITE)) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Cannot specify both EX_READ and EX_WRITE");
-    ex_err_fn(exoid, __func__, errmsg, EX_BADFILEMODE);
+    ex_err(__func__, errmsg, EX_BADFILEMODE);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -244,7 +241,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
 #endif
     }
     else if (type == 4) {
-#if defined(NC_64BIT_DATA)
+#if NC_HAS_CDF5
       fprintf(stderr,
               "EXODUS: ERROR: Attempting to open the CDF5 "
               "file:\n\t'%s'\n\t failed. The netcdf library supports "
@@ -296,7 +293,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
              "file does not exist, or there is a permission or file format "
              "issue.",
              path, type);
-    ex_err_fn(exoid, __func__, errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -354,10 +351,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     }
 
     if (in_redef) {
-      if ((status = nc_enddef(exoid)) != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
-                 exoid);
-        ex_err_fn(exoid, __func__, errmsg, status);
+      if ((status = ex_leavedef(exoid, __func__)) != NC_NOERR) {
         EX_FUNC_LEAVE(EX_FATAL);
       }
       in_redef = 0;

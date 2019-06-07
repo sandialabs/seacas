@@ -48,7 +48,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#if !defined(NO_EXODUS_SUPPORT)
+#if defined(SEACAS_HAVE_EXODUS)
 #include <exodusII.h>
 #endif
 
@@ -78,8 +78,6 @@
 #include <cassert>
 
 #include "info_interface.h"
-
-#define OUTPUT std::cout
 
 namespace Ioss {
 

@@ -5,6 +5,8 @@ var apr__util_8cc =
     [ "cleanup_memory", "apr__util_8cc.html#afb5566ed6b22e0cab7cc41693e6dd119", null ],
     [ "concat_string", "apr__util_8cc.html#a41353d3d45d86d0c6f8a723a29701b8a", null ],
     [ "conv_string", "apr__util_8cc.html#a19c836a774b99479ca97f4b8ed654c07", null ],
+    [ "copy_string", "apr__util_8cc.html#ad654db4b411275026f8ded8d5144e5cc", null ],
+    [ "copy_string", "apr__util_8cc.html#ad6cd715f7752222febff9ad4c321b7a8", null ],
     [ "get_temp_filename", "apr__util_8cc.html#a0774cfa499e3a94a7ce6b6a07709b231", null ],
     [ "immutable_modify", "apr__util_8cc.html#aee1c189c56f01ed591a1d7bc21bf380c", null ],
     [ "is_directory", "apr__util_8cc.html#a4007090c9cdfec53d0191ee4d8432cb1", null ],

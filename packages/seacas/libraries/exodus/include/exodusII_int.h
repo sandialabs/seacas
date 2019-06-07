@@ -48,16 +48,19 @@
 #endif
 
 #include "netcdf.h"
-#define NC_HAVE_META_H
 #if defined(NC_HAVE_META_H)
 #include "netcdf_meta.h"
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER < 1900
 #define PRId64 "I64d"
 #else
 #include <inttypes.h>
 #endif
+
+#include <assert.h>
+#include <ctype.h>
+#include <string.h>
 
 #ifndef __APPLE__
 #if defined __STDC__ || defined __cplusplus
@@ -81,6 +84,8 @@
 #define __func__ __FUNCTION__
 #define snprintf _snprintf
 #endif
+
+#define snprintf_nowarn(...) (snprintf(__VA_ARGS__) < 0 ? abort() : (void)0)
 
 #ifdef __cplusplus
 extern "C" {
@@ -211,6 +216,12 @@ EXODUS_EXPORT int indent;
 #define EX_FUNC_VOID() return
 #endif
 #endif
+
+#define EX_UNUSED(A)                                                                               \
+  do {                                                                                             \
+    (void)(A);                                                                                     \
+  } while (0)
+
 /*
  * This file contains defined constants that are used internally in the
  * EXODUS API.
@@ -847,7 +858,8 @@ int  ex_leavedef(int         exoid,    /* NemesisI file ID         */
  );
 
 int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version);
-int ex_int_populate_header(int exoid, const char *path, int my_mode, int *comp_ws, int *io_ws);
+int ex_int_populate_header(int exoid, const char *path, int my_mode, int is_parallel, int *comp_ws,
+                           int *io_ws);
 
 int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
                            struct elem_blk_parm *elem_blk_parm);

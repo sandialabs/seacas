@@ -56,10 +56,6 @@
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, DIM_NUM_BOR_ELEMS, etc
-#include <netcdf.h>       // for NC_NOERR, nc_inq_dimid, etc
-#include <stddef.h>       // for size_t
-#include <stdio.h>
-#include <sys/types.h> // for int64_t
 
 int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_nodes,
                          void_int *num_ext_nodes, void_int *num_int_elems, void_int *num_bor_elems,

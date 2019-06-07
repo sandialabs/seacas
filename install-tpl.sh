@@ -8,19 +8,34 @@ txtred=$(tput setaf 1)    # Red
 txtgrn=$(tput setaf 2)    # Green
 txtylw=$(tput setaf 3)    # Yellow
 txtblu=$(tput setaf 4)    # Blue
-txtpur=$(tput setaf 5)    # Purple
+#txtpur=$(tput setaf 5)    # Purple
 txtcyn=$(tput setaf 6)    # Cyan
-txtwht=$(tput setaf 7)    # White
+#txtwht=$(tput setaf 7)    # White
 txtrst=$(tput sgr0)       # Text reset
 
 # Which compiler to use?
 export COMPILER=${COMPILER:-gnu}
+
+function check_exec()
+{
+    local var=$1
+    command -v ${var} >/dev/null 2>&1 || { echo >&2 "${txtred}---${var} is required, but is not currently in path.  Aborting TPL Install.${txtrst}"; exit 1; }
+}
 
 function check_valid_yes_no()
 {
     local var=$1
     if ! [ "${!var}" == "YES" ] && ! [ "${!var}" == "NO" ]; then
     echo "${txtred}Invalid value for $var (${!var}) -- Must be YES or NO${txtrst}"
+    exit 1
+fi
+}
+
+function check_valid_on_off()
+{
+    local var=$1
+    if ! [ "${!var}" == "ON" ] && ! [ "${!var}" == "OFF" ]; then
+    echo "${txtred}Invalid value for $var (${!var}) -- Must be ON or OFF${txtrst}"
     exit 1
 fi
 }
@@ -40,23 +55,53 @@ check_valid_yes_no FORCE
 SHARED=${SHARED:-YES}
 check_valid_yes_no SHARED
 
-# Enable Burst-Buffer support in PNetCDF?
+# Enable Burst-Buffer support in PnetCDF?
 BB=${BB:-NO}
 check_valid_yes_no BB
 
-# Which TPLS? (HDF5 and NetCDF always, PNetCDF if MPI=ON)
+CRAY=${CRAY:-NO}
+check_valid_yes_no CRAY
+
+# Which TPLS? (HDF5 and NetCDF always, PnetCDF if MPI=ON)
 CGNS=${CGNS:-ON}
+check_valid_on_off CGNS
+
 MATIO=${MATIO:-ON}
+check_valid_on_off MATIO
+
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
+check_valid_on_off GNU_PARALLEL
+
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
+check_valid_yes_no NEEDS_ZLIB
+
+KOKKOS=${KOKKOS:-OFF}
+check_valid_on_off KOKKOS
+
 H5VERSION=${H5VERSION:-V110}
+ADIOS2=${ADIOS2:-OFF}
+check_valid_on_off ADIOS2
+
+GTEST=${GTEST:-${ADIOS2}}
+
+MPI=${MPI:-OFF}
+check_valid_on_off MPI
 
 SUDO=${SUDO:-}
 JOBS=${JOBS:-2}
 VERBOSE=${VERBOSE:-1}
+USE_PROXY=${USE_PROXY:-NO}
+check_valid_yes_no USE_PROXY
+
+if [ "${USE_PROXY}" == "YES" ]
+then
+    export http_proxy="http://wwwproxy.sandia.gov:80"
+    export https_proxy="https://wwwproxy.sandia.gov:80"
+fi
 
 pwd
-export ACCESS=`pwd`
+export ACCESS=$(pwd)
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 if [ "$MPI" == "ON" ] && [ "$CRAY" == "ON" ]
 then
@@ -68,7 +113,7 @@ then
     CC=mpicc; export CC
 fi
 
-OS=`uname -s`
+OS=$(uname -s)
 if [ "$SHARED" == "YES" ]
 then
     if [ "$OS" == "Darwin" ] ; then
@@ -86,19 +131,24 @@ if [ $# -gt 0 ]; then
 	echo ""
 	echo "   ACCESS       = ${txtgrn}${ACCESS}${txtcyn} (Automatically set to current directory)"
 	echo "   OS           = ${txtgrn}${OS}${txtcyn} (Automatically set)"
-	echo "   COMPILER     = ${COMPILER}"
+	echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm)"
+	echo "   MPI          = ${MPI} (Parallel Build?)"
 	echo ""
+	echo "   FORCE        = ${FORCE}"
 	echo "   DOWNLOAD     = ${DOWNLOAD}"
 	echo "   BUILD        = ${BUILD}"
-	echo "   FORCE        = ${FORCE}"
 	echo "   SHARED       = ${SHARED}"
-	ecoh "   BB           = ${BB}"
+	echo "   USE_PROXY    = ${USE_PROXY}"
 	echo ""
 	echo "   H5VERSION    = ${H5VERSION}"
 	echo "   CGNS         = ${CGNS}"
 	echo "   MATIO        = ${MATIO}"
 	echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
 	echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
+	echo "   KOKKOS       = ${KOKKOS}"
+	echo "   BB           = ${BB}"
+	echo "   ADIOS2       = ${ADIOS2}"
+	echo "   GTEST        = ${GTEST}"
 	echo ""
 	echo "   SUDO         = ${SUDO}"
 	echo "   JOBS         = ${JOBS}"
@@ -108,13 +158,18 @@ if [ $# -gt 0 ]; then
     fi
 fi
 
+# Check that cmake, git, wget exist at the beginning instead of erroring out later on...
+check_exec cmake
+check_exec git
+check_exec wget
+
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libz.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libz.${LD_EXT} ]
     then
 	echo "${txtgrn}+++ ZLIB${txtrst}"
         zlib_version="1.2.11"
-					 
+
 	cd $ACCESS
 	cd TPL
 	if [ "$DOWNLOAD" == "YES" ]
@@ -126,18 +181,12 @@ then
             tar -xzf zlib-${zlib_version}.tar.gz
             rm -rf zlib-${zlib_version}.tar.gz
 	fi
-	
+
 	if [ "$BUILD" == "YES" ]
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd zlib-${zlib_version}
-	    if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
-	    then
-		USE_SHARED=""
-	    else
-		USE_SHARED="--static"
-	    fi
-            ./configure --prefix=${ACCESS}
+            ./configure --prefix=${INSTALL_PATH}
             if [[ $? != 0 ]]
             then
 		echo 1>&2 ${txtred}couldn\'t configure zlib. exiting.${txtrst}
@@ -156,14 +205,14 @@ then
 fi
 
 # =================== BUILD HDF5 ===============
-if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libhdf5.${LD_EXT} ]
+if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
     if [ "${H5VERSION}" == "V18" ]
     then
-	hdf_version="1.8.20"
+	hdf_version="1.8.21"
     else
-	hdf_version="1.10.4"
+	hdf_version="1.10.5"
     fi
 
     cd $ACCESS
@@ -187,7 +236,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version}
-        H5VERSION=${H5VERSION} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
+        CRAY=${CRAY} H5VERSION=${H5VERSION} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
@@ -203,32 +252,32 @@ then
 else
     echo "${txtylw}+++ HDF5 already installed.  Skipping download and installation.${txtrst}"
 fi
-# =================== INSTALL PNETCDF if parallel build ===============
+# =================== INSTALL PnetCDF if parallel build ===============
 if [ "$MPI" == "ON" ]
 then
     # PnetCDF currently only builds static library...
-    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libpnetcdf.a ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
-        echo "${txtgrn}+++ PNetCDF${txtrst}"
-        pnet_version="1.10.0"
-
+        echo "${txtgrn}+++ PnetCDF${txtrst}"
+        pnet_version="1.11.1"
+	pnet_base="pnetcdf"
         cd $ACCESS
         cd TPL/pnetcdf
         if [ "$DOWNLOAD" == "YES" ]
         then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
-            rm -rf parallel-netcdf-${pnet_version}
-            rm -f parallel-netcdf-${pnet_version}.tar.gz
-            wget http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-${pnet_version}.tar.gz
-            tar -xzf parallel-netcdf-${pnet_version}.tar.gz
-            rm -f parallel-netcdf-${pnet_version}.tar.gz
+            rm -rf ${pnet_base}-${pnet_version}
+            rm -f ${pnet_base}-${pnet_version}.tar.gz
+            wget --no-check-certificate https://parallel-netcdf.github.io/Release/${pnet_base}-${pnet_version}.tar.gz
+            tar -xzf ${pnet_base}-${pnet_version}.tar.gz
+            rm -f ${pnet_base}-${pnet_version}.tar.gz
         fi
 
         if [ "$BUILD" == "YES" ]
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
-            cd parallel-netcdf-${pnet_version}
-            BB=${BB} SHARED=${SHARED} bash ../runconfigure.sh
+            cd ${pnet_base}-${pnet_version}
+            CRAY=${CRAY} BB=${BB} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure PnetCDF. exiting.${txtrst}
@@ -249,12 +298,12 @@ then
             fi
         fi
     else
-	echo "${txtylw}+++ PNetCDF already installed.  Skipping download and installation.${txtrst}"
+	echo "${txtylw}+++ PnetCDF already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 
 # =================== INSTALL NETCDF ===============
-if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libnetcdf.${LD_EXT} ]
+if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libnetcdf.${LD_EXT} ]
 then
     echo "${txtgrn}+++ NetCDF${txtrst}"
     cd $ACCESS
@@ -270,13 +319,14 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
+	git checkout v4.6.3
         if [ -d build ]
         then
             rm -rf build
         fi
         mkdir build
         cd build
-        SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
+        CRAY=${CRAY} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure cmake for NetCDF. exiting.${txtrst}
@@ -296,7 +346,7 @@ fi
 # =================== INSTALL CGNS ===============
 if [ "$CGNS" == "ON" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libcgns.${LD_EXT} ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libcgns.${LD_EXT} ]
     then
         echo "${txtgrn}+++ CGNS${txtrst}"
         cd $ACCESS
@@ -306,8 +356,17 @@ then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf CGNS
             git clone https://github.com/cgns/CGNS
-            cd CGNS; git am ../CGNS-parallel.patch; cd ..
-        fi
+	    cd CGNS
+	    echo "${txtblu}"
+	    git am ../CGNS-sandia.patch
+	    echo "${txtrst}"
+	    if [[ $? != 0 ]]
+	    then
+		echo 1>&2 ${txtred}couldn\'t patch CGNS for SNL-suggested changes. exiting.${txtrst}
+		exit 1
+	    fi
+	    cd ..
+	fi
 
         if [ "$BUILD" == "YES" ]
         then
@@ -318,7 +377,7 @@ then
                 mkdir build
             fi
             cd build
-            SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
+            CRAY=${CRAY} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure CGNS. exiting.${txtrst}
@@ -340,7 +399,12 @@ fi
 # =================== INSTALL MATIO  ===============
 if [ "$MATIO" == "ON" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/lib/libmatio.${LD_EXT} ]
+    # Check that aclocal, automake, autoconf exist...
+    check_exec aclocal
+    check_exec automake
+    check_exec autoconf
+
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
 	echo "${txtgrn}+++ MatIO${txtrst}"
 	cd $ACCESS
@@ -351,13 +415,13 @@ then
             rm -rf matio
             git clone https://github.com/tbeu/matio.git
 	fi
-	
+
 	if [ "$BUILD" == "YES" ]
 	then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd matio
             ./autogen.sh
-            SHARED=${SHARED} bash ../runconfigure.sh
+            CRAY=${CRAY} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure MatIO. exiting.${txtrst}
@@ -375,10 +439,148 @@ then
     fi
 fi
 
+# =================== INSTALL KOKKOS  ===============
+if [ "$KOKKOS" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkokkos.${LD_EXT} ]
+    then
+	kokkos_version="2.8.00"
+	echo "${txtgrn}+++ KOKKOS${txtrst}"
+	cd $ACCESS
+	cd TPL/kokkos
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf kokkos
+	    wget --no-check-certificate https://github.com/kokkos/kokkos/archive/${kokkos_version}.tar.gz
+            tar -zxf ${kokkos_version}.tar.gz
+            rm -f ${kokkos_version}.tar.gz
+	    ln -s kokkos-${kokkos_version} kokkos
+	fi
+
+	if [ "$BUILD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd kokkos-${kokkos_version}
+            if [ -d build ]
+            then
+                rm -rf build
+            fi
+            mkdir build
+            cd build
+            CUDA=${CUDA} SHARED=${SHARED} MPI=${MPI} bash ../../runcmake.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure cmake for KOKKOS. exiting.${txtrst}
+                exit 1
+            fi
+
+            make -j${JOBS} && ${SUDO} make "VERBOSE=${VERBOSE}" install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build KOKKOS. exiting.${txtrst}
+                exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ KOKKOS already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
+# =================== INSTALL ADIOS2  ===============
+if [ "$ADIOS2" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libadios2.${LD_EXT} ]
+    then
+        echo "${txtgrn}+++ ADIOS2${txtrst}"
+        cd $ACCESS
+        cd TPL/adios2
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf ADIOS2
+            git clone https://github.com/ornladios/ADIOS2.git
+        fi
+
+        if [ "$BUILD" == "YES" ]
+        then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd ADIOS2
+	    git checkout 8c2135169ad534c30c503ad2bb8be0507facf63b
+            if [ -d build ]
+            then
+                rm -rf build
+            fi
+            mkdir build
+            cd build
+            SHARED=${SHARED} MPI=${MPI} bash -x ../../runcmake.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure cmake for ADIOS2. exiting.${txtrst}
+                exit 1
+            fi
+
+            make -j${JOBS} && ${SUDO} make "VERBOSE=${VERBOSE}" install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build ADIOS2. exiting.${txtrst}
+                exit 1
+            fi
+        fi
+    else
+        echo "${txtylw}+++ ADIOS2 already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
+# =================== INSTALL gtest  ===============
+if [ "$GTEST" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libgtest.${LD_EXT} ]
+    then
+        echo "${txtgrn}+++ gtest${txtrst}"
+        cd $ACCESS
+        cd TPL/gtest
+        if [ "$DOWNLOAD" == "YES" ]
+        then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf gtest
+            git clone https://github.com/google/googletest.git
+        fi
+
+        if [ "$BUILD" == "YES" ]
+        then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd googletest
+	    git checkout release-1.8.1
+            if [ -d build ]
+            then
+                rm -rf build
+            fi
+            mkdir build
+            cd build
+            SHARED=${SHARED} bash -x ../../runcmake.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure cmake for gtest. exiting.${txtrst}
+                exit 1
+            fi
+
+            make -j${JOBS} && ${SUDO} make "VERBOSE=${VERBOSE}" install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build gtest. exiting.${txtrst}
+                exit 1
+            fi
+        fi
+    else
+        echo "${txtylw}+++ gtest already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
 # =================== INSTALL PARALLEL  ===============
 if [ "$GNU_PARALLEL" == "ON" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $ACCESS/bin/env_parallel ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/bin/env_parallel ]
     then
 	echo "${txtgrn}+++ GNU Parallel${txtrst}"
         cd $ACCESS

@@ -26,6 +26,7 @@ var classIoss_1_1Region =
     [ "begin_mode", "classIoss_1_1Region.html#aa5d4487914fe37e521c6ab765c4aa8eb", null ],
     [ "begin_mode__", "classIoss_1_1Region.html#a8adfa960f5be7a1094e1aa5b72a94f02", null ],
     [ "begin_state", "classIoss_1_1Region.html#ace5efadbd57a5b8d507b0371a964e372", null ],
+    [ "contains_string", "classIoss_1_1Region.html#aee1fc1cf83115bdd2d8a5ddac5f20d7e", null ],
     [ "delete_database", "classIoss_1_1Region.html#a831662046684d7877ad025ff89f583aa", null ],
     [ "end_mode", "classIoss_1_1Region.html#a5f455825763ca8a655f3fc3ebe27ba9a", null ],
     [ "end_mode__", "classIoss_1_1Region.html#af029b5cf0dc2d400fe04602dcab631a0", null ],

@@ -63,7 +63,7 @@ namespace IOShell {
     std::string              outFiletype{"unknown"};
     std::string              groupName;
     std::string              decomp_method;
-    std::string              compose_output{"none"};
+    std::string              compose_output{"default"};
     double                   maximum_time{std::numeric_limits<double>::max()};
     double                   minimum_time{-std::numeric_limits<double>::max()};
     double                   append_time{std::numeric_limits<double>::max()};
@@ -73,6 +73,8 @@ namespace IOShell {
     int                      data_storage_type{0};
     int                      compression_level{0};
     int                      serialize_io_size{0};
+    int                      flush_interval{0};
+
     //! If non-zero, then put `split_times` timesteps in each file. Then close file and start new
     //! file.
     // If `split_cyclic == 0`, then filenames will be
@@ -103,8 +105,10 @@ namespace IOShell {
     bool delete_timesteps{false};
     bool minimize_open_files{false};
     bool disable_field_recognition{false};
-    bool file_per_state{
-        false}; // Put transient data for each timestep in separate file (EXPERMENTAL)
+    // Put transient data for each timestep in separate file (EXPERMENTAL)
+    bool file_per_state{false};
+    // Testing CGNS - defines zones in reverse order from input file.
+    bool reverse{false};
     char fieldSuffixSeparator{'_'};
   };
 } // namespace IOShell

@@ -51,12 +51,14 @@ inline const std::string IOSS_VECTOR_2D() { return std::string("vector_2d"); }
 inline const std::string IOSS_VECTOR_3D() { return std::string("vector_3d"); }
 inline const std::string IOSS_SYM_TENSOR() { return std::string("sym_tensor_33"); }
 
-#if defined(SIERRA_PARALLEL_MPI)
+#if defined(BUILT_IN_SIERRA)
 #define SEACAS_HAVE_MPI
-#define NO_DATAWAREHOUSE_SUPPORT
 /* #undef IOSS_THREADSAFE */
 /* #undef SEACAS_HAVE_KOKKOS */
+/* #undef SEACAS_HAVE_DATAWAREHOUSE */
+#define SEACAS_HAVE_EXODUS
 #define SEACAS_HAVE_CGNS
+#define SEACAS_HAVE_PAMGEN
 #define PARALLEL_AWARE_EXODUS
 #else
 #include <SEACASIoss_config.h>
@@ -74,7 +76,13 @@ inline const std::string IOSS_SYM_TENSOR() { return std::string("sym_tensor_33")
 
 #if defined(SEACAS_HAVE_MPI)
 #include <mpi.h>
+#define PAR_UNUSED(x)
 #else
+#define PAR_UNUSED(x)                                                                              \
+  do {                                                                                             \
+    (void)(x);                                                                                     \
+  } while (0)
+
 #ifndef MPI_COMM_WORLD
 #define MPI_COMM_WORLD 0
 using MPI_Comm       = int;
@@ -110,10 +118,11 @@ using Kokkos_Complex = Kokkos::complex<double>;
 #if defined IOSS_TRACE
 #include <Ioss_Tracer.h>
 #define IOSS_FUNC_ENTER(m) Ioss::Tracer m(__func__)
-
 #else
 #define IOSS_FUNC_ENTER(m)
 #endif
 #endif
 
+#ifndef IOSS_DEBUG_OUTPUT
 #define IOSS_DEBUG_OUTPUT 0
+#endif

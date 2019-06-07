@@ -12,13 +12,16 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
+<g id="a_node1"><a xlink:title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-111.5 0,-129.5 106.0439,-129.5 106.0439,-111.5 0,-111.5"/>
 <text text-anchor="middle" x="53.022" y="-117.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::GroupingEntity</text>
+</a>
+</g>
 </g>
 <!-- Node1 -->
 <g id="node2" class="node">
 <title>Node1</title>
-<g id="a_node2"><a xlink:href="classIoex_1_1SuperElement.html" target="_top" xlink:title="Ioex::SuperElement">
+<g id="a_node2"><a xlink:href="classIoex_1_1SuperElement.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="142.0439,-259.5 142.0439,-277.5 245.8711,-277.5 245.8711,-259.5 142.0439,-259.5"/>
 <text text-anchor="middle" x="193.9575" y="-265.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioex::SuperElement</text>
 </a>
@@ -33,7 +36,7 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
-<g id="a_node3"><a xlink:href="classIoss_1_1CommSet.html" target="_top" xlink:title="Ioss::CommSet">
+<g id="a_node3"><a xlink:href="classIoss_1_1CommSet.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="151.7827,-222.5 151.7827,-240.5 236.1323,-240.5 236.1323,-222.5 151.7827,-222.5"/>
 <text text-anchor="middle" x="193.9575" y="-228.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::CommSet</text>
 </a>
@@ -78,7 +81,7 @@
 <!-- Node15 -->
 <g id="node16" class="node">
 <title>Node15</title>
-<g id="a_node16"><a xlink:href="classIoss_1_1NullEntity.html" target="_top" xlink:title="Ioss::NullEntity">
+<g id="a_node16"><a xlink:href="classIoss_1_1NullEntity.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="152.8911,-74.5 152.8911,-92.5 235.0239,-92.5 235.0239,-74.5 152.8911,-74.5"/>
 <text text-anchor="middle" x="193.9575" y="-80.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::NullEntity</text>
 </a>
@@ -93,7 +96,7 @@
 <!-- Node16 -->
 <g id="node17" class="node">
 <title>Node16</title>
-<g id="a_node17"><a xlink:href="classIoss_1_1Region.html" target="_top" xlink:title="A grouping entity that contains other grouping entities. ">
+<g id="a_node17"><a xlink:href="classIoss_1_1Region.html" target="_top" xlink:title="A grouping entity that contains other grouping entities.">
 <polygon fill="#ffffff" stroke="#000000" points="158.1646,-37.5 158.1646,-55.5 229.7505,-55.5 229.7505,-37.5 158.1646,-37.5"/>
 <text text-anchor="middle" x="193.9575" y="-43.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::Region</text>
 </a>
@@ -108,7 +111,7 @@
 <!-- Node17 -->
 <g id="node18" class="node">
 <title>Node17</title>
-<g id="a_node18"><a xlink:href="classIoss_1_1SideSet.html" target="_top" xlink:title="A collection of element sides. ">
+<g id="a_node18"><a xlink:href="classIoss_1_1SideSet.html" target="_top" xlink:title="A collection of element sides.">
 <polygon fill="#ffffff" stroke="#000000" points="156.4971,-.5 156.4971,-18.5 231.418,-18.5 231.418,-.5 156.4971,-.5"/>
 <text text-anchor="middle" x="193.9575" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::SideSet</text>
 </a>
@@ -123,7 +126,7 @@
 <!-- Node4 -->
 <g id="node5" class="node">
 <title>Node4</title>
-<g id="a_node5"><a xlink:href="classIoss_1_1EdgeBlock.html" target="_top" xlink:title="A collection of element edges with the same topology. ">
+<g id="a_node5"><a xlink:href="classIoss_1_1EdgeBlock.html" target="_top" xlink:title="A collection of element edges with the same topology.">
 <polygon fill="#ffffff" stroke="#000000" points="293.2603,-333.5 293.2603,-351.5 380.9644,-351.5 380.9644,-333.5 293.2603,-333.5"/>
 <text text-anchor="middle" x="337.1123" y="-339.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::EdgeBlock</text>
 </a>
@@ -138,7 +141,7 @@
 <!-- Node5 -->
 <g id="node6" class="node">
 <title>Node5</title>
-<g id="a_node6"><a xlink:href="classIoss_1_1ElementBlock.html" target="_top" xlink:title="A collection of elements having the same topology. ">
+<g id="a_node6"><a xlink:href="classIoss_1_1ElementBlock.html" target="_top" xlink:title="A collection of elements having the same topology.">
 <polygon fill="#ffffff" stroke="#000000" points="286.5952,-296.5 286.5952,-314.5 387.6294,-314.5 387.6294,-296.5 286.5952,-296.5"/>
 <text text-anchor="middle" x="337.1123" y="-302.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::ElementBlock</text>
 </a>
@@ -153,7 +156,7 @@
 <!-- Node6 -->
 <g id="node7" class="node">
 <title>Node6</title>
-<g id="a_node7"><a xlink:href="classIoss_1_1FaceBlock.html" target="_top" xlink:title="A collection of element faces with the same topology. ">
+<g id="a_node7"><a xlink:href="classIoss_1_1FaceBlock.html" target="_top" xlink:title="A collection of element faces with the same topology.">
 <polygon fill="#ffffff" stroke="#000000" points="293.8218,-259.5 293.8218,-277.5 380.4028,-277.5 380.4028,-259.5 293.8218,-259.5"/>
 <text text-anchor="middle" x="337.1123" y="-265.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::FaceBlock</text>
 </a>
@@ -168,7 +171,7 @@
 <!-- Node7 -->
 <g id="node8" class="node">
 <title>Node7</title>
-<g id="a_node8"><a xlink:href="classIoss_1_1NodeBlock.html" target="_top" xlink:title="A collection of all nodes in the region. ">
+<g id="a_node8"><a xlink:href="classIoss_1_1NodeBlock.html" target="_top" xlink:title="A collection of all nodes in the region.">
 <polygon fill="#ffffff" stroke="#000000" points="292.9844,-222.5 292.9844,-240.5 381.2402,-240.5 381.2402,-222.5 292.9844,-222.5"/>
 <text text-anchor="middle" x="337.1123" y="-228.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::NodeBlock</text>
 </a>
@@ -183,7 +186,7 @@
 <!-- Node8 -->
 <g id="node9" class="node">
 <title>Node8</title>
-<g id="a_node9"><a xlink:href="classIoss_1_1SideBlock.html" target="_top" xlink:title="A collection of element sides having the same topology. ">
+<g id="a_node9"><a xlink:href="classIoss_1_1SideBlock.html" target="_top" xlink:title="A collection of element sides having the same topology.">
 <polygon fill="#ffffff" stroke="#000000" points="294.9302,-185.5 294.9302,-203.5 379.2944,-203.5 379.2944,-185.5 294.9302,-185.5"/>
 <text text-anchor="middle" x="337.1123" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::SideBlock</text>
 </a>
@@ -198,7 +201,7 @@
 <!-- Node9 -->
 <g id="node10" class="node">
 <title>Node9</title>
-<g id="a_node10"><a xlink:href="classIoss_1_1StructuredBlock.html" target="_top" xlink:title="A structured zone – i,j,k. ">
+<g id="a_node10"><a xlink:href="classIoss_1_1StructuredBlock.html" target="_top" xlink:title="A structured zone – i,j,k.">
 <polygon fill="#ffffff" stroke="#000000" points="281.8711,-148.5 281.8711,-166.5 392.3535,-166.5 392.3535,-148.5 281.8711,-148.5"/>
 <text text-anchor="middle" x="337.1123" y="-154.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::StructuredBlock</text>
 </a>
@@ -213,7 +216,7 @@
 <!-- Node11 -->
 <g id="node12" class="node">
 <title>Node11</title>
-<g id="a_node12"><a xlink:href="classIoss_1_1EdgeSet.html" target="_top" xlink:title="A collection of element edges. ">
+<g id="a_node12"><a xlink:href="classIoss_1_1EdgeSet.html" target="_top" xlink:title="A collection of element edges.">
 <polygon fill="#ffffff" stroke="#000000" points="297.9819,-111.5 297.9819,-129.5 376.2427,-129.5 376.2427,-111.5 297.9819,-111.5"/>
 <text text-anchor="middle" x="337.1123" y="-117.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::EdgeSet</text>
 </a>
@@ -228,7 +231,7 @@
 <!-- Node12 -->
 <g id="node13" class="node">
 <title>Node12</title>
-<g id="a_node13"><a xlink:href="classIoss_1_1ElementSet.html" target="_top" xlink:title="A collection of elements. ">
+<g id="a_node13"><a xlink:href="classIoss_1_1ElementSet.html" target="_top" xlink:title="A collection of elements.">
 <polygon fill="#ffffff" stroke="#000000" points="291.3169,-74.5 291.3169,-92.5 382.9077,-92.5 382.9077,-74.5 291.3169,-74.5"/>
 <text text-anchor="middle" x="337.1123" y="-80.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::ElementSet</text>
 </a>
@@ -243,7 +246,7 @@
 <!-- Node13 -->
 <g id="node14" class="node">
 <title>Node13</title>
-<g id="a_node14"><a xlink:href="classIoss_1_1FaceSet.html" target="_top" xlink:title="A collection of element faces. ">
+<g id="a_node14"><a xlink:href="classIoss_1_1FaceSet.html" target="_top" xlink:title="A collection of element faces.">
 <polygon fill="#ffffff" stroke="#000000" points="298.5435,-37.5 298.5435,-55.5 375.6812,-55.5 375.6812,-37.5 298.5435,-37.5"/>
 <text text-anchor="middle" x="337.1123" y="-43.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::FaceSet</text>
 </a>
@@ -258,7 +261,7 @@
 <!-- Node14 -->
 <g id="node15" class="node">
 <title>Node14</title>
-<g id="a_node15"><a xlink:href="classIoss_1_1NodeSet.html" target="_top" xlink:title="A collection of nodes. ">
+<g id="a_node15"><a xlink:href="classIoss_1_1NodeSet.html" target="_top" xlink:title="A collection of nodes.">
 <polygon fill="#ffffff" stroke="#000000" points="297.7061,-.5 297.7061,-18.5 376.5186,-18.5 376.5186,-.5 297.7061,-.5"/>
 <text text-anchor="middle" x="337.1123" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Ioss::NodeSet</text>
 </a>

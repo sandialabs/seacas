@@ -666,7 +666,7 @@ int Zoltan_LB_Eval_Graph(ZZ *zzin, int print_stats, ZOLTAN_GRAPH_EVAL *graph)
   ZOLTAN_FREE(&partCount);
 
   /* Note: this is incorrect if parts are split across processes, as
-   * they could be if migration has not yet occurred.
+   * they could be if migration has not yet occured.
    */
 
   MPI_Allreduce(localCount, globalCount, nparts, MPI_INT, MPI_SUM, comm);

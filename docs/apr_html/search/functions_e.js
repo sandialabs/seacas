@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['red',['red',['../namespacetrmclr.html#add14279b38ea9e58303202ac84fa0ee4',1,'trmclr']]],
   ['redefined_5fwarning',['redefined_warning',['../namespaceSEAMS.html#a36fa53fd83f697ce33c330210a3a9ef1',1,'SEAMS']]],
   ['remove_5fvariable',['remove_variable',['../classSEAMS_1_1Aprepro.html#ae4ee54a52b8183ebcf4ad74ab7dc4d84',1,'SEAMS::Aprepro']]],
   ['rescan',['rescan',['../classSEAMS_1_1Scanner.html#aca31007249ba78df3deca0776e6ea4ba',1,'SEAMS::Scanner']]],

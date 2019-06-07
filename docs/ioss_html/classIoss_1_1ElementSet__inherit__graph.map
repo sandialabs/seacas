@@ -1,4 +1,5 @@
 <map id="Ioss::ElementSet" name="Ioss::ElementSet">
+<area shape="rect" id="node1" title="A collection of elements." alt="" coords="15,152,137,177"/>
 <area shape="rect" id="node2" href="$classIoss_1_1EntitySet.html" title="Base class for all &#39;set&#39;&#45;type grouping entities, which means that members of the set are not necessar..." alt="" coords="23,79,129,104"/>
-<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ..." alt="" coords="5,5,147,31"/>
+<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:" alt="" coords="5,5,147,31"/>
 </map>

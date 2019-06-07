@@ -1,23 +1,23 @@
 C    Copyright(C) 1988-2017 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
-C    
+C
 C    Redistribution and use in source and binary forms, with or without
 C    modification, are permitted provided that the following conditions are
 C    met:
-C    
+C
 C    * Redistributions of source code must retain the above copyright
 C       notice, this list of conditions and the following disclaimer.
-C              
+C
 C    * Redistributions in binary form must reproduce the above
 C      copyright notice, this list of conditions and the following
 C      disclaimer in the documentation and/or other materials provided
 C      with the distribution.
-C                            
+C
 C    * Neither the name of NTESS nor the names of its
 C      contributors may be used to endorse or promote products derived
 C      from this software without specific prior written permission.
-C                                                    
+C
 C    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 C    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 C    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -48,10 +48,10 @@ C************************************************************************
 C
 C       G. D. Sjaardema, 1521,  01/30/88
 C
-C DESCRIPTION: Read and transfer the names found on the data base and 
+C DESCRIPTION: Read and transfer the names found on the data base and
 C       print a formatted echo to SYS$OUTPUT
 C
-C DUMMY VARIABLES: 
+C DUMMY VARIABLES:
 C       NAMECO    CHARACTER     Names of coordinates
 C       NAMEBL    CHARACTER     Names of element blocks
 C       NAMEHV    CHARACTER     Names of history variables
@@ -84,14 +84,9 @@ C
      $              (NAMEGV(I),I=1,NVARGL),
      $              (NAMENV(I),I=1,NVARNP),
      $              (NAMEEV(I),I=1,NVAREL)
-C      PRINT 1000
- 1000 FORMAT (/T6,'Coordinate',T18,'History',T30,'Global',T42,
-     *            'Nodal',T54,'Element',T66,'Block',
-     *        /T6,'----------',T18,'-------',T30,'------',T42,
-     *            '-----',T54,'-------',T66,'-----')
-C
+
       NROW = MAX(NDIM, NELBLK, NVARHI, NVARGL, NVARNP, NVAREL)
-C
+
       IF (.FALSE.) THEN
       DO 10 I=1, NROW+1
          DO 5 J=1,6
@@ -125,7 +120,4 @@ C
  2100 CONTINUE
       PRINT *, 'Read error during names transfer'
       STOP 'PNAMES'
- 2200 CONTINUE 
-      PRINT *, 'Write error during names transfer'
-      STOP 'PNAMES'
-      END      
+      END

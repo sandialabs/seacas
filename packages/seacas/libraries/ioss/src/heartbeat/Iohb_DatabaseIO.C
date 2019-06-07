@@ -131,7 +131,7 @@ namespace {
       else {
         tmp = new std::ofstream(filename.c_str());
       }
-      if (tmp != nullptr && !tmp->is_open()) {
+      if (!tmp->is_open()) {
         delete tmp;
       }
       else {
@@ -165,11 +165,7 @@ namespace Iohb {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), timeLastFlush_(0),
-        flushInterval_(10), logStream(nullptr), layout_(nullptr), legend_(nullptr),
-        tsFormat("[%H:%M:%S]"), separator_(", "), precision_(5), fieldWidth_(0), showLabels(false),
-        showLegend(true), appendOutput(false), addTimeField(false), initialized_(false),
-        streamNeedsDelete(false), fileFormat(DEFAULT)
+      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props)
   {
     timeLastFlush_ = time(nullptr);
     dbState        = Ioss::STATE_UNKNOWN;
@@ -184,7 +180,7 @@ namespace Iohb {
     }
   }
 
-  void DatabaseIO::initialize(const Ioss::Region * /*region*/) const
+  void DatabaseIO::initialize() const
   {
     if (!initialized_) {
       assert(layout_ == nullptr);
@@ -200,6 +196,21 @@ namespace Iohb {
         std::string format = properties.get("FILE_FORMAT").get_string();
         if (Ioss::Utils::case_strcmp(format, "spyhis") == 0) {
           new_this->fileFormat = SPYHIS;
+        }
+        else if (Ioss::Utils::case_strcmp(format, "csv") == 0) {
+          new_this->fileFormat = CSV;
+          new_this->separator_ = ", ";
+        }
+        else if (Ioss::Utils::case_strcmp(format, "ts_csv") == 0) {
+          new_this->fileFormat = TS_CSV;
+          new_this->separator_ = ", ";
+        }
+        else if (Ioss::Utils::case_strcmp(format, "text") == 0) {
+          new_this->fileFormat = TEXT;
+          new_this->separator_ = "\t";
+        }
+        else if (Ioss::Utils::case_strcmp(format, "ts_text") == 0) {
+          new_this->fileFormat = TS_TEXT;
         }
       }
 
@@ -258,11 +269,38 @@ namespace Iohb {
         new_this->addTimeField = (properties.get("SHOW_TIME_FIELD").get_int() == 1);
       }
 
+      // "Predefined" formats...
       if (fileFormat == SPYHIS) {
         new_this->addTimeField = true;
         new_this->showLegend   = true;
         new_this->showLabels   = false;
         new_this->tsFormat     = "";
+      }
+      else if (fileFormat == CSV) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = ", ";
+        new_this->tsFormat     = "";
+      }
+      else if (fileFormat == TS_CSV) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = ", ";
+      }
+      else if (fileFormat == TEXT) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = "\t";
+        new_this->tsFormat     = "";
+      }
+      else if (fileFormat == TS_TEXT) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = "\t";
       }
 
       if (showLegend) {
@@ -290,10 +328,10 @@ namespace Iohb {
 
   bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::begin_state__(Ioss::Region *region, int /* state */, double time)
+  bool DatabaseIO::begin_state__(int /* state */, double time)
   {
     // If this is the first time, open the output stream and see if user wants a legend
-    initialize(region);
+    initialize();
 
     layout_ = new Layout(showLabels, precision_, separator_, fieldWidth_);
     if (tsFormat != "") {
@@ -316,7 +354,7 @@ namespace Iohb {
     }
   }
 
-  bool DatabaseIO::end_state__(Ioss::Region * /* region */, int /* state */, double /* time */)
+  bool DatabaseIO::end_state__(int /* state */, double /* time */)
   {
     if (legend_ != nullptr) {
       if (fileFormat == SPYHIS) {
@@ -382,6 +420,13 @@ namespace Iohb {
     return -1;
   }
 
+  int64_t DatabaseIO::get_field_internal(const Ioss::StructuredBlock * /* sb */,
+                                         const Ioss::Field & /* field */, void * /* data */,
+                                         size_t /* data_size */) const
+  {
+    return -1;
+  }
+
   int64_t DatabaseIO::get_field_internal(const Ioss::NodeSet * /* ns */,
                                          const Ioss::Field & /* field */, void * /* data */,
                                          size_t /* data_size */) const
@@ -425,10 +470,11 @@ namespace Iohb {
     return -1;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::Region *region, const Ioss::Field &field,
-                                         void *data, size_t data_size) const
+  int64_t DatabaseIO::put_field_internal(const Ioss::Region * /* region */,
+                                         const Ioss::Field &field, void *data,
+                                         size_t data_size) const
   {
-    initialize(region);
+    initialize();
     Ioss::Field::RoleType role       = field.get_role();
     int64_t               num_to_get = field.verify(data_size);
 
@@ -561,6 +607,13 @@ namespace Iohb {
     return -1;
   }
   int64_t DatabaseIO::put_field_internal(const Ioss::CommSet * /* cs */,
+                                         const Ioss::Field & /* field */, void * /* data */,
+                                         size_t /* data_size */) const
+  {
+    return -1;
+  }
+
+  int64_t DatabaseIO::put_field_internal(const Ioss::StructuredBlock * /* sb */,
                                          const Ioss::Field & /* field */, void * /* data */,
                                          size_t /* data_size */) const
   {

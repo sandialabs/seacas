@@ -7,6 +7,7 @@ var classIoss_1_1StructuredBlock =
     [ "~StructuredBlock", "classIoss_1_1StructuredBlock.html#a0371175e0164118aa0bde47426ac72af", null ],
     [ "clone", "classIoss_1_1StructuredBlock.html#a1d080d0d7963b4b4ce84ff5f5092af1d", null ],
     [ "contains", "classIoss_1_1StructuredBlock.html#acbac29a9ca4d2d4052e66a0264f34117", null ],
+    [ "contains_string", "classIoss_1_1StructuredBlock.html#af51b7e053ebbb6881994d186185cab22", null ],
     [ "get_block_local_node_offset", "classIoss_1_1StructuredBlock.html#a180b8790fe2e53da4a4d6d26ba5761f8", null ],
     [ "get_block_local_node_offset", "classIoss_1_1StructuredBlock.html#a31cfaa2408c32c391c5f9cc12794bf8d", null ],
     [ "get_bounding_box", "classIoss_1_1StructuredBlock.html#a6e94dcf8c1c520ac4143f481439acbc2", null ],

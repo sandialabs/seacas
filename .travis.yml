@@ -19,7 +19,7 @@ matrix:
     - compiler: clang
       env: SANITIZER="-fsanitize=address -fsanitize=memory -fno-omit-frame-pointer -fPIC" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
     - compiler: gcc
-      env: MPI=ON H5VERSION=V18
+      env: MPI=ON H5VERSION=V18 USE_64BIT_INT=ON
     - compiler: clang
       env: MPI=ON THREADSAFE=ON H5VERSION=V18
     - compiler: gcc
@@ -30,6 +30,12 @@ matrix:
       env: CGNS=OFF MPI=ON H5VERSION=V18
     - compiler: gcc
       env: FORTRAN=OFF
+    - compiler: gcc
+      env: ADIOS2=ON
+    - compiler: gcc
+      env: MPI=ON ADIOS2=ON
+    - compiler: clang
+      env: APPLICATIONS=OFF LEGACY=OFF FORTRAN=OFF
 
 before_install:
   # C++14
@@ -40,13 +46,28 @@ before_install:
   - sudo apt-get -y install gfortran-6
   - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-6 90
   - sudo apt-get -y install libz-dev
-  - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
-  - if [ -n "$MPI" ]; then sudo apt-get -y install libopenmpi-dev; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install -q mpich libmpich-dev; fi
   - GNU_PARALLEL=OFF ./install-tpl.sh 
 
 before_script:
 
 install:
+  ############################################################################
+  # Install a recent CMake
+  ############################################################################
+  - DEPS_DIR="${HOME}/deps"
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.0-Linux-x86_64.tar.gz"
+      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    else
+      brew install cmake || brew upgrade cmake
+    fi
+  - cd -
+  - cmake --version
   - ./cmake-config
 
 script:

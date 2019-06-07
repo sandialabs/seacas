@@ -1,4 +1,8 @@
 <map id="SEAMS::Aprepro" name="SEAMS::Aprepro">
-<area shape="rect" id="node3" href="$classSEAMS_1_1Scanner.html" title="SEAMS::Scanner" alt="" coords="75,192,200,217"/>
-<area shape="rect" id="node2" href="$structSEAMS_1_1aprepro__options.html" title="SEAMS::aprepro_options" alt="" coords="132,5,304,31"/>
+<area shape="rect" id="node1" title=" " alt="" coords="261,92,384,117"/>
+<area shape="rect" id="node3" href="$classSEAMS_1_1Scanner.html" title=" " alt="" coords="180,192,305,217"/>
+<area shape="rect" id="node2" href="$structSEAMS_1_1aprepro__options.html" title=" " alt="" coords="246,5,418,31"/>
+<area shape="rect" id="node4" href="$classSEAMSFlexLexer.html" title=" " alt="" coords="102,92,229,117"/>
+<area shape="rect" id="node5" href="$classFlexLexer.html" title=" " alt="" coords="5,5,85,31"/>
+<area shape="rect" id="node6" href="$structyy__buffer__state.html" title=" " alt="" coords="109,5,221,31"/>
 </map>

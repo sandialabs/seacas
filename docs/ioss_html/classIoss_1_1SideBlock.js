@@ -2,6 +2,7 @@ var classIoss_1_1SideBlock =
 [
     [ "SideBlock", "classIoss_1_1SideBlock.html#a8c6f360c5e9506f7cb62f40945bfc792", null ],
     [ "block_membership", "classIoss_1_1SideBlock.html#ad31a4170f11254f07e88a6d9accbe7e3", null ],
+    [ "contains_string", "classIoss_1_1SideBlock.html#aa672ae655e87effecd352dc6618692ae", null ],
     [ "get_consistent_side_number", "classIoss_1_1SideBlock.html#a8b70618765526012e18bc488a8068fda", null ],
     [ "get_implicit_property", "classIoss_1_1SideBlock.html#a667785b61f8ae1f750b2fb6d0ade815d", null ],
     [ "internal_get_field_data", "classIoss_1_1SideBlock.html#aeb82c56646d1bd6d5ecbe1973197d3a4", null ],

@@ -43,7 +43,7 @@ namespace Ioss {
   {
 
   public:
-    static constexpr auto name = "quad9";
+    static const char *name;
 
     static void factory();
     ~Quad9() override;

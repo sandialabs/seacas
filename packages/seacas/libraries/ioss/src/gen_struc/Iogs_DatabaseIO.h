@@ -116,8 +116,7 @@ namespace Iogs {
     bool begin__(Ioss::State state) override;
     bool end__(Ioss::State state) override;
 
-    bool begin_state__(Ioss::Region *region, int state, double time) override;
-    bool end_state__(Ioss::Region *region, int state, double time) override;
+    bool begin_state__(int state, double time) override;
 
     void get_step_times__() override;
     void get_nodeblocks();
@@ -137,8 +136,8 @@ namespace Iogs {
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::FaceBlock *nb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override
+    int64_t get_field_internal(const Ioss::ElementBlock * /* eb */, const Ioss::Field & /* field */,
+                               void * /* data */, size_t /* data_size */) const override
     {
       return -1;
     }
@@ -184,8 +183,9 @@ namespace Iogs {
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-                               void *data, size_t data_size) const override
+    int64_t put_field_internal(const Ioss::StructuredBlock * /* sb */,
+                               const Ioss::Field & /* field */, void * /* data */,
+                               size_t /* data_size */) const override
     {
       return -1;
     }

@@ -12,13 +12,16 @@
 <!-- Node2 -->
 <g id="node1" class="node">
 <title>Node2</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-.5 0,-18.5 112.7041,-18.5 112.7041,-.5 0,-.5"/>
 <text text-anchor="middle" x="56.3521" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Iotr::Scale3D_Factory</text>
+</a>
+</g>
 </g>
 <!-- Node3 -->
 <g id="node2" class="node">
 <title>Node3</title>
-<g id="a_node2"><a xlink:href="classIotr_1_1Factory.html" target="_top" xlink:title="Iotr::Factory">
+<g id="a_node2"><a xlink:href="classIotr_1_1Factory.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="21.6797,-55.5 21.6797,-73.5 91.0244,-73.5 91.0244,-55.5 21.6797,-55.5"/>
 <text text-anchor="middle" x="56.3521" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Iotr::Factory</text>
 </a>

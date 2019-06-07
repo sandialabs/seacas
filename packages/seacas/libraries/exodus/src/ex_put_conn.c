@@ -35,26 +35,28 @@
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_id_lkup, etc
-#include "netcdf.h"       // for NC_NOERR, nc_inq_varid, etc
-#include <inttypes.h>     // for PRId64
-#include <stddef.h>       // for size_t
-#include <stdio.h>
 
 /*! write out the connectivity array */
-#define EX_WRITE_CONN(TNAME, VARCONN, VARCONNVAL)                                                  \
-  if (ex_int64_status(exoid) & EX_BULK_INT64_API) {                                                \
-    status = nc_put_var_longlong(exoid, VARCONN, VARCONNVAL);                                      \
-  }                                                                                                \
-  else {                                                                                           \
-    status = nc_put_var_int(exoid, VARCONN, VARCONNVAL);                                           \
-  }                                                                                                \
-  if (status != NC_NOERR) {                                                                        \
-    snprintf(errmsg, MAX_ERR_LENGTH,                                                               \
-             "ERROR: failed to write connectivity array for %s block %" PRId64 " in file id %d",   \
-             TNAME, blk_id, exoid);                                                                \
-    ex_err_fn(exoid, __func__, errmsg, status);                                                    \
-    EX_FUNC_LEAVE(EX_FATAL);                                                                       \
+int ex_int_write_conn(int exoid, ex_entity_id blk_id, const char *type, int var_id,
+                      const void_int *var_conn)
+{
+  int status = 0;
+  if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
+    status = nc_put_var_longlong(exoid, var_id, var_conn);
   }
+  else {
+    status = nc_put_var_int(exoid, var_id, var_conn);
+  }
+  if (status != NC_NOERR) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to write connectivity array for %s block %" PRId64 " in file id %d",
+             type, blk_id, exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    return (status);
+  }
+  return status;
+}
 
 /*!
  * writes the connectivity array for a block
@@ -116,7 +118,10 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
-    EX_WRITE_CONN(ex_name_of_object(blk_type), connid, node_conn);
+    status = ex_int_write_conn(exoid, blk_id, ex_name_of_object(blk_type), connid, node_conn);
+    if (status != NC_NOERR) {
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
   }
 
   /* If there are edge and face connectivity arrays that belong with the element
@@ -153,7 +158,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
 
     num_ed_per_elem = 0;
     if ((elem_edge_conn != 0) &&
-        (status = nc_inq_dimlen(exoid, nedpereldim, &num_ed_per_elem) != NC_NOERR)) {
+        ((status = nc_inq_dimlen(exoid, nedpereldim, &num_ed_per_elem)) != NC_NOERR)) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to get number of edges/elem in block %" PRId64 " in file id %d",
                blk_id, exoid);
@@ -163,7 +168,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
 
     num_fa_per_elem = 0;
     if ((elem_face_conn != 0) &&
-        (status = nc_inq_dimlen(exoid, nfapereldim, &num_fa_per_elem) != NC_NOERR)) {
+        ((status = nc_inq_dimlen(exoid, nfapereldim, &num_fa_per_elem)) != NC_NOERR)) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to get number of faces/elem in block %" PRId64 " in file id %d",
                blk_id, exoid);
@@ -201,7 +206,10 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
-      EX_WRITE_CONN("element edge", connid, elem_edge_conn);
+      status = ex_int_write_conn(exoid, blk_id, "element edge", connid, elem_edge_conn);
+      if (status != NC_NOERR) {
+        EX_FUNC_LEAVE(EX_FATAL);
+      }
     }
 
     if (num_fa_per_elem != 0) {
@@ -214,7 +222,10 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
         ex_err_fn(exoid, __func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
-      EX_WRITE_CONN("element face", connid, elem_face_conn);
+      status = ex_int_write_conn(exoid, blk_id, "element face", connid, elem_face_conn);
+      if (status != NC_NOERR) {
+        EX_FUNC_LEAVE(EX_FATAL);
+      }
     }
   }
 

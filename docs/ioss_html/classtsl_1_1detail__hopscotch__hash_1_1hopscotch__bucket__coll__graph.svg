@@ -58,16 +58,19 @@ var sectionId = 'dynsection-1';
 <!-- Node2 -->
 <g id="node1" class="node">
 <title>Node2</title>
+<g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="377.5225,-31.5 377.5225,-79.5 539.2793,-79.5 539.2793,-31.5 377.5225,-31.5"/>
 <text text-anchor="start" x="385.5225" y="-67.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="385.5225" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">_hash::hopscotch_bucket</text>
 <text text-anchor="start" x="385.5225" y="-47.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">&lt; ValueType, NeighborhoodSize,</text>
 <text text-anchor="middle" x="458.4009" y="-37.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000"> StoreHash &gt;</text>
+</a>
+</g>
 </g>
 <!-- Node3 -->
 <g id="node2" class="node">
 <title>Node3</title>
-<g id="a_node2"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash.html" target="_top" xlink:title="tsl::detail_hopscotch\l_hash::hopscotch_bucket\l_hash\&lt; StoreHash \&gt;">
+<g id="a_node2"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="53.7939,-67.5 53.7939,-105.5 183.207,-105.5 183.207,-67.5 53.7939,-67.5"/>
 <text text-anchor="start" x="61.7939" y="-93.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="61.7939" y="-83.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">_hash::hopscotch_bucket</text>
@@ -84,7 +87,7 @@ var sectionId = 'dynsection-1';
 <!-- Node4 -->
 <g id="node3" class="node">
 <title>Node4</title>
-<g id="a_node3"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1smallest__type__for__min__bits.html" target="_top" xlink:title="tsl::detail_hopscotch\l_hash::smallest_type\l_for_min_bits\&lt; NeighborhoodSize\l+NB_RESERVED_BITS_IN_NEIGHBORHOOD \&gt;">
+<g id="a_node3"><a xlink:href="classtsl_1_1detail__hopscotch__hash_1_1smallest__type__for__min__bits.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="0,-.5 0,-48.5 237.001,-48.5 237.001,-.5 0,-.5"/>
 <text text-anchor="start" x="8" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">tsl::detail_hopscotch</text>
 <text text-anchor="start" x="8" y="-26.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">_hash::smallest_type</text>
