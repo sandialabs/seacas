@@ -1,5 +1,6 @@
 var NAVTREEINDEX26 =
 {
+"classtsl_1_1robin__set.html#a3a6ae574115f854d5e36587245ccfc6e":[3,0,82,7,16],
 "classtsl_1_1robin__set.html#a3c76037a81ef5125732551510a72aac2":[3,0,82,7,78],
 "classtsl_1_1robin__set.html#a3ecaa65ec84bf3b33aecc891ece46b6a":[3,0,82,7,77],
 "classtsl_1_1robin__set.html#a3fa90cb08e8ab9e489fa58ae094b02ff":[3,0,82,7,70],
@@ -192,8 +193,8 @@ var NAVTREEINDEX26 =
 "functions_type.html":[3,3,3],
 "functions_u.html":[3,3,0,19],
 "functions_v.html":[3,3,0,20],
-"functions_vars.html":[3,3,2,0],
 "functions_vars.html":[3,3,2],
+"functions_vars.html":[3,3,2,0],
 "functions_vars_b.html":[3,3,2,1],
 "functions_vars_c.html":[3,3,2,2],
 "functions_vars_d.html":[3,3,2,3],
@@ -247,7 +248,6 @@ var NAVTREEINDEX26 =
 "hopscotch__set_8h.html":[4,0,0,9,3],
 "hopscotch__set_8h.html#afe88acbc8c6f26efda106ceb0d529631":[4,0,0,9,3,2],
 "hopscotch__set_8h_source.html":[4,0,0,9,3],
-"index.html":[0],
 "index.html":[],
-"index.html#avail":[0,0]
+"index.html":[0]
 };
