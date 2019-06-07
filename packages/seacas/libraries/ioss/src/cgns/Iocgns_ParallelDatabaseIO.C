@@ -318,11 +318,6 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::closeDatabase__() const
   {
-<<<<<<< HEAD
-    if (cgnsFilePtr != -1) {
-      CGCHECK(cgp_close(cgnsFilePtr));
-      closeDW();
-=======
     if (m_cgnsFilePtr != -1) {
       bool do_timer = false;
       Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
@@ -337,7 +332,7 @@ namespace Iocgns {
           fmt::print(stderr, "File Close Time = {}\n", duration);
         }
       }
->>>>>>> master
+      closeDW();
     }
     m_cgnsFilePtr = -1;
   }

@@ -16,7 +16,6 @@ then
   else
     LD_EXT="so"
   fi
-  SKIP_RPATH="NO"
 else
   LD_EXT="a"
   EXTRA_DEPS="-DNC_EXTRA_DEPS=-ldl\;-lz"

@@ -16,12 +16,6 @@ fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 SHARED="${SHARED:-ON}"
-if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
-then
-  SKIP_RPATH="NO"
-else
-  SKIP_RPATH="YES"
-fi
 
 if [ "$MPI" == "ON" ]
 then
@@ -73,7 +67,6 @@ fi
 cmake \
 ${RPATH} \
 -D CGNS_BUILD_SHARED:BOOL=${SHARED} \
--D CMAKE_SKIP_INSTALL_RPATH:BOOL=${SKIP_RPATH} \
 -D CGNS_ENABLE_HDF5:BOOL=ON \
 ${LIB} \
 -D HDF5_ROOT=${INSTALL_PATH} \
