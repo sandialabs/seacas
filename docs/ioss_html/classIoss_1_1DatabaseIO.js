@@ -9,14 +9,9 @@ var classIoss_1_1DatabaseIO =
     [ "add_qa_record", "classIoss_1_1DatabaseIO.html#ae08238723053bb3a3413cdbae40abe70", null ],
     [ "begin", "classIoss_1_1DatabaseIO.html#a53913dd63638db01ec12c0d82dae06d1", null ],
     [ "begin__", "classIoss_1_1DatabaseIO.html#a3b53318d28f33f0c5751830a1d02ff81", null ],
-<<<<<<< HEAD
-    [ "begin_state", "classIoss_1_1DatabaseIO.html#ac0abc172dc240f106363975705f0f7cc", null ],
-    [ "begin_state__", "classIoss_1_1DatabaseIO.html#a7a3509e2a23a62f3c4ce21cba99b85e1", null ],
-    [ "check_setDW", "classIoss_1_1DatabaseIO.html#a9b590c354a84661cab4408eff66ce90c", null ],
-=======
     [ "begin_state", "classIoss_1_1DatabaseIO.html#a0799f329a1d56e7e09fe13f0c8dedbe6", null ],
     [ "begin_state__", "classIoss_1_1DatabaseIO.html#accf63f87cb4325c93b7b649074856895", null ],
->>>>>>> master
+    [ "check_setDW", "classIoss_1_1DatabaseIO.html#a9b590c354a84661cab4408eff66ce90c", null ],
     [ "check_side_topology", "classIoss_1_1DatabaseIO.html#aa0a0a89a632e9400e9b972d4ed0a40b7", null ],
     [ "closeDatabase", "classIoss_1_1DatabaseIO.html#abd61efb4ff35bb829faac1e1ebbb26ea", null ],
     [ "closeDatabase__", "classIoss_1_1DatabaseIO.html#a1a76a51e956ab708923e6f5d93afa3ac", null ],

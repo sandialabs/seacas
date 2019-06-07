@@ -4,11 +4,7 @@ var searchData=
   ['basetype',['baseType',['../classIoss_1_1CompositeVariableType.html#ac5ceb689a30e2ba798300dbb41576465',1,'Ioss::CompositeVariableType']]],
   ['basic_5ftype',['basic_type',['../structIoad_1_1DatabaseIO_1_1FieldInfoType.html#a9bde4273c717b3d2d8fa06160f05a4dd',1,'Ioad::DatabaseIO::FieldInfoType']]],
   ['basictype',['BasicType',['../classIoss_1_1Field.html#a43f29f9ba05cb45ed893455c76526c3e',1,'Ioss::Field::BasicType()'],['../classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614',1,'Ioss::Property::BasicType()']]],
-<<<<<<< HEAD
   ['bbname',['bbName',['../classIoss_1_1DatabaseIO.html#a75d8447712b2656a0ef06ffc24263b09',1,'Ioss::DatabaseIO']]],
-  ['bc_5foverlaps',['bc_overlaps',['../namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a438fbeb34b60bbaebe9d53b540e8fdd3',1,'anonymous_namespace{Iocgns_Utils.C}']]],
-=======
->>>>>>> master
   ['bc_5fsubset_5frange',['bc_subset_range',['../namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#ab655cb4bf7fe82089505620b49823dba',1,'anonymous_namespace{Iocgns_Utils.C}']]],
   ['beam2',['Beam2',['../classIoss_1_1Beam2.html',1,'Ioss::Beam2'],['../classIoss_1_1Beam2.html#a927a9dd75c46a435c2fc1c8db410a098',1,'Ioss::Beam2::Beam2(const Beam2 &amp;)=delete'],['../classIoss_1_1Beam2.html#a9a4d25552fe92358e15cf6f67aaf7d2b',1,'Ioss::Beam2::Beam2()'],['../namespaceIogn.html#a05c78571e9bf222ffa337fa31ed95006a7174327b7d198fca7194a9913617bc8b',1,'Iogn::Beam2()']]],
   ['beam3',['Beam3',['../classIoss_1_1Beam3.html',1,'Ioss::Beam3'],['../classIoss_1_1Beam3.html#a541fef0944afb350b7f6ae01b7568104',1,'Ioss::Beam3::Beam3(const Beam3 &amp;)=delete'],['../classIoss_1_1Beam3.html#a2f4b9159a626d0ccd999062ec5e863c8',1,'Ioss::Beam3::Beam3()']]],

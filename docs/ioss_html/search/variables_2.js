@@ -1,15 +1,5 @@
 var searchData=
 [
-<<<<<<< HEAD
-  ['basetype',['baseType',['../classIoss_1_1CompositeVariableType.html#ac5ceb689a30e2ba798300dbb41576465',1,'Ioss::CompositeVariableType']]],
-  ['bbname',['bbName',['../classIoss_1_1DatabaseIO.html#a75d8447712b2656a0ef06ffc24263b09',1,'Ioss::DatabaseIO']]],
-  ['blockadjacenciescalculated',['blockAdjacenciesCalculated',['../classIoex_1_1DatabaseIO.html#ab9c45d254a0db843298dd81a4b5e47c1',1,'Ioex::DatabaseIO::blockAdjacenciesCalculated()'],['../classIoss_1_1DatabaseIO.html#aec6a8e90c689b4c065e617310136419d',1,'Ioss::DatabaseIO::blockAdjacenciesCalculated()']]],
-  ['blockadjacency',['blockAdjacency',['../classIoss_1_1DatabaseIO.html#afe17eae189de84c0382635eed06c90f4',1,'Ioss::DatabaseIO']]],
-  ['blockinclusions',['blockInclusions',['../classIoss_1_1DatabaseIO.html#a7214d81bafcaeb09cf765f2f693f35bd',1,'Ioss::DatabaseIO']]],
-  ['blockmembership',['blockMembership',['../classIoss_1_1SideBlock.html#a33796cc4d9ea082a510a881c6d801ff4',1,'Ioss::SideBlock::blockMembership()'],['../classIoss_1_1SideSet.html#a343b74a4420c315316edd45cbc49b746',1,'Ioss::SideSet::blockMembership()']]],
-  ['blockomissions',['blockOmissions',['../classIoss_1_1DatabaseIO.html#a03bfe3176de49d5a03876ba5f848c647',1,'Ioss::DatabaseIO']]],
-  ['blocktopologicaldata',['blockTopologicalData',['../structIogn_1_1ExodusData.html#aaf968ac6e36fdc550236c07d6954568d',1,'Iogn::ExodusData']]]
-=======
   ['catalyst_5fblock_5ffile_5fname',['catalyst_block_file_name',['../classIovs_1_1DatabaseIO.html#ad3cbef263b9b8c3b005994db8ff793ce',1,'Iovs::DatabaseIO']]],
   ['catalyst_5ffile_5fsuffix',['CATALYST_FILE_SUFFIX',['../Iovs__DatabaseIO_8C.html#a15d50234b51cff62eec1fd6e55b532f2',1,'Iovs_DatabaseIO.C']]],
   ['catalyst_5foutput_5fdirectory',['catalyst_output_directory',['../classIovs_1_1DatabaseIO.html#a60b9cc8c055e8ab09968f9ce1091e26a',1,'Iovs::DatabaseIO::catalyst_output_directory()'],['../Iovs__DatabaseIO_8C.html#a129675305154f68ec416b75dc7d443fc',1,'CATALYST_OUTPUT_DIRECTORY():&#160;Iovs_DatabaseIO.C']]],
@@ -27,6 +17,7 @@ var searchData=
   ['commsetelemcount',['commsetElemCount',['../classIodw_1_1DatabaseIO.html#ade70628d16646a3356aac90ff619d997',1,'Iodw::DatabaseIO::commsetElemCount()'],['../classIoex_1_1DatabaseIO.html#aa2d29956136a820f97508c224e4b5f46',1,'Ioex::DatabaseIO::commsetElemCount()'],['../classIopg_1_1DatabaseIO.html#addd1f9dc55722abc94dde07b28a2f6f8',1,'Iopg::DatabaseIO::commsetElemCount()']]],
   ['commsetnodecount',['commsetNodeCount',['../classIodw_1_1DatabaseIO.html#acd4c8fb6f8696d2c870dd8e563de1eb2',1,'Iodw::DatabaseIO::commsetNodeCount()'],['../classIoex_1_1DatabaseIO.html#a3b270465cc5ee2aa3bafd828b0752b53',1,'Ioex::DatabaseIO::commsetNodeCount()'],['../classIopg_1_1DatabaseIO.html#afca6c41a2b787286a938b61cb57cf0ad',1,'Iopg::DatabaseIO::commsetNodeCount()']]],
   ['commsets',['commSets',['../classIoss_1_1Region.html#aa2a500a88173ddff734079b48d90f7fa',1,'Ioss::Region']]],
+  ['communication_5fmap',['communication_map',['../classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html#a51931bfd3104a7a7615f832c6094b026',1,'anonymous_namespace{cgns_decomp.C}::Interface']]],
   ['communicator_5f',['communicator_',['../classIoss_1_1ParallelUtils.html#ab17672d0da05747fd37a418400ed51df',1,'Ioss::ParallelUtils']]],
   ['complex_5fsuffix',['complex_suffix',['../namespaceanonymous__namespace_02Iofx__DatabaseIO_8C_03.html#a44ac9dd7d6945d6de8236536904307d8',1,'anonymous_namespace{Iofx_DatabaseIO.C}::complex_suffix()'],['../namespaceanonymous__namespace_02Iopx__DatabaseIO_8C_03.html#ab477cfd2f2ebf42eb6ef55cb3cecb65e',1,'anonymous_namespace{Iopx_DatabaseIO.C}::complex_suffix()'],['../namespaceanonymous__namespace_02Ioex__DatabaseIO_8C_03.html#a756b4cdcd8565306fc1a6c20bd5ffef2',1,'anonymous_namespace{Ioex_DatabaseIO.C}::complex_suffix()']]],
   ['component_5fcount',['component_count',['../structIoad_1_1DatabaseIO_1_1FieldInfoType.html#a6bddca9ada52af94da64a870aa0f63b8',1,'Ioad::DatabaseIO::FieldInfoType']]],
@@ -53,5 +44,4 @@ var searchData=
   ['currenttime',['currentTime',['../classIogs_1_1DatabaseIO.html#a1025d9cc2dab7bda3aba69ed4a435667',1,'Iogs::DatabaseIO::currentTime()'],['../classIogn_1_1DatabaseIO.html#a19d614da1fc52bedc1a9d60e7d0fc69a',1,'Iogn::DatabaseIO::currentTime()']]],
   ['customfieldtypes',['customFieldTypes',['../classIoss_1_1ETRegistry.html#a75c721e5cb4ead3e0b332e690b855948',1,'Ioss::ETRegistry::customFieldTypes()'],['../classIoss_1_1Registry.html#a4e20ca416acc8a2c3a9f69e16512e227',1,'Ioss::Registry::customFieldTypes()']]],
   ['cyclecount',['cycleCount',['../classIoss_1_1DatabaseIO.html#a57b5b83cf120cf5e313f696f7720f1cb',1,'Ioss::DatabaseIO']]]
->>>>>>> master
 ];
