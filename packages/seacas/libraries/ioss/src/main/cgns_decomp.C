@@ -93,6 +93,7 @@ namespace {
           work_per_processor   = temp.find("w") != std::string::npos;
           zone_proc_assignment = temp.find("z") != std::string::npos;
           verbose              = temp.find("v") != std::string::npos;
+          communication_map    = temp.find("c") != std::string::npos;
         }
       }
       verbose = options_.retrieve("verbose") != nullptr;
