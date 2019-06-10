@@ -462,7 +462,7 @@ namespace Iocgns {
       }
     }
 
-    openDatabase__();
+    Ioss::DatabaseIO::openDatabase__();
   }
 
   DatabaseIO::~DatabaseIO()
@@ -559,6 +559,7 @@ namespace Iocgns {
   {
     if (m_cgnsFilePtr != -1) {
       CGCHECKM(cg_close(m_cgnsFilePtr));
+      closeDW();
     }
     m_cgnsFilePtr = -1;
   }

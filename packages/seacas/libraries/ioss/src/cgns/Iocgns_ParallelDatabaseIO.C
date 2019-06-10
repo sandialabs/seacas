@@ -186,7 +186,7 @@ namespace Iocgns {
       }
     }
 
-    openDatabase__();
+    Ioss::DatabaseIO::openDatabase__();
   }
 
   ParallelDatabaseIO::~ParallelDatabaseIO()
@@ -253,7 +253,8 @@ namespace Iocgns {
       cgp_mpi_comm(util().communicator());
 #endif
       CGCHECKM(cgp_pio_mode(CGP_COLLECTIVE));
-      int ierr = cgp_open(get_filename().c_str(), mode, &m_cgnsFilePtr);
+      Ioss::DatabaseIO::openDatabase__();
+      int ierr = cgp_open(get_dwname().c_str(), mode, &m_cgnsFilePtr);
 
       if (do_timer) {
         double t_end    = Ioss::Utils::timer();
@@ -331,6 +332,7 @@ namespace Iocgns {
           fmt::print(stderr, "File Close Time = {}\n", duration);
         }
       }
+      closeDW();
     }
     m_cgnsFilePtr = -1;
   }
