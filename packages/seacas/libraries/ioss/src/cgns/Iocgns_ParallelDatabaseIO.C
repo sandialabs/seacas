@@ -186,7 +186,7 @@ namespace Iocgns {
       }
     }
 
-    openDatabase__();
+    Ioss::DatabaseIO::openDatabase__();
   }
 
   ParallelDatabaseIO::~ParallelDatabaseIO()
