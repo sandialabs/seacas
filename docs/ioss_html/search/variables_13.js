@@ -7,6 +7,7 @@ var searchData=
   ['usecount',['useCount',['../classIoad_1_1Initializer.html#a8333b9a8ba086eced57b237c8434e34b',1,'Ioad::Initializer::useCount()'],['../classIocgns_1_1Initializer.html#a81632ab673137db3fbaa5a4cac8ce6c7',1,'Iocgns::Initializer::useCount()'],['../classIovs_1_1DatabaseIO.html#ad3f15154b74f115d7de596ccb7c8cd9e',1,'Iovs::DatabaseIO::useCount()']]],
   ['usegenericcanonicalname',['useGenericCanonicalName',['../classIoss_1_1DatabaseIO.html#a060c6b928c5684bf23e12ec4d6b15a79',1,'Ioss::DatabaseIO']]],
   ['usegenericnames_5f',['useGenericNames_',['../classInfo_1_1Interface.html#ab272d699c58a2668810663854bb0535f',1,'Info::Interface']]],
+  ['usingdatawarp',['usingDataWarp',['../classIoss_1_1DatabaseIO.html#a167898d3053a8cfa5f2c8dfbe5001e5d',1,'Ioss::DatabaseIO']]],
   ['usingparallelio',['usingParallelIO',['../classIoss_1_1DatabaseIO.html#a7981897eaa5bc4fddb206c6f16be4ddf',1,'Ioss::DatabaseIO']]],
   ['ustring',['ustring',['../classIoss_1_1GetLongOption.html#aafb9e890b362aa9956d4b24482489cc0',1,'Ioss::GetLongOption']]],
   ['util_5f',['util_',['../classIoss_1_1DatabaseIO.html#a50a33b2d3bde8456fa385e9fb29f3ff3',1,'Ioss::DatabaseIO']]]
