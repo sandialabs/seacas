@@ -477,7 +477,7 @@ namespace Iopx {
 
     MPI_Info info        = MPI_INFO_NULL;
     int      app_opt_val = ex_opts(EX_VERBOSE);
-    openDatabase__();
+    Ioss::DatabaseIO::openDatabase__();
 
     std::string filename = get_dwname();
 

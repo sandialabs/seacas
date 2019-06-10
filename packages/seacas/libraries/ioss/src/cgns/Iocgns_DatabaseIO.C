@@ -461,7 +461,7 @@ namespace Iocgns {
       }
     }
 
-    openDatabase__();
+    Ioss::DatabaseIO::openDatabase__();
   }
 
   DatabaseIO::~DatabaseIO()
