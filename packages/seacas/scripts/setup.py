@@ -8,7 +8,7 @@ setup(name='exodus',
 	url='https://www.github.com/gsjaardema/seacas',
 	py_modules=['exodus'],
 	license="BSD",
-#	extras = {'numpy'},     
+#	extras = {'numpy'},
 #	python_requires='<3',
       )
 
