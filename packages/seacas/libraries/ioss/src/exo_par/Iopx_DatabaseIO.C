@@ -475,9 +475,11 @@ namespace Iopx {
 
     int par_mode = get_parallel_io_mode(properties);
 
-    MPI_Info    info        = MPI_INFO_NULL;
-    int         app_opt_val = ex_opts(EX_VERBOSE);
-    std::string filename    = get_filename();
+    MPI_Info info        = MPI_INFO_NULL;
+    int      app_opt_val = ex_opts(EX_VERBOSE);
+    Ioss::DatabaseIO::openDatabase__();
+
+    std::string filename = get_dwname();
 
     Ioss::FileInfo file(filename);
     std::string    path = file.pathname();
