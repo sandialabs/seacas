@@ -694,6 +694,10 @@ namespace Ioss {
 
     mutable std::vector<std::vector<bool>> blockAdjacency;
 
+    virtual void openDatabase__() const;
+    virtual void closeDatabase__() const;
+    virtual void flush_database__() const {}
+
   private:
     virtual bool ok__(bool /* write_message */, std::string * /* error_message */,
                       int *bad_count) const
@@ -721,10 +725,6 @@ namespace Ioss {
       faceMap.release_memory();
       elemMap.release_memory();
     }
-
-    virtual void openDatabase__() const;
-    virtual void closeDatabase__() const;
-    virtual void flush_database__() const {}
 
     virtual bool open_group__(const std::string & /* group_name */) { return false; }
     virtual bool create_subgroup__(const std::string & /* group_name */) { return false; }
