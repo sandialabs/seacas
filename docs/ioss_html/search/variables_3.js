@@ -43,5 +43,6 @@ var searchData=
   ['doabs',['doAbs',['../classIotr_1_1MinMax.html#a27b45beac9b238ef5c70445a2f6e3b11',1,'Iotr::MinMax']]],
   ['dologging',['doLogging',['../classIoss_1_1DatabaseIO.html#a364e1592a80c9227429bb0be6866b98e',1,'Ioss::DatabaseIO::doLogging()'],['../classIovs_1_1DatabaseIO.html#ac9903dee16063fbe2d78ba3776787a5d',1,'Iovs::DatabaseIO::doLogging()']]],
   ['domin',['doMin',['../classIotr_1_1MinMax.html#a6aafc8fbbbe342ce903be024c811af62',1,'Iotr::MinMax']]],
-  ['dorotation',['doRotation',['../classIogs_1_1GeneratedMesh.html#a783a827ad0771e697dcff857a1667e1f',1,'Iogs::GeneratedMesh::doRotation()'],['../classIogn_1_1GeneratedMesh.html#a0da6689bb52014b75b29bc2422f93931',1,'Iogn::GeneratedMesh::doRotation()']]]
+  ['dorotation',['doRotation',['../classIogs_1_1GeneratedMesh.html#a783a827ad0771e697dcff857a1667e1f',1,'Iogs::GeneratedMesh::doRotation()'],['../classIogn_1_1GeneratedMesh.html#a0da6689bb52014b75b29bc2422f93931',1,'Iogn::GeneratedMesh::doRotation()']]],
+  ['dwpath',['dwPath',['../classIoss_1_1DatabaseIO.html#a01386f77f7c21053a812bf4b7d4a230d',1,'Ioss::DatabaseIO']]]
 ];
