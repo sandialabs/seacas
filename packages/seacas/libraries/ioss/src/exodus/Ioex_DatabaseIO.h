@@ -211,7 +211,11 @@ namespace Ioex {
 
     void openDatabase__() const override { get_file_pointer(); }
 
-    void closeDatabase__() const override { free_file_pointer(); }
+    void closeDatabase__() const override
+    {
+      free_file_pointer();
+      closeDW();
+    }
 
     virtual int get_file_pointer() const = 0; // Open file and set exodusFilePtr.
 
