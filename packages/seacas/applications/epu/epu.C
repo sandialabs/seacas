@@ -2625,8 +2625,8 @@ namespace {
               nset.nodeOrderMap[i] = global_pos - 1;
             }
 #if 0
-	    if (debug_level & 32)
-	      nset.dump_order();
+            if (debug_level & 32)
+              nset.dump_order();
 #endif
           }
         }
