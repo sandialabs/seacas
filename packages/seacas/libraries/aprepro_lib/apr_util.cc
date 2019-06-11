@@ -197,13 +197,13 @@ namespace SEAMS {
         yyerror(apr, function);
       }
       if (errno == EDOM) {
-        perror("	DOMAIN error");
+        perror("        DOMAIN error");
       }
       else if (errno == ERANGE) {
-        perror("	RANGE error");
+        perror("        RANGE error");
       }
       else if (errno != 0) {
-        perror("	Unknown error");
+        perror("        Unknown error");
       }
       errno = 0;
     }
@@ -213,13 +213,13 @@ namespace SEAMS {
       }
 
       if (std::fetestexcept(FE_INVALID) != 0) {
-        std::cerr << "	DOMAIN error\n";
+        std::cerr << "  DOMAIN error\n";
       }
       else if (std::fetestexcept(FE_OVERFLOW) != 0) {
         std::cerr << "  RANGE error -- overflow\n";
       }
       else if (std::fetestexcept(FE_DIVBYZERO) != 0) {
-        std::cerr << "	RANGE error -- divide by zero\n";
+        std::cerr << "  RANGE error -- divide by zero\n";
       }
     }
   }
