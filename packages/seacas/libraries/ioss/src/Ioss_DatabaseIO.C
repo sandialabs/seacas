@@ -294,25 +294,19 @@ namespace Ioss {
         if (!bb_path.empty()) {
           usingDataWarp = true;
           dwPath        = bb_path;
+          if (myProcessor == 0) {
+            fmt::print(stderr, "\nDataWarp Burst Buffer Enabled.  Path = `{}`\n\n", dwPath);
+          }
         }
         else {
           if (myProcessor == 0) {
-            std::ostringstream errmsg;
-            errmsg
-                << "\nWARNING: DataWarp enabled via `ENABLE_DATAWARP` environment variable, but\n"
-                << "         burst buffer path was not specified via `DW_JOB_STRIPED` or "
-                   "`DW_JOB_PRIVATE`\n"
-                << "         environment variables (typically set by queuing system)\n"
-                << "         DataWarp will *NOT* be enabled, but job will still run.\n\n";
-            IOSS_WARNING << errmsg.str();
+            fmt::print(IOSS_WARNING,
+                       "\nWARNING: DataWarp enabled via Ioss property `ENABLE_DATAWARP`, but\n"
+                       "         burst buffer path was not specified via `DW_JOB_STRIPED` or "
+                       "`DW_JOB_PRIVATE`\n"
+                       "         environment variables (typically set by queuing system)\n"
+                       "         DataWarp will *NOT* be enabled, but job will still run.\n\n");
           }
-        }
-        if (myProcessor == 0) {
-          std::cerr << "\nDataWarp Burst Buffer " << (usingDataWarp ? "Enabled." : "Disabled.");
-          if (usingDataWarp) {
-            std::cerr << "  Path = `" << dwPath << "`";
-          }
-          std::cerr << "\n\n";
         }
       }
     }
@@ -340,13 +334,13 @@ namespace Ioss {
         int dwret = dw_wait_file_stage(bb_file.filename().c_str());
         if (dwret < 0) {
           std::ostringstream errmsg;
-          errmsg << "ERROR: failed waiting for file stage" << bb_file.filename()
-                 << "' : " << std::strerror(-dwret) << "\n";
+          fmt::print(errmsg, "ERROR: failed waiting for file stage `{}`: {}\n", bb_file.filename(),
+                     std::strerror(-dwret));
           IOSS_ERROR(errmsg);
         }
 #else
         // Used to debug DataWarp logic on systems without DataWarp...
-        std::cerr << "DW: (FAKE) dw_wait_file_stage(" << bb_file.filename() << ");\n";
+        fmt::print(stderr, "DW: (FAKE) dw_wait_file_stage({});\n", bb_file.filename());
 #endif
       }
       set_dwname(bb_file.filename());
@@ -368,15 +362,13 @@ namespace Ioss {
             dw_stage_file_out(get_dwname().c_str(), get_pfsname().c_str(), DW_STAGE_IMMEDIATE);
         if (ret < 0) {
           std::ostringstream errmsg;
-          errmsg << "ERROR: file staging of " << get_dwname() << " to " << get_pfsname()
-                 << " failed at close "
-                 << "' : " << std::strerror(-ret) << "\n";
-          std::cerr << "DW " << errmsg.str();
+          fmt::print(errmsg, "ERROR: file staging of `{}` to `{}` failed at close: {}\n",
+                     get_dwname(), get_pfsname(), std::strerror(-ret));
           IOSS_ERROR(errmsg);
         }
 #else
-        std::cerr << "\nDW: (FAKE) dw_stage_file_out(" << get_dwname() << ", " << get_pfsname()
-                  << ", DW_STAGE_IMMEDIATE);\n";
+        fmt::print(stderr, "\nDW: (FAKE) dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
+                   get_dwname(), get_pfsname());
 #endif
       }
 #ifdef SEACAS_HAVE_MPI
@@ -1209,7 +1201,7 @@ namespace {
       if (util.parallel_size() > 1) {
         fmt::print(strm, "\tTot: {} (ms)\n", total);
       }
-      std::cerr << strm.str();
+      fmt::print(stderr, "{}", strm.str());
     }
   }
 
@@ -1251,7 +1243,7 @@ namespace {
           fmt::print(strm, " T:{:8d}", total);
         }
         fmt::print(strm, "\t{}/{}\n", name, field.get_name());
-        std::cerr << strm.str();
+        fmt::print(stderr, "{}", strm.str());
       }
     }
     else {
