@@ -160,7 +160,7 @@ namespace {
                       "this ordinal.",
                       nullptr);
       options_.enroll("load_balance", Ioss::GetLongOption::MandatoryValue,
-                      "Max ratio of processor work to average.", nullptr);
+                      "Max ratio of processor work to average. [default 1.4]", nullptr);
       options_.enroll("verbose", Ioss::GetLongOption::NoValue,
                       "Print additional decomposition information", nullptr);
       options_.enroll("output", Ioss::GetLongOption::MandatoryValue,
