@@ -4,6 +4,7 @@ var classIOShell_1_1Interface =
     [ "~Interface", "classIOShell_1_1Interface.html#a66372521baf528164f25d4883a642b34", null ],
     [ "enroll_options", "classIOShell_1_1Interface.html#ac4b56e9c0f6369bc5de6af80575aae95", null ],
     [ "parse_options", "classIOShell_1_1Interface.html#a91c17d1da7ea52b068de0bd8924a62a6", null ],
+    [ "add_processor_id_field", "classIOShell_1_1Interface.html#ae437523a13f49ee960e451f9d932f761", null ],
     [ "append_step", "classIOShell_1_1Interface.html#affeb223fb335f2b1d8aa9560e7ede37a", null ],
     [ "append_time", "classIOShell_1_1Interface.html#ac2e198f4889ee580ae0515615c062e34", null ],
     [ "compose_output", "classIOShell_1_1Interface.html#a0bebac52793526e98227e21ae44a0c14", null ],
