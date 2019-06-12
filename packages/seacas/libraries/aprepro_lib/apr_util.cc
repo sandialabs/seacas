@@ -39,7 +39,7 @@
 #include <cmath>            // for math_errhandling, etc
 #include <cstdio>           // for perror
 #include <cstdlib>          // for mkstemp
-#include <cstring>          // for strlen, memcpy, etc
+#include <cstring>          // for strlen, etc
 #include <iostream>         // for operator<<, cerr, ostream
 #include <string>           // for allocator, operator+, etc
 #include <sys/stat.h>       // for stat, S_ISDIR
