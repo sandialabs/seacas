@@ -173,7 +173,6 @@ var searchData=
   ['get_5freduction_5ffield',['get_reduction_field',['../classIoex_1_1DatabaseIO.html#a18a87fd245372a8b8b44d6b6a6787ba0',1,'Ioex::DatabaseIO']]],
   ['get_5fregion',['get_region',['../classIoss_1_1DatabaseIO.html#ac7cb8bf7c8175fa0546a2bd965570e7c',1,'Ioss::DatabaseIO']]],
   ['get_5frole',['get_role',['../classIoss_1_1Field.html#aade689a336549e6d96d931e7ba73503d',1,'Ioss::Field']]],
-  ['get_5fserial_5ffile_5fpointer',['get_serial_file_pointer',['../classIocgns_1_1ParallelDatabaseIO.html#ad21c9e3d0e832cc137bb3d21554775ce',1,'Iocgns::ParallelDatabaseIO']]],
   ['get_5fset_5fattr',['get_set_attr',['../classIopx_1_1DecompositionData.html#a39bf928ca24bcdabd630903466887ddb',1,'Iopx::DecompositionData']]],
   ['get_5fset_5fmesh_5fdouble',['get_set_mesh_double',['../classIopx_1_1DecompositionDataBase.html#aad0063a919217ef56870ea4d76d72b1d',1,'Iopx::DecompositionDataBase']]],
   ['get_5fset_5fmesh_5fvar',['get_set_mesh_var',['../classIopx_1_1DecompositionDataBase.html#a9e32656ad93e46f723db259bc4fc0e27',1,'Iopx::DecompositionDataBase::get_set_mesh_var()'],['../classIopx_1_1DecompositionData.html#a3c8d13493f568666399ccae0a94d5132',1,'Iopx::DecompositionData::get_set_mesh_var()']]],

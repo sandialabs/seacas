@@ -134,8 +134,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7a8ebae706e4652632d698fb94146270"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8afc070d69d30e7d08a4a88bde79767"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#af8afc070d69d30e7d08a4a88bde79767">get_file_pointer</a> () const override</td></tr>
 <tr class="separator:af8afc070d69d30e7d08a4a88bde79767"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad21c9e3d0e832cc137bb3d21554775ce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#ad21c9e3d0e832cc137bb3d21554775ce">get_serial_file_pointer</a> () const</td></tr>
-<tr class="separator:ad21c9e3d0e832cc137bb3d21554775ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51305aa15abb2768b43390b41925e811"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a51305aa15abb2768b43390b41925e811">node_major</a> () const override</td></tr>
 <tr class="separator:a51305aa15abb2768b43390b41925e811"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ef264028e3c96819cf3dc6d9a6621ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a7ef264028e3c96819cf3dc6d9a6621ea">needs_shared_node_information</a> () const override</td></tr>
@@ -347,10 +345,6 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a904506384522d1720a3d2d52a85cca63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a461a816513692d456089de4f72040600"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a461a816513692d456089de4f72040600">closeDatabase__</a> () const override</td></tr>
 <tr class="separator:a461a816513692d456089de4f72040600"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bc74f571d3c8d942059ec3b4b3ed544"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a7bc74f571d3c8d942059ec3b4b3ed544">openSerialDatabase__</a> () const</td></tr>
-<tr class="separator:a7bc74f571d3c8d942059ec3b4b3ed544"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22b49b2a0e0c418210b6b5207784d2fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a22b49b2a0e0c418210b6b5207784d2fc">closeSerialDatabase__</a> () const</td></tr>
-<tr class="separator:a22b49b2a0e0c418210b6b5207784d2fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2b8a640abe6f40a0874b0cb9022392c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#af2b8a640abe6f40a0874b0cb9022392c">begin__</a> (<a class="el" href="namespaceIoss.html#a02dbd3bfbd7f633e636c8c0c385c4a34">Ioss::State</a> state) override</td></tr>
 <tr class="separator:af2b8a640abe6f40a0874b0cb9022392c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4741b1b0dd5ec3b91bfef5292ca18ecf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a4741b1b0dd5ec3b91bfef5292ca18ecf">end__</a> (<a class="el" href="namespaceIoss.html#a02dbd3bfbd7f633e636c8c0c385c4a34">Ioss::State</a> state) override</td></tr>
@@ -442,8 +436,6 @@ Private Member Functions</h2></td></tr>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a9985140b7ece72fc1fcefb955cbf939d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a9985140b7ece72fc1fcefb955cbf939d">m_cgnsFilePtr</a> {-1}</td></tr>
 <tr class="separator:a9985140b7ece72fc1fcefb955cbf939d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5887f6ea9867faa78740b1f45343cc9f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a5887f6ea9867faa78740b1f45343cc9f">m_cgnsSerFilePtr</a> {-1}</td></tr>
-<tr class="separator:a5887f6ea9867faa78740b1f45343cc9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa532819f3d0a480f599c2c1fcb7d0428"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#aa4d4cdd26c26124cb15aad084f4de822">Ioss::MeshType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#aa532819f3d0a480f599c2c1fcb7d0428">m_meshType</a> {<a class="el" href="namespaceIoss.html#acc1610b8e37168350b478a07112dffcfa696b031073e74bf2cb98e5ef201d4aa3">Ioss::MeshType::UNKNOWN</a>}</td></tr>
 <tr class="separator:aa532819f3d0a480f599c2c1fcb7d0428"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79b280acd4bdf71ffea61a670ed5d52a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classIocgns_1_1DecompositionDataBase.html">DecompositionDataBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a79b280acd4bdf71ffea61a670ed5d52a">decomp</a></td></tr>
@@ -737,31 +729,6 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#a1a76a51e956ab708923e6f5d93afa3ac">Ioss::DatabaseIO</a>.</p>
-
-</div>
-</div>
-<a id="a22b49b2a0e0c418210b6b5207784d2fc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a22b49b2a0e0c418210b6b5207784d2fc">&#9670;&nbsp;</a></span>closeSerialDatabase__()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Iocgns::ParallelDatabaseIO::closeSerialDatabase__ </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>
@@ -1748,23 +1715,6 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="ad21c9e3d0e832cc137bb3d21554775ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad21c9e3d0e832cc137bb3d21554775ce">&#9670;&nbsp;</a></span>get_serial_file_pointer()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Iocgns::ParallelDatabaseIO::get_serial_file_pointer </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="adf531df5b0359d97018b17dee7714cff"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adf531df5b0359d97018b17dee7714cff">&#9670;&nbsp;</a></span>get_step_times__()</h2>
 
@@ -2090,31 +2040,6 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#a638d34a31593a0f4f6e3faf9a55f4118">Ioss::DatabaseIO</a>.</p>
-
-</div>
-</div>
-<a id="a7bc74f571d3c8d942059ec3b4b3ed544"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7bc74f571d3c8d942059ec3b4b3ed544">&#9670;&nbsp;</a></span>openSerialDatabase__()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Iocgns::ParallelDatabaseIO::openSerialDatabase__ </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>
@@ -2985,28 +2910,6 @@ Additional Inherited Members</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">int Iocgns::ParallelDatabaseIO::m_cgnsFilePtr {-1}</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a5887f6ea9867faa78740b1f45343cc9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5887f6ea9867faa78740b1f45343cc9f">&#9670;&nbsp;</a></span>m_cgnsSerFilePtr</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Iocgns::ParallelDatabaseIO::m_cgnsSerFilePtr {-1}</td>
         </tr>
       </table>
   </td>
