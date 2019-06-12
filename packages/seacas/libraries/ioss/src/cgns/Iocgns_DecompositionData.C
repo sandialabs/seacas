@@ -125,8 +125,8 @@ namespace {
 #endif
 
   // These are used for structured parallel decomposition...
-  void create_zone_data(int cgns_file_ptr,
-                        std::vector<Iocgns::StructuredZoneData *> &zones, MPI_Comm comm)
+  void create_zone_data(int cgns_file_ptr, std::vector<Iocgns::StructuredZoneData *> &zones,
+                        MPI_Comm comm)
   {
     Ioss::ParallelUtils par_util(comm);
     int                 myProcessor = par_util.parallel_rank(); // To make error macro work...
@@ -158,37 +158,35 @@ namespace {
       int nconn = 0;
       CGCHECK(cg_n1to1(cgns_file_ptr, base, zone, &nconn));
       for (int i = 0; i < nconn; i++) {
-          char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
-          char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
-          std::array<cgsize_t, 6> range;
-          std::array<cgsize_t, 6> donor_range;
-          Ioss::IJK_t             transform;
+        char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
+        char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
+        std::array<cgsize_t, 6> range;
+        std::array<cgsize_t, 6> donor_range;
+        Ioss::IJK_t             transform;
 
-          CGCHECK(cg_1to1_read(cgns_file_ptr, base, zone, i + 1, connectname, donorname,
-                               range.data(), donor_range.data(), transform.data()));
+        CGCHECK(cg_1to1_read(cgns_file_ptr, base, zone, i + 1, connectname, donorname, range.data(),
+                             donor_range.data(), transform.data()));
 
-          // Get number of nodes shared with other "previous" zones...
-          // A "previous" zone will have a lower zone number this this zone...
-          int  donor_zone = -1;
-          auto donor_iter = zone_name_map.find(donorname);
-          if (donor_iter != zone_name_map.end()) {
-            donor_zone = (*donor_iter).second;
-          }
-          Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
-          Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
-          Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
-          Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
+        // Get number of nodes shared with other "previous" zones...
+        // A "previous" zone will have a lower zone number this this zone...
+        int  donor_zone = -1;
+        auto donor_iter = zone_name_map.find(donorname);
+        if (donor_iter != zone_name_map.end()) {
+          donor_zone = (*donor_iter).second;
+        }
+        Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
+        Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
+        Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
+        Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
 
 #if IOSS_DEBUG_OUTPUT
-          if (rank == 0) {
-            fmt::print(stderr, "Adding zgc {} to {} donor: {}\n", connectname, zone_name,
-                       donorname);
-          }
-#endif
-          zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
-                                                     transform, range_beg, range_end, donor_beg,
-                                                     donor_end);
+        if (rank == 0) {
+          fmt::print(stderr, "Adding zgc {} to {} donor: {}\n", connectname, zone_name, donorname);
         }
+#endif
+        zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
+                                                   transform, range_beg, range_end, donor_beg,
+                                                   donor_end);
       }
     }
 
@@ -259,8 +257,7 @@ namespace Iocgns {
     }
   }
 
-  template <typename INT>
-  void DecompositionData<INT>::decompose_structured(int filePtr)
+  template <typename INT> void DecompositionData<INT>::decompose_structured(int filePtr)
   {
     m_decomposition.show_progress(__func__);
     create_zone_data(filePtr, m_structuredZones, m_decomposition.m_comm);

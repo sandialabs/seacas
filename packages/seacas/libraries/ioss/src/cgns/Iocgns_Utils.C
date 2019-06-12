@@ -1638,33 +1638,32 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
   std::vector<int>  bc_data(7 * num_bcs);
   std::vector<char> bc_names(2 * (CGNS_MAX_NAME_LENGTH + 1) * num_bcs);
 
+  for (int ibc = 0; ibc < num_bcs; ibc++) {
+    cgsize_t          range[6];
+    char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
+    char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
+    CG_BCType_t       bocotype;
+    CG_PointSetType_t ptset_type;
+    cgsize_t          npnts;
+    cgsize_t          NormalListSize;
+    CG_DataType_t     NormalDataType;
+    int               ndataset;
 
-    for (int ibc = 0; ibc < num_bcs; ibc++) {
-      cgsize_t          range[6];
-      char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
-      char              fam_name[CGNS_MAX_NAME_LENGTH + 1];
-      CG_BCType_t       bocotype;
-      CG_PointSetType_t ptset_type;
-      cgsize_t          npnts;
-      cgsize_t          NormalListSize;
-      CG_DataType_t     NormalDataType;
-      int               ndataset;
+    // All we really want from this is 'boco_name'
+    CGCHECKNP(cg_boco_info(cgns_file_ptr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
+                           &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
 
-      // All we really want from this is 'boco_name'
-      CGCHECKNP(cg_boco_info(cgns_file_ptr, base, zone, ibc + 1, boco_name, &bocotype, &ptset_type,
-                             &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
+    if (bocotype == CG_FamilySpecified) {
+      // Get family name associated with this boco_name
+      CGCHECKNP(
+          cg_goto(cgns_file_ptr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
+      CGCHECKNP(cg_famname_read(fam_name));
+    }
+    else {
+      Ioss::Utils::copy_string(fam_name, boco_name);
+    }
 
-      if (bocotype == CG_FamilySpecified) {
-        // Get family name associated with this boco_name
-        CGCHECKNP(
-            cg_goto(cgns_file_ptr, base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", ibc + 1, "end"));
-        CGCHECKNP(cg_famname_read(fam_name));
-      }
-      else {
-        Ioss::Utils::copy_string(fam_name, boco_name);
-      }
-
-      CGCHECKNP(cg_boco_read(cgns_file_ptr, base, zone, ibc + 1, range, nullptr));
+    CGCHECKNP(cg_boco_read(cgns_file_ptr, base, zone, ibc + 1, range, nullptr));
 
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
@@ -1683,7 +1682,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
 
     bool is_parallel_io = true;
     add_bc_to_block(block, boco_name, fam_name, ibc, range, bocotype, is_parallel_io);
-    }
+  }
 }
 
 void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                    cgns_file_ptr,
