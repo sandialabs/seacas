@@ -1,13 +1,29 @@
-From bcf339cdf0a2f9e69fa154883e2284541a91fe16 Mon Sep 17 00:00:00 2001
+From d04e1c3af31a81b6fc7d23c61cd45a6bf590ce2e Mon Sep 17 00:00:00 2001
 From: Greg Sjaardema <gsjaardema@gmail.com>
 Date: Tue, 9 Apr 2019 14:39:40 -0600
 Subject: [PATCH] Sandia specific mpi changes
 
 * Proof-of-concept for allowing file-per-processor and single-file parallel output
 ---
- src/cgns_io.c | 50 ++++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 46 insertions(+), 4 deletions(-)
+ src/adfh/ADFH.c |  4 ----
+ src/cgns_io.c   | 50 +++++++++++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 46 insertions(+), 8 deletions(-)
 
+diff --git a/src/adfh/ADFH.c b/src/adfh/ADFH.c
+index f056850..9360e2f 100644
+--- a/src/adfh/ADFH.c
++++ b/src/adfh/ADFH.c
+@@ -2130,10 +2130,6 @@ void ADFH_Database_Open(const char   *name,
+ 
+ #endif
+ 
+-#if HDF5_HAVE_FILE_SPACE_STRATEGY
+-    H5Pset_file_space_strategy(g_propfilecreate, H5F_FSPACE_STRATEGY_FSM_AGGR, 1, (hsize_t)1);
+-#endif
+-
+     /* add creation time for groups (used by iterators)
+       (prop set to file creation )*/
+     H5Pset_link_creation_order(g_propfilecreate,
 diff --git a/src/cgns_io.c b/src/cgns_io.c
 index 7e83f53..66e7177 100644
 --- a/src/cgns_io.c
@@ -355,5 +371,5 @@ index 7e83f53..66e7177 100644
              m_dims, m_start, m_end, m_stride, (const char *)data, &ierr);
          if (ierr > 0) return set_error(ierr);
 -- 
-2.21.0
+2.22.0
 
