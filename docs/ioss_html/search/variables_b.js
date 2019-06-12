@@ -19,7 +19,6 @@ var searchData=
   ['m_5fcelloffset',['m_cellOffset',['../classIoss_1_1StructuredBlock.html#a0fbd851c28e5f15bbd382b97f1759d85',1,'Ioss::StructuredBlock']]],
   ['m_5fcentroids',['m_centroids',['../classIoss_1_1Decomposition.html#a25f181b211f0f83b4c77c140b463b9d2',1,'Ioss::Decomposition']]],
   ['m_5fcgnsfileptr',['m_cgnsFilePtr',['../classIocgns_1_1DatabaseIO.html#a369800173d5ee71f6c609a69c93b1dc6',1,'Iocgns::DatabaseIO::m_cgnsFilePtr()'],['../classIocgns_1_1ParallelDatabaseIO.html#a9985140b7ece72fc1fcefb955cbf939d',1,'Iocgns::ParallelDatabaseIO::m_cgnsFilePtr()']]],
-  ['m_5fcgnsserfileptr',['m_cgnsSerFilePtr',['../classIocgns_1_1ParallelDatabaseIO.html#a5887f6ea9867faa78740b1f45343cc9f',1,'Iocgns::ParallelDatabaseIO']]],
   ['m_5fchild1',['m_child1',['../classIocgns_1_1StructuredZoneData.html#a6232c005ba5012b68e3a191dd4b94288',1,'Iocgns::StructuredZoneData']]],
   ['m_5fchild2',['m_child2',['../classIocgns_1_1StructuredZoneData.html#ac504b2f0c2f2df08eb091f1ded2e46ac',1,'Iocgns::StructuredZoneData']]],
   ['m_5fcomm',['m_comm',['../classIoss_1_1Decomposition.html#aa2200eb229f5490d85b529d1a3178057',1,'Ioss::Decomposition']]],
