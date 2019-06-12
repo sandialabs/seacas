@@ -1,0 +1,13 @@
+<map id="Ioss::StructuredBlock" name="Ioss::StructuredBlock">
+<area shape="rect" id="node1" title="A structured zone – i,j,k." alt="" coords="750,392,897,417"/>
+<area shape="rect" id="node2" href="$classIoss_1_1EntityBlock.html" title="Base class for all &#39;block&#39;&#45;type grouping entities, which means all members of the block are similar o..." alt="" coords="784,179,903,204"/>
+<area shape="rect" id="node11" href="$classIoss_1_1NodeBlock.html" title="A collection of all nodes in the region." alt="" coords="717,305,834,331"/>
+<area shape="rect" id="node3" href="$classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:" alt="" coords="185,92,326,117"/>
+<area shape="rect" id="node5" href="$classIoss_1_1Region.html" title="A grouping entity that contains other grouping entities." alt="" coords="117,179,212,204"/>
+<area shape="rect" id="node4" href="$classIoss_1_1DatabaseIO.html" title="An input or output Database." alt="" coords="264,305,388,331"/>
+<area shape="rect" id="node6" href="$classIoss_1_1Map.html" title=" " alt="" coords="351,179,430,204"/>
+<area shape="rect" id="node7" href="$classIoss_1_1ParallelUtils.html" title=" " alt="" coords="454,179,577,204"/>
+<area shape="rect" id="node8" href="$classIoss_1_1PropertyManager.html" title="A collection of Ioss::Property objects." alt="" coords="5,5,162,31"/>
+<area shape="rect" id="node9" href="$classIoss_1_1ElementTopology.html" title="Represents an element topology." alt="" coords="612,92,768,117"/>
+<area shape="rect" id="node10" href="$classIoss_1_1FieldManager.html" title="A collection of Ioss::Field objects." alt="" coords="188,5,323,31"/>
+</map>

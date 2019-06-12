@@ -71,7 +71,7 @@ namespace Ioss {
 namespace Iohb {
   class Layout;
 
-  enum Format { DEFAULT = 0, SPYHIS = 1 };
+  enum Format { DEFAULT = 0, SPYHIS = 1, TEXT, TS_TEXT, CSV, TS_CSV };
 
   class IOFactory : public Ioss::IOFactory
   {
