@@ -188,10 +188,6 @@ namespace Iohb {
 
       DatabaseIO *new_this = const_cast<DatabaseIO *>(this);
 
-      if (properties.exists("FIELD_SEPARATOR")) {
-        new_this->separator_ = properties.get("FIELD_SEPARATOR").get_string();
-      }
-
       if (properties.exists("FILE_FORMAT")) {
         std::string format = properties.get("FILE_FORMAT").get_string();
         if (Ioss::Utils::case_strcmp(format, "spyhis") == 0) {
@@ -228,7 +224,45 @@ namespace Iohb {
         }
       }
 
+      // "Predefined" formats... Define first so can be overridden
+      if (fileFormat == SPYHIS) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->tsFormat     = "";
+      }
+      else if (fileFormat == CSV) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = ", ";
+        new_this->tsFormat     = "";
+      }
+      else if (fileFormat == TS_CSV) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = ", ";
+      }
+      else if (fileFormat == TEXT) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = "\t";
+        new_this->tsFormat     = "";
+      }
+      else if (fileFormat == TS_TEXT) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->separator_   = "\t";
+      }
+
       // Pull variables from the regions property data...
+      if (properties.exists("FIELD_SEPARATOR")) {
+        new_this->separator_ = properties.get("FIELD_SEPARATOR").get_string();
+      }
+
       if (properties.exists("FLUSH_INTERVAL")) {
         new_this->flushInterval_ = properties.get("FLUSH_INTERVAL").get_int();
       }
@@ -267,40 +301,6 @@ namespace Iohb {
 
       if (properties.exists("SHOW_TIME_FIELD")) {
         new_this->addTimeField = (properties.get("SHOW_TIME_FIELD").get_int() == 1);
-      }
-
-      // "Predefined" formats...
-      if (fileFormat == SPYHIS) {
-        new_this->addTimeField = true;
-        new_this->showLegend   = true;
-        new_this->showLabels   = false;
-        new_this->tsFormat     = "";
-      }
-      else if (fileFormat == CSV) {
-        new_this->addTimeField = true;
-        new_this->showLegend   = true;
-        new_this->showLabels   = false;
-        new_this->separator_   = ", ";
-        new_this->tsFormat     = "";
-      }
-      else if (fileFormat == TS_CSV) {
-        new_this->addTimeField = true;
-        new_this->showLegend   = true;
-        new_this->showLabels   = false;
-        new_this->separator_   = ", ";
-      }
-      else if (fileFormat == TEXT) {
-        new_this->addTimeField = true;
-        new_this->showLegend   = true;
-        new_this->showLabels   = false;
-        new_this->separator_   = "\t";
-        new_this->tsFormat     = "";
-      }
-      else if (fileFormat == TS_TEXT) {
-        new_this->addTimeField = true;
-        new_this->showLegend   = true;
-        new_this->showLabels   = false;
-        new_this->separator_   = "\t";
       }
 
       if (showLegend) {
