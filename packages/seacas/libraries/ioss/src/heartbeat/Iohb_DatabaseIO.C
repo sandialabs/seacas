@@ -195,15 +195,12 @@ namespace Iohb {
         }
         else if (Ioss::Utils::case_strcmp(format, "csv") == 0) {
           new_this->fileFormat = CSV;
-          new_this->separator_ = ", ";
         }
         else if (Ioss::Utils::case_strcmp(format, "ts_csv") == 0) {
           new_this->fileFormat = TS_CSV;
-          new_this->separator_ = ", ";
         }
         else if (Ioss::Utils::case_strcmp(format, "text") == 0) {
           new_this->fileFormat = TEXT;
-          new_this->separator_ = "\t";
         }
         else if (Ioss::Utils::case_strcmp(format, "ts_text") == 0) {
           new_this->fileFormat = TS_TEXT;
