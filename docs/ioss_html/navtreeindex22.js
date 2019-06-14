@@ -1,6 +1,5 @@
 var NAVTREEINDEX22 =
 {
-"classIotr_1_1VM__Factory.html#abb40498f6ab4949fb853d174e5f0ef2e":[3,0,79,15,0],
 "classIotr_1_1VM__Factory.html#ad48708ef8c9958025bd1530944ac6565":[3,0,79,15,2],
 "classIotr_1_1VectorMagnitude.html":[3,0,79,14],
 "classIotr_1_1VectorMagnitude.html#a4b5368c008f38a659f6b8e2761e4b696":[3,0,79,14,0],
@@ -249,5 +248,6 @@ var NAVTREEINDEX22 =
 "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#ace21a9e7aad695ed65acc5f4dfeb0bed":[3,0,82,0,4,11],
 "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#ad4997662d86d72a65ad39f297417c56b":[3,0,82,0,4,18],
 "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#adb8efc76ae0f418d70237c6022f41a4f":[3,0,82,0,4,14],
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#aea637da7bd2352657451e35cea455b00":[3,0,82,0,4,12]
+"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#aea637da7bd2352657451e35cea455b00":[3,0,82,0,4,12],
+"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#aeb75fe01818a5f49418f4217160598e8":[3,0,82,0,4,16]
 };
