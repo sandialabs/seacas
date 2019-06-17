@@ -426,7 +426,7 @@ namespace {
     fmt::print("\n");
   }
   void describe_decomposition(std::vector<Iocgns::StructuredZoneData *> &zones,
-			      size_t orig_zone_count, const Interface &interface)
+                              size_t orig_zone_count, const Interface &interface)
   {
     size_t proc_count = interface.proc_count;
     bool   verbose    = interface.verbose;
@@ -454,7 +454,7 @@ namespace {
     double avg_work  = total_work / (double)proc_count;
 
     // Print work/processor map...
-    fmt::print("\nDecomposint {:n} zones over {:n} processors; Total work = {:n}; Average = "
+    fmt::print("\nDecomposing {:n} zones over {:n} processors; Total work = {:n}; Average = "
                "{:n} (goal)\n",
                orig_zone_count, proc_count, (size_t)total_work, (size_t)avg_work);
 
@@ -576,13 +576,13 @@ namespace {
     }
 
     // Calculate "nodal inflation" -- number of new surface nodes created...
-    auto nodal_work =
-        std::accumulate(zones.begin(), zones.end(), 0, [](size_t a, Iocgns::StructuredZoneData *b) {
-          return a + (b->m_parent == nullptr ? b->node_count() : 0);
-        });
+    auto nodal_work = std::accumulate(zones.begin(), zones.end(), (size_t)0,
+                                      [](size_t a, Iocgns::StructuredZoneData *b) {
+                                        return a + (b->m_parent == nullptr ? b->node_count() : 0);
+                                      });
 
     if (nodal_work > 0) {
-      auto new_nodal_work = std::accumulate(zones.begin(), zones.end(), 0,
+      auto new_nodal_work = std::accumulate(zones.begin(), zones.end(), (size_t)0,
                                             [](size_t a, Iocgns::StructuredZoneData *b) {
                                               return a + (b->is_active() ? b->node_count() : 0);
                                             });
@@ -659,7 +659,7 @@ int main(int argc, char *argv[])
 
   if (in_type == "cgns") {
     Iocgns::Utils::set_line_decomposition(dbi->get_file_pointer(), interface.line_decomposition,
-					  zones, 0, interface.verbose);
+                                          zones, 0, interface.verbose);
   }
 
   region.output_summary(std::cout, false);
