@@ -16,6 +16,12 @@ txtrst=$(tput sgr0)       # Text reset
 # Which compiler to use?
 export COMPILER=${COMPILER:-gnu}
 
+function check_exec()
+{
+    local var=$1
+    command -v ${var} >/dev/null 2>&1 || { echo >&2 "${txtred}---${var} is required, but is not currently in path.  Aborting TPL Install.${txtrst}"; exit 1; }
+}
+
 function check_valid_yes_no()
 {
     local var=$1
@@ -151,6 +157,11 @@ if [ $# -gt 0 ]; then
 	exit 0
     fi
 fi
+
+# Check that cmake, git, wget exist at the beginning instead of erroring out later on...
+check_exec cmake
+check_exec git
+check_exec wget
 
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
@@ -388,6 +399,11 @@ fi
 # =================== INSTALL MATIO  ===============
 if [ "$MATIO" == "ON" ]
 then
+    # Check that aclocal, automake, autoconf exist...
+    check_exec aclocal
+    check_exec automake
+    check_exec autoconf
+
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmatio.${LD_EXT} ]
     then
 	echo "${txtgrn}+++ MatIO${txtrst}"

@@ -186,7 +186,7 @@ namespace Iocgns {
       }
     }
 
-    openDatabase__();
+    Ioss::DatabaseIO::openDatabase__();
   }
 
   ParallelDatabaseIO::~ParallelDatabaseIO()
@@ -196,7 +196,6 @@ namespace Iocgns {
     }
     try {
       closeDatabase__();
-      closeSerialDatabase__();
     }
     catch (...) {
     }
@@ -208,14 +207,6 @@ namespace Iocgns {
       openDatabase__();
     }
     return m_cgnsFilePtr;
-  }
-
-  int ParallelDatabaseIO::get_serial_file_pointer() const
-  {
-    if (m_cgnsSerFilePtr < 0) {
-      openSerialDatabase__();
-    }
-    return m_cgnsSerFilePtr;
   }
 
   void ParallelDatabaseIO::openDatabase__() const
@@ -253,13 +244,14 @@ namespace Iocgns {
       cgp_mpi_comm(util().communicator());
 #endif
       CGCHECKM(cgp_pio_mode(CGP_COLLECTIVE));
-      int ierr = cgp_open(get_filename().c_str(), mode, &m_cgnsFilePtr);
+      Ioss::DatabaseIO::openDatabase__();
+      int ierr = cgp_open(get_dwname().c_str(), mode, &m_cgnsFilePtr);
 
       if (do_timer) {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(std::cerr, "File Open Time = {}\n", duration);
+          fmt::print(stderr, "File Open Time = {}\n", duration);
         }
       }
 
@@ -284,7 +276,7 @@ namespace Iocgns {
         set_int_byte_size_api(Ioss::USE_INT64_API);
       }
 
-      if (mode == CG_MODE_MODIFY) {
+      if (mode == CG_MODE_MODIFY && get_region() != nullptr) {
         Utils::update_db_zone_property(m_cgnsFilePtr, get_region(), myProcessor, true, true);
       }
 #if 0
@@ -301,19 +293,6 @@ namespace Iocgns {
     assert(m_cgnsFilePtr >= 0);
   }
 
-  void ParallelDatabaseIO::openSerialDatabase__() const
-  {
-    if (m_cgnsSerFilePtr < 0) {
-      if (myProcessor == 0 && is_input()) {
-        auto init           = pcg_mpi_initialized;
-        pcg_mpi_initialized = 0;
-        cg_open(get_filename().c_str(), CG_MODE_READ, &m_cgnsSerFilePtr);
-        pcg_mpi_initialized = init;
-        assert(m_cgnsSerFilePtr >= 0);
-      }
-    }
-  }
-
   void ParallelDatabaseIO::closeDatabase__() const
   {
     if (m_cgnsFilePtr != -1) {
@@ -327,22 +306,12 @@ namespace Iocgns {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(std::cerr, "File Close Time = {}\n", duration);
+          fmt::print(stderr, "File Close Time = {}\n", duration);
         }
       }
+      closeDW();
     }
     m_cgnsFilePtr = -1;
-  }
-
-  void ParallelDatabaseIO::closeSerialDatabase__() const
-  {
-    if (myProcessor == 0 && m_cgnsSerFilePtr >= 0) {
-      auto init           = pcg_mpi_initialized;
-      pcg_mpi_initialized = 0;
-      cg_close(m_cgnsSerFilePtr);
-      pcg_mpi_initialized = init;
-      m_cgnsSerFilePtr    = -1;
-    }
   }
 
   void ParallelDatabaseIO::finalize_database()
@@ -369,7 +338,7 @@ namespace Iocgns {
     }
   }
 
-  int64_t ParallelDatabaseIO::node_global_to_local__(int64_t global, bool must_exist) const
+  int64_t ParallelDatabaseIO::node_global_to_local__(int64_t global, bool /* must_exist */) const
   {
     // TODO: Fix
     return global;
@@ -414,7 +383,7 @@ namespace Iocgns {
           new DecompositionData<int>(properties, util().communicator()));
     }
     assert(decomp != nullptr);
-    decomp->decompose_model(get_serial_file_pointer(), get_file_pointer(), m_meshType);
+    decomp->decompose_model(get_file_pointer(), m_meshType);
 
     if (m_meshType == Ioss::MeshType::STRUCTURED) {
       handle_structured_blocks();
@@ -468,7 +437,7 @@ namespace Iocgns {
       eblock->property_add(Ioss::Property("original_block_order", i++));
       get_region()->add(eblock);
 #if IOSS_DEBUG_OUTPUT
-      fmt::print(std::cerr, "Added block {}, IOSS topology = '{}' with {} element.\n", block.name(),
+      fmt::print(stderr, "Added block {}, IOSS topology = '{}' with {} element.\n", block.name(),
                  element_topo, block.ioss_count());
 #endif
     }
@@ -484,7 +453,7 @@ namespace Iocgns {
         std::string block_name = fmt::format("{}/{}", zone.m_name, sset.name());
         std::string face_topo  = sset.topologyType;
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(std::cerr, "Processor {}: Added sideblock {} of topo {} with {} faces\n",
+        fmt::print(stderr, "Processor {}: Added sideblock {} of topo {} with {} faces\n",
                    myProcessor, block_name, face_topo, sset.ioss_count());
 #endif
         const auto &block = decomp->m_elementBlocks[sset.parentBlockIndex];
@@ -615,7 +584,7 @@ namespace Iocgns {
         block->property_add(Ioss::Property("guid", guid));
 
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(std::cerr, "Added block {}, Structured with ID = {}, GUID = {}\n", block_name,
+        fmt::print(stderr, "Added block {}, Structured with ID = {}, GUID = {}\n", block_name,
                    zone->m_adam->m_zone, guid);
 #endif
       }
@@ -628,7 +597,7 @@ namespace Iocgns {
     const auto &sbs = get_region()->get_structured_blocks();
     for (const auto &block : sbs) {
       // Handle boundary conditions...
-      Utils::add_structured_boundary_conditions(get_serial_file_pointer(), block, true);
+      Utils::add_structured_boundary_conditions(get_file_pointer(), block, true);
     }
 
     size_t node_count = finalize_structured_blocks();
@@ -878,17 +847,17 @@ namespace Iocgns {
             common = intersect(I_nodes, J_nodes);
 
 #if IOSS_DEBUG_OUTPUT
-            fmt::print(std::cerr, "Zone {}: {}, Donor Zone {}: {} Common: {}\n\t", zone,
+            fmt::print(stderr, "Zone {}: {}, Donor Zone {}: {} Common: {}\n\t", zone,
                        I_nodes.size(), dzone, J_nodes.size(), common.size());
 
             for (const auto &p : common) {
-              fmt::print(std::cerr, "{}, ", p.first);
+              fmt::print(stderr, "{}, ", p.first);
             }
-            fmt::print(std::cerr, "\n\t");
+            fmt::print(stderr, "\n\t");
             for (const auto &p : common) {
-              fmt::print(std::cerr, "{}, ", p.second);
+              fmt::print(stderr, "{}, ", p.second);
             }
-            fmt::print(std::cerr, "\n");
+            fmt::print(stderr, "\n");
 #endif
           }
 
@@ -968,7 +937,7 @@ namespace Iocgns {
     return true;
   }
 
-  bool ParallelDatabaseIO::begin_state__(int state, double time)
+  bool ParallelDatabaseIO::begin_state__(int state, double /* time */)
   {
     if (is_input()) {
       return true;
@@ -1583,9 +1552,9 @@ namespace Iocgns {
     return num_to_get;
   }
 
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Region *region,
-                                                 const Ioss::Field &field, void *data,
-                                                 size_t data_size) const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Region * /* region */,
+                                                 const Ioss::Field & /* field */, void * /* data */,
+                                                 size_t /* data_size */) const
   {
     return -1;
   }
@@ -2281,8 +2250,9 @@ namespace Iocgns {
   {
     return -1;
   }
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
-                                                 void *data, size_t data_size) const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet * /* cs */,
+                                                 const Ioss::Field & /* field*/, void * /*data*/,
+                                                 size_t /*data_size*/) const
   {
     return -1;
   }

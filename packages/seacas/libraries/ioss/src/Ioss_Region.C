@@ -183,7 +183,7 @@ namespace {
                  " {} not consistently defined on all processors.\n\t\t"
                  "Check that name and id matches across processors.\n",
                  (count == 1 ? "is" : "are"));
-      std::cerr << errmsg.str();
+      fmt::print(stderr, "{}", errmsg.str());
     }
   }
 
@@ -429,51 +429,51 @@ namespace Ioss {
   {
     IOSS_FUNC_ENTER(m_);
 
-    int64_t                               total_cells = 0;
-    int64_t     total_fs_faces = 0;
-    int64_t                       total_ns_nodes = 0;
-    int64_t     total_es_edges = 0;
-    int64_t     total_es_elements = 0;
-    int64_t                       total_sides = 0;
+    int64_t total_cells       = 0;
+    int64_t total_fs_faces    = 0;
+    int64_t total_ns_nodes    = 0;
+    int64_t total_es_edges    = 0;
+    int64_t total_es_elements = 0;
+    int64_t total_sides       = 0;
 
     {
-      const Ioss::StructuredBlockContainer &sbs         = get_structured_blocks();
+      const Ioss::StructuredBlockContainer &sbs = get_structured_blocks();
       for (auto sb : sbs) {
-	int64_t num_cell = sb->get_property("cell_count").get_int();
-	total_cells += num_cell;
+        int64_t num_cell = sb->get_property("cell_count").get_int();
+        total_cells += num_cell;
       }
 
-      const Ioss::NodeSetContainer &nss            = get_nodesets();
+      const Ioss::NodeSetContainer &nss = get_nodesets();
       for (auto ns : nss) {
-	int64_t count = ns->entity_count();
-	total_ns_nodes += count;
+        int64_t count = ns->entity_count();
+        total_ns_nodes += count;
       }
 
-      const auto &ess            = get_edgesets();
+      const auto &ess = get_edgesets();
       for (auto es : ess) {
-	int64_t count = es->entity_count();
-	total_es_edges += count;
+        int64_t count = es->entity_count();
+        total_es_edges += count;
       }
 
-      const auto &fss            = get_facesets();
+      const auto &fss = get_facesets();
       for (auto fs : fss) {
-	int64_t count = fs->entity_count();
-	total_fs_faces += count;
+        int64_t count = fs->entity_count();
+        total_fs_faces += count;
       }
 
-      const auto &els               = get_elementsets();
+      const auto &els = get_elementsets();
       for (auto es : els) {
-	int64_t count = es->entity_count();
-	total_es_elements += count;
+        int64_t count = es->entity_count();
+        total_es_elements += count;
       }
 
-      const Ioss::SideSetContainer &sss         = get_sidesets();
+      const Ioss::SideSetContainer &sss = get_sidesets();
       for (auto fs : sss) {
-	const Ioss::SideBlockContainer &fbs = fs->get_side_blocks();
-	for (auto fb : fbs) {
-	  int64_t num_side = fb->entity_count();
-	  total_sides += num_side;
-	}
+        const Ioss::SideBlockContainer &fbs = fs->get_side_blocks();
+        for (auto fb : fbs) {
+          int64_t num_side = fb->entity_count();
+          total_sides += num_side;
+        }
       }
     }
 
@@ -767,7 +767,7 @@ namespace Ioss {
       // Check that time is increasing...
       if (!warning_output) {
         fmt::print(IOSS_WARNING,
-                   "IOSS WARNING: Current time {} is not greater than previous time {} in\n{}\n. "
+                   "IOSS WARNING: Current time {} is not greater than previous time {} in\n\t{}.\n"
                    "This may cause problems in applications that assume monotonically increasing "
                    "time values.\n",
                    time, stateTimes.back(), get_database()->get_filename());

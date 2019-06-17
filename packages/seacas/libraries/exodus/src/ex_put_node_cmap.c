@@ -56,9 +56,6 @@
 
 #include <exodusII.h>     // for ex_err, etc
 #include <exodusII_int.h> // for EX_FATAL, DIM_NCNT_CMAP, etc
-#include <stddef.h>       // for size_t
-#include <stdio.h>
-#include <sys/types.h> // for int64_t
 
 int ex_put_node_cmap(int exoid, ex_entity_id map_id, void_int *node_ids, void_int *proc_ids,
                      int processor)
@@ -163,7 +160,6 @@ int ex_put_node_cmap(int exoid, ex_entity_id map_id, void_int *node_ids, void_in
     status = nc_put_vara_int(exoid, varid, start, count, node_ids);
   }
   if (status != NC_NOERR) {
-    fprintf(stderr, "Start, Count = %" ST_ZU "\t%" ST_ZU "\n", start[0], count[0]);
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output vector \"%s\" in file ID %d",
              VAR_N_COMM_NIDS, exoid);
     ex_err_fn(exoid, __func__, errmsg, status);

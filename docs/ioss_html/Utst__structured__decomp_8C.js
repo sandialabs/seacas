@@ -18,6 +18,8 @@ var Utst__structured__decomp_8C =
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#a119db9acfd96c045f318472ce5ce402a", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#a47bccd02607f08cbdea8f90e5cb61f47", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#aedab364cbf1466bcebe3ec2b024d06b6", null ],
+    [ "TEST_CASE", "Utst__structured__decomp_8C.html#a889610dfd8459f85c6141193d354ab81", null ],
+    [ "TEST_CASE", "Utst__structured__decomp_8C.html#ac2a56ec3ff59a7d5f4450af65d52238b", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ab100bc18e62c7d1adeb487902441d696", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ae9b5bb738a269182fc92ef0545ca3e03", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ab4befec15602ab85fea4eac176866b80", null ],

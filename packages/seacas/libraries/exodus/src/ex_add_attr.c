@@ -34,11 +34,6 @@
  */
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, EX_WARN, etc
-#include <inttypes.h>     // for PRId64
-#include <stddef.h>       // for size_t
-#include <stdio.h>
-#include <string.h>    // for strlen
-#include <sys/types.h> // for int64_t
 
 int ex_add_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int64_t num_attr_per_entry)
 {
@@ -219,7 +214,7 @@ int ex_add_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int64_t
     start[1] = 0;
     count[1] = strlen(text) + 1;
 
-    for (i = 0; i < num_attr_per_entry; i++) {
+    for (i = 0; i < (size_t)num_attr_per_entry; i++) {
       start[0] = i;
       nc_put_vara_text(exoid, att_name_varid, start, count, text);
     }

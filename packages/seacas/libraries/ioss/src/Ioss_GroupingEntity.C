@@ -89,9 +89,8 @@ void Ioss::GroupingEntity::delete_database() {}
 
 void Ioss::GroupingEntity::really_delete_database()
 {
-  Ioss::DatabaseIO *new_db = const_cast<Ioss::DatabaseIO *>(database_);
-  delete new_db;
-  new_db = nullptr;
+  delete database_;
+  database_ = nullptr;
 }
 
 std::string Ioss::GroupingEntity::generic_name() const

@@ -53,14 +53,6 @@
 
 #include "exodusII.h"     // for ex_err, ex_block, etc
 #include "exodusII_int.h" // for elem_blk_parm, EX_FATAL, etc
-#include <assert.h>
-#include <ctype.h>    // for toupper
-#include <inttypes.h> // for PRId64
-#include <stddef.h>   // for size_t
-#include <stdio.h>
-#include <stdlib.h>    // for malloc, NULL, free
-#include <string.h>    // for strncmp, strlen
-#include <sys/types.h> // for int64_t
 
 /*!
  * This routine is designed to read the Exodus II V 2.0 side set side
@@ -1059,8 +1051,6 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
           get_nodes(exoid, side_set_node_list, node_pos++, connect,
                     connect_offset + hex16_table[side_num][7] - 1);
         }
-        else {
-        }
       }
       else {
         get_nodes(exoid, side_set_node_list, node_pos + 0, connect,
@@ -1087,8 +1077,8 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
           get_nodes(exoid, side_set_node_list, node_pos + 8, connect,
                     connect_offset + hex_table[side_num][8] - 1);
         }
-        break;
       }
+      break;
     }
     default: {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s is an unsupported element type",

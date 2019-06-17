@@ -15,7 +15,7 @@ var classIogs_1_1GeneratedMesh =
     [ "GeneratedMesh", "classIogs_1_1GeneratedMesh.html#a539e1d279448102a279f0b671b7850ae", null ],
     [ "add_sideset", "classIogs_1_1GeneratedMesh.html#a5bd6cc5676991178f46e9c811a1a14f1", null ],
     [ "block_offset_proc", "classIogs_1_1GeneratedMesh.html#afdd1f7e5035b4b42829fce77ef06572c", null ],
-    [ "block_range", "classIogs_1_1GeneratedMesh.html#a4d714a193182bbe732a3fd7375bcb07c", null ],
+    [ "block_range", "classIogs_1_1GeneratedMesh.html#af70d20e7adc31a68fcb16237a4995735", null ],
     [ "block_range_proc", "classIogs_1_1GeneratedMesh.html#ab5008a853d31dbd6229f06f1617887b8", null ],
     [ "build_node_map", "classIogs_1_1GeneratedMesh.html#a0a83b70fc64a083796fac37338bed0c7", null ],
     [ "communication_node_count_proc", "classIogs_1_1GeneratedMesh.html#af8c00d958b9e8b649e9e1c40fff38071", null ],

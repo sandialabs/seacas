@@ -1,5 +1,6 @@
 var structIoss_1_1MeshCopyOptions =
 [
+    [ "add_proc_id", "structIoss_1_1MeshCopyOptions.html#aaffb05734d481e9d95a04a71fd5bdeb7", null ],
     [ "data_storage_type", "structIoss_1_1MeshCopyOptions.html#adbf836dfcb40005e91e022f3631d4cdd", null ],
     [ "debug", "structIoss_1_1MeshCopyOptions.html#a5465dc808e8f6418004d6c271f07037c", null ],
     [ "delay", "structIoss_1_1MeshCopyOptions.html#a870f812528275cc21b54942d0d6c973e", null ],

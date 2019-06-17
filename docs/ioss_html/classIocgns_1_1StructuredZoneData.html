@@ -114,8 +114,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aab68938b876393a2f8ba7dbd25264939"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb70a4ce1ac9231b19808f6dba825183"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1StructuredZoneData.html#afb70a4ce1ac9231b19808f6dba825183">work</a> () const</td></tr>
 <tr class="separator:afb70a4ce1ac9231b19808f6dba825183"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7b4b9bc6a4cfb29b1a14f442badfca5"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">StructuredZoneData</a> *, <a class="el" href="classIocgns_1_1StructuredZoneData.html">StructuredZoneData</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1StructuredZoneData.html#ae7b4b9bc6a4cfb29b1a14f442badfca5">split</a> (int zone_id, double avg_work, double balance, int rank)</td></tr>
-<tr class="separator:ae7b4b9bc6a4cfb29b1a14f442badfca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6e3ce6034969dbbc9cfadd57d6752ed"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1StructuredZoneData.html#ac6e3ce6034969dbbc9cfadd57d6752ed">node_count</a> () const</td></tr>
+<tr class="separator:ac6e3ce6034969dbbc9cfadd57d6752ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb00fb31251fb14220e410d494e697d6"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">StructuredZoneData</a> *, <a class="el" href="classIocgns_1_1StructuredZoneData.html">StructuredZoneData</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1StructuredZoneData.html#afb00fb31251fb14220e410d494e697d6">split</a> (int zone_id, double avg_work, int rank, bool verbose)</td></tr>
+<tr class="separator:afb00fb31251fb14220e410d494e697d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1df840014d39b162185acf5f4eadfab3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1StructuredZoneData.html#a1df840014d39b162185acf5f4eadfab3">resolve_zgc_split_donor</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones)</td></tr>
 <tr class="separator:a1df840014d39b162185acf5f4eadfab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3e13e6e63c76954d29b24e754960a01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1StructuredZoneData.html#ab3e13e6e63c76954d29b24e754960a01">update_zgc_processor</a> (std::vector&lt; <a class="el" href="classIocgns_1_1StructuredZoneData.html">Iocgns::StructuredZoneData</a> * &gt; &amp;zones)</td></tr>
@@ -284,6 +286,31 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ac6e3ce6034969dbbc9cfadd57d6752ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6e3ce6034969dbbc9cfadd57d6752ed">&#9670;&nbsp;</a></span>node_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Iocgns::StructuredZoneData::node_count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a1df840014d39b162185acf5f4eadfab3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1df840014d39b162185acf5f4eadfab3">&#9670;&nbsp;</a></span>resolve_zgc_split_donor()</h2>
 
@@ -302,8 +329,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ae7b4b9bc6a4cfb29b1a14f442badfca5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae7b4b9bc6a4cfb29b1a14f442badfca5">&#9670;&nbsp;</a></span>split()</h2>
+<a id="afb00fb31251fb14220e410d494e697d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb00fb31251fb14220e410d494e697d6">&#9670;&nbsp;</a></span>split()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -323,14 +350,14 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>balance</em>, </td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>rank</em>&#160;</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>verbose</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

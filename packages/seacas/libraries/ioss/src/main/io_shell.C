@@ -115,10 +115,10 @@ int main(int argc, char *argv[])
 
 #ifdef SEACAS_HAVE_KOKKOS
   if (rank == 0)
-    std::cerr << "Kokkos default execution space configuration:\n";
+    fmt::print(stderr, "Kokkos default execution space configuration:\n");
   Kokkos::DefaultExecutionSpace::print_configuration(std::cerr, false);
   if (rank == 0)
-    std::cerr << '\n';
+    fmt::print(stderr, "\n");
 #endif
 
   double begin = Ioss::Utils::timer();
@@ -286,6 +286,7 @@ namespace {
       options.data_storage_type = interface.data_storage_type;
       options.delay             = interface.timestep_delay;
       options.reverse           = interface.reverse;
+      options.add_proc_id       = interface.add_processor_id_field;
 
       size_t ts_count = 0;
       if (region.property_exists("state_count") &&

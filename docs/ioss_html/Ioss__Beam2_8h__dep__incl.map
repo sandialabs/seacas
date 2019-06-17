@@ -1,7 +1,9 @@
 <map id="src/Ioss_Beam2.h" name="src/Ioss_Beam2.h">
-<area shape="rect" id="node1" title=" " alt="" coords="191,5,319,31"/>
+<area shape="rect" id="node1" title=" " alt="" coords="282,5,410,31"/>
 <area shape="rect" id="node2" href="$Iocgns__Utils_8C.html" title=" " alt="" coords="5,85,166,111"/>
-<area shape="rect" id="node3" href="$Ioss__Beam2_8C.html" title=" " alt="" coords="190,85,320,111"/>
-<area shape="rect" id="node4" href="$Ioss__StandardElementTypes_8h.html" title=" " alt="" coords="343,79,521,117"/>
-<area shape="rect" id="node5" href="$Ioss__Initializer_8C.html" title=" " alt="" coords="362,165,502,191"/>
+<area shape="rect" id="node3" href="$Iogn__DashSurfaceMesh_8h.html" title=" " alt="" coords="190,79,339,117"/>
+<area shape="rect" id="node5" href="$Ioss__Beam2_8C.html" title=" " alt="" coords="363,85,493,111"/>
+<area shape="rect" id="node6" href="$Ioss__StandardElementTypes_8h.html" title=" " alt="" coords="517,79,695,117"/>
+<area shape="rect" id="node4" href="$Iogn__DashSurfaceMesh_8C.html" title=" " alt="" coords="188,165,340,204"/>
+<area shape="rect" id="node7" href="$Ioss__Initializer_8C.html" title=" " alt="" coords="536,172,676,197"/>
 </map>

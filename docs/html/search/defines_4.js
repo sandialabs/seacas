@@ -28,7 +28,6 @@ var searchData=
   ['ex_5funused',['EX_UNUSED',['../exodusII__int_8h.html#a5e1888937cb4d3958176f144bbdda001',1,'exodusII_int.h']]],
   ['ex_5fvers',['EX_VERS',['../exodusII_8h.html#a2d5e98bf5604721ad61b71685b68ef7e',1,'exodusII.h']]],
   ['ex_5fwarn',['EX_WARN',['../exodusII_8h.html#a8c5681d9b1d7a31149f2dfacce00b5e6',1,'exodusII.h']]],
-  ['ex_5fwrite_5fconn',['EX_WRITE_CONN',['../ex__put__conn_8c.html#ad13821dc1e272e6b8265bc7456cbf887',1,'ex_put_conn.c']]],
   ['excheck',['EXCHECK',['../ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a',1,'ex_copy.c']]],
   ['excheckf',['EXCHECKF',['../ex__copy_8c.html#a02085d8fa0557805b71b34222eb29067',1,'ex_copy.c']]],
   ['exchecki',['EXCHECKI',['../ex__copy_8c.html#aeb426c0afa8f865ae0be634f06ad4676',1,'ex_copy.c']]],

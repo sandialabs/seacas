@@ -39,11 +39,11 @@ namespace tsl {
    * backward shift deletion.
    *
    * For operations modifying the hash set (insert, erase, rehash, ...), the strong exception
-   * guarantee is only guaranteed when the expression `std::is_nothrow_swappable<Key>::value &&
-   * std::is_nothrow_move_constructible<Key>::value` is true, otherwise if an exception
+   * guarantee is only guaranteed when the expression `std::is_nothrow_swappable<Key>\:\:value &&
+   * std::is_nothrow_move_constructible<Key>\:\:value` is true, otherwise if an exception
    * is thrown during the swap or the move, the hash set may end up in a undefined state. Per the
    * standard a `Key` with a noexcept copy constructor and no move constructor also satisfies the
-   * `std::is_nothrow_move_constructible<Key>::value` criterion (and will thus guarantee the
+   * `std::is_nothrow_move_constructible<Key>\:\:value` criterion (and will thus guarantee the
    * strong exception for the set).
    *
    * When `StoreHash` is true, 32 bits of the hash are stored alongside the values. It can improve
@@ -113,62 +113,62 @@ namespace tsl {
      */
     robin_set() : robin_set(ht::DEFAULT_INIT_BUCKETS_SIZE) {}
 
-    explicit robin_set(size_type bucket_count, const Hash &hash = Hash(),
+    explicit robin_set(size_type my_bucket_count, const Hash &hash = Hash(),
                        const KeyEqual &equal = KeyEqual(), const Allocator &alloc = Allocator())
-        : m_ht(bucket_count, hash, equal, alloc)
+        : m_ht(my_bucket_count, hash, equal, alloc)
     {
     }
 
-    robin_set(size_type bucket_count, const Allocator &alloc)
-        : robin_set(bucket_count, Hash(), KeyEqual(), alloc)
+    robin_set(size_type my_bucket_count, const Allocator &alloc)
+        : robin_set(my_bucket_count, Hash(), KeyEqual(), alloc)
     {
     }
 
-    robin_set(size_type bucket_count, const Hash &hash, const Allocator &alloc)
-        : robin_set(bucket_count, hash, KeyEqual(), alloc)
+    robin_set(size_type my_bucket_count, const Hash &hash, const Allocator &alloc)
+        : robin_set(my_bucket_count, hash, KeyEqual(), alloc)
     {
     }
 
     explicit robin_set(const Allocator &alloc) : robin_set(ht::DEFAULT_INIT_BUCKETS_SIZE, alloc) {}
 
     template <class InputIt>
-    robin_set(InputIt first, InputIt last, size_type bucket_count = ht::DEFAULT_INIT_BUCKETS_SIZE,
-              const Hash &hash = Hash(), const KeyEqual &equal = KeyEqual(),
-              const Allocator &alloc = Allocator())
-        : robin_set(bucket_count, hash, equal, alloc)
+    robin_set(InputIt first, InputIt last,
+              size_type my_bucket_count = ht::DEFAULT_INIT_BUCKETS_SIZE, const Hash &hash = Hash(),
+              const KeyEqual &equal = KeyEqual(), const Allocator &alloc = Allocator())
+        : robin_set(my_bucket_count, hash, equal, alloc)
     {
       insert(first, last);
     }
 
     template <class InputIt>
-    robin_set(InputIt first, InputIt last, size_type bucket_count, const Allocator &alloc)
-        : robin_set(first, last, bucket_count, Hash(), KeyEqual(), alloc)
+    robin_set(InputIt first, InputIt last, size_type my_bucket_count, const Allocator &alloc)
+        : robin_set(first, last, my_bucket_count, Hash(), KeyEqual(), alloc)
     {
     }
 
     template <class InputIt>
-    robin_set(InputIt first, InputIt last, size_type bucket_count, const Hash &hash,
+    robin_set(InputIt first, InputIt last, size_type my_bucket_count, const Hash &hash,
               const Allocator &alloc)
-        : robin_set(first, last, bucket_count, hash, KeyEqual(), alloc)
+        : robin_set(first, last, my_bucket_count, hash, KeyEqual(), alloc)
     {
     }
 
     robin_set(std::initializer_list<value_type> init,
-              size_type bucket_count = ht::DEFAULT_INIT_BUCKETS_SIZE, const Hash &hash = Hash(),
+              size_type my_bucket_count = ht::DEFAULT_INIT_BUCKETS_SIZE, const Hash &hash = Hash(),
               const KeyEqual &equal = KeyEqual(), const Allocator &alloc = Allocator())
-        : robin_set(init.begin(), init.end(), bucket_count, hash, equal, alloc)
+        : robin_set(init.begin(), init.end(), my_bucket_count, hash, equal, alloc)
     {
     }
 
-    robin_set(std::initializer_list<value_type> init, size_type bucket_count,
+    robin_set(std::initializer_list<value_type> init, size_type my_bucket_count,
               const Allocator &alloc)
-        : robin_set(init.begin(), init.end(), bucket_count, Hash(), KeyEqual(), alloc)
+        : robin_set(init.begin(), init.end(), my_bucket_count, Hash(), KeyEqual(), alloc)
     {
     }
 
-    robin_set(std::initializer_list<value_type> init, size_type bucket_count, const Hash &hash,
+    robin_set(std::initializer_list<value_type> init, size_type my_bucket_count, const Hash &hash,
               const Allocator &alloc)
-        : robin_set(init.begin(), init.end(), bucket_count, hash, KeyEqual(), alloc)
+        : robin_set(init.begin(), init.end(), my_bucket_count, hash, KeyEqual(), alloc)
     {
     }
 

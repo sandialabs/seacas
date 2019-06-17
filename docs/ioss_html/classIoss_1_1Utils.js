@@ -37,6 +37,7 @@ var classIoss_1_1Utils =
     [ "local_filename", "classIoss_1_1Utils.html#a60e19e9db88e2f6dcbfa87c42e5f3e04", null ],
     [ "log_power_2", "classIoss_1_1Utils.html#a78ab83fa66bd69d336118e0e72a84241", null ],
     [ "lowercase", "classIoss_1_1Utils.html#a48106bb99507951b4655783fe6ceb0f8", null ],
+    [ "number_width", "classIoss_1_1Utils.html#a875232ab39ecaf79b1b668d28fb590d6", null ],
     [ "platform_information", "classIoss_1_1Utils.html#a9f148e3768f9322640e47ac8c0bc50c0", null ],
     [ "power_2", "classIoss_1_1Utils.html#a4f3b2d6a6ac736d341fee8db95c6fc4b", null ],
     [ "time_and_date", "classIoss_1_1Utils.html#acbd41c4c408240d7e09c7c30b3f4bb9d", null ],
