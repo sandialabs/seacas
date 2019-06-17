@@ -124,6 +124,13 @@ namespace {
       }
 
       {
+        const char *temp = options_.retrieve("db_type");
+        if (temp != nullptr) {
+          filetype = temp;
+        }
+      }
+
+      {
         const char *temp = options_.retrieve("load_balance");
         if (temp != nullptr) {
           load_balance = std::stod(temp);
@@ -161,6 +168,8 @@ namespace {
                       "Max ratio of processor work to average. [default 1.4]", nullptr);
       options_.enroll("verbose", Ioss::GetLongOption::NoValue,
                       "Print additional decomposition information", nullptr);
+      options_.enroll("db_type", Ioss::GetLongOption::MandatoryValue,
+                      "Database Type: gen_struc or cgns. Default is cgns.", nullptr);
       options_.enroll("output", Ioss::GetLongOption::MandatoryValue,
                       "What is printed: z=zone-proc assignment, h=histogram, w=work-per-processor, "
                       "c=comm map, v=verbose.",
@@ -171,6 +180,7 @@ namespace {
     int                 ordinal{-1};
     double              load_balance{1.4};
     std::string         filename{};
+    std::string         filetype{"cgns"};
     std::string         line_decomposition{};
     bool                verbose{false};
     bool                histogram{true};
@@ -605,7 +615,7 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  std::string in_type = "cgns";
+  std::string in_type = interface.filetype;
 
   codename   = argv[0];
   size_t ind = codename.find_last_of('/', codename.size());
@@ -646,8 +656,11 @@ int main(int argc, char *argv[])
     }
     zones.back()->m_zoneConnectivity = iblock->m_zoneConnectivity;
   }
-  Iocgns::Utils::set_line_decomposition(dbi->get_file_pointer(), interface.line_decomposition,
-                                        zones, 0, interface.verbose);
+
+  if (in_type == "cgns") {
+    Iocgns::Utils::set_line_decomposition(dbi->get_file_pointer(), interface.line_decomposition,
+					  zones, 0, interface.verbose);
+  }
 
   region.output_summary(std::cout, false);
 
