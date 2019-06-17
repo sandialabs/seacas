@@ -4,6 +4,7 @@ var classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface =
     [ "parse_options", "classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html#afca7a7b5bfdc3175153dd1e6b351837c", null ],
     [ "communication_map", "classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html#a51931bfd3104a7a7615f832c6094b026", null ],
     [ "filename", "classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html#a7bf6825e484e44889bc7744028b28919", null ],
+    [ "filetype", "classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html#a0705fb4d998cc3f91498dc94b4d36c82", null ],
     [ "histogram", "classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html#ac1415d5e2edc6b6a71f195d90fb45dee", null ],
     [ "line_decomposition", "classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html#a11b475edd0b33441ebca463e4046a11f", null ],
     [ "load_balance", "classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html#af609abab63d5b5a4db342a6b876eda78", null ],
