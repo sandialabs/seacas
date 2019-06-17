@@ -82,15 +82,13 @@ namespace {
         exit(EXIT_SUCCESS);
       }
 
-      {
+      if (options_.retrieve("output") != nullptr) {
         const std::string temp = options_.retrieve("output");
-        if (!temp.empty()) {
-          histogram            = temp.find("h") != std::string::npos;
-          work_per_processor   = temp.find("w") != std::string::npos;
-          zone_proc_assignment = temp.find("z") != std::string::npos;
-          verbose              = temp.find("v") != std::string::npos;
-          communication_map    = temp.find("c") != std::string::npos;
-        }
+        histogram              = temp.find("h") != std::string::npos;
+        work_per_processor     = temp.find("w") != std::string::npos;
+        zone_proc_assignment   = temp.find("z") != std::string::npos;
+        verbose                = temp.find("v") != std::string::npos;
+        communication_map      = temp.find("c") != std::string::npos;
       }
       verbose = options_.retrieve("verbose") != nullptr;
 
@@ -573,15 +571,17 @@ namespace {
           return a + (b->m_parent == nullptr ? b->node_count() : 0);
         });
 
-    auto new_nodal_work =
-        std::accumulate(zones.begin(), zones.end(), 0, [](size_t a, Iocgns::StructuredZoneData *b) {
-          return a + (b->is_active() ? b->node_count() : 0);
-        });
+    if (nodal_work > 0) {
+      auto new_nodal_work = std::accumulate(zones.begin(), zones.end(), 0,
+                                            [](size_t a, Iocgns::StructuredZoneData *b) {
+                                              return a + (b->is_active() ? b->node_count() : 0);
+                                            });
 
-    auto delta = new_nodal_work - nodal_work;
-    fmt::print("Nodal Inflation:\n\tOriginal Node Count = {:n}, Decomposed Node Count = {:n}, "
-               "Created = {:n}, Ratio = {:.2f}\n\n",
-               nodal_work, new_nodal_work, delta, (double)new_nodal_work / nodal_work);
+      auto delta = new_nodal_work - nodal_work;
+      fmt::print("Nodal Inflation:\n\tOriginal Node Count = {:n}, Decomposed Node Count = {:n}, "
+                 "Created = {:n}, Ratio = {:.2f}\n\n",
+                 nodal_work, new_nodal_work, delta, (double)new_nodal_work / nodal_work);
+    }
 
     // Imbalance penalty -- max work / avg work.  If perfect balance, then all processors would have
     // "avg_work" work to do. With current decomposition, every processor has to wait until
