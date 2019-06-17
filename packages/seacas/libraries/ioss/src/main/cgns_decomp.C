@@ -418,7 +418,7 @@ namespace {
     fmt::print("\n");
   }
   void describe_decomposition(std::vector<Iocgns::StructuredZoneData *> &zones,
-                              const Interface &                          interface)
+			      size_t orig_zone_count, const Interface &interface)
   {
     size_t proc_count = interface.proc_count;
     bool   verbose    = interface.verbose;
@@ -444,12 +444,11 @@ namespace {
     }
     size_t ord_width = Ioss::Utils::number_width(max_ordinal, false);
     double avg_work  = total_work / (double)proc_count;
-    size_t zcount    = zones.size();
 
     // Print work/processor map...
-    fmt::print("\nDecomposition for {} zones over {:n} processors; Total work = {:n}; Average = "
+    fmt::print("\nDecomposint {:n} zones over {:n} processors; Total work = {:n}; Average = "
                "{:n} (goal)\n",
-               zcount, proc_count, (size_t)total_work, (size_t)avg_work);
+               orig_zone_count, proc_count, (size_t)total_work, (size_t)avg_work);
 
     // Get max name length for all zones...
     size_t name_len = 0;
@@ -652,11 +651,12 @@ int main(int argc, char *argv[])
 
   region.output_summary(std::cout, false);
 
+  size_t orig_zone_count = zones.size();
   Iocgns::Utils::decompose_model(zones, interface.proc_count, 0, interface.load_balance,
                                  interface.verbose);
   update_zgc_data(zones, interface.proc_count);
 
-  describe_decomposition(zones, interface);
+  describe_decomposition(zones, orig_zone_count, interface);
 
   validate_decomposition(zones, interface.proc_count);
 
