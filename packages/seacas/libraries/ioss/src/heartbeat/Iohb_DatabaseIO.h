@@ -71,7 +71,7 @@ namespace Ioss {
 namespace Iohb {
   class Layout;
 
-  enum Format { DEFAULT = 0, SPYHIS = 0, TEXT, TS_TEXT, CSV, TS_CSV };
+  enum Format { DEFAULT = 0, SPYHIS = 1, TEXT, TS_TEXT, CSV, TS_CSV };
 
   class IOFactory : public Ioss::IOFactory
   {
@@ -183,18 +183,19 @@ namespace Iohb {
     Layout *      layout_{nullptr};
     Layout *      legend_{nullptr};
 
-    std::string tsFormat{"[%H:%M:%S]"};
+    std::string defaultTsFormat{"[%H:%M:%S]"};
+    std::string tsFormat{};
     std::string separator_{", "};
     int         precision_{5};
     int         fieldWidth_{0};
-    bool        showLabels{false};
-    bool        showLegend{true};
+    bool        showLabels{true};
+    bool        showLegend{false};
     bool        appendOutput{false};
     bool        addTimeField{false};
 
     bool        initialized_{false};
     bool        streamNeedsDelete{false};
-    enum Format fileFormat { SPYHIS };
+    enum Format fileFormat { DEFAULT };
   };
 } // namespace Iohb
 #endif // IOSS_Iohb_DatabaseIO_h

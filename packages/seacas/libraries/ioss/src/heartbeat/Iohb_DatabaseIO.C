@@ -221,38 +221,32 @@ namespace Iohb {
         }
       }
 
-      // "Predefined" formats... Define first so can be overridden
-      if (fileFormat == SPYHIS) {
-        new_this->addTimeField = true;
-        new_this->showLegend   = true;
-        new_this->showLabels   = false;
-        new_this->tsFormat     = "";
-      }
-      else if (fileFormat == CSV) {
+      // "Predefined" formats... (put first so can modify settings if wanted)
+      if (fileFormat == CSV) {
         new_this->addTimeField = true;
         new_this->showLegend   = true;
         new_this->showLabels   = false;
         new_this->separator_   = ", ";
-        new_this->tsFormat     = "";
       }
       else if (fileFormat == TS_CSV) {
         new_this->addTimeField = true;
         new_this->showLegend   = true;
         new_this->showLabels   = false;
         new_this->separator_   = ", ";
+        new_this->tsFormat     = defaultTsFormat;
       }
       else if (fileFormat == TEXT) {
         new_this->addTimeField = true;
         new_this->showLegend   = true;
         new_this->showLabels   = false;
         new_this->separator_   = "\t";
-        new_this->tsFormat     = "";
       }
       else if (fileFormat == TS_TEXT) {
         new_this->addTimeField = true;
         new_this->showLegend   = true;
         new_this->showLabels   = false;
         new_this->separator_   = "\t";
+        new_this->tsFormat     = defaultTsFormat;
       }
 
       // Pull variables from the regions property data...
@@ -270,7 +264,12 @@ namespace Iohb {
 
       if (properties.exists("SHOW_TIME_STAMP")) {
         bool show_time_stamp = properties.get("SHOW_TIME_STAMP").get_int() == 1;
-        if (!show_time_stamp) {
+        if (show_time_stamp) {
+          if (tsFormat.empty()) {
+	    new_this->tsFormat = defaultTsFormat;
+	  }
+	}
+	else {
           new_this->tsFormat = "";
         }
       }
@@ -300,6 +299,14 @@ namespace Iohb {
         new_this->addTimeField = (properties.get("SHOW_TIME_FIELD").get_int() == 1);
       }
 
+      // SpyHis format is specific format, so don't override these settings:
+      if (fileFormat == SPYHIS) {
+        new_this->addTimeField = true;
+        new_this->showLegend   = true;
+        new_this->showLabels   = false;
+        new_this->tsFormat     = "";
+      }
+
       if (showLegend) {
         new_this->legend_ = new Layout(false, precision_, separator_, fieldWidth_);
         if (!tsFormat.empty()) {
@@ -317,6 +324,7 @@ namespace Iohb {
           }
         }
       }
+
       new_this->initialized_ = true;
     }
   }
