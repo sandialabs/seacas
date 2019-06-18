@@ -2565,6 +2565,7 @@ namespace {
 
             // The node ids are in local space -- map to global; bring df along (if any).
             for (size_t iset = 0; iset < size; iset++) {
+              SMART_ASSERT(ns_nodes[iset] > 0)(p)(ns)(iset)(ns_nodes[iset]);
               size_t global_node         = local_node_to_global[p][ns_nodes[iset] - 1] + 1;
               glob_ns_nodes[global_node] = 1;
               glob_ns_df[global_node]    = ns_df[iset];
@@ -2836,6 +2837,8 @@ namespace {
           // The element ids are in local space -- map to global
           for (size_t i = 0; i < size; i++) {
             size_t local_elem             = glob_ssets[ss].elems[off + i];
+            SMART_ASSERT(local_elem > 0)(p)(ss)(i)(local_elem);
+            SMART_ASSERT(glob_ssets[ss].sides[off + i] > 0 && glob_ssets[ss].sides[off + i] <= 6);
             size_t global_elem            = local_element_to_global[p][local_elem - 1];
             glob_ssets[ss].elems[off + i] = global_elem + 1;
           }
