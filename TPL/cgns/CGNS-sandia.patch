@@ -1,4 +1,4 @@
-From 01103aecb0b84b01eb416ad5c0a97ff0d0a69c3e Mon Sep 17 00:00:00 2001
+From 04892892f97bea21814d4b80d1cff3ef79ae468e Mon Sep 17 00:00:00 2001
 From: Greg Sjaardema <gsjaardema@gmail.com>
 Date: Tue, 9 Apr 2019 14:39:40 -0600
 Subject: [PATCH] Sandia specific mpi changes
@@ -372,14 +372,14 @@ index 7e83f53..66e7177 100644
              m_dims, m_start, m_end, m_stride, (const char *)data, &ierr);
          if (ierr > 0) return set_error(ierr);
 diff --git a/src/cgnslib.h b/src/cgnslib.h
-index e753909..4eb1694 100644
+index e753909..9a9f267 100644
 --- a/src/cgnslib.h
 +++ b/src/cgnslib.h
 @@ -41,6 +41,8 @@
  #define CGNS_COMPATVERSION 2540
  #define CGNS_COMPATDOTVERS 2.54
  
-+#define CGNS_SANDIA_MODS 1
++#define CGNS_SANDIA_PARALLEL_MODS 1
 +
  #include "cgnstypes.h"
  
