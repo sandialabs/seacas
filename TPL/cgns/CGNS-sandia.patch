@@ -1,4 +1,4 @@
-From d04e1c3af31a81b6fc7d23c61cd45a6bf590ce2e Mon Sep 17 00:00:00 2001
+From 01103aecb0b84b01eb416ad5c0a97ff0d0a69c3e Mon Sep 17 00:00:00 2001
 From: Greg Sjaardema <gsjaardema@gmail.com>
 Date: Tue, 9 Apr 2019 14:39:40 -0600
 Subject: [PATCH] Sandia specific mpi changes
@@ -7,7 +7,8 @@ Subject: [PATCH] Sandia specific mpi changes
 ---
  src/adfh/ADFH.c |  4 ----
  src/cgns_io.c   | 50 +++++++++++++++++++++++++++++++++++++++++++++----
- 2 files changed, 46 insertions(+), 8 deletions(-)
+ src/cgnslib.h   |  2 ++
+ 3 files changed, 48 insertions(+), 8 deletions(-)
 
 diff --git a/src/adfh/ADFH.c b/src/adfh/ADFH.c
 index f056850..9360e2f 100644
@@ -370,6 +371,19 @@ index 7e83f53..66e7177 100644
          ADFH_Write_Data(id, s_start, s_end, s_stride, m_data_type, m_num_dims,
              m_dims, m_start, m_end, m_stride, (const char *)data, &ierr);
          if (ierr > 0) return set_error(ierr);
+diff --git a/src/cgnslib.h b/src/cgnslib.h
+index e753909..4eb1694 100644
+--- a/src/cgnslib.h
++++ b/src/cgnslib.h
+@@ -41,6 +41,8 @@
+ #define CGNS_COMPATVERSION 2540
+ #define CGNS_COMPATDOTVERS 2.54
+ 
++#define CGNS_SANDIA_MODS 1
++
+ #include "cgnstypes.h"
+ 
+ #if CG_BUILD_SCOPE
 -- 
 2.22.0
 
