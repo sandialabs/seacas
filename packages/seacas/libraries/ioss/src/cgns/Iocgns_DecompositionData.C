@@ -275,7 +275,20 @@ namespace Iocgns {
     // The line decomposition is an ordinal which will not be split during the
     // decomposition.
     if (!m_lineDecomposition.empty()) {
-      Utils::set_line_decomposition(filePtr, m_lineDecomposition, m_structuredZones, rank, verbose);
+      // See if the ordinal is specified as "__ordinal_{ijk}" which is used for testing...
+      if (m_lineDecomposition.find("__ordinal_") == 0) {
+	// Get the ordinal... (last character of string)
+	char ordinal = m_lineDecomposition[m_lineDecomposition.size()-1];
+	int ord = ordinal == 'i' ? 0 : ordinal == 'j' ? 1 : 2;
+	for (auto zone : m_structuredZones) {
+	  if (zone->is_active()) {
+	    zone->m_lineOrdinal = ord;
+	  }
+	}
+      }
+      else {
+	Utils::set_line_decomposition(filePtr, m_lineDecomposition, m_structuredZones, rank, verbose);
+      }
     }
 
     // Do the processor decomposition.
@@ -320,7 +333,7 @@ namespace Iocgns {
       int z = 1;
       fmt::print(
           stderr,
-          "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax     work\n");
+          "     n    proc  parent    imin    imax    jmin    jmax    kmin    kmax          work\n");
       auto tmp_zone(m_structuredZones);
       std::sort(tmp_zone.begin(), tmp_zone.end(),
                 [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
@@ -329,7 +342,7 @@ namespace Iocgns {
 
       for (auto &zone : tmp_zone) {
         if (zone->is_active()) {
-          fmt::print(stderr, "{:6d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8n}\n", z++,
+          fmt::print(stderr, "{:6d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:14n}\n", z++,
                      zone->m_proc, zone->m_adam->m_zone, zone->m_offset[0] + 1,
                      zone->m_ordinal[0] + zone->m_offset[0] + 1, zone->m_offset[1] + 1,
                      zone->m_ordinal[1] + zone->m_offset[1] + 1, zone->m_offset[2] + 1,
