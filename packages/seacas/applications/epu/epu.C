@@ -55,6 +55,8 @@
 #include <vector>
 
 #include "copy_string_cpp.h"
+// Enable SMART_ASSERT even in Release mode...
+#define SMART_ASSERT_DEBUG_MODE 1
 #include "smart_assert.h"
 
 #include <exodusII.h>
