@@ -514,7 +514,7 @@ TEST_CASE("grv-large", "[grv-large]")
     SECTION(name)
     {
       double load_balance_tolerance = 1.3;
-      check_split_assign(zones, load_balance_tolerance, proc_count, .7);
+      check_split_assign(zones, load_balance_tolerance, proc_count, .7, 1.1);
     }
   }
   cleanup(zones);
