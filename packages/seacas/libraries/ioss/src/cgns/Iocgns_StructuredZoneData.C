@@ -306,7 +306,7 @@ namespace Iocgns {
       return std::make_pair(nullptr, nullptr);
     }
 
-    SMART_ASSERT(ordinal != m_lineOrdinal);
+    assert(ordinal != m_lineOrdinal);
 
     m_child1 = new StructuredZoneData;
     m_child2 = new StructuredZoneData;
