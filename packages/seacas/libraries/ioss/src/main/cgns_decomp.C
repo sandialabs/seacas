@@ -371,7 +371,7 @@ namespace {
 
   void output_histogram(const std::vector<size_t> &proc_work, size_t avg_work, size_t median)
   {
-    fmt::print("Work-per-processor Histogram\n\n");
+    fmt::print("Work-per-processor Histogram\n");
     std::array<size_t, 16> histogram{};
 
     auto wmin = *std::min_element(proc_work.begin(), proc_work.end());
@@ -381,7 +381,7 @@ namespace {
     hist_size        = std::min(hist_size, proc_work.size());
 
     if (hist_size <= 1) {
-      fmt::print("Work is the same on all processors; no histogram possible.\n\n");
+      fmt::print("\tWork is the same on all processors; no histogram needed.\n\n");
       return;
     }
 
@@ -395,7 +395,7 @@ namespace {
     size_t proc_width = Ioss::Utils::number_width(proc_work.size(), true);
     size_t work_width = Ioss::Utils::number_width(wmax, true);
 
-    fmt::print("\t{:^{}} {:^{}}\n", "Work Range", 2 * work_width + 2, "#", proc_width);
+    fmt::print("\n\t{:^{}} {:^{}}\n", "Work Range", 2 * work_width + 2, "#", proc_width);
     auto hist_max = *std::max_element(histogram.begin(), histogram.end());
     for (size_t i = 0; i < hist_size; i++) {
       int         max_star = 50;
