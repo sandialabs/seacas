@@ -65,9 +65,9 @@ namespace Iogs {
     // First 'group' is the interval specification -- IxJxK
     auto tokens = Ioss::tokenize(groups[0], "x");
     assert(tokens.size() == 3);
-    numX = std::stoi(tokens[0]);
-    numY = std::stoi(tokens[1]);
-    numZ = std::stoi(tokens[2]);
+    numX = std::stoll(tokens[0]);
+    numY = std::stoll(tokens[1]);
+    numZ = std::stoll(tokens[2]);
 
     initialize();
     parse_options(groups);
@@ -234,7 +234,7 @@ namespace Iogs {
         Ioss::Int64Vector Zs;
         numZ = 0;
         for (size_t j = 0; j < processorCount; j++) {
-          Zs.push_back(std::stoi(tokens[j]));
+          Zs.push_back(std::stoll(tokens[j]));
           numZ += Zs[j];
         }
         myNumZ   = Zs[myProcessor];
@@ -270,7 +270,7 @@ namespace Iogs {
       }
 
       else if (option[0] == "times") {
-        timestepCount = std::stoi(option[1]);
+        timestepCount = std::stoll(option[1]);
       }
 
       else if (option[0] == "variables") {
