@@ -35,6 +35,7 @@
 
 #include <Ionit_Initializer.h>
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -191,7 +192,7 @@ namespace {
 } // namespace
 namespace {
   std::string codename;
-  std::string version = "0.95";
+  std::string version = "0.96";
 
   int term_width();
 
@@ -201,6 +202,19 @@ namespace {
       delete zone;
       zone = nullptr;
     }
+  }
+
+  double surface_ratio(const Iocgns::StructuredZoneData *zone)
+  {
+    size_t surf = 2 * (zone->m_ordinal[0] * zone->m_ordinal[1] + zone->m_ordinal[0] * zone->m_ordinal[2] +
+		       zone->m_ordinal[1] * zone->m_ordinal[2]);
+    size_t vol  = zone->cell_count();
+
+    // If a 'perfect' cube, then would be pl=cbrt(vol) on a side and surf would be 6*pl*pl
+    // Calculate 'perfect' surf / actual surf...
+    double pl = std::cbrt(vol);
+    double psurf = 6.0 * pl * pl;
+    return double(surf) / psurf;
   }
 
   int64_t generate_guid(size_t id, int rank, int proc_count)
@@ -347,7 +361,8 @@ namespace {
         npl      = npl < 1 ? 1 : npl;
         int line = 0;
 
-        fmt::print("\tZone '{}' ({}):\n\t\t", adam_zone->m_name, comms.size());
+        fmt::print("\tZone '{}' ({} inter-processor communications):\n\t\t",
+		   adam_zone->m_name, comms.size());
         for (const auto &proc : comms) {
           if (proc.second < 0) {
             // From decompostion
@@ -478,7 +493,7 @@ namespace {
         if (adam_zone->m_parent == nullptr) {
           if (adam_zone->m_child1 == nullptr) {
             // Unsplit...
-            fmt::print("\tZone: {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n} (unsplit)\n",
+            fmt::print("\tZone: {:{}}\t  Proc: {:{}}\tOrd: {:^12}    Work: {:{}n} (unsplit)\n",
                        adam_zone->m_name, name_len, adam_zone->m_proc, proc_width,
                        fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width,
                                    adam_zone->m_ordinal[0], adam_zone->m_ordinal[1],
@@ -486,7 +501,7 @@ namespace {
                        adam_zone->work(), work_width);
           }
           else {
-            fmt::print("\tZone: {:{}} is decomposed. \tOrdinal: {:^12}\tWork: {:{}n}\n",
+            fmt::print("\tZone: {:{}} is decomposed. \tOrd: {:^12}    Work: {:{}n}\n",
                        adam_zone->m_name, name_len,
                        fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width,
                                    adam_zone->m_ordinal[0], adam_zone->m_ordinal[1],
@@ -494,11 +509,11 @@ namespace {
                        adam_zone->work(), work_width);
             for (const auto zone : zones) {
               if (zone->is_active() && zone->m_adam == adam_zone) {
-                fmt::print("\t      {:{}}\t  Proc: {:{}}\tOrdinal: {:^12}\tWork: {:{}n}\n",
+                fmt::print("\t      {:{}}\t  Proc: {:{}}\tOrd: {:^12}    Work: {:{}n}    SurfExp: {:0.3}\n",
                            zone->m_name, name_len, zone->m_proc, proc_width,
                            fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, zone->m_ordinal[0],
                                        zone->m_ordinal[1], zone->m_ordinal[2]),
-                           zone->work(), work_width);
+                           zone->work(), work_width, surface_ratio(zone));
               }
             }
           }
