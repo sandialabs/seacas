@@ -193,6 +193,8 @@ namespace {
   std::string codename;
   std::string version = "0.95";
 
+  int term_width();
+
   void cleanup(std::vector<Iocgns::StructuredZoneData *> &zones)
   {
     for (auto &zone : zones) {
@@ -340,8 +342,8 @@ namespace {
         Ioss::Utils::uniquify(comms);
 
         int pw = Ioss::Utils::number_width(proc_count, false);
-        // Assume line width = 100, calculate output / line --
-        int npl  = 100 / (4 + 2 * pw);
+	// Two tabs at beginning ~16 spaces.  Each entry is "[pw->pw]  " which is 6+2pw
+        int npl  = (term_width() - 16) / (6 + 2 * pw);
         npl      = npl < 1 ? 1 : npl;
         int line = 0;
 
@@ -674,4 +676,27 @@ int main(int argc, char *argv[])
   validate_decomposition(zones, interface.proc_count);
 
   cleanup(zones);
+}
+
+namespace {
+#include <sys/ioctl.h>
+#include <stdio.h>
+#include <unistd.h>
+
+  int term_width(void)
+  {
+    int cols = 100;
+    if (isatty(fileno(stdout))) {
+#ifdef TIOCGSIZE
+      struct ttysize ts;
+      ioctl(STDIN_FILENO, TIOCGSIZE, &ts);
+      cols = ts.ts_cols;
+#elif defined(TIOCGWINSZ)
+      struct winsize ts;
+      ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
+      cols = ts.ws_col;
+#endif /* TIOCGSIZE */
+    }
+    return cols;
+  }
 }
