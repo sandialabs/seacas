@@ -646,7 +646,8 @@ namespace Iocgns {
 
   int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
 
-  void DatabaseIO::create_structured_block_fpp(int base, int num_zones, size_t & /* num_node */)
+  void DatabaseIO::create_structured_block_fpp(int base, int num_zones, size_t & /* num_node */,
+                                               const Ioss::MeshType &mesh_type)
   {
     assert(isParallel);
     PAR_UNUSED(base);
@@ -970,7 +971,8 @@ namespace Iocgns {
 #endif
   }
 
-  void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node)
+  void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node,
+                                           const Ioss::MeshType &mesh_type)
   {
     assert(!isParallel);
 
@@ -1122,7 +1124,8 @@ namespace Iocgns {
     return num_nodes;
   }
 
-  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node)
+  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node,
+                                             const Ioss::MeshType &mesh_type)
   {
     cgsize_t size[9];
     char     db_name[CGNS_MAX_NAME_LENGTH + 1];
@@ -1155,55 +1158,66 @@ namespace Iocgns {
                               &connect_type, &ptset_type, &npnts, donorname, &donor_zonetype,
                               &donor_ptset_type, &donor_datatype, &ndata_donor));
 
-        if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList ||
-            donor_ptset_type != CG_PointListDonor) {
+        if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList) {
           std::ostringstream errmsg;
-          fmt::print(errmsg,
-                     "ERROR: CGNS: Zone {} adjacency data is not correct type. Require "
-                     "Abutting1to1 and PointList. {}\t{}\t{}\n",
-                     zone, connect_type, ptset_type, donor_ptset_type);
-#if IOSS_ENABLE_HYBRID
-          std::cerr << errmsg.str();
-          continue;
-#else
+          fmt::print(
+              errmsg,
+              "ERROR: CGNS: Zone {}, connection {}:  adjacency data is not correct type. Require "
+              "Abutting1to1 and PointList.\n",
+              zone, connectname);
           IOSS_ERROR(errmsg);
-#endif
+        }
+
+        if (mesh_type == Ioss::MeshType::HYBRID && donor_ptset_type == CG_CellListDonor) {
+          fmt::print(stderr, "CellListDonor (HYBRID?) -- deal with later\n");
+        }
+        else if (donor_ptset_type != CG_PointListDonor) {
+          std::ostringstream errmsg;
+          fmt::print(
+              errmsg,
+              "ERROR: CGNS: Zone {}, connection {}:  adjacency data is not correct type. Require "
+              "PointListDonor or a hybrid mesh with CellListDonor.\n",
+              zone, connectname);
+          IOSS_ERROR(errmsg);
         }
 
         // Verify data consistency...
-        if (npnts != ndata_donor) {
-          std::ostringstream errmsg;
-          fmt::print(errmsg,
-                     "ERROR: CGNS: Zone {} point count ({}) does not match donor point count ({}).",
-                     zone, npnts, ndata_donor);
-          IOSS_ERROR(errmsg);
-        }
-
-        // Get number of nodes shared with other "previous" zones...
-        // A "previous" zone will have a lower zone number this this zone...
-        auto donor_iter = m_zoneNameMap.find(donorname);
-        if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
-          num_shared += npnts;
-#if IOSS_DEBUG_OUTPUT
-          fmt::print("Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
-#endif
-          if (get_region()->mesh_type() == Ioss::MeshType::HYBRID) {
-            fmt::print(stderr, "\n\nFIX THE NODE SHARING FOR HYBRID!!!\n\n");
+        if (donor_ptset_type == CG_PointListDonor) {
+          if (npnts != ndata_donor) {
+            std::ostringstream errmsg;
+            fmt::print(
+                errmsg,
+                "ERROR: CGNS: Zone {} point count ({}) does not match donor point count ({}).",
+                zone, npnts, ndata_donor);
+            IOSS_ERROR(errmsg);
           }
-          else {
-            std::vector<cgsize_t> points(npnts);
-            std::vector<cgsize_t> donors(npnts);
 
-            CGCHECKM(cg_conn_read(get_file_pointer(), base, zone, i + 1, TOPTR(points),
-                                  donor_datatype, TOPTR(donors)));
+          // Get number of nodes shared with other "previous" zones...
+          // A "previous" zone will have a lower zone number this this zone...
+          auto donor_iter = m_zoneNameMap.find(donorname);
+          if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
+            num_shared += npnts;
+#if IOSS_DEBUG_OUTPUT
+            fmt::print("Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
+#endif
+            if (mesh_type == Ioss::MeshType::HYBRID) {
+              fmt::print(stderr, "\n\nFIX THE NODE SHARING FOR HYBRID!!!\n\n");
+            }
+            else {
+              std::vector<cgsize_t> points(npnts);
+              std::vector<cgsize_t> donors(npnts);
 
-            // Fill in entries in m_blockLocalNodeMap for the shared nodes...
-            auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
-            auto &block_map = m_blockLocalNodeMap[zone];
-            for (int j = 0; j < npnts; j++) {
-              cgsize_t point       = points[j];
-              cgsize_t donor       = donors[j];
-              block_map[point - 1] = donor_map[donor - 1];
+              CGCHECKM(cg_conn_read(get_file_pointer(), base, zone, i + 1, TOPTR(points),
+                                    donor_datatype, TOPTR(donors)));
+
+              // Fill in entries in m_blockLocalNodeMap for the shared nodes...
+              auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
+              auto &block_map = m_blockLocalNodeMap[zone];
+              for (int j = 0; j < npnts; j++) {
+                cgsize_t point       = points[j];
+                cgsize_t donor       = donors[j];
+                block_map[point - 1] = donor_map[donor - 1];
+              }
             }
           }
         }
@@ -1380,25 +1394,25 @@ namespace Iocgns {
     if (isParallel && mesh_type == Ioss::MeshType::STRUCTURED) {
       // Handle the file-per-processor parallel case separately for
       // now. Hopefully can consolidate at some later time.
-      create_structured_block_fpp(base, num_zones, num_node);
+      create_structured_block_fpp(base, num_zones, num_node, mesh_type);
     }
     else {
       for (int zone = 1; zone <= num_zones; zone++) {
         if (mesh_type == Ioss::MeshType::STRUCTURED) {
-          create_structured_block(base, zone, num_node);
+          create_structured_block(base, zone, num_node, mesh_type);
         }
         else if (mesh_type == Ioss::MeshType::UNSTRUCTURED) {
-          create_unstructured_block(base, zone, num_node);
+          create_unstructured_block(base, zone, num_node, mesh_type);
         }
 #if IOSS_ENABLE_HYBRID
         else if (mesh_type == Ioss::MeshType::HYBRID) {
           CG_ZoneType_t zone_type;
           CGCHECKM(cg_zone_type(get_file_pointer(), base, zone, &zone_type));
           if (zone_type == CG_Structured) {
-            create_structured_block(base, zone, num_node);
+            create_structured_block(base, zone, num_node, mesh_type);
           }
           else if (zone_type == CG_Unstructured) {
-            create_unstructured_block(base, zone, num_node);
+            create_unstructured_block(base, zone, num_node, mesh_type);
           }
           else {
             std::ostringstream errmsg;

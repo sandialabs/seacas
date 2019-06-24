@@ -38,10 +38,11 @@
 #include <Ioss_DatabaseIO.h> // for DatabaseIO
 #include <Ioss_IOFactory.h>  // for IOFactory
 #include <Ioss_Map.h>        // for Map
-#include <Ioss_State.h>      // for State
-#include <cstddef>           // for size_t
-#include <cstdint>           // for int64_t
-#include <iostream>          // for ostream
+#include <Ioss_MeshType.h>
+#include <Ioss_State.h> // for State
+#include <cstddef>      // for size_t
+#include <cstdint>      // for int64_t
+#include <iostream>     // for ostream
 #include <map>
 #include <string> // for string
 
@@ -115,14 +116,17 @@ namespace Iocgns {
     void flush_database__() const override;
 
     bool   check_valid_file_open(int status) const;
-    void   create_structured_block(int base, int zone, size_t &num_node);
-    void   create_structured_block_fpp(int base, int zone, size_t &num_node);
+    void   create_structured_block(int base, int zone, size_t &num_node,
+                                   const Ioss::MeshType &mesh_type);
+    void   create_structured_block_fpp(int base, int zone, size_t &num_node,
+                                       const Ioss::MeshType &mesh_type);
     size_t finalize_hybrid_unstructured_blocks();
     size_t finalize_structured_blocks();
     void   finalize_database() override;
     void   get_step_times__() override;
 
-    void create_unstructured_block(int base, int zone, size_t &num_node);
+    void create_unstructured_block(int base, int zone, size_t &num_node,
+                                   const Ioss::MeshType &mesh_type);
     void write_adjacency_data();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
