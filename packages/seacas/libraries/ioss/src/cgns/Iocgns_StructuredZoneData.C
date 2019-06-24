@@ -31,6 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_CodeTypes.h>
+#include <Ioss_SmartAssert.h>
 #include <algorithm>
 #include <cgns/Iocgns_StructuredZoneData.h>
 #include <fmt/color.h>
