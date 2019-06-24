@@ -2838,7 +2838,7 @@ namespace {
 
           // The element ids are in local space -- map to global
           for (size_t i = 0; i < size; i++) {
-            size_t local_elem             = glob_ssets[ss].elems[off + i];
+            size_t local_elem = glob_ssets[ss].elems[off + i];
             SMART_ASSERT(local_elem > 0)(p)(ss)(i)(local_elem);
             SMART_ASSERT(glob_ssets[ss].sides[off + i] > 0 && glob_ssets[ss].sides[off + i] <= 6);
             size_t global_elem            = local_element_to_global[p][local_elem - 1];

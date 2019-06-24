@@ -56,8 +56,9 @@
 #include <cgnsconfig.h>
 #include <pcgnslib.h>
 
-#if !defined(CGNS_SANDIA_PARALLEL_MODS) 
-#error "At this time, CGNS must be patched using CGNS-sandia.patch; contact gdsjaar@sandia.gov for info"
+#if !defined(CGNS_SANDIA_PARALLEL_MODS)
+#error                                                                                             \
+    "At this time, CGNS must be patched using CGNS-sandia.patch; contact gdsjaar@sandia.gov for info"
 #endif
 
 #if !defined(CGNSLIB_H)
