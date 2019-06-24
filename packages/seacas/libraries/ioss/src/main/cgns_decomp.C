@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
@@ -47,6 +48,8 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <sys/ioctl.h>
+#include <unistd.h>
 #include <utility>
 #include <vector>
 
@@ -206,13 +209,14 @@ namespace {
 
   double surface_ratio(const Iocgns::StructuredZoneData *zone)
   {
-    size_t surf = 2 * (zone->m_ordinal[0] * zone->m_ordinal[1] + zone->m_ordinal[0] * zone->m_ordinal[2] +
-		       zone->m_ordinal[1] * zone->m_ordinal[2]);
-    size_t vol  = zone->cell_count();
+    size_t surf =
+        2 * (zone->m_ordinal[0] * zone->m_ordinal[1] + zone->m_ordinal[0] * zone->m_ordinal[2] +
+             zone->m_ordinal[1] * zone->m_ordinal[2]);
+    size_t vol = zone->cell_count();
 
     // If a 'perfect' cube, then would be pl=cbrt(vol) on a side and surf would be 6*pl*pl
     // Calculate 'perfect' surf / actual surf...
-    double pl = std::cbrt(vol);
+    double pl    = std::cbrt(vol);
     double psurf = 6.0 * pl * pl;
     return double(surf) / psurf;
   }
@@ -356,13 +360,13 @@ namespace {
         Ioss::Utils::uniquify(comms);
 
         int pw = Ioss::Utils::number_width(proc_count, false);
-	// Two tabs at beginning ~16 spaces.  Each entry is "[pw->pw]  " which is 6+2pw
+        // Two tabs at beginning ~16 spaces.  Each entry is "[pw->pw]  " which is 6+2pw
         int npl  = (term_width() - 16) / (6 + 2 * pw);
         npl      = npl < 1 ? 1 : npl;
         int line = 0;
 
-        fmt::print("\tZone '{}' ({} inter-processor communications):\n\t\t",
-		   adam_zone->m_name, comms.size());
+        fmt::print("\tZone '{}' ({} inter-processor communications):\n\t\t", adam_zone->m_name,
+                   comms.size());
         for (const auto &proc : comms) {
           if (proc.second < 0) {
             // From decompostion
@@ -509,7 +513,8 @@ namespace {
                        adam_zone->work(), work_width);
             for (const auto zone : zones) {
               if (zone->is_active() && zone->m_adam == adam_zone) {
-                fmt::print("\t      {:{}}\t  Proc: {:{}}\tOrd: {:^12}    Work: {:{}n}    SurfExp: {:0.3}\n",
+                fmt::print("\t      {:{}}\t  Proc: {:{}}\tOrd: {:^12}    Work: {:{}n}    SurfExp: "
+                           "{:0.3}\n",
                            zone->m_name, name_len, zone->m_proc, proc_width,
                            fmt::format("{1:{0}} x {2:{0}} x {3:{0}}", ord_width, zone->m_ordinal[0],
                                        zone->m_ordinal[1], zone->m_ordinal[2]),
@@ -694,10 +699,6 @@ int main(int argc, char *argv[])
 }
 
 namespace {
-#include <sys/ioctl.h>
-#include <stdio.h>
-#include <unistd.h>
-
   int term_width(void)
   {
     int cols = 100;
@@ -714,4 +715,4 @@ namespace {
     }
     return cols;
   }
-}
+} // namespace
