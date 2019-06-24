@@ -277,17 +277,18 @@ namespace Iocgns {
     if (!m_lineDecomposition.empty()) {
       // See if the ordinal is specified as "__ordinal_{ijk}" which is used for testing...
       if (m_lineDecomposition.find("__ordinal_") == 0) {
-	// Get the ordinal... (last character of string)
-	char ordinal = m_lineDecomposition[m_lineDecomposition.size()-1];
-	int ord = ordinal == 'i' ? 0 : ordinal == 'j' ? 1 : 2;
-	for (auto zone : m_structuredZones) {
-	  if (zone->is_active()) {
-	    zone->m_lineOrdinal = ord;
-	  }
-	}
+        // Get the ordinal... (last character of string)
+        char ordinal = m_lineDecomposition[m_lineDecomposition.size() - 1];
+        int  ord     = ordinal == 'i' ? 0 : ordinal == 'j' ? 1 : 2;
+        for (auto zone : m_structuredZones) {
+          if (zone->is_active()) {
+            zone->m_lineOrdinal = ord;
+          }
+        }
       }
       else {
-	Utils::set_line_decomposition(filePtr, m_lineDecomposition, m_structuredZones, rank, verbose);
+        Utils::set_line_decomposition(filePtr, m_lineDecomposition, m_structuredZones, rank,
+                                      verbose);
       }
     }
 

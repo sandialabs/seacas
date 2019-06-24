@@ -764,7 +764,10 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
   /* Free up coordinates if used */
   if (problem->read_coords == ELB_TRUE) {
     switch (mesh->num_dims) {
-    case 1: free(y_node_ptr); y_node_ptr = nullptr; FALL_THROUGH;
+    case 1:
+      free(y_node_ptr);
+      y_node_ptr = nullptr;
+      FALL_THROUGH;
     case 2: free(z_node_ptr); z_node_ptr = nullptr;
     }
   }
