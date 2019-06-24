@@ -39,6 +39,7 @@
 #include <Ioss_NodeBlock.h>
 #include <Ioss_Property.h>
 #include <Ioss_ZoneConnectivity.h>
+#include <Ioss_ZoneConnectivityHybrid.h>
 #include <array>
 #include <cassert>
 #include <string>
@@ -345,6 +346,7 @@ namespace Ioss {
 
   public:
     std::vector<ZoneConnectivity>          m_zoneConnectivity;
+    std::vector<ZoneConnectivityHybrid>    m_zoneConnectivityHybrid;
     std::vector<BoundaryCondition>         m_boundaryConditions;
     std::vector<size_t>                    m_blockLocalNodeIndex;
     std::vector<std::pair<size_t, size_t>> m_globalIdMap;
