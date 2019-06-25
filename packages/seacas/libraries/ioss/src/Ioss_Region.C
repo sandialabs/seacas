@@ -475,7 +475,7 @@ namespace Ioss {
          get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
          num_ts});
 
-    size_t num_glo_vars = field_count();
+    size_t num_glo_vars = field_count(Ioss::Field::TRANSIENT);
     size_t num_nod_vars = get_variable_count(get_node_blocks());
     size_t num_edg_vars = get_variable_count(get_edge_blocks());
     size_t num_fac_vars = get_variable_count(get_face_blocks());
