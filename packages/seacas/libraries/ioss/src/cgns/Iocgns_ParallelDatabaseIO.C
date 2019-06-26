@@ -397,7 +397,7 @@ namespace Iocgns {
       handle_unstructured_blocks();
     }
 #if IOSS_ENABLE_HYBRID
-    else if (mesh_type == Ioss::MeshType::HYBRID) {
+    else if (m_meshType == Ioss::MeshType::HYBRID) {
     }
 #endif
     else {

@@ -646,8 +646,7 @@ namespace Iocgns {
 
   int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
 
-  void DatabaseIO::create_structured_block_fpp(int base, int num_zones, size_t & /* num_node */,
-                                               const Ioss::MeshType &mesh_type)
+  void DatabaseIO::create_structured_block_fpp(int base, int num_zones, size_t & /* num_node */)
   {
     assert(isParallel);
     PAR_UNUSED(base);
@@ -971,8 +970,7 @@ namespace Iocgns {
 #endif
   }
 
-  void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node,
-                                           const Ioss::MeshType &mesh_type)
+  void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node)
   {
     assert(!isParallel);
 
@@ -1124,8 +1122,7 @@ namespace Iocgns {
     return num_nodes;
   }
 
-  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node,
-                                             const Ioss::MeshType &mesh_type)
+  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node)
   {
     cgsize_t size[9];
     char     db_name[CGNS_MAX_NAME_LENGTH + 1];
@@ -1168,7 +1165,7 @@ namespace Iocgns {
           IOSS_ERROR(errmsg);
         }
 
-        if (mesh_type == Ioss::MeshType::HYBRID && donor_ptset_type == CG_CellListDonor) {
+        if (m_meshType == Ioss::MeshType::HYBRID && donor_ptset_type == CG_CellListDonor) {
           fmt::print(stderr, "CellListDonor (HYBRID?) -- deal with later\n");
         }
         else if (donor_ptset_type != CG_PointListDonor) {
@@ -1200,7 +1197,7 @@ namespace Iocgns {
 #if IOSS_DEBUG_OUTPUT
             fmt::print("Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
 #endif
-            if (mesh_type == Ioss::MeshType::HYBRID) {
+            if (m_meshType == Ioss::MeshType::HYBRID) {
               fmt::print(stderr, "\n\nFIX THE NODE SHARING FOR HYBRID!!!\n\n");
             }
             else {
@@ -1374,6 +1371,8 @@ namespace Iocgns {
 
     get_step_times__();
 
+    m_meshType = Utils::check_mesh_type(get_file_pointer());
+
     // ========================================================================
     // Get the number of families in the mesh...
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
@@ -1389,30 +1388,29 @@ namespace Iocgns {
 
     // ========================================================================
     size_t num_node  = 0;
-    auto   mesh_type = Utils::check_mesh_type(get_file_pointer());
 
-    if (isParallel && mesh_type == Ioss::MeshType::STRUCTURED) {
+    if (isParallel && m_meshType == Ioss::MeshType::STRUCTURED) {
       // Handle the file-per-processor parallel case separately for
       // now. Hopefully can consolidate at some later time.
-      create_structured_block_fpp(base, num_zones, num_node, mesh_type);
+      create_structured_block_fpp(base, num_zones, num_node);
     }
     else {
       for (int zone = 1; zone <= num_zones; zone++) {
-        if (mesh_type == Ioss::MeshType::STRUCTURED) {
-          create_structured_block(base, zone, num_node, mesh_type);
+        if (m_meshType == Ioss::MeshType::STRUCTURED) {
+          create_structured_block(base, zone, num_node);
         }
-        else if (mesh_type == Ioss::MeshType::UNSTRUCTURED) {
-          create_unstructured_block(base, zone, num_node, mesh_type);
+        else if (m_meshType == Ioss::MeshType::UNSTRUCTURED) {
+          create_unstructured_block(base, zone, num_node);
         }
 #if IOSS_ENABLE_HYBRID
-        else if (mesh_type == Ioss::MeshType::HYBRID) {
+        else if (m_meshType == Ioss::MeshType::HYBRID) {
           CG_ZoneType_t zone_type;
           CGCHECKM(cg_zone_type(get_file_pointer(), base, zone, &zone_type));
           if (zone_type == CG_Structured) {
-            create_structured_block(base, zone, num_node, mesh_type);
+            create_structured_block(base, zone, num_node);
           }
           else if (zone_type == CG_Unstructured) {
-            create_unstructured_block(base, zone, num_node, mesh_type);
+            create_unstructured_block(base, zone, num_node);
           }
           else {
             std::ostringstream errmsg;
@@ -1435,11 +1433,11 @@ namespace Iocgns {
       }
     }
 
-    if (mesh_type == Ioss::MeshType::STRUCTURED || mesh_type == Ioss::MeshType::HYBRID) {
+    if (m_meshType == Ioss::MeshType::STRUCTURED || m_meshType == Ioss::MeshType::HYBRID) {
       num_node = finalize_structured_blocks();
     }
 #if IOSS_ENABLE_HYBRID
-    if (mesh_type == Ioss::MeshType::HYBRID) {
+    if (m_meshType == Ioss::MeshType::HYBRID) {
       // Need to add the nodes which are in the Unstructured blocks...
       // (Currently not resolving shared nodes)
       num_node += finalize_hybrid_unstructured_blocks();

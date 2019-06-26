@@ -116,17 +116,14 @@ namespace Iocgns {
     void flush_database__() const override;
 
     bool   check_valid_file_open(int status) const;
-    void   create_structured_block(int base, int zone, size_t &num_node,
-                                   const Ioss::MeshType &mesh_type);
-    void   create_structured_block_fpp(int base, int zone, size_t &num_node,
-                                       const Ioss::MeshType &mesh_type);
+    void   create_structured_block(int base, int zone, size_t &num_node);
+    void   create_structured_block_fpp(int base, int zone, size_t &num_node);
+    void   create_unstructured_block(int base, int zone, size_t &num_node);
     size_t finalize_hybrid_unstructured_blocks();
     size_t finalize_structured_blocks();
     void   finalize_database() override;
     void   get_step_times__() override;
 
-    void create_unstructured_block(int base, int zone, size_t &num_node,
-                                   const Ioss::MeshType &mesh_type);
     void write_adjacency_data();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
@@ -189,7 +186,8 @@ namespace Iocgns {
                              int64_t file_count, entity_type type) const;
 
   private:
-    mutable int m_cgnsFilePtr{-1};
+    mutable int    m_cgnsFilePtr{-1};
+    Ioss::MeshType m_meshType{Ioss::MeshType::UNKNOWN};
 
     int m_flushInterval{0}; // Default is no flushing after each timestep
     int m_currentVertexSolutionIndex     = 0;
