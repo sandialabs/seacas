@@ -1396,53 +1396,34 @@ namespace Iocgns {
     }
     else {
       for (int zone = 1; zone <= num_zones; zone++) {
-        if (m_meshType == Ioss::MeshType::STRUCTURED) {
-          create_structured_block(base, zone, num_node);
-        }
-        else if (m_meshType == Ioss::MeshType::UNSTRUCTURED) {
-          create_unstructured_block(base, zone, num_node);
-        }
-#if IOSS_ENABLE_HYBRID
-        else if (m_meshType == Ioss::MeshType::HYBRID) {
-          CG_ZoneType_t zone_type;
-          CGCHECKM(cg_zone_type(get_file_pointer(), base, zone, &zone_type));
-          if (zone_type == CG_Structured) {
-            create_structured_block(base, zone, num_node);
-          }
-          else if (zone_type == CG_Unstructured) {
-            create_unstructured_block(base, zone, num_node);
-          }
-          else {
-            std::ostringstream errmsg;
-            fmt::print(errmsg,
-                       "ERROR: CGNS: Zone {} is not of type Unstructured or Structured "
-                       "which are the only types currently supported",
-                       zone);
-            IOSS_ERROR(errmsg);
-          }
-        }
-#endif
-        else {
-          std::ostringstream errmsg;
-          fmt::print(errmsg,
-                     "ERROR: CGNS: Zone {} is not of type Unstructured or Structured "
-                     "which are the only types currently supported",
-                     zone);
-          IOSS_ERROR(errmsg);
-        }
+	CG_ZoneType_t zone_type;
+	CGCHECKM(cg_zone_type(get_file_pointer(), base, zone, &zone_type));
+	if (zone_type == CG_Structured) {
+	  create_structured_block(base, zone, num_node);
+	}
+	else if (zone_type == CG_Unstructured) {
+	  create_unstructured_block(base, zone, num_node);
+	}
+	else {
+	  std::ostringstream errmsg;
+	  fmt::print(errmsg,
+		     "ERROR: CGNS: Zone {} is not of type Unstructured or Structured "
+		     "which are the only types currently supported",
+		     zone);
+	  IOSS_ERROR(errmsg);
+	}
       }
     }
 
     if (m_meshType == Ioss::MeshType::STRUCTURED || m_meshType == Ioss::MeshType::HYBRID) {
       num_node = finalize_structured_blocks();
     }
-#if IOSS_ENABLE_HYBRID
     if (m_meshType == Ioss::MeshType::HYBRID) {
       // Need to add the nodes which are in the Unstructured blocks...
       // (Currently not resolving shared nodes)
+      // Also need to handle unstr->str and str->unstr boundary conditions.
       num_node += finalize_hybrid_unstructured_blocks();
     }
-#endif
 
     char basename[CGNS_MAX_NAME_LENGTH + 1];
     int  cell_dimension = 0;
