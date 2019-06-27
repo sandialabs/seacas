@@ -972,24 +972,23 @@ namespace Iocgns {
 
   void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node)
   {
+    // This routine is for serial only; separate routine for parallel-fpp; 
+    // Similar routine in ParallelDatabaseIO for parallel 1->N
     assert(!isParallel);
+    assert(myProcessor == 0);
+
+    // Creates the Ioss::StructuredBlock
+    // Adds all zgc with other StructuredBlocks
+    // Handles sharing with lower-numbered blocks (other sharing handled elsewhere)
+    // Adds boundary conditions.
+
+    // Hybrid connections handled elsewhere.
 
     cgsize_t size[9];
     char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
     CGCHECKM(cg_zone_read(get_file_pointer(), base, zone, zone_name, size));
 
-    auto        name_proc = decompose_name(zone_name, isParallel);
-    std::string zname     = name_proc.first;
-    int         proc      = name_proc.second;
-    if (proc != myProcessor) {
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: CGNS: Zone {} has a name that specifies it should be on processor {}, but "
-                 "it is actually on processor {}",
-                 zone, proc, myProcessor);
-      IOSS_ERROR(errmsg);
-    }
-
+    std::string zname{zone_name};
     m_zoneNameMap[zname] = zone;
 
     assert(size[0] - 1 == size[3]);
@@ -1015,7 +1014,7 @@ namespace Iocgns {
 
     num_node += block->get_property("node_count").get_int();
 
-    // Handle zone-grid-connectivity...
+    // Handle zone-grid-connectivity... (between structured blocks only here)
     int nconn = 0;
     CGCHECKM(cg_n1to1(get_file_pointer(), base, zone, &nconn));
     for (int i = 0; i < nconn; i++) {
@@ -1028,8 +1027,7 @@ namespace Iocgns {
       CGCHECKM(cg_1to1_read(get_file_pointer(), base, zone, i + 1, connectname, donorname,
                             range.data(), donor_range.data(), transform.data()));
 
-      auto        donorname_proc = decompose_name(donorname, isParallel);
-      std::string donor_name     = donorname_proc.first;
+      std::string donor_name{donorname};
 
       // Get number of nodes shared with other "previous" zones...
       // A "previous" zone will have a lower zone number this this zone...
@@ -1047,7 +1045,7 @@ namespace Iocgns {
                                              range_beg, range_end, donor_beg, donor_end);
 
       block->m_zoneConnectivity.back().m_ownerProcessor = myProcessor;
-      block->m_zoneConnectivity.back().m_donorProcessor = donorname_proc.second;
+      block->m_zoneConnectivity.back().m_donorProcessor = myProcessor;
     }
 
     // Handle boundary conditions...
