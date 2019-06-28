@@ -264,6 +264,14 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
   name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
   int_names = calloc(num_entity * name_length, 1);
+  if (!(int_names = calloc(num_entity * name_length, 1))) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to allocate memory for internal int_names "
+             "array in file id %d",
+             exoid);
+    ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
 
   for (i = 0; i < num_entity; i++) {
     if (names != NULL && *names != NULL && *names[i] != '\0') {
@@ -1621,7 +1629,7 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
     }
     else {
       /* Checks that only a single bit is set */
-      set_modes = set_modes && !(set_modes & (set_modes - 1));
+      set_modes = !(set_modes & (set_modes - 1));
       if (!set_modes) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "EXODUS: ERROR: More than 1 file format "
