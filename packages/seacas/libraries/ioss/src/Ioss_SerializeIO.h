@@ -93,7 +93,6 @@ namespace Ioss {
     static std::mutex m_;
 #endif
     bool m_activeFallThru; ///< No barries since my group is running
-    int  m_manualOwner;    ///< Manually specified owner
 
     static int s_groupFactor; ///< Grouping factor
     static int s_size;        ///< Number of processors
