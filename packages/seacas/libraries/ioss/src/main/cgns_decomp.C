@@ -86,15 +86,16 @@ namespace {
         exit(EXIT_SUCCESS);
       }
 
+      verbose = options_.retrieve("verbose") != nullptr;
+
       if (options_.retrieve("output") != nullptr) {
         const std::string temp = options_.retrieve("output");
         histogram              = temp.find("h") != std::string::npos;
         work_per_processor     = temp.find("w") != std::string::npos;
         zone_proc_assignment   = temp.find("z") != std::string::npos;
-        verbose                = temp.find("v") != std::string::npos;
+        verbose                = temp.find("v") != std::string::npos || verbose;
         communication_map      = temp.find("c") != std::string::npos;
       }
-      verbose = options_.retrieve("verbose") != nullptr;
 
       {
         const char *temp = options_.retrieve("processors");
