@@ -174,7 +174,7 @@ namespace {
     SMART_ASSERT(vec.capacity() == 0);
   }
 
-  ex_entity_type exodus_object_type(Excn::ObjectType &epu_type)
+  ex_entity_type exodus_object_type(const Excn::ObjectType &epu_type)
   {
     switch (epu_type) {
     case Excn::EBLK: return EX_ELEM_BLOCK;

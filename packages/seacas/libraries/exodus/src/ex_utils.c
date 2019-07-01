@@ -263,7 +263,6 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
   /* inquire previously defined dimensions  */
   name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
-  int_names = calloc(num_entity * name_length, 1);
   if (!(int_names = calloc(num_entity * name_length, 1))) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to allocate memory for internal int_names "
