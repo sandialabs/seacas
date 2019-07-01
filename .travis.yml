@@ -49,6 +49,7 @@ before_install:
   - sudo apt-get -y install gfortran-6
   - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-6 90
   - sudo apt-get -y install libz-dev
+  - sudo apt-get -y install python3
   - if [ -n "$MPI" ]; then sudo apt-get -y install -q mpich libmpich-dev; fi
   - GNU_PARALLEL=OFF ./install-tpl.sh 
 
