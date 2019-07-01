@@ -12,6 +12,9 @@ compiler:
 git:
   depth: 5
 
+python:
+  - "3.6"
+
 matrix:
   allow_failures:
     - os: osx

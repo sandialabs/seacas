@@ -23,6 +23,9 @@ APPLICATIONS=${APPLICATIONS:-ON}
 LEGACY=${LEGACY:-ON}
 FORTRAN=${FORTRAN:-ON}
 
+### Python Version...
+PYTHON_VER=${PYTHON_VER:-"3.0"}
+
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
 if [ "${netcdf_parallel}" == "yes" ]
@@ -336,6 +339,7 @@ ${DARWIN_OPT} \
 -D CGNS_ROOT:PATH=${CGNS_PATH} \
 -D Matio_ROOT:PATH=${MATIO_PATH} \
 -D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
+-D PythonInterp_FIND_VERSION:STRING=${PYTHON_VER} \
 \
 $EXTRA_ARGS \
 ${ACCESS}
@@ -351,6 +355,7 @@ echo "        MPI: ${MPI}"
 echo "     SHARED: ${SHARED}"
 echo " BUILD_TYPE: ${BUILD_TYPE}"
 echo " THREADSAFE: ${THREADSAFE}"
+echo " PYTHON_VER: ${PYTHON_VER}"
 echo " "
 echo "     NETCDF: ${HAVE_NETCDF}"
 echo "      MATIO: ${HAVE_MATIO}"
