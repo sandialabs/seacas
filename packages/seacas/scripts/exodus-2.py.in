@@ -5458,6 +5458,9 @@ def ctype_to_numpy(exo, c_array):
     # ctypes currently produce invalid PEP 3118 type codes, which causes numpy
     # to issue a warning.  This is a bug and can be ignored.
     # http://stackoverflow.com/questions/4964101/pep-3118-warning-when-using-ctypes-array-as-numpy-array
+    if (len(c_array) == 0):
+        return exo.np.array([])
+
     with exo.warnings.catch_warnings():
         exo.warnings.simplefilter('ignore')
         np_array = exo.np.ctypeslib.as_array(c_array)
