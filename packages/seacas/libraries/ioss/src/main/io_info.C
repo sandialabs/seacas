@@ -221,9 +221,6 @@ namespace {
     bool parallel      = region.get_database()->is_parallel();
     int  parallel_size = region.get_database()->parallel_size();
 
-    int64_t total_cells = 0;
-    int64_t total_nodes = 0;
-
     const Ioss::StructuredBlockContainer &sbs = region.get_structured_blocks();
     for (int proc = 0; proc < parallel_size; proc++) {
       if (proc == region.get_database()->parallel_rank()) {
@@ -234,9 +231,6 @@ namespace {
         int64_t num_cell = sb->get_property("cell_count").get_int();
         int64_t num_node = sb->get_property("node_count").get_int();
         int64_t num_dim  = sb->get_property("component_degree").get_int();
-
-        total_cells += num_cell;
-        total_nodes += num_node;
 
         fmt::print("\n{} {}", name(sb), sb->get_property("ni_global").get_int());
         if (num_dim > 1) {
@@ -284,11 +278,9 @@ namespace {
 
   void info_elementblock(Ioss::Region &region, const Info::Interface &interface)
   {
-    const Ioss::ElementBlockContainer &ebs            = region.get_element_blocks();
-    int64_t                            total_elements = 0;
+    const Ioss::ElementBlockContainer &ebs = region.get_element_blocks();
     for (auto eb : ebs) {
       int64_t num_elem = eb->entity_count();
-      total_elements += num_elem;
 
       std::string type       = eb->get_property("topology_type").get_string();
       int64_t     num_attrib = eb->get_property("attribute_count").get_int();
@@ -320,11 +312,9 @@ namespace {
 
   void info_edgeblock(Ioss::Region &region)
   {
-    const Ioss::EdgeBlockContainer &ebs         = region.get_edge_blocks();
-    int64_t                         total_edges = 0;
+    const Ioss::EdgeBlockContainer &ebs = region.get_edge_blocks();
     for (auto eb : ebs) {
       int64_t num_edge = eb->entity_count();
-      total_edges += num_edge;
 
       std::string type       = eb->get_property("topology_type").get_string();
       int64_t     num_attrib = eb->get_property("attribute_count").get_int();
@@ -349,11 +339,9 @@ namespace {
 
   void info_faceblock(Ioss::Region &region)
   {
-    const Ioss::FaceBlockContainer &ebs         = region.get_face_blocks();
-    int64_t                         total_faces = 0;
+    const Ioss::FaceBlockContainer &ebs = region.get_face_blocks();
     for (auto eb : ebs) {
       int64_t num_face = eb->entity_count();
-      total_faces += num_face;
 
       std::string type       = eb->get_property("topology_type").get_string();
       int64_t     num_attrib = eb->get_property("attribute_count").get_int();
@@ -378,8 +366,7 @@ namespace {
 
   void info_sidesets(Ioss::Region &region, const Info::Interface &interface)
   {
-    const Ioss::SideSetContainer &fss         = region.get_sidesets();
-    int64_t                       total_sides = 0;
+    const Ioss::SideSetContainer &fss = region.get_sidesets();
     for (auto fs : fss) {
       fmt::print("\n{} id: {:6d}", name(fs), id(fs));
       if (fs->property_exists("bc_type")) {
@@ -391,6 +378,7 @@ namespace {
 #endif
       }
       info_aliases(region, fs, true, false);
+      info_fields(fs, Ioss::Field::TRANSIENT, "\n\tTransient: ");
       if (interface.adjacencies()) {
         std::vector<std::string> blocks;
         fs->block_membership(blocks);
@@ -400,19 +388,17 @@ namespace {
         }
         fmt::print("\n");
       }
-
       const Ioss::SideBlockContainer &fbs = fs->get_side_blocks();
       for (auto fb : fbs) {
-        int64_t num_side = fb->entity_count();
-        total_sides += num_side;
+        fmt::print("\n\t{}", name(fb));
+        info_fields(fb, Ioss::Field::TRANSIENT, "\n\t\tTransient: ");
       }
     }
   }
 
   void info_nodesets(Ioss::Region &region)
   {
-    const Ioss::NodeSetContainer &nss         = region.get_nodesets();
-    int64_t                       total_nodes = 0;
+    const Ioss::NodeSetContainer &nss = region.get_nodesets();
     for (auto ns : nss) {
       int64_t count      = ns->entity_count();
       int64_t num_attrib = ns->get_property("attribute_count").get_int();
@@ -423,14 +409,12 @@ namespace {
       info_df(ns, "\t");
       info_fields(ns, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
       info_fields(ns, Ioss::Field::TRANSIENT, "\tTransient:  ");
-      total_nodes += count;
     }
   }
 
   void info_edgesets(Ioss::Region &region)
   {
-    const Ioss::EdgeSetContainer &nss         = region.get_edgesets();
-    int64_t                       total_edges = 0;
+    const Ioss::EdgeSetContainer &nss = region.get_edgesets();
     for (auto ns : nss) {
       int64_t count      = ns->entity_count();
       int64_t num_attrib = ns->get_property("attribute_count").get_int();
@@ -440,14 +424,12 @@ namespace {
       info_df(ns, "\t");
       info_fields(ns, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
       info_fields(ns, Ioss::Field::TRANSIENT, "\tTransient:  ");
-      total_edges += count;
     }
   }
 
   void info_facesets(Ioss::Region &region)
   {
-    const Ioss::FaceSetContainer &fss         = region.get_facesets();
-    int64_t                       total_faces = 0;
+    const Ioss::FaceSetContainer &fss = region.get_facesets();
     for (auto fs : fss) {
       int64_t count      = fs->entity_count();
       int64_t num_attrib = fs->get_property("attribute_count").get_int();
@@ -457,14 +439,12 @@ namespace {
       info_df(fs, "\t");
       info_fields(fs, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
       info_fields(fs, Ioss::Field::TRANSIENT, "\tTransient:  ");
-      total_faces += count;
     }
   }
 
   void info_elementsets(Ioss::Region &region)
   {
-    const Ioss::ElementSetContainer &ess            = region.get_elementsets();
-    int64_t                          total_elements = 0;
+    const Ioss::ElementSetContainer &ess = region.get_elementsets();
     for (auto es : ess) {
       int64_t count = es->entity_count();
       fmt::print("\n{} id: {:6d}, {:8n} elements.\n", name(es), id(es), count);
@@ -472,7 +452,6 @@ namespace {
       info_df(es, "\t");
       info_fields(es, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
       info_fields(es, Ioss::Field::TRANSIENT, "\tTransient:  ");
-      total_elements += count;
     }
   }
 
