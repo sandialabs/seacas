@@ -3352,7 +3352,7 @@ class exodus:
         ebType = ex_entity_type("EX_ELEM_BLOCK")
 
         EXODUS_LIB.ex_put_block(self.fileId, ebType, c_int(blkID),
-                                create_string_buffer("NFACED"),
+                                create_string_buffer(b"NFACED"),
                                 c_longlong(num_elems_this_blk),
                                 c_longlong(0),
                                 c_longlong(0),
@@ -3384,7 +3384,7 @@ class exodus:
         fbType = ex_entity_type("EX_FACE_BLOCK")
 
         EXODUS_LIB.ex_put_block(self.fileId, fbType, c_int(blkID),
-                                create_string_buffer("NSIDED"),
+                                create_string_buffer(b"NSIDED"),
                                 c_longlong(num_faces_this_blk),
                                 c_longlong(num_nodes),
                                 c_longlong(0),
