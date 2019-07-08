@@ -3,8 +3,8 @@ from ctypes import *
 import os
 
 """
-exodus.py v 1.11 (seacas-beta) is a python wrapper of some of the exodus library
-(Python 3 Version) 
+exodus.py v 1.12 (seacas-beta) is a python wrapper of some of the exodus library
+(Python 3 Version)
 
 Copyright(C) 2019 National Technology & Engineering Solutions of
 Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
@@ -41,10 +41,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.11 (seacas-beta)"
+EXODUS_PY_VERSION = "1.12 (seacas-beta)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.11 (seacas-beta), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.12 (seacas-beta), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -91,6 +91,7 @@ def getExodusVersion():
                 fields[1] == 'EX_API_VERS_NODOT'):
             return int(fields[2])
     return 0
+
 
 ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
 if os.uname()[0] == 'Darwin':
@@ -157,6 +158,9 @@ EXODUS_LIB.ex_opts(exErrPrintMode)
 
 
 def ex_inquiry(inquiry):
+    """
+    Map the exodus inquiry flags to an integer value.
+    """
     # create dictionary for return types
     inquiry_dictionary = {
         'EX_INQ_FILE_TYPE': 1,                    # inquire EXODUS file type
@@ -238,6 +242,9 @@ def ex_inquiry(inquiry):
 
 
 def ex_entity_type(varType):
+    """
+    Map the exodus ex_entity_type flags to an integer value.
+    """
     entity_dictionary = {
         'EX_ELEM_BLOCK': 1,  # element block property code
         'EX_NODE_SET': 2,  # node set property code
@@ -377,6 +384,7 @@ class exodus:
         self.fileName = str(file)
         self.basename = basename(file)
         self.modeChar = mode
+        self.fileId = None
         self.__open(io_size=io_size)
         EXODUS_LIB.ex_set_max_name_length(self.fileId, MAX_NAME_LENGTH)
         if mode.lower() == 'w':
@@ -398,6 +406,15 @@ class exodus:
                 self.__ex_inquire_int(
                     ex_inquiry("EX_INQ_TIME")))
 
+        self.coordsX = None
+        self.coordsY = None
+        self.coordsZ = None
+        self.times = None
+
+        self.elemBlkIds = None
+        self.sideSetIds = None
+        self.nodeSetIds = None
+
     #
     # build the info struct
     #
@@ -408,9 +425,9 @@ class exodus:
           e.put_info_ext(self,info_struct)
           -> put initialization information into exodus file
         """
-        if len(p.title)>MAX_LINE_LENGTH: 
+        if len(p.title) > MAX_LINE_LENGTH:
             print(('WARNING: Exodus title "%s" exceeds maximum line length (%i). It will be truncated.' %
-                   (p.title,MAX_LINE_LENGTH)))
+                   (p.title, MAX_LINE_LENGTH)))
             p.title = p.title[-1*MAX_LINE_LENGTH:]
 
         self.Title = create_string_buffer(p.title, MAX_LINE_LENGTH + 1)
@@ -632,8 +649,7 @@ class exodus:
         for rec in info_recs:
             vals = rec.split()
             if not begin:  # have not reached Sierra block
-                if len(vals) >= 2 and vals[0].lower(
-                ) == 'begin' and vals[1].lower() == b"sierra":
+                if len(vals) >= 2 and vals[0].lower() == b"begin" and vals[1].lower() == b"sierra":
                     begin = True
             if begin:  # inside Sierra block
                 sierra_inp.append(rec)
@@ -642,9 +658,9 @@ class exodus:
                         "WARNING: max line length reached for one or more input lines;")
                     print("         input data might be incomplete for these lines")
                     break
-                if len(vals) >= 2 and vals[0].lower(
-                ) == b"end" and vals[1].lower() == b"sierra":
+                if len(vals) >= 2 and vals[0].lower() == b"end" and vals[1].lower() == b"sierra":
                     break  # end of Sierra block
+
         if inpFileName:
             fd = open(inpFileName.encode('ascii'), "w")
             for fileLine in sierra_inp:
@@ -903,7 +919,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def put_node_id_map(self, map):
+    def put_node_id_map(self, id_map):
         """
         status = exo.put_node_id_map(node_id_map)
 
@@ -923,7 +939,7 @@ class exodus:
         """
         objType = ex_entity_type("EX_NODE_MAP")
         inqType = ex_inquiry("EX_INQ_NODES")
-        return self.__ex_put_id_map(objType, inqType, map)
+        return self.__ex_put_id_map(objType, inqType, id_map)
 
     # --------------------------------------------------------------------
 
@@ -936,9 +952,10 @@ class exodus:
             return value(s):
               <list<string>>  nvar_names
         """
-        if self.__ex_get_var_param('n').value == 0:
+        ndType = ex_entity_type("EX_NODAL")
+        if self.__ex_get_variable_param(ndType).value == 0:
             return []
-        return self.__ex_get_var_names("n")
+        return self.__ex_get_variable_names(ndType)
 
     # --------------------------------------------------------------------
 
@@ -1134,7 +1151,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def put_elem_id_map(self, map):
+    def put_elem_id_map(self, id_map):
         """
         status = exo.put_elem_id_map(elem_id_map)
 
@@ -1155,7 +1172,7 @@ class exodus:
         """
         objType = ex_entity_type("EX_ELEM_MAP")
         inqType = ex_inquiry("EX_INQ_ELEM")
-        return self.__ex_put_id_map(objType, inqType, map)
+        return self.__ex_put_id_map(objType, inqType, id_map)
 
     # --------------------------------------------------------------------
 
@@ -1233,7 +1250,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_elem_blk_name(self, id):
+    def get_elem_blk_name(self, object_id):
         """
         elem_blk_name = exo.get_elem_blk_name(elem_blk_id)
 
@@ -1246,12 +1263,12 @@ class exodus:
             <string>  elem_blk_name
         """
         objType = ex_entity_type("EX_ELEM_BLOCK")
-        elemBlkName = self.__ex_get_name(objType, id)
+        elemBlkName = self.__ex_get_name(objType, object_id)
         return elemBlkName
 
     # --------------------------------------------------------------------
 
-    def put_elem_blk_name(self, id, name):
+    def put_elem_blk_name(self, object_id, name):
         """
         exo.put_elem_blk_name(elem_blk_id, elem_blk_name)
 
@@ -1262,7 +1279,7 @@ class exodus:
             <string>  elem_blk_name
         """
         objType = ex_entity_type("EX_ELEM_BLOCK")
-        self.__ex_put_name(objType, id, name)
+        self.__ex_put_name(objType, object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -1301,7 +1318,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def elem_blk_info(self, id):
+    def elem_blk_info(self, object_id):
         """
         elem_type, \\
         num_blk_elems, \\
@@ -1319,7 +1336,7 @@ class exodus:
             <int>     num_elem_nodes  number of nodes per element
             <int>     num_elem_attrs  number of attributes per element
         """
-        (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_elem_block(id)
+        (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_elem_block(object_id)
         return elemType.value, numElem.value, nodesPerElem.value, numAttr.value
 
     # --------------------------------------------------------------------
@@ -1383,7 +1400,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_elem_connectivity(self, id):
+    def get_elem_connectivity(self, object_id):
         """
         elem_conn, \\
         num_blk_elems, \\
@@ -1413,7 +1430,7 @@ class exodus:
             <int>  num_elem_nodes   number of nodes per element
         """
         (elem_block_connectivity, num_elem_this_blk,
-         num_nodes_per_elem) = self.__ex_get_elem_conn(id)
+         num_nodes_per_elem) = self.__ex_get_elem_conn(object_id)
         if self.use_numpy:
             elem_block_connectivity = ctype_to_numpy(
                 self, elem_block_connectivity)
@@ -1424,7 +1441,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def put_elem_connectivity(self, id, connectivity):
+    def put_elem_connectivity(self, object_id, connectivity):
         """
         exo.put_elem_connectivity(elem_blk_id, elem_conn)
 
@@ -1442,9 +1459,9 @@ class exodus:
               (see get_node_id_map() for explanation
               of node *INDEX* versus node *ID*)
         """
-        d1, numBlkElems, numNodesPerElem, d2 = self.elem_blk_info(id)
+        _d1, numBlkElems, numNodesPerElem, _d2 = self.elem_blk_info(object_id)
         assert len(connectivity) == (numBlkElems * numNodesPerElem)
-        self.__ex_put_elem_conn(id, connectivity)
+        self.__ex_put_elem_conn(object_id, connectivity)
 
     # --------------------------------------------------------------------
 
@@ -1575,7 +1592,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def elem_type(self, id):
+    def elem_type(self, object_id):
         """
         elem_type = exo.elem_type(elem_blk_id)
 
@@ -1587,12 +1604,12 @@ class exodus:
           return value(s):
             <string>  elem_type
         """
-        (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_elem_block(id)
+        (elemType, _numElem, _nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
         return elemType.value
 
     # --------------------------------------------------------------------
 
-    def num_attr(self, id):
+    def num_attr(self, object_id):
         """
         num_elem_attrs = exo.num_attr(elem_blk_id)
 
@@ -1604,12 +1621,12 @@ class exodus:
           return value(s):
             <int>  num_elem_attrs
         """
-        (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_elem_block(id)
+        (_elemType, _numElem, _nodesPerElem, numAttr) = self.__ex_get_elem_block(object_id)
         return numAttr.value
 
     # --------------------------------------------------------------------
 
-    def num_elems_in_blk(self, id):
+    def num_elems_in_blk(self, object_id):
         """
         num_blk_elems = exo.num_elems_in_blk(elem_blk_id)
 
@@ -1621,12 +1638,12 @@ class exodus:
           return value(s):
             <int>  num_blk_elems
         """
-        (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_elem_block(id)
+        (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
         return numElem.value
 
     # --------------------------------------------------------------------
 
-    def num_nodes_per_elem(self, id):
+    def num_nodes_per_elem(self, object_id):
         """
         num_elem_nodes = exo.num_nodes_per_elem(elem_blk_id)
 
@@ -1638,7 +1655,7 @@ class exodus:
           return value(s):
             <int>  num_elem_nodes
         """
-        (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_elem_block(id)
+        (_elemType, _numElem, nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
         return nodesPerElem.value
 
     # --------------------------------------------------------------------
@@ -1661,11 +1678,12 @@ class exodus:
               False otherwise
         """
         truthTable = self.__ex_get_elem_var_tab()
+        ebType = ex_entity_type("EX_ELEM_BLOCK")
         if blockId is not None:
             self.get_elem_blk_ids()
             assert blockId in list(self.elemBlkIds)
             indx = list(self.elemBlkIds).index(blockId)
-            numVars = self.__ex_get_var_param("e").value
+            numVars = self.__ex_get_variable_param(ebType).value
             start, stop = (indx * numVars, (indx + 1) * numVars)
             return truthTable[start:stop]
         return truthTable
@@ -1688,9 +1706,10 @@ class exodus:
           return value(s):
             <bool>  status  True = successful execution
         """
+        ebType = ex_entity_type("EX_ELEM_BLOCK")
         self.get_elem_blk_ids()
         numBlks = len(self.elemBlkIds)
-        numVars = int(self.__ex_get_var_param("e").value)
+        numVars = int(self.__ex_get_variable_param(ebType).value)
         assert len(table) == (numBlks * numVars)
         return self.__ex_put_elem_var_tab(table)
 
@@ -1801,9 +1820,10 @@ class exodus:
             return value(s):
               <list<string>>  evar_names
         """
-        if self.__ex_get_var_param("e").value == 0:
+        ebType = ex_entity_type("EX_ELEM_BLOCK")
+        if self.__ex_get_variable_param(ebType).value == 0:
             return []
-        return self.__ex_get_var_names("e")
+        return self.__ex_get_variable_names(ebType)
 
     # --------------------------------------------------------------------
 
@@ -1894,7 +1914,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_element_property_value(self, id, name):
+    def get_element_property_value(self, object_id, name):
         """
         eprop_val = exo.get_element_property_value(elem_blk_id, eprop_name)
 
@@ -1909,12 +1929,12 @@ class exodus:
             <int>  eprop_val
         """
         ebType = ex_entity_type("EX_ELEM_BLOCK")
-        propVal = self.__ex_get_prop(ebType, id, name)
+        propVal = self.__ex_get_prop(ebType, object_id, name)
         return int(propVal)
 
     # --------------------------------------------------------------------
 
-    def put_element_property_value(self, id, name, value):
+    def put_element_property_value(self, object_id, name, value):
         """
         status = exo.put_element_property_value(elem_blk_id, \\
           eprop_name, \\
@@ -1932,7 +1952,7 @@ class exodus:
             <bool>  status  True = successful execution
         """
         ebType = ex_entity_type("EX_ELEM_BLOCK")
-        return self.__ex_put_prop(ebType, id, name, value)
+        return self.__ex_put_prop(ebType, object_id, name, value)
 
     #
     # nodesets
@@ -1981,7 +2001,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_node_set_name(self, id):
+    def get_node_set_name(self, object_id):
         """
         node_set_name = exo.get_node_set_name(node_set_id)
 
@@ -1994,12 +2014,12 @@ class exodus:
             <string>  node_set_name
         """
         objType = ex_entity_type("EX_NODE_SET")
-        nodeSetName = self.__ex_get_name(objType, id)
+        nodeSetName = self.__ex_get_name(objType, object_id)
         return nodeSetName
 
     # --------------------------------------------------------------------
 
-    def put_node_set_name(self, id, name):
+    def put_node_set_name(self, object_id, name):
         """
         exo.put_node_set_name(node_set_id, node_set_name)
 
@@ -2010,7 +2030,7 @@ class exodus:
             <string>  node_set_name
         """
         objType = ex_entity_type("EX_NODE_SET")
-        self.__ex_put_name(objType, id, name)
+        self.__ex_put_name(objType, object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -2049,7 +2069,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def num_nodes_in_node_set(self, id):
+    def num_nodes_in_node_set(self, object_id):
         """
         num_ns_nodes = exo.num_nodes_in_node_set(node_set_id)
 
@@ -2061,12 +2081,12 @@ class exodus:
           return value(s):
             <int>  num_ns_nodes
         """
-        node_set_nodes = self.get_node_set_nodes(id)
+        node_set_nodes = self.get_node_set_nodes(object_id)
         return len(node_set_nodes)
 
     # --------------------------------------------------------------------
 
-    def get_node_set_nodes(self, id):
+    def get_node_set_nodes(self, object_id):
         """
         ns_nodes = exo.get_node_set_nodes(node_set_id)
 
@@ -2086,8 +2106,8 @@ class exodus:
               <np_array<int>>  ns_nodes
         """
         node_set_ids = self.get_node_set_ids()
-        assert id in node_set_ids
-        node_set_nodes = self.__ex_get_node_set(id)
+        assert object_id in node_set_ids
+        node_set_nodes = self.__ex_get_node_set(object_id)
         node_set_nodes = list(node_set_nodes)
         if self.use_numpy:
             node_set_nodes = self.np.array(node_set_nodes)
@@ -2095,7 +2115,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def put_node_set(self, id, nodeSetNodes):
+    def put_node_set(self, object_id, nodeSetNodes):
         """
         exo.put_node_set(node_set_id, ns_nodes)
 
@@ -2107,11 +2127,11 @@ class exodus:
             <int>        node_set_id  node set *ID* (not *INDEX*)
             <list<int>>  ns_nodes
         """
-        self.__ex_put_node_set(id, nodeSetNodes)
+        self.__ex_put_node_set(object_id, nodeSetNodes)
 
     # --------------------------------------------------------------------
 
-    def get_node_set_dist_facts(self, id):
+    def get_node_set_dist_facts(self, object_id):
         """
         ns_dist_facts = exo.get_node_set_dist_facts(node_set_id)
 
@@ -2131,7 +2151,7 @@ class exodus:
                 factors, e.g. nodal
                 'weights'
         """
-        node_set_dfs = self.__ex_get_node_set_dist_fact(id)
+        node_set_dfs = self.__ex_get_node_set_dist_fact(object_id)
         node_set_dfs = list(node_set_dfs)
         if self.use_numpy:
             node_set_dfs = self.np.array(node_set_dfs)
@@ -2139,7 +2159,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def put_node_set_dist_fact(self, id, nodeSetDistFact):
+    def put_node_set_dist_fact(self, object_id, nodeSetDistFact):
         """
         exo.put_node_set_dist_fact(node_set_id, ns_dist_facts)
 
@@ -2150,7 +2170,7 @@ class exodus:
             <list<float>>  ns_dist_facts  a list of distribution factors,
               e.g. nodal 'weights'
         """
-        self.__ex_put_node_set_dist_fact(id, nodeSetDistFact)
+        self.__ex_put_node_set_dist_fact(object_id, nodeSetDistFact)
 
     # --------------------------------------------------------------------
 
@@ -2205,11 +2225,12 @@ class exodus:
               a node set, False otherwise
         """
         truthTable = self.__ex_get_nset_var_tab()
+        nsType = ex_entity_type("EX_NODE_SET")
         if nodeSetId is not None:
             self.get_node_set_ids()
             assert nodeSetId in list(self.nodeSetIds)
             indx = list(self.nodeSetIds).index(nodeSetId)
-            numVars = self.__ex_get_var_param("m").value
+            numVars = self.__ex_get_variable_param(nsType).value
             start, stop = (indx * numVars, (indx + 1) * numVars)
             return truthTable[start:stop]
         return truthTable
@@ -2234,7 +2255,8 @@ class exodus:
         """
         self.get_node_set_ids()
         numBlks = len(self.nodeSetIds)
-        numVars = int(self.__ex_get_var_param("m").value)
+        nsType = ex_entity_type("EX_NODE_SET")
+        numVars = int(self.__ex_get_variable_param(nsType).value)
         assert len(table) == (numBlks * numVars)
         return self.__ex_put_nset_var_tab(table)
 
@@ -2294,7 +2316,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_node_set_variable_values(self, id, name, step):
+    def get_node_set_variable_values(self, object_id, name, step):
         """
         nsvar_vals = \\
           exo.get_node_set_variable_values(node_set_id, \\
@@ -2320,14 +2342,14 @@ class exodus:
         """
         names = self.get_node_set_variable_names()
         var_id = names.index(name) + 1
-        values = self.__ex_get_nset_var(step, var_id, id)
+        values = self.__ex_get_nset_var(step, var_id, object_id)
         if self.use_numpy:
             values = ctype_to_numpy(self, values)
         return values
 
     # --------------------------------------------------------------------
 
-    def put_node_set_variable_values(self, id, name, step, values):
+    def put_node_set_variable_values(self, object_id, name, step, values):
         """
         status = \\
           exo.put_node_set_variable_values(node_set_id, \\
@@ -2350,7 +2372,7 @@ class exodus:
         """
         names = self.get_node_set_variable_names()
         var_id = names.index(name) + 1
-        self.__ex_put_nset_var(step, var_id, id, values)
+        self.__ex_put_nset_var(step, var_id, object_id, values)
         return True
 
     # --------------------------------------------------------------------
@@ -2378,7 +2400,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_node_set_params(self, id):
+    def get_node_set_params(self, object_id):
         """
         num_ns_nodes, num_ns_dist_facts = \\
           exo.get_node_set_params(node_set_id)
@@ -2393,12 +2415,12 @@ class exodus:
             <int>  num_ns_nodes
             <int>  num_ns_dist_facts
         """
-        (numSetNodes, numSetDistFacts) = self.__ex_get_node_set_param(int(id))
+        (numSetNodes, numSetDistFacts) = self.__ex_get_node_set_param(int(object_id))
         return (numSetNodes, numSetDistFacts)
 
     # --------------------------------------------------------------------
 
-    def put_node_set_params(self, id, numSetNodes, numSetDistFacts=None):
+    def put_node_set_params(self, object_id, numSetNodes, numSetDistFacts=None):
         """
         exo.put_node_set_params(node_set_id, \\
           num_ns_nodes, \\
@@ -2416,8 +2438,8 @@ class exodus:
         """
         if numSetDistFacts is None:
             numSetDistFacts = numSetNodes
-        assert numSetDistFacts == 0 or numSetDistFacts == numSetNodes
-        self.__ex_put_node_set_param(id, numSetNodes, numSetDistFacts)
+        assert numSetDistFacts in (0, numSetNodes)
+        self.__ex_put_node_set_param(object_id, numSetNodes, numSetDistFacts)
 
     # --------------------------------------------------------------------
 
@@ -2439,7 +2461,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_node_set_property_value(self, id, name):
+    def get_node_set_property_value(self, object_id, name):
         """
         nsprop_val = \\
           exo.get_node_set_property_value(node_set_id, nsprop_name)
@@ -2455,12 +2477,12 @@ class exodus:
             <int>  nsprop_val
         """
         nsType = ex_entity_type("EX_NODE_SET")
-        propVal = self.__ex_get_prop(nsType, id, name)
+        propVal = self.__ex_get_prop(nsType, object_id, name)
         return int(propVal)
 
     # --------------------------------------------------------------------
 
-    def put_node_set_property_value(self, id, name, value):
+    def put_node_set_property_value(self, object_id, name, value):
         """
         status = exo.put_node_set_property_value(node_set_id, \\
           nsprop_name, \\
@@ -2478,7 +2500,7 @@ class exodus:
             <bool>  status  True = successful execution
         """
         nsType = ex_entity_type("EX_NODE_SET")
-        return self.__ex_put_prop(nsType, id, name, value)
+        return self.__ex_put_prop(nsType, object_id, name, value)
 
     #
     # sidesets
@@ -2527,7 +2549,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_side_set_name(self, id):
+    def get_side_set_name(self, object_id):
         """
         side_set_name = exo.get_side_set_name(side_set_id)
 
@@ -2540,12 +2562,12 @@ class exodus:
             <string>  side_set_name
         """
         objType = ex_entity_type("EX_SIDE_SET")
-        sideSetName = self.__ex_get_name(objType, id)
+        sideSetName = self.__ex_get_name(objType, object_id)
         return sideSetName
 
     # --------------------------------------------------------------------
 
-    def put_side_set_name(self, id, name):
+    def put_side_set_name(self, object_id, name):
         """
         exo.put_side_set_name(side_set_id, side_set_name)
 
@@ -2556,7 +2578,7 @@ class exodus:
             <string>  side_set_name
         """
         objType = ex_entity_type("EX_SIDE_SET")
-        self.__ex_put_name(objType, id, name)
+        self.__ex_put_name(objType, object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -2595,7 +2617,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def num_faces_in_side_set(self, id):
+    def num_faces_in_side_set(self, object_id):
         """
         num_ss_faces = exo.num_faces_in_side_set(side_set_id)
 
@@ -2611,7 +2633,7 @@ class exodus:
         if id not in ssids:
             print("WARNING: queried side set ID does not exist in database")
             return 0
-        (num_side_in_set, num_dist_fact_in_set) = self.__ex_get_side_set_param(id)
+        (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_side_set_param(object_id)
         return num_side_in_set
 
     # --------------------------------------------------------------------
@@ -2647,7 +2669,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_side_set_params(self, id):
+    def get_side_set_params(self, object_id):
         """
         num_ss_sides, num_ss_dist_facts = \\
           exo.get_side_set_params(side_set_id)
@@ -2667,12 +2689,12 @@ class exodus:
             the sum of all face nodes.  A single node can be counted more
             than once, i.e. once for each face it belongs to in the side set.
         """
-        (numSetSides, numSetDistFacts) = self.__ex_get_side_set_param(int(id))
+        (numSetSides, numSetDistFacts) = self.__ex_get_side_set_param(int(object_id))
         return (numSetSides, numSetDistFacts)
 
     # --------------------------------------------------------------------
 
-    def put_side_set_params(self, id, numSetSides, numSetDistFacts):
+    def put_side_set_params(self, object_id, numSetSides, numSetDistFacts):
         """
         exo.put_side_set_params(side_set_id, \\
           num_ss_sides, \\
@@ -2691,11 +2713,11 @@ class exodus:
             the sum of all face nodes.  A single node can be counted more
             than once, i.e. once for each face it belongs to in the side set.
         """
-        self.__ex_put_side_set_param(id, numSetSides, numSetDistFacts)
+        self.__ex_put_side_set_param(object_id, numSetSides, numSetDistFacts)
 
     # --------------------------------------------------------------------
 
-    def get_side_set(self, id):
+    def get_side_set(self, object_id):
         """
         ss_elems, ss_sides = exo.get_side_set(side_set_id)
 
@@ -2716,7 +2738,7 @@ class exodus:
               <np_array<int>>  ss_elems
               <np_array<int>>  ss_sides
         """
-        (side_set_elem_list, side_set_side_list) = self.__ex_get_side_set(id)
+        (side_set_elem_list, side_set_side_list) = self.__ex_get_side_set(object_id)
         if self.use_numpy:
             side_set_elem_list = ctype_to_numpy(self, side_set_elem_list)
             side_set_side_list = ctype_to_numpy(self, side_set_side_list)
@@ -2724,7 +2746,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def put_side_set(self, id, sideSetElements, sideSetSides):
+    def put_side_set(self, object_id, sideSetElements, sideSetSides):
         """
         exo.put_side_set(side_set_id, ss_elems, ss_sides)
 
@@ -2737,11 +2759,11 @@ class exodus:
             <list<int>>  ss_elems
             <list<int>>  ss_sides
         """
-        self.__ex_put_side_set(id, sideSetElements, sideSetSides)
+        self.__ex_put_side_set(object_id, sideSetElements, sideSetSides)
 
     # --------------------------------------------------------------------
 
-    def get_side_set_dist_fact(self, id):
+    def get_side_set_dist_fact(self, object_id):
         """
         ss_dist_facts = exo.get_side_set_dist_fact(side_set_id)
 
@@ -2766,14 +2788,14 @@ class exodus:
             the sum of all face nodes.  A single node can be counted more
             than once, i.e. once for each face it belongs to in the side set.
         """
-        side_set_dfs = list(self.__ex_get_side_set_dist_fact(id))
+        side_set_dfs = list(self.__ex_get_side_set_dist_fact(object_id))
         if self.use_numpy:
             side_set_dfs = self.np.array(side_set_dfs)
         return side_set_dfs
 
     # --------------------------------------------------------------------
 
-    def put_side_set_dist_fact(self, id, sideSetDistFact):
+    def put_side_set_dist_fact(self, object_id, sideSetDistFact):
         """
         exo.put_side_set_dist_fact(side_set_id, ss_dist_facts)
 
@@ -2789,11 +2811,11 @@ class exodus:
             the sum of all face nodes.  A single node can be counted more
             than once, i.e. once for each face it belongs to in the side set.
         """
-        self.__ex_put_side_set_dist_fact(id, sideSetDistFact)
+        self.__ex_put_side_set_dist_fact(object_id, sideSetDistFact)
 
     # --------------------------------------------------------------------
 
-    def get_side_set_node_list(self, id):
+    def get_side_set_node_list(self, object_id):
         """
         ss_num_nodes_per_side, \\
         ss_nodes = exo.get_side_set_node_list(side_set_id)
@@ -2822,7 +2844,7 @@ class exodus:
             belongs to in the side set.
         """
         (side_set_node_cnt_list,
-         side_set_node_list) = self.__ex_get_side_set_node_list(id)
+         side_set_node_list) = self.__ex_get_side_set_node_list(object_id)
         if self.use_numpy:
             side_set_node_cnt_list = ctype_to_numpy(
                 self, side_set_node_cnt_list)
@@ -2849,11 +2871,12 @@ class exodus:
               a side set, False otherwise
         """
         truthTable = self.__ex_get_sset_var_tab()
+        ssType = ex_entity_type("EX_SIDE_SET")
         if sideSetId is not None:
             self.get_side_set_ids()
             assert sideSetId in list(self.sideSetIds)
             indx = list(self.sideSetIds).index(sideSetId)
-            numVars = self.__ex_get_var_param("s").value
+            numVars = self.__ex_get_variable_param(ssType).value
             start, stop = (indx * numVars, (indx + 1) * numVars)
             return truthTable[start:stop]
         return truthTable
@@ -2877,8 +2900,9 @@ class exodus:
             <bool>  status  True = successful execution
         """
         self.get_side_set_ids()
+        ssType = ex_entity_type("EX_SIDE_SET")
         numBlks = len(self.sideSetIds)
-        numVars = int(self.__ex_get_var_param("s").value)
+        numVars = int(self.__ex_get_variable_param(ssType).value)
         assert len(table) == (numBlks * numVars)
         return self.__ex_put_sset_var_tab(table)
 
@@ -2971,7 +2995,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_side_set_variable_values(self, id, name, step):
+    def get_side_set_variable_values(self, object_id, name, step):
         """
         ssvar_vals = \\
           exo.get_side_set_variable_values(side_set_id, \\
@@ -2997,14 +3021,14 @@ class exodus:
         """
         names = self.get_side_set_variable_names()
         var_id = names.index(name) + 1
-        values = self.__ex_get_sset_var(step, var_id, id)
+        values = self.__ex_get_sset_var(step, var_id, object_id)
         if self.use_numpy:
             values = ctype_to_numpy(self, values)
         return values
 
     # --------------------------------------------------------------------
 
-    def put_side_set_variable_values(self, id, name, step, values):
+    def put_side_set_variable_values(self, object_id, name, step, values):
         """
         status = \\
           exo.put_side_set_variable_values(side_set_id, \\
@@ -3027,7 +3051,7 @@ class exodus:
         """
         names = self.get_side_set_variable_names()
         var_id = names.index(name) + 1
-        self.__ex_put_sset_var(step, var_id, id, values)
+        self.__ex_put_sset_var(step, var_id, object_id, values)
         return True
 
     # --------------------------------------------------------------------
@@ -3050,7 +3074,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_side_set_property_value(self, id, name):
+    def get_side_set_property_value(self, object_id, name):
         """
         ssprop_val = \\
           exo.get_side_set_property_value(side_set_id, ssprop_name)
@@ -3066,12 +3090,12 @@ class exodus:
             <int>  ssprop_val
         """
         ssType = ex_entity_type("EX_SIDE_SET")
-        propVal = self.__ex_get_prop(ssType, id, name)
+        propVal = self.__ex_get_prop(ssType, object_id, name)
         return int(propVal)
 
     # --------------------------------------------------------------------
 
-    def put_side_set_property_value(self, id, name, value):
+    def put_side_set_property_value(self, object_id, name, value):
         """
         status = exo.put_side_set_property_value(side_set_id, \\
           ssprop_name, \\
@@ -3089,7 +3113,7 @@ class exodus:
             <bool>  status  True = successful execution
         """
         ssType = ex_entity_type("EX_SIDE_SET")
-        return self.__ex_put_prop(ssType, id, name, value)
+        return self.__ex_put_prop(ssType, object_id, name, value)
 
     #
     # global variables
@@ -3140,7 +3164,8 @@ class exodus:
         """
         if self.get_global_variable_number() == 0:
             return []
-        return self.__ex_get_var_names("g")
+        objType = ex_entity_type("EX_GLOBAL")
+        return self.__ex_get_variable_names(objType)
 
     # --------------------------------------------------------------------
 
@@ -3596,7 +3621,7 @@ class exodus:
             self.numNodeSets = c_int(0)
             self.numSideSets = c_int(0)
         EXODUS_LIB.ex_get_init(
-            self.fileId, self.Title, 
+            self.fileId, self.Title,
             byref(self.numDim),
             byref(self.numNodes),
             byref(self.numElem),
@@ -3737,7 +3762,7 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_inquire_float(self, id):
+    def __ex_inquire_float(self, inq_id):
         val = c_int(0)
         dummy_char = create_string_buffer(MAX_LINE_LENGTH + 1)
         ret_float = c_float(0.0)
@@ -3747,27 +3772,27 @@ class exodus:
             dummy_int = c_int(0)
         val = EXODUS_LIB.ex_inquire(
             self.fileId,
-            id,
+            inq_id,
             byref(dummy_int),
             byref(ret_float),
             dummy_char)
         if val < 0:
             raise Exception(
                 "ERROR: ex_inquire(" +
-                str(id) +
+                str(inq_id) +
                 ") failed on " +
                 self.fileName)
         return ret_float
 
     # --------------------------------------------------------------------
 
-    def __ex_inquire_int(self, id):
+    def __ex_inquire_int(self, inq_id):
         val = c_longlong(0)
-        val = EXODUS_LIB.ex_inquire_int(self.fileId, id)
+        val = EXODUS_LIB.ex_inquire_int(self.fileId, inq_id)
         if val < 0:
             raise Exception(
                 "ERROR: ex_inquire_int(" +
-                str(id) +
+                str(inq_id) +
                 ") failed on " +
                 self.fileName)
         return val
@@ -3957,12 +3982,12 @@ class exodus:
         node_set_id = c_longlong(nodeSetId)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             node_set_nodes = (c_longlong * len(nodeSetNodes))()
-            for i in range(len(nodeSetNodes)):
-                node_set_nodes[i] = c_longlong(nodeSetNodes[i])
+            for i, node_set_node in enumerate(nodeSetNodes):
+                node_set_nodes[i] = c_longlong(node_set_node)
         else:
             node_set_nodes = (c_int * len(nodeSetNodes))()
-            for i in range(len(nodeSetNodes)):
-                node_set_nodes[i] = c_int(nodeSetNodes[i])
+            for i, node_set_node in enumerate(nodeSetNodes):
+                node_set_nodes[i] = c_int(node_set_node)
         EXODUS_LIB.ex_put_node_set(self.fileId, node_set_id, node_set_nodes)
 
     # --------------------------------------------------------------------
@@ -3980,18 +4005,18 @@ class exodus:
     def __ex_put_node_set_dist_fact(self, nodeSetId, nodeSetDistFact):
         node_set_id = c_longlong(nodeSetId)
         node_set_dist_fact = (c_double * len(nodeSetDistFact))()
-        for i in range(len(nodeSetDistFact)):
-            node_set_dist_fact[i] = c_double(nodeSetDistFact[i])
+        for i, dist_fact in enumerate(nodeSetDistFact):
+            node_set_dist_fact[i] = c_double(dist_fact)
         EXODUS_LIB.ex_put_node_set_dist_fact(
             self.fileId, node_set_id, node_set_dist_fact)
 
     # --------------------------------------------------------------------
 
-    def __ex_get_nset_var(self, timeStep, varId, id):
+    def __ex_get_nset_var(self, timeStep, varId, object_id):
         step = c_int(timeStep)
         var_id = c_int(varId)
-        node_set_id = c_longlong(id)
-        (numNodeInSet, numDistFactInSet) = self.__ex_get_node_set_param(id)
+        node_set_id = c_longlong(object_id)
+        (numNodeInSet, _numDistFactInSet) = self.__ex_get_node_set_param(object_id)
         num_node_in_set = c_longlong(numNodeInSet)
         ns_var_vals = (c_double * numNodeInSet)()
         EXODUS_LIB.ex_get_nset_var(
@@ -4008,12 +4033,14 @@ class exodus:
     def __ex_get_nset_var_tab(self):
         self.__ex_get_node_set_ids()
         node_set_count = c_int(len(self.nodeSetIds))
-        variable_count = self.__ex_get_var_param("m")
+        nsType = ex_entity_type("EX_NODE_SET")
+        ns_type = c_int(nsType)
+        variable_count = self.__ex_get_variable_param(nsType)
         truth_table = (c_int * (node_set_count.value * variable_count.value))()
-        EXODUS_LIB.ex_get_nset_var_tab(self.fileId,
-                                       node_set_count,
-                                       variable_count,
-                                       byref(truth_table))
+        EXODUS_LIB.ex_get_truth_table(self.fileId, ns_type,
+                                      node_set_count,
+                                      variable_count,
+                                      byref(truth_table))
         truthTab = []
         for val in truth_table:
             if val:
@@ -4027,25 +4054,27 @@ class exodus:
     def __ex_put_nset_var_tab(self, truthTab):
         self.__ex_get_node_set_ids()
         num_blks = c_int(len(self.nodeSetIds))
-        num_vars = self.__ex_get_var_param("m")
+        nsType = ex_entity_type("EX_NODE_SET")
+        num_vars = self.__ex_get_variable_param(nsType)
         truth_tab = (c_int * (num_blks.value * num_vars.value))()
-        for i in range(len(truthTab)):
-            boolVal = truthTab[i]
+        for i, boolVal in enumerate(truthTab):
             if boolVal:
                 truth_tab[i] = c_int(1)
             else:
                 truth_tab[i] = c_int(0)
-        EXODUS_LIB.ex_put_nset_var_tab(
-            self.fileId, num_blks, num_vars, truth_tab)
+        objType = ex_entity_type("EX_NODE_SET")
+        obj_type = c_int(objType)
+        EXODUS_LIB.ex_put_truth_table(
+            self.fileId, obj_type, num_blks, num_vars, truth_tab)
         return True
 
     # --------------------------------------------------------------------
 
-    def __ex_put_nset_var(self, timeStep, varId, id, values):
+    def __ex_put_nset_var(self, timeStep, varId, object_id, values):
         step = c_int(timeStep)
         var_id = c_int(varId)
-        node_set_id = c_longlong(id)
-        (numNodeInSet, numDistFactInSet) = self.__ex_get_node_set_param(id)
+        node_set_id = c_longlong(object_id)
+        (numNodeInSet, _numDistFactInSet) = self.__ex_get_node_set_param(object_id)
         num_node_in_set = c_longlong(numNodeInSet)
         ns_var_vals = (c_double * numNodeInSet)()
         for i in range(numNodeInSet):
@@ -4066,7 +4095,7 @@ class exodus:
         self.coordsY = (c_double * self.numNodes.value)()
         self.coordsZ = (c_double * self.numNodes.value)()
         EXODUS_LIB.ex_get_coord(
-            self.fileId, 
+            self.fileId,
             byref(self.coordsX),
             byref(self.coordsY),
             byref(self.coordsZ))
@@ -4082,7 +4111,7 @@ class exodus:
             self.coordsY[i] = float(yCoords[i])
             self.coordsZ[i] = float(zCoords[i])
         EXODUS_LIB.ex_put_coord(
-            self.fileId, 
+            self.fileId,
             byref(self.coordsX),
             byref(self.coordsY),
             byref(self.coordsZ))
@@ -4123,20 +4152,20 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_put_id_map(self, objType, inqType, map):
+    def __ex_put_id_map(self, objType, inqType, idMap):
         obj_type = c_int(objType)
         num_objs = c_int(self.__ex_inquire_int(inqType))
         numObjs = num_objs.value
-        assert numObjs == len(map)
+        assert numObjs == len(idMap)
         id_map = []
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_IDS_INT64_API:
             id_map = (c_longlong * numObjs)()
             for i in range(numObjs):
-                id_map[i] = c_longlong(map[i])
+                id_map[i] = c_longlong(idMap[i])
         else:
             id_map = (c_int * numObjs)()
             for i in range(numObjs):
-                id_map[i] = c_int(map[i])
+                id_map[i] = c_int(idMap[i])
         EXODUS_LIB.ex_put_id_map(self.fileId, obj_type, byref(id_map))
         return True
 
@@ -4172,8 +4201,8 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_elem_block(self, id):
-        elem_block_id = c_longlong(id)
+    def __ex_get_elem_block(self, object_id):
+        elem_block_id = c_longlong(object_id)
         elem_type = create_string_buffer(MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             num_elem_this_blk = c_longlong(0)
@@ -4203,12 +4232,12 @@ class exodus:
 
     def __ex_put_elem_block(
             self,
-            id,
+            object_id,
             eType,
             numElems,
             numNodesPerElem,
             numAttrsPerElem):
-        elem_block_id = c_longlong(id)
+        elem_block_id = c_longlong(object_id)
         elem_type = create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
         num_elem_this_blk = c_longlong(numElems)
         num_nodes_per_elem = c_longlong(numNodesPerElem)
@@ -4219,10 +4248,10 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_elem_conn(self, id):
-        (elem_type, num_elem_this_blk, num_nodes_per_elem,
-         num_attr) = self.__ex_get_elem_block(id)
-        elem_block_id = c_longlong(id)
+    def __ex_get_elem_conn(self, object_id):
+        (_elem_type, num_elem_this_blk, num_nodes_per_elem,
+         _num_attr) = self.__ex_get_elem_block(object_id)
+        elem_block_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             elem_block_connectivity = (
                 c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
@@ -4237,10 +4266,10 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_put_elem_conn(self, id, connectivity):
-        (elem_type, num_elem_this_blk, num_nodes_per_elem,
-         num_attr) = self.__ex_get_elem_block(id)
-        elem_block_id = c_longlong(id)
+    def __ex_put_elem_conn(self, object_id, connectivity):
+        (_elem_type, num_elem_this_blk, num_nodes_per_elem,
+         _num_attr) = self.__ex_get_elem_block(object_id)
+        elem_block_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             elem_block_connectivity = (
                 c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
@@ -4261,8 +4290,8 @@ class exodus:
     def __ex_put_elem_attr(self, elemBlkID, Attr):
         elem_blk_id = c_longlong(elemBlkID)
         attrib = (c_double * len(Attr))()
-        for i in range(len(Attr)):
-            attrib[i] = c_double(Attr[i])
+        for i, attr in enumerate(Attr):
+            attrib[i] = c_double(attr)
         EXODUS_LIB.ex_put_attr(
             self.fileId,
             ex_entity_type('EX_ELEM_BLOCK'),
@@ -4286,29 +4315,27 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_var_param(self, varChar):
-        assert varChar.lower() in 'ngems'
-        var_char = c_char(varChar)
+    def __ex_get_variable_param(self, varType):
         num_vars = c_int()
-        EXODUS_LIB.ex_get_var_param(
-            self.fileId, byref(var_char), byref(num_vars))
+        var_type = c_int(varType)
+        EXODUS_LIB.ex_get_variable_param(
+            self.fileId, var_type, byref(num_vars))
         return num_vars
 
     # --------------------------------------------------------------------
 
-    def __ex_get_var_names(self, varChar):
-        assert varChar.lower() in 'ngems'
-        var_char = c_char(varChar)
-        num_vars = self.__ex_get_var_param(varChar)
+    def __ex_get_variable_names(self, varType):
+        var_type = c_int(varType)
+        num_vars = self.__ex_get_variable_param(varType)
         var_name_ptrs = (
             POINTER(c_char * (MAX_NAME_LENGTH + 1)) * num_vars.value)()
         for i in range(num_vars.value):
             var_name_ptrs[i] = pointer(
                 create_string_buffer(
                     MAX_NAME_LENGTH + 1))
-        EXODUS_LIB.ex_get_var_names(
+        EXODUS_LIB.ex_get_variable_names(
             self.fileId,
-            byref(var_char),
+            var_type,
             num_vars,
             byref(var_name_ptrs))
         var_names = []
@@ -4321,10 +4348,12 @@ class exodus:
     def __ex_get_elem_var_tab(self):
         self.__ex_get_elem_blk_ids()
         num_blks = c_int(len(self.elemBlkIds))
-        num_vars = self.__ex_get_var_param("e")
+        objType = ex_entity_type("EX_ELEM_BLOCK")
+        obj_type = c_int(objType)
+        num_vars = self.__ex_get_variable_param(objType)
         truth_tab = (c_int * (num_blks.value * num_vars.value))()
-        EXODUS_LIB.ex_get_elem_var_tab(
-            self.fileId, num_blks, num_vars, byref(truth_tab))
+        EXODUS_LIB.ex_get_truth_table(
+            self.fileId, obj_type, num_blks, num_vars, byref(truth_tab))
         truthTab = []
         for val in truth_tab:
             if val:
@@ -4338,16 +4367,17 @@ class exodus:
     def __ex_put_elem_var_tab(self, truthTab):
         self.__ex_get_elem_blk_ids()
         num_blks = c_int(len(self.elemBlkIds))
-        num_vars = self.__ex_get_var_param("e")
+        objType = ex_entity_type("EX_ELEM_BLOCK")
+        obj_type = c_int(objType)
+        num_vars = self.__ex_get_variable_param(objType)
         truth_tab = (c_int * (num_blks.value * num_vars.value))()
-        for i in range(len(truthTab)):
-            boolVal = truthTab[i]
+        for i, boolVal in enumerate(truthTab):
             if boolVal:
                 truth_tab[i] = c_int(1)
             else:
                 truth_tab[i] = c_int(0)
-        EXODUS_LIB.ex_put_elem_var_tab(
-            self.fileId, num_blks, num_vars, truth_tab)
+        EXODUS_LIB.ex_put_truth_table(
+            self.fileId, obj_type, num_blks, num_vars, truth_tab)
         return True
 
     # --------------------------------------------------------------------
@@ -4392,8 +4422,8 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_side_set_node_list_len(self, id):
-        side_set_id = c_longlong(id)
+    def __ex_get_side_set_node_list_len(self, object_id):
+        side_set_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             side_set_node_list_len = c_longlong(0)
         else:
@@ -4404,8 +4434,8 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_side_set_param(self, id):
-        side_set_id = c_longlong(id)
+    def __ex_get_side_set_param(self, object_id):
+        side_set_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             num_side_in_set = c_longlong(0)
             num_dist_fact_in_set = c_longlong(0)
@@ -4421,8 +4451,8 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_put_side_set_param(self, id, numSides, numDistFacts):
-        side_set_id = c_longlong(id)
+    def __ex_put_side_set_param(self, object_id, numSides, numDistFacts):
+        side_set_id = c_longlong(object_id)
         num_side_in_set = c_longlong(numSides)
         num_dist_fact_in_set = c_longlong(numDistFacts)
         EXODUS_LIB.ex_put_side_set_param(
@@ -4436,7 +4466,7 @@ class exodus:
 
     def __ex_get_side_set(self, sideSetId):
         side_set_id = c_longlong(sideSetId)
-        (num_side_in_set, num_dist_fact_in_set) = self.__ex_get_side_set_param(sideSetId)
+        (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_side_set_param(sideSetId)
         if num_side_in_set == 0:
             return ([], [])
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
@@ -4452,19 +4482,19 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_put_side_set(self, id, sideSetElements, sideSetSides):
-        side_set_id = c_longlong(id)
+    def __ex_put_side_set(self, object_id, sideSetElements, sideSetSides):
+        side_set_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             side_set_elem_list = (c_longlong * len(sideSetElements))()
             side_set_side_list = (c_longlong * len(sideSetSides))()
-            for i in range(len(sideSetElements)):
-                side_set_elem_list[i] = c_longlong(sideSetElements[i])
+            for i, sse in enumerate(sideSetElements):
+                side_set_elem_list[i] = c_longlong(sse)
                 side_set_side_list[i] = c_longlong(sideSetSides[i])
         else:
             side_set_elem_list = (c_int * len(sideSetElements))()
             side_set_side_list = (c_int * len(sideSetSides))()
-            for i in range(len(sideSetElements)):
-                side_set_elem_list[i] = c_int(sideSetElements[i])
+            for i, sse in enumerate(sideSetElements):
+                side_set_elem_list[i] = c_int(sse)
                 side_set_side_list[i] = c_int(sideSetSides[i])
         EXODUS_LIB.ex_put_side_set(
             self.fileId,
@@ -4478,12 +4508,15 @@ class exodus:
     def __ex_get_sset_var_tab(self):
         self.__ex_get_side_set_ids()
         side_set_count = c_int(len(self.sideSetIds))
-        variable_count = self.__ex_get_var_param("s")
+        objType = ex_entity_type("EX_SIDE_SET")
+        variable_count = self.__ex_get_variable_param(objType)
         truth_table = (c_int * (side_set_count.value * variable_count.value))()
-        EXODUS_LIB.ex_get_sset_var_tab(self.fileId,
-                                       side_set_count,
-                                       variable_count,
-                                       byref(truth_table))
+        objType = ex_entity_type("EX_SIDE_SET")
+        obj_type = c_int(objType)
+        EXODUS_LIB.ex_get_truth_table(self.fileId, obj_type,
+                                      side_set_count,
+                                      variable_count,
+                                      byref(truth_table))
         truthTab = []
         for val in truth_table:
             if val:
@@ -4497,16 +4530,18 @@ class exodus:
     def __ex_put_sset_var_tab(self, truthTab):
         self.__ex_get_side_set_ids()
         num_blks = c_int(len(self.sideSetIds))
-        num_vars = self.__ex_get_var_param("s")
+        objType = ex_entity_type("EX_SIDE_SET")
+        num_vars = self.__ex_get_variable_param(objType)
         truth_tab = (c_int * (num_blks.value * num_vars.value))()
-        for i in range(len(truthTab)):
-            boolVal = truthTab[i]
+        for i, boolVal in enumerate(truthTab):
             if boolVal:
                 truth_tab[i] = c_int(1)
             else:
                 truth_tab[i] = c_int(0)
-        EXODUS_LIB.ex_put_sset_var_tab(
-            self.fileId, num_blks, num_vars, truth_tab)
+        objType = ex_entity_type("EX_SIDE_SET")
+        obj_type = c_int(objType)
+        EXODUS_LIB.ex_put_truth_table(
+            self.fileId, obj_type, num_blks, num_vars, truth_tab)
         return True
 
     # --------------------------------------------------------------------
@@ -4525,17 +4560,17 @@ class exodus:
     def __ex_put_side_set_dist_fact(self, sideSetId, sideSetDistFact):
         side_set_id = c_longlong(sideSetId)
         side_set_dist_fact = (c_double * len(sideSetDistFact))()
-        for i in range(len(sideSetDistFact)):
-            side_set_dist_fact[i] = c_double(sideSetDistFact[i])
+        for i, df in enumerate(sideSetDistFact):
+            side_set_dist_fact[i] = c_double(df)
         EXODUS_LIB.ex_put_side_set_dist_fact(
             self.fileId, side_set_id, side_set_dist_fact)
 
     # --------------------------------------------------------------------
 
-    def __ex_get_side_set_node_list(self, id):
-        side_set_id = c_longlong(id)
-        side_set_node_list_len = self.__ex_get_side_set_node_list_len(id)
-        (num_side_in_set, num_dist_fact_in_set) = self.__ex_get_side_set_param(id)
+    def __ex_get_side_set_node_list(self, object_id):
+        side_set_id = c_longlong(object_id)
+        side_set_node_list_len = self.__ex_get_side_set_node_list_len(object_id)
+        (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_side_set_param(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             side_set_node_cnt_list = (c_longlong * num_side_in_set)()
             side_set_node_list = (c_longlong * side_set_node_list_len.value)()
@@ -4549,11 +4584,11 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_sset_var(self, timeStep, varId, id):
+    def __ex_get_sset_var(self, timeStep, varId, object_id):
         step = c_int(timeStep)
         var_id = c_int(varId)
-        side_set_id = c_longlong(id)
-        (numSideInSet, numDistFactInSet) = self.__ex_get_side_set_param(id)
+        side_set_id = c_longlong(object_id)
+        (numSideInSet, _numDistFactInSet) = self.__ex_get_side_set_param(object_id)
         ss_var_vals = (c_double * numSideInSet)()
         num_side_in_set = c_longlong(numSideInSet)
         EXODUS_LIB.ex_get_sset_var(
@@ -4567,11 +4602,11 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_put_sset_var(self, timeStep, varId, id, values):
+    def __ex_put_sset_var(self, timeStep, varId, object_id, values):
         step = c_int(timeStep)
         var_id = c_int(varId)
-        side_set_id = c_longlong(id)
-        (numSideInSet, numDistFactInSet) = self.__ex_get_side_set_param(id)
+        side_set_id = c_longlong(object_id)
+        (numSideInSet, _numDistFactInSet) = self.__ex_get_side_set_param(object_id)
         num_side_in_set = c_longlong(numSideInSet)
         ss_var_vals = (c_double * numSideInSet)()
         for i in range(numSideInSet):
@@ -4788,8 +4823,9 @@ def collectLocalNodeToLocalElems(
         collectElemConnectivity(exodusHandle, connectivity)
 
     numNodes = exodusHandle.num_nodes()
-    for i in range(numNodes + 1):
+    for _i in range(numNodes + 1):
         localNodeToLocalElems.append([])
+
     localElemId = 0
     for local_elem_conn in connectivity:
         for n in local_elem_conn:
@@ -4840,7 +4876,7 @@ def collectLocalElemToLocalElems(
             exodusHandle, connectivity, localNodeToLocalElems)
 
     numElems = exodusHandle.num_elems()
-    for i in range(numElems):
+    for _i in range(numElems):
         localElemToLocalElems.append([])
     for localElemId in range(numElems):
         nodeList = list(connectivity[localElemId])
@@ -4982,7 +5018,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
         print("Transfer Element Data")
     blkIds = exoFrom.get_elem_blk_ids()
     for blkId in blkIds:
-        (elemType, numElem, nodesPerElem, oldnumAttr) = exoFrom.elem_blk_info(blkId)
+        (elemType, numElem, nodesPerElem, _oldnumAttr) = exoFrom.elem_blk_info(blkId)
         numAttr = len(e_attr_names[blkId])
         exo_to.put_elem_blk_info(
             blkId,
@@ -5129,7 +5165,7 @@ def transfer_variables(
     nNewGlobalVars = len(additionalGlobalVariables)
     nGlobalVars = exoFrom.get_global_variable_number() + nNewGlobalVars
     defaultNewVarVals = []
-    for i in range(nNewGlobalVars):
+    for _i in range(nNewGlobalVars):
         defaultNewVarVals.append(0.0)
     if nGlobalVars > 0:
         exo_to.set_global_variable_number(nGlobalVars)
@@ -5184,7 +5220,7 @@ def transfer_variables(
             newElemVariableBlocks.append(blkIds)
         else:
             print(("Warning additionalElementVariable item ",
-                  item, " is not right type to add."))
+                   item, " is not right type to add."))
             print("should be a string or tuple, skipping")
 
     if debugPrint:
@@ -5329,7 +5365,7 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[]):
             new_e_var_blks.append(blk_ids)
         else:
             print(("Warning additionalElementVariable item " +
-                  item + " is not right type to add."))
+                   item + " is not right type to add."))
             print("should be a string or tuple, skipping")
 
     if debugPrint:
@@ -5454,7 +5490,7 @@ def ctype_to_numpy(exo, c_array):
     # ctypes currently produce invalid PEP 3118 type codes, which causes numpy
     # to issue a warning.  This is a bug and can be ignored.
     # http://stackoverflow.com/questions/4964101/pep-3118-warning-when-using-ctypes-array-as-numpy-array
-    if len(c_array) == 0:
+    if not c_array:
         return exo.np.array([])
 
     with exo.warnings.catch_warnings():
