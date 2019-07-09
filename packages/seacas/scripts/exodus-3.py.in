@@ -1249,6 +1249,25 @@ class exodus:
 
     # --------------------------------------------------------------------
 
+    def get_name(self, object_type, object_id):
+        """
+        elem_blk_name = exo.get_name("EX_ELEM_BLOCK", elem_blk_id)
+
+          -> get the name of the specified entity_type and entity
+
+          input value(s):
+            <int>  object_type  block/set type
+            <int>  object_id    block/set *ID* (not *INDEX*)
+
+          return value(s):
+            <string>  name
+        """
+        objType = ex_entity_type(object_type)
+        name = self.__ex_get_name(objType, object_id)
+        return name
+
+    # --------------------------------------------------------------------
+
     def get_elem_blk_name(self, object_id):
         """
         elem_blk_name = exo.get_elem_blk_name(elem_blk_id)
@@ -1261,9 +1280,26 @@ class exodus:
           return value(s):
             <string>  elem_blk_name
         """
-        objType = ex_entity_type("EX_ELEM_BLOCK")
-        elemBlkName = self.__ex_get_name(objType, object_id)
-        return elemBlkName
+        return self.get_name("EX_ELEM_BLOCK", object_id)
+
+    # --------------------------------------------------------------------
+
+    def put_name(self, object_type, object_id, name):
+        """
+        exo.put_name("EX_ELEM_BLOCK", elem_blk_id)
+
+          -> get the name of the specified entity_type and entity
+
+          input value(s):
+            <int>     object_type  block/set type
+            <int>     object_id    block/set *ID* (not *INDEX*)
+            <string>  name         block/set name
+
+          return value(s):
+            <string>  elem_blk_name
+        """
+        objType = ex_entity_type(object_type)
+        self.__ex_put_name(objType, object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -1277,8 +1313,7 @@ class exodus:
             <int>     elem_blk_id    element block *ID* (not *INDEX*)
             <string>  elem_blk_name
         """
-        objType = ex_entity_type("EX_ELEM_BLOCK")
-        self.__ex_put_name(objType, object_id, name)
+        self.put_name("EX_ELEM_BLOCK", object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -2028,8 +2063,7 @@ class exodus:
             <int>     node_set_id    node set *ID* (not *INDEX*)
             <string>  node_set_name
         """
-        objType = ex_entity_type("EX_NODE_SET")
-        self.__ex_put_name(objType, object_id, name)
+        self.put_name("EX_NODE_SET", object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -2572,8 +2606,7 @@ class exodus:
             <int>     side_set_id    side set *ID* (not *INDEX*)
             <string>  side_set_name
         """
-        objType = ex_entity_type("EX_SIDE_SET")
-        self.__ex_put_name(objType, object_id, name)
+        self.put_name("EX_SIDE_SET", object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -5033,8 +5066,8 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
                 continue
             else:
                 exo_to.put_element_property_value(blkId, elemProp, propVal)
-        blockName = exoFrom.get_elem_blk_name(blkId)
-        exo_to.put_elem_blk_name(blkId, blockName)
+        blockName = exoFrom.get_name("EX_ELEM_BLOCK", blkId)
+        exo_to.put_name("EX_ELEM_BLOCK", blkId, blockName)
 
     if debugPrint:
         print("Transfer Element Id Map")
@@ -5054,8 +5087,8 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
             if numSetDistFacts > 0:
                 nsDF = exoFrom.get_node_set_dist_facts(nsId)
                 exo_to.put_node_set_dist_fact(nsId, nsDF)
-            nodeSetName = exoFrom.get_node_set_name(nsId)
-            exo_to.put_node_set_name(nsId, nodeSetName)
+            nodeSetName = exoFrom.get_name("EX_NODE_SET", nsId)
+            exo_to.put_name("EX_NODE_SET", nsId, nodeSetName)
             for nodeSetProp in nodeSetProps:
                 propVal = exoFrom.get_node_set_property_value(
                     nsId, nodeSetProp)
@@ -5078,8 +5111,8 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
             if numSetDistFacts > 0:
                 ssDF = exoFrom.get_side_set_dist_fact(ssId)
                 exo_to.put_side_set_dist_fact(ssId, ssDF)
-            sideSetName = exoFrom.get_side_set_name(ssId)
-            exo_to.put_side_set_name(ssId, sideSetName)
+            sideSetName = exoFrom.get_name("EX_SIDE_SET", ssId)
+            exo_to.put_name("EX_SIDE_SET", ssId, sideSetName)
             for sideSetProp in sideSetProps:
                 propVal = exoFrom.get_side_set_property_value(
                     ssId, sideSetProp)
