@@ -486,7 +486,7 @@ class exodus:
           return value(s):
             <string>  title
         """
-        return self.Title.value
+        return self.Title.value.decode('utf8')
 
     # --------------------------------------------------------------------
 
@@ -2271,14 +2271,10 @@ class exodus:
             return value(s):
               <list<string>>  nsvar_names
         """
-        names = []
-        nsType = ex_entity_type("EX_NODE_SET")
-        num_vars = self.__ex_get_variable_param(nsType)
-        for varid in range(num_vars.value):
-            varid += 1
-            name = self.__ex_get_variable_name(nsType, varid)
-            names.append(name.value)
-        return names
+        objType = ex_entity_type("EX_NODE_SET")
+        if self.__ex_get_variable_param(objType).value == 0:
+            return []
+        return self.__ex_get_variable_names(objType)
 
     # --------------------------------------------------------------------
 
@@ -2950,14 +2946,10 @@ class exodus:
             return value(s):
               <list<string>>  ssvar_names
         """
-        names = []
-        ssType = ex_entity_type("EX_SIDE_SET")
-        num_vars = self.__ex_get_variable_param(ssType)
-        for varid in range(num_vars.value):
-            varid += 1
-            name = self.__ex_get_variable_name(ssType, varid)
-            names.append(name.value)
-        return names
+        objType = ex_entity_type("EX_SIDE_SET")
+        if self.__ex_get_variable_param(objType).value == 0:
+            return []
+        return self.__ex_get_variable_names(objType)
 
     # --------------------------------------------------------------------
 
@@ -3287,7 +3279,7 @@ class exodus:
         # adjust one of them
         values[names.index(name)] = c_double(value)
         # write them all
-        EXODUS_LIB.ex_put_glob_vars(self.fileId,
+        EXODUS_LIB.ex_put_var(self.fileId,
                                     c_int(step),
                                     c_int(numVals),
                                     values)
@@ -3813,7 +3805,7 @@ class exodus:
         EXODUS_LIB.ex_get_coord_names(self.fileId, byref(coord_name_ptrs))
         coord_names = []
         for cnp in coord_name_ptrs:
-            coord_names.append(cnp.contents.value)
+            coord_names.append(cnp.contents.value.decode('utf8'))
         return coord_names
 
     # --------------------------------------------------------------------
@@ -3825,7 +3817,7 @@ class exodus:
         for i in range(self.numDim.value):
             coord_name_ptrs[i] = pointer(
                 create_string_buffer(
-                    names[i], MAX_NAME_LENGTH + 1))
+                    names[i].encode('ascii'), MAX_NAME_LENGTH + 1))
         EXODUS_LIB.ex_put_coord_names(self.fileId, byref(coord_name_ptrs))
 
     # --------------------------------------------------------------------
@@ -3857,14 +3849,14 @@ class exodus:
         obj_id = c_int(objId)
         obj_name = create_string_buffer(MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_get_name(self.fileId, obj_type, obj_id, byref(obj_name))
-        return obj_name.value
+        return obj_name.value.decode('utf8')
 
     # --------------------------------------------------------------------
 
     def __ex_put_name(self, objType, objId, objName):
         obj_type = c_int(objType)
         obj_id = c_int(objId)
-        obj_name = create_string_buffer(objName, MAX_NAME_LENGTH + 1)
+        obj_name = create_string_buffer(objName.encode('ascii'), MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_name(self.fileId, obj_type, obj_id, obj_name)
 
     # --------------------------------------------------------------------
@@ -3881,7 +3873,7 @@ class exodus:
         EXODUS_LIB.ex_get_names(self.fileId, obj_type, byref(obj_name_ptrs))
         obj_names = []
         for onp in obj_name_ptrs:
-            obj_names.append(onp.contents.value)
+            obj_names.append(onp.contents.value.decode('utf8'))
         return obj_names
 
     # --------------------------------------------------------------------
@@ -3895,7 +3887,7 @@ class exodus:
         for i in range(numObjs):
             obj_name_ptrs[i] = pointer(
                 create_string_buffer(
-                    objNames[i], MAX_NAME_LENGTH + 1))
+                    objNames[i].encode('ascii'), MAX_NAME_LENGTH + 1))
         EXODUS_LIB.ex_put_names(self.fileId, obj_type, byref(obj_name_ptrs))
 
     # --------------------------------------------------------------------
@@ -4344,7 +4336,7 @@ class exodus:
             byref(var_name_ptrs))
         var_names = []
         for vnp in var_name_ptrs:
-            var_names.append(vnp.contents.value)
+            var_names.append(vnp.contents.value.decode('utf8'))
         return var_names
 
     # --------------------------------------------------------------------
@@ -4658,7 +4650,7 @@ class exodus:
         var_id = c_int(varId)
         name = create_string_buffer(MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_get_variable_name(self.fileId, var_type, var_id, name)
-        return name
+        return name.decode('utf8')
 
     # --------------------------------------------------------------------
 
@@ -4682,7 +4674,7 @@ class exodus:
             self.fileId, object_id, byref(attr_name_ptrs))
         attr_names = []
         for cnp in attr_name_ptrs:
-            attr_names.append(cnp.contents.value)
+            attr_names.append(cnp.contents.value.decode('utf8'))
         return attr_names
 
     # --------------------------------------------------------------------
@@ -4716,7 +4708,7 @@ class exodus:
             self.fileId, var_type, byref(prop_name_ptrs))
         prop_names = []
         for cnp in prop_name_ptrs:
-            prop_names.append(cnp.contents.value)
+            prop_names.append(cnp.contents.value.decode('utf8'))
         return prop_names
 
     # --------------------------------------------------------------------
@@ -4724,7 +4716,7 @@ class exodus:
     def __ex_get_prop(self, objType, objId, propName):
         obj_type = c_int(objType)
         obj_id = c_longlong(objId)
-        prop_name = create_string_buffer(propName, MAX_STR_LENGTH + 1)
+        prop_name = create_string_buffer(propName.encode('ascii'), MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_IDS_INT64_API:
             prop_val = c_longlong(0)
         else:
@@ -4742,7 +4734,7 @@ class exodus:
     def __ex_put_prop(self, objType, objId, propName, propVal):
         obj_type = c_int(objType)
         obj_id = c_longlong(objId)
-        prop_name = create_string_buffer(propName, MAX_STR_LENGTH + 1)
+        prop_name = create_string_buffer(propName.encode('ascii'), MAX_STR_LENGTH + 1)
         prop_val = c_longlong(propVal)
         EXODUS_LIB.ex_put_prop(
             self.fileId,
@@ -4947,7 +4939,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
             toFileName,
             " file already exists cowardly exiting instead of overwriting in call to copy_mesh().")
 
-    title = exoFrom.title()
+    title = exoFrom.title().encode('ascii')
     ex_pars = ex_init_params(num_dim=exoFrom.num_dimensions(),
                              num_nodes=exoFrom.num_nodes(),
                              num_elem=exoFrom.num_elems(),
@@ -5038,7 +5030,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
         elemProps = exoFrom.get_element_property_names()
         for elemProp in elemProps:
             propVal = exoFrom.get_element_property_value(blkId, elemProp)
-            if elemProp == b"ID" and propVal == blkId:
+            if elemProp == "ID" and propVal == blkId:
                 continue
             else:
                 exo_to.put_element_property_value(blkId, elemProp, propVal)
@@ -5068,7 +5060,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
             for nodeSetProp in nodeSetProps:
                 propVal = exoFrom.get_node_set_property_value(
                     nsId, nodeSetProp)
-                if nodeSetProp == b"ID" and propVal == nsId:
+                if nodeSetProp == "ID" and propVal == nsId:
                     continue
                 else:
                     exo_to.put_node_set_property_value(
@@ -5092,7 +5084,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
             for sideSetProp in sideSetProps:
                 propVal = exoFrom.get_side_set_property_value(
                     ssId, sideSetProp)
-                if sideSetProp == b"ID" and propVal == ssId:
+                if sideSetProp == "ID" and propVal == ssId:
                     continue
                 else:
                     exo_to.put_side_set_property_value(
