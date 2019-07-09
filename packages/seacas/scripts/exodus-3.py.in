@@ -420,15 +420,12 @@ class exodus:
         e.summarize() will output a summary of the exodus file data
         """
 
-        total_ns_nodes = 0
         total_sides = 0
-
         sidesets = self.get_side_set_ids()
         for sideset in sidesets:
-            print(sideset)
-            print(self.num_faces_in_side_set(sideset))
             total_sides = total_sides + self.num_faces_in_side_set(sideset)
 
+        total_ns_nodes = 0
         nodesets = self.get_node_set_ids()
         for nodeset in nodesets:
             total_ns_nodes = total_ns_nodes + self.num_nodes_in_node_set(nodeset)
