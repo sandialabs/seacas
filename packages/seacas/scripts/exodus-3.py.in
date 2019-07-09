@@ -414,10 +414,65 @@ class exodus:
         self.sideSetIds = None
         self.nodeSetIds = None
 
+
+    def summarize(self):
+        """
+        e.summarize() will output a summary of the exodus file data
+        """
+
+        total_ns_nodes = 0
+        total_sides = 0
+
+        sidesets = self.get_side_set_ids()
+        for sideset in sidesets:
+            print(sideset)
+            print(self.num_faces_in_side_set(sideset))
+            total_sides = total_sides + self.num_faces_in_side_set(sideset)
+
+        nodesets = self.get_node_set_ids()
+        for nodeset in nodesets:
+            total_ns_nodes = total_ns_nodes + self.num_nodes_in_node_set(nodeset)
+
+        num_glo_vars = self.get_global_variable_number()
+        num_nod_vars = self.get_node_variable_number()
+        num_ele_vars = self.get_element_variable_number()
+        num_ns_vars = self.get_node_set_variable_number()
+        num_ss_vars = self.get_side_set_variable_number()
+
+        print("\n Database: {0}\n"
+              " Title:\t{17}\n\n"
+              " Number of spatial dimensions = {1}\t"
+              "                                   {2:3s}\t"
+              " Number of global variables     = {11}\n"
+              " Number of node blocks        = {5}\t"
+              " Number of nodes              = {3}\t"
+              " Number of nodal variables      = {12}\n"
+              " Number of element blocks     = {6}\t"
+              " Number of elements           = {4}\t"
+              " Number of element variables    = {13}\n"
+              " Number of node sets          = {7}\t"
+              " Length of node list          = {9}\t"
+              " Number of nodeset variables    = {14}\n"
+              " Number of element side sets  = {8}\t"
+              " Length of element sides      = {10}\t"
+              " Number of sideset variables    = {15}\n\n"
+              " Number of time steps         = {16}\n"
+              .format(self.fileName,
+                      self.num_dimensions(), "",
+                      self.num_nodes(),
+                      self.num_elems(),
+                      1,
+                      self.num_blks(),
+                      self.num_node_sets(),
+                      self.num_side_sets(),
+                      total_ns_nodes, total_sides,
+                      num_glo_vars, num_nod_vars, num_ele_vars,
+                      num_ns_vars, num_ss_vars, self.num_times(), self.title()))
     #
     # build the info struct
     #
     # --------------------------------------------------------------------
+
 
     def put_info_ext(self, p):
         """
@@ -2658,7 +2713,7 @@ class exodus:
             <int>  num_ss_faces
         """
         ssids = self.get_side_set_ids()
-        if id not in ssids:
+        if object_id not in ssids:
             print("WARNING: queried side set ID does not exist in database")
             return 0
         (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_side_set_param(object_id)
