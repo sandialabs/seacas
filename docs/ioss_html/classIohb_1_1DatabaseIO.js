@@ -43,6 +43,7 @@ var classIohb_1_1DatabaseIO =
     [ "read_meta_data__", "classIohb_1_1DatabaseIO.html#a55f12c7379af5e04a6be07ec75ff5252", null ],
     [ "addTimeField", "classIohb_1_1DatabaseIO.html#a60b6274217cb4675a11fad99797efec5", null ],
     [ "appendOutput", "classIohb_1_1DatabaseIO.html#afc13975ead75040d3f6e4fe1ce8dc778", null ],
+    [ "defaultTsFormat", "classIohb_1_1DatabaseIO.html#a580b65bae1ceb27b8e5380c96ef724d4", null ],
     [ "fieldWidth_", "classIohb_1_1DatabaseIO.html#a3beb94420150ba18cbe524224e09c171", null ],
     [ "flushInterval_", "classIohb_1_1DatabaseIO.html#a14979888aa691450b6cdc5ba6ce06f4d", null ],
     [ "initialized_", "classIohb_1_1DatabaseIO.html#afa89fbf0d222beee5ea4f0dc64790f2e", null ],
