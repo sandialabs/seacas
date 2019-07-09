@@ -83,7 +83,6 @@ def getExodusVersion():
     Parse the exodusII.h header file and return the version number or 0 if not
     found.
     """
-    ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
     for line in open(ACCESS + "/include/exodusII.h"):
         fields = line.split()
         if (len(fields) == 3 and
@@ -3280,9 +3279,9 @@ class exodus:
         values[names.index(name)] = c_double(value)
         # write them all
         EXODUS_LIB.ex_put_var(self.fileId,
-                                    c_int(step),
-                                    c_int(numVals),
-                                    values)
+                              c_int(step),
+                              c_int(numVals),
+                              values)
         return True
 
     # --------------------------------------------------------------------
@@ -3592,7 +3591,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __copy_file(self, fileId, include_transient=False):
-        if (include_transient):
+        if include_transient:
             EXODUS_LIB.ex_copy(self.fileId, fileId)
             EXODUS_LIB.ex_copy_transient(self.fileId, fileId)
         else:
