@@ -72,6 +72,7 @@ db_path = "base_ioshell.g"
 e = exodus.exodus(db_path)
 new_database_path = db_path[:-2] + '_copy.e'
 exo_copy = e.copy(new_database_path, True)
+exo_copy.summarize()
 
 print("Exodus file has title:", exo_copy.title())
 print("Exodus file has", exo_copy.num_dimensions(), "dimensions")
