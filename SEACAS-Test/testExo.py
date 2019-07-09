@@ -27,7 +27,8 @@ for array_type in array_types:
 
     blocks = e.get_elem_blk_ids()
     for block in blocks:
-      print("block id = ", block)
+      name = e.get_elem_blk_name(block)
+      print("block id = {}, name = {}".format(block, name))
 
     sidesets = e.get_side_set_ids()
     for sideset in sidesets:
@@ -67,54 +68,52 @@ for array_type in array_types:
     print("Database copied using " + array_type + " arrays.")
 
 #Test the exodus.py `copy` function which calls the C API `ex_copy`
-e = exodus.exodus(database_path)
-new_database_path = database_path[:-2] + '_copy.e'
-exo_copy = e.copy(new_database_path)
-exo_copy.put_time(1,0.0)
+db_path = "base_ioshell.g"
+e = exodus.exodus(db_path)
+new_database_path = db_path[:-2] + '_copy.e'
+exo_copy = e.copy(new_database_path, True)
 
 print("Exodus file has title:", exo_copy.title())
 print("Exodus file has", exo_copy.num_dimensions(), "dimensions")
 print("Exodus file has", exo_copy.num_nodes(), "nodes")
 print("Exodus file has", exo_copy.num_elems(), "elements")
+
 print("Exodus file has", exo_copy.num_blks(), "blocks")
-print("Exodus file has", exo_copy.num_node_sets(), "node sets")
+blocks = exo_copy.get_elem_blk_ids()
+for block in blocks:
+    name = exo_copy.get_elem_blk_name(block)
+    print("\tblock id = {}, name = {}".format(block, name))
+
 print("Exodus file has", exo_copy.num_side_sets(), "side sets")
+sidesets = exo_copy.get_side_set_ids()
+for sideset in sidesets:
+    name = exo_copy.get_side_set_name(sideset)
+    print("\tside set id = {}, name = {}".format(sideset, name))
+
+print("Exodus file has", exo_copy.num_node_sets(), "node sets")
+nodesets = exo_copy.get_node_set_ids()
+for nodeset in nodesets:
+    name = exo_copy.get_node_set_name(nodeset)
+    print("\tnode set id = {}, name = {}".format(nodeset, name))
+
+coordinates = exo_copy.get_coords()
+print("Local Node Id 1 has coordinates:", coordinates[0][0], coordinates[1][0], coordinates[2][0])
+nn = (exo_copy.num_nodes() - 1)
+print("Local Node Id", exo_copy.num_nodes(), "has coordinates:", coordinates[0][nn], coordinates[1][nn], coordinates[2][nn])
+
 print("Exodus file has", exo_copy.num_times(), "time steps")
 if exo_copy.num_times() > 0:
     times = exo_copy.get_times()
     for time in times:
-        print("time = ", time)
-
-    blocks = exo_copy.get_elem_blk_ids()
-    for block in blocks:
-        print("block id = ", block)
-
-    sidesets = exo_copy.get_side_set_ids()
-    for sideset in sidesets:
-        print("side set id = ", sideset)
-
-    nodesets = exo_copy.get_node_set_ids()
-    for nodeset in nodesets:
-        print("node set id = ", nodeset)
-
-    coordinates = exo_copy.get_coords()
-    print("Local Node Id 1 has coordinates:", coordinates[0][0], coordinates[1][0], coordinates[2][0])
-    nn = (exo_copy.num_nodes() - 1)
-    print("Local Node Id", exo_copy.num_nodes(), "has coordinates:", coordinates[0][nn], coordinates[1][nn], coordinates[2][nn])
-    print("Side Set Variable Names")
+        print("\ttime = ", time)
 
     ssVarNames = exo_copy.get_side_set_variable_names()
+    print("Side Set Variable Names:")
     for name in ssVarNames:
-        print("ssvar = ", name)
-        print("Side Set Cosa Variable Values")
-        step = 1
+        print("\tSideSet Variable = ", name)
+        step = 2
+        ssvals = exo_copy.get_side_set_variable_values(2,"SideBlock_2",step)
 
-        if exo_copy.num_times() > 0:
-            for time in times:
-                print("time = ", time)
-            ssvals = exo_copy.get_side_set_variable_values(1,"cosa",step)
-            for ssval in ssvals:
-                print("value =", ssval)
-            step += 1
 
+    
 exo_copy.close()

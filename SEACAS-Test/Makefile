@@ -3,6 +3,7 @@ NPROCB = 32
 NPROCC = 33
 
 BIN = ../bin
+PYTHON  =       python3
 APREPRO	=	$(BIN)/aprepro
 FASTQ	=	$(BIN)/fastq
 GJOIN	=	$(BIN)/gjoin
@@ -97,12 +98,16 @@ matlab: baseline.g
 	$(MAT2EXO) baseline.mat
 	$(EXODIFF) -stat baseline.g baseline.exo
 
-python: baseline.g
+base_ioshell.g:
+	$(IO_SHELL) --in_type generated 10x10x10+nodeset:xyz+sideset:XYZ+times:5+variables:global,10,element,5,nodal,2,surface,3,nodeset,4 base_ioshell.g
+
+python: baseline.g base_ioshell.g
 	$(RM) baseline*copy*.e
-	PYTHONPATH=../lib:$$PYTHONPATH python testExo.py
+	$(RM) base_ioshell*copy*.e
+	PYTHONPATH=../lib:$$PYTHONPATH $(PYTHON) testExo.py
 	$(EXODIFF) -stat -pedantic baseline.g baseline_numpy_copy.e
 	$(EXODIFF) -stat -pedantic baseline.g baseline_ctype_copy.e
-	$(EXODIFF) -ignore_steps -stat -pedantic baseline.g baseline_copy.e
+	$(EXODIFF) -stat -pedantic base_ioshell.g base_ioshell_copy.e
 
 conjoin:
 	$(IO_SHELL) --in_type generated --split_times 1 10x10x10+times:2000+variables:nodal,3,element,6 conjoin/output.g
