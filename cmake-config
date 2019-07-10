@@ -22,6 +22,7 @@ INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 APPLICATIONS=${APPLICATIONS:-ON}
 LEGACY=${LEGACY:-ON}
 FORTRAN=${FORTRAN:-ON}
+ZOLTAN=${ZOLTAN:-ON}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
@@ -303,6 +304,7 @@ cmake -G "${GENERATOR}" \
 -D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
 ${SUBSET_OPTIONS} \
+-D SEACASProj_ENABLE_Zoltan:BOOL=${ZOLTAN} \
 -D SEACASProj_ENABLE_TESTS=ON \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
@@ -356,6 +358,7 @@ echo "     NETCDF: ${HAVE_NETCDF}"
 echo "      MATIO: ${HAVE_MATIO}"
 echo "       CGNS: ${HAVE_CGNS}"
 echo "     KOKKOS: ${HAVE_KOKKOS}"
+echo "     ZOLTAN: ${ZOLTAN}"
 echo "     ADIOS2: ${HAVE_ADIOS2}"
 echo "      GTEST: ${HAVE_GTEST}"
 echo "    DOXYGEN: ${DOXYGEN}"
