@@ -93,11 +93,9 @@ var NAVTREEINDEX0 =
 "ex__conv_8c.html#afe156dce5f7f9dcb85464bbc8c8e8993":[9,0,2,3,2],
 "ex__copy_8c.html":[9,0,2,4],
 "ex__copy_8c.html#a02085d8fa0557805b71b34222eb29067":[9,0,2,4,1],
-"ex__copy_8c.html#a4c18291e0af54b68dd8de44480dc79c1":[9,0,2,4,6],
 "ex__copy_8c.html#a6df1d22fb5f09eccc23b9f399670cfd7":[9,0,2,4,3],
 "ex__copy_8c.html#a9063e80f8777300c93afde6e6f4c9cea":[9,0,2,4,4],
 "ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a":[9,0,2,4,0],
-"ex__copy_8c.html#ae4f66d79971313449a2522ab6df73acc":[9,0,2,4,5],
 "ex__copy_8c.html#aeb426c0afa8f865ae0be634f06ad4676":[9,0,2,4,2],
 "ex__create_8c.html":[9,0,2,5],
 "ex__create_8c.html#aaea5bc36c6f151eacbe5fb9d23eb22a5":[9,0,2,5,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX0 =
 "ex__get__nodal__var_8c.html":[9,0,2,0,29],
 "ex__get__nodal__var_8c.html#a7ce606b69a7aab9cd7f29e0e8656940a":[9,0,2,0,29,0],
 "ex__get__nodal__var__int_8c.html":[9,0,2,44],
-"ex__get__nodal__var__int_8c.html#a455c65cd66488994beef43f33ef0dd5b":[9,0,2,44,0]
+"ex__get__nodal__var__int_8c.html#a455c65cd66488994beef43f33ef0dd5b":[9,0,2,44,0],
+"ex__get__nodal__var__time_8c.html":[9,0,2,0,30],
+"ex__get__nodal__var__time_8c.html#afef762ab61ca2dabf04d548e51f026eb":[9,0,2,0,30,0]
 };

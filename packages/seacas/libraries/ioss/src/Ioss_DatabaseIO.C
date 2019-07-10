@@ -398,9 +398,9 @@ namespace Ioss {
     std::ostringstream errmsg;
 
     if (myProcessor == 0) {
-      Ioss::FileInfo   file = Ioss::FileInfo(filename);
-      std::string      path = file.pathname();
-      std::string path_root = path[0] == '/' ? "/" : "";
+      Ioss::FileInfo file      = Ioss::FileInfo(filename);
+      std::string    path      = file.pathname();
+      std::string    path_root = path[0] == '/' ? "/" : "";
 
       auto comps = tokenize(path, "/");
       for (const auto &comp : comps) {

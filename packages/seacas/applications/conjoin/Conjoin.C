@@ -160,7 +160,7 @@ namespace {
   std::string format_time(double seconds);
   int         get_width(size_t max_value);
 
-  ex_entity_type exodus_object_type(Excn::ObjectType &conjoin_type)
+  ex_entity_type exodus_object_type(const Excn::ObjectType &conjoin_type)
   {
     switch (conjoin_type) {
     case Excn::EBLK: return EX_ELEM_BLOCK;

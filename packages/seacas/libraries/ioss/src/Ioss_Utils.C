@@ -2601,14 +2601,14 @@ namespace {
     region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
     auto &sblocks = region.get_structured_blocks();
     for (auto &sb : sblocks) {
-      sb->field_add(Ioss::Field("processor_id", Ioss::Field::REAL, "scalar",
-				Ioss::Field::TRANSIENT, sb->entity_count()));
+      sb->field_add(Ioss::Field("processor_id", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT,
+                                sb->entity_count()));
     }
 
     auto &eblocks = region.get_element_blocks();
     for (auto &eb : eblocks) {
-      eb->field_add(Ioss::Field("processor_id", Ioss::Field::REAL, "scalar",
-				Ioss::Field::TRANSIENT, eb->entity_count()));
+      eb->field_add(Ioss::Field("processor_id", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT,
+                                eb->entity_count()));
     }
     region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
 

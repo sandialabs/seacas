@@ -45,7 +45,7 @@
 #include <fmt/ostream.h>
 #include <sstream>
 #include <stdexcept>
-#include <string>  // for string, char_traits, etc
+#include <string> // for string, char_traits, etc
 #include <term_width.h>
 #include <utility> // for pair, make_pair
 #include <vector>  // for vector

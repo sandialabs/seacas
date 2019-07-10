@@ -266,10 +266,10 @@ namespace Iohb {
         bool show_time_stamp = properties.get("SHOW_TIME_STAMP").get_int() == 1;
         if (show_time_stamp) {
           if (tsFormat.empty()) {
-	    new_this->tsFormat = defaultTsFormat;
-	  }
-	}
-	else {
+            new_this->tsFormat = defaultTsFormat;
+          }
+        }
+        else {
           new_this->tsFormat = "";
         }
       }

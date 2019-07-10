@@ -6,6 +6,8 @@ var Ioss__Region_8C =
     [ "compute_hash", "Ioss__Region_8C.html#a6656dc24f504bdeebf73ddf5af0bf448", null ],
     [ "compute_hashes", "Ioss__Region_8C.html#aae5204bc476b0c52db06f247173b475c", null ],
     [ "db_name_str", "Ioss__Region_8C.html#a904fc679995d885fd3a334d5ae09fab4", null ],
+    [ "get_entity_count", "Ioss__Region_8C.html#a5ee57762c7c97cee640a574133de0ad2", null ],
+    [ "get_variable_count", "Ioss__Region_8C.html#a80d363a92e4cd87d869c68f6f423ba7b", null ],
     [ "id_str", "Ioss__Region_8C.html#adfa215b5aff3e5839afc69a8ca503491", null ],
     [ "is_input_or_appending_output", "Ioss__Region_8C.html#aae03421eda60874ac48b485e68558e7e", null ],
     [ "numberOfBits", "Ioss__Region_8C.html#aaa7df9904c197f8f00d2ff2658583d09", null ],

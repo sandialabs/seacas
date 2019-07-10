@@ -15,7 +15,6 @@ var classIoss_1_1SerializeIO =
     [ "setGroupFactor", "classIoss_1_1SerializeIO.html#af07ba50639b68621f5955c0b0da9141c", null ],
     [ "m_activeFallThru", "classIoss_1_1SerializeIO.html#aadd130d891cfb03927792c8ea07ec3c6", null ],
     [ "m_databaseIO", "classIoss_1_1SerializeIO.html#a3cf8d46cc7a176a521092bca6b2eaec0", null ],
-    [ "m_manualOwner", "classIoss_1_1SerializeIO.html#a35aee4aa537a8141fcc11d4df368e487", null ],
     [ "s_groupFactor", "classIoss_1_1SerializeIO.html#a98c0946f315c5744390c9fb0372df2ae", null ],
     [ "s_groupRank", "classIoss_1_1SerializeIO.html#a842e0d28863079837054bc85c5a19cf3", null ],
     [ "s_groupSize", "classIoss_1_1SerializeIO.html#a1a8812a3e87272c4e0e41c15f8be4c60", null ],

@@ -57,6 +57,7 @@
 #include <Ioss_Wedge18.h>
 #include <Ioss_Wedge6.h>
 
+#include <fmt/color.h>
 #include <fmt/ostream.h>
 #include <numeric>
 #include <set>
@@ -2153,13 +2154,20 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
     std::vector<bool> exceeds(proc_count);
     for (size_t i = 0; i < work_vector.size(); i++) {
       double workload_ratio = double(work_vector[i]) / avg_work;
-      if (verbose && rank == 0) {
-        fmt::print(stderr, "\nProcessor {} work: {:n}, workload ratio: {}", i, work_vector[i],
-                   workload_ratio);
-      }
       if (workload_ratio > load_balance_threshold) {
         exceeds[i] = true;
         px++;
+        if (verbose && rank == 0) {
+          fmt::print(stderr, fg(fmt::color::red),
+                     "\nProcessor {} work: {:n}, workload ratio: {} (exceeds)", i, work_vector[i],
+                     workload_ratio);
+        }
+      }
+      else {
+        if (verbose && rank == 0) {
+          fmt::print(stderr, "\nProcessor {} work: {:n}, workload ratio: {}", i, work_vector[i],
+                     workload_ratio);
+        }
       }
     }
     if (verbose && rank == 0) {
