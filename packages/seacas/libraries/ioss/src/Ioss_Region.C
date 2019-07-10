@@ -442,6 +442,7 @@ namespace Ioss {
   /** \brief Print a summary of entities in the region.
    *
    *  \param[in,out] strm The output stream to use for printing.
+   *  \param[in]     do_transient deprecated and ignored
    */
   void Region::output_summary(std::ostream &strm, bool /* do_transient */)
   {
