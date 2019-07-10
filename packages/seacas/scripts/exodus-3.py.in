@@ -496,8 +496,8 @@ class exodus:
           -> put initialization information into exodus file
         """
         if len(p.title) > MAX_LINE_LENGTH:
-            print(('WARNING: Exodus title "%s" exceeds maximum line length (%i). It will be truncated.' %
-                   (p.title, MAX_LINE_LENGTH)))
+            print("WARNING: Exodus title \"{}\" exceeds maximum line length ({}). It will be truncated."
+                  .format(p.title, MAX_LINE_LENGTH))
             p.title = p.title[-1*MAX_LINE_LENGTH:]
 
         self.Title = create_string_buffer(p.title, MAX_LINE_LENGTH + 1)
@@ -1088,7 +1088,7 @@ class exodus:
         ndType = ex_entity_type("EX_NODAL")
         NDvarNames = self.get_node_variable_names()
         if name in NDvarNames:
-            print(("WARNING: node variable \"", name, "\" already exists."))
+            print("WARNING: node variable \"{}\" already exists.".format(name))
         if index > len(NDvarNames):
             raise Exception("ERROR: variable index out of range.")
         self.__ex_put_variable_name(ndType, index, name)
@@ -1990,7 +1990,7 @@ class exodus:
         ebType = ex_entity_type("EX_ELEM_BLOCK")
         EBvarNames = self.get_element_variable_names()
         if name in EBvarNames:
-            print(("WARNING: element variable \"", name, "\" already exists."))
+            print("WARNING: element variable \"{}\" already exists.".format(name))
         if index > len(EBvarNames):
             print(("index", index, "len", len(EBvarNames)))
             raise Exception("ERROR: variable index out of range.")
@@ -2433,7 +2433,7 @@ class exodus:
         nsType = ex_entity_type("EX_NODE_SET")
         NSvarNames = self.get_node_set_variable_names()
         if name in NSvarNames:
-            print(("WARNING: Node set variable \"", name, "\" already exists."))
+            print("WARNING: Node set variable \"{}\" already exists.".format(name))
         if index > len(NSvarNames):
             raise Exception("ERROR: variable index out of range.")
         self.__ex_put_variable_name(nsType, index, name)
@@ -2502,7 +2502,8 @@ class exodus:
         names = self.get_node_set_variable_names()
         var_id = names.index(name) + 1
         obj_type = ex_entity_type("EX_NODE_SET")
-        self.__ex_put_var(step, obj_type, var_id, object_id, values)
+        (numSetNodes, _numSetDistFacts) = self.get_node_set_params(object_id)
+        self.__ex_put_var(step, obj_type, var_id, object_id, numSetNodes, values)
         return True
 
     # --------------------------------------------------------------------
@@ -3103,7 +3104,7 @@ class exodus:
         ssType = ex_entity_type("EX_SIDE_SET")
         SSvarNames = self.get_side_set_variable_names()
         if name in SSvarNames:
-            print(("WARNING: Side set variable \"", name, "\" already exists."))
+            print("WARNING: Side set variable \"{}\" already exists.".format(name))
         if index > len(SSvarNames):
             raise Exception("ERROR: variable index out of range.")
         self.__ex_put_variable_name(ssType, index, name)
@@ -3172,7 +3173,8 @@ class exodus:
         names = self.get_side_set_variable_names()
         var_id = names.index(name) + 1
         obj_type = ex_entity_type("EX_SIDE_SET")
-        self.__ex_put_var(step, obj_type, var_id, object_id, values)
+        (numSetSides, _numSetDistFacts) = self.get_side_set_params(object_id)
+        self.__ex_put_var(step, obj_type, var_id, object_id, numSetSides, values)
         return True
 
     # --------------------------------------------------------------------
@@ -3316,7 +3318,7 @@ class exodus:
         gbType = ex_entity_type("EX_GLOBAL")
         GlobVarNames = self.get_global_variable_names()
         if name in GlobVarNames:
-            print(("WARNING: global variable \"", name, "\" already exists."))
+            print("WARNING: Global variable \"{}\" already exists.".format(name))
         if index > len(GlobVarNames):
             print(("index", index, "len", len(GlobVarNames)))
             raise Exception("ERROR: variable index out of range.")
