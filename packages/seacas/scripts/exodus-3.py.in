@@ -1,6 +1,7 @@
 import sys
 from ctypes import *
 import os
+import locale
 
 """
 exodus.py v 1.12 (seacas-beta) is a python wrapper of some of the exodus library
@@ -60,6 +61,9 @@ Authors:
   Greg Sjaardema   (gdsjaar@sandia.gov)
 """
 
+### Documentation is generated on a Mac laptop using:
+### pdoc --force --html ../lib/exodus.py
+
 sys.dont_write_bytecode = True
 
 ONELINE = "Gather from or export to Exodus files using the Exodus library"
@@ -71,7 +75,7 @@ if sys.version_info[0] < 3:
 def basename(file_name):
     """
     Extract base name from file_name.
-    basename("test.e") -> "test"
+    `basename("test.e") -> "test"`
     """
     fileParts = file_name.split(".")
     base_name = ".".join(fileParts[:-1])
@@ -91,6 +95,8 @@ def getExodusVersion():
             return int(fields[2])
     return 0
 
+
+locale.setlocale(locale.LC_ALL, 'en_US')
 
 ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
 if os.uname()[0] == 'Darwin':
@@ -242,7 +248,9 @@ def ex_inquiry(inquiry):
 
 def ex_obj_to_inq(objType):
     """
-    Return the count of objects of the specified objType
+    Return the ex_inquiry string corresponding to the specified objType.
+    This can be passed to the ex_inquiry() function to get the number of
+    objects of the specified objType
     """
     entity_dictionary = {
         'EX_EDGE_BLOCK': 'EX_INQ_EDGE_BLK',
@@ -292,7 +300,7 @@ def ex_entity_type(varType):
 class ex_init_params(Structure):
     """
     Parameters defining the model dimension, note that many are optional.
-
+    ```
     <int>     num_dim        number of model dimensions
     <int>     num_nodes      number of model nodes
     <int>     num_edge       number of model edges
@@ -310,6 +318,7 @@ class ex_init_params(Structure):
     <int>     num_edge_maps  number of model edge maps
     <int>     num_face_maps  number of model face maps
     <int>     num_elem_maps  number of model elem maps
+    ```
     """
     _fields_ = [("title", c_char * (MAX_LINE_LENGTH + 1)),
                 ("num_dim", c_longlong),
@@ -337,6 +346,7 @@ class ex_init_params(Structure):
 
 class exodus:
     """
+    ```
     ex_pars = ex_init_params(num_dim=numDims,num_nodes=numNodes,
                              num_elem=numElems, num_elem_blk=numElemBlocks)
 
@@ -345,14 +355,12 @@ class exodus:
       title=title, \\
       array_type=array_type, \\
       init_params=init_params)
+    ```
+    -> open exodus database for data insertion/extraction
 
-      -> open exodus database for data insertion/extraction
-
-      input value(s):
+    input value(s):
         <string>  file_name   name of exodus file to open
-        <string>  mode        'r' for read,
-          'a' for append,
-          'w' for write
+        <string>  mode        'r' for read, 'a' for append, 'w' for write
         <string>  title       database title
         <string>  array_type  'ctype' for c-type arrays,
           'numpy' for numpy arrays
@@ -436,18 +444,30 @@ class exodus:
 
     def summarize(self):
         """
-        e.summarize() will output a summary of the exodus file data
+        Outputs a summary of the exodus file data. Output is similar to:
+        ```
+        Database: base_ioshell_copy.e
+        Title:	GeneratedMesh: 10x10x10+nodeset:xyz+sideset:XYZ+times:5+variables:global,10,elem
+
+        Number of spatial dimensions = 3	                                      	 Number of global variables     = 10
+        Number of node blocks        = 1	 Number of nodes              = 1,331	 Number of nodal variables      = 2
+        Number of element blocks     = 1	 Number of elements           = 1,000	 Number of element variables    = 5
+        Number of node sets          = 3	 Length of node list          = 363	 Number of nodeset variables    = 4
+        Number of element side sets  = 3	 Length of element sides      = 300	 Number of sideset variables    = 3
+
+        Number of time steps         = 5
+        ```
         """
 
         total_sides = 0
         sidesets = self.get_side_set_ids()
         for sideset in sidesets:
-            total_sides = total_sides + self.num_faces_in_side_set(sideset)
+            total_sides += self.num_faces_in_side_set(sideset)
 
         total_ns_nodes = 0
         nodesets = self.get_node_set_ids()
         for nodeset in nodesets:
-            total_ns_nodes = total_ns_nodes + self.num_nodes_in_node_set(nodeset)
+            total_ns_nodes += self.num_nodes_in_node_set(nodeset)
 
         num_glo_vars = self.get_global_variable_number()
         num_nod_vars = self.get_node_variable_number()
@@ -457,22 +477,22 @@ class exodus:
 
         print("\n Database: {0}\n"
               " Title:\t{17}\n\n"
-              " Number of spatial dimensions = {1}\t"
-              "                                   {2:3s}\t"
-              " Number of global variables     = {11}\n"
-              " Number of node blocks        = {5}\t"
-              " Number of nodes              = {3}\t"
-              " Number of nodal variables      = {12}\n"
-              " Number of element blocks     = {6}\t"
-              " Number of elements           = {4}\t"
-              " Number of element variables    = {13}\n"
-              " Number of node sets          = {7}\t"
-              " Length of node list          = {9}\t"
-              " Number of nodeset variables    = {14}\n"
-              " Number of element side sets  = {8}\t"
-              " Length of element sides      = {10}\t"
-              " Number of sideset variables    = {15}\n\n"
-              " Number of time steps         = {16}\n"
+              " Number of spatial dimensions = {1:3d}\t"
+              "                                   {2:11s}\t"
+              " Number of global variables     = {11:6d}\n"
+              " Number of node blocks        = {5:3d}\t"
+              " Number of nodes              = {3:10n}\t"
+              " Number of nodal variables      = {12:6d}\n"
+              " Number of element blocks     = {6:3n}\t"
+              " Number of elements           = {4:10n}\t"
+              " Number of element variables    = {13:6d}\n"
+              " Number of node sets          = {7:3n}\t"
+              " Length of node list          = {9:10n}\t"
+              " Number of nodeset variables    = {14:6d}\n"
+              " Number of element side sets  = {8:3n}\t"
+              " Length of element sides      = {10:10n}\t"
+              " Number of sideset variables    = {15:6d}\n\n"
+              " Number of time steps         = {16:3n}\n"
               .format(self.fileName,
                       self.num_dimensions(), "",
                       self.num_nodes(),
@@ -719,7 +739,7 @@ class exodus:
         for rec in info_recs:
             vals = rec.split()
             if not begin:  # have not reached Sierra block
-                if len(vals) >= 2 and vals[0].lower() == b"begin" and vals[1].lower() == b"sierra":
+                if len(vals) >= 2 and vals[0].lower() == "begin" and vals[1].lower() == "sierra":
                     begin = True
             if begin:  # inside Sierra block
                 sierra_inp.append(rec)
@@ -728,13 +748,13 @@ class exodus:
                         "WARNING: max line length reached for one or more input lines;")
                     print("         input data might be incomplete for these lines")
                     break
-                if len(vals) >= 2 and vals[0].lower() == b"end" and vals[1].lower() == b"sierra":
+                if len(vals) >= 2 and vals[0].lower() == "end" and vals[1].lower() == "sierra":
                     break  # end of Sierra block
 
         if inpFileName:
             fd = open(inpFileName.encode('ascii'), "w")
             for fileLine in sierra_inp:
-                print(fileLine, file=fd)
+                fd.write(fileLine+"\n")
             fd.close()
             return []
 
@@ -905,13 +925,16 @@ class exodus:
             <c_double>  y_coord  global y-direction coordinate
             <c_double>  z_coord  global z-direction coordinate
 
-          note:
+        Note:
+        -----
+        ```
             >>> x_coords, y_coords, z_coords = exo.get_coords()
             >>> x_coord = x_coords[node_index-1]
             >>> y_coord = y_coords[node_index-1]
             >>> z_coord = z_coords[node_index-1]
             ... is equivalent to ...
             >>> x_coord, y_coord, z_coord = exo.get_coords(node_index)
+        ```
         """
         listX, listY, listZ = self.__ex_get_partial_coord(i, 1)
         return (listX[0], listY[0], listZ[0])
@@ -1077,13 +1100,16 @@ class exodus:
           return value(s):
             <bool>  status  True = successful execution
 
-          NOTE:
-            this method is often called within the following sequence:
+        Note:
+        ----
+        this method is often called within the following sequence:
+        ```
             >>> num_nvars = exo.get_node_variable_number()
             >>> new_nvar_index = num_nvars + 1
             >>> num_nvars += 1
             >>> exo.set_node_variable_number(num_nvars)
             >>> exo.put_node_variable_name("new_nvar_name", new_nvar_index)
+        ```
         """
         ndType = ex_entity_type("EX_NODAL")
         NDvarNames = self.get_node_variable_names()
@@ -1979,13 +2005,16 @@ class exodus:
           return value(s):
             <bool>  status  True = successful execution
 
-          NOTE:
-            this method is often called within the following sequence:
+        Note:
+        ----
+        this method is often called within the following sequence:
+        ```
             >>> num_evars = exo.get_element_variable_number()
             >>> new_evar_index = num_evars + 1
             >>> num_evars += 1
             >>> exo.set_element_variable_number(num_evars)
             >>> exo.put_element_variable_name("new_evar", new_evar_index)
+        ```
         """
         ebType = ex_entity_type("EX_ELEM_BLOCK")
         EBvarNames = self.get_element_variable_names()
@@ -2422,13 +2451,16 @@ class exodus:
           return value(s):
             <bool>  status  True = successful execution
 
-          NOTE:
-            this method is often called within the following sequence:
+        Note:
+        -----
+        this method is often called within the following sequence:
+        ```
             >>> num_nsvars = exo.get_node_set_variable_number()
             >>> new_nsvar_index = num_nsvars + 1
             >>> num_nsvars += 1
             >>> exo.set_node_set_variable_number(num_nsvars)
             >>> exo.put_node_set_variable_name("new_nsvar", new_nsvar_index)
+        ```
         """
         nsType = ex_entity_type("EX_NODE_SET")
         NSvarNames = self.get_node_set_variable_names()
@@ -2779,10 +2811,11 @@ class exodus:
             <int>  tot_num_ss_nodes
             <int>  tot_num_ss_dist_facts
 
-          NOTE:
-            The number of nodes (and distribution factors) in a side set is
-            the sum of all face nodes.  A single node can be counted more
-            than once, i.e. once for each face it belongs to in the side set.
+        Note:
+        -----
+        The number of nodes (and distribution factors) in a side set is
+        the sum of all face nodes.  A single node can be counted more
+        than once, i.e. once for each face it belongs to in the side set.
         """
         ids = self.__ex_get_ids("EX_SIDE_SET")
         totNumSetSides, totNumSetDistFacts = 0, 0  # totNumSetDistFacts = totNumSetNodes
@@ -2810,10 +2843,11 @@ class exodus:
             <int>  num_ss_sides
             <int>  num_ss_dist_facts
 
-          NOTE:
-            The number of nodes (and distribution factors) in a side set is
-            the sum of all face nodes.  A single node can be counted more
-            than once, i.e. once for each face it belongs to in the side set.
+        Note:
+        -----
+        The number of nodes (and distribution factors) in a side set is
+        the sum of all face nodes.  A single node can be counted more
+        than once, i.e. once for each face it belongs to in the side set.
         """
         (numSetSides, numSetDistFacts) = self.__ex_get_side_set_param(object_id)
         return (numSetSides, numSetDistFacts)
@@ -2834,10 +2868,11 @@ class exodus:
             <int>  num_ss_dist_facts  number of nodal distribution factors
               (e.g. nodal 'weights')
 
-          NOTE:
-            The number of nodes (and distribution factors) in a side set is
-            the sum of all face nodes.  A single node can be counted more
-            than once, i.e. once for each face it belongs to in the side set.
+        Note:
+        -----
+        The number of nodes (and distribution factors) in a side set is
+        the sum of all face nodes.  A single node can be counted more
+        than once, i.e. once for each face it belongs to in the side set.
         """
         self.__ex_put_side_set_param(object_id, numSetSides, numSetDistFacts)
 
@@ -2909,10 +2944,11 @@ class exodus:
                 factors, e.g. nodal
                 'weights'
 
-          NOTE:
-            The number of nodes (and distribution factors) in a side set is
-            the sum of all face nodes.  A single node can be counted more
-            than once, i.e. once for each face it belongs to in the side set.
+        Note:
+        -----
+        The number of nodes (and distribution factors) in a side set is
+        the sum of all face nodes.  A single node can be counted more
+        than once, i.e. once for each face it belongs to in the side set.
         """
         side_set_dfs = list(self.__ex_get_side_set_dist_fact(object_id))
         if self.use_numpy:
@@ -2932,10 +2968,11 @@ class exodus:
             <list<float>>  ns_dist_facts  a list of distribution factors,
               e.g. nodal 'weights'
 
-          NOTE:
-            The number of nodes (and distribution factors) in a side set is
-            the sum of all face nodes.  A single node can be counted more
-            than once, i.e. once for each face it belongs to in the side set.
+        Note:
+        -----
+        The number of nodes (and distribution factors) in a side set is
+        the sum of all face nodes.  A single node can be counted more
+        than once, i.e. once for each face it belongs to in the side set.
         """
         self.__ex_put_side_set_dist_fact(object_id, sideSetDistFact)
 
@@ -2963,11 +3000,11 @@ class exodus:
               <np_array<int>>  ss_num_side_nodes
               <np_array<int>>  ss_nodes
 
-          NOTE:
-            The number of nodes (and distribution factors) in a side set is
-            the sum of the entries in ss_num_nodes_per_side.  A single node
-            can be counted more than once, i.e. once for each face it
-            belongs to in the side set.
+        Note:
+        -----
+        The number of nodes (and distribution factors) in a side set is
+        the sum of all face nodes.  A single node can be counted more
+        than once, i.e. once for each face it belongs to in the side set.
         """
         (side_set_node_cnt_list,
          side_set_node_list) = self.__ex_get_side_set_node_list(object_id)
@@ -3093,13 +3130,16 @@ class exodus:
           return value(s):
             <bool>  status  True = successful execution
 
-          NOTE:
-            this method is often called within the following sequence:
+        Note:
+        -----
+        this method is often called within the following sequence:
+        ```
             >>> num_ssvars = exo.get_side_set_variable_number()
             >>> new_ssvar_index = num_ssvars + 1
             >>> num_ssvars += 1
             >>> exo.set_side_set_variable_number(num_ssvars)
             >>> exo.put_side_set_variable_name("new_ssvar", new_ssvar_index)
+        ```
         """
         ssType = ex_entity_type("EX_SIDE_SET")
         SSvarNames = self.get_side_set_variable_names()
@@ -3307,13 +3347,16 @@ class exodus:
           return value(s):
             <bool>  status  True = successful execution
 
-          NOTE:
-            this method is often called within the following sequence:
+        Note:
+        -----
+        this method is often called within the following sequence:
+        ```
             >>> num_gvars = exo.get_global_variable_number()
             >>> new_gvar_index = num_gvars + 1
             >>> num_gvars += 1
             >>> exo.set_global_variable_number(num_gvars)
             >>> exo.put_global_variable_name("new_gvar", new_gvar_index)
+        ```
         """
         gbType = ex_entity_type("EX_GLOBAL")
         GlobVarNames = self.get_global_variable_names()
@@ -3656,9 +3699,10 @@ class exodus:
 
           -> close the exodus file
 
-          NOTE:
-            Can only be called once for an exodus object, and once called
-            all methods for that object become inoperable
+        Note:
+        -----
+        Can only be called once for an exodus object, and once called
+        all methods for that object become inoperable
         """
         print(("Closing exodus file: " + self.fileName))
         errorInt = EXODUS_LIB.ex_close(self.fileId)
@@ -4716,13 +4760,15 @@ def collectElemConnectivity(exodusHandle, connectivity):
     """
       This function generates a list of lists that represent the element connectivity.
 
-      Usage:
-
+    Usage:
+    ------
+    ```
       exodusHandle = exodus("file.g", "r")
       connectivity = []
       collectElemConnectivity(exodusHandle, connectivity)
 
       exodusHandle.close()
+    ```
     """
 
     if not isinstance(connectivity, list):
@@ -4752,14 +4798,16 @@ def collectLocalNodeToLocalElems(
       This function generates a list of lists to go from local node id
       to local elem id.
 
-      Usage:
-
+    Usage:
+    ------
+    ```
       exodusHandle = exodus("file.g", "r")
       connectivity = [] ## If this is not empty it will assume it is already filled.
       localNodeToLocalElems = []
       collectLocalNodeToLocalElems(exodusHandle, connectivity, localNodeToLocalElems)
 
       exodusHandle.close()
+    ```
     """
 
     if not isinstance(connectivity, list):
@@ -4797,8 +4845,9 @@ def collectLocalElemToLocalElems(
       This function generates a list of lists to go from local elem id
       to connected local elem ids.
 
-      Usage:
-
+    Usage:
+    ------
+    ```
       exodusHandle = exodus("file.g", "r")
       connectivity = [] ## If this is not empty it will assume it is already filled.
       localNodeToLocalElems = [] ## If this is not empty it will assume it is already filled.
@@ -4807,6 +4856,7 @@ def collectLocalElemToLocalElems(
                                    localElemToLocalElems)
 
       exodusHandle.close()
+    ```
     """
 
     if not isinstance(connectivity, list):
@@ -4872,7 +4922,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
     exo_to : exodus object
         New exodus mesh
 
-    Notes
+    Note:
     -----
     This function also allows one to add new element attributes during the copy
     process.  The number of element attributes is permanently set when the
@@ -4973,12 +5023,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
     for blkId in blkIds:
         (elemType, numElem, nodesPerElem, _oldnumAttr) = exoFrom.elem_blk_info(blkId)
         numAttr = len(e_attr_names[blkId])
-        exo_to.put_elem_blk_info(
-            blkId,
-            elemType,
-            numElem,
-            nodesPerElem,
-            numAttr)
+        exo_to.put_elem_blk_info(blkId, elemType, numElem, nodesPerElem, numAttr)
         (connectivity, numElem, nodesPerElem) = exoFrom.get_elem_connectivity(blkId)
         exo_to.put_elem_connectivity(blkId, connectivity)
         if numAttr > 0:
@@ -5063,23 +5108,30 @@ def transfer_variables(
         additionalNodalVariables=[],
         additionalElementVariables=[]):
     """
-      This function transfers variables from exoFrom to exo_to and allows
-      additional variables to be added with additionalGlobalVariables,
-      additionalNodalVariables, and additionalElementVariables.  Additional
-      variables values are set to their defaults so that the user can populate
-      them later.
+    This function transfers variables from `exoFrom` to `exo_to` and allows
+    additional variables to be added with `additionalGlobalVariables`,
+    `additionalNodalVariables`, and `additionalElementVariables`.  Additional
+    variables values are set to their defaults so that the user can populate
+    them later.
 
-      exoFrom: exodus object to transfer from
+    Parameters
+    ----------
+    exoFrom : exodus database object
+        exodus object to transfer from
 
-      exo_to: exodus object to transfer to
+    exo_to : exodus dabase object
+        exodus object to transfer to
 
-      additionalGlobalVariables: list of global variable names to add.
+    additionalGlobalVariables : list 
+        list of global variable names to add.
 
-      additionalNodalVaraibles: list of nodal variable names to add.
+    additionalNodalVariables : list
+        list of nodal variable names to add.
 
-      additionalElementVariables: should be a list of element variable names to add to all blocks or
-        tuples (name, blkIds) where name is the element variable to add
-        and blkIds is a list of blkIds to add it to.
+    additionalElementVariables : list 
+        should be a list of element variable names to add to all blocks or
+        tuples `(name, blkIds)` where `name` is the element variable to add
+        and `blkIds` is a list of block ids to add it to.
     """
     # IDEA: It may make sense to make transfer_variables() strictly transfer
     # variables, and use add_variables() to add new variables.  Alternatively,
@@ -5231,7 +5283,7 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[]):
 
     Parameters
     ----------
-      exo: exodus database object
+    exo : exodus database object
         Exodus database that variables will be added to.
     global_vars : list
         global variable names to add.
@@ -5248,8 +5300,8 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[]):
         Exodus database with variables added to it.  (The values of the variables
         are set to their defaults so that the user can populate them later.)
 
-    See Also
-    --------
+    Note
+    ----
     This function does not allow one to add element attributes to an exodus
     database.  See the copy_mesh() function for that capability.
     """
@@ -5364,28 +5416,43 @@ def copyTransfer(
         additionalElementVariables=[],
         additionalElementAttributes=[]):
     """
-      This function creates an exodus file toFileName and copies
-      everything from exodus file fromFileName returning a file handle
-      to toFileName.
+    This function creates an exodus file `toFileName` and copies
+    everything from exodus file `fromFileName` returning a file handle
+    to `toFileName`.
+    
+    Additional space is allocated for `additionalGlobalVariables`,
+    `additionalNodalVariables` and `additionalElementVariables` if
+    specified.
 
-      Additional space is allocated for additionalGlobalVariables,
-      additionalNodalVariables and additionalElementVariables if
-      specified.
+    Parameters
+    ----------
+    fromFileName : string
+        File name of the exodus mesh to be copied
+    toFileName : string
+        File name of the new exodus mesh
+    array_type : 'ctype' | 'numpy'
+        Specifies whether arrays will be imported and copied as ctype or numpy
+        arrays.  (This option should make no difference to the user, but it can
+        be used by developers to test whether the commands within this function
+        handle both array types correctly.)
+    additionalGlobalVariables : list
+        list of global variable names to add.
+    additionalNodalVaraibles: list
+        list of nodal variable names to add.
+    additionalElementVariables: list 
+        should be a list of element variable
+        names to add to all blocks or tuples (name, blkIds) where name is
+        the element variable to add and blkIds is a list of blkIds to add
+        it to.
+    additionalElementAttributes: list
+        list of element attribute names to
+         add to all blocks or tuples ( name, blkIds ) where name is the
+         element attribute to add and blkIds is a list of blkIds to add it
+         to.  
 
-      additionalGlobalVariables: list of global variable names to add.
-
-      additionalNodalVaraibles: list of nodal variable names to add.
-
-      additionalElementVariables: should be a list of element variable
-      names to add to all blocks or tuples (name, blkIds) where name is
-      the element variable to add and blkIds is a list of blkIds to add
-      it to.
-
-      additionalElementAttributes: list of element attribute names to
-      add to all blocks or tuples ( name, blkIds ) where name is the
-      element attribute to add and blkIds is a list of blkIds to add it
-      to.  Usage:
-
+    Usage:
+    ------
+    ```
       fromFileName = "input.e"
       toFileName = "output.e"
       ## Do not add any new global variables
@@ -5403,7 +5470,7 @@ def copyTransfer(
       ## Fill in new variables
 
       toFileHandle.close()
-
+    ```
     """
 
     exoFrom = exodus(fromFileName, "r", array_type=array_type)
@@ -5428,17 +5495,17 @@ def ctype_to_numpy(exo, c_array):
     """
     Converts a c-type array into a numpy array
 
-      Parameters
-      ----------
-      exo : exodus object
-          exodus database object initialized with the option array_type = 'numpy'
-      c_array : c-type array
-          c-type array to be converted into a numpy array
+    Parameters
+    ----------
+    exo : exodus object
+        exodus database object initialized with the option `array_type = 'numpy'`
+    c_array : c-type array
+        c-type array to be converted into a numpy array
 
-      Returns
-      -------
-      np_array : numpy array
-          Numpy array converted from c-type array
+    Returns
+    -------
+    np_array : numpy array
+        Numpy array converted from c-type array
     """
     # ctypes currently produce invalid PEP 3118 type codes, which causes numpy
     # to issue a warning.  This is a bug and can be ignored.
