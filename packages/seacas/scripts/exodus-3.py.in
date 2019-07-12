@@ -1537,8 +1537,7 @@ class exodus:
         -------
             <string>  name
         """
-        objType = ex_entity_type(object_type)
-        name = self.__ex_get_name(objType, object_id)
+        name = self.__ex_get_name(object_type, object_id)
         return name
 
     # --------------------------------------------------------------------
@@ -1560,8 +1559,7 @@ class exodus:
         -------
             <string>  elem_blk_name
         """
-        objType = ex_entity_type(object_type)
-        self.__ex_put_name(objType, object_id, name)
+        self.__ex_put_name(object_type, object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -1622,7 +1620,7 @@ class exodus:
         -------
             <string>  elem_blk_name
         """
-        return self.get_name('EX_ELEM_BLOCK', object_id)
+        return self.__ex_get_name('EX_ELEM_BLOCK', object_id)
 
     # --------------------------------------------------------------------
 
@@ -1638,7 +1636,7 @@ class exodus:
             <int>     elem_blk_id    element block *ID* (not *INDEX*)
             <string>  elem_blk_name
         """
-        self.put_name('EX_ELEM_BLOCK', object_id, name)
+        self.__ex_put_name('EX_ELEM_BLOCK', object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -2409,9 +2407,7 @@ class exodus:
         -------
             <string>  node_set_name
         """
-        objType = ex_entity_type('EX_NODE_SET')
-        nodeSetName = self.__ex_get_name(objType, object_id)
-        return nodeSetName
+        return self.__ex_get_name('EX_NODE_SET', object_id)
 
     # --------------------------------------------------------------------
 
@@ -2427,7 +2423,7 @@ class exodus:
             <int>     node_set_id    node set *ID* (not *INDEX*)
             <string>  node_set_name
         """
-        self.put_name('EX_NODE_SET', object_id, name)
+        self.__ex_put_name('EX_NODE_SET', object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -3012,9 +3008,7 @@ class exodus:
         -------
             <string>  side_set_name
         """
-        objType = ex_entity_type('EX_SIDE_SET')
-        sideSetName = self.__ex_get_name(objType, object_id)
-        return sideSetName
+        return self.__ex_get_name('EX_SIDE_SET', object_id)
 
     # --------------------------------------------------------------------
 
@@ -3030,7 +3024,7 @@ class exodus:
             <int>     side_set_id    side set *ID* (not *INDEX*)
             <string>  side_set_name
         """
-        self.put_name('EX_SIDE_SET', object_id, name)
+        self.__ex_put_name('EX_SIDE_SET', object_id, name)
 
     # --------------------------------------------------------------------
 
@@ -4409,7 +4403,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_name(self, objType, objId):
-        obj_type = c_int(objType)
+        obj_type = c_int(ex_entity_type(objType))
         obj_id = c_longlong(objId)
         obj_name = create_string_buffer(MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_get_name(self.fileId, obj_type, obj_id, byref(obj_name))
@@ -4418,7 +4412,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_name(self, objType, objId, objName):
-        obj_type = c_int(objType)
+        obj_type = c_int(ex_entity_type(objType))
         obj_id = c_longlong(objId)
         obj_name = create_string_buffer(objName.encode('ascii'), MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_name(self.fileId, obj_type, obj_id, obj_name)
