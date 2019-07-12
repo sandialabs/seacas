@@ -352,24 +352,43 @@ def ex_entity_type(varType):
 class ex_init_params(Structure):
     """
     Parameters defining the model dimension, note that many are optional.
-    ```
-    <int>     num_dim        number of model dimensions
-    <int>     num_nodes      number of model nodes
-    <int>     num_edge       number of model edges
-    <int>     num_edge_blk   number of model edge blocks
-    <int>     num_face       number of model faces
-    <int>     num_face_blk   number of model face blocks
-    <int>     num_elem       number of model elements
-    <int>     num_elem_blk   number of model element blocks
-    <int>     num_node_sets  number of model node sets
-    <int>     num_edge_sets  number of model edge sets
-    <int>     num_face_sets  number of model face sets
-    <int>     num_side_sets  number of model side sets
-    <int>     num_elem_sets  number of model elem sets
-    <int>     num_node_maps  number of model node maps
-    <int>     num_edge_maps  number of model edge maps
-    <int>     num_face_maps  number of model face maps
-    <int>     num_elem_maps  number of model elem maps
+
+    Parameters
+    ----------
+    num_dim : int
+        number of model dimensions
+    num_nodes : int
+        number of model nodes
+    num_edge : int
+        number of model edges
+    num_edge_blk: int
+        number of model edge blocks
+    num_face: int
+        number of model faces
+    num_face_blk: int
+        number of model face blocks
+    num_elem: int
+        number of model elements
+    num_elem_blk: int
+        number of model element blocks
+    num_node_sets: int
+        number of model node sets
+    num_edge_sets: int
+        number of model edge sets
+    num_face_sets: int
+        number of model face sets
+    num_side_sets: int
+        number of model side sets
+    num_elem_sets: int
+        number of model elem sets
+    num_node_maps: int
+        number of model node maps
+    num_edge_maps: int
+        number of model edge maps
+    num_face_maps: int
+        number of model face maps
+    num_elem_maps: int
+        number of model elem maps
     ```
     """
     _fields_ = [("title", c_char * (MAX_LINE_LENGTH + 1)),
@@ -1813,6 +1832,63 @@ class exodus:
 
     # --------------------------------------------------------------------
 
+    def get_attr_values(self, object_type, blk_id, attr_name):
+        """
+        get an attribute for each entity in a block
+        ```
+        attrs = exo.get_attr_values('EX_ELEM_BLOCK', blk_id)
+        ```
+
+        Parameters
+        ----------
+            <int>    object_type    block/set type
+            <int>    blk_id         block *ID* (not *INDEX*)
+            <string> attr_name      attribute name
+
+        Returns
+        -------
+            if array_type == 'ctype': <list<float>>  values
+            if array_type == 'numpy': <np_array<float>>  values
+                array of values for the requested
+                attribute.  Array has dimensions of
+                1 x num_elem, where num_elem is the
+                number of entities on the block.
+        """
+        # Determine index of requested attribute in attribute list
+        attr_names = self.get_attribute_names(blk_id)
+        a_ndx = attr_names.index(attr_name)
+
+        values = self.__ex_get_one_attr(object_type, blk_id, a_ndx)
+        if self.use_numpy:
+            values = ctype_to_numpy(self, values)
+        return values
+
+    # --------------------------------------------------------------------
+
+    def put_attr_values(self, object_type, blk_id, attr_name, values):
+        """
+        store an attribute for each entity in a block
+        ```
+        exo.put_attr_values('EX_ELEM_BLOCK', blk_id, attr_name, values)
+        ```
+
+        Parameters
+        ----------
+            <int>          object_type    block/set type
+            <int>          blk_id         block *ID* (not *INDEX*)
+            <string>       attr_name      attribute name
+            <list<float>>  values         list of values for a single attribute
+                                          on a block.  List dimensions
+                                          should be 1 x N_entity, where N_entity is
+                                          the number of entities on the block.
+        """
+        # Determine index of requested attribute in attribute list
+        attr_names = self.get_attribute_names(object_type, blk_id)
+        a_ndx = attr_names.index(attr_name)
+        self.__ex_put_one_attr(object_type, blk_id, a_ndx, values)
+ 
+   # --------------------------------------------------------------------
+
     def get_elem_attr(self, elem_blk_id):
         """
         get all attributes for each element in a block
@@ -1865,16 +1941,11 @@ class exodus:
                 1 x num_elem, where num_elem is the
                 number of elements on the element block.
         """
-        # The exo.get_elem_attr() method dumps all the element attributes in one
-        # monolithic list.  This can be cumbersome for the user, and
-        # prompted the following convenience function, which grabs a single set
-        # of element attribute values from the proper location in the monolithic
-        # list.
+        # Determine index of requested attribute in attribute list
         elem_attr_names = self.get_element_attribute_names(elem_blk_id)
         a_ndx = elem_attr_names.index(elem_attr_name)
-        num_attr = len(elem_attr_names)
-        all_values = self.get_elem_attr(elem_blk_id)
-        values = all_values[a_ndx::num_attr]
+
+        values = self.__ex_get_one_attr('EX_ELEM_BLOCK', elem_blk_id, a_ndx)
         if self.use_numpy:
             values = ctype_to_numpy(self, values)
         return values
@@ -1921,6 +1992,7 @@ class exodus:
                                           the number of elements on the element
                                           block.
         """
+        # Determine index of requested attribute in attribute list
         elem_attr_names = self.get_element_attribute_names(elem_blk_id)
         a_ndx = elem_attr_names.index(elem_attr_name)
         self.__ex_put_one_attr('EX_ELEM_BLOCK', elem_blk_id, a_ndx, values)
@@ -4794,6 +4866,23 @@ class exodus:
             elem_blk_id,
             attr_index,
             attrib)
+
+    # --------------------------------------------------------------------
+
+    def __ex_get_one_attr(self, objType, elemBlkID, attrIndx):
+        elem_blk_id = c_longlong(elemBlkID)
+        obj_type = c_int(objType)
+        attr_index = c_longlong(attrIndx)
+        inqType = ex_inquiry(ex_obj_to_inq(objType))
+        num_objs = c_int(self.__ex_inquire_int(inqType)).value
+        attrib = (c_double * num_objs)()
+        EXODUS_LIB.ex_get_one_attr(
+            self.fileId,
+            obj_type,
+            elem_blk_id,
+            attr_index,
+            byref(attrib))
+        return attrib
 
     # --------------------------------------------------------------------
 
