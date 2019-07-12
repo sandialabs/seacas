@@ -1830,63 +1830,6 @@ class exodus:
         assert len(connectivity) == (numBlkElems * numNodesPerElem)
         self.__ex_put_elem_conn(object_id, connectivity)
 
-    # --------------------------------------------------------------------
-
-    def get_attr_values(self, object_type, blk_id, attr_name):
-        """
-        get an attribute for each entity in a block
-        ```
-        attrs = exo.get_attr_values('EX_ELEM_BLOCK', blk_id)
-        ```
-
-        Parameters
-        ----------
-            <int>    object_type    block/set type
-            <int>    blk_id         block *ID* (not *INDEX*)
-            <string> attr_name      attribute name
-
-        Returns
-        -------
-            if array_type == 'ctype': <list<float>>  values
-            if array_type == 'numpy': <np_array<float>>  values
-                array of values for the requested
-                attribute.  Array has dimensions of
-                1 x num_elem, where num_elem is the
-                number of entities on the block.
-        """
-        # Determine index of requested attribute in attribute list
-        attr_names = self.get_attribute_names(blk_id)
-        a_ndx = attr_names.index(attr_name)
-
-        values = self.__ex_get_one_attr(object_type, blk_id, a_ndx)
-        if self.use_numpy:
-            values = ctype_to_numpy(self, values)
-        return values
-
-    # --------------------------------------------------------------------
-
-    def put_attr_values(self, object_type, blk_id, attr_name, values):
-        """
-        store an attribute for each entity in a block
-        ```
-        exo.put_attr_values('EX_ELEM_BLOCK', blk_id, attr_name, values)
-        ```
-
-        Parameters
-        ----------
-            <int>          object_type    block/set type
-            <int>          blk_id         block *ID* (not *INDEX*)
-            <string>       attr_name      attribute name
-            <list<float>>  values         list of values for a single attribute
-                                          on a block.  List dimensions
-                                          should be 1 x N_entity, where N_entity is
-                                          the number of entities on the block.
-        """
-        # Determine index of requested attribute in attribute list
-        attr_names = self.get_attribute_names(object_type, blk_id)
-        a_ndx = attr_names.index(attr_name)
-        self.__ex_put_one_attr(object_type, blk_id, a_ndx, values)
- 
    # --------------------------------------------------------------------
 
     def get_elem_attr(self, elem_blk_id):
