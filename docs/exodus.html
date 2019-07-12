@@ -1700,8 +1700,7 @@ class exodus:
         -------
             &lt;list&lt;string&gt;&gt;  names
         &#34;&#34;&#34;
-        objType = ex_entity_type(object_type)
-        names = self.__ex_get_names(objType)
+        names = self.__ex_get_names(object_type)
         return names
 
     # --------------------------------------------------------------------
@@ -1722,8 +1721,7 @@ class exodus:
             &lt;list&lt;string&gt;&gt;  names
         &#34;&#34;&#34;
 
-        objType = ex_entity_type(object_type)
-        self.__ex_put_names(objType, names)
+        self.__ex_put_names(object_type, names)
 
     # --------------------------------------------------------------------
 
@@ -1775,8 +1773,7 @@ class exodus:
         -------
             &lt;list&lt;string&gt;&gt;  elem_blk_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-        elemBlkNames = self.__ex_get_names(objType)
+        elemBlkNames = self.__ex_get_names(&#39;EX_ELEM_BLOCK&#39;)
         return elemBlkNames
 
     # --------------------------------------------------------------------
@@ -1794,8 +1791,7 @@ class exodus:
         ----------
             &lt;list&lt;string&gt;&gt;  elem_blk_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-        self.__ex_put_names(objType, names)
+        self.__ex_put_names(&#39;EX_ELEM_BLOCK&#39;, names)
 
     # --------------------------------------------------------------------
 
@@ -1818,7 +1814,7 @@ class exodus:
             &lt;int&gt;     num_elem_nodes  number of nodes per element
             &lt;int&gt;     num_elem_attrs  number of attributes per element
         &#34;&#34;&#34;
-        (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_elem_block(object_id)
+        (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         return elemType.value, numElem.value, nodesPerElem.value, numAttr.value
 
     # --------------------------------------------------------------------
@@ -1840,8 +1836,8 @@ class exodus:
             &lt;int&gt;     num_elem_nodes   number of nodes per element
             &lt;int&gt;     num_elem_attrs   number of attributes per element
         &#34;&#34;&#34;
-        self.__ex_put_elem_block(elem_blk_id, elem_type, num_blk_elems,
-                                 num_elem_nodes, num_elem_attrs)
+        self.__ex_put_block(&#39;EX_ELEM_BLOCK&#39;, elem_blk_id, elem_type, num_blk_elems,
+                            num_elem_nodes, num_elem_attrs)
 
     # --------------------------------------------------------------------
 
@@ -2075,7 +2071,7 @@ class exodus:
         -------
             &lt;string&gt;  elem_type
         &#34;&#34;&#34;
-        (elemType, _numElem, _nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
+        (elemType, _numElem, _nodesPerElem, _numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         return elemType.value
 
     # --------------------------------------------------------------------
@@ -2095,7 +2091,7 @@ class exodus:
         -------
             &lt;int&gt;  num_elem_attrs
         &#34;&#34;&#34;
-        (_elemType, _numElem, _nodesPerElem, numAttr) = self.__ex_get_elem_block(object_id)
+        (_elemType, _numElem, _nodesPerElem, numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         return numAttr.value
 
     # --------------------------------------------------------------------
@@ -2115,7 +2111,7 @@ class exodus:
         -------
             &lt;int&gt;  num_blk_elems
         &#34;&#34;&#34;
-        (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
+        (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         return numElem.value
 
     # --------------------------------------------------------------------
@@ -2135,7 +2131,7 @@ class exodus:
         -------
             &lt;int&gt;  num_elem_nodes
         &#34;&#34;&#34;
-        (_elemType, _numElem, nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
+        (_elemType, _numElem, nodesPerElem, _numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         return nodesPerElem.value
 
     # --------------------------------------------------------------------
@@ -2566,8 +2562,7 @@ class exodus:
         -------
             &lt;list&lt;string&gt;&gt;  node_set_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_NODE_SET&#39;)
-        nodeSetNames = self.__ex_get_names(objType)
+        nodeSetNames = self.__ex_get_names(&#39;EX_NODE_SET&#39;)
         return nodeSetNames
 
     # --------------------------------------------------------------------
@@ -2585,8 +2580,7 @@ class exodus:
         ----------
             &lt;list&lt;string&gt;&gt;  node_set_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_NODE_SET&#39;)
-        self.__ex_put_names(objType, names)
+        self.__ex_put_names(&#39;EX_NODE_SET&#39;, names)
 
     # --------------------------------------------------------------------
 
@@ -3171,8 +3165,7 @@ class exodus:
         -------
             &lt;list&lt;string&gt;&gt;  side_set_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_SIDE_SET&#39;)
-        sideSetNames = self.__ex_get_names(objType)
+        sideSetNames = self.__ex_get_names(&#39;EX_SIDE_SET&#39;)
         return sideSetNames
 
     # --------------------------------------------------------------------
@@ -3190,8 +3183,7 @@ class exodus:
         ----------
             &lt;list&lt;string&gt;&gt;  side_set_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_SIDE_SET&#39;)
-        self.__ex_put_names(objType, names)
+        self.__ex_put_names(&#39;EX_SIDE_SET&#39;, names)
 
     # --------------------------------------------------------------------
 
@@ -4560,7 +4552,7 @@ class exodus:
                 create_string_buffer(
                     MAX_NAME_LENGTH + 1))
 
-        obj_type = c_int(objType)
+        obj_type = c_int(ex_entity_type(objType))
         EXODUS_LIB.ex_get_names(self.fileId, obj_type, byref(obj_name_ptrs))
         obj_names = []
         for onp in obj_name_ptrs:
@@ -4574,7 +4566,7 @@ class exodus:
         numObjs = c_int(self.__ex_inquire_int(inqType)).value
         assert numObjs == len(objNames)
         obj_name_ptrs = (POINTER(c_char * (MAX_NAME_LENGTH + 1)) * numObjs)()
-        obj_type = c_int(objType)
+        obj_type = c_int(ex_entity_type(objType))
         for i in range(numObjs):
             obj_name_ptrs[i] = pointer(
                 create_string_buffer(
@@ -4828,9 +4820,10 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_elem_block(self, object_id):
-        elem_block_id = c_longlong(object_id)
-        elem_type = create_string_buffer(MAX_STR_LENGTH + 1)
+    def __ex_get_block(self, object_type, object_id):
+        obj_type = c_int(ex_entity_type(object_type))
+        block_id = c_longlong(object_id)
+        type = create_string_buffer(MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
             num_elem_this_blk = c_longlong(0)
             num_nodes_per_elem = c_longlong(0)
@@ -4845,39 +4838,43 @@ class exodus:
             num_attr = c_int(0)
         EXODUS_LIB.ex_get_block(
             self.fileId,
-            ex_entity_type(&#39;EX_ELEM_BLOCK&#39;),
-            elem_block_id,
-            elem_type,
+            obj_type,
+            block_id,
+            type,
             byref(num_elem_this_blk),
             byref(num_nodes_per_elem),
             byref(num_edges_per_elem),
             byref(num_faces_per_elem),
             byref(num_attr))
-        return elem_type, num_elem_this_blk, num_nodes_per_elem, num_attr
+        return type, num_elem_this_blk, num_nodes_per_elem, num_attr
 
     # --------------------------------------------------------------------
 
-    def __ex_put_elem_block(
+    def __ex_put_block(
             self,
+            object_type,
             object_id,
             eType,
             numElems,
             numNodesPerElem,
             numAttrsPerElem):
-        elem_block_id = c_longlong(object_id)
+        obj_type = c_int(ex_entity_type(object_type))
+        block_id = c_longlong(object_id)
         elem_type = create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
         num_elem_this_blk = c_longlong(numElems)
         num_nodes_per_elem = c_longlong(numNodesPerElem)
+        num_edges_per_elem = c_longlong(0)
+        num_faces_per_elem = c_longlong(0)
         num_attr = c_longlong(numAttrsPerElem)
-        EXODUS_LIB.ex_put_elem_block(self.fileId, elem_block_id, elem_type,
-                                     num_elem_this_blk, num_nodes_per_elem,
-                                     num_attr)
+        EXODUS_LIB.ex_put_block(self.fileId, obj_type, block_id, elem_type,
+                                num_elem_this_blk, num_nodes_per_elem,
+                                num_edges_per_elem, num_faces_per_elem, num_attr)
 
     # --------------------------------------------------------------------
 
     def __ex_get_elem_conn(self, object_id):
         (_elem_type, num_elem_this_blk, num_nodes_per_elem,
-         _num_attr) = self.__ex_get_elem_block(object_id)
+         _num_attr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         elem_block_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
             elem_block_connectivity = (
@@ -4895,7 +4892,7 @@ class exodus:
 
     def __ex_put_elem_conn(self, object_id, connectivity):
         (_elem_type, num_elem_this_blk, num_nodes_per_elem,
-         _num_attr) = self.__ex_get_elem_block(object_id)
+         _num_attr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         elem_block_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
             elem_block_connectivity = (
@@ -8675,8 +8672,7 @@ exo = exodus(file_name, mode=mode, title=title,
         -------
             &lt;list&lt;string&gt;&gt;  names
         &#34;&#34;&#34;
-        objType = ex_entity_type(object_type)
-        names = self.__ex_get_names(objType)
+        names = self.__ex_get_names(object_type)
         return names
 
     # --------------------------------------------------------------------
@@ -8697,8 +8693,7 @@ exo = exodus(file_name, mode=mode, title=title,
             &lt;list&lt;string&gt;&gt;  names
         &#34;&#34;&#34;
 
-        objType = ex_entity_type(object_type)
-        self.__ex_put_names(objType, names)
+        self.__ex_put_names(object_type, names)
 
     # --------------------------------------------------------------------
 
@@ -8750,8 +8745,7 @@ exo = exodus(file_name, mode=mode, title=title,
         -------
             &lt;list&lt;string&gt;&gt;  elem_blk_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-        elemBlkNames = self.__ex_get_names(objType)
+        elemBlkNames = self.__ex_get_names(&#39;EX_ELEM_BLOCK&#39;)
         return elemBlkNames
 
     # --------------------------------------------------------------------
@@ -8769,8 +8763,7 @@ exo = exodus(file_name, mode=mode, title=title,
         ----------
             &lt;list&lt;string&gt;&gt;  elem_blk_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-        self.__ex_put_names(objType, names)
+        self.__ex_put_names(&#39;EX_ELEM_BLOCK&#39;, names)
 
     # --------------------------------------------------------------------
 
@@ -8793,7 +8786,7 @@ exo = exodus(file_name, mode=mode, title=title,
             &lt;int&gt;     num_elem_nodes  number of nodes per element
             &lt;int&gt;     num_elem_attrs  number of attributes per element
         &#34;&#34;&#34;
-        (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_elem_block(object_id)
+        (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         return elemType.value, numElem.value, nodesPerElem.value, numAttr.value
 
     # --------------------------------------------------------------------
@@ -8815,8 +8808,8 @@ exo = exodus(file_name, mode=mode, title=title,
             &lt;int&gt;     num_elem_nodes   number of nodes per element
             &lt;int&gt;     num_elem_attrs   number of attributes per element
         &#34;&#34;&#34;
-        self.__ex_put_elem_block(elem_blk_id, elem_type, num_blk_elems,
-                                 num_elem_nodes, num_elem_attrs)
+        self.__ex_put_block(&#39;EX_ELEM_BLOCK&#39;, elem_blk_id, elem_type, num_blk_elems,
+                            num_elem_nodes, num_elem_attrs)
 
     # --------------------------------------------------------------------
 
@@ -9050,7 +9043,7 @@ exo = exodus(file_name, mode=mode, title=title,
         -------
             &lt;string&gt;  elem_type
         &#34;&#34;&#34;
-        (elemType, _numElem, _nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
+        (elemType, _numElem, _nodesPerElem, _numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         return elemType.value
 
     # --------------------------------------------------------------------
@@ -9070,7 +9063,7 @@ exo = exodus(file_name, mode=mode, title=title,
         -------
             &lt;int&gt;  num_elem_attrs
         &#34;&#34;&#34;
-        (_elemType, _numElem, _nodesPerElem, numAttr) = self.__ex_get_elem_block(object_id)
+        (_elemType, _numElem, _nodesPerElem, numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         return numAttr.value
 
     # --------------------------------------------------------------------
@@ -9090,7 +9083,7 @@ exo = exodus(file_name, mode=mode, title=title,
         -------
             &lt;int&gt;  num_blk_elems
         &#34;&#34;&#34;
-        (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
+        (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         return numElem.value
 
     # --------------------------------------------------------------------
@@ -9110,7 +9103,7 @@ exo = exodus(file_name, mode=mode, title=title,
         -------
             &lt;int&gt;  num_elem_nodes
         &#34;&#34;&#34;
-        (_elemType, _numElem, nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
+        (_elemType, _numElem, nodesPerElem, _numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         return nodesPerElem.value
 
     # --------------------------------------------------------------------
@@ -9541,8 +9534,7 @@ exo = exodus(file_name, mode=mode, title=title,
         -------
             &lt;list&lt;string&gt;&gt;  node_set_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_NODE_SET&#39;)
-        nodeSetNames = self.__ex_get_names(objType)
+        nodeSetNames = self.__ex_get_names(&#39;EX_NODE_SET&#39;)
         return nodeSetNames
 
     # --------------------------------------------------------------------
@@ -9560,8 +9552,7 @@ exo = exodus(file_name, mode=mode, title=title,
         ----------
             &lt;list&lt;string&gt;&gt;  node_set_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_NODE_SET&#39;)
-        self.__ex_put_names(objType, names)
+        self.__ex_put_names(&#39;EX_NODE_SET&#39;, names)
 
     # --------------------------------------------------------------------
 
@@ -10146,8 +10137,7 @@ exo = exodus(file_name, mode=mode, title=title,
         -------
             &lt;list&lt;string&gt;&gt;  side_set_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_SIDE_SET&#39;)
-        sideSetNames = self.__ex_get_names(objType)
+        sideSetNames = self.__ex_get_names(&#39;EX_SIDE_SET&#39;)
         return sideSetNames
 
     # --------------------------------------------------------------------
@@ -10165,8 +10155,7 @@ exo = exodus(file_name, mode=mode, title=title,
         ----------
             &lt;list&lt;string&gt;&gt;  side_set_names
         &#34;&#34;&#34;
-        objType = ex_entity_type(&#39;EX_SIDE_SET&#39;)
-        self.__ex_put_names(objType, names)
+        self.__ex_put_names(&#39;EX_SIDE_SET&#39;, names)
 
     # --------------------------------------------------------------------
 
@@ -11535,7 +11524,7 @@ exo = exodus(file_name, mode=mode, title=title,
                 create_string_buffer(
                     MAX_NAME_LENGTH + 1))
 
-        obj_type = c_int(objType)
+        obj_type = c_int(ex_entity_type(objType))
         EXODUS_LIB.ex_get_names(self.fileId, obj_type, byref(obj_name_ptrs))
         obj_names = []
         for onp in obj_name_ptrs:
@@ -11549,7 +11538,7 @@ exo = exodus(file_name, mode=mode, title=title,
         numObjs = c_int(self.__ex_inquire_int(inqType)).value
         assert numObjs == len(objNames)
         obj_name_ptrs = (POINTER(c_char * (MAX_NAME_LENGTH + 1)) * numObjs)()
-        obj_type = c_int(objType)
+        obj_type = c_int(ex_entity_type(objType))
         for i in range(numObjs):
             obj_name_ptrs[i] = pointer(
                 create_string_buffer(
@@ -11803,9 +11792,10 @@ exo = exodus(file_name, mode=mode, title=title,
 
     # --------------------------------------------------------------------
 
-    def __ex_get_elem_block(self, object_id):
-        elem_block_id = c_longlong(object_id)
-        elem_type = create_string_buffer(MAX_STR_LENGTH + 1)
+    def __ex_get_block(self, object_type, object_id):
+        obj_type = c_int(ex_entity_type(object_type))
+        block_id = c_longlong(object_id)
+        type = create_string_buffer(MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
             num_elem_this_blk = c_longlong(0)
             num_nodes_per_elem = c_longlong(0)
@@ -11820,39 +11810,43 @@ exo = exodus(file_name, mode=mode, title=title,
             num_attr = c_int(0)
         EXODUS_LIB.ex_get_block(
             self.fileId,
-            ex_entity_type(&#39;EX_ELEM_BLOCK&#39;),
-            elem_block_id,
-            elem_type,
+            obj_type,
+            block_id,
+            type,
             byref(num_elem_this_blk),
             byref(num_nodes_per_elem),
             byref(num_edges_per_elem),
             byref(num_faces_per_elem),
             byref(num_attr))
-        return elem_type, num_elem_this_blk, num_nodes_per_elem, num_attr
+        return type, num_elem_this_blk, num_nodes_per_elem, num_attr
 
     # --------------------------------------------------------------------
 
-    def __ex_put_elem_block(
+    def __ex_put_block(
             self,
+            object_type,
             object_id,
             eType,
             numElems,
             numNodesPerElem,
             numAttrsPerElem):
-        elem_block_id = c_longlong(object_id)
+        obj_type = c_int(ex_entity_type(object_type))
+        block_id = c_longlong(object_id)
         elem_type = create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
         num_elem_this_blk = c_longlong(numElems)
         num_nodes_per_elem = c_longlong(numNodesPerElem)
+        num_edges_per_elem = c_longlong(0)
+        num_faces_per_elem = c_longlong(0)
         num_attr = c_longlong(numAttrsPerElem)
-        EXODUS_LIB.ex_put_elem_block(self.fileId, elem_block_id, elem_type,
-                                     num_elem_this_blk, num_nodes_per_elem,
-                                     num_attr)
+        EXODUS_LIB.ex_put_block(self.fileId, obj_type, block_id, elem_type,
+                                num_elem_this_blk, num_nodes_per_elem,
+                                num_edges_per_elem, num_faces_per_elem, num_attr)
 
     # --------------------------------------------------------------------
 
     def __ex_get_elem_conn(self, object_id):
         (_elem_type, num_elem_this_blk, num_nodes_per_elem,
-         _num_attr) = self.__ex_get_elem_block(object_id)
+         _num_attr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         elem_block_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
             elem_block_connectivity = (
@@ -11870,7 +11864,7 @@ exo = exodus(file_name, mode=mode, title=title,
 
     def __ex_put_elem_conn(self, object_id, connectivity):
         (_elem_type, num_elem_this_blk, num_nodes_per_elem,
-         _num_attr) = self.__ex_get_elem_block(object_id)
+         _num_attr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
         elem_block_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
             elem_block_connectivity = (
@@ -12397,7 +12391,7 @@ new exodus object</p>
         &lt;int&gt;     num_elem_nodes  number of nodes per element
         &lt;int&gt;     num_elem_attrs  number of attributes per element
     &#34;&#34;&#34;
-    (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_elem_block(object_id)
+    (elemType, numElem, nodesPerElem, numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
     return elemType.value, numElem.value, nodesPerElem.value, numAttr.value</code></pre>
 </details>
 </dd>
@@ -12431,7 +12425,7 @@ new exodus object</p>
     -------
         &lt;string&gt;  elem_type
     &#34;&#34;&#34;
-    (elemType, _numElem, _nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
+    (elemType, _numElem, _nodesPerElem, _numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
     return elemType.value</code></pre>
 </details>
 </dd>
@@ -12939,8 +12933,7 @@ difference between block <em>ID</em> and block <em>INDEX</em>)</p>
     -------
         &lt;list&lt;string&gt;&gt;  elem_blk_names
     &#34;&#34;&#34;
-    objType = ex_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-    elemBlkNames = self.__ex_get_names(objType)
+    elemBlkNames = self.__ex_get_names(&#39;EX_ELEM_BLOCK&#39;)
     return elemBlkNames</code></pre>
 </details>
 </dd>
@@ -13692,8 +13685,7 @@ difference between <em>ID</em> and <em>INDEX</em>)</p>
     -------
         &lt;list&lt;string&gt;&gt;  names
     &#34;&#34;&#34;
-    objType = ex_entity_type(object_type)
-    names = self.__ex_get_names(objType)
+    names = self.__ex_get_names(object_type)
     return names</code></pre>
 </details>
 </dd>
@@ -13958,8 +13950,7 @@ difference between node set <em>ID</em> and node set <em>INDEX</em>)</p>
     -------
         &lt;list&lt;string&gt;&gt;  node_set_names
     &#34;&#34;&#34;
-    objType = ex_entity_type(&#39;EX_NODE_SET&#39;)
-    nodeSetNames = self.__ex_get_names(objType)
+    nodeSetNames = self.__ex_get_names(&#39;EX_NODE_SET&#39;)
     return nodeSetNames</code></pre>
 </details>
 </dd>
@@ -14677,8 +14668,7 @@ difference between side set <em>ID</em> and side set <em>INDEX</em>)</p>
     -------
         &lt;list&lt;string&gt;&gt;  side_set_names
     &#34;&#34;&#34;
-    objType = ex_entity_type(&#39;EX_SIDE_SET&#39;)
-    sideSetNames = self.__ex_get_names(objType)
+    sideSetNames = self.__ex_get_names(&#39;EX_SIDE_SET&#39;)
     return sideSetNames</code></pre>
 </details>
 </dd>
@@ -15186,7 +15176,7 @@ if array_type == 'numpy':
     -------
         &lt;int&gt;  num_elem_attrs
     &#34;&#34;&#34;
-    (_elemType, _numElem, _nodesPerElem, numAttr) = self.__ex_get_elem_block(object_id)
+    (_elemType, _numElem, _nodesPerElem, numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
     return numAttr.value</code></pre>
 </details>
 </dd>
@@ -15298,7 +15288,7 @@ if array_type == 'numpy':
     -------
         &lt;int&gt;  num_blk_elems
     &#34;&#34;&#34;
-    (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
+    (_elemType, numElem, _nodesPerElem, _numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
     return numElem.value</code></pre>
 </details>
 </dd>
@@ -15483,7 +15473,7 @@ if array_type == 'numpy':
     -------
         &lt;int&gt;  num_elem_nodes
     &#34;&#34;&#34;
-    (_elemType, _numElem, nodesPerElem, _numAttr) = self.__ex_get_elem_block(object_id)
+    (_elemType, _numElem, nodesPerElem, _numAttr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
     return nodesPerElem.value</code></pre>
 </details>
 </dd>
@@ -15832,8 +15822,8 @@ direction, a length exo.num_nodes() list is input</p>
         &lt;int&gt;     num_elem_nodes   number of nodes per element
         &lt;int&gt;     num_elem_attrs   number of attributes per element
     &#34;&#34;&#34;
-    self.__ex_put_elem_block(elem_blk_id, elem_type, num_blk_elems,
-                             num_elem_nodes, num_elem_attrs)</code></pre>
+    self.__ex_put_block(&#39;EX_ELEM_BLOCK&#39;, elem_blk_id, elem_type, num_blk_elems,
+                        num_elem_nodes, num_elem_attrs)</code></pre>
 </details>
 </dd>
 <dt id="exodus.exodus.put_elem_blk_name"><code class="name flex">
@@ -15891,8 +15881,7 @@ difference between block <em>ID</em> and block <em>INDEX</em>)</p>
     ----------
         &lt;list&lt;string&gt;&gt;  elem_blk_names
     &#34;&#34;&#34;
-    objType = ex_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-    self.__ex_put_names(objType, names)</code></pre>
+    self.__ex_put_names(&#39;EX_ELEM_BLOCK&#39;, names)</code></pre>
 </details>
 </dd>
 <dt id="exodus.exodus.put_elem_connectivity"><code class="name flex">
@@ -16680,8 +16669,7 @@ difference between <em>ID</em> and <em>INDEX</em>)</p>
         &lt;list&lt;string&gt;&gt;  names
     &#34;&#34;&#34;
 
-    objType = ex_entity_type(object_type)
-    self.__ex_put_names(objType, names)</code></pre>
+    self.__ex_put_names(object_type, names)</code></pre>
 </details>
 </dd>
 <dt id="exodus.exodus.put_node_count_per_face"><code class="name flex">
@@ -16898,8 +16886,7 @@ difference between node set <em>ID</em> and node set <em>INDEX</em>)</p>
     ----------
         &lt;list&lt;string&gt;&gt;  node_set_names
     &#34;&#34;&#34;
-    objType = ex_entity_type(&#39;EX_NODE_SET&#39;)
-    self.__ex_put_names(objType, names)</code></pre>
+    self.__ex_put_names(&#39;EX_NODE_SET&#39;, names)</code></pre>
 </details>
 </dd>
 <dt id="exodus.exodus.put_node_set_params"><code class="name flex">
@@ -17504,8 +17491,7 @@ difference between side set <em>ID</em> and side set <em>INDEX</em>)</p>
     ----------
         &lt;list&lt;string&gt;&gt;  side_set_names
     &#34;&#34;&#34;
-    objType = ex_entity_type(&#39;EX_SIDE_SET&#39;)
-    self.__ex_put_names(objType, names)</code></pre>
+    self.__ex_put_names(&#39;EX_SIDE_SET&#39;, names)</code></pre>
 </details>
 </dd>
 <dt id="exodus.exodus.put_side_set_params"><code class="name flex">
