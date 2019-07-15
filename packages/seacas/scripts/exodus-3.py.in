@@ -1150,9 +1150,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<int>>  node_id_map
         """
-        objType = ex_entity_type('EX_NODE_MAP')
-        inqType = ex_inquiry('EX_INQ_NODES')
-        nodeIdMap = self.__ex_get_id_map(objType, inqType)
+        nodeIdMap = self.__ex_get_id_map('EX_NODE_MAP')
         if self.use_numpy:
             nodeIdMap = self.np.array(nodeIdMap)
         return nodeIdMap
@@ -1180,9 +1178,7 @@ class exodus:
         -------
             <bool>  status  True = successful execution
         """
-        objType = ex_entity_type('EX_NODE_MAP')
-        inqType = ex_inquiry(ex_obj_to_inq('EX_NODE_MAP'))
-        return self.__ex_put_id_map(objType, inqType, id_map)
+        return self.__ex_put_id_map('EX_NODE_MAP', id_map)
 
     # --------------------------------------------------------------------
 
@@ -1197,10 +1193,9 @@ class exodus:
         -------
               <list<string>>  nvar_names
         """
-        ndType = ex_entity_type('EX_NODAL')
-        if self.__ex_get_variable_param(ndType).value == 0:
+        if self.__ex_get_variable_param('EX_NODAL').value == 0:
             return []
-        return self.__ex_get_variable_names(ndType)
+        return self.__ex_get_variable_names('EX_NODAL')
 
     # --------------------------------------------------------------------
 
@@ -1215,8 +1210,7 @@ class exodus:
         -------
         num_nvars :               <int> 
         """
-        ndType = ex_entity_type('EX_NODAL')
-        num = self.__ex_get_variable_param(ndType)
+        num = self.__ex_get_variable_param('EX_NODAL')
         return num.value
 
     # --------------------------------------------------------------------
@@ -1236,8 +1230,7 @@ class exodus:
         -------
               <bool>  status  True = successful execution
         """
-        ndType = ex_entity_type('EX_NODAL')
-        self.__ex_put_variable_param(ndType, number)
+        self.__ex_put_variable_param('EX_NODAL', number)
         return True
 
     # --------------------------------------------------------------------
@@ -1270,13 +1263,12 @@ class exodus:
             >>> exo.put_node_variable_name("new_nvar_name", new_nvar_index)
         ```
         """
-        ndType = ex_entity_type('EX_NODAL')
         NDvarNames = self.get_node_variable_names()
         if name in NDvarNames:
             print("WARNING: node variable \"{}\" already exists.".format(name))
         if index > len(NDvarNames):
             raise Exception("ERROR: variable index out of range.")
-        self.__ex_put_variable_name(ndType, index, name)
+        self.__ex_put_variable_name('EX_NODAL', index, name)
         return True
 
     # --------------------------------------------------------------------
@@ -1305,9 +1297,8 @@ class exodus:
         """
         names = self.get_node_variable_names()
         var_id = names.index(name) + 1
-        ndType = ex_entity_type('EX_NODAL')
         numVals = self.num_nodes()
-        values = self.__ex_get_var(step, ndType, var_id, 0, numVals)
+        values = self.__ex_get_var(step, 'EX_NODAL', var_id, 0, numVals)
         if self.use_numpy:
             values = ctype_to_numpy(self, values)
         return values
@@ -1334,9 +1325,8 @@ class exodus:
         """
         names = self.get_node_variable_names()
         var_id = names.index(name) + 1
-        ndType = ex_entity_type('EX_NODAL')
         numVals = self.num_nodes()
-        self.__ex_put_var(step, ndType, var_id, 0, numVals, values)
+        self.__ex_put_var(step, 'EX_NODAL', var_id, 0, numVals, values)
         return True
 
     #
@@ -1407,9 +1397,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<int>>  elem_id_map
         """
-        objType = ex_entity_type('EX_ELEM_MAP')
-        inqType = ex_inquiry(ex_obj_to_inq('EX_ELEM_MAP'))
-        elemIdMap = self.__ex_get_id_map(objType, inqType)
+        elemIdMap = self.__ex_get_id_map('EX_ELEM_MAP')
         if self.use_numpy:
             elemIdMap = self.np.array(elemIdMap)
         return elemIdMap
@@ -1438,9 +1426,7 @@ class exodus:
         -------
             <bool>  status  True = successful execution
         """
-        objType = ex_entity_type('EX_ELEM_MAP')
-        inqType = ex_inquiry(ex_obj_to_inq('EX_ELEM_MAP'))
-        return self.__ex_put_id_map(objType, inqType, id_map)
+        return self.__ex_put_id_map('EX_ELEM_MAP', id_map)
 
     # --------------------------------------------------------------------
 
@@ -2052,12 +2038,11 @@ class exodus:
               False otherwise
         """
         truthTable = self.__ex_get_truth_table('EX_ELEM_BLOCK')
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
         if blockId is not None:
             self.get_elem_blk_ids()
             assert blockId in list(self.elemBlkIds)
             indx = list(self.elemBlkIds).index(blockId)
-            numVars = self.__ex_get_variable_param(ebType).value
+            numVars = self.__ex_get_variable_param('EX_ELEM_BLOCK').value
             start, stop = (indx * numVars, (indx + 1) * numVars)
             return truthTable[start:stop]
         return truthTable
@@ -2114,9 +2099,8 @@ class exodus:
         """
         names = self.get_element_variable_names()
         var_id = names.index(name) + 1
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
         numVals = self.num_elems_in_blk(blockId)
-        values = self.__ex_get_var(step, ebType, var_id, blockId, numVals)
+        values = self.__ex_get_var(step, 'EX_ELEM_BLOCK', var_id, blockId, numVals)
         if self.use_numpy:
             values = ctype_to_numpy(self, values)
         return values
@@ -2149,9 +2133,8 @@ class exodus:
         """
         names = self.get_element_variable_names()
         var_id = names.index(name) + 1
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
         numVals = self.num_elems_in_blk(blockId)
-        self.__ex_put_var(step, ebType, var_id, blockId, numVals, values)
+        self.__ex_put_var(step, 'EX_ELEM_BLOCK', var_id, blockId, numVals, values)
         return True
 
     # --------------------------------------------------------------------
@@ -2167,8 +2150,7 @@ class exodus:
         -------
               <int>  num_evars
         """
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
-        num = self.__ex_get_variable_param(ebType)
+        num = self.__ex_get_variable_param('EX_ELEM_BLOCK')
         return num.value
 
     # --------------------------------------------------------------------
@@ -2188,8 +2170,7 @@ class exodus:
         -------
               <bool>  status  True = successful execution
         """
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
-        self.__ex_put_variable_param(ebType, number)
+        self.__ex_put_variable_param('EX_ELEM_BLOCK', number)
         return True
 
     # --------------------------------------------------------------------
@@ -2205,10 +2186,9 @@ class exodus:
         -------
               <list<string>>  evar_names
         """
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
-        if self.__ex_get_variable_param(ebType).value == 0:
+        if self.__ex_get_variable_param('EX_ELEM_BLOCK').value == 0:
             return []
-        return self.__ex_get_variable_names(ebType)
+        return self.__ex_get_variable_names('EX_ELEM_BLOCK')
 
     # --------------------------------------------------------------------
 
@@ -2241,14 +2221,13 @@ class exodus:
             >>> exo.put_element_variable_name("new_evar", new_evar_index)
         ```
         """
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
         EBvarNames = self.get_element_variable_names()
         if name in EBvarNames:
             print("WARNING: element variable \"{}\" already exists.".format(name))
         if index > len(EBvarNames):
             print(("index", index, "len", len(EBvarNames)))
             raise Exception("ERROR: variable index out of range.")
-        self.__ex_put_variable_name(ebType, index, name)
+        self.__ex_put_variable_name('EX_ELEM_BLOCK', index, name)
         return True
 
     # --------------------------------------------------------------------
@@ -2308,9 +2287,7 @@ class exodus:
             <list<string>>  eprop_names
         """
         names = []
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
-        inqType = 'EX_INQ_EB_PROP'
-        names = self.__ex_get_prop_names(ebType, inqType)
+        names = self.__ex_get_prop_names('EX_ELEM_BLOCK', 'EX_INQ_EB_PROP')
         return list(names)
 
     # --------------------------------------------------------------------
@@ -2333,8 +2310,7 @@ class exodus:
         -------
             <int>  eprop_val
         """
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
-        propVal = self.__ex_get_prop(ebType, object_id, name)
+        propVal = self.__ex_get_prop('EX_ELEM_BLOCK', object_id, name)
         return int(propVal)
 
     # --------------------------------------------------------------------
@@ -2359,8 +2335,7 @@ class exodus:
         -------
             <bool>  status  True = successful execution
         """
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
-        return self.__ex_put_prop(ebType, object_id, name, value)
+        return self.__ex_put_prop('EX_ELEM_BLOCK', object_id, name, value)
 
     #
     # nodesets
@@ -2612,8 +2587,7 @@ class exodus:
         -------
               <int>  num_nsvars
         """
-        nsType = ex_entity_type('EX_NODE_SET')
-        num = self.__ex_get_variable_param(nsType)
+        num = self.__ex_get_variable_param('EX_NODE_SET')
         return num.value
 
     # --------------------------------------------------------------------
@@ -2633,8 +2607,7 @@ class exodus:
         -------
               <bool>  status  True = successful execution
         """
-        nsType = ex_entity_type('EX_NODE_SET')
-        self.__ex_put_variable_param(nsType, number)
+        self.__ex_put_variable_param('EX_NODE_SET', number)
         return True
 
     # --------------------------------------------------------------------
@@ -2660,12 +2633,11 @@ class exodus:
               a node set, False otherwise
         """
         truthTable = self.__ex_get_truth_table('EX_NODE_SET')
-        nsType = ex_entity_type('EX_NODE_SET')
         if nodeSetId is not None:
             self.get_node_set_ids()
             assert nodeSetId in list(self.nodeSetIds)
             indx = list(self.nodeSetIds).index(nodeSetId)
-            numVars = self.__ex_get_variable_param(nsType).value
+            numVars = self.__ex_get_variable_param('EX_NODE_SET').value
             start, stop = (indx * numVars, (indx + 1) * numVars)
             return truthTable[start:stop]
         return truthTable
@@ -2705,10 +2677,9 @@ class exodus:
         -------
               <list<string>>  nsvar_names
         """
-        objType = ex_entity_type('EX_NODE_SET')
-        if self.__ex_get_variable_param(objType).value == 0:
+        if self.__ex_get_variable_param('EX_NODE_SET').value == 0:
             return []
-        return self.__ex_get_variable_names(objType)
+        return self.__ex_get_variable_names('EX_NODE_SET')
 
     # --------------------------------------------------------------------
 
@@ -2741,13 +2712,12 @@ class exodus:
             >>> exo.put_node_set_variable_name("new_nsvar", new_nsvar_index)
         ```
         """
-        nsType = ex_entity_type('EX_NODE_SET')
         NSvarNames = self.get_node_set_variable_names()
         if name in NSvarNames:
             print("WARNING: Node set variable \"{}\" already exists.".format(name))
         if index > len(NSvarNames):
             raise Exception("ERROR: variable index out of range.")
-        self.__ex_put_variable_name(nsType, index, name)
+        self.__ex_put_variable_name('EX_NODE_SET', index, name)
         return True
 
     # --------------------------------------------------------------------
@@ -2781,11 +2751,10 @@ class exodus:
         """
         names = self.get_node_set_variable_names()
         var_id = names.index(name) + 1
-        obj_type = ex_entity_type('EX_NODE_SET')
 
         (numNodeInSet, _numDistFactInSet) = self.__ex_get_node_set_param(object_id)
 
-        values = self.__ex_get_var(step, obj_type, var_id, object_id, numNodeInSet)
+        values = self.__ex_get_var(step, 'EX_NODE_SET', var_id, object_id, numNodeInSet)
         if self.use_numpy:
             values = ctype_to_numpy(self, values)
         return values
@@ -2818,9 +2787,8 @@ class exodus:
         """
         names = self.get_node_set_variable_names()
         var_id = names.index(name) + 1
-        obj_type = ex_entity_type('EX_NODE_SET')
         (numSetNodes, _numSetDistFacts) = self.get_node_set_params(object_id)
-        self.__ex_put_var(step, obj_type, var_id, object_id, numSetNodes, values)
+        self.__ex_put_var(step, 'EX_NODE_SET', var_id, object_id, numSetNodes, values)
         return True
 
     # --------------------------------------------------------------------
@@ -2909,9 +2877,7 @@ class exodus:
             <list<string>>  nsprop_names
         """
         names = []
-        nsType = ex_entity_type('EX_NODE_SET')
-        inqType = 'EX_INQ_NS_PROP'
-        names = self.__ex_get_prop_names(nsType, inqType)
+        names = self.__ex_get_prop_names('EX_NODE_SET', 'EX_INQ_NS_PROP')
         return list(names)
 
     # --------------------------------------------------------------------
@@ -2934,8 +2900,7 @@ class exodus:
         -------
             <int>  nsprop_val
         """
-        nsType = ex_entity_type('EX_NODE_SET')
-        propVal = self.__ex_get_prop(nsType, object_id, name)
+        propVal = self.__ex_get_prop('EX_NODE_SET', object_id, name)
         return int(propVal)
 
     # --------------------------------------------------------------------
@@ -2960,8 +2925,7 @@ class exodus:
         -------
             <bool>  status  True = successful execution
         """
-        nsType = ex_entity_type('EX_NODE_SET')
-        return self.__ex_put_prop(nsType, object_id, name, value)
+        return self.__ex_put_prop('EX_NODE_SET', object_id, name, value)
 
     #
     # sidesets
@@ -3369,12 +3333,11 @@ class exodus:
               a side set, False otherwise
         """
         truthTable = self.__ex_get_truth_table('EX_SIDE_SET')
-        ssType = ex_entity_type('EX_SIDE_SET')
         if sideSetId is not None:
             self.get_side_set_ids()
             assert sideSetId in list(self.sideSetIds)
             indx = list(self.sideSetIds).index(sideSetId)
-            numVars = self.__ex_get_variable_param(ssType).value
+            numVars = self.__ex_get_variable_param('EX_SIDE_SET').value
             start, stop = (indx * numVars, (indx + 1) * numVars)
             return truthTable[start:stop]
         return truthTable
@@ -3415,8 +3378,7 @@ class exodus:
         -------
               <int>  num_ssvars
         """
-        ssType = ex_entity_type('EX_SIDE_SET')
-        num = self.__ex_get_variable_param(ssType)
+        num = self.__ex_get_variable_param('EX_SIDE_SET')
         return num.value
 
     # --------------------------------------------------------------------
@@ -3436,8 +3398,7 @@ class exodus:
         -------
               <bool>  status  True = successful execution
         """
-        ssType = ex_entity_type('EX_SIDE_SET')
-        self.__ex_put_variable_param(ssType, number)
+        self.__ex_put_variable_param('EX_SIDE_SET', number)
         return True
 
     # --------------------------------------------------------------------
@@ -3453,10 +3414,9 @@ class exodus:
         -------
               <list<string>>  ssvar_names
         """
-        objType = ex_entity_type('EX_SIDE_SET')
-        if self.__ex_get_variable_param(objType).value == 0:
+        if self.__ex_get_variable_param('EX_SIDE_SET').value == 0:
             return []
-        return self.__ex_get_variable_names(objType)
+        return self.__ex_get_variable_names('EX_SIDE_SET')
 
     # --------------------------------------------------------------------
 
@@ -3489,13 +3449,12 @@ class exodus:
             >>> exo.put_side_set_variable_name("new_ssvar", new_ssvar_index)
         ```
         """
-        ssType = ex_entity_type('EX_SIDE_SET')
         SSvarNames = self.get_side_set_variable_names()
         if name in SSvarNames:
             print("WARNING: Side set variable \"{}\" already exists.".format(name))
         if index > len(SSvarNames):
             raise Exception("ERROR: variable index out of range.")
-        self.__ex_put_variable_name(ssType, index, name)
+        self.__ex_put_variable_name('EX_SIDE_SET', index, name)
         return True
 
     # --------------------------------------------------------------------
@@ -3527,11 +3486,10 @@ class exodus:
         """
         names = self.get_side_set_variable_names()
         var_id = names.index(name) + 1
-        obj_type = ex_entity_type('EX_SIDE_SET')
 
         (numSideInSet, _numDistFactInSet) = self.__ex_get_side_set_param(object_id)
 
-        values = self.__ex_get_var(step, obj_type, var_id, object_id, numSideInSet)
+        values = self.__ex_get_var(step, 'EX_SIDE_SET', var_id, object_id, numSideInSet)
         if self.use_numpy:
             values = ctype_to_numpy(self, values)
         return values
@@ -3564,9 +3522,8 @@ class exodus:
         """
         names = self.get_side_set_variable_names()
         var_id = names.index(name) + 1
-        obj_type = ex_entity_type('EX_SIDE_SET')
         (numSetSides, _numSetDistFacts) = self.get_side_set_params(object_id)
-        self.__ex_put_var(step, obj_type, var_id, object_id, numSetSides, values)
+        self.__ex_put_var(step, 'EX_SIDE_SET', var_id, object_id, numSetSides, values)
         return True
 
     # --------------------------------------------------------------------
@@ -3584,9 +3541,7 @@ class exodus:
             <list<string>>  ssprop_names
         """
         names = []
-        ssType = ex_entity_type('EX_SIDE_SET')
-        inqType = 'EX_INQ_SS_PROP'
-        names = self.__ex_get_prop_names(ssType, inqType)
+        names = self.__ex_get_prop_names('EX_SIDE_SET', 'EX_INQ_SS_PROP')
         return list(names)
 
     # --------------------------------------------------------------------
@@ -3609,8 +3564,7 @@ class exodus:
         -------
             <int>  ssprop_val
         """
-        ssType = ex_entity_type('EX_SIDE_SET')
-        propVal = self.__ex_get_prop(ssType, object_id, name)
+        propVal = self.__ex_get_prop('EX_SIDE_SET', object_id, name)
         return int(propVal)
 
     # --------------------------------------------------------------------
@@ -3635,8 +3589,7 @@ class exodus:
         -------
             <bool>  status  True = successful execution
         """
-        ssType = ex_entity_type('EX_SIDE_SET')
-        return self.__ex_put_prop(ssType, object_id, name, value)
+        return self.__ex_put_prop('EX_SIDE_SET', object_id, name, value)
 
     #
     # global variables
@@ -3654,8 +3607,7 @@ class exodus:
         -------
               <int>  num_gvars
         """
-        gbType = ex_entity_type('EX_GLOBAL')
-        num = self.__ex_get_variable_param(gbType)
+        num = self.__ex_get_variable_param('EX_GLOBAL')
         return num.value
 
     # --------------------------------------------------------------------
@@ -3675,8 +3627,7 @@ class exodus:
         -------
               <bool>  status  True = successful execution
         """
-        gbType = ex_entity_type('EX_GLOBAL')
-        self.__ex_put_variable_param(gbType, number)
+        self.__ex_put_variable_param('EX_GLOBAL', number)
         return True
 
     # --------------------------------------------------------------------
@@ -3694,8 +3645,7 @@ class exodus:
         """
         if self.get_global_variable_number() == 0:
             return []
-        objType = ex_entity_type('EX_GLOBAL')
-        return self.__ex_get_variable_names(objType)
+        return self.__ex_get_variable_names('EX_GLOBAL')
 
     # --------------------------------------------------------------------
 
@@ -3728,14 +3678,13 @@ class exodus:
             >>> exo.put_global_variable_name("new_gvar", new_gvar_index)
         ```
         """
-        gbType = ex_entity_type('EX_GLOBAL')
         GlobVarNames = self.get_global_variable_names()
         if name in GlobVarNames:
             print("WARNING: Global variable \"{}\" already exists.".format(name))
         if index > len(GlobVarNames):
             print(("index", index, "len", len(GlobVarNames)))
             raise Exception("ERROR: variable index out of range.")
-        self.__ex_put_variable_name(gbType, index, name)
+        self.__ex_put_variable_name('EX_GLOBAL', index, name)
         return True
 
     # --------------------------------------------------------------------
@@ -3759,9 +3708,8 @@ class exodus:
         """
         names = self.get_global_variable_names()
         var_id = names.index(name)
-        gbType = ex_entity_type('EX_GLOBAL')
-        num = self.__ex_get_variable_param(gbType)
-        gvalues = self.__ex_get_var(step, gbType, 0, 1, num.value)
+        num = self.__ex_get_variable_param('EX_GLOBAL')
+        gvalues = self.__ex_get_var(step, 'EX_GLOBAL', 0, 1, num.value)
         return gvalues[var_id]
 
     # --------------------------------------------------------------------
@@ -3788,9 +3736,8 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  gvar_vals
         """
-        gbType = ex_entity_type('EX_GLOBAL')
-        num = self.__ex_get_variable_param(gbType)
-        gvalues = self.__ex_get_var(step, gbType, 0, 1, num.value)
+        num = self.__ex_get_variable_param('EX_GLOBAL')
+        gvalues = self.__ex_get_var(step, 'EX_GLOBAL', 0, 1, num.value)
         values = []
         for i in range(num.value):
             values.append(gvalues[i])
@@ -3893,11 +3840,10 @@ class exodus:
         """
         names = self.get_global_variable_names()
         var_id = names.index(name)
-        gbType = ex_entity_type('EX_GLOBAL')
-        num = self.__ex_get_variable_param(gbType)
+        num = self.__ex_get_variable_param('EX_GLOBAL')
         values = []
         for i in range(self.numTimes.value):
-            gvalues = self.__ex_get_var(i + 1, gbType, 0, 1, num.value)
+            gvalues = self.__ex_get_var(i + 1, 'EX_GLOBAL', 0, 1, num.value)
             values.append(gvalues[var_id])
         if self.use_numpy:
             values = self.np.array(values)
@@ -3929,8 +3875,7 @@ class exodus:
         """
 
         ebType = ex_entity_type('EX_ELEM_BLOCK')
-
-        EXODUS_LIB.ex_put_block(self.fileId, ebType, c_longlong(blkID),
+        EXODUS_LIB.ex_put_block(self.fileId, 'EX_ELEM_BLOCK', c_longlong(blkID),
                                 create_string_buffer(b"NFACED"),
                                 c_longlong(num_elems_this_blk),
                                 c_longlong(0),
@@ -3964,7 +3909,6 @@ class exodus:
             <bool>  status  True = successful execution
         """
         fbType = ex_entity_type('EX_FACE_BLOCK')
-
         EXODUS_LIB.ex_put_block(self.fileId, fbType, c_longlong(blkID),
                                 create_string_buffer(b"NSIDED"),
                                 c_longlong(num_faces_this_blk),
@@ -4569,7 +4513,7 @@ class exodus:
         num_objs = c_int(self.__ex_inquire_int(inqType)).value
 
         obj_type = ex_entity_type(objType)
-        variable_count = self.__ex_get_variable_param(obj_type)
+        variable_count = self.__ex_get_variable_param(objType)
 
         truth_table = (c_int * (num_objs * variable_count.value))()
         EXODUS_LIB.ex_get_truth_table(self.fileId, obj_type,
@@ -4590,7 +4534,7 @@ class exodus:
         num_objs = c_int(self.__ex_inquire_int(inqType)).value
 
         obj_type = ex_entity_type(objType)
-        num_vars = self.__ex_get_variable_param(obj_type).value
+        num_vars = self.__ex_get_variable_param(objType).value
 
         assert len(truthTab) == (num_objs * num_vars)
 
@@ -4652,9 +4596,11 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_id_map(self, objType, inqType):
-        obj_type = c_int(objType)
-        num_objs = c_int(self.__ex_inquire_int(inqType))
+    def __ex_get_id_map(self, objType):
+        inqType = ex_obj_to_inq(objType)
+        obj_type = c_int(ex_entity_type(objType))
+        inq_type = c_int(ex_inquiry(inqType))
+        num_objs = c_int(self.__ex_inquire_int(inq_type))
         numObjs = num_objs.value
         id_map = []
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_IDS_INT64_API:
@@ -4669,9 +4615,11 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_put_id_map(self, objType, inqType, idMap):
-        obj_type = c_int(objType)
-        num_objs = c_int(self.__ex_inquire_int(inqType))
+    def __ex_put_id_map(self, objType, idMap):
+        inqType = ex_obj_to_inq(objType)
+        obj_type = c_int(ex_entity_type(objType))
+        inq_type = c_int(ex_inquiry(inqType))
+        num_objs = c_int(self.__ex_inquire_int(inq_type))
         numObjs = num_objs.value
         assert numObjs == len(idMap)
         id_map = []
@@ -4871,8 +4819,8 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_variable_param(self, varType):
+        var_type = c_int(ex_entity_type(varType))
         num_vars = c_int()
-        var_type = c_int(varType)
         EXODUS_LIB.ex_get_variable_param(
             self.fileId, var_type, byref(num_vars))
         return num_vars
@@ -4880,14 +4828,16 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_variable_names(self, varType):
-        var_type = c_int(varType)
         num_vars = self.__ex_get_variable_param(varType)
         var_name_ptrs = (
             POINTER(c_char * (MAX_NAME_LENGTH + 1)) * num_vars.value)()
+
         for i in range(num_vars.value):
             var_name_ptrs[i] = pointer(
                 create_string_buffer(
                     MAX_NAME_LENGTH + 1))
+
+        var_type = c_int(ex_entity_type(varType))
         EXODUS_LIB.ex_get_variable_names(
             self.fileId,
             var_type,
@@ -4902,7 +4852,7 @@ class exodus:
 
     def __ex_get_var(self, timeStep, varType, varId, blkId, numValues):
         step = c_int(timeStep)
-        var_type = c_int(varType)
+        var_type = c_int(ex_entity_type(varType))
         var_id = c_int(varId)
         block_id = c_longlong(blkId)
         num_values = c_longlong(numValues)
@@ -4921,7 +4871,7 @@ class exodus:
 
     def __ex_put_var(self, timeStep, varType, varId, blkId, numValues, values):
         step = c_int(timeStep)
-        var_type = c_int(varType)
+        var_type = c_int(ex_entity_type(varType))
         var_id = c_int(varId)
         block_id = c_longlong(blkId)
         num_values = c_longlong(numValues)
@@ -5061,22 +5011,14 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_variable_param(self, varType):
-        var_type = c_int(varType)
-        num_vars = c_int(0)
-        EXODUS_LIB.ex_get_variable_param(
-            self.fileId, var_type, byref(num_vars))
-        return num_vars
-
-    # --------------------------------------------------------------------
-
     def __ex_put_variable_param(self, varType, numVars):
-        var_type = c_int(varType)
         num_vars = c_int(numVars)
         current_num = self.__ex_get_variable_param(varType)
         if current_num.value == num_vars.value:
             # print "value already set"
             return True
+
+        var_type = c_int(ex_entity_type(varType))
         errorInt = EXODUS_LIB.ex_put_variable_param(
             self.fileId, var_type, num_vars)
         if errorInt != 0:
@@ -5098,7 +5040,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_variable_name(self, varType, varId, varName):
-        var_type = c_int(varType)
+        var_type = c_int(ex_entity_type(varType))
         var_id = c_int(varId)
         name = create_string_buffer(varName, MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_variable_name(self.fileId, var_type, var_id, name)
@@ -5139,7 +5081,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_prop_names(self, varType, inqType):
-        var_type = c_int(varType)
+        var_type = c_int(ex_entity_type(varType))
         num_props = c_int(self.__ex_inquire_int(ex_inquiry(inqType)))
         prop_name_ptrs = (
             POINTER(c_char * (MAX_STR_LENGTH + 1)) * num_props.value)()
@@ -5157,7 +5099,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_prop(self, objType, objId, propName):
-        obj_type = c_int(objType)
+        obj_type = c_int(ex_entity_type(objType))
         obj_id = c_longlong(objId)
         prop_name = create_string_buffer(propName.encode('ascii'), MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_IDS_INT64_API:
@@ -5175,7 +5117,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_prop(self, objType, objId, propName, propVal):
-        obj_type = c_int(objType)
+        obj_type = c_int(ex_entity_type(objType))
         obj_id = c_longlong(objId)
         prop_name = create_string_buffer(propName.encode('ascii'), MAX_STR_LENGTH + 1)
         prop_val = c_longlong(propVal)
