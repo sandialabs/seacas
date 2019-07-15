@@ -429,8 +429,10 @@ def ex_obj_to_inq(objType):
         &#39;EX_FACE_SET&#39;: &#39;EX_INQ_FACE_SETS&#39;,
         &#39;EX_ELEM_SET&#39;: &#39;EX_INQ_ELEM_SETS&#39;,
         &#39;EX_SIDE_SET&#39;: &#39;EX_INQ_SIDE_SETS&#39;,
-        &#39;EX_ELEM_MAP&#39;: &#39;EX_INQ_ELEM&#39;,
         &#39;EX_NODE_MAP&#39;: &#39;EX_INQ_NODES&#39;,
+        &#39;EX_EDGE_MAP&#39;: &#39;EX_INQ_EDGE&#39;,
+        &#39;EX_FACE_MAP&#39;: &#39;EX_INQ_FACE&#39;,
+        &#39;EX_ELEM_MAP&#39;: &#39;EX_INQ_ELEM&#39;,
     }
 
     if objType in entity_dictionary:
@@ -1227,10 +1229,33 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_node_num_map(self):
+    def put_id_map(self, objType, id_map):
         &#34;&#34;&#34;
-        **DEPRECATED** use: exo.get_node_id_map()
+        store mapping of exodus node index to user- or application-
+        defined node id; node_id_map is ordered the same as the nodal
+        coordinate arrays returned by exo.get_coords() -- this ordering
+        follows the exodus node *INDEX* order, a 1-based system going
+        from 1 to exo.num_nodes(); a user or application can optionally
+        use a separate node *ID* numbering system, so the node_id_map
+        points to the node *ID* for each node *INDEX*
+        ```
+        status = exo.put_node_id_map(node_id_map)
+        ```
 
+        Parameters
+        ----------
+            &lt;list&lt;int&gt;&gt;  node_id_map
+
+        Returns
+        -------
+            &lt;bool&gt;  status  True = successful execution
+        &#34;&#34;&#34;
+        return self.__ex_put_id_map(objType, id_map)
+
+    # --------------------------------------------------------------------
+
+    def get_id_map(self, objType):
+        &#34;&#34;&#34;
         get mapping of exodus node index to user- or application-
         defined node id; node_id_map is ordered the same as the nodal
         coordinate arrays returned by exo.get_coords() -- this ordering
@@ -1239,15 +1264,19 @@ class exodus:
         use a separate node *ID* numbering system, so the node_id_map
         points to the node *ID* for each node *INDEX*
         ```
-        node_id_map = exo.get_node_num_map()
+        node_id_map = exo.get_node_id_map()
         ```
 
         Returns
         -------
-            &lt;list&lt;c_int&gt;&gt;  node_id_map
+
+            if array_type == &#39;ctype&#39;:
+              &lt;list&lt;int&gt;&gt;  node_id_map
+
+            if array_type == &#39;numpy&#39;:
+              &lt;np_array&lt;int&gt;&gt;  node_id_map
         &#34;&#34;&#34;
-        nodeNumMap = self.__ex_get_node_num_map()
-        return nodeNumMap
+        return self.__ex_get_id_map(objType)
 
     # --------------------------------------------------------------------
 
@@ -1273,10 +1302,31 @@ class exodus:
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;int&gt;&gt;  node_id_map
         &#34;&#34;&#34;
-        nodeIdMap = self.__ex_get_id_map(&#39;EX_NODE_MAP&#39;)
-        if self.use_numpy:
-            nodeIdMap = self.np.array(nodeIdMap)
-        return nodeIdMap
+        return self.__ex_get_id_map(&#39;EX_NODE_MAP&#39;)
+
+    # --------------------------------------------------------------------
+
+    def get_node_num_map(self):
+        &#34;&#34;&#34;
+        **DEPRECATED** use: `get_node_id_map()`
+
+        get mapping of exodus node index to user- or application-
+        defined node id; node_id_map is ordered the same as the nodal
+        coordinate arrays returned by exo.get_coords() -- this ordering
+        follows the exodus node *INDEX* order, a 1-based system going
+        from 1 to exo.num_nodes(); a user or application can optionally
+        use a separate node *ID* numbering system, so the node_id_map
+        points to the node *ID* for each node *INDEX*
+        ```
+        node_id_map = exo.get_node_num_map()
+        ```
+
+        Returns
+        -------
+            &lt;list&lt;c_int&gt;&gt;  node_id_map
+        &#34;&#34;&#34;
+        nodeNumMap = self.__ex_get_node_num_map()
+        return nodeNumMap
 
     # --------------------------------------------------------------------
 
@@ -1567,31 +1617,6 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def get_elem_num_map(self):
-        &#34;&#34;&#34;
-        **DEPRECATED** use: exo.get_elem_id_map()
-
-        get mapping of exodus element index to user- or application-
-        defined element id; elem_id_map is ordered by the element
-        *INDEX* ordering, a 1-based system going from 1 to
-        exo.num_elems(), used by exodus for storage and input/output
-        of array data stored on the elements; a user or application
-        can optionally use a separate element *ID* numbering system,
-        so the elem_id_map points to the element *ID* for each
-        element *INDEX*
-        ```
-        elem_id_map = exo.get_elem_num_map()
-        ```
-
-        Returns
-        -------
-            &lt;list&lt;c_int&gt;&gt;  elem_id_map
-        &#34;&#34;&#34;
-        elemNumMap = self.__ex_get_elem_num_map()
-        return elemNumMap
-
-    # --------------------------------------------------------------------
-
     def get_elem_id_map(self):
         &#34;&#34;&#34;
         get mapping of exodus element index to user- or application-
@@ -1615,10 +1640,7 @@ class exodus:
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;int&gt;&gt;  elem_id_map
         &#34;&#34;&#34;
-        elemIdMap = self.__ex_get_id_map(&#39;EX_ELEM_MAP&#39;)
-        if self.use_numpy:
-            elemIdMap = self.np.array(elemIdMap)
-        return elemIdMap
+        return self.__ex_get_id_map(&#39;EX_ELEM_MAP&#39;)
 
     # --------------------------------------------------------------------
 
@@ -1645,6 +1667,31 @@ class exodus:
             &lt;bool&gt;  status  True = successful execution
         &#34;&#34;&#34;
         return self.__ex_put_id_map(&#39;EX_ELEM_MAP&#39;, id_map)
+
+    # --------------------------------------------------------------------
+
+    def get_elem_num_map(self):
+        &#34;&#34;&#34;
+        **DEPRECATED** use: `get_elem_id_map()`
+
+        get mapping of exodus element index to user- or application-
+        defined element id; elem_id_map is ordered by the element
+        *INDEX* ordering, a 1-based system going from 1 to
+        exo.num_elems(), used by exodus for storage and input/output
+        of array data stored on the elements; a user or application
+        can optionally use a separate element *ID* numbering system,
+        so the elem_id_map points to the element *ID* for each
+        element *INDEX*
+        ```
+        elem_id_map = exo.get_elem_num_map()
+        ```
+
+        Returns
+        -------
+            &lt;list&lt;c_int&gt;&gt;  elem_id_map
+        &#34;&#34;&#34;
+        elemNumMap = self.__ex_get_elem_num_map()
+        return elemNumMap
 
     # --------------------------------------------------------------------
 
@@ -3314,8 +3361,7 @@ class exodus:
         -------
             &lt;list&lt;string&gt;&gt;  side_set_names
         &#34;&#34;&#34;
-        sideSetNames = self.__ex_get_names(&#39;EX_SIDE_SET&#39;)
-        return sideSetNames
+        return self.__ex_get_names(&#39;EX_SIDE_SET&#39;)
 
     # --------------------------------------------------------------------
 
@@ -4870,6 +4916,8 @@ class exodus:
         idMap = []
         for i in range(numObjs):
             idMap.append(id_map[i])
+        if self.use_numpy:
+            idMap = self.np.array(idMap)
         return idMap
 
     # --------------------------------------------------------------------
@@ -7122,8 +7170,10 @@ objects of the specified objType</p></section>
         &#39;EX_FACE_SET&#39;: &#39;EX_INQ_FACE_SETS&#39;,
         &#39;EX_ELEM_SET&#39;: &#39;EX_INQ_ELEM_SETS&#39;,
         &#39;EX_SIDE_SET&#39;: &#39;EX_INQ_SIDE_SETS&#39;,
-        &#39;EX_ELEM_MAP&#39;: &#39;EX_INQ_ELEM&#39;,
         &#39;EX_NODE_MAP&#39;: &#39;EX_INQ_NODES&#39;,
+        &#39;EX_EDGE_MAP&#39;: &#39;EX_INQ_EDGE&#39;,
+        &#39;EX_FACE_MAP&#39;: &#39;EX_INQ_FACE&#39;,
+        &#39;EX_ELEM_MAP&#39;: &#39;EX_INQ_ELEM&#39;,
     }
 
     if objType in entity_dictionary:
@@ -8302,10 +8352,33 @@ exo = exodus(file_name, mode=mode, title=title,
 
     # --------------------------------------------------------------------
 
-    def get_node_num_map(self):
+    def put_id_map(self, objType, id_map):
         &#34;&#34;&#34;
-        **DEPRECATED** use: exo.get_node_id_map()
+        store mapping of exodus node index to user- or application-
+        defined node id; node_id_map is ordered the same as the nodal
+        coordinate arrays returned by exo.get_coords() -- this ordering
+        follows the exodus node *INDEX* order, a 1-based system going
+        from 1 to exo.num_nodes(); a user or application can optionally
+        use a separate node *ID* numbering system, so the node_id_map
+        points to the node *ID* for each node *INDEX*
+        ```
+        status = exo.put_node_id_map(node_id_map)
+        ```
 
+        Parameters
+        ----------
+            &lt;list&lt;int&gt;&gt;  node_id_map
+
+        Returns
+        -------
+            &lt;bool&gt;  status  True = successful execution
+        &#34;&#34;&#34;
+        return self.__ex_put_id_map(objType, id_map)
+
+    # --------------------------------------------------------------------
+
+    def get_id_map(self, objType):
+        &#34;&#34;&#34;
         get mapping of exodus node index to user- or application-
         defined node id; node_id_map is ordered the same as the nodal
         coordinate arrays returned by exo.get_coords() -- this ordering
@@ -8314,15 +8387,19 @@ exo = exodus(file_name, mode=mode, title=title,
         use a separate node *ID* numbering system, so the node_id_map
         points to the node *ID* for each node *INDEX*
         ```
-        node_id_map = exo.get_node_num_map()
+        node_id_map = exo.get_node_id_map()
         ```
 
         Returns
         -------
-            &lt;list&lt;c_int&gt;&gt;  node_id_map
+
+            if array_type == &#39;ctype&#39;:
+              &lt;list&lt;int&gt;&gt;  node_id_map
+
+            if array_type == &#39;numpy&#39;:
+              &lt;np_array&lt;int&gt;&gt;  node_id_map
         &#34;&#34;&#34;
-        nodeNumMap = self.__ex_get_node_num_map()
-        return nodeNumMap
+        return self.__ex_get_id_map(objType)
 
     # --------------------------------------------------------------------
 
@@ -8348,10 +8425,31 @@ exo = exodus(file_name, mode=mode, title=title,
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;int&gt;&gt;  node_id_map
         &#34;&#34;&#34;
-        nodeIdMap = self.__ex_get_id_map(&#39;EX_NODE_MAP&#39;)
-        if self.use_numpy:
-            nodeIdMap = self.np.array(nodeIdMap)
-        return nodeIdMap
+        return self.__ex_get_id_map(&#39;EX_NODE_MAP&#39;)
+
+    # --------------------------------------------------------------------
+
+    def get_node_num_map(self):
+        &#34;&#34;&#34;
+        **DEPRECATED** use: `get_node_id_map()`
+
+        get mapping of exodus node index to user- or application-
+        defined node id; node_id_map is ordered the same as the nodal
+        coordinate arrays returned by exo.get_coords() -- this ordering
+        follows the exodus node *INDEX* order, a 1-based system going
+        from 1 to exo.num_nodes(); a user or application can optionally
+        use a separate node *ID* numbering system, so the node_id_map
+        points to the node *ID* for each node *INDEX*
+        ```
+        node_id_map = exo.get_node_num_map()
+        ```
+
+        Returns
+        -------
+            &lt;list&lt;c_int&gt;&gt;  node_id_map
+        &#34;&#34;&#34;
+        nodeNumMap = self.__ex_get_node_num_map()
+        return nodeNumMap
 
     # --------------------------------------------------------------------
 
@@ -8642,31 +8740,6 @@ exo = exodus(file_name, mode=mode, title=title,
 
     # --------------------------------------------------------------------
 
-    def get_elem_num_map(self):
-        &#34;&#34;&#34;
-        **DEPRECATED** use: exo.get_elem_id_map()
-
-        get mapping of exodus element index to user- or application-
-        defined element id; elem_id_map is ordered by the element
-        *INDEX* ordering, a 1-based system going from 1 to
-        exo.num_elems(), used by exodus for storage and input/output
-        of array data stored on the elements; a user or application
-        can optionally use a separate element *ID* numbering system,
-        so the elem_id_map points to the element *ID* for each
-        element *INDEX*
-        ```
-        elem_id_map = exo.get_elem_num_map()
-        ```
-
-        Returns
-        -------
-            &lt;list&lt;c_int&gt;&gt;  elem_id_map
-        &#34;&#34;&#34;
-        elemNumMap = self.__ex_get_elem_num_map()
-        return elemNumMap
-
-    # --------------------------------------------------------------------
-
     def get_elem_id_map(self):
         &#34;&#34;&#34;
         get mapping of exodus element index to user- or application-
@@ -8690,10 +8763,7 @@ exo = exodus(file_name, mode=mode, title=title,
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;int&gt;&gt;  elem_id_map
         &#34;&#34;&#34;
-        elemIdMap = self.__ex_get_id_map(&#39;EX_ELEM_MAP&#39;)
-        if self.use_numpy:
-            elemIdMap = self.np.array(elemIdMap)
-        return elemIdMap
+        return self.__ex_get_id_map(&#39;EX_ELEM_MAP&#39;)
 
     # --------------------------------------------------------------------
 
@@ -8720,6 +8790,31 @@ exo = exodus(file_name, mode=mode, title=title,
             &lt;bool&gt;  status  True = successful execution
         &#34;&#34;&#34;
         return self.__ex_put_id_map(&#39;EX_ELEM_MAP&#39;, id_map)
+
+    # --------------------------------------------------------------------
+
+    def get_elem_num_map(self):
+        &#34;&#34;&#34;
+        **DEPRECATED** use: `get_elem_id_map()`
+
+        get mapping of exodus element index to user- or application-
+        defined element id; elem_id_map is ordered by the element
+        *INDEX* ordering, a 1-based system going from 1 to
+        exo.num_elems(), used by exodus for storage and input/output
+        of array data stored on the elements; a user or application
+        can optionally use a separate element *ID* numbering system,
+        so the elem_id_map points to the element *ID* for each
+        element *INDEX*
+        ```
+        elem_id_map = exo.get_elem_num_map()
+        ```
+
+        Returns
+        -------
+            &lt;list&lt;c_int&gt;&gt;  elem_id_map
+        &#34;&#34;&#34;
+        elemNumMap = self.__ex_get_elem_num_map()
+        return elemNumMap
 
     # --------------------------------------------------------------------
 
@@ -10389,8 +10484,7 @@ exo = exodus(file_name, mode=mode, title=title,
         -------
             &lt;list&lt;string&gt;&gt;  side_set_names
         &#34;&#34;&#34;
-        sideSetNames = self.__ex_get_names(&#39;EX_SIDE_SET&#39;)
-        return sideSetNames
+        return self.__ex_get_names(&#39;EX_SIDE_SET&#39;)
 
     # --------------------------------------------------------------------
 
@@ -11945,6 +12039,8 @@ exo = exodus(file_name, mode=mode, title=title,
         idMap = []
         for i in range(numObjs):
             idMap.append(id_map[i])
+        if self.use_numpy:
+            idMap = self.np.array(idMap)
         return idMap
 
     # --------------------------------------------------------------------
@@ -13278,17 +13374,14 @@ if array_type == 'numpy':
         if array_type == &#39;numpy&#39;:
           &lt;np_array&lt;int&gt;&gt;  elem_id_map
     &#34;&#34;&#34;
-    elemIdMap = self.__ex_get_id_map(&#39;EX_ELEM_MAP&#39;)
-    if self.use_numpy:
-        elemIdMap = self.np.array(elemIdMap)
-    return elemIdMap</code></pre>
+    return self.__ex_get_id_map(&#39;EX_ELEM_MAP&#39;)</code></pre>
 </details>
 </dd>
 <dt id="exodus.exodus.get_elem_num_map"><code class="name flex">
 <span>def <span class="ident">get_elem_num_map</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p><strong>DEPRECATED</strong> use: exo.get_elem_id_map()</p>
+<section class="desc"><p><strong>DEPRECATED</strong> use: <code>get_elem_id_map()</code></p>
 <p>get mapping of exodus element index to user- or application-
 defined element id; elem_id_map is ordered by the element
 <em>INDEX</em> ordering, a 1-based system going from 1 to
@@ -13306,7 +13399,7 @@ element <em>INDEX</em></p>
 <summary>Source code</summary>
 <pre><code class="python">def get_elem_num_map(self):
     &#34;&#34;&#34;
-    **DEPRECATED** use: exo.get_elem_id_map()
+    **DEPRECATED** use: `get_elem_id_map()`
 
     get mapping of exodus element index to user- or application-
     defined element id; elem_id_map is ordered by the element
@@ -13810,6 +13903,53 @@ if array_type == 'numpy':
     return values</code></pre>
 </details>
 </dd>
+<dt id="exodus.exodus.get_id_map"><code class="name flex">
+<span>def <span class="ident">get_id_map</span></span>(<span>self, objType)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>get mapping of exodus node index to user- or application-
+defined node id; node_id_map is ordered the same as the nodal
+coordinate arrays returned by exo.get_coords() &ndash; this ordering
+follows the exodus node <em>INDEX</em> order, a 1-based system going
+from 1 to exo.num_nodes(); a user or application can optionally
+use a separate node <em>ID</em> numbering system, so the node_id_map
+points to the node <em>ID</em> for each node <em>INDEX</em></p>
+<pre><code>node_id_map = exo.get_node_id_map()
+</code></pre>
+<h2 id="returns">Returns</h2>
+<pre><code>if array_type == 'ctype':
+  &lt;list&lt;int&gt;&gt;  node_id_map
+
+if array_type == 'numpy':
+  &lt;np_array&lt;int&gt;&gt;  node_id_map
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_id_map(self, objType):
+    &#34;&#34;&#34;
+    get mapping of exodus node index to user- or application-
+    defined node id; node_id_map is ordered the same as the nodal
+    coordinate arrays returned by exo.get_coords() -- this ordering
+    follows the exodus node *INDEX* order, a 1-based system going
+    from 1 to exo.num_nodes(); a user or application can optionally
+    use a separate node *ID* numbering system, so the node_id_map
+    points to the node *ID* for each node *INDEX*
+    ```
+    node_id_map = exo.get_node_id_map()
+    ```
+
+    Returns
+    -------
+
+        if array_type == &#39;ctype&#39;:
+          &lt;list&lt;int&gt;&gt;  node_id_map
+
+        if array_type == &#39;numpy&#39;:
+          &lt;np_array&lt;int&gt;&gt;  node_id_map
+    &#34;&#34;&#34;
+    return self.__ex_get_id_map(objType)</code></pre>
+</details>
+</dd>
 <dt id="exodus.exodus.get_ids"><code class="name flex">
 <span>def <span class="ident">get_ids</span></span>(<span>self, objType)</span>
 </code></dt>
@@ -14013,17 +14153,14 @@ if array_type == 'numpy':
         if array_type == &#39;numpy&#39;:
           &lt;np_array&lt;int&gt;&gt;  node_id_map
     &#34;&#34;&#34;
-    nodeIdMap = self.__ex_get_id_map(&#39;EX_NODE_MAP&#39;)
-    if self.use_numpy:
-        nodeIdMap = self.np.array(nodeIdMap)
-    return nodeIdMap</code></pre>
+    return self.__ex_get_id_map(&#39;EX_NODE_MAP&#39;)</code></pre>
 </details>
 </dd>
 <dt id="exodus.exodus.get_node_num_map"><code class="name flex">
 <span>def <span class="ident">get_node_num_map</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p><strong>DEPRECATED</strong> use: exo.get_node_id_map()</p>
+<section class="desc"><p><strong>DEPRECATED</strong> use: <code>get_node_id_map()</code></p>
 <p>get mapping of exodus node index to user- or application-
 defined node id; node_id_map is ordered the same as the nodal
 coordinate arrays returned by exo.get_coords() &ndash; this ordering
@@ -14040,7 +14177,7 @@ points to the node <em>ID</em> for each node <em>INDEX</em></p>
 <summary>Source code</summary>
 <pre><code class="python">def get_node_num_map(self):
     &#34;&#34;&#34;
-    **DEPRECATED** use: exo.get_node_id_map()
+    **DEPRECATED** use: `get_node_id_map()`
 
     get mapping of exodus node index to user- or application-
     defined node id; node_id_map is ordered the same as the nodal
@@ -14976,8 +15113,7 @@ difference between side set <em>ID</em> and side set <em>INDEX</em>)</p>
     -------
         &lt;list&lt;string&gt;&gt;  side_set_names
     &#34;&#34;&#34;
-    sideSetNames = self.__ex_get_names(&#39;EX_SIDE_SET&#39;)
-    return sideSetNames</code></pre>
+    return self.__ex_get_names(&#39;EX_SIDE_SET&#39;)</code></pre>
 </details>
 </dd>
 <dt id="exodus.exodus.get_side_set_node_list"><code class="name flex">
@@ -16877,6 +17013,51 @@ name and time step</p>
                           c_int(numVals),
                           values)
     return True</code></pre>
+</details>
+</dd>
+<dt id="exodus.exodus.put_id_map"><code class="name flex">
+<span>def <span class="ident">put_id_map</span></span>(<span>self, objType, id_map)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>store mapping of exodus node index to user- or application-
+defined node id; node_id_map is ordered the same as the nodal
+coordinate arrays returned by exo.get_coords() &ndash; this ordering
+follows the exodus node <em>INDEX</em> order, a 1-based system going
+from 1 to exo.num_nodes(); a user or application can optionally
+use a separate node <em>ID</em> numbering system, so the node_id_map
+points to the node <em>ID</em> for each node <em>INDEX</em></p>
+<pre><code>status = exo.put_node_id_map(node_id_map)
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<pre><code>&lt;list&lt;int&gt;&gt;  node_id_map
+</code></pre>
+<h2 id="returns">Returns</h2>
+<pre><code>&lt;bool&gt;  status  True = successful execution
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def put_id_map(self, objType, id_map):
+    &#34;&#34;&#34;
+    store mapping of exodus node index to user- or application-
+    defined node id; node_id_map is ordered the same as the nodal
+    coordinate arrays returned by exo.get_coords() -- this ordering
+    follows the exodus node *INDEX* order, a 1-based system going
+    from 1 to exo.num_nodes(); a user or application can optionally
+    use a separate node *ID* numbering system, so the node_id_map
+    points to the node *ID* for each node *INDEX*
+    ```
+    status = exo.put_node_id_map(node_id_map)
+    ```
+
+    Parameters
+    ----------
+        &lt;list&lt;int&gt;&gt;  node_id_map
+
+    Returns
+    -------
+        &lt;bool&gt;  status  True = successful execution
+    &#34;&#34;&#34;
+    return self.__ex_put_id_map(objType, id_map)</code></pre>
 </details>
 </dd>
 <dt id="exodus.exodus.put_info"><code class="name flex">
@@ -18840,6 +19021,7 @@ Number of time steps         = 5
 <li><code><a title="exodus.exodus.get_global_variable_number" href="#exodus.exodus.get_global_variable_number">get_global_variable_number</a></code></li>
 <li><code><a title="exodus.exodus.get_global_variable_value" href="#exodus.exodus.get_global_variable_value">get_global_variable_value</a></code></li>
 <li><code><a title="exodus.exodus.get_global_variable_values" href="#exodus.exodus.get_global_variable_values">get_global_variable_values</a></code></li>
+<li><code><a title="exodus.exodus.get_id_map" href="#exodus.exodus.get_id_map">get_id_map</a></code></li>
 <li><code><a title="exodus.exodus.get_ids" href="#exodus.exodus.get_ids">get_ids</a></code></li>
 <li><code><a title="exodus.exodus.get_info_records" href="#exodus.exodus.get_info_records">get_info_records</a></code></li>
 <li><code><a title="exodus.exodus.get_name" href="#exodus.exodus.get_name">get_name</a></code></li>
@@ -18913,6 +19095,7 @@ Number of time steps         = 5
 <li><code><a title="exodus.exodus.put_face_node_conn" href="#exodus.exodus.put_face_node_conn">put_face_node_conn</a></code></li>
 <li><code><a title="exodus.exodus.put_global_variable_name" href="#exodus.exodus.put_global_variable_name">put_global_variable_name</a></code></li>
 <li><code><a title="exodus.exodus.put_global_variable_value" href="#exodus.exodus.put_global_variable_value">put_global_variable_value</a></code></li>
+<li><code><a title="exodus.exodus.put_id_map" href="#exodus.exodus.put_id_map">put_id_map</a></code></li>
 <li><code><a title="exodus.exodus.put_info" href="#exodus.exodus.put_info">put_info</a></code></li>
 <li><code><a title="exodus.exodus.put_info_ext" href="#exodus.exodus.put_info_ext">put_info_ext</a></code></li>
 <li><code><a title="exodus.exodus.put_info_records" href="#exodus.exodus.put_info_records">put_info_records</a></code></li>
