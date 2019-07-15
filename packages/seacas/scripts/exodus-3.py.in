@@ -1662,8 +1662,10 @@ class exodus:
 
         Parameters
         ----------
-            <int>  object_type  block/set type
-            <int>  object_id    block/set *ID* (not *INDEX*)
+        object_type : int
+            block/set type
+        object_id : int
+            block/set *ID* (not *INDEX*)
 
         Returns
         -------
@@ -1683,9 +1685,12 @@ class exodus:
 
         Parameters
         ----------
-            <int>     object_type  block/set type
-            <int>     object_id    block/set *ID* (not *INDEX*)
-            <string>  name         block/set name
+        object_type : int
+            block/set type
+        object_id : int
+            block/set *ID* (not *INDEX*)
+        name : string
+            block/set name
 
         Returns
         -------
@@ -1706,7 +1711,8 @@ class exodus:
 
         Parameters
         ----------
-            <int>    object_type   block/set type
+        object_type : int
+            block/set type
 
         Returns
         -------
@@ -1729,8 +1735,8 @@ class exodus:
 
         Parameters
         ----------
-          object_type :             <int>
-            <list<string>>  names
+        object_type : int
+        names : <list<string>>
         """
 
         self.__ex_put_names(object_type, names)
@@ -1766,8 +1772,8 @@ class exodus:
 
         Parameters
         ----------
-            elem_blk_id : int
-    element block *ID* (not *INDEX*)
+        elem_blk_id : int
+            element block *ID* (not *INDEX*)
         elem_blk_name : string
         """
         self.__ex_put_name('EX_ELEM_BLOCK', object_id, name)
@@ -1785,7 +1791,7 @@ class exodus:
 
         Returns
         -------
-            <list<string>>  elem_blk_names
+        elem_blk_names : <list<string>>
         """
         elemBlkNames = self.__ex_get_names('EX_ELEM_BLOCK')
         return elemBlkNames
@@ -1803,7 +1809,7 @@ class exodus:
 
         Parameters
         ----------
-            <list<string>>  elem_blk_names
+        elem_blk_names : <list<string>>
         """
         self.__ex_put_names('EX_ELEM_BLOCK', names)
 
@@ -1847,10 +1853,14 @@ class exodus:
         ----------
         elem_blk_id : int
             element block *ID* (not *INDEX*)
-            <string>  elem_type        element type (all caps), e.g. 'HEX8'
-            <int>     num_blk_elems    number of elements in the block
-            <int>     num_elem_nodes   number of nodes per element
-            <int>     num_elem_attrs   number of attributes per element
+        elem_type : string
+            element type (all caps), e.g. 'HEX8'
+        num_blk_elems : int
+            number of elements in the block
+        num_elem_nodes : int
+            number of nodes per element
+        num_elem_attrs : int
+            number of attributes per element
         """
         self.__ex_put_block('EX_ELEM_BLOCK', elem_blk_id, elem_type, num_blk_elems,
                             num_elem_nodes, num_elem_attrs)
