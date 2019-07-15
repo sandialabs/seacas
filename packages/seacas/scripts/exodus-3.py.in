@@ -2752,7 +2752,7 @@ class exodus:
         names = self.get_node_set_variable_names()
         var_id = names.index(name) + 1
 
-        (numNodeInSet, _numDistFactInSet) = self.__ex_get_node_set_param(object_id)
+        (numNodeInSet, _numDistFactInSet) = self.__ex_get_set_param('EX_NODE_SET', object_id)
 
         values = self.__ex_get_var(step, 'EX_NODE_SET', var_id, object_id, numNodeInSet)
         if self.use_numpy:
@@ -2787,7 +2787,7 @@ class exodus:
         """
         names = self.get_node_set_variable_names()
         var_id = names.index(name) + 1
-        (numSetNodes, _numSetDistFacts) = self.get_node_set_params(object_id)
+        (numSetNodes, _numSetDistFacts) = self.get_set_params(object_id, 'EX_NODE_SET')
         self.__ex_put_var(step, 'EX_NODE_SET', var_id, object_id, numSetNodes, values)
         return True
 
@@ -2810,10 +2810,60 @@ class exodus:
         self.nodeSetIds = self.__ex_get_ids('EX_NODE_SET')
         totNumSetNodes, totNumSetDistFacts = 0, 0
         for nodeSetId in self.nodeSetIds:
-            (numSetNodes, numSetDistFacts) = self.__ex_get_node_set_param(nodeSetId)
+            (numSetNodes, numSetDistFacts) = self.__ex_get_set_param('EX_NODE_SET', nodeSetId)
             totNumSetNodes += numSetNodes
             totNumSetDistFacts += numSetDistFacts
         return (totNumSetNodes, totNumSetDistFacts)
+
+    # --------------------------------------------------------------------
+
+    def get_set_params(self, object_type, object_id):
+        """
+        get number of entities and distribution factors (e.g. nodal
+        'weights') in the specified set
+        ```
+        num_ns_nodes, num_ns_dist_facts = \\
+          exo.get_node_set_params('EX_NODE_SET', node_set_id)
+        ```
+
+        Parameters
+        ----------
+        set_id : int
+            set *ID* (not *INDEX*)
+
+        Returns
+        -------
+        num_set_entities : int
+        num_set_dist_facts : int
+        """
+        (numSetEntities, numSetDistFacts) = self.__ex_get_set_param(object_type, object_id)
+        return (numSetEntities, numSetDistFacts)
+
+    # --------------------------------------------------------------------
+
+    def put_set_params(self, object_type, object_id, numSetEntity, numSetDistFacts=None):
+        """
+        initialize a new set of the specified type
+        ```
+        exo.put_set_params('EX_NODE_SET', node_set_id, \\
+          num_ns_nodes, \\
+          num_ns_dist_facts)
+        ```
+
+        Parameters
+        ----------
+        set_id : int
+            set *ID* (not *INDEX*)
+        num_set_entity : int
+            number of nodes/edges/faces/elements to be added to set
+        num_dist_facts : int, optional
+            number of distribution factors (e.g. nodal 'weights') --
+            must be equal to zero or num_set_entity
+        """
+        if numSetDistFacts is None:
+            numSetDistFacts = numSetEntity
+        assert numSetDistFacts in (0, numSetEntity)
+        self.__ex_put_set_param(object_type, object_id, numSetEntity, numSetDistFacts)
 
     # --------------------------------------------------------------------
 
@@ -2835,7 +2885,7 @@ class exodus:
             <int>  num_ns_nodes
             <int>  num_ns_dist_facts
         """
-        (numSetNodes, numSetDistFacts) = self.__ex_get_node_set_param(object_id)
+        (numSetNodes, numSetDistFacts) = self.__ex_get_set_param('EX_NODE_SET', object_id)
         return (numSetNodes, numSetDistFacts)
 
     # --------------------------------------------------------------------
@@ -2860,7 +2910,7 @@ class exodus:
         if numSetDistFacts is None:
             numSetDistFacts = numSetNodes
         assert numSetDistFacts in (0, numSetNodes)
-        self.__ex_put_node_set_param(object_id, numSetNodes, numSetDistFacts)
+        self.__ex_put_set_param('EX_NODE_SET', object_id, numSetNodes, numSetDistFacts)
 
     # --------------------------------------------------------------------
 
@@ -3067,7 +3117,7 @@ class exodus:
         if object_id not in ssids:
             print("WARNING: queried side set ID does not exist in database")
             return 0
-        (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_side_set_param(object_id)
+        (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_set_param('EX_SIDE_SET', object_id)
         return num_side_in_set
 
     # --------------------------------------------------------------------
@@ -3097,7 +3147,7 @@ class exodus:
         ids = self.__ex_get_ids('EX_SIDE_SET')
         totNumSetSides, totNumSetDistFacts = 0, 0  # totNumSetDistFacts = totNumSetNodes
         for sideSetId in ids:
-            (numSetSides, numSetDistFacts) = self.__ex_get_side_set_param(sideSetId)
+            (numSetSides, numSetDistFacts) = self.__ex_get_set_param('EX_SIDE_SET', sideSetId)
             totNumSetSides += numSetSides
             totNumSetDistFacts += numSetDistFacts
         totNumSetNodes = totNumSetDistFacts
@@ -3129,7 +3179,7 @@ class exodus:
         the sum of all face nodes.  A single node can be counted more
         than once, i.e. once for each face it belongs to in the side set.
         """
-        (numSetSides, numSetDistFacts) = self.__ex_get_side_set_param(object_id)
+        (numSetSides, numSetDistFacts) = self.__ex_get_set_param('EX_SIDE_SET', object_id)
         return (numSetSides, numSetDistFacts)
 
     # --------------------------------------------------------------------
@@ -3156,7 +3206,7 @@ class exodus:
         the sum of all face nodes.  A single node can be counted more
         than once, i.e. once for each face it belongs to in the side set.
         """
-        self.__ex_put_side_set_param(object_id, numSetSides, numSetDistFacts)
+        self.__ex_put_set_param('EX_SIDE_SET', object_id, numSetSides, numSetDistFacts)
 
     # --------------------------------------------------------------------
 
@@ -3487,7 +3537,7 @@ class exodus:
         names = self.get_side_set_variable_names()
         var_id = names.index(name) + 1
 
-        (numSideInSet, _numDistFactInSet) = self.__ex_get_side_set_param(object_id)
+        (numSideInSet, _numDistFactInSet) = self.__ex_get_set_param('EX_SIDE_SET', object_id)
 
         values = self.__ex_get_var(step, 'EX_SIDE_SET', var_id, object_id, numSideInSet)
         if self.use_numpy:
@@ -3522,7 +3572,7 @@ class exodus:
         """
         names = self.get_side_set_variable_names()
         var_id = names.index(name) + 1
-        (numSetSides, _numSetDistFacts) = self.get_side_set_params(object_id)
+        (numSetSides, _numSetDistFacts) = self.get_set_params(object_id, 'EX_SIDE_SET')
         self.__ex_put_var(step, 'EX_SIDE_SET', var_id, object_id, numSetSides, values)
         return True
 
@@ -3875,7 +3925,7 @@ class exodus:
         """
 
         ebType = ex_entity_type('EX_ELEM_BLOCK')
-        EXODUS_LIB.ex_put_block(self.fileId, 'EX_ELEM_BLOCK', c_longlong(blkID),
+        EXODUS_LIB.ex_put_block(self.fileId, ebType, c_longlong(blkID),
                                 create_string_buffer(b"NFACED"),
                                 c_longlong(num_elems_this_blk),
                                 c_longlong(0),
@@ -4431,38 +4481,9 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_node_set_param(self, nodeSetId):
-        node_set_id = c_longlong(nodeSetId)
-        if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
-            num_set_nodes = c_longlong(0)
-            num_set_dist_facts = c_longlong(0)
-        else:
-            num_set_nodes = c_int(0)
-            num_set_dist_facts = c_int(0)
-        EXODUS_LIB.ex_get_node_set_param(
-            self.fileId,
-            node_set_id,
-            byref(num_set_nodes),
-            byref(num_set_dist_facts))
-        return (int(num_set_nodes.value), int(num_set_dist_facts.value))
-
-    # --------------------------------------------------------------------
-
-    def __ex_put_node_set_param(self, nodeSetId, numNodes, numDistFacts):
-        node_set_id = c_longlong(nodeSetId)
-        num_set_nodes = c_longlong(numNodes)
-        num_set_dist_facts = c_longlong(numDistFacts)
-        EXODUS_LIB.ex_put_node_set_param(
-            self.fileId,
-            node_set_id,
-            num_set_nodes,
-            num_set_dist_facts)
-
-    # --------------------------------------------------------------------
-
     def __ex_get_node_set(self, nodeSetId):
         node_set_id = c_longlong(nodeSetId)
-        num_node_set_nodes = self.__ex_get_node_set_param(nodeSetId)[0]
+        num_node_set_nodes = self.__ex_get_set_param('EX_NODE_SET', nodeSetId)[0]
         if num_node_set_nodes == 0:
             return []
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
@@ -4490,7 +4511,7 @@ class exodus:
 
     def __ex_get_node_set_dist_fact(self, nodeSetId):
         node_set_id = c_longlong(nodeSetId)
-        num_node_set_nodes = self.__ex_get_node_set_param(nodeSetId)[0]
+        num_node_set_nodes = self.__ex_get_set_param('EX_NODE_SET', nodeSetId)[0]
         set_dfs = (c_double * num_node_set_nodes)()
         EXODUS_LIB.ex_get_node_set_dist_fact(
             self.fileId, node_set_id, byref(set_dfs))
@@ -4902,7 +4923,8 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_get_side_set_param(self, object_id):
+    def __ex_get_set_param(self, objType, object_id):
+        object_type = c_int(ex_entity_type(objType))
         side_set_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             num_side_in_set = c_longlong(0)
@@ -4910,8 +4932,9 @@ class exodus:
         else:
             num_side_in_set = c_int(0)
             num_dist_fact_in_set = c_int(0)
-        EXODUS_LIB.ex_get_side_set_param(
+        EXODUS_LIB.ex_get_set_param(
             self.fileId,
+            object_type,
             side_set_id,
             byref(num_side_in_set),
             byref(num_dist_fact_in_set))
@@ -4919,12 +4942,14 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __ex_put_side_set_param(self, object_id, numSides, numDistFacts):
+    def __ex_put_set_param(self, objType, object_id, numSides, numDistFacts):
+        object_type = c_int(ex_entity_type(objType))
         side_set_id = c_longlong(object_id)
         num_side_in_set = c_longlong(numSides)
         num_dist_fact_in_set = c_longlong(numDistFacts)
-        EXODUS_LIB.ex_put_side_set_param(
+        EXODUS_LIB.ex_put_set_param(
             self.fileId,
+            object_type,
             side_set_id,
             num_side_in_set,
             num_dist_fact_in_set)
@@ -4934,7 +4959,7 @@ class exodus:
 
     def __ex_get_side_set(self, sideSetId):
         side_set_id = c_longlong(sideSetId)
-        (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_side_set_param(sideSetId)
+        (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_set_param('EX_SIDE_SET', sideSetId)
         if num_side_in_set == 0:
             return ([], [])
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
@@ -4997,7 +5022,7 @@ class exodus:
     def __ex_get_side_set_node_list(self, object_id):
         side_set_id = c_longlong(object_id)
         side_set_node_list_len = self.__ex_get_side_set_node_list_len(object_id)
-        (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_side_set_param(object_id)
+        (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_set_param('EX_SIDE_SET', object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             side_set_node_cnt_list = (c_longlong * num_side_in_set)()
             side_set_node_list = (c_longlong * side_set_node_list_len.value)()
