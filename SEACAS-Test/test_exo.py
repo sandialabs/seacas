@@ -75,10 +75,6 @@ NEW_DATABASE_PATH = DB_PATH[:-2] + '_copy.e'
 EXO_COPY = EXO.copy(NEW_DATABASE_PATH, True)
 EXO_COPY.summarize()
 
-print("Exodus file has title:", EXO_COPY.title())
-print("Exodus file has", EXO_COPY.num_dimensions(), "dimensions")
-print("Exodus file has", EXO_COPY.num_nodes(), "nodes")
-print("Exodus file has", EXO_COPY.num_elems(), "elements")
 
 print("Exodus file has", EXO_COPY.num_blks(), "blocks")
 BLOCKS = EXO_COPY.get_elem_blk_ids()
