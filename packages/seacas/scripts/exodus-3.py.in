@@ -555,11 +555,11 @@ class exodus:
         for nodeset in nodesets:
             total_ns_nodes += self.num_nodes_in_node_set(nodeset)
 
-        num_glo_vars = self.get_global_variable_number()
-        num_nod_vars = self.get_node_variable_number()
-        num_ele_vars = self.get_element_variable_number()
-        num_ns_vars = self.get_node_set_variable_number()
-        num_ss_vars = self.get_side_set_variable_number()
+        num_glo_vars = self.get_variable_number('EX_GLOBAL')
+        num_nod_vars = self.get_variable_number('EX_NODAL')
+        num_ele_vars = self.get_variable_number('EX_ELEM_BLOCK')
+        num_ns_vars = self.get_variable_number('EX_NODE_SET')
+        num_ss_vars = self.get_variable_number('EX_SIDE_SET')
 
         print("\n Database: {0}\n"
               " Title:\t{17}\n\n"
@@ -1273,9 +1273,9 @@ class exodus:
 
     def get_variable_number(self, objType):
         """
-        get the number of nodal variables in the model
+        get the number of variables of the specified type in the model
         ```
-        num_nvars = exo.get_node_variable_number()
+        num_nvars = exo.get_variable_number('EX_NODAL')
         ```
 
         Returns
@@ -1303,6 +1303,48 @@ class exodus:
               <bool>  status  True = successful execution
         """
         self.__ex_put_variable_param(objType, number)
+        return True
+
+    # --------------------------------------------------------------------
+
+    def put_variable_name(self, objType, name, index):
+        """
+        add the name and index of a new variable to the model;
+        variable indexing goes from 1 to exo.get_variable_number()
+        ```
+        status = exo.put_variable_name('EX_NODAL', nvar_name, nvar_index)
+        ```
+
+        Parameters
+        ----------
+        objType : string
+            object type
+        var_name : string
+            name of new variable
+        nvar_index : int
+            1-based index of new nodal variable
+
+        Returns
+        -------
+            <bool>  status  True = successful execution
+
+        Note:
+        ----
+        this method is often called within the following sequence:
+        ```
+            >>> num_nvars = exo.get_variable_number('EX_NODAL')
+            >>> new_nvar_index = num_nvars + 1
+            >>> num_nvars += 1
+            >>> exo.set_variable_number('EX_NODAL', num_nvars)
+            >>> exo.put_variable_name('EX_NODAL', "new_nvar_name", new_nvar_index)
+        ```
+        """
+        varNames = self.get_variable_names(objType)
+        if name in varNames:
+            print("WARNING: variable \"{}\" already exists.".format(name))
+        if index > len(varNames):
+            raise Exception("ERROR: variable index out of range.")
+        self.__ex_put_variable_name(objType, index, name)
         return True
 
     # --------------------------------------------------------------------
@@ -1371,54 +1413,12 @@ class exodus:
             >>> exo.put_node_variable_name("new_nvar_name", new_nvar_index)
         ```
         """
-        NDvarNames = self.get_node_variable_names()
+        NDvarNames = self.get_variable_names('EX_NODAL')
         if name in NDvarNames:
             print("WARNING: node variable \"{}\" already exists.".format(name))
         if index > len(NDvarNames):
             raise Exception("ERROR: variable index out of range.")
         self.__ex_put_variable_name('EX_NODAL', index, name)
-        return True
-
-    # --------------------------------------------------------------------
-
-    def put_variable_name(self, objType, name, index):
-        """
-        add the name and index of a new variable to the model;
-        variable indexing goes from 1 to exo.get_variable_number()
-        ```
-        status = exo.put_variable_name('EX_NODAL', nvar_name, nvar_index)
-        ```
-
-        Parameters
-        ----------
-        objType : string
-            object type
-        var_name : string
-            name of new variable
-        nvar_index : int
-            1-based index of new nodal variable
-
-        Returns
-        -------
-            <bool>  status  True = successful execution
-
-        Note:
-        ----
-        this method is often called within the following sequence:
-        ```
-            >>> num_nvars = exo.get_variable_number('EX_NODAL')
-            >>> new_nvar_index = num_nvars + 1
-            >>> num_nvars += 1
-            >>> exo.set_variable_number('EX_NODAL', num_nvars)
-            >>> exo.put_variable_name('EX_NODAL', "new_nvar_name", new_nvar_index)
-        ```
-        """
-        varNames = self.get_variable_names(objType)
-        if name in varNames:
-            print("WARNING: variable \"{}\" already exists.".format(name))
-        if index > len(varNames):
-            raise Exception("ERROR: variable index out of range.")
-        self.__ex_put_variable_name(objType, index, name)
         return True
 
     # --------------------------------------------------------------------
@@ -1445,7 +1445,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  nvar_vals
         """
-        names = self.get_node_variable_names()
+        names = self.get_variable_names('EX_NODAL')
         var_id = names.index(name) + 1
         numVals = self.num_nodes()
         values = self.__ex_get_var(step, 'EX_NODAL', var_id, 0, numVals)
@@ -1473,7 +1473,7 @@ class exodus:
         -------
             <bool>  status  True = successful execution
         """
-        names = self.get_node_variable_names()
+        names = self.get_variable_names('EX_NODAL')
         var_id = names.index(name) + 1
         numVals = self.num_nodes()
         self.__ex_put_var(step, 'EX_NODAL', var_id, 0, numVals, values)
@@ -2252,7 +2252,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  evar_vals
         """
-        names = self.get_element_variable_names()
+        names = self.get_variable_names('EX_ELEM_BLOCK')
         var_id = names.index(name) + 1
         numVals = self.num_elems_in_blk(blockId)
         values = self.__ex_get_var(step, 'EX_ELEM_BLOCK', var_id, blockId, numVals)
@@ -2286,7 +2286,7 @@ class exodus:
         -------
             <bool>  status  True = successful execution
         """
-        names = self.get_element_variable_names()
+        names = self.get_variable_names('EX_ELEM_BLOCK')
         var_id = names.index(name) + 1
         numVals = self.num_elems_in_blk(blockId)
         self.__ex_put_var(step, 'EX_ELEM_BLOCK', var_id, blockId, numVals, values)
@@ -2376,7 +2376,7 @@ class exodus:
             >>> exo.put_element_variable_name("new_evar", new_evar_index)
         ```
         """
-        EBvarNames = self.get_element_variable_names()
+        EBvarNames = self.get_variable_names('EX_ELEM_BLOCK')
         if name in EBvarNames:
             print("WARNING: element variable \"{}\" already exists.".format(name))
         if index > len(EBvarNames):
@@ -2893,7 +2893,7 @@ class exodus:
             >>> exo.put_node_set_variable_name("new_nsvar", new_nsvar_index)
         ```
         """
-        NSvarNames = self.get_node_set_variable_names()
+        NSvarNames = self.get_variable_names('EX_NODE_SET')
         if name in NSvarNames:
             print("WARNING: Node set variable \"{}\" already exists.".format(name))
         if index > len(NSvarNames):
@@ -2930,7 +2930,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  nsvar_vals
         """
-        names = self.get_node_set_variable_names()
+        names = self.get_variable_names('EX_NODE_SET')
         var_id = names.index(name) + 1
 
         (numNodeInSet, _numDistFactInSet) = self.__ex_get_set_param('EX_NODE_SET', object_id)
@@ -2966,7 +2966,7 @@ class exodus:
         -------
             <bool>  status  True = successful execution
         """
-        names = self.get_node_set_variable_names()
+        names = self.get_variable_names('EX_NODE_SET')
         var_id = names.index(name) + 1
         (numSetNodes, _numSetDistFacts) = self.get_set_params(object_id, 'EX_NODE_SET')
         self.__ex_put_var(step, 'EX_NODE_SET', var_id, object_id, numSetNodes, values)
@@ -3675,7 +3675,7 @@ class exodus:
             >>> exo.put_side_set_variable_name("new_ssvar", new_ssvar_index)
         ```
         """
-        SSvarNames = self.get_side_set_variable_names()
+        SSvarNames = self.get_variable_names('EX_SIDE_SET')
         if name in SSvarNames:
             print("WARNING: Side set variable \"{}\" already exists.".format(name))
         if index > len(SSvarNames):
@@ -3710,7 +3710,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  ssvar_vals
         """
-        names = self.get_side_set_variable_names()
+        names = self.get_variable_names('EX_SIDE_SET')
         var_id = names.index(name) + 1
 
         (numSideInSet, _numDistFactInSet) = self.__ex_get_set_param('EX_SIDE_SET', object_id)
@@ -3746,7 +3746,7 @@ class exodus:
         -------
             <bool>  status  True = successful execution
         """
-        names = self.get_side_set_variable_names()
+        names = self.get_variable_names('EX_SIDE_SET')
         var_id = names.index(name) + 1
         (numSetSides, _numSetDistFacts) = self.get_set_params(object_id, 'EX_SIDE_SET')
         self.__ex_put_var(step, 'EX_SIDE_SET', var_id, object_id, numSetSides, values)
@@ -3869,7 +3869,7 @@ class exodus:
         -------
               <list<string>>  gvar_names
         """
-        if self.get_global_variable_number() == 0:
+        if self.get_variable_number('EX_GLOBAL') == 0:
             return []
         return self.__ex_get_variable_names('EX_GLOBAL')
 
@@ -3904,7 +3904,7 @@ class exodus:
             >>> exo.put_global_variable_name("new_gvar", new_gvar_index)
         ```
         """
-        GlobVarNames = self.get_global_variable_names()
+        GlobVarNames = self.get_variable_names('EX_GLOBAL')
         if name in GlobVarNames:
             print("WARNING: Global variable \"{}\" already exists.".format(name))
         if index > len(GlobVarNames):
@@ -3932,7 +3932,7 @@ class exodus:
         -------
             <float>  gvar_val
         """
-        names = self.get_global_variable_names()
+        names = self.get_variable_names('EX_GLOBAL')
         var_id = names.index(name)
         num = self.__ex_get_variable_param('EX_GLOBAL')
         gvalues = self.__ex_get_var(step, 'EX_GLOBAL', 0, 1, num.value)
@@ -3994,9 +3994,9 @@ class exodus:
             <bool>  status  True = successful execution
         """
         # we must write all values at once, not individually
-        names = self.get_global_variable_names()
+        names = self.get_variable_names('EX_GLOBAL')
         # get all values
-        numVals = self.get_global_variable_number()
+        numVals = self.get_variable_number('EX_GLOBAL')
         values = (c_double * numVals)()
         for i in range(numVals):
             values[i] = c_double(
@@ -4031,7 +4031,7 @@ class exodus:
         -------
             <bool>  status  True = successful execution
         """
-        numVals = self.get_global_variable_number()
+        numVals = self.get_variable_number('EX_GLOBAL')
         gvalues = (c_double * numVals)()
         for i in range(numVals):
             gvalues[i] = c_double(values[i])
@@ -4064,7 +4064,7 @@ class exodus:
             if array_type == 'numpy':
               <np_array<double>>  gvar_vals
         """
-        names = self.get_global_variable_names()
+        names = self.get_variable_names('EX_GLOBAL')
         var_id = names.index(name)
         num = self.__ex_get_variable_param('EX_GLOBAL')
         values = []
@@ -5755,17 +5755,17 @@ def transfer_variables(
     if debugPrint:
         print("Add Global Variables")
     nNewGlobalVars = len(additionalGlobalVariables)
-    nGlobalVars = exoFrom.get_global_variable_number() + nNewGlobalVars
+    nGlobalVars = exoFrom.get_variable_number('EX_GLOBAL') + nNewGlobalVars
     defaultNewVarVals = []
     for _i in range(nNewGlobalVars):
         defaultNewVarVals.append(0.0)
     if nGlobalVars > 0:
-        exo_to.set_global_variable_number(nGlobalVars)
-        gVarNames = exoFrom.get_global_variable_names()
+        exo_to.set_variable_number('EX_GLOBAL', nGlobalVars)
+        gVarNames = exoFrom.get_variable_names('EX_GLOBAL')
         gVarNames.extend(additionalGlobalVariables)
         for nameIndex in range(nGlobalVars):
             globalVarName = gVarNames[nameIndex]
-            exo_to.put_global_variable_name(globalVarName, nameIndex + 1)
+            exo_to.put_variable_name('EX_GLOBAL', globalVarName, nameIndex + 1)
         for step in range(nSteps):
             gValues = exoFrom.get_all_global_variable_values(step + 1)
             if array_type == 'numpy':
@@ -5777,15 +5777,15 @@ def transfer_variables(
     if debugPrint:
         print("Add Nodal Variables")
     nNewNodalVars = len(additionalNodalVariables)
-    nOrigNodalVars = exoFrom.get_node_variable_number()
+    nOrigNodalVars = exoFrom.get_variable_number('EX_NODAL')
     nNodalVars = nOrigNodalVars + nNewNodalVars
     if nNodalVars > 0:
-        exo_to.set_node_variable_number(nNodalVars)
-        nVarNames = exoFrom.get_node_variable_names()
+        exo_to.set_variable_number('EX_NODAL', nNodalVars)
+        nVarNames = exoFrom.get_variable_names('EX_NODAL')
         nVarNames.extend(additionalNodalVariables)
         for nameIndex in range(nNodalVars):
             nodalVarName = nVarNames[nameIndex]
-            exo_to.put_node_variable_name(nodalVarName, nameIndex + 1)
+            exo_to.put_variable_name('EX_NODAL', nodalVarName, nameIndex + 1)
             if nameIndex < nOrigNodalVars:
                 for step in range(nSteps):
                     nValues = exoFrom.get_node_variable_values(
@@ -5818,12 +5818,12 @@ def transfer_variables(
     if debugPrint:
         print("Add Element Variables")
     nNewElemVars = len(newElemVariableNames)
-    nOrigElemVars = exoFrom.get_element_variable_number()
+    nOrigElemVars = exoFrom.get_variable_number('EX_ELEM_BLOCK')
     nElemVars = nOrigElemVars + nNewElemVars
     if nElemVars > 0:
-        exo_to.set_element_variable_number(nElemVars)
-        origElemVarNames = exoFrom.get_element_variable_names()
-        eVarNames = exoFrom.get_element_variable_names()
+        exo_to.set_variable_number(nElemVars)
+        origElemVarNames = exoFrom.get_variable_names('EX_ELEM_BLOCK')
+        eVarNames = exoFrom.get_variable_names('EX_ELEM_BLOCK')
         eVarNames.extend(newElemVariableNames)
         truthTable = []
         if nOrigElemVars > 0:
@@ -5843,7 +5843,7 @@ def transfer_variables(
         exo_to.set_element_variable_truth_table(truthTable)
         for nameIndex in range(nElemVars):
             elemVarName = eVarNames[nameIndex]
-            exo_to.put_element_variable_name(elemVarName, nameIndex + 1)
+            exo_to.put_variable_name('EX_ELEM_BLOCK', elemVarName, nameIndex + 1)
         truthIndex = 0
         for blkId in blkIds:
             for eVarName in origElemVarNames:
@@ -5908,13 +5908,13 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[]):
     if debugPrint:
         print("Add Global Variables")
     n_new_vars = len(global_vars)
-    n_old_vars = exo.get_global_variable_number()
+    n_old_vars = exo.get_variable_number('EX_GLOBAL')
     n_vars = n_old_vars + n_new_vars
     default_vals = [0.0] * n_new_vars
     if n_new_vars > 0:
-        exo.set_global_variable_number(n_vars)
+        exo.set_variable_number('EX_GLOBAL', n_vars)
         for i, var_name in enumerate(global_vars):
-            exo.put_global_variable_name(var_name, n_old_vars + i + 1)
+            exo.put_variable_name('EX_GLOBAL', var_name, n_old_vars + i + 1)
         # One might wish to put all the values for a given global variable in the
         # database at once, but exo.put_global_variable_value() ends up loading
         # all the global variables for a given step and then putting them all back
@@ -5932,12 +5932,12 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[]):
     if debugPrint:
         print("Add Nodal Variables")
     n_new_vars = len(nodal_vars)
-    n_old_vars = exo.get_node_variable_number()
+    n_old_vars = exo.get_variable_number('EX_NODAL')
     n_vars = n_old_vars + n_new_vars
     if n_new_vars > 0:
-        exo.set_node_variable_number(n_vars)
+        exo.set_variable_number('EX_NODAL', n_vars)
         for i, var_name in enumerate(nodal_vars):
-            exo.put_node_variable_name(var_name, i + n_old_vars + 1)
+            exo.put_variable_name('EX_NODAL', var_name, i + n_old_vars + 1)
 
     if debugPrint:
         print("Construct Truth Table for additionalElementVariables")
@@ -5963,10 +5963,10 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[]):
     if debugPrint:
         print("Add Element Variables")
     n_new_vars = len(new_e_var_names)
-    n_old_vars = exo.get_element_variable_number()
+    n_old_vars = exo.get_variable_number('EX_ELEM_BLOCK')
     n_vars = n_old_vars + n_new_vars
     if n_new_vars > 0:
-        exo.set_element_variable_number(n_vars)
+        exo.set_variable_number('EX_ELEM_BLOCK', n_vars)
         old_truth_table = []
         if n_old_vars > 0:
             old_truth_table = exo.get_element_variable_truth_table()
@@ -5983,7 +5983,7 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[]):
                     truth_table.append(False)
         exo.set_element_variable_truth_table(truth_table)
         for i, var_name in enumerate(new_e_var_names):
-            exo.put_element_variable_name(var_name, n_old_vars + i + 1)
+            exo.put_variable_name('EX_ELEM_BLOCK', var_name, n_old_vars + i + 1)
 
     # TODO: Add Nodeset Variables
 
