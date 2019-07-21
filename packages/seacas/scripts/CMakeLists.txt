@@ -67,28 +67,23 @@ endif()
 ASSERT_DEFINED(${PROJECT_NAME}_ENABLE_SEACASExodus)
 ASSERT_DEFINED(BUILD_SHARED_LIBS)
 IF (${PROJECT_NAME}_ENABLE_SEACASExodus)
-   find_package(PYTHON)
+   IF (${PythonInterp_FIND_VERSION} VERSION_LESS "3.0")
+      SET( INPUT "${CMAKE_CURRENT_SOURCE_DIR}/exodus-2.py.in" )
+   ELSE()
+      SET( INPUT "${CMAKE_CURRENT_SOURCE_DIR}/exodus-3.py.in" )
+   ENDIF()
 
-   IF (${Python_FOUND})
-      IF (${Python_VERSION_MAJOR} STREQUAL "3")
-         SET( INPUT "${CMAKE_CURRENT_SOURCE_DIR}/exodus-3.py.in" )
-      ELSE()
-         SET( INPUT "${CMAKE_CURRENT_SOURCE_DIR}/exodus-2.py.in" )
-      ENDIF()
-
-      IF (BUILD_SHARED_LIBS)
-         CONFIGURE_FILE(
-   		   ${INPUT}
-		   ${CMAKE_CURRENT_BINARY_DIR}/exodus.py
-		   @ONLY
-		   )
-         INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/exodus.py DESTINATION lib)
-      else()
-         MESSAGE(STATUS "Exodus.py NOT installed since shared exodus library is not available.")
-      endif()
-      ELSE()
-         MESSAGE(STATUS "Exodus.py NOT installed since Python interpreter was not found.")
-      ENDIF()
+   IF (BUILD_SHARED_LIBS)
+      CONFIGURE_FILE(
+		${INPUT}
+		${CMAKE_CURRENT_BINARY_DIR}/exodus.py
+		@ONLY
+		)
+      INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/exodus.py DESTINATION lib)
+      MESSAGE(STATUS "Exodus.py NOT installed since shared exodus library is not available.")
+   ELSE()
+      MESSAGE(STATUS "Exodus.py NOT installed since Python interpreter was not found.")
+   ENDIF()
 ELSE()
       MESSAGE(STATUS "Exodus.py NOT installed since Exodus is not enabled.")
 endif()
