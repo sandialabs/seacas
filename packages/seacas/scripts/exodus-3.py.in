@@ -5746,7 +5746,7 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[], node_set_
 # --------------------------------------------------------------------
 
 
-def internal_add_variables(exo, obj_type, vars, debugPrint):
+def internal_add_variables(exo, obj_type, entvars, debugPrint):
     """ Internal support function for `exodus.add_variables` """
     if debugPrint:
         print("Construct Truth Table for additional variables")
@@ -5755,7 +5755,7 @@ def internal_add_variables(exo, obj_type, vars, debugPrint):
     new_e_var_names = []
     new_e_var_blks = []
     blk_ids = exo.get_ids(obj_type)
-    for item in vars:
+    for item in entvars:
         if isinstance(item, tuple):
             new_e_var_names.append(item[0])
             in_blks = []
