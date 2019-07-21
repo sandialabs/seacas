@@ -5512,6 +5512,10 @@ def transfer_variables(
         raise Exception("ERROR: additionalNodalVariables is not a list.")
     if not isinstance(additionalElementVariables, list):
         raise Exception("ERROR: additionalElementVariables is not a list.")
+    if not isinstance(additionalNodeSetVariables, list):
+        raise Exception("ERROR: additionalNodeSetVariables is not a list.")
+    if not isinstance(additionalSideSetVariables, list):
+        raise Exception("ERROR: additionalSideSetVariables is not a list.")
 
     if debugPrint:
         print("Transfer Info records")
@@ -5690,6 +5694,10 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[], node_set_
         raise Exception("ERROR: nodal_vars is not a list.")
     if not isinstance(element_vars, list):
         raise Exception("ERROR: element_vars is not a list.")
+    if not isinstance(node_set_vars, list):
+        raise Exception("ERROR: node_set_vars is not a list.")
+    if not isinstance(side_set_vars, list):
+        raise Exception("ERROR: side_set_vars is not a list.")
 
     if exo.modeChar is 'r':
         raise Exception(
@@ -5739,6 +5747,7 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[], node_set_
 
 
 def internal_add_variables(exo, obj_type, vars, debugPrint):
+    """ Internal support function for `exodus.add_variables` """
     if debugPrint:
         print("Construct Truth Table for additional variables")
     exo.__add_variables(obj_type)
