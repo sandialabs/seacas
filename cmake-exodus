@@ -80,6 +80,9 @@ STATIC=${STATIC:-ON}
 
 GENERATOR=${GENERATOR:-"Unix Makefiles"}
 
+### Python Version...
+PYTHON_VER=${PYTHON_VER:-"3.0"}
+
 # If using an XLF compiler on an IBM system, may need to add the following:
 # -DCMAKE_Fortran_FLAGS="-qfixed=72" \
 # -DCMAKE_EXE_LINKER_FLAGS:STRING="-lxl -lxlopt"
@@ -174,6 +177,7 @@ cmake -G "${GENERATOR}" \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 \
+-D PythonInterp_FIND_VERSION:STRING=${PYTHON_VER} \
 -D SEACASProj_ENABLE_Fortran=${FORTRAN} \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
@@ -202,6 +206,7 @@ echo "          FC: ${FC}"
 echo "         MPI: ${MPI}"
 echo "      SHARED: ${SHARED}"
 echo "  THREADSAFE: ${THREADSAFE}"
+echo "  PYTHON_VER: ${PYTHON_VER}"
 echo "  "
 echo " HAVE_NETCDF: ${HAVE_NETCDF}"
 echo ""
