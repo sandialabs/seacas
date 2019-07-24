@@ -54,6 +54,10 @@
 #include <exodusII.h>
 #include <exodusII_int.h>
 
+/*!
+ * \ingroup ModelDescription
+ * \undoc
+ */
 int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
 {
   int  dimid, varid;

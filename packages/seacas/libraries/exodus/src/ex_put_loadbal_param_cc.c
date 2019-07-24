@@ -69,6 +69,10 @@
 #define NC_INT64 NC_INT
 #endif
 
+/*!
+ * \ingroup ModelDescription
+ * \undoc
+ */
 int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bor_nodes,
                             void_int *num_ext_nodes, void_int *num_int_elems,
                             void_int *num_bor_elems, void_int *num_node_cmaps,

@@ -183,11 +183,8 @@ var NAVTREEINDEX0 =
 "ex__get__init__ext_8c.html":[9,0,2,36],
 "ex__get__init__ext_8c.html#a679a7de6bebdade2b8cc9238a0d1ccc2":[9,0,2,36,0],
 "ex__get__init__global_8c.html":[9,0,2,37],
-"ex__get__init__global_8c.html#a4edb26795b49c719a260e27a4fa56822":[9,0,2,37,0],
 "ex__get__init__info_8c.html":[9,0,2,38],
-"ex__get__init__info_8c.html#a15d22291d3a9eeec038b833e21314024":[9,0,2,38,0],
 "ex__get__loadbal__param_8c.html":[9,0,2,39],
-"ex__get__loadbal__param_8c.html#a9007d001325fc02e5e7e96cce728f0e6":[9,0,2,39,0],
 "ex__get__map_8c.html":[9,0,2,40],
 "ex__get__map_8c.html#a30b961ff5c0887cc5a56d5292a469219":[9,0,2,40,0],
 "ex__get__map__param_8c.html":[9,0,2,41],
@@ -249,5 +246,8 @@ var NAVTREEINDEX0 =
 "ex__get__ns__param__global_8c.html#adf5ebba4eae5481a192827f453ca7a33":[9,0,2,47,0],
 "ex__get__nset__var_8c.html":[9,0,2,0,37],
 "ex__get__nset__var_8c.html#af6417c28f60bd51466fae1a2fafde5c5":[9,0,2,0,37,0],
-"ex__get__nset__var__tab_8c.html":[9,0,2,0,38]
+"ex__get__nset__var__tab_8c.html":[9,0,2,0,38],
+"ex__get__nset__var__tab_8c.html#a6a58219f2c3527d8d7d182e76f9faf71":[9,0,2,0,38,0],
+"ex__get__num__map_8c.html":[9,0,2,48],
+"ex__get__num__map_8c.html#a43acc64ccdd809b172c2d642f1956281":[9,0,2,48,0]
 };
