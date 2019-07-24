@@ -59,6 +59,7 @@
 #include "exodusII_int.h"
 #include <mpi.h>
 /*!
+\ingroup Utilities
 
 \note The ex_open_par_int() is an internal function called by
 ex_open_par(). The user should call ex_open_par() and not ex_open_par_int().

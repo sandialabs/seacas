@@ -34,6 +34,7 @@
  */
 
 /*!
+\ingroup Utilities
 
 \note The ex_create_int() is an internal function called by
 ex_create(). The user should call ex_create() and not ex_create_int().

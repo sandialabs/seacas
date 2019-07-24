@@ -1,7 +1,7 @@
 var modules =
 [
     [ "Results Data", "group__ResultsData.html", "group__ResultsData" ],
-    [ "Data File Utilities", "group__Utilities.html", null ],
+    [ "Data File Utilities", "group__Utilities.html", "group__Utilities" ],
     [ "Model Description", "group__ModelDescription.html", "group__ModelDescription" ],
     [ "Variables controlling the file creation mode.", "group__FileVars.html", "group__FileVars" ],
     [ "Variables controlling the compression, name size, and integer size.", "group__FileOptions.html", "group__FileOptions" ],

@@ -97,95 +97,9 @@ $(document).ready(function(){initNavTree('ex__put__init_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aad1d6ddd57d1fa8f94da25d505e8c7ba"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__init_8c.html#aad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init</a> (int exoid, const char *title, int64_t num_dim, int64_t num_nodes, int64_t num_elem, int64_t num_elem_blk, int64_t num_node_sets, int64_t num_side_sets)</td></tr>
-<tr class="separator:aad1d6ddd57d1fa8f94da25d505e8c7ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaad1d6ddd57d1fa8f94da25d505e8c7ba"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init</a> (int exoid, const char *title, int64_t num_dim, int64_t num_nodes, int64_t num_elem, int64_t num_elem_blk, int64_t num_node_sets, int64_t num_side_sets)</td></tr>
+<tr class="separator:gaad1d6ddd57d1fa8f94da25d505e8c7ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="aad1d6ddd57d1fa8f94da25d505e8c7ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad1d6ddd57d1fa8f94da25d505e8c7ba">&#9670;&nbsp;</a></span>ex_put_init()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int ex_put_init </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>exoid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>title</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_dim</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_nodes</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_elem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_elem_blk</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_node_sets</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_side_sets</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The function <a class="el" href="ex__put__init_8c.html#aad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a> writes the initialization parameters to the exodus file. This function must be called once (and only once) before writing any data to the file.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__put__init_8c.html#aad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
-<li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
-<li>data file opened for read only.</li>
-<li>this routine has been called previously.</li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
-    <tr><td class="paramname">title</td><td>Database title. Maximum length is MAX_LINE_LENGTH. </td></tr>
-    <tr><td class="paramname">num_dim</td><td>The dimensionality of the database. This is the number of coordinates per node. </td></tr>
-    <tr><td class="paramname">num_nodes</td><td>The number of nodal points. </td></tr>
-    <tr><td class="paramname">num_elem</td><td>The number of elements. </td></tr>
-    <tr><td class="paramname">num_elem_blk</td><td>The number of element blocks. </td></tr>
-    <tr><td class="paramname">num_node_sets</td><td>The number of node sets. </td></tr>
-    <tr><td class="paramname">num_side_sets</td><td>The number of side sets.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>The following code segment will initialize an open exodus file with the specified parameters:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_dim, num_nods, num_el, num_el_blk, num_ns, num_ss, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* initialize file with parameters */</span></div><div class="line">num_dim = 3; num_nods = 46; num_el = 5; num_el_blk = 5;</div><div class="line">num_ns = 2; num_ss = 5;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#aad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <span class="stringliteral">&quot;This is the title&quot;</span>, num_dim,</div><div class="line">                     num_nods, num_el,num_el_blk, num_ns, num_ss);</div></div><!-- fragment --> 
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

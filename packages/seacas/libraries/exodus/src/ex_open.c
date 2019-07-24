@@ -55,6 +55,7 @@
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 /*!
+\ingroup Utilities
 
 \note The ex_open_int() is an internal function called by
 ex_open(). The user should call ex_open() and not ex_open_int().

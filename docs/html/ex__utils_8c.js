@@ -1,6 +1,6 @@
 var ex__utils_8c =
 [
-    [ "EX_QSORT_CUTOFF", "ex__utils_8c.html#ad80acff89f02005080373bf6cf4ff468", null ],
+    [ "EX_QSORT_CUTOFF", "group__Utilities.html#gad80acff89f02005080373bf6cf4ff468", null ],
     [ "MAGIC_NUMBER_LEN", "ex__utils_8c.html#ac9417fa0bdbbdb8ed8ab47ef644a4097", null ],
     [ "ex_catstr", "ex__utils_8c.html#a4e618070ca4a4434d5161ae8f6416522", null ],
     [ "ex_catstr2", "ex__utils_8c.html#aa992f34cd15bcad5c1aa37e863000eec", null ],
@@ -40,7 +40,7 @@ var ex__utils_8c =
     [ "ex_put_names_internal", "ex__utils_8c.html#a97664a4c2e7ae8559477473791cb33df", null ],
     [ "ex_rm_file_item", "ex__utils_8c.html#ad99980f27eda2e60115caca21f6d2930", null ],
     [ "ex_rm_stat_ptr", "ex__utils_8c.html#a4d9dfe41bed761f4e15cf55271272ad9", null ],
-    [ "ex_set_max_name_length", "ex__utils_8c.html#a3126c6db205970eaa43de2b0eac0bf87", null ],
+    [ "ex_set_max_name_length", "group__Utilities.html#ga3126c6db205970eaa43de2b0eac0bf87", null ],
     [ "ex_swap", "ex__utils_8c.html#a2dc7aa236042ea93dff094a43436cff4", null ],
     [ "ex_swap64", "ex__utils_8c.html#af35e776de5243f4b5a3f2bbbe06d42c6", null ],
     [ "ex_trim_internal", "ex__utils_8c.html#a6c2fa92940d40e58f2dbd28063cd4fc2", null ],

@@ -102,8 +102,8 @@ $(document).ready(function(){initNavTree('ex__utils_8c.html','');});
 Macros</h2></td></tr>
 <tr class="memitem:ac9417fa0bdbbdb8ed8ab47ef644a4097"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#ac9417fa0bdbbdb8ed8ab47ef644a4097">MAGIC_NUMBER_LEN</a>&#160;&#160;&#160;4</td></tr>
 <tr class="separator:ac9417fa0bdbbdb8ed8ab47ef644a4097"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad80acff89f02005080373bf6cf4ff468"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#ad80acff89f02005080373bf6cf4ff468">EX_QSORT_CUTOFF</a>&#160;&#160;&#160;12</td></tr>
-<tr class="separator:ad80acff89f02005080373bf6cf4ff468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad80acff89f02005080373bf6cf4ff468"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gad80acff89f02005080373bf6cf4ff468">EX_QSORT_CUTOFF</a>&#160;&#160;&#160;12</td></tr>
+<tr class="separator:gad80acff89f02005080373bf6cf4ff468"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -111,8 +111,8 @@ Functions</h2></td></tr>
 <tr class="separator:ac89ad2ce316bb7fecf5fab8c9e447347"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a278917a76c0c7c81a24390bc18af7cad"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#a278917a76c0c7c81a24390bc18af7cad">ex_check_file_type</a> (const char *path, int *type)</td></tr>
 <tr class="separator:a278917a76c0c7c81a24390bc18af7cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3126c6db205970eaa43de2b0eac0bf87"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#a3126c6db205970eaa43de2b0eac0bf87">ex_set_max_name_length</a> (int exoid, int length)</td></tr>
-<tr class="separator:a3126c6db205970eaa43de2b0eac0bf87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3126c6db205970eaa43de2b0eac0bf87"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga3126c6db205970eaa43de2b0eac0bf87">ex_set_max_name_length</a> (int exoid, int length)</td></tr>
+<tr class="separator:ga3126c6db205970eaa43de2b0eac0bf87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae356629b4b51b86cf54a498492f14f08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#ae356629b4b51b86cf54a498492f14f08">ex_update_max_name_length</a> (int exoid, int length)</td></tr>
 <tr class="separator:ae356629b4b51b86cf54a498492f14f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97664a4c2e7ae8559477473791cb33df"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__utils_8c.html#a97664a4c2e7ae8559477473791cb33df">ex_put_names_internal</a> (int exoid, int varid, size_t num_entity, char **names, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> obj_type, const char *subtype, const char *routine)</td></tr>
@@ -254,23 +254,6 @@ Variables</h2></td></tr>
 <tr class="separator:ab71aa5cfa846f02a7fb1924bcfeb77db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="ad80acff89f02005080373bf6cf4ff468"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad80acff89f02005080373bf6cf4ff468">&#9670;&nbsp;</a></span>EX_QSORT_CUTOFF</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define EX_QSORT_CUTOFF&#160;&#160;&#160;12</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The following 'indexed qsort' routine is modified from Sedgewicks algorithm It selects the pivot based on the median of the left, right, and center values to try to avoid degenerate cases ocurring when a single value is chosen. It performs a quicksort on intervals down to the EX_QSORT_CUTOFF size and then performs a final insertion sort on the almost sorted final array. Based on data in Sedgewick, the EX_QSORT_CUTOFF value should be between 5 and 20.</p>
-<p>See Sedgewick for further details Define DEBUG_QSORT at the top of this file and recompile to compile in code that verifies that the array is sorted.</p>
-<p>NOTE: The 'int' implementation below assumes that <em>both</em> the items being sorted and the <em>number</em> of items being sorted are both representable as 'int'. </p>
-
-</div>
-</div>
 <a id="ac9417fa0bdbbdb8ed8ab47ef644a4097"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac9417fa0bdbbdb8ed8ab47ef644a4097">&#9670;&nbsp;</a></span>MAGIC_NUMBER_LEN</h2>
 
@@ -1622,34 +1605,6 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>this routine removes a pointer to a structure containing the ids of element blocks, node sets, or side sets according to exoid; this is necessary to clean up because netCDF reuses file ids; should be called from ex_close </p>
-
-</div>
-</div>
-<a id="a3126c6db205970eaa43de2b0eac0bf87"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3126c6db205970eaa43de2b0eac0bf87">&#9670;&nbsp;</a></span>ex_set_max_name_length()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int ex_set_max_name_length </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>exoid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>length</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 
 </div>
 </div>
