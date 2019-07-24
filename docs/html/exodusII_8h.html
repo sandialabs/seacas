@@ -493,8 +493,8 @@ Functions</h2></td></tr>
 <tr class="separator:af6c1eb5868fc55be97680530215918b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefc10e2a564e1ed1a926f2fadf5c6a6f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aefc10e2a564e1ed1a926f2fadf5c6a6f">ex_get_id_map</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> map_type, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *map)</td></tr>
 <tr class="separator:aefc10e2a564e1ed1a926f2fadf5c6a6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adae17da907ad55a12bd475a3984777a4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#adae17da907ad55a12bd475a3984777a4">ex_get_partial_id_map</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> map_type, int64_t start_entity_num, int64_t num_entities, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *map)</td></tr>
-<tr class="separator:adae17da907ad55a12bd475a3984777a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadae17da907ad55a12bd475a3984777a4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ModelDescription.html#gadae17da907ad55a12bd475a3984777a4">ex_get_partial_id_map</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> map_type, int64_t start_entity_num, int64_t num_entities, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *map)</td></tr>
+<tr class="separator:gadae17da907ad55a12bd475a3984777a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a112db87284be27b03f716a17a923507d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a112db87284be27b03f716a17a923507d">ex_put_coordinate_frames</a> (int exoid, int nframes, const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *cf_ids, void *pt_coordinates, const char *tags)</td></tr>
 <tr class="separator:a112db87284be27b03f716a17a923507d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16d75c04427a26326070625c5116a934"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a16d75c04427a26326070625c5116a934">ex_put_info</a> (int exoid, int num_info, char *info[])</td></tr>
@@ -4587,7 +4587,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000021">Deprecated:</a></b></dt><dd>Use <a class="el" href="exodusII_8h.html#adae17da907ad55a12bd475a3984777a4">ex_get_partial_id_map()</a>(exoid, EX_ELEM_MAP, start_ent, num_ents, elem_map) instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000021">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#gadae17da907ad55a12bd475a3984777a4">ex_get_partial_id_map()</a>(exoid, EX_ELEM_MAP, start_ent, num_ents, elem_map) instead </dd></dl>
 
 </div>
 </div>
@@ -4628,7 +4628,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000024">Deprecated:</a></b></dt><dd>Use <a class="el" href="exodusII_8h.html#adae17da907ad55a12bd475a3984777a4">ex_get_partial_id_map()</a>(exoid, EX_NODE_MAP, start_ent, num_ents, node_map) instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000024">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#gadae17da907ad55a12bd475a3984777a4">ex_get_partial_id_map()</a>(exoid, EX_NODE_MAP, start_ent, num_ents, node_map) instead </dd></dl>
 
 </div>
 </div>
@@ -6189,53 +6189,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000044">Deprecated:</a></b></dt><dd>Use <a class="el" href="exodusII_8h.html#adae17da907ad55a12bd475a3984777a4">ex_get_partial_id_map()</a>(exoid, EX_ELEM_MAP, start_ent, num_ents, elem_map) </dd></dl>
-
-</div>
-</div>
-<a id="adae17da907ad55a12bd475a3984777a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adae17da907ad55a12bd475a3984777a4">&#9670;&nbsp;</a></span>ex_get_partial_id_map()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int ex_get_partial_id_map </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>exoid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a>&#160;</td>
-          <td class="paramname"><em>map_type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>start_entity_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_entities</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
-          <td class="paramname"><em>map</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000044">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#gadae17da907ad55a12bd475a3984777a4">ex_get_partial_id_map()</a>(exoid, EX_ELEM_MAP, start_ent, num_ents, elem_map) </dd></dl>
 
 </div>
 </div>

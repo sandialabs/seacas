@@ -2,7 +2,7 @@ var modules =
 [
     [ "Results Data", "group__ResultsData.html", "group__ResultsData" ],
     [ "Data File Utilities", "group__Utilities.html", null ],
-    [ "Model Description", "group__ModelDescription.html", null ],
+    [ "Model Description", "group__ModelDescription.html", "group__ModelDescription" ],
     [ "Variables controlling the file creation mode.", "group__FileVars.html", "group__FileVars" ],
     [ "Variables controlling the compression, name size, and integer size.", "group__FileOptions.html", "group__FileOptions" ],
     [ "maximum string lengths;", "group__StringLengths.html", "group__StringLengths" ],

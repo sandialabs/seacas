@@ -266,7 +266,7 @@ var exodusII_8h =
     [ "ex_get_partial_elem_map", "exodusII_8h.html#abb16ed31d7150cd9e43fc2e2bfefa102", null ],
     [ "ex_get_partial_elem_num_map", "exodusII_8h.html#a2c4efea455ee7acbccf99e7dbe05df7d", null ],
     [ "ex_get_partial_elem_var", "group__ResultsData.html#gab25e879410b8ac93b4feba2126faba17", null ],
-    [ "ex_get_partial_id_map", "exodusII_8h.html#adae17da907ad55a12bd475a3984777a4", null ],
+    [ "ex_get_partial_id_map", "group__ModelDescription.html#gadae17da907ad55a12bd475a3984777a4", null ],
     [ "ex_get_partial_nodal_var", "group__ResultsData.html#gaea570a5fe3f2b769133784e57477ca44", null ],
     [ "ex_get_partial_node_num_map", "exodusII_8h.html#a12e122a8ce4bfd3e8ef6d1c1d14e9fd4", null ],
     [ "ex_get_partial_node_set", "exodusII_8h.html#a5360ae23452aecd2132956864355ed7b", null ],

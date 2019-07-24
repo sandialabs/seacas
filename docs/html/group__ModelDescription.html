@@ -86,11 +86,81 @@ $(document).ready(function(){initNavTree('group__ModelDescription.html','');});
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Model Description</div>  </div>
 </div><!--header-->
 <div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:gadae17da907ad55a12bd475a3984777a4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ModelDescription.html#gadae17da907ad55a12bd475a3984777a4">ex_get_partial_id_map</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> map_type, int64_t start_entity_num, int64_t num_entities, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *map)</td></tr>
+<tr class="separator:gadae17da907ad55a12bd475a3984777a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>The routines in this section read and write information which describe an exodus finite element model. This includes nodal coordinates, element order map, element connectivity arrays, element attributes, node sets, side sets, and object properties. </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="gadae17da907ad55a12bd475a3984777a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadae17da907ad55a12bd475a3984777a4">&#9670;&nbsp;</a></span>ex_get_partial_id_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_partial_id_map </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a>&#160;</td>
+          <td class="paramname"><em>map_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>start_entity_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_entities</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
+          <td class="paramname"><em>map</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>reads the a portion of the values of the id map for the entity type specified by <code>map_type</code> The beginning location of the read is a <code>start_entity_num</code> which is 1-based. The read will return <code>num_entities</code> values starting at that location. Requirements are:</p><ul>
+<li><code>start_entity_num &gt; 0</code></li>
+<li><code>start_entity_num + num_entities - 1 &lt;= num_entity</code> which is the number of entities of specified type (e.g. elements)</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
+    <tr><td class="paramname">map_type</td><td>type (edge block, face block, edge set, ... ) </td></tr>
+    <tr><td class="paramname">start_entity_num</td><td>index of first entity in block to read (1-based) </td></tr>
+    <tr><td class="paramname">num_entities</td><td>number of entries to read in this block/set </td></tr>
+    <tr><td class="paramname">map</td><td>the values read are returned here. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
