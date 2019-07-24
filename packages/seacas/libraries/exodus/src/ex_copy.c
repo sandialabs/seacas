@@ -187,6 +187,7 @@ static int ex_copy_internal(int in_exoid, int out_exoid, int mesh_only)
 }
 
 /*!
+  \ingroup Utilities
   \undoc
 
  *  efficiently copies all non-transient information (attributes,
@@ -204,6 +205,7 @@ int ex_copy(int in_exoid, int out_exoid)
 }
 
 /*!
+  \ingroup Utilities
   \undoc
 
  *  efficiently copies all non-transient and transient information

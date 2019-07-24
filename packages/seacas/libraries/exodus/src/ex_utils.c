@@ -196,6 +196,10 @@ int ex_check_file_type(const char *path, int *type)
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
+/*!
+  \ingroup Utilities
+  \undoc
+*/
 int ex_set_max_name_length(int exoid, int length)
 {
   char errmsg[MAX_ERR_LENGTH];
@@ -1215,6 +1219,8 @@ static void ex_swap64(int64_t v[], int64_t i, int64_t j)
 }
 
 /*!
+ * \ingroup Utilities
+ * \internal
  * The following 'indexed qsort' routine is modified from Sedgewicks
  * algorithm It selects the pivot based on the median of the left,
  * right, and center values to try to avoid degenerate cases ocurring

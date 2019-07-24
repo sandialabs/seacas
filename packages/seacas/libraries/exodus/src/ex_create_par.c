@@ -34,6 +34,7 @@
  */
 
 /*!
+\ingroup Utilities
 
 \note The ex_create_par_int() is an internal function called by
 ex_create_par(). The user should call ex_create_par() and not ex_create_par_int().
