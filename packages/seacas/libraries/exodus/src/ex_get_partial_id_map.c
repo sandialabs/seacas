@@ -95,6 +95,14 @@ int ex_get_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
+  if (start_entity_num < 1) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: start index (%" PRId64 ") must be greater than 0 in file id %d",
+             start_entity_num, exoid);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
   if (start_entity_num + num_entities - 1 > num_entries) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start index (%" PRId64 ") + entity count (%" PRId64
