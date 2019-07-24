@@ -146,7 +146,10 @@ def getExodusVersion():
     return 0
 
 
-locale.setlocale(locale.LC_ALL, 'en_US')
+try:
+    locale.setlocale(locale.LC_ALL, 'en_US')
+except locale.Error:
+    locale.setlocale(locale.LC_ALL, 'C')
 
 ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
 if os.uname()[0] == 'Darwin':
