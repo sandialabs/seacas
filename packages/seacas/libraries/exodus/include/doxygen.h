@@ -181,7 +181,7 @@ The method uses the 'mode' argument to the ex_open() and
 ex_create() functions.  The mode is a 32-bit integer in which certain
 bits are turned on by or'ing certain predefined constants.
 
-    exoid = ex_create( EX_TEST_FILENAME,
+    exoid = ex_create( "test.exo",
                        EX_CLOBBER|EX_MAPS_INT64_DB|EX_MAPS_INT64_API,
                        &appWordSize, &diskWordSize );
 
@@ -197,12 +197,12 @@ specification are:
 | #EX_MAPS_INT64_API  | entity map data
 | #EX_IDS_INT64_API   | mesh entity ids
 | #EX_BULK_INT64_API  | bulk data
-| #EX_ALL_INT64_API   | (the above 3 or'd together)
 | #EX_INQ_INT64_API   | integers passed to/from ex_inquire()
+| #EX_ALL_INT64_API   | (the above 4 or'd together)
 
 The constants that end with `_DB` specify that that particular integer
 data is stored on the database as 64-bit integers; the constants that
-end with "_API" specify that that particular integer data is passed
+end with `_API` specify that that particular integer data is passed
 to/from API functions as 64-bit integers.
 
 If the range of the data being transmitted is larger than the
@@ -217,7 +217,7 @@ The three types of integer data whose storage can be specified are
    and blocks; and map ids (`EX_IDS_INT64_`)
 
 The function ex_int64_status()(exoid) is used to determine the integer
-storage types being used for the EXODUS database 'exoid'.  It returns
+storage types being used for the EXODUS database `exoid`.  It returns
 an integer which can be and'ed with the above flags to determine
 either the storage type or function parameter type.
 
@@ -242,8 +242,8 @@ The fortran API is uses the same mechanism as was described above for
 the C API. If using the "8-byte real and 8-byte int" fortran mode
 typically used by the SEACAS applications (the compiler automatically
 promotes all integers and reals to 8-byte quantities), then the
-fortran exodus library will automatically enable the *_API
-options; the client still needs to specify the *_DB options.
+fortran exodus library will automatically enable the `EX_*_INT64_API`
+options; the client still needs to specify the `EX_*_INT64_DB` options.
 
 \subsection int64_fortran_imp Fortran Implementation
 
