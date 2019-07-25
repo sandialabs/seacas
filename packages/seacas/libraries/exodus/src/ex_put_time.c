@@ -37,6 +37,7 @@
 #include "exodusII_int.h" // for EX_FATAL, ex_comp_ws, etc
 
 /*!
+\ingroup ResultsData
 
 The function ex_put_time() writes the time value for a specified time
 step.

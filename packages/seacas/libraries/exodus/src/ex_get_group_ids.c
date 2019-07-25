@@ -37,6 +37,7 @@
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR
 
 /**
+ * \ingroup Utilities
  * Given a file or group 'parent' id, return the number of child groups and the
  * ids
  * of the child groups below the parent.  If num_groups is NULL, do not return

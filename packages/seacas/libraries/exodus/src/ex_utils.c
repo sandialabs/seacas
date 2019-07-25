@@ -223,6 +223,10 @@ int ex_set_max_name_length(int exoid, int length)
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
+/*!
+  \ingroup Utilities
+  \undoc
+*/
 void ex_update_max_name_length(int exoid, int length)
 {
   int status;
@@ -1149,11 +1153,10 @@ void ex_rm_file_item(int                exoid,    /* file id */
   }
 }
 
-/*****************************************************************************
- *
- * ex_get_num_props - get number of properties
- *
- *****************************************************************************/
+/*!
+  \ingroup Utilities
+  \undoc
+*/
 int ex_get_num_props(int exoid, ex_entity_type obj_type)
 {
   int   cntr, varid;
@@ -1513,6 +1516,11 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
 }
 
 /* Deprecated. do not use */
+/*!
+  \deprecated
+  \ingroup Utilities
+  \undoc
+*/
 size_t ex_header_size(int exoid) { return 0; }
 
 /* type = 1 for integer, 2 for real, 3 for character */

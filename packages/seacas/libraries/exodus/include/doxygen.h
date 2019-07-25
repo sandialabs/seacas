@@ -190,15 +190,15 @@ specification are:
 
 |   Constant Name    | Which data are 64-bit
 ---------------------|----------------------
-| EX_MAPS_INT64_DB   | entity map data
-| EX_IDS_INT64_DB    | mesh entity ids
-| EX_BULK_INT64_DB   | bulk data
-| EX_ALL_INT64_DB    | (the above 3 or'd together)
-| EX_MAPS_INT64_API  | entity map data
-| EX_IDS_INT64_API   | mesh entity ids
-| EX_BULK_INT64_API  | bulk data
-| EX_ALL_INT64_API   | (the above 3 or'd together)
-| EX_INQ_INT64_API   | integers passed to/from ex_inquire()
+| #EX_MAPS_INT64_DB   | entity map data
+| #EX_IDS_INT64_DB    | mesh entity ids
+| #EX_BULK_INT64_DB   | bulk data
+| #EX_ALL_INT64_DB    | (the above 3 or'd together)
+| #EX_MAPS_INT64_API  | entity map data
+| #EX_IDS_INT64_API   | mesh entity ids
+| #EX_BULK_INT64_API  | bulk data
+| #EX_ALL_INT64_API   | (the above 3 or'd together)
+| #EX_INQ_INT64_API   | integers passed to/from ex_inquire()
 
 The constants that end with `_DB` specify that that particular integer
 data is stored on the database as 64-bit integers; the constants that
@@ -222,15 +222,15 @@ an integer which can be and'ed with the above flags to determine
 either the storage type or function parameter type.
 
 For example, if
-`(EX_MAPS_INT64_DB & ex_int64_status(exoid))` is true, then map data is
+`(#EX_MAPS_INT64_DB & ex_int64_status(exoid))` is true, then map data is
 being stored as 64-bit integers for that database.
 
 It is not possible to determine the integer data size on a database
 without opening the database via an ex_open() call. However, the
 integer size specification for API functions can be changed at any
 time via the ex_set_int64_status()(exoid, mode) function. The mode is
-one or more of `EX_MAPS_INT64_API`, `EX_IDS_INT64_API`, or
-`EX_BULK_INT64_API`, or'd together.  Any exodus function calls after
+one or more of `#EX_MAPS_INT64_API`, `#EX_IDS_INT64_API`, or
+`#EX_BULK_INT64_API`, or'd together.  Any exodus function calls after
 that point will use the specified integer size. Note that a call to
 ex_set_int64_status()(exoid, mode) overrides any previous setting for
 the integer sizes used in the API.  The ex_create() function is the
@@ -266,12 +266,12 @@ database.  Valid values for 'option' are:
 
 |   Option Name          | Option Values
 -------------------------|---------------
-| EX_OPT_MAX_NAME_LENGTH | Maximum length of names that will be returned/passed via API call.
-| EX_OPT_COMPRESSION_TYPE | Not currently used; default is gzip
-| EX_OPT_COMPRESSION_LEVEL | In the range [0..9]. A value of 0 indicates no compression
-| EX_OPT_COMPRESSION_SHUFFLE | 1 if enabled, 0 if disabled
-| EX_OPT_INTEGER_SIZE_API | 4 or 8 indicating byte size of integers used in API functions.
-| EX_OPT_INTEGER_SIZE_DB  | Query only, returns 4 or 8 indicating byte size of integers stored on the database.
+| #EX_OPT_MAX_NAME_LENGTH | Maximum length of names that will be returned/passed via API call.
+| #EX_OPT_COMPRESSION_TYPE | Not currently used; default is gzip
+| #EX_OPT_COMPRESSION_LEVEL | In the range [0..9]. A value of 0 indicates no compression
+| #EX_OPT_COMPRESSION_SHUFFLE | 1 if enabled, 0 if disabled
+| #EX_OPT_INTEGER_SIZE_API | 4 or 8 indicating byte size of integers used in API functions.
+| #EX_OPT_INTEGER_SIZE_DB  | Query only, returns 4 or 8 indicating byte size of integers stored on the database.
 
 The compression-related options are only available on NetCDF-4 files
 since the underlying hdf5 compression functionality is used for the
@@ -340,10 +340,8 @@ element attributes, node sets, side sets, and object properties.
   @}
 
 @example ../test/CreateEdgeFace.c
-@example ../test/ExoIICTests.cxx
 @example ../test/ReadEdgeFace.c
 @example ../test/create_mesh.c
-@example ../test/testwt-oned.c
 @example ../test/rd_wt_mesh.c
 @example ../test/test-empty.c
 @example ../test/test_nemesis.c
@@ -355,6 +353,7 @@ element attributes, node sets, side sets, and object properties.
 @example ../test/test_ts_partial_nvar_rd.c
 @example ../test/testcp.c
 @example ../test/testcp_nl.c
+@example ../test/testcp_tran.c
 @example ../test/testcpd.c
 @example ../test/testrd-groups.c
 @example ../test/testrd-long-name.c
@@ -369,13 +368,14 @@ element attributes, node sets, side sets, and object properties.
 @example ../test/testrdwt.c
 @example ../test/testwt-compress.c
 @example ../test/testwt-groups.c
-@example ../test/testwt-localization.C
 @example ../test/testwt-long-name.c
 @example ../test/testwt-nface-nside.c
 @example ../test/testwt-nfaced.c
 @example ../test/testwt-nsided.c
 @example ../test/testwt-one-attrib.c
+@example ../test/testwt-oned.c
 @example ../test/testwt-partial.c
+@example ../test/testwt-results.c
 @example ../test/testwt-zeroe.c
 @example ../test/testwt-zeron.c
 @example ../test/testwt.c
@@ -388,6 +388,22 @@ element attributes, node sets, side sets, and object properties.
 @example ../test/testwtd.c
 @example ../test/testwtm.c
 @example ../test/twod.c
+
+@example ../exodus_for/test/test_nem.f
+@example ../exodus_for/test/testcp.f
+@example ../exodus_for/test/testcpd.f
+@example ../exodus_for/test/testcpnl.f
+@example ../exodus_for/test/testrd.f
+@example ../exodus_for/test/testrd1.f
+@example ../exodus_for/test/testrd_nsid.f
+@example ../exodus_for/test/testrdd.f
+@example ../exodus_for/test/testwt.f
+@example ../exodus_for/test/testwt1.f
+@example ../exodus_for/test/testwt2.f
+@example ../exodus_for/test/testwt3.f
+@example ../exodus_for/test/testwt_nsid.f
+@example ../exodus_for/test/testwtd.f
+@example ../exodus_for/test/testwtm.f
 */
 
 /* clang-format on */
