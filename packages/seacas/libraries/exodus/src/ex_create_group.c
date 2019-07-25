@@ -37,7 +37,7 @@
 #include "exodusII_int.h" // for EX_FATAL
 
 /*!
-  \ingroup Utilities
+  \ingroup ModelDescription
   \undoc
 */
 
