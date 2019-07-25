@@ -126,11 +126,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000070">Deprecated:</a></b></dt><dd>Use <a class="el" href="exodusII_8h.html#aedc9233bcc6ffe7c634d67bd305ace2a">ex_put_id_map()</a>(exoid, EX_ELEM_MAP, elem_map)</dd></dl>
-<p>The function <a class="el" href="ex__put__elem__num__map_8c.html#a84dcb5a98c8be5db5a595257e89d7839">ex_put_elem_num_map()</a> writes out the optional element number map to the database. See Section LocalElementIds for a description of the element number map. The function <a class="el" href="group__Utilities.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a> must be invoked before this call is made.</p>
+<p>The function <a class="el" href="ex__put__elem__num__map_8c.html#a84dcb5a98c8be5db5a595257e89d7839">ex_put_elem_num_map()</a> writes out the optional element number map to the database. See Section LocalElementIds for a description of the element number map. The function <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a> must be invoked before this call is made.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__put__elem__num__map_8c.html#a84dcb5a98c8be5db5a595257e89d7839">ex_put_elem_num_map()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>data file opened for read only.</li>
-<li>data file not initialized properly with call to <a class="el" href="group__Utilities.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
+<li>data file not initialized properly with call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
 <li>an element number map already exists in the file.</li>
 </ul>
 </dd></dl>

@@ -138,12 +138,12 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="ex__put__coord_8c.html#a7b04e195e3fa979ba07470b860d70145">ex_put_coord()</a> writes the nodal coordinates of the nodes in the model. The function <a class="el" href="group__Utilities.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a> must be invoked before this call is made.</p>
+<p>The function <a class="el" href="ex__put__coord_8c.html#a7b04e195e3fa979ba07470b860d70145">ex_put_coord()</a> writes the nodal coordinates of the nodes in the model. The function <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a> must be invoked before this call is made.</p>
 <p>Because the coordinates are floating point values, the application code must declare the arrays passed to be the appropriate type (<em>float</em> or <em>double</em>) to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__put__coord_8c.html#a7b04e195e3fa979ba07470b860d70145">ex_put_coord()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>data file opened for read only.</li>
-<li>data file not initialized properly with call to <a class="el" href="group__Utilities.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
+<li>data file not initialized properly with call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
