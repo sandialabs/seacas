@@ -149,19 +149,19 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000012">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var()</a>(exoid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, num_elem_this_blk, elem_var_vals) instead</dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000013">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var()</a>(exoid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, num_elem_this_blk, elem_var_vals) instead</dd></dl>
 <p>The function <a class="el" href="ex__get__elem__var_8c.html#acef3658d3fedb2a77e8471dc3693ad58">ex_get_elem_var()</a> reads the values of a single element variable for one element block at one time step. Memory must be allocated for the element variable values array before this function is invoked.</p>
-<p>Because element variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
+<p>Because element variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__get__elem__var_8c.html#acef3658d3fedb2a77e8471dc3693ad58">ex_get_elem_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
-<li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>variable does not exist for the desired element block.</li>
 <li>invalid element block.</li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">time_step</td><td>The time step number, as described under <a class="el" href="exodusII_8h.html#a2052c8728dac97589b94d9947e645797">ex_put_time()</a>, at which the element variable values are desired. This is essentially an index (in the time dimension) into the element variable values array stored in the database. The first time step is 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">time_step</td><td>The time step number, as described under <a class="el" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time()</a>, at which the element variable values are desired. This is essentially an index (in the time dimension) into the element variable values array stored in the database. The first time step is 1.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">elem_var_index</td><td>The index of the desired element variable. The first variable has an index of 1.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">elem_blk_id</td><td>The desired element block ID.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">num_elem_this_blk</td><td>The number of elements in this element block.</td></tr>

@@ -8,7 +8,7 @@ var ex__err_8c =
     [ "ex_get_err", "group__Utilities.html#ga30160a81eb1aff6befe3890bea4f3bae", null ],
     [ "ex_reset_error_status", "group__Utilities.html#ga2bfe82f5a1be0b1382a481e1cc7c3731", null ],
     [ "ex_set_err", "group__Utilities.html#ga3da0f860c0efa4b115e905c042403346", null ],
-    [ "ex_strerror", "group__Utilities.html#gaa1cdf87b4af74c54b772410d09b3b358", null ],
+    [ "ex_strerror", "group__Utilities.html#gad8366f1fe4b33f38de0776451c53a166", null ],
     [ "exerrval", "ex__err_8c.html#a2afcad8a32ffecb9237121f272c06ad6", null ],
     [ "last_err_num", "ex__err_8c.html#a6f0854983303eaa2c002253ecdfa9c96", null ],
     [ "last_errmsg", "ex__err_8c.html#a880c8369cce3e921b336dba3a3bdfac9", null ],

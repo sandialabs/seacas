@@ -97,52 +97,9 @@ $(document).ready(function(){initNavTree('ex__get__map_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a30b961ff5c0887cc5a56d5292a469219"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__get__map_8c.html#a30b961ff5c0887cc5a56d5292a469219">ex_get_map</a> (int exoid, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *elem_map)</td></tr>
-<tr class="separator:a30b961ff5c0887cc5a56d5292a469219"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga30b961ff5c0887cc5a56d5292a469219"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ModelDescription.html#ga30b961ff5c0887cc5a56d5292a469219">ex_get_map</a> (int exoid, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *elem_map)</td></tr>
+<tr class="separator:ga30b961ff5c0887cc5a56d5292a469219"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a30b961ff5c0887cc5a56d5292a469219"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a30b961ff5c0887cc5a56d5292a469219">&#9670;&nbsp;</a></span>ex_get_map()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int ex_get_map </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>exoid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
-          <td class="paramname"><em>elem_map</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The function <a class="el" href="ex__get__map_8c.html#a30b961ff5c0887cc5a56d5292a469219">ex_get_map()</a> reads the element order map from the database. If an element order map is not stored in the data file, a default array (1,2,3,. .. num_elem) is returned. Memory must be allocated for the element map array ({num_elem} in length) before this call is made.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__get__map_8c.html#a30b961ff5c0887cc5a56d5292a469219">ex_get_map()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
-<li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
-<li>if an element order map is not stored, a default map and a warning value are returned.</li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">elem_map</td><td>Returned element order map.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>The following code will read an element order map from an open exodus file :</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> *elem_map, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* read element order map */</span></div><div class="line">elem_map = (<span class="keywordtype">int</span> *)calloc(num_elem, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a30b961ff5c0887cc5a56d5292a469219">ex_get_map</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, elem_map);</div></div><!-- fragment --> 
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -97,53 +97,9 @@ $(document).ready(function(){initNavTree('ex__put__map_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a5ceec0317e895d0d2a435321a0188475"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__map_8c.html#a5ceec0317e895d0d2a435321a0188475">ex_put_map</a> (int exoid, const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *elem_map)</td></tr>
-<tr class="separator:a5ceec0317e895d0d2a435321a0188475"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5ceec0317e895d0d2a435321a0188475"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ModelDescription.html#ga5ceec0317e895d0d2a435321a0188475">ex_put_map</a> (int exoid, const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *elem_map)</td></tr>
+<tr class="separator:ga5ceec0317e895d0d2a435321a0188475"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a5ceec0317e895d0d2a435321a0188475"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ceec0317e895d0d2a435321a0188475">&#9670;&nbsp;</a></span>ex_put_map()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int ex_put_map </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>exoid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
-          <td class="paramname"><em>elem_map</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The function <a class="el" href="ex__put__map_8c.html#a5ceec0317e895d0d2a435321a0188475">ex_put_map()</a> writes out the optional element order map to the database. The function <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a> must be invoked before this call is made.</p>
-<p>In case of an error, <a class="el" href="ex__put__map_8c.html#a5ceec0317e895d0d2a435321a0188475">ex_put_map()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:</p><ul>
-<li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
-<li>data file opened for read only.</li>
-<li>data file not initialized properly with call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
-<li>an element map already exists in the file.</li>
-</ul>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">elem_map</td><td>The element order map.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>The following code generates a default element order map and outputs it to an open exodus file. This is a trivial case and included just for illustration. Since this map is optional, it should be written out only if it contains something other than the default map.</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">int</span> *elem_map = (<span class="keywordtype">int</span> *)calloc(num_elem, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_elem; i++) {</div><div class="line">   elem_map[i] = i+1;</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a5ceec0317e895d0d2a435321a0188475">ex_put_map</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, elem_map);</div></div><!-- fragment --> 
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

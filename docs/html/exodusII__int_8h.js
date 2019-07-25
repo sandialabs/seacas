@@ -346,7 +346,7 @@ var exodusII__int_8h =
     [ "ex_rm_file_item", "exodusII__int_8h.html#ac0ecf4c4132d52ce792768807e1e19da", null ],
     [ "ex_rm_stat_ptr", "exodusII__int_8h.html#a4d9dfe41bed761f4e15cf55271272ad9", null ],
     [ "ex_trim_internal", "exodusII__int_8h.html#a6c2fa92940d40e58f2dbd28063cd4fc2", null ],
-    [ "ex_update_max_name_length", "exodusII__int_8h.html#ae356629b4b51b86cf54a498492f14f08", null ],
+    [ "ex_update_max_name_length", "group__Utilities.html#gae356629b4b51b86cf54a498492f14f08", null ],
     [ "nc_flt_code", "group__Utilities.html#ga0bcb99c4a23dde165c0a75e9acfb3d55", null ],
     [ "ne_check_file_version", "exodusII__int_8h.html#a5fc0f33c92c66e1814484732cf49e173", null ],
     [ "ne_id_lkup", "exodusII__int_8h.html#a2c69b0e0815ba6422012897d0a1adee8", null ],

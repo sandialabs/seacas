@@ -97,80 +97,9 @@ $(document).ready(function(){initNavTree('ex__put__partial__set_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a038a1fc6df4a66d7cf25d5540d05e5f9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__partial__set_8c.html#a038a1fc6df4a66d7cf25d5540d05e5f9">ex_put_partial_set</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> set_type, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> set_id, int64_t offset, int64_t num_to_put, const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *set_entry_list, const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *set_extra_list)</td></tr>
-<tr class="separator:a038a1fc6df4a66d7cf25d5540d05e5f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga038a1fc6df4a66d7cf25d5540d05e5f9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ModelDescription.html#ga038a1fc6df4a66d7cf25d5540d05e5f9">ex_put_partial_set</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> set_type, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> set_id, int64_t offset, int64_t num_to_put, const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *set_entry_list, const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *set_extra_list)</td></tr>
+<tr class="separator:ga038a1fc6df4a66d7cf25d5540d05e5f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a038a1fc6df4a66d7cf25d5540d05e5f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a038a1fc6df4a66d7cf25d5540d05e5f9">&#9670;&nbsp;</a></span>ex_put_partial_set()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int ex_put_partial_set </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>exoid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a>&#160;</td>
-          <td class="paramname"><em>set_type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
-          <td class="paramname"><em>set_id</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>offset</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_to_put</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
-          <td class="paramname"><em>set_entry_list</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
-          <td class="paramname"><em>set_extra_list</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>writes the set entry list and set extra list for a single set </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
-    <tr><td class="paramname">set_type</td><td>set type </td></tr>
-    <tr><td class="paramname">set_id</td><td>set id </td></tr>
-    <tr><td class="paramname">offset</td><td>The initial entity (1-based) to be output </td></tr>
-    <tr><td class="paramname">num_to_put</td><td>The number of entities to output </td></tr>
-    <tr><td class="paramname">*set_entry_list</td><td>array of entries in set. Set to NULL to not write. </td></tr>
-    <tr><td class="paramname">*set_extra_list</td><td>array of extras in set. Set to NULL to not write. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

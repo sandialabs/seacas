@@ -131,7 +131,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000009">Deprecated:</a></b></dt><dd>Use <a class="el" href="exodusII_8h.html#aeeccbb525d582741af06a06aa275c5fe">ex_get_conn()</a>(exoid, EX_ELEM_BLOCK, elem_blk_id, connect, 0, 0) instead</dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000010">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#gaeeccbb525d582741af06a06aa275c5fe">ex_get_conn()</a>(exoid, EX_ELEM_BLOCK, elem_blk_id, connect, 0, 0) instead</dd></dl>
 <p>The function <a class="el" href="ex__get__elem__conn_8c.html#acfd72eac4420f08757ef50cc7a0e7f4e">ex_get_elem_conn()</a> reads the connectivity array for an element block. Memory must be allocated for the connectivity array (num_elem_this_blk * num_nodes_per_elem in length) before this routine is called.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__get__elem__conn_8c.html#acfd72eac4420f08757ef50cc7a0e7f4e">ex_get_elem_conn()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>an element block with the specified ID is not stored in the file.</li>
@@ -139,7 +139,7 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">elem_blk_id</td><td>The element block ID. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">connect</td><td>Size [num_elem_this_blk,num_nodes_per_elem]. Returned connectivity array; a list of nodes (internal node IDs; See Section LocalNodeIds) that define each element. The node index cycles faster than the element index.</td></tr>
   </table>

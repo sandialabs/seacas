@@ -37,6 +37,7 @@
 #include "exodusII_int.h" // for EX_FATAL, VAR_WHOLE_TIME, etc
 
 /*!
+\ingroup ResultsData
 
 The function ex_get_all_times() reads the time values for all time
 steps. Memory must be allocated for the time values array before this

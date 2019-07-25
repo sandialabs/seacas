@@ -150,7 +150,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">  \deprecated Use ex_get_partial_coord()(exoid, start_node_num, num_nodes, x_coor, y_coor,
-</pre><p> z_coor) instead reads the coordinates of the nodes. Memory must be allocated for the coordinate arrays (x_coor, y_coor, and z_coor) before this call is made. The length of each of these arrays is the number of nodes in the mesh. Because the coordinates are floating point values, the application code must declare the arrays passed to be the appropriate type "float" or "double" to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></p><dl class="params"><dt>Parameters</dt><dd>
+</pre><p> z_coor) instead reads the coordinates of the nodes. Memory must be allocated for the coordinate arrays (x_coor, y_coor, and z_coor) before this call is made. The length of each of these arrays is the number of nodes in the mesh. Because the coordinates are floating point values, the application code must declare the arrays passed to be the appropriate type "float" or "double" to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">exoid</td><td>exodus file id </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">start_node_num</td><td>the starting index of the coordinates to be returned. </td></tr>

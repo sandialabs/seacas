@@ -97,6 +97,10 @@ $(document).ready(function(){initNavTree('group__Utilities.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:ga37c928f7e30c333ee7c704d04f7e3a87"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create</a>(path,  mode,  comp_ws,  io_ws)&#160;&#160;&#160;<a class="el" href="group__Utilities.html#gaaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int</a>(path, mode, comp_ws, io_ws, <a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>)</td></tr>
+<tr class="separator:ga37c928f7e30c333ee7c704d04f7e3a87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9a940cd55241b5c5e7960a123d79c94c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open</a>(path,  mode,  comp_ws,  io_ws,  version)&#160;&#160;&#160;<a class="el" href="group__Utilities.html#ga6595a688ca002de77217c2bb7c271147">ex_open_int</a>(path, mode, comp_ws, io_ws, version, <a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>)</td></tr>
+<tr class="separator:ga9a940cd55241b5c5e7960a123d79c94c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad80acff89f02005080373bf6cf4ff468"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gad80acff89f02005080373bf6cf4ff468">EX_QSORT_CUTOFF</a>&#160;&#160;&#160;12</td></tr>
 <tr class="separator:gad80acff89f02005080373bf6cf4ff468"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -104,50 +108,74 @@ Macros</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:gabccf733ba6ef7e8a51595eb34c4f94ff"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a> (int exoid)</td></tr>
 <tr class="separator:gabccf733ba6ef7e8a51595eb34c4f94ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0bcb99c4a23dde165c0a75e9acfb3d55"><td class="memItemLeft" align="right" valign="top">nc_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga0bcb99c4a23dde165c0a75e9acfb3d55">nc_flt_code</a> (int exoid)</td></tr>
-<tr class="separator:ga0bcb99c4a23dde165c0a75e9acfb3d55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf576fc80741a1f568148eaf0cec76b86"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaf576fc80741a1f568148eaf0cec76b86">ex_int64_status</a> (int exoid)</td></tr>
-<tr class="separator:gaf576fc80741a1f568148eaf0cec76b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8be8ae9fd499756ab2dcb94ca4df7743"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga8be8ae9fd499756ab2dcb94ca4df7743">ex_set_int64_status</a> (int exoid, int mode)</td></tr>
-<tr class="separator:ga8be8ae9fd499756ab2dcb94ca4df7743"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab9398d414e1316177db89782ed2a08c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gab9398d414e1316177db89782ed2a08c4">ex_set_option</a> (int exoid, <a class="el" href="group__FileOptions.html#ga790e5d19a7cc9c2f8d4fd5a49a2c5dd0">ex_option_type</a> option, int option_value)</td></tr>
-<tr class="separator:gab9398d414e1316177db89782ed2a08c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa3e1ca507ddc8a0d3ed14235e618fe34"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaa3e1ca507ddc8a0d3ed14235e618fe34">ex_comp_ws</a> (int exoid)</td></tr>
-<tr class="separator:gaa3e1ca507ddc8a0d3ed14235e618fe34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4794be6082193f2d9f02c07db041c9e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga4794be6082193f2d9f02c07db041c9e1">ex_is_parallel</a> (int exoid)</td></tr>
-<tr class="separator:ga4794be6082193f2d9f02c07db041c9e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab9a0caef233c3321be24ecd4c9d51578"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gab9a0caef233c3321be24ecd4c9d51578">ex_set_parallel</a> (int exoid, int is_parallel)</td></tr>
-<tr class="separator:gab9a0caef233c3321be24ecd4c9d51578"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae4f66d79971313449a2522ab6df73acc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gae4f66d79971313449a2522ab6df73acc">ex_copy</a> (int in_exoid, int out_exoid)</td></tr>
+<tr class="separator:gae4f66d79971313449a2522ab6df73acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4c18291e0af54b68dd8de44480dc79c1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga4c18291e0af54b68dd8de44480dc79c1">ex_copy_transient</a> (int in_exoid, int out_exoid)</td></tr>
+<tr class="separator:ga4c18291e0af54b68dd8de44480dc79c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaea5bc36c6f151eacbe5fb9d23eb22a5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int</a> (const char *path, int cmode, int *comp_ws, int *io_ws, int run_version)</td></tr>
 <tr class="separator:gaaea5bc36c6f151eacbe5fb9d23eb22a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga27866a3e7d0d04c5849cd34ccd13b579"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga27866a3e7d0d04c5849cd34ccd13b579">ex_cvt_nodes_to_sides</a> (int exoid, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *num_elem_per_set, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *num_nodes_per_set, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_sets_elem_index, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_sets_node_index, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_sets_elem_list, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_sets_node_list, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_sets_side_list)</td></tr>
-<tr class="separator:ga27866a3e7d0d04c5849cd34ccd13b579"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2bfe82f5a1be0b1382a481e1cc7c3731"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga2bfe82f5a1be0b1382a481e1cc7c3731">ex_reset_error_status</a> ()</td></tr>
-<tr class="separator:ga2bfe82f5a1be0b1382a481e1cc7c3731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3339b4af498cfc53f21a587ef980852f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga3339b4af498cfc53f21a587ef980852f">ex_get_group_id</a> (int parent_id, const char *group_name, int *group_id)</td></tr>
+<tr class="separator:ga3339b4af498cfc53f21a587ef980852f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad5c9d1b8940f6dcf157c01c081b76095"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gad5c9d1b8940f6dcf157c01c081b76095">ex_get_group_ids</a> (int parent_id, int *num_groups, int *group_ids)</td></tr>
+<tr class="separator:gad5c9d1b8940f6dcf157c01c081b76095"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga758afb447e34a35fc1305509ebca70d3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga758afb447e34a35fc1305509ebca70d3">ex_get_info</a> (int exoid, char **info)</td></tr>
+<tr class="separator:ga758afb447e34a35fc1305509ebca70d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaed5098654802b50ae832bc661f485f52"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaed5098654802b50ae832bc661f485f52">ex_get_qa</a> (int exoid, char *qa_record[][4])</td></tr>
+<tr class="separator:gaed5098654802b50ae832bc661f485f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6595a688ca002de77217c2bb7c271147"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga6595a688ca002de77217c2bb7c271147">ex_open_int</a> (const char *path, int mode, int *comp_ws, int *io_ws, float *version, int run_version)</td></tr>
+<tr class="separator:ga6595a688ca002de77217c2bb7c271147"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga16d75c04427a26326070625c5116a934"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga16d75c04427a26326070625c5116a934">ex_put_info</a> (int exoid, int num_info, char *info[])</td></tr>
+<tr class="separator:ga16d75c04427a26326070625c5116a934"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4babf166b2821494be7d9bfcc95234f5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga4babf166b2821494be7d9bfcc95234f5">ex_put_qa</a> (int exoid, int num_qa_records, char *qa_record[][4])</td></tr>
+<tr class="separator:ga4babf166b2821494be7d9bfcc95234f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafffa0ac5ec86658fb22ed6af7f5530cc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gafffa0ac5ec86658fb22ed6af7f5530cc">ex_update</a> (int exoid)</td></tr>
+<tr class="separator:gafffa0ac5ec86658fb22ed6af7f5530cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf5d7d2d496640993b1c6fe395532e1bc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaf5d7d2d496640993b1c6fe395532e1bc">ex_get_num_props</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> obj_type)</td></tr>
+<tr class="separator:gaf5d7d2d496640993b1c6fe395532e1bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa8231cf6c15bb76730fd5903a3ad5777"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaa8231cf6c15bb76730fd5903a3ad5777">ex_large_model</a> (int exoid)</td></tr>
+<tr class="separator:gaa8231cf6c15bb76730fd5903a3ad5777"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5cf345127f80e3bcf813194c15d97030"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga5cf345127f80e3bcf813194c15d97030">ex_header_size</a> (int exoid)</td></tr>
+<tr class="separator:ga5cf345127f80e3bcf813194c15d97030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga73924582d1725b8f8672ce292dde53e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga73924582d1725b8f8672ce292dde53e5">ex_err</a> (const char *module_name, const char *message, int err_num)</td></tr>
 <tr class="separator:ga73924582d1725b8f8672ce292dde53e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad80ad976010b0653dd981c3c7867475f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gad80ad976010b0653dd981c3c7867475f">ex_err_fn</a> (int exoid, const char *module_name, const char *message, int err_num)</td></tr>
 <tr class="separator:gad80ad976010b0653dd981c3c7867475f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3da0f860c0efa4b115e905c042403346"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga3da0f860c0efa4b115e905c042403346">ex_set_err</a> (const char *module_name, const char *message, int err_num)</td></tr>
 <tr class="separator:ga3da0f860c0efa4b115e905c042403346"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad8366f1fe4b33f38de0776451c53a166"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gad8366f1fe4b33f38de0776451c53a166">ex_strerror</a> (int err_num)</td></tr>
+<tr class="separator:gad8366f1fe4b33f38de0776451c53a166"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga30160a81eb1aff6befe3890bea4f3bae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga30160a81eb1aff6befe3890bea4f3bae">ex_get_err</a> (const char **msg, const char **func, int *err_num)</td></tr>
 <tr class="separator:ga30160a81eb1aff6befe3890bea4f3bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa1cdf87b4af74c54b772410d09b3b358"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaa1cdf87b4af74c54b772410d09b3b358">ex_strerror</a> (int err_num)</td></tr>
-<tr class="separator:gaa1cdf87b4af74c54b772410d09b3b358"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga758afb447e34a35fc1305509ebca70d3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga758afb447e34a35fc1305509ebca70d3">ex_get_info</a> (int exoid, char **info)</td></tr>
-<tr class="separator:ga758afb447e34a35fc1305509ebca70d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaed5098654802b50ae832bc661f485f52"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaed5098654802b50ae832bc661f485f52">ex_get_qa</a> (int exoid, char *qa_record[][4])</td></tr>
-<tr class="separator:gaed5098654802b50ae832bc661f485f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga81bbe8483e24b17bf1b6d0c3b5ebdd3a"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int</a> (int exoid, int req_info)</td></tr>
-<tr class="separator:ga81bbe8483e24b17bf1b6d0c3b5ebdd3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8315ac9fae6afbb886b6d53ec98e9ffa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga8315ac9fae6afbb886b6d53ec98e9ffa">ex_inquire</a> (int exoid, int req_info, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *ret_int, float *ret_float, char *ret_char)</td></tr>
-<tr class="separator:ga8315ac9fae6afbb886b6d53ec98e9ffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga16d75c04427a26326070625c5116a934"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga16d75c04427a26326070625c5116a934">ex_put_info</a> (int exoid, int num_info, char *info[])</td></tr>
-<tr class="separator:ga16d75c04427a26326070625c5116a934"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4babf166b2821494be7d9bfcc95234f5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga4babf166b2821494be7d9bfcc95234f5">ex_put_qa</a> (int exoid, int num_qa_records, char *qa_record[][4])</td></tr>
-<tr class="separator:ga4babf166b2821494be7d9bfcc95234f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8f47bbb035d32bbafc594c5ed3c00403"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga8f47bbb035d32bbafc594c5ed3c00403">ex_opts</a> (int options)</td></tr>
+<tr class="separator:ga8f47bbb035d32bbafc594c5ed3c00403"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga97c9b3dd2005e08f6e1d98470947fc6a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire</a> (int exoid, <a class="el" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dc">ex_inquiry</a> req_info, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *, float *, char *)</td></tr>
+<tr class="separator:ga97c9b3dd2005e08f6e1d98470947fc6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1b8122836266615fd2795736dc21e2ae"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a> (int exoid, <a class="el" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dc">ex_inquiry</a> req_info)</td></tr>
+<tr class="separator:ga1b8122836266615fd2795736dc21e2ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf576fc80741a1f568148eaf0cec76b86"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaf576fc80741a1f568148eaf0cec76b86">ex_int64_status</a> (int exoid)</td></tr>
+<tr class="separator:gaf576fc80741a1f568148eaf0cec76b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8be8ae9fd499756ab2dcb94ca4df7743"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga8be8ae9fd499756ab2dcb94ca4df7743">ex_set_int64_status</a> (int exoid, int mode)</td></tr>
+<tr class="separator:ga8be8ae9fd499756ab2dcb94ca4df7743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac89ad2ce316bb7fecf5fab8c9e447347"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gac89ad2ce316bb7fecf5fab8c9e447347">ex_print_config</a> (void)</td></tr>
+<tr class="separator:gac89ad2ce316bb7fecf5fab8c9e447347"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3126c6db205970eaa43de2b0eac0bf87"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga3126c6db205970eaa43de2b0eac0bf87">ex_set_max_name_length</a> (int exoid, int length)</td></tr>
 <tr class="separator:ga3126c6db205970eaa43de2b0eac0bf87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab9398d414e1316177db89782ed2a08c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gab9398d414e1316177db89782ed2a08c4">ex_set_option</a> (int exoid, <a class="el" href="group__FileOptions.html#ga790e5d19a7cc9c2f8d4fd5a49a2c5dd0">ex_option_type</a> option, int option_value)</td></tr>
+<tr class="separator:gab9398d414e1316177db89782ed2a08c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga27866a3e7d0d04c5849cd34ccd13b579"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga27866a3e7d0d04c5849cd34ccd13b579">ex_cvt_nodes_to_sides</a> (int exoid, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *num_elem_per_set, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *num_nodes_per_set, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_sets_elem_index, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_sets_node_index, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_sets_elem_list, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_sets_node_list, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_sets_side_list)</td></tr>
+<tr class="separator:ga27866a3e7d0d04c5849cd34ccd13b579"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0bcb99c4a23dde165c0a75e9acfb3d55"><td class="memItemLeft" align="right" valign="top">nc_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga0bcb99c4a23dde165c0a75e9acfb3d55">nc_flt_code</a> (int exoid)</td></tr>
+<tr class="separator:ga0bcb99c4a23dde165c0a75e9acfb3d55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa3e1ca507ddc8a0d3ed14235e618fe34"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gaa3e1ca507ddc8a0d3ed14235e618fe34">ex_comp_ws</a> (int exoid)</td></tr>
+<tr class="separator:gaa3e1ca507ddc8a0d3ed14235e618fe34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4794be6082193f2d9f02c07db041c9e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga4794be6082193f2d9f02c07db041c9e1">ex_is_parallel</a> (int exoid)</td></tr>
+<tr class="separator:ga4794be6082193f2d9f02c07db041c9e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab9a0caef233c3321be24ecd4c9d51578"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gab9a0caef233c3321be24ecd4c9d51578">ex_set_parallel</a> (int exoid, int is_parallel)</td></tr>
+<tr class="separator:gab9a0caef233c3321be24ecd4c9d51578"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2bfe82f5a1be0b1382a481e1cc7c3731"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga2bfe82f5a1be0b1382a481e1cc7c3731">ex_reset_error_status</a> ()</td></tr>
+<tr class="separator:ga2bfe82f5a1be0b1382a481e1cc7c3731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae356629b4b51b86cf54a498492f14f08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#gae356629b4b51b86cf54a498492f14f08">ex_update_max_name_length</a> (int exoid, int length)</td></tr>
+<tr class="separator:gae356629b4b51b86cf54a498492f14f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -159,6 +187,96 @@ Variables</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This section describes data file utility functions for creating opening a file, initializing a file with global parameters, reading writing information text, inquiring on parameters stored in the data file, and error reporting. </p>
 <h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="ga37c928f7e30c333ee7c704d04f7e3a87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga37c928f7e30c333ee7c704d04f7e3a87">&#9670;&nbsp;</a></span>ex_create</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ex_create</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">path, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">mode, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">comp_ws, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">io_ws&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;<a class="el" href="group__Utilities.html#gaaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int</a>(path, mode, comp_ws, io_ws, <a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a12">/test/create_mesh.c</a>, <a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a7">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a23">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test-empty_8c-example.html#a3">/test/test-empty.c</a>, <a class="el" href="_2test_2test_nemesis_8c-example.html#a3">/test/test_nemesis.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a5">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a6">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a8">/test/test_ts_partial_nvar.c</a>, <a class="el" href="_2test_2testcp_8c-example.html#a8">/test/testcp.c</a>, <a class="el" href="_2test_2testcp_nl_8c-example.html#a8">/test/testcp_nl.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a8">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testcpd_8c-example.html#a8">/test/testcpd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a7">/test/testrd1.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a8">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a8">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a5">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a5">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a5">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nfaced_8c-example.html#a4">/test/testwt-nfaced.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a5">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a6">/test/testwt-one-attrib.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a5">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a5">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a5">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a4">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a4">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a5">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a5">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a5">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a5">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a5">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a4">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a4">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a5">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a5">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a0">/test/twod.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="ga9a940cd55241b5c5e7960a123d79c94c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9a940cd55241b5c5e7960a123d79c94c">&#9670;&nbsp;</a></span>ex_open</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ex_open</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">path, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">mode, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">comp_ws, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">io_ws, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">version&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;<a class="el" href="group__Utilities.html#ga6595a688ca002de77217c2bb7c271147">ex_open_int</a>(path, mode, comp_ws, io_ws, version, <a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a6">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2ReadEdgeFace_8c-example.html#a34">/test/ReadEdgeFace.c</a>, <a class="el" href="_2test_2test-empty_8c-example.html#a6">/test/test-empty.c</a>, <a class="el" href="_2test_2test_nemesis_8c-example.html#a5">/test/test_nemesis.c</a>, <a class="el" href="_2test_2test_ts_nvar_rd_8c-example.html#a9">/test/test_ts_nvar_rd.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_rd_8c-example.html#a9">/test/test_ts_partial_nvar_rd.c</a>, <a class="el" href="_2test_2testcp_8c-example.html#a4">/test/testcp.c</a>, <a class="el" href="_2test_2testcp_nl_8c-example.html#a4">/test/testcp_nl.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a4">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testcpd_8c-example.html#a4">/test/testcpd.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a7">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a7">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nfaced_8c-example.html#a5">/test/testrd-nfaced.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a7">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a7">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a9">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a7">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_ss_8c-example.html#a6">/test/testrd_ss.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a7">/test/testrdd.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a6">/test/testrdwt.c</a>, and <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a18">/test/testwt-one-attrib.c</a>.</dd>
+</dl>
+
+</div>
+</div>
 <a id="gad80acff89f02005080373bf6cf4ff468"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gad80acff89f02005080373bf6cf4ff468">&#9670;&nbsp;</a></span>EX_QSORT_CUTOFF</h2>
 
@@ -194,17 +312,19 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <p>The function <a class="el" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close()</a> updates and then closes an open exodus file.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
-<li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
+    <tr><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
   </table>
   </dd>
 </dl>
 <p>The following code segment closes an open exodus file:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>,<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>);</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>,<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a18">/test/create_mesh.c</a>, <a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a77">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a9">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2ReadEdgeFace_8c-example.html#a76">/test/ReadEdgeFace.c</a>, <a class="el" href="_2test_2test-empty_8c-example.html#a5">/test/test-empty.c</a>, <a class="el" href="_2test_2test_nemesis_8c-example.html#a4">/test/test_nemesis.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a8">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a12">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2test_ts_nvar_rd_8c-example.html#a12">/test/test_ts_nvar_rd.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a14">/test/test_ts_partial_nvar.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_rd_8c-example.html#a12">/test/test_ts_partial_nvar_rd.c</a>, <a class="el" href="_2test_2testcp_8c-example.html#a11">/test/testcp.c</a>, <a class="el" href="_2test_2testcp_nl_8c-example.html#a12">/test/testcp_nl.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a18">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testcpd_8c-example.html#a11">/test/testcpd.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a68">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a74">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nfaced_8c-example.html#a35">/test/testrd-nfaced.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a67">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a70">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a67">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a56">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a63">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrd_ss_8c-example.html#a26">/test/testrd_ss.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a55">/test/testrdd.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a50">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a13">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a11">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a10">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a29">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nfaced_8c-example.html#a28">/test/testwt-nfaced.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a8">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a17">/test/testwt-one-attrib.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a38">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a8">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a19">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a7">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a7">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a8">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a47">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a33">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a8">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a8">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a43">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a7">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a33">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a45">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a24">/test/twod.c</a>.</dd>
+</dl>
+
 </div>
 </div>
 <a id="gaa3e1ca507ddc8a0d3ed14235e618fe34"></a>
@@ -227,6 +347,66 @@ Variables</h2></td></tr>
     <tr><td class="paramname">exoid</td><td>integer which uniquely identifies the file of interest. </td></tr>
   </table>
   </dd>
+</dl>
+
+</div>
+</div>
+<a id="gae4f66d79971313449a2522ab6df73acc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae4f66d79971313449a2522ab6df73acc">&#9670;&nbsp;</a></span>ex_copy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_copy </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>in_exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>out_exoid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testcp_8c-example.html#a10">/test/testcp.c</a>, <a class="el" href="_2test_2testcp_nl_8c-example.html#a11">/test/testcp_nl.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a10">/test/testcp_tran.c</a>, and <a class="el" href="_2test_2testcpd_8c-example.html#a10">/test/testcpd.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="ga4c18291e0af54b68dd8de44480dc79c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4c18291e0af54b68dd8de44480dc79c1">&#9670;&nbsp;</a></span>ex_copy_transient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_copy_transient </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>in_exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>out_exoid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testcp_tran_8c-example.html#a15">/test/testcp_tran.c</a>.</dd>
 </dl>
 
 </div>
@@ -274,10 +454,10 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section note"><dt>Note</dt><dd>The <a class="el" href="group__Utilities.html#gaaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int()</a> is an internal function called by <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a>. The user should call <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> and not <a class="el" href="group__Utilities.html#gaaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int()</a>.</dd></dl>
-<p>The function <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> creates a new exodus file and returns an ID that can subsequently be used to refer to the file.</p>
+<dl class="section note"><dt>Note</dt><dd>The <a class="el" href="group__Utilities.html#gaaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int()</a> is an internal function called by <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a>. The user should call <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> and not <a class="el" href="group__Utilities.html#gaaea5bc36c6f151eacbe5fb9d23eb22a5">ex_create_int()</a>.</dd></dl>
+<p>The function <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> creates a new exodus file and returns an ID that can subsequently be used to refer to the file.</p>
 <p>All floating point values in an exodus file are stored as either 4-byte (float) or 8-byte (double) numbers; no mixing of 4- and 8-byte numbers in a single file is allowed. An application code can compute either 4- or 8-byte values and can designate that the values be stored in the exodus file as either 4- or 8-byte numbers; conversion between the 4- and 8-byte values is performed automatically by the API routines. Thus, there are four possible combinations of compute word size and storage (or I/O) word size.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> returns a negative number. Possible causes of errors include:<ul>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> returns a negative number. Possible causes of errors include:<ul>
 <li>Passing a file name that includes a directory that does not exist.</li>
 <li>Specifying a file name of a file that exists and also specifying a no clobber option.</li>
 <li>Attempting to create a file in a directory without permission to create files there.</li>
@@ -319,7 +499,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <p>The following code segment creates an exodus file called <code>test.exo</code>:</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="exodusII_8h.html">exodusII.h</a>&quot;</span></div><div class="line"><span class="keywordtype">int</span> CPU_word_size, IO_word_size, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line">CPU_word_size = <span class="keyword">sizeof</span>(float);      <span class="comment">/* use float or double */</span></div><div class="line">IO_word_size = 8;                   <span class="comment">/* store variables as doubles */</span></div><div class="line"></div><div class="line"><span class="comment">/* create exodus file */</span></div><div class="line"><a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a> = <a class="code" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create</a> (<span class="stringliteral">&quot;test.exo&quot;</span>       <span class="comment">/* filename path */</span></div><div class="line">                    <a class="code" href="group__FileVars.html#gadeed66ded179e51a8858254052a76ba4">EX_CLOBBER</a>,     <span class="comment">/* create mode */</span></div><div class="line">                    &amp;CPU_word_size, <span class="comment">/* CPU float word size in bytes */</span></div><div class="line">                    &amp;IO_word_size); <span class="comment">/* I/O float word size in bytes */</span></div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="exodusII_8h.html">exodusII.h</a>&quot;</span></div><div class="line"><span class="keywordtype">int</span> CPU_word_size, IO_word_size, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line">CPU_word_size = <span class="keyword">sizeof</span>(float);      <span class="comment">/* use float or double */</span></div><div class="line">IO_word_size = 8;                   <span class="comment">/* store variables as doubles */</span></div><div class="line"></div><div class="line"><span class="comment">/* create exodus file */</span></div><div class="line"><a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a> = <a class="code" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create</a> (<span class="stringliteral">&quot;test.exo&quot;</span>       <span class="comment">/* filename path */</span></div><div class="line">                    <a class="code" href="group__FileVars.html#gadeed66ded179e51a8858254052a76ba4">EX_CLOBBER</a>,     <span class="comment">/* create mode */</span></div><div class="line">                    &amp;CPU_word_size, <span class="comment">/* CPU float word size in bytes */</span></div><div class="line">                    &amp;IO_word_size); <span class="comment">/* I/O float word size in bytes */</span></div></div><!-- fragment --> 
 </div>
 </div>
 <a id="ga27866a3e7d0d04c5849cd34ccd13b579"></a>
@@ -383,7 +563,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="group__Utilities.html#ga27866a3e7d0d04c5849cd34ccd13b579">ex_cvt_nodes_to_sides()</a> is used to convert a side set node list to a side set side list. This routine is provided for application programs that utilize side sets defined by nodes (as was done previous to release 2.0) rather than local faces or edges. The application program must allocate memory for the returned array of sides. The length of this array is the same as the length of the concatenated side sets element list, which can be determined with a call to <a class="el" href="group__Utilities.html#ga8315ac9fae6afbb886b6d53ec98e9ffa">ex_inquire()</a> or <a class="el" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int()</a>.</p>
+<p>The function <a class="el" href="group__Utilities.html#ga27866a3e7d0d04c5849cd34ccd13b579">ex_cvt_nodes_to_sides()</a> is used to convert a side set node list to a side set side list. This routine is provided for application programs that utilize side sets defined by nodes (as was done previous to release 2.0) rather than local faces or edges. The application program must allocate memory for the returned array of sides. The length of this array is the same as the length of the concatenated side sets element list, which can be determined with a call to <a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire()</a> or <a class="el" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__Utilities.html#ga27866a3e7d0d04c5849cd34ccd13b579">ex_cvt_nodes_to_sides()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>a warning value is returned if no side sets are stored in the file.</li>
 <li>because the faces of a wedge require a different number of nodes to describe them (quadrilateral vs. triangular faces), the function will abort with a fatal return code if a wedge is encountered in the side set element list.</li>
@@ -391,7 +571,7 @@ Variables</h2></td></tr>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">num_elem_per_set</td><td>Array containing the number of sides for each set. The number of sides is equal to the number of elements for each set.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">num_nodes_per_set</td><td>Array containing the number of nodes for each set.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">side_sets_elem_index</td><td>Array containing indices into the <code>side_sets_elem_list</code> which are the locations of the first element for each set. These indices are 0-based. Unused.</td></tr>
@@ -403,7 +583,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <p>The following code segment will convert side sets described by nodes to side sets described by local side numbers:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, ids[2], num_side_per_set[2],</div><div class="line">    num_nodes_per_set[2], elem_ind[2], node_ind[2],</div><div class="line">    elem_list[4], node_list[8], el_lst_len, *side_list;</div><div class="line"></div><div class="line">ids[0] = 30             ; ids[1]  = 31;</div><div class="line">num_side_per_set[0]  = 2; num_side_per_set[1] = 2;</div><div class="line">num_nodes_per_set[0] = 4; num_nodes_per_set[1] = 4;</div><div class="line"></div><div class="line">elem_ind[0] = 0; elem_ind[1] = 2;</div><div class="line">node_ind[0] = 0; node_ind[1] = 4;</div><div class="line"></div><div class="line"><span class="comment">/* side set #1 */</span></div><div class="line">elem_list[0] = 2; elem_list[1] = 2;</div><div class="line">node_list[0] = 8; node_list[1] = 5;</div><div class="line">node_list[2] = 6; node_list[3] = 7;</div><div class="line"></div><div class="line"><span class="comment">/* side set #2 */</span></div><div class="line">elem_list[2] = 1; elem_list[3] = 2;</div><div class="line">node_list[4] = 2; node_list[5] = 3;</div><div class="line">node_list[6] = 7; node_list[7] = 8;</div><div class="line"></div><div class="line">el_lst_len = <a class="code" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadaa954caa2f631729bfee1375a268178">EX_INQ_SS_ELEM_LEN</a>);</div><div class="line"></div><div class="line"><span class="comment">/* side set element list is same length as side list */</span></div><div class="line">side_list = (<span class="keywordtype">int</span> *) calloc (el_lst_len, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div><div class="line"></div><div class="line"><a class="code" href="group__Utilities.html#ga27866a3e7d0d04c5849cd34ccd13b579">ex_cvt_nodes_to_sides</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_side_per_set, num_nodes_per_set,</div><div class="line">                      elem_ind, node_ind, elem_list,</div><div class="line">                      node_list, side_list);</div></div><!-- fragment --><p><b>Algorithm:</b></p>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, ids[2], num_side_per_set[2],</div><div class="line">    num_nodes_per_set[2], elem_ind[2], node_ind[2],</div><div class="line">    elem_list[4], node_list[8], el_lst_len, *side_list;</div><div class="line"></div><div class="line">ids[0] = 30             ; ids[1]  = 31;</div><div class="line">num_side_per_set[0]  = 2; num_side_per_set[1] = 2;</div><div class="line">num_nodes_per_set[0] = 4; num_nodes_per_set[1] = 4;</div><div class="line"></div><div class="line">elem_ind[0] = 0; elem_ind[1] = 2;</div><div class="line">node_ind[0] = 0; node_ind[1] = 4;</div><div class="line"></div><div class="line"><span class="comment">/* side set #1 */</span></div><div class="line">elem_list[0] = 2; elem_list[1] = 2;</div><div class="line">node_list[0] = 8; node_list[1] = 5;</div><div class="line">node_list[2] = 6; node_list[3] = 7;</div><div class="line"></div><div class="line"><span class="comment">/* side set #2 */</span></div><div class="line">elem_list[2] = 1; elem_list[3] = 2;</div><div class="line">node_list[4] = 2; node_list[5] = 3;</div><div class="line">node_list[6] = 7; node_list[7] = 8;</div><div class="line"></div><div class="line">el_lst_len = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadaa954caa2f631729bfee1375a268178">EX_INQ_SS_ELEM_LEN</a>);</div><div class="line"></div><div class="line"><span class="comment">/* side set element list is same length as side list */</span></div><div class="line">side_list = (<span class="keywordtype">int</span> *) calloc (el_lst_len, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div><div class="line"></div><div class="line"><a class="code" href="group__Utilities.html#ga27866a3e7d0d04c5849cd34ccd13b579">ex_cvt_nodes_to_sides</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_side_per_set, num_nodes_per_set,</div><div class="line">                      elem_ind, node_ind, elem_list,</div><div class="line">                      node_list, side_list);</div></div><!-- fragment --><p><b>Algorithm:</b></p>
 <pre class="fragment">  Read elem_block_ids --&gt; elem_blk_id[array]
 
   Read element block parameters --&gt; elem_blk_parms[array]
@@ -441,7 +621,9 @@ Variables</h2></td></tr>
       }
     }
   }
-</pre> 
+</pre> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testwt1_8c-example.html#a35">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a31">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a14">/test/testwt_ss.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a24">/test/testwtm.c</a>.</dd>
+</dl>
+
 </div>
 </div>
 <a id="ga73924582d1725b8f8672ce292dde53e5"></a>
@@ -476,6 +658,8 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="undoc"><dt><b><a class="el" href="undoc.html#_undoc000004">Undocumented:</a></b></dt><dd></dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_errval_8c-example.html#a2">/test/test_ts_errval.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -552,6 +736,80 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="undoc"><dt><b><a class="el" href="undoc.html#_undoc000007">Undocumented:</a></b></dt><dd></dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_errval_8c-example.html#a3">/test/test_ts_errval.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="ga3339b4af498cfc53f21a587ef980852f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3339b4af498cfc53f21a587ef980852f">&#9670;&nbsp;</a></span>ex_get_group_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_group_id </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>parent_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>group_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>group_id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Given an exoid and group name (NULL gets root group), return id of that group. If the name is NULL, return the root group. If the name contains "/", then the name is assumed to be a full path name and all groups in the file are searched. Otherwise, the name is assumed to be the name of a child group of exoid </p>
+
+</div>
+</div>
+<a id="gad5c9d1b8940f6dcf157c01c081b76095"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad5c9d1b8940f6dcf157c01c081b76095">&#9670;&nbsp;</a></span>ex_get_group_ids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_group_ids </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>parent_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>num_groups</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>group_ids</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Given a file or group 'parent' id, return the number of child groups and the ids of the child groups below the parent. If num_groups is NULL, do not return count; if group_ids is NULL, do not return ids. </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a14">/test/testrd-groups.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -580,21 +838,52 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="group__Utilities.html#ga758afb447e34a35fc1305509ebca70d3">ex_get_info()</a> reads information records from the database. The records are MAX_LINE_LENGTH-character strings. Memory must be allocated for the information records before this call is made. The number of records can be determined by invoking <a class="el" href="group__Utilities.html#ga8315ac9fae6afbb886b6d53ec98e9ffa">ex_inquire()</a> or <a class="el" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int()</a>.</p>
+<p>The function <a class="el" href="group__Utilities.html#ga758afb447e34a35fc1305509ebca70d3">ex_get_info()</a> reads information records from the database. The records are MAX_LINE_LENGTH-character strings. Memory must be allocated for the information records before this call is made. The number of records can be determined by invoking <a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire()</a> or <a class="el" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__Utilities.html#ga758afb447e34a35fc1305509ebca70d3">ex_get_info()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
-<li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>a warning value is returned if no information records were stored.</li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">info</td><td>Returned array containing the information records.</td></tr>
   </table>
   </dd>
 </dl>
 <p>The following code segment will determine the number of information records and read them from an open exodus file :</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_info;</div><div class="line"><span class="keywordtype">char</span> *info[MAXINFO];</div><div class="line"></div><div class="line"><span class="comment">/* read information records */</span></div><div class="line">num_info = <a class="code" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>,<a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca4fd836d4c6b12c55b50dd5b545091dc7">EX_INQ_INFO</a>);</div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_info; i++) {</div><div class="line">   info[i] = (<span class="keywordtype">char</span> *) calloc ((<a class="code" href="group__StringLengths.html#gaf0f2173e3b202ddf5756531b4471dcb2">MAX_LINE_LENGTH</a>+1), <span class="keyword">sizeof</span>(char));</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga758afb447e34a35fc1305509ebca70d3">ex_get_info</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, info);</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_info;</div><div class="line"><span class="keywordtype">char</span> *info[MAXINFO];</div><div class="line"></div><div class="line"><span class="comment">/* read information records */</span></div><div class="line">num_info = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>,<a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca4fd836d4c6b12c55b50dd5b545091dc7">EX_INQ_INFO</a>);</div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_info; i++) {</div><div class="line">   info[i] = (<span class="keywordtype">char</span> *) calloc ((<a class="code" href="group__StringLengths.html#gaf0f2173e3b202ddf5756531b4471dcb2">MAX_LINE_LENGTH</a>+1), <span class="keyword">sizeof</span>(char));</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga758afb447e34a35fc1305509ebca70d3">ex_get_info</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, info);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a56">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a64">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nfaced_8c-example.html#a34">/test/testrd-nfaced.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a57">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a60">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a55">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a45">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a51">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a44">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a48">/test/testrdwt.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="gaf5d7d2d496640993b1c6fe395532e1bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf5d7d2d496640993b1c6fe395532e1bc">&#9670;&nbsp;</a></span>ex_get_num_props()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_num_props </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a>&#160;</td>
+          <td class="paramname"><em>obj_type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="undoc"><dt><b><a class="el" href="undoc.html#_undoc000026">Undocumented:</a></b></dt><dd></dd></dl>
+
 </div>
 </div>
 <a id="gaed5098654802b50ae832bc661f485f52"></a>
@@ -628,25 +917,47 @@ Variables</h2></td></tr>
 <li>the analysis date</li>
 <li>the analysis time</li>
 </ul>
-<p>Memory must be allocated for the QA records before this call is made. The number of QA records can be determined by invoking <a class="el" href="group__Utilities.html#ga8315ac9fae6afbb886b6d53ec98e9ffa">ex_inquire()</a>.</p>
+<p>Memory must be allocated for the QA records before this call is made. The number of QA records can be determined by invoking <a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__Utilities.html#gaed5098654802b50ae832bc661f485f52">ex_get_qa()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
-<li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>a warning value is returned if no QA records were stored.</li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">qa_record</td><td>Returned array containing the QA records.</td></tr>
   </table>
   </dd>
 </dl>
 <p>The following will determine the number of QA records and read them from the open exodus file:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_qa_rec, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a></div><div class="line"><span class="keywordtype">char</span> *qa_record[MAX_QA_REC][4];</div><div class="line"></div><div class="line"><span class="comment">/* read QA records */</span></div><div class="line">num_qa_rec = <a class="code" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca866d6d42ea0e03c30a062b07f0105874">EX_INQ_QA</a>);</div><div class="line"></div><div class="line"><span class="keywordflow">for</span> (i=0; i&lt;num_qa_rec; i++) {</div><div class="line">    <span class="keywordflow">for</span> (j=0; j&lt;4; j++)</div><div class="line">    qa_record[i][j] = (<span class="keywordtype">char</span> *) calloc ((<a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a>+1), <span class="keyword">sizeof</span>(<span class="keywordtype">char</span>));</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#gaed5098654802b50ae832bc661f485f52">ex_get_qa</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, qa_record);</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_qa_rec, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a></div><div class="line"><span class="keywordtype">char</span> *qa_record[MAX_QA_REC][4];</div><div class="line"></div><div class="line"><span class="comment">/* read QA records */</span></div><div class="line">num_qa_rec = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca866d6d42ea0e03c30a062b07f0105874">EX_INQ_QA</a>);</div><div class="line"></div><div class="line"><span class="keywordflow">for</span> (i=0; i&lt;num_qa_rec; i++) {</div><div class="line">    <span class="keywordflow">for</span> (j=0; j&lt;4; j++)</div><div class="line">    qa_record[i][j] = (<span class="keywordtype">char</span> *) calloc ((<a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a>+1), <span class="keyword">sizeof</span>(<span class="keywordtype">char</span>));</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#gaed5098654802b50ae832bc661f485f52">ex_get_qa</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, qa_record);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a54">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a62">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nfaced_8c-example.html#a31">/test/testrd-nfaced.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a55">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a58">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a53">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a43">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a49">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a42">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a45">/test/testrdwt.c</a>.</dd>
+</dl>
+
 </div>
 </div>
-<a id="ga8315ac9fae6afbb886b6d53ec98e9ffa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga8315ac9fae6afbb886b6d53ec98e9ffa">&#9670;&nbsp;</a></span>ex_inquire()</h2>
+<a id="ga5cf345127f80e3bcf813194c15d97030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5cf345127f80e3bcf813194c15d97030">&#9670;&nbsp;</a></span>ex_header_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t ex_header_size </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000003">Deprecated:</a></b></dt><dd></dd></dl>
+<dl class="undoc"><dt><b><a class="el" href="undoc.html#_undoc000027">Undocumented:</a></b></dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="ga97c9b3dd2005e08f6e1d98470947fc6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga97c9b3dd2005e08f6e1d98470947fc6a">&#9670;&nbsp;</a></span>ex_inquire()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -660,7 +971,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dc">ex_inquiry</a>&#160;</td>
           <td class="paramname"><em>req_info</em>, </td>
         </tr>
         <tr>
@@ -688,217 +999,32 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="group__Utilities.html#ga8315ac9fae6afbb886b6d53ec98e9ffa">ex_inquire()</a> is used to inquire values of certain data entities in an exodus file. Memory must be allocated for the returned values before this function is invoked.query database. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int()</a>.</dd></dl>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__Utilities.html#ga8315ac9fae6afbb886b6d53ec98e9ffa">ex_inquire()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
-<li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</li>
+<p>The function <a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire()</a> is used to inquire values of certain data entities in an exodus file. Memory must be allocated for the returned values before this function is invoked.query database.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int()</a>, <a class="el" href="exodusII_8h.html#a4ed4d7c08e7044d839e83bf284cd01c3">ex_inquiry</a>.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</li>
 <li>requested information not stored in the file.</li>
 <li>invalid request flag.</li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">req_info</td><td>A flag which designates what information is requested. It must be one of the following constants in the table below.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">req_info</td><td>A flag of type <a class="el" href="exodusII_8h.html#a4ed4d7c08e7044d839e83bf284cd01c3">ex_inquiry</a> which designates what information is requested. It must be one of the following constants in the table below.</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">ret_int</td><td>Returned integer, if an integer value is requested (according to req_info); otherwise, supply a dummy argument.</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">ret_float</td><td>Returned float, if a float value is requested (according to req_info); otherwise, supply a dummy argument. This argument is always a float even if the database IO and/or CPU word size is a double.</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">ret_char</td><td>Returned character string, if a character value is requested (according to req_info); otherwise, supply a dummy argument.</td></tr>
   </table>
   </dd>
 </dl>
-<table class="doxtable">
-<tr>
-<td>EX_INQ_API_VERS</td><td><p class="starttd">The exodus API version number is returned in ret_float and an undotted version number is returned in ret_int. The API version number reflects the release of the function library (i.e., function names, argument list, etc.). The API and LIB version numbers are synchronized and will always match. Initially, it was thought that maintaining the two versions separately would be a benefit, but that was more confusing than helpful, so the numbers were made the same.</p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_DB_VERS </td><td><p class="starttd">The exodus database version number is returned in ret_float and an `&lsquo;undotted&rsquo;' version number is returned in ret_int. The database version number reflects the version of the library that was used to <em>write</em> the file pointed to by exoid. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_LIB_VERS </td><td><p class="starttd">The exodus library version number is returned in ret_float and an undotted version number is returned in ret_int. The API library version number reflects the version number of the exodus library linked with this application. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_TITLE </td><td><p class="starttd">The title stored in the database is returned in ret_char. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_DIM </td><td><p class="starttd">The dimensionality, or number of coordinates per node (1, 2 or 3), of the database is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_NODES </td><td><p class="starttd">The number of nodes is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_ELEM </td><td><p class="starttd">The number of elements is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_ELEM_BLK </td><td><p class="starttd">The number of element blocks is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_NODE_SETS </td><td><p class="starttd">The number of node sets is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_NS_NODE_LEN </td><td><p class="starttd">The length of the concatenated node sets node list is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_NS_DF_LEN </td><td><p class="starttd">The length of the concatenated node sets distribution list is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_SIDE_SETS </td><td><p class="starttd">The number of side sets is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_SS_ELEM_LEN </td><td><p class="starttd">The length of the concatenated side sets element list is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_SS_DF_LEN </td><td><p class="starttd">The length of the concatenated side sets distribution factor list is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_SS_NODE_LEN </td><td><p class="starttd">The aggregate length of all of the side sets node lists is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_EB_PROP </td><td><p class="starttd">The number of integer properties stored for each element block is returned in ret_int; this number includes the property named ID. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_NS_PROP </td><td><p class="starttd">The number of integer properties stored for each node set is returned in ret_int; this number includes the property named ID. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_SS_PROP </td><td><p class="starttd">The number of integer properties stored for each side set is returned in ret_int; this number includes the property named ID. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_QA </td><td><p class="starttd">The number of QA records is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_INFO </td><td><p class="starttd">The number of information records is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_TIME </td><td><p class="starttd">The number of time steps stored in the database is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_EDGE_BLK </td><td><p class="starttd">The number of edge blocks is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_EDGE_MAP </td><td><p class="starttd">The number of edge maps is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_EDGE_PROP </td><td><p class="starttd">The number of properties stored per edge blockis returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_EDGE_SETS </td><td><p class="starttd">The number of edge sets is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_EDGE </td><td><p class="starttd">The number of edges is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_FACE </td><td><p class="starttd">The number of faces is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_EB_PROP </td><td><p class="starttd">The number of element block properties is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_ELEM_MAP </td><td><p class="starttd">The number of element maps is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_ELEM_SETS </td><td><p class="starttd">The number of element sets is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_ELS_DF_LEN </td><td><p class="starttd">The length of the concatenated element set distribution factor list is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_ELS_LEN </td><td><p class="starttd">The length of the concatenated element set element list is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_ELS_PROP </td><td><p class="starttd">The number of properties stored per elem set is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_EM_PROP </td><td><p class="starttd">The number of element map properties is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_ES_DF_LEN </td><td><p class="starttd">The length of the concatenated edge set distribution factor list is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_ES_LEN </td><td><p class="starttd">The length of the concatenated edge set edge list is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_ES_PROP </td><td><p class="starttd">The number of properties stored per edge set is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_FACE_BLK </td><td><p class="starttd">The number of face blocks is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_FACE_MAP </td><td><p class="starttd">The number of face maps is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_FACE_PROP </td><td><p class="starttd">The number of properties stored per face block is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_FACE_SETS </td><td><p class="starttd">The number of face sets is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_FS_DF_LEN </td><td><p class="starttd">The length of the concatenated face set distribution factor list is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_FS_LEN </td><td><p class="starttd">The length of the concatenated face set face list is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_FS_PROP </td><td><p class="starttd">The number of properties stored per face set is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_NM_PROP </td><td><p class="starttd">The number of node map properties is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_NODE_MAP </td><td><p class="starttd">The number of node maps is returned in ret_int. </p>
-<p class="endtd"></p>
-</td></tr>
-<tr>
-<td>EX_INQ_COORD_FRAMES </td><td>The number of coordinate frames is returned in ret_int.  </td></tr>
-</table>
 <p>As an example, the following will return the number of element block properties stored in the exodus file :</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="exodusII_8h.html">exodusII.h</a>&quot;</span></div><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_props;</div><div class="line"><span class="keywordtype">float</span> fdum;</div><div class="line"><span class="keywordtype">char</span> *cdum;</div><div class="line"></div><div class="line"><span class="comment">/* determine the number of element block properties */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga8315ac9fae6afbb886b6d53ec98e9ffa">ex_inquire</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcaf6b20402a8dc9c9d4257c3ccf38b9cc5">EX_INQ_EB_PROP</a>, &amp;num_props,</div><div class="line">                    &amp;fdum, cdum);</div><div class="line"></div><div class="line"><span class="comment">/* ...Another way to get the same information */</span></div><div class="line">num_props = <a class="code" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcaf6b20402a8dc9c9d4257c3ccf38b9cc5">EX_INQ_EB_PROP</a>);</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="exodusII_8h.html">exodusII.h</a>&quot;</span></div><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_props;</div><div class="line"><span class="keywordtype">float</span> fdum;</div><div class="line"><span class="keywordtype">char</span> *cdum;</div><div class="line"></div><div class="line"><span class="comment">/* determine the number of element block properties */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcaf6b20402a8dc9c9d4257c3ccf38b9cc5">EX_INQ_EB_PROP</a>, &amp;num_props,</div><div class="line">                    &amp;fdum, cdum);</div><div class="line"></div><div class="line"><span class="comment">/* ...Another way to get the same information */</span></div><div class="line">num_props = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcaf6b20402a8dc9c9d4257c3ccf38b9cc5">EX_INQ_EB_PROP</a>);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2ReadEdgeFace_8c-example.html#a59">/test/ReadEdgeFace.c</a>, <a class="el" href="_2test_2testcp_8c-example.html#a6">/test/testcp.c</a>, <a class="el" href="_2test_2testcp_nl_8c-example.html#a6">/test/testcp_nl.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a6">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testcpd_8c-example.html#a6">/test/testcpd.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a9">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a9">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nfaced_8c-example.html#a7">/test/testrd-nfaced.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a9">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a9">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a11">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a9">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a8">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrd_ss_8c-example.html#a8">/test/testrd_ss.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a16">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a25">/test/testrdwt.c</a>.</dd>
+</dl>
+
 </div>
 </div>
-<a id="ga81bbe8483e24b17bf1b6d0c3b5ebdd3a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">&#9670;&nbsp;</a></span>ex_inquire_int()</h2>
+<a id="ga1b8122836266615fd2795736dc21e2ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1b8122836266615fd2795736dc21e2ae">&#9670;&nbsp;</a></span>ex_inquire_int()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -912,7 +1038,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dc">ex_inquiry</a>&#160;</td>
           <td class="paramname"><em>req_info</em>&#160;</td>
         </tr>
         <tr>
@@ -922,17 +1048,19 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>A variant of <a class="el" href="group__Utilities.html#ga8315ac9fae6afbb886b6d53ec98e9ffa">ex_inquire()</a> which queries integer-valued information only. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utilities.html#ga8315ac9fae6afbb886b6d53ec98e9ffa">ex_inquire()</a>. </dd></dl>
+<p>A variant of <a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire()</a> which queries integer-valued information only. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire()</a>. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">req_info</td><td>A flag which designates what information is requested. (See <a class="el" href="group__Utilities.html#ga8315ac9fae6afbb886b6d53ec98e9ffa">ex_inquire()</a> documentation) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">req_info</td><td>A flag of type <a class="el" href="exodusII_8h.html#a4ed4d7c08e7044d839e83bf284cd01c3">ex_inquiry</a> which designates what information is requested. (See <a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire()</a> documentation) </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>result of inquiry.</dd></dl>
 <p>As an example, the following will return the number of nodes, elements, and element blocks stored in the exodus file :</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="exodusII_8h.html">exodusII.h</a>&quot;</span></div><div class="line"><span class="keywordtype">int</span> <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">int</span> num_nodes = <a class="code" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcab4acc79d4aff51ab6a302a1414f1776b">EX_INQ_NODES</a>);</div><div class="line"><span class="keywordtype">int</span> num_elems = <a class="code" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcacca700bfa1732bc3dbf4dcff701b6c0a">EX_INQ_ELEM</a>);</div><div class="line"><span class="keywordtype">int</span> num_block = <a class="code" href="group__Utilities.html#ga81bbe8483e24b17bf1b6d0c3b5ebdd3a">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcaf1df9386077087bf792fce04b6de1ecb">EX_INQ_ELEM_BLK</a>);</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="exodusII_8h.html">exodusII.h</a>&quot;</span></div><div class="line"><span class="keywordtype">int</span> <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">int</span> num_nodes = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcab4acc79d4aff51ab6a302a1414f1776b">EX_INQ_NODES</a>);</div><div class="line"><span class="keywordtype">int</span> num_elems = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcacca700bfa1732bc3dbf4dcff701b6c0a">EX_INQ_ELEM</a>);</div><div class="line"><span class="keywordtype">int</span> num_block = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcaf1df9386077087bf792fce04b6de1ecb">EX_INQ_ELEM_BLK</a>);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a20">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2ReadEdgeFace_8c-example.html#a56">/test/ReadEdgeFace.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a0">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2test_ts_nvar_rd_8c-example.html#a0">/test/test_ts_nvar_rd.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a0">/test/test_ts_partial_nvar.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_rd_8c-example.html#a0">/test/test_ts_partial_nvar_rd.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a12">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a12">/test/testrd-long-name.c</a>, and <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a24">/test/testwt-one-attrib.c</a>.</dd>
+</dl>
+
 </div>
 </div>
 <a id="gaf576fc80741a1f568148eaf0cec76b86"></a>
@@ -980,6 +1108,133 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="gaa8231cf6c15bb76730fd5903a3ad5777"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa8231cf6c15bb76730fd5903a3ad5777">&#9670;&nbsp;</a></span>ex_large_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_large_model </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Determine whether the new large model storage is being used in this file, or old method. Basically, the difference is whether the coordinates and nodal variables are stored in a blob (xyz components together) or as a variable per component per nodal_variable. </p>
+
+</div>
+</div>
+<a id="ga6595a688ca002de77217c2bb7c271147"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6595a688ca002de77217c2bb7c271147">&#9670;&nbsp;</a></span>ex_open_int()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_open_int </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>comp_ws</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>io_ws</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>run_version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ga8f47bbb035d32bbafc594c5ed3c00403"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8f47bbb035d32bbafc594c5ed3c00403">&#9670;&nbsp;</a></span>ex_opts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_opts </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>options</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The function <a class="el" href="group__Utilities.html#ga8f47bbb035d32bbafc594c5ed3c00403">ex_opts()</a> is used to set message reporting options.</p>
+<dl class="section return"><dt>Returns</dt><dd>Returns previous value for the message reporting option.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">options</td><td>Integer option value. Current options are shown in the table below.</td></tr>
+  </table>
+  </dd>
+</dl>
+<table class="doxtable">
+<tr>
+<td>EX_ABORT </td><td>Causes fatal errors to force program exit. (Default is false.)  </td></tr>
+<tr>
+<td>EX_DEBUG </td><td>Causes certain messages to print for debug use. (Default is false.) </td></tr>
+<tr>
+<td>EX_VERBOSE</td><td>Causes all error messages to print when true, otherwise no error messages will print. (Default is false.) </td></tr>
+</table>
+<dl class="section note"><dt>Note</dt><dd>Values may be OR'ed together to provide any combination of these capabilities.</dd></dl>
+<p>For example, the following will cause all messages to print and will cause the program to exit upon receipt of fatal error:</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="exodusII_8h.html">exodusII.h</a>&quot;</span></div><div class="line"><a class="code" href="group__Utilities.html#ga8f47bbb035d32bbafc594c5ed3c00403">ex_opts</a>(<a class="code" href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a">EX_ABORT</a>|<a class="code" href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9">EX_VERBOSE</a>);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a2">/test/create_mesh.c</a>, <a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a4">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a2">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test-empty_8c-example.html#a0">/test/test-empty.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a3">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_rd_8c-example.html#a6">/test/test_ts_nvar_rd.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a6">/test/test_ts_partial_nvar.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_rd_8c-example.html#a6">/test/test_ts_partial_nvar_rd.c</a>, <a class="el" href="_2test_2testcp_8c-example.html#a1">/test/testcp.c</a>, <a class="el" href="_2test_2testcp_nl_8c-example.html#a1">/test/testcp_nl.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a1">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testcpd_8c-example.html#a1">/test/testcpd.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a4">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a4">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nfaced_8c-example.html#a2">/test/testrd-nfaced.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a4">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a4">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a4">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a4">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a4">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrd_ss_8c-example.html#a3">/test/testrd_ss.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a4">/test/testrdd.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a3">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a3">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a2">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a2">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a2">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nfaced_8c-example.html#a1">/test/testwt-nfaced.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a2">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a3">/test/testwt-one-attrib.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a2">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a2">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a3">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a1">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a1">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a3">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a2">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a2">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a2">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a2">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a1">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a1">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a2">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a2">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a2">/test/twod.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="gac89ad2ce316bb7fecf5fab8c9e447347"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac89ad2ce316bb7fecf5fab8c9e447347">&#9670;&nbsp;</a></span>ex_print_config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ex_print_config </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ga16d75c04427a26326070625c5116a934"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga16d75c04427a26326070625c5116a934">&#9670;&nbsp;</a></span>ex_put_info()</h2>
 
@@ -1013,13 +1268,13 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <p>The function <a class="el" href="group__Utilities.html#ga16d75c04427a26326070625c5116a934">ex_put_info()</a> writes information records to the database. The records are MAX_LINE_LENGTH-character strings.</p>
 <p>In case of an error, <a class="el" href="group__Utilities.html#ga16d75c04427a26326070625c5116a934">ex_put_info()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:</p><ul>
-<li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>data file opened for read only.</li>
 <li>information records already exist in file.</li>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">num_info</td><td>The number of information records. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">info</td><td>Array containing the information records. To only define the number of info records instead of defining and outputting, pass NULL for info argument.</td></tr>
   </table>
@@ -1027,7 +1282,9 @@ Variables</h2></td></tr>
 </dl>
 <p>The following code will write out three information records to an open exodus file -</p>
 <div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_info;</div><div class="line"><span class="keywordtype">char</span> *info[3];</div><div class="line"></div><div class="line"><span class="comment">/* write information records */</span></div><div class="line">num_info = 3;</div><div class="line"></div><div class="line">info[0] = <span class="stringliteral">&quot;This is the first information record.&quot;</span>;</div><div class="line">info[1] = <span class="stringliteral">&quot;This is the second information record.&quot;</span>;</div><div class="line">info[2] = <span class="stringliteral">&quot;This is the third information record.&quot;</span>;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga16d75c04427a26326070625c5116a934">ex_put_info</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_info, info);</div></div><!-- fragment --><p>The following code will first tell the database that there are three information records, and then later actually output those records.</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_info;</div><div class="line"><span class="keywordtype">char</span> *info[3];</div><div class="line"></div><div class="line"><span class="comment">/* Define the number of information records that will be written</span></div><div class="line"><span class="comment">later. */</span></div><div class="line">num_info = 3;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga16d75c04427a26326070625c5116a934">ex_put_info</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_info, NULL);</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/* Now, actually write the information records */</span></div><div class="line">info[0] = <span class="stringliteral">&quot;This is the first information record.&quot;</span>;</div><div class="line">info[1] = <span class="stringliteral">&quot;This is the second information record.&quot;</span>;</div><div class="line">info[2] = <span class="stringliteral">&quot;This is the third information record.&quot;</span>;</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga16d75c04427a26326070625c5116a934">ex_put_info</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_info, info);</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_info;</div><div class="line"><span class="keywordtype">char</span> *info[3];</div><div class="line"></div><div class="line"><span class="comment">/* Define the number of information records that will be written</span></div><div class="line"><span class="comment">later. */</span></div><div class="line">num_info = 3;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga16d75c04427a26326070625c5116a934">ex_put_info</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_info, NULL);</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/* Now, actually write the information records */</span></div><div class="line">info[0] = <span class="stringliteral">&quot;This is the first information record.&quot;</span>;</div><div class="line">info[1] = <span class="stringliteral">&quot;This is the second information record.&quot;</span>;</div><div class="line">info[2] = <span class="stringliteral">&quot;This is the third information record.&quot;</span>;</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga16d75c04427a26326070625c5116a934">ex_put_info</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_info, info);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a34">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a49">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a46">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a34">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a32">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a39">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nfaced_8c-example.html#a38">/test/testwt-nfaced.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a30">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a31">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a30">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a17">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a10">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a41">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a38">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a24">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a10">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a30">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a34">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a27">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a24">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a36">/test/testwtm.c</a>.</dd>
+</dl>
+
 </div>
 </div>
 <a id="ga4babf166b2821494be7d9bfcc95234f5"></a>
@@ -1069,21 +1326,23 @@ Variables</h2></td></tr>
 <li>the analysis time</li>
 </ul>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__Utilities.html#ga4babf166b2821494be7d9bfcc95234f5">ex_put_qa()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
-<li>data file not properly opened with call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>data file opened for read only.</li>
 <li>QA records already exist in file.</li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">num_qa_records</td><td>The number of QA records. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">qa_record</td><td>Array containing the QA records. To only define the number of qa records instead of defining and outputting, pass NULL for qa_record argument.</td></tr>
   </table>
   </dd>
 </dl>
 <p>The following code segment will write out two QA records:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_qa_rec, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">char</span> *qa_record[2][4];</div><div class="line"></div><div class="line"><span class="comment">/* write QA records */</span></div><div class="line">num_qa_rec = 2;</div><div class="line"></div><div class="line">qa_record[0][0] = <span class="stringliteral">&quot;TESTWT1&quot;</span>;</div><div class="line">qa_record[0][1] = <span class="stringliteral">&quot;testwt1&quot;</span>;</div><div class="line">qa_record[0][2] = <span class="stringliteral">&quot;07/07/93&quot;</span>;</div><div class="line">qa_record[0][3] = <span class="stringliteral">&quot;15:41:33&quot;</span>;</div><div class="line">qa_record[1][0] = <span class="stringliteral">&quot;FASTQ&quot;</span>;</div><div class="line">qa_record[1][1] = <span class="stringliteral">&quot;fastq&quot;</span>;</div><div class="line">qa_record[1][2] = <span class="stringliteral">&quot;07/07/93&quot;</span>;</div><div class="line">qa_record[1][3] = <span class="stringliteral">&quot;16:41:33&quot;</span>;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga4babf166b2821494be7d9bfcc95234f5">ex_put_qa</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_qa_rec, qa_record);</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_qa_rec, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">char</span> *qa_record[2][4];</div><div class="line"></div><div class="line"><span class="comment">/* write QA records */</span></div><div class="line">num_qa_rec = 2;</div><div class="line"></div><div class="line">qa_record[0][0] = <span class="stringliteral">&quot;TESTWT1&quot;</span>;</div><div class="line">qa_record[0][1] = <span class="stringliteral">&quot;testwt1&quot;</span>;</div><div class="line">qa_record[0][2] = <span class="stringliteral">&quot;07/07/93&quot;</span>;</div><div class="line">qa_record[0][3] = <span class="stringliteral">&quot;15:41:33&quot;</span>;</div><div class="line">qa_record[1][0] = <span class="stringliteral">&quot;FASTQ&quot;</span>;</div><div class="line">qa_record[1][1] = <span class="stringliteral">&quot;fastq&quot;</span>;</div><div class="line">qa_record[1][2] = <span class="stringliteral">&quot;07/07/93&quot;</span>;</div><div class="line">qa_record[1][3] = <span class="stringliteral">&quot;16:41:33&quot;</span>;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__Utilities.html#ga4babf166b2821494be7d9bfcc95234f5">ex_put_qa</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_qa_rec, qa_record);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a33">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a46">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a45">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a33">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a31">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a38">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nfaced_8c-example.html#a37">/test/testwt-nfaced.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a29">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a30">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a29">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a16">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a9">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a40">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a37">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a23">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a9">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a29">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a33">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a26">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a23">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a35">/test/testwtm.c</a>.</dd>
+</dl>
+
 </div>
 </div>
 <a id="ga2bfe82f5a1be0b1382a481e1cc7c3731"></a>
@@ -1195,6 +1454,8 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="undoc"><dt><b><a class="el" href="undoc.html#_undoc000024">Undocumented:</a></b></dt><dd></dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-long-name_8c-example.html#a15">/test/testrd-long-name.c</a>, and <a class="el" href="_2test_2testwt-oned_8c-example.html#a8">/test/testwt-oned.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -1230,6 +1491,8 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="undoc"><dt><b><a class="el" href="undoc.html#_undoc000001">Undocumented:</a></b></dt><dd></dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a14">/test/create_mesh.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a9">/test/testwt-compress.c</a>, and <a class="el" href="_2test_2testwt-long-name_8c-example.html#a7">/test/testwt-long-name.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -1258,7 +1521,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p><a class="el" href="group__Utilities.html#gab9a0caef233c3321be24ecd4c9d51578">ex_set_parallel()</a> sets the parallel setting for a file. returns 1 (true) or 0 (false) depending on the current setting. Do not use this unless you know what you are doing and why you are doing it. One use is if calling <a class="el" href="exodusII_8h.html#a63115d5d368817b48f51328ec87ce206">ex_get_partial_set()</a> in a serial mode (proc 0 only) on a file opened in parallel. Make sure to reset the value to original value after done with special case... </p><dl class="params"><dt>Parameters</dt><dd>
+<p><a class="el" href="group__Utilities.html#gab9a0caef233c3321be24ecd4c9d51578">ex_set_parallel()</a> sets the parallel setting for a file. returns 1 (true) or 0 (false) depending on the current setting. Do not use this unless you know what you are doing and why you are doing it. One use is if calling <a class="el" href="group__ModelDescription.html#ga63115d5d368817b48f51328ec87ce206">ex_get_partial_set()</a> in a serial mode (proc 0 only) on a file opened in parallel. Make sure to reset the value to original value after done with special case... </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>integer which uniquely identifies the file of interest. </td></tr>
     <tr><td class="paramname">is_parallel</td><td>1 if parallel, 0 if serial. </td></tr>
@@ -1268,14 +1531,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="gaa1cdf87b4af74c54b772410d09b3b358"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaa1cdf87b4af74c54b772410d09b3b358">&#9670;&nbsp;</a></span>ex_strerror()</h2>
+<a id="gad8366f1fe4b33f38de0776451c53a166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad8366f1fe4b33f38de0776451c53a166">&#9670;&nbsp;</a></span>ex_strerror()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const char* ex_strerror </td>
+          <td class="memname">const char * ex_strerror </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>err_num</em></td><td>)</td>
@@ -1284,6 +1547,61 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="undoc"><dt><b><a class="el" href="undoc.html#_undoc000008">Undocumented:</a></b></dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="gafffa0ac5ec86658fb22ed6af7f5530cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafffa0ac5ec86658fb22ed6af7f5530cc">&#9670;&nbsp;</a></span>ex_update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_update </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>updates an opened EXODUS file (or EXODUS history file) </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a42">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a53">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a45">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a39">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a50">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a37">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a37">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a37">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a25">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a25">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a16">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a48">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a46">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a32">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a41">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a37">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a42">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a32">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a44">/test/testwtm.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="gae356629b4b51b86cf54a498492f14f08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae356629b4b51b86cf54a498492f14f08">&#9670;&nbsp;</a></span>ex_update_max_name_length()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ex_update_max_name_length </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="undoc"><dt><b><a class="el" href="undoc.html#_undoc000025">Undocumented:</a></b></dt><dd></dd></dl>
 
 </div>
 </div>
@@ -1320,9 +1638,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="section note"><dt>Note</dt><dd>The ex_create_par_int() is an internal function called by ex_create_par(). The user should call ex_create_par() and not ex_create_par_int().</dd></dl>
-<p>The function <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> creates a new exodus file and returns an ID that can subsequently be used to refer to the file.</p>
+<p>The function <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> creates a new exodus file and returns an ID that can subsequently be used to refer to the file.</p>
 <p>All floating point values in an exodus file are stored as either 4-byte (float) or 8-byte (double) numbers; no mixing of 4- and 8-byte numbers in a single file is allowed. An application code can compute either 4- or 8-byte values and can designate that the values be stored in the exodus file as either 4- or 8-byte numbers; conversion between the 4- and 8-byte values is performed automatically by the API routines. Thus, there are four possible combinations of compute word size and storage (or I/O) word size.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> returns a negative number. Possible causes of errors include:<ul>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> returns a negative number. Possible causes of errors include:<ul>
 <li>Passing a file name that includes a directory that does not exist.</li>
 <li>Specifying a file name of a file that exists and also specifying a no clobber option.</li>
 <li>Attempting to create a file in a directory without permission to create files there.</li>
@@ -1364,7 +1682,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <p>The following code segment creates an exodus file called <code>test.exo</code>:</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="exodusII_8h.html">exodusII.h</a>&quot;</span></div><div class="line"><span class="keywordtype">int</span> CPU_word_size, IO_word_size, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line">CPU_word_size = <span class="keyword">sizeof</span>(float);      <span class="comment">/* use float or double */</span></div><div class="line">IO_word_size = 8;                   <span class="comment">/* store variables as doubles */</span></div><div class="line"></div><div class="line"><span class="comment">/* create exodus file */</span></div><div class="line"><a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a> = <a class="code" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create</a> (<span class="stringliteral">&quot;test.exo&quot;</span>       <span class="comment">/* filename path */</span></div><div class="line">                    <a class="code" href="group__FileVars.html#gadeed66ded179e51a8858254052a76ba4">EX_CLOBBER</a>,     <span class="comment">/* create mode */</span></div><div class="line">                    &amp;CPU_word_size, <span class="comment">/* CPU float word size in bytes */</span></div><div class="line">                    &amp;IO_word_size); <span class="comment">/* I/O float word size in bytes */</span></div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="exodusII_8h.html">exodusII.h</a>&quot;</span></div><div class="line"><span class="keywordtype">int</span> CPU_word_size, IO_word_size, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line">CPU_word_size = <span class="keyword">sizeof</span>(float);      <span class="comment">/* use float or double */</span></div><div class="line">IO_word_size = 8;                   <span class="comment">/* store variables as doubles */</span></div><div class="line"></div><div class="line"><span class="comment">/* create exodus file */</span></div><div class="line"><a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a> = <a class="code" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create</a> (<span class="stringliteral">&quot;test.exo&quot;</span>       <span class="comment">/* filename path */</span></div><div class="line">                    <a class="code" href="group__FileVars.html#gadeed66ded179e51a8858254052a76ba4">EX_CLOBBER</a>,     <span class="comment">/* create mode */</span></div><div class="line">                    &amp;CPU_word_size, <span class="comment">/* CPU float word size in bytes */</span></div><div class="line">                    &amp;IO_word_size); <span class="comment">/* I/O float word size in bytes */</span></div></div><!-- fragment --> 
 </div>
 </div>
 <a id="gab71aa5cfa846f02a7fb1924bcfeb77db"></a>
@@ -1386,9 +1704,9 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section note"><dt>Note</dt><dd>The <a class="el" href="ex__open_8c.html#a6595a688ca002de77217c2bb7c271147">ex_open_int()</a> is an internal function called by <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. The user should call <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> and not <a class="el" href="ex__open_8c.html#a6595a688ca002de77217c2bb7c271147">ex_open_int()</a>.</dd></dl>
-<p>The function <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> opens an existing exodus file and returns an ID that can subsequently be used to refer to the file, the word size of the floating point values stored in the file, and the version of the exodus database (returned as a <code>float'', regardless of the compute or I/O word size). Multiple files may be</code>open'' simultaneously.</p>
-<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> returns a negative number. Possible causes of errors include:<ul>
+<dl class="section note"><dt>Note</dt><dd>The <a class="el" href="group__Utilities.html#ga6595a688ca002de77217c2bb7c271147">ex_open_int()</a> is an internal function called by <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. The user should call <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> and not <a class="el" href="group__Utilities.html#ga6595a688ca002de77217c2bb7c271147">ex_open_int()</a>.</dd></dl>
+<p>The function <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> opens an existing exodus file and returns an ID that can subsequently be used to refer to the file, the word size of the floating point values stored in the file, and the version of the exodus database (returned as a <code>float'', regardless of the compute or I/O word size). Multiple files may be</code>open'' simultaneously.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> returns a negative number. Possible causes of errors include:<ul>
 <li>The specified file does not exist.</li>
 <li>The mode specified is something other than the predefined constant <em>EX_READ</em> or <em>EX_WRITE</em>.</li>
 <li>Database version is earlier than 2.0.</li>
@@ -1409,7 +1727,7 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <p>The following opens an exodus file named <code>test.exo</code> for read only, using default settings for compute and I/O word sizes:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> CPU_word_size,IO_word_size, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">float</span> version;</div><div class="line"></div><div class="line">CPU_word_size = <span class="keyword">sizeof</span>(float);   <span class="comment">/* float or double */</span></div><div class="line">IO_word_size = 0;                <span class="comment">/* use what is stored in file */</span></div><div class="line"></div><div class="line"><span class="comment">/* open exodus files */</span></div><div class="line"><a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a> = <a class="code" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open</a> (<span class="stringliteral">&quot;test.exo&quot;</span>,     <span class="comment">/* filename path */</span></div><div class="line">                 <a class="code" href="group__FileVars.html#ga49938d96ef78ea1726e9970383bf61b1">EX_READ</a>,        <span class="comment">/* access mode = READ */</span></div><div class="line">                 &amp;CPU_word_size, <span class="comment">/* CPU word size */</span></div><div class="line">                 &amp;IO_word_size,  <span class="comment">/* IO word size */</span></div><div class="line">                 &amp;version);      <span class="comment">/* ExodusII library version */</span></div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> CPU_word_size,IO_word_size, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">float</span> version;</div><div class="line"></div><div class="line">CPU_word_size = <span class="keyword">sizeof</span>(float);   <span class="comment">/* float or double */</span></div><div class="line">IO_word_size = 0;                <span class="comment">/* use what is stored in file */</span></div><div class="line"></div><div class="line"><span class="comment">/* open exodus files */</span></div><div class="line"><a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a> = <a class="code" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open</a> (<span class="stringliteral">&quot;test.exo&quot;</span>,     <span class="comment">/* filename path */</span></div><div class="line">                 <a class="code" href="group__FileVars.html#ga49938d96ef78ea1726e9970383bf61b1">EX_READ</a>,        <span class="comment">/* access mode = READ */</span></div><div class="line">                 &amp;CPU_word_size, <span class="comment">/* CPU word size */</span></div><div class="line">                 &amp;IO_word_size,  <span class="comment">/* IO word size */</span></div><div class="line">                 &amp;version);      <span class="comment">/* ExodusII library version */</span></div></div><!-- fragment --> 
 </div>
 </div>
 </div><!-- contents -->
