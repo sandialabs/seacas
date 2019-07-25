@@ -182,7 +182,7 @@ Integer Bulkdata Storage Details (32-bit and 64-bit integers)</h1>
 </ul>
 <p>A mesh entity id is the id of any block (element block, edge block, ...); set (node set, face set, ...), coordinate frame, and communication map.</p>
 <p>When an EXODUS file is created via the <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> function, the 'mode' argument provides the mechanism for specifying how integer data will be passed as arguments to the API functions and also how the integer data will be stored on the database. The <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> function also provides a mechanism for specifying how integer data will be passed as arguments.</p>
-<p>The method uses the 'mode' argument to the <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> and <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> functions. The mode is a 32-bit integer in which certain bits are turned on by or'ing certain predefined constants. </p><pre class="fragment">exoid = ex_create( EX_TEST_FILENAME,
+<p>The method uses the 'mode' argument to the <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> and <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> functions. The mode is a 32-bit integer in which certain bits are turned on by or'ing certain predefined constants. </p><pre class="fragment">exoid = ex_create( "test.exo",
                    EX_CLOBBER|EX_MAPS_INT64_DB|EX_MAPS_INT64_API,
                    &amp;appWordSize, &amp;diskWordSize );
 </pre><p>The constants related to the integer size (32-bit or 64-bit) specification are:</p>
@@ -204,23 +204,23 @@ Integer Bulkdata Storage Details (32-bit and 64-bit integers)</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><a class="el" href="group__FileVars.html#ga0f0209ea697749096d1067c65ad57087">EX_BULK_INT64_API</a>  </td><td class="markdownTableBodyNone">bulk data   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><a class="el" href="group__FileVars.html#ga2540def4fa42a09aecab9ef5f0e851d5">EX_ALL_INT64_API</a>  </td><td class="markdownTableBodyNone">(the above 3 or'd together)   </td></tr>
-<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><a class="el" href="group__FileVars.html#ga98c2f53e6c9e2bbbfa3b752b3d8822a0">EX_INQ_INT64_API</a>  </td><td class="markdownTableBodyNone">integers passed to/from <a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire()</a>   </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a class="el" href="group__FileVars.html#ga2540def4fa42a09aecab9ef5f0e851d5">EX_ALL_INT64_API</a>  </td><td class="markdownTableBodyNone">(the above 4 or'd together)   </td></tr>
 </table>
-<p>The constants that end with <code>_DB</code> specify that that particular integer data is stored on the database as 64-bit integers; the constants that end with "_API" specify that that particular integer data is passed to/from API functions as 64-bit integers.</p>
+<p>The constants that end with <code>_DB</code> specify that that particular integer data is stored on the database as 64-bit integers; the constants that end with <code>_API</code> specify that that particular integer data is passed to/from API functions as 64-bit integers.</p>
 <p>If the range of the data being transmitted is larger than the permitted integer range (for example, if the data is stored on the database as 64-bit ints and the application specifies passing data as 32-bit ints), the API function will return an error.</p>
 <p>The three types of integer data whose storage can be specified are</p><ul>
 <li>maps (<code>EX_MAPS_INT64_</code>),</li>
 <li>"bulk data" including connectivity lists and entity lists (<code>EX_BULK_INT64_</code>), and</li>
 <li>entity ids which are the ids of element, face, edge, and node sets and blocks; and map ids (<code>EX_IDS_INT64_</code>)</li>
 </ul>
-<p>The function <a class="el" href="group__Utilities.html#gaf576fc80741a1f568148eaf0cec76b86">ex_int64_status()</a>(exoid) is used to determine the integer storage types being used for the EXODUS database 'exoid'. It returns an integer which can be and'ed with the above flags to determine either the storage type or function parameter type.</p>
+<p>The function <a class="el" href="group__Utilities.html#gaf576fc80741a1f568148eaf0cec76b86">ex_int64_status()</a>(exoid) is used to determine the integer storage types being used for the EXODUS database <code>exoid</code>. It returns an integer which can be and'ed with the above flags to determine either the storage type or function parameter type.</p>
 <p>For example, if <code>(<a class="el" href="group__FileVars.html#ga8b79c74f5807228669456780e4cdc6a9">EX_MAPS_INT64_DB</a> &amp; ex_int64_status(exoid))</code> is true, then map data is being stored as 64-bit integers for that database.</p>
 <p>It is not possible to determine the integer data size on a database without opening the database via an <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> call. However, the integer size specification for API functions can be changed at any time via the <a class="el" href="group__Utilities.html#ga8be8ae9fd499756ab2dcb94ca4df7743">ex_set_int64_status()</a>(exoid, mode) function. The mode is one or more of <code><a class="el" href="group__FileVars.html#ga6eb827ba708bd54aa72a5ac8468d4093">EX_MAPS_INT64_API</a></code>, <code><a class="el" href="group__FileVars.html#ga8163fd2a9d4320d3a452bbd54ee6a512">EX_IDS_INT64_API</a></code>, or <code><a class="el" href="group__FileVars.html#ga0f0209ea697749096d1067c65ad57087">EX_BULK_INT64_API</a></code>, or'd together. Any exodus function calls after that point will use the specified integer size. Note that a call to <a class="el" href="group__Utilities.html#ga8be8ae9fd499756ab2dcb94ca4df7743">ex_set_int64_status()</a>(exoid, mode) overrides any previous setting for the integer sizes used in the API. The <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> function is the only way to specify the integer sizes specification for database integers.</p>
 <h2><a class="anchor" id="int64_fortran_api"></a>
 Fortran API</h2>
-<p>The fortran API is uses the same mechanism as was described above for the C API. If using the "8-byte real and 8-byte int" fortran mode typically used by the SEACAS applications (the compiler automatically promotes all integers and reals to 8-byte quantities), then the fortran exodus library will automatically enable the *_API options; the client still needs to specify the *_DB options.</p>
+<p>The fortran API is uses the same mechanism as was described above for the C API. If using the "8-byte real and 8-byte int" fortran mode typically used by the SEACAS applications (the compiler automatically promotes all integers and reals to 8-byte quantities), then the fortran exodus library will automatically enable the <code>EX_*_INT64_API</code> options; the client still needs to specify the <code>EX_*_INT64_DB</code> options.</p>
 <h2><a class="anchor" id="int64_fortran_imp"></a>
 Fortran Implementation</h2>
 <p>The new capability to pass 64-bit integer data through the fortran and C API functions simplifies the implementation of the "8-byte real
