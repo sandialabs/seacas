@@ -185,7 +185,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
   EX_FUNC_LEAVE(EX_FATAL);
 #endif
 
-  nc_mode = ex_int_handle_mode(my_mode, is_parallel, run_version);
+  nc_mode = ex__handle_mode(my_mode, is_parallel, run_version);
 
   if ((status = nc_create_par(path, nc_mode, comm, info, &exoid)) != NC_NOERR) {
 #if NC_HAS_HDF5
@@ -205,7 +205,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  status = ex_int_populate_header(exoid, path, my_mode, is_parallel, comp_ws, io_ws);
+  status = ex__populate_header(exoid, path, my_mode, is_parallel, comp_ws, io_ws);
   if (status != EX_NOERR) {
     EX_FUNC_LEAVE(status);
   }

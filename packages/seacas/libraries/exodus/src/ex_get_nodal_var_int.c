@@ -95,15 +95,15 @@ error = ex_get_nodal_var(exoid, time_step, var_index, num_nodes,
 
 */
 
-int ex_get_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
-                         void *nodal_var_vals)
+int ex__get_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
+                      void *nodal_var_vals)
 {
   int    varid;
   int    status;
   size_t start[3], count[3];
   char   errmsg[MAX_ERR_LENGTH];
 
-  ex_check_valid_file_id(exoid, __func__);
+  ex__check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined variable */
 
@@ -146,7 +146,7 @@ int ex_get_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
     count[1] = num_nodes;
   }
 
-  if (ex_comp_ws(exoid) == 4) {
+  if (ex__comp_ws(exoid) == 4) {
     status = nc_get_vara_float(exoid, varid, start, count, nodal_var_vals);
   }
   else {

@@ -51,7 +51,7 @@ int ex_get_group_ids(int parent_id, int *num_groups, int *group_ids)
   int status;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(parent_id, __func__);
+  ex__check_valid_file_id(parent_id, __func__);
 
   status = nc_inq_grps(parent_id, num_groups, group_ids);
   if (status != NC_NOERR) {

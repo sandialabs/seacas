@@ -154,7 +154,7 @@ int ex_put_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid, __func__);
+  ex__check_valid_file_id(exoid, __func__);
 
   switch (obj_type) {
   case EX_GLOBAL:
@@ -195,7 +195,7 @@ int ex_put_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
   }
 
   /* write EXODUS variable names */
-  status = ex_put_names_internal(exoid, varid, num_vars, var_names, obj_type, "variable", __func__);
+  status = ex__put_names(exoid, varid, num_vars, var_names, obj_type, "variable", __func__);
 
   EX_FUNC_LEAVE(status);
 }

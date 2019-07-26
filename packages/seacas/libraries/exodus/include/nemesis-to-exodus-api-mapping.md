@@ -20,7 +20,8 @@ Exodus API function. In many cases, the only change needed is
 replacing `ne_` by `ex_`, but the routines which were made more
 "generic" (e.g. ne_get_n_side_set() and ne_get_n_node_set() directly
 map to ex_get_n_side_set() and ex_get_n_node_set() which are
-deprecated, so the table below shows the recommended ex_get_partial_set()) additional arguments are required.
+deprecated, so the table below shows the recommended
+ex_get_partial_set()) additional arguments are required.
 
 The nemesis library can still be used since it is still built upon
 request and its implementation is simply wrapper routines which

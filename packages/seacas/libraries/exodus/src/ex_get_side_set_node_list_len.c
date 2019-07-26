@@ -83,7 +83,7 @@ int ex_get_side_set_node_list_len(int exoid, ex_entity_id side_set_id,
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid, __func__);
+  ex__check_valid_file_id(exoid, __func__);
 
   if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
     *(int64_t *)side_set_node_list_len = 0; /* default value */
@@ -218,13 +218,13 @@ int ex_get_side_set_node_list_len(int exoid, ex_entity_id side_set_id,
     for (i = 0; i < tot_num_ss_elem; i++) {
       ss_elem_ndx_64[i] = i; /* init index array to current position */
     }
-    ex_iqsort64(side_set_elem_list, ss_elem_ndx_64, tot_num_ss_elem);
+    ex__iqsort64(side_set_elem_list, ss_elem_ndx_64, tot_num_ss_elem);
   }
   else {
     for (i = 0; i < tot_num_ss_elem; i++) {
       ss_elem_ndx[i] = i; /* init index array to current position */
     }
-    ex_iqsort(side_set_elem_list, ss_elem_ndx, tot_num_ss_elem);
+    ex__iqsort(side_set_elem_list, ss_elem_ndx, tot_num_ss_elem);
   }
 
   /* Allocate space for the element block ids */
@@ -273,7 +273,7 @@ int ex_get_side_set_node_list_len(int exoid, ex_entity_id side_set_id,
       id = ((int *)elem_blk_ids)[i];
     }
 
-    err_stat = ex_int_get_block_param(exoid, id, ndim, &elem_blk_parms[i]);
+    err_stat = ex__get_block_param(exoid, id, ndim, &elem_blk_parms[i]);
     if (err_stat != EX_NOERR) {
       goto cleanup;
     }

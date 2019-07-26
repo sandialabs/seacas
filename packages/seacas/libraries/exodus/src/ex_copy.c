@@ -138,8 +138,8 @@ static int ex_copy_internal(int in_exoid, int out_exoid, int mesh_only)
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(in_exoid, __func__);
-  ex_check_valid_file_id(out_exoid, __func__);
+  ex__check_valid_file_id(in_exoid, __func__);
+  ex__check_valid_file_id(out_exoid, __func__);
 
   /*
    * Get exodus_large_model setting on both input and output
@@ -171,7 +171,7 @@ static int ex_copy_internal(int in_exoid, int out_exoid, int mesh_only)
   EXCHECK(cpy_variables(in_exoid, out_exoid, in_large, mesh_only));
 
   /* take the output file out of define mode */
-  if ((status = ex_leavedef(out_exoid, __func__)) != NC_NOERR) {
+  if ((status = ex__leavedef(out_exoid, __func__)) != NC_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -491,7 +491,7 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
      option is that in_large == 0 and out_large == 1.  Also will need
      the spatial dimension, so get that now.
    */
-  ex_get_dimension(in_id, DIM_NUM_DIM, "dimension", &spatial_dim, &temp, routine);
+  ex__get_dimension(in_id, DIM_NUM_DIM, "dimension", &spatial_dim, &temp, routine);
 
   /* output file will have coordx, coordy, coordz (if 3d).  See if
      they are already defined in output file. Assume either all or
@@ -516,16 +516,16 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
   /* Define according to the EXODUS file's IO_word_size */
   nbr_dim = 1;
   EXCHECKI(nc_def_var(out_id, VAR_COORD_X, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
-  ex_compress_variable(out_id, var_out_id, 2);
+  ex__compress_variable(out_id, var_out_id, 2);
   if (spatial_dim > 1) {
     EXCHECKI(
         nc_def_var(out_id, VAR_COORD_Y, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
-    ex_compress_variable(out_id, var_out_id, 2);
+    ex__compress_variable(out_id, var_out_id, 2);
   }
   if (spatial_dim > 2) {
     EXCHECKI(
         nc_def_var(out_id, VAR_COORD_Z, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
-    ex_compress_variable(out_id, var_out_id, 2);
+    ex__compress_variable(out_id, var_out_id, 2);
   }
 
   return var_out_id; /* OK */
@@ -596,11 +596,11 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
 
   if ((var_type == NC_FLOAT) || (var_type == NC_DOUBLE)) {
     EXCHECKI(nc_def_var(out_id, var_nm, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
-    ex_compress_variable(out_id, var_out_id, 2);
+    ex__compress_variable(out_id, var_out_id, 2);
   }
   else {
     EXCHECKI(nc_def_var(out_id, var_nm, var_type, nbr_dim, dim_out_id, &var_out_id));
-    ex_compress_variable(out_id, var_out_id, 1);
+    ex__compress_variable(out_id, var_out_id, 1);
   }
   return var_out_id; /* OK */
 
@@ -770,8 +770,8 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
   /* At this point, know that in_large == 0, so will need to
      copy a vector to multiple scalars.  Also
      will need a couple dimensions, so get them now.*/
-  ex_get_dimension(in_id, DIM_NUM_DIM, "dimension", &spatial_dim, &temp, routine);
-  ex_get_dimension(in_id, DIM_NUM_NODES, "nodes", &num_nodes, &temp, routine);
+  ex__get_dimension(in_id, DIM_NUM_DIM, "dimension", &spatial_dim, &temp, routine);
+  ex__get_dimension(in_id, DIM_NUM_NODES, "nodes", &num_nodes, &temp, routine);
 
   /* output file will have coordx, coordy, coordz (if 3d). */
   /* Get the var_id for the requested variable from both files. */
@@ -841,7 +841,7 @@ void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct list_item
 
   if (number > 0) {
     for (i = 0; i < number; i++) {
-      ex_inc_file_item(out_exoid, ctr_list);
+      ex__inc_file_item(out_exoid, ctr_list);
     }
   }
 }
