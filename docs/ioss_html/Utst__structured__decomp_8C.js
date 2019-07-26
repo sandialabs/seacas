@@ -1,8 +1,8 @@
 var Utst__structured__decomp_8C =
 [
     [ "CATCH_CONFIG_MAIN", "Utst__structured__decomp_8C.html#a656eb5868e824d59f489f910db438420", null ],
-    [ "check_split_assign", "Utst__structured__decomp_8C.html#a69cf5d314b5bf92f6fa549103832d6ce", null ],
-    [ "cleanup", "Utst__structured__decomp_8C.html#aaf4289f16bb3cf91d9a7a7318fa37f2c", null ],
+    [ "check_split_assign", "Utst__structured__decomp_8C.html#a9631358d47a181d6697be33c73b3aece", null ],
+    [ "cleanup", "Utst__structured__decomp_8C.html#a256a840c43baa6d6644ba4320c4f2bc5", null ],
     [ "generate_guid", "Utst__structured__decomp_8C.html#a3b567f5a3bae047251df70710f33084f", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ae227bd353365db005323f627c50a7796", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ab714d768c6469287d172c18041cd1fd0", null ],
@@ -22,7 +22,5 @@ var Utst__structured__decomp_8C =
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ac2a56ec3ff59a7d5f4450af65d52238b", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ab100bc18e62c7d1adeb487902441d696", null ],
     [ "TEST_CASE", "Utst__structured__decomp_8C.html#ae9b5bb738a269182fc92ef0545ca3e03", null ],
-    [ "TEST_CASE", "Utst__structured__decomp_8C.html#ab4befec15602ab85fea4eac176866b80", null ],
-    [ "TEST_CASE", "Utst__structured__decomp_8C.html#afc1e1484e1ff9fbeceba5d599ff24ef0", null ],
     [ "update_zgc_data", "Utst__structured__decomp_8C.html#a76f1a825bd4a9bdf4a6d2dae0cd8ee11", null ]
 ];
