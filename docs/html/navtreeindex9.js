@@ -1,5 +1,7 @@
 var NAVTREEINDEX9 =
 {
+"nemesis-mapping.html#comm":[3,6],
+"nemesis-mapping.html#initial":[3,0],
 "nemesis-mapping.html#lb":[3,1],
 "nemesis-mapping.html#map":[3,5],
 "nemesis-mapping.html#param":[3,2],

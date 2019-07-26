@@ -83,6 +83,10 @@ extern int H5get_libversion(unsigned *, unsigned *, unsigned *);
 extern char *ncmpi_inq_libvers();
 #endif
 
+/*!
+  \ingroup Utilities
+  \undoc
+*/
 void ex_print_config(void)
 {
   fprintf(stderr, "\tExodus Version %.2f\n", EX_API_VERS);
@@ -145,6 +149,10 @@ void ex_print_config(void)
   fprintf(stderr, "\n");
 }
 
+/*!
+  \ingroup Utilities
+  \undoc
+*/
 int ex_check_file_type(const char *path, int *type)
 {
   /* Based on (stolen from?) NC_check_file_type from netcdf sources.
@@ -253,6 +261,10 @@ void ex_update_max_name_length(int exoid, int length)
   EX_FUNC_VOID();
 }
 
+/*!
+  \internal
+  \undoc
+*/
 int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
                           ex_entity_type obj_type, const char *subtype, const char *routine)
 {
@@ -319,6 +331,10 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
+/*!
+  \internal
+  \undoc
+*/
 int ex_put_name_internal(int exoid, int varid, size_t index, const char *name,
                          ex_entity_type obj_type, const char *subtype, const char *routine)
 {
@@ -368,6 +384,10 @@ int ex_put_name_internal(int exoid, int varid, size_t index, const char *name,
   return (EX_NOERR);
 }
 
+/*!
+  \internal
+  \undoc
+*/
 int ex_get_names_internal(int exoid, int varid, size_t num_entity, char **names,
                           ex_entity_type obj_type, const char *routine)
 {
@@ -390,6 +410,10 @@ int ex_get_names_internal(int exoid, int varid, size_t num_entity, char **names,
   return (EX_NOERR);
 }
 
+/*!
+  \internal
+  \undoc
+*/
 int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int name_size,
                          ex_entity_type obj_type, const char *routine)
 {
@@ -420,6 +444,10 @@ int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int nam
   return (EX_NOERR);
 }
 
+/*!
+  \internal
+  \undoc
+*/
 void ex_trim_internal(char *name)
 {
   /* Thread-safe, reentrant */
@@ -446,6 +474,10 @@ void ex_trim_internal(char *name)
 
 /** ex_catstr  - concatenate  string/number (where number is converted to ASCII)
  */
+/*!
+  \internal
+  \undoc
+*/
 char *ex_catstr(const char *string, int num)
 {
   /* Only called from an already locked function */
@@ -458,6 +490,10 @@ char *ex_catstr(const char *string, int num)
 }
 
 /** ex_catstr2 - concatenate  string1num1string2num2   */
+/*!
+  \internal
+  \undoc
+*/
 char *ex_catstr2(const char *string1, int num1, const char *string2, int num2)
 {
   /* Only called from an already locked function */
@@ -469,6 +505,10 @@ char *ex_catstr2(const char *string1, int num1, const char *string2, int num2)
   return (tmp_string);
 }
 
+/*!
+  \internal
+  \undoc
+*/
 char *ex_name_of_object(ex_entity_type obj_type)
 {
   /* Thread-safe and reentrant */
@@ -492,6 +532,10 @@ char *ex_name_of_object(ex_entity_type obj_type)
   }
 }
 
+/*!
+  \internal
+  \undoc
+*/
 ex_entity_type ex_var_type_to_ex_entity_type(char var_type)
 {
   /* Thread-safe and reentrant */
@@ -531,6 +575,10 @@ ex_entity_type ex_var_type_to_ex_entity_type(char var_type)
   }
 }
 
+/*!
+  \internal
+  \undoc
+*/
 char *ex_dim_num_objects(ex_entity_type obj_type)
 {
   switch (obj_type) {
@@ -557,6 +605,10 @@ char *ex_dim_num_objects(ex_entity_type obj_type)
   }
 }
 
+/*!
+  \internal
+  \undoc
+*/
 char *ex_dim_num_entries_in_object(ex_entity_type obj_type, int idx)
 {
   switch (obj_type) {
@@ -573,6 +625,10 @@ char *ex_dim_num_entries_in_object(ex_entity_type obj_type, int idx)
   }
 }
 
+/*!
+  \internal
+  \undoc
+*/
 char *ex_name_var_of_object(ex_entity_type obj_type, int i, int j)
 {
   switch (obj_type) {
@@ -588,6 +644,10 @@ char *ex_name_var_of_object(ex_entity_type obj_type, int i, int j)
   }
 }
 
+/*!
+  \internal
+  \undoc
+*/
 char *ex_name_of_map(ex_entity_type map_type, int map_index)
 {
   switch (map_type) {
@@ -617,6 +677,10 @@ char *ex_name_of_map(ex_entity_type map_type, int map_index)
 *
 *****************************************************************************/
 
+/*!
+  \internal
+  \undoc
+*/
 int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
 {
   char *   id_table;
@@ -904,6 +968,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
 /*! this routine returns a pointer to a structure containing the ids of
  * element blocks, node sets, or side sets according to exoid;  if there
  * is not a structure that matches the exoid, one is created
+ * \internal
  */
 
 struct obj_stats *ex_get_stat_ptr(int exoid, struct obj_stats **obj_ptr)
@@ -943,6 +1008,7 @@ struct obj_stats *ex_get_stat_ptr(int exoid, struct obj_stats **obj_ptr)
  * element blocks, node sets, or side sets according to exoid;  this
  * is necessary to clean up because netCDF reuses file ids;  should be
  * called from ex_close
+ * \internal
  */
 
 void ex_rm_stat_ptr(int exoid, struct obj_stats **obj_ptr)
@@ -988,6 +1054,10 @@ static struct list_item *edm_ctr_list = 0; /* edge maps */
 static struct list_item *fam_ctr_list = 0; /* face maps */
 static struct list_item *em_ctr_list  = 0; /* element maps */
 
+/*!
+  \internal
+  \undoc
+*/
 struct list_item **ex_get_counter_list(ex_entity_type obj_type)
 {
   /* Thread-safe, but is dealing with globals */
@@ -1034,6 +1104,7 @@ struct list_item **ex_get_counter_list(ex_entity_type obj_type)
  *       number of files in one application, items must be taken out of the
  *       linked lists in each of the above routines.  these should be called
  *       after ncclose().
+ * \internal
  */
 
 int ex_inc_file_item(int                exoid,    /* file id */
@@ -1082,6 +1153,7 @@ int ex_inc_file_item(int                exoid,    /* file id */
  *       number of files in one application, items must be taken out of the
  *       linked lists in each of the above routines.  these should be called
  *       after nc_close().
+ * \internal
  */
 
 int ex_get_file_item(int                exoid,    /* file id */
@@ -1128,6 +1200,7 @@ int ex_get_file_item(int                exoid,    /* file id */
  *       number of files in one application, items must be taken out of the
  *       linked lists in each of the above routines.  these should be called
  *       after ncclose().
+ * \internal
  */
 
 void ex_rm_file_item(int                exoid,    /* file id */
@@ -1198,9 +1271,17 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
   }
 }
 
+/*!
+  \ingroup Utilities
+  \undoc
+*/
 int ex_get_cpu_ws(void) { return (sizeof(float)); }
 
 /* swap - interchange v[i] and v[j] */
+/*!
+  \internal
+  \undoc
+*/
 static void ex_swap(int v[], int64_t i, int64_t j)
 {
   /* Thread-safe, reentrant */
@@ -1211,6 +1292,10 @@ static void ex_swap(int v[], int64_t i, int64_t j)
   v[j] = temp;
 }
 
+/*!
+  \internal
+  \undoc
+*/
 static void ex_swap64(int64_t v[], int64_t i, int64_t j)
 {
   /* Thread-safe, reentrant */
@@ -1221,28 +1306,12 @@ static void ex_swap64(int64_t v[], int64_t i, int64_t j)
   v[j] = temp;
 }
 
-/*!
- * \ingroup Utilities
- * \internal
- * The following 'indexed qsort' routine is modified from Sedgewicks
- * algorithm It selects the pivot based on the median of the left,
- * right, and center values to try to avoid degenerate cases ocurring
- * when a single value is chosen.  It performs a quicksort on
- * intervals down to the EX_QSORT_CUTOFF size and then performs a final
- * insertion sort on the almost sorted final array.  Based on data in
- * Sedgewick, the EX_QSORT_CUTOFF value should be between 5 and 20.
- *
- * See Sedgewick for further details
- * Define DEBUG_QSORT at the top of this file and recompile to compile
- * in code that verifies that the array is sorted.
- *
- * NOTE: The 'int' implementation below assumes that *both* the items
- *       being sorted and the *number* of items being sorted are both
- *       representable as 'int'.
- */
-
 #define EX_QSORT_CUTOFF 12
 
+/*!
+  \internal
+  \undoc
+*/
 static int ex_int_median3(int v[], int iv[], int64_t left, int64_t right)
 {
   /* Thread-safe, reentrant */
@@ -1263,6 +1332,10 @@ static int ex_int_median3(int v[], int iv[], int64_t left, int64_t right)
   return iv[right - 1];
 }
 
+/*!
+  \internal
+  \undoc
+*/
 static int64_t ex_int_median3_64(int64_t v[], int64_t iv[], int64_t left, int64_t right)
 {
   /* Thread-safe, reentrant */
@@ -1283,6 +1356,10 @@ static int64_t ex_int_median3_64(int64_t v[], int64_t iv[], int64_t left, int64_
   return iv[right - 1];
 }
 
+/*!
+  \internal
+  \undoc
+*/
 static void ex_int_iqsort(int v[], int iv[], int left, int right)
 {
   /* Thread-safe, reentrant */
@@ -1315,6 +1392,10 @@ static void ex_int_iqsort(int v[], int iv[], int left, int right)
   }
 }
 
+/*!
+  \internal
+  \undoc
+*/
 static void ex_int_iqsort64(int64_t v[], int64_t iv[], int64_t left, int64_t right)
 {
   /* Thread-safe, reentrant */
@@ -1347,6 +1428,10 @@ static void ex_int_iqsort64(int64_t v[], int64_t iv[], int64_t left, int64_t rig
   }
 }
 
+/*!
+  \internal
+  \undoc
+*/
 static void ex_int_iisort(int v[], int iv[], int N)
 {
   /* Thread-safe, reentrant */
@@ -1374,6 +1459,10 @@ static void ex_int_iisort(int v[], int iv[], int N)
   }
 }
 
+/*!
+  \internal
+  \undoc
+*/
 static void ex_int_iisort64(int64_t v[], int64_t iv[], int64_t N)
 {
   /* Thread-safe, reentrant */
@@ -1401,6 +1490,26 @@ static void ex_int_iisort64(int64_t v[], int64_t iv[], int64_t N)
   }
 }
 
+/*!
+ * \ingroup Utilities
+ * \internal
+ * The following 'indexed qsort' routine is modified from Sedgewicks
+ * algorithm It selects the pivot based on the median of the left,
+ * right, and center values to try to avoid degenerate cases ocurring
+ * when a single value is chosen.  It performs a quicksort on
+ * intervals down to the EX_QSORT_CUTOFF size and then performs a final
+ * insertion sort on the almost sorted final array.  Based on data in
+ * Sedgewick, the EX_QSORT_CUTOFF value should be between 5 and 20.
+ *
+ * See Sedgewick for further details
+ * Define DEBUG_QSORT at the top of this file and recompile to compile
+ * in code that verifies that the array is sorted.
+ *
+ * NOTE: The 'int' implementation below assumes that *both* the items
+ *       being sorted and the *number* of items being sorted are both
+ *       representable as 'int'.
+ * \internal
+ */
 void ex_iqsort(int v[], int iv[], int N)
 {
   /* Thread-safe, reentrant */
@@ -1416,6 +1525,7 @@ void ex_iqsort(int v[], int iv[], int N)
 #endif
 }
 
+/*! \sa ex_iqsort() */
 void ex_iqsort64(int64_t v[], int64_t iv[], int64_t N)
 {
   /* Thread-safe, reentrant */
@@ -1437,6 +1547,8 @@ void ex_iqsort64(int64_t v[], int64_t iv[], int64_t N)
  * coordinates and nodal variables are stored in a blob (xyz
  * components together) or as a variable per component per
  * nodal_variable.
+ *
+ * \ingroup Utilities
  */
 int ex_large_model(int exoid)
 {
@@ -1477,6 +1589,10 @@ int ex_large_model(int exoid)
   EX_FUNC_LEAVE(file_size);
 }
 
+/*!
+  \internal
+  \undoc
+*/
 int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t *count, int *dimid,
                      const char *routine)
 {
@@ -1515,15 +1631,16 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
   return status;
 }
 
-/* Deprecated. do not use */
 /*!
   \deprecated
-  \ingroup Utilities
-  \undoc
 */
 size_t ex_header_size(int exoid) { return 0; }
 
 /* type = 1 for integer, 2 for real, 3 for character */
+/*!
+  \internal
+  \undoc
+*/
 void ex_compress_variable(int exoid, int varid, int type)
 {
 #if NC_HAS_HDF5
@@ -1554,6 +1671,10 @@ void ex_compress_variable(int exoid, int varid, int type)
 #endif
 }
 
+/*!
+  \internal
+  \undoc
+*/
 int ex_leavedef(int exoid, const char *call_rout)
 {
   char errmsg[MAX_ERR_LENGTH];
@@ -1570,6 +1691,10 @@ int ex_leavedef(int exoid, const char *call_rout)
 
 static int warning_output = 0;
 
+/*!
+  \internal
+  \undoc
+*/
 int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
 {
   char       errmsg[MAX_ERR_LENGTH];
@@ -1882,6 +2007,10 @@ int ex_int_handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   return nc_mode | pariomode;
 }
 
+/*!
+  \internal
+  \undoc
+*/
 int ex_int_populate_header(int exoid, const char *path, int my_mode, int is_parallel, int *comp_ws,
                            int *io_ws)
 {
@@ -2030,7 +2159,11 @@ int ex_int_populate_header(int exoid, const char *path, int my_mode, int is_para
 return EX_NOERR;
 }
 
-/* Safer than strncpy -- guarantees null termination */
+/*!
+  \internal
+  \undoc
+  Safer than strncpy -- guarantees null termination
+*/
 char *ex_copy_string(char *dest, char const *source, size_t elements)
 {
   char *d;
