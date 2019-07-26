@@ -1,5 +1,7 @@
 var group__ResultsData =
 [
+    [ "ex__get_partial_nodal_var", "group__ResultsData.html#ga70d0037bf3c12d4ba5ab09eb956e19e9", null ],
+    [ "ex__put_partial_nodal_var", "group__ResultsData.html#gaafda0a407402616fde3c5e653a2a79c1", null ],
     [ "ex_get_all_times", "group__ResultsData.html#ga25705723a510ee4c6b23959925eca4ec", null ],
     [ "ex_get_glob_vars", "group__ResultsData.html#gaab1f1155881d0b4d3ac442472297daab", null ],
     [ "ex_get_n_elem_var", "group__ResultsData.html#ga97dffa4a9104d4c4d5a6738ae20c171b", null ],
@@ -8,7 +10,6 @@ var group__ResultsData =
     [ "ex_get_object_truth_vector", "group__ResultsData.html#ga1591cc35b01b6546f9367b4420be6862", null ],
     [ "ex_get_partial_elem_var", "group__ResultsData.html#gab25e879410b8ac93b4feba2126faba17", null ],
     [ "ex_get_partial_nodal_var", "group__ResultsData.html#gaea570a5fe3f2b769133784e57477ca44", null ],
-    [ "ex_get_partial_nodal_var_int", "group__ResultsData.html#gae7684d6a6aae627c305faa966b28c862", null ],
     [ "ex_get_partial_var", "group__ResultsData.html#ga862d5db5ec8152e5192411af56925168", null ],
     [ "ex_get_time", "group__ResultsData.html#ga043918d9caf73f8dcdb41e23ddc9b914", null ],
     [ "ex_get_truth_table", "group__ResultsData.html#ga90ac12b9e78cbb4305f07d27cffeb780", null ],
@@ -26,7 +27,6 @@ var group__ResultsData =
     [ "ex_put_n_nodal_var", "group__ResultsData.html#ga5602f2e069573ece8120c18937484217", null ],
     [ "ex_put_n_var", "group__ResultsData.html#ga81d3d8efe090c1904110c73a3571caf5", null ],
     [ "ex_put_partial_nodal_var", "group__ResultsData.html#ga68c55a598842817089abbe4256fb6e2d", null ],
-    [ "ex_put_partial_nodal_var_int", "group__ResultsData.html#ga84d5e789c39551a51c5ef2ec064bb30c", null ],
     [ "ex_put_partial_var", "group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8", null ],
     [ "ex_put_time", "group__ResultsData.html#ga2052c8728dac97589b94d9947e645797", null ],
     [ "ex_put_truth_table", "group__ResultsData.html#ga332addfae3873a71c38db5465e6bcf0b", null ],

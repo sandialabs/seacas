@@ -1,11 +1,11 @@
 var searchData=
 [
   ['nc_5ffloat_5fwordsize',['NC_FLOAT_WORDSIZE',['../ex__conv_8c.html#ad496620435dc522e8908edff46c3a2c0',1,'ex_conv.c']]],
-  ['nc_5fflt_5fcode',['nc_flt_code',['../group__Utilities.html#ga0bcb99c4a23dde165c0a75e9acfb3d55',1,'nc_flt_code(int exoid):&#160;ex_conv.c'],['../group__Utilities.html#ga0bcb99c4a23dde165c0a75e9acfb3d55',1,'nc_flt_code(int exoid):&#160;ex_conv.c']]],
+  ['nc_5fflt_5fcode',['nc_flt_code',['../group__Internal.html#ga0bcb99c4a23dde165c0a75e9acfb3d55',1,'nc_flt_code(int exoid):&#160;ex_conv.c'],['../group__Utilities.html#ga0bcb99c4a23dde165c0a75e9acfb3d55',1,'nc_flt_code(int exoid):&#160;ex_conv.c']]],
   ['nc_5fint64',['NC_INT64',['../ex__put__loadbal__param__cc_8c.html#a8fe8ec701fdf28231954b552bd7c402c',1,'ex_put_loadbal_param_cc.c']]],
   ['ncopts',['ncopts',['../exo__jack-windows_8c.html#ad666765b7d4bbdd6a39ad40e7ee3c73a',1,'exo_jack-windows.c']]],
-  ['ne_5fcheck_5ffile_5fversion',['ne_check_file_version',['../exodusII__int_8h.html#a5fc0f33c92c66e1814484732cf49e173',1,'ne_check_file_version(int neid):&#160;ex_ne_util.c'],['../ex__ne__util_8c.html#afc38e37ae28f3909fe08bc566ea3a662',1,'ne_check_file_version(int exoid):&#160;ex_ne_util.c']]],
-  ['ne_5fid_5flkup',['ne_id_lkup',['../exodusII__int_8h.html#a2c69b0e0815ba6422012897d0a1adee8',1,'ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne_var_id):&#160;ex_ne_util.c'],['../ex__ne__util_8c.html#a2c69b0e0815ba6422012897d0a1adee8',1,'ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne_var_id):&#160;ex_ne_util.c']]],
+  ['ne_5fcheck_5ffile_5fversion',['ne_check_file_version',['../group__Internal.html#ga5fc0f33c92c66e1814484732cf49e173',1,'ne_check_file_version(int neid):&#160;ex_ne_util.c'],['../group__Internal.html#ga5fc0f33c92c66e1814484732cf49e173',1,'ne_check_file_version(int exoid):&#160;ex_ne_util.c']]],
+  ['ne_5fid_5flkup',['ne_id_lkup',['../group__Internal.html#ga2c69b0e0815ba6422012897d0a1adee8',1,'ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne_var_id):&#160;ex_ne_util.c'],['../group__Internal.html#ga2c69b0e0815ba6422012897d0a1adee8',1,'ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne_var_id):&#160;ex_ne_util.c']]],
   ['ne_5fret_5fstring',['ne_ret_string',['../ex__ne__util_8c.html#a65cf2d853fd81dda86ef0eb9ab83c6f5',1,'ex_ne_util.c']]],
   ['nemesis_2dto_2dexodus_2dapi_2dmapping_2emd',['nemesis-to-exodus-api-mapping.md',['../nemesis-to-exodus-api-mapping_8md.html',1,'']]],
   ['nemesis_5fapi_5fversion',['NEMESIS_API_VERSION',['../exodusII_8h.html#a931e965a07b4cab183cd07a96a8026c8',1,'exodusII.h']]],

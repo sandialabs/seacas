@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Exodus
-   &#160;<span id="projectnumber">7.21</span>
+   &#160;<span id="projectnumber">7.22</span>
    </div>
   </td>
  </tr>
@@ -91,7 +91,7 @@ $(document).ready(function(){initNavTree('nemesis-mapping.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>The nemesis library was originally an extension to the ExodusII library which provided routines required to support use of Exodus databases in a parallel setting; typically with a file-per-processor usage.</p>
-<p>Since the use of Exodus in parallel executions is now very common, the Nemesis library routines have been integrated into the Exodus library API. In most cases, the exodus API function corresponding to a nemesis API function is obtained by replacing the <code>ne_</code> prefix with an <code>ex_</code> prefix. There are a few routines where this results in a name collision or confusion (e.g. ne_put_version() is <a class="el" href="exodusII__int_8h.html#a8c0c82097e14ea1243c2ff2de15fd14e">ex_put_nemesis_version()</a> since it would be confusing to call it ex_put_version()). The partial read/write functions which in nemesis are indicated by a <code>_n_</code> in the function name have been in replaced by <code>_partial_</code> (although the corresponding <code>ex_*_n_*</code> function does exist in the deprecated functions).</p>
+<p>Since the use of Exodus in parallel executions is now very common, the Nemesis library routines have been integrated into the Exodus library API. In most cases, the exodus API function corresponding to a nemesis API function is obtained by replacing the <code>ne_</code> prefix with an <code>ex_</code> prefix. There are a few routines where this results in a name collision or confusion (e.g. ne_put_version() is ex_put_nemesis_version() since it would be confusing to call it ex_put_version()). The partial read/write functions which in nemesis are indicated by a <code>_n_</code> in the function name have been in replaced by <code>_partial_</code> (although the corresponding <code>ex_*_n_*</code> function does exist in the deprecated functions).</p>
 <p>The tables below list all Nemesis API functions and the corresponding Exodus API function. In many cases, the only change needed is replacing <code>ne_</code> by <code>ex_</code>, but the routines which were made more "generic" (e.g. ne_get_n_side_set() and ne_get_n_node_set() directly map to <a class="el" href="exodusII_8h.html#a001583b0bf2cdf96998e2398bd0f4005">ex_get_n_side_set()</a> and <a class="el" href="exodusII_8h.html#ae7ad3f14815a498a210c88f12bbdfad1">ex_get_n_node_set()</a> which are deprecated, so the table below shows the recommended <a class="el" href="group__ModelDescription.html#ga63115d5d368817b48f51328ec87ce206">ex_get_partial_set()</a>) additional arguments are required.</p>
 <p>The nemesis library can still be used since it is still built upon request and its implementation is simply wrapper routines which forward all existing nemesis function calls to the appropriate Exodus function call (with needed argument changes).</p>
 <h1><a class="anchor" id="initial"></a>
@@ -108,7 +108,7 @@ Initial Information Routines</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">ne_put_init_global  </td><td class="markdownTableBodyNone"><a class="el" href="group__ModelDescription.html#ga04480bc7f03d463ebd190a7086a5852d">ex_put_init_global()</a>   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">ne_put_version  </td><td class="markdownTableBodyNone"><a class="el" href="exodusII__int_8h.html#a8c0c82097e14ea1243c2ff2de15fd14e">ex_put_nemesis_version()</a>   </td></tr>
+<td class="markdownTableBodyNone">ne_put_version  </td><td class="markdownTableBodyNone">ex_put_nemesis_version()   </td></tr>
 </table>
 <h1><a class="anchor" id="lb"></a>
 Loadbalance Parameter Routines</h1>

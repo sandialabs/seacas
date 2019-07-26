@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Exodus
-   &#160;<span id="projectnumber">7.21</span>
+   &#160;<span id="projectnumber">7.22</span>
    </div>
   </td>
  </tr>
@@ -133,10 +133,10 @@ Functions</h2></td></tr>
 <tr class="separator:ga862d5db5ec8152e5192411af56925168"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga65af6a2020057488a89b28238993562b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga65af6a2020057488a89b28238993562b">ex_get_var_time</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> var_type, int var_index, int64_t id, int beg_time_step, int end_time_step, void *var_vals)</td></tr>
 <tr class="separator:ga65af6a2020057488a89b28238993562b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae7684d6a6aae627c305faa966b28c862"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#gae7684d6a6aae627c305faa966b28c862">ex_get_partial_nodal_var_int</a> (int exoid, int time_step, int nodal_var_index, int64_t start_node, int64_t num_nodes, void *var_vals)</td></tr>
-<tr class="separator:gae7684d6a6aae627c305faa966b28c862"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga84d5e789c39551a51c5ef2ec064bb30c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga84d5e789c39551a51c5ef2ec064bb30c">ex_put_partial_nodal_var_int</a> (int exoid, int time_step, int nodal_var_index, int64_t start_node, int64_t num_nodes, const void *nodal_var_vals)</td></tr>
-<tr class="separator:ga84d5e789c39551a51c5ef2ec064bb30c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga70d0037bf3c12d4ba5ab09eb956e19e9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga70d0037bf3c12d4ba5ab09eb956e19e9">ex__get_partial_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t start_node, int64_t num_nodes, void *var_vals)</td></tr>
+<tr class="separator:ga70d0037bf3c12d4ba5ab09eb956e19e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaafda0a407402616fde3c5e653a2a79c1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#gaafda0a407402616fde3c5e653a2a79c1">ex__put_partial_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t start_node, int64_t num_nodes, const void *nodal_var_vals)</td></tr>
+<tr class="separator:gaafda0a407402616fde3c5e653a2a79c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaab1f1155881d0b4d3ac442472297daab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#gaab1f1155881d0b4d3ac442472297daab">ex_get_glob_vars</a> (int exoid, int time_step, int num_glob_vars, void *glob_var_vals)</td></tr>
 <tr class="separator:gaab1f1155881d0b4d3ac442472297daab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga97dffa4a9104d4c4d5a6738ae20c171b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga97dffa4a9104d4c4d5a6738ae20c171b">ex_get_n_elem_var</a> (int exoid, int time_step, int elem_var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> elem_blk_id, int64_t num_elem_this_blk, int64_t start_elem_num, int64_t num_elem, void *elem_var_vals)</td></tr>
@@ -183,6 +183,122 @@ Functions</h2></td></tr>
 <li>If the mesh geometry changes in time (i.e., number of nodes increases, connectivity changes), the new geometry must be output to a new file. </li>
 </ul>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ga70d0037bf3c12d4ba5ab09eb956e19e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga70d0037bf3c12d4ba5ab09eb956e19e9">&#9670;&nbsp;</a></span>ex__get_partial_nodal_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex__get_partial_nodal_var </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nodal_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>start_node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>reads the values of a single nodal variable for a single time step from the database; assume the first time step and nodal variable index is 1 </p>
+
+</div>
+</div>
+<a id="gaafda0a407402616fde3c5e653a2a79c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaafda0a407402616fde3c5e653a2a79c1">&#9670;&nbsp;</a></span>ex__put_partial_nodal_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex__put_partial_nodal_var </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nodal_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>start_node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>nodal_var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>writes the values of a single nodal variable for a partial block at one single time step to the database; assume the first time step and nodal variable index is 1 </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
+    <tr><td class="paramname">time_step</td><td>whole time step number </td></tr>
+    <tr><td class="paramname">nodal_var_index</td><td>index of desired nodal variable </td></tr>
+    <tr><td class="paramname">start_node</td><td>index of first node to write data for (1-based) </td></tr>
+    <tr><td class="paramname">num_nodes</td><td>number of nodal points </td></tr>
+    <tr><td class="paramname">nodal_var_vals</td><td>array of nodal variable values </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ga25705723a510ee4c6b23959925eca4ec"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga25705723a510ee4c6b23959925eca4ec">&#9670;&nbsp;</a></span>ex_get_all_times()</h2>
 
@@ -646,59 +762,6 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000047">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node, num_nodes, var_vals);</dd></dl>
-
-</div>
-</div>
-<a id="gae7684d6a6aae627c305faa966b28c862"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae7684d6a6aae627c305faa966b28c862">&#9670;&nbsp;</a></span>ex_get_partial_nodal_var_int()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int ex_get_partial_nodal_var_int </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>exoid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>time_step</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>nodal_var_index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>start_node</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_nodes</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>var_vals</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>reads the values of a single nodal variable for a single time step from the database; assume the first time step and nodal variable index is 1 </p>
 
 </div>
 </div>
@@ -1715,69 +1778,6 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000100">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node, num_nodes, nodal_var_vals)</dd></dl>
-<p>writes the values of a single nodal variable for a partial block at one single time step to the database; assume the first time step and nodal variable index is 1 </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
-    <tr><td class="paramname">time_step</td><td>whole time step number </td></tr>
-    <tr><td class="paramname">nodal_var_index</td><td>index of desired nodal variable </td></tr>
-    <tr><td class="paramname">start_node</td><td>index of first node to write data for (1-based) </td></tr>
-    <tr><td class="paramname">num_nodes</td><td>number of nodal points </td></tr>
-    <tr><td class="paramname">nodal_var_vals</td><td>array of nodal variable values </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga84d5e789c39551a51c5ef2ec064bb30c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga84d5e789c39551a51c5ef2ec064bb30c">&#9670;&nbsp;</a></span>ex_put_partial_nodal_var_int()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int ex_put_partial_nodal_var_int </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>exoid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>time_step</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>nodal_var_index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>start_node</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_nodes</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const void *&#160;</td>
-          <td class="paramname"><em>nodal_var_vals</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 <p>writes the values of a single nodal variable for a partial block at one single time step to the database; assume the first time step and nodal variable index is 1 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>

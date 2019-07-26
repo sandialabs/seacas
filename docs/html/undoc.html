@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Exodus
-   &#160;<span id="projectnumber">7.21</span>
+   &#160;<span id="projectnumber">7.22</span>
    </div>
   </td>
  </tr>
@@ -91,28 +91,52 @@ $(document).ready(function(){initNavTree('undoc.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt>Global <a class="el" href="ex__utils_8c.html#a4e618070ca4a4434d5161ae8f6416522">ex_catstr</a>  (const char *string, int num)</dt>
+<dt>Global <a class="el" href="group__Internal.html#ga3de7039dc4e1ab7e239438e5e0b8e6cb">ex__catstr</a>  (const char *, int)</dt>
 <dd><a class="anchor" id="_undoc000033"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a4e618070ca4a4434d5161ae8f6416522">ex_catstr</a>  (const char *string, int num)</dt>
-<dd><a class="anchor" id="_undoc000033"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#aa992f34cd15bcad5c1aa37e863000eec">ex_catstr2</a>  (const char *string1, int num1, const char *string2, int num2)</dt>
+<dt>Global <a class="el" href="group__Internal.html#ga12974e7fe03aa7a03bb548d10c8ca107">ex__catstr2</a>  (const char *, int, const char *, int)</dt>
 <dd><a class="anchor" id="_undoc000034"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#aa992f34cd15bcad5c1aa37e863000eec">ex_catstr2</a>  (const char *string1, int num1, const char *string2, int num2)</dt>
-<dd><a class="anchor" id="_undoc000034"></a>  </dd>
-<dt>Global <a class="el" href="group__Utilities.html#ga278917a76c0c7c81a24390bc18af7cad">ex_check_file_type</a>  (const char *path, int *type)</dt>
+<dt>Global <a class="el" href="group__Internal.html#ga59bdd5d8964c479f6029c276d6a6d097">ex__check_file_type</a>  (const char *path, int *type)</dt>
 <dd><a class="anchor" id="_undoc000025"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#ae240484d9a735c54d1192cde3ab82b5a">ex_compress_variable</a>  (int exoid, int varid, int type)</dt>
+<dt>Global <a class="el" href="group__Internal.html#ga87ef88cfa27b66d5d64aee24bb289a1a">ex__compress_variable</a>  (int exoid, int varid, int type)</dt>
 <dd><a class="anchor" id="_undoc000054"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#gaf5dbd61cbdfa95bd6d8bcc8f7fa67b13">ex__dim_num_entries_in_object</a>  (ex_entity_type, int)</dt>
+<dd><a class="anchor" id="_undoc000038"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#gab0886afc13f3d5f30e51cb53fb44dc1f">ex__dim_num_objects</a>  (ex_entity_type obj_type)</dt>
+<dd><a class="anchor" id="_undoc000037"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#ga21e797d65f94a7d9f247a7297e2b3de0">ex__get_cpu_ws</a>  (void)</dt>
+<dd><a class="anchor" id="_undoc000044"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#ga707c30ae1404a7eb8731c2f3e54c2281">ex__get_dimension</a>  (int exoid, const char *DIMENSION, const char *label, size_t *count, int *dimid, const char *routine)</dt>
+<dd><a class="anchor" id="_undoc000053"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#ga22a8974e2931f0a9895ca71ab01ba634">ex__get_name</a>  (int exoid, int varid, size_t index, char *name, int name_size, ex_entity_type obj_type, const char *routine)</dt>
+<dd><a class="anchor" id="_undoc000031"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#gada75be624c09c5e43fc21aa20db18b2e">ex__get_names</a>  (int exoid, int varid, size_t num_entity, char **names, ex_entity_type obj_type, const char *routine)</dt>
+<dd><a class="anchor" id="_undoc000030"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#gad944c6f57e961483c31f1d75336573a5">ex__handle_mode</a>  (unsigned int my_mode, int is_parallel, int run_version)</dt>
+<dd><a class="anchor" id="_undoc000056"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#ga70aa2d8fa483a41b3fdbaef475526e8d">ex__id_lkup</a>  (int exoid, ex_entity_type id_type, ex_entity_id num)</dt>
+<dd><a class="anchor" id="_undoc000041"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#gab6eaa5a45716ec23528f6308c2a8eb40">ex__leavedef</a>  (int exoid, const char *call_rout)</dt>
+<dd><a class="anchor" id="_undoc000055"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#gac5d53509f50b814eff016b208d1529dd">ex__name_of_map</a>  (ex_entity_type, int)</dt>
+<dd><a class="anchor" id="_undoc000040"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#gabd85ddd3d929f958959705166aa26eea">ex__name_var_of_object</a>  (ex_entity_type, int, int)</dt>
+<dd><a class="anchor" id="_undoc000039"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#ga4ac4f0e7de34bfc525e5c18eeb2f7413">ex__populate_header</a>  (int exoid, const char *path, int my_mode, int is_parallel, int *comp_ws, int *io_ws)</dt>
+<dd><a class="anchor" id="_undoc000057"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#ga3ed0cdd23f1f503b24a4b590ce339bbd">ex__put_name</a>  (int exoid, int varid, size_t index, const char *name, ex_entity_type obj_type, const char *subtype, const char *routine)</dt>
+<dd><a class="anchor" id="_undoc000029"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#gac071b15c112fb01a896be1eea932e67d">ex__put_names</a>  (int exoid, int varid, size_t num_entity, char **names, ex_entity_type obj_type, const char *subtype, const char *routine)</dt>
+<dd><a class="anchor" id="_undoc000028"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#ga9339fa5714993b24028454297ee90129">ex__reset_error_status</a>  ()</dt>
+<dd><a class="anchor" id="_undoc000003"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#ga72b40a2080a24437041089d1ca10d6a1">ex__trim</a>  (char *name)</dt>
+<dd><a class="anchor" id="_undoc000032"></a>  </dd>
+<dt>Global <a class="el" href="group__Internal.html#gaf94a8a293630c4c13ff878e5f6ebde1f">ex__update_max_name_length</a>  (int exoid, int length)</dt>
+<dd><a class="anchor" id="_undoc000027"></a>  </dd>
 <dt>Global <a class="el" href="ex__utils_8c.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>  (char *dest, char const *source, size_t elements)</dt>
 <dd><a class="anchor" id="_undoc000058"></a> Safer than strncpy &ndash; guarantees null termination  </dd>
 <dt>Global <a class="el" href="group__ModelDescription.html#ga3ec5c53a8b305d10a09be9617e872543">ex_create_group</a>  (int parent_id, const char *group_name)</dt>
 <dd><a class="anchor" id="_undoc000002"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a5e9669d5fae0139cd3c29dfd6fea9f6f">ex_dim_num_entries_in_object</a>  (ex_entity_type obj_type, int idx)</dt>
-<dd><a class="anchor" id="_undoc000038"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a5e9669d5fae0139cd3c29dfd6fea9f6f">ex_dim_num_entries_in_object</a>  (ex_entity_type obj_type, int idx)</dt>
-<dd><a class="anchor" id="_undoc000038"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a8ece0f3ebc9d7e1b2e293bbb3aa3827c">ex_dim_num_objects</a>  (ex_entity_type obj_type)</dt>
-<dd><a class="anchor" id="_undoc000037"></a>  </dd>
 <dt>Global <a class="el" href="group__Utilities.html#ga73924582d1725b8f8672ce292dde53e5">ex_err</a>  (const char *module_name, const char *message, int err_num)</dt>
 <dd><a class="anchor" id="_undoc000004"></a>  </dd>
 <dt>Global <a class="el" href="group__Utilities.html#gad80ad976010b0653dd981c3c7867475f">ex_err_fn</a>  (int exoid, const char *module_name, const char *message, int err_num)</dt>
@@ -135,12 +159,8 @@ $(document).ready(function(){initNavTree('undoc.html','');});
 <dd><a class="anchor" id="_undoc000059"></a> reads the side set ID's, side set element count array, side set node count array, side set element pointers array, side set node pointers array, side set element list, side set node list, and side set distribution factors  </dd>
 <dt>Global <a class="el" href="group__ModelDescription.html#gaeeccbb525d582741af06a06aa275c5fe">ex_get_conn</a>  (int exoid, ex_entity_type blk_type, ex_entity_id blk_id, void_int *nodeconn, void_int *edgeconn, void_int *faceconn)</dt>
 <dd><a class="anchor" id="_undoc000016"></a> exgconn - exodusII read edge/face/element block connectivity </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#ac2f5220894707b3d4470e95ef6fdad08">ex_get_counter_list</a>  (ex_entity_type obj_type)</dt>
+<dt>Global <a class="el" href="group__Internal.html#gac2f5220894707b3d4470e95ef6fdad08">ex_get_counter_list</a>  (ex_entity_type obj_type)</dt>
 <dd><a class="anchor" id="_undoc000042"></a>  </dd>
-<dt>Global <a class="el" href="group__Utilities.html#gad8bd24ec1c1421c00bb8205aba6258d0">ex_get_cpu_ws</a>  (void)</dt>
-<dd><a class="anchor" id="_undoc000044"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#ae2b51e06da0c27da2c791c308f42ba8c">ex_get_dimension</a>  (int exoid, const char *DIMENSION, const char *label, size_t *count, int *dimid, const char *routine)</dt>
-<dd><a class="anchor" id="_undoc000053"></a>  </dd>
 <dt>Global <a class="el" href="group__Utilities.html#ga30160a81eb1aff6befe3890bea4f3bae">ex_get_err</a>  (const char **msg, const char **func, int *err_num)</dt>
 <dd><a class="anchor" id="_undoc000007"></a>  </dd>
 <dt>Global <a class="el" href="group__ModelDescription.html#ga4edb26795b49c719a260e27a4fa56822">ex_get_init_global</a>  (int exoid, void_int *num_nodes_g, void_int *num_elems_g, void_int *num_elem_blks_g, void_int *num_node_sets_g, void_int *num_side_sets_g)</dt>
@@ -149,16 +169,8 @@ $(document).ready(function(){initNavTree('undoc.html','');});
 <dd><a class="anchor" id="_undoc000018"></a>  </dd>
 <dt>Global <a class="el" href="group__ModelDescription.html#ga9007d001325fc02e5e7e96cce728f0e6">ex_get_loadbal_param</a>  (int exoid, void_int *num_int_nodes, void_int *num_bor_nodes, void_int *num_ext_nodes, void_int *num_int_elems, void_int *num_bor_elems, void_int *num_node_cmaps, void_int *num_elem_cmaps, int processor)</dt>
 <dd><a class="anchor" id="_undoc000019"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#aa2fc487dead225b38df4d5bd58c494ba">ex_get_name_internal</a>  (int exoid, int varid, size_t index, char *name, int name_size, ex_entity_type obj_type, const char *routine)</dt>
-<dd><a class="anchor" id="_undoc000031"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a7ff833115ad686dd85d71e251c297c63">ex_get_names_internal</a>  (int exoid, int varid, size_t num_entity, char **names, ex_entity_type obj_type, const char *routine)</dt>
-<dd><a class="anchor" id="_undoc000030"></a>  </dd>
 <dt>Global <a class="el" href="group__Utilities.html#gaf5d7d2d496640993b1c6fe395532e1bc">ex_get_num_props</a>  (int exoid, ex_entity_type obj_type)</dt>
 <dd><a class="anchor" id="_undoc000043"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a53ca5c604b4ce9f9e98a82ee98269282">ex_id_lkup</a>  (int exoid, ex_entity_type id_type, ex_entity_id num)</dt>
-<dd><a class="anchor" id="_undoc000041"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#afc7ab35150b72a96c904ac2fb831fa32">ex_int_handle_mode</a>  (unsigned int my_mode, int is_parallel, int run_version)</dt>
-<dd><a class="anchor" id="_undoc000056"></a>  </dd>
 <dt>Global <a class="el" href="ex__utils_8c.html#a70aed184c504449a0022fbd757dfbb41">ex_int_iisort</a>  (int v[], int iv[], int N)</dt>
 <dd><a class="anchor" id="_undoc000051"></a>  </dd>
 <dt>Global <a class="el" href="ex__utils_8c.html#abc3ad0e4f6220f9e230c50458d5d3cfb">ex_int_iisort64</a>  (int64_t v[], int64_t iv[], int64_t N)</dt>
@@ -171,20 +183,8 @@ $(document).ready(function(){initNavTree('undoc.html','');});
 <dd><a class="anchor" id="_undoc000047"></a>  </dd>
 <dt>Global <a class="el" href="ex__utils_8c.html#af8c4570298295a78d1f0ce9ad1bbdb5c">ex_int_median3_64</a>  (int64_t v[], int64_t iv[], int64_t left, int64_t right)</dt>
 <dd><a class="anchor" id="_undoc000048"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#aacb4f7e889965e6077ee5cb8c7250994">ex_int_populate_header</a>  (int exoid, const char *path, int my_mode, int is_parallel, int *comp_ws, int *io_ws)</dt>
-<dd><a class="anchor" id="_undoc000057"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#ab86e9f8fb7fe52a0ae98204946e77f35">ex_leavedef</a>  (int exoid, const char *call_rout)</dt>
-<dd><a class="anchor" id="_undoc000055"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#abfcb73acccb51722a1fc0488766056a6">ex_name_of_map</a>  (ex_entity_type map_type, int map_index)</dt>
-<dd><a class="anchor" id="_undoc000040"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#abfcb73acccb51722a1fc0488766056a6">ex_name_of_map</a>  (ex_entity_type map_type, int map_index)</dt>
-<dd><a class="anchor" id="_undoc000040"></a>  </dd>
 <dt>Global <a class="el" href="ex__utils_8c.html#ace51015c588554746b4729b7d2bf46b0">ex_name_of_object</a>  (ex_entity_type obj_type)</dt>
 <dd><a class="anchor" id="_undoc000035"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a0894055db76f50558ddc808d12dde365">ex_name_var_of_object</a>  (ex_entity_type obj_type, int i, int j)</dt>
-<dd><a class="anchor" id="_undoc000039"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a0894055db76f50558ddc808d12dde365">ex_name_var_of_object</a>  (ex_entity_type obj_type, int i, int j)</dt>
-<dd><a class="anchor" id="_undoc000039"></a>  </dd>
 <dt>Global <a class="el" href="group__Utilities.html#gac89ad2ce316bb7fecf5fab8c9e447347">ex_print_config</a>  (void)</dt>
 <dd><a class="anchor" id="_undoc000024"></a>  </dd>
 <dt>Global <a class="el" href="group__ModelDescription.html#ga04480bc7f03d463ebd190a7086a5852d">ex_put_init_global</a>  (int exoid, int64_t num_nodes_g, int64_t num_elems_g, int64_t num_elem_blks_g, int64_t num_node_sets_g, int64_t num_side_sets_g)</dt>
@@ -195,12 +195,6 @@ $(document).ready(function(){initNavTree('undoc.html','');});
 <dd><a class="anchor" id="_undoc000022"></a>  </dd>
 <dt>Global <a class="el" href="group__ModelDescription.html#gacac29bcc7ddf2b1c0538a6754c07c0c6">ex_put_loadbal_param_cc</a>  (int exoid, void_int *num_int_nodes, void_int *num_bor_nodes, void_int *num_ext_nodes, void_int *num_int_elems, void_int *num_bor_elems, void_int *num_node_cmaps, void_int *num_elem_cmaps)</dt>
 <dd><a class="anchor" id="_undoc000023"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a3f4e0a4e971d78c381c95a684f79441c">ex_put_name_internal</a>  (int exoid, int varid, size_t index, const char *name, ex_entity_type obj_type, const char *subtype, const char *routine)</dt>
-<dd><a class="anchor" id="_undoc000029"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a97664a4c2e7ae8559477473791cb33df">ex_put_names_internal</a>  (int exoid, int varid, size_t num_entity, char **names, ex_entity_type obj_type, const char *subtype, const char *routine)</dt>
-<dd><a class="anchor" id="_undoc000028"></a>  </dd>
-<dt>Global <a class="el" href="group__Utilities.html#ga2bfe82f5a1be0b1382a481e1cc7c3731">ex_reset_error_status</a>  ()</dt>
-<dd><a class="anchor" id="_undoc000003"></a>  </dd>
 <dt>Global <a class="el" href="group__Utilities.html#ga3da0f860c0efa4b115e905c042403346">ex_set_err</a>  (const char *module_name, const char *message, int err_num)</dt>
 <dd><a class="anchor" id="_undoc000006"></a>  </dd>
 <dt>Global <a class="el" href="group__Utilities.html#ga3126c6db205970eaa43de2b0eac0bf87">ex_set_max_name_length</a>  (int exoid, int length)</dt>
@@ -213,10 +207,6 @@ $(document).ready(function(){initNavTree('undoc.html','');});
 <dd><a class="anchor" id="_undoc000045"></a>  </dd>
 <dt>Global <a class="el" href="ex__utils_8c.html#af35e776de5243f4b5a3f2bbbe06d42c6">ex_swap64</a>  (int64_t v[], int64_t i, int64_t j)</dt>
 <dd><a class="anchor" id="_undoc000046"></a>  </dd>
-<dt>Global <a class="el" href="ex__utils_8c.html#a6c2fa92940d40e58f2dbd28063cd4fc2">ex_trim_internal</a>  (char *name)</dt>
-<dd><a class="anchor" id="_undoc000032"></a>  </dd>
-<dt>Global <a class="el" href="group__Utilities.html#gae356629b4b51b86cf54a498492f14f08">ex_update_max_name_length</a>  (int exoid, int length)</dt>
-<dd><a class="anchor" id="_undoc000027"></a>  </dd>
 <dt>Global <a class="el" href="ex__utils_8c.html#a2e68f6c347848990e7f9eafee4a27dda">ex_var_type_to_ex_entity_type</a>  (char var_type)</dt>
 <dd><a class="anchor" id="_undoc000036"></a> </dd>
 </dl>

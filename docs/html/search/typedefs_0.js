@@ -2,8 +2,8 @@ var searchData=
 [
   ['ex_5fblock',['ex_block',['../group__APIStructs.html#gaba1420f7a98c7bb441829dbbc1fa6ed4',1,'exodusII.h']]],
   ['ex_5fblock_5fparams',['ex_block_params',['../group__APIStructs.html#gabcda51a5f89c020efe1882eaaba88663',1,'exodusII.h']]],
-  ['ex_5fcoordinate_5fframe_5ftype',['ex_coordinate_frame_type',['../exodusII__int_8h.html#af3b5bbf443004ed823670c1a6e9e7bcb',1,'exodusII_int.h']]],
-  ['ex_5felement_5ftype',['ex_element_type',['../exodusII__int_8h.html#a55eeb5193f62fd06509e794ed901b423',1,'exodusII_int.h']]],
+  ['ex_5fcoordinate_5fframe_5ftype',['ex_coordinate_frame_type',['../group__Internal.html#gaf3b5bbf443004ed823670c1a6e9e7bcb',1,'exodusII_int.h']]],
+  ['ex_5felement_5ftype',['ex_element_type',['../group__Internal.html#ga55eeb5193f62fd06509e794ed901b423',1,'exodusII_int.h']]],
   ['ex_5fentity_5fid',['ex_entity_id',['../exodusII_8h.html#ac03e735ba54b290660f8424399684450',1,'exodusII.h']]],
   ['ex_5fentity_5ftype',['ex_entity_type',['../exodusII_8h.html#a36089ec5db710bc43db9ff7d70b38b79',1,'exodusII.h']]],
   ['ex_5finit_5fparams',['ex_init_params',['../group__APIStructs.html#ga1068d38d81d5f0aec97f9cc4cb766223',1,'exodusII.h']]],
