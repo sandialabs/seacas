@@ -34,7 +34,7 @@
  */
 
 #include "exodusII.h"     // for ex_err, etc
-#include "exodusII_int.h" // for EX_FATAL, ex_id_lkup, etc
+#include "exodusII_int.h" // for EX_FATAL, ex__id_lkup, etc
 
 /*!
 
@@ -119,7 +119,7 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid, __func__);
+  ex__check_valid_file_id(exoid, __func__);
 
   /* check if property has already been created */
 
@@ -293,10 +293,10 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
       goto error_ret; /* Exit define mode and return */
     }
 
-    ex_update_max_name_length(exoid, prop_name_len - 1);
+    ex__update_max_name_length(exoid, prop_name_len - 1);
 
     /* leave define mode  */
-    if ((status = ex_leavedef(exoid, __func__)) != NC_NOERR) {
+    if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -304,12 +304,12 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
   }
 
   /* find index into property array using obj_id; put value in property */
-  /* array at proper index; ex_id_lkup returns an index that is 1-based,*/
+  /* array at proper index; ex__id_lkup returns an index that is 1-based,*/
   /* but netcdf expects 0-based arrays so subtract 1                    */
 
   /* special case: property name ID - check for duplicate ID assignment */
   if (strcmp("ID", prop_name) == 0) {
-    int indx = ex_id_lkup(exoid, obj_type, value);
+    int indx = ex__id_lkup(exoid, obj_type, value);
     if (indx != -EX_LOOKUPFAIL) { /* found the id */
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: attempt to assign duplicate %s ID %" PRId64 " in file id %d",
@@ -319,7 +319,7 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
     }
   }
 
-  status = ex_id_lkup(exoid, obj_type, obj_id);
+  status = ex__id_lkup(exoid, obj_type, obj_id);
   if (status > 0) {
     start[0] = status - 1;
   }
@@ -358,6 +358,6 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
 error_ret:
   nc_set_fill(exoid, oldfill, &temp); /* default: nofill */
 
-  ex_leavedef(exoid, __func__);
+  ex__leavedef(exoid, __func__);
   EX_FUNC_LEAVE(EX_FATAL);
 }

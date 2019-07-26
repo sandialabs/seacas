@@ -34,7 +34,7 @@
  */
 
 #include "exodusII.h"     // for ex_err, etc
-#include "exodusII_int.h" // for ex_compress_variable, etc
+#include "exodusII_int.h" // for ex__compress_variable, etc
 
 /*! \cond INTERNAL */
 static int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_name,
@@ -157,7 +157,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
   int  status;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid, __func__);
+  ex__check_valid_file_id(exoid, __func__);
 
   /* if no variables are to be stored, return with warning */
   if (num_vars == 0) {
@@ -228,7 +228,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
       ex_err_fn(exoid, __func__, errmsg, status);
       goto error_ret; /* exit define mode and return */
     }
-    ex_compress_variable(exoid, varid, 2);
+    ex__compress_variable(exoid, varid, 2);
   }
 
   else if (obj_type == EX_NODAL) {
@@ -272,7 +272,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
         ex_err_fn(exoid, __func__, errmsg, status);
         goto error_ret; /* exit define mode and return */
       }
-      ex_compress_variable(exoid, varid, 2);
+      ex__compress_variable(exoid, varid, 2);
     }
 
     /* Now define nodal variable name variable */
@@ -348,7 +348,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
   }
 
   /* leave define mode  */
-  if ((status = ex_leavedef(exoid, __func__)) != NC_NOERR) {
+  if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -356,6 +356,6 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
 
 /* Fatal error: exit definition mode and return */
 error_ret:
-  ex_leavedef(exoid, __func__);
+  ex__leavedef(exoid, __func__);
   EX_FUNC_LEAVE(EX_FATAL);
 }

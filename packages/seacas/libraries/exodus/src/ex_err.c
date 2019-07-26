@@ -116,7 +116,7 @@ static int  last_err_num;
   \ingroup Utilities
   \undoc
 */
-void ex_reset_error_status()
+void ex__reset_error_status()
 {
 #if !defined(EXODUS_THREADSAFE)
   exerrval   = 0;
@@ -206,7 +206,7 @@ void ex_err_fn(int exoid, const char *module_name, const char *message, int err_
   if (err_num == EX_PRTLASTMSG) {
     fprintf(stderr, "\n[%s] %s\n", EX_PNAME, EX_ERRMSG);
 
-    struct ex_file_item *file = ex_find_file_item(exoid);
+    struct ex_file_item *file = ex__find_file_item(exoid);
     if (file) {
       size_t pathlen = 0;
       nc_inq_path(exoid, &pathlen, NULL);
@@ -245,7 +245,7 @@ void ex_err_fn(int exoid, const char *module_name, const char *message, int err_
 
   else if (exoptval & EX_VERBOSE) { /* check see if we really want to hear this */
     char *               path = NULL;
-    struct ex_file_item *file = ex_find_file_item(exoid);
+    struct ex_file_item *file = ex__find_file_item(exoid);
     if (file) {
       size_t pathlen = 0;
       nc_inq_path(exoid, &pathlen, NULL);

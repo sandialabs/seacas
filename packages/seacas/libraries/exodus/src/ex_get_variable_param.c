@@ -106,7 +106,7 @@ int ex_get_variable_param(int exoid, ex_entity_type obj_type, int *num_vars)
   int         status;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid, __func__);
+  ex__check_valid_file_id(exoid, __func__);
 
   *num_vars = 0;
 

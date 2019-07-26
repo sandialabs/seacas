@@ -34,7 +34,7 @@
  */
 
 #include "exodusII.h"     // for ex_err, etc
-#include "exodusII_int.h" // for EX_FATAL, ex_trim_internal, etc
+#include "exodusII_int.h" // for EX_FATAL, ex__trim, etc
 
 /*!
   \ingroup Utilities
@@ -83,7 +83,7 @@ int ex_get_info(int exoid, char **info)
   int rootid = exoid & EX_FILE_ID_MASK;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid, __func__);
+  ex__check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined dimensions and variables  */
   if ((status = nc_inq_dimid(rootid, DIM_NUM_INFO, &dimid)) != NC_NOERR) {
@@ -123,7 +123,7 @@ int ex_get_info(int exoid, char **info)
         EX_FUNC_LEAVE(EX_FATAL);
       }
       info[i][MAX_LINE_LENGTH] = '\0';
-      ex_trim_internal(info[i]);
+      ex__trim(info[i]);
     }
   }
   EX_FUNC_LEAVE(EX_NOERR);

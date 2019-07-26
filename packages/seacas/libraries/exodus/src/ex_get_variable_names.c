@@ -98,7 +98,7 @@ int ex_get_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
   const char *vvarname;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid, __func__);
+  ex__check_valid_file_id(exoid, __func__);
 
   switch (obj_type) {
   case EX_NODAL: vvarname = VAR_NAME_NOD_VAR; break;
@@ -127,7 +127,7 @@ int ex_get_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
   }
 
   /* read the variable names */
-  status = ex_get_names_internal(exoid, varid, num_vars, var_names, obj_type, __func__);
+  status = ex__get_names(exoid, varid, num_vars, var_names, obj_type, __func__);
   if (status != NC_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
