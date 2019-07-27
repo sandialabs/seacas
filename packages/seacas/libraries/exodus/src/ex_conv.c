@@ -46,7 +46,7 @@
  *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
-#include "exodusII_int.h" // for ex_file_item, EX_FATAL, etc
+#include "exodusII_int.h" // for ex__file_item, EX_FATAL, etc
 
 /*! \file
  * this file contains code needed to support the various floating point word
@@ -62,13 +62,13 @@
 
 #define NC_FLOAT_WORDSIZE 4
 
-static struct ex_file_item *file_list = NULL;
+static struct ex__file_item *file_list = NULL;
 
-struct ex_file_item *ex__find_file_item(int exoid)
+struct ex__file_item *ex__find_file_item(int exoid)
 {
   /* Find base filename in case exoid refers to a group */
-  int                  base_exoid = (unsigned)exoid & EX_FILE_ID_MASK;
-  struct ex_file_item *ptr        = file_list;
+  int                   base_exoid = (unsigned)exoid & EX_FILE_ID_MASK;
+  struct ex__file_item *ptr        = file_list;
   while (ptr) {
     if (ptr->file_id == base_exoid) {
       break;
@@ -86,7 +86,7 @@ void ex__check_valid_file_id(int exoid, const char *func)
   }
 #if !defined BUILT_IN_SIERRA
   else {
-    struct ex_file_item *file = ex__find_file_item(exoid);
+    struct ex__file_item *file = ex__find_file_item(exoid);
 
     if (!file) {
       error = 1;
@@ -110,9 +110,9 @@ void ex__check_valid_file_id(int exoid, const char *func)
 int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
                   int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf)
 {
-  char                 errmsg[MAX_ERR_LENGTH];
-  struct ex_file_item *new_file;
-  int                  filetype = 0;
+  char                  errmsg[MAX_ERR_LENGTH];
+  struct ex__file_item *new_file;
+  int                   filetype = 0;
 
   /*! ex__conv_init() initializes the floating point conversion process.
    *
@@ -220,7 +220,7 @@ int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
 
   nc_inq_format(exoid, &filetype);
 
-  if (!(new_file = malloc(sizeof(struct ex_file_item)))) {
+  if (!(new_file = malloc(sizeof(struct ex__file_item)))) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to allocate memory for internal file "
              "structure storage file id %d",
@@ -274,9 +274,9 @@ int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
 void ex__conv_exit(int exoid)
 {
 
-  char                 errmsg[MAX_ERR_LENGTH];
-  struct ex_file_item *file = file_list;
-  struct ex_file_item *prev = NULL;
+  char                  errmsg[MAX_ERR_LENGTH];
+  struct ex__file_item *file = file_list;
+  struct ex__file_item *prev = NULL;
 
   EX_FUNC_ENTER();
   while (file) {
@@ -319,7 +319,7 @@ nc_type nc_flt_code(int exoid)
    * "exoid" is some integer which uniquely identifies the file of interest.
    */
   EX_FUNC_ENTER();
-  struct ex_file_item *file = ex__find_file_item(exoid);
+  struct ex__file_item *file = ex__find_file_item(exoid);
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
@@ -352,7 +352,7 @@ int ex_int64_status(int exoid)
      EX_ALL_INT64_API   (EX_MAPS_INT64_API|EX_IDS_INT64_API|EX_BULK_INT64_API)
   */
   EX_FUNC_ENTER();
-  struct ex_file_item *file = ex__find_file_item(exoid);
+  struct ex__file_item *file = ex__find_file_item(exoid);
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
@@ -384,7 +384,7 @@ int ex_set_int64_status(int exoid, int mode)
   int db_mode  = 0;
 
   EX_FUNC_ENTER();
-  struct ex_file_item *file = ex__find_file_item(exoid);
+  struct ex__file_item *file = ex__find_file_item(exoid);
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
@@ -408,7 +408,7 @@ int ex_set_int64_status(int exoid, int mode)
 int ex_set_option(int exoid, ex_option_type option, int option_value)
 {
   EX_FUNC_ENTER();
-  struct ex_file_item *file = ex__find_file_item(exoid);
+  struct ex__file_item *file = ex__find_file_item(exoid);
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_set_option().", exoid);
@@ -461,7 +461,7 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
  */
 int ex__comp_ws(int exoid)
 {
-  struct ex_file_item *file = ex__find_file_item(exoid);
+  struct ex__file_item *file = ex__find_file_item(exoid);
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
@@ -484,7 +484,7 @@ int ex__comp_ws(int exoid)
 int ex__is_parallel(int exoid)
 {
   EX_FUNC_ENTER();
-  struct ex_file_item *file = ex__find_file_item(exoid);
+  struct ex__file_item *file = ex__find_file_item(exoid);
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
@@ -511,8 +511,8 @@ int ex__is_parallel(int exoid)
 int ex_set_parallel(int exoid, int is_parallel)
 {
   EX_FUNC_ENTER();
-  int                  old_value = 0;
-  struct ex_file_item *file      = ex__find_file_item(exoid);
+  int                   old_value = 0;
+  struct ex__file_item *file      = ex__find_file_item(exoid);
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];

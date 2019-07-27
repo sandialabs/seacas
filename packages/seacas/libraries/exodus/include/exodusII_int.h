@@ -103,7 +103,9 @@ extern "C" {
 #endif
 
 /**
- * \defgroup Internal Variables and functions used internally in the library
+ * \defgroup Internal Internal Functions and Defines
+ *
+ * Variables and functions used internally in the library
  *@{
  */
 #define MAX_VAR_NAME_LENGTH 32 /**< Internal use only */
@@ -699,7 +701,7 @@ EXODUS_EXPORT int indent;
 #define DIM_NCNT_CMAP "ncnt_cmap"
 #define DIM_ECNT_CMAP "ecnt_cmap"
 
-enum ex_element_type {
+enum ex__element_type {
   EX_EL_UNK          = -1, /**< unknown entity */
   EX_EL_NULL_ELEMENT = 0,
   EX_EL_TRIANGLE     = 1,  /**< Triangle entity */
@@ -715,14 +717,11 @@ enum ex_element_type {
   EX_EL_TRISHELL     = 11, /**< Triangular Shell entity */
   EX_EL_PYRAMID      = 12  /**< Pyramid entity */
 };
-typedef enum ex_element_type ex_element_type;
-
-enum ex_coordinate_frame_type { EX_CF_RECTANGULAR = 1, EX_CF_CYLINDRICAL = 2, EX_CF_SPHERICAL = 3 };
-typedef enum ex_coordinate_frame_type ex_coordinate_frame_type;
+typedef enum ex__element_type ex__element_type;
 
 /* Internal structure declarations */
 
-struct ex_file_item
+struct ex__file_item
 {
   int     file_id;
   nc_type netcdf_type_code;
@@ -734,28 +733,28 @@ struct ex_file_item
   unsigned int user_compute_wordsize : 1; /* 0 for 4 byte or 1 for 8 byte reals */
   unsigned int shuffle : 1;               /* 1 true, 0 false */
   unsigned int
-                       file_type : 2; /* 0 - classic, 1 -- 64 bit classic, 2 --netcdf4,  3 --netcdf4 classic */
-  unsigned int         is_parallel : 1; /* 1 true, 0 false */
-  unsigned int         is_hdf5 : 1;     /* 1 true, 0 false */
-  unsigned int         is_pnetcdf : 1;  /* 1 true, 0 false */
-  unsigned int         has_nodes : 1;   /* for input only at this time */
-  unsigned int         has_edges : 1;   /* for input only at this time */
-  unsigned int         has_faces : 1;   /* for input only at this time */
-  unsigned int         has_elems : 1;   /* for input only at this time */
-  struct ex_file_item *next;
+                        file_type : 2; /* 0 - classic, 1 -- 64 bit classic, 2 --netcdf4,  3 --netcdf4 classic */
+  unsigned int          is_parallel : 1; /* 1 true, 0 false */
+  unsigned int          is_hdf5 : 1;     /* 1 true, 0 false */
+  unsigned int          is_pnetcdf : 1;  /* 1 true, 0 false */
+  unsigned int          has_nodes : 1;   /* for input only at this time */
+  unsigned int          has_edges : 1;   /* for input only at this time */
+  unsigned int          has_faces : 1;   /* for input only at this time */
+  unsigned int          has_elems : 1;   /* for input only at this time */
+  struct ex__file_item *next;
 };
 
 struct elem_blk_parm
 {
-  char            elem_type[33];
-  int64_t         elem_blk_id;
-  int64_t         num_elem_in_blk;
-  int             num_nodes_per_elem;
-  int             num_sides;
-  int             num_nodes_per_side[6];
-  int             num_attr;
-  int64_t         elem_ctr;
-  ex_element_type elem_type_val;
+  char             elem_type[33];
+  int64_t          elem_blk_id;
+  int64_t          num_elem_in_blk;
+  int              num_nodes_per_elem;
+  int              num_sides;
+  int              num_nodes_per_side[6];
+  int              num_attr;
+  int64_t          elem_ctr;
+  ex__element_type elem_type_val;
 };
 
 struct list_item
@@ -796,7 +795,7 @@ int     ex__comp_ws(int exoid);
 int     ex__get_cpu_ws(void);
 int     ex__is_parallel(int exoid);
 
-struct list_item **ex_get_counter_list(ex_entity_type obj_type);
+struct list_item **ex__get_counter_list(ex_entity_type obj_type);
 int                ex__get_file_item(int /*exoid*/, struct list_item ** /*list_ptr*/);
 int                ex__inc_file_item(int /*exoid*/, struct list_item ** /*list_ptr*/);
 void               ex__rm_file_item(int /*exoid*/, struct list_item ** /*list_ptr*/);
@@ -814,9 +813,9 @@ extern struct obj_stats *exoII_edm;
 extern struct obj_stats *exoII_fam;
 extern struct obj_stats *exoII_nm;
 
-struct ex_file_item *ex__find_file_item(int exoid);
-struct ex_file_item *ex__add_file_item(int exoid);
-struct obj_stats *   ex__get_stat_ptr(int exoid, struct obj_stats **obj_ptr);
+struct ex__file_item *ex__find_file_item(int exoid);
+struct ex__file_item *ex__add_file_item(int exoid);
+struct obj_stats *    ex__get_stat_ptr(int exoid, struct obj_stats **obj_ptr);
 
 void ex__rm_stat_ptr(int exoid, struct obj_stats **obj_ptr);
 
@@ -867,14 +866,11 @@ int ex__populate_header(int exoid, const char *path, int my_mode, int is_paralle
 
 int ex__get_block_param(int exoid, ex_entity_id id, int ndim, struct elem_blk_parm *elem_blk_parm);
 
-int ex__get_file_type(int   exoid, /* NetCDF/Exodus file ID */
-                      char *ftype  /* Nemesis file type */
-);
+int ex__get_file_type(int exoid, char *ftype);
 
-int ex__put_nemesis_version(int exoid); /* NetCDF/Exodus file ID */
+int ex__put_nemesis_version(int exoid);
 
-int ne_check_file_version(int neid /* NetCDF/Exodus file ID */
-);
+int ne__check_file_version(int neid);
 
 int ne_id_lkup(int          exoid,       /* NetCDF/Exodus file ID */
                const char * ne_var_name, /* Nemesis variable name */

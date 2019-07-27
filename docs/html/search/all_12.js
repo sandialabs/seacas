@@ -2,7 +2,6 @@ var searchData=
 [
   ['variables_20controlling_20the_20compression_2c_20name_20size_2c_20and_20integer_20size_2e',['Variables controlling the compression, name size, and integer size.',['../group__FileOptions.html',1,'']]],
   ['variables_20controlling_20the_20file_20creation_20mode_2e',['Variables controlling the file creation mode.',['../group__FileVars.html',1,'']]],
-  ['variables_20and_20functions_20used_20internally_20in_20the_20library',['Variables and functions used internally in the library',['../group__Internal.html',1,'']]],
   ['valid_5fids',['valid_ids',['../structobj__stats.html#abe12ee8b8ad80d32bc9c2044e2cd2386',1,'obj_stats']]],
   ['valid_5fstat',['valid_stat',['../structobj__stats.html#a20d1d15cd2518ae027ac6daf43370c33',1,'obj_stats']]],
   ['value',['value',['../structlist__item.html#a942b621521bcef52f811123db796dafc',1,'list_item']]],

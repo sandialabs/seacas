@@ -347,7 +347,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       eb_id = edge_id_int[iblk];
     }
 
-    cur_num_edge_blk = ex__get_file_item(exoid, ex_get_counter_list(EX_EDGE_BLOCK));
+    cur_num_edge_blk = ex__get_file_item(exoid, ex__get_counter_list(EX_EDGE_BLOCK));
     if (cur_num_edge_blk >= (int)num_edge_blk) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: exceeded number of edge blocks (%ld) defined in file id %d",
@@ -358,7 +358,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
 
     /* NOTE: ex__inc_file_item  is used to find the number of edge blocks
        for a specific file and returns that value incremented. */
-    cur_num_edge_blk = ex__inc_file_item(exoid, ex_get_counter_list(EX_EDGE_BLOCK));
+    cur_num_edge_blk = ex__inc_file_item(exoid, ex__get_counter_list(EX_EDGE_BLOCK));
 
     if (param->num_edge_this_blk[iblk] == 0) { /* Is this a NULL edge block? */
       continue;
@@ -415,7 +415,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       fb_id = face_id_int[iblk];
     }
 
-    cur_num_face_blk = ex__get_file_item(exoid, ex_get_counter_list(EX_FACE_BLOCK));
+    cur_num_face_blk = ex__get_file_item(exoid, ex__get_counter_list(EX_FACE_BLOCK));
     if (cur_num_face_blk >= (int)num_face_blk) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: exceeded number of face blocks (%ld) defined in file id %d",
@@ -426,7 +426,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
 
     /* NOTE: ex__inc_file_item  is used to find the number of edge blocks
        for a specific file and returns that value incremented. */
-    cur_num_face_blk = ex__inc_file_item(exoid, ex_get_counter_list(EX_FACE_BLOCK));
+    cur_num_face_blk = ex__inc_file_item(exoid, ex__get_counter_list(EX_FACE_BLOCK));
 
     if (param->num_face_this_blk[iblk] == 0) { /* Is this a NULL face block? */
       continue;
@@ -483,7 +483,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       eb_id = elem_id_int[iblk];
     }
 
-    cur_num_elem_blk = ex__get_file_item(exoid, ex_get_counter_list(EX_ELEM_BLOCK));
+    cur_num_elem_blk = ex__get_file_item(exoid, ex__get_counter_list(EX_ELEM_BLOCK));
     if (cur_num_elem_blk >= (int)num_elem_blk) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: exceeded number of element blocks (%ld) defined "
@@ -495,7 +495,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
 
     /* NOTE: ex__inc_file_item  is used to find the number of element blocks
        for a specific file and returns that value incremented. */
-    cur_num_elem_blk = ex__inc_file_item(exoid, ex_get_counter_list(EX_ELEM_BLOCK));
+    cur_num_elem_blk = ex__inc_file_item(exoid, ex__get_counter_list(EX_ELEM_BLOCK));
 
     if (param->num_elem_this_blk[iblk] == 0) { /* Is this a NULL element block? */
       continue;

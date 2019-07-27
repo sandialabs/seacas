@@ -218,7 +218,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
        NOTE: ex__get_file_item  is used to find the number of sets of type
        for a specific file and returns that value.
     */
-    cur_num_sets = ex__get_file_item(exoid, ex_get_counter_list(set_type));
+    cur_num_sets = ex__get_file_item(exoid, ex__get_counter_list(set_type));
     if (cur_num_sets >= num_sets) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: exceeded number of %ss (%d) defined in file id %d",
                ex_name_of_object(set_type), num_sets, exoid);
@@ -229,7 +229,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
     /*   NOTE: ex__inc_file_item  is used to find the number of sets
          for a specific file and returns that value incremented. */
 
-    cur_num_sets = ex__inc_file_item(exoid, ex_get_counter_list(set_type));
+    cur_num_sets = ex__inc_file_item(exoid, ex__get_counter_list(set_type));
     set_id_ndx   = cur_num_sets + 1;
 
     /* setup more pointers based on set_type */

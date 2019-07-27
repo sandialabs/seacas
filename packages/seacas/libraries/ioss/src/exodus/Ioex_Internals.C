@@ -702,8 +702,8 @@ int Internals::initialize_state_file(Mesh &mesh, const ex_var_params &var_params
       return (EX_FATAL);
     }
 
-    struct ex_file_item *file = ex__find_file_item(exodusFilePtr);
-    file->time_varid          = varid;
+    struct ex__file_item *file = ex__find_file_item(exodusFilePtr);
+    file->time_varid           = varid;
 
     ex__compress_variable(exodusFilePtr, varid, 2);
   } // Exit redefine mode
@@ -1210,8 +1210,8 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     return (EX_FATAL);
   }
   {
-    struct ex_file_item *file = ex__find_file_item(exodusFilePtr);
-    file->time_varid          = varid;
+    struct ex__file_item *file = ex__find_file_item(exodusFilePtr);
+    file->time_varid           = varid;
   }
 
   ex__compress_variable(exodusFilePtr, varid, 2);
@@ -1744,7 +1744,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks, bool count_onl
 
   // Iterate over blocks ...
   for (size_t iblk = 0; iblk < num_elem_blk; iblk++) {
-    ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_ELEM_BLOCK));
+    ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_ELEM_BLOCK));
 
     if (blocks[iblk].entityCount == 0) {
       continue;
@@ -1909,7 +1909,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks, bool count_onl
       // mode for netcdf-4-based output.  If the number of attribues >
       // 1 and in parallel mode, set the mode to independent.
       if (blocks[iblk].attributeCount > 1) {
-        struct ex_file_item *file = ex__find_file_item(exodusFilePtr);
+        struct ex__file_item *file = ex__find_file_item(exodusFilePtr);
         if (file->is_parallel && file->is_hdf5) {
           nc_var_par_access(exodusFilePtr, varid, NC_INDEPENDENT);
         }
@@ -1979,7 +1979,7 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks, bool count_onl
 
   // Iterate over blocks ...
   for (size_t iblk = 0; iblk < num_face_blk; iblk++) {
-    ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_FACE_BLOCK));
+    ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_FACE_BLOCK));
 
     if (blocks[iblk].entityCount == 0) {
       continue;
@@ -2137,7 +2137,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks, bool count_onl
 
   // Iterate over blocks ...
   for (size_t iblk = 0; iblk < num_edge_blk; iblk++) {
-    ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_EDGE_BLOCK));
+    ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_EDGE_BLOCK));
 
     if (blocks[iblk].entityCount == 0) {
       continue;
@@ -2674,7 +2674,7 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets, bool count_onl
 
     //  NOTE: ex__inc_file_item is used to find the number of node sets
     // for a specific file and returns that value incremented.
-    int cur_num_node_sets = ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_NODE_SET));
+    int cur_num_node_sets = ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_NODE_SET));
 
     if (nodesets[i].entityCount == 0) {
       continue;
@@ -2849,7 +2849,7 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets, bool count_onl
 
     //  NOTE: ex__inc_file_item is used to find the number of edge sets
     // for a specific file and returns that value incremented.
-    int cur_num_edge_sets = ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_EDGE_SET));
+    int cur_num_edge_sets = ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_EDGE_SET));
 
     if (edgesets[i].entityCount == 0) {
       continue;
@@ -3040,7 +3040,7 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets, bool count_onl
 
     //  NOTE: ex__inc_file_item is used to find the number of face sets
     // for a specific file and returns that value incremented.
-    int cur_num_face_sets = ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_FACE_SET));
+    int cur_num_face_sets = ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_FACE_SET));
 
     if (facesets[i].entityCount == 0) {
       continue;
@@ -3228,7 +3228,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
 
     //  NOTE: ex__inc_file_item is used to find the number of elem sets
     // for a specific file and returns that value incremented.
-    int cur_num_elem_sets = ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_ELEM_SET));
+    int cur_num_elem_sets = ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_ELEM_SET));
 
     if (elemsets[i].entityCount == 0) {
       continue;
@@ -3511,7 +3511,7 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets, bool count_onl
 
     //  NOTE: ex__inc_file_item is used to find the number of side sets
     // for a specific file and returns that value incremented.
-    int cur_num_side_sets = ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_SIDE_SET));
+    int cur_num_side_sets = ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_SIDE_SET));
 
     if (sidesets[i].entityCount == 0) {
       continue;

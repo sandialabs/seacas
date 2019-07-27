@@ -211,9 +211,9 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
     info->title[0] = '\0';
   }
 
-  /* Update settings in ex_file_item struct */
+  /* Update settings in ex__file_item struct */
   {
-    struct ex_file_item *file = ex__find_file_item(exoid);
+    struct ex__file_item *file = ex__find_file_item(exoid);
     if (file) {
       file->has_nodes = info->num_nodes > 0;
       file->has_edges = info->num_edge > 0;

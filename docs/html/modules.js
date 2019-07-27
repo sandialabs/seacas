@@ -8,5 +8,5 @@ var modules =
     [ "maximum string lengths;", "group__StringLengths.html", "group__StringLengths" ],
     [ "Structures used by external API functions.", "group__APIStructs.html", "group__APIStructs" ],
     [ "Exodus error return codes - exerrval return values", "group__ErrorReturnCodes.html", "group__ErrorReturnCodes" ],
-    [ "Variables and functions used internally in the library", "group__Internal.html", "group__Internal" ]
+    [ "Internal Functions and Defines", "group__Internal.html", "group__Internal" ]
 ];

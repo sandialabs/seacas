@@ -207,7 +207,7 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
       num_attr = ((int *)num_attr_this_blk)[iblk];
     }
 
-    cur_num_elem_blk = ex__get_file_item(exoid, ex_get_counter_list(EX_ELEM_BLOCK));
+    cur_num_elem_blk = ex__get_file_item(exoid, ex__get_counter_list(EX_ELEM_BLOCK));
     if (cur_num_elem_blk >= num_elem_blk) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: exceeded number of element blocks (%d) defined in file id %d", num_elem_blk,
@@ -218,7 +218,7 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
 
     /* NOTE: ex__inc_file_item  is used to find the number of element blocks
        for a specific file and returns that value incremented. */
-    cur_num_elem_blk = ex__inc_file_item(exoid, ex_get_counter_list(EX_ELEM_BLOCK));
+    cur_num_elem_blk = ex__inc_file_item(exoid, ex__get_counter_list(EX_ELEM_BLOCK));
 
     if (eb_array[iblk] == 0) { /* Is this a NULL element block? */
       continue;
