@@ -206,7 +206,7 @@ void ex_err_fn(int exoid, const char *module_name, const char *message, int err_
   if (err_num == EX_PRTLASTMSG) {
     fprintf(stderr, "\n[%s] %s\n", EX_PNAME, EX_ERRMSG);
 
-    struct ex_file_item *file = ex__find_file_item(exoid);
+    struct ex__file_item *file = ex__find_file_item(exoid);
     if (file) {
       size_t pathlen = 0;
       nc_inq_path(exoid, &pathlen, NULL);
@@ -244,8 +244,8 @@ void ex_err_fn(int exoid, const char *module_name, const char *message, int err_
   }
 
   else if (exoptval & EX_VERBOSE) { /* check see if we really want to hear this */
-    char *               path = NULL;
-    struct ex_file_item *file = ex__find_file_item(exoid);
+    char *                path = NULL;
+    struct ex__file_item *file = ex__find_file_item(exoid);
     if (file) {
       size_t pathlen = 0;
       nc_inq_path(exoid, &pathlen, NULL);

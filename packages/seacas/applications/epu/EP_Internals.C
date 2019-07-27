@@ -624,7 +624,7 @@ template <typename INT> int Excn::Internals<INT>::put_metadata(const std::vector
   // Iterate over element blocks ...
   for (size_t iblk = 0; iblk < num_elem_blk; iblk++) {
 
-    ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_ELEM_BLOCK));
+    ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_ELEM_BLOCK));
 
     if (blocks[iblk].elementCount == 0) {
       continue;
@@ -813,7 +813,8 @@ int Excn::Internals<INT>::put_metadata(const std::vector<NodeSet<INT>> &nodesets
 
     //  NOTE: ex__inc_file_item is used to find the number of node sets
     // for a specific file and returns that value incremented.
-    int cur_num_node_sets = (int)ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_NODE_SET));
+    int cur_num_node_sets =
+        (int)ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_NODE_SET));
 
     if (nodesets[i].nodeCount == 0) {
       continue;
@@ -964,7 +965,8 @@ int Excn::Internals<INT>::put_metadata(const std::vector<SideSet<INT>> &sidesets
 
     //  NOTE: ex__inc_file_item is used to find the number of side sets
     // for a specific file and returns that value incremented.
-    int cur_num_side_sets = (int)ex__inc_file_item(exodusFilePtr, ex_get_counter_list(EX_SIDE_SET));
+    int cur_num_side_sets =
+        (int)ex__inc_file_item(exodusFilePtr, ex__get_counter_list(EX_SIDE_SET));
 
     if (sidesets[i].sideCount == 0) {
       continue;

@@ -222,7 +222,7 @@ an integer which can be and'ed with the above flags to determine
 either the storage type or function parameter type.
 
 For example, if
-`(#EX_MAPS_INT64_DB & ex_int64_status(exoid))` is true, then map data is
+`(#EX_MAPS_INT64_DB & ex_int64_status()(exoid))` is true, then map data is
 being stored as 64-bit integers for that database.
 
 It is not possible to determine the integer data size on a database

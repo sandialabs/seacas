@@ -42,7 +42,7 @@
  *     ne_id_lkup()
  *     ex__get_file_type()
  *     ex__put_nemesis_version()
- *     ne_check_file_version()
+ *     ne__check_file_version()
  *     ex_get_idx()
  *
  *****************************************************************************
@@ -221,7 +221,7 @@ int ex__put_nemesis_version(int exoid)
 /* This function checks that the version info is correct.
  */
 /*****************************************************************************/
-int ne_check_file_version(int exoid)
+int ne__check_file_version(int exoid)
 {
 #if 0
   float  file_ver;

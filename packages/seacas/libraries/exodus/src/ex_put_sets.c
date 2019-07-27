@@ -136,12 +136,12 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
       if (sets_to_define[i] > 0) {
         /*   NOTE: ex__inc_file_item finds the current number of sets defined
              for a specific file and returns that value incremented. */
-        cur_num_sets      = ex__inc_file_item(exoid, ex_get_counter_list(sets[i].type));
+        cur_num_sets      = ex__inc_file_item(exoid, ex__get_counter_list(sets[i].type));
         set_id_ndx        = cur_num_sets + 1;
         sets_to_define[i] = set_id_ndx;
       }
       else {
-        cur_num_sets      = ex__get_file_item(exoid, ex_get_counter_list(sets[i].type));
+        cur_num_sets      = ex__get_file_item(exoid, ex__get_counter_list(sets[i].type));
         set_id_ndx        = cur_num_sets - set_count + i + 1;
         sets_to_define[i] = set_id_ndx;
       }

@@ -145,7 +145,7 @@ int ex_put_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, cons
      NOTE: ex__get_file_item  is used to find the number of maps
      for a specific file and returns that value.
   */
-  cur_num_maps = ex__get_file_item(exoid, ex_get_counter_list(map_type));
+  cur_num_maps = ex__get_file_item(exoid, ex__get_counter_list(map_type));
   if (cur_num_maps >= num_maps) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: exceeded number of %ss (%d) specified in file id %d",
              ex_name_of_object(map_type), num_maps, exoid);
@@ -155,7 +155,7 @@ int ex_put_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, cons
 
   /*   NOTE: ex__inc_file_item  is used to find the number of maps
        for a specific file and returns that value incremented. */
-  cur_num_maps = ex__inc_file_item(exoid, ex_get_counter_list(map_type));
+  cur_num_maps = ex__inc_file_item(exoid, ex__get_counter_list(map_type));
 
   /* write out information to previously defined variable */
 

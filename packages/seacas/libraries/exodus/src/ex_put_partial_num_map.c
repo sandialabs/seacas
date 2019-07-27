@@ -140,7 +140,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
        ex__get_file_item is used to find the number of element maps for a
        specific file and returns that value.
     */
-    cur_num_maps = ex__get_file_item(exoid, ex_get_counter_list(map_type));
+    cur_num_maps = ex__get_file_item(exoid, ex__get_counter_list(map_type));
     if (cur_num_maps >= (int)num_maps) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: exceeded number of %ss (%" ST_ZU ") specified in file id %d",
@@ -151,7 +151,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
 
     /*   NOTE: ex__inc_file_item  is used to find the number of element maps
          for a specific file and returns that value incremented. */
-    cur_num_maps = ex__inc_file_item(exoid, ex_get_counter_list(map_type));
+    cur_num_maps = ex__inc_file_item(exoid, ex__get_counter_list(map_type));
   }
   else {
     map_ndx      = ex__id_lkup(exoid, map_type, map_id);

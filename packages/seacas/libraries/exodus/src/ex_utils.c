@@ -1058,7 +1058,7 @@ static struct list_item *em_ctr_list  = 0; /* element maps */
   \internal
   \undoc
 */
-struct list_item **ex_get_counter_list(ex_entity_type obj_type)
+struct list_item **ex__get_counter_list(ex_entity_type obj_type)
 {
   /* Thread-safe, but is dealing with globals */
   /* Only called from a routine which will be using locks */
@@ -1645,7 +1645,7 @@ void ex__compress_variable(int exoid, int varid, int type)
 {
 #if NC_HAS_HDF5
 
-  struct ex_file_item *file = ex__find_file_item(exoid);
+  struct ex__file_item *file = ex__find_file_item(exoid);
 
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];

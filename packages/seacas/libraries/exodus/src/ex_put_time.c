@@ -77,11 +77,11 @@ error = ex_put_time (exoid, n, &time_value);
 
 int ex_put_time(int exoid, int time_step, const void *time_value)
 {
-  int                  status;
-  int                  varid;
-  size_t               start[1];
-  char                 errmsg[MAX_ERR_LENGTH];
-  struct ex_file_item *file = NULL;
+  int                   status;
+  int                   varid;
+  size_t                start[1];
+  char                  errmsg[MAX_ERR_LENGTH];
+  struct ex__file_item *file = NULL;
 
   EX_FUNC_ENTER();
 

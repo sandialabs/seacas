@@ -160,7 +160,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
        NOTE: ex__get_file_item  is a function that finds the number of element
        blocks for a specific file and returns that value.
     */
-    cur_num_blk = ex__get_file_item(exoid, ex_get_counter_list(blocks[i].type));
+    cur_num_blk = ex__get_file_item(exoid, ex__get_counter_list(blocks[i].type));
     if (cur_num_blk >= (int)num_blk) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: exceeded number of %ss (%d) defined in file id %d",
                ex_name_of_object(blocks[i].type), (int)num_blk, exoid);
@@ -171,7 +171,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
 
     /*   NOTE: ex__inc_file_item  is a function that finds the number of element
          blocks for a specific file and returns that value incremented. */
-    cur_num_blk = ex__inc_file_item(exoid, ex_get_counter_list(blocks[i].type));
+    cur_num_blk = ex__inc_file_item(exoid, ex__get_counter_list(blocks[i].type));
     start[0]    = cur_num_blk;
 
     /* write out block id to previously defined id array variable*/
@@ -350,7 +350,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
        * 1 and in parallel mode, set the mode to independent.
        */
       if (blocks[i].num_attribute > 1) {
-        struct ex_file_item *file = ex__find_file_item(exoid);
+        struct ex__file_item *file = ex__find_file_item(exoid);
         if (file->is_parallel && file->is_hdf5) {
           nc_var_par_access(exoid, varid, NC_INDEPENDENT);
         }

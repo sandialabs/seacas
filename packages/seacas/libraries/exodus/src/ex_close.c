@@ -48,7 +48,7 @@
  *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
-#include "exodusII_int.h" // for ex_get_counter_list, etc
+#include "exodusII_int.h" // for ex__get_counter_list, etc
 
 /*!
 \ingroup Utilities
@@ -116,18 +116,18 @@ int ex_close(int exoid)
    * internal datastructures.
    */
 
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_ELEM_BLOCK));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_FACE_BLOCK));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_EDGE_BLOCK));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_NODE_SET));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_EDGE_SET));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_FACE_SET));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_SIDE_SET));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_ELEM_SET));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_NODE_MAP));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_EDGE_MAP));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_FACE_MAP));
-  ex__rm_file_item(exoid, ex_get_counter_list(EX_ELEM_MAP));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_ELEM_BLOCK));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_FACE_BLOCK));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_EDGE_BLOCK));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_NODE_SET));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_EDGE_SET));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_FACE_SET));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_SIDE_SET));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_ELEM_SET));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_NODE_MAP));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_EDGE_MAP));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_FACE_MAP));
+  ex__rm_file_item(exoid, ex__get_counter_list(EX_ELEM_MAP));
 
   ex__rm_stat_ptr(exoid, &exoII_ed);
   ex__rm_stat_ptr(exoid, &exoII_fa);

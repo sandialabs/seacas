@@ -291,7 +291,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
      * default if not set by the client is 32 characters. The value
      * does not include the trailing null.
      */
-    struct ex_file_item *file = ex__find_file_item(rootid);
+    struct ex__file_item *file = ex__find_file_item(rootid);
 
     if (!file) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_inquire_int().", rootid);

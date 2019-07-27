@@ -299,8 +299,8 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     goto error_ret;
   }
   {
-    struct ex_file_item *file = ex__find_file_item(exoid);
-    file->time_varid          = temp;
+    struct ex__file_item *file = ex__find_file_item(exoid);
+    file->time_varid           = temp;
   }
   ex__compress_variable(exoid, temp, 2);
 

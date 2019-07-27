@@ -34,7 +34,7 @@
  */
 
 #include "exodusII.h"     // for EX_FATAL, exerrval, ex_err, etc
-#include "exodusII_int.h" // for ex_get_counter_list, etc
+#include "exodusII_int.h" // for ex__get_counter_list, etc
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -817,20 +817,20 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large)
 /*! \internal */
 void update_structs(int out_exoid)
 {
-  update_internal_structs(out_exoid, EX_INQ_EDGE_BLK, ex_get_counter_list(EX_EDGE_BLOCK));
-  update_internal_structs(out_exoid, EX_INQ_FACE_BLK, ex_get_counter_list(EX_FACE_BLOCK));
-  update_internal_structs(out_exoid, EX_INQ_ELEM_BLK, ex_get_counter_list(EX_ELEM_BLOCK));
+  update_internal_structs(out_exoid, EX_INQ_EDGE_BLK, ex__get_counter_list(EX_EDGE_BLOCK));
+  update_internal_structs(out_exoid, EX_INQ_FACE_BLK, ex__get_counter_list(EX_FACE_BLOCK));
+  update_internal_structs(out_exoid, EX_INQ_ELEM_BLK, ex__get_counter_list(EX_ELEM_BLOCK));
 
-  update_internal_structs(out_exoid, EX_INQ_NODE_SETS, ex_get_counter_list(EX_NODE_SET));
-  update_internal_structs(out_exoid, EX_INQ_EDGE_SETS, ex_get_counter_list(EX_EDGE_SET));
-  update_internal_structs(out_exoid, EX_INQ_FACE_SETS, ex_get_counter_list(EX_FACE_SET));
-  update_internal_structs(out_exoid, EX_INQ_SIDE_SETS, ex_get_counter_list(EX_SIDE_SET));
-  update_internal_structs(out_exoid, EX_INQ_ELEM_SETS, ex_get_counter_list(EX_ELEM_SET));
+  update_internal_structs(out_exoid, EX_INQ_NODE_SETS, ex__get_counter_list(EX_NODE_SET));
+  update_internal_structs(out_exoid, EX_INQ_EDGE_SETS, ex__get_counter_list(EX_EDGE_SET));
+  update_internal_structs(out_exoid, EX_INQ_FACE_SETS, ex__get_counter_list(EX_FACE_SET));
+  update_internal_structs(out_exoid, EX_INQ_SIDE_SETS, ex__get_counter_list(EX_SIDE_SET));
+  update_internal_structs(out_exoid, EX_INQ_ELEM_SETS, ex__get_counter_list(EX_ELEM_SET));
 
-  update_internal_structs(out_exoid, EX_INQ_NODE_MAP, ex_get_counter_list(EX_NODE_MAP));
-  update_internal_structs(out_exoid, EX_INQ_EDGE_MAP, ex_get_counter_list(EX_EDGE_MAP));
-  update_internal_structs(out_exoid, EX_INQ_FACE_MAP, ex_get_counter_list(EX_FACE_MAP));
-  update_internal_structs(out_exoid, EX_INQ_ELEM_MAP, ex_get_counter_list(EX_ELEM_MAP));
+  update_internal_structs(out_exoid, EX_INQ_NODE_MAP, ex__get_counter_list(EX_NODE_MAP));
+  update_internal_structs(out_exoid, EX_INQ_EDGE_MAP, ex__get_counter_list(EX_EDGE_MAP));
+  update_internal_structs(out_exoid, EX_INQ_FACE_MAP, ex__get_counter_list(EX_FACE_MAP));
+  update_internal_structs(out_exoid, EX_INQ_ELEM_MAP, ex__get_counter_list(EX_ELEM_MAP));
 }
 
 /*! \internal */

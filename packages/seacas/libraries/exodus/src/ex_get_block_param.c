@@ -74,7 +74,7 @@ int ex_get_block_param(int exoid, ex_block *block)
   const char *ablknam = NULL;
   const char *vblkcon = NULL;
 
-  struct ex_file_item *file = NULL;
+  struct ex__file_item *file = NULL;
 
   EX_FUNC_ENTER();
 
