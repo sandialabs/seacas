@@ -4,7 +4,6 @@ var searchData=
   ['adrdum',['adrdum',['../addrwrap_8F.html#a5def4be380917ac5c2e84afd0b2481bb',1,'addrwrap.F']]],
   ['att_5fapi_5fversion',['ATT_API_VERSION',['../group__Internal.html#ga4812d3066157a3200fa3cd3e41597a3c',1,'exodusII_int.h']]],
   ['att_5fapi_5fversion_5fblank',['ATT_API_VERSION_BLANK',['../group__Internal.html#ga27f04e55774c17797b7f96c5b761e471',1,'exodusII_int.h']]],
-  ['att_5ffile_5ftype',['ATT_FILE_TYPE',['../group__Internal.html#gab3f1dcf5123e4ef0ae91167bf6be8d05',1,'exodusII_int.h']]],
   ['att_5ffilesize',['ATT_FILESIZE',['../group__Internal.html#gae38b4ad57bbae8cfd0bad837e7b57716',1,'exodusII_int.h']]],
   ['att_5fflt_5fwordsize',['ATT_FLT_WORDSIZE',['../group__Internal.html#gaa07483bf1d25e29cabfba3948fc16259',1,'exodusII_int.h']]],
   ['att_5fflt_5fwordsize_5fblank',['ATT_FLT_WORDSIZE_BLANK',['../group__Internal.html#ga08ed48a7cd5e76aaf6034fcf34932a05',1,'exodusII_int.h']]],

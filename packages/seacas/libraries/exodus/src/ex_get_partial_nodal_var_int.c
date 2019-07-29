@@ -59,10 +59,10 @@
 #include <exodusII_int.h> // for EX_WARN, ex__comp_ws, etc
 
 /*!
+  \internal
   \ingroup ResultsData
-
- * reads the values of a single nodal variable for a single time step from
- * the database; assume the first time step and nodal variable index is 1
+  \note This function is called internally by ex_get_partial_var() to handle
+  the reading of nodal variable values.
  */
 
 int ex__get_partial_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t start_node,

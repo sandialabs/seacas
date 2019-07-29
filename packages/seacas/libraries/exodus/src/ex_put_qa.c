@@ -40,7 +40,7 @@
 \ingroup Utilities
 
 The function ex_put_qa() writes the QA records to the database. Each
-QA record contains four MAX_STR_LENGTH-byte character
+QA record contains four #MAX_STR_LENGTH byte character
 strings. The character strings are:
 
  -  the analysis code name

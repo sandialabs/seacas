@@ -39,7 +39,7 @@
 /* Function(s) contained in this file:
  *
  *     ex__leavedef()
- *     ne_id_lkup()
+ *     ne__id_lkup()
  *     ex__get_file_type()
  *     ex__put_nemesis_version()
  *     ne__check_file_version()
@@ -64,7 +64,7 @@ char *ne_ret_string;
 /* Note: This function assumes a 1-d vector of data for "ne_var_name".
  */
 /*****************************************************************************/
-int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne_var_id)
+int ne__id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne_var_id)
 {
   int       status;
   int       varid, ndims, dimid[1], ret = -1;

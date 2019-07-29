@@ -69,7 +69,7 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
   int          int_size, ids_size;
   int          status;
 
-  struct elem_blk_parm *elem_blk_parms = NULL;
+  struct ex__elem_blk_parm *elem_blk_parms = NULL;
 
   char errmsg[MAX_ERR_LENGTH];
 
@@ -142,7 +142,7 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
   }
 
   /* Allocate space for the element block params */
-  if (!(elem_blk_parms = malloc(num_elem_blks * sizeof(struct elem_blk_parm)))) {
+  if (!(elem_blk_parms = malloc(num_elem_blks * sizeof(struct ex__elem_blk_parm)))) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to allocate space for element block params "
              "for file id %d",

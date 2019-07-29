@@ -37,7 +37,12 @@
 #include "exodusII_int.h" // for EX_WARN, ex__comp_ws, etc
 
 /*!
-The function ex_put_nodal_var() writes the values of a single nodal
+\internal
+\ingroup ResultsData
+\note This function is called internally by ex_put_var() to handle
+the writing of nodal variable values.
+
+The function ex__put_nodal_var() writes the values of a single nodal
 variable for a single time step. The function ex_put_variable_param()
 must be invoked before this call is made.
 
@@ -46,7 +51,7 @@ code must declare the array passed to be the appropriate type
 (float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
-\return In case of an error, ex_put_nodal_var() returns a negative number; a
+\return In case of an error, ex__put_nodal_var() returns a negative number; a
 warning will return a positive number. Possible causes of errors
 include:
   -  data file not properly opened with call to ex_create() or ex_open()

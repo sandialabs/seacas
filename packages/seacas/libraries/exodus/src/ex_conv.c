@@ -232,7 +232,7 @@ int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
   new_file->file_id               = exoid;
   new_file->user_compute_wordsize = *comp_wordsize == 4 ? 0 : 1;
   new_file->int64_status          = int64_status;
-  new_file->maximum_name_length   = ex_default_max_name_length;
+  new_file->maximum_name_length   = ex__default_max_name_length;
   new_file->time_varid            = -1;
   new_file->compression_level     = 0;
   new_file->shuffle               = 0;
@@ -339,17 +339,18 @@ int ex_int64_status(int exoid)
      'types' in the database are to be stored as int64 types and which, if any,
      types are passed/returned as int64 types in the API
 
-     Defines:
-     EX_MAPS_INT64_DB  All maps (id, order, ...) store int64_t values
-     EX_IDS_INT64_DB   All entity ids (sets, blocks, maps) are int64_t values
-     EX_BULK_INT64_DB
-     EX_ALL_INT64_DB   (EX_MAPS_INT64_DB|EX_IDS_INT64_DB|EX_BULK_INT64_DB)
-
-     EX_MAPS_INT64_API  All maps (id, order, ...) passed as int64_t values
-     EX_IDS_INT64_API   All entity ids (sets, blocks, maps) are passed as
-     int64_t values
-     EX_BULK_INT64_API
-     EX_ALL_INT64_API   (EX_MAPS_INT64_API|EX_IDS_INT64_API|EX_BULK_INT64_API)
+     | Defines: | |
+     |----------|-|
+     | #EX_MAPS_INT64_DB | All maps (id, order, ...) store int64_t values |
+     | #EX_IDS_INT64_DB  | All entity ids (sets, blocks, maps) are int64_t values |
+     | #EX_BULK_INT64_DB | All integer bulk data (local indices, counts, maps); not ids |
+     | #EX_ALL_INT64_DB  | (#EX_MAPS_INT64_DB \| #EX_IDS_INT64_DB \| #EX_BULK_INT64_DB) |
+     | #EX_MAPS_INT64_API| All maps (id, order, ...) passed as int64_t values |
+     | #EX_IDS_INT64_API | All entity ids (sets, blocks, maps) are passed as int64_t values |
+     | #EX_BULK_INT64_API| All integer bulk data (local indices, counts, maps); not ids|
+     | #EX_INQ_INT64_API | Integers passed to/from ex_inquire() are int64_t |
+     | #EX_ALL_INT64_API | (#EX_MAPS_INT64_API \| #EX_IDS_INT64_API \| #EX_BULK_INT64_API \|
+   #EX_INQ_INT64_API) |
   */
   EX_FUNC_ENTER();
   struct ex__file_item *file = ex__find_file_item(exoid);
@@ -367,17 +368,20 @@ int ex_set_int64_status(int exoid, int mode)
 {
   /*!
     \ingroup Utilities
-    ex_set_int64_status() sets the value of the INT64_API flags
-     which specify how integer types are passed/returned as int64 types in the
-     API
 
-     Mode can be one of:
-     0                  All are passed as int32_t values.
-     EX_MAPS_INT64_API  All maps (id, order, ...) passed as int64_t values
-     EX_IDS_INT64_API   All entity ids (sets, blocks, maps) are passed as
-     int64_t values
-     EX_BULK_INT64_API
-     EX_ALL_INT64_API   (EX_MAPS_INT64_API|EX_IDS_INT64_API|EX_BULK_INT64_API)
+     ex_set_int64_status() sets the value of the INT64_API flags which
+     specify how integer types are passed/returned as int64 types in
+     the API
+
+     | Mode can be one of: | |
+     |----------|-|
+     | 0                 | All integers are passed as int32_t values. |
+     | #EX_MAPS_INT64_API| All maps (id, order, ...) passed as int64_t values |
+     | #EX_IDS_INT64_API | All entity ids (sets, blocks, maps) are passed as int64_t values |
+     | #EX_BULK_INT64_API| All integer bulk data (local indices, counts, maps); not ids|
+     | #EX_INQ_INT64_API | Integers passed to/from ex_inquire() are int64_t |
+     | #EX_ALL_INT64_API | (#EX_MAPS_INT64_API \| #EX_IDS_INT64_API \| #EX_BULK_INT64_API \|
+    #EX_INQ_INT64_API) |
   */
 
   int api_mode = 0;
@@ -498,13 +502,15 @@ int ex__is_parallel(int exoid)
 
 /*!
  * \ingroup Utilities
- * ex_set_parallel() sets the parallel setting for a file.
- * returns 1 (true) or 0 (false) depending on the current setting.
+ * \note
  * Do not use this unless you know what you are doing and why you
  * are doing it.  One use is if calling ex_get_partial_set() in a
  * serial mode (proc 0 only) on a file opened in parallel.
  * Make sure to reset the value to original value after done with
  * special case...
+ *
+ * ex_set_parallel() sets the parallel setting for a file.
+ * returns 1 (true) or 0 (false) depending on the current setting.
  * \param exoid  integer which uniquely identifies the file of interest.
  * \param is_parallel 1 if parallel, 0 if serial.
  */

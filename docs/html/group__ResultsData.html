@@ -133,8 +133,12 @@ Functions</h2></td></tr>
 <tr class="separator:ga862d5db5ec8152e5192411af56925168"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga65af6a2020057488a89b28238993562b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga65af6a2020057488a89b28238993562b">ex_get_var_time</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> var_type, int var_index, int64_t id, int beg_time_step, int end_time_step, void *var_vals)</td></tr>
 <tr class="separator:ga65af6a2020057488a89b28238993562b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7cca4d9d3deb736eb3c01ad6dff35ae6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga7cca4d9d3deb736eb3c01ad6dff35ae6">ex__get_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t num_nodes, void *nodal_var_vals)</td></tr>
+<tr class="separator:ga7cca4d9d3deb736eb3c01ad6dff35ae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga70d0037bf3c12d4ba5ab09eb956e19e9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga70d0037bf3c12d4ba5ab09eb956e19e9">ex__get_partial_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t start_node, int64_t num_nodes, void *var_vals)</td></tr>
 <tr class="separator:ga70d0037bf3c12d4ba5ab09eb956e19e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadea4cacfe3af0f6245b2d973546bc4ef"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#gadea4cacfe3af0f6245b2d973546bc4ef">ex__put_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t num_nodes, const void *nodal_var_vals)</td></tr>
+<tr class="separator:gadea4cacfe3af0f6245b2d973546bc4ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaafda0a407402616fde3c5e653a2a79c1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#gaafda0a407402616fde3c5e653a2a79c1">ex__put_partial_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t start_node, int64_t num_nodes, const void *nodal_var_vals)</td></tr>
 <tr class="separator:gaafda0a407402616fde3c5e653a2a79c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaab1f1155881d0b4d3ac442472297daab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#gaab1f1155881d0b4d3ac442472297daab">ex_get_glob_vars</a> (int exoid, int time_step, int num_glob_vars, void *glob_var_vals)</td></tr>
@@ -145,6 +149,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga0b61408e6504b9ba61c300f60f897f92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga726df39122abe7d8abab0f0e48e701d6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga726df39122abe7d8abab0f0e48e701d6">ex_get_n_var</a> (int exoid, int time_step, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> var_type, int var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> obj_id, int64_t start_index, int64_t num_entities, void *var_vals)</td></tr>
 <tr class="separator:ga726df39122abe7d8abab0f0e48e701d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7ce606b69a7aab9cd7f29e0e8656940a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t num_nodes, void *nodal_var_vals)</td></tr>
+<tr class="separator:ga7ce606b69a7aab9cd7f29e0e8656940a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab25e879410b8ac93b4feba2126faba17"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#gab25e879410b8ac93b4feba2126faba17">ex_get_partial_elem_var</a> (int exoid, int time_step, int elem_var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> elem_blk_id, int64_t num_elem_this_blk, int64_t start_elem_num, int64_t num_elem, void *elem_var_vals)</td></tr>
 <tr class="separator:gab25e879410b8ac93b4feba2126faba17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaea570a5fe3f2b769133784e57477ca44"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#gaea570a5fe3f2b769133784e57477ca44">ex_get_partial_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t start_node, int64_t num_nodes, void *var_vals)</td></tr>
@@ -161,6 +167,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga5602f2e069573ece8120c18937484217"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga81d3d8efe090c1904110c73a3571caf5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga81d3d8efe090c1904110c73a3571caf5">ex_put_n_var</a> (int exoid, int time_step, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> var_type, int var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> obj_id, int64_t start_index, int64_t num_entities, const void *var_vals)</td></tr>
 <tr class="separator:ga81d3d8efe090c1904110c73a3571caf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga63a7a7a25cad06db55084133c933b5ca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga63a7a7a25cad06db55084133c933b5ca">ex_put_nodal_var_slab</a> (int exoid, int time_step, int nodal_var_index, int64_t start_pos, int64_t num_vals, void *nodal_var_vals)</td></tr>
+<tr class="separator:ga63a7a7a25cad06db55084133c933b5ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga68c55a598842817089abbe4256fb6e2d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga68c55a598842817089abbe4256fb6e2d">ex_put_partial_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t start_node, int64_t num_nodes, const void *nodal_var_vals)</td></tr>
 <tr class="separator:ga68c55a598842817089abbe4256fb6e2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab0b72cd46b9655253d699cbb42744c36"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#gab0b72cd46b9655253d699cbb42744c36">ex_put_var_name</a> (int exoid, const char *var_type, int var_num, const char *var_name)</td></tr>
@@ -183,6 +191,72 @@ Functions</h2></td></tr>
 <li>If the mesh geometry changes in time (i.e., number of nodes increases, connectivity changes), the new geometry must be output to a new file. </li>
 </ul>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ga7cca4d9d3deb736eb3c01ad6dff35ae6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7cca4d9d3deb736eb3c01ad6dff35ae6">&#9670;&nbsp;</a></span>ex__get_nodal_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex__get_nodal_var </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nodal_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>nodal_var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section note"><dt>Note</dt><dd>This function is called internally by <a class="el" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var()</a> to handle the reading of nodal variable values.</dd></dl>
+<p>The function <a class="el" href="group__ResultsData.html#ga7cca4d9d3deb736eb3c01ad6dff35ae6">ex__get_nodal_var()</a> reads the values of a single nodal variable for a single time step. Memory must be allocated for the nodal variable values array before this function is invoked.</p>
+<p>Because nodal variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__ResultsData.html#ga7cca4d9d3deb736eb3c01ad6dff35ae6">ex__get_nodal_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>specified nodal variable does not exist.</li>
+<li>a warning value is returned if no nodal variables are stored in the file.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">time_step</td><td>The time step, as described under <a class="el" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time()</a>, at which the nodal variable values are desired. This is essentially an index (in the time dimension) into the nodal variable values array stored in the database. The first time step is 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodal_var_index</td><td>The index of the desired nodal variable. The first variable has an index of 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_nodes</td><td>The number of nodal points.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">nodal_var_vals</td><td>Returned array of num_nodes values of the nodal_var_index-th nodal variable for the time_step-th time step.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>For example, the following demonstrates how this function would be used:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nodes, time_step, var_index;</div><div class="line"><span class="keywordtype">float</span> *var_values;</div><div class="line"></div><div class="line"><span class="comment">/* read the second nodal variable at the first time step */</span></div><div class="line">time_step = 1;</div><div class="line">var_index = 2;</div><div class="line"></div><div class="line">var_values = (<span class="keywordtype">float</span> *) calloc (num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, time_step, var_index, num_nodes,</div><div class="line">var_values);</div></div><!-- fragment --> 
+</div>
+</div>
 <a id="ga70d0037bf3c12d4ba5ab09eb956e19e9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga70d0037bf3c12d4ba5ab09eb956e19e9">&#9670;&nbsp;</a></span>ex__get_partial_nodal_var()</h2>
 
@@ -232,8 +306,75 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>reads the values of a single nodal variable for a single time step from the database; assume the first time step and nodal variable index is 1 </p>
+<dl class="section note"><dt>Note</dt><dd>This function is called internally by <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a> to handle the reading of nodal variable values. </dd></dl>
 
+</div>
+</div>
+<a id="gadea4cacfe3af0f6245b2d973546bc4ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadea4cacfe3af0f6245b2d973546bc4ef">&#9670;&nbsp;</a></span>ex__put_nodal_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex__put_nodal_var </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nodal_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>nodal_var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section note"><dt>Note</dt><dd>This function is called internally by <a class="el" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var()</a> to handle the writing of nodal variable values.</dd></dl>
+<p>The function <a class="el" href="group__ResultsData.html#gadea4cacfe3af0f6245b2d973546bc4ef">ex__put_nodal_var()</a> writes the values of a single nodal variable for a single time step. The function <a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> must be invoked before this call is made.</p>
+<p>Because nodal variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__ResultsData.html#gadea4cacfe3af0f6245b2d973546bc4ef">ex__put_nodal_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file opened for read only.</li>
+<li>data file not initialized properly with call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
+<li><a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> not called previously specifying the number of nodal variables.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">time_step</td><td>The time step number, as described under <a class="el" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time()</a>. This is essentially a counter that is incremented when results variables are output. The first time step is 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodal_var_index</td><td>The index of the nodal variable. The first variable has an index of 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_nodes</td><td>The number of nodal points.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodal_var_vals</td><td>Array of num_nodes values of the nodal_var_index-th nodal variable for the time_step-th time step.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>As an example, the following code segment writes all the nodal variables for a single time step:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nod_vars, num_nodes, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, time_step;</div><div class="line"><span class="keywordtype">float</span> *nodal_var_vals;</div><div class="line"></div><div class="line"><span class="comment">/* write nodal variables */</span></div><div class="line">nodal_var_vals = (<span class="keywordtype">float</span> *) calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"><span class="keywordflow">for</span> (k=1; k &lt;= num_nod_vars; k++) {</div><div class="line">   <span class="keywordflow">for</span> (j=0; j &lt; num_nodes; j++) {</div><div class="line">      <span class="comment">/* application code fills in this array */</span></div><div class="line">      nodal_var_vals[j] = 10.0;</div><div class="line">   }</div><div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#aac2d4d012d5e2a8069c50a5eb1c05a59">ex_put_nodal_var</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, time_step, k, num_nodes,</div><div class="line">                            nodal_var_vals);</div><div class="line">}</div></div><!-- fragment --> 
 </div>
 </div>
 <a id="gaafda0a407402616fde3c5e653a2a79c1"></a>
@@ -285,6 +426,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="section note"><dt>Note</dt><dd>This function is called internally by <a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var()</a> to handle the reading of nodal variable values.</dd></dl>
 <p>writes the values of a single nodal variable for a partial block at one single time step to the database; assume the first time step and nodal variable index is 1 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
@@ -339,7 +481,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following code segment will read the time values for all time steps stored in the data file:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_time_steps;</div><div class="line"><span class="keywordtype">float</span> *time_values;</div><div class="line"></div><div class="line"><span class="comment">/* determine how many time steps are stored */</span></div><div class="line">num_time_steps = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631">EX_INQ_TIME</a>);</div><div class="line"></div><div class="line"><span class="comment">/* read time values at all time steps */</span></div><div class="line">time_values = (<span class="keywordtype">float</span> *) calloc(num_time_steps, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga25705723a510ee4c6b23959925eca4ec">ex_get_all_times</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, time_values);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a63">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a71">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a64">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a67">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a64">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a53">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a58">/test/testrd_par.c</a>, and <a class="el" href="_2test_2testrdd_8c-example.html#a52">/test/testrdd.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, num_time_steps;</div><div class="line"><span class="keywordtype">float</span> *time_values;</div><div class="line"></div><div class="line"><span class="comment">/* determine how many time steps are stored */</span></div><div class="line">num_time_steps = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631">EX_INQ_TIME</a>);</div><div class="line"></div><div class="line"><span class="comment">/* read time values at all time steps */</span></div><div class="line">time_values = (<span class="keywordtype">float</span> *) calloc(num_time_steps, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga25705723a510ee4c6b23959925eca4ec">ex_get_all_times</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, time_values);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a63">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a71">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a64">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a67">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a64">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a53">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a58">/test/testrd_par.c</a>, and <a class="el" href="_2test_2testrdd_8c-example.html#a52">/test/testrdd.c</a>.</dd>
 </dl>
 
 </div>
@@ -381,7 +523,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000017">Deprecated:</a></b></dt><dd><p class="startdd">Use <a class="el" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var()</a>(exoid, time_step, EX_GLOBAL, 1, 1, num_glob_vars, global_var_vals)</p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000018">Deprecated:</a></b></dt><dd><p class="startdd">Use <a class="el" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var()</a>(exoid, time_step, EX_GLOBAL, 1, 1, num_glob_vars, global_var_vals)</p>
 <p class="enddd">The function <a class="el" href="group__ResultsData.html#gaab1f1155881d0b4d3ac442472297daab">ex_get_glob_vars()</a> reads the values of all the global variables for a single time step. Memory must be allocated for the global variables values array before this function is invoked.</p>
 </dd></dl>
 <p>Because global variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
@@ -465,7 +607,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000023">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, start_elem_num, num_elem, elem_var_vals) instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000024">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, start_elem_num, num_elem, elem_var_vals) instead </dd></dl>
 
 </div>
 </div>
@@ -518,7 +660,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000024">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node, num_nodes, var_vals) instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000025">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node, num_nodes, var_vals) instead </dd></dl>
 
 </div>
 </div>
@@ -583,7 +725,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000031">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, var_type, var_index, obj_id, start_index, num_entities, var_vals) instead.</dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000032">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, var_type, var_index, obj_id, start_index, num_entities, var_vals) instead.</dd></dl>
 <p>reads the values of a single variable for a partial block at one time step from the database; assume the first time step and variable index and start_index are 1 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
@@ -598,6 +740,71 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+</div>
+</div>
+<a id="ga7ce606b69a7aab9cd7f29e0e8656940a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7ce606b69a7aab9cd7f29e0e8656940a">&#9670;&nbsp;</a></span>ex_get_nodal_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_nodal_var </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nodal_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>nodal_var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000033">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, num_nodes, nodal_var_vals) The function <a class="el" href="group__ResultsData.html#ga7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var()</a> reads the values of a single nodal variable for a single time step. Memory must be allocated for the nodal variable values array before this function is invoked.</dd></dl>
+<p>Because nodal variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__ResultsData.html#ga7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>specified nodal variable does not exist.</li>
+<li>a warning value is returned if no nodal variables are stored in the file.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">time_step</td><td>The time step, as described under <a class="el" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time()</a>, at which the nodal variable values are desired. This is essentially an index (in the time dimension) into the nodal variable values array stored in the database. The first time step is 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodal_var_index</td><td>The index of the desired nodal variable. The first variable has an index of 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_nodes</td><td>The number of nodal points.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">nodal_var_vals</td><td>Returned array of num_nodes values of the nodal_var_index-th nodal variable for the time_step-th time step.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>For example, the following demonstrates how this function would be used:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nodes, time_step, var_index;</div><div class="line"><span class="keywordtype">float</span> *var_values;</div><div class="line"></div><div class="line"><span class="comment">/* read the second nodal variable at the first time step */</span></div><div class="line">time_step = 1;</div><div class="line">var_index = 2;</div><div class="line"></div><div class="line">var_values = (<span class="keywordtype">float</span> *) calloc (num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga7ce606b69a7aab9cd7f29e0e8656940a">ex_get_nodal_var</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, time_step, var_index, num_nodes,</div><div class="line">                         var_values);</div></div><!-- fragment --> 
 </div>
 </div>
 <a id="ga1591cc35b01b6546f9367b4420be6862"></a>
@@ -708,7 +915,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000046">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, start_elem_num, num_elem, elem_var_vals) </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000047">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, start_elem_num, num_elem, elem_var_vals) </dd></dl>
 
 </div>
 </div>
@@ -761,7 +968,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000047">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node, num_nodes, var_vals);</dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000048">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#ga862d5db5ec8152e5192411af56925168">ex_get_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node, num_nodes, var_vals);</dd></dl>
 
 </div>
 </div>
@@ -891,7 +1098,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>As an example, the following coding will read the time value stored in the data file for time step n:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> n, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">float</span> time_value;</div><div class="line"></div><div class="line"><span class="comment">/* read time value at time step 3 */</span></div><div class="line">n = 3;</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga043918d9caf73f8dcdb41e23ddc9b914">ex_get_time</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, n, &amp;time_value);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a62">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a70">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a63">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a66">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a63">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a52">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a57">/test/testrd_par.c</a>, and <a class="el" href="_2test_2testrdd_8c-example.html#a51">/test/testrdd.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> n, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"><span class="keywordtype">float</span> time_value;</div><div class="line"></div><div class="line"><span class="comment">/* read time value at time step 3 */</span></div><div class="line">n = 3;</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga043918d9caf73f8dcdb41e23ddc9b914">ex_get_time</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n, &amp;time_value);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a62">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a70">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a63">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a66">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a63">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a52">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a57">/test/testrd_par.c</a>, and <a class="el" href="_2test_2testrdd_8c-example.html#a51">/test/testrdd.c</a>.</dd>
 </dl>
 
 </div>
@@ -1074,7 +1281,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>reads the name of a particular results variable from the database </p><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000059">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#gabd0cc67d7e853e95c257878adbfff961">ex_get_variable_name()</a>(exoid, obj_type, var_num, *var_name) </dd></dl>
+<p>reads the name of a particular results variable from the database </p><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000060">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#gabd0cc67d7e853e95c257878adbfff961">ex_get_variable_name()</a>(exoid, obj_type, var_num, *var_name) </dd></dl>
 
 </div>
 </div>
@@ -1115,7 +1322,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>reads the names of the results variables from the database </p><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000060">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga91a1893c2e7278baa3cf9d0c89875a0b">ex_get_variable_names()</a>(exoid, obj_type, num_vars, var_names) </dd></dl>
+<p>reads the names of the results variables from the database </p><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000061">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga91a1893c2e7278baa3cf9d0c89875a0b">ex_get_variable_names()</a>(exoid, obj_type, num_vars, var_names) </dd></dl>
 
 </div>
 </div>
@@ -1150,7 +1357,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>reads the number of global, nodal, or element variables that are stored in the database </p><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000061">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param()</a>(exoid, obj_type, *num_vars) </dd></dl>
+<p>reads the number of global, nodal, or element variables that are stored in the database </p><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000062">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param()</a>(exoid, obj_type, *num_vars) </dd></dl>
 
 </div>
 </div>
@@ -1197,7 +1404,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>reads the EXODUS specified variable truth table from the database </p><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000062">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga90ac12b9e78cbb4305f07d27cffeb780">ex_get_truth_table()</a>(exoid, obj_type, num_blk, num_var, var_tab) </dd></dl>
+<p>reads the EXODUS specified variable truth table from the database </p><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000063">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga90ac12b9e78cbb4305f07d27cffeb780">ex_get_truth_table()</a>(exoid, obj_type, num_blk, num_var, var_tab) </dd></dl>
 
 </div>
 </div>
@@ -1342,7 +1549,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="group__ResultsData.html#ga91a1893c2e7278baa3cf9d0c89875a0b">ex_get_variable_names()</a> reads the names of the results variables from the database. Memory must be allocated for the name array before this function is invoked. The names are <code>MAX_STR_LENGTH-characters</code> in length.</p>
+<p>The function <a class="el" href="group__ResultsData.html#ga91a1893c2e7278baa3cf9d0c89875a0b">ex_get_variable_names()</a> reads the names of the results variables from the database. Memory must be allocated for the name array before this function is invoked.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__ResultsData.html#ga91a1893c2e7278baa3cf9d0c89875a0b">ex_get_variable_names()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>invalid variable type specified.</li>
@@ -1362,28 +1569,28 @@ Functions</h2></td></tr>
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">ex_entity_type  </th><th class="markdownTableHeadNone">description   </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_GLOBAL  </td><td class="markdownTableBodyNone">Global entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>  </td><td class="markdownTableBodyNone">Global entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_NODAL  </td><td class="markdownTableBodyNone">Nodal entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>  </td><td class="markdownTableBodyNone">Nodal entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_NODE_SET  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_EDGE_BLOCK  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0545aa5bf16712b8cfb3df0f03d17f65">EX_EDGE_BLOCK</a>  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_SET  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2cb06b0c979985302d634fb014b2feba">EX_EDGE_SET</a>  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_BLOCK  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a874689df09da1bd5faefcd6ec6350391">EX_FACE_BLOCK</a>  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_FACE_SET  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0bd66a762fd0281609f7be23a1ec5ee5">EX_FACE_SET</a>  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_ELEM_BLOCK  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_SET  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_SIDE_SET  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
 </table>
 <p>As an example, the following code segment will read the names of the nodal variables stored in the data file:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_nod_vars;</div><div class="line"><span class="keywordtype">char</span> *var_names[10];</div><div class="line"></div><div class="line"><span class="comment">/* read nodal variables parameters and names */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, &amp;num_nod_vars);</div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_nod_vars; i++) {</div><div class="line">   var_names[i] = (<span class="keywordtype">char</span> *) calloc ((<a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a>+1), <span class="keyword">sizeof</span>(char));</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga91a1893c2e7278baa3cf9d0c89875a0b">ex_get_variable_names</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nod_vars, var_names);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2ReadEdgeFace_8c-example.html#a65">/test/ReadEdgeFace.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a59">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a67">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a60">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a63">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a60">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a48">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a54">/test/testrd_par.c</a>, and <a class="el" href="_2test_2testrdd_8c-example.html#a47">/test/testrdd.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, num_nod_vars;</div><div class="line"><span class="keywordtype">char</span> *var_names[10];</div><div class="line"></div><div class="line"><span class="comment">/* read nodal variables parameters and names */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, &amp;num_nod_vars);</div><div class="line"><span class="keywordtype">int</span> name_len = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, EX_INT_MAX_READ_NAME_LENGTH);</div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_nod_vars; i++) {</div><div class="line">   var_names[i] = (<span class="keywordtype">char</span> *) calloc ((name_len+1), <span class="keyword">sizeof</span>(char));</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga91a1893c2e7278baa3cf9d0c89875a0b">ex_get_variable_names</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nod_vars, var_names);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2ReadEdgeFace_8c-example.html#a65">/test/ReadEdgeFace.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a59">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a67">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a60">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a63">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a60">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a48">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a54">/test/testrd_par.c</a>, and <a class="el" href="_2test_2testrdd_8c-example.html#a47">/test/testrdd.c</a>.</dd>
 </dl>
 
 </div>
@@ -1437,28 +1644,28 @@ Functions</h2></td></tr>
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">ex_entity_type  </th><th class="markdownTableHeadNone">description   </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_GLOBAL  </td><td class="markdownTableBodyNone">Global entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>  </td><td class="markdownTableBodyNone">Global entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_NODAL  </td><td class="markdownTableBodyNone">Nodal entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>  </td><td class="markdownTableBodyNone">Nodal entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_NODE_SET  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_EDGE_BLOCK  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0545aa5bf16712b8cfb3df0f03d17f65">EX_EDGE_BLOCK</a>  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_SET  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2cb06b0c979985302d634fb014b2feba">EX_EDGE_SET</a>  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_BLOCK  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a874689df09da1bd5faefcd6ec6350391">EX_FACE_BLOCK</a>  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_FACE_SET  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0bd66a762fd0281609f7be23a1ec5ee5">EX_FACE_SET</a>  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_ELEM_BLOCK  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_SET  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_SIDE_SET  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
 </table>
 <p>As an example, the following coding will determine the number of global variables stored in the data file:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_glo_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* read global variables parameters */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, &amp;num_glo_vars);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a17">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2ReadEdgeFace_8c-example.html#a63">/test/ReadEdgeFace.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a11">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a57">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a65">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a58">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a61">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a56">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a46">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a52">/test/testrd_par.c</a>, and <a class="el" href="_2test_2testrdd_8c-example.html#a45">/test/testrdd.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_glo_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* read global variables parameters */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, &amp;num_glo_vars);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a17">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2ReadEdgeFace_8c-example.html#a63">/test/ReadEdgeFace.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a11">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a57">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a65">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a58">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a61">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a56">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a46">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a52">/test/testrd_par.c</a>, and <a class="el" href="_2test_2testrdd_8c-example.html#a45">/test/testrdd.c</a>.</dd>
 </dl>
 
 </div>
@@ -1635,7 +1842,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000080">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node, num_nodes, nodal_var_vals) </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000081">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node, num_nodes, nodal_var_vals) </dd></dl>
 <p>writes the values of a single nodal variable for a partial block at one single time step to the database; assume the first time step and nodal variable index is 1 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
@@ -1711,7 +1918,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000086">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var()</a>(exoid, time_step, var_type, var_index, obj_id, start_index, num_entities, var_vals) writes the values of a single variable for a partial block at one time step to the database; assume the first time step and variable index are 1 </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000087">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var()</a>(exoid, time_step, var_type, var_index, obj_id, start_index, num_entities, var_vals) writes the values of a single variable for a partial block at one time step to the database; assume the first time step and variable index are 1 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
@@ -1722,6 +1929,70 @@ Functions</h2></td></tr>
     <tr><td class="paramname">start_index</td><td>index of first entity in block to write (1-based) </td></tr>
     <tr><td class="paramname">num_entities</td><td>number of entries in this block/set </td></tr>
     <tr><td class="paramname">var_vals</td><td>the values to be written </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga63a7a7a25cad06db55084133c933b5ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga63a7a7a25cad06db55084133c933b5ca">&#9670;&nbsp;</a></span>ex_put_nodal_var_slab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_nodal_var_slab </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nodal_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>start_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>nodal_var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000088">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_pos, num_vals, nodal_var_vals) instead. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">time_step</td><td>The time step index </td></tr>
+    <tr><td class="paramname">nodal_var_index</td><td>Nodal variable index </td></tr>
+    <tr><td class="paramname">start_pos</td><td>Start position for write </td></tr>
+    <tr><td class="paramname">num_vals</td><td>Number of nodal variables </td></tr>
+    <tr><td class="paramname">nodal_var_vals</td><td>Nodal variable values </td></tr>
   </table>
   </dd>
 </dl>
@@ -1777,7 +2048,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000100">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node, num_nodes, nodal_var_vals)</dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000101">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node, num_nodes, nodal_var_vals)</dd></dl>
 <p>writes the values of a single nodal variable for a partial block at one single time step to the database; assume the first time step and nodal variable index is 1 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
@@ -1918,7 +2189,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following code segment will write out the simulation time value at simulation time step n:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, n;</div><div class="line"><span class="keywordtype">float</span> time_value;</div><div class="line"></div><div class="line"><span class="comment">/* write time value */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, n, &amp;time_value);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a31">/test/create_mesh.c</a>, <a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a75">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a34">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a39">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a13">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a15">/test/test_ts_partial_nvar.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a51">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a39">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a37">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a46">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a35">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a35">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a35">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a23">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a22">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a14">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a46">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a44">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a30">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a39">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a35">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a40">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a30">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a42">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a25">/test/twod.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n;</div><div class="line"><span class="keywordtype">float</span> time_value;</div><div class="line"></div><div class="line"><span class="comment">/* write time value */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n, &amp;time_value);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a31">/test/create_mesh.c</a>, <a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a75">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a34">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a39">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a13">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a15">/test/test_ts_partial_nvar.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a51">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a39">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a37">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a46">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a35">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a35">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a35">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a23">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a22">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a14">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a46">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a44">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a30">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a39">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a35">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a40">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a30">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a42">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a25">/test/twod.c</a>.</dd>
 </dl>
 
 </div>
@@ -1977,7 +2248,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following coding will create, populate, and write an element variable truth table to an opened exodus file (NOTE: all element variables are valid for all element blocks in this example.):</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> *<a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>, num_elem_blk, num_ele_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* write element variable truth table */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a> = (<span class="keywordtype">int</span> *)calloc((num_elem_blk*num_ele_vars), <span class="keyword">sizeof</span>(int));</div><div class="line"></div><div class="line"><span class="keywordflow">for</span> (i=0, k=0; i &lt; num_elem_blk; i++) {</div><div class="line">   <span class="keywordflow">for</span> (j=0; j &lt; num_ele_vars; j++) {</div><div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>[k++] = 1;</div><div class="line">   }</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga332addfae3873a71c38db5465e6bcf0b">ex_put_truth_table</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, num_elem_blk, num_ele_vars,</div><div class="line">                            <a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a38">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a50">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a38">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a36">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a45">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a34">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a34">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a34">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a22">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a45">/test/testwt.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a29">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a34">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a29">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a41">/test/testwtm.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> *<a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>, num_elem_blk, num_ele_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* write element variable truth table */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a> = (<span class="keywordtype">int</span> *)calloc((num_elem_blk*num_ele_vars), <span class="keyword">sizeof</span>(int));</div><div class="line"></div><div class="line"><span class="keywordflow">for</span> (i=0, k=0; i &lt; num_elem_blk; i++) {</div><div class="line">   <span class="keywordflow">for</span> (j=0; j &lt; num_ele_vars; j++) {</div><div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>[k++] = 1;</div><div class="line">   }</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#ga332addfae3873a71c38db5465e6bcf0b">ex_put_truth_table</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, num_elem_blk, num_ele_vars,</div><div class="line">                            <a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a38">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a50">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a38">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a36">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a45">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a34">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a34">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a34">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a22">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a45">/test/testwt.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a29">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a34">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a29">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a41">/test/testwtm.c</a>.</dd>
 </dl>
 
 </div>
@@ -2037,7 +2308,29 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a32">/test/create_mesh.c</a>, <a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a76">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a35">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a40">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a5">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a17">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a52">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a40">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a38">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a47">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a36">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a36">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a36">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a24">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a23">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a15">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a47">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a45">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a31">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a40">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a36">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a41">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a31">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a43">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a26">/test/twod.c</a>.</dd>
+<p>writes the values of a single variable of the specified type for a single time step. The function <a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> must be invoked before this call is made.</p>
+<p>Because variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file opened for read only.</li>
+<li>data file not initialized properly with call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
+<li><a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> not called previously specifying the number of variables.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">time_step</td><td>The time step number, as described under <a class="el" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time()</a>. This is essentially a counter that is incremented when results variables are output. The first time step is 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">var_type</td><td>type (edge block, face block, edge set, ... )</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">var_index</td><td>The index of the variable. The first variable has an index of 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">obj_id</td><td>entity block/set id (ignored for global and nodal variables)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_entries_this_obj</td><td>The number of items in this block/set</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">var_vals</td><td>Array of <code>num_entries_this_obj</code> values of the <code>var_index</code>-th variable for the <code>time_step</code>-th time step.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>As an example, the following code segment writes all the nodal variables for a single time step:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nod_vars, num_nodes, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, time_step;</div><div class="line"><span class="keywordtype">float</span> *nodal_var_vals;</div><div class="line"></div><div class="line"><span class="comment">/* write nodal variables */</span></div><div class="line">nodal_var_vals = (<span class="keywordtype">float</span> *) calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div><div class="line"><span class="keywordflow">for</span> (k=1; k &lt;= num_nod_vars; k++) {</div><div class="line">   <span class="keywordflow">for</span> (j=0; j &lt; num_nodes; j++) {</div><div class="line">      <span class="comment">/* application code fills in this array */</span></div><div class="line">      nodal_var_vals[j] = 10.0;</div><div class="line">   }</div><div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, time_step, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, 0, k, num_nodes,</div><div class="line">                            nodal_var_vals);</div><div class="line">}</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a32">/test/create_mesh.c</a>, <a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a76">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a35">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a40">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a5">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a17">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a52">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a40">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a38">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a47">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a36">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a36">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a36">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a24">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a23">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a15">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a47">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a45">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a31">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a40">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a36">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a41">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a31">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a43">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a26">/test/twod.c</a>.</dd>
 </dl>
 
 </div>
@@ -2088,7 +2381,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000111">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#ga223eafff4a08dd9b2264a82df11050b3">ex_put_variable_name()</a>(exoid, obj_type, var_num, *var_name) </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000112">Deprecated:</a></b></dt><dd>use <a class="el" href="group__ResultsData.html#ga223eafff4a08dd9b2264a82df11050b3">ex_put_variable_name()</a>(exoid, obj_type, var_num, *var_name) </dd></dl>
 
 </div>
 </div>
@@ -2138,7 +2431,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000112">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names()</a>(exoid, obj_type, num_vars, var_names) </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000113">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names()</a>(exoid, obj_type, num_vars, var_names) </dd></dl>
 
 </div>
 </div>
@@ -2181,7 +2474,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000113">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a>(exoid, obj_type, num_vars) </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000114">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a>(exoid, obj_type, num_vars) </dd></dl>
 
 </div>
 </div>
@@ -2238,7 +2531,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000114">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga332addfae3873a71c38db5465e6bcf0b">ex_put_truth_table()</a>(exoid, obj_type, num_blk, num_var, var_tab) </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000115">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga332addfae3873a71c38db5465e6bcf0b">ex_put_truth_table()</a>(exoid, obj_type, num_blk, num_var, var_tab) </dd></dl>
 
 </div>
 </div>
@@ -2330,7 +2623,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function <a class="el" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names()</a> writes the names of the results variables to the database. The names are <code>MAX_STR_LENGTH</code> -characters in length. The function <a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> must be called before this function is invoked.</p>
+<p>The function <a class="el" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names()</a> writes the names of the results variables to the database. The maximum length of the names returned is specified by the return value from <a class="el" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int()</a>(exoid, EX_INQ_MAX_READ_NAME_LENGTH). The function <a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> must be called before this function is invoked.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
 <li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
 <li>data file not initialized properly with call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
@@ -2352,27 +2645,27 @@ Functions</h2></td></tr>
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">ex_entity_type  </th><th class="markdownTableHeadNone">description   </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_GLOBAL  </td><td class="markdownTableBodyNone">Global entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>  </td><td class="markdownTableBodyNone">Global entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_NODAL  </td><td class="markdownTableBodyNone">Nodal entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>  </td><td class="markdownTableBodyNone">Nodal entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_NODE_SET  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_EDGE_BLOCK  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0545aa5bf16712b8cfb3df0f03d17f65">EX_EDGE_BLOCK</a>  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_SET  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2cb06b0c979985302d634fb014b2feba">EX_EDGE_SET</a>  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_BLOCK  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a874689df09da1bd5faefcd6ec6350391">EX_FACE_BLOCK</a>  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_FACE_SET  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0bd66a762fd0281609f7be23a1ec5ee5">EX_FACE_SET</a>  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_ELEM_BLOCK  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_SET  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_SIDE_SET  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
 </table>
-<p>The following coding will write out the names associated with the nodal variables: </p><div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nod_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">char</span> *var_names[2];</div><div class="line"></div><div class="line"><span class="comment">/* write results variables parameters and names */</span></div><div class="line">num_nod_vars = 2;</div><div class="line"></div><div class="line">var_names[0] = <span class="stringliteral">&quot;disx&quot;</span>;</div><div class="line">var_names[1] = <span class="stringliteral">&quot;disy&quot;</span>;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nod_vars);</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nod_vars, var_names);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a28">/test/create_mesh.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a32">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a37">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a49">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a37">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a35">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a42">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a33">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a33">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a33">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a20">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a20">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a13">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a44">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a43">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a27">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a36">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a33">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a39">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a27">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a39">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a21">/test/twod.c</a>.</dd>
+<p>The following coding will write out the names associated with the nodal variables: </p><div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nod_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"><span class="keywordtype">char</span> *var_names[2];</div><div class="line"></div><div class="line"><span class="comment">/* write results variables parameters and names */</span></div><div class="line">num_nod_vars = 2;</div><div class="line"></div><div class="line">var_names[0] = <span class="stringliteral">&quot;disx&quot;</span>;</div><div class="line">var_names[1] = <span class="stringliteral">&quot;disy&quot;</span>;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nod_vars);</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nod_vars, var_names);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a28">/test/create_mesh.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a32">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a37">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a49">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a37">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a35">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a42">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a33">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a33">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a33">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a20">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a20">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a13">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a44">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a43">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a27">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a36">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a33">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a39">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a27">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a39">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a21">/test/twod.c</a>.</dd>
 </dl>
 
 </div>
@@ -2430,28 +2723,28 @@ Functions</h2></td></tr>
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">ex_entity_type  </th><th class="markdownTableHeadNone">description   </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_GLOBAL  </td><td class="markdownTableBodyNone">Global entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>  </td><td class="markdownTableBodyNone">Global entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_NODAL  </td><td class="markdownTableBodyNone">Nodal entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>  </td><td class="markdownTableBodyNone">Nodal entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_NODE_SET  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_EDGE_BLOCK  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0545aa5bf16712b8cfb3df0f03d17f65">EX_EDGE_BLOCK</a>  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_SET  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2cb06b0c979985302d634fb014b2feba">EX_EDGE_SET</a>  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_BLOCK  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a874689df09da1bd5faefcd6ec6350391">EX_FACE_BLOCK</a>  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_FACE_SET  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0bd66a762fd0281609f7be23a1ec5ee5">EX_FACE_SET</a>  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_ELEM_BLOCK  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_SET  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_SIDE_SET  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
 </table>
 <p>For example, the following code segment initializes the data file to store global variables:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_glo_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* write results variables parameters */</span></div><div class="line">num_glo_vars = 3;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, num_glo_vars);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a71">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a35">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a11">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a13">/test/test_ts_partial_nvar.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a14">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a47">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a35">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a33">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a40">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a31">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a32">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a31">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a17">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a18">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a11">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a42">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a39">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a25">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a31">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a35">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a25">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a37">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a19">/test/twod.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_glo_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* write results variables parameters */</span></div><div class="line">num_glo_vars = 3;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, num_glo_vars);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a71">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a35">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a11">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a13">/test/test_ts_partial_nvar.c</a>, <a class="el" href="_2test_2testcp_tran_8c-example.html#a14">/test/testcp_tran.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a47">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a35">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a33">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a40">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a31">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a32">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a31">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a17">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a18">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a11">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a42">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a39">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a25">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a31">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a35">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a25">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a37">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a19">/test/twod.c</a>.</dd>
 </dl>
 
 </div>

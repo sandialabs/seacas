@@ -98,8 +98,8 @@ $(document).ready(function(){initNavTree('ex__ne__util_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga2c69b0e0815ba6422012897d0a1adee8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga2c69b0e0815ba6422012897d0a1adee8">ne_id_lkup</a> (int exoid, const char *ne_var_name, int64_t *idx, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> ne_var_id)</td></tr>
-<tr class="separator:ga2c69b0e0815ba6422012897d0a1adee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga379eae3825a80df9f6cb25cb538bd8cd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga379eae3825a80df9f6cb25cb538bd8cd">ne__id_lkup</a> (int exoid, const char *ne_var_name, int64_t *idx, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> ne_var_id)</td></tr>
+<tr class="separator:ga379eae3825a80df9f6cb25cb538bd8cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf23ffa0c3b846713d5ca4f2f648b95cb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#gaf23ffa0c3b846713d5ca4f2f648b95cb">ex__get_file_type</a> (int exoid, char *ftype)</td></tr>
 <tr class="separator:gaf23ffa0c3b846713d5ca4f2f648b95cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaf24b47badc59254147ae53ea21d0a3a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#gaaf24b47badc59254147ae53ea21d0a3a">ex__put_nemesis_version</a> (int exoid)</td></tr>
@@ -152,6 +152,15 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">ne_var_name</td><td>Nemesis index variable name </td></tr>
+    <tr><td class="paramname">my_index</td><td>array of length 2 to hold results </td></tr>
+    <tr><td class="paramname">pos</td><td>position of this proc/cmap in index </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

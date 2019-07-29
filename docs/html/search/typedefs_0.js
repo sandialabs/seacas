@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['ex_5f_5fcoordinate_5fframe_5ftype',['ex__coordinate_frame_type',['../group__Internal.html#ga57d462fe872e5240f538d90838d0831e',1,'exodusII_int.h']]],
   ['ex_5f_5felement_5ftype',['ex__element_type',['../group__Internal.html#ga1210b5b3116150466759af293cf2c4df',1,'exodusII_int.h']]],
   ['ex_5fblock',['ex_block',['../group__APIStructs.html#gaba1420f7a98c7bb441829dbbc1fa6ed4',1,'exodusII.h']]],
   ['ex_5fblock_5fparams',['ex_block_params',['../group__APIStructs.html#gabcda51a5f89c020efe1882eaaba88663',1,'exodusII.h']]],

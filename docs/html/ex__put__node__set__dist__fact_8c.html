@@ -131,7 +131,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000091">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact()</a>(exoid, EX_NODE_SET, node_set_id, node_set_dist_fact)</dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000092">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact()</a>(exoid, EX_NODE_SET, node_set_id, node_set_dist_fact)</dd></dl>
 <p>The function <a class="el" href="ex__put__node__set__dist__fact_8c.html#a3d826dbc074b586bbbcc52d26f442585">ex_put_node_set_dist_fact()</a> writes node set distribution factors for a single node set. The function <a class="el" href="exodusII_8h.html#a8cdfacc20b190562b2f194c0d91f7657">ex_put_node_set_param()</a> must be called before this routine is invoked.</p>
 <p>Because the distribution factors are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__put__node__set__dist__fact_8c.html#a3d826dbc074b586bbbcc52d26f442585">ex_put_node_set_dist_fact()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>

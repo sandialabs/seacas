@@ -350,7 +350,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
        * add it now. */
       if (stat_dim != NC_NOERR) {
         /* Not found; set to default value of 32+1. */
-        int max_name = ex_default_max_name_length < 32 ? 32 : ex_default_max_name_length;
+        int max_name = ex__default_max_name_length < 32 ? 32 : ex__default_max_name_length;
         nc_def_dim(exoid, DIM_STR_NAME, max_name + 1, &dim_str_name);
       }
     }

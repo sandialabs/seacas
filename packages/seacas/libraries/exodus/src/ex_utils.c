@@ -46,18 +46,18 @@
 #include "exodusII.h"
 #include "exodusII_int.h"
 
-struct obj_stats *exoII_eb  = 0;
-struct obj_stats *exoII_ed  = 0;
-struct obj_stats *exoII_fa  = 0;
-struct obj_stats *exoII_ns  = 0;
-struct obj_stats *exoII_es  = 0;
-struct obj_stats *exoII_fs  = 0;
-struct obj_stats *exoII_ss  = 0;
-struct obj_stats *exoII_els = 0;
-struct obj_stats *exoII_em  = 0;
-struct obj_stats *exoII_edm = 0;
-struct obj_stats *exoII_fam = 0;
-struct obj_stats *exoII_nm  = 0;
+struct ex__obj_stats *exoII_eb  = 0;
+struct ex__obj_stats *exoII_ed  = 0;
+struct ex__obj_stats *exoII_fa  = 0;
+struct ex__obj_stats *exoII_ns  = 0;
+struct ex__obj_stats *exoII_es  = 0;
+struct ex__obj_stats *exoII_fs  = 0;
+struct ex__obj_stats *exoII_ss  = 0;
+struct ex__obj_stats *exoII_els = 0;
+struct ex__obj_stats *exoII_em  = 0;
+struct ex__obj_stats *exoII_edm = 0;
+struct ex__obj_stats *exoII_fam = 0;
+struct ex__obj_stats *exoII_nm  = 0;
 
 /*****************************************************************************
  *
@@ -691,11 +691,11 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   int64_t *id_vals   = NULL;
   int *    stat_vals = NULL;
 
-  static int        filled     = EX_FALSE;
-  static int        sequential = EX_FALSE;
-  struct obj_stats *tmp_stats;
-  int               status;
-  char              errmsg[MAX_ERR_LENGTH];
+  static int            filled     = EX_FALSE;
+  static int            sequential = EX_FALSE;
+  struct ex__obj_stats *tmp_stats;
+  int                   status;
+  char                  errmsg[MAX_ERR_LENGTH];
 
   switch (id_type) {
   case EX_NODAL: return (0);
@@ -971,9 +971,9 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
  * \internal
  */
 
-struct obj_stats *ex__get_stat_ptr(int exoid, struct obj_stats **obj_ptr)
+struct ex__obj_stats *ex__get_stat_ptr(int exoid, struct ex__obj_stats **obj_ptr)
 {
-  struct obj_stats *tmp_ptr;
+  struct ex__obj_stats *tmp_ptr;
 
   tmp_ptr = *obj_ptr;
 
@@ -985,7 +985,7 @@ struct obj_stats *ex__get_stat_ptr(int exoid, struct obj_stats **obj_ptr)
   }
 
   if (!tmp_ptr) { /* exoid not found */
-    tmp_ptr             = (struct obj_stats *)calloc(1, sizeof(struct obj_stats));
+    tmp_ptr             = (struct ex__obj_stats *)calloc(1, sizeof(struct ex__obj_stats));
     tmp_ptr->exoid      = exoid;
     tmp_ptr->next       = *obj_ptr;
     tmp_ptr->id_vals    = 0;
@@ -1011,9 +1011,9 @@ struct obj_stats *ex__get_stat_ptr(int exoid, struct obj_stats **obj_ptr)
  * \internal
  */
 
-void ex__rm_stat_ptr(int exoid, struct obj_stats **obj_ptr)
+void ex__rm_stat_ptr(int exoid, struct ex__obj_stats **obj_ptr)
 {
-  struct obj_stats *last_head_list_ptr, *tmp_ptr;
+  struct ex__obj_stats *last_head_list_ptr, *tmp_ptr;
 
   tmp_ptr            = *obj_ptr;
   last_head_list_ptr = *obj_ptr; /* save last head pointer */
@@ -1039,26 +1039,26 @@ void ex__rm_stat_ptr(int exoid, struct obj_stats **obj_ptr)
 }
 
 /* structures to hold number of blocks of that type for each file id */
-static struct list_item *ed_ctr_list = 0; /* edge blocks */
-static struct list_item *fa_ctr_list = 0; /* face blocks */
-static struct list_item *eb_ctr_list = 0; /* element blocks */
+static struct ex__list_item *ed_ctr_list = 0; /* edge blocks */
+static struct ex__list_item *fa_ctr_list = 0; /* face blocks */
+static struct ex__list_item *eb_ctr_list = 0; /* element blocks */
 /* structures to hold number of sets of that type for each file id */
-static struct list_item *ns_ctr_list  = 0; /* node sets */
-static struct list_item *es_ctr_list  = 0; /* edge sets */
-static struct list_item *fs_ctr_list  = 0; /* face sets */
-static struct list_item *ss_ctr_list  = 0; /* side sets */
-static struct list_item *els_ctr_list = 0; /* element sets */
+static struct ex__list_item *ns_ctr_list  = 0; /* node sets */
+static struct ex__list_item *es_ctr_list  = 0; /* edge sets */
+static struct ex__list_item *fs_ctr_list  = 0; /* face sets */
+static struct ex__list_item *ss_ctr_list  = 0; /* side sets */
+static struct ex__list_item *els_ctr_list = 0; /* element sets */
 /* structures to hold number of maps of that type for each file id */
-static struct list_item *nm_ctr_list  = 0; /* node maps */
-static struct list_item *edm_ctr_list = 0; /* edge maps */
-static struct list_item *fam_ctr_list = 0; /* face maps */
-static struct list_item *em_ctr_list  = 0; /* element maps */
+static struct ex__list_item *nm_ctr_list  = 0; /* node maps */
+static struct ex__list_item *edm_ctr_list = 0; /* edge maps */
+static struct ex__list_item *fam_ctr_list = 0; /* face maps */
+static struct ex__list_item *em_ctr_list  = 0; /* element maps */
 
 /*!
   \internal
   \undoc
 */
-struct list_item **ex__get_counter_list(ex_entity_type obj_type)
+struct ex__list_item **ex__get_counter_list(ex_entity_type obj_type)
 {
   /* Thread-safe, but is dealing with globals */
   /* Only called from a routine which will be using locks */
@@ -1107,20 +1107,20 @@ struct list_item **ex__get_counter_list(ex_entity_type obj_type)
  * \internal
  */
 
-int ex__inc_file_item(int                exoid,    /* file id */
-                      struct list_item **list_ptr) /* ptr to ptr to list_item */
+int ex__inc_file_item(int                    exoid,    /* file id */
+                      struct ex__list_item **list_ptr) /* ptr to ptr to list_item */
 {
-  struct list_item *tlist_ptr = *list_ptr; /* use temp list ptr to walk linked list */
-  while (tlist_ptr) {                      /* Walk linked list of file ids/vals */
-    if (exoid == tlist_ptr->exo_id) {      /* linear search for exodus file id */
-      break;                               /* Quit if found */
+  struct ex__list_item *tlist_ptr = *list_ptr; /* use temp list ptr to walk linked list */
+  while (tlist_ptr) {                          /* Walk linked list of file ids/vals */
+    if (exoid == tlist_ptr->exo_id) {          /* linear search for exodus file id */
+      break;                                   /* Quit if found */
     }
     tlist_ptr = tlist_ptr->next; /* Loop back if not */
   }
 
   if (!tlist_ptr) { /* ptr NULL? */
     /* allocate space for new structure record */
-    tlist_ptr         = (struct list_item *)calloc(1, sizeof(struct list_item));
+    tlist_ptr         = (struct ex__list_item *)calloc(1, sizeof(struct ex__list_item));
     tlist_ptr->exo_id = exoid;     /* insert file id */
     tlist_ptr->next   = *list_ptr; /* insert into head of list */
     *list_ptr         = tlist_ptr; /* fix up new head of list  */
@@ -1156,17 +1156,17 @@ int ex__inc_file_item(int                exoid,    /* file id */
  * \internal
  */
 
-int ex__get_file_item(int                exoid,    /* file id */
-                      struct list_item **list_ptr) /* ptr to ptr to list_item */
+int ex__get_file_item(int                    exoid,    /* file id */
+                      struct ex__list_item **list_ptr) /* ptr to ptr to list_item */
 {
   /* Not thread-safe: list_ptr passed in is a global
    * Would probably work ok with multiple threads since read-only,
    * but possible that list_ptr will be modified while being used
    */
-  struct list_item *tlist_ptr = *list_ptr; /* use temp list ptr to walk linked list */
-  while (tlist_ptr) {                      /* Walk linked list of file ids/vals */
-    if (exoid == tlist_ptr->exo_id) {      /* linear search for exodus file id */
-      break;                               /* Quit if found */
+  struct ex__list_item *tlist_ptr = *list_ptr; /* use temp list ptr to walk linked list */
+  while (tlist_ptr) {                          /* Walk linked list of file ids/vals */
+    if (exoid == tlist_ptr->exo_id) {          /* linear search for exodus file id */
+      break;                                   /* Quit if found */
     }
     tlist_ptr = tlist_ptr->next; /* Loop back if not */
   }
@@ -1203,13 +1203,13 @@ int ex__get_file_item(int                exoid,    /* file id */
  * \internal
  */
 
-void ex__rm_file_item(int                exoid,    /* file id */
-                      struct list_item **list_ptr) /* ptr to ptr to list_item */
+void ex__rm_file_item(int                    exoid,    /* file id */
+                      struct ex__list_item **list_ptr) /* ptr to ptr to list_item */
 
 {
-  struct list_item *last_head_list_ptr = *list_ptr; /* save last head pointer */
+  struct ex__list_item *last_head_list_ptr = *list_ptr; /* save last head pointer */
 
-  struct list_item *tlist_ptr = *list_ptr;
+  struct ex__list_item *tlist_ptr = *list_ptr;
   while (tlist_ptr) {                  /* Walk linked list of file ids/vals */
     if (exoid == tlist_ptr->exo_id) {  /* linear search for exodus file id */
       if (tlist_ptr == *list_ptr) {    /* Are we at the head of the list? */
@@ -1497,12 +1497,12 @@ static void ex_int_iisort64(int64_t v[], int64_t iv[], int64_t N)
  * algorithm It selects the pivot based on the median of the left,
  * right, and center values to try to avoid degenerate cases ocurring
  * when a single value is chosen.  It performs a quicksort on
- * intervals down to the EX_QSORT_CUTOFF size and then performs a final
+ * intervals down to the #EX_QSORT_CUTOFF size and then performs a final
  * insertion sort on the almost sorted final array.  Based on data in
- * Sedgewick, the EX_QSORT_CUTOFF value should be between 5 and 20.
+ * Sedgewick, the #EX_QSORT_CUTOFF value should be between 5 and 20.
  *
  * See Sedgewick for further details
- * Define DEBUG_QSORT at the top of this file and recompile to compile
+ * Define `DEBUG_QSORT` at the top of this file and recompile to compile
  * in code that verifies that the array is sorted.
  *
  * NOTE: The 'int' implementation below assumes that *both* the items

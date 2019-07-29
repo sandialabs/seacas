@@ -34,7 +34,8 @@ var NAVTREE =
         [ "Fortran API", "index.html#int64_fortran_api", null ],
         [ "Fortran Implementation", "index.html#int64_fortran_imp", null ]
       ] ],
-      [ "Options (Compression, Name Length, File Type)", "index.html#Database", null ]
+      [ "Database Options (Compression, Name Length, File Type)", "index.html#db_options", null ],
+      [ "Variable, Attribute, and Entity Block/Set Names", "index.html#names", null ]
     ] ],
     [ "Exodus Element Types", "element_types.html", [
       [ "Element Types", "element_types.html#types", null ],
@@ -97,16 +98,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_2exodus_for_2test_2test_nem_8f-example.html",
-"ex__get__partial__node__set_8c.html#a25f73f847bd6f6929558370b043593cf",
-"ex__put__variable__name_8c.html",
-"exo__jack_8c.html#a477e5b75bfb3c359b1d31f5d240b0b74",
-"exodusII_8h.html#ace4a906a205d1f5ff552df63cba73f5a",
-"group__FileVars.html#ga8b79c74f5807228669456780e4cdc6a9",
-"group__Internal.html#ga4f3f84ae94fbc092b9a662ea89b9d40d",
-"group__Internal.html#gaadcfef7e582e79f7269fa573b12291d3",
-"group__Internal.html#ggac775a5a0df48df4d0094526cdd600f8ca38d325108c7f6450a4b29a04ac438d4b",
-"group__ModelDescription.html#gabfb7063e4b9792f5acbf5cefd22d26c1",
-"group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87"
+"ex__get__partial__node__set__df_8c.html",
+"ex__put__variable__names_8c.html#a34813b717d28ab8154812fe658706756",
+"exo__jack_8c.html#a48b18538f419b4f8450a481152ef9282",
+"exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dc",
+"group__FileVars.html#ga98c2f53e6c9e2bbbfa3b752b3d8822a0",
+"group__Internal.html#ga4ac4f0e7de34bfc525e5c18eeb2f7413",
+"group__Internal.html#gaaf24b47badc59254147ae53ea21d0a3a",
+"group__Internal.html#ggac775a5a0df48df4d0094526cdd600f8ca501d58fd768e4ef7129a6509d1f803a3",
+"group__ModelDescription.html#gac0cc77c3159c314d1b3276fc38793a49",
+"group__Utilities.html#ga3126c6db205970eaa43de2b0eac0bf87"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

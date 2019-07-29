@@ -543,7 +543,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>elem_type</em>, </td>
+          <td class="paramname"><em>entity_descrip</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -715,6 +715,17 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">node_cmap_ids</td><td>Nodal comm. map IDs </td></tr>
+    <tr><td class="paramname">node_cmap_node_cnts</td><td>Number of nodes in each map </td></tr>
+    <tr><td class="paramname">elem_cmap_ids</td><td>Elemental comm. map IDs </td></tr>
+    <tr><td class="paramname">elem_cmap_elem_cnts</td><td>Number of elems in each map </td></tr>
+    <tr><td class="paramname">processor</td><td>This processor ID </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a27">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -901,7 +912,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following code segment will read the nodal coordinates from an open exodus file :</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="keywordtype">double</span> *x, *y, *z;</div><div class="line"></div><div class="line"><span class="comment">/* read nodal coordinates values from database */</span></div><div class="line">x = (<span class="keywordtype">double</span> *)calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div><div class="line">y = (<span class="keywordtype">double</span> *)calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div><div class="line"><span class="keywordflow">if</span> (num_dim &gt;= 3)</div><div class="line">   z = (<span class="keywordtype">double</span> *)calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div><div class="line"><span class="keywordflow">else</span></div><div class="line">   z = 0;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, x, y, z);</div><div class="line"></div><div class="line"><span class="comment">/* Do the same as the previous call in three separate calls */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, x,    NULL, NULL);</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, NULL, y,    NULL);</div><div class="line"><span class="keywordflow">if</span> (num_dim &gt;= 3)</div><div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, NULL, NULL, z);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a10">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_nvar_rd_8c-example.html#a2">/test/test_ts_nvar_rd.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a18">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a18">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nfaced_8c-example.html#a20">/test/testrd-nfaced.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a12">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a14">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a14">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a12">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a13">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a10">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a12">/test/testrdwt.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"></div><div class="line"><span class="keywordtype">double</span> *x, *y, *z;</div><div class="line"></div><div class="line"><span class="comment">/* read nodal coordinates values from database */</span></div><div class="line">x = (<span class="keywordtype">double</span> *)calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div><div class="line">y = (<span class="keywordtype">double</span> *)calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div><div class="line"><span class="keywordflow">if</span> (num_dim &gt;= 3)</div><div class="line">   z = (<span class="keywordtype">double</span> *)calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div><div class="line"><span class="keywordflow">else</span></div><div class="line">   z = 0;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, x, y, z);</div><div class="line"></div><div class="line"><span class="comment">/* Do the same as the previous call in three separate calls */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, x,    NULL, NULL);</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, NULL, y,    NULL);</div><div class="line"><span class="keywordflow">if</span> (num_dim &gt;= 3)</div><div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, NULL, NULL, z);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a10">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_nvar_rd_8c-example.html#a2">/test/test_ts_nvar_rd.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a18">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a18">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nfaced_8c-example.html#a20">/test/testrd-nfaced.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a12">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a14">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a14">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a12">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a13">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a10">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a12">/test/testrdwt.c</a>.</dd>
 </dl>
 
 </div>
@@ -945,7 +956,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following code segment will read the coordinate names from an open exodus file :</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">char</span> *coord_names[3];</div><div class="line"></div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_dim; i++) {</div><div class="line">   coord_names[i] = (<span class="keywordtype">char</span> *)calloc((..size of names...+1), <span class="keyword">sizeof</span>(char));</div><div class="line">}</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga200a95bc7ca0bd76e1ccbf8ec94aeb56">ex_get_coord_names</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, coord_names);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a19">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a19">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nfaced_8c-example.html#a21">/test/testrd-nfaced.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a13">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a15">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a15">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a13">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a14">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a11">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a14">/test/testrdwt.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"><span class="keywordtype">char</span> *coord_names[3];</div><div class="line"></div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_dim; i++) {</div><div class="line">   coord_names[i] = (<span class="keywordtype">char</span> *)calloc((..size of names...+1), <span class="keyword">sizeof</span>(char));</div><div class="line">}</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga200a95bc7ca0bd76e1ccbf8ec94aeb56">ex_get_coord_names</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, coord_names);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a19">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a19">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nfaced_8c-example.html#a21">/test/testrd-nfaced.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a13">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a15">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a15">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a13">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a14">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a11">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a14">/test/testrdwt.c</a>.</dd>
 </dl>
 
 </div>
@@ -1039,6 +1050,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NemesisI file ID </td></tr>
+    <tr><td class="paramname">el_blk_ids</td><td>Vector of global element IDs </td></tr>
+    <tr><td class="paramname">el_blk_cnts</td><td>Vector of global element counts </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a21">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -1093,6 +1112,17 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">map_id</td><td>Elemental comm map ID </td></tr>
+    <tr><td class="paramname">elem_ids</td><td>Element IDs </td></tr>
+    <tr><td class="paramname">side_ids</td><td>Element side IDs </td></tr>
+    <tr><td class="paramname">proc_ids</td><td>Processor IDs </td></tr>
+    <tr><td class="paramname">processor</td><td>This processor ID </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a29">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -1129,6 +1159,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">elem_blk_id</td><td>Element block ID </td></tr>
+    <tr><td class="paramname">elem_type</td><td>The name of the element type </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1336,7 +1374,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__ModelDescription.html#ga994b3b69829716c677a4a0897c5bccae">ex_get_init_ext()</a></dd></dl>
 <p>The following code segment will read the initialization parameters from the open exodus file:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_dim, num_nodes, num_elem, num_elem_blk,</div><div class="line">    num_node_sets, num_side_sets, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="keywordtype">char</span> title[<a class="code" href="group__StringLengths.html#gaf0f2173e3b202ddf5756531b4471dcb2">MAX_LINE_LENGTH</a>+1];</div><div class="line"></div><div class="line"><span class="comment">/* read database parameters */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gad0c4105c9e911d6be53e97a168937bde">ex_get_init</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, title, &amp;num_dim, &amp;num_nodes,</div><div class="line">                     &amp;num_elem, &amp;num_elem_blk, &amp;num_node_sets, &amp;num_side_sets);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a8">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test-empty_8c-example.html#a10">/test/test-empty.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a16">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a16">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a11">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a12">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a13">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a11">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a11">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrd_ss_8c-example.html#a10">/test/testrd_ss.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a9">/test/testrdd.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a10">/test/testrdwt.c</a>, and <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a20">/test/testwt-one-attrib.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_dim, num_nodes, num_elem, num_elem_blk,</div><div class="line">    num_node_sets, num_side_sets, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"></div><div class="line"><span class="keywordtype">char</span> title[<a class="code" href="group__StringLengths.html#gaf0f2173e3b202ddf5756531b4471dcb2">MAX_LINE_LENGTH</a>+1];</div><div class="line"></div><div class="line"><span class="comment">/* read database parameters */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gad0c4105c9e911d6be53e97a168937bde">ex_get_init</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, title, &amp;num_dim, &amp;num_nodes,</div><div class="line">                     &amp;num_elem, &amp;num_elem_blk, &amp;num_node_sets, &amp;num_side_sets);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a8">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test-empty_8c-example.html#a10">/test/test-empty.c</a>, <a class="el" href="_2test_2testrd-groups_8c-example.html#a16">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a16">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a11">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a12">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a13">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a11">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a11">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrd_ss_8c-example.html#a10">/test/testrd_ss.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a9">/test/testrdd.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a10">/test/testrdwt.c</a>, and <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a20">/test/testwt-one-attrib.c</a>.</dd>
 </dl>
 
 </div>
@@ -1583,7 +1621,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following code will read an element order map from an open exodus file :</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> *elem_map, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* read element order map */</span></div><div class="line">elem_map = (<span class="keywordtype">int</span> *)calloc(num_elem, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga30b961ff5c0887cc5a56d5292a469219">ex_get_map</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, elem_map);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a24">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a24">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a18">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a20">/test/testrd.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a14">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a19">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a12">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a16">/test/testrdwt.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> *elem_map, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* read element order map */</span></div><div class="line">elem_map = (<span class="keywordtype">int</span> *)calloc(num_elem, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga30b961ff5c0887cc5a56d5292a469219">ex_get_map</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, elem_map);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a24">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a24">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a18">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a20">/test/testrd.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a14">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a19">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a12">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a16">/test/testrdwt.c</a>.</dd>
 </dl>
 
 </div>
@@ -1745,6 +1783,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">map_id</td><td>Map ID </td></tr>
+    <tr><td class="paramname">node_ids</td><td>FEM node IDs </td></tr>
+    <tr><td class="paramname">proc_ids</td><td>Processor IDs </td></tr>
+    <tr><td class="paramname">processor</td><td>This processor ID </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a28">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -1787,6 +1835,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">global_ids</td><td>Global IDs of node sets </td></tr>
+    <tr><td class="paramname">node_cnts</td><td>Count of nodes in node sets </td></tr>
+    <tr><td class="paramname">df_cnts</td><td>Count of dist. factors in ns </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a22">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -2474,6 +2531,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">elem_mapi</td><td>Internal element IDs </td></tr>
+    <tr><td class="paramname">elem_mapb</td><td>Border element IDs </td></tr>
+    <tr><td class="paramname">processor</td><td>Processor ID </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a26">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -2522,6 +2588,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">node_mapi</td><td>Internal FEM node IDs </td></tr>
+    <tr><td class="paramname">node_mapb</td><td>Border FEM node IDs </td></tr>
+    <tr><td class="paramname">node_mape</td><td>External FEM node IDs </td></tr>
+    <tr><td class="paramname">processor</td><td>Processor IDs </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a25">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -2589,31 +2665,31 @@ Functions</h2></td></tr>
 </dl>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">ex_entity_type  </th><th class="markdownTableHeadNone">description   </th></tr>
+<th class="markdownTableHeadNone"><a class="el" href="exodusII_8h.html#a36089ec5db710bc43db9ff7d70b38b79">ex_entity_type</a>  </th><th class="markdownTableHeadNone">description   </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_NODE_SET  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_EDGE_BLOCK  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0545aa5bf16712b8cfb3df0f03d17f65">EX_EDGE_BLOCK</a>  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_SET  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2cb06b0c979985302d634fb014b2feba">EX_EDGE_SET</a>  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_BLOCK  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a874689df09da1bd5faefcd6ec6350391">EX_FACE_BLOCK</a>  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_FACE_SET  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0bd66a762fd0281609f7be23a1ec5ee5">EX_FACE_SET</a>  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_ELEM_BLOCK  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_SET  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_SIDE_SET  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_MAP  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a>  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_NODE_MAP  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a>  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_MAP  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2fafbaea7bc367649cc7083c9289dd25">EX_EDGE_MAP</a>  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_MAP  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a956868d459ca384a8f92931f70627758">EX_FACE_MAP</a>  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
 </table>
 <p>For an example of code to read an object property, refer to the description for <a class="el" href="group__ModelDescription.html#gaf5efefd0c9a16732d628ad438db897fa">ex_get_prop_names()</a>. </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a32">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a32">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a26">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a28">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a23">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a20">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a27">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a19">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a29">/test/testrdwt.c</a>.</dd>
@@ -2681,31 +2757,31 @@ Functions</h2></td></tr>
 </dl>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">ex_entity_type  </th><th class="markdownTableHeadNone">description   </th></tr>
+<th class="markdownTableHeadNone"><a class="el" href="exodusII_8h.html#a36089ec5db710bc43db9ff7d70b38b79">ex_entity_type</a>  </th><th class="markdownTableHeadNone">description   </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_NODE_SET  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_EDGE_BLOCK  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0545aa5bf16712b8cfb3df0f03d17f65">EX_EDGE_BLOCK</a>  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_SET  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2cb06b0c979985302d634fb014b2feba">EX_EDGE_SET</a>  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_BLOCK  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a874689df09da1bd5faefcd6ec6350391">EX_FACE_BLOCK</a>  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_FACE_SET  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0bd66a762fd0281609f7be23a1ec5ee5">EX_FACE_SET</a>  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_ELEM_BLOCK  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_SET  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_SIDE_SET  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_MAP  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a>  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_NODE_MAP  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a>  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_MAP  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2fafbaea7bc367649cc7083c9289dd25">EX_EDGE_MAP</a>  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_MAP  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a956868d459ca384a8f92931f70627758">EX_FACE_MAP</a>  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
 </table>
 <p>For an example of code to read an array of object properties, refer to the description for <a class="el" href="group__ModelDescription.html#gaf5efefd0c9a16732d628ad438db897fa">ex_get_prop_names()</a>. </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a40">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a40">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a35">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a36">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a17">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a28">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a35">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a27">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a39">/test/testrdwt.c</a>.</dd>
@@ -2760,34 +2836,34 @@ Functions</h2></td></tr>
 </dl>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">ex_entity_type  </th><th class="markdownTableHeadNone">description   </th></tr>
+<th class="markdownTableHeadNone"><a class="el" href="exodusII_8h.html#a36089ec5db710bc43db9ff7d70b38b79">ex_entity_type</a>  </th><th class="markdownTableHeadNone">description   </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_NODE_SET  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_EDGE_BLOCK  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0545aa5bf16712b8cfb3df0f03d17f65">EX_EDGE_BLOCK</a>  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_SET  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2cb06b0c979985302d634fb014b2feba">EX_EDGE_SET</a>  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_BLOCK  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a874689df09da1bd5faefcd6ec6350391">EX_FACE_BLOCK</a>  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_FACE_SET  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0bd66a762fd0281609f7be23a1ec5ee5">EX_FACE_SET</a>  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_ELEM_BLOCK  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_SET  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_SIDE_SET  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_MAP  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a>  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_NODE_MAP  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a>  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_MAP  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2fafbaea7bc367649cc7083c9289dd25">EX_EDGE_MAP</a>  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_MAP  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a956868d459ca384a8f92931f70627758">EX_FACE_MAP</a>  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
 </table>
 <p>As an example, the following code segment reads in properties assigned to node sets:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, num_props, *prop_values;</div><div class="line"><span class="keywordtype">char</span> *prop_names[MAX_PROPS];</div><div class="line"></div><div class="line"><span class="comment">/* read node set properties */</span></div><div class="line">num_props = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca67091b23e889fe18bffeeffc9ab50dfc">EX_INQ_NS_PROP</a>);</div><div class="line"></div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_props; i++) {</div><div class="line">   prop_names[i] = (<span class="keywordtype">char</span> *) malloc ((<a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a>+1), <span class="keyword">sizeof</span>(char));</div><div class="line">   prop_values = (<span class="keywordtype">int</span> *) malloc (num_node_sets, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div><div class="line">}</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gaf5efefd0c9a16732d628ad438db897fa">ex_get_prop_names</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>,<a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>,prop_names);</div><div class="line"></div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_props; i++) {</div><div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga74cf2c88e0f5f5d98247033b6f9d6e9e">ex_get_prop_array</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, prop_names[i],</div><div class="line">                             prop_values);</div><div class="line">}</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a31">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a31">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a25">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a27">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a22">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a19">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a26">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a18">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a27">/test/testrdwt.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, num_props, *prop_values;</div><div class="line"><span class="keywordtype">char</span> *prop_names[MAX_PROPS];</div><div class="line"></div><div class="line"><span class="comment">/* read node set properties */</span></div><div class="line">num_props = <a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca67091b23e889fe18bffeeffc9ab50dfc">EX_INQ_NS_PROP</a>);</div><div class="line"></div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_props; i++) {</div><div class="line">   prop_names[i] = (<span class="keywordtype">char</span> *) malloc ((<a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a>+1), <span class="keyword">sizeof</span>(char));</div><div class="line">   prop_values = (<span class="keywordtype">int</span> *) malloc (num_node_sets, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div><div class="line">}</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gaf5efefd0c9a16732d628ad438db897fa">ex_get_prop_names</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>,<a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>,prop_names);</div><div class="line"></div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_props; i++) {</div><div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga74cf2c88e0f5f5d98247033b6f9d6e9e">ex_get_prop_array</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, prop_names[i],</div><div class="line">                             prop_values);</div><div class="line">}</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-groups_8c-example.html#a31">/test/testrd-groups.c</a>, <a class="el" href="_2test_2testrd-long-name_8c-example.html#a31">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a25">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a27">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a22">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a19">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_par_8c-example.html#a26">/test/testrd_par.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a18">/test/testrdd.c</a>, and <a class="el" href="_2test_2testrdwt_8c-example.html#a27">/test/testrdwt.c</a>.</dd>
 </dl>
 
 </div>
@@ -3130,6 +3206,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">global_ids</td><td>Global side-set IDs </td></tr>
+    <tr><td class="paramname">side_cnts</td><td>Global side count </td></tr>
+    <tr><td class="paramname">df_cnts</td><td>Global dist. factor count </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a23">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -3495,6 +3580,17 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">node_cmap_ids</td><td>Node map IDs </td></tr>
+    <tr><td class="paramname">node_cmap_node_cnts</td><td>Nodes in nodal comm </td></tr>
+    <tr><td class="paramname">elem_cmap_ids</td><td>Elem map IDs </td></tr>
+    <tr><td class="paramname">elem_cmap_elem_cnts</td><td>Elems in elemental comm </td></tr>
+    <tr><td class="paramname">processor</td><td>This processor ID </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a16">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -3555,6 +3651,18 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">node_cmap_ids</td><td>Node map IDs </td></tr>
+    <tr><td class="paramname">node_cmap_node_cnts</td><td>Nodes in nodal comm </td></tr>
+    <tr><td class="paramname">node_proc_ptrs</td><td>Pointer into array for node maps </td></tr>
+    <tr><td class="paramname">elem_cmap_ids</td><td>Elem map IDs </td></tr>
+    <tr><td class="paramname">elem_cmap_elem_cnts</td><td>Elems in elemental comm </td></tr>
+    <tr><td class="paramname">elem_proc_ptrs</td><td>Pointer into array for elem maps </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a31">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -3831,7 +3939,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following will write the nodal coordinates to an open exodus file :</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">// /* if file opened with compute word size of sizeof(float) */</span></div><div class="line"><span class="keywordtype">float</span> x[8], y[8], z[8];</div><div class="line"></div><div class="line"><span class="comment">// /* write nodal coordinates values to database */</span></div><div class="line">x[0] = 0.0; y[0] = 0.0; z[0] = 0.0;</div><div class="line">x[1] = 0.0; y[1] = 0.0; z[1] = 1.0;</div><div class="line">x[2] = 1.0; y[2] = 0.0; z[2] = 1.0;</div><div class="line">x[3] = 1.0; y[3] = 0.0; z[3] = 0.0;</div><div class="line">x[4] = 0.0; y[4] = 1.0; z[4] = 0.0;</div><div class="line">x[5] = 0.0; y[5] = 1.0; z[5] = 1.0;</div><div class="line">x[6] = 1.0; y[6] = 1.0; z[6] = 1.0;</div><div class="line">x[7] = 1.0; y[7] = 1.0; z[7] = 0.0;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, x, y, z);</div><div class="line"></div><div class="line"><span class="comment">/* Do the same as the previous call in three separate calls */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, x,    NULL, NULL);</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, NULL, y,    NULL);</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, NULL, NULL, z);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a19">/test/create_mesh.c</a>, <a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a45">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a28">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a9">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a2">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a13">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a14">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a12">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a11">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a30">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nfaced_8c-example.html#a29">/test/testwt-nfaced.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a9">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a9">/test/testwt-one-attrib.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a10">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a8">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a9">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a8">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a8">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a11">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a9">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a7">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a8">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a8">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a8">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a5">/test/twod.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">// /* if file opened with compute word size of sizeof(float) */</span></div><div class="line"><span class="keywordtype">float</span> x[8], y[8], z[8];</div><div class="line"></div><div class="line"><span class="comment">// /* write nodal coordinates values to database */</span></div><div class="line">x[0] = 0.0; y[0] = 0.0; z[0] = 0.0;</div><div class="line">x[1] = 0.0; y[1] = 0.0; z[1] = 1.0;</div><div class="line">x[2] = 1.0; y[2] = 0.0; z[2] = 1.0;</div><div class="line">x[3] = 1.0; y[3] = 0.0; z[3] = 0.0;</div><div class="line">x[4] = 0.0; y[4] = 1.0; z[4] = 0.0;</div><div class="line">x[5] = 0.0; y[5] = 1.0; z[5] = 1.0;</div><div class="line">x[6] = 1.0; y[6] = 1.0; z[6] = 1.0;</div><div class="line">x[7] = 1.0; y[7] = 1.0; z[7] = 0.0;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, x, y, z);</div><div class="line"></div><div class="line"><span class="comment">/* Do the same as the previous call in three separate calls */</span></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, x,    NULL, NULL);</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, NULL, y,    NULL);</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, NULL, NULL, z);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a19">/test/create_mesh.c</a>, <a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a45">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a28">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a9">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a2">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a13">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a14">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a12">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a11">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a30">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nfaced_8c-example.html#a29">/test/testwt-nfaced.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a9">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a9">/test/testwt-one-attrib.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a10">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a8">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a9">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a8">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a8">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a11">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a9">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a7">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a8">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a8">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a8">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a5">/test/twod.c</a>.</dd>
 </dl>
 
 </div>
@@ -3875,7 +3983,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following coding will write the coordinate names to an open exodus file :</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="keywordtype">char</span> *coord_names[3];</div><div class="line">coord_names[0] = <span class="stringliteral">&quot;xcoor&quot;</span>;</div><div class="line">coord_names[1] = <span class="stringliteral">&quot;ycoor&quot;</span>;</div><div class="line">coord_names[2] = <span class="stringliteral">&quot;zcoor&quot;</span>;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga5aa680de654224107fa67a0e019b6bd1">ex_put_coord_names</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, coord_names);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a46">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a10">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a15">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a15">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a13">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a12">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a31">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nfaced_8c-example.html#a30">/test/testwt-nfaced.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a10">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a10">/test/testwt-one-attrib.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a11">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a10">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a9">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a8">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a10">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a9">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a9">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a12">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a10">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a8">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a9">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a9">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a9">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a6">/test/twod.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"></div><div class="line"><span class="keywordtype">char</span> *coord_names[3];</div><div class="line">coord_names[0] = <span class="stringliteral">&quot;xcoor&quot;</span>;</div><div class="line">coord_names[1] = <span class="stringliteral">&quot;ycoor&quot;</span>;</div><div class="line">coord_names[2] = <span class="stringliteral">&quot;zcoor&quot;</span>;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga5aa680de654224107fa67a0e019b6bd1">ex_put_coord_names</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, coord_names);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2CreateEdgeFace_8c-example.html#a46">/test/CreateEdgeFace.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a10">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a15">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a15">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a13">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a12">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nface-nside_8c-example.html#a31">/test/testwt-nface-nside.c</a>, <a class="el" href="_2test_2testwt-nfaced_8c-example.html#a30">/test/testwt-nfaced.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a10">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a10">/test/testwt-one-attrib.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a11">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a10">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a9">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a8">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a10">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a9">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a9">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a12">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a10">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a8">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a9">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a9">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a9">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a6">/test/twod.c</a>.</dd>
 </dl>
 
 </div>
@@ -3970,6 +4078,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NemesisI file ID </td></tr>
+    <tr><td class="paramname">el_blk_ids</td><td>Vector of global element IDs </td></tr>
+    <tr><td class="paramname">el_blk_cnts</td><td>Vector of global element counts </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a10">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -4024,6 +4140,17 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">map_id</td><td>Elemental comm map ID </td></tr>
+    <tr><td class="paramname">elem_ids</td><td>Vector of element IDs </td></tr>
+    <tr><td class="paramname">side_ids</td><td>Vector of side IDs </td></tr>
+    <tr><td class="paramname">proc_ids</td><td>Vector of processor IDs </td></tr>
+    <tr><td class="paramname">processor</td><td>This processor ID </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a18">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -4195,7 +4322,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
-    <tr><td class="paramname">title</td><td>Database title. Maximum length is MAX_LINE_LENGTH. </td></tr>
+    <tr><td class="paramname">title</td><td>Database title. Maximum length is <a class="el" href="group__StringLengths.html#gaf0f2173e3b202ddf5756531b4471dcb2">MAX_LINE_LENGTH</a>. </td></tr>
     <tr><td class="paramname">num_dim</td><td>The dimensionality of the database. This is the number of coordinates per node. </td></tr>
     <tr><td class="paramname">num_nodes</td><td>The number of nodal points. </td></tr>
     <tr><td class="paramname">num_elem</td><td>The number of elements. </td></tr>
@@ -4206,7 +4333,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following code segment will initialize an open exodus file with the specified parameters:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_dim, num_nods, num_el, num_el_blk, num_ns, num_ss, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* initialize file with parameters */</span></div><div class="line">num_dim = 3; num_nods = 46; num_el = 5; num_el_blk = 5;</div><div class="line">num_ns = 2; num_ss = 5;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <span class="stringliteral">&quot;This is the title&quot;</span>, num_dim,</div><div class="line">                     num_nods, num_el,num_el_blk, num_ns, num_ss);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a17">/test/create_mesh.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a25">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a7">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a10">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a12">/test/test_ts_partial_nvar.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a11">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a12">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a10">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a9">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a7">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a8">/test/testwt-one-attrib.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a9">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a7">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a7">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a6">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a6">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a7">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a7">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a7">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a7">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a7">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a6">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a6">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a7">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a7">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a4">/test/twod.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_dim, num_nods, num_el, num_el_blk, num_ns, num_ss, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"></div><div class="line"><span class="comment">/* initialize file with parameters */</span></div><div class="line">num_dim = 3; num_nods = 46; num_el = 5; num_el_blk = 5;</div><div class="line">num_ns = 2; num_ss = 5;</div><div class="line"></div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <span class="stringliteral">&quot;This is the title&quot;</span>, num_dim,</div><div class="line">                     num_nods, num_el,num_el_blk, num_ns, num_ss);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2create_mesh_8c-example.html#a17">/test/create_mesh.c</a>, <a class="el" href="_2test_2rd_wt_mesh_8c-example.html#a25">/test/rd_wt_mesh.c</a>, <a class="el" href="_2test_2test_ts_files_8c-example.html#a7">/test/test_ts_files.c</a>, <a class="el" href="_2test_2test_ts_nvar_8c-example.html#a10">/test/test_ts_nvar.c</a>, <a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a12">/test/test_ts_partial_nvar.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a11">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a12">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a10">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a9">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a7">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-one-attrib_8c-example.html#a8">/test/testwt-one-attrib.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a9">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a7">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-results_8c-example.html#a7">/test/testwt-results.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a6">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt-zeron_8c-example.html#a6">/test/testwt-zeron.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a7">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a7">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a7">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a7">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a7">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a6">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a6">/test/testwt_ss.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a7">/test/testwtd.c</a>, <a class="el" href="_2test_2testwtm_8c-example.html#a7">/test/testwtm.c</a>, and <a class="el" href="_2test_2twod_8c-example.html#a4">/test/twod.c</a>.</dd>
 </dl>
 
 </div>
@@ -4518,7 +4645,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>The following code generates a default element order map and outputs it to an open exodus file. This is a trivial case and included just for illustration. Since this map is optional, it should be written out only if it contains something other than the default map.</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>;</div><div class="line"><span class="keywordtype">int</span> *elem_map = (<span class="keywordtype">int</span> *)calloc(num_elem, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_elem; i++) {</div><div class="line">   elem_map[i] = i+1;</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga5ceec0317e895d0d2a435321a0188475">ex_put_map</a>(<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, elem_map);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a15">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a17">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a20">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a18">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a17">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a15">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a16">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a15">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a15">/test/testwt.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a10">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a13">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a15">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a9">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a10">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a10">/test/testwtm.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div><div class="line"><span class="keywordtype">int</span> *elem_map = (<span class="keywordtype">int</span> *)calloc(num_elem, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; num_elem; i++) {</div><div class="line">   elem_map[i] = i+1;</div><div class="line">}</div><div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga5ceec0317e895d0d2a435321a0188475">ex_put_map</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, elem_map);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a15">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a17">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a20">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a18">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a17">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a15">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a16">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a15">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a15">/test/testwt.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a10">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a13">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a15">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a9">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a10">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a10">/test/testwtm.c</a>.</dd>
 </dl>
 
 </div>
@@ -4706,6 +4833,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">map_id</td><td>Nodal comm map ID </td></tr>
+    <tr><td class="paramname">node_ids</td><td>FEM node IDs </td></tr>
+    <tr><td class="paramname">proc_ids</td><td>Processor IDs </td></tr>
+    <tr><td class="paramname">processor</td><td>This processor ID </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a17">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -4748,6 +4885,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NemesisI file ID </td></tr>
+    <tr><td class="paramname">global_ids</td><td>Vector of global node-set IDs </td></tr>
+    <tr><td class="paramname">node_cnts</td><td>Vector of node counts in node-sets </td></tr>
+    <tr><td class="paramname">df_cnts</td><td>Vector of dist factor counts in node-sets </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a11">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -5463,6 +5609,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">elem_mapi</td><td>Internal FEM element IDs </td></tr>
+    <tr><td class="paramname">elem_mapb</td><td>Border FEM element IDs </td></tr>
+    <tr><td class="paramname">processor</td><td>This processor ID </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a15">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -5511,6 +5666,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">node_mapi</td><td>Internal FEM node IDs </td></tr>
+    <tr><td class="paramname">node_mapb</td><td>Border FEM node IDs </td></tr>
+    <tr><td class="paramname">node_mape</td><td>External FEM node IDs </td></tr>
+    <tr><td class="paramname">proc_id</td><td>This processor ID </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a14">/test/test_nemesis.c</a>.</dd>
 </dl>
 
@@ -5582,31 +5747,31 @@ Functions</h2></td></tr>
 </dl>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">ex_entity_type  </th><th class="markdownTableHeadNone">description   </th></tr>
+<th class="markdownTableHeadNone"><a class="el" href="exodusII_8h.html#a36089ec5db710bc43db9ff7d70b38b79">ex_entity_type</a>  </th><th class="markdownTableHeadNone">description   </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_NODE_SET  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_EDGE_BLOCK  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0545aa5bf16712b8cfb3df0f03d17f65">EX_EDGE_BLOCK</a>  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_SET  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2cb06b0c979985302d634fb014b2feba">EX_EDGE_SET</a>  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_BLOCK  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a874689df09da1bd5faefcd6ec6350391">EX_FACE_BLOCK</a>  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_FACE_SET  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0bd66a762fd0281609f7be23a1ec5ee5">EX_FACE_SET</a>  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_ELEM_BLOCK  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_SET  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_SIDE_SET  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_MAP  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a>  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_NODE_MAP  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a>  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_MAP  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2fafbaea7bc367649cc7083c9289dd25">EX_EDGE_MAP</a>  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_MAP  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a956868d459ca384a8f92931f70627758">EX_FACE_MAP</a>  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
 </table>
 <p>For an example of code to write out an object property, refer to the description for <a class="el" href="group__ModelDescription.html#ga40bbb7194ab379a723548d61a62a3096">ex_put_prop_names()</a>. </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a23">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a30">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a35">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a23">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a22">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a25">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a21">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a20">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a14">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a30">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a14">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a14">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a17">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a20">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a16">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a14">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a14">/test/testwtm.c</a>.</dd>
@@ -5672,31 +5837,31 @@ Functions</h2></td></tr>
 </dl>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">ex_entity_type  </th><th class="markdownTableHeadNone">description   </th></tr>
+<th class="markdownTableHeadNone"><a class="el" href="exodusII_8h.html#a36089ec5db710bc43db9ff7d70b38b79">ex_entity_type</a>  </th><th class="markdownTableHeadNone">description   </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_NODE_SET  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_EDGE_BLOCK  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0545aa5bf16712b8cfb3df0f03d17f65">EX_EDGE_BLOCK</a>  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_SET  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2cb06b0c979985302d634fb014b2feba">EX_EDGE_SET</a>  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_BLOCK  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a874689df09da1bd5faefcd6ec6350391">EX_FACE_BLOCK</a>  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_FACE_SET  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0bd66a762fd0281609f7be23a1ec5ee5">EX_FACE_SET</a>  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_ELEM_BLOCK  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_SET  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_SIDE_SET  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_MAP  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a>  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_NODE_MAP  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a>  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_MAP  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2fafbaea7bc367649cc7083c9289dd25">EX_EDGE_MAP</a>  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_MAP  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a956868d459ca384a8f92931f70627758">EX_FACE_MAP</a>  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
 </table>
 <p>For an example of code to write an array of object properties, refer to the description for <a class="el" href="group__ModelDescription.html#ga40bbb7194ab379a723548d61a62a3096">ex_put_prop_names()</a>. </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a31">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a40">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a43">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a31">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a29">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-nsided_8c-example.html#a26">/test/testwt-nsided.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a28">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a27">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt-zeroe_8c-example.html#a15">/test/testwt-zeroe.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a38">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a34">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a21">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a33">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a27">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a30">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a21">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a21">/test/testwtm.c</a>.</dd>
@@ -5761,34 +5926,34 @@ Functions</h2></td></tr>
 </dl>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">ex_entity_type  </th><th class="markdownTableHeadNone">description   </th></tr>
+<th class="markdownTableHeadNone"><a class="el" href="exodusII_8h.html#a36089ec5db710bc43db9ff7d70b38b79">ex_entity_type</a>  </th><th class="markdownTableHeadNone">description   </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_NODE_SET  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>  </td><td class="markdownTableBodyNone">Node Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_EDGE_BLOCK  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0545aa5bf16712b8cfb3df0f03d17f65">EX_EDGE_BLOCK</a>  </td><td class="markdownTableBodyNone">Edge Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_SET  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2cb06b0c979985302d634fb014b2feba">EX_EDGE_SET</a>  </td><td class="markdownTableBodyNone">Edge Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_BLOCK  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a874689df09da1bd5faefcd6ec6350391">EX_FACE_BLOCK</a>  </td><td class="markdownTableBodyNone">Face Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_FACE_SET  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a0bd66a762fd0281609f7be23a1ec5ee5">EX_FACE_SET</a>  </td><td class="markdownTableBodyNone">Face Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_ELEM_BLOCK  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>  </td><td class="markdownTableBodyNone">Element Block entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_SET  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7c93a8f699b07275ce4e335cd951e6c5">EX_ELEM_SET</a>  </td><td class="markdownTableBodyNone">Element Set entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_SIDE_SET  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>  </td><td class="markdownTableBodyNone">Side Set entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_ELEM_MAP  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a>  </td><td class="markdownTableBodyNone">Element Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_NODE_MAP  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a>  </td><td class="markdownTableBodyNone">Node Map entity type   </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">EX_EDGE_MAP  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a2fafbaea7bc367649cc7083c9289dd25">EX_EDGE_MAP</a>  </td><td class="markdownTableBodyNone">Edge Map entity type   </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">EX_FACE_MAP  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
+<td class="markdownTableBodyNone"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a956868d459ca384a8f92931f70627758">EX_FACE_MAP</a>  </td><td class="markdownTableBodyNone">Face Map entity type   </td></tr>
 </table>
 <p>For instance, suppose a user wanted to assign the 1st, 3rd, and 5th element blocks (those element blocks stored 1st, 3rd, and 5th, regardless of their ID) to a group (property) called <b>TOP</b>, and the 2nd, 3rd, and 4th element blocks to a group called <b>LSIDE</b>. This could be accomplished with the following code:</p>
-<div class="fragment"><div class="line"><span class="keywordtype">char</span>* prop_names[2];</div><div class="line"><span class="keywordtype">int</span> top_part[]   = {1,0,1,0,1};</div><div class="line"><span class="keywordtype">int</span> lside_part[] = {0,1,1,1,0};</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> <span class="keywordtype">id</span>[] = {10, 20, 30, 40, 50};</div><div class="line"></div><div class="line">prop_names[0] = <span class="stringliteral">&quot;TOP&quot;</span>;</div><div class="line">prop_names[1] = <span class="stringliteral">&quot;LSIDE&quot;</span>;</div><div class="line"></div><div class="line"><span class="comment">/* This call to ex_put_prop_names is optional, but more efficient */</span></div><div class="line"><a class="code" href="group__ModelDescription.html#ga40bbb7194ab379a723548d61a62a3096">ex_put_prop_names</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, 2, prop_names);</div><div class="line"></div><div class="line"><span class="comment">/* The property values can be output individually thus */</span></div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; 5; i++) {</div><div class="line">   <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, <span class="keywordtype">id</span>[i], prop_names[0],</div><div class="line">                top_part[i]);</div><div class="line"></div><div class="line">   <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, <span class="keywordtype">id</span>[i], prop_names[1],</div><div class="line">                lside_part[i]);</div><div class="line">}</div><div class="line"></div><div class="line"><span class="comment">/* Alternatively, the values can be output as an array */</span></div><div class="line"><a class="code" href="group__ModelDescription.html#ga99aa0e6f185e1a7dfdee4f92ea770e8c">ex_put_prop_array</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, prop_names[0],</div><div class="line">                   top_part);</div><div class="line"></div><div class="line"><a class="code" href="group__ModelDescription.html#ga99aa0e6f185e1a7dfdee4f92ea770e8c">ex_put_prop_array</a> (<a class="code" href="structobj__stats.html#ae6369b4b2a96580664f725630eb7508c">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, prop_names[1],</div><div class="line">                   lside_part);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a22">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a28">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a34">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a22">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a21">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a20">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a19">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a29">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a11">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a13">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a15">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a19">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a15">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a13">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a13">/test/testwtm.c</a>.</dd>
+<div class="fragment"><div class="line"><span class="keywordtype">char</span>* prop_names[2];</div><div class="line"><span class="keywordtype">int</span> top_part[]   = {1,0,1,0,1};</div><div class="line"><span class="keywordtype">int</span> lside_part[] = {0,1,1,1,0};</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> <span class="keywordtype">id</span>[] = {10, 20, 30, 40, 50};</div><div class="line"></div><div class="line">prop_names[0] = <span class="stringliteral">&quot;TOP&quot;</span>;</div><div class="line">prop_names[1] = <span class="stringliteral">&quot;LSIDE&quot;</span>;</div><div class="line"></div><div class="line"><span class="comment">/* This call to ex_put_prop_names is optional, but more efficient */</span></div><div class="line"><a class="code" href="group__ModelDescription.html#ga40bbb7194ab379a723548d61a62a3096">ex_put_prop_names</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, 2, prop_names);</div><div class="line"></div><div class="line"><span class="comment">/* The property values can be output individually thus */</span></div><div class="line"><span class="keywordflow">for</span> (i=0; i &lt; 5; i++) {</div><div class="line">   <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, <span class="keywordtype">id</span>[i], prop_names[0],</div><div class="line">                top_part[i]);</div><div class="line"></div><div class="line">   <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, <span class="keywordtype">id</span>[i], prop_names[1],</div><div class="line">                lside_part[i]);</div><div class="line">}</div><div class="line"></div><div class="line"><span class="comment">/* Alternatively, the values can be output as an array */</span></div><div class="line"><a class="code" href="group__ModelDescription.html#ga99aa0e6f185e1a7dfdee4f92ea770e8c">ex_put_prop_array</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, prop_names[0],</div><div class="line">                   top_part);</div><div class="line"></div><div class="line"><a class="code" href="group__ModelDescription.html#ga99aa0e6f185e1a7dfdee4f92ea770e8c">ex_put_prop_array</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, prop_names[1],</div><div class="line">                   lside_part);</div></div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_ts_files_8c-example.html#a22">/test/test_ts_files.c</a>, <a class="el" href="_2test_2testrdwt_8c-example.html#a28">/test/testrdwt.c</a>, <a class="el" href="_2test_2testwt-compress_8c-example.html#a34">/test/testwt-compress.c</a>, <a class="el" href="_2test_2testwt-groups_8c-example.html#a22">/test/testwt-groups.c</a>, <a class="el" href="_2test_2testwt-long-name_8c-example.html#a21">/test/testwt-long-name.c</a>, <a class="el" href="_2test_2testwt-oned_8c-example.html#a20">/test/testwt-oned.c</a>, <a class="el" href="_2test_2testwt-partial_8c-example.html#a19">/test/testwt-partial.c</a>, <a class="el" href="_2test_2testwt_8c-example.html#a29">/test/testwt.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a11">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt2_8c-example.html#a13">/test/testwt2.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a15">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nc_8c-example.html#a19">/test/testwt_nc.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a15">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwtd_8c-example.html#a13">/test/testwtd.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a13">/test/testwtm.c</a>.</dd>
 </dl>
 
 </div>
@@ -6041,6 +6206,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NemesisI file ID </td></tr>
+    <tr><td class="paramname">global_ids</td><td>Vector of global side-set IDs </td></tr>
+    <tr><td class="paramname">side_cnts</td><td>Vector of element/side counts in each side set </td></tr>
+    <tr><td class="paramname">df_cnts</td><td>Vector of dist. factor counts in each side set </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2test_nemesis_8c-example.html#a12">/test/test_nemesis.c</a>.</dd>
 </dl>
 

@@ -56,7 +56,10 @@
 #include "exodusII_int.h" // for EX_WARN, ex__comp_ws, etc
 
 /*!
-\ingroup ResultsData
+  \internal
+  \ingroup ResultsData
+  \note This function is called internally by ex_put_partial_var() to handle
+  the reading of nodal variable values.
 
  * writes the values of a single nodal variable for a partial block at
  * one single time step to the database; assume the first time step

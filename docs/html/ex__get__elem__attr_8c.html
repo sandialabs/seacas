@@ -131,7 +131,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000006">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#ga2b1eea67e34b3167bd22febc06081d11">ex_get_attr()</a>(exoid, EX_ELEM_BLOCK, elem_blk_id, attrib) instead</dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000007">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#ga2b1eea67e34b3167bd22febc06081d11">ex_get_attr()</a>(exoid, EX_ELEM_BLOCK, elem_blk_id, attrib) instead</dd></dl>
 <p>The function <a class="el" href="ex__get__elem__attr_8c.html#a85540f60f4099b219138dfee5566871e">ex_get_elem_attr()</a> reads the attributes for an element block. Memory must be allocated for(num_attr x num_elem_this_blk) attributes before this routine is called.</p>
 <p>Because the attributes are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__get__elem__attr_8c.html#a85540f60f4099b219138dfee5566871e">ex_get_elem_attr()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>

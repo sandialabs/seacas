@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['ex_5f_5fcoordinate_5fframe_5ftype',['ex__coordinate_frame_type',['../group__Internal.html#ga3ca31427d30cc074ff6715bdef3bae1e',1,'exodusII_int.h']]],
   ['ex_5f_5felement_5ftype',['ex__element_type',['../group__Internal.html#gac775a5a0df48df4d0094526cdd600f8c',1,'exodusII_int.h']]],
   ['ex_5fentity_5ftype',['ex_entity_type',['../exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490',1,'exodusII.h']]],
   ['ex_5finquiry',['ex_inquiry',['../exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dc',1,'exodusII.h']]],

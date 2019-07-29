@@ -81,7 +81,7 @@ int ex_put_elem_cmap(int exoid, ex_entity_id map_id, void_int *elem_ids, void_in
   }
 
   /* Get the index for this map_id */
-  if ((map_idx = ne_id_lkup(exoid, VAR_E_COMM_IDS, varidx, map_id)) == -1) {
+  if ((map_idx = ne__id_lkup(exoid, VAR_E_COMM_IDS, varidx, map_id)) == -1) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to find index for variable \"%s\" in file ID %d", VAR_E_COMM_IDS,
              exoid);

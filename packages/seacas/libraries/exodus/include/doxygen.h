@@ -259,19 +259,19 @@ pass 64-bit integers down to the C API which has removed some code and
 simplified those functions.
 
 
-\section Database Options (Compression, Name Length, File Type)
+\section db_options Database Options (Compression, Name Length, File Type)
 
 The ex_set_option() function call is used to set various options on the
 database.  Valid values for 'option' are:
 
-|   Option Name          | Option Values
--------------------------|---------------
-| #EX_OPT_MAX_NAME_LENGTH | Maximum length of names that will be returned/passed via API call.
-| #EX_OPT_COMPRESSION_TYPE | Not currently used; default is gzip
-| #EX_OPT_COMPRESSION_LEVEL | In the range [0..9]. A value of 0 indicates no compression
-| #EX_OPT_COMPRESSION_SHUFFLE | 1 if enabled, 0 if disabled
-| #EX_OPT_INTEGER_SIZE_API | 4 or 8 indicating byte size of integers used in API functions.
-| #EX_OPT_INTEGER_SIZE_DB  | Query only, returns 4 or 8 indicating byte size of integers stored on the database.
+|   Option Name          | Option Values |
+-------------------------|---------------|
+| #EX_OPT_MAX_NAME_LENGTH | Maximum length of names that will be returned/passed via API call. |
+| #EX_OPT_COMPRESSION_TYPE | Not currently used; default is gzip |
+| #EX_OPT_COMPRESSION_LEVEL | In the range [0..9]. A value of 0 indicates no compression |
+| #EX_OPT_COMPRESSION_SHUFFLE | 1 if enabled, 0 if disabled |
+| #EX_OPT_INTEGER_SIZE_API | 4 or 8 indicating byte size of integers used in API functions. |
+| #EX_OPT_INTEGER_SIZE_DB  | Query only, returns 4 or 8 indicating byte size of integers stored on the database. |
 
 The compression-related options are only available on NetCDF-4 files
 since the underlying hdf5 compression functionality is used for the
@@ -279,6 +279,59 @@ implementation. The compression level indicates how much effort should
 be expended in the compression and the computational expense increases
 with higher levels; in many cases, a compression level of 1 is
 sufficient.
+
+\section names Variable, Attribute, and Entity Block/Set Names
+The length of the Variables, Attributes, and Entity Block/Set names is
+variable.  The default length is 32 characters to provide backward
+compatibility.  This is the default on both read and write, so if
+there is a database with longer names and the reader does not change
+the length of names to be returned, any API call that returns a name
+will truncate the name at 32 characters.
+
+To avoid this, the reading application can all 
+~~~{.c}
+  // Determine maximum length of names stored on database
+  int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+
+  // Tell the library to return names this length
+  ex_set_max_name_length(exodusFilePtr, max_name_length);
+~~~
+
+On write, you can call:
+
+~~~{.c}
+   ex_set_option(exoid, EX_OPT_MAX_NAME_LENGTH, {max_name_length});
+
+   // or equivalently
+   ex_set_max_name_length(exoid, {max_name_length});
+~~~
+
+which tells the database that you will be using names of that length or shorter.
+
+Following this call, you can define (i.e., read/write) names of any
+size; if the names are longer than `{max_name_length}`, then they will be truncated otherwise they will pass through unchanged.
+
+There are three queries that can be made to ex_inquire() or
+ex_inquire_int():
+
+  - #EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH -- returns the value of the
+    maximum size that can be specified for `max_name_length`
+    (netcdf/hdf5 limitation)
+  - #EX_INQ_DB_MAX_USED_NAME_LENGTH -- returns the size of the longest
+    name on the database.
+  - #EX_INQ_MAX_READ_NAME_LENGTH -- returns the maximum name length
+    size that will be passed back to the client. 32 by default,
+    set by the previously mentioned ex_set_option() or
+    ex_set_max_name_length() call.
+
+\note
+  - The length of the QA records (ex_get_qa(), ex_put_qa()) is not affected by this setting and each entry in the QA record is still limited to 32 characters.
+  - The length of the `entity_descrip` type passed and returnen in the
+    ex_get_block() and ex_put_block() calls is still limited to 32 characters.
+  - The length of the title is limited to 80 characters
+    (ex_get_init(), ex_get_init_ext(), ex_put_init(), ex_put_init_ext()).
+  - The length of the info records is limited to 80 characters
+  (ex_put_info(), ex_get_info()).
 
 \defgroup ResultsData Results Data
 @{

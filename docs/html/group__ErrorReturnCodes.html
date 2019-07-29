@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.15"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Exodus: Exodus error return codes - exerrval return values</title>
+<title>Exodus: Error return codes - #exerrval return values</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -89,7 +89,7 @@ $(document).ready(function(){initNavTree('group__ErrorReturnCodes.html','');});
   <div class="summary">
 <a href="#define-members">Macros</a>  </div>
   <div class="headertitle">
-<div class="title">Exodus error return codes - exerrval return values</div>  </div>
+<div class="title">Error return codes - #exerrval return values</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -121,6 +121,12 @@ Macros</h2></td></tr>
 <tr class="separator:ga5f3e8e75cd653fbcdef36ac8f07e2705"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga57a66c1583e9cc3c166cbf0e615a6feb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#ga57a66c1583e9cc3c166cbf0e615a6feb">EX_DUPLICATEID</a>&#160;&#160;&#160;-1007</td></tr>
 <tr class="separator:ga57a66c1583e9cc3c166cbf0e615a6feb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9188682d7a4c71e360f4f11f81fca38b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#ga9188682d7a4c71e360f4f11f81fca38b">EX_FATAL</a>&#160;&#160;&#160;-1</td></tr>
+<tr class="separator:ga9188682d7a4c71e360f4f11f81fca38b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac8473dcc328628bf234fc0919cdec307"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#gac8473dcc328628bf234fc0919cdec307">EX_NOERR</a>&#160;&#160;&#160;0</td></tr>
+<tr class="separator:gac8473dcc328628bf234fc0919cdec307"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8c5681d9b1d7a31149f2dfacce00b5e6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#ga8c5681d9b1d7a31149f2dfacce00b5e6">EX_WARN</a>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:ga8c5681d9b1d7a31149f2dfacce00b5e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -181,6 +187,21 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>duplicate id found </p>
+
+</div>
+</div>
+<a id="ga9188682d7a4c71e360f4f11f81fca38b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9188682d7a4c71e360f4f11f81fca38b">&#9670;&nbsp;</a></span>EX_FATAL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EX_FATAL&#160;&#160;&#160;-1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>fatal error flag def </p>
 
 </div>
 </div>
@@ -263,6 +284,21 @@ Macros</h2></td></tr>
 
 </div>
 </div>
+<a id="gac8473dcc328628bf234fc0919cdec307"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac8473dcc328628bf234fc0919cdec307">&#9670;&nbsp;</a></span>EX_NOERR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EX_NOERR&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>no error flag def </p>
+
+</div>
+</div>
 <a id="gab862a9509a1d0aaeabb4b77a38779985"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gab862a9509a1d0aaeabb4b77a38779985">&#9670;&nbsp;</a></span>EX_NOTROOTID</h2>
 
@@ -305,6 +341,21 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>print last error message msg code </p>
+
+</div>
+</div>
+<a id="ga8c5681d9b1d7a31149f2dfacce00b5e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8c5681d9b1d7a31149f2dfacce00b5e6">&#9670;&nbsp;</a></span>EX_WARN</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EX_WARN&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>warning flag def </p>
 
 </div>
 </div>
