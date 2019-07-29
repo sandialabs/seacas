@@ -40,7 +40,7 @@
   \ingroup Utilities
 
 The function ex_get_info() reads information records from the
-database. The records are MAX_LINE_LENGTH-character
+database. The records are #MAX_LINE_LENGTH character
 strings. Memory must be allocated for the information records before
 this call is made. The number of records can be determined by invoking
 ex_inquire() or ex_inquire_int().
@@ -65,7 +65,7 @@ char *info[MAXINFO];
 \comment{read information records}
 num_info = ex_inquire_int (exoid,EX_INQ_INFO);
 for (i=0; i < num_info; i++) {
-   info[i] = (char *) calloc ((MAX_LINE_LENGTH+1), sizeof(char));
+   info[i] = (char *) calloc ((EX_MAX_LINE_LENGTH+1), sizeof(char));
 }
 error = ex_get_info (exoid, info);
 ~~~

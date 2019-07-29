@@ -93,7 +93,8 @@ static int    cpy_var_val(int in_id, int out_id, char *var_nm);
 static int    cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_large);
 static int    cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large);
 static void   update_structs(int out_exoid);
-static void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct list_item **ctr_list);
+static void   update_internal_structs(int out_exoid, ex_inquiry inqcode,
+                                      struct ex__list_item **ctr_list);
 
 static int is_truth_table_variable(const char *var_name)
 {
@@ -834,7 +835,7 @@ void update_structs(int out_exoid)
 }
 
 /*! \internal */
-void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct list_item **ctr_list)
+void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct ex__list_item **ctr_list)
 {
   int i;
   int number = ex_inquire_int(out_exoid, inqcode);

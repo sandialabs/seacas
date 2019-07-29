@@ -104,7 +104,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   int err_stat = EX_NOERR;
   int status;
 
-  struct elem_blk_parm *elem_blk_parms = NULL;
+  struct ex__elem_blk_parm *elem_blk_parms = NULL;
 
   /* side to node translation tables -
      These tables are used to look up the side number based on the
@@ -409,7 +409,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   }
 
   /* Allocate space for the element block params */
-  if (!(elem_blk_parms = malloc(num_elem_blks * sizeof(struct elem_blk_parm)))) {
+  if (!(elem_blk_parms = malloc(num_elem_blks * sizeof(struct ex__elem_blk_parm)))) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to allocate space for element block params "
              "for file id %d",

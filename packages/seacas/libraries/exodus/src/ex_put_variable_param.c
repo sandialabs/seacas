@@ -124,16 +124,16 @@ described. Use one
 
 | ex_entity_type|  description              |
 |---------------|---------------------------|
-| EX_GLOBAL     |  Global entity type       |
-| EX_NODAL      |  Nodal entity type        |
-| EX_NODE_SET   |  Node Set entity type     |
-| EX_EDGE_BLOCK |  Edge Block entity type   |
-| EX_EDGE_SET   |  Edge Set entity type     |
-| EX_FACE_BLOCK |  Face Block entity type   |
-| EX_FACE_SET   |  Face Set entity type     |
-| EX_ELEM_BLOCK |  Element Block entity type|
-| EX_ELEM_SET   |  Element Set entity type  |
-| EX_SIDE_SET   |  Side Set entity type     |
+| #EX_GLOBAL     |  Global entity type       |
+| #EX_NODAL      |  Nodal entity type        |
+| #EX_NODE_SET   |  Node Set entity type     |
+| #EX_EDGE_BLOCK |  Edge Block entity type   |
+| #EX_EDGE_SET   |  Edge Set entity type     |
+| #EX_FACE_BLOCK |  Face Block entity type   |
+| #EX_FACE_SET   |  Face Set entity type     |
+| #EX_ELEM_BLOCK |  Element Block entity type|
+| #EX_ELEM_SET   |  Element Set entity type  |
+| #EX_SIDE_SET   |  Side Set entity type     |
 
 For example, the following code segment initializes the data file to
 store global variables:

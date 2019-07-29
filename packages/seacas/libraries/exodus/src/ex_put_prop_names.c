@@ -66,20 +66,20 @@ sets).
 \param[in] prop_names  Array containing  num_props names (of maximum length
                        of \p MAX_STR_LENGTH ) of properties to be stored.
 
-| ex_entity_type | description               |
+| #ex_entity_type | description               |
 | -------------- | ------------------------- |
-|  EX_NODE_SET   |  Node Set entity type     |
-|  EX_EDGE_BLOCK |  Edge Block entity type   |
-|  EX_EDGE_SET   |  Edge Set entity type     |
-|  EX_FACE_BLOCK |  Face Block entity type   |
-|  EX_FACE_SET   |  Face Set entity type     |
-|  EX_ELEM_BLOCK |  Element Block entity type|
-|  EX_ELEM_SET   |  Element Set entity type  |
-|  EX_SIDE_SET   |  Side Set entity type     |
-|  EX_ELEM_MAP   |  Element Map entity type  |
-|  EX_NODE_MAP   |  Node Map entity type     |
-|  EX_EDGE_MAP   |  Edge Map entity type     |
-|  EX_FACE_MAP   |  Face Map entity type     |
+|  #EX_NODE_SET   |  Node Set entity type     |
+|  #EX_EDGE_BLOCK |  Edge Block entity type   |
+|  #EX_EDGE_SET   |  Edge Set entity type     |
+|  #EX_FACE_BLOCK |  Face Block entity type   |
+|  #EX_FACE_SET   |  Face Set entity type     |
+|  #EX_ELEM_BLOCK |  Element Block entity type|
+|  #EX_ELEM_SET   |  Element Set entity type  |
+|  #EX_SIDE_SET   |  Side Set entity type     |
+|  #EX_ELEM_MAP   |  Element Map entity type  |
+|  #EX_NODE_MAP   |  Node Map entity type     |
+|  #EX_EDGE_MAP   |  Edge Map entity type     |
+|  #EX_FACE_MAP   |  Face Map entity type     |
 
 For instance, suppose a user wanted to assign the 1st, 3rd, and 5th
 element blocks (those element blocks stored 1st, 3rd, and 5th,

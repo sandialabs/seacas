@@ -70,7 +70,7 @@ compute or I/O word size). Multiple files may be ``open'' simultaneously.
 number. Possible causes of errors include:
   -  The specified file does not exist.
   -  The mode specified is something other than the predefined constant
-\fparam{EX_READ} or \fparam{EX_WRITE}.
+\fparam{#EX_READ} or \fparam{#EX_WRITE}.
   -  Database version is earlier than 2.0.
 
 \param path The file name of the exodus file. This can be given as either an
@@ -317,7 +317,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
        * add it now. */
       if (stat_dim != NC_NOERR) {
         /* Not found; set to default value of 32+1. */
-        int max_name = ex_default_max_name_length < 32 ? 32 : ex_default_max_name_length;
+        int max_name = ex__default_max_name_length < 32 ? 32 : ex__default_max_name_length;
         if ((status = nc_def_dim(exoid, DIM_STR_NAME, max_name + 1, &dim_str_name)) != NC_NOERR) {
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to define string name dimension in file id %d named %s", exoid,

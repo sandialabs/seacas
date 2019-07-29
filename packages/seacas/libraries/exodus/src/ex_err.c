@@ -317,6 +317,18 @@ void ex_get_err(const char **msg, const char **func, int *err_num)
 /*!
   \ingroup Utilities
   \undoc
+  Returns a pointer to a string which gives a text description of the error code err_num.
+  If the error code refers to a NetCDF error, then that string is returned.
+
+~~~{.c}
+    std::ostringstream errmsg;
+    \comment{Create errmsg here so that the exerrval doesn't get cleared by}
+    \comment{the ex_close call.}
+    int status;
+    ex_get_err(nullptr, nullptr, &status);
+    fmt::print(errmsg, "Exodus error ({}) {} at line {} of file '{}' in function '{}'.", status,
+               ex_strerror(status), lineno, filename, function);
+~~~
 */
 const char *ex_strerror(int err_num)
 {
