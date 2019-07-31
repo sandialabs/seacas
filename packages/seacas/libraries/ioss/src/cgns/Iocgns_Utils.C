@@ -1261,19 +1261,17 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *reg
                                                  int *cell_center_solution_index,
                                                  bool is_parallel_io)
 {
-  std::string c_name = "CellCenterSolutionAtStep";
-  std::string v_name = "VertexSolutionAtStep";
+  std::string c_name = fmt::format("CellCenterSolutionAtStep{:05}", state);
+  std::string v_name = fmt::format("VertexSolutionAtStep{:05}", state);
   std::string step   = std::to_string(state);
-  c_name += step;
-  v_name += step;
 
   const auto &nblocks          = region->get_node_blocks();
   const auto &nblock           = nblocks[0];
-  bool        has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
+  bool        global_has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
 
   // Create a lambda to avoid code duplication for similar treatment
   // of structured blocks and element blocks.
-  auto sol_lambda = [=](Ioss::EntityBlock *block) {
+  auto sol_lambda = [=](Ioss::EntityBlock *block, bool has_nodal_fields) {
     int base = block->get_property("base").get_int();
     int zone = get_db_zone(block);
     if (has_nodal_fields) {
@@ -1296,13 +1294,15 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *reg
   const auto &sblocks = region->get_structured_blocks();
   for (auto &block : sblocks) {
     if (is_parallel_io || block->is_active()) {
-      sol_lambda(block);
+      const auto &nb = block->get_node_block();
+      bool has_nodal_fields = global_has_nodal_fields || nb.field_count(Ioss::Field::TRANSIENT) > 0;
+      sol_lambda(block, has_nodal_fields);
     }
   }
   // Use the lambda
   const auto &eblocks = region->get_element_blocks();
   for (auto &block : eblocks) {
-    sol_lambda(block);
+    sol_lambda(block, global_has_nodal_fields);
   }
 }
 
