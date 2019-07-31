@@ -135,6 +135,16 @@ namespace {
 #endif
   };
 
+  Ioss::EntityType get_type(const std::string &name, Ioss::Region *region) 
+  {
+    Ioss::EntityType type = Ioss::INVALID_TYPE;
+    const auto *ge = region->get_entity(name);
+    if (ge != nullptr) {
+      type = ge->type();
+    }
+    return type;
+  }
+
   std::pair<std::string, int> decompose_name(const std::string &name, bool is_parallel)
   {
     int         proc = 0;
@@ -158,11 +168,12 @@ namespace {
     return std::make_pair(zname, proc);
   }
 
-#ifdef SEACAS_HAVE_MPI
-  void add_zgc_fpp(int cgns_file_ptr, Ioss::StructuredBlock *block,
-                   const std::map<std::string, int> &zone_name_map, int myProcessor,
-                   bool isParallel)
+  void add_zgc(int cgns_file_ptr, Ioss::StructuredBlock *block,
+	       const std::map<std::string, int> &zone_name_map, int myProcessor,
+	       bool isParallel)
   {
+    // NOTE: Here `isParallel` means file-per-processor; not N->1
+
     int base    = block->get_property("base").get_int();
     int zone    = block->get_property("zone").get_int();
     int db_zone = Iocgns::Utils::get_db_zone(block);
@@ -195,25 +206,33 @@ namespace {
       Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
 
       Ioss::IJK_t offset;
-      offset[0] = block->get_property("offset_i").get_int();
-      offset[1] = block->get_property("offset_j").get_int();
-      offset[2] = block->get_property("offset_k").get_int();
-      range_beg[0] += offset[0];
-      range_beg[1] += offset[1];
-      range_beg[2] += offset[2];
-      range_end[0] += offset[0];
-      range_end[1] += offset[1];
-      range_end[2] += offset[2];
+      if (isParallel) {
+	offset[0] = block->get_property("offset_i").get_int();
+	offset[1] = block->get_property("offset_j").get_int();
+	offset[2] = block->get_property("offset_k").get_int();
+	range_beg[0] += offset[0];
+	range_beg[1] += offset[1];
+	range_beg[2] += offset[2];
+	range_end[0] += offset[0];
+	range_end[1] += offset[1];
+	range_end[2] += offset[2];
+      }
 
       auto con_name = decompose_name(connectname, isParallel).first;
       block->m_zoneConnectivity.emplace_back(con_name, zone, donor_name, donor_zone, transform,
                                              range_beg, range_end, donor_beg, donor_end, offset);
 
       block->m_zoneConnectivity.back().m_ownerProcessor = myProcessor;
-      block->m_zoneConnectivity.back().m_donorProcessor = donorname_proc.second;
+      if (isParallel) {
+	block->m_zoneConnectivity.back().m_donorProcessor = donorname_proc.second;
+      }
+      else {
+	block->m_zoneConnectivity.back().m_donorProcessor = myProcessor;
+      }
     }
   }
 
+#ifdef SEACAS_HAVE_MPI
   int adjacent_block(const SBlock &b, int ijk, std::map<int, int> &proc_block_map)
   {
     // Find a block the the 'left|right|up|down|front|back' (ijk) of blocks[br]
@@ -884,7 +903,7 @@ namespace Iocgns {
 
       if (native) {
         // Handle zone-grid-connectivity...
-        add_zgc_fpp(get_file_pointer(), block, m_zoneNameMap, myProcessor, isParallel);
+        add_zgc(get_file_pointer(), block, m_zoneNameMap, myProcessor, isParallel);
 
         // Handle boundary conditions...
         Utils::add_structured_boundary_conditions(get_file_pointer(), block, false);
@@ -1015,44 +1034,13 @@ namespace Iocgns {
     num_node += block->get_property("node_count").get_int();
 
     // Handle zone-grid-connectivity... (between structured blocks only here)
-    int nconn = 0;
-    CGCHECKM(cg_n1to1(get_file_pointer(), base, zone, &nconn));
-    for (int i = 0; i < nconn; i++) {
-      char                    connectname[CGNS_MAX_NAME_LENGTH + 1];
-      char                    donorname[CGNS_MAX_NAME_LENGTH + 1];
-      std::array<cgsize_t, 6> range;
-      std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t             transform;
-
-      CGCHECKM(cg_1to1_read(get_file_pointer(), base, zone, i + 1, connectname, donorname,
-                            range.data(), donor_range.data(), transform.data()));
-
-      std::string donor_name{donorname};
-
-      // Get number of nodes shared with other "previous" zones...
-      // A "previous" zone will have a lower zone number this this zone...
-      int  donor_zone = -1;
-      auto donor_iter = m_zoneNameMap.find(donor_name);
-      if (donor_iter != m_zoneNameMap.end()) {
-        donor_zone = (*donor_iter).second;
-      }
-      Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
-      Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
-      Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
-      Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
-
-      block->m_zoneConnectivity.emplace_back(connectname, zone, donor_name, donor_zone, transform,
-                                             range_beg, range_end, donor_beg, donor_end);
-
-      block->m_zoneConnectivity.back().m_ownerProcessor = myProcessor;
-      block->m_zoneConnectivity.back().m_donorProcessor = myProcessor;
-    }
+    add_zgc(get_file_pointer(), block, m_zoneNameMap, myProcessor, false);
 
     // Handle boundary conditions...
     Utils::add_structured_boundary_conditions(get_file_pointer(), block, false);
   }
 
-  size_t DatabaseIO::finalize_hybrid_unstructured_blocks()
+  size_t DatabaseIO::finalize_hybrid_blocks()
   {
     size_t      node   = 0;
     const auto &blocks = get_region()->get_element_blocks();
@@ -1132,92 +1120,7 @@ namespace Iocgns {
     size_t total_block_nodes = size[0];
     m_blockLocalNodeMap[zone].resize(total_block_nodes, -1);
 
-    // Determine number of "shared" nodes (shared with other zones)
-    if (zone > 1) { // Donor zone is always lower numbered, so zone 1 has no donor zone.
-      int nconn = 0;
-      CGCHECKM(cg_nconns(get_file_pointer(), base, zone, &nconn));
-      cgsize_t num_shared = 0;
-      for (int i = 0; i < nconn; i++) {
-        char                      connectname[CGNS_MAX_NAME_LENGTH + 1];
-        CG_GridLocation_t         location;
-        CG_GridConnectivityType_t connect_type;
-        CG_PointSetType_t         ptset_type;
-        cgsize_t                  npnts = 0;
-        char                      donorname[CGNS_MAX_NAME_LENGTH + 1];
-        CG_ZoneType_t             donor_zonetype;
-        CG_PointSetType_t         donor_ptset_type;
-        CG_DataType_t             donor_datatype;
-        cgsize_t                  ndata_donor;
-
-        CGCHECKM(cg_conn_info(get_file_pointer(), base, zone, i + 1, connectname, &location,
-                              &connect_type, &ptset_type, &npnts, donorname, &donor_zonetype,
-                              &donor_ptset_type, &donor_datatype, &ndata_donor));
-
-        if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList) {
-          std::ostringstream errmsg;
-          fmt::print(
-              errmsg,
-              "ERROR: CGNS: Zone {}, connection {}:  adjacency data is not correct type. Require "
-              "Abutting1to1 and PointList.\n",
-              zone, connectname);
-          IOSS_ERROR(errmsg);
-        }
-
-        if (m_meshType == Ioss::MeshType::HYBRID && donor_ptset_type == CG_CellListDonor) {
-          fmt::print(stderr, "CellListDonor (HYBRID?) -- deal with later\n");
-        }
-        else if (donor_ptset_type != CG_PointListDonor) {
-          std::ostringstream errmsg;
-          fmt::print(
-              errmsg,
-              "ERROR: CGNS: Zone {}, connection {}:  adjacency data is not correct type. Require "
-              "PointListDonor or a hybrid mesh with CellListDonor.\n",
-              zone, connectname);
-          IOSS_ERROR(errmsg);
-        }
-
-        // Verify data consistency...
-        if (donor_ptset_type == CG_PointListDonor) {
-          if (npnts != ndata_donor) {
-            std::ostringstream errmsg;
-            fmt::print(
-                errmsg,
-                "ERROR: CGNS: Zone {} point count ({}) does not match donor point count ({}).",
-                zone, npnts, ndata_donor);
-            IOSS_ERROR(errmsg);
-          }
-
-          // Get number of nodes shared with other "previous" zones...
-          // A "previous" zone will have a lower zone number this this zone...
-          auto donor_iter = m_zoneNameMap.find(donorname);
-          if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
-            num_shared += npnts;
-#if IOSS_DEBUG_OUTPUT
-            fmt::print("Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
-#endif
-            if (m_meshType == Ioss::MeshType::HYBRID) {
-              fmt::print(stderr, "\n\nFIX THE NODE SHARING FOR HYBRID!!!\n\n");
-            }
-            else {
-              std::vector<cgsize_t> points(npnts);
-              std::vector<cgsize_t> donors(npnts);
-
-              CGCHECKM(cg_conn_read(get_file_pointer(), base, zone, i + 1, TOPTR(points),
-                                    donor_datatype, TOPTR(donors)));
-
-              // Fill in entries in m_blockLocalNodeMap for the shared nodes...
-              auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
-              auto &block_map = m_blockLocalNodeMap[zone];
-              for (int j = 0; j < npnts; j++) {
-                cgsize_t point       = points[j];
-                cgsize_t donor       = donors[j];
-                block_map[point - 1] = donor_map[donor - 1];
-              }
-            }
-          }
-        }
-      }
-    }
+    handle_zone_connectivity(base, zone);
 
     auto & block_map = m_blockLocalNodeMap[zone];
     size_t offset    = num_node;
@@ -1354,6 +1257,99 @@ namespace Iocgns {
     }
   }
 
+  void DatabaseIO::handle_zone_connectivity(int base, int zone)
+  {
+    // Determine number of "shared" nodes (shared with other zones)
+    if (zone > 1) { // Donor zone is always lower numbered, so zone 1 has no donor zone.
+      int nconn = 0;
+      CGCHECKM(cg_nconns(get_file_pointer(), base, zone, &nconn));
+      cgsize_t num_shared = 0;
+      for (int i = 0; i < nconn; i++) {
+        char                      connectname[CGNS_MAX_NAME_LENGTH + 1];
+        CG_GridLocation_t         location;
+        CG_GridConnectivityType_t connect_type;
+        CG_PointSetType_t         ptset_type;
+        cgsize_t                  npnts = 0;
+        char                      donorname[CGNS_MAX_NAME_LENGTH + 1];
+        CG_ZoneType_t             donor_zonetype;
+        CG_PointSetType_t         donor_ptset_type;
+        CG_DataType_t             donor_datatype;
+        cgsize_t                  ndata_donor;
+
+        CGCHECKM(cg_conn_info(get_file_pointer(), base, zone, i + 1, connectname, &location,
+                              &connect_type, &ptset_type, &npnts, donorname, &donor_zonetype,
+                              &donor_ptset_type, &donor_datatype, &ndata_donor));
+
+        if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList) {
+          std::ostringstream errmsg;
+          fmt::print(
+              errmsg,
+              "ERROR: CGNS: Zone {}, connection {}:  adjacency data is not correct type. Require "
+              "Abutting1to1 and PointList.\n",
+              zone, connectname);
+          IOSS_ERROR(errmsg);
+        }
+
+        if (m_meshType == Ioss::MeshType::HYBRID && donor_ptset_type == CG_CellListDonor) {
+          fmt::print(stderr, "CellListDonor (HYBRID?) -- deal with later\n");
+        }
+        else if (donor_ptset_type != CG_PointListDonor) {
+          std::ostringstream errmsg;
+          fmt::print(
+              errmsg,
+              "ERROR: CGNS: Zone {}, connection {}:  adjacency data is not correct type. Require "
+              "PointListDonor or a hybrid mesh with CellListDonor.\n",
+              zone, connectname);
+          IOSS_ERROR(errmsg);
+        }
+
+        // Verify data consistency...
+        if (donor_ptset_type == CG_PointListDonor) {
+          if (npnts != ndata_donor) {
+            std::ostringstream errmsg;
+            fmt::print(
+                errmsg,
+                "ERROR: CGNS: Zone {} point count ({}) does not match donor point count ({}).",
+                zone, npnts, ndata_donor);
+            IOSS_ERROR(errmsg);
+          }
+
+          // Get number of nodes shared with other "previous" zones...
+          // A "previous" zone will have a lower zone number this this zone...
+          auto donor_iter = m_zoneNameMap.find(donorname);
+          if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
+            num_shared += npnts;
+#if IOSS_DEBUG_OUTPUT
+            fmt::print("Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
+#endif
+	    // See if donor is structured or unstructured...
+	    auto donor_type = get_type(donorname, get_region());
+            if (m_meshType == Ioss::MeshType::HYBRID && donor_type == Ioss::STRUCTUREDBLOCK) {
+	      // We have a unstructured -> structured connection
+              fmt::print(stderr, "\n\nFIX THE NODE SHARING FOR HYBRID (structured -> unstructured) !!!\n\n");
+            }
+            else if (donor_type != Ioss::INVALID_TYPE) {
+              std::vector<cgsize_t> points(npnts);
+              std::vector<cgsize_t> donors(npnts);
+
+              CGCHECKM(cg_conn_read(get_file_pointer(), base, zone, i + 1, TOPTR(points),
+                                    donor_datatype, TOPTR(donors)));
+
+              // Fill in entries in m_blockLocalNodeMap for the shared nodes...
+              auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
+              auto &block_map = m_blockLocalNodeMap[zone];
+              for (int j = 0; j < npnts; j++) {
+                cgsize_t point       = points[j];
+                cgsize_t donor       = donors[j];
+                block_map[point - 1] = donor_map[donor - 1];
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   void DatabaseIO::read_meta_data__()
   {
     // Determine the number of bases in the grid.
@@ -1363,7 +1359,7 @@ namespace Iocgns {
     if (n_bases != 1) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
-                 "CGNS: Too many bases; only support files with a single bases at this time");
+                 "CGNS: Too many bases; only support files with a single base at this time");
       IOSS_ERROR(errmsg);
     }
 
@@ -1420,7 +1416,7 @@ namespace Iocgns {
       // Need to add the nodes which are in the Unstructured blocks...
       // (Currently not resolving shared nodes)
       // Also need to handle unstr->str and str->unstr boundary conditions.
-      num_node += finalize_hybrid_unstructured_blocks();
+      num_node += finalize_hybrid_blocks();
     }
 
     char basename[CGNS_MAX_NAME_LENGTH + 1];
