@@ -125,8 +125,6 @@ exoid = ex_open ("test.exo",     \co{filename path}
 ~~~
  */
 
-static int warning_output = 0;
-
 /* NOTE: Do *not* call `ex_open_int()` directly.  The public API
  *       function name is `ex_open()` which is a wrapper that calls
  *       `ex_open_int` with an additional argument to make sure
@@ -152,19 +150,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
   /* set error handling mode to no messages, non-fatal errors */
   ex_opts(exoptval); /* call required to set ncopts first time through */
 
-  if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
-    int run_version_major = run_version / 100;
-    int run_version_minor = run_version % 100;
-    int lib_version_major = EX_API_VERS_NODOT / 100;
-    int lib_version_minor = EX_API_VERS_NODOT % 100;
-    fprintf(stderr,
-            "EXODUS: Warning: This code was compiled with exodus "
-            "version %d.%02d,\n          but was linked with exodus "
-            "library version %d.%02d\n          This is probably an "
-            "error in the build process of this code.\n",
-            run_version_major, run_version_minor, lib_version_major, lib_version_minor);
-    warning_output = 1;
-  }
+  ex__check_version(run_version);
 
   if ((mode & EX_READ) && (mode & EX_WRITE)) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Cannot specify both EX_READ and EX_WRITE");

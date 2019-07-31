@@ -230,10 +230,15 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   case EX_INQ_LIB_VERS:
     /* returns the EXODUS Library version number */
     if (ret_float) {
-      flt_cvt(ret_float, EX_API_VERS);
+      float version_major = EXODUS_VERSION_MAJOR;
+      float version_minor = EXODUS_VERSION_MINOR;
+      float version       = version_major + version_minor / 100.0;
+      flt_cvt(ret_float, version);
     }
 
-    *ret_int = EX_API_VERS_NODOT;
+    if (ret_int) {
+      *ret_int = EX_API_VERS_NODOT;
+    }
     break;
 
   case EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH:
