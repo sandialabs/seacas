@@ -1727,16 +1727,30 @@ namespace Iocgns {
           Utils::find_solution_index(get_file_pointer(), base, zone, step, CG_Vertex);
 
       double * rdata                  = static_cast<double *>(data);
-      cgsize_t range_min[1]           = {1};
-      cgsize_t range_max[1]           = {num_to_get};
-      int      cgns_field             = 0;
+      assert(num_to_get == sb->get_property("node_count").get_int());
+      cgsize_t rmin[3] = {0, 0, 0};
+      cgsize_t rmax[3] = {0, 0, 0};
+      if (num_to_get > 0) {
+        rmin[0] = 1;
+        rmin[1] = 1;
+        rmin[2] = 1;
+
+        rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+        rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+        rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+
+	assert(num_to_get ==
+	       (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+      }
+
+
       auto     var_type               = field.transformed_storage();
       int      comp_count             = var_type->component_count();
       char     field_suffix_separator = get_field_separator();
 
       if (comp_count == 1) {
         CGCHECKM(cg_field_read(get_file_pointer(), base, zone, solution_index,
-                               field.get_name().c_str(), CG_RealDouble, range_min, range_max,
+                               field.get_name().c_str(), CG_RealDouble, rmin, rmax,
                                rdata));
       }
       else {
@@ -1746,7 +1760,7 @@ namespace Iocgns {
               var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
 
           CGCHECKM(cg_field_read(get_file_pointer(), base, zone, solution_index, var_name.c_str(),
-                                 CG_RealDouble, range_min, range_max, cgns_data.data()));
+                                 CG_RealDouble, rmin, rmax, cgns_data.data()));
           for (cgsize_t j = 0; j < num_to_get; j++) {
             rdata[comp_count * j + i] = cgns_data[j];
           }
@@ -1953,6 +1967,7 @@ namespace Iocgns {
 
     assert(num_to_get ==
            (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+
     double *rdata = static_cast<double *>(data);
 
     if (role == Ioss::Field::MESH) {
