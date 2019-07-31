@@ -1767,9 +1767,7 @@ namespace Iocgns {
         }
       }
     }
-    else {
-      num_to_get = Ioss::Utils::field_warning(sb, field, "input");
-    }
+    // Ignoring all other field role types...
     return num_to_get;
   }
 
@@ -2680,9 +2678,7 @@ namespace Iocgns {
         }
       }
     }
-    else {
-      num_to_get = Ioss::Utils::field_warning(sb, field, "output");
-    }
+    // Ignoring all other field role types...
     return num_to_get;
   }
 
