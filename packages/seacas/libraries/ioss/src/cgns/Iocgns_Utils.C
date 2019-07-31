@@ -509,15 +509,22 @@ void Iocgns::Utils::update_db_zone_property(int cgns_file_ptr, const Ioss::Regio
   }
 }
 
-int Iocgns::Utils::get_db_zone(const Ioss::EntityBlock *block)
+int Iocgns::Utils::get_db_zone(const Ioss::GroupingEntity *entity)
 {
   // Returns the zone of the entity as it appears on the cgns database.
   // Usually, but not always the same as the IOSS zone...
   // Can differ on fpp reads and maybe writes.
-  if (block->property_exists("db_zone")) {
-    return block->get_property("db_zone").get_int();
+  if (entity->property_exists("db_zone")) {
+    return entity->get_property("db_zone").get_int();
   }
-  return block->get_property("zone").get_int();
+  if (entity->property_exists("zone")) {
+    return entity->get_property("zone").get_int();
+  }
+  std::ostringstream errmsg;
+  fmt::print(errmsg,
+             "ERROR: CGNS: Entity '{}' of type '{}' does not have the 'zone' property assigned.",
+             entity->name(), entity->type_string());
+  IOSS_ERROR(errmsg);
 }
 
 size_t Iocgns::Utils::index(const Ioss::Field &field) { return field.get_index() & 0xffffffff; }
