@@ -89,7 +89,7 @@ extern char *ncmpi_inq_libvers();
 */
 void ex_print_config(void)
 {
-  fprintf(stderr, "\tExodus Version %.2f\n", EX_API_VERS);
+  fprintf(stderr, "\tExodus Version %s, Released %s\n", EXODUS_VERSION, EXODUS_RELEASE_DATE);
 #if defined(PARALLEL_AWARE_EXODUS)
   fprintf(stderr, "\t\tParallel enabled\n");
 #else
@@ -1691,6 +1691,24 @@ int ex__leavedef(int exoid, const char *call_rout)
 
 static int warning_output = 0;
 
+int ex__check_version(int run_version)
+{
+  if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
+    int run_version_major = run_version / 100;
+    int run_version_minor = run_version % 100;
+    int lib_version_major = EXODUS_VERSION_MAJOR;
+    int lib_version_minor = EXODUS_VERSION_MINOR;
+    fprintf(stderr,
+            "EXODUS: Warning: This code was compiled with exodus "
+            "version %d.%02d,\n          but was linked with exodus "
+            "library version %d.%02d\n          This is probably an "
+            "error in the build process of this code.\n",
+            run_version_major, run_version_minor, lib_version_major, lib_version_minor);
+    warning_output = 1;
+  }
+  return warning_output;
+}
+
 /*!
   \internal
   \undoc
@@ -1712,19 +1730,7 @@ int ex__handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   /* Do not include EX_64BIT_DATA in this list */
   static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_NETCDF4 | EX_PNETCDF;
 
-  if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
-    int run_version_major = run_version / 100;
-    int run_version_minor = run_version % 100;
-    int lib_version_major = EX_API_VERS_NODOT / 100;
-    int lib_version_minor = EX_API_VERS_NODOT % 100;
-    fprintf(stderr,
-            "EXODUS: Warning: This code was compiled with exodusII "
-            "version %d.%02d,\n          but was linked with exodusII "
-            "library version %d.%02d\n          This is probably an "
-            "error in the build process of this code.\n",
-            run_version_major, run_version_minor, lib_version_major, lib_version_minor);
-    warning_output = 1;
-  }
+  ex__check_version(run_version);
 
 /*
  * See if specified mode is supported in the version of netcdf we
@@ -2021,7 +2027,7 @@ int ex__populate_header(int exoid, const char *path, int my_mode, int is_paralle
   int is_hdf5    = 0;
   int is_pnetcdf = 0;
 
-  float vers;
+  float version;
   char  errmsg[MAX_ERR_LENGTH];
   int   int64_status = my_mode & (EX_ALL_INT64_DB | EX_ALL_INT64_API);
 
@@ -2086,22 +2092,31 @@ int ex__populate_header(int exoid, const char *path, int my_mode, int is_paralle
    */
 
   /* store Exodus API version # as an attribute */
-  vers = EX_API_VERS;
-  if ((status = nc_put_att_float(exoid, NC_GLOBAL, ATT_API_VERSION, NC_FLOAT, 1, &vers)) !=
-      NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to store Exodus II API version attribute in file id %d", exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    return (EX_FATAL);
+  {
+    float version_major = EXODUS_VERSION_MAJOR;
+    float version_minor = EXODUS_VERSION_MINOR;
+    version             = version_major + version_minor / 100.0;
+    if ((status = nc_put_att_float(exoid, NC_GLOBAL, ATT_API_VERSION, NC_FLOAT, 1, &version)) !=
+        NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to store Exodus II API version attribute in file id %d", exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      return (EX_FATAL);
+    }
   }
 
   /* store Exodus file version # as an attribute */
-  vers = EX_VERS;
-  if ((status = nc_put_att_float(exoid, NC_GLOBAL, ATT_VERSION, NC_FLOAT, 1, &vers)) != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to store Exodus II file version attribute in file id %d", exoid);
-    ex_err_fn(exoid, __func__, errmsg, status);
-    return (EX_FATAL);
+  {
+    float version_major = EXODUS_VERSION_MAJOR;
+    float version_minor = EXODUS_VERSION_MINOR;
+    version             = version_major + version_minor / 100.0;
+    if ((status = nc_put_att_float(exoid, NC_GLOBAL, ATT_VERSION, NC_FLOAT, 1, &version)) !=
+        NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to store Exodus II file version attribute in file id %d", exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      return (EX_FATAL);
+    }
   }
 
   /* store Exodus file float word size  as an attribute */

@@ -68,9 +68,17 @@
 #endif
 
 /* EXODUS version number */
-#define EX_API_VERS 7.22f
-#define EX_API_VERS_NODOT 722
+#define EXODUS_VERSION "7.23"
+#define EXODUS_VERSION_MAJOR 7
+#define EXODUS_VERSION_MINOR 23
+#define EXODUS_RELEASE_DATE "July 31, 2019"
+
+#define EX_API_VERS 7.23f
+#define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
+
 #define EX_VERS EX_API_VERS
+
+/* Retained for backward compatibility */
 #define NEMESIS_API_VERSION EX_API_VERS
 #define NEMESIS_API_VERSION_NODOT EX_API_VERS_NODOT
 #define NEMESIS_FILE_VERSION 2.6

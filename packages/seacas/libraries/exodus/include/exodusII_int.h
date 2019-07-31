@@ -766,6 +766,7 @@ int  ex__leavedef(int         exoid,    /* NemesisI file ID         */
                   const char *call_rout /* Name of calling function */
  );
 
+int ex__check_version(int run_version);
 int ex__handle_mode(unsigned int my_mode, int is_parallel, int run_version);
 int ex__populate_header(int exoid, const char *path, int my_mode, int is_parallel, int *comp_ws,
                         int *io_ws);
