@@ -46,7 +46,7 @@ before_install:
   - sudo apt-get update -qq
   - |
     if [ -n "$MPI" ]; then 
-       sudo apt-get -y install -q mpich libmpich-dev
+       sudo apt-get -y install -q mpich2 libmpich2-dev
     else
        sudo apt-get -y install g++-7
        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
