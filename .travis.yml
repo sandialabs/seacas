@@ -44,7 +44,8 @@ before_install:
   # C++14
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
-  - if [ -n "$MPI" ]; then 
+  - |
+    if [ -n "$MPI" ]; then 
        sudo apt-get -y install -q mpich libmpich-dev
     else
        sudo apt-get -y install g++-7
