@@ -80,7 +80,7 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
                          void *y_coor, void *z_coor)
 {
   int status;
-  int coordid;
+  int coordid = -1;
   int coordidx, coordidy, coordidz;
 
   int    numnoddim, ndimdim;
@@ -193,7 +193,7 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
       }
     }
     else {
-      coordidy = 0;
+      coordidy = -1;
     }
 
     if (num_dim > 2) {
@@ -205,7 +205,7 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
       }
     }
     else {
-      coordidz = 0;
+      coordidz = -1;
     }
 
     /* write out the coordinates  */
@@ -235,7 +235,7 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
         coordid = coordidz;
       }
 
-      if (coor != NULL && coordid != 0) {
+      if (coor != NULL && coordid != -1) {
         if (ex__comp_ws(exoid) == 4) {
           status = nc_get_vara_float(exoid, coordid, start, count, coor);
         }

@@ -98,7 +98,7 @@ if (num_dim >= 3)
 int ex_get_coord(int exoid, void *x_coor, void *y_coor, void *z_coor)
 {
   int status;
-  int coordid;
+  int coordid = -1;
   int coordidx, coordidy, coordidz;
 
   int    numnoddim, ndimdim;
@@ -197,7 +197,7 @@ int ex_get_coord(int exoid, void *x_coor, void *y_coor, void *z_coor)
       }
     }
     else {
-      coordidy = 0;
+      coordidy = -1;
     }
 
     if (num_dim > 2) {
@@ -209,7 +209,7 @@ int ex_get_coord(int exoid, void *x_coor, void *y_coor, void *z_coor)
       }
     }
     else {
-      coordidz = 0;
+      coordidz = -1;
     }
 
     /* write out the coordinates  */
@@ -233,7 +233,7 @@ int ex_get_coord(int exoid, void *x_coor, void *y_coor, void *z_coor)
         coordid = coordidz;
       }
 
-      if (coor != NULL && coordid != 0) {
+      if (coor != NULL && coordid != -1) {
         if (ex__comp_ws(exoid) == 4) {
           status = nc_get_var_float(exoid, coordid, coor);
         }
