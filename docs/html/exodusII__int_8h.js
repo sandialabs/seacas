@@ -296,6 +296,7 @@ var exodusII__int_8h =
     [ "ex__catstr2", "group__Internal.html#ga12974e7fe03aa7a03bb548d10c8ca107", null ],
     [ "ex__check_file_type", "group__Internal.html#ga59bdd5d8964c479f6029c276d6a6d097", null ],
     [ "ex__check_valid_file_id", "group__Internal.html#ga330d19673d0a06e92914646ec0e57155", null ],
+    [ "ex__check_version", "group__Internal.html#gac885f3a69320b4052c9bd85cf9307e46", null ],
     [ "ex__comp_ws", "group__Internal.html#ga092f2df32cf25d0010e953a9b64bdc96", null ],
     [ "ex__compress_variable", "group__Internal.html#ga87ef88cfa27b66d5d64aee24bb289a1a", null ],
     [ "ex__conv_exit", "group__Internal.html#ga56bb1fc426b3aec7290100a9be5c1f04", null ],

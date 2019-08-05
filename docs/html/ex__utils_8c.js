@@ -5,6 +5,7 @@ var ex__utils_8c =
     [ "ex__catstr", "group__Internal.html#ga3de7039dc4e1ab7e239438e5e0b8e6cb", null ],
     [ "ex__catstr2", "group__Internal.html#ga12974e7fe03aa7a03bb548d10c8ca107", null ],
     [ "ex__check_file_type", "group__Utilities.html#ga59bdd5d8964c479f6029c276d6a6d097", null ],
+    [ "ex__check_version", "group__Internal.html#gac885f3a69320b4052c9bd85cf9307e46", null ],
     [ "ex__compress_variable", "group__Internal.html#ga87ef88cfa27b66d5d64aee24bb289a1a", null ],
     [ "ex__dim_num_entries_in_object", "group__Internal.html#gaf5dbd61cbdfa95bd6d8bcc8f7fa67b13", null ],
     [ "ex__dim_num_objects", "group__Internal.html#gab0886afc13f3d5f30e51cb53fb44dc1f", null ],

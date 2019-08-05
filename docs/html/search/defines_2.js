@@ -19,5 +19,9 @@ var searchData=
   ['excheck',['EXCHECK',['../ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a',1,'ex_copy.c']]],
   ['excheckf',['EXCHECKF',['../ex__copy_8c.html#a02085d8fa0557805b71b34222eb29067',1,'ex_copy.c']]],
   ['exchecki',['EXCHECKI',['../ex__copy_8c.html#aeb426c0afa8f865ae0be634f06ad4676',1,'ex_copy.c']]],
-  ['exodus_5fexport',['EXODUS_EXPORT',['../exodusII_8h.html#a2ad34ede20848a9335ec2d30953724dd',1,'exodusII.h']]]
+  ['exodus_5fexport',['EXODUS_EXPORT',['../exodusII_8h.html#a2ad34ede20848a9335ec2d30953724dd',1,'exodusII.h']]],
+  ['exodus_5frelease_5fdate',['EXODUS_RELEASE_DATE',['../exodusII_8h.html#a37e831b87010d45baccb8af2db1c0143',1,'exodusII.h']]],
+  ['exodus_5fversion',['EXODUS_VERSION',['../exodusII_8h.html#a1716caad9b47ebafff37a1820196efb0',1,'exodusII.h']]],
+  ['exodus_5fversion_5fmajor',['EXODUS_VERSION_MAJOR',['../exodusII_8h.html#acea302ca351e6f781c53e9affe59dc71',1,'exodusII.h']]],
+  ['exodus_5fversion_5fminor',['EXODUS_VERSION_MINOR',['../exodusII_8h.html#ad3bbb36a7bacba53cad6cf944d0314bf',1,'exodusII.h']]]
 ];

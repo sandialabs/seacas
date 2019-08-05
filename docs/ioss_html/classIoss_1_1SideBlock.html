@@ -131,6 +131,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abc8534e5c921bd301828f3c7874e3108"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f54996f729cd36ed9fddb7974d6fc7b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classIoss_1_1SideSet.html">SideSet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SideBlock.html#a2f54996f729cd36ed9fddb7974d6fc7b">owner</a> () const</td></tr>
 <tr class="separator:a2f54996f729cd36ed9fddb7974d6fc7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73f5294832ab55c907f84aec93d0556e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SideBlock.html#a73f5294832ab55c907f84aec93d0556e">contained_in</a> () const override</td></tr>
+<tr class="separator:a73f5294832ab55c907f84aec93d0556e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad31a4170f11254f07e88a6d9accbe7e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SideBlock.html#ad31a4170f11254f07e88a6d9accbe7e3">block_membership</a> (std::vector&lt; std::string &gt; &amp;block_members) override</td></tr>
 <tr class="memdesc:ad31a4170f11254f07e88a6d9accbe7e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of blocks that the entities in this <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">GroupingEntity</a> "touch".  <a href="#ad31a4170f11254f07e88a6d9accbe7e3">More...</a><br /></td></tr>
 <tr class="separator:ad31a4170f11254f07e88a6d9accbe7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -417,6 +419,34 @@ Additional Inherited Members</h2></td></tr>
 <p>For a <a class="el" href="classIoss_1_1SideSet.html" title="A collection of element sides.">SideSet</a>, returns a list of the element blocks that the elements in the set belong to. For others, it returns an empty vector. Entries are pushed onto the "block_members" vector, so it will be appended to if it is not empty at entry to the function. </p>
 
 <p>Reimplemented from <a class="el" href="classIoss_1_1GroupingEntity.html#af0ac0895532e969424faa3d93b80b3a6">Ioss::GroupingEntity</a>.</p>
+
+</div>
+</div>
+<a id="a73f5294832ab55c907f84aec93d0556e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73f5294832ab55c907f84aec93d0556e">&#9670;&nbsp;</a></span>contained_in()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a>* Ioss::SideBlock::contained_in </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">GroupingEntity</a> pointer of the "object" that this entity is contained in. For example, a <a class="el" href="classIoss_1_1SideBlock.html" title="A collection of element sides having the same topology.">SideBlock</a> would return the <a class="el" href="classIoss_1_1SideSet.html" title="A collection of element sides.">SideSet</a> that "owns" the <a class="el" href="classIoss_1_1SideBlock.html" title="A collection of element sides having the same topology.">SideBlock</a>. Most GroupingEntities would return the containing <a class="el" href="classIoss_1_1Region.html" title="A grouping entity that contains other grouping entities.">Region</a> A region would return itself(?) A <a class="el" href="classIoss_1_1NodeBlock.html" title="A collection of all nodes in the region.">NodeBlock</a> containing the subset of nodes in a <a class="el" href="classIoss_1_1StructuredBlock.html" title="A structured zone – i,j,k.">StructuredBlock</a> would return that <a class="el" href="classIoss_1_1StructuredBlock.html" title="A structured zone – i,j,k.">StructuredBlock</a>. </p>
+
+<p>Reimplemented from <a class="el" href="classIoss_1_1GroupingEntity.html#ad794fcdc48401216d632f89026bc7a5c">Ioss::GroupingEntity</a>.</p>
 
 </div>
 </div>

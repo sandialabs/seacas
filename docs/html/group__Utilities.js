@@ -40,6 +40,5 @@ var group__Utilities =
     [ "ex_strerror", "group__Utilities.html#gad8366f1fe4b33f38de0776451c53a166", null ],
     [ "ex_update", "group__Utilities.html#gafffa0ac5ec86658fb22ed6af7f5530cc", null ],
     [ "nc_flt_code", "group__Utilities.html#ga0bcb99c4a23dde165c0a75e9acfb3d55", null ],
-    [ "exodus_unused_symbol_dummy_1", "group__Utilities.html#ga6b95d19f24054c23e566c8e37cc1bf4f", null ],
-    [ "warning_output", "group__Utilities.html#gab71aa5cfa846f02a7fb1924bcfeb77db", null ]
+    [ "exodus_unused_symbol_dummy_1", "group__Utilities.html#ga6b95d19f24054c23e566c8e37cc1bf4f", null ]
 ];

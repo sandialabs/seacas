@@ -129,6 +129,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a15157a4a9b6185e7a48c7a5c100a89d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f">EntityType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1NodeBlock.html#a15157a4a9b6185e7a48c7a5c100a89d3">type</a> () const override</td></tr>
 <tr class="memdesc:a15157a4a9b6185e7a48c7a5c100a89d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the EntityType, which indicates the particular type of <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">GroupingEntity</a> this is.  <a href="#a15157a4a9b6185e7a48c7a5c100a89d3">More...</a><br /></td></tr>
 <tr class="separator:a15157a4a9b6185e7a48c7a5c100a89d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59d13c5dbd84a4f383acb1217ceade1d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1NodeBlock.html#a59d13c5dbd84a4f383acb1217ceade1d">is_nonglobal_nodeblock</a> () const</td></tr>
+<tr class="separator:a59d13c5dbd84a4f383acb1217ceade1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18ace18ef893bfc60fcf43e29a4ec008"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classIoss_1_1GroupingEntity.html">GroupingEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1NodeBlock.html#a18ace18ef893bfc60fcf43e29a4ec008">contained_in</a> () const override</td></tr>
+<tr class="separator:a18ace18ef893bfc60fcf43e29a4ec008"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afae89ab834c357913ca88bdd70f10b07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Property.html">Property</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1NodeBlock.html#afae89ab834c357913ca88bdd70f10b07">get_implicit_property</a> (const std::string &amp;my_name) const override</td></tr>
 <tr class="memdesc:afae89ab834c357913ca88bdd70f10b07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate and get an implicit property.  <a href="#afae89ab834c357913ca88bdd70f10b07">More...</a><br /></td></tr>
 <tr class="separator:afae89ab834c357913ca88bdd70f10b07"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -373,6 +377,34 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a18ace18ef893bfc60fcf43e29a4ec008"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18ace18ef893bfc60fcf43e29a4ec008">&#9670;&nbsp;</a></span>contained_in()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="classIoss_1_1GroupingEntity.html">GroupingEntity</a>* Ioss::NodeBlock::contained_in </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">GroupingEntity</a> pointer of the "object" that this entity is contained in. For example, a <a class="el" href="classIoss_1_1SideBlock.html" title="A collection of element sides having the same topology.">SideBlock</a> would return the <a class="el" href="classIoss_1_1SideSet.html" title="A collection of element sides.">SideSet</a> that "owns" the <a class="el" href="classIoss_1_1SideBlock.html" title="A collection of element sides having the same topology.">SideBlock</a>. Most GroupingEntities would return the containing <a class="el" href="classIoss_1_1Region.html" title="A grouping entity that contains other grouping entities.">Region</a> A region would return itself(?) A <a class="el" href="classIoss_1_1NodeBlock.html" title="A collection of all nodes in the region.">NodeBlock</a> containing the subset of nodes in a <a class="el" href="classIoss_1_1StructuredBlock.html" title="A structured zone – i,j,k.">StructuredBlock</a> would return that <a class="el" href="classIoss_1_1StructuredBlock.html" title="A structured zone – i,j,k.">StructuredBlock</a>. </p>
+
+<p>Reimplemented from <a class="el" href="classIoss_1_1GroupingEntity.html#ad794fcdc48401216d632f89026bc7a5c">Ioss::GroupingEntity</a>.</p>
+
+</div>
+</div>
 <a id="a69334f8aa6d488d751cc8cde4631816e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a69334f8aa6d488d751cc8cde4631816e">&#9670;&nbsp;</a></span>contains_string()</h2>
 
@@ -519,6 +551,31 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classIoss_1_1GroupingEntity.html#a8f5d067d20febccdca9235fbf382a2de">Ioss::GroupingEntity</a>.</p>
+
+</div>
+</div>
+<a id="a59d13c5dbd84a4f383acb1217ceade1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59d13c5dbd84a4f383acb1217ceade1d">&#9670;&nbsp;</a></span>is_nonglobal_nodeblock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ioss::NodeBlock::is_nonglobal_nodeblock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
