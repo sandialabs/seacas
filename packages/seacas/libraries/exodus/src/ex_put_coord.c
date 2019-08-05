@@ -114,7 +114,7 @@ error = ex_put_coord(exoid, NULL, NULL, z);
 int ex_put_coord(int exoid, const void *x_coor, const void *y_coor, const void *z_coor)
 {
   int status;
-  int coordid;
+  int coordid = -1;
   int coordidx, coordidy, coordidz;
 
   int    numnoddim, ndimdim;
@@ -170,7 +170,7 @@ int ex_put_coord(int exoid, const void *x_coor, const void *y_coor, const void *
     }
   }
   else {
-    coordidy = 0;
+    coordidy = -1;
   }
   if (num_dim > 2) {
     if ((status = nc_inq_varid(exoid, VAR_COORD_Z, &coordidz)) != NC_NOERR) {
@@ -181,7 +181,7 @@ int ex_put_coord(int exoid, const void *x_coor, const void *y_coor, const void *
     }
   }
   else {
-    coordidz = 0;
+    coordidz = -1;
   }
 
   /* write out the coordinates  */
@@ -205,7 +205,7 @@ int ex_put_coord(int exoid, const void *x_coor, const void *y_coor, const void *
       coordid = coordidz;
     }
 
-    if (coor != NULL && coordid != 0) {
+    if (coor != NULL && coordid != -1) {
       if (ex__comp_ws(exoid) == 4) {
         status = nc_put_var_float(exoid, coordid, coor);
       }
