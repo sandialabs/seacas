@@ -104,7 +104,8 @@ $(document).ready(function(){initNavTree('classIoss_1_1SerializeIO.html','');});
 <div class="dynheader">
 Collaboration diagram for Ioss::SerializeIO:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1SerializeIO__coll__graph.svg" width="100%" height="525"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1SerializeIO__coll__graph.svg" width="100%" height="525"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -145,7 +146,7 @@ Private Attributes</h2></td></tr>
 <tr class="memdesc:a3cf8d46cc7a176a521092bca6b2eaec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Database I/O pointer.  <a href="#a3cf8d46cc7a176a521092bca6b2eaec0">More...</a><br /></td></tr>
 <tr class="separator:a3cf8d46cc7a176a521092bca6b2eaec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aadd130d891cfb03927792c8ea07ec3c6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SerializeIO.html#aadd130d891cfb03927792c8ea07ec3c6">m_activeFallThru</a></td></tr>
-<tr class="memdesc:aadd130d891cfb03927792c8ea07ec3c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">No barries since my group is running.  <a href="#aadd130d891cfb03927792c8ea07ec3c6">More...</a><br /></td></tr>
+<tr class="memdesc:aadd130d891cfb03927792c8ea07ec3c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">No barriers since my group is running.  <a href="#aadd130d891cfb03927792c8ea07ec3c6">More...</a><br /></td></tr>
 <tr class="separator:aadd130d891cfb03927792c8ea07ec3c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
@@ -173,7 +174,33 @@ Static Private Attributes</h2></td></tr>
 <div class="textblock"><p>Class <code><a class="el" href="classIoss_1_1SerializeIO.html" title="Class SerializeIO is a sentry class which performs serialization for mesh database I/O.">SerializeIO</a></code> is a sentry class which performs serialization for mesh database I/O. </p>
 <p>This sentry guards serialization of parallel I/O routines. At construction, it blocks the processes via an MPI barrier, releasing them to execute in groups specified by <code>s_groupSize</code>. At destruction, it continues to block via MPI barriers until all the processor have been released by the constructor.</p>
 <p>In the case where the constructor is called, and the sentry is already active and owned by the processes group, the constructor and destrutor simply fall through since the serialization is already in place at a higher level.</p>
-<p>The MPI </p>
+<dl class="section note"><dt>Note</dt><dd>All ranks must call the <a class="el" href="classIoss_1_1SerializeIO.html" title="Class SerializeIO is a sentry class which performs serialization for mesh database I/O.">SerializeIO</a> constructor synchronously. </dd>
+<dd>
+It is recommended to use RAII and keep the area protected by the <a class="el" href="classIoss_1_1SerializeIO.html" title="Class SerializeIO is a sentry class which performs serialization for mesh database I/O.">SerializeIO</a> as small as possible.</dd></dl>
+<p>The flow is that the ranks are split into groups of the specified size. Assume 3 ranks of group size 1.</p>
+<ul>
+<li>First time through,<ul>
+<li>rank 0 falls through and</li>
+<li>ranks 1, 2 sit at the barrier</li>
+<li>rank 0 hits the destructor and then all 3 ranks are in the barrier so they all go to next step</li>
+<li>(rank 1,2 in constructor, rank 0 in destructor)</li>
+</ul>
+</li>
+<li><code>s_owner</code> is now equal to <code>m_groupRank</code> on rank 1, so it falls out of the do while;<ul>
+<li>rank 2 still in the constructor do while Barrier</li>
+<li>rank 0 in the destructor do while Barrier</li>
+<li>rank 1 does its work and calls destructor;</li>
+<li>all ranks in Barrier, so they go to next step.</li>
+</ul>
+</li>
+<li><code>s_owner</code> now equal to <code>m_groupRank</code> on rank 2, so if falls out of the do while;<ul>
+<li>ranks 0,1 in destructor do while at the Barrier</li>
+<li>rank 2 does it work and calls destructor</li>
+<li>all ranks are now in the destructor Barrier, so they go to next step</li>
+<li>all ranks clear the Destructor and go to next step. </li>
+</ul>
+</li>
+</ul>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9af29aa7a2087ce0f54486bc523021ca"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9af29aa7a2087ce0f54486bc523021ca">&#9670;&nbsp;</a></span>SerializeIO() <span class="overload">[1/2]</span></h2>
@@ -525,7 +552,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>No barries since my group is running. </p>
+<p>No barriers since my group is running. </p>
 
 </div>
 </div>
