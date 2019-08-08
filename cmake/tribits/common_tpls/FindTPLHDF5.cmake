@@ -9,7 +9,9 @@
 # to trigger the right behavior in the function
 # TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES().
 #
-cmake_policy(SET CMP0074 NEW)
+if (${CMAKE_VERSION} GREATER "3.13")
+     cmake_policy(SET CMP0074 NEW)
+endif()
 
 SET(REQUIRED_HEADERS hdf5.h)
 SET(REQUIRED_LIBS_NAMES hdf5)
