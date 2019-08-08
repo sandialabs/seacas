@@ -52,6 +52,7 @@
 #
 # ************************************************************************
 # @HEADER
+cmake_policy(SET CMP0074 NEW)
 
 find_package(Matio REQUIRED)
 TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES( Matio

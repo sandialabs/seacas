@@ -37,6 +37,8 @@
 # ************************************************************************
 # @HEADER
 
+cmake_policy(SET CMP0074 NEW)
+
 TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES( Pnetcdf
   REQUIRED_HEADERS pnetcdf.h
   REQUIRED_LIBS_NAMES pnetcdf
