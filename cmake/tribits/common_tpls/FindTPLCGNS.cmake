@@ -44,6 +44,8 @@
 # in order to trigger the right behavior in the function
 # TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES().
 #
+cmake_policy(SET CMP0074 NEW)
+
 SET(REQUIRED_HEADERS cgnslib.h)
 SET(REQUIRED_LIBS_NAMES cgns)
 
