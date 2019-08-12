@@ -96,11 +96,67 @@ $(document).ready(function(){initNavTree('ex__get__elem__num__map_8c.html','');}
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga966a4b2b0cbdd04bc3a989bd757590bd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#ga966a4b2b0cbdd04bc3a989bd757590bd">ex_get_elem_num_map</a> (int exoid, <a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *elem_map)</td></tr>
-<tr class="separator:ga966a4b2b0cbdd04bc3a989bd757590bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af10fa24433691e63fc94b6756ca8df5d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__get__elem__num__map_8c.html#af10fa24433691e63fc94b6756ca8df5d">ex_get_elem_num_map</a> (int exoid, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *elem_map)</td></tr>
+<tr class="separator:af10fa24433691e63fc94b6756ca8df5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="af10fa24433691e63fc94b6756ca8df5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af10fa24433691e63fc94b6756ca8df5d">&#9670;&nbsp;</a></span>ex_get_elem_num_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_elem_num_map </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
+          <td class="paramname"><em>elem_map</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000013">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#gaefc10e2a564e1ed1a926f2fadf5c6a6f">ex_get_id_map()</a>(exoid, EX_ELEM_MAP, elem_map)</dd></dl>
+<p>The function <a class="el" href="ex__get__elem__num__map_8c.html#af10fa24433691e63fc94b6756ca8df5d">ex_get_elem_num_map()</a> reads the optional element number map from the database. See Section LocalElementIds for a description of the element number map. If an element number map is not stored in the data file, a default array (1,2,3,. .. num_elem) is returned. Memory must be allocated for the element number map array ({num_elem} in length) before this call is made.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__get__elem__num__map_8c.html#af10fa24433691e63fc94b6756ca8df5d">ex_get_elem_num_map()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>if an element number map is not stored, a default map and a warning value are returned.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">elem_map</td><td>Returned element number map.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The following code will read an element number map from an open exodus file : </p><div class="fragment"><div class="line"><span class="keywordtype">int</span> *elem_map, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* read element number map */</span></div>
+<div class="line">elem_map = (<span class="keywordtype">int</span> *) calloc(num_elem, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
+<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a966a4b2b0cbdd04bc3a989bd757590bd">ex_get_elem_num_map</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, elem_map);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* Equivalent using non-deprecated function */</span></div>
+<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gaefc10e2a564e1ed1a926f2fadf5c6a6f">ex_get_id_map</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a>, elem_map);</div>
+</div><!-- fragment --> 
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:115</div></div>
+<div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:677</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:266</div></div>
+<div class="ttc" id="aexodusII_8h_html_a966a4b2b0cbdd04bc3a989bd757590bd"><div class="ttname"><a href="exodusII_8h.html#a966a4b2b0cbdd04bc3a989bd757590bd">ex_get_elem_num_map</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_get_elem_num_map(int exoid, void_int *elem_map)</div><div class="ttdef"><b>Definition:</b> ex_get_elem_num_map.c:86</div></div>
+<div class="ttc" id="agroup__ModelDescription_html_gaefc10e2a564e1ed1a926f2fadf5c6a6f"><div class="ttname"><a href="group__ModelDescription.html#gaefc10e2a564e1ed1a926f2fadf5c6a6f">ex_get_id_map</a></div><div class="ttdeci">int ex_get_id_map(int exoid, ex_entity_type map_type, void_int *map)</div><div class="ttdef"><b>Definition:</b> ex_get_id_map.c:55</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

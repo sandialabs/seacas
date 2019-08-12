@@ -1,4 +1,4 @@
 var ex__put__glob__vars_8c =
 [
-    [ "ex_put_glob_vars", "group__APIStructs.html#ga4789179ea3fe71d4292ba8adb60fdbff", null ]
+    [ "ex_put_glob_vars", "ex__put__glob__vars_8c.html#a7a7cc5d748703245cb877bef71e541c0", null ]
 ];

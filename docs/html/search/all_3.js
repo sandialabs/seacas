@@ -1,7 +1,7 @@
 var searchData=
 [
   ['define_5fdimension_21',['define_dimension',['../ex__put__all__var__param__ext_8c.html#aa6af475e018e58cd36304484fb6ffe7c',1,'ex_put_all_var_param_ext.c']]],
-  ['define_5fmaps_22',['define_maps',['../group__ErrorReturnCodes.html#gae5b7d28db11451e6a03f7ea193a4a484',1,'ex_block_params']]],
+  ['define_5fmaps_22',['define_maps',['../structex__block__params.html#ae5b7d28db11451e6a03f7ea193a4a484',1,'ex_block_params']]],
   ['define_5ftruth_5ftable_23',['define_truth_table',['../ex__put__all__var__param__ext_8c.html#a933c749188e413f99bb348833e1b89ea',1,'ex_put_all_var_param_ext.c']]],
   ['define_5fvariable_5fname_5fvariable_24',['define_variable_name_variable',['../ex__put__all__var__param__ext_8c.html#a9a9b18a12e53b189eebd403d1fefcc99',1,'ex_put_all_var_param_ext.c']]],
   ['deprecated_20list_25',['Deprecated List',['../deprecated.html',1,'']]],
@@ -84,7 +84,7 @@ var searchData=
   ['dim_5fstr_102',['DIM_STR',['../group__Internal.html#gae826ec8d39ea9a6fb53c64e16bfd99ac',1,'exodusII_int.h']]],
   ['dim_5fstr_5fname_103',['DIM_STR_NAME',['../group__Internal.html#ga95d6193c4ed4ad962e5cf643e02a7d87',1,'exodusII_int.h']]],
   ['dim_5ftime_104',['DIM_TIME',['../group__Internal.html#ga2377424094138ff3b6336928de5ae54a',1,'exodusII_int.h']]],
-  ['distribution_5ffactor_5flist_105',['distribution_factor_list',['../group__ErrorReturnCodes.html#ga55b371867c6117ddf2938c498f5fda32',1,'ex_set']]],
+  ['distribution_5ffactor_5flist_105',['distribution_factor_list',['../structex__set.html#a55b371867c6117ddf2938c498f5fda32',1,'ex_set']]],
   ['doxygen_2eh_106',['doxygen.h',['../doxygen_8h.html',1,'']]],
   ['data_20file_20utilities_107',['Data File Utilities',['../group__Utilities.html',1,'']]]
 ];

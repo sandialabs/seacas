@@ -96,11 +96,120 @@ $(document).ready(function(){initNavTree('ex__put__elem__var_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gacdd0a32434145c29ba3de7a2c81fa23d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#gacdd0a32434145c29ba3de7a2c81fa23d">ex_put_elem_var</a> (int exoid, int time_step, int elem_var_index, <a class="el" href="group__StringLengths.html#gac03e735ba54b290660f8424399684450">ex_entity_id</a> elem_blk_id, int64_t num_elem_this_blk, const void *elem_var_vals)</td></tr>
-<tr class="separator:gacdd0a32434145c29ba3de7a2c81fa23d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae29af88933e304b46ee6d9e3241f5232"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__elem__var_8c.html#ae29af88933e304b46ee6d9e3241f5232">ex_put_elem_var</a> (int exoid, int time_step, int elem_var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> elem_blk_id, int64_t num_elem_this_blk, const void *elem_var_vals)</td></tr>
+<tr class="separator:ae29af88933e304b46ee6d9e3241f5232"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ae29af88933e304b46ee6d9e3241f5232"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae29af88933e304b46ee6d9e3241f5232">&#9670;&nbsp;</a></span>ex_put_elem_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_elem_var </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>elem_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
+          <td class="paramname"><em>elem_blk_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_elem_this_blk</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>elem_var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000073">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var()</a>(exoid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, num_elem_this_blk, elem_var_vals)</dd></dl>
+<p>The function <a class="el" href="ex__put__elem__var_8c.html#ae29af88933e304b46ee6d9e3241f5232">ex_put_elem_var()</a> writes the values of a single element variable for one element block at one time step. It is recommended, but not required, to write the element variable truth table (with <a class="el" href="exodusII_8h.html#a8a8d1cdaa7874d67603c01aeeda171a1">ex_put_elem_var_tab()</a> before this function is invoked for better efficiency.</p>
+<p>Because element variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__put__elem__var_8c.html#ae29af88933e304b46ee6d9e3241f5232">ex_put_elem_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file opened for read only.</li>
+<li>data file not initialized properly with call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
+<li>invalid element block ID.</li>
+<li><a class="el" href="exodusII_8h.html#a8203562a4606a04c2724ac3220da17d0">ex_put_elem_block()</a> not called previously to specify parameters for this element block.</li>
+<li><a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> not called previously specifying the number of element variables.</li>
+<li>an element variable truth table was stored in the file but contains a zero (indicating no valid element variable) for the specified element block and element variable.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">time_step</td><td>The time step number, as described under <a class="el" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time()</a>. This is essentially a counter that is incremented only when results variables are output. The first time step is 1. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elem_var_index</td><td>The index of the element variable. The first variable has an index of 1. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elem_blk_id</td><td>The element block ID. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_elem_this_blk</td><td>The number of elements in the given element block. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elem_var_vals</td><td>Array of num_elem_this_blk values of the elem_var_index-th element variable for the element block with ID of elem_blk_id at the time_step-th time step.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The following coding will write out all of the element variables for a single time step n to an open exodus file :</p>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_ele_vars, num_elem_blk, *num_elem_in_block,<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>,</div>
+<div class="line">    <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n, *ebids;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">float</span> *elem_var_vals;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* write element variables */</span></div>
+<div class="line"><span class="keywordflow">for</span> (k=1; k &lt;= num_ele_vars; k++) {</div>
+<div class="line">   <span class="keywordflow">for</span> (j=0; j &lt; num_elem_blk; j++) {</div>
+<div class="line">      elem_var_vals = (<span class="keywordtype">float</span> *)</div>
+<div class="line">         calloc(num_elem_in_block[j], <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
+<div class="line"> </div>
+<div class="line">         <span class="keywordflow">for</span> (m=0; m &lt; num_elem_in_block[j]; m++) {</div>
+<div class="line">            <span class="comment">/* simulation code fills this in */</span></div>
+<div class="line">            elem_var_vals[m] = 10.0;</div>
+<div class="line">         }</div>
+<div class="line"> </div>
+<div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#acdd0a32434145c29ba3de7a2c81fa23d">ex_put_elem_var</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n, k, ebids[j],</div>
+<div class="line">                               num_elem_in_block[j], elem_var_vals);</div>
+<div class="line"> </div>
+<div class="line">      <span class="comment">/* Using non-deprecated function: */</span></div>
+<div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, n, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, k, ebids[j],</div>
+<div class="line">                               num_elem_in_block[j], elem_var_vals);</div>
+<div class="line"> </div>
+<div class="line">      free (elem_var_vals);</div>
+<div class="line">   }</div>
+<div class="line">}</div>
+</div><!-- fragment --> 
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:115</div></div>
+<div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:677</div></div>
+<div class="ttc" id="aexodusII_8h_html_acdd0a32434145c29ba3de7a2c81fa23d"><div class="ttname"><a href="exodusII_8h.html#acdd0a32434145c29ba3de7a2c81fa23d">ex_put_elem_var</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_put_elem_var(int exoid, int time_step, int elem_var_index, ex_entity_id elem_blk_id, int64_t num_elem_this_blk, const void *elem_var_vals)</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var.c:140</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:261</div></div>
+<div class="ttc" id="agroup__ResultsData_html_gafa1d828867b436631e99a63fd5ddbf05"><div class="ttname"><a href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a></div><div class="ttdeci">int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index, ex_entity_id obj_id, int64_t num_entries_this_obj, const void *var_vals)</div><div class="ttdef"><b>Definition:</b> ex_put_var.c:238</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

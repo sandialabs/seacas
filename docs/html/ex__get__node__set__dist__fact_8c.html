@@ -96,9 +96,60 @@ $(document).ready(function(){initNavTree('ex__get__node__set__dist__fact_8c.html
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gae0de0db9ad77b8c4173ac4df2ed5b86b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#gae0de0db9ad77b8c4173ac4df2ed5b86b">ex_get_node_set_dist_fact</a> (int exoid, <a class="el" href="group__StringLengths.html#gac03e735ba54b290660f8424399684450">ex_entity_id</a> node_set_id, void *node_set_dist_fact)</td></tr>
-<tr class="separator:gae0de0db9ad77b8c4173ac4df2ed5b86b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06c2ee073b131d3f67c7f6713df25729"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__get__node__set__dist__fact_8c.html#a06c2ee073b131d3f67c7f6713df25729">ex_get_node_set_dist_fact</a> (int exoid, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> node_set_id, void *node_set_dist_fact)</td></tr>
+<tr class="separator:a06c2ee073b131d3f67c7f6713df25729"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a06c2ee073b131d3f67c7f6713df25729"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06c2ee073b131d3f67c7f6713df25729">&#9670;&nbsp;</a></span>ex_get_node_set_dist_fact()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_node_set_dist_fact </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
+          <td class="paramname"><em>node_set_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>node_set_dist_fact</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000038">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#gaba37d22e5d2ec3ac13323c9e7e289812">ex_get_set_dist_fact()</a>(exoid, EX_NODE_SET, node_set_id, node_set_dist_fact)</dd></dl>
+<p>The function <a class="el" href="ex__get__node__set__dist__fact_8c.html#a06c2ee073b131d3f67c7f6713df25729">ex_get_node_set_dist_fact()</a> returns the node set distribution factors for a single node set. Memory must be allocated for the list of distribution factors(num_dist_in_set in length) before this function is invoked.</p>
+<p>Because the distribution factors are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__get__node__set__dist__fact_8c.html#a06c2ee073b131d3f67c7f6713df25729">ex_get_node_set_dist_fact()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>a warning value is returned if no distribution factors were stored.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">node_set_id</td><td>The node set ID. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">node_set_dist_fact</td><td>Returned array containing the distribution factors in the node set.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Refer to the description of <a class="el" href="exodusII_8h.html#afa5aa8049c0233df2f5401a61a0fdde3">ex_get_node_set_param()</a> for a sample code segment to read a node set's distribution factors. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

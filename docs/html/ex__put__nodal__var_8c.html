@@ -97,11 +97,95 @@ $(document).ready(function(){initNavTree('ex__put__nodal__var_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gaac2d4d012d5e2a8069c50a5eb1c05a59"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#gaac2d4d012d5e2a8069c50a5eb1c05a59">ex_put_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t num_nodes, const void *nodal_var_vals)</td></tr>
-<tr class="separator:gaac2d4d012d5e2a8069c50a5eb1c05a59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a295aba6f56b209f0a8d5c2208a3bbc39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__nodal__var_8c.html#a295aba6f56b209f0a8d5c2208a3bbc39">ex_put_nodal_var</a> (int exoid, int time_step, int nodal_var_index, int64_t num_nodes, const void *nodal_var_vals)</td></tr>
+<tr class="separator:a295aba6f56b209f0a8d5c2208a3bbc39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a295aba6f56b209f0a8d5c2208a3bbc39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a295aba6f56b209f0a8d5c2208a3bbc39">&#9670;&nbsp;</a></span>ex_put_nodal_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_nodal_var </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nodal_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>nodal_var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000003">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var()</a>(exoid, time_step, EX_NODAL, nodal_var_index, 1, num_nodes, nodal_var_vals)</dd></dl>
+<p>The function <a class="el" href="ex__put__nodal__var_8c.html#a295aba6f56b209f0a8d5c2208a3bbc39">ex_put_nodal_var()</a> writes the values of a single nodal variable for a single time step. The function <a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> must be invoked before this call is made.</p>
+<p>Because nodal variables are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__put__nodal__var_8c.html#a295aba6f56b209f0a8d5c2208a3bbc39">ex_put_nodal_var()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file opened for read only.</li>
+<li>data file not initialized properly with call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
+<li><a class="el" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param()</a> not called previously specifying the number of nodal variables.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">time_step</td><td>The time step number, as described under <a class="el" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time()</a>. This is essentially a counter that is incremented when results variables are output. The first time step is 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodal_var_index</td><td>The index of the nodal variable. The first variable has an index of 1.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_nodes</td><td>The number of nodal points.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodal_var_vals</td><td>Array of num_nodes values of the nodal_var_index-th nodal variable for the time_step-th time step.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>As an example, the following code segment writes all the nodal variables for a single time step:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> num_nod_vars, num_nodes, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, time_step;</div>
+<div class="line"><span class="keywordtype">float</span> *nodal_var_vals;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* write nodal variables */</span></div>
+<div class="line">nodal_var_vals = (<span class="keywordtype">float</span> *) calloc(num_nodes, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
+<div class="line"><span class="keywordflow">for</span> (k=1; k &lt;= num_nod_vars; k++) {</div>
+<div class="line">   <span class="keywordflow">for</span> (j=0; j &lt; num_nodes; j++) {</div>
+<div class="line">      <span class="comment">/* application code fills in this array */</span></div>
+<div class="line">      nodal_var_vals[j] = 10.0;</div>
+<div class="line">   }</div>
+<div class="line">   <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#aac2d4d012d5e2a8069c50a5eb1c05a59">ex_put_nodal_var</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, time_step, k, num_nodes,</div>
+<div class="line">                            nodal_var_vals);</div>
+<div class="line">}</div>
+</div><!-- fragment --> 
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:115</div></div>
+<div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:677</div></div>
+<div class="ttc" id="aexodusII_8h_html_aac2d4d012d5e2a8069c50a5eb1c05a59"><div class="ttname"><a href="exodusII_8h.html#aac2d4d012d5e2a8069c50a5eb1c05a59">ex_put_nodal_var</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_put_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num_nodes, const void *nodal_var_vals)</div><div class="ttdef"><b>Definition:</b> ex_put_nodal_var.c:103</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

@@ -1,4 +1,4 @@
 var ex__get__side__set__param_8c =
 [
-    [ "ex_get_side_set_param", "group__APIStructs.html#gac44ded56c2f6f121c625c649f853d991", null ]
+    [ "ex_get_side_set_param", "ex__get__side__set__param_8c.html#aa1502d78710ba6fe5dceb57ebf6132dd", null ]
 ];

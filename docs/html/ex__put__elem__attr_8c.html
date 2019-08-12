@@ -96,9 +96,64 @@ $(document).ready(function(){initNavTree('ex__put__elem__attr_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gaa4ba9756d0331b3eabe73cd07adec4c3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#gaa4ba9756d0331b3eabe73cd07adec4c3">ex_put_elem_attr</a> (int exoid, <a class="el" href="group__StringLengths.html#gac03e735ba54b290660f8424399684450">ex_entity_id</a> elem_blk_id, const void *attrib)</td></tr>
-<tr class="separator:gaa4ba9756d0331b3eabe73cd07adec4c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ba88a4c32ad3cd2fcebb6ed74b93c29"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__elem__attr_8c.html#a4ba88a4c32ad3cd2fcebb6ed74b93c29">ex_put_elem_attr</a> (int exoid, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> elem_blk_id, const void *attrib)</td></tr>
+<tr class="separator:a4ba88a4c32ad3cd2fcebb6ed74b93c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a4ba88a4c32ad3cd2fcebb6ed74b93c29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ba88a4c32ad3cd2fcebb6ed74b93c29">&#9670;&nbsp;</a></span>ex_put_elem_attr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_elem_attr </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
+          <td class="paramname"><em>elem_blk_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>attrib</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000067">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr()</a>(exoid, EX_ELEM_BLOCK, elem_blk_id, attrib)</dd></dl>
+<p>The function <a class="el" href="ex__put__elem__attr_8c.html#a4ba88a4c32ad3cd2fcebb6ed74b93c29">ex_put_elem_attr()</a> writes the attributes for an element block. Each element in the element block must have the same number of attributes, so there are(num_attr x num_elem_this_blk) attributes for each element block. The function <a class="el" href="exodusII_8h.html#a8203562a4606a04c2724ac3220da17d0">ex_put_elem_block()</a> must be invoked before this call is made.</p>
+<p>Because the attributes are floating point values, the application code must declare the array passed to be the appropriate type (float or double) to match the compute word size passed in <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__put__elem__attr_8c.html#a4ba88a4c32ad3cd2fcebb6ed74b93c29">ex_put_elem_attr()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file opened for read only.</li>
+<li>data file not initialized properly with call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
+<li><a class="el" href="exodusII_8h.html#a8203562a4606a04c2724ac3220da17d0">ex_put_elem_block()</a> was not called previously for specified element block ID.</li>
+<li><a class="el" href="exodusII_8h.html#a8203562a4606a04c2724ac3220da17d0">ex_put_elem_block()</a> was called with 0 attributes specified.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elem_blk_id</td><td>The element block ID. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">attrib</td><td>Size [num_elem_this_blk*num_attr] The list of attributes for the element block. The num_attr index cycles faster.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Refer to the code example in <a class="el" href="exodusII_8h.html#a8203562a4606a04c2724ac3220da17d0">ex_put_elem_block()</a> for an example of writing the attributes array for an element block. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -163,6 +163,6 @@ var exo__jack_windows_8c =
     [ "EXPVP", "exo__jack-windows_8c.html#ac172e3b5260c82f5b42b9c05e9d91e08", null ],
     [ "EXPVTT", "exo__jack-windows_8c.html#ad5e89de4e36ecd3c6e7eb42a79bde237", null ],
     [ "EXUPDA", "exo__jack-windows_8c.html#ad26a4999e7c866b9b3829d8875fc852a", null ],
-    [ "exerrval", "group__APIStructs.html#ga2afcad8a32ffecb9237121f272c06ad6", null ],
+    [ "exerrval", "exo__jack-windows_8c.html#a2afcad8a32ffecb9237121f272c06ad6", null ],
     [ "ncopts", "exo__jack-windows_8c.html#ad666765b7d4bbdd6a39ad40e7ee3c73a", null ]
 ];

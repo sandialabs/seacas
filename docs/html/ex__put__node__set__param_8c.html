@@ -96,11 +96,109 @@ $(document).ready(function(){initNavTree('ex__put__node__set__param_8c.html','')
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga8cdfacc20b190562b2f194c0d91f7657"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#ga8cdfacc20b190562b2f194c0d91f7657">ex_put_node_set_param</a> (int exoid, <a class="el" href="group__StringLengths.html#gac03e735ba54b290660f8424399684450">ex_entity_id</a> node_set_id, int64_t num_nodes_in_set, int64_t num_dist_in_set)</td></tr>
-<tr class="separator:ga8cdfacc20b190562b2f194c0d91f7657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adca0e30d164d2a036dc0b3b127d3f401"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__node__set__param_8c.html#adca0e30d164d2a036dc0b3b127d3f401">ex_put_node_set_param</a> (int exoid, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> node_set_id, int64_t num_nodes_in_set, int64_t num_dist_in_set)</td></tr>
+<tr class="separator:adca0e30d164d2a036dc0b3b127d3f401"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="adca0e30d164d2a036dc0b3b127d3f401"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adca0e30d164d2a036dc0b3b127d3f401">&#9670;&nbsp;</a></span>ex_put_node_set_param()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_node_set_param </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
+          <td class="paramname"><em>node_set_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_nodes_in_set</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_dist_in_set</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000093">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param()</a>(exoid, EX_NODE_SET, node_set_id, num_nodes_in_set, num_dist_in_set)</dd></dl>
+<p>The function <a class="el" href="ex__put__node__set__param_8c.html#adca0e30d164d2a036dc0b3b127d3f401">ex_put_node_set_param()</a> writes the node set ID, the number of nodes which describe a single node set, and the number of node set distribution factors for the node set.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__put__node__set__param_8c.html#adca0e30d164d2a036dc0b3b127d3f401">ex_put_node_set_param()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+<li>data file opened for read only.</li>
+<li>data file not initialized properly with call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a>.</li>
+<li>the number of node sets specified in the call to <a class="el" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init()</a> was zero or has been exceeded.</li>
+<li>a node set with the same ID has already been stored.</li>
+<li>the specified number of distribution factors is not zero and is not equal to the number of nodes.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">node_set_id</td><td>The node set ID. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_nodes_in_set</td><td>The number of nodes in the node set. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_dist_in_set</td><td>The number of distribution factors in the node set. This should be either 0 (zero) for no factors, or should equal num_nodes_in_set.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The following code segment will write out a node set to an open exodus file :</p>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> id, num_nodes_in_set, num_dist_in_set, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, *node_list;</div>
+<div class="line"><span class="keywordtype">float</span> *dist_fact;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* write node set parameters */</span></div>
+<div class="line"><span class="keywordtype">id</span> = 20; num_nodes_in_set = 5; num_dist_in_set = 5;</div>
+<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a8cdfacc20b190562b2f194c0d91f7657">ex_put_node_set_param</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <span class="keywordtype">id</span>, num_nodes_in_set,</div>
+<div class="line">                              num_dist_in_set);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* write node set node list */</span></div>
+<div class="line">node_list = (<span class="keywordtype">int</span> *) calloc (num_nodes_in_set, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
+<div class="line">node_list[0] = 100; node_list[1] = 101; node_list[2] = 102;</div>
+<div class="line">node_list[3] = 103; node_list[4] = 104;</div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#ab9ce28af65a9720eb865f8b50df0fcc3">ex_put_node_set</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <span class="keywordtype">id</span>, node_list);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* write node set distribution factors */</span></div>
+<div class="line">dist_fact = (<span class="keywordtype">float</span> *) calloc (num_dist_in_set, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
+<div class="line">dist_fact[0] = 1.0; dist_fact[1] = 2.0; dist_fact[2] = 3.0;</div>
+<div class="line">dist_fact[3] = 4.0; dist_fact[4] = 5.0;</div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a1f78ded5792c05111dc25fa928db227d">ex_put_node_set_dist_fact</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <span class="keywordtype">id</span>, dist_fact);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* Same result using non-deprecated functions */</span></div>
+<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, <span class="keywordtype">id</span>, num_nodes_in_set,</div>
+<div class="line">num_dist_in_set);</div>
+<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, <span class="keywordtype">id</span>, node_list, NULL);</div>
+<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a>(<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, <span class="keywordtype">id</span>, dist_fact);</div>
+</div><!-- fragment --> 
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:256</div></div>
+<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:115</div></div>
+<div class="ttc" id="aexodusII_8h_html_a8cdfacc20b190562b2f194c0d91f7657"><div class="ttname"><a href="exodusII_8h.html#a8cdfacc20b190562b2f194c0d91f7657">ex_put_node_set_param</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_put_node_set_param(int exoid, ex_entity_id node_set_id, int64_t num_nodes_in_set, int64_t num_dist_in_set)</div><div class="ttdef"><b>Definition:</b> ex_put_node_set_param.c:101</div></div>
+<div class="ttc" id="agroup__ModelDescription_html_gadab43f382dc0b6000215baa82097fef5"><div class="ttname"><a href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a></div><div class="ttdeci">int ex_put_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id, const void *set_dist_fact)</div><div class="ttdef"><b>Definition:</b> ex_put_set_dist_fact.c:63</div></div>
+<div class="ttc" id="agroup__ModelDescription_html_ga00b965a438a94c8f5b67fa3c7f8d2ffe"><div class="ttname"><a href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a></div><div class="ttdeci">int ex_put_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id, int64_t num_entries_in_set, int64_t num_dist_fact_in_set)</div><div class="ttdef"><b>Definition:</b> ex_put_set_param.c:65</div></div>
+<div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:677</div></div>
+<div class="ttc" id="aexodusII_8h_html_ab9ce28af65a9720eb865f8b50df0fcc3"><div class="ttname"><a href="exodusII_8h.html#ab9ce28af65a9720eb865f8b50df0fcc3">ex_put_node_set</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_put_node_set(int exoid, ex_entity_id node_set_id, const void_int *node_set_node_list)</div><div class="ttdef"><b>Definition:</b> ex_put_node_set.c:65</div></div>
+<div class="ttc" id="agroup__ModelDescription_html_gae228a5d04b47322f28c458d95edf7f73"><div class="ttname"><a href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a></div><div class="ttdeci">int ex_put_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, const void_int *set_entry_list, const void_int *set_extra_list)</div><div class="ttdef"><b>Definition:</b> ex_put_set.c:67</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f78ded5792c05111dc25fa928db227d"><div class="ttname"><a href="exodusII_8h.html#a1f78ded5792c05111dc25fa928db227d">ex_put_node_set_dist_fact</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_put_node_set_dist_fact(int exoid, ex_entity_id node_set_id, const void *node_set_dist_fact)</div><div class="ttdef"><b>Definition:</b> ex_put_node_set_dist_fact.c:70</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

@@ -96,9 +96,60 @@ $(document).ready(function(){initNavTree('ex__put__side__set_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga1403808296f87abacd7ee7570d751bb0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#ga1403808296f87abacd7ee7570d751bb0">ex_put_side_set</a> (int exoid, <a class="el" href="group__StringLengths.html#gac03e735ba54b290660f8424399684450">ex_entity_id</a> side_set_id, const <a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_set_elem_list, const <a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_set_side_list)</td></tr>
-<tr class="separator:ga1403808296f87abacd7ee7570d751bb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a877709c854108187dec0dbf454da1ad5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__side__set_8c.html#a877709c854108187dec0dbf454da1ad5">ex_put_side_set</a> (int exoid, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> side_set_id, const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_set_elem_list, const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *side_set_side_list)</td></tr>
+<tr class="separator:a877709c854108187dec0dbf454da1ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a877709c854108187dec0dbf454da1ad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a877709c854108187dec0dbf454da1ad5">&#9670;&nbsp;</a></span>ex_put_side_set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_side_set </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
+          <td class="paramname"><em>side_set_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
+          <td class="paramname"><em>side_set_elem_list</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
+          <td class="paramname"><em>side_set_side_list</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>writes the side set element list and side set side list for a single side set </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
+    <tr><td class="paramname">side_set_id</td><td>side set id </td></tr>
+    <tr><td class="paramname">*side_set_elem_list</td><td>array of elements in side set </td></tr>
+    <tr><td class="paramname">*side_set_side_list</td><td>array of sides in side set </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000107">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set()</a>(exoid, EX_SIDE_SET, side_set_id, side_set_elem_list, side_set_side_list) </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

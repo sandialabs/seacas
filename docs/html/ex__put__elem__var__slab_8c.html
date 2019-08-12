@@ -96,9 +96,81 @@ $(document).ready(function(){initNavTree('ex__put__elem__var__slab_8c.html','');
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga173d31b4b6c3f63696603cf7671f8d21"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#ga173d31b4b6c3f63696603cf7671f8d21">ex_put_elem_var_slab</a> (int exoid, int time_step, int elem_var_index, <a class="el" href="group__StringLengths.html#gac03e735ba54b290660f8424399684450">ex_entity_id</a> elem_blk_id, int64_t start_pos, int64_t num_vals, void *elem_var_vals)</td></tr>
-<tr class="separator:ga173d31b4b6c3f63696603cf7671f8d21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbd5c8831caa4fde4aeccc139b6c3af8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__elem__var__slab_8c.html#afbd5c8831caa4fde4aeccc139b6c3af8">ex_put_elem_var_slab</a> (int exoid, int time_step, int elem_var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> elem_blk_id, int64_t start_pos, int64_t num_vals, void *elem_var_vals)</td></tr>
+<tr class="separator:afbd5c8831caa4fde4aeccc139b6c3af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="afbd5c8831caa4fde4aeccc139b6c3af8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbd5c8831caa4fde4aeccc139b6c3af8">&#9670;&nbsp;</a></span>ex_put_elem_var_slab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_elem_var_slab </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>elem_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
+          <td class="paramname"><em>elem_blk_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>start_pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>elem_var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000074">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var()</a>(exoid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, start_pos, num_vals, elem_var_vals) </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">time_step</td><td>time index </td></tr>
+    <tr><td class="paramname">elem_var_index</td><td>elemental variable index </td></tr>
+    <tr><td class="paramname">elem_blk_id</td><td>elemental block id </td></tr>
+    <tr><td class="paramname">start_pos</td><td>Starting position to write to </td></tr>
+    <tr><td class="paramname">num_vals</td><td>Number of elements to write </td></tr>
+    <tr><td class="paramname">elem_var_vals</td><td>variable values </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

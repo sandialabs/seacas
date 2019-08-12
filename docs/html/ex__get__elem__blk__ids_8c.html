@@ -96,11 +96,66 @@ $(document).ready(function(){initNavTree('ex__get__elem__blk__ids_8c.html','');}
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga93999c6ef6831cc64be11f7ae6053a3f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#ga93999c6ef6831cc64be11f7ae6053a3f">ex_get_elem_blk_ids</a> (int exoid, <a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *ids)</td></tr>
-<tr class="separator:ga93999c6ef6831cc64be11f7ae6053a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7a259ad988532a988dab0699e2d58cf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__get__elem__blk__ids_8c.html#ac7a259ad988532a988dab0699e2d58cf">ex_get_elem_blk_ids</a> (int exoid, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *ids)</td></tr>
+<tr class="separator:ac7a259ad988532a988dab0699e2d58cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ac7a259ad988532a988dab0699e2d58cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7a259ad988532a988dab0699e2d58cf">&#9670;&nbsp;</a></span>ex_get_elem_blk_ids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_elem_blk_ids </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
+          <td class="paramname"><em>ids</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000009">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#gad1f33f5a3b24a7e8bc700053aff4c7d1">ex_get_ids()</a>(exoid, EX_ELEM_BLOCK, ids) instead</dd></dl>
+<p>The function <a class="el" href="ex__get__elem__blk__ids_8c.html#ac7a259ad988532a988dab0699e2d58cf">ex_get_elem_blk_ids()</a> reads the IDs of all of the element blocks. Memory must be allocated for the returned array of ({num_elem_blk}) IDs before this function is invoked. The required size(num_elem_blk) can be determined via a call to <a class="el" href="group__Utilities.html#ga97c9b3dd2005e08f6e1d98470947fc6a">ex_inquire()</a> or <a class="el" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>In case of an error, <a class="el" href="ex__get__elem__blk__ids_8c.html#ac7a259ad988532a988dab0699e2d58cf">ex_get_elem_blk_ids()</a> returns a negative number; a warning will return a positive number. Possible causes of errors include:<ul>
+<li>data file not properly opened with call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a></li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exoid</td><td>exodus file ID returned from a previous call to <a class="el" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open()</a>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ids</td><td>Returned array of the element blocks IDs. The order of the IDs in this array reflects the sequence that the element blocks were introduced into the file.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The following code segment reads all the element block IDs:</p>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>, <a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, *idelbs, num_elem_blk;</div>
+<div class="line">idelbs = (<span class="keywordtype">int</span> *) calloc(num_elem_blk, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="exodusII_8h.html#a93999c6ef6831cc64be11f7ae6053a3f">ex_get_elem_blk_ids</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, idelbs);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* Same result using non-deprecated functions */</span></div>
+<div class="line"><a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gad1f33f5a3b24a7e8bc700053aff4c7d1">ex_get_ids</a> (<a class="code" href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">exoid</a>, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, idelbs);</div>
+</div><!-- fragment --> 
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aexodusII_8h_html_a93999c6ef6831cc64be11f7ae6053a3f"><div class="ttname"><a href="exodusII_8h.html#a93999c6ef6831cc64be11f7ae6053a3f">ex_get_elem_blk_ids</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_get_elem_blk_ids(int exoid, void_int *ids)</div><div class="ttdef"><b>Definition:</b> ex_get_elem_blk_ids.c:77</div></div>
+<div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:115</div></div>
+<div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:677</div></div>
+<div class="ttc" id="agroup__ModelDescription_html_gad1f33f5a3b24a7e8bc700053aff4c7d1"><div class="ttname"><a href="group__ModelDescription.html#gad1f33f5a3b24a7e8bc700053aff4c7d1">ex_get_ids</a></div><div class="ttdeci">int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)</div><div class="ttdef"><b>Definition:</b> ex_get_ids.c:46</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:261</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

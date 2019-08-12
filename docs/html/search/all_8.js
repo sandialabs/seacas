@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['id_1152',['id',['../group__ErrorReturnCodes.html#ga5029b0343dfbef84bc2666488a2764db',1,'ex_block::id()'],['../group__ErrorReturnCodes.html#ga7b626b24b1c480d51d07d78ce2d3148b',1,'ex_set::id()']]],
+  ['id_1152',['id',['../structex__block.html#a5029b0343dfbef84bc2666488a2764db',1,'ex_block::id()'],['../structex__set.html#a7b626b24b1c480d51d07d78ce2d3148b',1,'ex_set::id()']]],
   ['id_5fvals_1153',['id_vals',['../structex____obj__stats.html#ae8c3a54c8acafa85c97e9e1b7e975833',1,'ex__obj_stats']]],
   ['int64_5fstatus_1154',['int64_status',['../structex____file__item.html#ade02f5dce0471af80a23a4bc5e1d995c',1,'ex__file_item']]],
   ['internal_20functions_20and_20defines_1155',['Internal Functions and Defines',['../group__Internal.html',1,'']]],

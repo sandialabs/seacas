@@ -96,9 +96,74 @@ $(document).ready(function(){initNavTree('ex__put__concat__var__param_8c.html','
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga99470b719a4af9f982a08057bc05d838"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#ga99470b719a4af9f982a08057bc05d838">ex_put_concat_var_param</a> (int exoid, int num_g, int num_n, int num_e, int num_elem_blk, int *elem_var_tab)</td></tr>
-<tr class="separator:ga99470b719a4af9f982a08057bc05d838"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafde035060d6f9cd055f3f1615461c66"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__concat__var__param_8c.html#aafde035060d6f9cd055f3f1615461c66">ex_put_concat_var_param</a> (int exoid, int num_g, int num_n, int num_e, int num_elem_blk, int *elem_var_tab)</td></tr>
+<tr class="separator:aafde035060d6f9cd055f3f1615461c66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="aafde035060d6f9cd055f3f1615461c66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafde035060d6f9cd055f3f1615461c66">&#9670;&nbsp;</a></span>ex_put_concat_var_param()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_concat_var_param </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>num_g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>num_n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>num_e</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>num_elem_blk</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>elem_var_tab</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>writes the number of global, nodal, and element variables that will be written to the database </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>int exodus file id </td></tr>
+    <tr><td class="paramname">num_g</td><td>int global variable count </td></tr>
+    <tr><td class="paramname">num_n</td><td>int nodal variable count </td></tr>
+    <tr><td class="paramname">num_e</td><td>int element variable count </td></tr>
+    <tr><td class="paramname">num_elem_blk</td><td>int number of element blocks </td></tr>
+    <tr><td class="paramname">elem_var_tab</td><td>int* element variable truth table array </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000066">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga4e10ac1ef1f40d2941f7918d527e539d">ex_put_all_var_param()</a>(exoid, num_g, num_n, num_e, elem_var_tab, 0, 0, 0, 0) </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

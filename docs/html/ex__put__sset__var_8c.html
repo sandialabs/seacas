@@ -96,9 +96,74 @@ $(document).ready(function(){initNavTree('ex__put__sset__var_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gab5ae27fc3a9b5fc0aedc73ded164d424"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#gab5ae27fc3a9b5fc0aedc73ded164d424">ex_put_sset_var</a> (int exoid, int time_step, int sset_var_index, <a class="el" href="group__StringLengths.html#gac03e735ba54b290660f8424399684450">ex_entity_id</a> sset_id, int64_t num_faces_this_sset, const void *sset_var_vals)</td></tr>
-<tr class="separator:gab5ae27fc3a9b5fc0aedc73ded164d424"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31a3ab2d905b72533f889cabe340f5b9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__sset__var_8c.html#a31a3ab2d905b72533f889cabe340f5b9">ex_put_sset_var</a> (int exoid, int time_step, int sset_var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> sset_id, int64_t num_faces_this_sset, const void *sset_var_vals)</td></tr>
+<tr class="separator:a31a3ab2d905b72533f889cabe340f5b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a31a3ab2d905b72533f889cabe340f5b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31a3ab2d905b72533f889cabe340f5b9">&#9670;&nbsp;</a></span>ex_put_sset_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_sset_var </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sset_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
+          <td class="paramname"><em>sset_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_faces_this_sset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>sset_var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>writes the values of a single sideset variable for one sideset at one time step to the database; assume the first time step and sideset variable index are 1 </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
+    <tr><td class="paramname">time_step</td><td>time step number </td></tr>
+    <tr><td class="paramname">sset_var_index</td><td>sideset variable index </td></tr>
+    <tr><td class="paramname">sset_id</td><td>sideset id </td></tr>
+    <tr><td class="paramname">num_faces_this_sset</td><td>number of faces in this sideset </td></tr>
+    <tr><td class="paramname">sset_var_vals</td><td>the variable values to be written </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000110">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var()</a>(exoid, time_step, EX_SIDE_SET, sset_var_index, sset_id, num_faces_this_sset, sset_var_vals) </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

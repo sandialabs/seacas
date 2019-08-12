@@ -96,9 +96,60 @@ $(document).ready(function(){initNavTree('ex__put__nset__var__tab_8c.html','');}
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga3070aeee46e9839a3dc5d521765eda27"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#ga3070aeee46e9839a3dc5d521765eda27">ex_put_nset_var_tab</a> (int exoid, int num_nset, int num_nset_var, int *nset_var_tab)</td></tr>
-<tr class="separator:ga3070aeee46e9839a3dc5d521765eda27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac71769577e252a3d2af522a259c735e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__put__nset__var__tab_8c.html#aac71769577e252a3d2af522a259c735e">ex_put_nset_var_tab</a> (int exoid, int num_nset, int num_nset_var, int *nset_var_tab)</td></tr>
+<tr class="separator:aac71769577e252a3d2af522a259c735e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="aac71769577e252a3d2af522a259c735e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac71769577e252a3d2af522a259c735e">&#9670;&nbsp;</a></span>ex_put_nset_var_tab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_nset_var_tab </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>num_nset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>num_nset_var</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>nset_var_tab</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>writes the EXODUS nodeset variable truth table to the database; also, creates netCDF variables in which to store EXODUS nodeset variable values; although this table isn't required (because the netCDF variables can also be created in ex_put_nset_var), this call will save tremendous time because all of the variables are defined at once while the file is in define mode, rather than going in and out of define mode (causing the entire file to be copied over and over) which is what occurs when the nodeset variable values variables are defined in ex_put_nset_var </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
+    <tr><td class="paramname">num_nset</td><td>number of nodesets </td></tr>
+    <tr><td class="paramname">num_nset_var</td><td>number of nodeset variables </td></tr>
+    <tr><td class="paramname">nset_var_tab</td><td>nodeset variable truth table array </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000095">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga332addfae3873a71c38db5465e6bcf0b">ex_put_truth_table()</a>(exoid, EX_NODE_SET, num_nset, num_nset_var, nset_var_tab) </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

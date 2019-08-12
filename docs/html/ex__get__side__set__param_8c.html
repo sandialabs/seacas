@@ -96,9 +96,60 @@ $(document).ready(function(){initNavTree('ex__get__side__set__param_8c.html','')
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gac44ded56c2f6f121c625c649f853d991"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#gac44ded56c2f6f121c625c649f853d991">ex_get_side_set_param</a> (int exoid, <a class="el" href="group__StringLengths.html#gac03e735ba54b290660f8424399684450">ex_entity_id</a> side_set_id, <a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *num_side_in_set, <a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *num_dist_fact_in_set)</td></tr>
-<tr class="separator:gac44ded56c2f6f121c625c649f853d991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1502d78710ba6fe5dceb57ebf6132dd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__get__side__set__param_8c.html#aa1502d78710ba6fe5dceb57ebf6132dd">ex_get_side_set_param</a> (int exoid, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> side_set_id, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *num_side_in_set, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *num_dist_fact_in_set)</td></tr>
+<tr class="separator:aa1502d78710ba6fe5dceb57ebf6132dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="aa1502d78710ba6fe5dceb57ebf6132dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1502d78710ba6fe5dceb57ebf6132dd">&#9670;&nbsp;</a></span>ex_get_side_set_param()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_side_set_param </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
+          <td class="paramname"><em>side_set_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
+          <td class="paramname"><em>num_side_in_set</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td>
+          <td class="paramname"><em>num_dist_fact_in_set</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>reads the number of sides and the number of distribution factors which describe a single side set </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">exoid</td><td>exodus file id </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">side_set_id</td><td>side set id </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">num_side_in_set</td><td>number of sides in the side set </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">num_dist_fact_in_set</td><td>number of distribution factors in the </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000057">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ModelDescription.html#ga712b89d54676bfeab4244ac674416ff5">ex_get_set_param()</a>(exoid, EX_SIDE_SET, side_set_id, num_side_in_set, num_dist_fact_in_set) </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

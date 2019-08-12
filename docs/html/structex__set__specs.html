@@ -89,7 +89,7 @@ $(document).ready(function(){initNavTree('structex__set__specs.html','');});
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">ex_set_specs Struct Reference<div class="ingroups"><a class="el" href="group__FileVars.html">Variables controlling the file creation mode.</a> &raquo; <a class="el" href="group__FileOptions.html">Variables controlling the compression, name size, and integer size.</a> &raquo; <a class="el" href="group__StringLengths.html">maximum string lengths;</a> &raquo; <a class="el" href="group__APIStructs.html">Structures used by external API functions.</a></div></div>  </div>
+<div class="title">ex_set_specs Struct Reference<div class="ingroups"><a class="el" href="group__APIStructs.html">Structures used by external API functions.</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -97,27 +97,156 @@ $(document).ready(function(){initNavTree('structex__set__specs.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:ga06ecbec33a9895e028b54d80527eb3f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#ga06ecbec33a9895e028b54d80527eb3f9">sets_ids</a></td></tr>
-<tr class="separator:ga06ecbec33a9895e028b54d80527eb3f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac9b578adbaf067e8b2afe0aa5d927166"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#gac9b578adbaf067e8b2afe0aa5d927166">num_entries_per_set</a></td></tr>
-<tr class="separator:gac9b578adbaf067e8b2afe0aa5d927166"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga26af7c745c163cc3e2e857255b3c5b11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#ga26af7c745c163cc3e2e857255b3c5b11">num_dist_per_set</a></td></tr>
-<tr class="separator:ga26af7c745c163cc3e2e857255b3c5b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf7dc8db54bf8d7ec697a81b4a651c3ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#gaf7dc8db54bf8d7ec697a81b4a651c3ca">sets_entry_index</a></td></tr>
-<tr class="separator:gaf7dc8db54bf8d7ec697a81b4a651c3ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga01768e58fd47a77b4c54eb75ff8fc1b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#ga01768e58fd47a77b4c54eb75ff8fc1b9">sets_dist_index</a></td></tr>
-<tr class="separator:ga01768e58fd47a77b4c54eb75ff8fc1b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadd5d9ae60a32198be0ab209d23441072"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#gadd5d9ae60a32198be0ab209d23441072">sets_entry_list</a></td></tr>
-<tr class="separator:gadd5d9ae60a32198be0ab209d23441072"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8f153530e336bc5b8dea551062ad6512"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__StringLengths.html#ga393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#ga8f153530e336bc5b8dea551062ad6512">sets_extra_list</a></td></tr>
-<tr class="separator:ga8f153530e336bc5b8dea551062ad6512"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga885624dab2047d1cb53eac5e125d7791"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ErrorReturnCodes.html#ga885624dab2047d1cb53eac5e125d7791">sets_dist_fact</a></td></tr>
-<tr class="separator:ga885624dab2047d1cb53eac5e125d7791"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06ecbec33a9895e028b54d80527eb3f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structex__set__specs.html#a06ecbec33a9895e028b54d80527eb3f9">sets_ids</a></td></tr>
+<tr class="separator:a06ecbec33a9895e028b54d80527eb3f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b578adbaf067e8b2afe0aa5d927166"><td class="memItemLeft" align="right" valign="top"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structex__set__specs.html#ac9b578adbaf067e8b2afe0aa5d927166">num_entries_per_set</a></td></tr>
+<tr class="separator:ac9b578adbaf067e8b2afe0aa5d927166"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26af7c745c163cc3e2e857255b3c5b11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structex__set__specs.html#a26af7c745c163cc3e2e857255b3c5b11">num_dist_per_set</a></td></tr>
+<tr class="separator:a26af7c745c163cc3e2e857255b3c5b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7dc8db54bf8d7ec697a81b4a651c3ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structex__set__specs.html#af7dc8db54bf8d7ec697a81b4a651c3ca">sets_entry_index</a></td></tr>
+<tr class="separator:af7dc8db54bf8d7ec697a81b4a651c3ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01768e58fd47a77b4c54eb75ff8fc1b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structex__set__specs.html#a01768e58fd47a77b4c54eb75ff8fc1b9">sets_dist_index</a></td></tr>
+<tr class="separator:a01768e58fd47a77b4c54eb75ff8fc1b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add5d9ae60a32198be0ab209d23441072"><td class="memItemLeft" align="right" valign="top"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structex__set__specs.html#add5d9ae60a32198be0ab209d23441072">sets_entry_list</a></td></tr>
+<tr class="separator:add5d9ae60a32198be0ab209d23441072"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f153530e336bc5b8dea551062ad6512"><td class="memItemLeft" align="right" valign="top"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structex__set__specs.html#a8f153530e336bc5b8dea551062ad6512">sets_extra_list</a></td></tr>
+<tr class="separator:a8f153530e336bc5b8dea551062ad6512"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a885624dab2047d1cb53eac5e125d7791"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structex__set__specs.html#a885624dab2047d1cb53eac5e125d7791">sets_dist_fact</a></td></tr>
+<tr class="separator:a885624dab2047d1cb53eac5e125d7791"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-long-name_8c-example.html#_a44">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#_a39">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#_a40">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#_a42">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#_a32">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_ss_8c-example.html#_a23">/test/testrd_ss.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#_a31">/test/testrdd.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#_a23">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#_a20">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#_a19">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#_a15">/test/testwt_ss.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#_a25">/test/testwtm.c</a>.</dd>
 </dl>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+</div><h2 class="groupheader">Field Documentation</h2>
+<a id="a26af7c745c163cc3e2e857255b3c5b11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26af7c745c163cc3e2e857255b3c5b11">&#9670;&nbsp;</a></span>num_dist_per_set</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a>* ex_set_specs::num_dist_per_set</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-long-name_8c-example.html#a47">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a42">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a43">/test/testrd.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a26">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a23">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a22">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a18">/test/testwt_ss.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a28">/test/testwtm.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="ac9b578adbaf067e8b2afe0aa5d927166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9b578adbaf067e8b2afe0aa5d927166">&#9670;&nbsp;</a></span>num_entries_per_set</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a>* ex_set_specs::num_entries_per_set</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-long-name_8c-example.html#a46">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a41">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a42">/test/testrd.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a25">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a22">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a21">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a17">/test/testwt_ss.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a27">/test/testwtm.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a885624dab2047d1cb53eac5e125d7791"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a885624dab2047d1cb53eac5e125d7791">&#9670;&nbsp;</a></span>sets_dist_fact</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* ex_set_specs::sets_dist_fact</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-long-name_8c-example.html#a52">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a47">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a48">/test/testrd.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a31">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a28">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a27">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a23">/test/testwt_ss.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a33">/test/testwtm.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a01768e58fd47a77b4c54eb75ff8fc1b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01768e58fd47a77b4c54eb75ff8fc1b9">&#9670;&nbsp;</a></span>sets_dist_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a>* ex_set_specs::sets_dist_index</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-long-name_8c-example.html#a49">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a44">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a45">/test/testrd.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a28">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a25">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a24">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a20">/test/testwt_ss.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a30">/test/testwtm.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="af7dc8db54bf8d7ec697a81b4a651c3ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7dc8db54bf8d7ec697a81b4a651c3ca">&#9670;&nbsp;</a></span>sets_entry_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a>* ex_set_specs::sets_entry_index</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-long-name_8c-example.html#a48">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a43">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a44">/test/testrd.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a27">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a24">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a23">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a19">/test/testwt_ss.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a29">/test/testwtm.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="add5d9ae60a32198be0ab209d23441072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add5d9ae60a32198be0ab209d23441072">&#9670;&nbsp;</a></span>sets_entry_list</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a>* ex_set_specs::sets_entry_list</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-long-name_8c-example.html#a50">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a45">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a46">/test/testrd.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a29">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a26">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a25">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a21">/test/testwt_ss.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a31">/test/testwtm.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a8f153530e336bc5b8dea551062ad6512"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f153530e336bc5b8dea551062ad6512">&#9670;&nbsp;</a></span>sets_extra_list</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a>* ex_set_specs::sets_extra_list</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-long-name_8c-example.html#a51">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a46">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a47">/test/testrd.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a30">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a27">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a26">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a22">/test/testwt_ss.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a32">/test/testwtm.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a06ecbec33a9895e028b54d80527eb3f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06ecbec33a9895e028b54d80527eb3f9">&#9670;&nbsp;</a></span>sets_ids</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a>* ex_set_specs::sets_ids</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2test_2testrd-long-name_8c-example.html#a45">/test/testrd-long-name.c</a>, <a class="el" href="_2test_2testrd-nsided_8c-example.html#a40">/test/testrd-nsided.c</a>, <a class="el" href="_2test_2testrd_8c-example.html#a41">/test/testrd.c</a>, <a class="el" href="_2test_2testrd1_8c-example.html#a43">/test/testrd1.c</a>, <a class="el" href="_2test_2testrd_nc_8c-example.html#a33">/test/testrd_nc.c</a>, <a class="el" href="_2test_2testrd_ss_8c-example.html#a24">/test/testrd_ss.c</a>, <a class="el" href="_2test_2testrdd_8c-example.html#a32">/test/testrdd.c</a>, <a class="el" href="_2test_2testwt1_8c-example.html#a24">/test/testwt1.c</a>, <a class="el" href="_2test_2testwt_clb_8c-example.html#a21">/test/testwt_clb.c</a>, <a class="el" href="_2test_2testwt_nossnsdf_8c-example.html#a20">/test/testwt_nossnsdf.c</a>, <a class="el" href="_2test_2testwt_ss_8c-example.html#a16">/test/testwt_ss.c</a>, and <a class="el" href="_2test_2testwtm_8c-example.html#a26">/test/testwtm.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>include/<a class="el" href="exodusII_8h_source.html">exodusII.h</a></li>
 </ul>
 </div><!-- contents -->

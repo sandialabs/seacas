@@ -98,7 +98,7 @@ $(document).ready(function(){initNavTree('ex__ne__util_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga379eae3825a80df9f6cb25cb538bd8cd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga379eae3825a80df9f6cb25cb538bd8cd">ne__id_lkup</a> (int exoid, const char *ne_var_name, int64_t *idx, <a class="el" href="group__StringLengths.html#gac03e735ba54b290660f8424399684450">ex_entity_id</a> ne_var_id)</td></tr>
+<tr class="memitem:ga379eae3825a80df9f6cb25cb538bd8cd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga379eae3825a80df9f6cb25cb538bd8cd">ne__id_lkup</a> (int exoid, const char *ne_var_name, int64_t *idx, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> ne_var_id)</td></tr>
 <tr class="separator:ga379eae3825a80df9f6cb25cb538bd8cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf23ffa0c3b846713d5ca4f2f648b95cb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#gaf23ffa0c3b846713d5ca4f2f648b95cb">ex__get_file_type</a> (int exoid, char *ftype)</td></tr>
 <tr class="separator:gaf23ffa0c3b846713d5ca4f2f648b95cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -106,14 +106,64 @@ Functions</h2></td></tr>
 <tr class="separator:gaaf24b47badc59254147ae53ea21d0a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa2220bc33d5d33af84a45ffeadd7bf15"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#gaa2220bc33d5d33af84a45ffeadd7bf15">ne__check_file_version</a> (int exoid)</td></tr>
 <tr class="separator:gaa2220bc33d5d33af84a45ffeadd7bf15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad9efac3df1091721626eb2d92c7373b4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#gad9efac3df1091721626eb2d92c7373b4">ex_get_idx</a> (int exoid, const char *ne_var_name, int64_t *my_index, int pos)</td></tr>
-<tr class="separator:gad9efac3df1091721626eb2d92c7373b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9efac3df1091721626eb2d92c7373b4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__ne__util_8c.html#ad9efac3df1091721626eb2d92c7373b4">ex_get_idx</a> (int exoid, const char *ne_var_name, int64_t *my_index, int pos)</td></tr>
+<tr class="separator:ad9efac3df1091721626eb2d92c7373b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a65cf2d853fd81dda86ef0eb9ab83c6f5"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__ne__util_8c.html#a65cf2d853fd81dda86ef0eb9ab83c6f5">ne_ret_string</a></td></tr>
 <tr class="separator:a65cf2d853fd81dda86ef0eb9ab83c6f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ad9efac3df1091721626eb2d92c7373b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9efac3df1091721626eb2d92c7373b4">&#9670;&nbsp;</a></span>ex_get_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_idx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>ne_var_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t *&#160;</td>
+          <td class="paramname"><em>my_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>NetCDF/Exodus file ID </td></tr>
+    <tr><td class="paramname">ne_var_name</td><td>Nemesis index variable name </td></tr>
+    <tr><td class="paramname">my_index</td><td>array of length 2 to hold results </td></tr>
+    <tr><td class="paramname">pos</td><td>position of this proc/cmap in index </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="a65cf2d853fd81dda86ef0eb9ab83c6f5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a65cf2d853fd81dda86ef0eb9ab83c6f5">&#9670;&nbsp;</a></span>ne_ret_string</h2>

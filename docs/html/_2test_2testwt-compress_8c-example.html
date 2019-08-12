@@ -183,7 +183,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  <span class="keyword">struct </span><a name="_a2"></a><a class="code" href="structex__block.html">ex_block</a> blocks[10];</div>
 <div class="line">  <span class="keywordtype">int</span>             mode;</div>
 <div class="line"> </div>
-<div class="line">  <a name="a3"></a><a class="code" href="group__Utilities.html#ga8f47bbb035d32bbafc594c5ed3c00403">ex_opts</a>(<a name="a4"></a><a class="code" href="group__FileOptions.html#gga8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9">EX_VERBOSE</a> | <a name="a5"></a><a class="code" href="group__FileOptions.html#gga8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a">EX_ABORT</a>);</div>
+<div class="line">  <a name="a3"></a><a class="code" href="group__Utilities.html#ga8f47bbb035d32bbafc594c5ed3c00403">ex_opts</a>(<a name="a4"></a><a class="code" href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9">EX_VERBOSE</a> | <a name="a5"></a><a class="code" href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a">EX_ABORT</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* Specify compute and i/o word size */</span></div>
 <div class="line"> </div>
@@ -358,7 +358,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* Add nodal attributes */</span></div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a16"></a><a class="code" href="group__ModelDescription.html#gacbe0d2c034655cb912a2ebf761ec89c5">ex_put_attr_param</a>(exoid, <a name="a17"></a><a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, 0, 2);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a16"></a><a class="code" href="group__ModelDescription.html#gacbe0d2c034655cb912a2ebf761ec89c5">ex_put_attr_param</a>(exoid, <a name="a17"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, 0, 2);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_attr_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -366,13 +366,13 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a18"></a><a class="code" href="group__ModelDescription.html#ga3ff6ca7454f0ae270fb138c5a4844e37">ex_put_one_attr</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, 0, 1, x);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a18"></a><a class="code" href="group__ModelDescription.html#ga3ff6ca7454f0ae270fb138c5a4844e37">ex_put_one_attr</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, 0, 1, x);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga3ff6ca7454f0ae270fb138c5a4844e37">ex_put_one_attr</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, 0, 2, y);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga3ff6ca7454f0ae270fb138c5a4844e37">ex_put_one_attr</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, 0, 2, y);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
@@ -381,7 +381,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  {</div>
 <div class="line">    attrib_names[0] = <span class="stringliteral">&quot;Node_attr_1&quot;</span>;</div>
 <div class="line">    attrib_names[1] = <span class="stringliteral">&quot;Node_attr_2&quot;</span>;</div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>           = <a name="a19"></a><a class="code" href="group__ModelDescription.html#gae9beb2de2a75649c57a025b0f647cb74">ex_put_attr_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, 0, attrib_names);</div>
+<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>           = <a name="a19"></a><a class="code" href="group__ModelDescription.html#gae9beb2de2a75649c57a025b0f647cb74">ex_put_attr_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, 0, attrib_names);</div>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">      <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">      exit(-1);</div>
@@ -408,13 +408,13 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* write element block parameters */</span></div>
 <div class="line">  <span class="keywordflow">for</span> (i = 0; i &lt; 10; i++) {</div>
-<div class="line">    blocks[i].<a name="a21"></a><a class="code" href="group__ErrorReturnCodes.html#ga243c28a77311f4472780b63102b4a23e">type</a>                = <a name="a22"></a><a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>;</div>
-<div class="line">    blocks[i].<a name="a23"></a><a class="code" href="group__ErrorReturnCodes.html#ga5029b0343dfbef84bc2666488a2764db">id</a>                  = 0;</div>
-<div class="line">    blocks[i].<a name="a24"></a><a class="code" href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">num_entry</a>           = 0;</div>
-<div class="line">    blocks[i].<a name="a25"></a><a class="code" href="group__ErrorReturnCodes.html#ga16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 0;</div>
-<div class="line">    blocks[i].<a name="a26"></a><a class="code" href="group__ErrorReturnCodes.html#ga928236f90fd888b24bc850ccfb704985">num_edges_per_entry</a> = 0;</div>
-<div class="line">    blocks[i].<a name="a27"></a><a class="code" href="group__ErrorReturnCodes.html#gafbc3bc33f0561153d5595892b82485ac">num_faces_per_entry</a> = 0;</div>
-<div class="line">    blocks[i].<a name="a28"></a><a class="code" href="group__ErrorReturnCodes.html#ga246f71ae43b6502a1db60c5d081afa9d">num_attribute</a>       = 0;</div>
+<div class="line">    blocks[i].<a name="a21"></a><a class="code" href="structex__block.html#a243c28a77311f4472780b63102b4a23e">type</a>                = <a name="a22"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>;</div>
+<div class="line">    blocks[i].<a name="a23"></a><a class="code" href="structex__block.html#a5029b0343dfbef84bc2666488a2764db">id</a>                  = 0;</div>
+<div class="line">    blocks[i].<a name="a24"></a><a class="code" href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">num_entry</a>           = 0;</div>
+<div class="line">    blocks[i].<a name="a25"></a><a class="code" href="structex__block.html#a16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 0;</div>
+<div class="line">    blocks[i].<a name="a26"></a><a class="code" href="structex__block.html#a928236f90fd888b24bc850ccfb704985">num_edges_per_entry</a> = 0;</div>
+<div class="line">    blocks[i].<a name="a27"></a><a class="code" href="structex__block.html#afbc3bc33f0561153d5595892b82485ac">num_faces_per_entry</a> = 0;</div>
+<div class="line">    blocks[i].<a name="a28"></a><a class="code" href="structex__block.html#a246f71ae43b6502a1db60c5d081afa9d">num_attribute</a>       = 0;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  block_names[0] = <span class="stringliteral">&quot;block_1&quot;</span>;</div>
@@ -425,45 +425,45 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  block_names[5] = <span class="stringliteral">&quot;block_6&quot;</span>;</div>
 <div class="line">  block_names[6] = <span class="stringliteral">&quot;block_7&quot;</span>;</div>
 <div class="line"> </div>
-<div class="line">  <a name="a29"></a><a class="code" href="group__APIStructs.html#gaf1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[0].<a name="a30"></a><a class="code" href="group__ErrorReturnCodes.html#ga7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;quad&quot;</span>, <a name="a31"></a><a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
-<div class="line">  <a class="code" href="group__APIStructs.html#gaf1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[1].<a class="code" href="group__ErrorReturnCodes.html#ga7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;quad&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
-<div class="line">  <a class="code" href="group__APIStructs.html#gaf1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[2].<a class="code" href="group__ErrorReturnCodes.html#ga7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;hex&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
-<div class="line">  <a class="code" href="group__APIStructs.html#gaf1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[3].<a class="code" href="group__ErrorReturnCodes.html#ga7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;tetra&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
-<div class="line">  <a class="code" href="group__APIStructs.html#gaf1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[4].<a class="code" href="group__ErrorReturnCodes.html#ga7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;wedge&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
-<div class="line">  <a class="code" href="group__APIStructs.html#gaf1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[5].<a class="code" href="group__ErrorReturnCodes.html#ga7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;tetra&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
-<div class="line">  <a class="code" href="group__APIStructs.html#gaf1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[6].<a class="code" href="group__ErrorReturnCodes.html#ga7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;tri&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
+<div class="line">  <a name="a29"></a><a class="code" href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[0].<a name="a30"></a><a class="code" href="structex__block.html#a7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;quad&quot;</span>, <a name="a31"></a><a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
+<div class="line">  <a class="code" href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[1].<a class="code" href="structex__block.html#a7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;quad&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
+<div class="line">  <a class="code" href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[2].<a class="code" href="structex__block.html#a7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;hex&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
+<div class="line">  <a class="code" href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[3].<a class="code" href="structex__block.html#a7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;tetra&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
+<div class="line">  <a class="code" href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[4].<a class="code" href="structex__block.html#a7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;wedge&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
+<div class="line">  <a class="code" href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[5].<a class="code" href="structex__block.html#a7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;tetra&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
+<div class="line">  <a class="code" href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(blocks[6].<a class="code" href="structex__block.html#a7f53d2602122f3101a26b4d3cd306915">topology</a>, <span class="stringliteral">&quot;tri&quot;</span>, <a class="code" href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a> + 1);</div>
 <div class="line"> </div>
-<div class="line">  blocks[0].<a class="code" href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
-<div class="line">  blocks[1].<a class="code" href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
-<div class="line">  blocks[2].<a class="code" href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
-<div class="line">  blocks[3].<a class="code" href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
-<div class="line">  blocks[4].<a class="code" href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
-<div class="line">  blocks[5].<a class="code" href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
-<div class="line">  blocks[6].<a class="code" href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
+<div class="line">  blocks[0].<a class="code" href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
+<div class="line">  blocks[1].<a class="code" href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
+<div class="line">  blocks[2].<a class="code" href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
+<div class="line">  blocks[3].<a class="code" href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
+<div class="line">  blocks[4].<a class="code" href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
+<div class="line">  blocks[5].<a class="code" href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
+<div class="line">  blocks[6].<a class="code" href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">num_entry</a> = 1;</div>
 <div class="line"> </div>
-<div class="line">  blocks[0].<a class="code" href="group__ErrorReturnCodes.html#ga246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
-<div class="line">  blocks[1].<a class="code" href="group__ErrorReturnCodes.html#ga246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
-<div class="line">  blocks[2].<a class="code" href="group__ErrorReturnCodes.html#ga246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
-<div class="line">  blocks[3].<a class="code" href="group__ErrorReturnCodes.html#ga246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
-<div class="line">  blocks[4].<a class="code" href="group__ErrorReturnCodes.html#ga246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
-<div class="line">  blocks[5].<a class="code" href="group__ErrorReturnCodes.html#ga246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
-<div class="line">  blocks[6].<a class="code" href="group__ErrorReturnCodes.html#ga246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
+<div class="line">  blocks[0].<a class="code" href="structex__block.html#a246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
+<div class="line">  blocks[1].<a class="code" href="structex__block.html#a246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
+<div class="line">  blocks[2].<a class="code" href="structex__block.html#a246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
+<div class="line">  blocks[3].<a class="code" href="structex__block.html#a246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
+<div class="line">  blocks[4].<a class="code" href="structex__block.html#a246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
+<div class="line">  blocks[5].<a class="code" href="structex__block.html#a246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
+<div class="line">  blocks[6].<a class="code" href="structex__block.html#a246f71ae43b6502a1db60c5d081afa9d">num_attribute</a> = 1;</div>
 <div class="line"> </div>
-<div class="line">  blocks[0].<a class="code" href="group__ErrorReturnCodes.html#ga16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 4; <span class="comment">/* elements in block #1 are 4-node quads  */</span></div>
-<div class="line">  blocks[1].<a class="code" href="group__ErrorReturnCodes.html#ga16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 4; <span class="comment">/* elements in block #2 are 4-node quads  */</span></div>
-<div class="line">  blocks[2].<a class="code" href="group__ErrorReturnCodes.html#ga16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 8; <span class="comment">/* elements in block #3 are 8-node hexes  */</span></div>
-<div class="line">  blocks[3].<a class="code" href="group__ErrorReturnCodes.html#ga16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 4; <span class="comment">/* elements in block #4 are 4-node tetras */</span></div>
-<div class="line">  blocks[4].<a class="code" href="group__ErrorReturnCodes.html#ga16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 6; <span class="comment">/* elements in block #5 are 6-node wedges */</span></div>
-<div class="line">  blocks[5].<a class="code" href="group__ErrorReturnCodes.html#ga16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 8; <span class="comment">/* elements in block #6 are 8-node tetras */</span></div>
-<div class="line">  blocks[6].<a class="code" href="group__ErrorReturnCodes.html#ga16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 3; <span class="comment">/* elements in block #7 are 3-node tris   */</span></div>
+<div class="line">  blocks[0].<a class="code" href="structex__block.html#a16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 4; <span class="comment">/* elements in block #1 are 4-node quads  */</span></div>
+<div class="line">  blocks[1].<a class="code" href="structex__block.html#a16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 4; <span class="comment">/* elements in block #2 are 4-node quads  */</span></div>
+<div class="line">  blocks[2].<a class="code" href="structex__block.html#a16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 8; <span class="comment">/* elements in block #3 are 8-node hexes  */</span></div>
+<div class="line">  blocks[3].<a class="code" href="structex__block.html#a16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 4; <span class="comment">/* elements in block #4 are 4-node tetras */</span></div>
+<div class="line">  blocks[4].<a class="code" href="structex__block.html#a16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 6; <span class="comment">/* elements in block #5 are 6-node wedges */</span></div>
+<div class="line">  blocks[5].<a class="code" href="structex__block.html#a16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 8; <span class="comment">/* elements in block #6 are 8-node tetras */</span></div>
+<div class="line">  blocks[6].<a class="code" href="structex__block.html#a16eaf07c0b9ee1ea671863e3b41092c6">num_nodes_per_entry</a> = 3; <span class="comment">/* elements in block #7 are 3-node tris   */</span></div>
 <div class="line"> </div>
-<div class="line">  blocks[0].<a class="code" href="group__ErrorReturnCodes.html#ga5029b0343dfbef84bc2666488a2764db">id</a> = 10;</div>
-<div class="line">  blocks[1].<a class="code" href="group__ErrorReturnCodes.html#ga5029b0343dfbef84bc2666488a2764db">id</a> = 11;</div>
-<div class="line">  blocks[2].<a class="code" href="group__ErrorReturnCodes.html#ga5029b0343dfbef84bc2666488a2764db">id</a> = 12;</div>
-<div class="line">  blocks[3].<a class="code" href="group__ErrorReturnCodes.html#ga5029b0343dfbef84bc2666488a2764db">id</a> = 13;</div>
-<div class="line">  blocks[4].<a class="code" href="group__ErrorReturnCodes.html#ga5029b0343dfbef84bc2666488a2764db">id</a> = 14;</div>
-<div class="line">  blocks[5].<a class="code" href="group__ErrorReturnCodes.html#ga5029b0343dfbef84bc2666488a2764db">id</a> = 15;</div>
-<div class="line">  blocks[6].<a class="code" href="group__ErrorReturnCodes.html#ga5029b0343dfbef84bc2666488a2764db">id</a> = 16;</div>
+<div class="line">  blocks[0].<a class="code" href="structex__block.html#a5029b0343dfbef84bc2666488a2764db">id</a> = 10;</div>
+<div class="line">  blocks[1].<a class="code" href="structex__block.html#a5029b0343dfbef84bc2666488a2764db">id</a> = 11;</div>
+<div class="line">  blocks[2].<a class="code" href="structex__block.html#a5029b0343dfbef84bc2666488a2764db">id</a> = 12;</div>
+<div class="line">  blocks[3].<a class="code" href="structex__block.html#a5029b0343dfbef84bc2666488a2764db">id</a> = 13;</div>
+<div class="line">  blocks[4].<a class="code" href="structex__block.html#a5029b0343dfbef84bc2666488a2764db">id</a> = 14;</div>
+<div class="line">  blocks[5].<a class="code" href="structex__block.html#a5029b0343dfbef84bc2666488a2764db">id</a> = 15;</div>
+<div class="line">  blocks[6].<a class="code" href="structex__block.html#a5029b0343dfbef84bc2666488a2764db">id</a> = 16;</div>
 <div class="line"> </div>
 <div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a32"></a><a class="code" href="group__ModelDescription.html#gaca77ecebfa9dad39ba97ec76a14b3364">ex_put_block_params</a>(exoid, num_elem_blk, blocks);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_block_params, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
@@ -475,7 +475,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* Write element block names */</span></div>
 <div class="line">  <span class="keywordflow">for</span> (i = 0; i &lt; num_elem_blk; i++) {</div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a33"></a><a class="code" href="group__ModelDescription.html#ga9f3c7c8c26e49556f86534f4460e0cf0">ex_put_name</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[i].<span class="keywordtype">id</span>, block_names[i]);</div>
+<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a33"></a><a class="code" href="group__ModelDescription.html#ga9f3c7c8c26e49556f86534f4460e0cf0">ex_put_name</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[i].<span class="keywordtype">id</span>, block_names[i]);</div>
 <div class="line">    printf(<span class="stringliteral">&quot;after ex_put_names, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
@@ -489,7 +489,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  <span class="comment">/*               12345678901234567890123456789012 */</span></div>
 <div class="line">  prop_names[0] = <span class="stringliteral">&quot;MATERIAL_PROPERTY_LONG_NAME_32CH&quot;</span>;</div>
 <div class="line">  prop_names[1] = <span class="stringliteral">&quot;DENSITY&quot;</span>;</div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>         = <a name="a34"></a><a class="code" href="group__ModelDescription.html#ga40bbb7194ab379a723548d61a62a3096">ex_put_prop_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, 2, prop_names);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>         = <a name="a34"></a><a class="code" href="group__ModelDescription.html#ga40bbb7194ab379a723548d61a62a3096">ex_put_prop_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, 2, prop_names);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop_names, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -497,49 +497,49 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a35"></a><a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[0].<span class="keywordtype">id</span>, prop_names[0], 10);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a35"></a><a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[0].<span class="keywordtype">id</span>, prop_names[0], 10);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[1].<span class="keywordtype">id</span>, prop_names[0], 20);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[1].<span class="keywordtype">id</span>, prop_names[0], 20);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[2].<span class="keywordtype">id</span>, prop_names[0], 30);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[2].<span class="keywordtype">id</span>, prop_names[0], 30);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[3].<span class="keywordtype">id</span>, prop_names[0], 40);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[3].<span class="keywordtype">id</span>, prop_names[0], 40);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[4].<span class="keywordtype">id</span>, prop_names[0], 50);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[4].<span class="keywordtype">id</span>, prop_names[0], 50);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[5].<span class="keywordtype">id</span>, prop_names[0], 60);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[5].<span class="keywordtype">id</span>, prop_names[0], 60);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[6].<span class="keywordtype">id</span>, prop_names[0], 70);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[6].<span class="keywordtype">id</span>, prop_names[0], 70);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -554,7 +554,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  connect[2] = 3;</div>
 <div class="line">  connect[3] = 4;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a36"></a><a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[0].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a36"></a><a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[0].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_conn, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -566,7 +566,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  connect[2] = 7;</div>
 <div class="line">  connect[3] = 8;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[1].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[1].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_conn, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -583,7 +583,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  connect[6] = 15;</div>
 <div class="line">  connect[7] = 16;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[2].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[2].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_conn, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -596,7 +596,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  connect[2] = 19;</div>
 <div class="line">  connect[3] = 20;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[3].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[3].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_conn, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -611,7 +611,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  connect[4] = 25;</div>
 <div class="line">  connect[5] = 26;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[4].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[4].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_conn, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -628,7 +628,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  connect[6] = 30;</div>
 <div class="line">  connect[7] = 29;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[5].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[5].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_conn, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -640,7 +640,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  connect[1] = 32;</div>
 <div class="line">  connect[2] = 33;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[6].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[6].<span class="keywordtype">id</span>, connect, NULL, NULL);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_conn, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -652,7 +652,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* write element block attributes */</span></div>
 <div class="line">  attrib[0] = 3.14159;</div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>     = <a name="a37"></a><a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[0].<span class="keywordtype">id</span>, attrib);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>     = <a name="a37"></a><a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[0].<span class="keywordtype">id</span>, attrib);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_attr, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -660,7 +660,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  attrib[0] = 6.14159;</div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>     = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[1].<span class="keywordtype">id</span>, attrib);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>     = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[1].<span class="keywordtype">id</span>, attrib);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_attr, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -668,7 +668,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[2].<span class="keywordtype">id</span>, attrib);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[2].<span class="keywordtype">id</span>, attrib);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_attr, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -676,7 +676,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[3].<span class="keywordtype">id</span>, attrib);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[3].<span class="keywordtype">id</span>, attrib);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_attr, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -684,7 +684,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[4].<span class="keywordtype">id</span>, attrib);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[4].<span class="keywordtype">id</span>, attrib);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_attr, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -692,7 +692,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[5].<span class="keywordtype">id</span>, attrib);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[5].<span class="keywordtype">id</span>, attrib);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_attr, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -700,7 +700,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[6].<span class="keywordtype">id</span>, attrib);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[6].<span class="keywordtype">id</span>, attrib);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_attr, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -710,7 +710,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  attrib_names[0] = <span class="stringliteral">&quot;THICKNESS&quot;</span>;</div>
 <div class="line">  <span class="keywordflow">for</span> (i = 0; i &lt; num_elem_blk; i++) {</div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae9beb2de2a75649c57a025b0f647cb74">ex_put_attr_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[i].<span class="keywordtype">id</span>, attrib_names);</div>
+<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae9beb2de2a75649c57a025b0f647cb74">ex_put_attr_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, blocks[i].<span class="keywordtype">id</span>, attrib_names);</div>
 <div class="line">    printf(<span class="stringliteral">&quot;after ex_put_elem_attr_names, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">      <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -726,7 +726,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  nsids[0] = 20;</div>
 <div class="line">  nsids[1] = 21;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a38"></a><a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a name="a39"></a><a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], 5, 5);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a38"></a><a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a name="a39"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], 5, 5);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_node_set_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -746,21 +746,21 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  dist_fact[3] = 4.0;</div>
 <div class="line">  dist_fact[4] = 5.0;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a40"></a><a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], node_list, NULL);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a40"></a><a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], node_list, NULL);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_node_set, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a41"></a><a class="code" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], dist_fact);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a41"></a><a class="code" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], dist_fact);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_node_set_dist_fact, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[1], 3, 3);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[1], 3, 3);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_node_set_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -776,14 +776,14 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  dist_fact[1] = 2.1;</div>
 <div class="line">  dist_fact[2] = 3.1;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[1], node_list, NULL);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[1], node_list, NULL);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_node_set, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[1], dist_fact);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[1], dist_fact);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_node_set_dist_fact, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -794,7 +794,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  nset_names[0] = <span class="stringliteral">&quot;nset_1&quot;</span>;</div>
 <div class="line">  nset_names[1] = <span class="stringliteral">&quot;nset_2&quot;</span>;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a42"></a><a class="code" href="group__ModelDescription.html#gabfb7063e4b9792f5acbf5cefd22d26c1">ex_put_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nset_names);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a42"></a><a class="code" href="group__ModelDescription.html#gabfb7063e4b9792f5acbf5cefd22d26c1">ex_put_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nset_names);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_names, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -802,14 +802,14 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], <span class="stringliteral">&quot;FACE&quot;</span>, 4);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], <span class="stringliteral">&quot;FACE&quot;</span>, 4);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[1], <span class="stringliteral">&quot;FACE&quot;</span>, 5);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[1], <span class="stringliteral">&quot;FACE&quot;</span>, 5);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -820,7 +820,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  prop_array[0] = 1000;</div>
 <div class="line">  prop_array[1] = 2000;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a43"></a><a class="code" href="group__ModelDescription.html#ga99aa0e6f185e1a7dfdee4f92ea770e8c">ex_put_prop_array</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, <span class="stringliteral">&quot;VELOCITY&quot;</span>, prop_array);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a43"></a><a class="code" href="group__ModelDescription.html#ga99aa0e6f185e1a7dfdee4f92ea770e8c">ex_put_prop_array</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, <span class="stringliteral">&quot;VELOCITY&quot;</span>, prop_array);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop_array, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -828,7 +828,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* Add nodeset attributes */</span></div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gacbe0d2c034655cb912a2ebf761ec89c5">ex_put_attr_param</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], 1);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gacbe0d2c034655cb912a2ebf761ec89c5">ex_put_attr_param</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], 1);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_attr_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -836,7 +836,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], x);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], x);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
@@ -844,7 +844,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  {</div>
 <div class="line">    attrib_names[0] = <span class="stringliteral">&quot;Nodeset_attribute&quot;</span>;</div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>           = <a class="code" href="group__ModelDescription.html#gae9beb2de2a75649c57a025b0f647cb74">ex_put_attr_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], attrib_names);</div>
+<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>           = <a class="code" href="group__ModelDescription.html#gae9beb2de2a75649c57a025b0f647cb74">ex_put_attr_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, nsids[0], attrib_names);</div>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">      <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">      exit(-1);</div>
@@ -866,7 +866,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* side set #1  - quad */</span></div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a name="a44"></a><a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, ssids[0], 2, 4);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a name="a44"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, ssids[0], 2, 4);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -885,7 +885,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  dist_fact[2] = 30.2;</div>
 <div class="line">  dist_fact[3] = 30.3;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 30, elem_list, side_list);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 30, elem_list, side_list);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -893,7 +893,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 30, dist_fact);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 30, dist_fact);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set_dist_fact, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -903,7 +903,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* side set #2  - quad, spanning 2 elements  */</span></div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 31, 2, 4);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 31, 2, 4);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -922,7 +922,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  dist_fact[2] = 31.2;</div>
 <div class="line">  dist_fact[3] = 31.3;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 31, elem_list, side_list);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 31, elem_list, side_list);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -930,7 +930,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 31, dist_fact);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 31, dist_fact);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set_dist_fact, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -940,7 +940,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* side set #3  - hex */</span></div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 32, 7, 0);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 32, 7, 0);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -964,7 +964,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  side_list[5] = 1;</div>
 <div class="line">  side_list[6] = 6;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 32, elem_list, side_list);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 32, elem_list, side_list);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -974,7 +974,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* side set #4  - tetras */</span></div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 33, 8, 0);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 33, 8, 0);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1000,7 +1000,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  side_list[6] = 3;</div>
 <div class="line">  side_list[7] = 4;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 33, elem_list, side_list);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 33, elem_list, side_list);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1010,7 +1010,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  <span class="comment">/* side set #5  - wedges and tris */</span></div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 34, 10, 0);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 34, 10, 0);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1040,7 +1040,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  side_list[8] = 4;</div>
 <div class="line">  side_list[9] = 5;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 34, elem_list, side_list);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 34, elem_list, side_list);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_side_set, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1055,7 +1055,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  sset_names[3] = <span class="stringliteral">&quot;sset_4&quot;</span>;</div>
 <div class="line">  sset_names[4] = <span class="stringliteral">&quot;sset_5&quot;</span>;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gabfb7063e4b9792f5acbf5cefd22d26c1">ex_put_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, sset_names);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#gabfb7063e4b9792f5acbf5cefd22d26c1">ex_put_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, sset_names);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_names, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1063,7 +1063,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 30, <span class="stringliteral">&quot;COLOR&quot;</span>, 100);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 30, <span class="stringliteral">&quot;COLOR&quot;</span>, 100);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1071,7 +1071,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 31, <span class="stringliteral">&quot;COLOR&quot;</span>, 101);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, 31, <span class="stringliteral">&quot;COLOR&quot;</span>, 101);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_prop, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1122,14 +1122,14 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">  var_names[0] = <span class="stringliteral">&quot;glo_vars&quot;</span>;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a47"></a><a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a name="a48"></a><a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, num_glo_vars);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a47"></a><a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a name="a48"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, num_glo_vars);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_variable_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a49"></a><a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, num_glo_vars, var_names);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a49"></a><a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, num_glo_vars, var_names);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_variable_names, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -1141,14 +1141,14 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  var_names[0] = <span class="stringliteral">&quot;node_variable_a_very_long_name_0&quot;</span>;</div>
 <div class="line">  var_names[1] = <span class="stringliteral">&quot;nod_var1&quot;</span>;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nod_vars);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nod_vars);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_variable_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nod_vars, var_names);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nod_vars, var_names);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_variable_names, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -1162,14 +1162,14 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">  var_names[1] = <span class="stringliteral">&quot;this_variable_name_is_just_right&quot;</span>;</div>
 <div class="line">  var_names[2] = <span class="stringliteral">&quot;this_variable_name_is_ok&quot;</span>;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, num_ele_vars);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, num_ele_vars);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_variable_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">    exit(-1);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, num_ele_vars, var_names);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, num_ele_vars, var_names);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_variable_names, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">    <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -1183,14 +1183,14 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    var_names[1] = <span class="stringliteral">&quot;ns_var1&quot;</span>;</div>
 <div class="line">    var_names[2] = <span class="stringliteral">&quot;ns_var2&quot;</span>;</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, num_nset_vars);</div>
+<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, num_nset_vars);</div>
 <div class="line">    printf(<span class="stringliteral">&quot;after ex_put_variable_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">      <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">      exit(-1);</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, num_nset_vars, var_names);</div>
+<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, num_nset_vars, var_names);</div>
 <div class="line">    printf(<span class="stringliteral">&quot;after ex_put_variable_names, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">      <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -1205,14 +1205,14 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    var_names[1] = <span class="stringliteral">&quot;ss_var1&quot;</span>;</div>
 <div class="line">    var_names[2] = <span class="stringliteral">&quot;ss_var2&quot;</span>;</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, num_sset_vars);</div>
+<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, num_sset_vars);</div>
 <div class="line">    printf(<span class="stringliteral">&quot;after ex_put_variable_param, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">      <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">      exit(-1);</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, num_sset_vars, var_names);</div>
+<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, num_sset_vars, var_names);</div>
 <div class="line">    printf(<span class="stringliteral">&quot;after ex_put_variable_names, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">      <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -1231,7 +1231,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">    }</div>
 <div class="line">  }</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a50"></a><a class="code" href="group__ResultsData.html#ga332addfae3873a71c38db5465e6bcf0b">ex_put_truth_table</a>(exoid, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, num_elem_blk, num_ele_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>);</div>
+<div class="line">  <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a50"></a><a class="code" href="group__ResultsData.html#ga332addfae3873a71c38db5465e6bcf0b">ex_put_truth_table</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, num_elem_blk, num_ele_vars, <a class="code" href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a>);</div>
 <div class="line">  printf(<span class="stringliteral">&quot;after ex_put_elem_var_tab, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1275,7 +1275,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">      glob_var_vals[j] = (float)(j + 2) * time_value;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a52"></a><a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid, whole_time_step, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, 1, 0, num_glo_vars, glob_var_vals);</div>
+<div class="line">    <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a name="a52"></a><a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid, whole_time_step, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, 1, 0, num_glo_vars, glob_var_vals);</div>
 <div class="line">    printf(<span class="stringliteral">&quot;after ex_put_glob_vars, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1290,7 +1290,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">        nodal_var_vals[j] = (float)k + ((<span class="keywordtype">float</span>)(j + 1) * time_value);</div>
 <div class="line">      }</div>
 <div class="line"> </div>
-<div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid, whole_time_step, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, k, 1, num_nodes, nodal_var_vals);</div>
+<div class="line">      <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid, whole_time_step, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, k, 1, num_nodes, nodal_var_vals);</div>
 <div class="line">      printf(<span class="stringliteral">&quot;after ex_put_nodal_var, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">      <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">        <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -1302,12 +1302,12 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">for</span> (k = 1; k &lt;= num_ele_vars; k++) {</div>
 <div class="line">      <span class="keywordflow">for</span> (j = 0; j &lt; num_elem_blk; j++) {</div>
-<div class="line">        <span class="keywordflow">for</span> (m = 0; m &lt; blocks[j].<a class="code" href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">num_entry</a>; m++) {</div>
+<div class="line">        <span class="keywordflow">for</span> (m = 0; m &lt; blocks[j].<a class="code" href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">num_entry</a>; m++) {</div>
 <div class="line">          elem_var_vals[m] = (float)(k + 1) + (float)(j + 2) + ((float)(m + 1) * time_value);</div>
 <div class="line">          <span class="comment">/* printf(&quot;elem_var_vals[%d]: %f\n&quot;,m,elem_var_vals[m]); */</span></div>
 <div class="line">        }</div>
-<div class="line">        <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid, whole_time_step, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, k, blocks[j].<span class="keywordtype">id</span>,</div>
-<div class="line">                           blocks[j].<a class="code" href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">num_entry</a>, elem_var_vals);</div>
+<div class="line">        <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid, whole_time_step, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, k, blocks[j].<span class="keywordtype">id</span>,</div>
+<div class="line">                           blocks[j].<a class="code" href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">num_entry</a>, elem_var_vals);</div>
 <div class="line">        printf(<span class="stringliteral">&quot;after ex_put_elem_var, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">        <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
 <div class="line">          <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -1324,7 +1324,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">          sset_var_vals[m] = (float)(k + 2) + (float)(j + 3) + ((float)(m + 1) * time_value);</div>
 <div class="line">          <span class="comment">/* printf(&quot;sset_var_vals[%d]: %f\n&quot;,m,sset_var_vals[m]); */</span></div>
 <div class="line">        }</div>
-<div class="line">        <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid, whole_time_step, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, k, ssids[j], num_face_in_sset[j],</div>
+<div class="line">        <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid, whole_time_step, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a>, k, ssids[j], num_face_in_sset[j],</div>
 <div class="line">                           sset_var_vals);</div>
 <div class="line">        printf(<span class="stringliteral">&quot;after ex_put_sset_var, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">        <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1342,7 +1342,7 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">          nset_var_vals[m] = (float)(k + 3) + (float)(j + 4) + ((float)(m + 1) * time_value);</div>
 <div class="line">          <span class="comment">/* printf(&quot;nset_var_vals[%d]: %f\n&quot;,m,nset_var_vals[m]); */</span></div>
 <div class="line">        }</div>
-<div class="line">        <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid, whole_time_step, <a class="code" href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, k, nsids[j], num_nodes_in_nset[j],</div>
+<div class="line">        <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a> = <a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid, whole_time_step, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a>, k, nsids[j], num_nodes_in_nset[j],</div>
 <div class="line">                           nset_var_vals);</div>
 <div class="line">        printf(<span class="stringliteral">&quot;after ex_put_nset_var, error = %d\n&quot;</span>, <a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>);</div>
 <div class="line">        <span class="keywordflow">if</span> (<a class="code" href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a>) {</div>
@@ -1382,62 +1382,62 @@ $(document).ready(function(){initNavTree('_2test_2testwt-compress_8c-example.htm
 <div class="line">}</div>
 </div><!-- fragment --> </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="agroup__FileOptions_html_gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb"><div class="ttname"><a href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:256</div></div>
-<div class="ttc" id="agroup__FileOptions_html_gga8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a"><div class="ttname"><a href="group__FileOptions.html#gga8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a">EX_ABORT</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:284</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a689f369480f6fa94bb48b2a4883e55eb">EX_NODE_SET</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:256</div></div>
+<div class="ttc" id="astructex__block_html_a619b2c434a69bf79fd803b318d00a0a3"><div class="ttname"><a href="structex__block.html#a619b2c434a69bf79fd803b318d00a0a3">ex_block::num_entry</a></div><div class="ttdeci">int64_t num_entry</div><div class="ttdef"><b>Definition:</b> exodusII.h:355</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gabfb7063e4b9792f5acbf5cefd22d26c1"><div class="ttname"><a href="group__ModelDescription.html#gabfb7063e4b9792f5acbf5cefd22d26c1">ex_put_names</a></div><div class="ttdeci">int ex_put_names(int exoid, ex_entity_type obj_type, char *names[])</div><div class="ttdef"><b>Definition:</b> ex_put_names.c:63</div></div>
-<div class="ttc" id="agroup__ErrorReturnCodes_html_ga7f53d2602122f3101a26b4d3cd306915"><div class="ttname"><a href="group__ErrorReturnCodes.html#ga7f53d2602122f3101a26b4d3cd306915">ex_block::topology</a></div><div class="ttdeci">char topology[MAX_STR_LENGTH+1]</div><div class="ttdef"><b>Definition:</b> exodusII.h:354</div></div>
 <div class="ttc" id="aex__put__elem__var__tab_8c_html_a99e6183f76c10251a43dd7f8389d68df"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#a99e6183f76c10251a43dd7f8389d68df">truth_tab</a></div><div class="ttdeci">truth_tab</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:108</div></div>
 <div class="ttc" id="agroup__ResultsData_html_ga332addfae3873a71c38db5465e6bcf0b"><div class="ttname"><a href="group__ResultsData.html#ga332addfae3873a71c38db5465e6bcf0b">ex_put_truth_table</a></div><div class="ttdeci">int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_var, int *var_tab)</div><div class="ttdef"><b>Definition:</b> ex_put_truth_table.c:93</div></div>
 <div class="ttc" id="agroup__Utilities_html_ga4babf166b2821494be7d9bfcc95234f5"><div class="ttname"><a href="group__Utilities.html#ga4babf166b2821494be7d9bfcc95234f5">ex_put_qa</a></div><div class="ttdeci">int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])</div><div class="ttdef"><b>Definition:</b> ex_put_qa.c:90</div></div>
 <div class="ttc" id="agroup__Utilities_html_ga8f47bbb035d32bbafc594c5ed3c00403"><div class="ttname"><a href="group__Utilities.html#ga8f47bbb035d32bbafc594c5ed3c00403">ex_opts</a></div><div class="ttdeci">int ex_opts(int options)</div><div class="ttdef"><b>Definition:</b> ex_opts.c:83</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga9f3c7c8c26e49556f86534f4460e0cf0"><div class="ttname"><a href="group__ModelDescription.html#ga9f3c7c8c26e49556f86534f4460e0cf0">ex_put_name</a></div><div class="ttdeci">int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, const char *name)</div><div class="ttdef"><b>Definition:</b> ex_put_name.c:67</div></div>
 <div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:115</div></div>
-<div class="ttc" id="agroup__ErrorReturnCodes_html_ga246f71ae43b6502a1db60c5d081afa9d"><div class="ttname"><a href="group__ErrorReturnCodes.html#ga246f71ae43b6502a1db60c5d081afa9d">ex_block::num_attribute</a></div><div class="ttdeci">int64_t num_attribute</div><div class="ttdef"><b>Definition:</b> exodusII.h:359</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga99aa0e6f185e1a7dfdee4f92ea770e8c"><div class="ttname"><a href="group__ModelDescription.html#ga99aa0e6f185e1a7dfdee4f92ea770e8c">ex_put_prop_array</a></div><div class="ttdeci">int ex_put_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name, const void_int *values)</div><div class="ttdef"><b>Definition:</b> ex_put_prop_array.c:98</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gadab43f382dc0b6000215baa82097fef5"><div class="ttname"><a href="group__ModelDescription.html#gadab43f382dc0b6000215baa82097fef5">ex_put_set_dist_fact</a></div><div class="ttdeci">int ex_put_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id, const void *set_dist_fact)</div><div class="ttdef"><b>Definition:</b> ex_put_set_dist_fact.c:63</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga40bbb7194ab379a723548d61a62a3096"><div class="ttname"><a href="group__ModelDescription.html#ga40bbb7194ab379a723548d61a62a3096">ex_put_prop_names</a></div><div class="ttdeci">int ex_put_prop_names(int exoid, ex_entity_type obj_type, int num_props, char **prop_names)</div><div class="ttdef"><b>Definition:</b> ex_put_prop_names.c:124</div></div>
+<div class="ttc" id="astructex__block_html_a246f71ae43b6502a1db60c5d081afa9d"><div class="ttname"><a href="structex__block.html#a246f71ae43b6502a1db60c5d081afa9d">ex_block::num_attribute</a></div><div class="ttdeci">int64_t num_attribute</div><div class="ttdef"><b>Definition:</b> exodusII.h:359</div></div>
+<div class="ttc" id="astructex__block_html_a5029b0343dfbef84bc2666488a2764db"><div class="ttname"><a href="structex__block.html#a5029b0343dfbef84bc2666488a2764db">ex_block::id</a></div><div class="ttdeci">int64_t id</div><div class="ttdef"><b>Definition:</b> exodusII.h:352</div></div>
 <div class="ttc" id="agroup__ResultsData_html_gac8b76bb57f2ab1e4cbca7aef29b6ae91"><div class="ttname"><a href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a></div><div class="ttdeci">int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)</div><div class="ttdef"><b>Definition:</b> ex_put_variable_param.c:152</div></div>
-<div class="ttc" id="agroup__ErrorReturnCodes_html_ga928236f90fd888b24bc850ccfb704985"><div class="ttname"><a href="group__ErrorReturnCodes.html#ga928236f90fd888b24bc850ccfb704985">ex_block::num_edges_per_entry</a></div><div class="ttdeci">int64_t num_edges_per_entry</div><div class="ttdef"><b>Definition:</b> exodusII.h:357</div></div>
 <div class="ttc" id="agroup__FileVars_html_gad8792dfd3a757cb160760cfe83b549f8"><div class="ttname"><a href="group__FileVars.html#gad8792dfd3a757cb160760cfe83b549f8">EX_NETCDF4</a></div><div class="ttdeci">#define EX_NETCDF4</div><div class="ttdef"><b>Definition:</b> exodusII.h:119</div></div>
 <div class="ttc" id="agroup__ResultsData_html_ga2052c8728dac97589b94d9947e645797"><div class="ttname"><a href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time</a></div><div class="ttdeci">int ex_put_time(int exoid, int time_step, const void *time_value)</div><div class="ttdef"><b>Definition:</b> ex_put_time.c:78</div></div>
 <div class="ttc" id="agroup__Utilities_html_gab9398d414e1316177db89782ed2a08c4"><div class="ttname"><a href="group__Utilities.html#gab9398d414e1316177db89782ed2a08c4">ex_set_option</a></div><div class="ttdeci">int ex_set_option(int exoid, ex_option_type option, int option_value)</div><div class="ttdef"><b>Definition:</b> ex_conv.c:411</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gae9beb2de2a75649c57a025b0f647cb74"><div class="ttname"><a href="group__ModelDescription.html#gae9beb2de2a75649c57a025b0f647cb74">ex_put_attr_names</a></div><div class="ttdeci">int ex_put_attr_names(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, char **names)</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga00b965a438a94c8f5b67fa3c7f8d2ffe"><div class="ttname"><a href="group__ModelDescription.html#ga00b965a438a94c8f5b67fa3c7f8d2ffe">ex_put_set_param</a></div><div class="ttdeci">int ex_put_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id, int64_t num_entries_in_set, int64_t num_dist_fact_in_set)</div><div class="ttdef"><b>Definition:</b> ex_put_set_param.c:65</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga7d8749467a1a567f542d51ae9b465955"><div class="ttname"><a href="group__ModelDescription.html#ga7d8749467a1a567f542d51ae9b465955">ex_put_prop</a></div><div class="ttdeci">int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const char *prop_name, ex_entity_id value)</div><div class="ttdef"><b>Definition:</b> ex_put_prop.c:103</div></div>
-<div class="ttc" id="agroup__ErrorReturnCodes_html_ga16eaf07c0b9ee1ea671863e3b41092c6"><div class="ttname"><a href="group__ErrorReturnCodes.html#ga16eaf07c0b9ee1ea671863e3b41092c6">ex_block::num_nodes_per_entry</a></div><div class="ttdeci">int64_t num_nodes_per_entry</div><div class="ttdef"><b>Definition:</b> exodusII.h:356</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:264</div></div>
 <div class="ttc" id="agroup__Utilities_html_ga37c928f7e30c333ee7c704d04f7e3a87"><div class="ttname"><a href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create</a></div><div class="ttdeci">#define ex_create(path, mode, comp_ws, io_ws)</div><div class="ttdef"><b>Definition:</b> exodusII.h:444</div></div>
-<div class="ttc" id="agroup__FileOptions_html_gga1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873"><div class="ttname"><a href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:254</div></div>
+<div class="ttc" id="astructex__block_html_a16eaf07c0b9ee1ea671863e3b41092c6"><div class="ttname"><a href="structex__block.html#a16eaf07c0b9ee1ea671863e3b41092c6">ex_block::num_nodes_per_entry</a></div><div class="ttdeci">int64_t num_nodes_per_entry</div><div class="ttdef"><b>Definition:</b> exodusII.h:356</div></div>
 <div class="ttc" id="agroup__StringLengths_html_gaaa695591372841e2c5580e4ed0f3620f"><div class="ttname"><a href="group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f">MAX_STR_LENGTH</a></div><div class="ttdeci">#define MAX_STR_LENGTH</div><div class="ttdef"><b>Definition:</b> exodusII.h:300</div></div>
 <div class="ttc" id="agroup__Utilities_html_gabccf733ba6ef7e8a51595eb34c4f94ff"><div class="ttname"><a href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a></div><div class="ttdeci">int ex_close(int exoid)</div><div class="ttdef"><b>Definition:</b> ex_close.c:73</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga5aa680de654224107fa67a0e019b6bd1"><div class="ttname"><a href="group__ModelDescription.html#ga5aa680de654224107fa67a0e019b6bd1">ex_put_coord_names</a></div><div class="ttdeci">int ex_put_coord_names(int exoid, char *coord_names[])</div><div class="ttdef"><b>Definition:</b> ex_put_coord_names.c:73</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gae228a5d04b47322f28c458d95edf7f73"><div class="ttname"><a href="group__ModelDescription.html#gae228a5d04b47322f28c458d95edf7f73">ex_put_set</a></div><div class="ttdeci">int ex_put_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, const void_int *set_entry_list, const void_int *set_extra_list)</div><div class="ttdef"><b>Definition:</b> ex_put_set.c:67</div></div>
 <div class="ttc" id="astructex__block_html"><div class="ttname"><a href="structex__block.html">ex_block</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:350</div></div>
-<div class="ttc" id="agroup__FileOptions_html_gga1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac"><div class="ttname"><a href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:271</div></div>
-<div class="ttc" id="agroup__ErrorReturnCodes_html_ga5029b0343dfbef84bc2666488a2764db"><div class="ttname"><a href="group__ErrorReturnCodes.html#ga5029b0343dfbef84bc2666488a2764db">ex_block::id</a></div><div class="ttdeci">int64_t id</div><div class="ttdef"><b>Definition:</b> exodusII.h:352</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:271</div></div>
+<div class="ttc" id="aexodusII_8h_html_a8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a"><div class="ttname"><a href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a">EX_ABORT</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:284</div></div>
 <div class="ttc" id="agroup__ResultsData_html_gae487ed3a7cd9dcef6eca2ca6dac0f48b"><div class="ttname"><a href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a></div><div class="ttdeci">int ex_put_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char *var_names[])</div><div class="ttdef"><b>Definition:</b> ex_put_variable_names.c:151</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gacbe0d2c034655cb912a2ebf761ec89c5"><div class="ttname"><a href="group__ModelDescription.html#gacbe0d2c034655cb912a2ebf761ec89c5">ex_put_attr_param</a></div><div class="ttdeci">int ex_put_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int num_attrs)</div><div class="ttdef"><b>Definition:</b> ex_put_attr_param.c:61</div></div>
+<div class="ttc" id="astructex__block_html_a7f53d2602122f3101a26b4d3cd306915"><div class="ttname"><a href="structex__block.html#a7f53d2602122f3101a26b4d3cd306915">ex_block::topology</a></div><div class="ttdeci">char topology[MAX_STR_LENGTH+1]</div><div class="ttdef"><b>Definition:</b> exodusII.h:354</div></div>
 <div class="ttc" id="agroup__FileVars_html_gadeed66ded179e51a8858254052a76ba4"><div class="ttname"><a href="group__FileVars.html#gadeed66ded179e51a8858254052a76ba4">EX_CLOBBER</a></div><div class="ttdeci">#define EX_CLOBBER</div><div class="ttdef"><b>Definition:</b> exodusII.h:114</div></div>
 <div class="ttc" id="aexodusII__int_8h_html"><div class="ttname"><a href="exodusII__int_8h.html">exodusII_int.h</a></div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:254</div></div>
 <div class="ttc" id="agroup__Utilities_html_ga16d75c04427a26326070625c5116a934"><div class="ttname"><a href="group__Utilities.html#ga16d75c04427a26326070625c5116a934">ex_put_info</a></div><div class="ttdeci">int ex_put_info(int exoid, int num_info, char *info[])</div><div class="ttdef"><b>Definition:</b> ex_put_info.c:102</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gaca77ecebfa9dad39ba97ec76a14b3364"><div class="ttname"><a href="group__ModelDescription.html#gaca77ecebfa9dad39ba97ec76a14b3364">ex_put_block_params</a></div><div class="ttdeci">int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *blocks)</div><div class="ttdef"><b>Definition:</b> ex_put_block_params.c:47</div></div>
+<div class="ttc" id="astructex__block_html_afbc3bc33f0561153d5595892b82485ac"><div class="ttname"><a href="structex__block.html#afbc3bc33f0561153d5595892b82485ac">ex_block::num_faces_per_entry</a></div><div class="ttdeci">int64_t num_faces_per_entry</div><div class="ttdef"><b>Definition:</b> exodusII.h:358</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga359b6d011348ed04746217e67612f3c1"><div class="ttname"><a href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a></div><div class="ttdeci">int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const void_int *node_conn, const void_int *elem_edge_conn, const void_int *elem_face_conn)</div><div class="ttdef"><b>Definition:</b> ex_put_conn.c:71</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga5ceec0317e895d0d2a435321a0188475"><div class="ttname"><a href="group__ModelDescription.html#ga5ceec0317e895d0d2a435321a0188475">ex_put_map</a></div><div class="ttdeci">int ex_put_map(int exoid, const void_int *elem_map)</div><div class="ttdef"><b>Definition:</b> ex_put_map.c:85</div></div>
-<div class="ttc" id="agroup__FileOptions_html_gga8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9"><div class="ttname"><a href="group__FileOptions.html#gga8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9">EX_VERBOSE</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:282</div></div>
 <div class="ttc" id="aexodusII_8h_html"><div class="ttname"><a href="exodusII_8h.html">exodusII.h</a></div></div>
 <div class="ttc" id="agroup__FileOptions_html_gga790e5d19a7cc9c2f8d4fd5a49a2c5dd0ad067190db4fac3cbc8f5c4f99a1c322a"><div class="ttname"><a href="group__FileOptions.html#gga790e5d19a7cc9c2f8d4fd5a49a2c5dd0ad067190db4fac3cbc8f5c4f99a1c322a">EX_OPT_COMPRESSION_SHUFFLE</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:245</div></div>
 <div class="ttc" id="agroup__Utilities_html_gafffa0ac5ec86658fb22ed6af7f5530cc"><div class="ttname"><a href="group__Utilities.html#gafffa0ac5ec86658fb22ed6af7f5530cc">ex_update</a></div><div class="ttdeci">int ex_update(int exoid)</div><div class="ttdef"><b>Definition:</b> ex_update.c:56</div></div>
-<div class="ttc" id="agroup__FileOptions_html_gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286"><div class="ttname"><a href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:261</div></div>
-<div class="ttc" id="agroup__ErrorReturnCodes_html_gafbc3bc33f0561153d5595892b82485ac"><div class="ttname"><a href="group__ErrorReturnCodes.html#gafbc3bc33f0561153d5595892b82485ac">ex_block::num_faces_per_entry</a></div><div class="ttdeci">int64_t num_faces_per_entry</div><div class="ttdef"><b>Definition:</b> exodusII.h:358</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga995cd1ef78b0873019518411d789be9e"><div class="ttname"><a href="group__ModelDescription.html#ga995cd1ef78b0873019518411d789be9e">ex_put_attr</a></div><div class="ttdeci">int ex_put_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const void *attrib)</div><div class="ttdef"><b>Definition:</b> ex_put_attr.c:63</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gaad1d6ddd57d1fa8f94da25d505e8c7ba"><div class="ttname"><a href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init</a></div><div class="ttdeci">int ex_put_init(int exoid, const char *title, int64_t num_dim, int64_t num_nodes, int64_t num_elem, int64_t num_elem_blk, int64_t num_node_sets, int64_t num_side_sets)</div><div class="ttdef"><b>Definition:</b> ex_put_init.c:80</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga7b04e195e3fa979ba07470b860d70145"><div class="ttname"><a href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a></div><div class="ttdeci">int ex_put_coord(int exoid, const void *x_coor, const void *y_coor, const void *z_coor)</div><div class="ttdef"><b>Definition:</b> ex_put_coord.c:113</div></div>
-<div class="ttc" id="agroup__APIStructs_html_gaf1f4f3b83e65c1415d915910a48463ea"><div class="ttname"><a href="group__APIStructs.html#gaf1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a></div><div class="ttdeci">char * ex_copy_string(char *dest, char const *source, size_t elements)</div><div class="ttdef"><b>Definition:</b> ex_utils.c:2174</div></div>
-<div class="ttc" id="agroup__ErrorReturnCodes_html_ga619b2c434a69bf79fd803b318d00a0a3"><div class="ttname"><a href="group__ErrorReturnCodes.html#ga619b2c434a69bf79fd803b318d00a0a3">ex_block::num_entry</a></div><div class="ttdeci">int64_t num_entry</div><div class="ttdef"><b>Definition:</b> exodusII.h:355</div></div>
-<div class="ttc" id="agroup__ErrorReturnCodes_html_ga243c28a77311f4472780b63102b4a23e"><div class="ttname"><a href="group__ErrorReturnCodes.html#ga243c28a77311f4472780b63102b4a23e">ex_block::type</a></div><div class="ttdeci">ex_entity_type type</div><div class="ttdef"><b>Definition:</b> exodusII.h:353</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:261</div></div>
+<div class="ttc" id="astructex__block_html_a243c28a77311f4472780b63102b4a23e"><div class="ttname"><a href="structex__block.html#a243c28a77311f4472780b63102b4a23e">ex_block::type</a></div><div class="ttdeci">ex_entity_type type</div><div class="ttdef"><b>Definition:</b> exodusII.h:353</div></div>
+<div class="ttc" id="aexodusII_8h_html_a8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9"><div class="ttname"><a href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9">EX_VERBOSE</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:282</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga3ff6ca7454f0ae270fb138c5a4844e37"><div class="ttname"><a href="group__ModelDescription.html#ga3ff6ca7454f0ae270fb138c5a4844e37">ex_put_one_attr</a></div><div class="ttdeci">int ex_put_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int attrib_index, const void *attrib)</div><div class="ttdef"><b>Definition:</b> ex_put_one_attr.c:63</div></div>
 <div class="ttc" id="agroup__FileOptions_html_gga790e5d19a7cc9c2f8d4fd5a49a2c5dd0a56598a35ce7443245ddcd3370e7527b2"><div class="ttname"><a href="group__FileOptions.html#gga790e5d19a7cc9c2f8d4fd5a49a2c5dd0a56598a35ce7443245ddcd3370e7527b2">EX_OPT_COMPRESSION_LEVEL</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:244</div></div>
-<div class="ttc" id="agroup__FileOptions_html_gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14"><div class="ttname"><a href="group__FileOptions.html#gga1f649ed288d305ab55773ffd1d220490a54efd13e0c9055244e2a8cb84dd09d14">EX_SIDE_SET</a></div><div class="ttdef"><b>Definition:</b> exodusII.h:264</div></div>
+<div class="ttc" id="astructex__block_html_a928236f90fd888b24bc850ccfb704985"><div class="ttname"><a href="structex__block.html#a928236f90fd888b24bc850ccfb704985">ex_block::num_edges_per_entry</a></div><div class="ttdeci">int64_t num_edges_per_entry</div><div class="ttdef"><b>Definition:</b> exodusII.h:357</div></div>
 <div class="ttc" id="agroup__ResultsData_html_gafa1d828867b436631e99a63fd5ddbf05"><div class="ttname"><a href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a></div><div class="ttdeci">int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index, ex_entity_id obj_id, int64_t num_entries_this_obj, const void *var_vals)</div><div class="ttdef"><b>Definition:</b> ex_put_var.c:238</div></div>
+<div class="ttc" id="aexodusII_8h_html_af1f4f3b83e65c1415d915910a48463ea"><div class="ttname"><a href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a></div><div class="ttdeci">char * ex_copy_string(char *dest, char const *source, size_t elements)</div><div class="ttdef"><b>Definition:</b> ex_utils.c:2174</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

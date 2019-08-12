@@ -96,9 +96,63 @@ $(document).ready(function(){initNavTree('ex__get__nset__var_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gae0ab0762edb6c1ecc2d4e135dbdcb9d6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APIStructs.html#gae0ab0762edb6c1ecc2d4e135dbdcb9d6">ex_get_nset_var</a> (int exoid, int time_step, int nset_var_index, <a class="el" href="group__StringLengths.html#gac03e735ba54b290660f8424399684450">ex_entity_id</a> nset_id, int64_t num_node_this_nset, void *nset_var_vals)</td></tr>
-<tr class="separator:gae0ab0762edb6c1ecc2d4e135dbdcb9d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6417c28f60bd51466fae1a2fafde5c5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__get__nset__var_8c.html#af6417c28f60bd51466fae1a2fafde5c5">ex_get_nset_var</a> (int exoid, int time_step, int nset_var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> nset_id, int64_t num_node_this_nset, void *nset_var_vals)</td></tr>
+<tr class="separator:af6417c28f60bd51466fae1a2fafde5c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="af6417c28f60bd51466fae1a2fafde5c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6417c28f60bd51466fae1a2fafde5c5">&#9670;&nbsp;</a></span>ex_get_nset_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_nset_var </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time_step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nset_var_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
+          <td class="paramname"><em>nset_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_node_this_nset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>nset_var_vals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>reads the values of a single nodeset variable for one nodeset at one time step in the database; assume the first time step and nodeset variable index is 1 </p><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000041">Deprecated:</a></b></dt><dd>Use <a class="el" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var()</a>(exoid, time_step, EX_NODE_SET, nset_var_index, nset_id, num_node_this_nset, nset_var_vals) instead </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
