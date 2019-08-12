@@ -945,13 +945,16 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   if (!(tmp_stats->valid_ids)) {
     free(id_vals);
   }
-  if (!(tmp_stats->valid_stat)) {
-    free(stat_vals);
-  }
 
   if (stat_vals[i] == 0) /* is this object null? */ {
     ex_err_fn(exoid, __func__, "", EX_NULLENTITY);
+    if (!(tmp_stats->valid_stat)) {
+      free(stat_vals);
+    }
     return (-((int)i + 1)); /* return index into id array (1-based) */
+  }
+  if (!(tmp_stats->valid_stat)) {
+    free(stat_vals);
   }
   return (i + 1); /* return index into id array (1-based) */
 }
