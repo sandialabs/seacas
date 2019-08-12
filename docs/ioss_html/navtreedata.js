@@ -1,18 +1,17 @@
 /*
-@ @licstart  The following is the entire license notice for the
+@licstart  The following is the entire license notice for the
 JavaScript code in this file.
 
-Copyright (C) 1997-2017 by Dimitri van Heesch
+Copyright (C) 1997-2019 by Dimitri van Heesch
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+it under the terms of version 2 of the GNU General Public License as published by
+the Free Software Foundation
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
@@ -26,7 +25,18 @@ var NAVTREE =
   [ "IOSS", "index.html", [
     [ "IOSS API Documentation", "index.html", [
       [ "Availability", "index.html#avail", null ],
-      [ "Properties", "index.html#properties", null ],
+      [ "Properties", "index.html#properties", [
+        [ "General Properties", "index.html#autotoc_md0", null ],
+        [ "Auto-Decomposition-Related Properties", "index.html#autotoc_md1", [
+          [ "Valid values for Decomposition Method", "index.html#autotoc_md2", null ]
+        ] ],
+        [ "Output File Composition – Single File output from parallel run instead of file-per-processor", "index.html#autotoc_md3", null ],
+        [ "Properties Related to byte size of reals and integers", "index.html#autotoc_md4", null ],
+        [ "Properties related to underlying file type (exodus only)", "index.html#autotoc_md5", null ],
+        [ "Properties for the heartbeat output", "index.html#autotoc_md6", null ],
+        [ "Experimental", "index.html#autotoc_md7", null ],
+        [ "Debugging / Profiling", "index.html#autotoc_md8", null ]
+      ] ],
       [ "License", "index.html#license", null ]
     ] ],
     [ "Todo List", "todo.html", null ],
@@ -99,11 +109,11 @@ var NAVTREEINDEX =
 "classtsl_1_1hopscotch__map.html#ae4bc1495e4ea36f2cb429b058e847122",
 "classtsl_1_1robin__map.html#afb148e953f4f5a2e639f3e6d72dbab6d",
 "functions_vars_z.html",
-"namespaceanonymous__namespace_02Ioss__Sphere_8C_03.html",
-"structIoad_1_1DatabaseIO_1_1BlockInfoType.html#a3b71d87bcd62362847daab9c4f50a414",
-"structIoss_1_1BoundaryCondition.html#a6ed7927a6c29ca7f727d1a303ec5f4fd",
-"structanonymous__namespace_02Ioss__Pyramid5_8C_03_1_1Constants.html",
-"structanonymous__namespace_02Ioss__TriShell3_8C_03_1_1Constants.html#ab08bd876bc70880fb6610ccacf0bdb60"
+"namespaceanonymous__namespace_02Ioss__ShellLine2D2_8C_03.html",
+"structAssert.html#ab3e0b11c8812244836b7deef1d66e4ce",
+"structIoss_1_1AxisAlignedBoundingBox.html#a9a890ae2ecb4f4d19b8048bf8e7fef65",
+"structanonymous__namespace_02Ioss__Pyramid19_8C_03_1_1Constants.html#a67a483a8f19eccc3b52bd7411391a639",
+"structanonymous__namespace_02Ioss__TriShell3_8C_03_1_1Constants.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

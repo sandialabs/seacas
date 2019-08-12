@@ -1,4 +1,4 @@
 var ex__get__sset__var__tab_8c =
 [
-    [ "ex_get_sset_var_tab", "ex__get__sset__var__tab_8c.html#a99cd21f38a31181a0ab85b08807ae071", null ]
+    [ "ex_get_sset_var_tab", "group__APIStructs.html#ga867f93b52f4d2148e528c17c569bcf07", null ]
 ];

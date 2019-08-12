@@ -1,4 +1,4 @@
 var ex__get__n__node__num__map_8c =
 [
-    [ "ex_get_n_node_num_map", "ex__get__n__node__num__map_8c.html#a3a4d35f9d0af9c89856ef8248f224013", null ]
+    [ "ex_get_n_node_num_map", "group__APIStructs.html#gab8a406303990ae5cfc9ed5171c4b39af", null ]
 ];

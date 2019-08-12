@@ -9,27 +9,27 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 78)">
 <title>Iotr::Scale3D_Factory</title>
 <polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-78 116.7041,-78 116.7041,4 -4,4"/>
-<!-- Node0 -->
+<!-- Node1 -->
 <g id="node1" class="node">
-<title>Node0</title>
+<title>Node1</title>
 <g id="a_node1"><a xlink:title=" ">
 <polygon fill="#bfbfbf" stroke="#000000" points="0,-.5 0,-18.5 112.7041,-18.5 112.7041,-.5 0,-.5"/>
 <text text-anchor="middle" x="56.3521" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Iotr::Scale3D_Factory</text>
 </a>
 </g>
 </g>
-<!-- Node1 -->
+<!-- Node2 -->
 <g id="node2" class="node">
-<title>Node1</title>
+<title>Node2</title>
 <g id="a_node2"><a xlink:href="classIotr_1_1Factory.html" target="_top" xlink:title=" ">
 <polygon fill="#ffffff" stroke="#000000" points="21.6797,-55.5 21.6797,-73.5 91.0244,-73.5 91.0244,-55.5 21.6797,-55.5"/>
 <text text-anchor="middle" x="56.3521" y="-61.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">Iotr::Factory</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node0 -->
+<!-- Node2&#45;&gt;Node1 -->
 <g id="edge1" class="edge">
-<title>Node1&#45;&gt;Node0</title>
+<title>Node2&#45;&gt;Node1</title>
 <path fill="none" stroke="#191970" d="M56.3521,-45.383C56.3521,-36.3738 56.3521,-26.0373 56.3521,-18.7795"/>
 <polygon fill="#191970" stroke="#191970" points="52.8522,-45.4178 56.3521,-55.4179 59.8522,-45.4179 52.8522,-45.4178"/>
 </g>
