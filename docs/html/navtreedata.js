@@ -1,18 +1,17 @@
 /*
-@ @licstart  The following is the entire license notice for the
+@licstart  The following is the entire license notice for the
 JavaScript code in this file.
 
-Copyright (C) 1997-2017 by Dimitri van Heesch
+Copyright (C) 1997-2019 by Dimitri van Heesch
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+it under the terms of version 2 of the GNU General Public License as published by
+the Free Software Foundation
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
@@ -34,7 +33,8 @@ var NAVTREE =
         [ "Fortran API", "index.html#int64_fortran_api", null ],
         [ "Fortran Implementation", "index.html#int64_fortran_imp", null ]
       ] ],
-      [ "Options (Compression, Name Length, File Type)", "index.html#Database", null ]
+      [ "Database Options (Compression, Name Length, File Type)", "index.html#db_options", null ],
+      [ "Variable, Attribute, and Entity Block/Set Names", "index.html#names", null ]
     ] ],
     [ "Exodus Element Types", "element_types.html", [
       [ "Element Types", "element_types.html#types", null ],
@@ -96,15 +96,17 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_2test_2CreateEdgeFace_8c-example.html",
-"ex__get__nodal__var__time__int_8c.html",
-"ex__put__map__param_8c.html#a5d1a64c0b1b5c990f5710b8a41e73acb",
-"exo__jack-windows_8c.html#a22ea0b385ce0f87e8e8173c15655a7ed",
-"exo__jack_8c.html#aa3495af14ed01a0109c956602ddf6d51",
-"exodusII_8h.html#a9c924c89a1571920c4a8176b38643781",
-"exodusII__int_8h.html#a30d6d441fee3915fa11bd4f45d699f64",
-"exodusII__int_8h.html#aed680a7a32cfb5080e24de4de477367c",
-"group__ResultsData.html#ga726df39122abe7d8abab0f0e48e701d6"
+"_2exodus_for_2test_2test_nem_8f-example.html",
+"ex__get__partial__node__set__df_8c.html",
+"ex__put__variable__names_8c.html#a34813b717d28ab8154812fe658706756",
+"exo__jack_8c.html#a48b18538f419b4f8450a481152ef9282",
+"exodusII_8h.html#ad3bbb36a7bacba53cad6cf944d0314bf",
+"group__FileVars.html#ga8163fd2a9d4320d3a452bbd54ee6a512",
+"group__Internal.html#ga4aa68cc5b76cda63c72889a3c88a9a53",
+"group__Internal.html#gaaef21fb43f754ce1b1d1264575c53cd5",
+"group__Internal.html#ggac775a5a0df48df4d0094526cdd600f8ca2f988a64717c7348056d0d3a922c5218",
+"group__ModelDescription.html#gabf401f3d6f9903875a25ff6e2ae6c3cf",
+"group__Utilities.html#ga27866a3e7d0d04c5849cd34ccd13b579"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

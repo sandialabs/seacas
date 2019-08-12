@@ -1,4 +1,4 @@
 var ex__put__nodal__var__int_8c =
 [
-    [ "ex_put_nodal_var_int", "ex__put__nodal__var__int_8c.html#a3b84b167d75518e6877b271045da8ec0", null ]
+    [ "ex__put_nodal_var", "group__ResultsData.html#gadea4cacfe3af0f6245b2d973546bc4ef", null ]
 ];

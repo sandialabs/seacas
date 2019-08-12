@@ -1,4 +1,4 @@
 var ex__get__glob__vars__int_8c =
 [
-    [ "ex_get_glob_vars_int", "ex__get__glob__vars__int_8c.html#a280fb5a55b9640e6daea736b3de19f96", null ]
+    [ "ex__get_glob_vars", "group__Internal.html#ga56282affbf63b3d3572f27d4075c39eb", null ]
 ];

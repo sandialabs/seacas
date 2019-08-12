@@ -1,18 +1,17 @@
 /*
-@ @licstart  The following is the entire license notice for the
+@licstart  The following is the entire license notice for the
 JavaScript code in this file.
 
-Copyright (C) 1997-2017 by Dimitri van Heesch
+Copyright (C) 1997-2019 by Dimitri van Heesch
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+it under the terms of version 2 of the GNU General Public License as published by
+the Free Software Foundation
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
@@ -26,7 +25,18 @@ var NAVTREE =
   [ "IOSS", "index.html", [
     [ "IOSS API Documentation", "index.html", [
       [ "Availability", "index.html#avail", null ],
-      [ "Properties", "index.html#properties", null ],
+      [ "Properties", "index.html#properties", [
+        [ "General Properties", "index.html#autotoc_md0", null ],
+        [ "Auto-Decomposition-Related Properties", "index.html#autotoc_md1", [
+          [ "Valid values for Decomposition Method", "index.html#autotoc_md2", null ]
+        ] ],
+        [ "Output File Composition – Single File output from parallel run instead of file-per-processor", "index.html#autotoc_md3", null ],
+        [ "Properties Related to byte size of reals and integers", "index.html#autotoc_md4", null ],
+        [ "Properties related to underlying file type (exodus only)", "index.html#autotoc_md5", null ],
+        [ "Properties for the heartbeat output", "index.html#autotoc_md6", null ],
+        [ "Experimental", "index.html#autotoc_md7", null ],
+        [ "Debugging / Profiling", "index.html#autotoc_md8", null ]
+      ] ],
       [ "License", "index.html#license", null ]
     ] ],
     [ "Todo List", "todo.html", null ],
@@ -76,34 +86,34 @@ var NAVTREEINDEX =
 "Ioss__EntityType_8h.html#a60ba379fdd8679588ac7c40b32490dc5",
 "Ioss__SmartAssert_8h.html#a1bd30ac77bb6fd95588b90f112bd79e1",
 "Iovs__DatabaseIO_8C.html#af45b4430c7a0c377e5b0f1cdd00f909f",
-"classIoad_1_1DatabaseIO.html#a413eec2032a2a919b352d7f80fa0b0bd",
-"classIocgns_1_1ParallelDatabaseIO.html#a82cec7eed91cc83935f217eefa3c2d6b",
-"classIoex_1_1DatabaseIO.html#aa2d29956136a820f97508c224e4b5f46",
-"classIogn_1_1DatabaseIO.html#a77caac769115f8fb21a7ebef496f3220",
-"classIogs_1_1GeneratedMesh.html#a301acc5c82bb56fa065fcac7c07cfa18",
-"classIopx_1_1DatabaseIO.html#a978385f0cab8d0dd6bb70d8864eb6d25",
-"classIoss_1_1CoordinateFrame.html#a2cc5381b30c3e38178f0f7903d79edba",
-"classIoss_1_1Decomposition.html#aada0578ac905d03c801dac2858de1ff2",
-"classIoss_1_1FaceBlock.html#af867b579092c945085ede1eb3b7e37ea",
-"classIoss_1_1Hex16.html#a6a023a4de59c3513b81b1ec8caf6b15a",
-"classIoss_1_1ParallelUtils.html#aeff274320a606f5a7a611d385e5b451c",
-"classIoss_1_1Quad9.html#a241e68468ef873b231081e16a24f0888",
-"classIoss_1_1Shell8.html#aec6581a3a380fb1765236acaeee07761",
-"classIoss_1_1St__Quad9.html#aea6849d0d42e949f7aa10c9e794d076c",
-"classIoss_1_1Tet11.html#a86a593e72a0bc081f00bfdc5d9b1f55f",
-"classIoss_1_1Tri6.html#af445874fc040863b4b365dffb4cd42ba",
-"classIoss_1_1Wedge12.html#abb80b3bd2ac022965ad484bc03d7326c",
-"classIotr_1_1Tensor__Factory.html#a5c385666b9d661c2d55ba40fcc8dfa96",
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#abf75d64ec78f8b004caa807e2f2747e9",
-"classtsl_1_1detail__robin__hash_1_1robin__hash.html#a356fd39b766aec21d31be63e55bc3d71",
-"classtsl_1_1hopscotch__map_1_1KeySelect.html#a16b64bff67f6d0d81732a8536de955ea",
-"classtsl_1_1robin__set.html#a1217c9e5efe5d27ce104de73661f3340",
-"hopscotch__growth__policy_8h.html#ac36e611286652c5392ee80694d129f84",
-"namespaceanonymous__namespace_02Ioss__Tet7_8C_03.html",
-"structIodw_1_1Utils_1_1RegionKeys.html",
-"structIoss_1_1GetLongOption_1_1Cell.html#a39219206f750f575e131bf3e2db639b7",
-"structanonymous__namespace_02Ioss__Quad4_8C_03_1_1Constants.html#a38621015a0900e017454543675a5bc62",
-"structanonymous__namespace_02Ioss__TriShell6_8C_03_1_1Constants.html#a0a2cb0d8325ae96b928fcc8230810a1b"
+"classIoad_1_1DatabaseIO.html#a32dd28bb1c39eecfdb1769ebd23a6200",
+"classIocgns_1_1ParallelDatabaseIO.html#a7158de3503d170e8959eaac91661ad35",
+"classIoex_1_1DatabaseIO.html#a807e2e705ebffd0606ac6809566fc652",
+"classIogn_1_1DatabaseIO.html#a3dcabef660dea9d0b71c964b7e6607a0",
+"classIogs_1_1GeneratedMesh.html#a231a3b3eb6bb6b89c13c459a377c5d59a705a2ff13ca8a989dc5296a50f3eaff5",
+"classIopx_1_1DatabaseIO.html#a688a1c86c984a55af4fc37e0591ecb6d",
+"classIoss_1_1CompositeVariableType.html#ac539c9b5255f458ac1e323660689c40f",
+"classIoss_1_1Decomposition.html#a7f5d07326e25987b083d27bfff129c6b",
+"classIoss_1_1Face.html#afa997f7ad6a87e3d599bd830fb3319ba",
+"classIoss_1_1Hex16.html#a0979c87a7a7069861f1c920dc2550969",
+"classIoss_1_1ParallelUtils.html#a96157c96e4309ff710306e2833e6ffb0",
+"classIoss_1_1Quad8.html#aaf4c3b97cd53b24fddae4bce93d85754",
+"classIoss_1_1Shell8.html#a61ce603d4f682ab42764363c62b77b15",
+"classIoss_1_1St__Pyramid5.html",
+"classIoss_1_1Tet10.html#adf8f6f0af6f623bf19689a15dc2e8135",
+"classIoss_1_1Tri6.html#a4f08c83b56ff296e11f39206148703f9",
+"classIoss_1_1Wedge12.html#a515beb54331da89922cbf0e066668ab5",
+"classIotr_1_1Tensor.html#a79c78784d81275843c4c5b4927caf39b",
+"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#a600a2172582060b21f2f8ceabd18db83",
+"classtsl_1_1detail__robin__hash_1_1robin__hash.html#a0e8902ef4b9ed0bb7bf8deb1ef54b638",
+"classtsl_1_1hopscotch__map.html#ae4bc1495e4ea36f2cb429b058e847122",
+"classtsl_1_1robin__map.html#afb148e953f4f5a2e639f3e6d72dbab6d",
+"functions_vars_z.html",
+"namespaceanonymous__namespace_02Ioss__ShellLine2D2_8C_03.html",
+"structAssert.html#ab3e0b11c8812244836b7deef1d66e4ce",
+"structIoss_1_1AxisAlignedBoundingBox.html#a9a890ae2ecb4f4d19b8048bf8e7fef65",
+"structanonymous__namespace_02Ioss__Pyramid19_8C_03_1_1Constants.html#a67a483a8f19eccc3b52bd7411391a639",
+"structanonymous__namespace_02Ioss__TriShell3_8C_03_1_1Constants.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

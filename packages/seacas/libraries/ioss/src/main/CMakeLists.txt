@@ -94,6 +94,19 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32
   COMM mpi serial
   )
 
+if (TPL_ENABLE_MPI)
+  TRIBITS_ADD_ADVANCED_TEST(exodus_fpp_serialize
+     TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} --serialize_io_size 2 ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block32.g
+        NOEXEPREFIX NOEXESUFFIX
+        NUM_MPI_PROCS 4
+     TEST_1 EXEC io_shell ARGS ${JOIN_ARG} --serialize_io_size 2 8-block32.g 8-block-32j.g
+        NOEXEPREFIX NOEXESUFFIX
+        NUM_MPI_PROCS ${NPROCS}
+     TEST_2 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block-32j.g
+  COMM mpi
+  )
+endif()
+
 TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus64
    TEST_0 EXEC io_shell ARGS -64 ${DECOMP_ARG} ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
      NOEXEPREFIX NOEXESUFFIX
@@ -361,6 +374,15 @@ TRIBITS_ADD_ADVANCED_TEST(structured_cgns_roundtrip_fields
      NUM_MPI_PROCS 1-4
      NOEXEPREFIX NOEXESUFFIX
    TEST_1 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/test/transient-fields.cgns transient-fields-out.cgns
+     NUM_MPI_PROCS 1
+  COMM mpi serial
+  )
+
+TRIBITS_ADD_ADVANCED_TEST(structured_cgns_embedded_nodeblock_fields
+   TEST_0 EXEC io_shell ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/structured_with_nodeblock_fields.cgns structured_with_nodeblock_fields_out.cgns
+     NUM_MPI_PROCS 1-4
+     NOEXEPREFIX NOEXESUFFIX
+   TEST_1 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/test/structured_with_nodeblock_fields.cgns structured_with_nodeblock_fields_out.cgns
      NUM_MPI_PROCS 1
   COMM mpi serial
   )
