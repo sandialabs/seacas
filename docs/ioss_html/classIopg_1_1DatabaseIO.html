@@ -127,8 +127,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae959d972861738d51a8f1d0995bec414"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIopg_1_1DatabaseIO.html#ae959d972861738d51a8f1d0995bec414">maximum_symbol_length</a> () const override</td></tr>
 <tr class="memdesc:ae959d972861738d51a8f1d0995bec414"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the length of the longest name in the database file.  <a href="classIopg_1_1DatabaseIO.html#ae959d972861738d51a8f1d0995bec414">More...</a><br /></td></tr>
 <tr class="separator:ae959d972861738d51a8f1d0995bec414"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a894e4cbe1247710512206f74361abf50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIopg_1_1DatabaseIO.html#a894e4cbe1247710512206f74361abf50">compute_block_membership</a> (<a class="el" href="classIoss_1_1SideBlock.html">Ioss::SideBlock</a> *efblock, std::vector&lt; std::string &gt; &amp;block_membership) const</td></tr>
-<tr class="separator:a894e4cbe1247710512206f74361abf50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdc5e488b0934318c3ad74e766189ead"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIopg_1_1DatabaseIO.html#afdc5e488b0934318c3ad74e766189ead">compute_block_membership__</a> (<a class="el" href="classIoss_1_1SideBlock.html">Ioss::SideBlock</a> *efblock, std::vector&lt; std::string &gt; &amp;block_membership) const</td></tr>
+<tr class="separator:afdc5e488b0934318c3ad74e766189ead"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classIoss_1_1DatabaseIO"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classIoss_1_1DatabaseIO')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classIoss_1_1DatabaseIO.html">Ioss::DatabaseIO</a></td></tr>
 <tr class="memitem:a87736d6eb5a3b7dfa3144743067d282e inherit pub_methods_classIoss_1_1DatabaseIO"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a87736d6eb5a3b7dfa3144743067d282e">ok</a> (bool write_message=false, std::string *error_message=nullptr, int *bad_count=nullptr) const</td></tr>
 <tr class="memdesc:a87736d6eb5a3b7dfa3144743067d282e inherit pub_methods_classIoss_1_1DatabaseIO"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check to see if database state is OK.  <a href="classIoss_1_1DatabaseIO.html#a87736d6eb5a3b7dfa3144743067d282e">More...</a><br /></td></tr>
@@ -658,14 +658,17 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a894e4cbe1247710512206f74361abf50"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a894e4cbe1247710512206f74361abf50">&#9670;&nbsp;</a></span>compute_block_membership()</h2>
+<a id="afdc5e488b0934318c3ad74e766189ead"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdc5e488b0934318c3ad74e766189ead">&#9670;&nbsp;</a></span>compute_block_membership__()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Iopg::DatabaseIO::compute_block_membership </td>
+          <td class="memname">void Iopg::DatabaseIO::compute_block_membership__ </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classIoss_1_1SideBlock.html">Ioss::SideBlock</a> *&#160;</td>
           <td class="paramname"><em>efblock</em>, </td>
@@ -682,7 +685,14 @@ Additional Inherited Members</h2></td></tr>
           <td></td><td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#af9c65230f8cba6eddc74ae7a2ccbfd8e">Ioss::DatabaseIO</a>.</p>
 
 </div>
 </div>
