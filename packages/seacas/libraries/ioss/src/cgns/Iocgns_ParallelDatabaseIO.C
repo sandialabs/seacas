@@ -56,14 +56,6 @@
 #include <cgnsconfig.h>
 #include <pcgnslib.h>
 
-#if 0
-// GDS: Temporarily disabled so SPARC can build inside Trilinos...
-#if !defined(CGNS_SANDIA_PARALLEL_MODS)
-#error                                                                                             \
-    "At this time, CGNS must be patched using CGNS-sandia.patch; contact gdsjaar@sandia.gov for info"
-#endif
-#endif
-
 #if !defined(CGNSLIB_H)
 #error "Could not include cgnslib.h"
 #endif
@@ -89,7 +81,6 @@
 #include "Ioss_VariableType.h"
 
 using GL_IdVector = std::vector<std::pair<int, int>>;
-extern int pcg_mpi_initialized;
 
 namespace {
   MPI_Datatype cgns_mpi_type()

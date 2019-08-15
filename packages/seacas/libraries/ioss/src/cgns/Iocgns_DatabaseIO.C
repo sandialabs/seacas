@@ -44,7 +44,11 @@
 #include <cassert>
 #include <cgns/Iocgns_DatabaseIO.h>
 #include <cgns/Iocgns_Utils.h>
+#ifdef SEACAS_HAVE_MPI
+#include <pcgnslib.h>
+#else
 #include <cgnslib.h>
+#endif
 #include <cstddef>
 #include <ctime>
 #include <fmt/ostream.h>
@@ -89,10 +93,6 @@
 #include "Ioss_VariableType.h"
 
 extern char hdf5_access[64];
-
-#ifdef SEACAS_HAVE_MPI
-extern int pcg_mpi_initialized;
-#endif
 
 namespace {
 
@@ -513,10 +513,12 @@ namespace Iocgns {
       }
 
 #ifdef SEACAS_HAVE_MPI
-      // Kluge to get fpp and dof CGNS working at same time.
-      pcg_mpi_initialized = 0;
-#endif
+      cgp_mpi_comm(MPI_COMM_SELF);
+      int ierr = cgp_open(decoded_filename().c_str(), mode, &m_cgnsFilePtr);
+      cgp_mpi_comm(util().communicator());
+#else
       int ierr = cg_open(decoded_filename().c_str(), mode, &m_cgnsFilePtr);
+#endif
       // Will not return if error...
       check_valid_file_open(ierr);
       if ((is_input() && properties.exists("MEMORY_READ")) ||
