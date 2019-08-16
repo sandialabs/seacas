@@ -121,15 +121,15 @@ void ex_print_config(void)
   }
 #endif
 #if NC_HAS_PARALLEL
-  fprintf(stderr, "\t\tparallel IO enabled via HDF5 and/or PnetCDF\n");
+  fprintf(stderr, "\t\tParallel IO enabled via HDF5 and/or PnetCDF\n");
 #endif
 #if NC_HAS_PARALLEL4
-  fprintf(stderr, "\t\tparallel IO enabled via HDF5\n");
+  fprintf(stderr, "\t\tParallel IO enabled via HDF5\n");
 #endif
 #if NC_HAS_PNETCDF
   {
     char *libver = ncmpi_inq_libvers();
-    fprintf(stderr, "\t\tparallel IO enabled via PnetCDF (%s)\n", libver);
+    fprintf(stderr, "\t\tParallel IO enabled via PnetCDF (%s)\n", libver);
   }
 #endif
 #if NC_HAS_ERANGE_FILL
