@@ -115,7 +115,6 @@ IF ( NETCDF_NCDUMP_BINARY )
        test_ts_files
        test_ts_errval
      )
-     target_link_libraries(pthread)
   ENDIF()
 
   CONFIGURE_FILE(
