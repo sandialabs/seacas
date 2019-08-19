@@ -83,7 +83,7 @@ namespace Ioss {
           MPI_Barrier(util.communicator());
         } while (++s_owner != s_groupRank);
 #endif
-        m_databaseIO->openDatabase();
+        m_databaseIO->openDatabase__();
       }
       else {
         s_owner = s_groupRank;
@@ -100,7 +100,7 @@ namespace Ioss {
       IOSS_FUNC_ENTER(m_);
       if (!m_activeFallThru) {
         if (s_groupFactor > 0) {
-          m_databaseIO->closeDatabase();
+          m_databaseIO->closeDatabase__();
 #ifdef SEACAS_HAVE_MPI
           s_owner                        = s_groupRank;
           const Ioss::ParallelUtils util = m_databaseIO->util();
