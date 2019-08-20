@@ -24,7 +24,7 @@ matrix:
     - compiler: gcc
       env: MPI=ON H5VERSION=V18 USE_64BIT_INT=ON
     - compiler: clang
-      env: MPI=ON THREADSAFE=ON H5VERSION=V18
+      env: MPI=ON THREADSAFE=ON H5VERSION=V18 FORTRAN=OFF
     - compiler: gcc
       env: KOKKOS=ON
     - compiler: gcc
