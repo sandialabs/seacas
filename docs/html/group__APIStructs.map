@@ -1,8 +1,0 @@
-<map id="Structures used by external API functions." name="Structures used by external API functions.">
-<area shape="rect" id="node1" href="$group__ResultsData.html" title="This section describes data file utility functions for creating opening a file, initializing a file w..." alt="" coords="440,5,538,29"/>
-<area shape="rect" id="node2" href="$group__Utilities.html" title="This section describes data file utility functions for creating opening a file, initializing a file w..." alt="" coords="429,53,550,77"/>
-<area shape="rect" id="node3" href="$group__StringLengths.html" title="constants that are used as netcdf dimensions must be of type long" alt="" coords="5,77,171,101"/>
-<area shape="rect" id="node6" title="ex_put_init_ext(), ex_get_init_ext(), ex_get_block_param(), ex_put_block_param(), ex_get_block_params..." alt="" coords="219,71,377,108"/>
-<area shape="rect" id="node4" href="$group__ModelDescription.html" title="The routines in this section read and write information which describe an exodus finite element model..." alt="" coords="425,101,553,125"/>
-<area shape="rect" id="node5" href="$group__ErrorReturnCodes.html" title=" " alt="" coords="425,149,554,200"/>
-</map>
