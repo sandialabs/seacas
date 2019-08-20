@@ -58,6 +58,7 @@ manually as detailed in
 | CGNS            | YES, NO | YES | Should CGNS TPL be built.  |
 | USE\_64BIT\_INT | YES, NO | NO  | In CGNS, enable 64-bit integers |
 | MATIO           | YES, NO | YES | Should matio TPL be built. |
+| ADIOS2          | YES, NO | NO  | Should adios2 TPL be built. |
 | KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
 | H5VERSION       | V110, V18 | V110 | Use HDF5-1.10.X or HDF5-1.8.X |
