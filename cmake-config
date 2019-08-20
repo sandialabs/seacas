@@ -179,6 +179,10 @@ HAVE_X11=${X11:-ON}
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-OFF}
+if [ "$THREADSAFE" == "ON" ] ; then
+  THREAD_SAFE_OPT="-DSEACASProj_EXTRA_LINK_FLAGS=-lpthread"
+fi
+
 
 ### TPLs --
 ### Make sure these point to the locations to find the libraries and includes in lib and include
@@ -325,6 +329,7 @@ ${SUBSET_OPTIONS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
+${THREAD_SAFE_OPT} \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
@@ -348,6 +353,7 @@ $EXTRA_ARGS \
 ${ACCESS}
 
 echo ""
+echo "          OS: ${OS}"
 echo "      ACCESS: ${ACCESS}"
 echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo "  "
