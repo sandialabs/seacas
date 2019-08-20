@@ -141,6 +141,7 @@ var classIoss_1_1DatabaseIO =
     [ "using_parallel_io", "classIoss_1_1DatabaseIO.html#a6e5c575a44253f465dd993bb49a16d2d", null ],
     [ "util", "classIoss_1_1DatabaseIO.html#acd988f56b93ac669b2e504a8e471b321", null ],
     [ "verify_and_log", "classIoss_1_1DatabaseIO.html#a618aca6d29316cd72a2af28b9867ac56", null ],
+    [ "SerializeIO", "classIoss_1_1DatabaseIO.html#a0929bbf71b00b96fdcf34c26a0d56cf3", null ],
     [ "bbName", "classIoss_1_1DatabaseIO.html#a75d8447712b2656a0ef06ffc24263b09", null ],
     [ "blockAdjacenciesCalculated", "classIoss_1_1DatabaseIO.html#aec6a8e90c689b4c065e617310136419d", null ],
     [ "blockAdjacency", "classIoss_1_1DatabaseIO.html#afe17eae189de84c0382635eed06c90f4", null ],

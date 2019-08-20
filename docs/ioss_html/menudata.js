@@ -239,7 +239,15 @@ var menudata={children:[
 {text:"s",url:"functions_eval.html#index_s"},
 {text:"t",url:"functions_eval.html#index_t"},
 {text:"z",url:"functions_eval.html#index_z"}]},
-{text:"Related Functions",url:"functions_rela.html"}]}]},
+{text:"Related Functions",url:"functions_rela.html",children:[
+{text:"h",url:"functions_rela.html#index_h"},
+{text:"m",url:"functions_rela.html#index_m"},
+{text:"o",url:"functions_rela.html#index_o"},
+{text:"p",url:"functions_rela.html#index_p"},
+{text:"r",url:"functions_rela.html#index_r"},
+{text:"s",url:"functions_rela.html#index_s"},
+{text:"t",url:"functions_rela.html#index_t"},
+{text:"v",url:"functions_rela.html#index_v"}]}]}]},
 {text:"Files",url:"files.html",children:[
 {text:"File List",url:"files.html"},
 {text:"File Members",url:"globals.html",children:[
