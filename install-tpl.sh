@@ -496,7 +496,7 @@ then
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ADIOS2
-	    git checkout 8c2135169ad534c30c503ad2bb8be0507facf63b
+#	    git checkout 8c2135169ad534c30c503ad2bb8be0507facf63b
             if [ -d build ]
             then
                 rm -rf build
