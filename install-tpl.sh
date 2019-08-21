@@ -82,7 +82,7 @@ H5VERSION=${H5VERSION:-V110}
 ADIOS2=${ADIOS2:-OFF}
 check_valid_on_off ADIOS2
 
-GTEST=${GTEST:-${ADIOS2}}
+GTEST=${GTEST:-OFF}
 
 MPI=${MPI:-OFF}
 check_valid_on_off MPI
