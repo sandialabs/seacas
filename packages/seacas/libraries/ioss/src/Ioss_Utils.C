@@ -89,6 +89,8 @@
 
 // For copy_database...
 namespace {
+  auto initial_time = std::chrono::high_resolution_clock::now();
+
   size_t max_field_size = 0;
 
   struct DataPool
@@ -1144,14 +1146,8 @@ unsigned int Ioss::Utils::hash(const std::string &name)
 
 double Ioss::Utils::timer()
 {
-#ifdef SEACAS_HAVE_MPI
-  return MPI_Wtime();
-#else
-  static auto begin = std::chrono::high_resolution_clock::now();
-
   auto now = std::chrono::high_resolution_clock::now();
-  return std::chrono::duration<double>(now - begin).count();
-#endif
+  return std::chrono::duration<double>(now - initial_time).count();
 }
 
 /** \brief Convert an input file to a vector of strings containing one string for each line of the
