@@ -1959,9 +1959,10 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   if (options.debug && rank == 0) {
     fmt::print(stderr, "END STATE_TRANSIENT... \n");
   }
-  dbi->progress("END STATE_TRANSIENT ... ");
+  dbi->progress("END STATE_TRANSIENT (begin) ... ");
 
   output_region.end_mode(Ioss::STATE_TRANSIENT);
+  dbi->progress("END STATE_TRANSIENT (end) ... ");
   Ioss::Utils::clear(data_pool.data);
 }
 
