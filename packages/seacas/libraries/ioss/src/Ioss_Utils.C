@@ -55,11 +55,27 @@
 #include <sys/utsname.h>
 #endif
 
+// For memory utilities...
+#if defined(_WIN32)
+#include <psapi.h>
+#include <windows.h>
+
+#elif defined(__unix__) || defined(__unix) || defined(unix) ||                                     \
+    (defined(__APPLE__) && defined(__MACH__))
+#include <sys/resource.h>
+#include <unistd.h>
+
 #if defined(__APPLE__) && defined(__MACH__)
-#include <mach/kern_return.h> // for kern_return_t
 #include <mach/mach.h>
-#include <mach/message.h> // for mach_msg_type_number_t
-#include <mach/task_info.h>
+
+#elif (defined(_AIX) || defined(__TOS__AIX__)) ||                                                  \
+    (defined(__sun__) || defined(__sun) || defined(sun) && (defined(__SVR4) || defined(__svr4__)))
+#include <fcntl.h>
+#include <procfs.h>
+
+#elif defined(__linux__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
+#include <stdio.h>
+#endif
 #endif
 
 #if defined(BGQ_LWK) && defined(__linux__)
@@ -864,7 +880,7 @@ std::string Ioss::Utils::platform_information()
       fmt::format("Node: {0}, OS: {1} {2}, {3}, Machine: {4}", sys_info.nodename, sys_info.sysname,
                   sys_info.release, sys_info.version, sys_info.machine);
 #else
-  std::string info = "Node: Unknown, OS: Unknown, Machine: Unknown";
+  std::string                 info = "Node: Unknown, OS: Unknown, Machine: Unknown";
 #endif
   return info;
 }
@@ -872,9 +888,15 @@ std::string Ioss::Utils::platform_information()
 /** \brief Return amount of memory being used on this processor */
 size_t Ioss::Utils::get_memory_info()
 {
+  // Code from http://nadeausoftware.com/sites/NadeauSoftware.com/files/getRSS.c
   size_t memory_usage = 0;
-#if defined(__APPLE__) && defined(__MACH__)
-  static size_t               original = 0;
+#if defined(_WIN32)
+  /* Windows -------------------------------------------------- */
+  PROCESS_MEMORY_COUNTERS info;
+  GetProcessMemoryInfo(GetCurrentProcess(), &info, sizeof(info));
+  memory_usage = (size_t)info.WorkingSetSize;
+
+#elif defined(__APPLE__) && defined(__MACH__)
   kern_return_t               error;
   mach_msg_type_number_t      outCount;
   mach_task_basic_info_data_t taskinfo{};
@@ -884,42 +906,45 @@ size_t Ioss::Utils::get_memory_info()
   error                 = task_info(mach_task_self(), MACH_TASK_BASIC_INFO,
                     reinterpret_cast<task_info_t>(&taskinfo), &outCount);
   if (error == KERN_SUCCESS) {
-    // type is mach_vm_size_t
-    if (original == 0) {
-      original = taskinfo.virtual_size;
-    }
-    memory_usage = taskinfo.virtual_size - original;
+    memory_usage = taskinfo.resident_size;
   }
 #elif __linux__
 #if defined(BGQ_LWK)
-  uint64_t    heap;
+  uint64_t heap;
   Kernel_GetMemorySize(KERNEL_MEMSIZE_HEAP, &heap);
-  memory_usage      = heap;
+  memory_usage = heap;
 #else
-  std::string line(128, '\0');
+  // On Linux, the /proc pseudo-file system contains a directory for
+  // each running or zombie process. The /proc/[pid]/stat,
+  // /proc/[pid]/statm, and /proc/[pid]/status pseudo-files for the
+  // process with id [pid] all contain a process's current resident
+  // set size, among other things. But the /proc/[pid]/statm
+  // pseudo-file is the easiest to read since it contains a single
+  // line of text with white-space delimited values:
+  //
+  // * total program size
+  // * resident set size
+  // * shared pages
+  // * text (code) size
+  // * library size
+  // * data size (heap + stack)
+  // * dirty pages
+  //
+  // The second value provides the process's current resident set size
+  // in pages. To get the field for the current process, open
+  // /proc/self/statm and parse the second integer value. Multiply the
+  // field by the page size from sysconf( ).
 
-  /* Read memory size data from /proc/self/status
-   * run "man proc" to get info on the contents of /proc/self/status
-   */
-  std::ifstream proc_status("/proc/self/status");
-  if (!proc_status) {
-    return memory_usage;
+  long  rss = 0L;
+  FILE *fp  = NULL;
+  if ((fp = fopen("/proc/self/statm", "r")) == NULL)
+    return (size_t)0L; // Can't open? */
+  if (fscanf(fp, "%*s%ld", &rss) != 1) {
+    fclose(fp);
+    return (size_t)0L; // Can't read? */
   }
-
-  while (1) {
-    if (!std::getline(proc_status, line)) {
-      return memory_usage;
-    }
-
-    if (line.substr(0, 6) == "VmRSS:") {
-      std::string        vmrss = line.substr(7);
-      std::istringstream iss(vmrss);
-      iss >> memory_usage;
-      memory_usage *= 1024;
-      break;
-    }
-  }
-  proc_status.close();
+  fclose(fp);
+  memory_usage = (size_t)rss * (size_t)sysconf(_SC_PAGESIZE);
 #endif
 #endif
   return memory_usage;
@@ -927,33 +952,36 @@ size_t Ioss::Utils::get_memory_info()
 
 size_t Ioss::Utils::get_hwm_memory_info()
 {
+  // Code from http://nadeausoftware.com/sites/NadeauSoftware.com/files/getRSS.c
   size_t memory_usage = 0;
-#if defined(__linux__)
-#if defined(BGQ_LWK)
+#if defined(_WIN32)
+  /* Windows -------------------------------------------------- */
+  PROCESS_MEMORY_COUNTERS info;
+  GetProcessMemoryInfo(GetCurrentProcess(), &info, sizeof(info));
+  memory_usage = (size_t)info.PeakWorkingSetSize;
 
-#else
-  std::string line(128, '\0');
-
-  /* Read memory size data from /proc/self/status
-   * run "man proc" to get info on the contents of /proc/self/status
-   */
-  std::ifstream proc_status("/proc/self/status");
-  if (!proc_status)
-    return memory_usage;
-
-  while (1) {
-
-    if (!std::getline(proc_status, line))
-      return memory_usage;
-    if (line.substr(0, 6) == "VmHWM:") {
-      std::string        vmrss = line.substr(7);
-      std::istringstream iss(vmrss);
-      iss >> memory_usage;
-      memory_usage *= 1024;
-      break;
-    }
+#elif (defined(_AIX) || defined(__TOS__AIX__)) ||                                                  \
+    (defined(__sun__) || defined(__sun) || defined(sun) && (defined(__SVR4) || defined(__svr4__)))
+  /* AIX and Solaris ------------------------------------------ */
+  struct psinfo psinfo;
+  int           fd = -1;
+  if ((fd = open("/proc/self/psinfo", O_RDONLY)) == -1)
+    return (size_t)0L; /* Can't open? */
+  if (read(fd, &psinfo, sizeof(psinfo)) != sizeof(psinfo)) {
+    close(fd);
+    return (size_t)0L; /* Can't read? */
   }
-  proc_status.close();
+  close(fd);
+  memory_usage      = (size_t)(psinfo.pr_rssize * 1024L);
+
+#elif (defined(__APPLE__) && defined(__MACH__)) || (defined(__linux__) && !defined(BGQ_LWK))
+  /* BSD, Linux, and OSX -------------------------------------- */
+  struct rusage rusage;
+  getrusage(RUSAGE_SELF, &rusage);
+#if defined(__APPLE__) && defined(__MACH__)
+  memory_usage = (size_t)rusage.ru_maxrss;
+#else
+  memory_usage = (size_t)(rusage.ru_maxrss * 1024L);
 #endif
 #endif
   return memory_usage;
