@@ -64,8 +64,6 @@ int main(int argc, char *argv[])
     codename = codename.substr(ind + 1, codename.size());
   }
 
-  fmt::print("Input: '{}', Type: {}\n\n", interface.filename(), interface.type());
-
   if (interface.list_groups()) {
     Ioss::io_info_group_info(interface);
   }
