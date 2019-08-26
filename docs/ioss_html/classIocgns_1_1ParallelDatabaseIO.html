@@ -122,6 +122,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a591cf29c4fcee4db9ab11fe174c37b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad13d641500c4a43bb7ac24bba3046586"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#ad13d641500c4a43bb7ac24bba3046586">~ParallelDatabaseIO</a> ()</td></tr>
 <tr class="separator:ad13d641500c4a43bb7ac24bba3046586"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aee3c77c097526dfc4b7b5e24d8ec96"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a5aee3c77c097526dfc4b7b5e24d8ec96">get_format</a> () const override</td></tr>
+<tr class="separator:a5aee3c77c097526dfc4b7b5e24d8ec96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e62b598cf4eba5403c75eaf5c986130"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#a3e62b598cf4eba5403c75eaf5c986130">entity_field_support</a> () const override</td></tr>
 <tr class="separator:a3e62b598cf4eba5403c75eaf5c986130"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada61a387605f9e662678fa3e71767c5a"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#ada61a387605f9e662678fa3e71767c5a">node_global_to_local__</a> (int64_t global, bool must_exist) const override</td></tr>
@@ -1657,6 +1659,34 @@ Additional Inherited Members</h2></td></tr>
 <p>For the database types that support it, return an integer <code>handle</code> through which a client can directly access the underlying file. Please use sparingly and with discretion. Basically, a kluge </p>
 
 <p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#a009607cca86df2f61da6aea3ef27abfa">Ioss::DatabaseIO</a>.</p>
+
+</div>
+</div>
+<a id="a5aee3c77c097526dfc4b7b5e24d8ec96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aee3c77c097526dfc4b7b5e24d8ec96">&#9670;&nbsp;</a></span>get_format()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string Iocgns::ParallelDatabaseIO::get_format </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return a string specifying underlying format of database (exodus, cgns, ...) </p>
+
+<p>Implements <a class="el" href="classIoss_1_1DatabaseIO.html#a99c8441c36c8369e28598837b9fc9d43">Ioss::DatabaseIO</a>.</p>
 
 </div>
 </div>

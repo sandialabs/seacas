@@ -25,6 +25,7 @@ var classIovs_1_1DatabaseIO =
     [ "get_field_internal", "classIovs_1_1DatabaseIO.html#aadfa09d5e1f6a1cb2236d1b379239c27", null ],
     [ "get_field_internal", "classIovs_1_1DatabaseIO.html#a13972d71dcef9a43be96e06aad5c90e1", null ],
     [ "get_field_internal", "classIovs_1_1DatabaseIO.html#a084fb29a455b88480795f7a747a6133b", null ],
+    [ "get_format", "classIovs_1_1DatabaseIO.html#a867ea207eb0a336be80a60639236c37c", null ],
     [ "get_node_map", "classIovs_1_1DatabaseIO.html#a6b2fa1ad235c26415edc7f55b85b0608", null ],
     [ "handle_element_ids", "classIovs_1_1DatabaseIO.html#a6e00b65d9147c8c1f6ea79ad96f56dea", null ],
     [ "handle_node_ids", "classIovs_1_1DatabaseIO.html#a41fa95d9c63d12a2f0f6bb1a0d422061", null ],

@@ -50,6 +50,7 @@ var classIoad_1_1DatabaseIO =
     [ "get_field_internal", "classIoad_1_1DatabaseIO.html#a84223e940bb2719b5de922644f5f6a5f", null ],
     [ "get_field_internal", "classIoad_1_1DatabaseIO.html#ad5a1ce179030c12021a091947cfd0d32", null ],
     [ "get_field_internal_t", "classIoad_1_1DatabaseIO.html#aba9132c488a5fb5ff3aebac48d4cb659", null ],
+    [ "get_format", "classIoad_1_1DatabaseIO.html#a6f35b247a6a8d7ab64c2ca586925941a", null ],
     [ "get_globals", "classIoad_1_1DatabaseIO.html#a24182446b6e9d183c927f30ffc821d10", null ],
     [ "get_optional_string_variable", "classIoad_1_1DatabaseIO.html#ad154f091ea608e4d4d1f07a163b8fc7a", null ],
     [ "get_property_value", "classIoad_1_1DatabaseIO.html#a67bd0e222cf69c2d2de49e620c5a432f", null ],

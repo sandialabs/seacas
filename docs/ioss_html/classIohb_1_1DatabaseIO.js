@@ -23,6 +23,7 @@ var classIohb_1_1DatabaseIO =
     [ "get_field_internal", "classIohb_1_1DatabaseIO.html#a06498f2ca86695f8834d36f027bcee45", null ],
     [ "get_field_internal", "classIohb_1_1DatabaseIO.html#a85c7d1a98d7adc8205a95ade7bbc3f8b", null ],
     [ "get_field_internal", "classIohb_1_1DatabaseIO.html#ac2ce5a3711300a43f9b9381e472bd625", null ],
+    [ "get_format", "classIohb_1_1DatabaseIO.html#afe86be6ba5e5df7afc5168904a5ca064", null ],
     [ "initialize", "classIohb_1_1DatabaseIO.html#a397a6192b3f37e4ea31a976d5d21ae3a", null ],
     [ "int_byte_size_db", "classIohb_1_1DatabaseIO.html#ae9a0e90a733b8b1e75810f5c63e39edd", null ],
     [ "node_global_to_local__", "classIohb_1_1DatabaseIO.html#add79581e85907669ee33c797e633b9c8", null ],

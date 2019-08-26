@@ -23,6 +23,7 @@ var classIogs_1_1DatabaseIO =
     [ "get_field_internal", "classIogs_1_1DatabaseIO.html#a57aa8b0fb15166ceff8a7d5c90b0262f", null ],
     [ "get_field_internal", "classIogs_1_1DatabaseIO.html#a18c868d46548dcf1cfff3464de86b943", null ],
     [ "get_field_internal", "classIogs_1_1DatabaseIO.html#aeb4664998f3f1a7784dc8b6da6e21f29", null ],
+    [ "get_format", "classIogs_1_1DatabaseIO.html#a0861687baf8f9847669a3ad4e8099166", null ],
     [ "get_gen_struc_mesh", "classIogs_1_1DatabaseIO.html#abdd14aeb29ed28e43265f72043317ced", null ],
     [ "get_node_map", "classIogs_1_1DatabaseIO.html#a11de8ff567425c074f5b118b912080eb", null ],
     [ "get_nodeblocks", "classIogs_1_1DatabaseIO.html#a707a15c3e6efde35bc4eb23268f67a05", null ],
