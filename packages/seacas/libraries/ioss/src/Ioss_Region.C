@@ -498,9 +498,9 @@ namespace Ioss {
     fmt::print(
         strm,
         "\n Database: {0}\n"
-        " Mesh Type = {1}\n\n"
+        " Mesh Type = {1}, {39}\n\n"
         " Number of spatial dimensions = {2:{24}n}\t"
-        "                                   {38:{23}s}\t"
+        "                                {38:{23}s}\t"
         " Number of global variables     = {26:{25}n}\n"
         " Number of node blocks        = {7:{24}n}\t"
         " Number of nodes              = {3:{23}n}\t"
@@ -545,7 +545,7 @@ namespace Ioss {
         total_cells, total_ns_nodes, total_es_edges, total_fs_faces, total_es_elements, total_sides,
         num_width, sb_width, vr_width, num_glo_vars, num_nod_vars, num_ele_vars, num_str_vars,
         num_ns_vars, num_ss_vars, num_ts, num_edg_vars, num_fac_vars, num_es_vars, num_fs_vars,
-        num_els_vars, " ");
+        num_els_vars, " ", get_database()->get_format());
   }
 
   /** \brief Set the Region and the associated DatabaseIO to the given State.
