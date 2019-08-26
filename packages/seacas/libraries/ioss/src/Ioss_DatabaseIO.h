@@ -202,6 +202,9 @@ namespace Ioss {
      */
     const std::string &decoded_filename() const;
 
+    /** Return a string specifying underlying format of database (exodus, cgns, ...) */
+    virtual const std::string get_format() const = 0;
+
     /** \brief Determine whether the database is an input database.
      *
      *  \returns True if the database is an input database. False otherwise.
