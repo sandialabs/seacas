@@ -1,4 +1,0 @@
-<map id="Model Description" name="Model Description">
-<area shape="rect" id="node1" title="The routines in this section read and write information which describe an exodus finite element model..." alt="" coords="211,12,339,36"/>
-<area shape="rect" id="node2" href="$group__APIStructs.html" title="ex_put_init_ext(), ex_get_init_ext(), ex_get_block_param(), ex_put_block_param(), ex_get_block_params..." alt="" coords="5,5,163,43"/>
-</map>

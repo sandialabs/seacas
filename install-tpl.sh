@@ -82,7 +82,7 @@ H5VERSION=${H5VERSION:-V110}
 ADIOS2=${ADIOS2:-OFF}
 check_valid_on_off ADIOS2
 
-GTEST=${GTEST:-${ADIOS2}}
+GTEST=${GTEST:-OFF}
 
 MPI=${MPI:-OFF}
 check_valid_on_off MPI
@@ -356,16 +356,6 @@ then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf CGNS
             git clone https://github.com/cgns/CGNS
-	    cd CGNS
-	    echo "${txtblu}"
-	    git am ../CGNS-sandia.patch
-	    echo "${txtrst}"
-	    if [[ $? != 0 ]]
-	    then
-		echo 1>&2 ${txtred}couldn\'t patch CGNS for SNL-suggested changes. exiting.${txtrst}
-		exit 1
-	    fi
-	    cd ..
 	fi
 
         if [ "$BUILD" == "YES" ]
@@ -506,7 +496,7 @@ then
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ADIOS2
-	    git checkout 8c2135169ad534c30c503ad2bb8be0507facf63b
+#	    git checkout 8c2135169ad534c30c503ad2bb8be0507facf63b
             if [ -d build ]
             then
                 rm -rf build

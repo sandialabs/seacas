@@ -2,6 +2,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c82efc90be9943e08b71e2d16abaa370)](https://app.codacy.com/app/gsjaardema/seacas?utm_source=github.com&utm_medium=referral&utm_content=gsjaardema/seacas&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/gsjaardema/seacas.svg?branch=master)](https://travis-ci.org/gsjaardema/seacas)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
+[![Spack Version](https://img.shields.io/spack/v/adios2.svg)](https://spack.readthedocs.io/en/latest/package_list.html#seacas)
 
 * [Get the sources](#get-the-sources)
 * [Build instructions](#build-instructions)
@@ -57,6 +58,7 @@ manually as detailed in
 | CGNS            | YES, NO | YES | Should CGNS TPL be built.  |
 | USE\_64BIT\_INT | YES, NO | NO  | In CGNS, enable 64-bit integers |
 | MATIO           | YES, NO | YES | Should matio TPL be built. |
+| ADIOS2          | YES, NO | NO  | Should adios2 TPL be built. |
 | KOKKOS          | YES, NO | NO  | Should Kokkos TPL be built. |
 | GNU_PARALLEL    | YES, NO | YES | Should GNU parallel script be built. |
 | H5VERSION       | V110, V18 | V110 | Use HDF5-1.10.X or HDF5-1.8.X |

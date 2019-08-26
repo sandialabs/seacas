@@ -82,6 +82,8 @@ namespace Ioss {
   class DatabaseIO
   {
   public:
+    friend class SerializeIO;
+
     /** \brief Check to see if database state is OK.
      *
      *  \param[in] write_message If true, then output a warning message indicating the problem.
@@ -199,6 +201,9 @@ namespace Ioss {
      * \ returns The file-per-processor name for a file on this processor.
      */
     const std::string &decoded_filename() const;
+
+    /** Return a string specifying underlying format of database (exodus, cgns, ...) */
+    virtual const std::string get_format() const = 0;
 
     /** \brief Determine whether the database is an input database.
      *
@@ -457,7 +462,6 @@ namespace Ioss {
     void get_block_adjacencies(const Ioss::ElementBlock *eb,
                                std::vector<std::string> &block_adjacency) const
     {
-      IOSS_FUNC_ENTER(m_);
       return get_block_adjacencies__(eb, block_adjacency);
     }
     void compute_block_membership(Ioss::SideBlock *         efblock,

@@ -4,7 +4,7 @@ var classIopg_1_1DatabaseIO =
     [ "DatabaseIO", "classIopg_1_1DatabaseIO.html#ae622f5eeeb571fe00d64edff4bffc963", null ],
     [ "~DatabaseIO", "classIopg_1_1DatabaseIO.html#a8eb6bacd3bf246930f0675c07915019f", null ],
     [ "begin__", "classIopg_1_1DatabaseIO.html#a2fd76a64844be5dab49b3582fb56b5c9", null ],
-    [ "compute_block_membership", "classIopg_1_1DatabaseIO.html#a894e4cbe1247710512206f74361abf50", null ],
+    [ "compute_block_membership__", "classIopg_1_1DatabaseIO.html#afdc5e488b0934318c3ad74e766189ead", null ],
     [ "end__", "classIopg_1_1DatabaseIO.html#a55375c1d64ab3c058c32f9b5c480554a", null ],
     [ "entity_field_support", "classIopg_1_1DatabaseIO.html#a60823e7d5c064b58a49326959f715f5e", null ],
     [ "get_commsets", "classIopg_1_1DatabaseIO.html#aaf02f16f04c392b30c2013ca50af68c2", null ],

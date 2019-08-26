@@ -144,17 +144,15 @@ int main(int argc, char *argv[])
     int64_t MiB = 1024 * 1024;
 #ifdef SEACAS_HAVE_MPI
     int64_t             min, max, avg;
+    int64_t             hwmin, hwmax, hwavg;
     Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
     parallel.memory_stats(min, max, avg);
+    parallel.hwm_memory_stats(hwmin, hwmax, hwavg);
     if (rank == 0) {
       fmt::print(stderr, "\n\tCurrent Memory: {:n}M  {:n}M  {:n}M\n", min / MiB, max / MiB,
                  avg / MiB);
-    }
-
-    parallel.hwm_memory_stats(min, max, avg);
-    if (rank == 0) {
-      fmt::print(stderr, "\n\tHigh Water Memory: {:n}M  {:n}M  {:n}M\n", min / MiB, max / MiB,
-                 avg / MiB);
+      fmt::print(stderr, "\tHigh Water Memory: {:n}M  {:n}M  {:n}M\n", hwmin / MiB, hwmax / MiB,
+                 hwavg / MiB);
     }
 #else
     int64_t mem = Ioss::Utils::get_memory_info();
@@ -162,7 +160,7 @@ int main(int argc, char *argv[])
     if (rank == 0) {
       fmt::print(stderr,
                  "\n\tCurrent Memory:    {:n}M\n"
-                 "\n\tHigh Water Memory: {:n}M\n",
+                 "\tHigh Water Memory: {:n}M\n",
                  mem / MiB, hwm / MiB);
     }
 #endif

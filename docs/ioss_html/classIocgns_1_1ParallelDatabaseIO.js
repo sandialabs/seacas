@@ -31,6 +31,7 @@ var classIocgns_1_1ParallelDatabaseIO =
     [ "get_field_internal", "classIocgns_1_1ParallelDatabaseIO.html#a51d5034b04db8f0d3bf70e321c8e6d2a", null ],
     [ "get_field_internal_sub_nb", "classIocgns_1_1ParallelDatabaseIO.html#a9648c4334d5b25df8dc69e7733fa1ff6", null ],
     [ "get_file_pointer", "classIocgns_1_1ParallelDatabaseIO.html#af8afc070d69d30e7d08a4a88bde79767", null ],
+    [ "get_format", "classIocgns_1_1ParallelDatabaseIO.html#a5aee3c77c097526dfc4b7b5e24d8ec96", null ],
     [ "get_map", "classIocgns_1_1ParallelDatabaseIO.html#a30f1d30426f7779c7dcc7511fe63b247", null ],
     [ "get_map", "classIocgns_1_1ParallelDatabaseIO.html#a76a23ce6c827706c14cf9c1bc50ef5c2", null ],
     [ "get_processor_zone_node_offset", "classIocgns_1_1ParallelDatabaseIO.html#ae3818355d8b764b2bc65804b4fbc081c", null ],

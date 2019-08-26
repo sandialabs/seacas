@@ -273,6 +273,24 @@ bool Info::Interface::parse_options(int argc, char **argv)
     }
   }
 
+  {
+    const char *temp = options_.retrieve("surface_split_scheme");
+    if (temp != nullptr) {
+      if (std::strcmp(temp, "TOPOLOGY") == 0) {
+        surfaceSplitScheme_ = 1;
+      }
+      else if (std::strcmp(temp, "ELEMENT_BLOCK") == 0) {
+        surfaceSplitScheme_ = 2;
+      }
+      else if (std::strcmp(temp, "BLOCK") == 0) {
+        surfaceSplitScheme_ = 2;
+      }
+      else if (std::strcmp(temp, "NO_SPLIT") == 0) {
+        surfaceSplitScheme_ = 3;
+      }
+    }
+  }
+
   if (options_.retrieve("disable_field_recognition") != nullptr) {
     disableFieldRecognition_ = true;
   }

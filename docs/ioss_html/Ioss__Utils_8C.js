@@ -33,6 +33,7 @@ var Ioss__Utils_8C =
     [ "transfer_sidesets", "Ioss__Utils_8C.html#a2f7d1035e3a301b40968c7cc1802b9d2", null ],
     [ "transfer_structuredblocks", "Ioss__Utils_8C.html#a4ec8f68aa3bb8904bd84839a42d249a9", null ],
     [ "two_letter_hash", "Ioss__Utils_8C.html#aee56b66fd87b59d8c5bc374cf8c9821e", null ],
+    [ "initial_time", "Ioss__Utils_8C.html#ae24a2c84c80473618ac9b809c81af59d", null ],
     [ "max_field_size", "Ioss__Utils_8C.html#addc09de33512ee282ede36ff15b7e00e", null ],
     [ "tab64", "Ioss__Utils_8C.html#a1e554e962ed09c738da4ed28a47052bc", null ]
 ];
