@@ -71,9 +71,10 @@ namespace {
   void info_df(const Ioss::GroupingEntity *ge, const std::string &prefix)
   {
     int64_t num_dist = ge->get_property("distribution_factor_count").get_int();
+    std::vector<double> df;
+    // Do even if num_dist == 0 so parallel does not assert.
+    ge->get_field_data("distribution_factors", df);
     if (num_dist > 0) {
-      std::vector<double> df;
-      ge->get_field_data("distribution_factors", df);
       auto mm = std::minmax_element(df.begin(), df.end());
       fmt::print("{}Distribution Factors: ", prefix);
       if (*mm.first == *mm.second) {
@@ -229,14 +230,7 @@ namespace {
   void info_structuredblock(Ioss::Region &region, const Info::Interface &interface)
   {
     bool parallel      = region.get_database()->is_parallel();
-    int  parallel_size = region.get_database()->parallel_size();
-
     const Ioss::StructuredBlockContainer &sbs = region.get_structured_blocks();
-    for (int proc = 0; proc < parallel_size; proc++) {
-      if (proc == region.get_database()->parallel_rank()) {
-        if (parallel)
-          fmt::print("\nProcessor {}", proc);
-      }
       for (auto sb : sbs) {
         int64_t num_cell = sb->get_property("cell_count").get_int();
         int64_t num_node = sb->get_property("node_count").get_int();
@@ -281,9 +275,8 @@ namespace {
           fmt::print("\tBounding Box: Minimum X,Y,Z = {:12.4e}\t{:12.4e}\t{:12.4e}\n"
                      "\t              Maximum X,Y,Z = {:12.4e}\t{:12.4e}\t{:12.4e}\n",
                      bbox.xmin, bbox.ymin, bbox.zmin, bbox.xmax, bbox.ymax, bbox.zmax);
-        }
+	}
       }
-    }
   }
 
   void info_elementblock(Ioss::Region &region, const Info::Interface &interface)
@@ -577,23 +570,36 @@ namespace Ioss {
       std::exit(EXIT_FAILURE);
     }
 
-    // Get all properties of input database...
-    region.output_summary(std::cout, true);
+    bool parallel      = region.get_database()->is_parallel();
+    int  parallel_size = region.get_database()->parallel_size();
+    int  parallel_rank = region.get_database()->parallel_rank();
+    region.get_database()->set_parallel_consistency(false);
 
-    if (interface.summary() == 0) {
-      info_nodeblock(region, interface);
-      info_edgeblock(region);
-      info_faceblock(region);
-      info_elementblock(region, interface);
-      info_structuredblock(region, interface);
+    for (int proc = 0; proc < parallel_size; proc++) {
+      if (proc == parallel_rank) {
+        if (parallel) {
+          fmt::print("\nProcessor {}", proc);
+	}
+	region.output_summary(std::cout, true);
 
-      info_nodesets(region);
-      info_edgesets(region);
-      info_facesets(region);
-      info_elementsets(region);
+	if (interface.summary() == 0) {
 
-      info_sidesets(region, interface);
-      info_coordinate_frames(region);
+	  info_nodeblock(region, interface);
+	  info_edgeblock(region);
+	  info_faceblock(region);
+	  info_elementblock(region, interface);
+	  info_structuredblock(region, interface);
+
+	  info_nodesets(region);
+	  info_edgesets(region);
+	  info_facesets(region);
+	  info_elementsets(region);
+
+	  info_sidesets(region, interface);
+	  info_coordinate_frames(region);
+	}
+      }
+	MPI_Barrier(region.get_database()->util().communicator());
     }
 
     if (interface.compute_volume()) {
