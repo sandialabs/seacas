@@ -70,7 +70,7 @@ namespace {
 
   void info_df(const Ioss::GroupingEntity *ge, const std::string &prefix)
   {
-    int64_t num_dist = ge->get_property("distribution_factor_count").get_int();
+    int64_t             num_dist = ge->get_property("distribution_factor_count").get_int();
     std::vector<double> df;
     // Do even if num_dist == 0 so parallel does not assert.
     ge->get_field_data("distribution_factors", df);
@@ -229,54 +229,54 @@ namespace {
 
   void info_structuredblock(Ioss::Region &region, const Info::Interface &interface)
   {
-    bool parallel      = region.get_database()->is_parallel();
-    const Ioss::StructuredBlockContainer &sbs = region.get_structured_blocks();
-      for (auto sb : sbs) {
-        int64_t num_cell = sb->get_property("cell_count").get_int();
-        int64_t num_node = sb->get_property("node_count").get_int();
-        int64_t num_dim  = sb->get_property("component_degree").get_int();
+    bool                                  parallel = region.get_database()->is_parallel();
+    const Ioss::StructuredBlockContainer &sbs      = region.get_structured_blocks();
+    for (auto sb : sbs) {
+      int64_t num_cell = sb->get_property("cell_count").get_int();
+      int64_t num_node = sb->get_property("node_count").get_int();
+      int64_t num_dim  = sb->get_property("component_degree").get_int();
 
-        fmt::print("\n{} {}", name(sb), sb->get_property("ni_global").get_int());
-        if (num_dim > 1) {
-          fmt::print("x{}", sb->get_property("nj_global").get_int());
-        }
-        if (num_dim > 2) {
-          fmt::print("x{}", sb->get_property("nk_global").get_int());
-        }
-
-        if (parallel) {
-          fmt::print(" [{}x{}x{}, Offset = {}, {}, {}] ", sb->get_property("ni").get_int(),
-                     sb->get_property("nj").get_int(), sb->get_property("nk").get_int(),
-                     sb->get_property("offset_i").get_int(), sb->get_property("offset_j").get_int(),
-                     sb->get_property("offset_k").get_int());
-        }
-
-        fmt::print("{:14n} cells, {:14n} nodes ", num_cell, num_node);
-
-        info_aliases(region, sb, true, false);
-        info_fields(sb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
-        info_nodeblock(region, sb->get_node_block(), interface, "\t");
-        fmt::print("\n");
-
-        if (!sb->m_zoneConnectivity.empty()) {
-          fmt::print("\tConnectivity with other blocks:\n");
-          for (const auto &zgc : sb->m_zoneConnectivity) {
-            fmt::print("{}\n", zgc);
-          }
-        }
-        if (!sb->m_boundaryConditions.empty()) {
-          fmt::print("\tBoundary Conditions:\n");
-          for (const auto &bc : sb->m_boundaryConditions) {
-            fmt::print("{}\n", bc);
-          }
-        }
-        if (interface.compute_bbox()) {
-          Ioss::AxisAlignedBoundingBox bbox = sb->get_bounding_box();
-          fmt::print("\tBounding Box: Minimum X,Y,Z = {:12.4e}\t{:12.4e}\t{:12.4e}\n"
-                     "\t              Maximum X,Y,Z = {:12.4e}\t{:12.4e}\t{:12.4e}\n",
-                     bbox.xmin, bbox.ymin, bbox.zmin, bbox.xmax, bbox.ymax, bbox.zmax);
-	}
+      fmt::print("\n{} {}", name(sb), sb->get_property("ni_global").get_int());
+      if (num_dim > 1) {
+        fmt::print("x{}", sb->get_property("nj_global").get_int());
       }
+      if (num_dim > 2) {
+        fmt::print("x{}", sb->get_property("nk_global").get_int());
+      }
+
+      if (parallel) {
+        fmt::print(" [{}x{}x{}, Offset = {}, {}, {}] ", sb->get_property("ni").get_int(),
+                   sb->get_property("nj").get_int(), sb->get_property("nk").get_int(),
+                   sb->get_property("offset_i").get_int(), sb->get_property("offset_j").get_int(),
+                   sb->get_property("offset_k").get_int());
+      }
+
+      fmt::print("{:14n} cells, {:14n} nodes ", num_cell, num_node);
+
+      info_aliases(region, sb, true, false);
+      info_fields(sb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
+      info_nodeblock(region, sb->get_node_block(), interface, "\t");
+      fmt::print("\n");
+
+      if (!sb->m_zoneConnectivity.empty()) {
+        fmt::print("\tConnectivity with other blocks:\n");
+        for (const auto &zgc : sb->m_zoneConnectivity) {
+          fmt::print("{}\n", zgc);
+        }
+      }
+      if (!sb->m_boundaryConditions.empty()) {
+        fmt::print("\tBoundary Conditions:\n");
+        for (const auto &bc : sb->m_boundaryConditions) {
+          fmt::print("{}\n", bc);
+        }
+      }
+      if (interface.compute_bbox()) {
+        Ioss::AxisAlignedBoundingBox bbox = sb->get_bounding_box();
+        fmt::print("\tBounding Box: Minimum X,Y,Z = {:12.4e}\t{:12.4e}\t{:12.4e}\n"
+                   "\t              Maximum X,Y,Z = {:12.4e}\t{:12.4e}\t{:12.4e}\n",
+                   bbox.xmin, bbox.ymin, bbox.zmin, bbox.xmax, bbox.ymax, bbox.zmax);
+      }
+    }
   }
 
   void info_elementblock(Ioss::Region &region, const Info::Interface &interface)
@@ -579,27 +579,29 @@ namespace Ioss {
       if (proc == parallel_rank) {
         if (parallel) {
           fmt::print("\nProcessor {}", proc);
-	}
-	region.output_summary(std::cout, true);
+        }
+        region.output_summary(std::cout, true);
 
-	if (interface.summary() == 0) {
+        if (interface.summary() == 0) {
 
-	  info_nodeblock(region, interface);
-	  info_edgeblock(region);
-	  info_faceblock(region);
-	  info_elementblock(region, interface);
-	  info_structuredblock(region, interface);
+          info_nodeblock(region, interface);
+          info_edgeblock(region);
+          info_faceblock(region);
+          info_elementblock(region, interface);
+          info_structuredblock(region, interface);
 
-	  info_nodesets(region);
-	  info_edgesets(region);
-	  info_facesets(region);
-	  info_elementsets(region);
+          info_nodesets(region);
+          info_edgesets(region);
+          info_facesets(region);
+          info_elementsets(region);
 
-	  info_sidesets(region, interface);
-	  info_coordinate_frames(region);
-	}
+          info_sidesets(region, interface);
+          info_coordinate_frames(region);
+        }
       }
-	MPI_Barrier(region.get_database()->util().communicator());
+#ifdef SEACAS_HAVE_MPI
+      MPI_Barrier(region.get_database()->util().communicator());
+#endif
     }
 
     if (interface.compute_volume()) {
