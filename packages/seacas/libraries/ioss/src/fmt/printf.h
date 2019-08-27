@@ -232,8 +232,8 @@ class printf_arg_formatter : public internal::arg_formatter_base<Range> {
     specifier information for standard argument types.
     \endrst
    */
-  printf_arg_formatter(iterator iter, format_specs& specs, context_type& ctx)
-      : base(Range(iter), &specs, internal::locale_ref()), context_(ctx) {}
+  printf_arg_formatter(iterator iter, format_specs& my_specs, context_type& ctx)
+      : base(Range(iter), &my_specs, internal::locale_ref()), context_(ctx) {}
 
   template <typename T, FMT_ENABLE_IF(std::is_integral<T>::value)>
   iterator operator()(T value) {
@@ -352,9 +352,9 @@ template <typename OutputIt, typename Char> class basic_printf_context {
    appropriate lifetimes.
    \endrst
    */
-  basic_printf_context(OutputIt out, basic_string_view<char_type> format_str,
+  basic_printf_context(OutputIt it_out, basic_string_view<char_type> format_str,
                        basic_format_args<basic_printf_context> args)
-      : out_(out), args_(args), parse_ctx_(format_str) {}
+      : out_(it_out), args_(args), parse_ctx_(format_str) {}
 
   OutputIt out() { return out_; }
   void advance_to(OutputIt it) { out_ = it; }
@@ -451,7 +451,7 @@ unsigned basic_printf_context<OutputIt, Char>::parse_header(
 template <typename OutputIt, typename Char>
 template <typename ArgFormatter>
 OutputIt basic_printf_context<OutputIt, Char>::format() {
-  auto out = this->out();
+  auto my_out = this->out();
   const Char* start = parse_ctx_.begin();
   const Char* end = parse_ctx_.end();
   auto it = start;
@@ -459,11 +459,11 @@ OutputIt basic_printf_context<OutputIt, Char>::format() {
     char_type c = *it++;
     if (c != '%') continue;
     if (it != end && *it == c) {
-      out = std::copy(start, it, out);
+      my_out = std::copy(start, it, my_out);
       start = ++it;
       continue;
     }
-    out = std::copy(start, it - 1, out);
+    my_out = std::copy(start, it - 1, my_out);
 
     format_specs specs;
     specs.align = align::right;
@@ -487,11 +487,11 @@ OutputIt basic_printf_context<OutputIt, Char>::format() {
       }
     }
 
-    format_arg arg = get_arg(arg_index);
-    if (specs.alt && visit_format_arg(internal::is_zero_int(), arg))
+    format_arg my_arg = get_arg(arg_index);
+    if (specs.alt && visit_format_arg(internal::is_zero_int(), my_arg))
       specs.alt = false;
     if (specs.fill[0] == '0') {
-      if (arg.is_arithmetic())
+      if (my_arg.is_arithmetic())
         specs.align = align::numeric;
       else
         specs.fill[0] = ' ';  // Ignore '0' flag for non-numeric types.
@@ -506,28 +506,28 @@ OutputIt basic_printf_context<OutputIt, Char>::format() {
       if (t == 'h') {
         ++it;
         t = it != end ? *it : 0;
-        convert_arg<signed char>(arg, t);
+        convert_arg<signed char>(my_arg, t);
       } else {
-        convert_arg<short>(arg, t);
+        convert_arg<short>(my_arg, t);
       }
       break;
     case 'l':
       if (t == 'l') {
         ++it;
         t = it != end ? *it : 0;
-        convert_arg<long long>(arg, t);
+        convert_arg<long long>(my_arg, t);
       } else {
-        convert_arg<long>(arg, t);
+        convert_arg<long>(my_arg, t);
       }
       break;
     case 'j':
-      convert_arg<intmax_t>(arg, t);
+      convert_arg<intmax_t>(my_arg, t);
       break;
     case 'z':
-      convert_arg<std::size_t>(arg, t);
+      convert_arg<std::size_t>(my_arg, t);
       break;
     case 't':
-      convert_arg<std::ptrdiff_t>(arg, t);
+      convert_arg<std::ptrdiff_t>(my_arg, t);
       break;
     case 'L':
       // printf produces garbage when 'L' is omitted for long double, no
@@ -535,13 +535,13 @@ OutputIt basic_printf_context<OutputIt, Char>::format() {
       break;
     default:
       --it;
-      convert_arg<void>(arg, c);
+      convert_arg<void>(my_arg, c);
     }
 
     // Parse type.
     if (it == end) FMT_THROW(format_error("invalid format string"));
     specs.type = static_cast<char>(*it++);
-    if (arg.is_integral()) {
+    if (my_arg.is_integral()) {
       // Normalize type.
       switch (specs.type) {
       case 'i':
@@ -549,8 +549,8 @@ OutputIt basic_printf_context<OutputIt, Char>::format() {
         specs.type = 'd';
         break;
       case 'c':
-        visit_format_arg(internal::char_converter<basic_printf_context>(arg),
-                         arg);
+        visit_format_arg(internal::char_converter<basic_printf_context>(my_arg),
+                         my_arg);
         break;
       }
     }
@@ -558,9 +558,9 @@ OutputIt basic_printf_context<OutputIt, Char>::format() {
     start = it;
 
     // Format argument.
-    visit_format_arg(ArgFormatter(out, specs, *this), arg);
+    visit_format_arg(ArgFormatter(my_out, specs, *this), my_arg);
   }
-  return std::copy(start, it, out);
+  return std::copy(start, it, my_out);
 }
 
 template <typename Char>
