@@ -41,9 +41,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <fmt/chrono.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <fmt/time.h>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -974,7 +974,7 @@ size_t Ioss::Utils::get_hwm_memory_info()
     return (size_t)0L; /* Can't read? */
   }
   close(fd);
-  memory_usage      = (size_t)(psinfo.pr_rssize * 1024L);
+  memory_usage = (size_t)(psinfo.pr_rssize * 1024L);
 
 #elif (defined(__APPLE__) && defined(__MACH__)) || (defined(__linux__) && !defined(BGQ_LWK))
   /* BSD, Linux, and OSX -------------------------------------- */
