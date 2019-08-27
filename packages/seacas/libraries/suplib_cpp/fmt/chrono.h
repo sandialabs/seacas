@@ -557,19 +557,19 @@ struct chrono_formatter {
   Rep hour() const { return static_cast<Rep>(mod((s.count() / 3600), 24)); }
 
   Rep hour12() const {
-    Rep hour = static_cast<Rep>(mod((s.count() / 3600), 12));
-    return hour <= 0 ? 12 : hour;
+    Rep my_hour = static_cast<Rep>(mod((s.count() / 3600), 12));
+    return my_hour <= 0 ? 12 : my_hour;
   }
 
   Rep minute() const { return static_cast<Rep>(mod((s.count() / 60), 60)); }
   Rep second() const { return static_cast<Rep>(mod(s.count(), 60)); }
 
   std::tm time() const {
-    auto time = std::tm();
-    time.tm_hour = to_nonnegative_int(hour(), 24);
-    time.tm_min = to_nonnegative_int(minute(), 60);
-    time.tm_sec = to_nonnegative_int(second(), 60);
-    return time;
+    auto my_time = std::tm();
+    my_time.tm_hour = to_nonnegative_int(hour(), 24);
+    my_time.tm_min = to_nonnegative_int(minute(), 60);
+    my_time.tm_sec = to_nonnegative_int(second(), 60);
+    return my_time;
   }
 
   void write_sign() {
@@ -593,13 +593,13 @@ struct chrono_formatter {
   void write_pinf() { std::copy_n("inf", 3, out); }
   void write_ninf() { std::copy_n("-inf", 4, out); }
 
-  void format_localized(const tm& time, const char* format) {
+  void format_localized(const tm& my_time, const char* format) {
     if (isnan(val)) return write_nan();
     auto locale = context.locale().template get<std::locale>();
     auto& facet = std::use_facet<std::time_put<char_type>>(locale);
     std::basic_ostringstream<char_type> os;
     os.imbue(locale);
-    facet.put(os, os, ' ', &time, format, format + std::strlen(format));
+    facet.put(os, os, ' ', &my_time, format, format + std::strlen(format));
     auto str = os.str();
     std::copy(str.begin(), str.end(), out);
   }
@@ -627,27 +627,27 @@ struct chrono_formatter {
     if (handle_nan_inf()) return;
 
     if (ns == numeric_system::standard) return write(hour(), 2);
-    auto time = tm();
-    time.tm_hour = to_nonnegative_int(hour(), 24);
-    format_localized(time, "%OH");
+    auto my_time = tm();
+    my_time.tm_hour = to_nonnegative_int(hour(), 24);
+    format_localized(my_time, "%OH");
   }
 
   void on_12_hour(numeric_system ns) {
     if (handle_nan_inf()) return;
 
     if (ns == numeric_system::standard) return write(hour12(), 2);
-    auto time = tm();
-    time.tm_hour = to_nonnegative_int(hour12(), 12);
-    format_localized(time, "%OI");
+    auto my_time = tm();
+    my_time.tm_hour = to_nonnegative_int(hour12(), 12);
+    format_localized(my_time, "%OI");
   }
 
   void on_minute(numeric_system ns) {
     if (handle_nan_inf()) return;
 
     if (ns == numeric_system::standard) return write(minute(), 2);
-    auto time = tm();
-    time.tm_min = to_nonnegative_int(minute(), 60);
-    format_localized(time, "%OM");
+    auto my_time = tm();
+    my_time.tm_min = to_nonnegative_int(minute(), 60);
+    format_localized(my_time, "%OM");
   }
 
   void on_second(numeric_system ns) {
@@ -670,9 +670,9 @@ struct chrono_formatter {
       }
       return;
     }
-    auto time = tm();
-    time.tm_sec = to_nonnegative_int(second(), 60);
-    format_localized(time, "%OS");
+    auto my_time = tm();
+    my_time.tm_sec = to_nonnegative_int(second(), 60);
+    format_localized(my_time, "%OS");
   }
 
   void on_12_hour_time() {

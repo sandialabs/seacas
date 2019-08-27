@@ -1049,10 +1049,10 @@ template <typename OutputIt, typename Char> class basic_format_context {
    Constructs a ``basic_format_context`` object. References to the arguments are
    stored in the object so make sure they have appropriate lifetimes.
    */
-  basic_format_context(OutputIt out,
+  basic_format_context(OutputIt out_it,
                        basic_format_args<basic_format_context> ctx_args,
                        internal::locale_ref loc = internal::locale_ref())
-      : out_(out), args_(ctx_args), loc_(loc) {}
+      : out_(out_it), args_(ctx_args), loc_(loc) {}
 
   format_arg arg(int id) const { return args_.get(id); }
 

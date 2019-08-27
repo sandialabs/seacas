@@ -470,10 +470,10 @@ template <typename T> constexpr bool use_grisu() {
 
 template <typename T>
 template <typename U>
-void buffer<T>::append(const U* begin, const U* end) {
-  std::size_t new_size = size_ + to_unsigned(end - begin);
+void buffer<T>::append(const U* p_begin, const U* p_end) {
+  std::size_t new_size = size_ + to_unsigned(p_end - p_begin);
   reserve(new_size);
-  std::uninitialized_copy(begin, end, make_checked(ptr_, capacity_) + size_);
+  std::uninitialized_copy(p_begin, p_end, make_checked(ptr_, capacity_) + size_);
   size_ = new_size;
 }
 }  // namespace internal
@@ -537,8 +537,8 @@ class basic_memory_buffer : private Allocator, public internal::buffer<T> {
 
   // Deallocate memory allocated by the buffer.
   void deallocate() {
-    T* data = this->data();
-    if (data != store_) Allocator::deallocate(data, this->capacity());
+    T* p_data = this->data();
+    if (p_data != store_) Allocator::deallocate(p_data, this->capacity());
   }
 
  protected:
@@ -600,13 +600,13 @@ class basic_memory_buffer : private Allocator, public internal::buffer<T> {
 };
 
 template <typename T, std::size_t SIZE, typename Allocator>
-void basic_memory_buffer<T, SIZE, Allocator>::grow(std::size_t size) {
+void basic_memory_buffer<T, SIZE, Allocator>::grow(std::size_t p_size) {
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
-  if (size > 1000) throw std::runtime_error("fuzz mode - won't grow that much");
+  if (p_size > 1000) throw std::runtime_error("fuzz mode - won't grow that much");
 #endif
   std::size_t old_capacity = this->capacity();
   std::size_t new_capacity = old_capacity + old_capacity / 2;
-  if (size > new_capacity) new_capacity = size;
+  if (p_size > new_capacity) new_capacity = p_size;
   T* old_data = this->data();
   T* new_data = std::allocator_traits<Allocator>::allocate(*this, new_capacity);
   // The following code doesn't throw, so the raw pointer above doesn't leak.
@@ -1581,9 +1581,9 @@ template <typename Range> class basic_writer {
 
  public:
   /** Constructs a ``basic_writer`` object. */
-  explicit basic_writer(Range out,
+  explicit basic_writer(Range p_out,
                         internal::locale_ref loc = internal::locale_ref())
-      : out_(out.begin()), locale_(loc) {}
+      : out_(p_out.begin()), locale_(loc) {}
 
   iterator out() const { return out_; }
 
@@ -2625,8 +2625,8 @@ class arg_formatter : public internal::arg_formatter_base<Range> {
    */
   explicit arg_formatter(context_type& ctx,
                          basic_parse_context<char_type>* parse_ctx = nullptr,
-                         format_specs* specs = nullptr)
-      : base(Range(ctx.out()), specs, ctx.locale()),
+                         format_specs* f_specs = nullptr)
+      : base(Range(ctx.out()), f_specs, ctx.locale()),
         ctx_(ctx),
         parse_ctx_(parse_ctx) {}
 
@@ -2672,9 +2672,9 @@ class FMT_API system_error : public std::runtime_error {
    \endrst
   */
   template <typename... Args>
-  system_error(int error_code, string_view message, const Args&... args)
+  system_error(int p_error_code, string_view message, const Args&... args)
       : std::runtime_error("") {
-    init(error_code, message, make_format_args(args...));
+    init(p_error_code, message, make_format_args(args...));
   }
   ~system_error() FMT_NOEXCEPT;
 
@@ -3136,9 +3136,9 @@ template <typename Range, typename Char>
 typename basic_format_context<Range, Char>::format_arg
 basic_format_context<Range, Char>::arg(basic_string_view<char_type> name) {
   map_.init(args_);
-  format_arg arg = map_.find(name);
-  if (arg.type() == internal::none_type) this->on_error("argument not found");
-  return arg;
+  format_arg f_arg = map_.find(name);
+  if (f_arg.type() == internal::none_type) this->on_error("argument not found");
+  return f_arg;
 }
 
 template <typename Char, typename ErrorHandler>
