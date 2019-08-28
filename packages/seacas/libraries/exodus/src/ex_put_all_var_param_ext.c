@@ -47,6 +47,7 @@
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex__get_dimension, etc
+extern int nc_use_compact_storage;
 
 static int  define_dimension(int exoid, const char *DIMENSION, int count, const char *label,
                              int *dimid);
@@ -401,6 +402,7 @@ static int define_variable_name_variable(int exoid, const char *VARIABLE, int di
   dims[0] = dimension;
   (void)nc_inq_dimid(exoid, DIM_STR_NAME, &dims[1]); /* Checked earlier, so known to exist */
 
+  nc_use_compact_storage = 1;
   if ((status = nc_def_var(exoid, VARIABLE, NC_CHAR, 2, dims, &variable)) != NC_NOERR) {
     if (status == NC_ENAMEINUSE) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s variable names are already defined in file id %d",
@@ -413,6 +415,7 @@ static int define_variable_name_variable(int exoid, const char *VARIABLE, int di
       ex_err_fn(exoid, __func__, errmsg, status);
     }
   }
+  nc_use_compact_storage = 0;
 #if NC_HAS_HDF5
   nc_def_var_fill(exoid, variable, 0, &fill);
 #endif
@@ -583,12 +586,14 @@ static int ex_define_vars(int exoid, ex_entity_type obj_type, const char *entity
     dims[0] = dimid1;
     dims[1] = dimid2;
 
+    nc_use_compact_storage = 1;
     if ((status = nc_def_var(exoid, VTV, NC_INT, 2, dims, truth_table_var)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to define %s variable truth table in file id %d", entity_name, exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       return status;
     }
+    nc_use_compact_storage = 0;
   }
   return NC_NOERR;
 }
