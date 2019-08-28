@@ -34,6 +34,7 @@
 #include <cassert>                 // for assert
 #include <exodus/Ioex_Internals.h> // for Internals, ElemBlock, etc
 extern "C" {
+  int nc_use_compact_storage;
 #include <exodusII_int.h> // for EX_FATAL, EX_NOERR, etc
 }
 #include <cstddef> // for size_t
@@ -869,8 +870,9 @@ int Internals::write_meta_data(Mesh &mesh)
     maximumNameLength = get_max_name_length(mesh.elemsets, maximumNameLength);
     maximumNameLength = get_max_name_length(mesh.sidesets, maximumNameLength);
 
-    Redefine the_database(exodusFilePtr);
-
+    nc_redef(exodusFilePtr);
+    //    Redefine the_database(exodusFilePtr);
+    nc_use_compact_storage = 1;
     // Set the database to NOFILL mode.  Only writes values we want written...
     int old_fill = 0;
 
@@ -913,6 +915,10 @@ int Internals::write_meta_data(Mesh &mesh)
     if ((ierr = put_metadata(mesh.sidesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
+
+    parallelUtil.progress("Before nc_enddef");
+    nc_enddef(exodusFilePtr);
+    parallelUtil.progress("After nc_enddef");
   }
 
   // NON-Define mode output...
@@ -928,10 +934,12 @@ int Internals::write_meta_data(Mesh &mesh)
     EX_FUNC_LEAVE(ierr);
   }
 
+  parallelUtil.progress("Before non_define_data elemblocks");
   if ((ierr = put_non_define_data(mesh.elemblocks)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
+  parallelUtil.progress("Before non_define_data nodesets");
   if ((ierr = put_non_define_data(mesh.nodesets)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
@@ -948,11 +956,13 @@ int Internals::write_meta_data(Mesh &mesh)
     EX_FUNC_LEAVE(ierr);
   }
 
+  parallelUtil.progress("Before non_define_data sidesets");
   if ((ierr = put_non_define_data(mesh.sidesets)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
   // For now, put entity names using the ExodusII api...
+  parallelUtil.progress("Before output names...");
   output_names(mesh.edgeblocks, exodusFilePtr, EX_EDGE_BLOCK);
   output_names(mesh.faceblocks, exodusFilePtr, EX_FACE_BLOCK);
   output_names(mesh.elemblocks, exodusFilePtr, EX_ELEM_BLOCK);
@@ -962,6 +972,8 @@ int Internals::write_meta_data(Mesh &mesh)
   output_names(mesh.elemsets, exodusFilePtr, EX_ELEM_SET);
   output_names(mesh.sidesets, exodusFilePtr, EX_SIDE_SET);
 
+  parallelUtil.progress("End of Ioex::Internals write_meta_data");
+  nc_use_compact_storage = 0;
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
@@ -1228,7 +1240,9 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     // Define the node map here to avoid a later redefine call
     int dims[1];
     dims[0] = numnoddim;
+    nc_use_compact_storage = 0;
     status  = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims, &varid);
+    nc_use_compact_storage = 1;
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -1306,7 +1320,9 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     int dims[1];
     dims[0] = numelemdim;
     varid   = 0;
+    nc_use_compact_storage = 0;
     status  = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims, &varid);
+    nc_use_compact_storage = 1;
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -1792,7 +1808,9 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks, bool count_onl
       dims[1] = nelnoddim;
 
       int connid;
+      nc_use_compact_storage = 0;
       status = nc_def_var(exodusFilePtr, VAR_CONN(iblk + 1), bulk_type, 2, dims, &connid);
+      nc_use_compact_storage = 1;
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         errmsg = fmt::format("Error: failed to create connectivity array for block {}"
@@ -2703,8 +2721,10 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets, bool count_onl
     // define variable to store node set node list here instead of in expns
     dims[0] = dimid;
     int varid;
+      nc_use_compact_storage = 0;
     status =
         nc_def_var(exodusFilePtr, VAR_NODE_NS(cur_num_node_sets + 1), bulk_type, 1, dims, &varid);
+      nc_use_compact_storage = 1;
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -2735,8 +2755,10 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets, bool count_onl
         return (EX_FATAL);
       }
       // create variable for distribution factors
+      nc_use_compact_storage = 0;
       status = nc_def_var(exodusFilePtr, VAR_FACT_NS(cur_num_node_sets + 1),
                           nc_flt_code(exodusFilePtr), 1, dims, &varid);
+      nc_use_compact_storage = 1;
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -3539,8 +3561,10 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets, bool count_onl
 
     dims[0]   = dimid;
     int varid = 0;
+      nc_use_compact_storage = 0;
     status =
         nc_def_var(exodusFilePtr, VAR_ELEM_SS(cur_num_side_sets + 1), bulk_type, 1, dims, &varid);
+      nc_use_compact_storage = 1;
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -3558,8 +3582,10 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets, bool count_onl
     ex__compress_variable(exodusFilePtr, varid, 1);
 
     // create side list variable for side set
+      nc_use_compact_storage = 0;
     status =
         nc_def_var(exodusFilePtr, VAR_SIDE_SS(cur_num_side_sets + 1), bulk_type, 1, dims, &varid);
+    nc_use_compact_storage = 1;
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -3597,8 +3623,10 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets, bool count_onl
 
       // create distribution factor list variable for side set
       dims[0] = dimid;
+      nc_use_compact_storage = 0;
       status  = nc_def_var(exodusFilePtr, VAR_FACT_SS(cur_num_side_sets + 1),
                           nc_flt_code(exodusFilePtr), 1, dims, &varid);
+      nc_use_compact_storage = 1;
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -3831,6 +3859,7 @@ namespace {
     int         dim[2];
     int         varid;
 
+    nc_use_compact_storage = 0;
     if (nodes > 0) {
       if (ex_large_model(exodusFilePtr) == 1) {
         // node coordinate arrays -- separate storage...
@@ -3889,6 +3918,7 @@ namespace {
       }
     }
 
+    nc_use_compact_storage = 1;
     // coordinate names array
     dim[0] = dim_dim;
     dim[1] = str_dim;
