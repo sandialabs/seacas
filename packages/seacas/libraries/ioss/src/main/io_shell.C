@@ -48,8 +48,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include <iomanip>
-#include <iostream>
 #include <string>
 #include <sys/times.h>
 #include <unistd.h>
@@ -59,14 +57,6 @@
 // ========================================================================
 
 namespace {
-
-  struct my_numpunct : std::numpunct<char>
-  {
-  protected:
-    char        do_thousands_sep() const override { return ','; }
-    std::string do_grouping() const override { return "\3"; }
-  };
-
   std::string codename;
   std::string version = "5.0";
 
@@ -368,10 +358,7 @@ namespace {
             filename += "." + suffix.substr(split % interface.split_cyclic, 1);
           }
           else {
-            std::ostringstream filen;
-            filen << filename << "_" << std::setw(width) << std::setfill('0')
-                  << std::to_string(split + 1);
-            filename = filen.str();
+            filename = fmt::format("{0}_{1:0{2}}", filename, split + 1, width);
           }
 
           if (rank == 0 && !interface.quiet) {

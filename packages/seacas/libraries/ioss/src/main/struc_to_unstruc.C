@@ -46,21 +46,12 @@
 #include <cassert>
 #include <cstring>
 #include <fstream>
-#include <iomanip>
-#include <iostream>
 #include <numeric>
 #include <string>
 #include <unistd.h>
 #include <vector>
 
 namespace {
-
-  struct my_numpunct : std::numpunct<char>
-  {
-  protected:
-    char        do_thousands_sep() const override { return ','; }
-    std::string do_grouping() const override { return "\3"; }
-  };
 
   int rank = 0;
 

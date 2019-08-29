@@ -44,8 +44,6 @@
 #include <cstdlib>
 #include <exception>
 #include <fmt/ostream.h>
-#include <iomanip>
-#include <iostream>
 #include <limits>
 #include <numeric>
 #include <set>
@@ -129,13 +127,6 @@ using ExodusIdVector = std::vector<ex_entity_id>;
 
 extern double seacas_timer();
 namespace {
-  struct my_numpunct : std::numpunct<char>
-  {
-  protected:
-    char        do_thousands_sep() const override { return ','; }
-    std::string do_grouping() const override { return "\3"; }
-  };
-
   unsigned int debug_level = 0;
   const double FILL_VALUE  = FLT_MAX;
   int          rank        = 0;
