@@ -206,7 +206,7 @@ namespace Ioss {
       }
       int width = std::floor(std::log10(number)) + 1;
       if (use_commas) {
-        width += (width / 3);
+        width += ((width - 1) / 3);
       }
       return width;
     }
