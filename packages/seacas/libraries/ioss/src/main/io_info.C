@@ -599,9 +599,7 @@ namespace Ioss {
           info_coordinate_frames(region);
         }
       }
-#ifdef SEACAS_HAVE_MPI
-      MPI_Barrier(region.get_database()->util().communicator());
-#endif
+      region.get_database()->util().barrier();
     }
 
     if (interface.compute_volume()) {

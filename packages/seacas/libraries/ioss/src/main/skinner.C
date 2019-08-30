@@ -54,6 +54,7 @@
 #include "Ioss_ParallelUtils.h"
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
+#include "Ioss_ScopeGuard.h"
 #include "Ioss_Utils.h"
 
 #include <cassert>
@@ -73,6 +74,7 @@ int main(int argc, char *argv[])
   int my_rank = 0;
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
+  ON_BLOCK_EXIT(MPI_Finalize);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
@@ -113,9 +115,6 @@ int main(int argc, char *argv[])
   if (my_rank == 0) {
     fmt::print("\n{} execution successful.\n\n", codename);
   }
-#ifdef SEACAS_HAVE_MPI
-  MPI_Finalize();
-#endif
   return EXIT_SUCCESS;
 }
 
@@ -157,14 +156,10 @@ namespace {
     region.output_summary(std::cerr, false);
 
     Ioss::FaceGenerator face_generator(region);
-#ifdef SEACAS_HAVE_MPI
-    MPI_Barrier(MPI_COMM_WORLD);
-#endif
+    region.get_database()->util().barrier();
     auto start = std::chrono::steady_clock::now();
     face_generator.generate_faces((INT)0);
-#ifdef SEACAS_HAVE_MPI
-    MPI_Barrier(MPI_COMM_WORLD);
-#endif
+    region.get_database()->util().barrier();
     auto duration = std::chrono::steady_clock::now() - start;
 
     Ioss::FaceUnorderedSet &faces = face_generator.faces();

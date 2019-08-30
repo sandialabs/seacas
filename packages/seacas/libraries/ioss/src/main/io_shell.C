@@ -123,7 +123,8 @@ int main(int argc, char *argv[])
   }
 
 #ifdef SEACAS_HAVE_MPI
-  MPI_Barrier(MPI_COMM_WORLD);
+  Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
+  parallel.barrier();
 #endif
   double end = Ioss::Utils::timer();
 
@@ -133,9 +134,8 @@ int main(int argc, char *argv[])
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
 #ifdef SEACAS_HAVE_MPI
-    int64_t             min, max, avg;
-    int64_t             hwmin, hwmax, hwavg;
-    Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
+    int64_t min, max, avg;
+    int64_t hwmin, hwmax, hwavg;
     parallel.memory_stats(min, max, avg);
     parallel.hwm_memory_stats(hwmin, hwmax, hwavg);
     if (rank == 0) {

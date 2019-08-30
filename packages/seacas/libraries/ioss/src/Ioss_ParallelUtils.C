@@ -323,6 +323,13 @@ void Ioss::ParallelUtils::attribute_reduction(const int length, char buffer[]) c
 #endif
 }
 
+void Ioss::ParallelUtils::barrier() const
+{
+#ifdef SEACAS_HAVE_MPI
+  MPI_Barrier(communicator_);
+#endif
+}
+
 void Ioss::ParallelUtils::global_count(const IntVector &local_counts,
                                        IntVector &      global_counts) const
 {
