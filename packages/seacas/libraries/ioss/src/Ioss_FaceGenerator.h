@@ -55,22 +55,25 @@ namespace Ioss {
   class Face
   {
   public:
-    Face() : id_(0), elementCount_(0), sharedWithProc_(-1) {}
-    Face(size_t id, std::array<size_t, 4> conn)
-        : id_(id), elementCount_(0), sharedWithProc_(-1), connectivity_(std::move(conn))
-    {
-    }
+    Face() = default;
+    Face(size_t id, std::array<size_t, 4> conn) : id_(id), connectivity_(std::move(conn)) {}
 
     void add_element(size_t element_id) const
     {
       assert(elementCount_ < 2);
+#ifdef SEACAS_HAVE_MPI
       element[elementCount_++] = element_id;
+#else
+      elementCount_++;
+#endif
     }
 
-    size_t                id_;
-    mutable size_t        element[2]{};
-    mutable int           elementCount_; // Should be max of 2 solid elements...
-    mutable int           sharedWithProc_;
+    size_t id_{0};
+#ifdef SEACAS_HAVE_MPI
+    mutable int    sharedWithProc_{-1};
+    mutable size_t element[2]{};
+#endif
+    mutable int           elementCount_{0}; // Should be max of 2 solid elements...
     std::array<size_t, 4> connectivity_{};
   };
 

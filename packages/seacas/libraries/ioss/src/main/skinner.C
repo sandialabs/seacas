@@ -170,13 +170,17 @@ namespace {
     size_t boundary  = 0;
     size_t error     = 0;
     size_t pboundary = 0;
+    size_t lboundary = 0; // Boundary count on this processor
 
     for (auto &face : faces) {
       if (face.elementCount_ == 2) {
         interior++;
+
+#ifdef SEACAS_HAVE_MPI
         if (face.sharedWithProc_ != -1) {
           pboundary++;
         }
+#endif
       }
       else if (face.elementCount_ == 1) {
         boundary++;
@@ -185,6 +189,8 @@ namespace {
         error++;
       }
     }
+
+    lboundary = boundary;
 
 #ifdef SEACAS_HAVE_MPI
     Ioss::Int64Vector counts(3), global(3);
@@ -218,12 +224,13 @@ namespace {
 
     // Get vector of all boundary faces which will be output as the skin...
     std::vector<Ioss::Face> boundary_faces;
-    boundary_faces.reserve(boundary);
+    boundary_faces.reserve(lboundary);
     for (auto &face : faces) {
       if (face.elementCount_ == 1) {
         boundary_faces.push_back(face);
       }
     }
+    assert(boundary_faces.size() == lboundary);
 
     // Iterate the boundary faces and determine which nodes are referenced...
     size_t           node_count = region.get_property("node_count").get_int();
