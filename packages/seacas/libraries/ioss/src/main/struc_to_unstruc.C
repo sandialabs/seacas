@@ -35,6 +35,7 @@
 #include <Ioss_FileInfo.h>
 #include <Ioss_Hex8.h>
 #include <Ioss_ParallelUtils.h>
+#include <Ioss_ScopeGuard.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
@@ -100,6 +101,7 @@ int main(int argc, char *argv[])
 {
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
+  ON_BLOCK_EXIT(MPI_Finalize);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
 
@@ -131,9 +133,6 @@ int main(int argc, char *argv[])
     fmt::print(stderr, "\n\tElapsed time = {} seconds.\n", end - begin);
     fmt::print(stderr, "\n{} execution successful.\n", codename);
   }
-#ifdef SEACAS_HAVE_MPI
-  MPI_Finalize();
-#endif
   return EXIT_SUCCESS;
 }
 
