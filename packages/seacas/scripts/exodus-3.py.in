@@ -1,5 +1,5 @@
 """
-exodus.py v 1.13 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.14 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -141,8 +141,14 @@ def getExodusVersion():
         fields = line.split()
         if (len(fields) == 3 and
                 fields[0] == '#define' and
-                fields[1] == 'EX_API_VERS_NODOT'):
-            return int(fields[2])
+                fields[1] == 'EXODUS_VERSION_MAJOR'):
+            version_major = int(fields[2])
+        if (len(fields) == 3 and
+                fields[0] == '#define' and
+                fields[1] == 'EXODUS_VERSION_MINOR'):
+            version_minor = int(fields[2])
+        if (version_major > 0 and version_minor > 0):
+           return 100 * version_major + version_minor
     return 0
 
 
