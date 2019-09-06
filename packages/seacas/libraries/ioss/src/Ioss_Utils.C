@@ -333,10 +333,10 @@ std::string Ioss::Utils::format_id_list(const std::vector<size_t> &ids, const st
     return "";
   }
 
-  size_t begin    = ids[0];
-  size_t previous = begin;
-  size_t current  = begin;
-  std::string comma = "";
+  size_t      begin    = ids[0];
+  size_t      previous = begin;
+  size_t      current  = begin;
+  std::string comma    = "";
 
   std::ostringstream ret_str;
 
@@ -347,12 +347,12 @@ std::string Ioss::Utils::format_id_list(const std::vector<size_t> &ids, const st
     if (num < ids.size()) {
       current = ids[num];
       if (current <= previous) {
-	std::ostringstream errmsg;
-	fmt::print(errmsg, "INTERNAL ERROR: Unsorted ids list at index {} in {}.\n", num, __func__);
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        fmt::print(errmsg, "INTERNAL ERROR: Unsorted ids list at index {} in {}.\n", num, __func__);
+        IOSS_ERROR(errmsg);
       }
       if (current == previous + 1) {
-	// Building a range...
+        // Building a range...
         previous = current;
         continue;
       }
