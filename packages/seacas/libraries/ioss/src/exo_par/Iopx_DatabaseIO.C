@@ -598,72 +598,8 @@ namespace Iopx {
 
     m_groupCount[EX_SIDE_SET] = info.num_side_sets;
 
-    std::vector<int64_t> counts{nodeCount, elementCount, m_groupCount[EX_ELEM_BLOCK]};
-    std::vector<int64_t> all_counts;
-    util().all_gather(counts, all_counts);
-    // Get minimum value in `all_counts`. If >0, then don't need to check further...
-    auto min_val = *std::min_element(all_counts.begin(), all_counts.end());
-
-    if (myProcessor == 0) {
-      static std::array<std::string, 3> label{"node", "element", "element block"};
-      size_t proc_count = all_counts.size() / 3;
-
-      if (min_val < 0) {
-	// Error on one or more of the counts...
-	for (size_t j=0; j < 3; j++) {
-	  std::vector<size_t> bad_proc;
-	  for (size_t i=0; i < proc_count; i++) {
-	    if (all_counts[3*i+j] < 0) {
-	      bad_proc.push_back(i);
-	    }
-	  }
-
-	  if (!bad_proc.empty()) {
-	    std::ostringstream errmsg;
-	    fmt::print(errmsg, "ERROR: Negative {} count on {} processor{}: ",
-		       label[j], bad_proc.size(), bad_proc.size() > 1 ? "s" : "");
-	    std::string sep = "";
-	    for (size_t p : bad_proc) {
-	      fmt::print(errmsg, "{}{}", sep, p);
-	      sep = ", ";
-	    }
-	    IOSS_ERROR(errmsg);
-	  }
-	}
-      }
-
-      // Now check for warning (count == 0)
-      if (min_val <= 0) {
-	// Possible warning on one or more of the counts...
-	for (size_t j=0; j < 3; j++) {
-	  std::vector<size_t> bad_proc;
-	  for (size_t i=0; i < proc_count; i++) {
-	    if (all_counts[3*i+j] == 0) {
-	      bad_proc.push_back(i);
-	    }
-	  }
-
-	  if (!bad_proc.empty()) {
-	    std::ostringstream errmsg;
-	    fmt::print(errmsg, "WARNING: No {}s on processor{}: ",
-		       label[j], bad_proc.size() > 1 ? "s" : "");
-	    std::string sep = "";
-	    for (size_t p : bad_proc) {
-	      fmt::print(errmsg, "{}{}", sep, p);
-	      sep = ", ";
-	    }
-	    fmt::print(IOSS_WARNING, "{}\n", errmsg.str());
-	  }
-	}
-      }
-      fmt::print(stderr, "\n");
-    }
-    else { // All other processors; need to abort if negative count
-      if (min_val < 0) {
-	std::ostringstream errmsg;
-	IOSS_ERROR(errmsg);
-      }
-    }
+    // Checks: node, element, blocks > 0; warning if == 0; error if < 0
+    check_valid_values();
 
     Ioss::Region *this_region = get_region();
 
@@ -4569,4 +4505,69 @@ void DatabaseIO::output_node_map() const
   }
 }
 
+void DatabaseIO::check_valid_values() const
+{
+    std::vector<int64_t> counts{nodeCount, elementCount, m_groupCount[EX_ELEM_BLOCK]};
+    std::vector<int64_t> all_counts;
+    util().all_gather(counts, all_counts);
+    // Get minimum value in `all_counts`. If >0, then don't need to check further...
+    auto min_val = *std::min_element(all_counts.begin(), all_counts.end());
+
+    if (myProcessor == 0) {
+      size_t proc_count = all_counts.size() / 3;
+
+      if (min_val < 0) {
+	static std::array<std::string, 3> label{"node", "element", "element block"};
+	// Error on one or more of the counts...
+	for (size_t j=0; j < 3; j++) {
+	  std::vector<size_t> bad_proc;
+	  for (size_t i=0; i < proc_count; i++) {
+	    if (all_counts[3*i+j] < 0) {
+	      bad_proc.push_back(i);
+	    }
+	  }
+
+	  if (!bad_proc.empty()) {
+	    std::ostringstream errmsg;
+	    fmt::print(errmsg, "ERROR: Negative {} count on {} processor{}:\n\t{}\n\n",
+		       label[j], bad_proc.size(), bad_proc.size() > 1 ? "s" : "",
+		       Ioss::Utils::format_id_list(bad_proc, ":"));
+	    IOSS_ERROR(errmsg);
+	  }
+	}
+      }
+
+      // Now check for warning (count == 0)
+      if (min_val <= 0) {
+	static std::array<std::string, 3> label{"nodes or elements", "elements", "element blocks"};
+	// Possible warning on one or more of the counts...
+	// Note that it is possible to have nodes on a processor with no elements,
+	// but not possible to have elements if no nodes...
+	for (size_t j=0; j < 3; j++) {
+	  std::vector<size_t> bad_proc;
+	  for (size_t i=0; i < proc_count; i++) {
+	    if (all_counts[3*i+j] == 0) {
+	      bad_proc.push_back(i);
+	    }
+	  }
+
+	  if (!bad_proc.empty()) {
+	    fmt::print(IOSS_WARNING, "WARNING: No {} on processor{}:\n\t{}\n\n",
+		       label[j], bad_proc.size() > 1 ? "s" : "",
+		       Ioss::Utils::format_id_list(bad_proc, ":"));
+	    if (j==0) {
+	      break;
+	    }
+	  }
+	}
+      }
+    }
+    else { // All other processors; need to abort if negative count
+      if (min_val < 0) {
+	std::ostringstream errmsg;
+	IOSS_ERROR(errmsg);
+      }
+    }
+
+}
 } // namespace Iopx
