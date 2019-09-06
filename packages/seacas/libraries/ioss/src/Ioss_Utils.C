@@ -324,6 +324,60 @@ int64_t Ioss::Utils::extract_id(const std::string &name_id)
   return id;
 }
 
+std::string Ioss::Utils::format_id_list(const std::vector<size_t> &ids, const std::string rng_sep)
+{
+  if (ids.empty()) {
+    return "";
+  }
+
+  size_t num      = 0;
+  size_t begin    = ids[0];
+  size_t previous = begin;
+  bool   comma    = false; // Is comma needed
+
+  std::ostringstream ret_str;
+
+  // Loop until all the ids are printed.  Use ranges if possible.
+  while (num < ids.size() + 1) {
+    size_t current = ids[num++];
+
+    // Handle last entity
+    if (num <= ids.size()) {
+      if (num == 1) { // Handle 1st time in loop
+        continue;
+      }
+
+      if (current == previous + 1) {
+        previous = current;
+        continue;
+      }
+    }
+
+    // If we are here, we are no longer tracking a range and
+    // need to print the range or a number.
+    if (comma) {
+      fmt::print(ret_str, ", ");
+    }
+
+    if (begin == previous) {
+      fmt::print(ret_str, "{}", previous);
+    }
+    else if (previous == begin + 1) {
+      // a range, but only 2 consecutive numbers
+      fmt::print(ret_str, "{}, {}", begin, previous);
+    }
+    else {
+      // a range of 3 or more consecutive numbers
+      fmt::print(ret_str, "{}{}{}", begin, rng_sep, previous);
+    }
+
+    begin    = current;
+    previous = current;
+    comma    = true;
+  }
+  return ret_str.str();
+}
+
 std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int64_t id)
 {
   // ExodusII stores block, nodeset, and sideset ids as integers
@@ -2726,5 +2780,4 @@ namespace {
     region.end_state(step);
     region.end_mode(Ioss::STATE_TRANSIENT);
   }
-
 } // namespace
