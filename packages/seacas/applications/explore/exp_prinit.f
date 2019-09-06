@@ -111,8 +111,8 @@ C   --   NVARSS - IN - the number of sideset variables (if OPTION)
       END IF
 
       IF ((OPTION .EQ. '*') .OR. (INDEX (OPTION, 'S') .GT. 0)) THEN
-         call convert(scrstr(1), numnps,  l1)
-         call convert(scrstr(2), lnpsnl,  l2)
+         call convert(scrstr(1), numnps, l1)
+         call convert(scrstr(2), lnpsnl, l2)
          call convert(scrstr(3), lnpsdf, l3)
          IF (NUMNPS .LE. 0) THEN
             IF (NOUT .GT. 0) THEN
@@ -129,8 +129,8 @@ C   --   NVARSS - IN - the number of sideset variables (if OPTION)
      $              scrstr(1)(:l1), scrstr(2)(:l2), scrstr(3)(:l3)
             END IF
          END IF
-         call convert(scrstr(1), numness,  l1)
-         call convert(scrstr(2), lessel,  l2)
+         call convert(scrstr(1), numess, l1)
+         call convert(scrstr(2), lessel, l2)
          call convert(scrstr(3), lessnl, l3)
          call convert(scrstr(4), lessdf, l4)
          IF (NUMESS .LE. 0) THEN
@@ -143,11 +143,11 @@ C   --   NVARSS - IN - the number of sideset variables (if OPTION)
             END IF
          ELSE
             IF (NOUT .GT. 0) THEN
-               WRITE (NOUT, 10050, IOSTAT=IDUM) 
+               WRITE (NOUT, 10050, IOSTAT=IDUM)
      $              scrstr(1)(:l1), scrstr(2)(:l2), scrstr(3)(:l3),
      $              scrstr(4)(:l4)
             ELSE
-               WRITE (*, 10050, IOSTAT=IDUM) 
+               WRITE (*, 10050, IOSTAT=IDUM)
      $              scrstr(1)(:l1), scrstr(2)(:l2), scrstr(3)(:l3),
      $              scrstr(4)(:l4)
             END IF
