@@ -326,54 +326,57 @@ int64_t Ioss::Utils::extract_id(const std::string &name_id)
 
 std::string Ioss::Utils::format_id_list(const std::vector<size_t> &ids, const std::string rng_sep)
 {
+  // PRECONDITION: `ids` is monotonically increasing -- will throw IOSS_ERROR if violated.
+  // Based on function from cubit (but I wrote original cubit version long time ago... ;-)
+
   if (ids.empty()) {
     return "";
   }
 
-  size_t num      = 0;
   size_t begin    = ids[0];
   size_t previous = begin;
-  bool   comma    = false; // Is comma needed
+  size_t current  = begin;
+  std::string comma = "";
 
   std::ostringstream ret_str;
 
-  // Loop until all the ids are printed.  Use ranges if possible.
-  while (num < ids.size() + 1) {
-    size_t current = ids[num++];
+  size_t num = 0;
+  while (++num <= ids.size()) {
 
     // Handle last entity
-    if (num <= ids.size()) {
-      if (num == 1) { // Handle 1st time in loop
-        continue;
+    if (num < ids.size()) {
+      current = ids[num];
+      if (current <= previous) {
+	std::ostringstream errmsg;
+	fmt::print(errmsg, "INTERNAL ERROR: Unsorted ids list at index {} in {}.\n", num, __func__);
+	IOSS_ERROR(errmsg);
       }
-
       if (current == previous + 1) {
+	// Building a range...
         previous = current;
         continue;
       }
     }
 
-    // If we are here, we are no longer tracking a range and
-    // need to print the range or a number.
-    if (comma) {
-      fmt::print(ret_str, ", ");
-    }
-
+    // No longer tracking a range... Time to print
+    // `begin` is first id in range of 1 or more ids
+    // `previous` is last id in range of 1 or more ids
     if (begin == previous) {
-      fmt::print(ret_str, "{}", previous);
+      // A single id
+      fmt::print(ret_str, "{}{}", comma, previous);
     }
     else if (previous == begin + 1) {
-      // a range, but only 2 consecutive numbers
-      fmt::print(ret_str, "{}, {}", begin, previous);
+      // A range of 2 consecutive ids, print separately
+      fmt::print(ret_str, "{}{}, {}", comma, begin, previous);
     }
     else {
-      // a range of 3 or more consecutive numbers
-      fmt::print(ret_str, "{}{}{}", begin, rng_sep, previous);
+      // a range of 3 or more consecutive ids
+      fmt::print(ret_str, "{}{}{}{}", comma, begin, rng_sep, previous);
     }
 
     begin    = current;
     previous = current;
-    comma    = true;
+    comma    = ", ";
   }
   return ret_str.str();
 }
