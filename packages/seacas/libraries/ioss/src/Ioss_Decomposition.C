@@ -319,13 +319,15 @@ namespace Ioss {
   {
     show_progress(__func__);
     if (m_processor == 0) {
-      fmt::print(stderr, "\nIOSS: Using decomposition method '{}' for {:n} elements on {} processors.\n",
-		 m_method, m_globalElementCount, m_processorCount);
+      fmt::print(stderr,
+                 "\nIOSS: Using decomposition method '{}' for {:n} elements on {} processors.\n",
+                 m_method, m_globalElementCount, m_processorCount);
 
       if ((size_t)m_processorCount > m_globalElementCount) {
-	fmt::print(stderr, "\nWARNING: Decomposing {} elements across {} processors will "
-		   "result in some processors with *NO* elements.\n",
-		   m_globalElementCount, m_processorCount);
+        fmt::print(stderr,
+                   "\nWARNING: Decomposing {} elements across {} processors will "
+                   "result in some processors with *NO* elements.\n",
+                   m_globalElementCount, m_processorCount);
       }
     }
 #if !defined(NO_PARMETIS_SUPPORT)
