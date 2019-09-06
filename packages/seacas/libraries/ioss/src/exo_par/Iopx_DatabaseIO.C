@@ -598,37 +598,71 @@ namespace Iopx {
 
     m_groupCount[EX_SIDE_SET] = info.num_side_sets;
 
-    if (nodeCount == 0) {
-      fmt::print(IOSS_WARNING, "No nodes were found in the model, file '{}'\n", get_filename());
-    }
-    else if (nodeCount < 0) {
-      // NOTE: Code will not continue past this call...
-      std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "ERROR: Negative node count was found in the model\n"
-                 "       File: '{}'.\n",
-                 get_filename());
-      IOSS_ERROR(errmsg);
-    }
+    std::vector<int64_t> counts{nodeCount, elementCount, m_groupCount[EX_ELEM_BLOCK]};
+    std::vector<int64_t> all_counts;
+    util().all_gather(counts, all_counts);
+    // Get minimum value in `all_counts`. If >0, then don't need to check further...
+    auto min_val = *std::min_element(all_counts.begin(), all_counts.end());
 
-    if (elementCount == 0) {
-      fmt::print(IOSS_WARNING, "No elements were found in the model, file: '{}'\n", get_filename());
-    }
+    if (myProcessor == 0) {
+      static std::array<std::string, 3> label{"node", "element", "element block"};
+      size_t proc_count = all_counts.size() / 3;
 
-    if (elementCount < 0) {
-      // NOTE: Code will not continue past this call...
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: Negative element count was found in the model, file: '{}'",
-                 get_filename());
-      IOSS_ERROR(errmsg);
-    }
+      if (min_val < 0) {
+	// Error on one or more of the counts...
+	for (size_t j=0; j < 3; j++) {
+	  std::vector<size_t> bad_proc;
+	  for (size_t i=0; i < proc_count; i++) {
+	    if (all_counts[3*i+j] < 0) {
+	      bad_proc.push_back(i);
+	    }
+	  }
 
-    if (elementCount > 0 && m_groupCount[EX_ELEM_BLOCK] <= 0) {
-      // NOTE: Code will not continue past this call...
-      std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: No element blocks were found in the model, file: '{}'",
-                 get_filename());
-      IOSS_ERROR(errmsg);
+	  if (!bad_proc.empty()) {
+	    std::ostringstream errmsg;
+	    fmt::print(errmsg, "ERROR: Negative {} count on {} processor{}: ",
+		       label[j], bad_proc.size(), bad_proc.size() > 1 ? "s" : "");
+	    std::string sep = "";
+	    for (size_t p : bad_proc) {
+	      fmt::print(errmsg, "{}{}", sep, p);
+	      sep = ", ";
+	    }
+	    IOSS_ERROR(errmsg);
+	  }
+	}
+      }
+
+      // Now check for warning (count == 0)
+      if (min_val <= 0) {
+	// Possible warning on one or more of the counts...
+	for (size_t j=0; j < 3; j++) {
+	  std::vector<size_t> bad_proc;
+	  for (size_t i=0; i < proc_count; i++) {
+	    if (all_counts[3*i+j] == 0) {
+	      bad_proc.push_back(i);
+	    }
+	  }
+
+	  if (!bad_proc.empty()) {
+	    std::ostringstream errmsg;
+	    fmt::print(errmsg, "WARNING: No {}s on processor{}: ",
+		       label[j], bad_proc.size() > 1 ? "s" : "");
+	    std::string sep = "";
+	    for (size_t p : bad_proc) {
+	      fmt::print(errmsg, "{}{}", sep, p);
+	      sep = ", ";
+	    }
+	    fmt::print(IOSS_WARNING, "{}\n", errmsg.str());
+	  }
+	}
+      }
+      fmt::print(stderr, "\n");
+    }
+    else { // All other processors; need to abort if negative count
+      if (min_val < 0) {
+	std::ostringstream errmsg;
+	IOSS_ERROR(errmsg);
+      }
     }
 
     Ioss::Region *this_region = get_region();
