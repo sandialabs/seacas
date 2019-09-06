@@ -1,5 +1,5 @@
 <map id="src/main/shell_to_hex.C" name="src/main/shell_to_hex.C">
-<area shape="rect" id="node1" title=" " alt="" coords="989,5,1152,31"/>
+<area shape="rect" id="node1" title=" " alt="" coords="1034,5,1198,31"/>
 <area shape="rect" id="node2" href="$Ioss__CodeTypes_8h.html" title=" " alt="" coords="1203,592,1335,617"/>
 <area shape="rect" id="node4" title=" " alt="" coords="3060,665,3124,691"/>
 <area shape="rect" id="node6" title=" " alt="" coords="1606,665,1660,691"/>
@@ -25,7 +25,8 @@
 <area shape="rect" id="node46" href="$Ioss__IOFactory_8h.html" title=" " alt="" coords="1127,299,1249,324"/>
 <area shape="rect" id="node47" href="$Ioss__NodeBlock_8h.html" title=" " alt="" coords="4065,79,4194,104"/>
 <area shape="rect" id="node48" href="$Ioss__Region_8h.html" title=" " alt="" coords="3596,152,3703,177"/>
-<area shape="rect" id="node52" href="$vector3d_8h.html" title=" " alt="" coords="4496,79,4579,104"/>
+<area shape="rect" id="node52" href="$Ioss__ScopeGuard_8h.html" title=" " alt="" coords="4470,79,4610,104"/>
+<area shape="rect" id="node53" href="$vector3d_8h.html" title=" " alt="" coords="4634,79,4718,104"/>
 <area shape="rect" id="node3" title=" " alt="" coords="1117,665,1169,691"/>
 <area shape="rect" id="node5" title=" " alt="" coords="3907,665,3967,691"/>
 <area shape="rect" id="node8" title=" " alt="" coords="1192,665,1346,691"/>

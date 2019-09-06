@@ -10,6 +10,7 @@ var classSkinner_1_1Interface =
     [ "output_filename", "classSkinner_1_1Interface.html#a1b8b54afc984d50199163d051bab241c", null ],
     [ "output_type", "classSkinner_1_1Interface.html#af58a2b89b2dc6c73631945811611a4d3", null ],
     [ "parse_options", "classSkinner_1_1Interface.html#ad9182a0e92127024e284b31262d734b4", null ],
+    [ "blocks_", "classSkinner_1_1Interface.html#a582b9a7c0df36d828913ec012dc83ab5", null ],
     [ "compose_output", "classSkinner_1_1Interface.html#a7c5d87cff80b6b9e337aad4e18fccf40", null ],
     [ "compression_level", "classSkinner_1_1Interface.html#a07976bcda95a56530c26aa47ca637d60", null ],
     [ "debug", "classSkinner_1_1Interface.html#af862e3b598107f3714dbb62668f2688d", null ],
