@@ -83,9 +83,6 @@ int main(int argc, char *argv[])
   Skinner::Interface interface;
   bool               success = interface.parse_options(argc, argv);
   if (!success) {
-#ifdef SEACAS_HAVE_MPI
-    MPI_Finalize();
-#endif
     return EXIT_FAILURE;
   }
 
