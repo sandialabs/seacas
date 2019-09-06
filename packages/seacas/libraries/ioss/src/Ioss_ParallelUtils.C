@@ -449,6 +449,8 @@ template void Ioss::ParallelUtils::all_gather(int, std::vector<int> &) const;
 template void Ioss::ParallelUtils::all_gather(int64_t, std::vector<int64_t> &) const;
 /// \relates Ioss::ParallelUtils::all_gather
 template void Ioss::ParallelUtils::all_gather(std::vector<int> &, std::vector<int> &) const;
+/// \relates Ioss::ParallelUtils::all_gather
+template void Ioss::ParallelUtils::all_gather(std::vector<int64_t> &, std::vector<int64_t> &) const;
 
 template <typename T> void Ioss::ParallelUtils::gather(T my_value, std::vector<T> &result) const
 {
