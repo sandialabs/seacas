@@ -5486,7 +5486,7 @@ def transfer_variables(
     exoFrom : exodus database object
         exodus object to transfer from
 
-    exo_to : exodus dabase object
+    exo_to : exodus database object
         exodus object to transfer to
 
     additionalGlobalVariables : list

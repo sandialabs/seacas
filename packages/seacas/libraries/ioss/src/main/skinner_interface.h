@@ -79,6 +79,7 @@ namespace Skinner {
     bool        netcdf4_{false};
     bool        ignoreFaceIds_{false};
     bool        noOutput_{false};
+    bool        blocks_{false};
   };
 } // namespace Skinner
 #endif

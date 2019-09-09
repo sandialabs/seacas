@@ -1842,7 +1842,7 @@ int ex__handle_mode(unsigned int my_mode, int is_parallel, int run_version)
   /* Check parallel io mode.  Valid is NC_MPIPOSIX or NC_MPIIO or NC_PNETCDF
    * Exodus uses different flag values; map to netcdf values
    *
-   * NOTE: In curent versions of NetCDF, MPIPOSIX and MPIIO are ignored and the
+   * NOTE: In current versions of NetCDF, MPIPOSIX and MPIIO are ignored and the
    *       underlying format is either NC_PNETCDF or NC_NETCDF4 (hdf5-based)
    *       They map NC_MPIIO to NC_PNETCDF, but in the past, exodus mapped EX_MPIIO
    *       to EX_NETCDF4.
