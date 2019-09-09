@@ -322,25 +322,24 @@ std::string Ioss::Utils::format_id_list(const std::vector<size_t> &ids, const st
   if (ids.empty()) {
     return "";
   }
-  size_t current = ids[0];
-  size_t num     = 0;
+
+  size_t num = 0;
 
   std::ostringstream ret_str;
   while (num < ids.size()) {
-    fmt::print(ret_str, "{}{}", num == 0 ? "" : seq_sep, current);
-    size_t begin    = current;
-    size_t previous = current;
+    fmt::print(ret_str, "{}{}", num == 0 ? "" : seq_sep, ids[num]);
+    size_t begin    = ids[num];
+    size_t previous = ids[num];
     // Gather a range or single value... (begin .. previous)
-    while (previous == current && ++num < ids.size()) {
-      current = ids[num];
-      if (current <= previous) {
+    while (previous == ids[num] && ++num < ids.size()) {
+      if (ids[num] <= previous) {
         std::ostringstream errmsg;
         fmt::print(errmsg, "INTERNAL ERROR: Unsorted ids vector at index {} in {}.\n", num,
                    __func__);
         IOSS_ERROR(errmsg);
       }
-      if (current == previous + 1) {
-        previous = current;
+      if (ids[num] == previous + 1) {
+        previous++;
       }
     }
 
