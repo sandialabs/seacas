@@ -1,12 +1,12 @@
 
 TRIBITS_ADD_EXECUTABLE(
- Utst_ids
- SOURCES Utst_ids.C
+ Utst_utils
+ SOURCES Utst_utils.C
 )
 
 TRIBITS_ADD_TEST(
-	Utst_ids
-	NAME Utst_ids
+	Utst_utils
+	NAME Utst_utils
 	NUM_MPI_PROCS 1
 )
 

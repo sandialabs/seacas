@@ -317,42 +317,34 @@ int64_t Ioss::Utils::extract_id(const std::string &name_id)
 std::string Ioss::Utils::format_id_list(const std::vector<size_t> &ids, const std::string &rng_sep,
                                         const std::string &seq_sep)
 {
-  // PRECONDITION: `ids` is monotonically increasing -- will throw IOSS_ERROR if violated.
   // Based on function from cubit (but I wrote original cubit version long time ago... ;-)
   if (ids.empty()) {
     return "";
   }
 
-  size_t num = 0;
+  // PRECONDITION: `ids` is monotonically increasing -- will throw IOSS_ERROR if violated.
+  if (!std::is_sorted(ids.begin(), ids.end(), [](size_t a, size_t b) { return a <= b; })) {
+    std::ostringstream errmsg;
+    fmt::print(errmsg,
+               "INTERNAL ERROR: ({}) The `ids` vector is not in monotonically increasing order as "
+               "required.\n",
+               __func__);
+    IOSS_ERROR(errmsg);
+  }
 
+  size_t             num = 0;
   std::ostringstream ret_str;
   while (num < ids.size()) {
     fmt::print(ret_str, "{}{}", num == 0 ? "" : seq_sep, ids[num]);
-    size_t begin    = ids[num];
-    size_t previous = ids[num];
+    size_t begin    = ids[num]; // first id in range of 1 or more ids
+    size_t previous = ids[num]; // last id in range of 1 or more ids
     // Gather a range or single value... (begin .. previous)
-    while (previous == ids[num] && ++num < ids.size()) {
-      if (ids[num] <= previous) {
-        std::ostringstream errmsg;
-        fmt::print(errmsg, "INTERNAL ERROR: Unsorted ids vector at index {} in {}.\n", num,
-                   __func__);
-        IOSS_ERROR(errmsg);
-      }
-      if (ids[num] == previous + 1) {
-        previous++;
-      }
+    while (previous == ids[num] && ++num < ids.size() && ids[num] == previous + 1) {
+      previous++;
     }
 
-    // No longer tracking a range... Time to print
-    // `begin` is first id in range of 1 or more ids
-    // `previous` is last id in range of 1 or more ids
-    if (previous == begin + 1) {
-      // A range of 2 consecutive ids, print separately
-      fmt::print(ret_str, "{}{}", seq_sep, previous);
-    }
-    else if (begin != previous) {
-      // a range of 3 or more consecutive ids
-      fmt::print(ret_str, "{}{}", rng_sep, previous);
+    if (begin != previous) {
+      fmt::print(ret_str, "{}{}", previous == begin + 1 ? seq_sep : rng_sep, previous);
     }
   }
   return ret_str.str();
