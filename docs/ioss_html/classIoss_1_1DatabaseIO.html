@@ -933,7 +933,7 @@ Friends</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Determine whether Cray Datawarp module is loaded and we have BB capacity allocated for this job ( i.e: DW_JOB_STRIPED is set) &amp;&amp; IOSS property to use DATAWARP is set to Y/YES (i.e enviromental variable ENABLE_DATAWARP) . If we are using DW then set some pathnames for writing directly to BB instead of PFS(i.e Lustre)</p>
+<p>Determine whether Cray Datawarp module is loaded and we have BB capacity allocated for this job ( i.e: DW_JOB_STRIPED is set) &amp;&amp; IOSS property to use DATAWARP is set to Y/YES (i.e environmental variable ENABLE_DATAWARP) . If we are using DW then set some pathnames for writing directly to BB instead of PFS(i.e Lustre)</p>
 <p>Check whether user wants to use Cray DataWarp. It will be enabled if: the <code>DW_JOB_STRIPED</code> or <code>DW_JOB_PRIVATE</code> environment variable is set by the queuing system during runtime and the IOSS property <code>ENABLE_DATAWARP</code> set to <code>YES</code>.</p>
 <p>We currently only want output files to be directed to BB. </p>
 

@@ -214,7 +214,7 @@ $(document).ready(function(){initNavTree('robin__hash_8h_source.html','');});
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment">     * - If `StoreHash` is true, 32 bits of the hash of the value, if any, are also stored in the</span></div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment">     * bucket. If the size of the hash is more than 32 bits, it is truncated. We don&#39;t store the</span></div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="comment">     * full hash as storing the hash is a potential opportunity to use the unused space due to the</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment">     * alignement of the bucket_entry structure. We can thus potentially store the hash without any</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment">     * alignment of the bucket_entry structure. We can thus potentially store the hash without any</span></div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment">     * extra space (which would not be possible with 64 bits of the hash).</span></div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueType, <span class="keywordtype">bool</span> StoreHash&gt;</div>
@@ -441,7 +441,7 @@ $(document).ready(function(){initNavTree('robin__hash_8h_source.html','');});
 <div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;                         !std::is_same&lt;Hash, std::hash&lt;key_type&gt;&gt;::value));</div>
 <div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;<span class="comment">      /**</span></div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;<span class="comment">       * Only use the stored hash on lookup if we are explictly asked. We are not sure how slow</span></div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;<span class="comment">       * Only use the stored hash on lookup if we are explicitly asked. We are not sure how slow</span></div>
 <div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;<span class="comment">       * the KeyEqual operation is. An extra comparison may slow things down with a fast KeyEqual.</span></div>
 <div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;<span class="comment">       */</span></div>
 <div class="line"><a name="l00355"></a><span class="lineno"><a class="line" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#aedda7e60f06c615cbf2106fcd7983c56">  355</a></span>&#160;      <span class="keyword">static</span> constexpr <span class="keywordtype">bool</span> <a class="code" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#aedda7e60f06c615cbf2106fcd7983c56">USE_STORED_HASH_ON_LOOKUP</a> = StoreHash;</div>
@@ -600,7 +600,7 @@ $(document).ready(function(){initNavTree('robin__hash_8h_source.html','');});
 <div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;<span class="preprocessor">#else</span></div>
 <div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;<span class="comment">      /**</span></div>
 <div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;<span class="comment">       * C++11 doesn&#39;t support the creation of a std::vector with a custom allocator and &#39;count&#39;</span></div>
-<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;<span class="comment">       * default-inserted elements. The needed contructor `explicit vector(size_type count, const</span></div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;<span class="comment">       * default-inserted elements. The needed constructor `explicit vector(size_type count, const</span></div>
 <div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;<span class="comment">       * Allocator&amp; alloc = Allocator());` is only available in C++14 and later. We thus must resize</span></div>
 <div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;<span class="comment">       * after using the `vector(const Allocator&amp; alloc)` constructor.</span></div>
 <div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;<span class="comment">       *</span></div>
@@ -1344,7 +1344,7 @@ $(document).ready(function(){initNavTree('robin__hash_8h_source.html','');});
 <div class="line"><a name="l01252"></a><span class="lineno"> 1252</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l01253"></a><span class="lineno"> 1253</span>&#160;<span class="comment">      /**</span></div>
 <div class="line"><a name="l01254"></a><span class="lineno"> 1254</span>&#160;<span class="comment">       * Grow the table if m_grow_on_next_insert is true or we reached the max_load_factor.</span></div>
-<div class="line"><a name="l01255"></a><span class="lineno"> 1255</span>&#160;<span class="comment">       * Shrink the table if m_try_skrink_on_next_insert is true (an erase occured) and</span></div>
+<div class="line"><a name="l01255"></a><span class="lineno"> 1255</span>&#160;<span class="comment">       * Shrink the table if m_try_skrink_on_next_insert is true (an erase occurred) and</span></div>
 <div class="line"><a name="l01256"></a><span class="lineno"> 1256</span>&#160;<span class="comment">       * we&#39;re below the min_load_factor.</span></div>
 <div class="line"><a name="l01257"></a><span class="lineno"> 1257</span>&#160;<span class="comment">       *</span></div>
 <div class="line"><a name="l01258"></a><span class="lineno"> 1258</span>&#160;<span class="comment">       * Return true if the table has been rehashed.</span></div>

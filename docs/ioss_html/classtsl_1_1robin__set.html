@@ -331,7 +331,7 @@ class tsl::robin_set&lt; Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy
 
 <p>Implementation of a hash set using open-adressing and the robin hood hashing algorithm with backward shift deletion.</p>
 <p>For operations modifying the hash set (insert, erase, rehash, ...), the strong exception guarantee is only guaranteed when the expression <code>std::is_nothrow_swappable&lt;Key&gt;\:\:value &amp;&amp; std::is_nothrow_move_constructible&lt;Key&gt;\:\:value</code> is true, otherwise if an exception is thrown during the swap or the move, the hash set may end up in a undefined state. Per the standard a <code>Key</code> with a noexcept copy constructor and no move constructor also satisfies the <code>std::is_nothrow_move_constructible&lt;Key&gt;\:\:value</code> criterion (and will thus guarantee the strong exception for the set).</p>
-<p>When <code>StoreHash</code> is true, 32 bits of the hash are stored alongside the values. It can improve the performance during lookups if the <code>KeyEqual</code> function takes time (or engenders a cache-miss for example) as we then compare the stored hashes before comparing the keys. When <code><a class="el" href="classtsl_1_1rh_1_1power__of__two__growth__policy.html">tsl::rh::power_of_two_growth_policy</a></code> is used as <code>GrowthPolicy</code>, it may also speed-up the rehash process as we can avoid to recalculate the hash. When it is detected that storing the hash will not incur any memory penality due to alignement (i.e. <code>sizeof(<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html">tsl::detail_robin_hash::bucket_entry</a>&lt;ValueType, true&gt;) == sizeof(<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html">tsl::detail_robin_hash::bucket_entry</a>&lt;ValueType, false&gt;)</code>) and <code><a class="el" href="classtsl_1_1rh_1_1power__of__two__growth__policy.html">tsl::rh::power_of_two_growth_policy</a></code> is used, the hash will be stored even if <code>StoreHash</code> is false so that we can speed-up the rehash (but it will not be used on lookups unless <code>StoreHash</code> is true).</p>
+<p>When <code>StoreHash</code> is true, 32 bits of the hash are stored alongside the values. It can improve the performance during lookups if the <code>KeyEqual</code> function takes time (or engenders a cache-miss for example) as we then compare the stored hashes before comparing the keys. When <code><a class="el" href="classtsl_1_1rh_1_1power__of__two__growth__policy.html">tsl::rh::power_of_two_growth_policy</a></code> is used as <code>GrowthPolicy</code>, it may also speed-up the rehash process as we can avoid to recalculate the hash. When it is detected that storing the hash will not incur any memory penalty due to alignment (i.e. <code>sizeof(<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html">tsl::detail_robin_hash::bucket_entry</a>&lt;ValueType, true&gt;) == sizeof(<a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry.html">tsl::detail_robin_hash::bucket_entry</a>&lt;ValueType, false&gt;)</code>) and <code><a class="el" href="classtsl_1_1rh_1_1power__of__two__growth__policy.html">tsl::rh::power_of_two_growth_policy</a></code> is used, the hash will be stored even if <code>StoreHash</code> is false so that we can speed-up the rehash (but it will not be used on lookups unless <code>StoreHash</code> is true).</p>
 <p><code>GrowthPolicy</code> defines how the set grows and consequently how a hash value is mapped to a bucket. By default the set uses <code><a class="el" href="classtsl_1_1rh_1_1power__of__two__growth__policy.html">tsl::rh::power_of_two_growth_policy</a></code>. This policy keeps the number of buckets to a power of two and uses a mask to set the hash to a bucket instead of the slow modulo. Other growth policies are available and you may define your own growth policy, check <code><a class="el" href="classtsl_1_1rh_1_1power__of__two__growth__policy.html">tsl::rh::power_of_two_growth_policy</a></code> for the interface.</p>
 <p>If the destructor of <code>Key</code> throws an exception, the behaviour of the class is undefined.</p>
 <p>Iterators invalidation:</p><ul>
@@ -1344,7 +1344,7 @@ template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_t
 
 <p></p>
 <p>This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists. If so, K must be hashable and comparable to Key.</p>
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>
@@ -1411,7 +1411,7 @@ template&lt;class Key, class Hash = std::hash&lt;Key&gt;, class KeyEqual = std::
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>
@@ -1674,7 +1674,7 @@ template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_t
 
 <p></p>
 <p>This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists. If so, K must be hashable and comparable to Key.</p>
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>
@@ -1718,7 +1718,7 @@ template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_t
 
 <p></p>
 <p>This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists. If so, K must be hashable and comparable to Key.</p>
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>
@@ -1813,7 +1813,7 @@ template&lt;class Key, class Hash = std::hash&lt;Key&gt;, class KeyEqual = std::
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>
@@ -1854,7 +1854,7 @@ template&lt;class Key, class Hash = std::hash&lt;Key&gt;, class KeyEqual = std::
 </div><div class="memdoc">
 
 <p></p>
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>
@@ -1929,7 +1929,7 @@ template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_t
 
 <p></p>
 <p>This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists. If so, K must be hashable and comparable to Key.</p>
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup to the value if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup to the value if you already have the hash. </p>
 
 </div>
 </div>
@@ -1996,7 +1996,7 @@ template&lt;class Key, class Hash = std::hash&lt;Key&gt;, class KeyEqual = std::
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup to the value if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup to the value if you already have the hash. </p>
 
 </div>
 </div>
@@ -2198,7 +2198,7 @@ template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_t
 
 <p></p>
 <p>This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists. If so, K must be hashable and comparable to Key.</p>
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>
@@ -2242,7 +2242,7 @@ template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_t
 
 <p></p>
 <p>This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists. If so, K must be hashable and comparable to Key.</p>
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>
@@ -2337,7 +2337,7 @@ template&lt;class Key, class Hash = std::hash&lt;Key&gt;, class KeyEqual = std::
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>
@@ -2378,7 +2378,7 @@ template&lt;class Key, class Hash = std::hash&lt;Key&gt;, class KeyEqual = std::
 </div><div class="memdoc">
 
 <p></p>
-<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1robin__set.html#af87c41abcb19a1442b4038db6edeeec3">hash_function()</a>(key). Useful to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>

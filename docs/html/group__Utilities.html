@@ -1412,7 +1412,7 @@ Variables</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">comp_ws</td><td>The word size in bytes (0, 4 or 8) of the floating point variables used in the application program. If 0 (zero) is passed, the default size of floating point values for the machine will be used and returned in this variable. WARNING: all exodus functions requiring reals must be passed reals declared with this passed in or returned compute word size (4 or 8).</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">io_ws</td><td>The word size in bytes (0, 4 or 8) of the floating point data as they are stored in the exodus file. If the word size does not match the word size of data stored in the file, a fatal error is returned. If this argument is 0, the word size of the floating point data already stored in the file is returned.</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">version</td><td>Returned exodus database version number. Note that this is always a float, never a double.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">run_version</td><td>Internally generated to verify library compatability.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">run_version</td><td>Internally generated to verify library compatibility.</td></tr>
   </table>
   </dd>
 </dl>
