@@ -325,7 +325,7 @@ namespace Ioad {
     Ioss::Region *this_region = get_region();
     if (!is_input()) {
       // `BeginStep()` should not be used at the same time as random access. Since at read time,
-      // we currrently read variables with random access, `BeginStep()` should not be used
+      // we currently read variables with random access, `BeginStep()` should not be used
       // at read time.
       // Begin  step for transient data
       adios2::StepStatus status = adios_wrapper.BeginStep();

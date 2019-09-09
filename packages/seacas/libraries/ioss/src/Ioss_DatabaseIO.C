@@ -739,7 +739,7 @@ namespace Ioss {
           }
         }
         else {
-          // homogenous sides.
+          // homogeneous sides.
           side_topo.insert(std::make_pair(elem_type, side_type));
           all_sphere = false;
         }

@@ -175,7 +175,7 @@ namespace Ioss {
 
     /** Determine whether Cray Datawarp module is loaded and we have BB capacity allocated for this
      * job ( i.e: DW_JOB_STRIPED is set) && IOSS property to use DATAWARP is set to Y/YES (i.e
-     * enviromental variable ENABLE_DATAWARP) . If we are using DW then set some pathnames for
+     * environmental variable ENABLE_DATAWARP) . If we are using DW then set some pathnames for
      * writing directly to BB instead of PFS(i.e Lustre)
      */
     void check_setDW() const;
@@ -391,7 +391,7 @@ namespace Ioss {
     // pure virtual get_field_internal and put_field_internal functions,
     // but this lets me add some debug/checking/common code to the
     // functions without having to do it in the calling code or in the
-    // derived classes code.  This also fulfills the hueristic that a
+    // derived classes code.  This also fulfills the heuristic that a
     // public interface should not contain pure virtual functions.
     template <typename T>
     int64_t get_field(const T *reg, const Field &field, void *data, size_t data_size) const
@@ -448,7 +448,7 @@ namespace Ioss {
       lowerCaseVariableNames = true_false;
     }
 
-    /* \brief Set the method used to split sidesets into homogenous blocks.
+    /* \brief Set the method used to split sidesets into homogeneous blocks.
      *
      *  \param[in] split_type The desired method.
      *

@@ -684,7 +684,7 @@ namespace Iofx {
       // on the database.  Output a warning message if there is
       // potentially corrupt data on the database...
 
-      // Check whether user or application wants to limite the times even further...
+      // Check whether user or application wants to limit the times even further...
       // One use case is that job is restarting at a time prior to what has been
       // written to the results file, so want to start appending after
       // restart time instead of at end time on database.
@@ -1310,7 +1310,7 @@ namespace Iofx {
   {
     // This function creates all sidesets (surfaces) for a
     // model.  Note that a sideset contains 1 or more sideblocks
-    // which are homogenous (same topology). In serial execution,
+    // which are homogeneous (same topology). In serial execution,
     // this is fairly straightforward since there are no null sets and
     // we have all the information we need. (...except see below for
     // surface evolution).
@@ -1367,7 +1367,7 @@ namespace Iofx {
 
       // Create sidesets for each entry in the fs_set... These are the
       // sidesets which were probably written by a previous run of the
-      // IO system and are already split into homogenous pieces...
+      // IO system and are already split into homogeneous pieces...
       {
         for (const auto &fs_name : fs_set) {
           auto side_set = new Ioss::SideSet(this, fs_name);
