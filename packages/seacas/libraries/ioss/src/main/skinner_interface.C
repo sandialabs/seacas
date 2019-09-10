@@ -63,8 +63,8 @@ void Skinner::Interface::enroll_options()
   options_.enroll("no_output", Ioss::GetLongOption::NoValue,
                   "Do not produce output file, just generate the faces", nullptr);
 
-  options_.enroll("ignore_face_ids", Ioss::GetLongOption::NoValue,
-                  "Ignore internal face ids and just use 1..num_face", nullptr);
+  options_.enroll("ignore_face_hash_ids", Ioss::GetLongOption::NoValue,
+                  "Don't use face ids from hash of node ids; just use 1..num_face", nullptr);
 
   options_.enroll("blocks", Ioss::GetLongOption::NoValue,
                   "Skin block-by-block instead of entire model boundary", nullptr);
@@ -181,7 +181,7 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
   netcdf4_       = options_.retrieve("netcdf4") != nullptr;
   shuffle        = options_.retrieve("shuffle") != nullptr;
   noOutput_      = options_.retrieve("no_output") != nullptr;
-  ignoreFaceIds_ = options_.retrieve("ignore_face_ids") != nullptr;
+  useFaceHashIds_= options_.retrieve("ignore_face_hash_ids") == nullptr;
   debug          = options_.retrieve("debug") != nullptr;
   statistics     = options_.retrieve("statistics") != nullptr;
   blocks_        = options_.retrieve("blocks") != nullptr;

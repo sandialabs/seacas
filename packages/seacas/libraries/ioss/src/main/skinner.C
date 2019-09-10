@@ -66,7 +66,7 @@
 namespace {
   template <typename INT> void skinner(Skinner::Interface &interface, INT /*dummy*/);
   std::string                  codename;
-  std::string                  version = "0.9";
+  std::string                  version = "0.99";
 } // namespace
 
 int main(int argc, char *argv[])
@@ -177,14 +177,12 @@ namespace {
     }
 
     // Iterate the boundary faces and determine which nodes are referenced...
-    size_t           node_count = region.get_property("node_count").get_int();
-    std::vector<int> ref_nodes(node_count);
+    size_t           my_node_count = region.get_property("node_count").get_int();
+    std::vector<int> ref_nodes(my_node_count);
     for (const auto &boundaries : boundary_faces) {
       for (const auto &face : boundaries.second) {
-        size_t face_node_count = 0;
         for (auto &gnode : face.connectivity_) {
           if (gnode > 0) {
-            face_node_count++;
             auto node       = region.get_database()->node_global_to_local(gnode, true) - 1;
             ref_nodes[node] = 1;
           }
@@ -203,8 +201,12 @@ namespace {
     std::vector<INT> ids;
     nb->get_field_data("ids", ids);
 
+    std::vector<int> owner;
+    nb->get_field_data("owning_processor", owner);
+
     std::vector<INT>    ref_ids(ref_count);
     std::vector<double> coord_out(3 * ref_count);
+    std::vector<int>    owner_out(ref_count);
 
     size_t j = 0;
     for (size_t i = 0; i < ref_nodes.size(); i++) {
@@ -212,10 +214,10 @@ namespace {
         coord_out[3 * j + 0] = coord_in[3 * i + 0];
         coord_out[3 * j + 1] = coord_in[3 * i + 1];
         coord_out[3 * j + 2] = coord_in[3 * i + 2];
+	owner_out[j]         = owner[i];
         ref_ids[j++]         = ids[i];
       }
     }
-
     // Create output file...
     if (interface.compression_level > 0 || interface.shuffle) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
@@ -257,6 +259,12 @@ namespace {
 
     Ioss::NodeBlock *nbo =
         new Ioss::NodeBlock(output_region.get_database(), "nodeblock_1", ref_count, 3);
+
+    // Count number of nodes owned by this processor (owner_out[i] == myProcessor);
+    int my_rank = region.get_database()->util().parallel_rank();
+    size_t owned = std::count_if(owner_out.begin(), owner_out.end(), [my_rank](int i){return i == my_rank;});
+    nbo->property_add(Ioss::Property("locally_owned_count", (INT)owned));
+
     output_region.add(nbo);
 
     // Output element blocks: will have a "skin" block for each input element block.
@@ -283,11 +291,17 @@ namespace {
 
     output_region.begin_mode(Ioss::STATE_MODEL);
     nbo->put_field_data("ids", ref_ids);
+    nbo->put_field_data("owning_processor", owner_out);
     nbo->put_field_data("mesh_model_coordinates", coord_out);
     Ioss::Utils::clear(coord_out);
+    Ioss::Utils::clear(coord_in);
+    Ioss::Utils::clear(owner_out);
+    Ioss::Utils::clear(owner);
+    Ioss::Utils::clear(ids);
+    Ioss::Utils::clear(ref_ids);
 
-    bool use_face_ids = !interface.ignoreFaceIds_;
-    INT  fid          = 0;
+    bool use_face_hash_ids = interface.useFaceHashIds_;
+    INT fid = 0;
     for (auto eb : ebs) {
       const std::string &name       = eb->name();
       auto &             boundary   = boundary_faces[name];
@@ -295,27 +309,27 @@ namespace {
       size_t             node_count = block->topology()->number_corner_nodes();
 
       std::vector<INT> conn;
-      std::vector<INT> ids;
+      std::vector<INT> elids;
       conn.reserve(node_count * boundary.size());
-      ids.reserve(boundary.size());
+      elids.reserve(boundary.size());
 
       for (auto &face : boundary) {
-        if (use_face_ids) {
-          fid = face.id_;
+        if (use_face_hash_ids) {
+          fid = face.hashId_;
           if (fid < 0) { // Due to size_t -> INT conversion
             fid = -fid;
           }
         }
         else {
-          fid++;
+	  fid = face.element[0];
         }
 
-        for (int i = 0; i < node_count; i++) {
+        for (size_t i = 0; i < node_count; i++) {
           conn.push_back(face.connectivity_[i]);
         }
-        ids.push_back(fid);
+        elids.push_back(fid);
       }
-      block->put_field_data("ids", ids);
+      block->put_field_data("ids", elids);
       block->put_field_data("connectivity", conn);
     }
     output_region.end_mode(Ioss::STATE_MODEL);
