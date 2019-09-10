@@ -70,7 +70,7 @@ namespace Skinner {
 
   public:
     std::string decomp_method;
-    std::string compose_output{"none"};
+    std::string compose_output{"default"};
     int         compression_level{0};
     bool        shuffle{false};
     bool        debug{false};
