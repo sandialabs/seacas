@@ -77,7 +77,7 @@ namespace Skinner {
     bool        statistics{false};
     bool        ints64Bit_{false};
     bool        netcdf4_{false};
-    bool        ignoreFaceIds_{false};
+    bool        useFaceHashIds_{true};
     bool        noOutput_{false};
     bool        blocks_{false};
   };
