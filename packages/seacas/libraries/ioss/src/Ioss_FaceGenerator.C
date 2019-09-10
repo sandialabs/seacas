@@ -89,12 +89,12 @@ namespace {
   }
 
   void create_face(Ioss::FaceUnorderedSet &faces, size_t id, std::array<size_t, 4> &conn,
-                   size_t element)
+                   size_t element, int local_face)
   {
     Ioss::Face face(id, conn);
     auto       face_iter = faces.insert(face);
 
-    (*(face_iter.first)).add_element(element);
+    (*(face_iter.first)).add_element(element * 10 + local_face);
   }
 
   template <typename INT>
@@ -138,7 +138,7 @@ namespace {
           conn[j]      = ids[gnode - 1];
           id += hash_ids[gnode - 1];
         }
-        create_face(faces, id, conn, elem_ids[elem]);
+        create_face(faces, id, conn, elem_ids[elem], face);
       }
     }
   }
@@ -254,7 +254,7 @@ namespace {
           for (auto &node : shared_nodes) {
             if (node.second == face_node_count) {
               size_t offset                   = potential_offset[node.first];
-              potential_faces[6 * offset + 0] = face.id_;
+              potential_faces[6 * offset + 0] = face.hashId_;
               potential_faces[6 * offset + 1] = face.connectivity_[0];
               potential_faces[6 * offset + 2] = face.connectivity_[1];
               potential_faces[6 * offset + 3] = face.connectivity_[2];
@@ -312,7 +312,7 @@ namespace {
         auto       face_iter = faces.find(face);
         if (face_iter != faces.end()) {
           // we have a match... This is a shared interior face
-          (*face_iter).add_element(element);
+          (*face_iter).add_element(element); // Already has face multiplied in.
 
           int proc = 0;
           for (size_t j = 0; j < check_count.size(); j++) {
@@ -321,7 +321,6 @@ namespace {
             }
             proc++;
           }
-          (*face_iter).sharedWithProc_ = proc;
         }
       }
     }
