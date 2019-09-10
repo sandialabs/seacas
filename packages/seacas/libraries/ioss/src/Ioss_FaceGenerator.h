@@ -116,12 +116,14 @@ namespace Ioss {
   public:
     explicit FaceGenerator(Ioss::Region &region);
 
-    template <typename INT> void generate_faces(INT /*dummy*/);
-    FaceUnorderedSet &           faces() { return faces_; }
+    template <typename INT> void generate_faces(INT /*dummy*/, bool block_by_block = false);
+    FaceUnorderedSet &           faces(const std::string &name = "ALL") { return faces_[name]; }
 
   private:
-    Ioss::Region &   region_;
-    FaceUnorderedSet faces_;
+    template <typename INT> void            generate_block_faces(INT /*dummy*/);
+    template <typename INT> void            generate_model_faces(INT /*dummy*/);
+    Ioss::Region &                          region_;
+    std::map<std::string, FaceUnorderedSet> faces_;
   };
 } // namespace Ioss
 

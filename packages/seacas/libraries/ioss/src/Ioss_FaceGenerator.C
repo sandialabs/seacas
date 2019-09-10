@@ -98,9 +98,9 @@ namespace {
   }
 
   template <typename INT>
-  void generate_block_faces(Ioss::ElementBlock *eb, Ioss::FaceUnorderedSet &faces,
-                            const std::vector<INT> &ids, const std::vector<size_t> &hash_ids,
-                            INT /*dummy*/)
+  void internal_generate_faces(Ioss::ElementBlock *eb, Ioss::FaceUnorderedSet &faces,
+                               const std::vector<INT> &ids, const std::vector<size_t> &hash_ids,
+                               INT /*dummy*/)
   {
     const Ioss::ElementTopology *topo = eb->topology();
 
@@ -332,10 +332,20 @@ namespace {
 namespace Ioss {
   FaceGenerator::FaceGenerator(Ioss::Region &region) : region_(region) {}
 
-  template void FaceGenerator::generate_faces(int);
-  template void FaceGenerator::generate_faces(int64_t);
+  template void FaceGenerator::generate_faces(int, bool);
+  template void FaceGenerator::generate_faces(int64_t, bool);
 
-  template <typename INT> void FaceGenerator::generate_faces(INT /*dummy*/)
+  template <typename INT> void FaceGenerator::generate_faces(INT /*dummy*/, bool block_by_block)
+  {
+    if (block_by_block) {
+      generate_block_faces(INT(0));
+    }
+    else {
+      generate_model_faces(INT(0));
+    }
+  }
+
+  template <typename INT> void FaceGenerator::generate_block_faces(INT /*dummy*/)
   {
     Ioss::NodeBlock *nb = region_.get_node_blocks()[0];
 
@@ -351,19 +361,21 @@ namespace Ioss {
     }
     auto endh = std::chrono::high_resolution_clock::now();
 
-    size_t numel = region_.get_property("element_count").get_int();
-
-    size_t reserve = 3.2 * numel;
-    faces_.reserve(reserve);
-    fmt::print("\nInitial Hash Reserve = {:n}\t{:n}\n", reserve, faces_.bucket_count());
-
     const Ioss::ElementBlockContainer &ebs = region_.get_element_blocks();
     for (auto eb : ebs) {
-      generate_block_faces(eb, faces_, ids, hash_ids, (INT)0);
+      const std::string &name    = eb->name();
+      size_t             numel   = eb->entity_count();
+      size_t             reserve = 3.2 * numel;
+      faces_[name].reserve(reserve);
+      internal_generate_faces(eb, faces_[name], ids, hash_ids, (INT)0);
     }
 
-    auto endf = std::chrono::high_resolution_clock::now();
-    resolve_parallel_faces(region_, faces_, hash_ids, (INT)0);
+    auto   endf       = std::chrono::high_resolution_clock::now();
+    size_t face_count = 0;
+    for (auto eb : ebs) {
+      resolve_parallel_faces(region_, faces_[eb->name()], hash_ids, (INT)0);
+      face_count += faces_[eb->name()].size();
+    }
     auto endp = std::chrono::high_resolution_clock::now();
 
     auto diffh = endh - starth;
@@ -373,7 +385,7 @@ namespace Ioss {
                std::chrono::duration<double, std::milli>(diffh).count(),
                hash_ids.size() / std::chrono::duration<double>(diffh).count(),
                std::chrono::duration<double, std::milli>(difff).count(),
-               faces_.size() / std::chrono::duration<double>(difff).count());
+               face_count / std::chrono::duration<double>(difff).count());
 #ifdef SEACAS_HAVE_MPI
     auto   diffp      = endp - endf;
     size_t proc_count = region_.get_database()->util().parallel_size();
@@ -381,7 +393,60 @@ namespace Ioss {
     if (proc_count > 1) {
       fmt::print("Parallel time:       \t{} ms\t{} faces/second.\n",
                  std::chrono::duration<double, std::milli>(diffp).count(),
-                 faces_.size() / std::chrono::duration<double>(diffp).count());
+                 face_count / std::chrono::duration<double>(diffp).count());
+    }
+#endif
+    fmt::print("Total time:          \t{} ms\n\n",
+               std::chrono::duration<double, std::milli>(endp - starth).count());
+  }
+
+  template <typename INT> void FaceGenerator::generate_model_faces(INT /*dummy*/)
+  {
+    Ioss::NodeBlock *nb = region_.get_node_blocks()[0];
+
+    std::vector<INT> ids;
+    nb->get_field_data("ids", ids);
+
+    // Convert ids into hashed-ids
+    auto                starth = std::chrono::high_resolution_clock::now();
+    std::vector<size_t> hash_ids;
+    hash_ids.reserve(ids.size());
+    for (auto id : ids) {
+      hash_ids.push_back(id_hash(id));
+    }
+    auto endh = std::chrono::high_resolution_clock::now();
+
+    auto & faces = faces_["ALL"];
+    size_t numel = region_.get_property("element_count").get_int();
+
+    size_t reserve = 3.2 * numel;
+    faces.reserve(reserve);
+    const Ioss::ElementBlockContainer &ebs = region_.get_element_blocks();
+    for (auto eb : ebs) {
+      internal_generate_faces(eb, faces, ids, hash_ids, (INT)0);
+    }
+
+    auto endf = std::chrono::high_resolution_clock::now();
+    resolve_parallel_faces(region_, faces, hash_ids, (INT)0);
+
+    auto endp = std::chrono::high_resolution_clock::now();
+
+    auto diffh = endh - starth;
+    auto difff = endf - endh;
+    fmt::print("Node ID hash time:   \t{} ms\t{} nodes/second\n"
+               "Face generation time:\t{} ms\t{} faces/second.\n",
+               std::chrono::duration<double, std::milli>(diffh).count(),
+               hash_ids.size() / std::chrono::duration<double>(diffh).count(),
+               std::chrono::duration<double, std::milli>(difff).count(),
+               faces.size() / std::chrono::duration<double>(difff).count());
+#ifdef SEACAS_HAVE_MPI
+    auto   diffp      = endp - endf;
+    size_t proc_count = region_.get_database()->util().parallel_size();
+
+    if (proc_count > 1) {
+      fmt::print("Parallel time:       \t{} ms\t{} faces/second.\n",
+                 std::chrono::duration<double, std::milli>(diffp).count(),
+                 faces.size() / std::chrono::duration<double>(diffp).count());
     }
 #endif
     fmt::print("Total time:          \t{} ms\n\n",
