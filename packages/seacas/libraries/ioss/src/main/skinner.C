@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
     }
   }
 
+  double begin = Ioss::Utils::timer();
   try {
     if (interface.ints_64_bit()) {
       skinner(interface, static_cast<int64_t>(0));
@@ -108,8 +109,14 @@ int main(int argc, char *argv[])
     fmt::print(stderr, "\n{}\n\nskinner terminated due to exception\n", e.what());
     exit(EXIT_FAILURE);
   }
+#ifdef SEACAS_HAVE_MPI
+  Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
+  parallel.barrier();
+#endif
+  double end = Ioss::Utils::timer();
 
   if (my_rank == 0) {
+    fmt::print("\n\tTotal Execution time = {} seconds\n", end - begin);
     fmt::print("\n{} execution successful.\n\n", codename);
   }
   return EXIT_SUCCESS;
@@ -141,7 +148,11 @@ namespace {
 
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");
-    region.output_summary(std::cerr, false);
+    int my_rank = region.get_database()->util().parallel_rank();
+
+    if (my_rank == 0) {
+      region.output_summary(std::cerr, false);
+    }
 
     // Generate the faces...
     Ioss::FaceGenerator face_generator(region);
@@ -190,6 +201,7 @@ namespace {
     std::vector<INT> ids;
     nb->get_field_data("ids", ids);
 
+
     std::vector<int> owner;
     nb->get_field_data("owning_processor", owner);
 
@@ -230,8 +242,7 @@ namespace {
         new Ioss::NodeBlock(output_region.get_database(), "nodeblock_1", ref_count, 3);
 
     // Count number of nodes owned by this processor (owner_out[i] == myProcessor);
-    int    my_rank = region.get_database()->util().parallel_rank();
-    size_t owned   = std::count_if(owner_out.begin(), owner_out.end(),
+    size_t owned = std::count_if(owner_out.begin(), owner_out.end(),
                                  [my_rank](int i) { return i == my_rank; });
     nbo->property_add(Ioss::Property("locally_owned_count", (INT)owned));
 
@@ -300,7 +311,9 @@ namespace {
       block->put_field_data("connectivity", conn);
     }
     output_region.end_mode(Ioss::STATE_MODEL);
-    output_region.output_summary(std::cerr, false);
+    if (my_rank == 0) {
+      output_region.output_summary(std::cerr, false);
+    }
   }
 
   Ioss::PropertyManager set_properties(Skinner::Interface &interface)
