@@ -352,13 +352,13 @@ namespace Ioss {
     nb->get_field_data("ids", ids);
 
     // Convert ids into hashed-ids
-    auto                starth = std::chrono::high_resolution_clock::now();
+    //    auto                starth = std::chrono::high_resolution_clock::now();
     std::vector<size_t> hash_ids;
     hash_ids.reserve(ids.size());
     for (auto id : ids) {
       hash_ids.push_back(id_hash(id));
     }
-    auto endh = std::chrono::high_resolution_clock::now();
+    //    auto endh = std::chrono::high_resolution_clock::now();
 
     const Ioss::ElementBlockContainer &ebs = region_.get_element_blocks();
     for (auto eb : ebs) {
@@ -369,14 +369,15 @@ namespace Ioss {
       internal_generate_faces(eb, faces_[name], ids, hash_ids, (INT)0);
     }
 
-    auto   endf       = std::chrono::high_resolution_clock::now();
+    //    auto   endf       = std::chrono::high_resolution_clock::now();
     size_t face_count = 0;
     for (auto eb : ebs) {
       resolve_parallel_faces(region_, faces_[eb->name()], hash_ids, (INT)0);
       face_count += faces_[eb->name()].size();
     }
-    auto endp = std::chrono::high_resolution_clock::now();
+    //    auto endp = std::chrono::high_resolution_clock::now();
 
+#if 0
     auto diffh = endh - starth;
     auto difff = endf - endh;
     fmt::print("Node ID hash time:   \t{} ms\t{} nodes/second\n"
@@ -397,6 +398,7 @@ namespace Ioss {
 #endif
     fmt::print("Total time:          \t{} ms\n\n",
                std::chrono::duration<double, std::milli>(endp - starth).count());
+#endif
   }
 
   template <typename INT> void FaceGenerator::generate_model_faces(INT /*dummy*/)
@@ -407,13 +409,13 @@ namespace Ioss {
     nb->get_field_data("ids", ids);
 
     // Convert ids into hashed-ids
-    auto                starth = std::chrono::high_resolution_clock::now();
+    //    auto                starth = std::chrono::high_resolution_clock::now();
     std::vector<size_t> hash_ids;
     hash_ids.reserve(ids.size());
     for (auto id : ids) {
       hash_ids.push_back(id_hash(id));
     }
-    auto endh = std::chrono::high_resolution_clock::now();
+    //    auto endh = std::chrono::high_resolution_clock::now();
 
     auto & faces = faces_["ALL"];
     size_t numel = region_.get_property("element_count").get_int();
@@ -425,11 +427,12 @@ namespace Ioss {
       internal_generate_faces(eb, faces, ids, hash_ids, (INT)0);
     }
 
-    auto endf = std::chrono::high_resolution_clock::now();
+    //    auto endf = std::chrono::high_resolution_clock::now();
     resolve_parallel_faces(region_, faces, hash_ids, (INT)0);
 
-    auto endp = std::chrono::high_resolution_clock::now();
+    //    auto endp = std::chrono::high_resolution_clock::now();
 
+#if 0
     auto diffh = endh - starth;
     auto difff = endf - endh;
     fmt::print("Node ID hash time:   \t{} ms\t{} nodes/second\n"
@@ -450,6 +453,7 @@ namespace Ioss {
 #endif
     fmt::print("Total time:          \t{} ms\n\n",
                std::chrono::duration<double, std::milli>(endp - starth).count());
+#endif
   }
 } // namespace Ioss
 
