@@ -35,6 +35,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <functional>
 #include <numeric>
 #include <string>
@@ -261,6 +262,13 @@ namespace {
       auto &             boundary  = boundary_faces[name];
       auto               face_topo = eb->topology()->face_type(0);
       std::string        topo      = "shell";
+      if (face_topo == nullptr) {
+	std::ostringstream errmsg;
+	fmt::print(errmsg, "ERROR: Block '{}' with topology '{}' does not have"
+		   " a unique face topology.\nThis is not supported at this time.\n",
+		   name, eb->topology()->name());
+	IOSS_ERROR(errmsg);
+      }
       if (face_topo->name() == "tri3") {
         topo = "trishell";
       }
