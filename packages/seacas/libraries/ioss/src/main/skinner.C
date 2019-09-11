@@ -116,24 +116,15 @@ int main(int argc, char *argv[])
 }
 
 namespace {
+  Ioss::PropertyManager set_properties(Skinner::Interface &interface);
+
   template <typename INT> void skinner(Skinner::Interface &interface, INT /*dummy*/)
   {
     std::string inpfile    = interface.input_filename();
     std::string input_type = interface.input_type();
 
-    Ioss::PropertyManager properties;
-    if (interface.ints_64_bit()) {
-      properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
-      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
-    }
+    Ioss::PropertyManager properties = set_properties(interface);
 
-    if (interface.debug) {
-      properties.add(Ioss::Property("LOGGING", 1));
-    }
-
-    if (!interface.decomp_method.empty()) {
-      properties.add(Ioss::Property("DECOMPOSITION_METHOD", interface.decomp_method));
-    }
     //========================================================================
     // INPUT ...
     // NOTE: The "READ_RESTART" mode ensures that the node and element ids will be mapped.
@@ -154,9 +145,7 @@ namespace {
 
     // Generate the faces...
     Ioss::FaceGenerator face_generator(region);
-    region.get_database()->util().barrier();
     face_generator.generate_faces((INT)0, true);
-    region.get_database()->util().barrier();
 
     if (interface.no_output()) {
       return;
@@ -214,33 +203,13 @@ namespace {
         coord_out[3 * j + 0] = coord_in[3 * i + 0];
         coord_out[3 * j + 1] = coord_in[3 * i + 1];
         coord_out[3 * j + 2] = coord_in[3 * i + 2];
-	owner_out[j]         = owner[i];
+        owner_out[j]         = owner[i];
         ref_ids[j++]         = ids[i];
       }
     }
-    // Create output file...
-    if (interface.compression_level > 0 || interface.shuffle) {
-      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
-      properties.add(Ioss::Property("COMPRESSION_LEVEL", interface.compression_level));
-      properties.add(Ioss::Property("COMPRESSION_SHUFFLE", interface.shuffle));
-    }
-
-    if (interface.compose_output == "default") {
-      properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
-      properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
-    }
-    else if (interface.compose_output == "external") {
-      properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
-      properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
-    }
-    else if (interface.compose_output != "none") {
-      properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
-      properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
-    }
-
-    if (interface.netcdf4_) {
-      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
-    }
+    Ioss::Utils::clear(coord_in);
+    Ioss::Utils::clear(ids);
+    Ioss::Utils::clear(owner);
 
     std::string       file = interface.output_filename();
     std::string       type = interface.output_type();
@@ -261,8 +230,9 @@ namespace {
         new Ioss::NodeBlock(output_region.get_database(), "nodeblock_1", ref_count, 3);
 
     // Count number of nodes owned by this processor (owner_out[i] == myProcessor);
-    int my_rank = region.get_database()->util().parallel_rank();
-    size_t owned = std::count_if(owner_out.begin(), owner_out.end(), [my_rank](int i){return i == my_rank;});
+    int    my_rank = region.get_database()->util().parallel_rank();
+    size_t owned   = std::count_if(owner_out.begin(), owner_out.end(),
+                                 [my_rank](int i) { return i == my_rank; });
     nbo->property_add(Ioss::Property("locally_owned_count", (INT)owned));
 
     output_region.add(nbo);
@@ -294,14 +264,11 @@ namespace {
     nbo->put_field_data("owning_processor", owner_out);
     nbo->put_field_data("mesh_model_coordinates", coord_out);
     Ioss::Utils::clear(coord_out);
-    Ioss::Utils::clear(coord_in);
     Ioss::Utils::clear(owner_out);
-    Ioss::Utils::clear(owner);
-    Ioss::Utils::clear(ids);
     Ioss::Utils::clear(ref_ids);
 
     bool use_face_hash_ids = interface.useFaceHashIds_;
-    INT fid = 0;
+    INT  fid               = 0;
     for (auto eb : ebs) {
       const std::string &name       = eb->name();
       auto &             boundary   = boundary_faces[name];
@@ -316,12 +283,12 @@ namespace {
       for (auto &face : boundary) {
         if (use_face_hash_ids) {
           fid = face.hashId_;
-          if (fid < 0) { // Due to size_t -> INT conversion
+          if (fid < 0) { // Due to (unsigned)size_t -> (signed)INT conversion
             fid = -fid;
           }
         }
         else {
-	  fid = face.element[0];
+          fid = face.element[0];
         }
 
         for (size_t i = 0; i < node_count; i++) {
@@ -334,5 +301,47 @@ namespace {
     }
     output_region.end_mode(Ioss::STATE_MODEL);
     output_region.output_summary(std::cerr, false);
+  }
+
+  Ioss::PropertyManager set_properties(Skinner::Interface &interface)
+  {
+    Ioss::PropertyManager properties;
+    if (interface.ints_64_bit()) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
+      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
+    }
+
+    if (interface.debug) {
+      properties.add(Ioss::Property("LOGGING", 1));
+    }
+
+    if (!interface.decomp_method.empty()) {
+      properties.add(Ioss::Property("DECOMPOSITION_METHOD", interface.decomp_method));
+    }
+
+    if (interface.compression_level > 0 || interface.shuffle) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+      properties.add(Ioss::Property("COMPRESSION_LEVEL", interface.compression_level));
+      properties.add(Ioss::Property("COMPRESSION_SHUFFLE", interface.shuffle));
+    }
+
+    if (interface.compose_output == "default") {
+      properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
+      properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
+    }
+    else if (interface.compose_output == "external") {
+      properties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
+      properties.add(Ioss::Property("COMPOSE_RESTART", "NO"));
+    }
+    else if (interface.compose_output != "none") {
+      properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
+      properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
+    }
+
+    if (interface.netcdf4_) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+    }
+
+    return properties;
   }
 } // namespace
