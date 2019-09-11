@@ -2,6 +2,7 @@
 """
 Test routine for SEACAS exodus.py module
 """
+import sys
 import exodus
 
 DATABASE_PATH = "baseline.g"
@@ -73,7 +74,8 @@ DB_PATH = "base_ioshell.g"
 EXO = exodus.exodus(DB_PATH)
 NEW_DATABASE_PATH = DB_PATH[:-2] + '_copy.e'
 EXO_COPY = EXO.copy(NEW_DATABASE_PATH, True)
-EXO_COPY.summarize()
+if sys.version_info[0] >= 3:
+    EXO_COPY.summarize()
 
 
 print("Exodus file has", EXO_COPY.num_blks(), "blocks")
