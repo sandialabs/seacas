@@ -129,7 +129,7 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a73a4f6a152499a25e6e4337d22dbc82d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSkinner_1_1Interface.html#a73a4f6a152499a25e6e4337d22dbc82d">decomp_method</a></td></tr>
 <tr class="separator:a73a4f6a152499a25e6e4337d22dbc82d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c5d87cff80b6b9e337aad4e18fccf40"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSkinner_1_1Interface.html#a7c5d87cff80b6b9e337aad4e18fccf40">compose_output</a> {&quot;none&quot;}</td></tr>
+<tr class="memitem:a7c5d87cff80b6b9e337aad4e18fccf40"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSkinner_1_1Interface.html#a7c5d87cff80b6b9e337aad4e18fccf40">compose_output</a> {&quot;default&quot;}</td></tr>
 <tr class="separator:a7c5d87cff80b6b9e337aad4e18fccf40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07976bcda95a56530c26aa47ca637d60"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSkinner_1_1Interface.html#a07976bcda95a56530c26aa47ca637d60">compression_level</a> {0}</td></tr>
 <tr class="separator:a07976bcda95a56530c26aa47ca637d60"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,8 +143,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a892078d766eba369a7d391b89a45e701"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4669edeeb7e5590d14519a90fd85b85e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSkinner_1_1Interface.html#a4669edeeb7e5590d14519a90fd85b85e">netcdf4_</a> {false}</td></tr>
 <tr class="separator:a4669edeeb7e5590d14519a90fd85b85e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c746c55a77b1c112a431a54f30a1209"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSkinner_1_1Interface.html#a0c746c55a77b1c112a431a54f30a1209">ignoreFaceIds_</a> {false}</td></tr>
-<tr class="separator:a0c746c55a77b1c112a431a54f30a1209"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71bc55127c99356817da5a5a92a77304"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSkinner_1_1Interface.html#a71bc55127c99356817da5a5a92a77304">useFaceHashIds_</a> {true}</td></tr>
+<tr class="separator:a71bc55127c99356817da5a5a92a77304"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acde492c353ff17a6f75a62ff0ad4f71d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSkinner_1_1Interface.html#acde492c353ff17a6f75a62ff0ad4f71d">noOutput_</a> {false}</td></tr>
 <tr class="separator:acde492c353ff17a6f75a62ff0ad4f71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a582b9a7c0df36d828913ec012dc83ab5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSkinner_1_1Interface.html#a582b9a7c0df36d828913ec012dc83ab5">blocks_</a> {false}</td></tr>
@@ -437,7 +437,7 @@ Private Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::string Skinner::Interface::compose_output {&quot;none&quot;}</td>
+          <td class="memname">std::string Skinner::Interface::compose_output {&quot;default&quot;}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -480,20 +480,6 @@ Private Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::string Skinner::Interface::decomp_method</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0c746c55a77b1c112a431a54f30a1209"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c746c55a77b1c112a431a54f30a1209">&#9670;&nbsp;</a></span>ignoreFaceIds_</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Skinner::Interface::ignoreFaceIds_ {false}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -674,6 +660,20 @@ Private Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">bool Skinner::Interface::statistics {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a71bc55127c99356817da5a5a92a77304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71bc55127c99356817da5a5a92a77304">&#9670;&nbsp;</a></span>useFaceHashIds_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Skinner::Interface::useFaceHashIds_ {true}</td>
         </tr>
       </table>
 </div><div class="memdoc">

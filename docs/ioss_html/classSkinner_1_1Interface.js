@@ -15,7 +15,6 @@ var classSkinner_1_1Interface =
     [ "compression_level", "classSkinner_1_1Interface.html#a07976bcda95a56530c26aa47ca637d60", null ],
     [ "debug", "classSkinner_1_1Interface.html#af862e3b598107f3714dbb62668f2688d", null ],
     [ "decomp_method", "classSkinner_1_1Interface.html#a73a4f6a152499a25e6e4337d22dbc82d", null ],
-    [ "ignoreFaceIds_", "classSkinner_1_1Interface.html#a0c746c55a77b1c112a431a54f30a1209", null ],
     [ "inFiletype_", "classSkinner_1_1Interface.html#af68458d40a1158e4117374fdb81fb158", null ],
     [ "inputFile_", "classSkinner_1_1Interface.html#a47e4ecf3cb2829e6e9da353b9c573757", null ],
     [ "ints64Bit_", "classSkinner_1_1Interface.html#a892078d766eba369a7d391b89a45e701", null ],
@@ -25,5 +24,6 @@ var classSkinner_1_1Interface =
     [ "outFiletype_", "classSkinner_1_1Interface.html#aed0de43fbbc9a03b1cd0db02054330ba", null ],
     [ "outputFile_", "classSkinner_1_1Interface.html#af668261a2661b6e3832698563f0e392d", null ],
     [ "shuffle", "classSkinner_1_1Interface.html#a4150a85afd8a53aadb7c754fe7d8cb9a", null ],
-    [ "statistics", "classSkinner_1_1Interface.html#af68075ea2a6f52e647998adf382ea3d6", null ]
+    [ "statistics", "classSkinner_1_1Interface.html#af68075ea2a6f52e647998adf382ea3d6", null ],
+    [ "useFaceHashIds_", "classSkinner_1_1Interface.html#a71bc55127c99356817da5a5a92a77304", null ]
 ];
