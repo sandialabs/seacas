@@ -3,7 +3,7 @@ from ctypes import *
 import os
 
 """
-exodus.py v 1.12 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.13 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 2 Version)
 
 Copyright(C) 2019 National Technology & Engineering Solutions of
@@ -437,7 +437,7 @@ class exodus:
     #
     # --------------------------------------------------------------------
 
-    def copy(self, fileName):
+    def copy(self, fileName, include_transient=False):
         """
         exo_copy = exo.copy(file_name)
 
@@ -458,7 +458,7 @@ class exodus:
         i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
         EXODUS_LIB.ex_set_int64_status(fileId, i64Status)
 
-        self.__copy_file(fileId)
+        self.__copy_file(fileId, include_transient)
         EXODUS_LIB.ex_close(self.fileId)
 
         return exodus(fileName, "a")
@@ -3581,8 +3581,12 @@ class exodus:
 
     # --------------------------------------------------------------------
 
-    def __copy_file(self, fileId):
-        EXODUS_LIB.ex_copy(self.fileId, fileId)
+    def __copy_file(self, fileId, include_transient=False):
+        if include_transient:
+            EXODUS_LIB.ex_copy(self.fileId, fileId)
+            EXODUS_LIB.ex_copy_transient(self.fileId, fileId)
+        else:
+            EXODUS_LIB.ex_copy(self.fileId, fileId)
 
     # --------------------------------------------------------------------
 
