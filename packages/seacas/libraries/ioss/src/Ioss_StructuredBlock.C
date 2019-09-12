@@ -126,6 +126,7 @@ namespace Ioss {
       : EntityBlock(io_database, my_name, Ioss::Hex8::name, get_cell_count(ni, nj, nk, index_dim)),
         m_ni(ni), m_nj(nj), m_nk(nk), m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
         m_niGlobal(glo_ni == 0 ? m_ni : glo_ni), m_njGlobal(glo_nj == 0 ? m_nj : glo_nj),
+        m_nkGlobal(glo_nk == 0 ? m_nk : glo_nk),
         m_nodeBlock(io_database, my_name + "_nodes", get_node_count(m_ni, m_nj, m_nk, index_dim),
                     index_dim)
   {
