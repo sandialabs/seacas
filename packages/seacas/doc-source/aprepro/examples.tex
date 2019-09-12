@@ -17,7 +17,7 @@ Example for Aprepro
 Point  1  \{x1  =  6.31952E+01\}  \{y1  =  7.57774E+01\}
 Point  2  \{x2  =  0.00000E+00\}  \{y2  =  -3.55000E+01\}
 Point  5  \{x5  =  0.00000E+00\}  \{y5  =  3.62966E+01\}
-\$  Wth  =  \{Wth  =  3.0\}      
+\$  Width  =  \{Width  =  3.0\}      
 \ldots Wall thickness
 \$  Rad5  =  \{Rad5  =  207.00\}
 \$  Rad2  =  \{Rad2  =  203.2236\}
@@ -29,9 +29,9 @@ Point  30  \{x20\}    \{y1\}
 Point  40  \{x1+Rad1*cosd(Th12)\}  \{y1+Rad1*sind(Th12)\}
 Point  50  0.00    \{y2  +  Rad2\}
 \$  Inner Wall (3  mm  thick) 
-\$  \{Rad5  -=  Wth\}        
-\$  \{Rad2  -=  Wth\}        
-\$  \{Rad1  -=  Wth\}        
+\$  \{Rad5  -=  Width\}        
+\$  \{Rad2  -=  Width\}        
+\$  \{Rad1  -=  Width\}        
 \ldots Rad1, Rad2, and Rad5 are reduced by the wall thickness
 Point  110  0.00    \{y5  -  Rad5\}
 Point  120  \{x20  =  x1+Rad1\}    \{y5-sqrt(Rad5\^{}2-x20\^{}2)\}

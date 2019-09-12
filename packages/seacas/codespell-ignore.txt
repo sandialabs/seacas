@@ -31,4 +31,7 @@ alog
 circularly
 iff
 uint
-
+amin
+noe
+tim
+wan
