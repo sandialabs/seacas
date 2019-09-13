@@ -32,6 +32,7 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_Utils.h>
 #include <cstddef>
 #include <string>
 #include <sys/select.h>
@@ -114,7 +115,7 @@ namespace Ioss {
     if (my_rank == 0 && sum < my_size) {
       std::vector<size_t> procs;
       for (int i = 0; i < my_size; i++) {
-        if (results[i] == 0) {
+        if (result[i] == 0) {
           procs.push_back(i);
         }
       }
