@@ -3143,13 +3143,10 @@ namespace {
     osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
     if (GetVersionEx(&osvi)) {
+      DWORD             build = osvi.dwBuildNumber & 0xFFFF;
       std::stringstream str;
-      str << " ";
-      str << osvi.dwMajorVersion << "." << osvi.dwMinorVersion;
-      str << " ";
-      str << osvi.szCSDVersion;
-      DWORD build = osvi.dwBuildNumber & 0xFFFF;
-      str << " (Build " << build << ")";
+      fmt::print(str, " {}.{} {} (Build {})", osvi.dwMajorVersion, osvi.dwMinorVersion,
+                 osvi.szCSDVersion, build);
       os += str.str();
     }
     info += os;
