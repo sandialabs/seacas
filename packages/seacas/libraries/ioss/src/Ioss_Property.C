@@ -236,10 +236,7 @@ void *Ioss::Property::get_pointer() const
 
 bool Ioss::Property::get_value(int64_t *value) const
 {
-  bool valid_request = false;
-  if (type_ == INTEGER) {
-    valid_request = true;
-  }
+  bool valid_request = type_ == INTEGER ? true : false;
   if (is_explicit()) {
     *value = data_.ival;
   }
@@ -253,10 +250,7 @@ bool Ioss::Property::get_value(int64_t *value) const
 
 bool Ioss::Property::get_value(double *value) const
 {
-  bool valid_request = false;
-  if (type_ == REAL) {
-    valid_request = true;
-  }
+  bool valid_request = type_ == REAL ? true : false;
   if (is_explicit()) {
     *value = data_.rval;
   }
@@ -270,10 +264,7 @@ bool Ioss::Property::get_value(double *value) const
 
 bool Ioss::Property::get_value(std::string *value) const
 {
-  bool valid_request = false;
-  if (type_ == STRING) {
-    valid_request = true;
-  }
+  bool valid_request = type_ == STRING ? true : false;
   if (is_explicit()) {
     *value = *(data_.sval);
   }
@@ -287,10 +278,7 @@ bool Ioss::Property::get_value(std::string *value) const
 
 bool Ioss::Property::get_value(void *&value) const
 {
-  bool valid_request = false;
-  if (type_ == POINTER) {
-    valid_request = true;
-  }
+  bool valid_request = type_ == POINTER ? true : false;
   if (is_explicit()) {
     value = data_.pval;
   }
