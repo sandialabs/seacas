@@ -990,15 +990,13 @@ namespace Iopx {
         if (block.num_faces_per_entry > 0 && rank_offset < 1) {
           std::string storage = "Real["+std::to_string(block.num_faces_per_entry)+"]";
           io_block->field_add(Ioss::Field("connectivity_face",
-                                          io_block->field_int_type(), storage, Ioss::Field::MESH,
-                                          block.num_entry));
+                                          io_block->field_int_type(), storage, Ioss::Field::MESH));
         }
         // X -> Edge?
         if (block.num_edges_per_entry > 0 && rank_offset < 2) {
           std::string storage = "Real["+std::to_string(block.num_edges_per_entry)+"]";
           io_block->field_add(Ioss::Field("connectivity_edge",
-                                          io_block->field_int_type(), storage, Ioss::Field::MESH,
-                                          block.num_entry));
+                                          io_block->field_int_type(), storage, Ioss::Field::MESH));
         }
 #endif
 
@@ -1488,12 +1486,12 @@ namespace Iopx {
               storage += std::to_string(side_topo->number_nodes());
               storage += "]";
               side_block->field_add(Ioss::Field("distribution_factors", Ioss::Field::REAL, storage,
-                                                Ioss::Field::MESH, my_side_count));
+                                                Ioss::Field::MESH));
             }
 
             if (side_set_name == "universal_sideset") {
               side_block->field_add(Ioss::Field("side_ids", side_block->field_int_type(), "scalar",
-                                                Ioss::Field::MESH, my_side_count));
+                                                Ioss::Field::MESH));
             }
 
             int num_attr = 0;
