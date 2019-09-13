@@ -256,11 +256,7 @@ namespace Iofx {
           }
         }
         if (bad_count != nullptr) {
-          for (int i = 0; i < util().parallel_size(); i++) {
-            if (status[i] < 0) {
-              (*bad_count)++;
-            }
-          }
+          *bad_count = std::count_if(status.begin(), status.end(), [](int i) { return i < 0; });
         }
         if (abort_if_error) {
           std::ostringstream errmsg;

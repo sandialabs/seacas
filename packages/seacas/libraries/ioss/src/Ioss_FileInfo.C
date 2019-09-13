@@ -111,19 +111,14 @@ namespace Ioss {
     MPI_Allgather(&my_val, 1, MPI_INT, &result[0], 1, MPI_INT, communicator);
 
     int sum = std::accumulate(result.begin(), result.end(), 0);
-    if (my_rank == 0 && sum > 0 && sum < my_size) {
-      bool               first = true;
-      std::ostringstream errmsg;
+    if (my_rank == 0 && sum < my_size) {
+      std::vector<size_t> procs;
       for (int i = 0; i < my_size; i++) {
-        if (result[i] == 0) {
-          if (!first) {
-            errmsg << ", ";
-          }
-          errmsg << i;
-          first = false;
+        if (results[i] == 0) {
+          procs.push_back(i);
         }
       }
-      where = errmsg.str();
+      where = Ioss::Utils::format_id_list(procs, "--");
     }
     return sum;
 #endif

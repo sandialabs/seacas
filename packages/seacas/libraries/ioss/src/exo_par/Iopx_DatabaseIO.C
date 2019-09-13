@@ -283,15 +283,17 @@ namespace Iopx {
 
         std::string open_create = is_input() ? "open input" : "create output";
         if (write_message || error_msg != nullptr) {
-          // See which processors could not open/create the file...
-          std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: Unable to {} exodus database file '{}' on processors:\n\t",
-                     open_create, get_filename());
+          std::vector<size_t> procs;
           for (int i = 0; i < util().parallel_size(); i++) {
             if (status[i] < 0) {
-              fmt::print(errmsg, "{}, ", i);
+              procs.push_back(i);
             }
           }
+          std::string error_list = Ioss::Utils::format_id_list(procs, "--");
+          // See which processors could not open/create the file...
+          std::ostringstream errmsg;
+          fmt::print(errmsg, "ERROR: Unable to {} exodus database file '{}' on processors:\n\t{}",
+                     open_create, get_filename(), error_list);
           if (error_msg != nullptr) {
             *error_msg = errmsg.str();
           }
@@ -301,11 +303,7 @@ namespace Iopx {
           }
         }
         if (bad_count != nullptr) {
-          for (int i = 0; i < util().parallel_size(); i++) {
-            if (status[i] < 0) {
-              (*bad_count)++;
-            }
-          }
+          *bad_count = std::count_if(status.begin(), status.end(), [](int i) { return i < 0; });
         }
         if (abort_if_error) {
           std::ostringstream errmsg;
