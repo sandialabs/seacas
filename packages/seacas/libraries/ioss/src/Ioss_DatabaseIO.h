@@ -612,7 +612,7 @@ namespace Ioss {
     /*!
      * `bbName` is a temporary swizzled name which resides inside Burst Buffer namespace.
      * This is a private trivial mapped name vs original `DBFilename` (which resides in
-     * permament storage backed by parallel filesystem.
+     * permanent storage backed by parallel filesystem.
      * `dwPath` is global BB mountpoint for current job with requested capacity via SLURM \c \#DW
      * directive. `usingDataWarp`  -- a boolean, for convenience of use so that we don't have to do
      * getenv() calls to see if BB present.
