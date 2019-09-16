@@ -105,8 +105,7 @@ $(document).ready(function(){initNavTree('classIoss_1_1Property.html','');});
 <div class="dynheader">
 Collaboration diagram for Ioss::Property:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1Property__coll__graph.svg" width="100%" height="552"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1Property__coll__graph.svg" width="100%" height="552"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -145,7 +144,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a198cdf7d1b4b5ff234bd21a74099f88d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a STRING type property.  <a href="classIoss_1_1Property.html#a198cdf7d1b4b5ff234bd21a74099f88d">More...</a><br /></td></tr>
 <tr class="separator:a198cdf7d1b4b5ff234bd21a74099f88d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a294abc7316913acdc66c999267be0760"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a294abc7316913acdc66c999267be0760">Property</a> (std::string name, const char *value)</td></tr>
-<tr class="memdesc:a294abc7316913acdc66c999267be0760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a STRING type property.  <a href="classIoss_1_1Property.html#a294abc7316913acdc66c999267be0760">More...</a><br /></td></tr>
+<tr class="memdesc:a294abc7316913acdc66c999267be0760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a STRING type property from const char* argument.  <a href="classIoss_1_1Property.html#a294abc7316913acdc66c999267be0760">More...</a><br /></td></tr>
 <tr class="separator:a294abc7316913acdc66c999267be0760"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a141ea28c832794b6803482328db104e0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a141ea28c832794b6803482328db104e0">Property</a> (std::string name, void *value)</td></tr>
 <tr class="memdesc:a141ea28c832794b6803482328db104e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a POINTER type property.  <a href="classIoss_1_1Property.html#a141ea28c832794b6803482328db104e0">More...</a><br /></td></tr>
@@ -429,7 +428,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Create a STRING type property. </p>
+<p>Create a STRING type property from const char* argument. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>The property name. </td></tr>
@@ -975,6 +974,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>True if property is calculated rather than stored. False if property is stored in 'data_' </p>
 
 </div>
 </div>
