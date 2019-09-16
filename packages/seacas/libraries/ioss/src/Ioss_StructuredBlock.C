@@ -130,7 +130,7 @@ namespace Ioss {
         m_nodeBlock(io_database, my_name + "_nodes", get_node_count(m_ni, m_nj, m_nk, index_dim),
                     index_dim)
   {
-    m_nodeBlock.property_add(Property("IOSS_INTERNAL_CONTAINED_IN", this, false));
+    m_nodeBlock.property_add(Property("IOSS_INTERNAL_CONTAINED_IN", this));
 
     SMART_ASSERT(index_dim == 1 || index_dim == 2 || index_dim == 3)(index_dim);
 
