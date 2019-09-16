@@ -116,12 +116,12 @@ namespace Ioss {
     bool get_value(std::string *value) const;
     bool get_value(void *&value) const;
 
-    // True if property is calculated rather than stored.
-    // False if property is stored in 'data_'
+    /// True if property is calculated rather than stored.
+    /// False if property is stored in 'data_'
     bool isImplicit_{false};
 
-    // The actual value of the property.  Use 'type_' and 'storage_' to
-    // discriminate the actual type of the property.
+    /// The actual value of the property.  Use 'type_' and 'storage_' to
+    /// discriminate the actual type of the property.
     union Data {
       std::string *         sval;
       void *                pval;

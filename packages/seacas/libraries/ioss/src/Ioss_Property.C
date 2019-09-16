@@ -106,7 +106,7 @@ Ioss::Property::Property(std::string name, const std::string &value)
   data_.sval = new std::string(value);
 }
 
-/** \brief Create a STRING type property.
+/** \brief Create a STRING type property from const char* argument.
  *
  *  \param[in] name The property name.
  *  \param[in] value The property value.
