@@ -453,7 +453,7 @@ void NemSpread<T, INT>::process_lb_data(INT *Integer_Vector, int indx)
                  globals.Num_External_Nodes[indx];
   itotal_elems = globals.Num_Internal_Elems[indx] + globals.Num_Border_Elems[indx];
 
-  /* Allocate Permament Arrays on the current processor */
+  /* Allocate Permanent Arrays on the current processor */
   globals.GNodes[indx] = (INT *)array_alloc(__FILE__, __LINE__, 1,
                                             itotal_nodes + 2 * itotal_elems +
                                                 2 * (globals.N_Comm_Map[indx]->node_cnt) +

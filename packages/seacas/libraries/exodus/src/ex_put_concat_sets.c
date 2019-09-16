@@ -363,7 +363,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
           goto error_ret; /* exit define mode and return */
         }
 
-        /* resuse dimid from entry lists */
+        /* reuse dimid from entry lists */
       }
       else {
         if ((status = nc_def_dim(exoid, numdfptr, num_df, &dimid)) != NC_NOERR) {
