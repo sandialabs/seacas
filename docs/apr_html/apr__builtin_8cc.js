@@ -1,8 +1,6 @@
 var apr__builtin_8cc =
 [
     [ "d2r", "apr__builtin_8cc.html#aaeeb6e3399ffad67be7d1a4263077ace", null ],
-    [ "HYPOT", "apr__builtin_8cc.html#a764ddb925da0921f024fadb4c12d7382", null ],
-    [ "LOG1P", "apr__builtin_8cc.html#a23c96cc004e9b2fd339bdaf960cfb1f4", null ],
     [ "max", "apr__builtin_8cc.html#ac39d9cef6a5e030ba8d9e11121054268", null ],
     [ "min", "apr__builtin_8cc.html#abb702d8b501669a23aa0ab3b281b9384", null ],
     [ "PI", "apr__builtin_8cc.html#a598a3330b3c21701223ee0ca14316eca", null ],
@@ -23,6 +21,7 @@ var apr__builtin_8cc =
     [ "do_atand", "apr__builtin_8cc.html#a1ff18aed240463b04283d61de3485304", null ],
     [ "do_atanh", "apr__builtin_8cc.html#acc4bad484a49e2da5ee17fb6f1e1720c", null ],
     [ "do_case", "apr__builtin_8cc.html#af2d3232f7987dc0cf240c15eba43d97a", null ],
+    [ "do_cbrt", "apr__builtin_8cc.html#a36d0526a5e532db1b0390b24dd54d2ce", null ],
     [ "do_ceil", "apr__builtin_8cc.html#aac9098c9b30cb685803c94f21c7a0913", null ],
     [ "do_cols", "apr__builtin_8cc.html#a99bf5187e84623fd8c823e1203277fd5", null ],
     [ "do_cos", "apr__builtin_8cc.html#ac7e2e12b48b3dca6d1807156b5765b30", null ],
@@ -42,6 +41,8 @@ var apr__builtin_8cc =
     [ "do_dumpvar", "apr__builtin_8cc.html#a6384c97695216021b7495e9a6401c123", null ],
     [ "do_dumpvar1", "apr__builtin_8cc.html#a1a0216226b61a207cece5317065d1d62", null ],
     [ "do_elseif", "apr__builtin_8cc.html#adeb0a281429d350bb91e264298dad23d", null ],
+    [ "do_erf", "apr__builtin_8cc.html#acb8df463df07cf68c84ba7a704a8889e", null ],
+    [ "do_erfc", "apr__builtin_8cc.html#a6cb6e1212a28dbbe78b45ba9527c468c", null ],
     [ "do_error", "apr__builtin_8cc.html#a1ed5c0f0d644d10b8f417069bc4de540", null ],
     [ "do_execute", "apr__builtin_8cc.html#aee42615c86d66273c4925ed8b0818b94", null ],
     [ "do_exp", "apr__builtin_8cc.html#a74fbb678108b6c6fc6ef2f777db65c09", null ],
@@ -81,6 +82,7 @@ var apr__builtin_8cc =
     [ "do_output", "apr__builtin_8cc.html#a1a03e4a25e3e4700958c4d696791c193", null ],
     [ "do_polarX", "apr__builtin_8cc.html#a1e4c75a82d86a0e62327b0254308587f", null ],
     [ "do_polarY", "apr__builtin_8cc.html#a6cf65e69f2f3f4b5120db7b984887339", null ],
+    [ "do_pow", "apr__builtin_8cc.html#a5fbf8f01752cf2e1aa1ed94eaee03f9b", null ],
     [ "do_print_array", "apr__builtin_8cc.html#a94d7479298c988a04768cbb5eb540847", null ],
     [ "do_r2d", "apr__builtin_8cc.html#a3bc26e885a4acc02e6d70895ef41e21a", null ],
     [ "do_rand", "apr__builtin_8cc.html#a3d4fb2ac982efa7277cfe3dd35dbd0dc", null ],
@@ -103,6 +105,7 @@ var apr__builtin_8cc =
     [ "do_tan", "apr__builtin_8cc.html#a7cb8552f6ee9bdd973ea038dec05d9c3", null ],
     [ "do_tand", "apr__builtin_8cc.html#ad88c54937c59d2f4d681b2850a15a075", null ],
     [ "do_tanh", "apr__builtin_8cc.html#ad7343276658a57dea2a48a8ae846a028", null ],
+    [ "do_tgamma", "apr__builtin_8cc.html#aaf9fea7aacde738df8efeab80dc4197c", null ],
     [ "do_time", "apr__builtin_8cc.html#a17e37c1a676d3ace04ccfe80f9af5c9a", null ],
     [ "do_tolower", "apr__builtin_8cc.html#a6ad099176b51e40443555d9a8e3ab433", null ],
     [ "do_tostring", "apr__builtin_8cc.html#ad85eb83a2e5f4b04c966058ae5c97802", null ],
@@ -112,7 +115,6 @@ var apr__builtin_8cc =
     [ "get_tokenized_strings", "apr__builtin_8cc.html#acf907345185955f17b5cdbf928cde507", null ],
     [ "reset_error", "apr__builtin_8cc.html#a97223934f027610caeba5b309178b354", null ],
     [ "rng", "apr__builtin_8cc.html#afba54e4ae2d3a2369ed3086a983916fa", null ],
-    [ "cof", "apr__builtin_8cc.html#acf9da46826e72061729429207cd9c4bd", null ],
     [ "rd", "apr__builtin_8cc.html#a210b8303fb82ba1cd00e1e45de8ce01b", null ],
     [ "tokenized_strings", "apr__builtin_8cc.html#a8af8d106c8603c278d56239b3a9ad0e1", null ]
 ];
