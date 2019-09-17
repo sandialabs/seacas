@@ -157,6 +157,7 @@ ELSE()
   )
 ENDIF()
 ENDIF()
+ENDIF()
 
 IF (TPL_ENABLE_Pamgen OR Trilinos_ENABLE_Pamgen)
 # This test makes sure that the adjacency information (what element blocks are adjacent to what other
