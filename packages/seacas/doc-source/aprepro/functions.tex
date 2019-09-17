@@ -33,6 +33,7 @@ atan2(x,y)          &  Inverse tangent of $x/y$, returns radians.\\
 atan2d(x,y)         &  Inverse tangent of $x/y$, returns degrees.\\
 atand(x)            &  Inverse tangent of $x$, returns degrees.\\
 atanh(x)            &  Inverse hyperbolic tangent of $x$.\\
+cbrt(x)             &  Cube root of $x$. $\sqrt[3]{x}$. \\
 ceil(x)             &  Smallest integer not less than $x$.\\
 cos(x)              &  Cosine of $x$, with $x$ in radians\\
 cosd(x)             &  Cosine of $x$, with $x$ in degrees\\
@@ -40,6 +41,8 @@ cosh(x)             &  Hyperbolic cosine of $x$.\\
 d2r(x)              &  Degrees to radians.\\
 dim(x,y)            &  $x - \min(x,y)$\\
 dist(x1,y1, x2,y2)  &  $\sqrt{(x_1-x_2)^2 + (y_1-y_2)^2}$ \\
+erf(x)              &  Error Function $\mathrm{erf}(x)=\frac{2}{\sqrt{\pi}}\int_{0}^{x}e^{-t^{2}}\, dt$ \\
+erfc(x)             &  Complementary Error Function $1-\mathrm{erf}(x)$ \\
 exp(x)              &  Exponential  $e^x$ \\
 find\_word(word,svar,del)&  Find 1-based index of \var{word} in \var{svar}. Words are separated by one or more of the characters in the string variable del. Returns 0 if \var{word} is not found.\\
 floor(x)            &  Largest integer not greater than $x$.\\
@@ -58,6 +61,7 @@ min(x,y)            &  Minimum of $x$ and $y$. \\
 nint(x)             &  Rounds $x$ to nearest integer. $<0.5$ down; $>=0.5$ up.\\
 polarX(r,a)         &  $r * \cos(a)$, $a$ is in degrees \\
 polarY(r,a)         &  $r * \sin(a)$, $a$ is in degrees \\
+pow(x,y)            &  Power $x^y$. \\
 r2d(x)              &  Radians to degrees. \\
 rand(xl,xh)         &  Random value between $xl$ and $xh$; uniformly distributed. \\
 rand\_lognormal(m,s)&  Random value with lognormal distribution with mean $m$ and stddev $s$.\\
@@ -74,6 +78,7 @@ strtod(svar)        &  Returns a double-precision floating-point number equal to
 tan(x)              &  Tangent of $x$, with $x$ in radians. \\
 tand(x)             &  Tangent of $x$, with $x$ in radians. \\
 tanh(x)             &  Hyperbolic tangent of $x$. \\
+tgamma(x)           &  Gamma Function $\Gamma(x) = \int_0^\infty t^{x-1}e^{-t}dt$.\\
 Vangle(x1,y1,x2,y2) &  Angle (radians) between vector $x_1\hat{i}+y_1\hat{j}$ and $x_2\hat{i}+y_2\hat{j}$.\\
 Vangled(x1,y1,x2,y2)&  Angle (degrees) between vector $x_1\hat{i}+y_1\hat{j}$ and $x_2\hat{i}+y_2\hat{j}$.\\
 word\_count(svar,del)&  Number of words in \var{svar}. Words are separated by one or more of the characters in the string variable del.\\
