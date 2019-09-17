@@ -139,8 +139,6 @@ namespace Iopg {
 
   DatabaseIO::~DatabaseIO() { Delete_Pamgen_Mesh(); }
 
-  const std::string &get_format() const override { return "Pamgen"; }
-
   std::string massagePamgenInputString(std::string sinput, int &dimension)
   {
     std::string        mesh_description;
