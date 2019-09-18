@@ -105,7 +105,7 @@ $(document).ready(function(){initNavTree('robin__growth__policy_8h.html','');});
 <code>#include &lt;limits&gt;</code><br />
 <code>#include &lt;ratio&gt;</code><br />
 <code>#include &lt;stdexcept&gt;</code><br />
-<code>#include &lt;cstdio&gt;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for robin_growth_policy.h:</div>
 <div class="dyncontent">
@@ -114,7 +114,7 @@ Include dependency graph for robin_growth_policy.h:</div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="robin__growth__policy_8h__dep__incl.svg" width="410" height="343"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="robin__growth__policy_8h__dep__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="robin__growth__policy_8h_source.html">Go to the source code of this file.</a></p>
@@ -141,6 +141,8 @@ Namespaces</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:abf43b6f27a3bf5120e9d61e5f5d0d0ee"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="robin__growth__policy_8h.html#abf43b6f27a3bf5120e9d61e5f5d0d0ee">tsl_rh_assert</a>(expr)&#160;&#160;&#160;(static_cast&lt;void&gt;(0))</td></tr>
 <tr class="separator:abf43b6f27a3bf5120e9d61e5f5d0d0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa352528d449223f8086405d2ce4e8f9b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="robin__growth__policy_8h.html#aa352528d449223f8086405d2ce4e8f9b">TSL_RH_NO_EXCEPTIONS</a></td></tr>
+<tr class="separator:aa352528d449223f8086405d2ce4e8f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6763b674ae3f1893aa7524c5c8a8e9b2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="robin__growth__policy_8h.html#a6763b674ae3f1893aa7524c5c8a8e9b2">TSL_RH_THROW_OR_TERMINATE</a>(ex,  msg)</td></tr>
 <tr class="separator:a6763b674ae3f1893aa7524c5c8a8e9b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15c2bc0fd0ed52be3b0bc91b814b69cb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="robin__growth__policy_8h.html#a15c2bc0fd0ed52be3b0bc91b814b69cb">TSL_RH_LIKELY</a>(exp)&#160;&#160;&#160;(exp)</td></tr>
@@ -201,6 +203,21 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="aa352528d449223f8086405d2ce4e8f9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa352528d449223f8086405d2ce4e8f9b">&#9670;&nbsp;</a></span>TSL_RH_NO_EXCEPTIONS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TSL_RH_NO_EXCEPTIONS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>If exceptions are enabled, throw the exception passed in parameter, otherwise call std::terminate. </p>
+
+</div>
+</div>
 <a id="a6763b674ae3f1893aa7524c5c8a8e9b2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6763b674ae3f1893aa7524c5c8a8e9b2">&#9670;&nbsp;</a></span>TSL_RH_THROW_OR_TERMINATE</h2>
 
@@ -227,11 +244,10 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                                             \</div>
-<div class="line">    std::fprintf(stderr, <a class="code" href="namespaceIodw_1_1Utils.html#a1a405c51258e6b76149f43ac1ae8d613">msg</a>);                                                                     \</div>
+<div class="line">    std::cerr &lt;&lt; <a class="code" href="namespaceIodw_1_1Utils.html#a1a405c51258e6b76149f43ac1ae8d613">msg</a> &lt;&lt; std::endl;                                                                 \</div>
 <div class="line">    std::terminate();                                                                              \</div>
 <div class="line">  } <span class="keywordflow">while</span> (0)</div>
-</div><!-- fragment --><p>If exceptions are enabled, throw the exception passed in parameter, otherwise call std::terminate. </p>
-
+</div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->

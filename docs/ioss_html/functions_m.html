@@ -125,11 +125,12 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 : <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a0c2d398a267dfa4be524db949ebb70e6">tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 </li>
 <li>m_buckets
-: <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a8057408f1e0a37b2803649b31bfede15">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
+: <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a1cde291d413c464c9e6cb322ebded978">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
 , <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a9b0359da0bdc5033a40735fa0184b1fa">tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 </li>
 <li>m_buckets_data
-: <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#afd6e881df3b5d2f6f19f23b41bc0559f">tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
+: <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a0cc2f6918471984a009c3b498a1098b5">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
+, <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#afd6e881df3b5d2f6f19f23b41bc0559f">tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 </li>
 <li>m_buckets_end_iterator
 : <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html#af17b363e045897521744980dba19ac43">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;::hopscotch_iterator&lt; IsConst &gt;</a>
@@ -252,9 +253,6 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 <li>m_filename
 : <a class="el" href="classIoss_1_1Map.html#a6d4e799d4c1c50944d325a41b1a8e0f8">Ioss::Map</a>
 </li>
-<li>m_first_or_empty_bucket
-: <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a0210c11fc981502287be8d78afe04fdf">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
-</li>
 <li>m_flushInterval
 : <a class="el" href="classIocgns_1_1DatabaseIO.html#a59a4fefbdbfbbb8d275f3fe02b7feae7">Iocgns::DatabaseIO</a>
 , <a class="el" href="classIocgns_1_1ParallelDatabaseIO.html#addbfcc8189c8e0ab7807d64db31eebfd">Iocgns::ParallelDatabaseIO</a>
@@ -293,7 +291,9 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 , <a class="el" href="classtsl_1_1detail__robin__hash_1_1bucket__entry__hash_3_01true_01_4.html#aaf41fa2f53fe2f1dba7749957da80a42">tsl::detail_robin_hash::bucket_entry_hash&lt; true &gt;</a>
 </li>
 <li>m_ht
-: <a class="el" href="classtsl_1_1hopscotch__map.html#a1c018c7720fbeec1a31ffb531000d410">tsl::hopscotch_map&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+: <a class="el" href="classtsl_1_1bhopscotch__map.html#a62e185c160404720d3abcd857826318f">tsl::bhopscotch_map&lt; Key, T, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1bhopscotch__set.html#a251f7c9cf2c158e26c4a81886cd8be22">tsl::bhopscotch_set&lt; Key, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1hopscotch__map.html#a1c018c7720fbeec1a31ffb531000d410">tsl::hopscotch_map&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1hopscotch__set.html#a4aad0e41cfafde4e1e904ee96712ae1b">tsl::hopscotch_set&lt; Key, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1robin__map.html#af7f6782109f699cbe1468719e5ce73c5">tsl::robin_map&lt; Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1robin__set.html#a0fcbd0ff35c5217179ae3612bdab5fde">tsl::robin_set&lt; Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
@@ -584,7 +584,7 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 : <a class="el" href="classIocgns_1_1DecompositionDataBase.html#ac47eda52cb72720de0be48083e1e7b9c">Iocgns::DecompositionDataBase</a>
 </li>
 <li>m_zoneSharedMap
-: <a class="el" href="classIocgns_1_1DecompositionDataBase.html#aec52de7b6490602649899e103517fb3f">Iocgns::DecompositionDataBase</a>
+: <a class="el" href="classIocgns_1_1DecompositionDataBase.html#aa5b42eef68759b474ee43b068d9ecc8d">Iocgns::DecompositionDataBase</a>
 </li>
 <li>MAGNITUDE
 : <a class="el" href="classIotr_1_1Tensor.html#a79c78784d81275843c4c5b4927caf39ba82b7d88b01ec16a7f3ef0cb87bd288bb">Iotr::Tensor</a>
@@ -628,14 +628,11 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 <li>MandatoryValue
 : <a class="el" href="classIoss_1_1GetLongOption.html#a700d115b1f5dfc0a52f00060ab324246a122cc0b212f449c938efcfca33d45dfe">Ioss::GetLongOption</a>
 </li>
+<li>Map()
+: <a class="el" href="classIoss_1_1Map.html#a27a8baac2814c46e8251b759cea058f5">Ioss::Map</a>
+</li>
 <li>map()
 : <a class="el" href="classIoss_1_1Map.html#af3499aa0dc4ab638c5ddca50bed41252">Ioss::Map</a>
-</li>
-<li>Map()
-: <a class="el" href="classIoss_1_1Map.html#a5ac44643525eb91ba4d3a03c5d990169">Ioss::Map</a>
-</li>
-<li>map()
-: <a class="el" href="classIoss_1_1Map.html#aa2549f7c1d55f4b1cf1dce959ce6b6b7">Ioss::Map</a>
 </li>
 <li>map_cgns_face_to_ioss()
 : <a class="el" href="classIocgns_1_1Utils.html#a1deaba96f1a8171154442d06492f3c57">Iocgns::Utils</a>
@@ -650,7 +647,7 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 : <a class="el" href="classIoss_1_1Map.html#ad708a6f298cb6de35e4347d4cfd31bae">Ioss::Map</a>
 </li>
 <li>map_implicit_data()
-: <a class="el" href="classIoss_1_1Map.html#af1ad6013c22431a227b9845ef1cdfa98">Ioss::Map</a>
+: <a class="el" href="classIoss_1_1Map.html#ae73021d9e20d26adb2af9e9e87c951f5">Ioss::Map</a>
 </li>
 <li>map_ioss_face_to_cgns()
 : <a class="el" href="classIocgns_1_1Utils.html#a12c1aefe782b155aefa999e5bb235c3d">Iocgns::Utils</a>
@@ -659,7 +656,8 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 : <a class="el" href="classIocgns_1_1Utils.html#a95361f41dead54976b62fbe915bc7da3">Iocgns::Utils</a>
 </li>
 <li>mapped_type
-: <a class="el" href="classtsl_1_1hopscotch__map.html#a115c1d91228c4e0f67571f449b323794">tsl::hopscotch_map&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+: <a class="el" href="classtsl_1_1bhopscotch__map.html#a7abce739cfeb17ff39fb1e55824babce">tsl::bhopscotch_map&lt; Key, T, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1hopscotch__map.html#a115c1d91228c4e0f67571f449b323794">tsl::hopscotch_map&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1robin__map.html#a1d794edbc5168dca57ba353e0bee1784">tsl::robin_map&lt; Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 </li>
 <li>master_element_name()
@@ -672,42 +670,46 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 : <a class="el" href="classIoss_1_1VariableType.html#a776e8b90f1efe51d3446ad2cf5841232">Ioss::VariableType</a>
 </li>
 <li>Matrix_22()
-: <a class="el" href="classIoss_1_1Matrix__22.html#af0a36c012b14bc586f573d226653c6ef">Ioss::Matrix_22</a>
+: <a class="el" href="classIoss_1_1Matrix__22.html#a9d53677f9e8a1b0297a81d5ec5253366">Ioss::Matrix_22</a>
 </li>
 <li>Matrix_33()
-: <a class="el" href="classIoss_1_1Matrix__33.html#ad955fce39926809e72c5b1834b174f8f">Ioss::Matrix_33</a>
+: <a class="el" href="classIoss_1_1Matrix__33.html#abbd45859734a29bd7a7f7949a27dc8c0">Ioss::Matrix_33</a>
 </li>
 <li>max_bucket_count()
-: <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a95ba339c12812493a8df97b06e0d7cc8">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
+: <a class="el" href="classtsl_1_1bhopscotch__map.html#a9c13a40a6497ee39c65086591868b931">tsl::bhopscotch_map&lt; Key, T, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1bhopscotch__set.html#a33ab8fed34703417ab024c664dfe4ccc">tsl::bhopscotch_set&lt; Key, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a95ba339c12812493a8df97b06e0d7cc8">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
 , <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#af4122f060e7d885012f98d92993ab5cb">tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
-, <a class="el" href="classtsl_1_1hh_1_1mod__growth__policy.html#a4ec15508e3e6253baee6b696536cc7e5">tsl::hh::mod_growth_policy&lt; GrowthFactor &gt;</a>
 </li>
 <li>MAX_BUCKET_COUNT
 : <a class="el" href="classtsl_1_1hh_1_1mod__growth__policy.html#a39aa3a68071970ce542896786aa2018a">tsl::hh::mod_growth_policy&lt; GrowthFactor &gt;</a>
 </li>
 <li>max_bucket_count()
-: <a class="el" href="classtsl_1_1hh_1_1power__of__two__growth__policy.html#a6b4162f094ab1fbcc37f2dbd32cd998c">tsl::hh::power_of_two_growth_policy&lt; GrowthFactor &gt;</a>
+: <a class="el" href="classtsl_1_1hh_1_1mod__growth__policy.html#a4ec15508e3e6253baee6b696536cc7e5">tsl::hh::mod_growth_policy&lt; GrowthFactor &gt;</a>
+, <a class="el" href="classtsl_1_1hh_1_1power__of__two__growth__policy.html#a6b4162f094ab1fbcc37f2dbd32cd998c">tsl::hh::power_of_two_growth_policy&lt; GrowthFactor &gt;</a>
 , <a class="el" href="classtsl_1_1hh_1_1prime__growth__policy.html#a66b798346703b11f09087d195baaf025">tsl::hh::prime_growth_policy</a>
 , <a class="el" href="classtsl_1_1hopscotch__map.html#ae391a0f4c83b6ab9c7503b4ca335b370">tsl::hopscotch_map&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1hopscotch__set.html#abcd550788f6ce6cab6f22d0af9567dee">tsl::hopscotch_set&lt; Key, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1rh_1_1mod__growth__policy.html#a758984fba37f1fecc39a674d4471d309">tsl::rh::mod_growth_policy&lt; GrowthFactor &gt;</a>
 </li>
 <li>MAX_BUCKET_COUNT
 : <a class="el" href="classtsl_1_1rh_1_1mod__growth__policy.html#a7f27a569221998447415bf0d98315c1f">tsl::rh::mod_growth_policy&lt; GrowthFactor &gt;</a>
 </li>
 <li>max_bucket_count()
-: <a class="el" href="classtsl_1_1rh_1_1mod__growth__policy.html#a758984fba37f1fecc39a674d4471d309">tsl::rh::mod_growth_policy&lt; GrowthFactor &gt;</a>
-, <a class="el" href="classtsl_1_1rh_1_1power__of__two__growth__policy.html#a837ee1d15d9f44004f8acbb5df116939">tsl::rh::power_of_two_growth_policy&lt; GrowthFactor &gt;</a>
+: <a class="el" href="classtsl_1_1rh_1_1power__of__two__growth__policy.html#a837ee1d15d9f44004f8acbb5df116939">tsl::rh::power_of_two_growth_policy&lt; GrowthFactor &gt;</a>
 , <a class="el" href="classtsl_1_1rh_1_1prime__growth__policy.html#adb93687c90dad0e1b6ae31f7443d2a33">tsl::rh::prime_growth_policy</a>
 , <a class="el" href="classtsl_1_1robin__map.html#a69155fc70ea3d6887fa90a48ffb9bd3d">tsl::robin_map&lt; Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1robin__set.html#af63a2baee29b4680f49e55f9f8e8b2ab">tsl::robin_set&lt; Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 </li>
 <li>max_load_factor()
-: <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a2b29aec29c25a9d3cafb31f84445bf84">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
+: <a class="el" href="classtsl_1_1bhopscotch__map.html#ac9929ec2d2b3d4eb14b8d701038c5c65">tsl::bhopscotch_map&lt; Key, T, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1bhopscotch__set.html#aa8dc6419d907972a53b1f8dc68d2e4c8">tsl::bhopscotch_set&lt; Key, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a2b29aec29c25a9d3cafb31f84445bf84">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
 , <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a967995c9781b76a6134733d104fd1893">tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1hopscotch__map.html#aa48f17ccd7760fde3b2a666823741142">tsl::hopscotch_map&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
-, <a class="el" href="classtsl_1_1hopscotch__set.html#a69bedccdf114f7ae3aac88a33d56e5e3">tsl::hopscotch_set&lt; Key, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
-, <a class="el" href="classtsl_1_1robin__map.html#ac98a20f47db5ad7fcecf22adec84c422">tsl::robin_map&lt; Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
-, <a class="el" href="classtsl_1_1robin__set.html#a3ecaa65ec84bf3b33aecc891ece46b6a">tsl::robin_set&lt; Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1hopscotch__set.html#ad4e35a6a9bb69dc07d1073ff3b8451e9">tsl::hopscotch_set&lt; Key, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1robin__map.html#a90603aafb683e936dbad92c585ccdeab">tsl::robin_map&lt; Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1robin__set.html#afa1e914c188cba804978004b25e39abe">tsl::robin_set&lt; Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 </li>
 <li>max_name_length()
 : <a class="el" href="classIoex_1_1Internals.html#a4a2e3842a35da4c4f8b222cdb7820299">Ioex::Internals</a>
@@ -722,7 +724,8 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 : <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a147effd7d5b35d3295c856e0a56865bf">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
 </li>
 <li>max_size()
-: <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html#aedca01782adadb3124afcae107f7a6c9">tsl::detail_hopscotch_hash::hopscotch_bucket&lt; ValueType, NeighborhoodSize, StoreHash &gt;</a>
+: <a class="el" href="classtsl_1_1bhopscotch__map.html#a16d3f0ecb64b15d13312022caa2d8692">tsl::bhopscotch_map&lt; Key, T, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1bhopscotch__set.html#a1f4017a11298fe2940f0162b1164173b">tsl::bhopscotch_set&lt; Key, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a298df0cab2488276b701d3c1f235b45a">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
 , <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a6a7d8c3c60013a360bd4f95fa186c9e5">tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1hopscotch__map.html#ae004c2c0b10d1fb1942d5d78b7461aee">tsl::hopscotch_map&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
@@ -797,7 +800,7 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 <li>min_load_factor()
 : <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#a28d1d3bbd5f667aec7dc30a2ab1ce8e2">tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1robin__map.html#a03e6ecde5671971af02348e2059f9a7a">tsl::robin_map&lt; Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
-, <a class="el" href="classtsl_1_1robin__set.html#ac59a301ebfa46d5fcd35ce529008deb5">tsl::robin_set&lt; Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1robin__set.html#a8a57104ad0c718dcf4a3d94fb94e8cb1">tsl::robin_set&lt; Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 </li>
 <li>MIN_LOAD_FACTOR_FOR_REHASH
 : <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a59346a2e1cab9d2863d090985cdd23c2">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
@@ -853,7 +856,9 @@ $(document).ready(function(){initNavTree('functions_m.html','');});
 : <a class="el" href="classassert__context.html#a2770004e73fb5c0fd55b63ebbd4049d4">assert_context</a>
 </li>
 <li>mutable_iterator()
-: <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#af1141aef50b57fd5edfa7c63edd5a534">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
+: <a class="el" href="classtsl_1_1bhopscotch__map.html#ae6eef4d6fb5c328ff3923bcde606d404">tsl::bhopscotch_map&lt; Key, T, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1bhopscotch__set.html#a019521464241af361a3709fe67269618">tsl::bhopscotch_set&lt; Key, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
+, <a class="el" href="classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#af1141aef50b57fd5edfa7c63edd5a534">tsl::detail_hopscotch_hash::hopscotch_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer &gt;</a>
 , <a class="el" href="classtsl_1_1detail__robin__hash_1_1robin__hash.html#aed879d9e608af630358e1c41d28359fc">tsl::detail_robin_hash::robin_hash&lt; ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1hopscotch__map.html#afb2e4a5595a63ec7984fcf2e496c939b">tsl::hopscotch_map&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
 , <a class="el" href="classtsl_1_1hopscotch__set.html#a23c380f99243fb257b1bdb81e21442f3">tsl::hopscotch_set&lt; Key, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;</a>
