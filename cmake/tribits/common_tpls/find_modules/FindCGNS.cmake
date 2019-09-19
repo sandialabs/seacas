@@ -229,6 +229,17 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
     set(cgns_types_h "${CGNS_INCLUDE_DIR}/cgnstypes.h" )
     if (EXISTS ${cgns_types_h})
       file(STRINGS "${cgns_types_h}" cg_build_hdf5_string REGEX "^#define CG_BUILD_HDF5")
+      if ("${cg_build_hdf5_string}" STREQUAL "") 
+          set(cgns_config_h "${CGNS_INCLUDE_DIR}/cgnsconfig.h" )
+	  if (EXISTS ${cgns_config_h})
+	     file(STRINGS "${cgns_config_h}" cg_build_hdf5_string REGEX "^#define CG_BUILD_HDF5")
+	  endif()
+      endif()
+
+      if ("${cg_build_hdf5_string}" STREQUAL "") 
+         message(FATAL_ERROR "CGNS Symbol `CG_BUILD_HDF5` not found in `cgnstypes.h` or `cgnsconfig.h` as required.")
+      endif()
+
       string(REGEX REPLACE "[^0-9]" "" cg_build_hdf5 "${cg_build_hdf5_string}")
       if ( cg_build_hdf5 EQUAL 51 ) # Kluge: define is 1, but the 5 comes from hdf5
           message(STATUS "CGNS requires HDF5")
