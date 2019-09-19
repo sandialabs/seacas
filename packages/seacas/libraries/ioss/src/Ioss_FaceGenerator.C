@@ -195,15 +195,15 @@ namespace {
       // .. See if all of its nodes are shared with same processor.
       //  .. Iterate face nodes
       //  .. Determine shared proc.
-      //  .. (for now, use a map of <proc,count>
+      //  .. (for now, use a vector[proc] = count
       //   .. if potentially shared with 'proc', then count == num_nodes_face
 
       std::vector<INT> potential_count(proc_count);
+      std::vector<int> shared_nodes(proc_count);
       for (auto &face : faces) {
         if (face.elementCount_ == 1) {
           // On 'boundary' -- try to determine whether on processor or exterior
           // boundary
-          std::map<int, int> shared_nodes;
           int                face_node_count = 0;
           for (auto &gnode : face.connectivity_) {
             if (gnode > 0) {
@@ -218,10 +218,11 @@ namespace {
               }
             }
           }
-          for (auto &node : shared_nodes) {
-            if (node.second == face_node_count) {
-              potential_count[node.first]++;
+	  for (size_t i=0; i < proc_count; i++) {
+	    if (shared_nodes[i] == face_node_count) {
+              potential_count[i]++;
             }
+	    shared_nodes[i] = 0; // Reset for next trip through face.connectivity_ loop
           }
         }
       }
@@ -236,7 +237,6 @@ namespace {
         if (face.elementCount_ == 1) {
           // On 'boundary' -- try to determine whether on processor or exterior
           // boundary
-          std::map<int, int> shared_nodes;
           int                face_node_count = 0;
           for (auto &gnode : face.connectivity_) {
             if (gnode > 0) {
@@ -251,9 +251,9 @@ namespace {
               }
             }
           }
-          for (auto &node : shared_nodes) {
-            if (node.second == face_node_count) {
-              size_t offset                   = potential_offset[node.first];
+	  for (size_t i=0; i < proc_count; i++) {
+	    if (shared_nodes[i] == face_node_count) {
+              size_t offset                   = potential_offset[i];
               potential_faces[6 * offset + 0] = face.hashId_;
               potential_faces[6 * offset + 1] = face.connectivity_[0];
               potential_faces[6 * offset + 2] = face.connectivity_[1];
@@ -261,8 +261,9 @@ namespace {
               potential_faces[6 * offset + 4] = face.connectivity_[3];
               potential_faces[6 * offset + 5] = face.element[0];
               assert(face.elementCount_ == 1);
-              potential_offset[node.first]++;
+              potential_offset[i]++;
             }
+	    shared_nodes[i] = 0; // Reset for next trip through face.connectivity_ loop
           }
         }
       }
