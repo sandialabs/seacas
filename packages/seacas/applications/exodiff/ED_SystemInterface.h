@@ -159,5 +159,5 @@ private:
   GetLongOption options_; //!< Options parsing
 };
 
-extern SystemInterface interface;
+extern SystemInterface interFace;
 #endif
