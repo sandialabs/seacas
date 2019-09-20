@@ -119,6 +119,10 @@ struct termio new_termio, old_termio;
 #include <sys/types.h>
 #include <unistd.h>
 
+#ifdef _MSC_VER
+constexpr auto pid_t = int;
+#endif
+
 extern int kill(pid_t pid, int sig);
 
 #define _getline_c_ 1

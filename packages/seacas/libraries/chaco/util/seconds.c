@@ -32,9 +32,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+#ifndef _MSC_VER
 #include <sys/time.h>
-#if !defined(__CYGWIN__)
+#endif
+#if !defined(__CYGWIN__) && !defined(_MSC_VER)
 #include <sys/resource.h>
 #endif
 

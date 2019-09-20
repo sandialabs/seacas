@@ -35,8 +35,18 @@
 #include <Ioss_Utils.h>
 #include <cstddef>
 #include <string>
-#include <sys/select.h>
+#ifndef _MSC_VER
 #include <sys/unistd.h>
+#else
+#define R_OK 4 /* Test for read permission.  */
+#define W_OK 2 /* Test for write permission.  */
+#define X_OK 1 /* execute permission - unsupported in windows*/
+#define F_OK 0 /* Test for existence.  */
+#if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
+#define S_ISREG(m) (((m)&S_IFMT) == S_IFREG)
+#define S_ISDIR S_IFDIR
+#endif
+#endif
 
 #ifdef SEACAS_HAVE_MPI
 #include <numeric>
@@ -45,6 +55,11 @@
 #include <cstdio>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#if defined(_MSC_VER)
+#include <io.h>
+#define access _access
+#endif
 
 namespace {
   bool internal_access(const std::string &name, int mode);
@@ -165,13 +180,14 @@ namespace Ioss {
   //: Returns TRUE if we are pointing to a symbolic link
   bool FileInfo::is_symlink() const
   {
+#ifndef _MSC_VER
     struct stat s
     {
     };
     if (lstat(filename_.c_str(), &s) == 0) {
       return S_ISLNK(s.st_mode);
     }
-
+#endif
     return false;
   }
 

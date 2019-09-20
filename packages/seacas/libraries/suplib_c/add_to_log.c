@@ -34,16 +34,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _MSC_VER
 #include <sys/utsname.h>
-#include <time.h>
-#include <unistd.h>
-
-#if defined(__LIBCATAMOUNT__)
-#include <sys/resource.h>
-#include <sys/time.h>
-#else
 #include <sys/times.h>
 #endif
+#include <time.h>
+#include <unistd.h>
 
 #ifndef __USE_XOPEN
 #define __USE_XOPEN
@@ -103,17 +99,8 @@ void add_to_log(const char *my_name, double elapsed)
         }
 
         {
-#if defined(__LIBCATAMOUNT__)
-          struct rusage rusage;
+#if defined(_MSC_VER)
 
-          getrusage(RUSAGE_SELF, &rusage);
-          /*pp
-           * NOTE: Catamount seems to return the same values for user and system.
-           *       To avoid double-counting cpu time, I only use the user time.
-           *       and set the system time to 0.
-           */
-          u_time = rusage.ru_utime.tv_sec + rusage.ru_utime.tv_usec / 1.e6;
-          s_time = 0.0;
 #else
           int        ticks_per_second;
           struct tms time_buf;

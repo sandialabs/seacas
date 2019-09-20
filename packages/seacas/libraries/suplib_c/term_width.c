@@ -1,6 +1,9 @@
 #define _POSIX_SOURCE
 #include <stdio.h>
+#ifndef _MSC_VER
 #include <sys/ioctl.h>
+#endif
+
 #include <unistd.h>
 
 int term_width(void)
