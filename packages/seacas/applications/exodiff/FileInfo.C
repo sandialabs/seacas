@@ -41,7 +41,7 @@
 #include <sys/types.h> // for off_t
 
 #ifndef _MSC_VER
-#include <sys/unistd.h>
+#include <unistd.h>
 #else
 #define R_OK 4 /* Test for read permission.  */
 #define W_OK 2 /* Test for write permission.  */

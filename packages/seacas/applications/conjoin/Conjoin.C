@@ -56,7 +56,6 @@
 #include <sys/utsname.h>
 #endif
 
-
 #include "add_to_log.h"
 #include "adler.h"
 #include "copy_string_cpp.h"
@@ -204,7 +203,7 @@ std::string tsFormat = "[%H:%M:%S] ";
 
 // The main program templated to permit float/double transfer.
 template <typename T, typename INT>
-int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */);
+int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */);
 
 namespace {
   void                         compress_white_space(char *str);
@@ -213,7 +212,7 @@ namespace {
 
   template <typename T>
   void get_put_qa(int id, int id_out, const std::vector<TimeStepMap<T>> &global_times,
-                  Excn::SystemInterface &interface);
+                  Excn::SystemInterface &interFace);
   int  get_put_coordinate_names(int in, int out, int dimensionality);
 
   template <typename T, typename INT>
@@ -368,15 +367,15 @@ int main(int argc, char *argv[])
     time_t begin_time = time(nullptr);
     Excn::SystemInterface::show_version();
 
-    Excn::SystemInterface interface;
-    bool                  ok = interface.parse_options(argc, argv);
+    Excn::SystemInterface interFace;
+    bool                  ok = interFace.parse_options(argc, argv);
 
     if (!ok) {
       fmt::print(stderr, "\nERROR: Problems parsing command line arguments.\n\n");
       exit(EXIT_FAILURE);
     }
 
-    debug_level = interface.debug();
+    debug_level = interFace.debug();
 
     if ((debug_level & 64) != 0u) {
       ex_opts(EX_VERBOSE | EX_DEBUG);
@@ -387,30 +386,30 @@ int main(int argc, char *argv[])
 
     int error = 0;
 
-    if (!Excn::ExodusFile::initialize(interface)) {
+    if (!Excn::ExodusFile::initialize(interFace)) {
       fmt::print(stderr, "ERROR: Problem initializing input and/or output files.\n");
       exit(EXIT_FAILURE);
     }
 
     int int_byte_size = 4;
-    if (interface.ints_64_bit()) {
+    if (interFace.ints_64_bit()) {
       int_byte_size = 8;
     }
 
     if (Excn::ExodusFile::io_word_size() == 4) {
       if (int_byte_size == 4) {
-        error = conjoin(interface, static_cast<float>(0.0), 0);
+        error = conjoin(interFace, static_cast<float>(0.0), 0);
       }
       else {
-        error = conjoin(interface, static_cast<float>(0.0), static_cast<int64_t>(0));
+        error = conjoin(interFace, static_cast<float>(0.0), static_cast<int64_t>(0));
       }
     }
     else {
       if (int_byte_size == 4) {
-        error = conjoin(interface, 0.0, 0);
+        error = conjoin(interFace, 0.0, 0);
       }
       else {
-        error = conjoin(interface, 0.0, static_cast<int64_t>(0));
+        error = conjoin(interFace, 0.0, static_cast<int64_t>(0));
       }
     }
 
@@ -426,12 +425,12 @@ int main(int argc, char *argv[])
 }
 
 template <typename T, typename INT>
-int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */)
+int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */)
 {
   SMART_ASSERT(sizeof(T) == Excn::ExodusFile::io_word_size());
 
-  const double alive      = interface.alive_value();
-  size_t       part_count = interface.inputFiles_.size();
+  const double alive      = interFace.alive_value();
+  size_t       part_count = interFace.inputFiles_.size();
 
   auto mytitle = new char[MAX_LINE_LENGTH + 1];
   memset(mytitle, '\0', MAX_LINE_LENGTH + 1);
@@ -482,11 +481,11 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
   delete[] mytitle;
 
-  if (interface.omit_nodesets()) {
+  if (interFace.omit_nodesets()) {
     global.nodesetCount = 0;
   }
 
-  if (interface.omit_sidesets()) {
+  if (interFace.omit_sidesets()) {
     global.sidesetCount = 0;
   }
 
@@ -518,7 +517,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     int i = 0;
     for (i = nts; i > 0; i--) {
       if (times[i - 1] < t_min) {
-        if (used || t_min - times[i - 1] >= interface.interpart_minimum_time_delta()) {
+        if (used || t_min - times[i - 1] >= interFace.interpart_minimum_time_delta()) {
           used = true;
           global_times.push_back(TimeStepMap<T>(p - 1, i - 1, times[i - 1]));
         }
@@ -528,7 +527,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     t_min                           = t_min < times[0] ? t_min : times[0];
     if (!used) {
       std::string part = "Part " + std::to_string(p) + ": ";
-      part += interface.inputFiles_[p - 1];
+      part += interFace.inputFiles_[p - 1];
       fmt::print(
           stderr,
           "\nWARNING: {} does not contain any time steps which will be used in conjoined file.\n"
@@ -554,7 +553,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     // Now, build the reverse global node map which permits access of the
     // local id given the global id.
     std::vector<INT> global_node_map;
-    if (interface.ignore_coordinates()) {
+    if (interFace.ignore_coordinates()) {
       build_reverse_node_map(local_mesh, &global, part_count, global_node_map);
     }
     else {
@@ -583,7 +582,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     //    NOTE:  Node set/side set information can be different for each part
     /************************************************************************/
     // 7. Get Side sets
-    if (!interface.omit_sidesets()) {
+    if (!interFace.omit_sidesets()) {
       if (debug_level & 1) {
         fmt::print(stderr, "{}", time_stamp(tsFormat));
       }
@@ -595,7 +594,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
     /************************************************************************/
     // 6. Get Node sets
-    if (!interface.omit_nodesets()) {
+    if (!interFace.omit_nodesets()) {
       if (debug_level & 1) {
         fmt::print(stderr, "{}", time_stamp(tsFormat));
       }
@@ -614,11 +613,11 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     Excn::CommunicationMetaData comm_data;
 
     // Create the output file...
-    Excn::ExodusFile::create_output(interface);
+    Excn::ExodusFile::create_output(interFace);
 
     put_mesh_summary(global);
 
-    get_put_qa(Excn::ExodusFile(0), Excn::ExodusFile::output(), global_times, interface);
+    get_put_qa(Excn::ExodusFile(0), Excn::ExodusFile::output(), global_times, interFace);
 
     Excn::Internals exodus(Excn::ExodusFile::output(), Excn::ExodusFile::max_name_length());
 
@@ -676,8 +675,8 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
   //  NOTE: it is assumed that every part has the same global, nodal,
   //        and element lists
 
-  bool            add_n_status = interface.nodal_status_variable() != "NONE";
-  bool            add_e_status = interface.element_status_variable() != "NONE";
+  bool            add_n_status = interFace.nodal_status_variable() != "NONE";
+  bool            add_e_status = interFace.element_status_variable() != "NONE";
   Excn::Variables global_vars(Excn::GLOBAL);
   Excn::Variables nodal_vars(Excn::NODE, add_n_status);
   Excn::Variables element_vars(Excn::EBLK, add_e_status);
@@ -687,20 +686,20 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
   {
     Excn::ExodusFile id(0);
 
-    get_variable_params(id, global_vars, interface.global_var_names());
-    get_variable_params(id, nodal_vars, interface.node_var_names());
-    get_variable_params(id, element_vars, interface.elem_var_names());
-    get_variable_params(id, nodeset_vars, interface.nset_var_names());
-    get_variable_params(id, sideset_vars, interface.sset_var_names());
+    get_variable_params(id, global_vars, interFace.global_var_names());
+    get_variable_params(id, nodal_vars, interFace.node_var_names());
+    get_variable_params(id, element_vars, interFace.elem_var_names());
+    get_variable_params(id, nodeset_vars, interFace.nset_var_names());
+    get_variable_params(id, sideset_vars, interFace.sset_var_names());
 
     get_truth_table(global, blocks, glob_blocks, element_vars, 4);
-    filter_truth_table(id, global, glob_blocks, element_vars, interface.elem_var_names());
+    filter_truth_table(id, global, glob_blocks, element_vars, interFace.elem_var_names());
 
     get_truth_table(global, nodesets, glob_nsets, nodeset_vars, 32);
-    filter_truth_table(id, global, glob_nsets, nodeset_vars, interface.nset_var_names());
+    filter_truth_table(id, global, glob_nsets, nodeset_vars, interFace.nset_var_names());
 
     get_truth_table(global, sidesets, glob_ssets, sideset_vars, 16);
-    filter_truth_table(id, global, glob_ssets, sideset_vars, interface.sset_var_names());
+    filter_truth_table(id, global, glob_ssets, sideset_vars, interFace.sset_var_names());
   }
 
   // There is a slightly tricky situation here. The truthTable block order
@@ -734,12 +733,12 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
   int combined_status_variable_index = 0;
   {
     Excn::ExodusFile id(0);
-    get_put_variable_names(id, Excn::ExodusFile::output(), global_vars, interface);
-    get_put_variable_names(id, Excn::ExodusFile::output(), nodal_vars, interface);
-    get_put_variable_names(id, Excn::ExodusFile::output(), element_vars, interface,
+    get_put_variable_names(id, Excn::ExodusFile::output(), global_vars, interFace);
+    get_put_variable_names(id, Excn::ExodusFile::output(), nodal_vars, interFace);
+    get_put_variable_names(id, Excn::ExodusFile::output(), element_vars, interFace,
                            &combined_status_variable_index);
-    get_put_variable_names(id, Excn::ExodusFile::output(), nodeset_vars, interface);
-    get_put_variable_names(id, Excn::ExodusFile::output(), sideset_vars, interface);
+    get_put_variable_names(id, Excn::ExodusFile::output(), nodeset_vars, interFace);
+    get_put_variable_names(id, Excn::ExodusFile::output(), sideset_vars, interFace);
   }
   ex_update(Excn::ExodusFile::output());
 
@@ -882,7 +881,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
     // Add element status variable...
     // Use the output time step for writing data
-    if (interface.element_status_variable() != "NONE") {
+    if (interFace.element_status_variable() != "NONE") {
       add_status_variable(Excn::ExodusFile::output(), global, blocks[p], glob_blocks,
                           local_mesh[p].localElementToGlobal, time_step_out,
                           element_vars.index_[element_vars.count(Excn::IN)], alive,
@@ -948,7 +947,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 namespace {
   template <typename T>
   void get_put_qa(int id, int id_out, const std::vector<TimeStepMap<T>> & /*global_times*/,
-                  Excn::SystemInterface & /*interface*/)
+                  Excn::SystemInterface & /*interFace*/)
   {
     // NOTE: Assuming info and QA records for all parts
     int error = 0;
@@ -976,7 +975,7 @@ namespace {
                  i+1, global_times[i].timeValue,
                  global_times[i].partNumber+1,
                  global_times[i].localStepNumber+1,
-                 interface.inputFiles_[global_times[i].partNumber]);
+                 interFace.inputFiles_[global_times[i].partNumber]);
 
       copy_string(info_records[num_info_records+1+i], os.str(), MAX_LINE_LENGTH + 1);
     }

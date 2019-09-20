@@ -58,7 +58,7 @@ template <typename T, typename INT> void index_qsort(const T v[], INT iv[], size
 #endif
 }
 
-// The following are not part of the public interface...
+// The following are not part of the public interFace...
 
 namespace {
   /* The following 'indexed qsort' routine is modified from Sedgewicks

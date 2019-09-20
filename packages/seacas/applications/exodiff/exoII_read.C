@@ -908,7 +908,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
   num_side_sets   = info.num_side_sets;
   title           = info.title;
 
-  if (err > 0 && !interface.quiet_flag) {
+  if (err > 0 && !interFace.quiet_flag) {
     fmt::print(stderr, "exodiff: WARNING: was issued, number = {}\n", err);
   }
   if (dimension < 1 || dimension > 3) {
@@ -984,7 +984,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
       e_count += eblocks[b].Size();
     }
 
-    if (e_count != num_elmts && !interface.quiet_flag) {
+    if (e_count != num_elmts && !interFace.quiet_flag) {
       fmt::print(stderr,
                  "exodiff: WARNING: Total number of elements {:n}"
                  " does not equal the sum of the number of elements "
@@ -1163,7 +1163,7 @@ namespace {
         Error(fmt::format("Failed to get {} variable names!  Aborting...\n", type));
         exit(1);
       }
-      else if (err > 0 && !interface.quiet_flag) {
+      else if (err > 0 && !interFace.quiet_flag) {
         fmt::print(
             stderr,
             "exodiff: WARNING: Exodus issued warning \"{}\" on call to ex_get_var_names()!\n", err);
