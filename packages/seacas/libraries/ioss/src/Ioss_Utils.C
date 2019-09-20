@@ -47,7 +47,6 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
-#include <sys/select.h>
 #include <tokenize.h>
 #include <vector>
 
@@ -1837,12 +1836,14 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
     region.end_state(istep);
     output_region.end_state(ostep);
+#ifndef _MSC_VER
     if (options.delay > 0.0) {
       struct timespec delay;
       delay.tv_sec  = (int)options.delay;
       delay.tv_nsec = (options.delay - delay.tv_sec) * 1000000000L;
       nanosleep(&delay, nullptr);
     }
+#endif
   }
   if (options.debug && rank == 0) {
     fmt::print(stderr, "END STATE_TRANSIENT... \n");
