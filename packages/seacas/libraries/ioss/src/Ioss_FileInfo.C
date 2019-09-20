@@ -35,16 +35,19 @@
 #include <Ioss_Utils.h>
 #include <cstddef>
 #include <string>
+
 #ifndef _MSC_VER
 #include <sys/unistd.h>
 #else
+#include <io.h>
+#define access _access
 #define R_OK 4 /* Test for read permission.  */
 #define W_OK 2 /* Test for write permission.  */
 #define X_OK 1 /* execute permission - unsupported in windows*/
 #define F_OK 0 /* Test for existence.  */
-#if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
-#define S_ISREG(m) (((m)&S_IFMT) == S_IFREG)
-#define S_ISDIR S_IFDIR
+#ifndef S_ISREG
+#define S_ISREG(m) (((m)&_S_IFMT) == _S_IFREG)
+#define S_ISDIR(m) (((m)&_S_IFMT) == _S_IFDIR)
 #endif
 #endif
 
@@ -55,11 +58,6 @@
 #include <cstdio>
 #include <sys/stat.h>
 #include <unistd.h>
-
-#if defined(_MSC_VER)
-#include <io.h>
-#define access _access
-#endif
 
 namespace {
   bool internal_access(const std::string &name, int mode);
