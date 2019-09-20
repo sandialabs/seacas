@@ -51,8 +51,11 @@
 #include <cctype>
 #include <cstring>
 #include <ctime>
+#ifndef _MSC_VER
 #include <sys/times.h>
 #include <sys/utsname.h>
+#endif
+
 
 #include "add_to_log.h"
 #include "adler.h"

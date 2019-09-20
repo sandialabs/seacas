@@ -40,6 +40,11 @@
 #include <sys/types.h> // for ssize_t
 #include <vector>
 
+#if defined(_MSC_VER)
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#endif
+
 /* Function prototypes */
 extern int token_compare(char *      token, /* The input character string */
                          const char *key    /* The key to compare with token */

@@ -319,11 +319,14 @@ int main(int argc, char *argv[])
   checking_invalid = false;
   invalid_data     = false;
 
+  #ifndef _MSC_VER
   sigfillset(&(sigact.sa_mask));
   sigact.sa_handler = floating_point_exception_handler;
   if (sigaction(SIGFPE, &sigact, nullptr) == -1) {
     perror("sigaction failed");
   }
+  #endif
+
 #if defined(LINUX) && defined(GNU)
   // for GNU, this seems to be needed to turn on trapping
   feenableexcept(FE_DIVBYZERO | FE_OVERFLOW | FE_INVALID);

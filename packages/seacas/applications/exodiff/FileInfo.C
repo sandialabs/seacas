@@ -39,7 +39,19 @@
 #include <string>      // for string
 #include <sys/stat.h>  // for stat, lstat, S_ISDIR, etc
 #include <sys/types.h> // for off_t
-#include <unistd.h>    // for F_OK, R_OK, access, W_OK, etc
+
+#ifndef _MSC_VER
+#include <sys/unistd.h>
+#else
+#define R_OK 4 /* Test for read permission.  */
+#define W_OK 2 /* Test for write permission.  */
+#define X_OK 1 /* execute permission - unsupported in windows*/
+#define F_OK 0 /* Test for existence.  */
+#if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
+#define S_ISREG(m) (((m)&S_IFMT) == S_IFREG)
+#define S_ISDIR S_IFDIR
+#endif
+#endif
 
 namespace {
   bool internal_access(const std::string &name, int mode);
