@@ -297,16 +297,16 @@ namespace {
   {
     size_t i, j;
     size_t ndx = 0;
-    INT    small;
+    INT    small_val;
     INT    tmp;
 
     if (N <= 1) {
       return;
     }
-    small = v[0];
+    small_val = v[0];
     for (i = 1; i < N; i++) {
-      if (v[i] < small) {
-        small = v[i];
+      if (v[i] < small_val) {
+        small_val = v[i];
         ndx   = i;
       }
     }
@@ -696,16 +696,16 @@ namespace {
         ndx = i;
       }
     }
-    /* Put smallest value in slot 0 */
+    /* Put small_valest value in slot 0 */
     swap4(v1, v2, v3, v4, 0, ndx);
 
     for (size_t i = 1; i < N; i++) {
-      INT    small1 = v1[i];
-      INT    small2 = v2[i];
-      INT    small3 = v3[i];
-      INT    small4 = v4[i];
+      INT    small_val1 = v1[i];
+      INT    small_val2 = v2[i];
+      INT    small_val3 = v3[i];
+      INT    small_val4 = v4[i];
       size_t j;
-      for (j = i; is_less_than4(small1, small2, small3, small4, v1[j - 1], v2[j - 1], v3[j - 1],
+      for (j = i; is_less_than4(small_val1, small_val2, small_val3, small_val4, v1[j - 1], v2[j - 1], v3[j - 1],
                                 v4[j - 1]);
            j--) {
         v1[j] = v1[j - 1];
@@ -713,10 +713,10 @@ namespace {
         v3[j] = v3[j - 1];
         v4[j] = v4[j - 1];
       }
-      v1[j] = small1;
-      v2[j] = small2;
-      v3[j] = small3;
-      v4[j] = small4;
+      v1[j] = small_val1;
+      v2[j] = small_val2;
+      v3[j] = small_val3;
+      v4[j] = small_val4;
     }
   }
 
@@ -817,19 +817,19 @@ namespace {
       }
     }
 
-    /* Put smallest value in slot 0 */
+    /* Put small_valest value in slot 0 */
     swap2(v1, v2, 0, ndx);
 
     for (size_t i = 1; i < N; i++) {
-      INT    small1 = v1[i];
-      INT    small2 = v2[i];
+      INT    small_val1 = v1[i];
+      INT    small_val2 = v2[i];
       size_t j;
-      for (j = i; is_less_than2(small1, small2, v1[j - 1], v2[j - 1]); j--) {
+      for (j = i; is_less_than2(small_val1, small_val2, v1[j - 1], v2[j - 1]); j--) {
         v1[j] = v1[j - 1];
         v2[j] = v2[j - 1];
       }
-      v1[j] = small1;
-      v2[j] = small2;
+      v1[j] = small_val1;
+      v2[j] = small_val2;
     }
   }
 } // namespace
