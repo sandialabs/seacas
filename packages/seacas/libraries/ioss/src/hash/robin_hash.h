@@ -848,9 +848,9 @@ namespace tsl {
 
       template <class K> size_type erase(const K &key) { return erase(key, hash_key(key)); }
 
-      template <class K> size_type erase(const K &key, std::size_t hash)
+      template <class K> size_type erase(const K &key, std::size_t my_hash)
       {
-        auto it = find(key, hash);
+        auto it = find(key, my_hash);
         if (it != end()) {
           erase_from_bucket(it);
           m_try_skrink_on_next_insert = true;
@@ -892,10 +892,10 @@ namespace tsl {
 
       template <class K, class U = ValueSelect,
                 typename std::enable_if<has_mapped_type<U>::value>::type * = nullptr>
-      typename U::value_type &at(const K &key, std::size_t hash)
+      typename U::value_type &at(const K &key, std::size_t my_hash)
       {
         return const_cast<typename U::value_type &>(
-            static_cast<const robin_hash *>(this)->at(key, hash));
+            static_cast<const robin_hash *>(this)->at(key, my_hash));
       }
 
       template <class K, class U = ValueSelect,
@@ -907,9 +907,9 @@ namespace tsl {
 
       template <class K, class U = ValueSelect,
                 typename std::enable_if<has_mapped_type<U>::value>::type * = nullptr>
-      const typename U::value_type &at(const K &key, std::size_t hash) const
+      const typename U::value_type &at(const K &key, std::size_t my_hash) const
       {
-        auto it = find(key, hash);
+        auto it = find(key, my_hash);
         if (it != cend()) {
           return it.value();
         }
@@ -927,9 +927,9 @@ namespace tsl {
 
       template <class K> size_type count(const K &key) const { return count(key, hash_key(key)); }
 
-      template <class K> size_type count(const K &key, std::size_t hash) const
+      template <class K> size_type count(const K &key, std::size_t my_hash) const
       {
-        if (find(key, hash) != cend()) {
+        if (find(key, my_hash) != cend()) {
           return 1;
         }
         else {
@@ -939,9 +939,9 @@ namespace tsl {
 
       template <class K> iterator find(const K &key) { return find_impl(key, hash_key(key)); }
 
-      template <class K> iterator find(const K &key, std::size_t hash)
+      template <class K> iterator find(const K &key, std::size_t my_hash)
       {
-        return find_impl(key, hash);
+        return find_impl(key, my_hash);
       }
 
       template <class K> const_iterator find(const K &key) const
