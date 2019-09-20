@@ -120,7 +120,7 @@ struct termio new_termio, old_termio;
 #include <unistd.h>
 
 #ifdef _MSC_VER
-constexpr auto pid_t = int;
+#define pid_t int;
 #endif
 
 extern int kill(pid_t pid, int sig);

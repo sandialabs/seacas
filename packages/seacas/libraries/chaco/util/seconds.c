@@ -34,6 +34,8 @@
  */
 #ifndef _MSC_VER
 #include <sys/time.h>
+#else
+#include <Windows.h>
 #endif
 #if !defined(__CYGWIN__) && !defined(_MSC_VER)
 #include <sys/resource.h>
@@ -53,6 +55,17 @@ double seconds(void)
   curtime = ((rusage.ru_utime.tv_sec + rusage.ru_stime.tv_sec) +
              1.0e-6 * (rusage.ru_utime.tv_usec + rusage.ru_stime.tv_usec));
 
+#elif _MSC_VER
+    FILETIME a, b, c, d;
+    if (GetProcessTimes(GetCurrentProcess(), &a, &b, &c, &d) != 0) {
+      //  Returns total user time.
+      //  Can be tweaked to include kernel times as well.
+      return (double)(d.dwLowDateTime | ((unsigned long long)d.dwHighDateTime << 32)) * 0.0000001;
+    }
+    else {
+      //  Handle error
+      return 0;
+    }
 #else
 
   /* ANSI timer, but lower resolution & wraps around after ~36 minutes. */
