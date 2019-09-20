@@ -48,6 +48,7 @@
 
 void add_to_log(const char *my_name, double elapsed)
 {
+#ifndef _MSC_VER
 #define LEN 512
   char time_string[LEN];
   char log_string[LEN];
@@ -99,16 +100,12 @@ void add_to_log(const char *my_name, double elapsed)
         }
 
         {
-#if defined(_MSC_VER)
-
-#else
           int        ticks_per_second;
           struct tms time_buf;
           times(&time_buf);
           ticks_per_second = sysconf(_SC_CLK_TCK);
           u_time           = (double)(time_buf.tms_utime + time_buf.tms_cutime) / ticks_per_second;
           s_time           = (double)(time_buf.tms_stime + time_buf.tms_cstime) / ticks_per_second;
-#endif
         }
 
         uname(&sys_info);
@@ -127,4 +124,5 @@ void add_to_log(const char *my_name, double elapsed)
       }
     }
   }
+  #endif
 }
