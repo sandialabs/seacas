@@ -1347,7 +1347,7 @@ static char *hist_save(char *p)
 
   if (nl) {
     if ((s = (char *)malloc(len)) != 0) {
-      copy_string(s, p, len - 1);
+      copy_string(s, p, len);
       s[len - 1] = 0;
     }
   }
