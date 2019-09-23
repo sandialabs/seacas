@@ -3906,7 +3906,7 @@ class exodus:
             True = successful execution
         """
 
-        ebType = get_entity_type('EX_ELEM_BLOCK')
+        ebType = c_int(get_entity_type('EX_ELEM_BLOCK'))
         EXODUS_LIB.ex_put_block(self.fileId, ebType, c_longlong(blkID),
                                 create_string_buffer(b"NFACED"),
                                 c_longlong(num_elems_this_blk),
@@ -3940,7 +3940,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        fbType = get_entity_type('EX_FACE_BLOCK')
+        fbType = c_int(get_entity_type('EX_FACE_BLOCK'))
         EXODUS_LIB.ex_put_block(self.fileId, fbType, c_longlong(blkID),
                                 create_string_buffer(b"NSIDED"),
                                 c_longlong(num_faces_this_blk),
@@ -3973,7 +3973,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        ebType = get_entity_type('EX_ELEM_BLOCK')
+        ebType = c_int(get_entity_type('EX_ELEM_BLOCK'))
         entity_counts = (c_int * len(entityCounts))()
         entity_counts[:] = entityCounts
         EXODUS_LIB.ex_put_entity_count_per_polyhedra(
@@ -4003,7 +4003,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        ebType = get_entity_type('EX_FACE_BLOCK')
+        ebType = c_int(get_entity_type('EX_FACE_BLOCK'))
         entity_counts = (c_int * len(entityCounts))()
         entity_counts[:] = entityCounts
         EXODUS_LIB.ex_put_entity_count_per_polyhedra(
@@ -4033,7 +4033,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        ebType = get_entity_type('EX_ELEM_BLOCK')
+        ebType = c_int(get_entity_type('EX_ELEM_BLOCK'))
         elem_face_conn = (c_int * len(elemFaceConn))()
         elem_face_conn[:] = elemFaceConn
         EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_longlong(blkId),
@@ -4063,7 +4063,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        ebType = get_entity_type('EX_FACE_BLOCK')
+        ebType = c_int(get_entity_type('EX_FACE_BLOCK'))
         node_conn = (c_int * len(faceNodeConn))()
         node_conn[:] = faceNodeConn
         EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_longlong(blkId),
@@ -4509,7 +4509,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_object_truth_vector(self, objType, entId):
-        obj_type = get_entity_type(objType)
+        obj_type = c_int(get_entity_type(objType))
         entity_id = c_longlong(entId)
         variable_count = self.__ex_get_variable_param(objType)
         truth_table = (c_int * (variable_count.value))()
@@ -4531,7 +4531,7 @@ class exodus:
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
         num_objs = c_int(self.__ex_inquire_int(inqType)).value
 
-        obj_type = get_entity_type(objType)
+        obj_type = c_int(get_entity_type(objType))
         variable_count = self.__ex_get_variable_param(objType)
 
         truth_table = (c_int * (num_objs * variable_count.value))()
@@ -4552,7 +4552,7 @@ class exodus:
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
         num_objs = c_int(self.__ex_inquire_int(inqType)).value
 
-        obj_type = get_entity_type(objType)
+        obj_type = c_int(get_entity_type(objType))
         num_vars = self.__ex_get_variable_param(objType).value
 
         assert len(truthTab) == (num_objs * num_vars)
@@ -4816,7 +4816,7 @@ class exodus:
             attrib[i] = c_double(attr)
         EXODUS_LIB.ex_put_attr(
             self.fileId,
-            get_entity_type('EX_ELEM_BLOCK'),
+            c_int(get_entity_type('EX_ELEM_BLOCK')),
             elem_blk_id,
             attrib)
 
@@ -4830,7 +4830,7 @@ class exodus:
         attrib = (c_double * totalAttr)()
         EXODUS_LIB.ex_get_attr(
             self.fileId,
-            get_entity_type('EX_ELEM_BLOCK'),
+            c_int(get_entity_type('EX_ELEM_BLOCK')),
             elem_blk_id,
             byref(attrib))
         return attrib
