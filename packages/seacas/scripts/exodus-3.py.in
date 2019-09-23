@@ -159,6 +159,29 @@ try:
 except locale.Error:
     locale.setlocale(locale.LC_ALL, 'C')
 
+class ex_options(Enum):
+    """
+    `ex_opts()` function codes - codes are OR'ed into exopts
+
+    Parameters
+    ----------
+    EX_DEFAULT
+         Application responsible for calling `ex_err()` to get error and warning messages to output; library is quiet
+    EX_VERBOSE
+         Verbose mode -- output all error and warning messages
+    EX_DEBUG
+         Output Debug messages
+    EX_ABORT
+         If an error is detected, library will abort instead of letting application decide
+    EX_NULLVERBOSE
+         Output error and warning messages for NULL Entity errors and warnings
+    """
+    EX_DEFAULT     = 0
+    EX_VERBOSE     = 1
+    EX_DEBUG       = 2
+    EX_ABORT       = 4
+    EX_NULLVERBOSE = 8
+
 ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
 if os.uname()[0] == 'Darwin':
     EXODUS_SO = ACCESS + "/lib/libexodus.dylib"
@@ -171,7 +194,6 @@ MAX_NAME_LENGTH = 256     # match exodus default
 MAX_LINE_LENGTH = 80      # match exodus default
 
 EX_API_VERSION_NODOT = getExodusVersion()
-EX_VERBOSE = 1  # verbose mode message flag
 if EX_API_VERSION_NODOT >= 608:
     EX_READ = 0x0002  # ex_open(): open file for reading (default)
 else:
@@ -219,7 +241,7 @@ EX_MPIPOSIX = 0x40000  # \deprecated As of libhdf5 1.8.13.
 EX_PNETCDF = 0x80000
 
 # set exodus error output option
-exErrPrintMode = c_int(EX_VERBOSE)
+exErrPrintMode = c_int(ex_options.EX_VERBOSE.value)
 EXODUS_LIB.ex_opts(exErrPrintMode)
 
 
