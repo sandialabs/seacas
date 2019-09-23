@@ -92,10 +92,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.14 (seacas-py3)"
+EXODUS_PY_VERSION = "1.15 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.14 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.15 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -137,8 +137,8 @@ def getExodusVersion():
     Parse the exodusII.h header file and return the version number or 0 if not
     found.
     """
-    version_major = 0
-    version_minor = 0
+    version_major = -1
+    version_minor = -1
     for line in open(ACCESS + "/include/exodusII.h"):
         fields = line.split()
         if (len(fields) == 3 and
@@ -149,7 +149,7 @@ def getExodusVersion():
                 fields[0] == '#define' and
                 fields[1] == 'EXODUS_VERSION_MINOR'):
             version_minor = int(fields[2])
-        if (version_major > 0 and version_minor > 0):
+        if (version_major > 0 and version_minor >= 0):
            return 100 * version_major + version_minor
     return 0
 
