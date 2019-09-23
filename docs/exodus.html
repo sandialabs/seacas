@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.6.3" />
 <title>exodus API documentation</title>
-<meta name="description" content="exodus.py v 1.14 (seacas-beta) is a python wrapper of some of the exodus library
+<meta name="description" content="exodus.py v 1.15 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version) …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -21,7 +21,7 @@
 <h1 class="title">Module <code>exodus</code></h1>
 </header>
 <section id="section-intro">
-<p>exodus.py v 1.14 (seacas-beta) is a python wrapper of some of the exodus library
+<p>exodus.py v 1.15 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)</p>
 <p>Exodus is a common database for multiple application codes (mesh
 generators, analysis codes, visualization software, etc.) affording
@@ -117,7 +117,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 <details class="source">
 <summary>Source code</summary>
 <pre><code class="python">&#34;&#34;&#34;
-exodus.py v 1.14 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.15 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -210,10 +210,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = &#34;1.14 (seacas-py3)&#34;
+EXODUS_PY_VERSION = &#34;1.15 (seacas-py3)&#34;
 
 EXODUS_PY_COPYRIGHT = &#34;&#34;&#34;
-You are using exodus.py v 1.14 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.15 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &amp;
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -255,8 +255,8 @@ def getExodusVersion():
     Parse the exodusII.h header file and return the version number or 0 if not
     found.
     &#34;&#34;&#34;
-    version_major = 0
-    version_minor = 0
+    version_major = -1
+    version_minor = -1
     for line in open(ACCESS + &#34;/include/exodusII.h&#34;):
         fields = line.split()
         if (len(fields) == 3 and
@@ -267,7 +267,7 @@ def getExodusVersion():
                 fields[0] == &#39;#define&#39; and
                 fields[1] == &#39;EXODUS_VERSION_MINOR&#39;):
             version_minor = int(fields[2])
-        if (version_major &gt; 0 and version_minor &gt; 0):
+        if (version_major &gt; 0 and version_minor &gt;= 0):
            return 100 * version_major + version_minor
     return 0
 
@@ -423,7 +423,7 @@ def ex_inquiry_map(inquiry):
 def ex_obj_to_inq(objType):
     &#34;&#34;&#34;
     Return the ex_inquiry string corresponding to the specified objType.
-    This can be passed to the ex_inquiry() function to get the number of
+    This can be passed to the ex_inquiry_map() function to get the number of
     objects of the specified objType
     &#34;&#34;&#34;
     entity_dictionary = {
@@ -6849,14 +6849,14 @@ later.</p></section>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the ex_inquiry string corresponding to the specified objType.
-This can be passed to the ex_inquiry() function to get the number of
+This can be passed to the ex_inquiry_map() function to get the number of
 objects of the specified objType</p></section>
 <details class="source">
 <summary>Source code</summary>
 <pre><code class="python">def ex_obj_to_inq(objType):
     &#34;&#34;&#34;
     Return the ex_inquiry string corresponding to the specified objType.
-    This can be passed to the ex_inquiry() function to get the number of
+    This can be passed to the ex_inquiry_map() function to get the number of
     objects of the specified objType
     &#34;&#34;&#34;
     entity_dictionary = {
@@ -6892,8 +6892,8 @@ found.</p></section>
     Parse the exodusII.h header file and return the version number or 0 if not
     found.
     &#34;&#34;&#34;
-    version_major = 0
-    version_minor = 0
+    version_major = -1
+    version_minor = -1
     for line in open(ACCESS + &#34;/include/exodusII.h&#34;):
         fields = line.split()
         if (len(fields) == 3 and
@@ -6904,7 +6904,7 @@ found.</p></section>
                 fields[0] == &#39;#define&#39; and
                 fields[1] == &#39;EXODUS_VERSION_MINOR&#39;):
             version_minor = int(fields[2])
-        if (version_major &gt; 0 and version_minor &gt; 0):
+        if (version_major &gt; 0 and version_minor &gt;= 0):
            return 100 * version_major + version_minor
     return 0</code></pre>
 </details>
