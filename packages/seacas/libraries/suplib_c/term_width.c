@@ -3,8 +3,9 @@
 
 #ifdef _MSC_VER
 #include <io.h>
-#include <sys/ioctl.h>
 #define isatty _isatty
+#else
+#include <sys/ioctl.h>
 #endif
 
 #include <unistd.h>
