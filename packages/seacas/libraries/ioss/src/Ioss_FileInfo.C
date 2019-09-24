@@ -309,6 +309,19 @@ namespace Ioss {
     return tail;
   }
 
+  const std::string FileInfo::realpath() const
+  {
+    char *path = ::realpath(filename_.c_str(), nullptr);
+    if (path != nullptr) {
+      std::string temp(path);
+      free(path);
+      return temp;
+    }
+    {
+      return filename_;
+    }
+  }
+
   bool FileInfo::remove_file()
   {
     int success = std::remove(filename_.c_str());

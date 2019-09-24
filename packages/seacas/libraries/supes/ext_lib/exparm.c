@@ -78,7 +78,7 @@
 #endif
 #include <stdio.h> /* sprintf */
 
-#ifndef _MSC_VER
+#ifdef _MSC_VER
 #include <io.h>
 #include <sys/ioctl.h>
 #define isatty _isatty
