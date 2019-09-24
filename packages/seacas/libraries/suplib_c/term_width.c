@@ -1,7 +1,10 @@
 #define _POSIX_SOURCE
 #include <stdio.h>
+
 #ifndef _MSC_VER
+#include <io.h>
 #include <sys/ioctl.h>
+#define isatty _isatty
 #endif
 
 #include <unistd.h>

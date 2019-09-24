@@ -137,14 +137,14 @@ namespace {
     size_t j;
     size_t ndx = 0;
 
-    T small = v[iv[0]];
+    T low = v[iv[0]];
     for (size_t i = 1; i < N; i++) {
-      if (v[iv[i]] < small) {
-        small = v[iv[i]];
-        ndx   = i;
+      if (v[iv[i]] < low) {
+        low = v[iv[i]];
+        ndx = i;
       }
     }
-    /* Put smallest value in slot 0 */
+    /* Put lowest value in slot 0 */
     swap_(iv, 0, ndx);
 
     for (size_t i = 1; i < N; i++) {
