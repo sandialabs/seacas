@@ -241,14 +241,14 @@ namespace {
   {
 // Returns maximum number of files that one process can have open
 // at one time. (POSIX)
-#ifndef _MSC_VER 
-	  int fdmax = sysconf(_SC_OPEN_MAX);
+#ifndef _MSC_VER
+    int fdmax = sysconf(_SC_OPEN_MAX);
     if (fdmax == -1) {
       // POSIX indication that there is no limit on open files...
       fdmax = INT_MAX;
     }
 #else
-    int fdmax = INT_MAX;
+    int fdmax = _getmaxstdio();
 #endif
 
     // File descriptors are assigned in order (0,1,2,3,...) on a per-process
