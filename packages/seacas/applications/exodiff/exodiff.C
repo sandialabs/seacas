@@ -204,9 +204,11 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
 #endif
 #endif
 
+#ifndef _MSC_VER
 struct sigaction sigact; // the signal handler & blocked signals
-bool             checking_invalid = false;
-bool             invalid_data     = false;
+#endif
+bool checking_invalid = false;
+bool invalid_data     = false;
 extern "C" {
 void floating_point_exception_handler(int signo)
 {

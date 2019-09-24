@@ -699,6 +699,11 @@ int main(int argc, char *argv[])
   cleanup(zones);
 }
 
+#if defined(_MSC_VER)
+#include <io.h>
+#define isatty _isatty
+#endif
+
 namespace {
   int term_width(void)
   {

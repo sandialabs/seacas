@@ -2704,6 +2704,7 @@ namespace {
     // Maximum size of string is 'size' (not including terminating nullptr)
     // This is used as information data in the concatenated results file
     // to help in tracking when/where/... the file was created
+#ifndef _MSC_VER
     struct utsname sys_info
     {
     };
@@ -2721,6 +2722,7 @@ namespace {
     info += sys_info.machine;
     const char *sinfo = info.c_str();
     copy_string(info_record, sinfo, size + 1);
+#endif
   }
 
   inline bool is_whitespace(char c)
