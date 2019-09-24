@@ -712,8 +712,9 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
   // and we need to reorder the truth table to match the output block
   // order. After this call, we can use the original ordering, so just
   // need a temporary vector here...
-  if (global_vars.count(Excn::OUT) + nodal_vars.count(Excn::OUT) + element_vars.count(Excn::OUT) +
-          nodeset_vars.count(Excn::OUT) + sideset_vars.count(Excn::OUT) >
+  if (global_vars.count(Excn::OUT_) + nodal_vars.count(Excn::OUT_) +
+          element_vars.count(Excn::OUT_) + nodeset_vars.count(Excn::OUT_) +
+          sideset_vars.count(Excn::OUT_) >
       0) {
 
     std::vector<int> elem_truth_table;
@@ -724,9 +725,9 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     create_output_truth_table(glob_ssets, sideset_vars, sset_truth_table);
 
     ex_put_all_var_param(
-        Excn::ExodusFile::output(), global_vars.count(Excn::OUT), nodal_vars.count(Excn::OUT),
-        element_vars.count(Excn::OUT), elem_truth_table.data(), nodeset_vars.count(Excn::OUT),
-        nset_truth_table.data(), sideset_vars.count(Excn::OUT), sset_truth_table.data());
+        Excn::ExodusFile::output(), global_vars.count(Excn::OUT_), nodal_vars.count(Excn::OUT_),
+        element_vars.count(Excn::OUT_), elem_truth_table.data(), nodeset_vars.count(Excn::OUT_),
+        nset_truth_table.data(), sideset_vars.count(Excn::OUT_), sset_truth_table.data());
   }
 
   // II. read/write the variable names
@@ -752,8 +753,8 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     fmt::print(stderr, "{}", time_stamp(tsFormat));
   }
 
-  std::vector<T> global_values(global_vars.count(Excn::IN));
-  std::vector<T> output_global_values(global_vars.count(Excn::OUT));
+  std::vector<T> global_values(global_vars.count(Excn::IN_));
+  std::vector<T> output_global_values(global_vars.count(Excn::OUT_));
 
   // Determine maximum number of entities on any part
   int max_ent = find_max_entity_count(part_count, local_mesh, global, blocks, nodesets, sidesets);
@@ -802,21 +803,21 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     (time_step)(time_val)(global_times[time_step].timeValue);
     error += ex_put_time(Excn::ExodusFile::output(), time_step_out, &time_val);
 
-    if (global_vars.count(Excn::OUT) > 0) {
+    if (global_vars.count(Excn::OUT_) > 0) {
       if (debug_level & 1) {
         fmt::print(stderr, "{}Global Variables...\n", time_stamp(tsFormat));
       }
       error += ex_get_var(id, global_times[time_step].localStepNumber + 1, EX_GLOBAL, 0, 0,
                           global_vars.count(), (void *)global_values.data());
       // Map ...
-      for (int ig = 0; ig < global_vars.count(Excn::IN); ig++) {
+      for (int ig = 0; ig < global_vars.count(Excn::IN_); ig++) {
         if (global_vars.index_[ig] > 0) {
           SMART_ASSERT(ig < (int)global_values.size());
           output_global_values[global_vars.index_[ig] - 1] = global_values[ig];
         }
       }
       error += ex_put_var(Excn::ExodusFile::output(), time_step_out, EX_GLOBAL, 1, 0,
-                          global_vars.count(Excn::OUT), output_global_values.data());
+                          global_vars.count(Excn::OUT_), output_global_values.data());
     }
 
     // ========================================================================
@@ -825,14 +826,14 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
       fmt::print(stderr, "{}Nodal Variables...\n", time_stamp(tsFormat));
     }
 
-    if (nodal_vars.count(Excn::OUT) > 0) {
+    if (nodal_vars.count(Excn::OUT_) > 0) {
       size_t         node_count = local_mesh[p].count(Excn::NODE);
       std::vector<T> master_nodal_values(global.count(Excn::NODE));
 
       int offset = nodal_vars.addStatus ? 1 : 0;
-      for (int i = 0; i < nodal_vars.count(Excn::OUT) - offset;
+      for (int i = 0; i < nodal_vars.count(Excn::OUT_) - offset;
            i++) { // Last output variable may be status
-        for (int j = 0; j < nodal_vars.count(Excn::IN); j++) {
+        for (int j = 0; j < nodal_vars.count(Excn::IN_); j++) {
           if (nodal_vars.index_[j] - 1 == i) {
             std::fill(master_nodal_values.begin(), master_nodal_values.end(), 0.0);
 
@@ -863,7 +864,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
           }
 
           error += ex_put_var(Excn::ExodusFile::output(), time_step_out, EX_NODAL,
-                              nodal_vars.count(Excn::OUT), 0, global.count(Excn::NODE),
+                              nodal_vars.count(Excn::OUT_), 0, global.count(Excn::NODE),
                               master_nodal_values.data());
         }
       }
@@ -874,7 +875,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     if (debug_level & 1) {
       fmt::print(stderr, "{}Element Variables...\n", time_stamp(tsFormat));
     }
-    if (element_vars.count(Excn::IN) > 0) {
+    if (element_vars.count(Excn::IN_) > 0) {
       read_write_master_values(element_vars, global, glob_blocks, local_mesh, blocks, values, p, id,
                                global_times[time_step].localStepNumber, time_step_out);
     }
@@ -884,7 +885,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     if (interFace.element_status_variable() != "NONE") {
       add_status_variable(Excn::ExodusFile::output(), global, blocks[p], glob_blocks,
                           local_mesh[p].localElementToGlobal, time_step_out,
-                          element_vars.index_[element_vars.count(Excn::IN)], alive,
+                          element_vars.index_[element_vars.count(Excn::IN_)], alive,
                           combined_status_variable_index);
     }
 
@@ -893,7 +894,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     if (debug_level & 1) {
       fmt::print(stderr, "{}Sideset Variables...\n", time_stamp(tsFormat));
     }
-    if (sideset_vars.count(Excn::IN) > 0) {
+    if (sideset_vars.count(Excn::IN_) > 0) {
       read_write_master_values(sideset_vars, global, glob_ssets, local_mesh, sidesets, values, p,
                                id, global_times[time_step].localStepNumber, time_step_out);
     }
@@ -903,7 +904,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     if (debug_level & 1) {
       fmt::print(stderr, "{}Nodeset Variables...\n", time_stamp(tsFormat));
     }
-    if (nodeset_vars.count(Excn::IN) > 0) {
+    if (nodeset_vars.count(Excn::IN_) > 0) {
       read_write_master_values(nodeset_vars, global, glob_nsets, local_mesh, nodesets, values, p,
                                id, global_times[time_step].localStepNumber, time_step_out);
     }
@@ -1800,10 +1801,10 @@ namespace {
   void get_put_variable_names(int id, int out, Excn::Variables &vars, Excn::SystemInterface &si,
                               int *combined_status_variable_index)
   {
-    if (vars.count(Excn::OUT) > 0) {
+    if (vars.count(Excn::OUT_) > 0) {
 
       char **output_name_list =
-          get_name_array(vars.count(Excn::OUT), Excn::ExodusFile::max_name_length());
+          get_name_array(vars.count(Excn::OUT_), Excn::ExodusFile::max_name_length());
 
       int num_vars       = vars.index_.size();
       int extra          = vars.addStatus ? 1 : 0;
@@ -1852,7 +1853,7 @@ namespace {
 
       // See if any of the variable names conflict with the status variable name...
       if (status != "NONE") {
-        for (size_t i = 0; i < static_cast<size_t>(vars.count(Excn::OUT)) - 1; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(vars.count(Excn::OUT_)) - 1; i++) {
           if (case_compare(output_name_list[i], status) == 0) {
             // Error -- duplicate element variable names on output database.
             fmt::print(stderr,
@@ -1872,13 +1873,13 @@ namespace {
         nfield = 1;
       }
 
-      fmt::print(stderr, "Found {} {} variables.\n\t", vars.count(Excn::OUT), vars.label());
+      fmt::print(stderr, "Found {} {} variables.\n\t", vars.count(Excn::OUT_), vars.label());
       {
         int i    = 0;
         int ifld = 1;
-        while (i < vars.count(Excn::OUT)) {
+        while (i < vars.count(Excn::OUT_)) {
           fmt::print(stderr, "{:<{}}", output_name_list[i++], maxlen);
-          if (++ifld > nfield && i < vars.count(Excn::OUT)) {
+          if (++ifld > nfield && i < vars.count(Excn::OUT_)) {
             fmt::print(stderr, "\n\t");
             ifld = 1;
           }
@@ -1886,7 +1887,7 @@ namespace {
         fmt::print(stderr, "\n\n");
       }
 
-      ex_put_variable_names(out, vars.type(), vars.count(Excn::OUT), output_name_list);
+      ex_put_variable_names(out, vars.type(), vars.count(Excn::OUT_), output_name_list);
 
       // KLUGE: Handle finding combined status index variable here since it is
       // the only place we have the list of output variable names...
@@ -1894,7 +1895,7 @@ namespace {
         *combined_status_variable_index = 0;
         const std::string &comb_stat    = si.combined_mesh_status_variable();
         if (!comb_stat.empty()) {
-          for (int i = 0; i < vars.count(Excn::OUT); i++) {
+          for (int i = 0; i < vars.count(Excn::OUT_); i++) {
             if (case_compare(comb_stat, output_name_list[i]) == 0) {
               *combined_status_variable_index = i + 1;
               break;
@@ -1902,7 +1903,7 @@ namespace {
           }
         }
       }
-      free_name_array(output_name_list, vars.count(Excn::OUT));
+      free_name_array(output_name_list, vars.count(Excn::OUT_));
       free_name_array(input_name_list, num_vars);
     }
   }
@@ -2620,7 +2621,7 @@ namespace {
 
     Excn::ObjectType object_type = vars.objectType;
 
-    if (vars.count(Excn::OUT) > 0) {
+    if (vars.count(Excn::OUT_) > 0) {
       // For each input exodus file, get it's truth table and fill
       // in the location in the output truth table...
 
@@ -2638,30 +2639,30 @@ namespace {
           SMART_ASSERT(glob_blocks[gb].id == blocks[p][b].id);
 
           if (p == 0) {
-            glob_blocks[gb].truthTable.resize(vars.count(Excn::OUT));
+            glob_blocks[gb].truthTable.resize(vars.count(Excn::OUT_));
           }
 
-          if (vars.count(Excn::IN) > 0) {
-            blocks[p][b].truthTable.resize(vars.count(Excn::IN));
-            ex_get_object_truth_vector(id, vars.type(), blocks[p][b].id, vars.count(Excn::IN),
+          if (vars.count(Excn::IN_) > 0) {
+            blocks[p][b].truthTable.resize(vars.count(Excn::IN_));
+            ex_get_object_truth_vector(id, vars.type(), blocks[p][b].id, vars.count(Excn::IN_),
                                        blocks[p][b].truthTable.data());
 
             // Find global block corresponding to this block. (Ids match)
-            for (int j = 0; j < vars.count(Excn::IN); j++) {
+            for (int j = 0; j < vars.count(Excn::IN_); j++) {
               if (vars.index_[j] > 0) {
                 glob_blocks[gb].truthTable[vars.index_[j] - 1] += blocks[p][b].truthTable[j];
               }
             }
           }
           if (vars.addStatus) {
-            glob_blocks[gb].truthTable[vars.count(Excn::OUT) - 1] = 1;
+            glob_blocks[gb].truthTable[vars.count(Excn::OUT_) - 1] = 1;
           }
         }
       }
 
       // reset truth table values that may be greater than 1
       for (size_t b = 0; b < global.count(object_type); b++) {
-        for (int j = 0; j < vars.count(Excn::OUT); j++) {
+        for (int j = 0; j < vars.count(Excn::OUT_); j++) {
           if (glob_blocks[b].truthTable[j] > 0) {
             glob_blocks[b].truthTable[j] = 1;
           }
@@ -2670,9 +2671,9 @@ namespace {
 
       if (debug_level & debug) {
         fmt::print(stderr, "Truth table for {}\t{} variables\t{} sets\n", vars.label(),
-                   vars.count(Excn::OUT), global.count(object_type));
+                   vars.count(Excn::OUT_), global.count(object_type));
         for (size_t b = 0; b < global.count(object_type); b++) {
-          for (int j = 0; j < vars.count(Excn::OUT); j++) {
+          for (int j = 0; j < vars.count(Excn::OUT_); j++) {
             fmt::print(stderr, "{}", glob_blocks[b].truthTable[j]);
           }
           fmt::print(stderr, "\n");
@@ -2924,7 +2925,7 @@ namespace {
     // Only needed for element, but haven't cleaned this up yet...
     INT *part_loc_elem_to_global = local_mesh[p].localElementToGlobal.data();
 
-    for (int i = 0; i < vars.count(Excn::IN); i++) {
+    for (int i = 0; i < vars.count(Excn::IN_); i++) {
       if (vars.index_[i] > 0) {
         int ivar = vars.index_[i] - 1;
 
@@ -2976,12 +2977,12 @@ namespace {
   void create_output_truth_table(std::vector<U> &global_sets, Excn::Variables &vars,
                                  std::vector<int> &truth_table)
   {
-    truth_table.resize(global_sets.size() * vars.count(Excn::OUT));
+    truth_table.resize(global_sets.size() * vars.count(Excn::OUT_));
     for (auto &global_set : global_sets) {
       int bout = global_set.position_;
       SMART_ASSERT(bout >= 0);
-      for (int j = 0; j < vars.count(Excn::OUT); j++) {
-        int out_ttable_loc          = (bout * vars.count(Excn::OUT)) + j;
+      for (int j = 0; j < vars.count(Excn::OUT_); j++) {
+        int out_ttable_loc          = (bout * vars.count(Excn::OUT_)) + j;
         truth_table[out_ttable_loc] = global_set.truthTable[j];
       }
     }

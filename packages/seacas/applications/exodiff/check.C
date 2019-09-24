@@ -138,7 +138,7 @@ namespace {
   {
     bool is_same = true;
 
-    if (interFace.coord_tol.type == IGNORE || !check_only) {
+    if (interFace.coord_tol.type == IGNORE_ || !check_only) {
       return is_same;
     }
 

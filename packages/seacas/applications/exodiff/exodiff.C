@@ -263,7 +263,7 @@ namespace {
       if (file.Time(i) <= time) {
         tbef = i;
       }
-      else if (interFace.time_tol.type != IGNORE && !interFace.time_tol.Diff(time, file.Time(i))) {
+      else if (interFace.time_tol.type != IGNORE_ && !interFace.time_tol.Diff(time, file.Time(i))) {
         tbef = i;
       }
       else {
@@ -942,8 +942,8 @@ namespace {
 
       // Make sure there is an operation to perform (compare times, variables, ...)
       if (!interFace.ignore_steps) {
-        if ((min_num_times == 0 && interFace.coord_tol.type == IGNORE) ||
-            (min_num_times > 0 && interFace.time_tol.type == IGNORE &&
+        if ((min_num_times == 0 && interFace.coord_tol.type == IGNORE_) ||
+            (min_num_times > 0 && interFace.time_tol.type == IGNORE_ &&
              interFace.glob_var_names.empty() && interFace.node_var_names.empty() &&
              interFace.elmt_var_names.empty() && interFace.elmt_att_names.empty() &&
              interFace.ns_var_names.empty() && interFace.ss_var_names.empty())) {
@@ -1015,17 +1015,17 @@ namespace {
 } // namespace
 double FileDiff(double v1, double v2, TOLERANCE_TYPE_enum type)
 {
-  if (type == IGNORE) { // ignore
+  if (type == IGNORE_) { // ignore
     return 0.0;
   }
-  else if (type == RELATIVE) { // relative diff
+  else if (type == RELATIVE_) { // relative diff
     if (v1 == 0.0 && v2 == 0.0) {
       return 0.0;
     }
     double max = fabs(v1) < fabs(v2) ? fabs(v2) : fabs(v1);
     return (v1 - v2) / max;
   }
-  else if (type == COMBINED) {
+  else if (type == COMBINED_) {
     // if (Abs(x - y) <= Max(absTol, relTol * Max(Abs(x), Abs(y))))
     // In the current implementation, absTol == relTol;
     // In summary, use abs tolerance if both values are less than 1.0;
@@ -1035,17 +1035,17 @@ double FileDiff(double v1, double v2, TOLERANCE_TYPE_enum type)
     double tol = 1.0 < max ? max : 1.0;
     return fabs(v1 - v2) / tol;
   }
-  else if (type == ABSOLUTE) {
+  else if (type == ABSOLUTE_) {
     return (v1 - v2);
   }
-  else if (type == EIGEN_REL) { // relative diff
+  else if (type == EIGEN_REL_) { // relative diff
     if (v1 == 0.0 && v2 == 0.0) {
       return 0.0;
     }
     double max = fabs(v1) < fabs(v2) ? fabs(v2) : fabs(v1);
     return (fabs(v1) - fabs(v2)) / max;
   }
-  else if (type == EIGEN_COM) {
+  else if (type == EIGEN_COM_) {
     // if (Abs(x - y) <= Max(absTol, relTol * Max(Abs(x), Abs(y))))
     // In the current implementation, absTol == relTol;
     // In summary, use abs tolerance if both values are less than 1.0;
@@ -1055,7 +1055,7 @@ double FileDiff(double v1, double v2, TOLERANCE_TYPE_enum type)
     double tol = 1.0 < max ? max : 1.0;
     return fabs(fabs(v1) - fabs(v2)) / tol;
   }
-  else if (type == EIGEN_ABS) {
+  else if (type == EIGEN_ABS_) {
     return (fabs(v1) - fabs(v2));
   }
   else {
