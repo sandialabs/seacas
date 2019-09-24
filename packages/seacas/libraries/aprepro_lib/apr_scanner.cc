@@ -1046,7 +1046,7 @@ const char *  temp_f;
 #define MAX_IF_NESTING 64
 
 int    if_state[MAX_IF_NESTING]    = {0};     // INITIAL
-int    if_case_run[MAX_IF_NESTING] = {false}; /* Has any if or elseif condition executed */
+bool   if_case_run[MAX_IF_NESTING] = {false}; /* Has any if or elseif condition executed */
 int    if_lvl                      = 0;
 int    if_skip_level               = 0;
 bool   suppress_nl                 = false;
