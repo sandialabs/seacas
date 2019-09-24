@@ -1028,11 +1028,8 @@ typedef SEAMS::Parser::token_type token_type;
 
 #define show(x) *(aprepro->infoStream) << "<" << x << ">" << std::flush;
 namespace SEAMS {
-  extern bool        echo;
-  extern const char *get_temp_filename(void);
-  extern char *      pathopen(const char *file);
-  extern void        conv_string(const char *string);
-  void               yyerror(const char *s);
+  extern bool echo;
+  void        yyerror(const char *s);
 } // namespace SEAMS
 
 int file_must_exist = 0; /* Global used by include/conditional include */
@@ -3521,7 +3518,7 @@ namespace SEAMS {
 
     // Don't do it if the file is the one used by execute and rescan.
     if (aprepro.ap_file_list.top().name == "_string_" ||
-	aprepro.ap_file_list.top().name == "standard input") {
+        aprepro.ap_file_list.top().name == "standard input") {
       return;
     }
 

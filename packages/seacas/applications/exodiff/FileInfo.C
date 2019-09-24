@@ -267,7 +267,11 @@ const std::string FileInfo::basename() const
 
 const std::string FileInfo::realpath() const
 {
+#ifdef _MSC_VER
+  char *path = _fullpath(nullptr, filename_.c_str(), _MAX_PATH);
+#else
   char *path = ::realpath(filename_.c_str(), nullptr);
+#endif
   if (path != nullptr) {
     std::string temp(path);
     free(path);
