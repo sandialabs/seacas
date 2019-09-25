@@ -150,8 +150,10 @@
 
 char *optarg;     // global argument pointer
 int   optind = 0; // global argv index
+int   optopt = 0;
+int   opterr = 0;
 
-int getopt(int argc, char *argv[], char *optstring)
+int getopt(int argc, char *const argv[], const char *optstring)
 {
   static char *next = NULL;
   if (optind == 0)
