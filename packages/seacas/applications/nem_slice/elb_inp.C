@@ -46,7 +46,11 @@
 #include "elb_inp.h"
 #include "elb_util.h" // for strip_string, token_compare, etc
 #include "fmt/ostream.h"
+#ifdef _MSC_VER
+#include "XGetopt.h"
+#else
 #include "getopt.h" // for getopt
+#endif
 #include "scopeguard.h"
 #include <cstddef> // for size_t
 #ifndef _XOPEN_SOURCE

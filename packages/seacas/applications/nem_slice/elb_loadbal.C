@@ -415,7 +415,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       exit(-1);
     }
     else {
-      flag = interface(problem->num_vertices, (int *)graph->start.data(), (int *)graph->adj.data(),
+      flag = INTERFACE(problem->num_vertices, (int *)graph->start.data(), (int *)graph->adj.data(),
                        weight->vertices.data(), weight->edges.data(), x_ptr, y_ptr, z_ptr,
                        const_cast<char *>(assignfile), (char *)nullptr, lb->vertex2proc, tmp_arch,
                        tmp_lev, dim, goal, glob_method, refine, solve->rqi_flag, solve->vmax,
@@ -731,7 +731,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
       else {
         fmt::print("===================Call Chaco===========================\n");
         time1 = get_time();
-        flag  = interface(tmp_nv, (int *)tmp_start, (int *)tmp_adj, tmp_vwgts, tmp_ewgts, tmp_x,
+        flag  = INTERFACE(tmp_nv, (int *)tmp_start, (int *)tmp_adj, tmp_vwgts, tmp_ewgts, tmp_x,
                          tmp_y, tmp_z, const_cast<char *>(assignfile), (char *)nullptr, tmp_v2p,
                          arch, num_level, tmpdim, goal, glob_method, refine, solve->rqi_flag,
                          solve->vmax, lb->num_sects, solve->tolerance, seed);
