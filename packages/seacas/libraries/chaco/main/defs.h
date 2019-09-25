@@ -35,12 +35,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifndef max
 #define max(A, B) ((A) > (B) ? (A) : (B))
+#endif
+#ifndef min
 #define min(A, B) ((A) < (B) ? (A) : (B))
+#endif
+#ifndef sign
 #define sign(A) ((A) < 0 ? -1 : 1)
+#endif
+#ifndef absval
 #define absval(A) ((A) < 0 ? -(A) : (A))
+#endif
+#ifndef TRUE
 #define TRUE 1
+#endif
+#ifndef FALSE
 #define FALSE 0
+#endif
 
 /* Define constants that are needed in various places */
 #define PI 3.141592653589793
