@@ -35,6 +35,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <math.h>
+#include <stdlib.h>
+
 #ifndef max
 #define max(A, B) ((A) > (B) ? (A) : (B))
 #endif
@@ -55,8 +58,14 @@
 #endif
 
 /* Define constants that are needed in various places */
+#if defined(M_PI)
+#define PI M_PI
+#define TWOPI (2.0 * M_PI)
+#define HALFPI (0.5 * M_PI)
+#else
 #define PI 3.141592653589793
 #define TWOPI 6.283185307179586
 #define HALFPI 1.570796326794896
+#endif
 
 #endif
