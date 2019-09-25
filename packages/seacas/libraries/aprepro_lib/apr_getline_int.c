@@ -62,6 +62,7 @@
 #else
 #ifndef __unix__
 #define __unix__ 1
+#include <sys/time.h>
 #endif
 #if defined(AIX) || defined(_AIX)
 #define _ALL_SOURCE 1
@@ -77,7 +78,6 @@
 #include <unistd.h>
 #endif
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <sys/types.h>
 #ifdef CAN_USE_SYS_SELECT_H
 #include <sys/select.h>
