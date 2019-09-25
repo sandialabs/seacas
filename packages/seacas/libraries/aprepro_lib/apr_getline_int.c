@@ -78,13 +78,13 @@
 #endif
 #include <sys/stat.h>
 #ifndef _MSC_VER
+#include <dirent.h>
 #include <sys/time.h>
 #endif
 #include <sys/types.h>
 #ifdef CAN_USE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
-#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <pwd.h>
