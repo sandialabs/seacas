@@ -57,7 +57,6 @@
 #include <numeric>
 #include <set>
 #include <string>
-#include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <tokenize.h>

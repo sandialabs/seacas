@@ -41,6 +41,8 @@
 #include <vector>
 
 #if defined(_MSC_VER)
+#define strcasecmp stricmp
+#define strncasecmp strnicmp
 #ifdef _WIN64
 #define ssize_t __int64
 #else
