@@ -49,7 +49,6 @@
 #include <cstring>
 #include <fstream>
 #include <string>
-#include <sys/times.h>
 #include <unistd.h>
 
 #include "shell_interface.h"
