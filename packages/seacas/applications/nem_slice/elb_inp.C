@@ -199,7 +199,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       /* Weighting options */
       sub_opt = optarg;
       while (sub_opt != nullptr && *sub_opt != '\0') {
-        switch (::getsubopt(&sub_opt, (char *const *)weight_subopts, &value)) {
+        switch (getsubopt(&sub_opt, (char *const *)weight_subopts, &value)) {
         case READ_EXO:
           if (value == nullptr) {
             ctemp =
@@ -345,7 +345,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
           Gen_Error(0, ctemp);
           return 0;
 
-        } /* End "switch(::getsubopt(&sub_opt, weight_subopts, &value))" */
+        } /* End "switch(getsubopt(&sub_opt, weight_subopts, &value))" */
 
       } /* End "while(*sub_opt != '\0')" */
 
@@ -392,7 +392,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       while (sub_opt != nullptr && *sub_opt != '\0') {
 
         /* Switch over the machine description */
-        switch (::getsubopt(&sub_opt, (char *const *)mach_subopts, &value)) {
+        switch (getsubopt(&sub_opt, (char *const *)mach_subopts, &value)) {
         case HCUBE:
         case HYPERCUBE:
           if (machine->type < 0) {
@@ -478,7 +478,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
 
         default: Gen_Error(0, "FATAL: unknown machine type"); return 0;
 
-        } /* End "switch(::getsubopt(&sub_opt, mach_subopts, &value))" */
+        } /* End "switch(getsubopt(&sub_opt, mach_subopts, &value))" */
 
       } /* End "while(*sub_opt != '\0')" */
 
@@ -491,7 +491,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
         string_to_lower(sub_opt, '\0');
       }
       while (sub_opt != nullptr && *sub_opt != '\0') {
-        switch (::getsubopt(&sub_opt, (char *const *)lb_subopts, &value)) {
+        switch (getsubopt(&sub_opt, (char *const *)lb_subopts, &value)) {
         case MULTIKL: lb->type = MULTIKL; break;
 
         case SPECTRAL: lb->type = SPECTRAL; break;
@@ -568,7 +568,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
           Gen_Error(0, ctemp);
           return 0;
 
-        } /* End "switch(::getsubopt(&sup_opt, mach_subopts, &value))" */
+        } /* End "switch(getsubopt(&sup_opt, mach_subopts, &value))" */
 
       } /* End "while(*sup_opt != '\0')" */
 
@@ -583,7 +583,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
         string_to_lower(sub_opt, '\0');
       }
       while (sub_opt != nullptr && *sub_opt != '\0') {
-        switch (::getsubopt(&sub_opt, (char *const *)solve_subopts, &value)) {
+        switch (getsubopt(&sub_opt, (char *const *)solve_subopts, &value)) {
         case TOLER:
           if (value == nullptr) {
             fmt::print(stderr, "FATAL: tolerance specification requires \
@@ -623,7 +623,7 @@ value\n");
 
         default: fmt::print(stderr, "FATAL: unknown solver option\n"); return 0;
 
-        } /* End "switch(::getsubopt(&sub_opt, solve_subopts, &value))" */
+        } /* End "switch(getsubopt(&sub_opt, solve_subopts, &value))" */
 
       } /* End "while(sub_opt != '\0')" */
 
