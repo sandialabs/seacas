@@ -39,6 +39,14 @@
 #include <math.h>
 #include <stdio.h>
 
+#if defined(_MSC_VER)
+#ifdef _WIN64
+#define ssize_t __int64
+#else
+#define ssize_t long
+#endif
+#endif
+
 /*
    Keep guys moved in and guys moving out of separator.
 
@@ -98,15 +106,15 @@ int nway_klv(struct vtx_data **graph,      /* data structure for graph */
   int             to = -1, from;        /* sets moving into / out of */
   int             rtop, ltop;           /* top of each set of buckets */
   int *           to_top;               /* ptr to top of set moving to */
-  int64_t         lvtx, rvtx;           /* next vertex to move left/right */
+  ssize_t         lvtx, rvtx;           /* next vertex to move left/right */
   int             lweight, rweight;     /* weights of moving vertices */
   int             weightfrom = 0;       /* weight moving out of a set */
   int             list_length;          /* how long is list of vertices to bucketsort? */
   int             balanced;             /* is partition balanced? */
   int             temp_balanced;        /* is intermediate partition balanced? */
   int             ever_balanced;        /* has any partition been balanced? */
-  int64_t         bestvtx = -1;         /* best vertex to move */
-  int64_t         bestval = -1;         /* best change in value for a vtx move */
+  ssize_t         bestvtx = -1;         /* best vertex to move */
+  ssize_t         bestval = -1;         /* best change in value for a vtx move */
   int             vweight;              /* weight of best vertex */
   int             gtotal;               /* sum of changes from moving */
   int             improved;             /* total improvement from KL */
