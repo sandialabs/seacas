@@ -139,6 +139,13 @@ template int generate_loadbal(Machine_Description *machine, Problem_Description 
                               Weight_Description<int64_t> *weight, Sphere_Info *sphere, int argc,
                               char *argv[]);
 
+/* Variables used in Chaco */
+extern "C" {
+extern int FREE_GRAPH;
+extern int CONNECTED_DOMAINS;
+extern int OUTPUT_ASSIGN;
+}
+
 template <typename INT>
 int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
                      Mesh_Description<INT> *mesh, LB_Description<INT> *lb,
@@ -171,10 +178,6 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
   double  time1, time2;
   FILE *  fp = nullptr;
 
-  /* Variables used in Chaco */
-  extern int FREE_GRAPH;
-  extern int CONNECTED_DOMAINS;
-  extern int OUTPUT_ASSIGN;
   /*-----------------------------Execution Begins------------------------------*/
 
   tmpdim[0] = 0;
