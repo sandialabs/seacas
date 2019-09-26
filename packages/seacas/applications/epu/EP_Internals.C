@@ -111,7 +111,7 @@ namespace {
 bool Excn::is_path_absolute(const std::string &path)
 {
 #ifdef _WIN32
-  return !PathIsRelativeA(path.c_str());
+  return path[0] == '\\' || path[1] == ':';
 #else
   return path[0] == '/';
 #endif

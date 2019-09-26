@@ -20,7 +20,7 @@
  * Note:  This version has been updated by Mike Gleason <mgleason@ncftp.com>
  */
 
-#if defined(WIN32) || defined(_WINDOWS)
+#if defined(WIN32) || defined(_WINDOWS) || defined(_MSC_VER)
 #include <conio.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -61,7 +61,9 @@
 #define __windows__ 1
 #else
 #ifndef __unix__
+#ifndef _MSC_VER
 #define __unix__ 1
+#endif
 #endif
 #if defined(AIX) || defined(_AIX)
 #define _ALL_SOURCE 1
@@ -69,23 +71,27 @@
 #if defined(HAVE_CONFIG_H)
 #include <config.h>
 #else
-#/* guess */
+#ifndef __MSC_VER
 #define HAVE_TERMIOS_H 1
+#endif
 #define HAVE_UNISTD_H 1
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #include <sys/stat.h>
+#ifndef _MSC_VER
+#include <dirent.h>
+#include <pwd.h>
 #include <sys/time.h>
+#endif
 #include <sys/types.h>
 #ifdef CAN_USE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
-#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <pwd.h>
+#ifndef _MSC_VER
 #ifdef HAVE_TERMIOS_H /* use HAVE_TERMIOS_H interface */
 #include <termios.h>
 struct termios new_termios, old_termios;
@@ -101,6 +107,7 @@ struct ltchars ltch;
 struct termio new_termio, old_termio;
 #endif /* TIOCSETN */
 #endif /* HAVE_TERMIOS_H */
+#endif /* _MSC_VER */
 #define LOCAL_PATH_DELIM '/'
 #define LOCAL_PATH_DELIM_STR "/"
 #define _StrFindLocalPathDelim(a) strchr(a, LOCAL_PATH_DELIM)
@@ -118,6 +125,10 @@ struct termio new_termio, old_termio;
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#ifdef _MSC_VER
+#define pid_t int
+#endif
 
 extern int kill(pid_t pid, int sig);
 
