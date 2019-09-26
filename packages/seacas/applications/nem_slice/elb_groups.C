@@ -42,6 +42,7 @@
 #include "elb_elem.h" // for elem_name_from_enum
 #include "elb_err.h"  // for Gen_Error
 #include "elb_groups.h"
+#include "elb_util.h"
 #include <cstdio>  // for sscanf, nullptr
 #include <cstdlib> // for free, malloc
 #include <cstring> // for strchr, strlen

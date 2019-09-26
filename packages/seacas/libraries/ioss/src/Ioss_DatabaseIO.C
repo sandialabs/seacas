@@ -63,7 +63,6 @@
 #include <set>
 #include <string>
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <tokenize.h>
 #include <utility>
 #include <vector>
@@ -390,6 +389,13 @@ namespace Ioss {
     return exists;
   }
 
+#if defined(_MSC_VER)
+#include <direct.h>
+#ifndef S_ISDIR
+#define S_ISDIR(mode) (((mode)&S_IFMT) == S_IFDIR)
+#endif
+#endif
+
   void DatabaseIO::create_path(const std::string &filename) const
   {
     bool               error_found = false;
@@ -407,7 +413,11 @@ namespace Ioss {
         struct stat st;
         if (stat(path_root.c_str(), &st) != 0) {
           const int mode = 0777; // Users umask will be applied to this.
+#ifdef _MSC_VER
+          if (mkdir(path_root.c_str()) != 0 && errno != EEXIST) {
+#else
           if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
+#endif
             fmt::print(errmsg, "ERROR: Cannot create directory '{}': {}\n", path_root,
                        std::strerror(errno));
             error_found = true;
