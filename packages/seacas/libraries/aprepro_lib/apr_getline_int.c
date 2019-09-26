@@ -69,8 +69,9 @@
 #if defined(HAVE_CONFIG_H)
 #include <config.h>
 #else
-#/* guess */
+#ifndef __MSC_VER
 #define HAVE_TERMIOS_H 1
+#endif
 #define HAVE_UNISTD_H 1
 #endif
 #ifdef HAVE_UNISTD_H
@@ -88,6 +89,7 @@
 #endif
 #include <errno.h>
 #include <fcntl.h>
+#ifndef _MSC_VER
 #ifdef HAVE_TERMIOS_H /* use HAVE_TERMIOS_H interface */
 #include <termios.h>
 struct termios new_termios, old_termios;
@@ -103,6 +105,7 @@ struct ltchars ltch;
 struct termio new_termio, old_termio;
 #endif /* TIOCSETN */
 #endif /* HAVE_TERMIOS_H */
+#endif /* _MSC_VER */
 #define LOCAL_PATH_DELIM '/'
 #define LOCAL_PATH_DELIM_STR "/"
 #define _StrFindLocalPathDelim(a) strchr(a, LOCAL_PATH_DELIM)
