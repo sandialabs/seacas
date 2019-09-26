@@ -441,10 +441,7 @@ void NemSpread<T, INT>::process_lb_data(INT *Integer_Vector, int indx)
  */
 {
   /* Local variables */
-  int icount = 0, itotal_nodes, itotal_elems, ig_count = 0;
-
-  /* Function declarations */
-  extern void sort_int(int n, int ra[]);
+  INT icount = 0, itotal_nodes, itotal_elems, ig_count = 0;
 
   /***************************** execution begins ******************************/
 
