@@ -20,7 +20,7 @@
  * Note:  This version has been updated by Mike Gleason <mgleason@ncftp.com>
  */
 
-#if defined(WIN32) || defined(_WINDOWS)
+#if defined(WIN32) || defined(_WINDOWS) || defined(_MSC_VER)
 #include <conio.h>
 #include <errno.h>
 #include <fcntl.h>
