@@ -38,6 +38,7 @@
 #include "structs.h"
 #include <math.h>
 #include <stdio.h>
+#include <sys/types.h>
 
 #if defined(_MSC_VER)
 #ifdef _WIN64
