@@ -307,7 +307,7 @@ namespace {
     for (i = 1; i < N; i++) {
       if (v[i] < small_val) {
         small_val = v[i];
-        ndx   = i;
+        ndx       = i;
       }
     }
     /* Put smallest value in slot 0 */
@@ -705,8 +705,8 @@ namespace {
       INT    small_val3 = v3[i];
       INT    small_val4 = v4[i];
       size_t j;
-      for (j = i; is_less_than4(small_val1, small_val2, small_val3, small_val4, v1[j - 1], v2[j - 1], v3[j - 1],
-                                v4[j - 1]);
+      for (j = i; is_less_than4(small_val1, small_val2, small_val3, small_val4, v1[j - 1],
+                                v2[j - 1], v3[j - 1], v4[j - 1]);
            j--) {
         v1[j] = v1[j - 1];
         v2[j] = v2[j - 1];
@@ -874,6 +874,12 @@ template <typename INT> void qsort2(INT *v1, INT *v2, size_t N)
   }
 #endif
 }
+
+#ifdef _MSC_VER
+template void sort2(ssize_t N, ssize_t *v1, ssize_t *v2);
+template void sort2(ssize_t N, int *const v1, int *const v2);
+template void sort2(ssize_t N, ssize_t *const v1, ssize_t *const v2);
+#endif
 
 template void                sort2(ssize_t N, int *v1, int *v2);
 template void                sort2(ssize_t N, int64_t *v1, int64_t *v2);
