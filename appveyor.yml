@@ -26,8 +26,8 @@ install:
   - cmd: call %CONDA_INSTALL_LOCN%\Scripts\activate.bat
   - cmd: conda config --add channels conda-forge
   - cmd: conda config --set always_yes yes --set changeps1 no --set show_channel_urls true 
-  - cmd: conda update conda
-  - cmd: conda install hdf5 libnetcdf
+  - cmd: conda update -n base -c defaults conda
+  - cmd: conda install libnetcdf
 
 configuration: Release
 
@@ -43,3 +43,4 @@ build_script:
 
 test_script:
   - cmd: cmake --build . --config Release --target install -- /maxcpucount:4
+  - cmd: ctest 
