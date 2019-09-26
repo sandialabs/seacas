@@ -77,25 +77,25 @@ public:
   // Global data:
 
   const std::string &Title() const { return title; }
-  int                Dimension() const { return dimension; }
+  size_t             Dimension() const { return dimension; }
   size_t             Num_Nodes() const { return num_nodes; }
   size_t             Num_Elmts() const { return num_elmts; }
-  int                Num_Node_Sets() const { return num_node_sets; }
-  int                Num_Side_Sets() const { return num_side_sets; }
+  size_t             Num_Node_Sets() const { return num_node_sets; }
+  size_t             Num_Side_Sets() const { return num_side_sets; }
 
   // Times:
 
-  int    Num_Times() const { return num_times; }
+  size_t Num_Times() const { return num_times; }
   double Time(int time_num) const;
 
   // Variables:
 
-  int                             Num_Global_Vars() const { return global_vars.size(); }
-  int                             Num_Nodal_Vars() const { return nodal_vars.size(); }
-  int                             Num_Elmt_Vars() const { return elmt_vars.size(); }
-  int                             Num_Elmt_Atts() const { return elmt_atts.size(); }
-  int                             Num_NS_Vars() const { return ns_vars.size(); }
-  int                             Num_SS_Vars() const { return ss_vars.size(); }
+  size_t                          Num_Global_Vars() const { return global_vars.size(); }
+  size_t                          Num_Nodal_Vars() const { return nodal_vars.size(); }
+  size_t                          Num_Elmt_Vars() const { return elmt_vars.size(); }
+  size_t                          Num_Elmt_Atts() const { return elmt_atts.size(); }
+  size_t                          Num_NS_Vars() const { return ns_vars.size(); }
+  size_t                          Num_SS_Vars() const { return ss_vars.size(); }
   const std::vector<std::string> &Global_Var_Names() const { return global_vars; }
   const std::vector<std::string> &Nodal_Var_Names() const { return nodal_vars; }
   const std::vector<std::string> &Elmt_Var_Names() const { return elmt_vars; }
@@ -232,10 +232,10 @@ protected:
   std::vector<std::string> ns_vars;
   std::vector<std::string> ss_vars;
 
-  int     num_times;
+  size_t  num_times;
   double *times;
 
-  int      cur_time;    // Current timestep number of the results (0 means none).
+  size_t   cur_time;    // Current timestep number of the results (0 means none).
   double **results;     // Array of pointers (to arrays of results data);
                         // length is number of nodal variables.
   double *global_vals;  // Array of global variables for the current timestep.

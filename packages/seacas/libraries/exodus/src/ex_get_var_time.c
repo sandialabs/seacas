@@ -71,9 +71,11 @@
 int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t id,
                     int beg_time_step, int end_time_step, void *var_vals)
 {
-  int         dimid, varid, numel = 0, offset;
+  int         dimid, varid;
   int         status;
   int *       stat_vals = NULL;
+  size_t      numel     = 0;
+  size_t      offset;
   size_t      num_obj, i;
   size_t      num_entries_this_obj = 0;
   size_t      start[2], count[2];
