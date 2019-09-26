@@ -322,33 +322,6 @@ namespace {
     }
   }
 
-  template <typename INT> inline void SWAP(INT r, INT s)
-  {
-    INT t = r;
-    r     = s;
-    s     = t;
-  }
-
-  template <typename INT> void siftDown(INT *a, INT *b, size_t start, size_t end)
-  {
-    size_t root = start;
-
-    while (root * 2 + 1 < end) {
-      size_t child = 2 * root + 1;
-      if ((child + 1 < end) && (a[child] < a[child + 1])) {
-        child += 1;
-      }
-      if (a[root] < a[child]) {
-        SWAP(a[child], a[root]);
-        SWAP(b[child], b[root]);
-        root = child;
-      }
-      else {
-        return;
-      }
-    }
-  }
-
   template <typename INT> void siftDowniii(INT *a, INT *b, INT *c, size_t start, size_t end)
   {
     size_t root = start;
@@ -873,31 +846,6 @@ template <typename INT> void qsort2(INT *v1, INT *v2, size_t N)
     assert(is_less_than2v(v1, v2, i - 1, i));
   }
 #endif
-}
-
-#ifdef _MSC_VER
-template void sort2(ssize_t N, ssize_t *v1, ssize_t *v2);
-template void sort2(ssize_t N, int *const v1, int *const v2);
-template void sort2(ssize_t N, ssize_t *const v1, ssize_t *const v2);
-#endif
-
-template void                sort2(ssize_t N, int *v1, int *v2);
-template void                sort2(ssize_t N, int64_t *v1, int64_t *v2);
-template <typename INT> void sort2(ssize_t count, INT ra[], INT rb[])
-{
-  if (count <= 1) {
-    return;
-  }
-  /* heapify */
-  for (ssize_t start = (count - 2) / 2; start >= 0; start--) {
-    siftDown(ra, rb, start, count);
-  }
-
-  for (size_t end = count - 1; end > 0; end--) {
-    SWAP(ra[end], ra[0]);
-    SWAP(rb[end], rb[0]);
-    siftDown(ra, rb, 0, end);
-  }
 }
 
 template void                sort3(ssize_t count, int ra[], int rb[], int rc[]);
