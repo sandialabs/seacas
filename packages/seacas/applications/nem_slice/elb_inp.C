@@ -48,6 +48,7 @@
 #include "fmt/ostream.h"
 #ifdef _MSC_VER
 #include "XGetopt.h"
+#include <unistd.h>
 #else
 #include "getopt.h" // for getopt
 #endif
