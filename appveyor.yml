@@ -27,7 +27,7 @@ install:
   - cmd: conda config --add channels conda-forge
   - cmd: conda config --set always_yes yes --set changeps1 no --set show_channel_urls true 
   - cmd: conda update -n base -c defaults conda
-  - cmd: conda install hdf5=1.10.5 libnetcdf=4.7.1
+  - cmd: conda install libnetcdf=4.7.1 hdf5
 
 configuration: Release
 
