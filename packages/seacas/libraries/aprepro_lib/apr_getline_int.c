@@ -79,6 +79,7 @@
 #include <sys/stat.h>
 #ifndef _MSC_VER
 #include <dirent.h>
+#include <pwd.h>
 #include <sys/time.h>
 #endif
 #include <sys/types.h>
@@ -87,7 +88,6 @@
 #endif
 #include <errno.h>
 #include <fcntl.h>
-#include <pwd.h>
 #ifdef HAVE_TERMIOS_H /* use HAVE_TERMIOS_H interface */
 #include <termios.h>
 struct termios new_termios, old_termios;
