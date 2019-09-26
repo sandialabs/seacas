@@ -1,5 +1,5 @@
 """
-exodus.py v 1.14 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.15 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -88,14 +88,14 @@ import sys
 from ctypes import *
 import os
 import locale
-
+from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.14 (seacas-py3)"
+EXODUS_PY_VERSION = "1.15 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.14 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.15 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -137,8 +137,8 @@ def getExodusVersion():
     Parse the exodusII.h header file and return the version number or 0 if not
     found.
     """
-    version_major = 0
-    version_minor = 0
+    version_major = -1
+    version_minor = -1
     for line in open(ACCESS + "/include/exodusII.h"):
         fields = line.split()
         if (len(fields) == 3 and
@@ -149,7 +149,7 @@ def getExodusVersion():
                 fields[0] == '#define' and
                 fields[1] == 'EXODUS_VERSION_MINOR'):
             version_minor = int(fields[2])
-        if (version_major > 0 and version_minor > 0):
+        if (version_major > 0 and version_minor >= 0):
            return 100 * version_major + version_minor
     return 0
 
@@ -158,6 +158,29 @@ try:
     locale.setlocale(locale.LC_ALL, 'en_US.utf-8')
 except locale.Error:
     locale.setlocale(locale.LC_ALL, 'C')
+
+class ex_options(Enum):
+    """
+    `ex_opts()` function codes - codes are OR'ed into exopts
+
+    Parameters
+    ----------
+    EX_DEFAULT
+         Application responsible for calling `ex_err()` to get error and warning messages to output; library is quiet
+    EX_VERBOSE
+         Verbose mode -- output all error and warning messages
+    EX_DEBUG
+         Output Debug messages
+    EX_ABORT
+         If an error is detected, library will abort instead of letting application decide
+    EX_NULLVERBOSE
+         Output error and warning messages for NULL Entity errors and warnings
+    """
+    EX_DEFAULT     = 0
+    EX_VERBOSE     = 1
+    EX_DEBUG       = 2
+    EX_ABORT       = 4
+    EX_NULLVERBOSE = 8
 
 ACCESS = os.getenv('ACCESS', '@ACCESSDIR@')
 if os.uname()[0] == 'Darwin':
@@ -171,7 +194,6 @@ MAX_NAME_LENGTH = 256     # match exodus default
 MAX_LINE_LENGTH = 80      # match exodus default
 
 EX_API_VERSION_NODOT = getExodusVersion()
-EX_VERBOSE = 1  # verbose mode message flag
 if EX_API_VERSION_NODOT >= 608:
     EX_READ = 0x0002  # ex_open(): open file for reading (default)
 else:
@@ -219,98 +241,93 @@ EX_MPIPOSIX = 0x40000  # \deprecated As of libhdf5 1.8.13.
 EX_PNETCDF = 0x80000
 
 # set exodus error output option
-exErrPrintMode = c_int(EX_VERBOSE)
+exErrPrintMode = c_int(ex_options.EX_VERBOSE.value)
 EXODUS_LIB.ex_opts(exErrPrintMode)
 
 
-def ex_inquiry(inquiry):
-    """
-    Map the exodus inquiry flags to an integer value.
-    """
-    # create dictionary for return types
-    inquiry_dictionary = {
-        'EX_INQ_FILE_TYPE': 1,                    # inquire EXODUS file type
-        'EX_INQ_API_VERS': 2,                     # inquire API version number
-        'EX_INQ_DB_VERS': 3,                      # inquire database version number
-        'EX_INQ_TITLE': 4,                        # inquire database title
-        'EX_INQ_DIM': 5,                          # inquire number of dimensions
-        'EX_INQ_NODES': 6,                        # inquire number of nodes
-        'EX_INQ_ELEM': 7,                         # inquire number of elements
-        'EX_INQ_ELEM_BLK': 8,                     # inquire number of element blocks
-        'EX_INQ_NODE_SETS': 9,                    # inquire number of node sets
-        'EX_INQ_NS_NODE_LEN': 10,                 # inquire length of node set node list
-        'EX_INQ_SIDE_SETS': 11,                   # inquire number of side sets
-        'EX_INQ_SS_NODE_LEN': 12,                 # inquire length of side set node list
-        'EX_INQ_SS_ELEM_LEN': 13,                 # inquire length of side set element list
-        'EX_INQ_QA': 14,                          # inquire number of QA records
-        'EX_INQ_INFO': 15,                        # inquire number of info records
-        # inquire number of time steps in the database
-        'EX_INQ_TIME': 16,
-        # inquire number of element block properties
-        'EX_INQ_EB_PROP': 17,
-        'EX_INQ_NS_PROP': 18,                     # inquire number of node set properties
-        'EX_INQ_SS_PROP': 19,                     # inquire number of side set properties
+class ex_inquiry(Enum):
+        EX_INQ_FILE_TYPE = 1                    # inquire EXODUS file type
+        EX_INQ_API_VERS = 2                     # inquire API version number
+        EX_INQ_DB_VERS = 3                      # inquire database version number
+        EX_INQ_TITLE = 4                        # inquire database title
+        EX_INQ_DIM = 5                          # inquire number of dimensions
+        EX_INQ_NODES = 6                        # inquire number of nodes
+        EX_INQ_ELEM = 7                         # inquire number of elements
+        EX_INQ_ELEM_BLK = 8                     # inquire number of element blocks
+        EX_INQ_NODE_SETS = 9                    # inquire number of node sets
+        EX_INQ_NS_NODE_LEN = 10                 # inquire length of node set node list
+        EX_INQ_SIDE_SETS = 11                   # inquire number of side sets
+        EX_INQ_SS_NODE_LEN = 12                 # inquire length of side set node list
+        EX_INQ_SS_ELEM_LEN = 13                 # inquire length of side set element list
+        EX_INQ_QA = 14                          # inquire number of QA records
+        EX_INQ_INFO = 15                        # inquire number of info records
+        EX_INQ_TIME = 16                        # inquire number of time steps in the database
+        EX_INQ_EB_PROP = 17                     # inquire number of element block properties
+        EX_INQ_NS_PROP = 18                     # inquire number of node set properties
+        EX_INQ_SS_PROP = 19                     # inquire number of side set properties
         # inquire length of node set distribution factor list
-        'EX_INQ_NS_DF_LEN': 20,
+        EX_INQ_NS_DF_LEN = 20
         # inquire length of side set distribution factor list
-        'EX_INQ_SS_DF_LEN': 21,
-        'EX_INQ_LIB_VERS': 22,                    # inquire API Lib vers number
-        'EX_INQ_EM_PROP': 23,                     # inquire number of element map properties
-        'EX_INQ_NM_PROP': 24,                     # inquire number of node map properties
-        'EX_INQ_ELEM_MAP': 25,                    # inquire number of element maps
-        'EX_INQ_NODE_MAP': 26,                    # inquire number of node maps
-        'EX_INQ_EDGE': 27,                        # inquire number of edges
-        'EX_INQ_EDGE_BLK': 28,                    # inquire number of edge blocks
-        'EX_INQ_EDGE_SETS': 29,                   # inquire number of edge sets
+        EX_INQ_SS_DF_LEN = 21
+        EX_INQ_LIB_VERS = 22                    # inquire API Lib vers number
+        EX_INQ_EM_PROP = 23                     # inquire number of element map properties
+        EX_INQ_NM_PROP = 24                     # inquire number of node map properties
+        EX_INQ_ELEM_MAP = 25                    # inquire number of element maps
+        EX_INQ_NODE_MAP = 26                    # inquire number of node maps
+        EX_INQ_EDGE = 27                        # inquire number of edges
+        EX_INQ_EDGE_BLK = 28                    # inquire number of edge blocks
+        EX_INQ_EDGE_SETS = 29                   # inquire number of edge sets
         # inquire length of concat edge set edge list
-        'EX_INQ_ES_LEN': 30,
+        EX_INQ_ES_LEN = 30
         # inquire length of concat edge set dist factor list
-        'EX_INQ_ES_DF_LEN': 31,
+        EX_INQ_ES_DF_LEN = 31
         # inquire number of properties stored per edge block
-        'EX_INQ_EDGE_PROP': 32,
+        EX_INQ_EDGE_PROP = 32
         # inquire number of properties stored per edge set
-        'EX_INQ_ES_PROP': 33,
-        'EX_INQ_FACE': 34,                        # inquire number of faces
-        'EX_INQ_FACE_BLK': 35,                    # inquire number of face blocks
-        'EX_INQ_FACE_SETS': 36,                   # inquire number of face sets
+        EX_INQ_ES_PROP = 33
+        EX_INQ_FACE = 34                        # inquire number of faces
+        EX_INQ_FACE_BLK = 35                    # inquire number of face blocks
+        EX_INQ_FACE_SETS = 36                   # inquire number of face sets
         # inquire length of concat face set face list
-        'EX_INQ_FS_LEN': 37,
+        EX_INQ_FS_LEN = 37
         # inquire length of concat face set dist factor list
-        'EX_INQ_FS_DF_LEN': 38,
+        EX_INQ_FS_DF_LEN = 38
         # inquire number of properties stored per face block
-        'EX_INQ_FACE_PROP': 39,
+        EX_INQ_FACE_PROP = 39
         # inquire number of properties stored per face set
-        'EX_INQ_FS_PROP': 40,
-        'EX_INQ_ELEM_SETS': 41,                   # inquire number of element sets
+        EX_INQ_FS_PROP = 40
+        EX_INQ_ELEM_SETS = 41                   # inquire number of element sets
         # inquire length of concat element set element list
-        'EX_INQ_ELS_LEN': 42,
+        EX_INQ_ELS_LEN = 42
         # inquire length of concat element set dist factor list
-        'EX_INQ_ELS_DF_LEN': 43,
+        EX_INQ_ELS_DF_LEN = 43
         # inquire number of properties stored per elem set
-        'EX_INQ_ELS_PROP': 44,
-        'EX_INQ_EDGE_MAP': 45,                    # inquire number of edge maps
-        'EX_INQ_FACE_MAP': 46,                    # inquire number of face maps
-        'EX_INQ_COORD_FRAMES': 47,                # inquire number of coordinate frames
+        EX_INQ_ELS_PROP = 44
+        EX_INQ_EDGE_MAP = 45                    # inquire number of edge maps
+        EX_INQ_FACE_MAP = 46                    # inquire number of face maps
+        EX_INQ_COORD_FRAMES = 47                # inquire number of coordinate frames
         # inquire size of MAX_NAME_LENGTH dimension on database
-        'EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH': 48,
+        EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH = 48
         # inquire size of MAX_NAME_LENGTH dimension on database
-        'EX_INQ_DB_MAX_USED_NAME_LENGTH': 49,
+        EX_INQ_DB_MAX_USED_NAME_LENGTH = 49
         # inquire client-specified max size of returned names
-        'EX_INQ_MAX_READ_NAME_LENGTH': 50,
+        EX_INQ_MAX_READ_NAME_LENGTH = 50
         # inquire size of floating-point values stored on database
-        'EX_INQ_DB_FLOAT_SIZE': 51
-    }
-    # search dictionary for the requested code
-    if inquiry in inquiry_dictionary:
-        return inquiry_dictionary[inquiry]
-    # none found, must be invalid
-    return -1  # EX_INQ_INVALID
+        EX_INQ_DB_FLOAT_SIZE = 51
+        EX_INQ_INVALID = -1
+
+
+def ex_inquiry_map(inquiry):
+    """
+    Map the exodus inquiry flags to an enum value.
+    """
+    return ex_inquiry[inquiry].value
 
 
 def ex_obj_to_inq(objType):
     """
     Return the ex_inquiry string corresponding to the specified objType.
-    This can be passed to the ex_inquiry() function to get the number of
+    This can be passed to the ex_inquiry_map() function to get the number of
     objects of the specified objType
     """
     entity_dictionary = {
@@ -333,33 +350,71 @@ def ex_obj_to_inq(objType):
     return -1  # Invalid request
 
 
-def ex_entity_type(varType):
+class ex_entity_type(Enum):
+    """
+    The ex_entity_type enum from the exodusII.h include file
+
+    Parameters
+    ----------
+    EX_NODAL
+         nodal \"block\" for variables
+    EX_NODE_BLOCK
+         alias for EX_NODAL
+    EX_NODE_SET
+         node set property code
+    EX_EDGE_BLOCK
+         edge block property code
+    EX_EDGE_SET
+         edge set property code
+    EX_FACE_BLOCK
+         face block property code
+    EX_FACE_SET
+         face set property code
+    EX_ELEM_BLOCK
+         element block property code
+    EX_ELEM_SET
+         face set property code
+    EX_SIDE_SET
+         side set property code
+    EX_ELEM_MAP
+         element map property code
+    EX_NODE_MAP
+         node map property code
+    EX_EDGE_MAP
+         edge map property code
+    EX_FACE_MAP
+         face map property code
+    EX_GLOBAL
+         global \"block\" for variables
+    EX_COORDINATE
+         kluge so some internal wrapper functions work
+    EX_INVALID
+         invalid
+    """
+    EX_NODAL      = 14
+    EX_NODE_BLOCK = 14
+    EX_NODE_SET   = 2
+    EX_EDGE_BLOCK = 6
+    EX_EDGE_SET   = 7
+    EX_FACE_BLOCK = 8
+    EX_FACE_SET   = 9
+    EX_ELEM_BLOCK = 1
+    EX_ELEM_SET   = 10
+    EX_SIDE_SET = 3    
+    EX_ELEM_MAP = 4
+    EX_NODE_MAP = 5
+    EX_EDGE_MAP = 11
+    EX_FACE_MAP = 12
+    EX_GLOBAL     = 13
+    EX_COORDINATE = 15
+    EX_INVALID    = -1
+
+
+def get_entity_type(varType):
     """
     Map the exodus ex_entity_type flags to an integer value.
     """
-    entity_dictionary = {
-        'EX_ELEM_BLOCK': 1,  # element block property code
-        'EX_NODE_SET': 2,  # node set property code
-        'EX_SIDE_SET': 3,  # side set property code
-        'EX_ELEM_MAP': 4,  # element map property code
-        'EX_NODE_MAP': 5,  # node map property code
-        'EX_EDGE_BLOCK': 6,  # edge block property code
-        'EX_EDGE_SET': 7,  # edge set property code
-        'EX_FACE_BLOCK': 8,  # face block property code
-        'EX_FACE_SET': 9,  # face set property code
-        'EX_ELEM_SET': 10,  # face set property code
-        'EX_EDGE_MAP': 11,  # edge map property code
-        'EX_FACE_MAP': 12,  # face map property code
-        'EX_GLOBAL': 13,  # global 'block' for variables
-        'EX_NODAL': 14,  # nodal 'block' for variables
-        'EX_NODE_BLOCK': 14,  # alias for EX_NODAL
-        'EX_COORDINATE': 15,  # kluge so some internal wrapper functions work
-    }
-    # search dictionary for the requested code
-    if varType in entity_dictionary:
-        return entity_dictionary[varType]
-    # none found, must be invalid
-    return -1  # EX_INVALID
+    return ex_entity_type[varType].value
 
 
 # init params struct
@@ -531,7 +586,7 @@ class exodus:
             self.__ex_get_info()
             self.numTimes = c_int(
                 self.__ex_inquire_int(
-                    ex_inquiry('EX_INQ_TIME')))
+                    ex_inquiry_map('EX_INQ_TIME')))
 
         self.coordsX = None
         self.coordsY = None
@@ -790,7 +845,7 @@ class exodus:
         -------
         num_info_recs : int
         """
-        return int(self.__ex_inquire_int(ex_inquiry('EX_INQ_INFO')))
+        return int(self.__ex_inquire_int(ex_inquiry_map('EX_INQ_INFO')))
 
     # --------------------------------------------------------------------
     def get_info_records(self):
@@ -944,7 +999,7 @@ class exodus:
             True = successful execution
         """
         self.__ex_put_time(step, value)
-        self.numTimes = c_int(self.__ex_inquire_int(ex_inquiry('EX_INQ_TIME')))
+        self.numTimes = c_int(self.__ex_inquire_int(ex_inquiry_map('EX_INQ_TIME')))
         return True
 
     #
@@ -3873,7 +3928,7 @@ class exodus:
             True = successful execution
         """
 
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
+        ebType = c_int(get_entity_type('EX_ELEM_BLOCK'))
         EXODUS_LIB.ex_put_block(self.fileId, ebType, c_longlong(blkID),
                                 create_string_buffer(b"NFACED"),
                                 c_longlong(num_elems_this_blk),
@@ -3907,7 +3962,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        fbType = ex_entity_type('EX_FACE_BLOCK')
+        fbType = c_int(get_entity_type('EX_FACE_BLOCK'))
         EXODUS_LIB.ex_put_block(self.fileId, fbType, c_longlong(blkID),
                                 create_string_buffer(b"NSIDED"),
                                 c_longlong(num_faces_this_blk),
@@ -3940,7 +3995,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
+        ebType = c_int(get_entity_type('EX_ELEM_BLOCK'))
         entity_counts = (c_int * len(entityCounts))()
         entity_counts[:] = entityCounts
         EXODUS_LIB.ex_put_entity_count_per_polyhedra(
@@ -3970,7 +4025,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        ebType = ex_entity_type('EX_FACE_BLOCK')
+        ebType = c_int(get_entity_type('EX_FACE_BLOCK'))
         entity_counts = (c_int * len(entityCounts))()
         entity_counts[:] = entityCounts
         EXODUS_LIB.ex_put_entity_count_per_polyhedra(
@@ -4000,7 +4055,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        ebType = ex_entity_type('EX_ELEM_BLOCK')
+        ebType = c_int(get_entity_type('EX_ELEM_BLOCK'))
         elem_face_conn = (c_int * len(elemFaceConn))()
         elem_face_conn[:] = elemFaceConn
         EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_longlong(blkId),
@@ -4030,7 +4085,7 @@ class exodus:
         status : bool
             True = successful execution
         """
-        ebType = ex_entity_type('EX_FACE_BLOCK')
+        ebType = c_int(get_entity_type('EX_FACE_BLOCK'))
         node_conn = (c_int * len(faceNodeConn))()
         node_conn[:] = faceNodeConn
         EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_longlong(blkId),
@@ -4165,7 +4220,7 @@ class exodus:
             self.numElemBlk,
             self.numNodeSets,
             self.numSideSets)
-        self.version = self.__ex_inquire_float(ex_inquiry('EX_INQ_DB_VERS'))
+        self.version = self.__ex_inquire_float(ex_inquiry_map('EX_INQ_DB_VERS'))
 
     # --------------------------------------------------------------------
 
@@ -4205,7 +4260,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_qa(self):
-        num_qa_recs = c_int(self.__ex_inquire_int(ex_inquiry('EX_INQ_QA')))
+        num_qa_recs = c_int(self.__ex_inquire_int(ex_inquiry_map('EX_INQ_QA')))
         qa_rec_ptrs = ((POINTER(c_char * (MAX_STR_LENGTH + 1)) * 4) * num_qa_recs.value)()
         for i in range(num_qa_recs.value):
             for j in range(4):
@@ -4238,7 +4293,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def _ex_get_info_recs_quietly(self):
-        num_infos = c_int(self.__ex_inquire_int(ex_inquiry('EX_INQ_INFO')))
+        num_infos = c_int(self.__ex_inquire_int(ex_inquiry_map('EX_INQ_INFO')))
         info_ptrs = (POINTER(c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
         for i in range(num_infos.value):
             info_ptrs[i] = pointer(create_string_buffer(MAX_LINE_LENGTH + 1))
@@ -4252,7 +4307,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_info_recs(self):
-        num_infos = c_int(self.__ex_inquire_int(ex_inquiry('EX_INQ_INFO')))
+        num_infos = c_int(self.__ex_inquire_int(ex_inquiry_map('EX_INQ_INFO')))
         info_ptrs = (POINTER(c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
         for i in range(num_infos.value):
             info_ptrs[i] = pointer(create_string_buffer(MAX_LINE_LENGTH + 1))
@@ -4365,7 +4420,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_name(self, objType, objId):
-        obj_type = c_int(ex_entity_type(objType))
+        obj_type = c_int(get_entity_type(objType))
         obj_id = c_longlong(objId)
         obj_name = create_string_buffer(MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_get_name(self.fileId, obj_type, obj_id, byref(obj_name))
@@ -4374,7 +4429,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_name(self, objType, objId, objName):
-        obj_type = c_int(ex_entity_type(objType))
+        obj_type = c_int(get_entity_type(objType))
         obj_id = c_longlong(objId)
         obj_name = create_string_buffer(objName.encode('ascii'), MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_name(self.fileId, obj_type, obj_id, obj_name)
@@ -4382,7 +4437,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_names(self, objType):
-        inqType = ex_inquiry(ex_obj_to_inq(objType))
+        inqType = ex_inquiry_map(ex_obj_to_inq(objType))
         num_objs = c_int(self.__ex_inquire_int(inqType)).value
         obj_name_ptrs = (POINTER(c_char * (MAX_NAME_LENGTH + 1)) * num_objs)()
         for i in range(num_objs):
@@ -4390,7 +4445,7 @@ class exodus:
                 create_string_buffer(
                     MAX_NAME_LENGTH + 1))
 
-        obj_type = c_int(ex_entity_type(objType))
+        obj_type = c_int(get_entity_type(objType))
         EXODUS_LIB.ex_get_names(self.fileId, obj_type, byref(obj_name_ptrs))
         obj_names = []
         for onp in obj_name_ptrs:
@@ -4400,11 +4455,11 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_names(self, objType, objNames):
-        inqType = ex_inquiry(ex_obj_to_inq(objType))
+        inqType = ex_inquiry_map(ex_obj_to_inq(objType))
         numObjs = c_int(self.__ex_inquire_int(inqType)).value
         assert numObjs == len(objNames)
         obj_name_ptrs = (POINTER(c_char * (MAX_NAME_LENGTH + 1)) * numObjs)()
-        obj_type = c_int(ex_entity_type(objType))
+        obj_type = c_int(get_entity_type(objType))
         for i in range(numObjs):
             obj_name_ptrs[i] = pointer(
                 create_string_buffer(
@@ -4414,14 +4469,14 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_ids(self, objType):
-        inqType = ex_inquiry(ex_obj_to_inq(objType))
+        inqType = ex_inquiry_map(ex_obj_to_inq(objType))
         numObjs = c_int(self.__ex_inquire_int(inqType)).value
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_IDS_INT64_API:
             ids = (c_longlong * numObjs)()
         else:
             ids = (c_int * numObjs)()
         if numObjs > 0:
-            obj_type = c_int(ex_entity_type(objType))
+            obj_type = c_int(get_entity_type(objType))
             EXODUS_LIB.ex_get_ids(self.fileId, obj_type, byref(ids))
         return ids
 
@@ -4476,7 +4531,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_object_truth_vector(self, objType, entId):
-        obj_type = ex_entity_type(objType)
+        obj_type = c_int(get_entity_type(objType))
         entity_id = c_longlong(entId)
         variable_count = self.__ex_get_variable_param(objType)
         truth_table = (c_int * (variable_count.value))()
@@ -4495,10 +4550,10 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_truth_table(self, objType):
-        inqType = ex_inquiry(ex_obj_to_inq(objType))
+        inqType = ex_inquiry_map(ex_obj_to_inq(objType))
         num_objs = c_int(self.__ex_inquire_int(inqType)).value
 
-        obj_type = ex_entity_type(objType)
+        obj_type = c_int(get_entity_type(objType))
         variable_count = self.__ex_get_variable_param(objType)
 
         truth_table = (c_int * (num_objs * variable_count.value))()
@@ -4516,10 +4571,10 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_truth_table(self, objType, truthTab):
-        inqType = ex_inquiry(ex_obj_to_inq(objType))
+        inqType = ex_inquiry_map(ex_obj_to_inq(objType))
         num_objs = c_int(self.__ex_inquire_int(inqType)).value
 
-        obj_type = ex_entity_type(objType)
+        obj_type = c_int(get_entity_type(objType))
         num_vars = self.__ex_get_variable_param(objType).value
 
         assert len(truthTab) == (num_objs * num_vars)
@@ -4584,8 +4639,8 @@ class exodus:
 
     def __ex_get_id_map(self, objType):
         inqType = ex_obj_to_inq(objType)
-        obj_type = c_int(ex_entity_type(objType))
-        inq_type = c_int(ex_inquiry(inqType))
+        obj_type = c_int(get_entity_type(objType))
+        inq_type = c_int(ex_inquiry_map(inqType))
         num_objs = c_int(self.__ex_inquire_int(inq_type))
         numObjs = num_objs.value
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_IDS_INT64_API:
@@ -4604,8 +4659,8 @@ class exodus:
 
     def __ex_put_id_map(self, objType, idMap):
         inqType = ex_obj_to_inq(objType)
-        obj_type = c_int(ex_entity_type(objType))
-        inq_type = c_int(ex_inquiry(inqType))
+        obj_type = c_int(get_entity_type(objType))
+        inq_type = c_int(ex_inquiry_map(inqType))
         num_objs = c_int(self.__ex_inquire_int(inq_type))
         numObjs = num_objs.value
         assert numObjs == len(idMap)
@@ -4653,7 +4708,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_block(self, object_type, object_id):
-        obj_type = c_int(ex_entity_type(object_type))
+        obj_type = c_int(get_entity_type(object_type))
         block_id = c_longlong(object_id)
         blk_type = create_string_buffer(MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
@@ -4690,7 +4745,7 @@ class exodus:
             numElems,
             numNodesPerElem,
             numAttrsPerElem):
-        obj_type = c_int(ex_entity_type(object_type))
+        obj_type = c_int(get_entity_type(object_type))
         block_id = c_longlong(object_id)
         elem_type = create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
         num_elem_this_blk = c_longlong(numElems)
@@ -4763,7 +4818,7 @@ class exodus:
         elem_blk_id = c_longlong(elemBlkID)
         obj_type = c_int(objType)
         attr_index = c_longlong(attrIndx)
-        inqType = ex_inquiry(ex_obj_to_inq(objType))
+        inqType = ex_inquiry_map(ex_obj_to_inq(objType))
         num_objs = c_int(self.__ex_inquire_int(inqType)).value
         attrib = (c_double * num_objs)()
         EXODUS_LIB.ex_get_one_attr(
@@ -4783,7 +4838,7 @@ class exodus:
             attrib[i] = c_double(attr)
         EXODUS_LIB.ex_put_attr(
             self.fileId,
-            ex_entity_type('EX_ELEM_BLOCK'),
+            c_int(get_entity_type('EX_ELEM_BLOCK')),
             elem_blk_id,
             attrib)
 
@@ -4797,7 +4852,7 @@ class exodus:
         attrib = (c_double * totalAttr)()
         EXODUS_LIB.ex_get_attr(
             self.fileId,
-            ex_entity_type('EX_ELEM_BLOCK'),
+            c_int(get_entity_type('EX_ELEM_BLOCK')),
             elem_blk_id,
             byref(attrib))
         return attrib
@@ -4805,7 +4860,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_variable_param(self, varType):
-        var_type = c_int(ex_entity_type(varType))
+        var_type = c_int(get_entity_type(varType))
         num_vars = c_int()
         EXODUS_LIB.ex_get_variable_param(
             self.fileId, var_type, byref(num_vars))
@@ -4823,7 +4878,7 @@ class exodus:
                 create_string_buffer(
                     MAX_NAME_LENGTH + 1))
 
-        var_type = c_int(ex_entity_type(varType))
+        var_type = c_int(get_entity_type(varType))
         EXODUS_LIB.ex_get_variable_names(
             self.fileId,
             var_type,
@@ -4838,7 +4893,7 @@ class exodus:
 
     def __ex_get_var(self, timeStep, varType, varId, blkId, numValues):
         step = c_int(timeStep)
-        var_type = c_int(ex_entity_type(varType))
+        var_type = c_int(get_entity_type(varType))
         var_id = c_int(varId)
         block_id = c_longlong(blkId)
         num_values = c_longlong(numValues)
@@ -4857,7 +4912,7 @@ class exodus:
 
     def __ex_put_var(self, timeStep, varType, varId, blkId, numValues, values):
         step = c_int(timeStep)
-        var_type = c_int(ex_entity_type(varType))
+        var_type = c_int(get_entity_type(varType))
         var_id = c_int(varId)
         block_id = c_longlong(blkId)
         num_values = c_longlong(numValues)
@@ -4889,7 +4944,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_set_param(self, objType, object_id):
-        object_type = c_int(ex_entity_type(objType))
+        object_type = c_int(get_entity_type(objType))
         side_set_id = c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_BULK_INT64_API:
             num_side_in_set = c_longlong(0)
@@ -4908,7 +4963,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_set_param(self, objType, object_id, numSides, numDistFacts):
-        object_type = c_int(ex_entity_type(objType))
+        object_type = c_int(get_entity_type(objType))
         side_set_id = c_longlong(object_id)
         num_side_in_set = c_longlong(numSides)
         num_dist_fact_in_set = c_longlong(numDistFacts)
@@ -5008,7 +5063,7 @@ class exodus:
             # print "value already set"
             return True
 
-        var_type = c_int(ex_entity_type(varType))
+        var_type = c_int(get_entity_type(varType))
         errorInt = EXODUS_LIB.ex_put_variable_param(
             self.fileId, var_type, num_vars)
         if errorInt != 0:
@@ -5030,7 +5085,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_variable_name(self, varType, varId, varName):
-        var_type = c_int(ex_entity_type(varType))
+        var_type = c_int(get_entity_type(varType))
         var_id = c_int(varId)
         name = create_string_buffer(varName, MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_variable_name(self.fileId, var_type, var_id, name)
@@ -5041,7 +5096,7 @@ class exodus:
     def __ex_get_elem_attr_names(self, blkId):
         object_id = c_longlong(blkId)
         num_attr = c_int(self.num_attr(blkId))
-        len_name = self.__ex_inquire_int(ex_inquiry('EX_INQ_MAX_READ_NAME_LENGTH'))
+        len_name = self.__ex_inquire_int(ex_inquiry_map('EX_INQ_MAX_READ_NAME_LENGTH'))
         attr_name_ptrs = (POINTER(c_char * (len_name + 1)) * num_attr.value)()
         for i in range(num_attr.value):
             attr_name_ptrs[i] = pointer(create_string_buffer(len_name + 1))
@@ -5057,7 +5112,7 @@ class exodus:
     def __ex_put_elem_attr_names(self, blkId, varNames):
         object_id = c_int(blkId)
         num_attr = c_int(self.num_attr(blkId))
-        len_name = self.__ex_inquire_int(ex_inquiry('EX_INQ_MAX_READ_NAME_LENGTH'))
+        len_name = self.__ex_inquire_int(ex_inquiry_map('EX_INQ_MAX_READ_NAME_LENGTH'))
         attr_name_ptrs = (POINTER(c_char * (len_name + 1)) * num_attr.value)()
         assert len(varNames) == num_attr.value
         for i in range(num_attr.value):
@@ -5071,8 +5126,8 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_prop_names(self, varType, inqType):
-        var_type = c_int(ex_entity_type(varType))
-        num_props = c_int(self.__ex_inquire_int(ex_inquiry(inqType)))
+        var_type = c_int(get_entity_type(varType))
+        num_props = c_int(self.__ex_inquire_int(ex_inquiry_map(inqType)))
         prop_name_ptrs = (
             POINTER(c_char * (MAX_STR_LENGTH + 1)) * num_props.value)()
         for i in range(num_props.value):
@@ -5089,7 +5144,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_prop(self, objType, objId, propName):
-        obj_type = c_int(ex_entity_type(objType))
+        obj_type = c_int(get_entity_type(objType))
         obj_id = c_longlong(objId)
         prop_name = create_string_buffer(propName.encode('ascii'), MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) & EX_IDS_INT64_API:
@@ -5107,7 +5162,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_prop(self, objType, objId, propName, propVal):
-        obj_type = c_int(ex_entity_type(objType))
+        obj_type = c_int(get_entity_type(objType))
         obj_id = c_longlong(objId)
         prop_name = create_string_buffer(propName.encode('ascii'), MAX_STR_LENGTH + 1)
         prop_val = c_longlong(propVal)
