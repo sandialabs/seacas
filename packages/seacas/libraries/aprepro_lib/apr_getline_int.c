@@ -61,7 +61,9 @@
 #define __windows__ 1
 #else
 #ifndef __unix__
+#ifndef _MSC_VER
 #define __unix__ 1
+#endif
 #endif
 #if defined(AIX) || defined(_AIX)
 #define _ALL_SOURCE 1
