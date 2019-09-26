@@ -199,6 +199,10 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
     case 'w':
       /* Weighting options */
       sub_opt = optarg;
+#ifdef _MSC_VER
+      fprintf(stderr, "Windows build does not use getsubopt yet...\n");
+      exit(1);
+#else
       while (sub_opt != nullptr && *sub_opt != '\0') {
         switch (getsubopt(&sub_opt, (char *const *)weight_subopts, &value)) {
         case READ_EXO:
@@ -349,7 +353,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
         } /* End "switch(getsubopt(&sub_opt, weight_subopts, &value))" */
 
       } /* End "while(*sub_opt != '\0')" */
-
+#endif
       break; /* End "case 'w'" */
 
     case 'a':
@@ -390,6 +394,10 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       if (sub_opt != nullptr) {
         string_to_lower(sub_opt, '\0');
       }
+#ifdef _MSC_VER
+      fprintf(stderr, "Windows build does not use getsubopt yet...\n");
+      exit(1);
+#else
       while (sub_opt != nullptr && *sub_opt != '\0') {
 
         /* Switch over the machine description */
@@ -482,7 +490,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
         } /* End "switch(getsubopt(&sub_opt, mach_subopts, &value))" */
 
       } /* End "while(*sub_opt != '\0')" */
-
+#endif
       break; /* End "case 'm'" */
 
     case 'l':
@@ -491,6 +499,10 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       if (sub_opt != nullptr) {
         string_to_lower(sub_opt, '\0');
       }
+#ifdef _MSC_VER
+      fprintf(stderr, "Windows build does not use getsubopt yet...\n");
+      exit(1);
+#else
       while (sub_opt != nullptr && *sub_opt != '\0') {
         switch (getsubopt(&sub_opt, (char *const *)lb_subopts, &value)) {
         case MULTIKL: lb->type = MULTIKL; break;
@@ -572,7 +584,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
         } /* End "switch(getsubopt(&sup_opt, mach_subopts, &value))" */
 
       } /* End "while(*sup_opt != '\0')" */
-
+#endif
       break; /* End "case 'l'" */
 
     case 'S': prob->no_sph = 1; break;
@@ -583,6 +595,10 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
       if (sub_opt != nullptr) {
         string_to_lower(sub_opt, '\0');
       }
+#ifdef _MSC_VER
+      fprintf(stderr, "Windows build does not use getsubopt yet...\n");
+      exit(1);
+#else
       while (sub_opt != nullptr && *sub_opt != '\0') {
         switch (getsubopt(&sub_opt, (char *const *)solve_subopts, &value)) {
         case TOLER:
@@ -627,7 +643,7 @@ value\n");
         } /* End "switch(getsubopt(&sub_opt, solve_subopts, &value))" */
 
       } /* End "while(sub_opt != '\0')" */
-
+#endif
       break; /* End "case 's'" */
 
     case 'g':
@@ -661,7 +677,6 @@ value\n");
     } /* End "switch(opt_let)" */
 
   } /* End "while((opt_let=getopt(argc, argv, "i")) != EOF)" */
-
   /* Get the input file name, if specified on the command line */
   if ((argc - optind) >= 1) {
     exoII_inp_file = argv[optind];
