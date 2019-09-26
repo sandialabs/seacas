@@ -27,6 +27,9 @@ install:
   - cmd: conda config --add channels conda-forge
   - cmd: conda config --set always_yes yes --set changeps1 no --set show_channel_urls true 
   - cmd: conda update conda
+  - cmd: conda search libnetcdf --channel conda-forge  
+  - cmd: conda search hdf5 --channel conda-forge  
+  - cmd: conda search cgns --channel conda-forge  
   - cmd: conda install hdf5 libnetcdf cgns
 
 configuration: Release
