@@ -354,9 +354,7 @@ namespace {
 } // namespace
 
 unsigned int debug_level = 0;
-const float  FILL_VALUE  = FLT_MAX;
-
-int main(int argc, char *argv[])
+int          main(int argc, char *argv[])
 {
 #if defined(__LIBCATAMOUNT__)
   setlinebuf(stderr);
@@ -833,7 +831,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
            i++) { // Last output variable may be status
         for (int j = 0; j < nodal_vars.count(Excn::IN_); j++) {
           if (nodal_vars.index_[j] - 1 == i) {
-            std::fill(master_nodal_values.begin(), master_nodal_values.end(), 0.0);
+            std::fill(master_nodal_values.begin(), master_nodal_values.end(), T(0.0));
 
             error += ex_get_var(id, global_times[time_step].localStepNumber + 1, EX_NODAL, j + 1, 0,
                                 node_count, values.data());
@@ -854,7 +852,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
         // It is the last output variable...
         if (nodal_vars.addStatus) {
           SMART_ASSERT(alive == 0.0 || alive == 1.0)(alive);
-          std::fill(master_nodal_values.begin(), master_nodal_values.end(), (1.0 - alive));
+          std::fill(master_nodal_values.begin(), master_nodal_values.end(), T((1.0 - alive)));
           for (size_t j = 0; j < node_count; j++) {
             // Map local nodal value to global location...
             size_t nodal_value               = local_mesh[p].localNodeToGlobal[j];
@@ -1035,6 +1033,7 @@ namespace {
     std::vector<T> z(global.count(Excn::NODE));
 
     if (debug_level & 8) {
+      const T FILL_VALUE = FLT_MAX;
       std::fill(x.begin(), x.end(), FILL_VALUE);
       std::fill(y.begin(), y.end(), FILL_VALUE);
       std::fill(z.begin(), z.end(), FILL_VALUE);
@@ -1089,7 +1088,8 @@ namespace {
     if (dimensionality == 3) {
       if (debug_level & 8) {
         for (size_t i = 0; i < num_nodes; i++) {
-          INT node = local_node_to_global[i];
+          INT     node       = local_node_to_global[i];
+          const T FILL_VALUE = FLT_MAX;
           if (x[node] != FILL_VALUE && y[node] != FILL_VALUE && z[node] != FILL_VALUE) {
             if (!approx_equal(x[node], local_x[i]) || !approx_equal(y[node], local_y[i]) ||
                 !approx_equal(z[node], local_z[i])) {
@@ -1117,7 +1117,8 @@ namespace {
     else {
       if (debug_level & 8) {
         for (size_t i = 0; i < num_nodes; i++) {
-          INT node = local_node_to_global[i];
+          INT     node       = local_node_to_global[i];
+          const T FILL_VALUE = FLT_MAX;
           if (x[node] != FILL_VALUE && y[node] != FILL_VALUE) {
             if (!approx_equal(x[node], local_x[i]) || !approx_equal(y[node], local_y[i])) {
               fmt::print(
