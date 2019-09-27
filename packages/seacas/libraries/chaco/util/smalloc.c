@@ -44,7 +44,11 @@
 #define ST_ZU "%lu"
 #endif
 #else
+#if defined(_MSC_VER)
+#define ST_ZU "%zu"
+#else
 #define ST_ZU "%lu"
+#endif
 #endif
 
 static int    nmalloc    = 0; /* number of calls to malloc */
