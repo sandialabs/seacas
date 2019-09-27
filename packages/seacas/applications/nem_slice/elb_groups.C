@@ -310,7 +310,7 @@ namespace {
     int         c;        /* integer index when spanning a range */
 
     while (*p != '/' && *p != 0) {
-      q = sscanf(p, "%ld%n", &i, &qn);
+      q = sscanf(p, "%lld%n", &i, &qn);
       if (q == 0 || i < 0) {
         if (p[qn - 1] == '/' || *p == 0) {
           return;

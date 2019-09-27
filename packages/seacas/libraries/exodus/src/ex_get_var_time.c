@@ -56,8 +56,8 @@
  *
  *****************************************************************************/
 
-#include "exodusII.h"     // for ex_err, etc
-#include "exodusII_int.h" // for EX_FATAL, ST_ZU, etc
+#include "exodusII.h"
+#include "exodusII_int.h"
 
 /*!
   \ingroup ResultsData
