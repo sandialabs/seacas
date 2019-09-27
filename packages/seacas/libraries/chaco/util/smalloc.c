@@ -37,20 +37,6 @@
 #include <stdio.h>  // for NULL, fprintf, printf, FILE, etc
 #include <stdlib.h> // for malloc, free, realloc
 
-#if defined(__STDC_VERSION__)
-#if (__STDC_VERSION__ >= 199901L)
-#define ST_ZU "%zu"
-#else
-#define ST_ZU "%lu"
-#endif
-#else
-#if defined(_MSC_VER)
-#define ST_ZU "%zu"
-#else
-#define ST_ZU "%lu"
-#endif
-#endif
-
 static int    nmalloc    = 0; /* number of calls to malloc */
 static int    nfree      = 0; /* number of calls to free */
 static size_t bytes_used = 0; /* current dynamic memory usage */

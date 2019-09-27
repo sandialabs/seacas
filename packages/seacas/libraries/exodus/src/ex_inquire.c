@@ -608,7 +608,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
           if ((status = nc_inq_dimlen(exoid, dimid, &ldum)) != NC_NOERR) {
             *ret_int = 0;
             snprintf(errmsg, MAX_ERR_LENGTH,
-                     "ERROR: failed to get number of dist factors in %'th side set in file id %d",
+                     "ERROR: failed to get number of dist factors in %zu'th side set in file id %d",
                      i, exoid);
             ex_err_fn(exoid, __func__, errmsg, status);
             return (EX_FATAL);
