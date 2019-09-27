@@ -1943,9 +1943,10 @@ void DatabaseIO::get_commsets()
       }
 
       // Count nodes, elements, and convert counts to offsets.
-      my_node_count += std::accumulate(nodeCmapNodeCnts.begin(), nodeCmapNodeCnts.end(), 0);
+      my_node_count +=
+          std::accumulate(nodeCmapNodeCnts.begin(), nodeCmapNodeCnts.end(), int64_t(0));
 
-      elem_count += std::accumulate(elemCmapElemCnts.begin(), elemCmapElemCnts.end(), 0);
+      elem_count += std::accumulate(elemCmapElemCnts.begin(), elemCmapElemCnts.end(), int64_t(0));
     }
     // Create a single node commset and a single element commset
     Ioss::CommSet *commset = new Ioss::CommSet(this, "commset_node", "node", my_node_count);

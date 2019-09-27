@@ -2553,7 +2553,7 @@ namespace {
               ex_get_set_dist_fact(id, EX_NODE_SET, nodesets[p][ns].id, ns_df.data());
             }
             else {
-              std::fill(ns_df.begin(), ns_df.end(), 1.0);
+              std::fill(ns_df.begin(), ns_df.end(), T(1.0));
             }
 
             // The node ids are in local space -- map to global; bring df along (if any).
@@ -2800,10 +2800,10 @@ namespace {
     // Get a temporary vector to maintain the current
     // offset into the glob_ssets for storing sides
     Int64Vector offset(glob_ssets.size());
-    std::fill(offset.begin(), offset.end(), 0);
+    std::fill(offset.begin(), offset.end(), int64_t(0));
 
     Int64Vector df_offset(glob_ssets.size());
-    std::fill(df_offset.begin(), df_offset.end(), 0);
+    std::fill(df_offset.begin(), df_offset.end(), int64_t(0));
 
     {
       for (auto &glob_sset : glob_ssets) {
@@ -3283,7 +3283,7 @@ namespace {
           int output_truth_table_loc = (b * vars.count(OUT)) + ivar;
           if (global.truthTable[vars.objectType][output_truth_table_loc]) {
             std::fill(&master_values[ivar][b][0],
-                      &master_values[ivar][b][glob_sets[b].entity_count()], 0.0);
+                      &master_values[ivar][b][glob_sets[b].entity_count()], T(0.0));
           }
         }
       }

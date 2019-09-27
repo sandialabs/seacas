@@ -133,7 +133,7 @@ TEST_CASE("test segmented map creation", "[segment]")
     SECTION(sections[i])
     {
       std::size_t offset = offsets[i];
-      std::iota(init.begin(), init.end(), offset + 1);
+      std::iota(init.begin(), init.end(), int(offset) + 1);
 
       for (size_t j = 0; j < segments; j++) {
         my_map.set_map(&init[j * seg_size], seg_size, j * seg_size, true);
