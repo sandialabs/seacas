@@ -198,7 +198,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
     if ((status = nc_inq_dimid(exoid, ex__dim_num_entries_in_object(var_type, i + 1), &dimid)) !=
         NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to locate number of entries in %" ST_ZU "th %s in file id %d", i,
+               "ERROR: failed to locate number of entries in %zuth %s in file id %d", i,
                ex_name_of_object(var_type), exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       free(stat_vals);
@@ -207,7 +207,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
 
     if ((status = nc_inq_dimlen(exoid, dimid, &num_entries_this_obj)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to get number of entries in %" ST_ZU "th %s in file id %d", i,
+               "ERROR: failed to get number of entries in %zuth %s in file id %d", i,
                ex_name_of_object(var_type), exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       free(stat_vals);
@@ -222,7 +222,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
       if ((status = nc_inq_dimid(exoid, ex__dim_num_entries_in_object(var_type, i + 1), &dimid)) !=
           NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to locate number of entries in %" ST_ZU "th %s in file id %d", i,
+                 "ERROR: failed to locate number of entries in %zuth %s in file id %d", i,
                  ex_name_of_object(var_type), exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
         free(stat_vals);
@@ -231,7 +231,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
 
       if ((status = nc_inq_dimlen(exoid, dimid, &num_entries_this_obj)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to get number of entries in %" ST_ZU "th %s in file id %d", i,
+                 "ERROR: failed to get number of entries in %zuth %s in file id %d", i,
                  ex_name_of_object(var_type), exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
         free(stat_vals);
@@ -246,7 +246,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
   if ((status = nc_inq_varid(exoid, ex__name_var_of_object(var_type, var_index, i + 1), &varid)) !=
       NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to locate variable %" ST_ZU " for %dth %s in file id %d", i, var_index,
+             "ERROR: failed to locate variable %zu for %dth %s in file id %d", i, var_index,
              ex_name_of_object(var_type), exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
     free(stat_vals);
