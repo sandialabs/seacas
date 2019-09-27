@@ -133,9 +133,6 @@ struct NodeInfo
 using GlobalMap = std::vector<NodeInfo>;
 using GMapIter  = GlobalMap::iterator;
 
-typedef std::vector<std::pair<int, size_t>> GlobalElemMap;
-using GElemMapIter = GlobalElemMap::iterator;
-
 #include "CJ_ExodusEntity.h"
 #include "CJ_ExodusFile.h"
 #include "CJ_Internals.h"
@@ -262,7 +259,8 @@ namespace {
   void build_reverse_element_map(std::vector<Excn::Mesh<INT>> &         local_mesh,
                                  std::vector<std::vector<Excn::Block>> &blocks,
                                  std::vector<Excn::Block> &glob_blocks, Excn::Mesh<INT> *global,
-                                 size_t part_count, GlobalElemMap &global_element_map);
+                                 size_t                               part_count,
+                                 std::vector<std::pair<INT, size_t>> &global_element_map);
 
   template <typename INT>
   void get_nodesets(size_t total_node_count, std::vector<Excn::Mesh<INT>> &local_mesh,
@@ -574,7 +572,7 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     // must check for zero length blocks
     get_element_blocks(local_mesh, global, blocks, glob_blocks);
 
-    GlobalElemMap global_element_map(global.count(Excn::ELEM));
+    std::vector<std::pair<INT, size_t>> global_element_map(global.count(Excn::ELEM));
     build_reverse_element_map(local_mesh, blocks, glob_blocks, &global, part_count,
                               global_element_map);
 
@@ -1403,7 +1401,8 @@ namespace {
   void build_reverse_element_map(std::vector<Excn::Mesh<INT>> &         local_mesh,
                                  std::vector<std::vector<Excn::Block>> &blocks,
                                  std::vector<Excn::Block> &glob_blocks, Excn::Mesh<INT> *global,
-                                 size_t part_count, GlobalElemMap &global_element_map)
+                                 size_t                               part_count,
+                                 std::vector<std::pair<INT, size_t>> &global_element_map)
   {
     int error = 0;
     // Create the map that maps from a local part element to the
@@ -1429,8 +1428,8 @@ namespace {
     // out if that happens...  In the future, change the id to an
     // unused value and continue....
 
-    size_t                     tot_size = 0;
-    std::vector<GlobalElemMap> global_element_numbers(part_count);
+    size_t                                           tot_size = 0;
+    std::vector<std::vector<std::pair<INT, size_t>>> global_element_numbers(part_count);
     for (size_t p = 0; p < part_count; p++) {
       Excn::ExodusFile id(p);
       global_element_numbers[p].resize(local_mesh[p].count(Excn::ELEM));
@@ -1457,7 +1456,7 @@ namespace {
         SMART_ASSERT(glob_block.id == blocks[p][lb].id);
         block_size += blocks[p][lb].entity_count();
       }
-      GlobalElemMap block_element_map(block_size);
+      std::vector<std::pair<INT, size_t>> block_element_map(block_size);
 
       size_t poffset = 0;
       for (size_t p = 0; p < part_count; p++) {
@@ -1546,7 +1545,7 @@ namespace {
         size_t element_count = blocks[p][lb].entity_count();
         size_t boffset       = blocks[p][lb].offset_;
         for (size_t i = 0; i < element_count; i++) {
-          std::pair<int, size_t> global_element = global_element_numbers[p][boffset + i];
+          std::pair<INT, size_t> global_element = global_element_numbers[p][boffset + i];
 
           if (cur_pos == gm_end || *cur_pos != global_element) {
             auto iter = std::lower_bound(gm_begin, gm_end, global_element);
@@ -2168,7 +2167,8 @@ namespace {
         // Count number of nonzero entries and transfer to the
         // output nodeset
         // NOTE: global_node above is 1-based.
-        glob_sets[ns].nodeCount = std::accumulate(glob_ns_nodes.begin(), glob_ns_nodes.end(), 0);
+        glob_sets[ns].nodeCount =
+            std::accumulate(glob_ns_nodes.begin(), glob_ns_nodes.end(), INT(0));
         glob_sets[ns].nodeSetNodes.resize(glob_sets[ns].entity_count());
         glob_sets[ns].dfCount = 0;
 

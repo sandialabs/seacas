@@ -1219,7 +1219,7 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
     }
     if (debug_level & 2) {
       for (int i = 0; i < nodal_vars.count(OUT); i++) {
-        std::fill(&master_nodal_values[i][0], &master_nodal_values[i][global.nodeCount], 0.0);
+        std::fill(&master_nodal_values[i][0], &master_nodal_values[i][global.nodeCount], T(0.0));
       }
     }
 

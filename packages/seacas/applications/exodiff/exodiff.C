@@ -2456,8 +2456,8 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
     for (i = 0; i < n; ++i) {
       Side_Set<INT> *     ssmin    = file1.Get_Side_Set_by_Id(mm_ss[i].min_blk);
       Side_Set<INT> *     ssmax    = file1.Get_Side_Set_by_Id(mm_ss[i].max_blk);
-      std::pair<int, int> min_side = ssmin->Side_Id(mm_ss[i].min_id);
-      std::pair<int, int> max_side = ssmax->Side_Id(mm_ss[i].max_id);
+      std::pair<INT, INT> min_side = ssmin->Side_Id(mm_ss[i].min_id);
+      std::pair<INT, INT> max_side = ssmax->Side_Id(mm_ss[i].max_id);
       fmt::print("\t{:<{}}  # min: {:15.8g} @ t{},s{},f{}.{}\tmax: {:15.8g} @ t{},s{}"
                  ",f{}.{}\n",
                  ((interFace.ss_var_names)[i]), name_length, mm_ss[i].min_val, mm_ss[i].min_step,
