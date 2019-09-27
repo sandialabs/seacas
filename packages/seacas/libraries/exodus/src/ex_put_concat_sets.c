@@ -356,8 +356,8 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
       if (set_type == EX_NODE_SET) {
         if (num_df != num_entry) {
           snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: # dist fact (%" ST_ZU ") not equal to # nodes (%" ST_ZU
-                   ") in node set %" PRId64 " file id %d",
+                   "ERROR: # dist fact (%zu) not equal to # nodes (%zu) in node set %" PRId64
+                   " file id %d",
                    num_df, num_entry, set_id, exoid);
           ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
           goto error_ret; /* exit define mode and return */

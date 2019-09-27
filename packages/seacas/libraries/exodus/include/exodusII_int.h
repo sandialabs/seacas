@@ -100,7 +100,7 @@ extern "C" {
 #endif
 #else
 #if defined(_MSC_VER)
-#define ST_ZU "%zu"
+#define ST_ZU "%llu"
 #else
 #define ST_ZU "%lu"
 #endif
