@@ -32,7 +32,6 @@ install:
   - cmd: set PATH=%PATH%;%MSYS2_BIN_LOCN%;%INSTALL_LOC%\bin;%INSTALL_LOC%\lib
   - cmd: vcpkg install netcdf-c
   - cmd: vcpkg install matio
-  - cmd: cd c:\tools\vcpkg
   - cmd: vcpkg integrate install
 
 configuration: Release
