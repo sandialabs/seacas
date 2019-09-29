@@ -33,6 +33,7 @@ install:
   - cmd: vcpkg install netcdf-c
   - cmd: vcpkg install matio
   - cmd: vcpkg integrate install
+  - cmd: dir C:/Tools/vcpkg/packages
 
 configuration: Release
 
