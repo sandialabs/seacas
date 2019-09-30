@@ -35,6 +35,9 @@ install:
   - cmd: vcpkg install netcdf-c
   - cmd: vcpkg install matio
   - cmd: vcpkg integrate install
+  - cmd: dir install/bin
+  - cmd: dir install/lib
+  - cmd: dir install/include
   - cmd: vcpkg/packages/netcdf-c_x64-windows/bin/nc-config --all
   
 configuration: Release
