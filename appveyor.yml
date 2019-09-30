@@ -10,7 +10,8 @@ environment:
 #      SUPPRESSIONS: "/wd4244 /wd4267 /wd4305 /wd4477"
       SUPPRESSIONS: "/wd4478"
       VCPKG_DEFAULT_TRIPLET: "x64-windows"
-
+      VCPKG_BUILD_TYPE: "release"
+      
 # 4477: format string 'string' requires an argument of type 'type', but variadic argument number has type 'type'
 # 4244: conversion from 'type1' to 'type2', possible loss of data
 # 4267: conversion from 'size_t' to 'type', possible loss of data
@@ -34,7 +35,8 @@ install:
   - cmd: vcpkg install netcdf-c
   - cmd: vcpkg install matio
   - cmd: vcpkg integrate install
-
+  - cmd: vcpkg/packages/netcdf-c_x64-windows/bin/nc-config --all
+  
 configuration: Release
 
 build: off
