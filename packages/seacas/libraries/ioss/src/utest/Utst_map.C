@@ -95,7 +95,7 @@ TEST_CASE("test sequential map with offset", "[sequential offset]")
     SECTION(sections[i])
     {
       std::size_t offset = offsets[i];
-      std::iota(init.begin(), init.end(), int(offset) + 1);
+      std::iota(init.begin(), init.end(), int64_t(offset) + 1);
 
       my_map.set_map(init.data(), init.size(), 0, true);
 
