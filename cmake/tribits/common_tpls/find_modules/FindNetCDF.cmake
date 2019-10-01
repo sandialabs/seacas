@@ -247,7 +247,7 @@ if ( NetCDF_INCLUDE_DIR )
               HINTS ${NetCDF_INCLUDE_DIR}
               NO_DEFAULT_PATH)
     if(meta_path)
-	   # Search meta for NC_HAS_PARALLEL setting...
+       # Search meta for NC_HAS_PARALLEL setting...
        # Note that there is both NC_HAS_PARALLEL and NC_HAS_PARALLEL4, only want first...
        file(STRINGS "${meta_path}/netcdf_meta.h" netcdf_par_string REGEX "NC_HAS_PARALLEL ")
        string(REGEX MATCH "[01]" netcdf_par_val "${netcdf_par_string}")
@@ -268,12 +268,14 @@ if ( NetCDF_ROOT OR NetCDF_BIN_DIR )
 
     if (netcdf_config)
         message(STATUS "Found NetCDF configuration script: ${netcdf_config}")
-        execute_process(COMMAND "${netcdf_config}" "--has-hdf5"
+        execute_process(COMMAND "sh ${netcdf_config}" "--has-hdf5"
                         RESULT_VARIABLE _ret_code
-                        OUTPUT_VARIABLE my_stdout_var
+                        OUTPUT_VARIABLE _stdout
                         ERROR_VARIABLE  _stderr
                        )
-        string(REGEX MATCH "yes|no" _hdf5_answer ${my_stdout_var})
+        message(STATUS "${netcdf_config} --has-hdf5 returned error '${_stderr}'")
+        message(STATUS "${netcdf_config} --has-hdf5 returned output '${_stdout}'")
+        string(REGEX MATCH "yes|no" _hdf5_answer ${_stdout})
         message(STATUS "${netcdf_config} --has-hdf5 returned '${_hdf5_answer}'")
         string(COMPARE EQUAL "${_hdf5_answer}" "yes" _has_hdf5)
         if (${_has_hdf5} )
@@ -282,20 +284,20 @@ if ( NetCDF_ROOT OR NetCDF_BIN_DIR )
             set(NetCDF_NEEDS_HDF5 False)
         endif()
 
-        execute_process(COMMAND "${netcdf_config}" "--version"
+        execute_process(COMMAND "sh ${netcdf_config}" "--version"
                         RESULT_VARIABLE _ret_code
-                        OUTPUT_VARIABLE my_stdout_var
+                        OUTPUT_VARIABLE _stdout
                         ERROR_VARIABLE  _stderr
                        )
-        string(STRIP ${my_stdout_var} NetCDF_VERSION)
+        string(STRIP ${_stdout} NetCDF_VERSION)
 
 	# If --has-pnetcdf returns true, then add pnetcdf as dependent library.
-        execute_process(COMMAND "${netcdf_config}" "--has-pnetcdf"
+        execute_process(COMMAND "sh ${netcdf_config}" "--has-pnetcdf"
                         RESULT_VARIABLE _ret_code
-                        OUTPUT_VARIABLE my_stdout_var
+                        OUTPUT_VARIABLE _stdout
                         ERROR_VARIABLE  _stderr
                        )
-        string(REGEX MATCH "yes|no" _pnetcdf_answer ${my_stdout_var})
+        string(REGEX MATCH "yes|no" _pnetcdf_answer ${_stdout})
         message(STATUS "${netcdf_config} --has-pnetcdf returned '${_pnetcdf_answer}'")
         string(COMPARE EQUAL "${_pnetcdf_answer}" "yes" _has_pnetcdf)
         if (${_has_pnetcdf} )
