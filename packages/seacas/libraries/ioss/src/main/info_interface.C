@@ -81,9 +81,6 @@ void Info::Interface::enroll_options()
 #if defined(SEACAS_HAVE_CGNS)
                   ", cgns"
 #endif
-#if defined(SEACAS_HAVE_DATAWAREHOUSE)
-                  ", data_warehouse"
-#endif
                   ".",
                   "unknown");
   options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue, "(alias for db_type)", nullptr);
