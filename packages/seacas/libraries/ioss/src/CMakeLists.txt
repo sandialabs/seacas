@@ -18,6 +18,15 @@ IF (TPL_ENABLE_CGNS)
   SET(SEACAS_HAVE_CGNS ON)
 ENDIF()
 
+IF (${TPL_ENABLE_Faodel})
+  SET(SEACAS_HAVE_FAODEL ON)
+  # TriBITs recommends to find boost on your own,
+  # see seacas/cmake/tribits/common_tpls/FindTPLBoost.cmake
+  find_package(Boost REQUIRED COMPONENTS atomic log log_setup program_options serialization system)
+  # This is a temporary fix until Faodel components are fully usable via SEACAS TPLs
+  find_package(Faodel REQUIRED COMPONENTS lunasa kelpie)
+ENDIF()
+
 IF (${PACKAGE_NAME}_ENABLE_SEACASExodus)
   SET(SEACAS_HAVE_EXODUS ON)
 ENDIF()
@@ -90,6 +99,10 @@ ENDIF()
 
 IF (TPL_ENABLE_CGNS)
   ADD_SUBDIRECTORY(cgns)
+ENDIF()
+
+IF (${TPL_ENABLE_Faodel})
+  ADD_SUBDIRECTORY(faodel)
 ENDIF()
 
 IF (TPL_ENABLE_ADIOS2)

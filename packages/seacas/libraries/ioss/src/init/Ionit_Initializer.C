@@ -23,6 +23,10 @@
 #include <pamgen/Iopg_DatabaseIO.h>
 #endif
 
+#if defined(SEACAS_HAVE_FAODEL)
+#include <faodel/Iofaodel_DatabaseIO.h>
+#endif
+
 #if defined(SEACAS_HAVE_CGNS)
 #include <cgns/Iocgns_IOFactory.h>
 #endif
@@ -63,6 +67,9 @@ namespace Ioss {
 #endif
 #if defined(SEACAS_HAVE_PAMGEN)
       Iopg::IOFactory::factory(); // Pamgen
+#endif
+#if defined(SEACAS_HAVE_FAODEL)
+      Iofaodel::IOFactory::factory();
 #endif
 #if defined(SEACAS_HAVE_CGNS)
       Iocgns::IOFactory::factory();

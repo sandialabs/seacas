@@ -95,6 +95,9 @@ KOKKOS=${KOKKOS:-NO}
 KOKKOS=`check_valid KOKKOS`
 
 H5VERSION=${H5VERSION:-V110}
+FAODEL=${FAODEL:-OFF}
+ADIOS2=${ADIOS2:-OFF}
+check_valid_on_off ADIOS2
 
 ADIOS2=${ADIOS2:-NO}
 ADIOS2=`check_valid ADIOS2`
@@ -171,6 +174,7 @@ if [ $# -gt 0 ]; then
 	echo "   USE_AEC      = ${USE_AEC}"
 	echo "   KOKKOS       = ${KOKKOS}"
 	echo "   BB           = ${BB}"
+	echo "   FAODEL       = ${FAODEL}"
 	echo "   ADIOS2       = ${ADIOS2}"
 	echo "   GTEST        = ${GTEST}"
 	echo ""
@@ -800,6 +804,47 @@ then
     else
 	echo "${txtylw}+++ Parallel already installed.  Skipping download and installation.${txtrst}"
     fi
+fi
+
+# =================== INSTALL FAODEL ===============
+if [ "$FAODEL" == "ON" ]
+then
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libkelpie.a ]
+  then
+    faodel_base="faodel"
+    echo "${txtgrn}+++ Faodel${txtrst}"
+    cd $ACCESS
+    cd TPL/faodel
+    if [ "$DOWNLOAD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Downloading...${txtrst}"
+      rm -rf faodel*
+      git clone git@gitlab.sandia.gov:faodel/faodel
+    fi
+
+    if [ "$BUILD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+      mkdir ${faodel_base}/build
+      cd ${faodel_base}/build
+      echo "------------- ${faodel_base}"
+      echo "------------- $(pwd)"
+      MPI=${MPI} bash ../../runcmake.sh
+      if [[ $? != 0 ]]
+      then
+        echo 1>&2 ${txtred}couldn\'t configure faodel. exiting.${txtrst}
+        exit 1
+      fi
+      make -j${JOBS} && ${SUDO} make install
+      if [[ $? != 0 ]]
+      then
+        echo 1>&2 ${txtred}couldn\'t build faodel. exiting.${txtrst}
+        exit 1
+      fi
+    fi
+  else
+    echo "${txtylw}+++ Faodel already installed.  Skipping download and installation.${txtrst}"
+  fi
 fi
 
 # ==================================

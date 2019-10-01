@@ -5,6 +5,8 @@
 /* Define to indicate that the SEACAS project is being built with the KOKKOS package enabled*/
 #cmakedefine SEACAS_HAVE_KOKKOS
 
+#cmakedefine SEACAS_HAVE_FAODEL
+
 #cmakedefine SEACAS_HAVE_DATAWARP
 
 #cmakedefine SEACAS_HAVE_EXODUS
