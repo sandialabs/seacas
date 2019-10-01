@@ -230,7 +230,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
     INT itemp = globals.E_Comm_Map[iproc]->proc_ids[0];
 
     /* First find the count */
-    for (INT i1 = 1; i1 < globals.E_Comm_Map[iproc]->elem_cnt; i1++) {
+    for (size_t i1 = 1; i1 < globals.E_Comm_Map[iproc]->elem_cnt; i1++) {
       if (globals.E_Comm_Map[iproc]->proc_ids[i1] != itemp) {
         ecomm_cnt++;
         itemp = globals.E_Comm_Map[iproc]->proc_ids[i1];
@@ -346,7 +346,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
   INT *nem_node_mapb = nem_node_mapi + globals.Num_Internal_Nodes[iproc];
   INT *nem_node_mape = nem_node_mapb + globals.Num_Border_Nodes[iproc];
 
-  for (INT i1 = 0; i1 < itotal_nodes; i1++) {
+  for (size_t i1 = 0; i1 < itotal_nodes; i1++) {
     nem_node_mapi[i1] = i1 + 1;
   }
 
@@ -363,7 +363,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
   INT *loc_index = (INT *)array_alloc(__FILE__, __LINE__, 1, itotal_nodes, sizeof(INT));
 
   /* Initialize index array */
-  for (INT i2 = 0; i2 < itotal_nodes; i2++) {
+  for (size_t i2 = 0; i2 < itotal_nodes; i2++) {
     loc_index[i2] = i2;
   }
 

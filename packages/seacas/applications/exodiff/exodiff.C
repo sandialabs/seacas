@@ -433,7 +433,7 @@ namespace {
         file1.Num_NS_Vars() > interFace.max_number_of_names ||
         file1.Num_SS_Vars() > interFace.max_number_of_names ||
         file1.Num_Elmt_Vars() > interFace.max_number_of_names) {
-      int max = file1.Num_Global_Vars();
+      size_t max = file1.Num_Global_Vars();
       if (file1.Num_Nodal_Vars() > max) {
         max = file1.Num_Nodal_Vars();
       }
@@ -462,7 +462,7 @@ namespace {
           file2.Num_NS_Vars() > interFace.max_number_of_names ||
           file2.Num_SS_Vars() > interFace.max_number_of_names ||
           file2.Num_Elmt_Vars() > interFace.max_number_of_names) {
-        int max = file2.Num_Global_Vars();
+        size_t max = file2.Num_Global_Vars();
         if (file2.Num_Nodal_Vars() > max) {
           max = file2.Num_Nodal_Vars();
         }
@@ -634,7 +634,7 @@ namespace {
     Exo_Block<INT> **blocks2 = nullptr;
     if (elmt_map != nullptr) {
       blocks2 = new Exo_Block<INT> *[file2.Num_Elmt_Blocks()];
-      for (int b = 0; b < file2.Num_Elmt_Blocks(); ++b) {
+      for (size_t b = 0; b < file2.Num_Elmt_Blocks(); ++b) {
         blocks2[b] = file2.Get_Elmt_Block_by_Index(b);
       }
     }
@@ -1523,7 +1523,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
     Norm norm;
 
     if (elmt_map != nullptr) { // Load variable for all blocks in file 2.
-      for (int b = 0; b < file2.Num_Elmt_Blocks(); ++b) {
+      for (size_t b = 0; b < file2.Num_Elmt_Blocks(); ++b) {
         Exo_Block<INT> *block2 = file2.Get_Elmt_Block_by_Index(b);
         block2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
       }
@@ -1532,7 +1532,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
     size_t   global_elmt_index = 0;
     DiffData max_diff;
     size_t   e2;
-    for (int b = 0; b < file1.Num_Elmt_Blocks(); ++b) {
+    for (size_t b = 0; b < file1.Num_Elmt_Blocks(); ++b) {
       Exo_Block<INT> *eblock1 = file1.Get_Elmt_Block_by_Index(b);
       if (!eblock1->is_valid_var(vidx1)) {
         global_elmt_index += eblock1->Size();
@@ -1734,7 +1734,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
     DiffData max_diff;
     Norm     norm;
 
-    for (int b = 0; b < file1.Num_Node_Sets(); ++b) {
+    for (size_t b = 0; b < file1.Num_Node_Sets(); ++b) {
       Node_Set<INT> *nset1 = file1.Get_Node_Set_by_Index(b);
       if (nset1->Size() == 0) {
         continue;
@@ -1915,7 +1915,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
     }
 
     DiffData max_diff;
-    for (int b = 0; b < file1.Num_Side_Sets(); ++b) {
+    for (size_t b = 0; b < file1.Num_Side_Sets(); ++b) {
       Side_Set<INT> *sset1 = file1.Get_Side_Set_by_Index(b);
       SMART_ASSERT(sset1 != nullptr);
       if (sset1->Size() == 0) {
@@ -2074,7 +2074,7 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
     fmt::print("Sideset Distribution Factors:\n");
   }
   DiffData max_diff;
-  for (int b = 0; b < file1.Num_Side_Sets(); ++b) {
+  for (size_t b = 0; b < file1.Num_Side_Sets(); ++b) {
     Side_Set<INT> *sset1 = file1.Get_Side_Set_by_Index(b);
     SMART_ASSERT(sset1 != nullptr);
 
@@ -2214,7 +2214,7 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, INT
   bool diff_flag       = false;
 
   size_t global_elmt_offset = 0;
-  for (int b = 0; b < file1.Num_Elmt_Blocks(); ++b) {
+  for (size_t b = 0; b < file1.Num_Elmt_Blocks(); ++b) {
     Exo_Block<INT> *eblock1 = file1.Get_Elmt_Block_by_Index(b);
     SMART_ASSERT(eblock1 != nullptr);
 

@@ -158,9 +158,9 @@ namespace tsl {
         tsl_rh_assert(empty());
       }
 
-      bucket_entry(bool last_bucket) noexcept
+      bucket_entry(bool lst_bucket) noexcept
           : bucket_hash(), m_dist_from_ideal_bucket(EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET),
-            m_last_bucket(last_bucket)
+            m_last_bucket(lst_bucket)
       {
         tsl_rh_assert(empty());
       }
@@ -247,28 +247,28 @@ namespace tsl {
       void set_as_last_bucket() noexcept { m_last_bucket = true; }
 
       template <typename... Args>
-      void set_value_of_empty_bucket(distance_type dist_from_ideal_bucket, truncated_hash_type hash,
+      void set_value_of_empty_bucket(distance_type dist_frm_ideal_bucket, truncated_hash_type hash,
                                      Args &&... value_type_args)
       {
-        tsl_rh_assert(dist_from_ideal_bucket >= 0);
+        tsl_rh_assert(dist_frm_ideal_bucket >= 0);
         tsl_rh_assert(empty());
 
         ::new (static_cast<void *>(std::addressof(m_value)))
             value_type(std::forward<Args>(value_type_args)...);
         this->set_hash(hash);
-        m_dist_from_ideal_bucket = dist_from_ideal_bucket;
+        m_dist_from_ideal_bucket = dist_frm_ideal_bucket;
 
         tsl_rh_assert(!empty());
       }
 
-      void swap_with_value_in_bucket(distance_type &      dist_from_ideal_bucket,
-                                     truncated_hash_type &hash, value_type &value)
+      void swap_with_value_in_bucket(distance_type &      dist_frm_ideal_bucket,
+                                     truncated_hash_type &hash, value_type &my_value)
       {
         tsl_rh_assert(!empty());
 
         using std::swap;
-        swap(value, this->value());
-        swap(dist_from_ideal_bucket, m_dist_from_ideal_bucket);
+        swap(my_value, this->value());
+        swap(dist_frm_ideal_bucket, m_dist_from_ideal_bucket);
 
         // Avoid warning of unused variable if StoreHash is false
         (void)hash;
@@ -377,15 +377,15 @@ namespace tsl {
        * mask the least significant bytes, we just have to check that the truncated_hash_type didn't
        * truncated more bytes.
        */
-      static bool USE_STORED_HASH_ON_REHASH(size_type bucket_count)
+      static bool USE_STORED_HASH_ON_REHASH(size_type my_bucket_count)
       {
-        (void)bucket_count;
+        (void)my_bucket_count;
         if (STORE_HASH && sizeof(std::size_t) == sizeof(truncated_hash_type)) {
           return true;
         }
         else if (STORE_HASH && is_power_of_two_policy<GrowthPolicy>::value) {
-          tsl_rh_assert(bucket_count > 0);
-          return (bucket_count - 1) <= std::numeric_limits<truncated_hash_type>::max();
+          tsl_rh_assert(my_bucket_count > 0);
+          return (my_bucket_count - 1) <= std::numeric_limits<truncated_hash_type>::max();
         }
         else {
           return false;
@@ -500,22 +500,22 @@ namespace tsl {
 
     public:
 #if defined(__cplusplus) && __cplusplus >= 201402L
-      robin_hash(size_type bucket_count, const Hash &hash, const KeyEqual &equal,
+      robin_hash(size_type my_bucket_count, const Hash &hash, const KeyEqual &equal,
                  const Allocator &alloc, float min_load_factor = DEFAULT_MIN_LOAD_FACTOR,
                  float max_load_factor = DEFAULT_MAX_LOAD_FACTOR)
-          : Hash(hash), KeyEqual(equal), GrowthPolicy(bucket_count),
+          : Hash(hash), KeyEqual(equal), GrowthPolicy(my_bucket_count),
             m_buckets_data(
                 [&]() {
-                  if (bucket_count > max_bucket_count()) {
+                  if (my_bucket_count > max_bucket_count()) {
                     TSL_RH_THROW_OR_TERMINATE(std::length_error,
                                               "The map exceeds its maximum bucket count.");
                   }
 
-                  return bucket_count;
+                  return my_bucket_count;
                 }(),
                 alloc),
             m_buckets(m_buckets_data.empty() ? static_empty_bucket_ptr() : m_buckets_data.data()),
-            m_bucket_count(bucket_count), m_nb_elements(0), m_grow_on_next_insert(false),
+            m_bucket_count(my_bucket_count), m_nb_elements(0), m_grow_on_next_insert(false),
             m_try_skrink_on_next_insert(false)
       {
         if (m_bucket_count > 0) {
@@ -536,14 +536,14 @@ namespace tsl {
        * We can't use `vector(size_type count, const T& value, const Allocator& alloc)` as it
        * requires the value T to be copyable.
        */
-      robin_hash(size_type bucket_count, const Hash &my_hash, const KeyEqual &equal,
-                 const Allocator &alloc, float min_load_factor = DEFAULT_MIN_LOAD_FACTOR,
-                 float max_load_factor = DEFAULT_MAX_LOAD_FACTOR)
-          : Hash(my_hash), KeyEqual(equal), GrowthPolicy(bucket_count), m_buckets_data(alloc),
-            m_buckets(static_empty_bucket_ptr()), m_bucket_count(bucket_count), m_nb_elements(0),
+      robin_hash(size_type my_bucket_count, const Hash &my_hash, const KeyEqual &equal,
+                 const Allocator &alloc, float my_min_load_factor = DEFAULT_MIN_LOAD_FACTOR,
+                 float my_max_load_factor = DEFAULT_MAX_LOAD_FACTOR)
+          : Hash(my_hash), KeyEqual(equal), GrowthPolicy(my_bucket_count), m_buckets_data(alloc),
+            m_buckets(static_empty_bucket_ptr()), m_bucket_count(my_bucket_count), m_nb_elements(0),
             m_grow_on_next_insert(false), m_try_skrink_on_next_insert(false)
       {
-        if (bucket_count > max_bucket_count()) {
+        if (my_bucket_count > max_bucket_count()) {
           TSL_RH_THROW_OR_TERMINATE(std::length_error,
                                     "The map exceeds its maxmimum bucket count.");
         }
@@ -556,8 +556,8 @@ namespace tsl {
           m_buckets_data.back().set_as_last_bucket();
         }
 
-        this->min_load_factor(min_load_factor);
-        this->max_load_factor(max_load_factor);
+        this->min_load_factor(my_min_load_factor);
+        this->max_load_factor(my_max_load_factor);
       }
 #endif
 
