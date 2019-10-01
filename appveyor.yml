@@ -36,9 +36,11 @@ install:
   - cmd: vcpkg install matio
   - cmd: vcpkg integrate install
   - cmd: dir C:\Tools\vcpkg
-  - cmd: dir C:\Tools\vcpkg\packages
-  - cmd: dir C:\Tools\vcpkg\installed\x64-windows
-  - cmd: vcpkg\packages\netcdf-c_x64-windows\bin\nc-config --all
+  - cmd: dir C:\Tools\vcpkg\installed\x64-windows\bin
+  - cmd: dir C:\Tools\vcpkg\installed\x64-windows\include
+  - cmd: dir C:\Tools\vcpkg\installed\x64-windows\lib
+  - cmd: dir C:\Tools\vcpkg\installed\x64-windows\shared
+  - cmd: C:\Tools\vcpkg\installed\x64-windows\bin\nc-config --all
   
 configuration: Release
 
