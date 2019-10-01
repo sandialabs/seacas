@@ -10,7 +10,7 @@ environment:
       SUPPRESSIONS: "/wd4478"
       VCPKG_DEFAULT_TRIPLET: "x64-windows"
       VCPKG_BUILD_TYPE: "release"
-      LIB_ROOT: "C:\Tools\vcpkg\installed\x64-windows"
+      LIB_ROOT: C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%
 
 platform:
     - x64
