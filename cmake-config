@@ -256,6 +256,7 @@ PNETCDF_PATH=${INSTALL_PATH}
 MATIO_PATH=${INSTALL_PATH}
 HDF5_PATH=${INSTALL_PATH}
 CGNS_PATH=${INSTALL_PATH}
+FAODEL_PATH=${INSTALL_PATH}
 ADIOS2_PATH=${INSTALL_PATH}
 GTEST_PATH=${INSTALL_PATH}
 KOKKOS_PATH=${INSTALL_PATH}
@@ -276,6 +277,7 @@ function check_enable()
 HAVE_NETCDF=$(check_enable "${NETCDF_PATH}/include/netcdf.h")
 HAVE_MATIO=$(check_enable "${MATIO_PATH}/include/matio.h")
 HAVE_CGNS=$(check_enable "${CGNS_PATH}/include/cgnslib.h")
+HAVE_FAODEL=$(check_enable "${FAODEL_PATH}/include/faodel/faodelConfig.h")
 HAVE_ADIOS2=$(check_enable "${ADIOS2_PATH}/include/adios2.h")
 HAVE_GTEST=$(check_enable "${GTEST_PATH}/include/gtest/gtest.h")
 HAVE_KOKKOS=$(check_enable "${KOKKOS_PATH}/include/Kokkos_Core.hpp")
@@ -339,6 +341,14 @@ then
 		    -DTPL_Kokkos_LIBRARIES=${KOKKOS_PATH}/lib/libkokkos.${LD_EXT}"
 fi
 
+if [ "$HAVE_FAODEL" == "ON" ]
+then
+  FAODEL_SYMBOLS=" -D TPL_ENABLE_Faodel:BOOL=${HAVE_FAODEL} \
+    -D Faodel_ROOT:PATH=${FAODEL_PATH} \
+    -D Faodel_INCLUDE_DIRS:PATH=${FAODEL_PATH}/include/faodel \
+    "
+fi
+    
 if [ "$OS" == "Darwin" ] ; then
   DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/X11/include"
 else
@@ -453,8 +463,8 @@ ${THREAD_SAFE_OPT} \
 \
 ${KOKKOS_SYMBOLS} \
 ${MPI_SYMBOLS} \
-${DW_SYMBOLS} \
 ${DARWIN_OPT} \
+${FAODEL_SYMBOLS} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
@@ -493,6 +503,7 @@ echo "     ZOLTAN: ${ZOLTAN}"
 echo "     ADIOS2: ${HAVE_ADIOS2}"
 echo "      METIS: ${HAVE_METIS}"
 echo "   PARMETIS: ${HAVE_PARMETIS}"
+echo "     FAODEL: ${HAVE_FAODEL}"
 echo "      GTEST: ${HAVE_GTEST}"
 echo "    DOXYGEN: ${DOXYGEN}"
 echo ""

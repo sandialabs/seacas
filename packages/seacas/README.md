@@ -22,6 +22,7 @@ build SEACAS
  * [Parallel-NetCDF](#parallel-netcdf) -- optional for parallel
  * [NetCDF](#netcdf) -- required with modifications
  * [MatIO](#matio) -- optional
+ * [Faodel](#faodel) -- optional
 
 #### Zoltan
 Zoltan is a package in Trilinos and it must be enabled for a SEACAS build.
@@ -143,6 +144,11 @@ The MatIO library is used in the `exo2mat` and `mat2exo` programs which convert 
    ```
 
  * `make && make install`
+
+#### Faodel
+Faodel is a collection of data management tools that Sandia is developing to improve how datasets migrate between memory and storage resources in a distributed system. For SEACAS Faodel support means adding a new backend to IOSS. This enables additional data storage capabilities and the chance to communicate data between execution spaces.
+
+Faodel is available at [Faodel](https://github.com/faodel/faodel). And is build here as a SEACAS TPL.
 
 ## Configure, Build, and Install Trilinos
 At this time, you should have all external TPL libraries built and

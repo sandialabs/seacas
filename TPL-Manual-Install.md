@@ -10,6 +10,7 @@ described in the previous section.
  * [MatIO](#matio) -- optional, required for exo2mat and mat2exo
  * [GNU Parallel](#gnu-parallel) -- optional
  * [CGNS](#cgns) -- experimental optional
+ * [Faodel](#faodel) -- optional
 
 ## Zoltan
 A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
@@ -142,3 +143,8 @@ Support for CGNS in the IOSS library is being added.  To use this capability, yo
      * `cd build`
      * `../../runconfigure.sh`
      * `make && make install`
+
+#### Faodel
+Faodel is a collection of data management tools that Sandia is developing to improve how datasets migrate between memory and storage resources in a distributed system. For SEACAS Faodel support means adding a new backend to IOSS. This enables additional data storage capabilities and the chance to communicate data between execution spaces.
+
+Faodel is available at [Faodel](https://github.com/faodel/faodel). And is build here as a SEACAS TPL.
