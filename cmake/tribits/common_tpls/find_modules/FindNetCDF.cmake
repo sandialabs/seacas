@@ -268,7 +268,7 @@ if ( NetCDF_ROOT OR NetCDF_BIN_DIR )
 
     if (netcdf_config)
         message(STATUS "Found NetCDF configuration script: ${netcdf_config}")
-        execute_process(COMMAND "sh ${netcdf_config}" "--has-hdf5"
+        execute_process(COMMAND sh -c "${netcdf_config} --has-hdf5"
                         RESULT_VARIABLE _ret_code
                         OUTPUT_VARIABLE _stdout
                         ERROR_VARIABLE  _stderr
@@ -284,7 +284,7 @@ if ( NetCDF_ROOT OR NetCDF_BIN_DIR )
             set(NetCDF_NEEDS_HDF5 False)
         endif()
 
-        execute_process(COMMAND "sh ${netcdf_config}" "--version"
+        execute_process(COMMAND sh -c "${netcdf_config} --version"
                         RESULT_VARIABLE _ret_code
                         OUTPUT_VARIABLE _stdout
                         ERROR_VARIABLE  _stderr
@@ -292,7 +292,7 @@ if ( NetCDF_ROOT OR NetCDF_BIN_DIR )
         string(STRIP ${_stdout} NetCDF_VERSION)
 
 	# If --has-pnetcdf returns true, then add pnetcdf as dependent library.
-        execute_process(COMMAND "sh ${netcdf_config}" "--has-pnetcdf"
+        execute_process(COMMAND sh -c "${netcdf_config} --has-pnetcdf"
                         RESULT_VARIABLE _ret_code
                         OUTPUT_VARIABLE _stdout
                         ERROR_VARIABLE  _stderr
