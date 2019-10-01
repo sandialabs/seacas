@@ -37,6 +37,7 @@ install:
   - cmd: vcpkg integrate install
   - cmd: dir C:\Tools\vcpkg
   - cmd: dir C:\Tools\vcpkg\packages
+  - cmd: dir C:\Tools\vcpkg\installed
   - cmd: vcpkg\packages\netcdf-c_x64-windows\bin\nc-config --all
   
 configuration: Release
