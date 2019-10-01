@@ -39,9 +39,9 @@ install:
   - cmd: dir C:\Tools\vcpkg\installed\x64-windows\bin
   - cmd: dir C:\Tools\vcpkg\installed\x64-windows\include
   - cmd: dir C:\Tools\vcpkg\installed\x64-windows\lib
-  - cmd: dir C:\Tools\vcpkg\installed\x64-windows\shared
+  - cmd: type C:\Tools\vcpkg\installed\x64-windows\include\netcdf_meta.h
   - cmd: C:\Tools\vcpkg\installed\x64-windows\bin\nc-config --all
-  
+    
 configuration: Release
 
 build: off
