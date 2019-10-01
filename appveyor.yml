@@ -30,7 +30,9 @@ install:
   - cmd: vcpkg install matio
   - cmd: vcpkg integrate install
   - cmd: type C:\Tools\vcpkg\installed\x64-windows\bin\nc-config
-  - cmd: sh C:\Tools\vcpkg\installed\x64-windows\bin\nc-config --all
+  - cmd: sh C:\Tools\vcpkg\installed\x64-windows\bin\nc-config --has-hdf5
+  - cmd: sh C:\Tools\vcpkg\installed\x64-windows\bin\nc-config --has-pnetcdf
+  - cmd: sh C:\Tools\vcpkg\installed\x64-windows\bin\nc-config --version
     
 configuration: Release
 
