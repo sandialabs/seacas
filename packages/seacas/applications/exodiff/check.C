@@ -213,7 +213,7 @@ namespace {
   {
     bool is_same = true;
     // Verify that element blocks match in the two files...
-    for (int b = 0; b < file1.Num_Elmt_Blocks(); ++b) {
+    for (size_t b = 0; b < file1.Num_Elmt_Blocks(); ++b) {
       Exo_Block<INT> *block1 = file1.Get_Elmt_Block_by_Index(b);
       Exo_Block<INT> *block2 = nullptr;
       if (interFace.map_flag != DISTANCE && interFace.map_flag != PARTIAL) {
@@ -344,7 +344,7 @@ namespace {
       }
     }
     // Check that the files both contain the same nodesets...
-    for (int b = 0; b < file1.Num_Node_Sets(); ++b) {
+    for (size_t b = 0; b < file1.Num_Node_Sets(); ++b) {
       Node_Set<INT> *set1 = file1.Get_Node_Set_by_Index(b);
       Node_Set<INT> *set2 = nullptr;
       if (interFace.by_name) {
@@ -375,7 +375,7 @@ namespace {
 
     // Check that can access all nodesets in file2.
     // This should never fail if the above tests pass...
-    for (int b = 0; b < file2.Num_Node_Sets(); ++b) {
+    for (size_t b = 0; b < file2.Num_Node_Sets(); ++b) {
       Node_Set<INT> *set2 = file2.Get_Node_Set_by_Index(b);
       if (set2 == nullptr) {
         Error(
@@ -390,7 +390,7 @@ namespace {
     // For each nodeset, check that the order of the nodeset nodes is the same.
     // Eventually need to be able to map the order...
     if (!interFace.ns_var_names.empty() || interFace.pedantic) {
-      for (int b = 0; b < file1.Num_Node_Sets(); ++b) {
+      for (size_t b = 0; b < file1.Num_Node_Sets(); ++b) {
         Node_Set<INT> *set1 = file1.Get_Node_Set_by_Index(b);
         Node_Set<INT> *set2 = nullptr;
         if (interFace.by_name) {
@@ -454,7 +454,7 @@ namespace {
       }
     }
     // Check that the files both contain the same sidesets...
-    for (int b = 0; b < file1.Num_Side_Sets(); ++b) {
+    for (size_t b = 0; b < file1.Num_Side_Sets(); ++b) {
       Side_Set<INT> *set1 = file1.Get_Side_Set_by_Index(b);
       Side_Set<INT> *set2 = nullptr;
       if (interFace.by_name) {
@@ -483,7 +483,7 @@ namespace {
       }
     }
 
-    for (int b = 0; b < file2.Num_Side_Sets(); ++b) {
+    for (size_t b = 0; b < file2.Num_Side_Sets(); ++b) {
       Side_Set<INT> *set2 = file2.Get_Side_Set_by_Index(b);
       if (set2 == nullptr) {
         Error(
@@ -498,7 +498,7 @@ namespace {
     // For each sideset, check that the order of the sideset sides is the same.
     // Eventually need to be able to map the order...
     if (!interFace.ss_var_names.empty() || interFace.pedantic || !interFace.ignore_sideset_df) {
-      for (int b = 0; b < file1.Num_Side_Sets(); ++b) {
+      for (size_t b = 0; b < file1.Num_Side_Sets(); ++b) {
         Side_Set<INT> *set1 = file1.Get_Side_Set_by_Index(b);
         Side_Set<INT> *set2 = nullptr;
         if (interFace.by_name) {

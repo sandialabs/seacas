@@ -60,6 +60,9 @@
 #define FALL_THROUGH ((void)0)
 #endif /* __GNUC__ >= 7 */
 
+size_t Ioss::FaceGenerator::fequal = 0;
+size_t Ioss::FaceGenerator::secondary = 0;
+
 namespace {
   template <typename T> void generate_index(std::vector<T> &index)
   {
