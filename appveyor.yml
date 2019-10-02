@@ -32,7 +32,7 @@ install:
   - cmd: vcpkg integrate install
   - cmd: dir C:\Tools\vcpkg\installed\x64-windows\lib
   - cmd: dir C:\Tools\vcpkg\installed\x64-windows\bin
-  - cmd: DUMPBIN /SYMBOLS C:\Tools\vcpkg\installed\x64-windows\lib\libhdf5.lib
+  - cmd: link /dump /all C:\Tools\vcpkg\installed\x64-windows\lib\libhdf5.lib
   - cmd: git clone https://github.com/cgns/CGNS C:\projects\cgns
   - cmd: cd C:\projects\cgns
   - cmd: mkdir build
@@ -54,7 +54,7 @@ install:
      -DCGNS_ENABLE_PARALLEL:BOOL=OFF ^
      -DHDF5_NEED_MPI:BOOL=OFF ^
      -DHDF5_DIR:PATH=%LIB_ROOT% ^
-     -DHDF5_LIBRARY:PATH=%LIB_ROOT%\lib
+     -DHDF5_LIBRARY:PATH=%LIB_ROOT%\bin
   - cmd: cmake --build . --verbose --config Release -- /maxcpucount:4
   - cmd: cmake --build . --verbose --config Release --target install -- /maxcpucount:4
   - cmd: cd C:\projects\seacas
