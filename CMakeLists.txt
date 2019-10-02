@@ -38,6 +38,10 @@ SET(TPL_ENABLE_Pthread OFF CACHE BOOL "")
 
 OPTION(SEACASProj_ENABLE_DOXYGEN "Enable Doxygen documentation creation." OFF)
 
+if (${CMAKE_VERSION} GREATER "3.13")
+     cmake_policy(SET CMP0074 NEW)
+endif()
+
 # Do all of the processing for this Tribits project
 TRIBITS_PROJECT()
 

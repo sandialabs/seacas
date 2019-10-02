@@ -3,7 +3,7 @@ NPROCB = 32
 NPROCC = 33
 
 BIN = ../bin
-PYTHON  =       python3
+PYTHON  =       python
 APREPRO	=	$(BIN)/aprepro
 FASTQ	=	$(BIN)/fastq
 GJOIN	=	$(BIN)/gjoin
