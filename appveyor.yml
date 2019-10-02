@@ -30,6 +30,7 @@ install:
   - cmd: vcpkg install netcdf-c
   - cmd: vcpkg install matio
   - cmd: vcpkg integrate install
+  - cmd: dir C:\Tools\vcpkg\installed\x64-windows\lib
   - cmd: git clone https://github.com/cgns/CGNS C:\projects\cgns
   - cmd: cd C:\projects\cgns
   - cmd: mkdir build
