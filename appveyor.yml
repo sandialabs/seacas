@@ -41,8 +41,8 @@ install:
      -DCMAKE_PREFIX_PATH:PATH=%LIB_ROOT%\lib ^
      -DCMAKE_TOOLCHAIN_FILE=C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake ^
      -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
-     -DCGNS_BUILD_SHARED:BOOL=ON ^
-     -DCGNS_USE_SHARED:BOOL=ON ^
+     -DCGNS_BUILD_SHARED:BOOL=OFF ^
+     -DCGNS_USE_SHARED:BOOL=OFF ^
      -DCGNS_ENABLE_LFS:BOOL=OFF ^
      -DCGNS_BUILD_CGNSTOOLS:BOOL=OFF ^
      -DCGNS_ENABLE_HDF5:BOOL=ON ^
@@ -53,7 +53,7 @@ install:
      -DCGNS_ENABLE_PARALLEL:BOOL=OFF ^
      -DHDF5_NEED_MPI:BOOL=OFF ^
      -DHDF5_DIR:PATH=%LIB_ROOT% ^
-     -DHDF5_LIBRARY:PATH=%LIB_ROOT%\bin
+     -DHDF5_LIBRARY:PATH=%LIB_ROOT%\lib\libhdf5.lib
   - cmd: cmake --build . --verbose --config Release -- /maxcpucount:4
   - cmd: cmake --build . --verbose --config Release --target install -- /maxcpucount:4
   - cmd: cd C:\projects\seacas
@@ -67,7 +67,7 @@ build_script:
   - cmd: mkdir build
   - cmd: cd build
   - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
-     -DBUILD_SHARED_LIBS:BOOL=ON ^
+     -DBUILD_SHARED_LIBS:BOOL=OFF ^
      -DCGNS_ROOT:PATH=%LIB_ROOT% ^
      -DCMAKE_BUILD_TYPE=Release ^
      -DCMAKE_CXX_FLAGS="%SUPPRESSIONS% /EHsc" ^
