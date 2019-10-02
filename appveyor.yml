@@ -36,10 +36,10 @@ install:
   - cmd: cd build
   - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
     -DCMAKE_BUILD_TYPE=Release ^
-    -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
     -DCMAKE_PREFIX_PATH:PATH=%LIB_ROOT%\lib ^
     -DCMAKE_TOOLCHAIN_FILE=C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake ^
     -DCMAKE_STATIC_LINKER_FLAGS:STRING="" ^
+    -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
     -DCGNS_USE_SHARED:BOOL=OFF ^
     -DCGNS_BUILD_SHARED:BOOL=OFF ^
     -DCGNS_ENABLE_LFS:BOOL=OFF ^
