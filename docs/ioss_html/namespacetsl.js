@@ -4,6 +4,8 @@ var namespacetsl =
     [ "detail_robin_hash", "namespacetsl_1_1detail__robin__hash.html", "namespacetsl_1_1detail__robin__hash" ],
     [ "hh", "namespacetsl_1_1hh.html", "namespacetsl_1_1hh" ],
     [ "rh", "namespacetsl_1_1rh.html", "namespacetsl_1_1rh" ],
+    [ "bhopscotch_map", "classtsl_1_1bhopscotch__map.html", "classtsl_1_1bhopscotch__map" ],
+    [ "bhopscotch_set", "classtsl_1_1bhopscotch__set.html", "classtsl_1_1bhopscotch__set" ],
     [ "hopscotch_map", "classtsl_1_1hopscotch__map.html", "classtsl_1_1hopscotch__map" ],
     [ "hopscotch_set", "classtsl_1_1hopscotch__set.html", "classtsl_1_1hopscotch__set" ],
     [ "robin_map", "classtsl_1_1robin__map.html", "classtsl_1_1robin__map" ],

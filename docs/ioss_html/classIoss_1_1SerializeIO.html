@@ -172,7 +172,7 @@ Static Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class <code><a class="el" href="classIoss_1_1SerializeIO.html" title="Class SerializeIO is a sentry class which performs serialization for mesh database I/O.">SerializeIO</a></code> is a sentry class which performs serialization for mesh database I/O. </p>
 <p>This sentry guards serialization of parallel I/O routines. At construction, it blocks the processes via an MPI barrier, releasing them to execute in groups specified by <code>s_groupSize</code>. At destruction, it continues to block via MPI barriers until all the processor have been released by the constructor.</p>
-<p>In the case where the constructor is called, and the sentry is already active and owned by the processes group, the constructor and destrutor simply fall through since the serialization is already in place at a higher level.</p>
+<p>In the case where the constructor is called, and the sentry is already active and owned by the processes group, the constructor and destructor simply fall through since the serialization is already in place at a higher level.</p>
 <dl class="section note"><dt>Note</dt><dd>All ranks must call the <a class="el" href="classIoss_1_1SerializeIO.html" title="Class SerializeIO is a sentry class which performs serialization for mesh database I/O.">SerializeIO</a> constructor synchronously. </dd>
 <dd>
 It is recommended to use RAII and keep the area protected by the <a class="el" href="classIoss_1_1SerializeIO.html" title="Class SerializeIO is a sentry class which performs serialization for mesh database I/O.">SerializeIO</a> as small as possible.</dd></dl>

@@ -63,7 +63,6 @@
 #include <set>
 #include <string>
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <tokenize.h>
 #include <utility>
 #include <vector>
@@ -371,11 +370,9 @@ namespace Ioss {
                    get_dwname(), get_pfsname());
 #endif
       }
-#ifdef SEACAS_HAVE_MPI
       if (using_parallel_io()) {
-        MPI_Barrier(util().communicator());
+        util().barrier();
       }
-#endif
     }
   }
 
@@ -391,6 +388,13 @@ namespace Ioss {
     }
     return exists;
   }
+
+#if defined(_MSC_VER)
+#include <direct.h>
+#ifndef S_ISDIR
+#define S_ISDIR(mode) (((mode)&S_IFMT) == S_IFDIR)
+#endif
+#endif
 
   void DatabaseIO::create_path(const std::string &filename) const
   {
@@ -409,7 +413,11 @@ namespace Ioss {
         struct stat st;
         if (stat(path_root.c_str(), &st) != 0) {
           const int mode = 0777; // Users umask will be applied to this.
+#ifdef _MSC_VER
+          if (mkdir(path_root.c_str()) != 0 && errno != EEXIST) {
+#else
           if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
+#endif
             fmt::print(errmsg, "ERROR: Cannot create directory '{}': {}\n", path_root,
                        std::strerror(errno));
             error_found = true;
@@ -741,7 +749,7 @@ namespace Ioss {
           }
         }
         else {
-          // homogenous sides.
+          // homogeneous sides.
           side_topo.insert(std::make_pair(elem_type, side_type));
           all_sphere = false;
         }
@@ -1239,11 +1247,9 @@ namespace {
       }
     }
     else {
-#ifdef SEACAS_HAVE_MPI
       if (!single_proc_only) {
-        MPI_Barrier(util.communicator());
+        util.barrier();
       }
-#endif
       if (util.parallel_rank() == 0 || single_proc_only) {
         auto                          time_now = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> diff     = time_now - initial_time;

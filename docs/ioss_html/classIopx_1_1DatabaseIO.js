@@ -4,6 +4,7 @@ var classIopx_1_1DatabaseIO =
     [ "DatabaseIO", "classIopx_1_1DatabaseIO.html#ad37200b6c815d6404f108bd8bee989d1", null ],
     [ "~DatabaseIO", "classIopx_1_1DatabaseIO.html#a94cc420b15d4b320ed24b5dbd1645c76", null ],
     [ "check_valid_file_ptr", "classIopx_1_1DatabaseIO.html#aae737df4af01a4691b54f042ef2b7988", null ],
+    [ "check_valid_values", "classIopx_1_1DatabaseIO.html#a1db0622a9c2b471db17627e749bbb118", null ],
     [ "compute_node_status", "classIopx_1_1DatabaseIO.html#a9be987b5ffa655db68864d15cd5ec1f1", null ],
     [ "create_implicit_global_map", "classIopx_1_1DatabaseIO.html#a4755b1a441e20cefdd86c6e1e2256fc9", null ],
     [ "free_file_pointer", "classIopx_1_1DatabaseIO.html#a32a6c290cb2d3bb24eef497f7ca2a2b3", null ],

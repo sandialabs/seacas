@@ -62,6 +62,7 @@ var classIoss_1_1DatabaseIO =
     [ "get_file_per_state", "classIoss_1_1DatabaseIO.html#a876aac01eb56f11f6c006651a43de3d5", null ],
     [ "get_file_pointer", "classIoss_1_1DatabaseIO.html#a009607cca86df2f61da6aea3ef27abfa", null ],
     [ "get_filename", "classIoss_1_1DatabaseIO.html#a1c9ad01905e9773cd69b452a8551cbba", null ],
+    [ "get_format", "classIoss_1_1DatabaseIO.html#a99c8441c36c8369e28598837b9fc9d43", null ],
     [ "get_information_records", "classIoss_1_1DatabaseIO.html#ad8daf20452f3f5cf3f52c1f7c264f79e", null ],
     [ "get_logging", "classIoss_1_1DatabaseIO.html#a48942e443c4c83a30c30167d444bd034", null ],
     [ "get_overlay_count", "classIoss_1_1DatabaseIO.html#ad8a19a9995d541f47f116b83bacecb76", null ],

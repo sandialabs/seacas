@@ -316,6 +316,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a55394bfd3c779b1bdde87fd18876f411"><td class="memTemplParams" colspan="2">template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_transparent&lt; KE &gt;::value &gt;::type *  = nullptr&gt; </td></tr>
 <tr class="memitem:a55394bfd3c779b1bdde87fd18876f411"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classtsl_1_1hopscotch__map.html#ab1f7dbb7b85f2d41b9bf81ab7d5b474f">const_iterator</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtsl_1_1hopscotch__map.html#a55394bfd3c779b1bdde87fd18876f411">find</a> (const K &amp;key, std::size_t precalculated_hash) const</td></tr>
 <tr class="separator:a55394bfd3c779b1bdde87fd18876f411"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69f1bd19068900061d5a5a551481465e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1hopscotch__map.html#a69f1bd19068900061d5a5a551481465e">contains</a> (const Key &amp;key) const</td></tr>
+<tr class="separator:a69f1bd19068900061d5a5a551481465e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab83e5e6a0c35d64c5d50d6356b0d0e2e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1hopscotch__map.html#ab83e5e6a0c35d64c5d50d6356b0d0e2e">contains</a> (const Key &amp;key, std::size_t precalculated_hash) const</td></tr>
+<tr class="separator:ab83e5e6a0c35d64c5d50d6356b0d0e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0255617434505dfc064ce49c1bfe7ac0"><td class="memTemplParams" colspan="2">template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_transparent&lt; KE &gt;::value &gt;::type *  = nullptr&gt; </td></tr>
+<tr class="memitem:a0255617434505dfc064ce49c1bfe7ac0"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtsl_1_1hopscotch__map.html#a0255617434505dfc064ce49c1bfe7ac0">contains</a> (const K &amp;key) const</td></tr>
+<tr class="separator:a0255617434505dfc064ce49c1bfe7ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f816462a64e868612e8a571eec98e34"><td class="memTemplParams" colspan="2">template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_transparent&lt; KE &gt;::value &gt;::type *  = nullptr&gt; </td></tr>
+<tr class="memitem:a5f816462a64e868612e8a571eec98e34"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtsl_1_1hopscotch__map.html#a5f816462a64e868612e8a571eec98e34">contains</a> (const K &amp;key, std::size_t precalculated_hash) const</td></tr>
+<tr class="separator:a5f816462a64e868612e8a571eec98e34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a067d12d4993e2c1c86a5c66d28b1850d"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classtsl_1_1hopscotch__map.html#a60f52fac14aebb6fa6a86264d0973db2">iterator</a>, <a class="el" href="classtsl_1_1hopscotch__map.html#a60f52fac14aebb6fa6a86264d0973db2">iterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1hopscotch__map.html#a067d12d4993e2c1c86a5c66d28b1850d">equal_range</a> (const Key &amp;key)</td></tr>
 <tr class="separator:a067d12d4993e2c1c86a5c66d28b1850d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a19875c2eff85b402fb89be8338334f"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classtsl_1_1hopscotch__map.html#a60f52fac14aebb6fa6a86264d0973db2">iterator</a>, <a class="el" href="classtsl_1_1hopscotch__map.html#a60f52fac14aebb6fa6a86264d0973db2">iterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsl_1_1hopscotch__map.html#a7a19875c2eff85b402fb89be8338334f">equal_range</a> (const Key &amp;key, std::size_t precalculated_hash)</td></tr>
@@ -1658,6 +1668,148 @@ template&lt;class Key , class T , class Hash  = std::hash&lt;Key&gt;, class KeyE
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0255617434505dfc064ce49c1bfe7ac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0255617434505dfc064ce49c1bfe7ac0">&#9670;&nbsp;</a></span>contains() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class T , class Hash  = std::hash&lt;Key&gt;, class KeyEqual  = std::equal_to&lt;Key&gt;, class Allocator  = std::allocator&lt;std::pair&lt;Key, T&gt;&gt;, unsigned int NeighborhoodSize = 62, bool StoreHash = false, class GrowthPolicy  = tsl::hh::power_of_two_growth_policy&lt;2&gt;&gt; </div>
+<div class="memtemplate">
+template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_transparent&lt; KE &gt;::value &gt;::type *  = nullptr&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classtsl_1_1hopscotch__map.html">tsl::hopscotch_map</a>&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;::contains </td>
+          <td>(</td>
+          <td class="paramtype">const K &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists. If so, K must be hashable and comparable to Key. </p>
+
+</div>
+</div>
+<a id="a5f816462a64e868612e8a571eec98e34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f816462a64e868612e8a571eec98e34">&#9670;&nbsp;</a></span>contains() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class T , class Hash  = std::hash&lt;Key&gt;, class KeyEqual  = std::equal_to&lt;Key&gt;, class Allocator  = std::allocator&lt;std::pair&lt;Key, T&gt;&gt;, unsigned int NeighborhoodSize = 62, bool StoreHash = false, class GrowthPolicy  = tsl::hh::power_of_two_growth_policy&lt;2&gt;&gt; </div>
+<div class="memtemplate">
+template&lt;class K , class KE  = KeyEqual, typename std::enable_if&lt; has_is_transparent&lt; KE &gt;::value &gt;::type *  = nullptr&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classtsl_1_1hopscotch__map.html">tsl::hopscotch_map</a>&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;::contains </td>
+          <td>(</td>
+          <td class="paramtype">const K &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>precalculated_hash</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p></p>
+<p>This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists. If so, K must be hashable and comparable to Key.</p>
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1hopscotch__map.html#a22024c61aa478aff2b9dc601801f3047">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
+
+</div>
+</div>
+<a id="a69f1bd19068900061d5a5a551481465e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69f1bd19068900061d5a5a551481465e">&#9670;&nbsp;</a></span>contains() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class T , class Hash  = std::hash&lt;Key&gt;, class KeyEqual  = std::equal_to&lt;Key&gt;, class Allocator  = std::allocator&lt;std::pair&lt;Key, T&gt;&gt;, unsigned int NeighborhoodSize = 62, bool StoreHash = false, class GrowthPolicy  = tsl::hh::power_of_two_growth_policy&lt;2&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classtsl_1_1hopscotch__map.html">tsl::hopscotch_map</a>&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;::contains </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab83e5e6a0c35d64c5d50d6356b0d0e2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab83e5e6a0c35d64c5d50d6356b0d0e2e">&#9670;&nbsp;</a></span>contains() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class T , class Hash  = std::hash&lt;Key&gt;, class KeyEqual  = std::equal_to&lt;Key&gt;, class Allocator  = std::allocator&lt;std::pair&lt;Key, T&gt;&gt;, unsigned int NeighborhoodSize = 62, bool StoreHash = false, class GrowthPolicy  = tsl::hh::power_of_two_growth_policy&lt;2&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classtsl_1_1hopscotch__map.html">tsl::hopscotch_map</a>&lt; Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy &gt;::contains </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>precalculated_hash</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Use the hash value 'precalculated_hash' instead of hashing the key. The hash value should be the same as <a class="el" href="classtsl_1_1hopscotch__map.html#a22024c61aa478aff2b9dc601801f3047">hash_function()</a>(key). Usefull to speed-up the lookup if you already have the hash. </p>
 
 </div>
 </div>

@@ -7,6 +7,4 @@ TRIBITS_REPOSITORY_DEFINE_PACKAGES(
   )
 
 # Allow builds even if some packages are missing
-
-TRIBITS_DISABLE_PACKAGE_ON_PLATFORMS(SEACAS Windows)
 TRIBITS_DISABLE_PACKAGE_ON_PLATFORMS(Zoltan Windows)

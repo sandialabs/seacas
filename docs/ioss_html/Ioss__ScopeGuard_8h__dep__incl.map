@@ -1,6 +1,13 @@
 <map id="src/Ioss_ScopeGuard.h" name="src/Ioss_ScopeGuard.h">
-<area shape="rect" id="node1" title=" " alt="" coords="188,5,349,31"/>
-<area shape="rect" id="node2" href="$cgns__decomp_8C.html" title=" " alt="" coords="5,79,177,104"/>
-<area shape="rect" id="node3" href="$io__shell_8C.html" title=" " alt="" coords="202,79,336,104"/>
-<area shape="rect" id="node4" href="$io__shell__ts_8C.html" title=" " alt="" coords="359,79,511,104"/>
+<area shape="rect" id="node1" title=" " alt="" coords="811,5,972,31"/>
+<area shape="rect" id="node2" href="$cgns__decomp_8C.html" title=" " alt="" coords="5,85,177,111"/>
+<area shape="rect" id="node3" href="$cth__pressure__map_8C.html" title=" " alt="" coords="202,79,354,117"/>
+<area shape="rect" id="node4" href="$io__info__main_8C.html" title=" " alt="" coords="378,85,543,111"/>
+<area shape="rect" id="node5" href="$io__shell_8C.html" title=" " alt="" coords="567,85,701,111"/>
+<area shape="rect" id="node6" href="$io__shell__ts_8C.html" title=" " alt="" coords="725,85,876,111"/>
+<area shape="rect" id="node7" href="$shell__to__hex_8C.html" title=" " alt="" coords="900,85,1064,111"/>
+<area shape="rect" id="node8" href="$skinner_8C.html" title=" " alt="" coords="1087,85,1218,111"/>
+<area shape="rect" id="node9" href="$sphgen_8C.html" title=" " alt="" coords="1242,85,1375,111"/>
+<area shape="rect" id="node10" href="$struc__to__unstruc_8C.html" title=" " alt="" coords="1399,85,1586,111"/>
+<area shape="rect" id="node11" href="$Utst__superelement_8C.html" title=" " alt="" coords="1610,85,1810,111"/>
 </map>

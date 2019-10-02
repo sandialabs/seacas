@@ -1,5 +1,7 @@
 var dir_81ff9cf00c749aad2228acad00958fb4 =
 [
+    [ "bhopscotch_map.h", "bhopscotch__map_8h.html", "bhopscotch__map_8h" ],
+    [ "bhopscotch_set.h", "bhopscotch__set_8h.html", "bhopscotch__set_8h" ],
     [ "hopscotch_growth_policy.h", "hopscotch__growth__policy_8h.html", "hopscotch__growth__policy_8h" ],
     [ "hopscotch_hash.h", "hopscotch__hash_8h.html", "hopscotch__hash_8h" ],
     [ "hopscotch_map.h", "hopscotch__map_8h.html", "hopscotch__map_8h" ],

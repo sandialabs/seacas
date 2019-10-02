@@ -35,6 +35,7 @@ var classIocgns_1_1DatabaseIO =
     [ "get_field_internal", "classIocgns_1_1DatabaseIO.html#aa6539ba4d1a407cd9fd2b2627109c9bf", null ],
     [ "get_field_internal_sub_nb", "classIocgns_1_1DatabaseIO.html#a0d933b93fff155f34b4204488896f6fe", null ],
     [ "get_file_pointer", "classIocgns_1_1DatabaseIO.html#ae211642c5d4e7e00eab3a53a4570570d", null ],
+    [ "get_format", "classIocgns_1_1DatabaseIO.html#a06833294042efb871d301fadc4654acb", null ],
     [ "get_map", "classIocgns_1_1DatabaseIO.html#afe61912690b2df46d6e4f41d3a54805b", null ],
     [ "get_map", "classIocgns_1_1DatabaseIO.html#a91ba3ec10f0d5bf8daafddbf85af9650", null ],
     [ "get_step_times__", "classIocgns_1_1DatabaseIO.html#ad0775bb2ff9b8316ba375b25bf052b7b", null ],
