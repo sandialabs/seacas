@@ -39,7 +39,8 @@ install:
      -DCMAKE_PREFIX_PATH:PATH=%LIB_ROOT%\lib ^
      -DCMAKE_TOOLCHAIN_FILE=C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake ^
      -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
-     -DCGNS_BUILD_SHARED:BOOL=OFF ^
+     -DCGNS_BUILD_SHARED:BOOL=ON ^
+     -DCGNS_USE_SHARED:BOOL=ON ^
      -DCGNS_ENABLE_LFS:BOOL=OFF ^
      -DCGNS_BUILD_CGNSTOOLS:BOOL=OFF ^
      -DCGNS_ENABLE_HDF5:BOOL=ON ^
@@ -64,7 +65,7 @@ build_script:
   - cmd: mkdir build
   - cmd: cd build
   - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
-     -DBUILD_SHARED_LIBS:BOOL=OFF ^
+     -DBUILD_SHARED_LIBS:BOOL=ON ^
      -DCGNS_ROOT:PATH=%LIB_ROOT% ^
      -DCMAKE_BUILD_TYPE=Release ^
      -DCMAKE_CXX_FLAGS="%SUPPRESSIONS% /EHsc" ^
