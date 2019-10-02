@@ -34,7 +34,8 @@ install:
   - cmd: cd C:\projects\cgns
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release ^
+  - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
+    -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
     -DCMAKE_PREFIX_PATH:PATH=%LIB_ROOT%\lib ^
     -DCMAKE_TOOLCHAIN_FILE=C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake ^
