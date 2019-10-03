@@ -30,9 +30,8 @@ install:
   - cmd: vcpkg install netcdf-c:%VCPKG_DEFAULT_TRIPLET%
   - cmd: vcpkg install matio:%VCPKG_DEFAULT_TRIPLET%
   - cmd: vcpkg integrate install
+  - cmd: dir C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%
   - cmd: dir C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%\lib
-  - cmd: dir C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%\bin
-  - cmd: type C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%\lib\libhdf5.settings
   - cmd: git clone https://github.com/cgns/CGNS C:\projects\cgns
   - cmd: cd C:\projects\cgns
   - cmd: mkdir build
