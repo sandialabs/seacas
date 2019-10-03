@@ -27,8 +27,8 @@ install:
   - cmd: set SRC_DIR=%cd%
   - cmd: set INSTALL_LOC=%SRC_DIR%\install
   - cmd: set PATH=%PATH%;%MSYS2_BIN_LOCN%;%INSTALL_LOC%\bin;%INSTALL_LOC%\lib
-  - cmd: vcpkg install netcdf-c
-  - cmd: vcpkg install matio
+  - cmd: vcpkg install netcdf-c:x64-windows-static
+  - cmd: vcpkg install matio:x64-windows-static
   - cmd: vcpkg integrate install
   - cmd: dir C:\Tools\vcpkg\installed\x64-windows\lib
   - cmd: dir C:\Tools\vcpkg\installed\x64-windows\bin
