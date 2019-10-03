@@ -32,6 +32,7 @@ install:
   - cmd: vcpkg integrate install
   - cmd: dir C:\Tools\vcpkg\installed\x64-windows\lib
   - cmd: dir C:\Tools\vcpkg\installed\x64-windows\bin
+  - cmd: type C:\Tools\vcpkg\installed\x64-windows\lib\libhdf5.settings
   - cmd: git clone https://github.com/cgns/CGNS C:\projects\cgns
   - cmd: cd C:\projects\cgns
   - cmd: mkdir build
