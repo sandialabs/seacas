@@ -74,6 +74,7 @@ build_script:
      -DCMAKE_C_FLAGS="%SUPPRESSIONS%" ^
      -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
      -DHDF5_ROOT:PATH=%LIB_ROOT% ^
+     -DHDF5_LIBRARY:PATH=%LIB_ROOT%\lib\libhdf5.lib
      -DMatio_INCLUDE_DIRS:PATH=%LIB_ROOT%\include ^
      -DMatio_LIBRARIES:PATH=%LIB_ROOT%\lib\libmatio.lib ^
      -DNetCDF_ROOT:PATH=%LIB_ROOT% ^
