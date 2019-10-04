@@ -106,7 +106,7 @@ build_script:
      -DTPL_ENABLE_gtest:BOOL=OFF
 
   - cmd: if errorlevel 1 exit 1
-  - cmd: cmake --build . --config %configuration% -- /maxcpucount:4
+  - cmd: cmake --build . --verbose --config %configuration% -- /maxcpucount:4
 
 test_script:
   - cmd: ctest
