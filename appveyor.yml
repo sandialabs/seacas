@@ -54,8 +54,8 @@ install:
      -DHDF5_NEED_MPI:BOOL=OFF ^
      -DHDF5_DIR:PATH=%LIB_ROOT% ^
      -DHDF5_LIBRARY:PATH=%LIB_ROOT%\lib\libhdf5.lib
-  - cmd: cmake --build . --verbose --config Release -- /maxcpucount:4
-  - cmd: cmake --build . --verbose --config Release --target install -- /maxcpucount:4
+  - cmd: cmake --build . --config Release -- /maxcpucount:4
+  - cmd: cmake --build . --config Release --target install -- /maxcpucount:4
   - cmd: cd C:\projects\seacas
 
 configuration: Release
@@ -68,7 +68,7 @@ build_script:
   - cmd: cd build
   - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
      -DBUILD_SHARED_LIBS:BOOL=OFF ^
-     -DCGNS_ROOT:PATH=%LIB_ROOT% ^
+     -DCGNS_ROOT:PATH=C:/projects/seacas/install ^
      -DCMAKE_BUILD_TYPE=Release ^
      -DCMAKE_CXX_FLAGS="%SUPPRESSIONS% /EHsc" ^
      -DCMAKE_C_FLAGS="%SUPPRESSIONS%" ^
