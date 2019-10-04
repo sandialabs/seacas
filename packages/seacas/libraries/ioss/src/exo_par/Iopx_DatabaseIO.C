@@ -2566,6 +2566,7 @@ int64_t DatabaseIO::read_attribute_field(ex_entity_type type, const Ioss::Field 
 
   Ioss::Field::BasicType ioss_type = field.get_type();
   if (ioss_type == Ioss::Field::INTEGER || ioss_type == Ioss::Field::INT64) {
+    std::ostringstream errmsg;
     fmt::print(errmsg, "INTERNAL ERROR: Integer attribute fields are not yet handled for read. "
                        "Please report.\n");
     IOSS_ERROR(errmsg);
