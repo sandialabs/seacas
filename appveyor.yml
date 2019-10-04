@@ -75,6 +75,10 @@ build_script:
      -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
      -DHDF5_ROOT:PATH=%LIB_ROOT% ^
      -DHDF5_LIBRARY:PATH=%LIB_ROOT%\lib\libhdf5.lib
+     -DHDF5_INCLUDE_DIRS:PATH=%LIB_ROOT%\include ^
+     -DHDF5_LIBRARIES:PATH=%LIB_ROOT%\lib\libhdf5_hl.lib;%LIB_ROOT%\lib\libhdf5.lib ^
+     -DHDF5_C_LIBRARIES:PATH=%LIB_ROOT%\lib\libhdf5.lib ^
+     -DHDF5_HL_LIBRARIES:PATH=%LIB_ROOT%\lib\libhdf5_hl.lib ^
      -DMatio_INCLUDE_DIRS:PATH=%LIB_ROOT%\include ^
      -DMatio_LIBRARIES:PATH=%LIB_ROOT%\lib\libmatio.lib ^
      -DNetCDF_ROOT:PATH=%LIB_ROOT% ^
