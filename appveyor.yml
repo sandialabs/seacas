@@ -38,7 +38,7 @@ install:
   - cmd: cd build
   - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
      -DCMAKE_BUILD_TYPE=Release ^
-     -DCMAKE_PREFIX_PATH:PATH=%LIB_ROOT%\lib ^
+     -DCMAKE_PREFIX_PATH:PATH=%LIB_ROOT% ^
      -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
      -DCMAKE_C_FLAGS="/D H5_BUILT_AS_STATIC_LIB" ^
      -DCGNS_BUILD_SHARED:BOOL=OFF ^
