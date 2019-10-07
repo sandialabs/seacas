@@ -41,13 +41,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <fmt/chrono.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <fmt/time.h>
 #include <iomanip>
 #include <sstream>
 #include <string>
-#include <sys/select.h>
 #include <tokenize.h>
 #include <vector>
 
@@ -246,16 +245,6 @@ namespace {
 
 } // namespace
 
-/** \brief Get formatted time and date strings.
- *
- *  Fill time_string and date_string with current time and date
- *  formatted as "HH:MM:SS" for time and "yy/mm/dd" or "yyyy/mm/dd"
- *  for date.
- *
- *  \param[out] time_string The formatted time string.
- *  \param[out] date_string The formatted date string.
- *  \param[in] length Use 8 for short-year date format, or 10 for long-year date format.
- */
 void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t length)
 {
   time_t      calendar_time = time(nullptr);
@@ -324,6 +313,42 @@ int64_t Ioss::Utils::extract_id(const std::string &name_id)
   return id;
 }
 
+std::string Ioss::Utils::format_id_list(const std::vector<size_t> &ids, const std::string &rng_sep,
+                                        const std::string &seq_sep)
+{
+  // Based on function from cubit (but I wrote original cubit version long time ago... ;-)
+  if (ids.empty()) {
+    return "";
+  }
+
+  // PRECONDITION: `ids` is monotonically increasing -- will throw IOSS_ERROR if violated.
+  if (!std::is_sorted(ids.begin(), ids.end(), [](size_t a, size_t b) { return a <= b; })) {
+    std::ostringstream errmsg;
+    fmt::print(errmsg,
+               "INTERNAL ERROR: ({}) The `ids` vector is not in monotonically increasing order as "
+               "required.\n",
+               __func__);
+    IOSS_ERROR(errmsg);
+  }
+
+  size_t             num = 0;
+  std::ostringstream ret_str;
+  while (num < ids.size()) {
+    fmt::print(ret_str, "{}{}", num == 0 ? "" : seq_sep, ids[num]);
+    size_t begin    = ids[num]; // first id in range of 1 or more ids
+    size_t previous = ids[num]; // last id in range of 1 or more ids
+    // Gather a range or single value... (begin .. previous)
+    while (previous == ids[num] && ++num < ids.size() && ids[num] == previous + 1) {
+      previous++;
+    }
+
+    if (begin != previous) {
+      fmt::print(ret_str, "{}{}", previous == begin + 1 ? seq_sep : rng_sep, previous);
+    }
+  }
+  return ret_str.str();
+}
+
 std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int64_t id)
 {
   // ExodusII stores block, nodeset, and sideset ids as integers
@@ -351,19 +376,6 @@ void Ioss::Utils::delete_name_array(char **names, int count)
   delete[] names;
 }
 
-/** \brief Process the base element type 'base' which has
- *         'nodes_per_element' nodes and a spatial dimension of 'spatial'
- *         into a form that the IO system can (hopefully) recognize.
- *
- *  Lowercases the name; converts spaces to '_', adds
- *  nodes_per_element at end of name (if not already there), and
- *  does some other transformations to remove some exodusII ambiguity.
- *
- *  \param[in] base The element base name.
- *  \param[in] nodes_per_element The number of nodes per element.
- *  \param[in] spatial The spatial dimension of the element.
- *  \returns The Ioss-formatted element name.
- */
 std::string Ioss::Utils::fixup_type(const std::string &base, int nodes_per_element, int spatial)
 {
   std::string type = base;
@@ -433,16 +445,6 @@ std::string Ioss::Utils::fixup_type(const std::string &base, int nodes_per_eleme
   return type;
 }
 
-/** \brief Get a filename relative to the specified working directory (if any)
- *         of the current execution.
- *
- *  Working_directory must end with '/' or be empty.
- *
- *  \param[in] relative_filename The file path to be appended to the working directory path.
- *  \param[in] type The file type. "generated" file types are treated differently.
- *  \param[in] working_directory the path to which the relative_filename path is appended.
- *  \returns The full path (working_directory + relative_filename)
- */
 std::string Ioss::Utils::local_filename(const std::string &relative_filename,
                                         const std::string &type,
                                         const std::string &working_directory)
@@ -863,14 +865,6 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
   }
 }
 
-/** \brief Get a string containing 'uname' output.
- *
- *  This output contains information about the current computing platform.
- *  This is used as information data in the created results file to help
- *  in tracking when/where/... the file was created.
- *
- *  \returns The platform information string.
- */
 std::string Ioss::Utils::platform_information()
 {
 #ifndef _WIN32
@@ -887,7 +881,6 @@ std::string Ioss::Utils::platform_information()
   return info;
 }
 
-/** \brief Return amount of memory being used on this processor */
 size_t Ioss::Utils::get_memory_info()
 {
   // Code from http://nadeausoftware.com/sites/NadeauSoftware.com/files/getRSS.c
@@ -974,7 +967,7 @@ size_t Ioss::Utils::get_hwm_memory_info()
     return (size_t)0L; /* Can't read? */
   }
   close(fd);
-  memory_usage      = (size_t)(psinfo.pr_rssize * 1024L);
+  memory_usage = (size_t)(psinfo.pr_rssize * 1024L);
 
 #elif (defined(__APPLE__) && defined(__MACH__)) || (defined(__linux__) && !defined(BGQ_LWK))
   /* BSD, Linux, and OSX -------------------------------------- */
@@ -989,11 +982,6 @@ size_t Ioss::Utils::get_hwm_memory_info()
   return memory_usage;
 }
 
-/** \brief Determine whether an entity has the property "omitted."
- *
- *  \param[in] block The entity.
- *  \returns True if the entity has the property "omitted."
- */
 bool Ioss::Utils::block_is_omitted(Ioss::GroupingEntity *block)
 {
   bool omitted = false;
@@ -1092,21 +1080,6 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &            face_is_
   }
 }
 
-/** \brief Get the appropriate index offset for the sides of elements in a SideBlock.
- *
- *  And yet another idiosyncrasy of sidesets...
- *  The side of an element (especially shells) can be
- *  either a face or an edge in the same sideset.  The
- *  ordinal of an edge is (local_edge_number+numfaces) on the
- *  database, but needs to be (local_edge_number) for Sierra...
- *
- *  If the sideblock has a "parent_element_topology" and a
- *  "topology", then we can determine whether to offset the
- *  side ordinals...
- *
- *  \param[in] sb Compute the offset for element sides in this SideBlock
- *  \returns The offset.
- */
 int64_t Ioss::Utils::get_side_offset(const Ioss::SideBlock *sb)
 {
 
@@ -1150,16 +1123,6 @@ double Ioss::Utils::timer()
   return std::chrono::duration<double>(now - initial_time).count();
 }
 
-/** \brief Convert an input file to a vector of strings containing one string for each line of the
- * file.
- *
- *  Should only be called by a single processor or each processor will be accessing the file
- *  at the same time...
- *
- *  \param[in] file_name The name of the file.
- *  \param[out] lines The vector of strings containing the lines of the file
- *  \param[in] max_line_length The maximum number of characters in any line of the file.
- */
 void Ioss::Utils::input_file(const std::string &file_name, std::vector<std::string> *lines,
                              size_t max_line_length)
 {
@@ -1194,12 +1157,6 @@ void Ioss::Utils::input_file(const std::string &file_name, std::vector<std::stri
   }
 }
 
-/** \brief Case-insensitive string comparison.
- *
- *  \param[in] s1 First string
- *  \param[in] s2 Second string
- *  \returns 0 if strings are equal, nonzero otherwise.
- */
 int Ioss::Utils::case_strcmp(const std::string &s1, const std::string &s2)
 {
   const char *c1 = s1.c_str();
@@ -1214,38 +1171,17 @@ int Ioss::Utils::case_strcmp(const std::string &s1, const std::string &s2)
   }
 }
 
-/** \brief Convert a string to upper case.
- *
- *  \param[in] name The string to convert.
- *  \returns The converted string.
- */
 std::string Ioss::Utils::uppercase(std::string name)
 {
   std::transform(name.begin(), name.end(), name.begin(), [](char c) { return std::toupper(c); });
   return name;
 }
 
-/** \brief Convert a string to lower case.
- *
- *  \param[in] name The string to convert.
- *  \returns The converted string.
- */
 std::string Ioss::Utils::lowercase(std::string name)
 {
   std::transform(name.begin(), name.end(), name.begin(), [](char c) { return std::tolower(c); });
   return name;
 }
-
-/** \brief Check whether property 'prop_name' exists and if so, set 'prop_value'
- *
- * based on the property value.  Either "TRUE", "YES", "ON", or nonzero for true;
- * or "FALSE", "NO", "OFF", or 0 for false.
- * \param[in] properties the Ioss::PropertyManager containing the properties to be checked.
- * \param[in] prop_name the name of the property to check whether it exists and if so, set its
- * value.
- * \param[out] prop_value if prop_name exists and has a valid value, set prop_value accordingly.
- * \returns true/false depending on whether property found and value set.
- */
 
 bool Ioss::Utils::check_set_bool_property(const Ioss::PropertyManager &properties,
                                           const std::string &prop_name, bool &prop_value)
@@ -1277,13 +1213,6 @@ bool Ioss::Utils::check_set_bool_property(const Ioss::PropertyManager &propertie
   return found_property;
 }
 
-/** \brief Convert a string to lower case, and convert spaces to '_'.
- *
- *  The conversion is performed in place.
- *
- *  \param[in,out] name On input, the string to convert. On output, the converted string.
- *
- */
 void Ioss::Utils::fixup_name(char *name)
 {
   assert(name != nullptr);
@@ -1297,13 +1226,6 @@ void Ioss::Utils::fixup_name(char *name)
   }
 }
 
-/** \brief Convert a string to lower case, and convert spaces to '_'.
- *
- *  The conversion is performed in place.
- *
- *  \param[in,out] name On input, the string to convert. On output, the converted string.
- *
- */
 void Ioss::Utils::fixup_name(std::string &name)
 {
   name = Ioss::Utils::lowercase(name);
@@ -1345,32 +1267,6 @@ namespace {
   }
 } // namespace
 
-/** \brief Tries to shorten long variable names to an acceptable length, and converts to
- *         lowercase and spaces to '_'
- *
- *   Many databases have a maximum length for variable names which can
- *   cause a problem with variable name length.
- *
- *   This routine tries to shorten long variable names to an acceptable
- *   length ('max_var_len' characters max).  If the name is already less than
- *   this length, it is returned unchanged except for the appending of the hash...
- *
- *   Since there is a (good) chance that two shortened names will match,
- *   a 2-letter 'hash' code is appended to the end of the variable
- *   name. This can be treated as a 2-digit base 26 number
- *
- *   So, we shorten the name to a maximum of 'max_var_len-3' characters and
- *   append a dot ('.') and 2 character hash.
- *
- *   But, we also have to deal with the suffices that Ioex_DatabaseIO
- *   appends on non-scalar values.  For the 'standard' types, the
- *   maximum suffix is 4 characters (underscore + 1, 2, or 3 characters).
- *   So...shorten name to maximum of 'max_var_len-3-{3|4|n}' characters
- *   depending on the number of components.
- *
- *   This function also converts name to lowercase and converts spaces
- *   to '_'.
- */
 std::string Ioss::Utils::variable_name_kluge(const std::string &name, size_t component_count,
                                              size_t copies, size_t max_var_len)
 {
@@ -1473,15 +1369,6 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name, size_t com
   return lowercase(new_str);
 }
 
-/** \brief Create a nominal mesh for use in history databases.
- *
- *  The model for a history file is a single sphere element (1 node, 1 element).
- *  This is needed for some applications that read this file that require a
- *  "mesh" even though a history file is just a collection of global variables
- *  with no real mesh. This routine will add the mesh portion to a history file.
- *
- *  \param[in,out] region The region on which the nominal mesh is to be defined.
- */
 void Ioss::Utils::generate_history_mesh(Ioss::Region *region)
 {
   Ioss::DatabaseIO *db = region->get_database();
@@ -1950,10 +1837,14 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     region.end_state(istep);
     output_region.end_state(ostep);
     if (options.delay > 0.0) {
+#ifndef _MSC_VER
       struct timespec delay;
       delay.tv_sec  = (int)options.delay;
       delay.tv_nsec = (options.delay - delay.tv_sec) * 1000000000L;
       nanosleep(&delay, nullptr);
+#else
+      Sleep((int)(options.delay * 1000));
+#endif
     }
   }
   if (options.debug && rank == 0) {
@@ -2697,14 +2588,14 @@ namespace {
     region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
     auto &sblocks = region.get_structured_blocks();
     for (auto &sb : sblocks) {
-      sb->field_add(Ioss::Field("processor_id", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT,
-                                sb->entity_count()));
+      sb->field_add(
+          Ioss::Field("processor_id", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT));
     }
 
     auto &eblocks = region.get_element_blocks();
     for (auto &eb : eblocks) {
-      eb->field_add(Ioss::Field("processor_id", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT,
-                                eb->entity_count()));
+      eb->field_add(
+          Ioss::Field("processor_id", Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT));
     }
     region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
 
@@ -2726,5 +2617,4 @@ namespace {
     region.end_state(step);
     region.end_mode(Ioss::STATE_TRANSIENT);
   }
-
 } // namespace

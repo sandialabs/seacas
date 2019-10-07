@@ -69,7 +69,7 @@ into the standard IO subsystem (IOSS) model.
 
 An \exo{} file contains groupings of entity types such as nodes, edges, faces, and elements into either blocks or sets.  
 \begin{itemize}
-\item A "block" grouping consists of homogenous entities of the same entity type and each entity is in one and only one block. The block has a method for identifying the topology of the contained entities.
+\item A "block" grouping consists of homogeneous entities of the same entity type and each entity is in one and only one block. The block has a method for identifying the topology of the contained entities.
 \item A "set" grouping contains entities of the same entity type (node, edge, face, or element); however, the topologies of the entities (quad vs. triangle face) do not need to be the same. An entity can be in multiple entity sets, but it is not required to be in any.
 \end{itemize}
 The finite element model data (sets, blocks, fields, etc.) described in the \exo{} file is stored in an \ioss{Region} and its owned grouping entity classes. The table below shows the mapping between the \exo{} entity groups and the IOSS grouping entity classes. All of the IOSS classes are derived from the \ioss{GroupingEntity} class:
@@ -80,7 +80,7 @@ set   & \ioss{NodeSet}  & \ioss{EdgeSet}   & \ioss{FaceSet}   & \ioss{ElementSet
 block & \ioss{NodeBlock} & \ioss{EdgeBlock} & \ioss{FaceBlock} & \ioss{ElementBlock} & \\ \hline
 \end{tabular} 
 
-An \exo{} ``side'' is an entity type defined by a pair consisting of an element and a local side of that element. The \exo{} data model does not have a concept of a homogenous grouping (block) of ``side'' entity types; however,the IOSS will group the ``sides'' in an \exo{} side set into homogenous subsets with a class of \ioss{SideBlock}. This is described in more detail in Section~\ref{side sets}
+An \exo{} ``side'' is an entity type defined by a pair consisting of an element and a local side of that element. The \exo{} data model does not have a concept of a homogeneous grouping (block) of ``side'' entity types; however,the IOSS will group the ``sides'' in an \exo{} side set into homogeneous subsets with a class of \ioss{SideBlock}. This is described in more detail in Section~\ref{side sets}
 
 Each entity group in the \exo{} file will result in the creation of the corresponding \ioss{GroupingEntity} class. All of these classes will be managed by a \ioss{Region} which corresponds to the mesh model described by the \exo{} file.  
 
@@ -381,7 +381,7 @@ A side set can have multiple names.  There will be one  canonical name that is r
 
 \subsubsection*{SideBlocks}
 
-The IOSS examines each of the element/local side pairs in the \exo{} side set side list and combines then into homogenous groups which are called \ioss{SideBlock}s.  A \ioss{SideSet} consists of 1 or more \ioss{SideBlock}. There are a few options on how the element/local\_side pairs in an \exo{} sideset are categorized into homogenous \ioss{SideBlock}'s. The categorization is controlled by calling the \ioapi{set\_surface\_split\_type()} function on the \ioss{DatabaseIO} pointer. The argument to this function is of type \ioss{SurfaceSplitType}. The valid values are their function are:
+The IOSS examines each of the element/local side pairs in the \exo{} side set side list and combines then into homogeneous groups which are called \ioss{SideBlock}s.  A \ioss{SideSet} consists of 1 or more \ioss{SideBlock}. There are a few options on how the element/local\_side pairs in an \exo{} sideset are categorized into homogeneous \ioss{SideBlock}'s. The categorization is controlled by calling the \ioapi{set\_surface\_split\_type()} function on the \ioss{DatabaseIO} pointer. The argument to this function is of type \ioss{SurfaceSplitType}. The valid values are their function are:
 
 \begin{description}
 	\item[SPLIT\_BY\_DONT\_SPLIT] create only a single sideblock containing all pairs.
@@ -407,7 +407,7 @@ The names of the \ioss{SideBlock}s in a \ioss{SideSet} will be "surface\_"
 	  the information. 
 
 \subsubsection*{Distribution Factors}
-A \field{distribution\_factors} field will be defined for all \ioss{SideBlock}s whether or not they are defined on the \exo{} file. If they do not exist on the file, the values returned by the field will be equal to 1.0; otherwise, they will be the values stored on the file. Note that since a \ioss{SideBlock} contains element sides of a homogenous topology, the number of distribution factors is easy to determine from the topology of the \ioss{SideBlock}.
+A \field{distribution\_factors} field will be defined for all \ioss{SideBlock}s whether or not they are defined on the \exo{} file. If they do not exist on the file, the values returned by the field will be equal to 1.0; otherwise, they will be the values stored on the file. Note that since a \ioss{SideBlock} contains element sides of a homogeneous topology, the number of distribution factors is easy to determine from the topology of the \ioss{SideBlock}.
 
 \subsubsection*{Side Set Attributes}
 \begin{itemize}

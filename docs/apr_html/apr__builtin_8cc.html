@@ -131,8 +131,6 @@ Namespaces</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:a598a3330b3c21701223ee0ca14316eca"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__builtin_8cc.html#a598a3330b3c21701223ee0ca14316eca">PI</a>&#160;&#160;&#160;3.141592653589793238462643</td></tr>
 <tr class="separator:a598a3330b3c21701223ee0ca14316eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a764ddb925da0921f024fadb4c12d7382"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__builtin_8cc.html#a764ddb925da0921f024fadb4c12d7382">HYPOT</a>(x,  y)&#160;&#160;&#160;do_hypot(x, y)</td></tr>
-<tr class="separator:a764ddb925da0921f024fadb4c12d7382"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaeeb6e3399ffad67be7d1a4263077ace"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__builtin_8cc.html#aaeeb6e3399ffad67be7d1a4263077ace">d2r</a>(x)&#160;&#160;&#160;((x)*<a class="el" href="apr__builtin_8cc.html#a598a3330b3c21701223ee0ca14316eca">PI</a> / 180.)</td></tr>
 <tr class="separator:aaeeb6e3399ffad67be7d1a4263077ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11cb28cf4bfecf5bfbd98ab9e4f2123b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__builtin_8cc.html#a11cb28cf4bfecf5bfbd98ab9e4f2123b">r2d</a>(x)&#160;&#160;&#160;((x)*180. / <a class="el" href="apr__builtin_8cc.html#a598a3330b3c21701223ee0ca14316eca">PI</a>)</td></tr>
@@ -141,8 +139,6 @@ Macros</h2></td></tr>
 <tr class="separator:ac39d9cef6a5e030ba8d9e11121054268"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb702d8b501669a23aa0ab3b281b9384"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__builtin_8cc.html#abb702d8b501669a23aa0ab3b281b9384">min</a>(x,  y)&#160;&#160;&#160;(x) &lt; (y) ? (x) : (y)</td></tr>
 <tr class="separator:abb702d8b501669a23aa0ab3b281b9384"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23c96cc004e9b2fd339bdaf960cfb1f4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__builtin_8cc.html#a23c96cc004e9b2fd339bdaf960cfb1f4">LOG1P</a>(x)&#160;&#160;&#160;std::log(1.0 + (x))</td></tr>
-<tr class="separator:a23c96cc004e9b2fd339bdaf960cfb1f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -166,6 +162,8 @@ Functions</h2></td></tr>
 <tr class="separator:addee6b07ceaa5f8e52e1ae1d570fee1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaea81a89b6d09b1d773b902351a67c3e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#aaea81a89b6d09b1d773b902351a67c3e">SEAMS::do_hypot</a> (double x, double y)</td></tr>
 <tr class="separator:aaea81a89b6d09b1d773b902351a67c3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fbf8f01752cf2e1aa1ed94eaee03f9b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a5fbf8f01752cf2e1aa1ed94eaee03f9b">SEAMS::do_pow</a> (double x, double y)</td></tr>
+<tr class="separator:a5fbf8f01752cf2e1aa1ed94eaee03f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a935f2b8a2f7015c8bf6a538ec9757e11"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a935f2b8a2f7015c8bf6a538ec9757e11">SEAMS::do_max</a> (double x, double y)</td></tr>
 <tr class="separator:a935f2b8a2f7015c8bf6a538ec9757e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8505e7bb450e197ccd6fba2f76f354ed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a8505e7bb450e197ccd6fba2f76f354ed">SEAMS::do_min</a> (double x, double y)</td></tr>
@@ -226,6 +224,10 @@ Functions</h2></td></tr>
 <tr class="separator:a74fbb678108b6c6fc6ef2f777db65c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61a07df615db97b725953068019c2c6d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a61a07df615db97b725953068019c2c6d">SEAMS::do_expm1</a> (double x)</td></tr>
 <tr class="separator:a61a07df615db97b725953068019c2c6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb8df463df07cf68c84ba7a704a8889e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#acb8df463df07cf68c84ba7a704a8889e">SEAMS::do_erf</a> (double x)</td></tr>
+<tr class="separator:acb8df463df07cf68c84ba7a704a8889e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cb6e1212a28dbbe78b45ba9527c468c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a6cb6e1212a28dbbe78b45ba9527c468c">SEAMS::do_erfc</a> (double x)</td></tr>
+<tr class="separator:a6cb6e1212a28dbbe78b45ba9527c468c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a885fd993251109f432d15806c15b669e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a885fd993251109f432d15806c15b669e">SEAMS::do_floor</a> (double x)</td></tr>
 <tr class="separator:a885fd993251109f432d15806c15b669e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a8638311f650d15dd8f0d4d75dfafa3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a9a8638311f650d15dd8f0d4d75dfafa3">SEAMS::do_fmod</a> (double x, double y)</td></tr>
@@ -238,6 +240,8 @@ Functions</h2></td></tr>
 <tr class="separator:a0cb8d779d74c4c9ed873e487f209d82e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4f66d4d58dc4140eddba058d0185574"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#ab4f66d4d58dc4140eddba058d0185574">SEAMS::do_sqrt</a> (double x)</td></tr>
 <tr class="separator:ab4f66d4d58dc4140eddba058d0185574"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36d0526a5e532db1b0390b24dd54d2ce"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a36d0526a5e532db1b0390b24dd54d2ce">SEAMS::do_cbrt</a> (double x)</td></tr>
+<tr class="separator:a36d0526a5e532db1b0390b24dd54d2ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7343276658a57dea2a48a8ae846a028"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#ad7343276658a57dea2a48a8ae846a028">SEAMS::do_tanh</a> (double x)</td></tr>
 <tr class="separator:ad7343276658a57dea2a48a8ae846a028"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e4c75a82d86a0e62327b0254308587f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a1e4c75a82d86a0e62327b0254308587f">SEAMS::do_polarX</a> (double rad, double ang)</td></tr>
@@ -246,6 +250,8 @@ Functions</h2></td></tr>
 <tr class="separator:a6cf65e69f2f3f4b5120db7b984887339"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa40a6ac840b21e49e0f1e8f12d85e61e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#aa40a6ac840b21e49e0f1e8f12d85e61e">SEAMS::do_lgamma</a> (double val)</td></tr>
 <tr class="separator:aa40a6ac840b21e49e0f1e8f12d85e61e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf9fea7aacde738df8efeab80dc4197c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#aaf9fea7aacde738df8efeab80dc4197c">SEAMS::do_tgamma</a> (double val)</td></tr>
+<tr class="separator:aaf9fea7aacde738df8efeab80dc4197c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72772e5c75c1673473c1739225ed25dd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a72772e5c75c1673473c1739225ed25dd">SEAMS::do_juldayhms</a> (double mon, double day, double year, double h, double mi, double se)</td></tr>
 <tr class="separator:a72772e5c75c1673473c1739225ed25dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a277080a462e51d049b4900f2398af13f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a277080a462e51d049b4900f2398af13f">SEAMS::do_julday</a> (double mon, double day, double year)</td></tr>
@@ -363,8 +369,6 @@ Variables</h2></td></tr>
 <tr class="separator:a8af8d106c8603c278d56239b3a9ad0e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a210b8303fb82ba1cd00e1e45de8ce01b"><td class="memItemLeft" align="right" valign="top">std::random_device&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02apr__builtin_8cc_03.html#a210b8303fb82ba1cd00e1e45de8ce01b">anonymous_namespace{apr_builtin.cc}::rd</a></td></tr>
 <tr class="separator:a210b8303fb82ba1cd00e1e45de8ce01b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf9da46826e72061729429207cd9c4bd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#acf9da46826e72061729429207cd9c4bd">SEAMS::cof</a> []</td></tr>
-<tr class="separator:acf9da46826e72061729429207cd9c4bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="aaeeb6e3399ffad67be7d1a4263077ace"></a>
@@ -379,52 +383,6 @@ Variables</h2></td></tr>
           <td class="paramtype">&#160;</td>
           <td class="paramname">x</td><td>)</td>
           <td>&#160;&#160;&#160;((x)*<a class="el" href="apr__builtin_8cc.html#a598a3330b3c21701223ee0ca14316eca">PI</a> / 180.)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a764ddb925da0921f024fadb4c12d7382"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a764ddb925da0921f024fadb4c12d7382">&#9670;&nbsp;</a></span>HYPOT</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define HYPOT</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">x, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">y&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td>&#160;&#160;&#160;do_hypot(x, y)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a23c96cc004e9b2fd339bdaf960cfb1f4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a23c96cc004e9b2fd339bdaf960cfb1f4">&#9670;&nbsp;</a></span>LOG1P</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define LOG1P</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">x</td><td>)</td>
-          <td>&#160;&#160;&#160;std::log(1.0 + (x))</td>
         </tr>
       </table>
 </div><div class="memdoc">

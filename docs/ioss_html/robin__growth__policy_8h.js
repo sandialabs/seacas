@@ -5,6 +5,7 @@ var robin__growth__policy_8h =
     [ "prime_growth_policy", "classtsl_1_1rh_1_1prime__growth__policy.html", "classtsl_1_1rh_1_1prime__growth__policy" ],
     [ "tsl_rh_assert", "robin__growth__policy_8h.html#abf43b6f27a3bf5120e9d61e5f5d0d0ee", null ],
     [ "TSL_RH_LIKELY", "robin__growth__policy_8h.html#a15c2bc0fd0ed52be3b0bc91b814b69cb", null ],
+    [ "TSL_RH_NO_EXCEPTIONS", "robin__growth__policy_8h.html#aa352528d449223f8086405d2ce4e8f9b", null ],
     [ "TSL_RH_THROW_OR_TERMINATE", "robin__growth__policy_8h.html#a6763b674ae3f1893aa7524c5c8a8e9b2", null ],
     [ "mod", "robin__growth__policy_8h.html#a01a38ec6ebb3561c84d2cba84b02cb07", null ],
     [ "MOD_PRIME", "robin__growth__policy_8h.html#a84830b201debf0332555668c9607fdd2", null ],

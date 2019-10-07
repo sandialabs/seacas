@@ -68,6 +68,7 @@ var namespaces_dup =
     [ "anonymous_namespace{Ioss_Sphere.C}", "namespaceanonymous__namespace_02Ioss__Sphere_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Spring2.C}", "namespaceanonymous__namespace_02Ioss__Spring2_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Spring3.C}", "namespaceanonymous__namespace_02Ioss__Spring3_8C_03.html", null ],
+    [ "anonymous_namespace{Ioss_StructuredBlock.C}", "namespaceanonymous__namespace_02Ioss__StructuredBlock_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Tet10.C}", "namespaceanonymous__namespace_02Ioss__Tet10_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Tet11.C}", "namespaceanonymous__namespace_02Ioss__Tet11_8C_03.html", null ],
     [ "anonymous_namespace{Ioss_Tet14.C}", "namespaceanonymous__namespace_02Ioss__Tet14_8C_03.html", null ],

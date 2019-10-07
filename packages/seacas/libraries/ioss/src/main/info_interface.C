@@ -127,7 +127,7 @@ void Info::Interface::enroll_options()
                   "Show configuration of IOSS library (TPL versions)", nullptr);
 
   options_.enroll("surface_split_scheme", Ioss::GetLongOption::MandatoryValue,
-                  "Method used to split sidesets into homogenous blocks\n"
+                  "Method used to split sidesets into homogeneous blocks\n"
                   "\t\tOptions are: TOPOLOGY, BLOCK, NOSPLIT",
                   "TOPOLOGY");
 

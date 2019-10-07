@@ -91,17 +91,6 @@
 extern "C" {
 #endif
 
-/* A format string for outputting size_t ... */
-#if defined(__STDC_VERSION__)
-#if (__STDC_VERSION__ >= 199901L)
-#define ST_ZU "zu"
-#else
-#define ST_ZU "lu"
-#endif
-#else
-#define ST_ZU "lu"
-#endif
-
 /**
  * \defgroup Internal Internal Functions and Defines
  * \internal

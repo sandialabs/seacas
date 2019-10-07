@@ -1,6 +1,5 @@
 var io__shell_8C =
 [
-    [ "my_numpunct", "structanonymous__namespace_02io__shell_8C_03_1_1my__numpunct.html", "structanonymous__namespace_02io__shell_8C_03_1_1my__numpunct" ],
     [ "file_copy", "io__shell_8C.html#a3614c6356ba84d7eb73b876e616107bd", null ],
     [ "main", "io__shell_8C.html#a0ddf1224851353fc92bfbff6f499fa97", null ],
     [ "set_properties", "io__shell_8C.html#a5ef5720898c53911b39acab9e3b6ead9", null ],
