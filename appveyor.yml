@@ -8,7 +8,7 @@ environment:
       MSYS2_BIN_LOCN: C:\msys64\usr\bin
       CMAKE_GENERATOR: "Visual Studio 15 Win64"
       SUPPRESSIONS: "/wd4478"
-      VCPKG_DEFAULT_TRIPLET: "x64-windows-static"
+      VCPKG_DEFAULT_TRIPLET: "x64-windows"
       VCPKG_BUILD_TYPE: "release"
       LIB_ROOT: C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%
 
@@ -27,11 +27,9 @@ install:
   - cmd: set SRC_DIR=%cd%
   - cmd: set INSTALL_LOC=%SRC_DIR%\install
   - cmd: set PATH=%PATH%;%MSYS2_BIN_LOCN%;%INSTALL_LOC%\bin;%INSTALL_LOC%\lib
-  - cmd: vcpkg install netcdf-c:%VCPKG_DEFAULT_TRIPLET%
-  - cmd: vcpkg install matio:%VCPKG_DEFAULT_TRIPLET%
+  - cmd: vcpkg install netcdf-c
+  - cmd: vcpkg install matio
   - cmd: vcpkg integrate install
-  - cmd: dir C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%
-  - cmd: dir C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%\lib
 
 configuration: Release
 
