@@ -497,14 +497,14 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
     if (nts == 0) {
       std::string part = "Part " + std::to_string(p) + ": ";
       part += interFace.inputFiles_[p - 1];
-      fmt::print(
-          stderr,
-          "\nWARNING: '{}'\n\tdoes not contain any time steps so it will not be in the conjoined file.\n",
-          part);
+      fmt::print(stderr,
+                 "\nWARNING: '{}'\n\tdoes not contain any time steps so it will not be in the "
+                 "conjoined file.\n",
+                 part);
       local_mesh[p - 1].isActive = false;
     }
     else {
-      std::vector<T>   times(nts);
+      std::vector<T> times(nts);
       ex_get_all_times(id, times.data());
 
       // A database will include all times from step 0 up to the
@@ -522,26 +522,26 @@ int conjoin(Excn::SystemInterface &interFace, T /* dummy */, INT /* dummy int */
 
       int i = 0;
       for (i = nts; i > 0; i--) {
-	if (times[i - 1] < t_min) {
-	  if (used || t_min - times[i - 1] >= interface.interpart_minimum_time_delta()) {
-	    used = true;
-	    global_times.push_back(TimeStepMap<T>(p - 1, i - 1, times[i - 1]));
-	  }
-	}
+        if (times[i - 1] < t_min) {
+          if (used || t_min - times[i - 1] >= interFace.interpart_minimum_time_delta()) {
+            used = true;
+            global_times.push_back(TimeStepMap<T>(p - 1, i - 1, times[i - 1]));
+          }
+        }
       }
       local_mesh[p - 1].timestepCount = i;
       if (i > 0) {
-	t_min                           = t_min < times[0] ? t_min : times[0];
+        t_min = t_min < times[0] ? t_min : times[0];
       }
       if (!used) {
-	std::string part = "Part " + std::to_string(p) + ": ";
-	part += interface.inputFiles_[p - 1];
-	fmt::print(
-		   stderr,
-		   "\nWARNING: '{}'\n\tdoes not contain any time steps which will be used in conjoined file.\n"
-		   "\tCurrent minimum time = {}, timestep range on this part is {} to {}\n",
-		   part, t_min, times[0], times[nts - 1]);
-	local_mesh[p - 1].isActive = false;
+        std::string part = "Part " + std::to_string(p) + ": ";
+        part += interFace.inputFiles_[p - 1];
+        fmt::print(stderr,
+                   "\nWARNING: '{}'\n\tdoes not contain any time steps which will be used in "
+                   "conjoined file.\n"
+                   "\tCurrent minimum time = {}, timestep range on this part is {} to {}\n",
+                   part, t_min, times[0], times[nts - 1]);
+        local_mesh[p - 1].isActive = false;
       }
     }
   }
