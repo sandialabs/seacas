@@ -46,11 +46,6 @@ build_script:
      -DCMAKE_C_FLAGS="%SUPPRESSIONS%" ^
      -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
      -DHDF5_ROOT:PATH=%LIB_ROOT% ^
-     -DHDF5_LIBRARY:PATH=%LIB_ROOT%\lib\libhdf5.lib
-     -DHDF5_INCLUDE_DIRS:PATH=%LIB_ROOT%\include ^
-     -DHDF5_LIBRARIES:PATH=%LIB_ROOT%\lib\libhdf5_hl.lib;%LIB_ROOT%\lib\libhdf5.lib ^
-     -DHDF5_C_LIBRARIES:PATH=%LIB_ROOT%\lib\libhdf5.lib ^
-     -DHDF5_HL_LIBRARIES:PATH=%LIB_ROOT%\lib\libhdf5_hl.lib ^
      -DMatio_INCLUDE_DIRS:PATH=%LIB_ROOT%\include ^
      -DMatio_LIBRARIES:PATH=%LIB_ROOT%\lib\libmatio.lib ^
      -DNetCDF_ROOT:PATH=%LIB_ROOT% ^
@@ -78,7 +73,7 @@ build_script:
      -DTPL_ENABLE_gtest:BOOL=OFF
 
   - cmd: if errorlevel 1 exit 1
-  - cmd: cmake --build . --verbose --config %configuration% -- /maxcpucount:4
+  - cmd: cmake --build . --config %configuration% -- /maxcpucount:4
 
 test_script:
   - cmd: ctest
