@@ -3419,7 +3419,7 @@ class exodus:
         truth_tab : <list<bool>>
             True for variable defined in an entity, False otherwise
         """
-        if entId is not None:
+        if entId is None:
             truthTable = self.__ex_get_truth_table(objType)
         else:
             truthTable = self.__ex_get_object_truth_vector(objType, entId)
