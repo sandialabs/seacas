@@ -102,7 +102,7 @@ If you only want the exodus library, then follow most of the above instructions 
 	<https://github.com/gsjaardema/seacas/archive/exodus.zip> NOTE: Probably out-of-date and better to just clone entire repository.
 * You only need the netcdf and optionally hdf5 libraries
 * Use the `cmake-exodus` file instead of `cmake-config`.
-* This will build, by default, a shared exodus library and also install the exodus.py Python interface.
+* This will build, by default, a shared exodus library and also install the exodus.py and exomerge.py Python interfaces.
 
 ## Trilinos
 
@@ -136,7 +136,7 @@ Enter `spack info seacas` to see information on supported variants and other inf
 
 ## License
 
-SEACAS is licensed under the Modified BSD License.  See the LICENSE  file for details.
+SEACAS is licensed under the Modified BSD License.  See the [LICENSE](LICENSE) file for details.
 
 The following externally-developed software routines are used in some of the SEACAS applications and are under
 a separate license:
