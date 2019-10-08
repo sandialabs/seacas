@@ -52,6 +52,17 @@
 
 #ifndef _WIN32
 #include <sys/utsname.h>
+#include <sys/ioctl.h>
+#endif
+
+#ifndef _POSIX_SOURCE
+#define _POSIX_SOURCE
+#endif
+#include <cstdio>
+
+#if defined(_MSC_VER)
+#include <io.h>
+#define isatty _isatty
 #endif
 
 // For memory utilities...
@@ -1428,6 +1439,23 @@ int Ioss::Utils::log_power_2(uint64_t value)
   value |= value >> 16;
   value |= value >> 32;
   return tab64[(((value - (value >> 1)) * 0x07EDD5E59A4E28C2)) >> 58];
+}
+
+int Ioss::Utils::term_width()
+{
+  int cols = 100;
+  if (isatty(STDOUT_FILENO)) {
+#ifdef TIOCGSIZE
+    struct ttysize ts;
+    ioctl(STDIN_FILENO, TIOCGSIZE, &ts);
+    cols = ts.ts_cols;
+#elif defined(TIOCGWINSZ)
+    struct winsize ts;
+    ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
+    cols = ts.ws_col;
+#endif /* TIOCGSIZE */
+  }
+  return cols;
 }
 
 void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_region,
