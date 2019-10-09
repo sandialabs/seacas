@@ -158,7 +158,7 @@ namespace tsl {
         tsl_rh_assert(empty());
       }
 
-      bucket_entry(bool lst_bucket) noexcept
+      explicit bucket_entry(bool lst_bucket) noexcept
           : bucket_hash(), m_dist_from_ideal_bucket(EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET),
             m_last_bucket(lst_bucket)
       {
@@ -419,7 +419,7 @@ namespace tsl {
         using bucket_entry_ptr =
             typename std::conditional<IsConst, const bucket_entry *, bucket_entry *>::type;
 
-        robin_iterator(bucket_entry_ptr bucket) noexcept : m_bucket(bucket) {}
+        explicit robin_iterator(bucket_entry_ptr bucket) noexcept : m_bucket(bucket) {}
 
       public:
         using iterator_category = std::forward_iterator_tag;
@@ -1105,7 +1105,7 @@ namespace tsl {
       void erase_from_bucket(iterator pos)
       {
         pos.m_bucket->clear();
-        m_nb_elements--;
+        --m_nb_elements;
 
         /**
          * Backward shift, swap the empty bucket, previous_ibucket, with the values on its right,
@@ -1170,7 +1170,7 @@ namespace tsl {
                        std::forward<Args>(value_type_args)...);
         }
 
-        m_nb_elements++;
+        ++m_nb_elements;
         /*
          * The value will be inserted in ibucket in any case, either because it was
          * empty or by stealing the bucket (robin hood).
@@ -1267,7 +1267,7 @@ namespace tsl {
             }
           }
 
-          dist_from_ideal_bucket++;
+          ++dist_from_ideal_bucket;
           ibucket = next_bucket(ibucket);
         }
       }
