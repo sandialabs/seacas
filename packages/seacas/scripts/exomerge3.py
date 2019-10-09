@@ -58,11 +58,14 @@ import colorsys
 import difflib
 import operator
 
+if sys.version_info[0] < 3:
+    raise Exception("Python-3 version. If using python-2, try `import exomerge2 as exomerge`")
+
 # import exodus module
 # (exodus.py should be in the same directory as this file)
 try:
     import exodus
-except ImportError:
+except:
     import exodus3 as exodus
 
 # informal version number of this module
@@ -343,7 +346,7 @@ class ExodusModel(object):
         global SHOW_BANNER
         if SHOW_BANNER:
             print(('\n\nYou are using Exomerge v%s -- A lightweight Python '
-                   'interface for manipulating\nExodusII files.' % (VERSION)))
+                   'interface for manipulating\nExodusII files. (Python-3 version)' % (VERSION)))
             # print out the exodus banner after formatting it to fit within
             # 79 characters
             exodus_text = exodus.EXODUS_PY_COPYRIGHT

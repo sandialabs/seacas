@@ -1,3 +1,6 @@
+if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
+INCLUDE(InstallSymLink)
+endif()
 
 SET( ACCESSDIR ${CMAKE_INSTALL_PREFIX} )
 SET( SEPARATOR "_")
@@ -70,12 +73,12 @@ ASSERT_DEFINED(${PROJECT_NAME}_ENABLE_SEACASExodus)
 ASSERT_DEFINED(BUILD_SHARED_LIBS)
 IF (${PROJECT_NAME}_ENABLE_SEACASExodus)
    IF (${PythonInterp_FIND_VERSION} VERSION_LESS "3.0")
-      SET( INPUT "${CMAKE_CURRENT_SOURCE_DIR}/exodus2.in.py" )
-      SET( EXOMERGE "${CMAKE_CURRENT_SOURCE_DIR}/exomerge2.py" )
+      SET( EXODUSPY "exodus2.py" )
+      SET( EXOMERGE "exomerge2.py")
       MESSAGE(STATUS "A Python-2 version of exodus.py and exomerge.py will be installed.")
    ELSE()
-      SET( INPUT "${CMAKE_CURRENT_SOURCE_DIR}/exodus3.in.py" )
-      SET( EXOMERGE "${CMAKE_CURRENT_SOURCE_DIR}/exomerge3.py" )
+      SET( EXODUSPY "exodus3.py" )
+      SET( EXOMERGE "exomerge3.py")
       MESSAGE(STATUS "A Python-3 version of exodus.py and exomerge.py will be installed.")
    ENDIF()
 
@@ -90,17 +93,17 @@ IF (${PROJECT_NAME}_ENABLE_SEACASExodus)
 		${CMAKE_CURRENT_BINARY_DIR}/exodus3.py
 		@ONLY
 		)
-      CONFIGURE_FILE(
-		${INPUT}
-		${CMAKE_CURRENT_BINARY_DIR}/exodus.py
-		@ONLY
-		)
-      INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/exodus.py DESTINATION lib)
       INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/exodus2.py DESTINATION lib)
       INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/exodus3.py DESTINATION lib)
-      INSTALL(PROGRAMS ${EXOMERGE} DESTINATION lib RENAME exomerge.py)
       INSTALL(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/exomerge2.py DESTINATION lib)
       INSTALL(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/exomerge3.py DESTINATION lib)
+
+if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
+      InstallSymLink(${EXODUSPY} ${CMAKE_INSTALL_PREFIX}/lib/exodus.py)
+      InstallSymLink(${EXOMERGE} ${CMAKE_INSTALL_PREFIX}/lib/exomerge.py)
+endif()
+
+
    ELSE()
       MESSAGE(STATUS "Exodus.py and exomerge.py NOT installed since shared exodus library is not available.")
    ENDIF()

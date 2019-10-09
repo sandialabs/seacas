@@ -85,6 +85,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import sys
+if sys.version_info[0] < 3:
+    raise Exception("Python-3 version. If using python-2, try `import exodus2 as exodus`")
+
 from ctypes import *
 import os
 import locale
@@ -120,10 +123,6 @@ SHOW_BANNER = True
 sys.dont_write_bytecode = True
 
 ONELINE = "Gather from or export to Exodus files using the Exodus library"
-
-if sys.version_info[0] < 3:
-    raise Exception("Cannot use Python 2, must use Python 3.X or try `import exodus2`")
-
 
 def basename(file_name):
     """
