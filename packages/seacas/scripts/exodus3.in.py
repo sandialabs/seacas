@@ -122,7 +122,7 @@ sys.dont_write_bytecode = True
 ONELINE = "Gather from or export to Exodus files using the Exodus library"
 
 if sys.version_info[0] < 3:
-    raise Exception("Cannot use Python 2, must use Python 3.X")
+    raise Exception("Cannot use Python 2, must use Python 3.X or try `import exodus2`")
 
 
 def basename(file_name):
@@ -403,7 +403,7 @@ class ex_entity_type(Enum):
     EX_FACE_SET   = 9
     EX_ELEM_BLOCK = 1
     EX_ELEM_SET   = 10
-    EX_SIDE_SET = 3    
+    EX_SIDE_SET = 3
     EX_ELEM_MAP = 4
     EX_NODE_MAP = 5
     EX_EDGE_MAP = 11

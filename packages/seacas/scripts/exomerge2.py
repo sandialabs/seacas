@@ -60,7 +60,10 @@ import operator
 
 # import exodus module
 # (exodus.py should be in the same directory as this file)
-import exodus
+try:
+    import exodus
+except ImportError:
+    import exodus2 as exodus
 
 # informal version number of this module
 __version__ = 8.5
