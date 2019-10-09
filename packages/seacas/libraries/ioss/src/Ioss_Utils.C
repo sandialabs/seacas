@@ -490,9 +490,7 @@ namespace {
     // the 'N' in the Real[N] field.  Dividing 'which_names.size()' by
     // 'N' will give the number of components in the inner field.
 
-    char suffix[2];
-    suffix[0] = suffix_separator;
-    suffix[1] = 0;
+    char suffix[2] = {suffix_separator, '\0'};
 
     std::vector<std::string> tokens =
         Ioss::tokenize(names[which_names[which_names.size() - 1]], suffix);
@@ -1257,12 +1255,10 @@ namespace {
   std::string two_letter_hash(const char *symbol)
   {
     const int    HASHSIZE = 673; // Largest prime less than 676 (26*26)
-    char         word[3];
     unsigned int hashval;
-    unsigned int g;
     for (hashval = 0; *symbol != '\0'; symbol++) {
-      hashval = (hashval << 4) + *symbol;
-      g       = hashval & 0xf0000000;
+      hashval        = (hashval << 4) + *symbol;
+      unsigned int g = hashval & 0xf0000000;
       if (g != 0) {
         hashval = hashval ^ (g >> 24);
         hashval = hashval ^ g;
@@ -1271,9 +1267,7 @@ namespace {
 
     // Convert to base-26 'number'
     hashval %= HASHSIZE;
-    word[0] = char(hashval / 26) + 'a';
-    word[1] = char(hashval % 26) + 'a';
-    word[2] = '\0';
+    char word[3] = {char(hashval / 26 + 'a'), char(hashval % 26 + 'a'), '\0'};
     return (std::string(word));
   }
 } // namespace
