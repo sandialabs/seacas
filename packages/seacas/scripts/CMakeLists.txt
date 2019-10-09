@@ -70,27 +70,40 @@ ASSERT_DEFINED(${PROJECT_NAME}_ENABLE_SEACASExodus)
 ASSERT_DEFINED(BUILD_SHARED_LIBS)
 IF (${PROJECT_NAME}_ENABLE_SEACASExodus)
    IF (${PythonInterp_FIND_VERSION} VERSION_LESS "3.0")
-      SET( INPUT "${CMAKE_CURRENT_SOURCE_DIR}/exodus_2.in.py" )
-      SET( EXOMERGE "${CMAKE_CURRENT_SOURCE_DIR}/exomerge_2.py" )
+      SET( INPUT "${CMAKE_CURRENT_SOURCE_DIR}/exodus2.in.py" )
+      SET( EXOMERGE "${CMAKE_CURRENT_SOURCE_DIR}/exomerge2.py" )
       MESSAGE(STATUS "A Python-2 version of exodus.py and exomerge.py will be installed.")
    ELSE()
-      SET( INPUT "${CMAKE_CURRENT_SOURCE_DIR}/exodus_3.in.py" )
-      SET( EXOMERGE "${CMAKE_CURRENT_SOURCE_DIR}/exomerge_3.py" )
+      SET( INPUT "${CMAKE_CURRENT_SOURCE_DIR}/exodus3.in.py" )
+      SET( EXOMERGE "${CMAKE_CURRENT_SOURCE_DIR}/exomerge3.py" )
       MESSAGE(STATUS "A Python-3 version of exodus.py and exomerge.py will be installed.")
    ENDIF()
 
    IF (BUILD_SHARED_LIBS)
+      CONFIGURE_FILE(
+                ${CMAKE_CURRENT_SOURCE_DIR}/exodus2.in.py
+		${CMAKE_CURRENT_BINARY_DIR}/exodus2.py
+		@ONLY
+		)
+      CONFIGURE_FILE(
+                ${CMAKE_CURRENT_SOURCE_DIR}/exodus3.in.py
+		${CMAKE_CURRENT_BINARY_DIR}/exodus3.py
+		@ONLY
+		)
       CONFIGURE_FILE(
 		${INPUT}
 		${CMAKE_CURRENT_BINARY_DIR}/exodus.py
 		@ONLY
 		)
       INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/exodus.py DESTINATION lib)
+      INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/exodus2.py DESTINATION lib)
+      INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/exodus3.py DESTINATION lib)
       INSTALL(PROGRAMS ${EXOMERGE} DESTINATION lib RENAME exomerge.py)
+      INSTALL(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/exomerge2.py DESTINATION lib)
+      INSTALL(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/exomerge3.py DESTINATION lib)
    ELSE()
       MESSAGE(STATUS "Exodus.py and exomerge.py NOT installed since shared exodus library is not available.")
    ENDIF()
 ELSE()
       MESSAGE(STATUS "Exodus.py and exomerge.py NOT installed since Exodus is not enabled.")
 endif()
-
