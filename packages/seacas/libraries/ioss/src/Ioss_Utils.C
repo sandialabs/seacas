@@ -51,8 +51,8 @@
 #include <vector>
 
 #ifndef _WIN32
-#include <sys/utsname.h>
 #include <sys/ioctl.h>
+#include <sys/utsname.h>
 #endif
 
 #ifndef _POSIX_SOURCE
@@ -1291,52 +1291,15 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name, size_t com
   if (component_count <= 1) {
     comp_len = 0;
   }
-  else if (component_count < 100) {
-    comp_len = 3;
-  }
-  else if (component_count < 1000) {
-    comp_len = 4; //   _000
-  }
-  else if (component_count < 10000) {
-    comp_len = 5; //  _0000
-  }
-  else if (component_count < 100000) {
-    comp_len = 6; // _00000
-  }
   else {
-    std::ostringstream errmsg;
-    fmt::print(errmsg,
-               "Variable '{}' has {:n} components which is larger than the current maximum"
-               " of 100,000. Please contact developer.",
-               name, component_count);
-    IOSS_ERROR(errmsg);
+    comp_len = number_width(component_count) + 1; // _00000
   }
 
   if (copies <= 1) {
     copy_len = 0;
   }
-  else if (copies < 10) {
-    copy_len = 2;
-  }
-  else if (copies < 100) {
-    copy_len = 3;
-  }
-  else if (copies < 1000) {
-    copy_len = 4; //   _000
-  }
-  else if (copies < 10000) {
-    copy_len = 5; //  _0000
-  }
-  else if (copies < 100000) {
-    copy_len = 6; // _00000
-  }
   else {
-    std::ostringstream errmsg;
-    fmt::print(errmsg,
-               "Variable '{}' has {:n} copies which is larger than the current maximum"
-               " of 100,000. Please contact developer.",
-               name, copies);
-    IOSS_ERROR(errmsg);
+    copy_len = number_width(copies) + 1; // _00000
   }
 
   size_t maxlen = max_var_len - comp_len - copy_len;
@@ -1438,7 +1401,7 @@ int Ioss::Utils::log_power_2(uint64_t value)
 int Ioss::Utils::term_width()
 {
   int cols = 100;
-  if (isatty(STDOUT_FILENO)) {
+  if (isatty(fileno(stdout))) {
 #ifdef TIOCGSIZE
     struct ttysize ts;
     ioctl(STDIN_FILENO, TIOCGSIZE, &ts);
