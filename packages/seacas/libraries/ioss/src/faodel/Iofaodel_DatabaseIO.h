@@ -120,6 +120,7 @@ namespace Iofaodel {
     void compute_block_membership(Ioss::SideBlock *         efblock,
                                   std::vector<std::string> &block_membership) const;
 
+    const std::string get_format() const override;
 
   private:
     void read_meta_data__() override;
@@ -229,7 +230,7 @@ namespace Iofaodel {
     int nodesetCount;
     int sidesetCount;
 
-    // KEEP track of how many instances of this object exist, since each implicitly 
+    // KEEP track of how many instances of this object exist, since each implicitly
     // relies on a running instance of Faodel.
     static std::atomic<int> instanceCount;
 
@@ -247,7 +248,7 @@ namespace Iofaodel {
 
     int64_t put_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &field,
         void *data, size_t data_size) const;
-    
+
     mutable kelpie::Pool pool;
     faodel::Configuration faodel_config;
   };
