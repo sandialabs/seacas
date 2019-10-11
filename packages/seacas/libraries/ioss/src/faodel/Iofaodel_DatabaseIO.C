@@ -136,7 +136,7 @@ dirman.root_node_mpi 0
     if( instanceCount++ == 0 ) {
       int size;
       MPI_Comm_size(communicator, &size);
-      if( size == 1 ) { 
+      if( size == 1 ) {
         faodel_config.Append("dirman.resources_mpi[] dht:/ioss/dht 0");
       } else {
         faodel_config.Append("dirman.resources_mpi[] dht:/ioss/dht 0-" + std::to_string(size-1));
@@ -148,24 +148,26 @@ dirman.root_node_mpi 0
     }
 
 #ifdef JOB_TO_JOB_KELPIE
-    /* 
+    /*
        We will worry about job-to-job later
     */
     char *kelpie_url = std::getenv( "IOSS_KELPIE_URL" );
-    pool = kelpie::Connect( kelpie_url );    
+    pool = kelpie::Connect( kelpie_url );
 #endif
 
     pool = kelpie::Connect( "dht:/ioss/dht" );
     dbState = Ioss::STATE_UNKNOWN;
   }
 
-  DatabaseIO::~DatabaseIO() 
+  DatabaseIO::~DatabaseIO()
   {
     // Shut down Faodel gracefully
     if( --instanceCount == 0 ) {
       faodel::bootstrap::Finish();
     }
   }
+
+  const std::string DatabaseIO::get_format() const { return "faodel"; }
 
   void DatabaseIO::read_meta_data__()
   {
@@ -276,7 +278,7 @@ dirman.root_node_mpi 0
   std::vector<kelpie::Key>::iterator substr_to_iterator(const std::string & substr,
                                                         kelpie::ObjectCapacities & oc)
   {
-    return 
+    return
          std::find_if(oc.keys.begin(), oc.keys.end(),
                      [&substr](const kelpie::Key & k) {
                        if(k.K2().find(substr) != std::string::npos)
@@ -325,7 +327,7 @@ dirman.root_node_mpi 0
   {
     // Root of the second key
     std::string root("/Region/can.ex2/State/-1/Entity/FACEBLOCK");
-    
+
     kelpie::ObjectCapacities oc;
     pool.List(kelpie::Key(std::to_string(parallel_rank()), root+ "*"), &oc);
 
@@ -414,7 +416,7 @@ dirman.root_node_mpi 0
 #if 0
     // Root of the second key
     std::string root("/Region/can.ex2/State/-1/Entity/FACEBLOCK");
-    
+
     kelpie::ObjectCapacities oc;
     pool.List(kelpie::Key(std::to_string(parallel_rank()), root+ "*"), &oc);
 
@@ -461,7 +463,7 @@ dirman.root_node_mpi 0
   {
     // Root of the second key
     std::string root("/Region/can.ex2/State/-1/Entity/NODEBLOCK");
-    
+
     kelpie::ObjectCapacities oc;
     pool.List(kelpie::Key(std::to_string(parallel_rank()), root+ "*"), &oc);
 
@@ -519,7 +521,7 @@ dirman.root_node_mpi 0
   {
     // Root of the second key
     std::string root("/Region/can.ex2/State/-1/Entity/NODESET");
-    
+
     kelpie::ObjectCapacities oc;
     pool.List(kelpie::Key(std::to_string(parallel_rank()), root+ "*"), &oc);
 
@@ -562,7 +564,7 @@ dirman.root_node_mpi 0
   {
     // Root of the second key
     std::string root("/Region/can.ex2/State/-1/Entity/SIDESET");
-    
+
     kelpie::ObjectCapacities oc;
     pool.List(kelpie::Key(std::to_string(parallel_rank()), root+ "*"), &oc);
 
