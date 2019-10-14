@@ -289,17 +289,17 @@ $(document).ready(function(){initNavTree('robin__growth__policy_8h_source.html',
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;          <a class="code" href="robin__growth__policy_8h.html#a6763b674ae3f1893aa7524c5c8a8e9b2">TSL_RH_THROW_OR_TERMINATE</a>(std::length_error, <span class="stringliteral">&quot;The hash table exceeds its maxmimum size.&quot;</span>);</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        }</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160; </div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="classtsl_1_1rh_1_1mod__growth__policy.html#a4b19b624612cd19ecbfcba6ae38b9166">next_bucket_count</a> =</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> nxt_bucket_count =</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;            std::ceil(<span class="keywordtype">double</span>(<a class="code" href="classtsl_1_1rh_1_1mod__growth__policy.html#a330ca1e2635e01fa4915e382cd766ffa">m_mod</a>) * <a class="code" href="classtsl_1_1rh_1_1mod__growth__policy.html#aecb8cbacd767c09c4014585c0efa8e91">REHASH_SIZE_MULTIPLICATION_FACTOR</a>);</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        <span class="keywordflow">if</span> (!std::isnormal(<a class="code" href="classtsl_1_1rh_1_1mod__growth__policy.html#a4b19b624612cd19ecbfcba6ae38b9166">next_bucket_count</a>)) {</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        <span class="keywordflow">if</span> (!std::isnormal(nxt_bucket_count)) {</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;          <a class="code" href="robin__growth__policy_8h.html#a6763b674ae3f1893aa7524c5c8a8e9b2">TSL_RH_THROW_OR_TERMINATE</a>(std::length_error, <span class="stringliteral">&quot;The hash table exceeds its maxmimum size.&quot;</span>);</div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        }</div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160; </div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classtsl_1_1rh_1_1mod__growth__policy.html#a4b19b624612cd19ecbfcba6ae38b9166">next_bucket_count</a> &gt; <span class="keywordtype">double</span>(<a class="code" href="classtsl_1_1rh_1_1mod__growth__policy.html#a758984fba37f1fecc39a674d4471d309">max_bucket_count</a>())) {</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        <span class="keywordflow">if</span> (nxt_bucket_count &gt; <span class="keywordtype">double</span>(<a class="code" href="classtsl_1_1rh_1_1mod__growth__policy.html#a758984fba37f1fecc39a674d4471d309">max_bucket_count</a>())) {</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;          <span class="keywordflow">return</span> <a class="code" href="classtsl_1_1rh_1_1mod__growth__policy.html#a758984fba37f1fecc39a674d4471d309">max_bucket_count</a>();</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        }</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;        <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;          <span class="keywordflow">return</span> std::size_t(<a class="code" href="classtsl_1_1rh_1_1mod__growth__policy.html#a4b19b624612cd19ecbfcba6ae38b9166">next_bucket_count</a>);</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;          <span class="keywordflow">return</span> std::size_t(nxt_bucket_count);</div>
 <div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        }</div>
 <div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;      }</div>
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160; </div>

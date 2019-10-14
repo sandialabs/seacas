@@ -23,6 +23,7 @@ var classIoss_1_1FileInfo =
     [ "operator==", "classIoss_1_1FileInfo.html#ab2b1bfb63858187a21d19e475f4a2868", null ],
     [ "parallel_exists", "classIoss_1_1FileInfo.html#a0ffb80f3539d179a05b964a5ad075e0b", null ],
     [ "pathname", "classIoss_1_1FileInfo.html#af19049069064a3571f8d049ab9e00906", null ],
+    [ "realpath", "classIoss_1_1FileInfo.html#a0a2574368334b4f250b9b2c0691efafa", null ],
     [ "remove_file", "classIoss_1_1FileInfo.html#a859242fc28423ca9796f4666846f13cf", null ],
     [ "set_filename", "classIoss_1_1FileInfo.html#a6b9da81c9b6f9f904059534f8da808a2", null ],
     [ "set_filename", "classIoss_1_1FileInfo.html#aaac181b0e933f3fb09af130003fc7d23", null ],

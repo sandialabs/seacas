@@ -307,20 +307,20 @@ $(document).ready(function(){initNavTree('Ioss__GroupingEntity_8h_source.html','
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    <span class="comment">// Put this fields data into &#39;data&#39;.</span></div>
 <div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <span class="comment">// Returns number of entities for which the field was read.</span></div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <span class="comment">// Assumes &#39;data&#39; is large enough to hold all values.</span></div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728">get_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, <span class="keywordtype">void</span> *<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, <span class="keywordtype">size_t</span> data_size) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a4f3d6b42e6a7f68a61d00afe9132cc80">get_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, <span class="keywordtype">void</span> *<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, <span class="keywordtype">size_t</span> data_size) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160; </div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, <span class="keywordtype">void</span> *<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, <span class="keywordtype">size_t</span> data_size) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, <span class="keywordtype">void</span> *<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, <span class="keywordtype">size_t</span> data_size) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160; </div>
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="comment">// Put this fields data into the specified std::vector space.</span></div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    <span class="comment">// Returns number of entities for which the field was read.</span></div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <span class="comment">// Resizes &#39;data&#39; to size needed to hold all values.</span></div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728">get_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, std::vector&lt;T&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a4f3d6b42e6a7f68a61d00afe9132cc80">get_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, std::vector&lt;T&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; </div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, <span class="keyword">const</span> std::vector&lt;T&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, <span class="keyword">const</span> std::vector&lt;T&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, std::vector&lt;T&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, std::vector&lt;T&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160; </div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="preprocessor">#ifdef SEACAS_HAVE_KOKKOS</span></div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="comment">// Get and put this field&#39;s data into the specified Kokkos::View.</span></div>
@@ -329,16 +329,16 @@ $(document).ready(function(){initNavTree('Ioss__GroupingEntity_8h_source.html','
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    <span class="comment">// however, any Views that were previously created referencing the same</span></div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    <span class="comment">// underlying memory allocation as &#39;data&#39; will remain the original size.</span></div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728">get_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, Kokkos::View&lt;T *, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a4f3d6b42e6a7f68a61d00afe9132cc80">get_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, Kokkos::View&lt;T *, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160; </div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728">get_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, Kokkos::View&lt;T **, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a4f3d6b42e6a7f68a61d00afe9132cc80">get_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, Kokkos::View&lt;T **, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160; </div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, Kokkos::View&lt;T *, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, Kokkos::View&lt;T *, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160; </div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, Kokkos::View&lt;T **, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, Kokkos::View&lt;T **, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment">    /** Get the number of bytes used to store the INT data type</span></div>
@@ -549,281 +549,283 @@ $(document).ready(function(){initNavTree('Ioss__GroupingEntity_8h_source.html','
 <div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00460"></a><span class="lineno"><a class="line" href="classIoss_1_1GroupingEntity.html#aea644daddfe26ebaaad2e01e027c8913">  460</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728">Ioss::GroupingEntity::get_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, std::vector&lt;T&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;input&quot;</span>);</div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160; </div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#ad4f3aa9b1f18f9f3eb29e1db399d01f4">check_type</a>(<a class="code" href="classIoss_1_1Field.html#ae837f52a8c5b1cf6ce76113f4dd793d9">Ioss::Field::get_field_type</a>(T(0)));</div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160; </div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;  <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.resize(field.<a class="code" href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">raw_count</a>() * field.<a class="code" href="classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1">raw_storage</a>()-&gt;<a class="code" href="classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c">component_count</a>());</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;  <span class="keywordtype">size_t</span> data_size = <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.size() * <span class="keyword">sizeof</span>(T);</div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  <span class="keywordtype">int</span>    retval    = internal_get_field_data(field, <a class="code" href="Ioss__Utils_8h.html#a9b37e10718bdd79cdf16cd5ad63a46b5">TOPTR</a>(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>), data_size);</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160; </div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  <span class="comment">// At this point, transform the field if specified...</span></div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;  <span class="keywordflow">if</span> (retval &gt;= 0) {</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;    field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(<a class="code" href="Ioss__Utils_8h.html#a9b37e10718bdd79cdf16cd5ad63a46b5">TOPTR</a>(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>));</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;  }</div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160; </div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;  <span class="keywordflow">return</span> retval;</div>
-<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;}</div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;<span class="comment">/** \brief Write type &#39;T&#39; field data from memory into the database file using a std::vector.</span></div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;<span class="comment"> *  \param[in] field_name The name of the field to write.</span></div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;<span class="comment"> *  \param[in] data The data.</span></div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;<span class="comment"> *  \returns The number of values written.</span></div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00487"></a><span class="lineno"><a class="line" href="classIoss_1_1GroupingEntity.html#aaf4cae39181ef7f0910e6e9f775b4b4f">  487</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">Ioss::GroupingEntity::put_field_data</a>(<span class="keyword">const</span> std::string &amp;   field_name,</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;                                         <span class="keyword">const</span> std::vector&lt;T&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;output&quot;</span>);</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160; </div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#ad4f3aa9b1f18f9f3eb29e1db399d01f4">check_type</a>(<a class="code" href="classIoss_1_1Field.html#ae837f52a8c5b1cf6ce76113f4dd793d9">Ioss::Field::get_field_type</a>(T(0)));</div>
-<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;  <span class="keywordtype">size_t</span> data_size = <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.size() * <span class="keyword">sizeof</span>(T);</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;  <span class="keywordflow">if</span> (field.<a class="code" href="classIoss_1_1Field.html#a7a2d32fa8abd51081e5e4099ae408ee0">has_transform</a>()) {</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;    <span class="comment">// Need non-const data since the transform will change the users data.</span></div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    std::vector&lt;T&gt; nc_data(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;    field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(nc_data.data());</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;    <span class="keywordflow">return</span> internal_put_field_data(field, nc_data.data(), data_size);</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;  }</div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160; </div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;  T *my_data = const_cast&lt;T *&gt;(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.data());</div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;  <span class="keywordflow">return</span> internal_put_field_data(field, my_data, data_size);</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;}</div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160; </div>
-<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00507"></a><span class="lineno"><a class="line" href="classIoss_1_1GroupingEntity.html#a115ee292f2e63afaca3949736bde2ece">  507</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">Ioss::GroupingEntity::put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name, std::vector&lt;T&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;output&quot;</span>);</div>
-<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160; </div>
-<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#ad4f3aa9b1f18f9f3eb29e1db399d01f4">check_type</a>(<a class="code" href="classIoss_1_1Field.html#ae837f52a8c5b1cf6ce76113f4dd793d9">Ioss::Field::get_field_type</a>(T(0)));</div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;  <span class="keywordtype">size_t</span> data_size = <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.size() * <span class="keyword">sizeof</span>(T);</div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;  T *    my_data   = const_cast&lt;T *&gt;(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.data());</div>
-<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(my_data);</div>
-<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;  <span class="keywordflow">return</span> internal_put_field_data(field, my_data, data_size);</div>
-<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;}</div>
-<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160; </div>
-<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;<span class="preprocessor">#ifdef SEACAS_HAVE_KOKKOS</span></div>
-<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;<span class="comment">/** \brief Read field data from the database file into memory using a 1-D Kokkos:::View.</span></div>
-<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;<span class="comment"> *  \tparam T The data type.</span></div>
-<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;<span class="comment"> *  \tparam Args The other template arguments for data.</span></div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;<span class="comment"> *  \param[in] field_name The name of the field to read.</span></div>
-<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;<span class="comment"> *  \param[out] data The data.</span></div>
-<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;<span class="comment"> *  \returns The number of values read.</span></div>
-<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728">Ioss::GroupingEntity::get_field_data</a>(<span class="keyword">const</span> std::string &amp;         field_name,</div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;                                         Kokkos::View&lt;T *, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;  <span class="keyword">typedef</span> Kokkos::View&lt;T *, Args...&gt; ViewType;</div>
-<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160; </div>
-<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;input&quot;</span>);</div>
+<div class="line"><a name="l00460"></a><span class="lineno"><a class="line" href="classIoss_1_1GroupingEntity.html#a147100ac9892721cf7b6bd22a80b8969">  460</a></span>&#160;int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a4f3d6b42e6a7f68a61d00afe9132cc80">Ioss::GroupingEntity::get_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name,</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;                                             std::vector&lt;T&gt; &amp;   <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;input&quot;</span>);</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160; </div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#ad4f3aa9b1f18f9f3eb29e1db399d01f4">check_type</a>(<a class="code" href="classIoss_1_1Field.html#ae837f52a8c5b1cf6ce76113f4dd793d9">Ioss::Field::get_field_type</a>(T(0)));</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160; </div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;  <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.resize(field.<a class="code" href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">raw_count</a>() * field.<a class="code" href="classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1">raw_storage</a>()-&gt;<a class="code" href="classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c">component_count</a>());</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  <span class="keywordtype">size_t</span> data_size = <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.size() * <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;  <span class="keywordtype">size_t</span> retval    = internal_get_field_data(field, <a class="code" href="Ioss__Utils_8h.html#a9b37e10718bdd79cdf16cd5ad63a46b5">TOPTR</a>(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>), data_size);</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160; </div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;  <span class="comment">// At this point, transform the field if specified...</span></div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;  <span class="keywordflow">if</span> (retval &gt;= 0) {</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;    field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(<a class="code" href="Ioss__Utils_8h.html#a9b37e10718bdd79cdf16cd5ad63a46b5">TOPTR</a>(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>));</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;  }</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160; </div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  <span class="keywordflow">return</span> retval;</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;}</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;<span class="comment">/** \brief Write type &#39;T&#39; field data from memory into the database file using a std::vector.</span></div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;<span class="comment"> *  \param[in] field_name The name of the field to write.</span></div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;<span class="comment"> *  \param[in] data The data.</span></div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;<span class="comment"> *  \returns The number of values written.</span></div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00488"></a><span class="lineno"><a class="line" href="classIoss_1_1GroupingEntity.html#aa7e4a4b90e9e23e5138618e3058cd373">  488</a></span>&#160;int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">Ioss::GroupingEntity::put_field_data</a>(<span class="keyword">const</span> std::string &amp;   field_name,</div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;                                             <span class="keyword">const</span> std::vector&lt;T&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;output&quot;</span>);</div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160; </div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#ad4f3aa9b1f18f9f3eb29e1db399d01f4">check_type</a>(<a class="code" href="classIoss_1_1Field.html#ae837f52a8c5b1cf6ce76113f4dd793d9">Ioss::Field::get_field_type</a>(T(0)));</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;  <span class="keywordtype">size_t</span> data_size = <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.size() * <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;  <span class="keywordflow">if</span> (field.<a class="code" href="classIoss_1_1Field.html#a7a2d32fa8abd51081e5e4099ae408ee0">has_transform</a>()) {</div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    <span class="comment">// Need non-const data since the transform will change the users data.</span></div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;    std::vector&lt;T&gt; nc_data(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;    field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(nc_data.data());</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;    <span class="keywordflow">return</span> internal_put_field_data(field, nc_data.data(), data_size);</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;  }</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160; </div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;  T *my_data = const_cast&lt;T *&gt;(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.data());</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;  <span class="keywordflow">return</span> internal_put_field_data(field, my_data, data_size);</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;}</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160; </div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00508"></a><span class="lineno"><a class="line" href="classIoss_1_1GroupingEntity.html#a3373aa56c277192203cc7d31bf010023">  508</a></span>&#160;int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">Ioss::GroupingEntity::put_field_data</a>(<span class="keyword">const</span> std::string &amp;field_name,</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;                                             std::vector&lt;T&gt; &amp;   <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;output&quot;</span>);</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160; </div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#ad4f3aa9b1f18f9f3eb29e1db399d01f4">check_type</a>(<a class="code" href="classIoss_1_1Field.html#ae837f52a8c5b1cf6ce76113f4dd793d9">Ioss::Field::get_field_type</a>(T(0)));</div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;  <span class="keywordtype">size_t</span> data_size = <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.size() * <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;  T *    my_data   = const_cast&lt;T *&gt;(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.data());</div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(my_data);</div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;  <span class="keywordflow">return</span> internal_put_field_data(field, my_data, data_size);</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;}</div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160; </div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;<span class="preprocessor">#ifdef SEACAS_HAVE_KOKKOS</span></div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;<span class="comment">/** \brief Read field data from the database file into memory using a 1-D Kokkos:::View.</span></div>
+<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;<span class="comment"> *  \tparam T The data type.</span></div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;<span class="comment"> *  \tparam Args The other template arguments for data.</span></div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;<span class="comment"> *  \param[in] field_name The name of the field to read.</span></div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;<span class="comment"> *  \param[out] data The data.</span></div>
+<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;<span class="comment"> *  \returns The number of values read.</span></div>
+<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a4f3d6b42e6a7f68a61d00afe9132cc80">Ioss::GroupingEntity::get_field_data</a>(<span class="keyword">const</span> std::string &amp;         field_name,</div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;                                             Kokkos::View&lt;T *, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;  <span class="keyword">typedef</span> Kokkos::View&lt;T *, Args...&gt; ViewType;</div>
 <div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160; </div>
-<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;input&quot;</span>);</div>
 <div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160; </div>
-<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;  <span class="comment">// Resize the view</span></div>
-<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;  <span class="keywordtype">int</span> new_view_size = field.<a class="code" href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">raw_count</a>() * field.<a class="code" href="classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1">raw_storage</a>()-&gt;<a class="code" href="classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c">component_count</a>();</div>
-<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;  Kokkos::resize(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, new_view_size);</div>
-<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;  <span class="keywordtype">size_t</span> data_size = new_view_size * <span class="keyword">sizeof</span>(T);</div>
-<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160; </div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;  <span class="comment">// Create a host mirror view. (No memory allocation if data is in HostSpace.)</span></div>
-<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;  <span class="keyword">typename</span> ViewType::HostMirror host_data = Kokkos::create_mirror_view(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
-<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160; </div>
-<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;  <span class="comment">// Extract a pointer to the underlying allocated memory of the host view.</span></div>
-<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;  T *host_data_ptr = host_data.data();</div>
-<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160; </div>
-<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;  <span class="comment">// Extract the data from disk to the underlying memory pointed to by host_data_ptr.</span></div>
-<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;  <span class="keywordtype">int</span> retval = internal_get_field_data(field, host_data_ptr, data_size);</div>
-<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160; </div>
-<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;  <span class="comment">// At this point, transform the field if specified...</span></div>
-<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;  <span class="keywordflow">if</span> (retval &gt;= 0)</div>
-<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;    field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(host_data_ptr);</div>
-<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160; </div>
-<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;  <span class="comment">// Copy the data to the device. (No op if data is in HostSpace.)</span></div>
-<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;  Kokkos::deep_copy(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, host_data);</div>
-<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160; </div>
-<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;  <span class="keywordflow">return</span> retval;</div>
-<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;}</div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;<span class="comment">/** \brief Read field data from the database file into memory using a 2-D Kokkos:::View.</span></div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;<span class="comment"> *  \tparam T The data type</span></div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;<span class="comment"> *  \tparam Args The other template arguments for data.</span></div>
-<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;<span class="comment"> *  \param[in] field_name The name of the field to read.</span></div>
-<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;<span class="comment"> *  \param[out] data The data.</span></div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;<span class="comment"> *  \returns The number of values read.</span></div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728">Ioss::GroupingEntity::get_field_data</a>(<span class="keyword">const</span> std::string &amp;          field_name,</div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;                                         Kokkos::View&lt;T **, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;  <span class="keyword">typedef</span> Kokkos::View&lt;T **, Args...&gt; ViewType;</div>
-<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160; </div>
-<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;input&quot;</span>);</div>
+<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
+<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160; </div>
+<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;  <span class="comment">// Resize the view</span></div>
+<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;  <span class="keywordtype">int</span> new_view_size = field.<a class="code" href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">raw_count</a>() * field.<a class="code" href="classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1">raw_storage</a>()-&gt;<a class="code" href="classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c">component_count</a>();</div>
+<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;  Kokkos::resize(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, new_view_size);</div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;  <span class="keywordtype">size_t</span> data_size = new_view_size * <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160; </div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;  <span class="comment">// Create a host mirror view. (No memory allocation if data is in HostSpace.)</span></div>
+<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;  <span class="keyword">typename</span> ViewType::HostMirror host_data = Kokkos::create_mirror_view(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
+<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160; </div>
+<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;  <span class="comment">// Extract a pointer to the underlying allocated memory of the host view.</span></div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;  T *host_data_ptr = host_data.data();</div>
+<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160; </div>
+<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;  <span class="comment">// Extract the data from disk to the underlying memory pointed to by host_data_ptr.</span></div>
+<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;  <span class="keywordtype">size_t</span> retval = internal_get_field_data(field, host_data_ptr, data_size);</div>
+<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160; </div>
+<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;  <span class="comment">// At this point, transform the field if specified...</span></div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;  <span class="keywordflow">if</span> (retval &gt;= 0)</div>
+<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;    field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(host_data_ptr);</div>
+<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160; </div>
+<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;  <span class="comment">// Copy the data to the device. (No op if data is in HostSpace.)</span></div>
+<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;  Kokkos::deep_copy(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, host_data);</div>
+<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160; </div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;  <span class="keywordflow">return</span> retval;</div>
+<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;}</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;<span class="comment">/** \brief Read field data from the database file into memory using a 2-D Kokkos:::View.</span></div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;<span class="comment"> *  \tparam T The data type</span></div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;<span class="comment"> *  \tparam Args The other template arguments for data.</span></div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;<span class="comment"> *  \param[in] field_name The name of the field to read.</span></div>
+<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;<span class="comment"> *  \param[out] data The data.</span></div>
+<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;<span class="comment"> *  \returns The number of values read.</span></div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a4f3d6b42e6a7f68a61d00afe9132cc80">Ioss::GroupingEntity::get_field_data</a>(<span class="keyword">const</span> std::string &amp;          field_name,</div>
+<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;          Kokkos::View&lt;T **, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;  <span class="keyword">typedef</span> Kokkos::View&lt;T **, Args...&gt; ViewType;</div>
 <div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160; </div>
-<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
+<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;input&quot;</span>);</div>
 <div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160; </div>
-<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;  <span class="comment">// Resize the view</span></div>
-<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;  <span class="keywordtype">int</span> new_view_size_left  = field.<a class="code" href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">raw_count</a>();</div>
-<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;  <span class="keywordtype">int</span> new_view_size_right = field.<a class="code" href="classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1">raw_storage</a>()-&gt;<a class="code" href="classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c">component_count</a>();</div>
-<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;  Kokkos::resize(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, new_view_size_left, new_view_size_right);</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;  <span class="keywordtype">size_t</span> data_size = new_view_size_left * new_view_size_right * <span class="keyword">sizeof</span>(T);</div>
-<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160; </div>
-<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;  <span class="comment">// Create and allocate an array to hold the data temporarily.</span></div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;  <span class="comment">// This is necessary to ensure the data is placed in the correct</span></div>
-<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;  <span class="comment">// location in the 2-D array, avoiding incorrect placement due</span></div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;  <span class="comment">// to Views with padded dimensions.</span></div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;  T *data_array = <span class="keyword">new</span> T[data_size];</div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160; </div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;  <span class="comment">// Create a host mirror view. (No memory allocation if data is in HostSpace.)</span></div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;  <span class="keyword">typename</span> ViewType::HostMirror host_data = Kokkos::create_mirror_view(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160; </div>
-<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;  <span class="comment">// Extract the data from disk to the underlying memory pointed to by host_data_ptr.</span></div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;  <span class="keywordtype">int</span> retval = internal_get_field_data(field, data_array, data_size);</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160; </div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;  <span class="comment">// At this point, transform the field if specified...</span></div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;  <span class="keywordflow">if</span> (retval &gt;= 0)</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;    field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(data_array);</div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160; </div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;  <span class="comment">// Copy the data to the host Mirror view.</span></div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;  <span class="comment">// The host mirror view has the same layout as the device view.</span></div>
-<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;  <span class="comment">// For CUDA, this will be LayoutLeft. In this case, the loop order</span></div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;  <span class="comment">// chosen here will be slower than the reversed loop order.</span></div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;  <span class="comment">// However, The time for this extra in-memory copy is small</span></div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;  <span class="comment">// compared with the time to copy from disk into memory.</span></div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; new_view_size_left; ++i) {</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; new_view_size_right; ++j) {</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;      host_data(i, j) = data_array[new_view_size_right * i + j];</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;    }</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;  }</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160; </div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;  <span class="comment">// Delete the temporary array</span></div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;  <span class="keyword">delete</span>[] data_array;</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160; </div>
-<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;  <span class="comment">// Copy the data to the device. (No op if data is in HostSpace.)</span></div>
-<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;  Kokkos::deep_copy(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, host_data);</div>
-<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160; </div>
-<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;  <span class="keywordflow">return</span> retval;</div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;}</div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;<span class="comment">/** \brief Write field data from memory into the database file using a 1-D Kokkos::View.</span></div>
-<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;<span class="comment"> *  \tparam T The data type</span></div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;<span class="comment"> *  \tparam Args The other template arguments for data.</span></div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;<span class="comment"> *  \param[in] field_name The name of the field to write.</span></div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;<span class="comment"> *  \param[in] data The data.</span></div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;<span class="comment"> *  \returns The number of values written.</span></div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">Ioss::GroupingEntity::put_field_data</a>(<span class="keyword">const</span> std::string &amp;         field_name,</div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;                                         Kokkos::View&lt;T *, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;  <span class="keyword">typedef</span> Kokkos::View&lt;T *, Args...&gt; ViewType;</div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160; </div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;output&quot;</span>);</div>
+<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
+<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160; </div>
+<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;  <span class="comment">// Resize the view</span></div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;  <span class="keywordtype">int</span> new_view_size_left  = field.<a class="code" href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">raw_count</a>();</div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;  <span class="keywordtype">int</span> new_view_size_right = field.<a class="code" href="classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1">raw_storage</a>()-&gt;<a class="code" href="classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c">component_count</a>();</div>
+<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;  Kokkos::resize(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, new_view_size_left, new_view_size_right);</div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;  <span class="keywordtype">size_t</span> data_size = new_view_size_left * new_view_size_right * <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160; </div>
+<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;  <span class="comment">// Create and allocate an array to hold the data temporarily.</span></div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;  <span class="comment">// This is necessary to ensure the data is placed in the correct</span></div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;  <span class="comment">// location in the 2-D array, avoiding incorrect placement due</span></div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;  <span class="comment">// to Views with padded dimensions.</span></div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;  T *data_array = <span class="keyword">new</span> T[data_size];</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160; </div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;  <span class="comment">// Create a host mirror view. (No memory allocation if data is in HostSpace.)</span></div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;  <span class="keyword">typename</span> ViewType::HostMirror host_data = Kokkos::create_mirror_view(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160; </div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;  <span class="comment">// Extract the data from disk to the underlying memory pointed to by host_data_ptr.</span></div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;  <span class="keywordtype">size_t</span> retval = internal_get_field_data(field, data_array, data_size);</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160; </div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;  <span class="comment">// At this point, transform the field if specified...</span></div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;  <span class="keywordflow">if</span> (retval &gt;= 0)</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;    field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(data_array);</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160; </div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;  <span class="comment">// Copy the data to the host Mirror view.</span></div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;  <span class="comment">// The host mirror view has the same layout as the device view.</span></div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;  <span class="comment">// For CUDA, this will be LayoutLeft. In this case, the loop order</span></div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;  <span class="comment">// chosen here will be slower than the reversed loop order.</span></div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;  <span class="comment">// However, The time for this extra in-memory copy is small</span></div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;  <span class="comment">// compared with the time to copy from disk into memory.</span></div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; new_view_size_left; ++i) {</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; new_view_size_right; ++j) {</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;      host_data(i, j) = data_array[new_view_size_right * i + j];</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;    }</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;  }</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160; </div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;  <span class="comment">// Delete the temporary array</span></div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;  <span class="keyword">delete</span>[] data_array;</div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160; </div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;  <span class="comment">// Copy the data to the device. (No op if data is in HostSpace.)</span></div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;  Kokkos::deep_copy(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>, host_data);</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160; </div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;  <span class="keywordflow">return</span> retval;</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;}</div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;<span class="comment">/** \brief Write field data from memory into the database file using a 1-D Kokkos::View.</span></div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;<span class="comment"> *  \tparam T The data type</span></div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;<span class="comment"> *  \tparam Args The other template arguments for data.</span></div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;<span class="comment"> *  \param[in] field_name The name of the field to write.</span></div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;<span class="comment"> *  \param[in] data The data.</span></div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;<span class="comment"> *  \returns The number of values written.</span></div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">Ioss::GroupingEntity::put_field_data</a>(<span class="keyword">const</span> std::string &amp;         field_name,</div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;                                             Kokkos::View&lt;T *, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;  <span class="keyword">typedef</span> Kokkos::View&lt;T *, Args...&gt; ViewType;</div>
 <div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160; </div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field     = get_field(field_name);</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;  <span class="keywordtype">size_t</span>      data_size = field.<a class="code" href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">raw_count</a>() * field.<a class="code" href="classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1">raw_storage</a>()-&gt;<a class="code" href="classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c">component_count</a>() * <span class="keyword">sizeof</span>(T);</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160; </div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;  <span class="comment">// Create a host mirror view. (No memory allocation if data is in HostSpace.)</span></div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;  <span class="keyword">typename</span> ViewType::HostMirror host_data = Kokkos::create_mirror_view(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
-<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160; </div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;  <span class="comment">// Copy the data to the host. (No op if data is in HostSpace.)</span></div>
-<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;  Kokkos::deep_copy(host_data, <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
-<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160; </div>
-<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;  <span class="comment">// Extract a pointer to the underlying allocated memory of the host view.</span></div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;  T *host_data_ptr = host_data.data();</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160; </div>
-<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;  <span class="comment">// Transform the field</span></div>
-<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(host_data_ptr);</div>
-<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160; </div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;  <span class="comment">// Copy the data to disk from the underlying memory pointed to by host_data_ptr.</span></div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;  <span class="keywordflow">return</span> internal_put_field_data(field, host_data_ptr, data_size);</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;}</div>
-<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;<span class="comment">/** \brief Write field data from memory into the database file using a 2-D Kokkos::View.</span></div>
-<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;<span class="comment"> *  \tparam T The data type</span></div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;<span class="comment"> *  \tparam Args The other template arguments for data.</span></div>
-<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;<span class="comment"> *  \param[in] field_name The name of the field to write.</span></div>
-<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;<span class="comment"> *  \param[in] data The data.</span></div>
-<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;<span class="comment"> *  \returns The number of values written.</span></div>
-<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">Ioss::GroupingEntity::put_field_data</a>(<span class="keyword">const</span> std::string &amp;          field_name,</div>
-<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;                                         Kokkos::View&lt;T **, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;  <span class="keyword">typedef</span> Kokkos::View&lt;T **, Args...&gt; ViewType;</div>
-<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160; </div>
-<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;output&quot;</span>);</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;output&quot;</span>);</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160; </div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field     = get_field(field_name);</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;  <span class="keywordtype">size_t</span>      data_size = field.<a class="code" href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">raw_count</a>() * field.<a class="code" href="classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1">raw_storage</a>()-&gt;<a class="code" href="classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c">component_count</a>() * <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160; </div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;  <span class="comment">// Create a host mirror view. (No memory allocation if data is in HostSpace.)</span></div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;  <span class="keyword">typename</span> ViewType::HostMirror host_data = Kokkos::create_mirror_view(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160; </div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;  <span class="comment">// Copy the data to the host. (No op if data is in HostSpace.)</span></div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;  Kokkos::deep_copy(host_data, <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160; </div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;  <span class="comment">// Extract a pointer to the underlying allocated memory of the host view.</span></div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;  T *host_data_ptr = host_data.data();</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160; </div>
+<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;  <span class="comment">// Transform the field</span></div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(host_data_ptr);</div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160; </div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;  <span class="comment">// Copy the data to disk from the underlying memory pointed to by host_data_ptr.</span></div>
+<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;  <span class="keywordflow">return</span> internal_put_field_data(field, host_data_ptr, data_size);</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;}</div>
+<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;<span class="comment">/** \brief Write field data from memory into the database file using a 2-D Kokkos::View.</span></div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;<span class="comment"> *  \tparam T The data type</span></div>
+<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;<span class="comment"> *  \tparam Args The other template arguments for data.</span></div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;<span class="comment"> *  \param[in] field_name The name of the field to write.</span></div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;<span class="comment"> *  \param[in] data The data.</span></div>
+<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;<span class="comment"> *  \returns The number of values written.</span></div>
+<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;int64_t <a class="code" href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">Ioss::GroupingEntity::put_field_data</a>(<span class="keyword">const</span> std::string &amp;          field_name,</div>
+<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;                                             Kokkos::View&lt;T **, Args...&gt; &amp;<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;  <span class="keyword">typedef</span> Kokkos::View&lt;T **, Args...&gt; ViewType;</div>
 <div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160; </div>
-<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;  verify_field_exists(field_name, <span class="stringliteral">&quot;output&quot;</span>);</div>
 <div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160; </div>
-<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;  <span class="keywordtype">int</span>    view_size_left  = <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.extent(0);</div>
-<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;  <span class="keywordtype">int</span>    view_size_right = <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.extent(1);</div>
-<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;  <span class="keywordtype">size_t</span> data_size       = field.<a class="code" href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">raw_count</a>() * field.<a class="code" href="classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1">raw_storage</a>()-&gt;<a class="code" href="classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c">component_count</a>() * <span class="keyword">sizeof</span>(T);</div>
-<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160; </div>
-<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;  <span class="keywordflow">if</span> (view_size_left * view_size_right * <span class="keyword">sizeof</span>(T) != data_size) {</div>
-<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;    std::ostringstream errmsg;</div>
-<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;    errmsg &lt;&lt; <span class="stringliteral">&quot;\nERROR: View dimensions are inconsistent with field raw count or raw storage &quot;</span></div>
-<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;              <span class="stringliteral">&quot;component count&quot;</span></div>
-<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;for field&quot;</span> &lt;&lt; field_name &lt;&lt; <span class="stringliteral">&quot;\n\n&quot;</span>;</div>
-<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;    <a class="code" href="Ioss__Utils_8h.html#a8cf977184a0da53f11721c605f2fbf51">IOSS_ERROR</a>(errmsg);</div>
-<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;  }</div>
-<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160; </div>
-<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;  <span class="comment">// Create a host mirror view. (No memory allocation if data is in HostSpace.)</span></div>
-<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;  <span class="keyword">typename</span> ViewType::HostMirror host_data = Kokkos::create_mirror_view(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
-<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160; </div>
-<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;  <span class="comment">// Copy the data to the host. (No op if data is in HostSpace.)</span></div>
-<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;  Kokkos::deep_copy(host_data, <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
-<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160; </div>
-<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;  <span class="comment">// Create and allocate an array to hold the data temporarily.</span></div>
-<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;  <span class="comment">// This is necessary to ensure the data is taken from the correct</span></div>
-<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;  <span class="comment">// location in the 2-D array, avoiding incorrect location due</span></div>
-<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;  <span class="comment">// to Views with padded dimensions.</span></div>
-<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;  T *data_array = <span class="keyword">new</span> T[data_size];</div>
-<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160; </div>
-<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;  <span class="comment">// Copy the data from the host Mirror view.</span></div>
-<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;  <span class="comment">// The host mirror view has the same layout as the device view.</span></div>
-<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;  <span class="comment">// For CUDA, this will be LayoutLeft. In this case, the loop order</span></div>
-<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;  <span class="comment">// chosen here will be slower than the reversed loop order.</span></div>
-<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;  <span class="comment">// However, The time for this extra in-memory copy is small</span></div>
-<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;  <span class="comment">// compared with the time to copy to disk from memory.</span></div>
-<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; view_size_left; ++i) {</div>
-<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; view_size_right; ++j) {</div>
-<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;      data_array[view_size_right * i + j] = host_data(i, j);</div>
-<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;    }</div>
-<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;  }</div>
-<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160; </div>
-<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;  <span class="comment">// Transform the field</span></div>
-<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(data_array);</div>
-<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160; </div>
-<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;  <span class="comment">// Copy the data to disk from the underlying memory pointed to by data_array.</span></div>
-<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;  <span class="keywordtype">int</span> retval = internal_put_field_data(field, data_array, data_size);</div>
-<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160; </div>
-<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;  <span class="comment">// Delete the temporary array</span></div>
-<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;  <span class="keyword">delete</span>[] data_array;</div>
-<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160; </div>
-<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;  <span class="keywordflow">return</span> retval;</div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;}</div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160; </div>
+<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;  <a class="code" href="classIoss_1_1Field.html">Ioss::Field</a> field = get_field(field_name);</div>
+<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160; </div>
+<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;  <span class="keywordtype">int</span>    view_size_left  = <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.extent(0);</div>
+<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;  <span class="keywordtype">int</span>    view_size_right = <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>.extent(1);</div>
+<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;  <span class="keywordtype">size_t</span> data_size       = field.<a class="code" href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">raw_count</a>() * field.<a class="code" href="classIoss_1_1Field.html#aa50e28cbc6eff5e4056eda686d79f4e1">raw_storage</a>()-&gt;<a class="code" href="classIoss_1_1VariableType.html#ad1e37f24dd5bbe9ed6bee80a93665d6c">component_count</a>() * <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160; </div>
+<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;  <span class="keywordflow">if</span> (view_size_left * view_size_right * <span class="keyword">sizeof</span>(T) != data_size) {</div>
+<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;    std::ostringstream errmsg;</div>
+<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;    errmsg &lt;&lt; <span class="stringliteral">&quot;\nERROR: View dimensions are inconsistent with field raw count or raw storage &quot;</span></div>
+<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;              <span class="stringliteral">&quot;component count&quot;</span></div>
+<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;for field&quot;</span> &lt;&lt; field_name &lt;&lt; <span class="stringliteral">&quot;\n\n&quot;</span>;</div>
+<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    <a class="code" href="Ioss__Utils_8h.html#a8cf977184a0da53f11721c605f2fbf51">IOSS_ERROR</a>(errmsg);</div>
+<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;  }</div>
+<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160; </div>
+<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;  <span class="comment">// Create a host mirror view. (No memory allocation if data is in HostSpace.)</span></div>
+<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;  <span class="keyword">typename</span> ViewType::HostMirror host_data = Kokkos::create_mirror_view(<a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
+<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160; </div>
+<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;  <span class="comment">// Copy the data to the host. (No op if data is in HostSpace.)</span></div>
+<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;  Kokkos::deep_copy(host_data, <a class="code" href="namespaceanonymous__namespace_02cth__pressure__map_8C_03.html#a13e85c35bb623bd97cff6847698831ba">data</a>);</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160; </div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;  <span class="comment">// Create and allocate an array to hold the data temporarily.</span></div>
+<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;  <span class="comment">// This is necessary to ensure the data is taken from the correct</span></div>
+<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;  <span class="comment">// location in the 2-D array, avoiding incorrect location due</span></div>
+<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;  <span class="comment">// to Views with padded dimensions.</span></div>
+<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;  T *data_array = <span class="keyword">new</span> T[data_size];</div>
+<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160; </div>
+<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;  <span class="comment">// Copy the data from the host Mirror view.</span></div>
+<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;  <span class="comment">// The host mirror view has the same layout as the device view.</span></div>
+<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;  <span class="comment">// For CUDA, this will be LayoutLeft. In this case, the loop order</span></div>
+<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;  <span class="comment">// chosen here will be slower than the reversed loop order.</span></div>
+<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;  <span class="comment">// However, The time for this extra in-memory copy is small</span></div>
+<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;  <span class="comment">// compared with the time to copy to disk from memory.</span></div>
+<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; view_size_left; ++i) {</div>
+<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; view_size_right; ++j) {</div>
+<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;      data_array[view_size_right * i + j] = host_data(i, j);</div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;    }</div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;  }</div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160; </div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;  <span class="comment">// Transform the field</span></div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;  field.<a class="code" href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">transform</a>(data_array);</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160; </div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;  <span class="comment">// Copy the data to disk from the underlying memory pointed to by data_array.</span></div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;  <span class="keyword">auto</span> retval = internal_put_field_data(field, data_array, data_size);</div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160; </div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;  <span class="comment">// Delete the temporary array</span></div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;  <span class="keyword">delete</span>[] data_array;</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160; </div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;  <span class="keywordflow">return</span> retval;</div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;}</div>
 <div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160; </div>
+<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a28f5b47509e7f07f9e0fe021d3be54fd"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a28f5b47509e7f07f9e0fe021d3be54fd">Ioss::GroupingEntity::is_alias</a></div><div class="ttdeci">bool is_alias(const std::string &amp;my_name) const</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.C:111</div></div>
-<div class="ttc" id="anamespaceIoss_html_a23cc4564a1b431d96e72616d42b6ddee"><div class="ttname"><a href="namespaceIoss.html#a23cc4564a1b431d96e72616d42b6ddee">Ioss::NameList</a></div><div class="ttdeci">std::vector&lt; std::string &gt; NameList</div><div class="ttdef"><b>Definition:</b> Ioss_CodeTypes.h:45</div></div>
+<div class="ttc" id="anamespaceIoss_html_a23cc4564a1b431d96e72616d42b6ddee"><div class="ttname"><a href="namespaceIoss.html#a23cc4564a1b431d96e72616d42b6ddee">Ioss::NameList</a></div><div class="ttdeci">std::vector&lt; std::string &gt; NameList</div><div class="ttdef"><b>Definition:</b> Ioss_CodeTypes.h:53</div></div>
 <div class="ttc" id="aclassIoss_1_1Field_html"><div class="ttname"><a href="classIoss_1_1Field.html">Ioss::Field</a></div><div class="ttdoc">Holds metadata for bulk data associated with a GroupingEntity.</div><div class="ttdef"><b>Definition:</b> Ioss_Field.h:47</div></div>
 <div class="ttc" id="aIoss__Property_8h_html"><div class="ttname"><a href="Ioss__Property_8h.html">Ioss_Property.h</a></div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_af27bee6de570e447fa867fcaffdcefa7"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#af27bee6de570e447fa867fcaffdcefa7">Ioss::GroupingEntity::really_delete_database</a></div><div class="ttdeci">void really_delete_database()</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.C:88</div></div>
@@ -845,7 +847,6 @@ $(document).ready(function(){initNavTree('Ioss__GroupingEntity_8h_source.html','
 <div class="ttc" id="aclassIoss_1_1Field_html_ad4f3aa9b1f18f9f3eb29e1db399d01f4"><div class="ttname"><a href="classIoss_1_1Field.html#ad4f3aa9b1f18f9f3eb29e1db399d01f4">Ioss::Field::check_type</a></div><div class="ttdeci">void check_type(BasicType the_type) const</div><div class="ttdef"><b>Definition:</b> Ioss_Field.C:175</div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a8f5d067d20febccdca9235fbf382a2de"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a8f5d067d20febccdca9235fbf382a2de">Ioss::GroupingEntity::internal_put_field_data</a></div><div class="ttdeci">virtual int64_t internal_put_field_data(const Field &amp;field, void *data, size_t data_size=0) const =0</div></div>
 <div class="ttc" id="aclassIoss_1_1Field_html_acd40e32af496e75b0c416737ed0a97ec"><div class="ttname"><a href="classIoss_1_1Field.html#acd40e32af496e75b0c416737ed0a97ec">Ioss::Field::transform</a></div><div class="ttdeci">bool transform(void *data)</div><div class="ttdef"><b>Definition:</b> Ioss_Field.C:254</div></div>
-<div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a2e4800373483590f73d92721de5bb59d"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">Ioss::GroupingEntity::put_field_data</a></div><div class="ttdeci">int put_field_data(const std::string &amp;field_name, void *data, size_t data_size) const</div><div class="ttdoc">Write field data from memory into the database file using a pointer.</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.C:252</div></div>
 <div class="ttc" id="aclassIoss_1_1PropertyManager_html"><div class="ttname"><a href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a></div><div class="ttdoc">A collection of Ioss::Property objects.</div><div class="ttdef"><b>Definition:</b> Ioss_PropertyManager.h:49</div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a1041e50c022e4f3965eb8b26c982f4c1"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a1041e50c022e4f3965eb8b26c982f4c1">Ioss::GroupingEntity::get_implicit_property</a></div><div class="ttdeci">virtual Property get_implicit_property(const std::string &amp;my_name) const =0</div><div class="ttdoc">Calculate and get an implicit property.</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.C:172</div></div>
 <div class="ttc" id="aclassIoss_1_1Field_html_a43f29f9ba05cb45ed893455c76526c3ea194e95849e048f8440b0e4805906d411"><div class="ttname"><a href="classIoss_1_1Field.html#a43f29f9ba05cb45ed893455c76526c3ea194e95849e048f8440b0e4805906d411">Ioss::Field::INT64</a></div><div class="ttdef"><b>Definition:</b> Ioss_Field.h:58</div></div>
@@ -873,6 +874,7 @@ $(document).ready(function(){initNavTree('Ioss__GroupingEntity_8h_source.html','
 <div class="ttc" id="aIoss__Field_8h_html"><div class="ttname"><a href="Ioss__Field_8h.html">Ioss_Field.h</a></div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_ac8492e89387a368d1a783c34472eab66"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#ac8492e89387a368d1a783c34472eab66">Ioss::GroupingEntity::short_type_string</a></div><div class="ttdeci">virtual std::string short_type_string() const =0</div><div class="ttdoc">Get a short name of the particular type of entity.</div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a92953767e72bb32d4678e144b8672809"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a92953767e72bb32d4678e144b8672809">Ioss::GroupingEntity::field_erase</a></div><div class="ttdeci">void field_erase(const std::string &amp;field_name)</div><div class="ttdoc">Remove a field from the entity's field manager.</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.h:385</div></div>
+<div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a4f3d6b42e6a7f68a61d00afe9132cc80"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a4f3d6b42e6a7f68a61d00afe9132cc80">Ioss::GroupingEntity::get_field_data</a></div><div class="ttdeci">int64_t get_field_data(const std::string &amp;field_name, void *data, size_t data_size) const</div><div class="ttdoc">Read field data from the database file into memory using a pointer.</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.C:228</div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a0388ba5c4b7e07807d9e6b8a5baf7ac4"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a0388ba5c4b7e07807d9e6b8a5baf7ac4">Ioss::GroupingEntity::property_describe</a></div><div class="ttdeci">int property_describe(NameList *names) const</div><div class="ttdoc">Get the names of all properties in the property manager for this entity.</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.h:366</div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a1cd7715c7b5324175d030dceb4aa9315"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a1cd7715c7b5324175d030dceb4aa9315">Ioss::GroupingEntity::hash</a></div><div class="ttdeci">unsigned int hash() const</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.h:265</div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_aae4118ee166a2503ad351ec9ac79bbe6"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#aae4118ee166a2503ad351ec9ac79bbe6">Ioss::GroupingEntity::property_update</a></div><div class="ttdeci">void property_update(const std::string &amp;property, int64_t value) const</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.C:311</div></div>
@@ -881,7 +883,6 @@ $(document).ready(function(){initNavTree('Ioss__GroupingEntity_8h_source.html','
 <div class="ttc" id="aclassIoss_1_1Property_html_a45bcbc7137a296f3eda52c92c04da39f"><div class="ttname"><a href="classIoss_1_1Property.html#a45bcbc7137a296f3eda52c92c04da39f">Ioss::Property::get_int</a></div><div class="ttdeci">int64_t get_int() const</div><div class="ttdoc">Get the property value if it is of type INTEGER.</div><div class="ttdef"><b>Definition:</b> Ioss_Property.C:188</div></div>
 <div class="ttc" id="aclassIoss_1_1Field_html_ac24230b1f5a5bda5d68b842c20efa9bb"><div class="ttname"><a href="classIoss_1_1Field.html#ac24230b1f5a5bda5d68b842c20efa9bb">Ioss::Field::raw_count</a></div><div class="ttdeci">size_t raw_count() const</div><div class="ttdef"><b>Definition:</b> Ioss_Field.h:137</div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a59f3d5d80280d8cd8d4606d46057edea"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a59f3d5d80280d8cd8d4606d46057edea">Ioss::GroupingEntity::entityName</a></div><div class="ttdeci">std::string entityName</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.h:309</div></div>
-<div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a4969f0b3bc6d6a1c63d20d3938608728"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728">Ioss::GroupingEntity::get_field_data</a></div><div class="ttdeci">int get_field_data(const std::string &amp;field_name, void *data, size_t data_size) const</div><div class="ttdoc">Read field data from the database file into memory using a pointer.</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.C:228</div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a508cc132f3c03c54d0dfd84f567fa1b6"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a508cc132f3c03c54d0dfd84f567fa1b6">Ioss::GroupingEntity::get_field</a></div><div class="ttdeci">Field get_field(const std::string &amp;field_name) const</div><div class="ttdoc">Get a field from the entity's field manager.</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.h:407</div></div>
 <div class="ttc" id="aIoss__Utils_8h_html_a9b37e10718bdd79cdf16cd5ad63a46b5"><div class="ttname"><a href="Ioss__Utils_8h.html#a9b37e10718bdd79cdf16cd5ad63a46b5">TOPTR</a></div><div class="ttdeci">#define TOPTR(x)</div><div class="ttdef"><b>Definition:</b> Ioss_Utils.h:62</div></div>
 <div class="ttc" id="aIoss__FieldManager_8h_html"><div class="ttname"><a href="Ioss__FieldManager_8h.html">Ioss_FieldManager.h</a></div></div>
@@ -901,6 +902,7 @@ $(document).ready(function(){initNavTree('Ioss__GroupingEntity_8h_source.html','
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a187d71a2fe40885b4631d1843bb8deb6"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a187d71a2fe40885b4631d1843bb8deb6">Ioss::GroupingEntity::count_attributes</a></div><div class="ttdeci">void count_attributes() const</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.C:276</div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a40669aca09db99457475f6852eae0c96"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a40669aca09db99457475f6852eae0c96">Ioss::GroupingEntity::entity_count</a></div><div class="ttdeci">int64_t entity_count() const</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.h:267</div></div>
 <div class="ttc" id="aclassIoss_1_1Property_html"><div class="ttname"><a href="classIoss_1_1Property.html">Ioss::Property</a></div><div class="ttdoc">A named value that has a known type.</div><div class="ttdef"><b>Definition:</b> Ioss_Property.h:47</div></div>
+<div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a9b65d41c5f8ebe6a5b9d90be91c40d5c"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">Ioss::GroupingEntity::put_field_data</a></div><div class="ttdeci">int64_t put_field_data(const std::string &amp;field_name, void *data, size_t data_size) const</div><div class="ttdoc">Write field data from memory into the database file using a pointer.</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.C:252</div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a></div><div class="ttdoc">Base class for all 'grouping' entities. The following derived classes are typical:</div><div class="ttdef"><b>Definition:</b> Ioss_GroupingEntity.h:93</div></div>
 <div class="ttc" id="aIoss__CodeTypes_8h_html"><div class="ttname"><a href="Ioss__CodeTypes_8h.html">Ioss_CodeTypes.h</a></div></div>
 <div class="ttc" id="aclassIoss_1_1GroupingEntity_html_a14d4849fa78cad24916165bf0c212cf4"><div class="ttname"><a href="classIoss_1_1GroupingEntity.html#a14d4849fa78cad24916165bf0c212cf4">Ioss::GroupingEntity::operator=</a></div><div class="ttdeci">GroupingEntity &amp; operator=(const GroupingEntity &amp;)=delete</div></div>
