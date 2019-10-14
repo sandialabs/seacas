@@ -467,7 +467,7 @@ int64_t Ioss::GroupingEntity::get_field_data(const std::string &field_name,
 
   data.resize(field.raw_count() * field.raw_storage()->component_count());
   size_t data_size = data.size() * sizeof(T);
-  int    retval    = internal_get_field_data(field, TOPTR(data), data_size);
+  size_t retval    = internal_get_field_data(field, TOPTR(data), data_size);
 
   // At this point, transform the field if specified...
   if (retval >= 0) {
@@ -551,7 +551,7 @@ int64_t Ioss::GroupingEntity::get_field_data(const std::string &         field_n
   T *host_data_ptr = host_data.data();
 
   // Extract the data from disk to the underlying memory pointed to by host_data_ptr.
-  int retval = internal_get_field_data(field, host_data_ptr, data_size);
+  size_t retval = internal_get_field_data(field, host_data_ptr, data_size);
 
   // At this point, transform the field if specified...
   if (retval >= 0)
@@ -573,8 +573,8 @@ int64_t Ioss::GroupingEntity::get_field_data(const std::string &         field_n
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::get_field_data(const std::string &          field_name,
-                                         Kokkos::View<T **, Args...> &data) const
+int64_t Ioss::GroupingEntity::get_field_data(const std::string &          field_name,
+                                             Kokkos::View<T **, Args...> &data) const
 {
   typedef Kokkos::View<T **, Args...> ViewType;
 
@@ -598,7 +598,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &          field_name
   typename ViewType::HostMirror host_data = Kokkos::create_mirror_view(data);
 
   // Extract the data from disk to the underlying memory pointed to by host_data_ptr.
-  int retval = internal_get_field_data(field, data_array, data_size);
+  size_t retval = internal_get_field_data(field, data_array, data_size);
 
   // At this point, transform the field if specified...
   if (retval >= 0)
