@@ -5679,7 +5679,7 @@ class ExodusModel(object):
         Return the total number of elements in the given element blocks.
 
         Example:
-        >>> print object.get_element_count()
+        >>> print((' %d elements' % (object.get_element_count())))
 
         """
         element_block_ids = self._format_element_block_id_list(
