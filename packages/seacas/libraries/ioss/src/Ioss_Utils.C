@@ -553,9 +553,7 @@ namespace {
     // and see if it defines a valid type...
     std::vector<Ioss::Suffix> suffices;
 
-    char suffix[2];
-    suffix[0] = suffix_separator;
-    suffix[1] = 0;
+    char suffix[2] = {suffix_separator, '\0'};
 
     for (int which_name : which_names) {
       std::vector<std::string> tokens     = Ioss::tokenize(names[which_name], suffix);
