@@ -27,7 +27,6 @@ ZOLTAN=${ZOLTAN:-ON}
 ### Python Version...
 PYTHON_VER=${PYTHON_VER:-"3.0"}
 
-
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
 if [ "${netcdf_parallel}" == "yes" ]
@@ -299,15 +298,66 @@ fi
 
 FC=${FC:-gfortran}
 
-rm -f CMakeCache.txt
+EXTRA_WARNINGS=${EXTRA_WARNINGS:-NO}
+SANITIZER=${SANITIZER:-NO}
 
+if [ "$SANITIZER" != "NO" ] ; then
+### To use the clang sanitizers:
+#sanitizer=address     #: AddressSanitizer, a memory error detector.
+#sanitizer=integer     #: Enables checks for undefined or suspicious integer behavior.
+#sanitizer=thread      #: ThreadSanitizer, a data race detector.
+#sanitizer=memory      #: MemorySanitizer, experimental detector of uninitialized reads.
+#sanitizer=undefined   #: Fast and compatible undefined behavior checker. 
+#sanitizer=dataflow    #: DataFlowSanitizer, a general data flow analysis.
+#sanitizer=cfi         #: control flow integrity checks. Requires -flto.
+#sanitizer=safe-stack  #: safe stack protection against stack-based memory corruption errors.
+SANITIZE="-fsanitize=${SANITIZER} -fno-omit-frame-pointer -fPIC"
+fi
+### You can add these below if you want more verbosity...
+#-D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+#-D SEACASProj_VERBOSE_CONFIGURE=ON \
+
+### You can add these below to regenerate the flex and bison files for
+### aprepro and aprepro_lib May have to touch aprepro.l aprepro.y
+### aprepro.ll and aprepro.yy to have them regenerate 
+#-D GENERATE_FLEX_FILES=ON \
+#-D GENERATE_BISON_FILES=ON \
+
+if [ "$EXTRA_WARNINGS" == "YES" ] ; then
+### Additional gcc warnings:
+if [ "$COMPILER" == "gnu" ]
+then
+  COMMON_WARNING_FLAGS="\
+   -Wshadow -Wabsolute-value -Waddress -Waliasing -Wpedantic\
+  "
+
+  C_WARNING_FLAGS="${COMMON_WARNING_FLAGS}"
+
+  CXX_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wnull-dereference -Wzero-as-null-pointer-constant -Wuseless-cast -Weffc++ -Wsuggest-override"
+
+  # -Wuseless-cast
+  # -Wold-style-cast
+  # -Wdouble-promotion
+fi
+if [ "$COMPILER" == "clang" ]
+then
+  C_WARNING_FLAGS="-Weverything -Wno-missing-prototypes -Wno-sign-conversion -Wno-reserved-id-macro"
+
+  CXX_WARNING_FLAGS="-Weverything -Wno-c++98-compat -Wno-old-style-cast -Wno-sign-conversion -Wno-reserved-id-macro"
+fi
+fi
+
+rm -f CMakeCache.txt
 ###------------------------------------------------------------------------
 cmake -G "${GENERATOR}" \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
--D CMAKE_CXX_FLAGS=${CXXFLAGS} ${SANITIZER} \
--D CMAKE_C_FLAGS=${CFLAGS} ${SANITIZER} \
+-D CMAKE_CXX_FLAGS="${CXXFLAGS} ${CXX_WARNING_FLAGS} ${SANITIZE}" \
+-D CMAKE_C_FLAGS="${CFLAGS} ${C_WARNING_FLAGS} ${SANITIZE}" \
+-D CMAKE_FORTRAN_FLAGS="${FFLAGS} ${F77_WARNING_FLAGS} ${SANITIZE}" \
+-D SEACASProj_ENABLE_STRONG_C_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
+-D SEACASProj_ENABLE_STRONG_CXX_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
 -D BUILD_SHARED_LIBS:BOOL=${SHARED} \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \

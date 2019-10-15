@@ -81,6 +81,25 @@ to configure the SEACAS CMake build.
 * `make && make install`
 * If everything works, your applications should be in `${ACCESS}/bin`
 * To install in a different location, do `INSTALL_PATH={path_to_install} ../cmake-config`
+* The default behavior can be modified via a few environment variables:
+
+| Variable        | Values          | Default | Description |
+|-----------------|:---------------:|:-------:|-------------|
+| INSTALL_PATH    | path to install | pwd | Root of install path; default is current location |
+| BUILDDIR        | {dir}   | `pwd`/build | Directory to do config and build |
+| COMPILER        | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build |
+| SHARED          | ON, OFF | ON  | Build and use shared libraries is ON |
+| BUILD_TYPE      | debug, release| release | what type of build |
+| DEBUG           | -none- |      | If specified, then do a debug build. Can't be used with `BUILD_TYPE` |
+| HAVE_X11        | ON, OFF | ON  | Does the system have X11 libraries and include files; used for blot, fastq |
+| THREADSAFE      | ON, OFF | OFF | Compile a thread-safe IOSS and Exodus library |
+| USE_SRUN        | ON, OFF | OFF | If MPI enabled, then use srun instead of mpiexec to run parallel tests |
+| DOXYGEN         | ON, OFF | OFF | Run doxygen on several packages during build to generate documentation |
+| OMIT_DEPRECATED | YES, NO | NO  | Should the deprecated code be omitted; NO will enable deprecated code |
+| EXTRA_WARNINGS  | YES, NO | NO  | Build with extra warnings enabled; see list in `cmake-config` |
+| SANITIZER       | many    | NO  | If not NO, build using specified sanitizer; see list in `cmake-config` |
+| GENERATOR       | many    | "Unix Makefiles" | what generator should CMake use; see cmake doc |
+* The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
 
 ## Testing
 There are a few unit tests for zoltan, exodus, and aprepro that can be run via `make test` if you configured with `-D SEACASProj_ENABLE_TESTS=ON`.
