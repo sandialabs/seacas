@@ -89,6 +89,11 @@ to configure the SEACAS CMake build.
 | BUILDDIR        | {dir}   | `pwd`/build | Directory to do config and build |
 | COMPILER        | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build |
 | SHARED          | ON, OFF | ON  | Build and use shared libraries is ON |
+| APPLICATIONS    | ON, OFF | ON  | Should all SEACAS applications be built (see `cmake-config`) |
+| LEGACY          | ON, OFF | ON  | Should the legacy SEACAS applications be built (see `cmake-config`) |
+| FORTRAN         | ON, OFF | ON  | Should fortran libraries and applications be built (see `cmake-config`) |
+| ZOLTAN          | ON, OFF | ON  | Should zoltan library and nem_slice be built |
+| PYTHON_VER      | 2.7 3.0 | 3.0 | Minimum version of python which should be found |
 | BUILD_TYPE      | debug, release| release | what type of build |
 | DEBUG           | -none- |      | If specified, then do a debug build. Can't be used with `BUILD_TYPE` |
 | HAVE_X11        | ON, OFF | ON  | Does the system have X11 libraries and include files; used for blot, fastq |
