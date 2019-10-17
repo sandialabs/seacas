@@ -520,7 +520,7 @@ namespace SEAMS {
           << "  --comment=char or -c=char: Change comment character to 'char'      \n"
           << "      --copyright or -C: Print copyright message                 \n"
           << "   --keep_history or -k: Keep a history of aprepro substitutions.\n"
-	  << "                         (not for general interactive use)       \n"
+          << "                         (not for general interactive use)       \n"
           << "          --quiet or -q: (deprecated, option is ignored)         \n"
           << "                var=val: Assign value 'val' to variable 'var'    \n"
           << "                         Use var=\\\"sval\\\" for a string variable\n\n"
