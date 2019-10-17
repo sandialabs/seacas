@@ -7,6 +7,14 @@ if [ "X$ACCESS" == "X" ] ; then
 fi
 INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
+DEBUG="${DEBUG:-NO}"
+if [ "$DEBUG" == "YES" ]
+then
+  BUILD_TYPE="DEBUG"
+else
+  BUILD_TYPE="RELEASE"
+fi
+
 SHARED="${SHARED:-ON}"
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
 then
@@ -66,6 +74,7 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DBUILD_TESTING:BOOL=OFF \
          -DCMAKE_INSTALL_PREFIX=${INSTALL_PATH} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
+	 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
          -DENABLE_NETCDF_4:BOOL=ON \
          -DENABLE_PNETCDF:BOOL=${MPI} \
          -DENABLE_CDF5=ON \
