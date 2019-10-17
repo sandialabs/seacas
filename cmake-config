@@ -224,7 +224,7 @@ HAVE_KOKKOS=$(check_enable "${KOKKOS_PATH}/include/Kokkos_Core.hpp")
 ###    -D DataWarp_INCLUDE_DIRS:PATH=/opt/cray/datawarp/2.1.16-6.0.5.1_2.61__g238b34d.ari/include \
 
 ### Define to NO to *enable* exodus deprecated functions
-OMIT_DEPRECATED_CODE="NO"
+OMIT_DEPRECATED=${OMIT_DEPRECATED:-NO}
 
 # BUG needs to work with cray too.
 if [ "${MPI}" == "ON" ] && [ "${CRAY}" == "ON" ]
@@ -287,8 +287,8 @@ else
 fi
 
 # Only run doxygen if me and on master branch...
-DOXYGEN=OFF
-if [[ "$OS" == "Darwin" && "$MPI" == "OFF" ]] ; then
+DOXYGEN=${DOXYGEN:-OFF}
+if [[ "$DOXYGEN" == "OFF" && "$OS" == "Darwin" && "$MPI" == "OFF" ]] ; then
     branch=$(git branch |grep \* |cut -c3-)
     USER=$(id -nu)
     if [ "$USER" == "gdsjaar" ] && [ "$branch" == "master" ]; then
