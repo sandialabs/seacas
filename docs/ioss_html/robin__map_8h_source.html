@@ -143,7 +143,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">   * cache-miss for example) as we then compare the stored hashes before comparing the keys. When</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">   * `tsl::rh::power_of_two_growth_policy` is used as `GrowthPolicy`, it may also speed-up the</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">   * rehash process as we can avoid to recalculate the hash. When it is detected that storing the</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">   * hash will not incur any memory penality due to alignement (i.e.</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">   * hash will not incur any memory penalty due to alignment (i.e.</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">   * `sizeof(tsl::detail_robin_hash::bucket_entry&lt;ValueType, true&gt;) ==</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">   * sizeof(tsl::detail_robin_hash::bucket_entry&lt;ValueType, false&gt;)`) and</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">   * `tsl::rh::power_of_two_growth_policy` is used, the hash will be stored even if `StoreHash` is</span></div>
@@ -428,7 +428,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="comment">    /**</span></div>
 <div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup to the value if you already</span></div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup to the value if you already</span></div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;<span class="comment">     * have the hash.</span></div>
 <div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00342"></a><span class="lineno"><a class="line" href="classtsl_1_1robin__map.html#a5de84ecb7e8d4704ec9e5b2e7c8f5a88">  342</a></span>&#160;    <a class="code" href="classtsl_1_1robin__map.html#ae42652a724ddc26237783a8a8e0a3545">size_type</a> <a class="code" href="classtsl_1_1robin__map.html#a5de84ecb7e8d4704ec9e5b2e7c8f5a88">erase</a>(<span class="keyword">const</span> <a class="code" href="classtsl_1_1robin__map.html#a76bc73ce3005e1f39c254e9d5092f0c2">key_type</a> &amp;key, std::size_t precalculated_hash)</div>
@@ -451,7 +451,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;<span class="comment">     * @copydoc erase(const K&amp; key)</span></div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;<span class="comment">     *</span></div>
 <div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup to the value if you already</span></div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup to the value if you already</span></div>
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;<span class="comment">     * have the hash.</span></div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class </span>K, <span class="keyword">class </span>KE = KeyEqual,</div>
@@ -470,7 +470,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;<span class="comment">    /**</span></div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup if you already have the</span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup if you already have the</span></div>
 <div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="comment">     * hash.</span></div>
 <div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00384"></a><span class="lineno"><a class="line" href="classtsl_1_1robin__map.html#a6aacb285c6f7b6ad7420c57f640ab8b6">  384</a></span>&#160;    T &amp;<a class="code" href="classtsl_1_1robin__map.html#a6aacb285c6f7b6ad7420c57f640ab8b6">at</a>(<span class="keyword">const</span> Key &amp;key, std::size_t precalculated_hash)</div>
@@ -503,7 +503,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;<span class="comment">     * @copydoc at(const K&amp; key)</span></div>
 <div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;<span class="comment">     *</span></div>
 <div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup if you already have the</span></div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup if you already have the</span></div>
 <div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;<span class="comment">     * hash.</span></div>
 <div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class </span>K, <span class="keyword">class </span>KE = KeyEqual,</div>
@@ -540,7 +540,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;<span class="comment">    /**</span></div>
 <div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup if you already have the</span></div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup if you already have the</span></div>
 <div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;<span class="comment">     * hash.</span></div>
 <div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00454"></a><span class="lineno"><a class="line" href="classtsl_1_1robin__map.html#a26bcd048ce6a0217daca1293588dc3d1">  454</a></span>&#160;    <a class="code" href="classtsl_1_1robin__map.html#ae42652a724ddc26237783a8a8e0a3545">size_type</a> <a class="code" href="classtsl_1_1robin__map.html#a26bcd048ce6a0217daca1293588dc3d1">count</a>(<span class="keyword">const</span> Key &amp;key, std::size_t precalculated_hash)<span class="keyword"> const</span></div>
@@ -563,7 +563,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;<span class="comment">     * @copydoc count(const K&amp; key) const</span></div>
 <div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;<span class="comment">     *</span></div>
 <div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup if you already have the</span></div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup if you already have the</span></div>
 <div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;<span class="comment">     * hash.</span></div>
 <div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class </span>K, <span class="keyword">class </span>KE = KeyEqual,</div>
@@ -577,7 +577,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;<span class="comment">    /**</span></div>
 <div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup if you already have the</span></div>
+<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup if you already have the</span></div>
 <div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;<span class="comment">     * hash.</span></div>
 <div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00491"></a><span class="lineno"><a class="line" href="classtsl_1_1robin__map.html#a35021b11aabb61820236692a54b3a0f8">  491</a></span>&#160;    <a class="code" href="classtsl_1_1robin__map.html#afcded2ad86ebfdb7e1e9b252866215d8">iterator</a> <a class="code" href="classtsl_1_1robin__map.html#a35021b11aabb61820236692a54b3a0f8">find</a>(<span class="keyword">const</span> Key &amp;key, std::size_t precalculated_hash)</div>
@@ -610,7 +610,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;<span class="comment">     * @copydoc find(const K&amp; key)</span></div>
 <div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;<span class="comment">     *</span></div>
 <div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup if you already have the</span></div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup if you already have the</span></div>
 <div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;<span class="comment">     * hash.</span></div>
 <div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class </span>K, <span class="keyword">class </span>KE = KeyEqual,</div>
@@ -634,7 +634,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;<span class="comment">     * @copydoc find(const K&amp; key)</span></div>
 <div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;<span class="comment">     *</span></div>
 <div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup if you already have the</span></div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup if you already have the</span></div>
 <div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;<span class="comment">     * hash.</span></div>
 <div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class </span>K, <span class="keyword">class </span>KE = KeyEqual,</div>
@@ -648,7 +648,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;<span class="comment">    /**</span></div>
 <div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup if you already have the</span></div>
+<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup if you already have the</span></div>
 <div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;<span class="comment">     * hash.</span></div>
 <div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00562"></a><span class="lineno"><a class="line" href="classtsl_1_1robin__map.html#a45f4347099fa07f978f5deda43c3d71e">  562</a></span>&#160;    std::pair&lt;iterator, iterator&gt; <a class="code" href="classtsl_1_1robin__map.html#a45f4347099fa07f978f5deda43c3d71e">equal_range</a>(<span class="keyword">const</span> Key &amp;key, std::size_t precalculated_hash)</div>
@@ -685,7 +685,7 @@ $(document).ready(function(){initNavTree('robin__map_8h_source.html','');});
 <div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;<span class="comment">     * @copydoc equal_range(const K&amp; key)</span></div>
 <div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;<span class="comment">     *</span></div>
 <div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;<span class="comment">     * Use the hash value &#39;precalculated_hash&#39; instead of hashing the key. The hash value should be</span></div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;<span class="comment">     * the same as hash_function()(key). Usefull to speed-up the lookup if you already have the</span></div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;<span class="comment">     * the same as hash_function()(key). Useful to speed-up the lookup if you already have the</span></div>
 <div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;<span class="comment">     * hash.</span></div>
 <div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;<span class="comment">     */</span></div>
 <div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class </span>K, <span class="keyword">class </span>KE = KeyEqual,</div>

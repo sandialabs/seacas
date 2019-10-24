@@ -60,7 +60,7 @@ var group__ModelDescription =
     [ "ex_put_attr_names", "group__ModelDescription.html#gae9beb2de2a75649c57a025b0f647cb74", null ],
     [ "ex_put_attr_param", "group__ModelDescription.html#gacbe0d2c034655cb912a2ebf761ec89c5", null ],
     [ "ex_put_block", "group__ModelDescription.html#gad98c043e0e089bcb7a4f6662f96f7822", null ],
-    [ "ex_put_block_param", "group__ModelDescription.html#ga3b784966f8408e39d3debddd3d201da9", null ],
+    [ "ex_put_block_param", "group__ModelDescription.html#ga72e91e627fecb91c0a9dba34f02c455f", null ],
     [ "ex_put_block_params", "group__ModelDescription.html#gaca77ecebfa9dad39ba97ec76a14b3364", null ],
     [ "ex_put_cmap_params", "group__ModelDescription.html#ga12a96d0c1af9f03ee4f82d05dbe5546a", null ],
     [ "ex_put_cmap_params_cc", "group__ModelDescription.html#gaed235e0e2fea4319cc2586db5009506c", null ],

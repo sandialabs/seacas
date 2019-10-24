@@ -805,7 +805,7 @@ template&lt;class ValueType, class KeySelect, class ValueSelect, class Hash, cla
   </tr>
 </table>
 </div><div class="memdoc">
-<p>C++11 doesn't support the creation of a std::vector with a custom allocator and 'count' default-inserted elements. The needed contructor <code>explicit vector(size_type count, const Allocator&amp; alloc = Allocator());</code> is only available in C++14 and later. We thus must resize after using the <code>vector(const Allocator&amp; alloc)</code> constructor.</p>
+<p>C++11 doesn't support the creation of a std::vector with a custom allocator and 'count' default-inserted elements. The needed constructor <code>explicit vector(size_type count, const Allocator&amp; alloc = Allocator());</code> is only available in C++14 and later. We thus must resize after using the <code>vector(const Allocator&amp; alloc)</code> constructor.</p>
 <p>We can't use <code>vector(size_type count, const T&amp; value, const Allocator&amp; alloc)</code> as it requires the value T to be copyable. </p>
 
 </div>
@@ -3009,7 +3009,7 @@ template&lt;class ValueType, class KeySelect, class ValueSelect, class Hash, cla
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Grow the table if m_grow_on_next_insert is true or we reached the max_load_factor. Shrink the table if m_try_skrink_on_next_insert is true (an erase occured) and we're below the min_load_factor.</p>
+<p>Grow the table if m_grow_on_next_insert is true or we reached the max_load_factor. Shrink the table if m_try_skrink_on_next_insert is true (an erase occurred) and we're below the min_load_factor.</p>
 <p>Return true if the table has been rehashed. </p>
 
 </div>
@@ -3731,7 +3731,7 @@ template&lt;class ValueType, class KeySelect, class ValueSelect, class Hash, cla
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Only use the stored hash on lookup if we are explictly asked. We are not sure how slow the KeyEqual operation is. An extra comparison may slow things down with a fast KeyEqual. </p>
+<p>Only use the stored hash on lookup if we are explicitly asked. We are not sure how slow the KeyEqual operation is. An extra comparison may slow things down with a fast KeyEqual. </p>
 
 </div>
 </div>

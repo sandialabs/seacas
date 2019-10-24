@@ -329,12 +329,6 @@ Functions</h2></td></tr>
 <tr class="separator:ad4a3ff3a58be20fa74dfe21847ae0930"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af844507128ff1f4c4605f7adf787c6df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__scanner_8cc.html#af844507128ff1f4c4605f7adf787c6df">SEAMSfree</a> (void *)</td></tr>
 <tr class="separator:af844507128ff1f4c4605f7adf787c6df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0774cfa499e3a94a7ce6b6a07709b231"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a0774cfa499e3a94a7ce6b6a07709b231">SEAMS::get_temp_filename</a> (void)</td></tr>
-<tr class="separator:a0774cfa499e3a94a7ce6b6a07709b231"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc0de3998134653bfab9b0e15213d6fe"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#abc0de3998134653bfab9b0e15213d6fe">SEAMS::pathopen</a> (const char *file)</td></tr>
-<tr class="separator:abc0de3998134653bfab9b0e15213d6fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aedae771561608a98dc74ca400ed3b7b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#aedae771561608a98dc74ca400ed3b7b8">SEAMS::conv_string</a> (const char *string)</td></tr>
-<tr class="separator:aedae771561608a98dc74ca400ed3b7b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f3f79d3df1ce0ddad42fafcd48e3eb0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSEAMS.html#a2f3f79d3df1ce0ddad42fafcd48e3eb0">SEAMS::yyerror</a> (const char *s)</td></tr>
 <tr class="separator:a2f3f79d3df1ce0ddad42fafcd48e3eb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4a65b873df5c05570846b5413b41dfd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__scanner_8cc.html#ad4a65b873df5c05570846b5413b41dfd">if</a> (!(yy_init))</td></tr>
@@ -372,8 +366,8 @@ Variables</h2></td></tr>
 <tr class="separator:a087a9fd97ae4a0218a88b5e82ffb095c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a343f896e19aff0b084e69752ba9d4a71"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__scanner_8cc.html#a343f896e19aff0b084e69752ba9d4a71">if_state</a> [<a class="el" href="apr__scanner_8cc.html#a041574860a5965bb34cfcaff92e076ae">MAX_IF_NESTING</a>] = {0}</td></tr>
 <tr class="separator:a343f896e19aff0b084e69752ba9d4a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75cf27e21660baf40ab5393491cc1997"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__scanner_8cc.html#a75cf27e21660baf40ab5393491cc1997">if_case_run</a> [<a class="el" href="apr__scanner_8cc.html#a041574860a5965bb34cfcaff92e076ae">MAX_IF_NESTING</a>] = {false}</td></tr>
-<tr class="separator:a75cf27e21660baf40ab5393491cc1997"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd036cb542ca1fb4525bb885f94fb133"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__scanner_8cc.html#abd036cb542ca1fb4525bb885f94fb133">if_case_run</a> [<a class="el" href="apr__scanner_8cc.html#a041574860a5965bb34cfcaff92e076ae">MAX_IF_NESTING</a>] = {false}</td></tr>
+<tr class="separator:abd036cb542ca1fb4525bb885f94fb133"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac074a40c442373591bd7023cf4d8df0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__scanner_8cc.html#aac074a40c442373591bd7023cf4d8df0">if_lvl</a> = 0</td></tr>
 <tr class="separator:aac074a40c442373591bd7023cf4d8df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4dd60cbcb1cf6777c99c590898a7ac53"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="apr__scanner_8cc.html#a4dd60cbcb1cf6777c99c590898a7ac53">if_skip_level</a> = 0</td></tr>
@@ -1992,14 +1986,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a75cf27e21660baf40ab5393491cc1997"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a75cf27e21660baf40ab5393491cc1997">&#9670;&nbsp;</a></span>if_case_run</h2>
+<a id="abd036cb542ca1fb4525bb885f94fb133"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd036cb542ca1fb4525bb885f94fb133">&#9670;&nbsp;</a></span>if_case_run</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int if_case_run[<a class="el" href="apr__scanner_8cc.html#a041574860a5965bb34cfcaff92e076ae">MAX_IF_NESTING</a>] = {false}</td>
+          <td class="memname">bool if_case_run[<a class="el" href="apr__scanner_8cc.html#a041574860a5965bb34cfcaff92e076ae">MAX_IF_NESTING</a>] = {false}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2446,8 +2440,8 @@ Variables</h2></td></tr>
 <div class="ttc" id="aapr__scanner_8cc_html_aa093d500a6330d06d8e4760c494fac33"><div class="ttname"><a href="apr__scanner_8cc.html#aa093d500a6330d06d8e4760c494fac33">YY_CURRENT_BUFFER</a></div><div class="ttdeci">#define YY_CURRENT_BUFFER</div><div class="ttdef"><b>Definition:</b> apr_scanner.cc:320</div></div>
 <div class="ttc" id="aapr__scanner_8cc_html_a1516a44b66d8b9a552569a8cd010214f"><div class="ttname"><a href="apr__scanner_8cc.html#a1516a44b66d8b9a552569a8cd010214f">yyleng</a></div><div class="ttdeci">yy_size_t yyleng</div></div>
 <div class="ttc" id="aapr__scanner_8cc_html_a68792d73820bc46a71d3d4e613f0b977"><div class="ttname"><a href="apr__scanner_8cc.html#a68792d73820bc46a71d3d4e613f0b977">YY_MORE_ADJ</a></div><div class="ttdeci">#define YY_MORE_ADJ</div><div class="ttdef"><b>Definition:</b> apr_scanner.cc:968</div></div>
-<div class="ttc" id="aapr__scanner_8cc_html_a61b01b6b236b05090b972f8fd95da539"><div class="ttname"><a href="apr__scanner_8cc.html#a61b01b6b236b05090b972f8fd95da539">yy_cp</a></div><div class="ttdeci">char * yy_cp</div><div class="ttdef"><b>Definition:</b> apr_scanner.cc:1235</div></div>
-<div class="ttc" id="aapr__scanner_8cc_html_aa749693ef7d0c10b137e887638fdc5b2"><div class="ttname"><a href="apr__scanner_8cc.html#aa749693ef7d0c10b137e887638fdc5b2">yy_bp</a></div><div class="ttdeci">char * yy_bp</div><div class="ttdef"><b>Definition:</b> apr_scanner.cc:1235</div></div>
+<div class="ttc" id="aapr__scanner_8cc_html_a61b01b6b236b05090b972f8fd95da539"><div class="ttname"><a href="apr__scanner_8cc.html#a61b01b6b236b05090b972f8fd95da539">yy_cp</a></div><div class="ttdeci">char * yy_cp</div><div class="ttdef"><b>Definition:</b> apr_scanner.cc:1232</div></div>
+<div class="ttc" id="aapr__scanner_8cc_html_aa749693ef7d0c10b137e887638fdc5b2"><div class="ttname"><a href="apr__scanner_8cc.html#aa749693ef7d0c10b137e887638fdc5b2">yy_bp</a></div><div class="ttdeci">char * yy_bp</div><div class="ttdef"><b>Definition:</b> apr_scanner.cc:1232</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
