@@ -247,6 +247,8 @@ namespace Ioss {
       return true;
     }
 
+    static int term_width();
+
     static int log_power_2(uint64_t value);
 
     static char **get_name_array(size_t count, int size);

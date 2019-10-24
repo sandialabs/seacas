@@ -41,6 +41,7 @@ var classIoss_1_1Utils =
     [ "number_width", "classIoss_1_1Utils.html#a875232ab39ecaf79b1b668d28fb590d6", null ],
     [ "platform_information", "classIoss_1_1Utils.html#a9f148e3768f9322640e47ac8c0bc50c0", null ],
     [ "power_2", "classIoss_1_1Utils.html#a4f3b2d6a6ac736d341fee8db95c6fc4b", null ],
+    [ "term_width", "classIoss_1_1Utils.html#adda9e39aa8daad5a8d027708d53988a6", null ],
     [ "time_and_date", "classIoss_1_1Utils.html#acbd41c4c408240d7e09c7c30b3f4bb9d", null ],
     [ "timer", "classIoss_1_1Utils.html#a244105b001ec84b21566cf42a170269d", null ],
     [ "to_string", "classIoss_1_1Utils.html#a990b5cbc6a8633828fea90c8d0378441", null ],

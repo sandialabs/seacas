@@ -159,12 +159,12 @@ namespace {
   {
     local_data.resize(num_entity);
     if (comp_count == 1 && offset == 0) {
-      for (ssize_t j = 0; j < num_entity; j++) {
+      for (size_t j = 0; j < num_entity; j++) {
         local_data[j] = data[j];
       }
     }
     else {
-      for (ssize_t j = 0; j < num_entity; j++) {
+      for (size_t j = 0; j < num_entity; j++) {
         local_data[j] = data[offset];
         offset += comp_count;
       }
