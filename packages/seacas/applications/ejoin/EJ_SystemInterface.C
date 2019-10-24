@@ -120,8 +120,8 @@ void SystemInterface::enroll_options()
 
   options_.enroll(
       "block_prefix", GetLongOption::MandatoryValue,
-      "Prefix used on the input block names of second and subsequent meshes to make them"
-      " unique.  Default is 'p'.  Example: block1, p1_block1, p2_block1.",
+      "Prefix used on the input block names of second and subsequent meshes to make them\n"
+      "\t\tunique.  Default is 'p'.  Example: block1, p1_block1, p2_block1.",
       "p");
 
   options_.enroll("offset", GetLongOption::MandatoryValue,
