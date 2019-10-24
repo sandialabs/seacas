@@ -1,7 +1,6 @@
 path_classifiers:
   external:
     - "cmake"
-    - "packages/kokkos"
     - "packages/zoltan"
     - "packages/seacas/libraries/ioss/src/visualization"
   test:
