@@ -507,6 +507,19 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   else {
     throw std::runtime_error("\nERROR: (EPU) basename not specified\n");
   }
+
+  // Check that subcycle count does not match processor count --
+  // in that case the existing files will be overwritten.
+  if (processorCount_ <= subcycle_) {
+    if (myRank_ == 0) {
+      fmt::print(stderr,
+                 "\nERROR: (EPU) Invalid subcycle count specified: '{}'."
+                 "\n             Must be less than processor count '{}'.\n\n",
+                 subcycle_, processorCount_);
+    }
+    return false;
+  }
+
   return true;
 }
 
