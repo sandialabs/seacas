@@ -94,7 +94,7 @@ namespace {
 
 namespace {
   std::string codename;
-  std::string version = "$Revision$";
+  std::string version = "0.9";
 } // namespace
 
 int main(int argc, char *argv[])
