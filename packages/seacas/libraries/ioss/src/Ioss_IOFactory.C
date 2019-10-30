@@ -34,7 +34,8 @@
 #include <Ioss_IOFactory.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Utils.h> // for IOSS_ERROR
-#include <cstddef>      // for nullptr
+#include <Ioss_Version.h>
+#include <cstddef> // for nullptr
 #include <fmt/ostream.h>
 #include <map>     // for _Rb_tree_iterator, etc
 #include <ostream> // for basic_ostream, etc
@@ -136,9 +137,10 @@ int Ioss::IOFactory::describe(NameList *names)
 
 void Ioss::IOFactory::show_configuration()
 {
+  fmt::print(stderr, "\nIOSS Library Version '{}'\n\n", Ioss::Version());
   NameList db_types;
   describe(&db_types);
-  fmt::print(stderr, "\nSupported database types:\n\t");
+  fmt::print(stderr, "Supported database types:\n\t");
   for (const auto &db_type : db_types) {
     fmt::print(stderr, "{} ", db_type);
   }
