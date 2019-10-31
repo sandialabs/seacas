@@ -51,6 +51,24 @@ TEST_CASE("number_width", "[number_width]")
   }
 }
 
+TEST_CASE("str_equal", "[str_equal]")
+{
+  REQUIRE(Ioss::Utils::str_equal("", ""));
+  REQUIRE(!Ioss::Utils::str_equal("", "a"));
+  REQUIRE(!Ioss::Utils::str_equal("a", ""));
+  REQUIRE(Ioss::Utils::str_equal("a", "a"));
+  REQUIRE(Ioss::Utils::str_equal("A", "a"));
+  REQUIRE(Ioss::Utils::str_equal("a", "A"));
+
+  REQUIRE(Ioss::Utils::str_equal("longer_than_single_character", "longer_than_single_character"));
+  REQUIRE(Ioss::Utils::str_equal("longer_than_single_character", "LONGER_THAN_SINGLE_CHARACTER"));
+  REQUIRE(Ioss::Utils::str_equal("LONGER_THAN_SINGLE_CHARACTER", "longer_than_single_character"));
+  REQUIRE(Ioss::Utils::str_equal("LONGER_THAN_SINGLE_CHARACTER", "LONGER_THAN_SINGLE_CHARACTER"));
+  REQUIRE(Ioss::Utils::str_equal("LoNgEr_ThAn_SiNgLe_ChArAcTeR", "lOnGeR_tHaN_sInGlE_cHaRaCtEr"));
+
+  REQUIRE(!Ioss::Utils::str_equal("Almost_The_Same", "almost_the_sam"));
+}
+
 TEST_CASE("format_id_list", "[format_id_list]")
 {
   SECTION("ids_empty")

@@ -1164,18 +1164,11 @@ void Ioss::Utils::input_file(const std::string &file_name, std::vector<std::stri
   }
 }
 
-int Ioss::Utils::case_strcmp(const std::string &s1, const std::string &s2)
+bool Ioss::Utils::str_equal(const std::string &s1, const std::string &s2)
 {
-  const char *c1 = s1.c_str();
-  const char *c2 = s2.c_str();
-  for (;; c1++, c2++) {
-    if (std::tolower(*c1) != std::tolower(*c2)) {
-      return (std::tolower(*c1) - std::tolower(*c2));
-    }
-    if (*c1 == '\0') {
-      return 0;
-    }
-  }
+  return (s1.size() == s2.size()) &&
+         std::equal(s1.begin(), s1.end(), s2.begin(),
+                    [](char a, char b) { return std::tolower(a) == std::tolower(b); });
 }
 
 std::string Ioss::Utils::uppercase(std::string name)
