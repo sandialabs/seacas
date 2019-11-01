@@ -69,6 +69,23 @@ TEST_CASE("str_equal", "[str_equal]")
   REQUIRE(!Ioss::Utils::str_equal("Almost_The_Same", "almost_the_sam"));
 }
 
+TEST_CASE("substr_equal", "[substr_equal]")
+{
+  REQUIRE(Ioss::Utils::substr_equal("", ""));
+  REQUIRE(Ioss::Utils::substr_equal("", "a"));
+  REQUIRE(!Ioss::Utils::substr_equal("a", ""));
+  REQUIRE(Ioss::Utils::substr_equal("a", "a"));
+  REQUIRE(Ioss::Utils::substr_equal("A", "a"));
+  REQUIRE(Ioss::Utils::substr_equal("a", "A"));
+
+  REQUIRE(!Ioss::Utils::substr_equal("prefix", "pref"));
+  REQUIRE(Ioss::Utils::substr_equal("prefix", "PREFIX"));
+  REQUIRE(Ioss::Utils::substr_equal("pre", "PREFIX"));
+  REQUIRE(Ioss::Utils::substr_equal("pre", "prefix"));
+  REQUIRE(Ioss::Utils::substr_equal("PRe", "prefix"));
+  REQUIRE(Ioss::Utils::substr_equal("PRe", "PREFIX"));
+}
+
 TEST_CASE("format_id_list", "[format_id_list]")
 {
   SECTION("ids_empty")

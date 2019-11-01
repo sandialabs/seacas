@@ -444,7 +444,7 @@ std::string Ioss::Utils::fixup_type(const std::string &base, int nodes_per_eleme
     }
   }
 
-  if (std::strncmp(type.c_str(), "super", 5) == 0) {
+  if (Ioss::Utils::substr_equal("super", type)) {
     // A super element can have a varying number of nodes.  Create
     // an IO element type for this super element just so the IO
     // system can read a mesh containing super elements.  This
@@ -1169,6 +1169,11 @@ bool Ioss::Utils::str_equal(const std::string &s1, const std::string &s2)
   return (s1.size() == s2.size()) &&
          std::equal(s1.begin(), s1.end(), s2.begin(),
                     [](char a, char b) { return std::tolower(a) == std::tolower(b); });
+}
+
+bool Ioss::Utils::substr_equal(const std::string &prefix, const std::string &str)
+{
+  return (str.size() >= prefix.size()) && str_equal(prefix, str.substr(0, prefix.size()));
 }
 
 std::string Ioss::Utils::uppercase(std::string name)
@@ -2208,8 +2213,7 @@ namespace {
         max_field_size = field.get_size();
       }
       if (field_name != "ids" && !oge->field_exists(field_name) &&
-          (prefix.empty() ||
-           std::strncmp(prefix.c_str(), field_name.c_str(), prefix.length()) == 0)) {
+          Ioss::Utils::substr_equal(prefix, field_name)) {
         // If the field does not already exist, add it to the output node block
         oge->field_add(field);
       }
@@ -2243,8 +2247,7 @@ namespace {
       if (field_name == "ids") {
         continue;
       }
-      if ((prefix.empty() ||
-           std::strncmp(prefix.c_str(), field_name.c_str(), prefix.length()) == 0)) {
+      if (Ioss::Utils::substr_equal(prefix, field_name)) {
         assert(oge->field_exists(field_name));
         transfer_field_data_internal(ige, oge, pool, field_name, options);
       }

@@ -364,6 +364,14 @@ namespace Ioss {
      */
     static bool str_equal(const std::string &s1, const std::string &s2);
 
+    /** \brief Case-insensitive substring comparison.
+     *
+     *  \param[in] prefix
+     *  \param[in] str
+     *  \returns `true` if `str` begins with `prefix` or `prefix` is empty
+     */
+    static bool substr_equal(const std::string &prefix, const std::string &str);
+
     /** \brief Get a string containing `uname` output.
      *
      *  This output contains information about the current computing platform.
