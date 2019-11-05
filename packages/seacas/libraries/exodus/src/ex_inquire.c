@@ -340,6 +340,16 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     *ret_int = ldum;
     break;
 
+  case EX_INQ_ASSEMBLY:
+    /* returns the number of assemblies */
+    if (ex__get_dimension(exoid, DIM_NUM_ASSEMBLY, "assemblies", &ldum, &dimid, NULL) != NC_NOERR) {
+      *ret_int = 0;
+    }
+    else {
+      *ret_int = ldum;
+    }
+    break;
+
   case EX_INQ_NODES:
     /* returns the number of nodes */
     if (ex__get_dimension(exoid, DIM_NUM_NODES, "nodes", &ldum, &dimid, NULL) != NC_NOERR) {

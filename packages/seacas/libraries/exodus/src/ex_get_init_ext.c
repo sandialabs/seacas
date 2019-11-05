@@ -121,6 +121,10 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
   if (ex_get_dim_value(exoid, "nodes", DIM_NUM_NODES, dimid, &info->num_nodes) != EX_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
+  if (ex_get_dim_value(exoid, "assemblies", DIM_NUM_ASSEMBLY, dimid, &info->num_assembly) !=
+      EX_NOERR) {
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
   if (ex_get_dim_value(exoid, "edges", DIM_NUM_EDGE, dimid, &info->num_edge) != EX_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
