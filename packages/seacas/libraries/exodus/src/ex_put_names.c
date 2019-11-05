@@ -74,6 +74,9 @@ int ex_put_names(int exoid, ex_entity_type obj_type, char *names[])
   ex__check_valid_file_id(exoid, __func__);
 
   switch (obj_type) {
+  /*  ======== ASSEMBLY ========= */
+  case EX_ASSEMBLY: vname = VAR_NAME_ASSEMBLY; break;
+
   /*  ======== BLOCKS ========= */
   case EX_EDGE_BLOCK: vname = VAR_NAME_ED_BLK; break;
   case EX_FACE_BLOCK: vname = VAR_NAME_FA_BLK; break;

@@ -58,6 +58,7 @@ struct ex__obj_stats *exoII_em  = 0;
 struct ex__obj_stats *exoII_edm = 0;
 struct ex__obj_stats *exoII_fam = 0;
 struct ex__obj_stats *exoII_nm  = 0;
+struct ex__obj_stats *exoII_ass = 0;
 
 /*****************************************************************************
  *
@@ -517,6 +518,7 @@ char *ex_name_of_object(ex_entity_type obj_type)
 {
   /* Thread-safe and reentrant */
   switch (obj_type) {
+  case EX_ASSEMBLY: return "assembly";
   case EX_COORDINATE: /* kluge so some wrapper functions work */ return "coordinate";
   case EX_NODAL: return "nodal";
   case EX_EDGE_BLOCK: return "edge block";
@@ -587,6 +589,7 @@ char *ex__dim_num_objects(ex_entity_type obj_type)
 {
   switch (obj_type) {
   case EX_NODAL: return DIM_NUM_NODES;
+  case EX_ASSEMBLY: return DIM_NUM_ASSEMBLY;
   case EX_ELEM_BLOCK: return DIM_NUM_EL_BLK;
   case EX_EDGE_BLOCK: return DIM_NUM_ED_BLK;
   case EX_FACE_BLOCK: return DIM_NUM_FA_BLK;
@@ -636,6 +639,7 @@ char *ex__dim_num_entries_in_object(ex_entity_type obj_type, int idx)
 char *ex__name_var_of_object(ex_entity_type obj_type, int i, int j)
 {
   switch (obj_type) {
+  case EX_ASSEMBLY: return VAR_ASSEMBLY_VAR(i, j);
   case EX_EDGE_BLOCK: return VAR_EDGE_VAR(i, j);
   case EX_FACE_BLOCK: return VAR_FACE_VAR(i, j);
   case EX_ELEM_BLOCK: return VAR_ELEM_VAR(i, j);
@@ -704,6 +708,12 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   switch (id_type) {
   case EX_NODAL: return (0);
   case EX_GLOBAL: return (0);
+  case EX_ASSEMBLY:
+    id_table   = VAR_ID_ASSEMBLY;   /* id array name */
+    id_dim     = DIM_NUM_ASSEMBLY;  /* id array dimension name*/
+    stat_table = VAR_STAT_ASSEMBLY; /* id status array name */
+    tmp_stats  = ex__get_stat_ptr(exoid, &exoII_ass);
+    break;
   case EX_ELEM_BLOCK:
     id_table   = VAR_ID_EL_BLK;   /* id array name */
     id_dim     = DIM_NUM_EL_BLK;  /* id array dimension name*/
@@ -1047,11 +1057,12 @@ static struct ex__list_item *ed_ctr_list = 0; /* edge blocks */
 static struct ex__list_item *fa_ctr_list = 0; /* face blocks */
 static struct ex__list_item *eb_ctr_list = 0; /* element blocks */
 /* structures to hold number of sets of that type for each file id */
-static struct ex__list_item *ns_ctr_list  = 0; /* node sets */
-static struct ex__list_item *es_ctr_list  = 0; /* edge sets */
-static struct ex__list_item *fs_ctr_list  = 0; /* face sets */
-static struct ex__list_item *ss_ctr_list  = 0; /* side sets */
-static struct ex__list_item *els_ctr_list = 0; /* element sets */
+static struct ex__list_item *ns_ctr_list   = 0; /* node sets */
+static struct ex__list_item *es_ctr_list   = 0; /* edge sets */
+static struct ex__list_item *fs_ctr_list   = 0; /* face sets */
+static struct ex__list_item *ss_ctr_list   = 0; /* side sets */
+static struct ex__list_item *els_ctr_list  = 0; /* element sets */
+static struct ex__list_item *assm_ctr_list = 0; /* assemblies */
 /* structures to hold number of maps of that type for each file id */
 static struct ex__list_item *nm_ctr_list  = 0; /* node maps */
 static struct ex__list_item *edm_ctr_list = 0; /* edge maps */
@@ -1067,6 +1078,7 @@ struct ex__list_item **ex__get_counter_list(ex_entity_type obj_type)
   /* Thread-safe, but is dealing with globals */
   /* Only called from a routine which will be using locks */
   switch (obj_type) {
+  case EX_ASSEMBLY: return &assm_ctr_list;
   case EX_ELEM_BLOCK: return &eb_ctr_list;
   case EX_NODE_SET: return &ns_ctr_list;
   case EX_SIDE_SET: return &ss_ctr_list;
@@ -1255,6 +1267,7 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
     case EX_FACE_SET: var_name = VAR_FS_PROP(cntr + 1); break;
     case EX_SIDE_SET: var_name = VAR_SS_PROP(cntr + 1); break;
     case EX_ELEM_SET: var_name = VAR_ELS_PROP(cntr + 1); break;
+    case EX_ASSEMBLY: var_name = VAR_ASSEMBLY_PROP(cntr + 1); break;
     case EX_ELEM_MAP: var_name = VAR_EM_PROP(cntr + 1); break;
     case EX_FACE_MAP: var_name = VAR_FAM_PROP(cntr + 1); break;
     case EX_EDGE_MAP: var_name = VAR_EDM_PROP(cntr + 1); break;

@@ -54,6 +54,7 @@ int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
   ex__check_valid_file_id(exoid, __func__);
 
   switch (obj_type) {
+  case EX_ASSEMBLY: varidobj = VAR_ID_ASSEMBLY; break;
   case EX_EDGE_BLOCK: varidobj = VAR_ID_ED_BLK; break;
   case EX_FACE_BLOCK: varidobj = VAR_ID_FA_BLK; break;
   case EX_ELEM_BLOCK: varidobj = VAR_ID_EL_BLK; break;
