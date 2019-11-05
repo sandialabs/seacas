@@ -355,7 +355,7 @@ typedef struct ex_assembly
   int64_t        id;
   char *         name;
   ex_entity_type type; /* EX_ELEM_BLOCK or EX_ASSEMBLY */
-  int64_t        entity_count;
+  int            entity_count;
   void_int *     entity_list;
 } ex_assembly;
 
@@ -864,10 +864,10 @@ EXODUS_EXPORT int ex_get_attr_names(int exoid, ex_entity_type obj_type, ex_entit
                                     char **names);
 
 EXODUS_EXPORT int ex_put_assembly(int exoid, const struct ex_assembly assembly);
-EXODUS_EXPORT int ex_get_assembly(int exoid, ex_entity_id id, struct ex_assembly *assembly);
+EXODUS_EXPORT int ex_get_assembly(int exoid, struct ex_assembly *assembly);
 
 EXODUS_EXPORT int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembly);
-EXODUS_EXPORT int ex_get_assemblies(int exoid, size_t count, struct ex_assembly **assembly);
+EXODUS_EXPORT int ex_get_assemblies(int exoid, struct ex_assembly *assembly);
 
 /*  Write Node Edge Face or Side Set Parameters */
 EXODUS_EXPORT int ex_put_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,

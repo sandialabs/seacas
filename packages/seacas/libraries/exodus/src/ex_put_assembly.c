@@ -126,8 +126,8 @@ int ex_put_assembly(int exoid, const struct ex_assembly assembly)
       if ((status = nc_def_dim(exoid, numentryptr, assembly.entity_count, &dimid)) != NC_NOERR) {
         if (status == NC_ENAMEINUSE) {
           snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: assembly %" PRId64 " -- size already defined in file id %d",
-                   assembly.id, exoid);
+                   "ERROR: assembly %" PRId64 " -- size already defined in file id %d", assembly.id,
+                   exoid);
           ex_err_fn(exoid, __func__, errmsg, status);
         }
         else {
