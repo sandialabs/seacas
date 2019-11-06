@@ -869,6 +869,14 @@ EXODUS_EXPORT int ex_get_assembly(int exoid, struct ex_assembly *assembly);
 EXODUS_EXPORT int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembly);
 EXODUS_EXPORT int ex_get_assemblies(int exoid, struct ex_assembly *assembly);
 
+/*  Write arbitrary integer, double, or text attributes on an entity */
+EXODUS_EXPORT int ex_put_double_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id,
+                                          const char *atr_name, int num_values, double *values);
+EXODUS_EXPORT int ex_put_integer_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id,
+                                           const char *atr_name, int num_values, void_int *values);
+EXODUS_EXPORT int ex_put_text_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id,
+                                        const char *atr_name, const char *value);
+
 /*  Write Node Edge Face or Side Set Parameters */
 EXODUS_EXPORT int ex_put_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
                                    int64_t num_entries_in_set, int64_t num_dist_fact_in_set);

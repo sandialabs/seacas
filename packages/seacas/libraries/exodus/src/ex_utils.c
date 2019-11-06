@@ -604,8 +604,8 @@ char *ex__dim_num_objects(ex_entity_type obj_type)
   case EX_NODE_MAP: return DIM_NUM_NM;
   default: {
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: object type %d not supported in call to ex__dim_num_objects", obj_type);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
+             __func__);
     ex_err(__func__, errmsg, EX_BADPARAM);
     return (NULL);
   }
@@ -628,7 +628,13 @@ char *ex__dim_num_entries_in_object(ex_entity_type obj_type, int idx)
   case EX_FACE_SET: return DIM_NUM_FACE_FS(idx);
   case EX_SIDE_SET: return DIM_NUM_SIDE_SS(idx);
   case EX_ELEM_SET: return DIM_NUM_ELE_ELS(idx);
-  default: return NULL;
+  default: {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
+             __func__);
+    ex_err(__func__, errmsg, EX_BADPARAM);
+    return NULL;
+  }
   }
 }
 
@@ -648,7 +654,13 @@ char *ex__name_var_of_object(ex_entity_type obj_type, int i, int j)
   case EX_FACE_SET: return VAR_FS_VAR(i, j);
   case EX_SIDE_SET: return VAR_SS_VAR(i, j);
   case EX_ELEM_SET: return VAR_ELS_VAR(i, j);
-  default: return NULL;
+  default: {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
+             __func__);
+    ex_err(__func__, errmsg, EX_BADPARAM);
+    return (NULL);
+  }
   }
 }
 

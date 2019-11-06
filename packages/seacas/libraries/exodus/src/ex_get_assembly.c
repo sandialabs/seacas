@@ -134,7 +134,7 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
   }
 
   if (assembly->entity_list != NULL) {
-    if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
+    if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
       status = nc_get_var_longlong(exoid, entlst_id, assembly->entity_list);
     }
     else {

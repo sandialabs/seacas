@@ -66,7 +66,7 @@
 int main(int argc, char **argv)
 {
   int exoid, num_dim, num_nodes, num_elem, num_elem_blk;
-  int num_node_sets, num_side_sets;
+  int num_node_sets, num_side_sets, num_assembly;
   int error;
   int CPU_word_size, IO_word_size;
 
@@ -99,6 +99,7 @@ int main(int argc, char **argv)
     num_elem_blk  = 7;
     num_node_sets = 2;
     num_side_sets = 5;
+    num_assembly  = 4;
 
     ex_copy_string(par.title, title, MAX_LINE_LENGTH + 1);
     par.num_dim       = num_dim;
@@ -118,7 +119,7 @@ int main(int argc, char **argv)
     par.num_edge_maps = 0;
     par.num_face_maps = 0;
     par.num_elem_maps = 0;
-    par.num_assembly  = 4;
+    par.num_assembly  = num_assembly;
 
     error = ex_put_init_ext(exoid, &par);
     printf("after ex_put_init_ext, error = %d\n", error);
@@ -164,14 +165,6 @@ int main(int argc, char **argv)
   blocks[5].num_entry = 1;
   blocks[6].num_entry = 1;
 
-  blocks[0].num_attribute = 1;
-  blocks[1].num_attribute = 1;
-  blocks[2].num_attribute = 1;
-  blocks[3].num_attribute = 1;
-  blocks[4].num_attribute = 1;
-  blocks[5].num_attribute = 1;
-  blocks[6].num_attribute = 1;
-
   blocks[0].num_nodes_per_entry = 4; /* elements in block #1 are 4-node quads  */
   blocks[1].num_nodes_per_entry = 4; /* elements in block #2 are 4-node quads  */
   blocks[2].num_nodes_per_entry = 8; /* elements in block #3 are 8-node hexes  */
@@ -207,12 +200,13 @@ int main(int argc, char **argv)
     exit(-1);
   }
 
-  char *names[] = {"Root", "Child1", "Child2", "Child3"};
+  int   assembly_ids[] = {100, 200, 300, 400};
+  char *names[]        = {"Root", "Child1", "Child2", "Child3"};
   ex_put_names(exoid, EX_ASSEMBLY, names);
 
   int         list_100[] = {100, 200, 300, 400};
   ex_assembly assembly;
-  assembly.id           = 100;
+  assembly.id           = assembly_ids[0];
   assembly.name         = "RootName";
   assembly.type         = EX_ASSEMBLY;
   assembly.entity_count = 4;
@@ -224,7 +218,7 @@ int main(int argc, char **argv)
   ex_put_assembly(exoid, assembly);
 
   int list_200[]        = {10, 11, 12, 13};
-  assembly.id           = 200;
+  assembly.id           = assembly_ids[1];
   assembly.name         = "ChildName_2";
   assembly.type         = EX_ELEM_BLOCK;
   assembly.entity_count = 4;
@@ -233,7 +227,7 @@ int main(int argc, char **argv)
   ex_put_assembly(exoid, assembly);
 
   int list_300[]        = {14, 15, 16};
-  assembly.id           = 300;
+  assembly.id           = assembly_ids[2];
   assembly.name         = "ChildName_3";
   assembly.type         = EX_ELEM_BLOCK;
   assembly.entity_count = 3;
@@ -242,7 +236,7 @@ int main(int argc, char **argv)
   ex_put_assembly(exoid, assembly);
 
   int list_400[]        = {10, 16};
-  assembly.id           = 400;
+  assembly.id           = assembly_ids[3];
   assembly.name         = "ChildName_4";
   assembly.type         = EX_ELEM_BLOCK;
   assembly.entity_count = 2;
@@ -252,6 +246,75 @@ int main(int argc, char **argv)
 
   assembly.entity_list = list_400;
   ex_put_assembly(exoid, assembly);
+
+  /* Add some arbitrary attributes to the assemblies */
+  {
+    double scale     = 1.5;
+    double offset[]  = {1.1, 2.2, 3.3};
+    char * dimension = "length";
+    int    units[]   = {1, 0, 0, -1};
+
+    ex_put_double_attribute(exoid, EX_ASSEMBLY, 100, "Scale", 1, &scale);
+    ex_put_double_attribute(exoid, EX_ASSEMBLY, 200, "Offset", 3, offset);
+    ex_put_text_attribute(exoid, EX_ASSEMBLY, 300, "Dimension", dimension);
+    ex_put_integer_attribute(exoid, EX_ASSEMBLY, 400, "Units", 4, units);
+
+    /* Make sure this works for non-assemblies also... */
+    ex_put_integer_attribute(exoid, EX_ELEM_BLOCK, 11, "Units", 4, units);
+  }
+
+  error = ex_put_variable_param(exoid, EX_ASSEMBLY, 4);
+  printf("after ex_put_variable_param, error = %d\n", error);
+  if (error) {
+    ex_close(exoid);
+    exit(-1);
+  }
+
+  {
+    char *var_names[4];
+    var_names[0] = "Momentum_X";
+    var_names[1] = "Momentum_Y";
+    var_names[2] = "Momentum_Z";
+    var_names[3] = "Kinetic_Energy";
+
+    error = ex_put_variable_names(exoid, EX_ASSEMBLY, 4, var_names);
+    printf("after ex_put_variable_names, error = %d\n", error);
+    if (error) {
+      ex_close(exoid);
+      exit(-1);
+    }
+  }
+
+#if 0
+  { /* Output time steps ... */
+    float *var_vals = (float *)calloc(4, CPU_word_size);
+    for (int i = 0; i < 10; i++) {
+      float time_val = (float)(i+1) / 100.0f;
+
+      error = ex_put_time(exoid, i+1, &time_val);
+      printf("after ex_put_time, error = %d\n", error);
+      if (error) {
+	ex_close(exoid);
+	exit(-1);
+      }
+
+      /* write assembly variables */
+      for (int k = 0; k < num_assembly; k++) {
+	for (int j = 0; j < 4; j++) {
+	  var_vals[j] = (float)(j + 2) * time_val + k;
+	  error = ex_put_var(exoid, i+1, EX_ASSEMBLY, j, assembly_ids[k], 1, var_vals);
+	  printf("after ex_put_var, error = %d\n", error);
+	  if (error) {
+	    ex_close(exoid);
+	    exit(-1);
+	  }
+	}
+      }
+
+    }
+    
+  }
+#endif
 
   /* close the EXODUS files
    */
