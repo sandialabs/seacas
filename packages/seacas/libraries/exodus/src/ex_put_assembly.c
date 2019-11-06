@@ -141,7 +141,7 @@ int ex_put_assembly(int exoid, const struct ex_assembly assembly)
       }
 
       int_type = NC_INT;
-      if (ex_int64_status(exoid) & EX_BULK_INT64_DB) {
+      if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
         int_type = NC_INT64;
       }
 

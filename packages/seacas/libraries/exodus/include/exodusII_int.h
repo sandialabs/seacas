@@ -287,9 +287,8 @@ EXODUS_EXPORT int indent;
 #define VAR_ID_FA_BLK "fa_prop1"            /**< face    block ids props   */
 #define DIM_NUM_ENTRY_ASSEMBLY(num) ex__catstr("num_entity_assembly", num)
 #define VAR_ENTRY_ASSEMBLY(num) ex__catstr("assembly_entity", num)
-#define ASSEMBLY_TYPE "contains"
-#define ASSEMBLY_ID "id"
-#define ASSEMBLY_NAME "name"
+#define ASSEMBLY_TYPE "_contains"
+#define ASSEMBLY_NAME "_name"
 
 /*! element type names for each element block      */
 #define ATT_NAME_ELB "elem_type"
@@ -447,25 +446,26 @@ EXODUS_EXPORT int indent;
 #define VAR_FACT_NS(num) ex__catstr("dist_fact_ns", num)
 /*! list of the numth property for all node sets       */
 #define VAR_NS_PROP(num) ex__catstr("ns_prop", num)
-#define DIM_NUM_QA "num_qa_rec"         /**< number of QA records           */
-#define VAR_QA_TITLE "qa_records"       /**< QA records                */
-#define DIM_NUM_INFO "num_info"         /**< number of information records  */
-#define VAR_INFO "info_records"         /**< information records       */
-#define VAR_WHOLE_TIME "time_whole"     /**< simulation times for whole time steps */
-#define VAR_ELEM_TAB "elem_var_tab"     /**< element variable truth table */
-#define VAR_EBLK_TAB "edge_var_tab"     /**< edge variable truth table */
-#define VAR_FBLK_TAB "face_var_tab"     /**< face variable truth table */
-#define VAR_ELSET_TAB "elset_var_tab"   /**< elemset variable truth table */
-#define VAR_SSET_TAB "sset_var_tab"     /**< sideset variable truth table */
-#define VAR_FSET_TAB "fset_var_tab"     /**< faceset variable truth table */
-#define VAR_ESET_TAB "eset_var_tab"     /**< edgeset variable truth table */
-#define VAR_NSET_TAB "nset_var_tab"     /**< nodeset variable truth table */
-#define DIM_NUM_GLO_VAR "num_glo_var"   /**< number of global variables */
-#define VAR_NAME_GLO_VAR "name_glo_var" /**< names of global variables */
-#define VAR_GLO_VAR "vals_glo_var"      /**< values of global variables*/
-#define DIM_NUM_NOD_VAR "num_nod_var"   /**< number of nodal variables      */
-#define VAR_NAME_NOD_VAR "name_nod_var" /**< names of nodal variables  */
-#define VAR_NOD_VAR "vals_nod_var"      /**< values of nodal variables \deprecated */
+#define DIM_NUM_QA "num_qa_rec"             /**< number of QA records           */
+#define VAR_QA_TITLE "qa_records"           /**< QA records                */
+#define DIM_NUM_INFO "num_info"             /**< number of information records  */
+#define VAR_INFO "info_records"             /**< information records       */
+#define VAR_WHOLE_TIME "time_whole"         /**< simulation times for whole time steps */
+#define VAR_ASSEMBLY_TAB "assembly_var_tab" /**< element variable truth table */
+#define VAR_ELEM_TAB "elem_var_tab"         /**< element variable truth table */
+#define VAR_EBLK_TAB "edge_var_tab"         /**< edge variable truth table */
+#define VAR_FBLK_TAB "face_var_tab"         /**< face variable truth table */
+#define VAR_ELSET_TAB "elset_var_tab"       /**< elemset variable truth table */
+#define VAR_SSET_TAB "sset_var_tab"         /**< sideset variable truth table */
+#define VAR_FSET_TAB "fset_var_tab"         /**< faceset variable truth table */
+#define VAR_ESET_TAB "eset_var_tab"         /**< edgeset variable truth table */
+#define VAR_NSET_TAB "nset_var_tab"         /**< nodeset variable truth table */
+#define DIM_NUM_GLO_VAR "num_glo_var"       /**< number of global variables */
+#define VAR_NAME_GLO_VAR "name_glo_var"     /**< names of global variables */
+#define VAR_GLO_VAR "vals_glo_var"          /**< values of global variables*/
+#define DIM_NUM_NOD_VAR "num_nod_var"       /**< number of nodal variables      */
+#define VAR_NAME_NOD_VAR "name_nod_var"     /**< names of nodal variables  */
+#define VAR_NOD_VAR "vals_nod_var"          /**< values of nodal variables \deprecated */
 /*! values of nodal variables */
 #define VAR_NOD_VAR_NEW(num) ex__catstr("vals_nod_var", num)
 /*! Assemblies */
