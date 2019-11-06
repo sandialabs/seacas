@@ -198,6 +198,7 @@ int main(int argc, char **argv)
     printf("\nafter ex_get_names(EX_ASSEMBLY), error = %3d\n", error);
 
     ex_assembly assemblies[10];
+    int         entity[10];
     for (i = 0; i < num_assembly; i++) {
       ex_get_name(exoid, EX_ASSEMBLY, assembly_ids[i], name);
       if (strcmp(name, assembly_names[i]) != 0) {
@@ -209,12 +210,16 @@ int main(int argc, char **argv)
       /* Clear out name to make sure still getting same name */
       assemblies[i].name[0] = '\0';
 
-      assemblies[i].entity_list = NULL;
+      assemblies[i].entity_list = &entity;
       error                     = ex_get_assembly(exoid, &assemblies[i]);
       printf("\nafter ex_get_assembly, id=%d, error = %3d\n", assembly_ids[i], error);
-      printf("Assembly named '%s' has id %lld. It contains %d entities of type '%s'\n",
+      printf("Assembly named '%s' has id %lld. It contains %d entities of type '%s'\n\t",
              assemblies[i].name, assemblies[i].id, assemblies[i].entity_count,
              ex_name_of_object(assemblies[i].type));
+      for (int j = 0; j < assemblies[i].entity_count; j++) {
+        printf("%d, ", entity[j]);
+      }
+      printf("\n");
     }
 
     ex_assembly assmbly[10];
