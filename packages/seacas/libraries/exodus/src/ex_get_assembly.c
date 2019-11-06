@@ -132,5 +132,21 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
     ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
+
+  if (assembly->entity_list != NULL) {
+    if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
+      status = nc_get_var_longlong(exoid, entlst_id, assembly->entity_list);
+    }
+    else {
+      status = nc_get_var_int(exoid, entlst_id, assembly->entity_list);
+    }
+    if (status != EX_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to read entity list for assembly %" PRId64 " in file id %d",
+               assembly->id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+  }
   EX_FUNC_LEAVE(EX_NOERR);
 }
