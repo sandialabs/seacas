@@ -298,6 +298,10 @@ typedef enum ex_options ex_options;
  * constants that are used as netcdf dimensions must be of type long
  * @{
  */
+
+/** Maximum length of name permitted by NetCDF */
+#define EX_MAX_NAME NC_MAX_NAME
+
 /** Maximum length of QA record, element type name */
 #define MAX_STR_LENGTH 32L
 /** Default maximum length of an entity name, attribute name, variable name.
@@ -349,6 +353,20 @@ typedef struct ex_init_params
   int64_t num_elem_maps;
   int64_t num_assembly;
 } ex_init_params;
+
+enum ex_type { EX_INTEGER = NC_INT, EX_DOUBLE = NC_DOUBLE, EX_CHAR = NC_CHAR };
+
+typedef enum ex_type ex_type;
+
+typedef struct ex_attribute
+{
+  ex_entity_type entity_type;
+  int64_t        entity_id;
+  char           name[NC_MAX_NAME];
+  ex_type        type; /* int, double, text */
+  size_t         value_count;
+  void *         values; /* not accessed if NULL */
+} ex_attribute;
 
 typedef struct ex_assembly
 {
@@ -870,12 +888,24 @@ EXODUS_EXPORT int ex_put_assemblies(int exoid, size_t count, const struct ex_ass
 EXODUS_EXPORT int ex_get_assemblies(int exoid, struct ex_assembly *assembly);
 
 /*  Write arbitrary integer, double, or text attributes on an entity */
+EXODUS_EXPORT int ex_put_attribute(int exoid, ex_attribute attributes);
+EXODUS_EXPORT int ex_put_attributes(int exoid, size_t attr_count, ex_attribute *attributes);
+
 EXODUS_EXPORT int ex_put_double_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id,
                                           const char *atr_name, int num_values, double *values);
 EXODUS_EXPORT int ex_put_integer_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id,
                                            const char *atr_name, int num_values, void_int *values);
 EXODUS_EXPORT int ex_put_text_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id,
                                         const char *atr_name, const char *value);
+
+/*  Read attribute values on an entity */
+EXODUS_EXPORT int ex_get_attribute(int exoid, ex_attribute *attributes);
+EXODUS_EXPORT int ex_get_attributes(int exoid, size_t count, ex_attribute **attributes);
+
+/* Query attributes on an entity */
+EXODUS_EXPORT int ex_get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity_id id);
+EXODUS_EXPORT int ex_get_attribute_param(int exoid, ex_entity_type obj_type, ex_entity_id id,
+                                         ex_attribute *attributes);
 
 /*  Write Node Edge Face or Side Set Parameters */
 EXODUS_EXPORT int ex_put_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
