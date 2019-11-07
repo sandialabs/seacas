@@ -58,7 +58,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/* #include "drmd.h" */
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+#define EXCHECK(funcall)                                                                           \
+  do {                                                                                             \
+    error = (funcall);                                                                             \
+    printf("after %s, error = %d\n", TOSTRING(funcall), error);                                    \
+    if (error != EX_NOERR) {                                                                       \
+      fprintf(stderr, "Error calling %s\n", TOSTRING(funcall));                                    \
+      ex_close(exoid);                                                                             \
+      exit(-1);                                                                                    \
+    }                                                                                              \
+  } while (0)
 
 int main(int argc, char **argv)
 {
@@ -110,9 +123,7 @@ int main(int argc, char **argv)
   /* read database parameters */
   {
     ex_init_params par;
-    error = ex_get_init_ext(exoid, &par);
-
-    printf("after ex_get_init, error = %3d\n", error);
+    EXCHECK(ex_get_init_ext(exoid, &par));
 
     printf("database parameters:\n");
     printf("title =  '%s'\n", par.title);
@@ -135,8 +146,7 @@ int main(int argc, char **argv)
     num_assembly  = par.num_assembly;
 
     /* Check that ex_inquire gives same title */
-    error = ex_inquire(exoid, EX_INQ_TITLE, &idum, &fdum, title_chk);
-    printf("after ex_inquire, error = %d\n", error);
+    EXCHECK(ex_inquire(exoid, EX_INQ_TITLE, &idum, &fdum, title_chk));
     if (strcmp(par.title, title_chk) != 0) {
       printf("error in ex_inquire for EX_INQ_TITLE %s, vs %s\n", par.title, title_chk);
     }
@@ -149,25 +159,21 @@ int main(int argc, char **argv)
     num_nodes_per_elem = (int *)calloc(num_elem_blk, sizeof(int));
     num_attr           = (int *)calloc(num_elem_blk, sizeof(int));
 
-    error = ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
-    printf("\nafter ex_get_elem_blk_ids, error = %3d\n", error);
+    EXCHECK(ex_get_ids(exoid, EX_ELEM_BLOCK, ids));
 
     for (i = 0; i < num_elem_blk; i++) {
       block_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    error = ex_get_names(exoid, EX_ELEM_BLOCK, block_names);
-    printf("\nafter ex_get_names, error = %3d\n", error);
+    EXCHECK(ex_get_names(exoid, EX_ELEM_BLOCK, block_names));
 
     for (i = 0; i < num_elem_blk; i++) {
-      ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
+      EXCHECK(ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name));
       if (strcmp(name, block_names[i]) != 0) {
         printf("error in ex_get_name for block id %d\n", ids[i]);
       }
-      error = ex_get_block(exoid, EX_ELEM_BLOCK, ids[i], elem_type, &(num_elem_in_block[i]),
-                           &(num_nodes_per_elem[i]), 0, 0, &(num_attr[i]));
-      printf("\nafter ex_get_elem_block, error = %d\n", error);
-
+      EXCHECK(ex_get_block(exoid, EX_ELEM_BLOCK, ids[i], elem_type, &(num_elem_in_block[i]),
+                           &(num_nodes_per_elem[i]), 0, 0, &(num_attr[i])));
       printf("element block id = %2d\n", ids[i]);
       printf("element type = '%s'\n", elem_type);
       printf("num_elem_in_block = %2d\n", num_elem_in_block[i]);
@@ -191,16 +197,13 @@ int main(int argc, char **argv)
       assembly_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    error = ex_get_ids(exoid, EX_ASSEMBLY, assembly_ids);
-    printf("\nafter ex_get_ids(EX_ASSEMBLY), error = %3d\n", error);
-
-    error = ex_get_names(exoid, EX_ASSEMBLY, assembly_names);
-    printf("\nafter ex_get_names(EX_ASSEMBLY), error = %3d\n", error);
+    EXCHECK(ex_get_ids(exoid, EX_ASSEMBLY, assembly_ids));
+    EXCHECK(ex_get_names(exoid, EX_ASSEMBLY, assembly_names));
 
     ex_assembly assemblies[10];
     int         entity[10];
     for (i = 0; i < num_assembly; i++) {
-      ex_get_name(exoid, EX_ASSEMBLY, assembly_ids[i], name);
+      EXCHECK(ex_get_name(exoid, EX_ASSEMBLY, assembly_ids[i], name));
       if (strcmp(name, assembly_names[i]) != 0) {
         printf("error in ex_get_name for assembly id %d\n", assembly_ids[i]);
       }
@@ -211,8 +214,7 @@ int main(int argc, char **argv)
       assemblies[i].name[0] = '\0';
 
       assemblies[i].entity_list = &entity;
-      error                     = ex_get_assembly(exoid, &assemblies[i]);
-      printf("\nafter ex_get_assembly, id=%d, error = %3d\n", assembly_ids[i], error);
+      EXCHECK(ex_get_assembly(exoid, &assemblies[i]));
       printf("Assembly named '%s' has id %lld. It contains %d entities of type '%s'\n\t",
              assemblies[i].name, assemblies[i].id, assemblies[i].entity_count,
              ex_name_of_object(assemblies[i].type));
@@ -230,8 +232,7 @@ int main(int argc, char **argv)
       assmbly[i].name[0]     = '\0';
       assmbly[i].entity_list = NULL;
     }
-    error = ex_get_assemblies(exoid, assmbly);
-    printf("\nafter ex_get_assemblies, error = %3d\n", error);
+    EXCHECK(ex_get_assemblies(exoid, assmbly));
     for (i = 0; i < num_assembly; i++) {
       printf("Assembly named '%s' has id %lld. It contains %d entities of type '%s'\n",
              assmbly[i].name, assmbly[i].id, assmbly[i].entity_count,
@@ -239,7 +240,6 @@ int main(int argc, char **argv)
     }
   }
   /*  free(block_names[i]); */
-  error = ex_close(exoid);
-  printf("\nafter ex_close, error = %3d\n", error);
+  EXCHECK(ex_close(exoid));
   return 0;
 }
