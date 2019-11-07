@@ -257,6 +257,7 @@ int main(int argc, char **argv)
 
     /* Make sure this works for non-assemblies also... */
     EXCHECK(ex_put_integer_attribute(exoid, EX_ELEM_BLOCK, 11, "Units", 4, units));
+    EXCHECK(ex_put_text_attribute(exoid, EX_GLOBAL, 0, "ACIS", "STEP-X-43-1547836-Rev 0"));
   }
 
   EXCHECK(ex_put_variable_param(exoid, EX_ASSEMBLY, 4));

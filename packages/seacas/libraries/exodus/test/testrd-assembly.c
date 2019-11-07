@@ -238,7 +238,34 @@ int main(int argc, char **argv)
              assmbly[i].name, assmbly[i].id, assmbly[i].entity_count,
              ex_name_of_object(assmbly[i].type));
     }
+
+    /* Read attributes... */
+    ex_attribute attr[10];
+
+    for (i = 0; i < num_assembly; i++) {
+      int att_count = ex_get_attribute_count(exoid, EX_ASSEMBLY, assmbly[i].id);
+      printf("Assembly named '%s' with id %lld. It contains %d attributes:\n", assmbly[i].name,
+             assmbly[i].id, att_count);
+      for (int j = 0; j < att_count; j++) {
+        ex_get_attribute_param(exoid, EX_ASSEMBLY, assmbly[i].id, &attr[j]);
+        printf("\tName: '%s', Type = %d, Value Count = %d\n", attr[j].name, attr[j].type,
+               attr[j].value_count);
+      }
+      printf("\n");
+    }
   }
+
+  { /* Global attributes (includes exodus-internal attributes) */
+    ex_attribute attr[10];
+    int          att_count = ex_get_attribute_count(exoid, EX_GLOBAL, 0);
+    printf("GLOBAL contains %d attributes:\n", att_count);
+    for (int j = 0; j < att_count; j++) {
+      ex_get_attribute_param(exoid, EX_GLOBAL, 0, &attr);
+      printf("\tName: '%s', Type = %d, Value Count = %d\n", attr[j].name, attr[j].type,
+             attr[j].value_count);
+    }
+  }
+
   /*  free(block_names[i]); */
   EXCHECK(ex_close(exoid));
   return 0;

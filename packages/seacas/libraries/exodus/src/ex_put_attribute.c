@@ -54,7 +54,7 @@
    attributes which are currently supported in Exodus.
 */
 
-int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
+static int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
 {
   const char *entryptr = NULL;
   char        errmsg[MAX_ERR_LENGTH];
@@ -64,6 +64,10 @@ int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
   int varid  = 0;
 
   ex__check_valid_file_id(exoid, __func__);
+
+  if (obj_type == EX_GLOBAL) {
+    EX_FUNC_LEAVE(NC_GLOBAL);
+  }
 
   /* First, locate index of this objects id `obj_type` id array */
   id_ndx = ex__id_lkup(exoid, obj_type, id);
@@ -114,9 +118,11 @@ int ex_put_double_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id,
 {
   int  status;
   char errmsg[MAX_ERR_LENGTH];
+  int  varid;
+
   EX_FUNC_ENTER();
-  int varid = ex__get_varid(exoid, obj_type, id);
-  if (varid <= 0) {
+  varid = ex__get_varid(exoid, obj_type, id);
+  if (varid <= 0 && obj_type != EX_GLOBAL) {
     /* Error message handled in ex__get_varid */
     EX_FUNC_LEAVE(varid);
   }
@@ -131,7 +137,7 @@ int ex_put_double_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id,
   if ((status = nc_put_att_double(exoid, varid, atr_name, NC_DOUBLE, num_values, values)) !=
       NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to store double attribute %s on %s with id %lld in file id %d",
+             "ERROR: failed to store double attribute %s on %s with id %" PRId64 " in file id %d",
              atr_name, ex_name_of_object(obj_type), id, exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
     goto error_ret;
@@ -156,10 +162,11 @@ int ex_put_integer_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id
 {
   int  status;
   char errmsg[MAX_ERR_LENGTH];
+  int  varid;
 
   EX_FUNC_ENTER();
-  int varid = ex__get_varid(exoid, obj_type, id);
-  if (varid <= 0) {
+  varid = ex__get_varid(exoid, obj_type, id);
+  if (varid <= 0 && obj_type != EX_GLOBAL) {
     /* Error message handled in ex__get_varid */
     EX_FUNC_LEAVE(varid);
   }
@@ -180,7 +187,7 @@ int ex_put_integer_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id
 
   if (status != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to store integer attribute %s on %s with id %lld in file id %d",
+             "ERROR: failed to store integer attribute %s on %s with id %" PRId64 " in file id %d",
              atr_name, ex_name_of_object(obj_type), id, exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
     goto error_ret;
@@ -205,10 +212,12 @@ int ex_put_text_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id, c
 {
   int  status;
   char errmsg[MAX_ERR_LENGTH];
+  int  varid;
 
   EX_FUNC_ENTER();
-  int varid = ex__get_varid(exoid, obj_type, id);
-  if (varid <= 0) {
+
+  varid = ex__get_varid(exoid, obj_type, id);
+  if (varid <= 0 && obj_type != EX_GLOBAL) {
     /* Error message handled in ex__get_varid */
     EX_FUNC_LEAVE(varid);
   }
@@ -222,8 +231,8 @@ int ex_put_text_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id, c
 
   if ((status = nc_put_att_text(exoid, varid, atr_name, strlen(value) + 1, value)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to store text attribute %s on %s with id %lld in file id %d", atr_name,
-             ex_name_of_object(obj_type), id, exoid);
+             "ERROR: failed to store text attribute %s on %s with id %" PRId64 " in file id %d",
+             atr_name, ex_name_of_object(obj_type), id, exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
     goto error_ret;
   }
@@ -239,4 +248,41 @@ int ex_put_text_attribute(int exoid, ex_entity_type obj_type, ex_entity_id id, c
 error_ret:
   ex__leavedef(exoid, __func__);
   EX_FUNC_LEAVE(EX_FATAL);
+}
+
+int ex_put_attribute(int exoid, ex_attribute attribute)
+{
+  char errmsg[MAX_ERR_LENGTH];
+
+  switch (attribute.type) {
+  case EX_INTEGER:
+    return ex_put_integer_attribute(exoid, attribute.entity_type, attribute.entity_id,
+                                    attribute.name, attribute.value_count, attribute.values);
+  case EX_DOUBLE:
+    return ex_put_double_attribute(exoid, attribute.entity_type, attribute.entity_id,
+                                   attribute.name, attribute.value_count, attribute.values);
+  case EX_CHAR:
+    return ex_put_text_attribute(exoid, attribute.entity_type, attribute.entity_id, attribute.name,
+                                 attribute.values);
+  default:
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: Unrecognized attribute type %d for attribute %s on %s with id %" PRId64
+             " in file id %d",
+             attribute.type, attribute.name, ex_name_of_object(attribute.entity_type),
+             attribute.entity_id, exoid);
+    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    return EX_FATAL;
+  }
+}
+
+/*! Define and output the specified attributes. */
+int ex_put_attributes(int exoid, size_t attr_count, ex_attribute *attr)
+{
+  for (size_t i = 0; i < attr_count; i++) {
+    int status = ex_put_attribute(exoid, attr[i]);
+    if (status != EX_NOERR) {
+      return status;
+    }
+  }
+  return EX_NOERR;
 }
