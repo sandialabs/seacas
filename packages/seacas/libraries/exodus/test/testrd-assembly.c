@@ -243,13 +243,34 @@ int main(int argc, char **argv)
     ex_attribute attr[10];
 
     for (i = 0; i < num_assembly; i++) {
+      memset(attr, 0, sizeof(ex_attribute) * 10);
       int att_count = ex_get_attribute_count(exoid, EX_ASSEMBLY, assmbly[i].id);
       printf("Assembly named '%s' with id %lld. It contains %d attributes:\n", assmbly[i].name,
              assmbly[i].id, att_count);
+
+      ex_get_attribute_param(exoid, EX_ASSEMBLY, assmbly[i].id, attr);
+      ex_get_attributes(exoid, att_count, attr);
+
       for (int j = 0; j < att_count; j++) {
-        ex_get_attribute_param(exoid, EX_ASSEMBLY, assmbly[i].id, &attr[j]);
-        printf("\tName: '%s', Type = %d, Value Count = %d\n", attr[j].name, attr[j].type,
-               attr[j].value_count);
+        printf("\tName: '%s', Type = %d, Value Count = %d\n\t", attr[j].name, attr[j].type,
+               (int)attr[j].value_count);
+        for (int k = 0; k < attr[j].value_count; k++) {
+          if (attr[j].type == EX_INTEGER) {
+            int *vals = attr[j].values;
+            printf("\t%d", vals[k]);
+          }
+          else if (attr[j].type == EX_DOUBLE) {
+            double *vals = attr[j].values;
+            printf("\t%g", vals[k]);
+          }
+          else if (attr[j].type == EX_CHAR) {
+            char *vals = attr[j].values;
+            printf("\t%c", vals[k]);
+          }
+        }
+        printf("\n");
+        free(attr[j].values);
+        attr[j].values = NULL;
       }
       printf("\n");
     }
@@ -260,9 +281,9 @@ int main(int argc, char **argv)
     int          att_count = ex_get_attribute_count(exoid, EX_GLOBAL, 0);
     printf("GLOBAL contains %d attributes:\n", att_count);
     for (int j = 0; j < att_count; j++) {
-      ex_get_attribute_param(exoid, EX_GLOBAL, 0, &attr);
+      ex_get_attribute_param(exoid, EX_GLOBAL, 0, attr);
       printf("\tName: '%s', Type = %d, Value Count = %d\n", attr[j].name, attr[j].type,
-             attr[j].value_count);
+             (int)attr[j].value_count);
     }
   }
 

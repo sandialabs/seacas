@@ -84,8 +84,8 @@ int main(int argc, char **argv)
   int CPU_word_size, IO_word_size;
 
   char *          title = "This is a test";
-  char *          block_names[7];
-  struct ex_block blocks[7];
+  char *          block_names[10];
+  struct ex_block blocks[10];
 
   ex_opts(EX_VERBOSE);
 
@@ -103,6 +103,7 @@ int main(int argc, char **argv)
   printf("after ex_create for test.exo, exoid = %d\n", exoid);
   printf(" cpu word size: %d io word size: %d\n", CPU_word_size, IO_word_size);
 
+  ex_set_option(exoid, EX_OPT_ENABLE_FEATURE, EX_ENABLE_ASSEMBLY);
   /* initialize file with parameters */
   {
     ex_init_params par;
@@ -138,7 +139,7 @@ int main(int argc, char **argv)
   }
 
   /* write element block parameters */
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < num_elem_blk; i++) {
     blocks[i].type                = EX_ELEM_BLOCK;
     blocks[i].id                  = 0;
     blocks[i].num_entry           = 0;
@@ -200,48 +201,35 @@ int main(int argc, char **argv)
 
   EXCHECK(ex_put_names(exoid, EX_ASSEMBLY, names));
 
-  int         list_100[] = {100, 200, 300, 400};
-  ex_assembly assembly;
-  assembly.id           = assembly_ids[0];
-  assembly.name         = "RootName";
-  assembly.type         = EX_ASSEMBLY;
-  assembly.entity_count = 4;
-  assembly.entity_list  = NULL;
+  {
+    int         list_100[] = {100, 200, 300, 400};
+    ex_assembly assembly   = {assembly_ids[0], "RootName", EX_ASSEMBLY, 4, NULL};
+    EXCHECK(ex_put_assembly(exoid, assembly));
 
-  EXCHECK(ex_put_assembly(exoid, assembly));
+    assembly.entity_list = list_100;
+    EXCHECK(ex_put_assembly(exoid, assembly));
+  }
 
-  assembly.entity_list = list_100;
-  EXCHECK(ex_put_assembly(exoid, assembly));
+  {
+    int         list_200[] = {10, 11, 12, 13};
+    ex_assembly assembly   = {assembly_ids[1], "ChildName_2", EX_ELEM_BLOCK, 4, list_200};
+    EXCHECK(ex_put_assembly(exoid, assembly));
+  }
 
-  int list_200[]        = {10, 11, 12, 13};
-  assembly.id           = assembly_ids[1];
-  assembly.name         = "ChildName_2";
-  assembly.type         = EX_ELEM_BLOCK;
-  assembly.entity_count = 4;
-  assembly.entity_list  = list_200;
+  {
+    int         list_300[] = {14, 15, 16};
+    ex_assembly assembly   = {assembly_ids[2], "ChildName_3", EX_ELEM_BLOCK, 3, list_300};
+    EXCHECK(ex_put_assembly(exoid, assembly));
+  }
 
-  EXCHECK(ex_put_assembly(exoid, assembly));
+  {
+    int         list_400[] = {10, 16};
+    ex_assembly assembly   = {assembly_ids[3], "ChildName_4", EX_ELEM_BLOCK, 2, NULL};
+    EXCHECK(ex_put_assembly(exoid, assembly));
 
-  int list_300[]        = {14, 15, 16};
-  assembly.id           = assembly_ids[2];
-  assembly.name         = "ChildName_3";
-  assembly.type         = EX_ELEM_BLOCK;
-  assembly.entity_count = 3;
-  assembly.entity_list  = list_300;
-
-  EXCHECK(ex_put_assembly(exoid, assembly));
-
-  int list_400[]        = {10, 16};
-  assembly.id           = assembly_ids[3];
-  assembly.name         = "ChildName_4";
-  assembly.type         = EX_ELEM_BLOCK;
-  assembly.entity_count = 2;
-  assembly.entity_list  = NULL;
-
-  EXCHECK(ex_put_assembly(exoid, assembly));
-
-  assembly.entity_list = list_400;
-  EXCHECK(ex_put_assembly(exoid, assembly));
+    assembly.entity_list = list_400;
+    EXCHECK(ex_put_assembly(exoid, assembly));
+  }
 
   /* Add some arbitrary attributes to the assemblies */
   {
@@ -255,6 +243,17 @@ int main(int argc, char **argv)
     EXCHECK(ex_put_text_attribute(exoid, EX_ASSEMBLY, 300, "Dimension", dimension));
     EXCHECK(ex_put_integer_attribute(exoid, EX_ASSEMBLY, 400, "Units", 4, units));
 
+    ex_attribute attribute = {.entity_type = EX_ASSEMBLY,
+                              .entity_id   = 100,
+                              .name        = {"Units"},
+                              .type        = EX_INTEGER,
+                              .value_count = 4,
+                              .values      = units};
+    EXCHECK(ex_put_attribute(exoid, attribute));
+
+    ex_attribute attr_offset = {EX_ASSEMBLY, 300, "Offset", EX_DOUBLE, 3, offset};
+    EXCHECK(ex_put_attribute(exoid, attr_offset));
+
     /* Make sure this works for non-assemblies also... */
     EXCHECK(ex_put_integer_attribute(exoid, EX_ELEM_BLOCK, 11, "Units", 4, units));
     EXCHECK(ex_put_text_attribute(exoid, EX_GLOBAL, 0, "ACIS", "STEP-X-43-1547836-Rev 0"));
@@ -263,12 +262,7 @@ int main(int argc, char **argv)
   EXCHECK(ex_put_variable_param(exoid, EX_ASSEMBLY, 4));
 
   {
-    char *var_names[4];
-    var_names[0] = "Momentum_X";
-    var_names[1] = "Momentum_Y";
-    var_names[2] = "Momentum_Z";
-    var_names[3] = "Kinetic_Energy";
-
+    char *var_names[4] = {"Momentum_X", "Momentum_Y", "Momentum_Z", "Kinetic_Energy"};
     EXCHECK(ex_put_variable_names(exoid, EX_ASSEMBLY, 4, var_names));
   }
 

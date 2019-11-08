@@ -244,6 +244,7 @@ int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
   new_file->has_edges             = 1;
   new_file->has_faces             = 1;
   new_file->has_elems             = 1;
+  new_file->enable_assembly       = 0;
 
   new_file->next = file_list;
   file_list      = new_file;
@@ -446,6 +447,11 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
     ex_set_int64_status(exoid, option_value);
     break;
   case EX_OPT_INTEGER_SIZE_DB: /* (query only) */ break;
+  case EX_OPT_ENABLE_FEATURE:
+    if (option_value & EX_ENABLE_ASSEMBLY) {
+      file->enable_assembly = 1;
+    }
+    break;
   default: {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid option %d for ex_set_option().", (int)option);
