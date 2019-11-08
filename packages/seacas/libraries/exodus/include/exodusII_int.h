@@ -638,13 +638,14 @@ struct ex__file_item
   unsigned int shuffle : 1;               /**< 1 true, 0 false */
   unsigned int
                         file_type : 2; /**< 0 - classic, 1 -- 64 bit classic, 2 --NetCDF4,  3 --NetCDF4 classic */
-  unsigned int          is_parallel : 1; /**< 1 true, 0 false */
-  unsigned int          is_hdf5 : 1;     /**< 1 true, 0 false */
-  unsigned int          is_pnetcdf : 1;  /**< 1 true, 0 false */
-  unsigned int          has_nodes : 1;   /**< for input only at this time */
-  unsigned int          has_edges : 1;   /**< for input only at this time */
-  unsigned int          has_faces : 1;   /**< for input only at this time */
-  unsigned int          has_elems : 1;   /**< for input only at this time */
+  unsigned int          is_parallel : 1;     /**< 1 true, 0 false */
+  unsigned int          is_hdf5 : 1;         /**< 1 true, 0 false */
+  unsigned int          is_pnetcdf : 1;      /**< 1 true, 0 false */
+  unsigned int          has_nodes : 1;       /**< for input only at this time */
+  unsigned int          has_edges : 1;       /**< for input only at this time */
+  unsigned int          has_faces : 1;       /**< for input only at this time */
+  unsigned int          has_elems : 1;       /**< for input only at this time */
+  unsigned int          enable_assembly : 1; /**< client enables assembly feature */
   struct ex__file_item *next;
 };
 

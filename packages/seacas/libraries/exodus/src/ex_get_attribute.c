@@ -281,6 +281,30 @@ int ex_get_attribute(int exoid, ex_attribute *attr)
     EX_FUNC_LEAVE(varid);
   }
 
+  /* If attr->values is NULL, then this routine should allocate memory
+     (which needs to be freed by the client.
+   */
+  if (attr->values == NULL) {
+    if (attr->type == EX_INTEGER) {
+      attr->values = calloc(attr->value_count, sizeof(int));
+    }
+    else if (attr->type == EX_DOUBLE) {
+      attr->values = calloc(attr->value_count, sizeof(double));
+    }
+    else if (attr->type == EX_CHAR) {
+      attr->values = calloc(attr->value_count, sizeof(char));
+    }
+    if (attr->values == NULL) {
+      snprintf(
+          errmsg, MAX_ERR_LENGTH,
+          "ERROR: failed allocate memory to store values for attribute %s on %s with id %" PRId64
+          " in file id %d",
+          attr->name, ex_name_of_object(attr->entity_type), attr->entity_id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+  }
+
   if ((status = nc_get_att(exoid, varid, attr->name, attr->values)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to read attribute %s on %s with id %" PRId64 " in file id %d",
@@ -293,10 +317,10 @@ int ex_get_attribute(int exoid, ex_attribute *attr)
 }
 
 /*! Get the values for all of the specified attributes. */
-int ex_get_attributes(int exoid, size_t attr_count, ex_attribute **attr)
+int ex_get_attributes(int exoid, size_t attr_count, ex_attribute *attr)
 {
   for (size_t i = 0; i < attr_count; i++) {
-    int status = ex_get_attribute(exoid, attr[i]);
+    int status = ex_get_attribute(exoid, &(attr[i]));
     if (status != EX_NOERR) {
       return status;
     }

@@ -245,10 +245,34 @@ enum ex_option_type {
   EX_OPT_COMPRESSION_LEVEL,   /**<  In the range [0..9]. A value of 0 indicates no compression */
   EX_OPT_COMPRESSION_SHUFFLE, /**<  1 if enabled, 0 if disabled */
   EX_OPT_INTEGER_SIZE_API, /**<  4 or 8 indicating byte size of integers used in api functions. */
-  EX_OPT_INTEGER_SIZE_DB /**<  Query only, returns 4 or 8 indicating byte size of integers stored on
-                            the database. */
+  EX_OPT_INTEGER_SIZE_DB,  /**<  Query only, returns 4 or 8 indicating byte size of integers stored
+                             on  the database. */
+  EX_OPT_ENABLE_FEATURE    /**< On database creation, enable the use of the specified features.
+                                Value is `ex_feature_type` or'd together. */
 };
 typedef enum ex_option_type ex_option_type;
+
+/*! Values for use in ex_set_option() type EX_OPT_ENABLE_FEATURE
+
+    When a new feature is added, it can at times add a new member to an
+    existing struct.  If all values in a struct are not zeroed before
+    use, then when an older client uses the struct, the new struct
+    member may not be set or initialized and use of that member by the
+    library may result in an unintended garbage value.  To reduce the
+    chances of this happening, all features that are added will need
+    to be enabled by a call to ex_option_type() with the argument
+    EX_OPT_ENABLE_FEATURE and the value one or more of the
+    ex_feature_type members or'd together.
+
+    For example, to enable the `assembly` feature, the client would call:
+    ```
+    ex_set_option(exoid, EX_OPT_ENABLE_FEATURE, EX_ASSEMBLY);
+    ```
+*/
+
+enum ex_feature_type { EX_ENABLE_ASSEMBLY = 1 };
+typedef enum ex_feature_type ex_feature_type;
+
 /** @}*/
 
 enum ex_entity_type {
@@ -900,7 +924,7 @@ EXODUS_EXPORT int ex_put_text_attribute(int exoid, ex_entity_type obj_type, ex_e
 
 /*  Read attribute values on an entity */
 EXODUS_EXPORT int ex_get_attribute(int exoid, ex_attribute *attributes);
-EXODUS_EXPORT int ex_get_attributes(int exoid, size_t count, ex_attribute **attributes);
+EXODUS_EXPORT int ex_get_attributes(int exoid, size_t count, ex_attribute *attributes);
 
 /* Query attributes on an entity */
 EXODUS_EXPORT int ex_get_attribute_count(int exoid, ex_entity_type obj_type, ex_entity_id id);
