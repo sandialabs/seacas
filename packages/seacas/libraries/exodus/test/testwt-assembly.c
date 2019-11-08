@@ -106,7 +106,6 @@ int main(int argc, char **argv)
   ex_set_option(exoid, EX_OPT_ENABLE_FEATURE, EX_ENABLE_ASSEMBLY);
   /* initialize file with parameters */
   {
-    ex_init_params par;
     num_dim       = 3;
     num_nodes     = 33;
     num_elem      = 7;
@@ -115,38 +114,22 @@ int main(int argc, char **argv)
     num_side_sets = 5;
     num_assembly  = 4;
 
-    ex_copy_string(par.title, title, MAX_LINE_LENGTH + 1);
-    par.num_dim       = num_dim;
-    par.num_nodes     = num_nodes;
-    par.num_edge      = 0;
-    par.num_edge_blk  = 0;
-    par.num_face      = 5;
-    par.num_face_blk  = 1;
-    par.num_elem      = num_elem;
-    par.num_elem_blk  = num_elem_blk;
-    par.num_node_sets = num_node_sets;
-    par.num_edge_sets = 0;
-    par.num_face_sets = 0;
-    par.num_side_sets = 0;
-    par.num_elem_sets = 0;
-    par.num_node_maps = 0;
-    par.num_edge_maps = 0;
-    par.num_face_maps = 0;
-    par.num_elem_maps = 0;
-    par.num_assembly  = num_assembly;
+    ex_init_params par = {.num_dim       = num_dim,
+                          .num_nodes     = num_nodes,
+                          .num_face      = 5,
+                          .num_face_blk  = 1,
+                          .num_elem      = num_elem,
+                          .num_elem_blk  = num_elem_blk,
+                          .num_node_sets = num_node_sets,
+                          .num_assembly  = num_assembly};
 
+    ex_copy_string(par.title, title, MAX_LINE_LENGTH + 1);
     EXCHECK(ex_put_init_ext(exoid, &par));
   }
 
   /* write element block parameters */
   for (int i = 0; i < num_elem_blk; i++) {
-    blocks[i].type                = EX_ELEM_BLOCK;
-    blocks[i].id                  = 0;
-    blocks[i].num_entry           = 0;
-    blocks[i].num_nodes_per_entry = 0;
-    blocks[i].num_edges_per_entry = 0;
-    blocks[i].num_faces_per_entry = 0;
-    blocks[i].num_attribute       = 0;
+    blocks[i] = (ex_block){.type = EX_ELEM_BLOCK, .num_entry = 1, .id = i + 10};
   }
 
   block_names[0] = "block_1";
@@ -165,14 +148,6 @@ int main(int argc, char **argv)
   ex_copy_string(blocks[5].topology, "tetra", MAX_STR_LENGTH + 1);
   ex_copy_string(blocks[6].topology, "tri", MAX_STR_LENGTH + 1);
 
-  blocks[0].num_entry = 1;
-  blocks[1].num_entry = 1;
-  blocks[2].num_entry = 1;
-  blocks[3].num_entry = 1;
-  blocks[4].num_entry = 1;
-  blocks[5].num_entry = 1;
-  blocks[6].num_entry = 1;
-
   blocks[0].num_nodes_per_entry = 4; /* elements in block #1 are 4-node quads  */
   blocks[1].num_nodes_per_entry = 4; /* elements in block #2 are 4-node quads  */
   blocks[2].num_nodes_per_entry = 8; /* elements in block #3 are 8-node hexes  */
@@ -180,14 +155,6 @@ int main(int argc, char **argv)
   blocks[4].num_nodes_per_entry = 6; /* elements in block #5 are 6-node wedges */
   blocks[5].num_nodes_per_entry = 8; /* elements in block #6 are 8-node tetras */
   blocks[6].num_nodes_per_entry = 3; /* elements in block #7 are 3-node tris   */
-
-  blocks[0].id = 10;
-  blocks[1].id = 11;
-  blocks[2].id = 12;
-  blocks[3].id = 13;
-  blocks[4].id = 14;
-  blocks[5].id = 15;
-  blocks[6].id = 16;
 
   EXCHECK(ex_put_block_params(exoid, num_elem_blk, blocks));
 
