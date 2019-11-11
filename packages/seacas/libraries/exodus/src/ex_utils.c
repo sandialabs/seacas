@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2019 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -654,6 +654,32 @@ char *ex__name_var_of_object(ex_entity_type obj_type, int i, int j)
   case EX_FACE_SET: return VAR_FS_VAR(i, j);
   case EX_SIDE_SET: return VAR_SS_VAR(i, j);
   case EX_ELEM_SET: return VAR_ELS_VAR(i, j);
+  default: {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
+             __func__);
+    ex_err(__func__, errmsg, EX_BADPARAM);
+    return (NULL);
+  }
+  }
+}
+
+/*!
+  \internal
+  \undoc
+*/
+char *ex__name_red_var_of_object(ex_entity_type obj_type, int id)
+{
+  switch (obj_type) {
+  case EX_ASSEMBLY: return VAR_ASSEMBLY_RED_VAR(id);
+  case EX_EDGE_BLOCK: return VAR_EDGE_RED_VAR(id);
+  case EX_FACE_BLOCK: return VAR_FACE_RED_VAR(id);
+  case EX_ELEM_BLOCK: return VAR_ELEM_RED_VAR(id);
+  case EX_NODE_SET: return VAR_NS_RED_VAR(id);
+  case EX_EDGE_SET: return VAR_ES_RED_VAR(id);
+  case EX_FACE_SET: return VAR_FS_RED_VAR(id);
+  case EX_SIDE_SET: return VAR_SS_RED_VAR(id);
+  case EX_ELEM_SET: return VAR_ELS_RED_VAR(id);
   default: {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,

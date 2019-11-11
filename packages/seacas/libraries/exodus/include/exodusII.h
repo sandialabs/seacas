@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2019 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -580,6 +580,14 @@ EXODUS_EXPORT int ex_get_variable_name(int exoid, ex_entity_type obj_type, int v
 
 EXODUS_EXPORT int ex_get_variable_param(int exoid, ex_entity_type obj_type, int *num_vars);
 
+EXODUS_EXPORT int ex_get_reduction_variable_names(int exoid, ex_entity_type obj_type, int num_vars,
+                                                  char *var_names[]);
+EXODUS_EXPORT int ex_get_reduction_variable_name(int exoid, ex_entity_type obj_type, int var_num,
+                                                 char *var_name);
+
+EXODUS_EXPORT int ex_get_reduction_variable_param(int exoid, ex_entity_type obj_type,
+                                                  int *num_vars);
+
 EXODUS_EXPORT int ex_get_object_truth_vector(int exoid, ex_entity_type obj_type,
                                              ex_entity_id entity_id, int num_var, int *var_vec);
 
@@ -602,6 +610,14 @@ EXODUS_EXPORT int ex_put_variable_names(int exoid, ex_entity_type obj_type, int 
 
 EXODUS_EXPORT int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars);
 
+EXODUS_EXPORT int ex_put_reduction_variable_name(int exoid, ex_entity_type obj_type, int var_num,
+                                                 const char *var_name);
+
+EXODUS_EXPORT int ex_put_reduction_variable_names(int exoid, ex_entity_type obj_type, int num_vars,
+                                                  char *var_names[]);
+
+EXODUS_EXPORT int ex_put_reduction_variable_param(int exoid, ex_entity_type obj_type, int num_vars);
+
 EXODUS_EXPORT int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_var,
                                      int *var_tab);
 
@@ -618,6 +634,11 @@ EXODUS_EXPORT int ex_put_partial_var(int exoid, int time_step, ex_entity_type va
                                      int var_index, ex_entity_id obj_id, int64_t start_index,
                                      int64_t num_entities, const void *var_vals);
 
+/*  Write Edge Face or Element Reduction Variable Values on Blocks or Sets at a Time Step */
+EXODUS_EXPORT int ex_put_reduction_vars(int exoid, int time_step, ex_entity_type obj_type,
+                                        ex_entity_id obj_id, int64_t num_variables,
+                                        const void *var_vals);
+
 /*  Read Edge Face or Element Variable Values Defined On Blocks or Sets at a Time Step */
 EXODUS_EXPORT int ex_get_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
                              ex_entity_id obj_id, int64_t num_entry_this_obj, void *var_vals);
@@ -625,6 +646,10 @@ EXODUS_EXPORT int ex_get_var(int exoid, int time_step, ex_entity_type var_type, 
 EXODUS_EXPORT int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type,
                                      int var_index, ex_entity_id obj_id, int64_t start_index,
                                      int64_t num_entities, void *var_vals);
+
+/*  Read Edge Face or Element Reduction Variable Values Defined On Blocks or Sets at a Time Step */
+EXODUS_EXPORT int ex_get_reduction_vars(int exoid, int time_step, ex_entity_type obj_type,
+                                        ex_entity_id obj_id, int64_t num_variables, void *var_vals);
 
 /*  Read Edge Face or Element Variable Values Defined On Blocks or Sets Through Time */
 EXODUS_EXPORT int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t id,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2019 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -468,7 +468,7 @@ EXODUS_EXPORT int indent;
 #define VAR_NOD_VAR "vals_nod_var"          /**< values of nodal variables \deprecated */
 /*! values of nodal variables */
 #define VAR_NOD_VAR_NEW(num) ex__catstr("vals_nod_var", num)
-/*! Assemblies */
+
 #define DIM_NUM_ASSEMBLY_VAR "num_assembly_var"   /**< number of assembly variables    */
 #define VAR_NAME_ASSEMBLY_VAR "name_assembly_var" /**< names of assembly variables*/
 #define VAR_ASSEMBLY_VAR(num1, num2) ex__catstr2("vals_assembly_var", num1, "assembly", num2)
@@ -506,6 +506,55 @@ EXODUS_EXPORT int indent;
 #define VAR_NAME_ELSET_VAR "name_elset_var" /**< names of elemset variables*/
 /*! values of elemset variable num1 in elemset num2    */
 #define VAR_ELS_VAR(num1, num2) ex__catstr2("vals_elset_var", num1, "es", num2)
+
+/**
+ * \defgroup ReductionVariables Variables controlling storage of reduction variables
+ *@{
+ */
+#define DIM_NUM_ASSEMBLY_RED_VAR "num_assembly_red_var"   /**< number of assembly variables    */
+#define VAR_NAME_ASSEMBLY_RED_VAR "name_assembly_red_var" /**< names of assembly variables*/
+#define VAR_ASSEMBLY_RED_VAR(num) ex__catstr("vals_red_var_assembly", num)
+
+#define DIM_NUM_ELE_RED_VAR "num_elem_red_var"   /**< number of element variables    */
+#define VAR_NAME_ELE_RED_VAR "name_elem_red_var" /**< names of element variables*/
+/*! values of element variable num in element block num                    */
+#define VAR_ELEM_RED_VAR(num) ex__catstr("vals_red_var_eb", num)
+
+#define DIM_NUM_EDG_RED_VAR "num_edge_red_var"   /**< number of edge variables       */
+#define VAR_NAME_EDG_RED_VAR "name_edge_red_var" /**< names of edge variables   */
+/*! values of edge variable num in edge block num */
+#define VAR_EDGE_RED_VAR(num) ex__catstr("vals_red_var_edb", num)
+
+#define DIM_NUM_FAC_RED_VAR "num_face_red_var"   /**< number of face variables       */
+#define VAR_NAME_FAC_RED_VAR "name_face_red_var" /**< names of face variables   */
+/*! values of face variable num in face block num */
+#define VAR_FACE_RED_VAR(num) ex__catstr("vals_red_var_fb", num)
+
+#define DIM_NUM_NSET_RED_VAR "num_nset_red_var"   /**< number of nodeset variables    */
+#define VAR_NAME_NSET_RED_VAR "name_nset_red_var" /**< names of nodeset variables*/
+/*! values of nodeset variable num in nodeset num    */
+#define VAR_NS_RED_VAR(num) ex__catstr("vals_red_var_nset", num)
+
+#define DIM_NUM_ESET_RED_VAR "num_eset_red_var" /**< number of edgeset variables    */
+/*! values of edgeset variable num in edgeset num    */
+#define VAR_NAME_ESET_RED_VAR "name_eset_red_var" /**< names of edgeset variables*/
+#define VAR_ES_RED_VAR(num) ex__catstr("vals_red_var_eset", num)
+
+#define DIM_NUM_FSET_RED_VAR "num_fset_red_var"   /**< number of faceset variables    */
+#define VAR_NAME_FSET_RED_VAR "name_fset_red_var" /**< names of faceset variables*/
+/*! values of faceset variable num in faceset num    */
+#define VAR_FS_RED_VAR(num) ex__catstr("vals_red_var_fset", num)
+
+#define DIM_NUM_SSET_RED_VAR "num_sset_red_var"   /**< number of sideset variables    */
+#define VAR_NAME_SSET_RED_VAR "name_sset_red_var" /**< names of sideset variables*/
+/*! values of sideset variable num in sideset num    */
+#define VAR_SS_RED_VAR(num) ex__catstr("vals_red_var_sset", num)
+
+#define DIM_NUM_ELSET_RED_VAR "num_elset_red_var"   /**< number of element set variables*/
+#define VAR_NAME_ELSET_RED_VAR "name_elset_red_var" /**< names of elemset variables*/
+/*! values of elemset variable num in elemset num    */
+#define VAR_ELS_RED_VAR(num) ex__catstr("vals_red_var_elset", num)
+/** @}*/
 
 /*! general dimension of length MAX_STR_LENGTH used for some string lengths   */
 #define DIM_STR "len_string"
@@ -697,6 +746,7 @@ char *ex__catstr2(const char * /*string1*/, int /*num1*/, const char * /*string2
 char *ex__dim_num_entries_in_object(ex_entity_type /*obj_type*/, int /*idx*/);
 char *ex__dim_num_objects(ex_entity_type obj_type);
 char *ex__name_var_of_object(ex_entity_type /*obj_type*/, int /*i*/, int /*j*/);
+char *ex__name_red_var_of_object(ex_entity_type /*obj_type*/, int /*indx*/);
 char *ex__name_of_map(ex_entity_type /*map_type*/, int /*map_index*/);
 
 int  ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
