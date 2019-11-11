@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2019 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -83,9 +83,7 @@ int main(int argc, char **argv)
   int error;
   int CPU_word_size, IO_word_size;
 
-  char *          title = "This is a test";
-  char *          block_names[10];
-  struct ex_block blocks[10];
+  char *title = "This is a test";
 
   ex_opts(EX_VERBOSE);
 
@@ -116,11 +114,10 @@ int main(int argc, char **argv)
 
     ex_init_params par = {.num_dim       = num_dim,
                           .num_nodes     = num_nodes,
-                          .num_face      = 5,
-                          .num_face_blk  = 1,
                           .num_elem      = num_elem,
                           .num_elem_blk  = num_elem_blk,
                           .num_node_sets = num_node_sets,
+                          .num_side_sets = num_side_sets,
                           .num_assembly  = num_assembly};
 
     ex_copy_string(par.title, title, MAX_LINE_LENGTH + 1);
@@ -128,17 +125,10 @@ int main(int argc, char **argv)
   }
 
   /* write element block parameters */
+  struct ex_block blocks[num_elem_blk];
   for (int i = 0; i < num_elem_blk; i++) {
     blocks[i] = (ex_block){.type = EX_ELEM_BLOCK, .num_entry = 1, .id = i + 10};
   }
-
-  block_names[0] = "block_1";
-  block_names[1] = "block_2";
-  block_names[2] = "block_3";
-  block_names[3] = "block_4";
-  block_names[4] = "block_5";
-  block_names[5] = "block_6";
-  block_names[6] = "block_7";
 
   ex_copy_string(blocks[0].topology, "quad", MAX_STR_LENGTH + 1);
   ex_copy_string(blocks[1].topology, "quad", MAX_STR_LENGTH + 1);
@@ -159,6 +149,8 @@ int main(int argc, char **argv)
   EXCHECK(ex_put_block_params(exoid, num_elem_blk, blocks));
 
   /* Write element block names */
+  char *block_names[] = {"block_1", "block_2", "block_3", "block_4",
+                         "block_5", "block_6", "block_7"};
   for (int i = 0; i < num_elem_blk; i++) {
     EXCHECK(ex_put_name(exoid, EX_ELEM_BLOCK, blocks[i].id, block_names[i]));
   }
@@ -226,36 +218,53 @@ int main(int argc, char **argv)
     EXCHECK(ex_put_text_attribute(exoid, EX_GLOBAL, 0, "ACIS", "STEP-X-43-1547836-Rev 0"));
   }
 
-  EXCHECK(ex_put_variable_param(exoid, EX_ASSEMBLY, 4));
+  int num_assem_vars = 4;
+  EXCHECK(ex_put_reduction_variable_param(exoid, EX_ASSEMBLY, num_assem_vars));
 
   {
-    char *var_names[4] = {"Momentum_X", "Momentum_Y", "Momentum_Z", "Kinetic_Energy"};
-    EXCHECK(ex_put_variable_names(exoid, EX_ASSEMBLY, 4, var_names));
+    char *var_names[] = {"Momentum_X", "Momentum_Y", "Momentum_Z", "Kinetic_Energy"};
+    EXCHECK(ex_put_reduction_variable_names(exoid, EX_ASSEMBLY, num_assem_vars, var_names));
   }
 
-#if 0
   { /* Output time steps ... */
-    double *var_vals = (double *)calloc(4, CPU_word_size);
-    for (int i = 0; i < 10; i++) {
-      double time_val = (double)(i+1) / 100.0f;
+    double *var_vals = (double *)calloc(num_assem_vars, CPU_word_size);
+    for (int ts = 0; ts < 10; ts++) {
+      double time_val = (double)(ts + 1) / 100.0f;
 
-      EXCHECK(ex_put_time(exoid, i+1, &time_val));
+      EXCHECK(ex_put_time(exoid, ts + 1, &time_val));
 
       /* write assembly variables */
       for (int k = 0; k < num_assembly; k++) {
-	for (int j = 0; j < 4; j++) {
-	  var_vals[j] = (double)(j + 2) * time_val + k;
-	  EXCHECK(ex_put_var(exoid, i+1, EX_ASSEMBLY, j, assembly_ids[k], 1, var_vals));
-	}
+        for (int var_idx = 0; var_idx < num_assem_vars; var_idx++) {
+          var_vals[var_idx] = (double)(var_idx + 2) * time_val + k;
+        }
+        EXCHECK(ex_put_reduction_vars(exoid, ts + 1, EX_ASSEMBLY, assembly_ids[k], num_assem_vars,
+                                      var_vals));
       }
-
     }
-    
   }
-#endif
 
   /* close the EXODUS files
    */
   EXCHECK(ex_close(exoid));
   return 0;
 }
+
+/*!  Reduction Variables:
+ *   - Transient values applied to the object instead of each member of the object.
+ *     - for example, a value for the element block; not for each element in the block.
+ *   - Each object type has the same variables
+ *   - All values for a specific object are output at same time -- Vals for "assembly 100"
+ *   - GLOBAL values can be considered reduction variables
+ *     - for BW compat, can output either with:
+ *       - ex_put_var(exoid, ts, EX_GLOBAL, ?, ?, #gvar, gvar), or
+ *       - ex_put_reduction_var(exoid, ts, EX_GLOBAL, ?, #gvar, gvar)
+ *     -
+ *   - ex_put_reduc_var(exoid, ts, EX_ASSEMBLY, id, #var, var)
+ *   - ex_get_reduc_var(exoid, ts, EX_ASSEMBLY, id, #var, &var)
+ *
+ *   - ex_put_reduc_variable_names()
+ *   - ex_put_reduc_variable_param()
+
+ */
+/* int ex_put_reduction_var(exoid, time_step, obj_type, obj_id, #values, values); */
