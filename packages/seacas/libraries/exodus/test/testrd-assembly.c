@@ -267,7 +267,9 @@ int main(int argc, char **argv)
           }
           else if (attr[j].type == EX_CHAR) {
             char *vals = attr[j].values;
-            printf("\t%c", vals[k]);
+            if (vals[k] != '\0') {
+              printf("\t%c", vals[k]);
+            }
           }
         }
         printf("\n");

@@ -105,11 +105,11 @@ int main(int argc, char **argv)
   /* initialize file with parameters */
   {
     num_dim       = 3;
-    num_nodes     = 33;
+    num_nodes     = 1;
     num_elem      = 7;
     num_elem_blk  = 7;
-    num_node_sets = 2;
-    num_side_sets = 5;
+    num_node_sets = 0;
+    num_side_sets = 0;
     num_assembly  = 4;
 
     ex_init_params par = {.num_dim       = num_dim,
@@ -124,29 +124,37 @@ int main(int argc, char **argv)
     EXCHECK(ex_put_init_ext(exoid, &par));
   }
 
+  double coord[] = {0.0};
+  EXCHECK(ex_put_coord(exoid, coord, coord, coord));
+
   /* write element block parameters */
   struct ex_block blocks[num_elem_blk];
   for (int i = 0; i < num_elem_blk; i++) {
     blocks[i] = (ex_block){.type = EX_ELEM_BLOCK, .num_entry = 1, .id = i + 10};
   }
 
-  ex_copy_string(blocks[0].topology, "quad", MAX_STR_LENGTH + 1);
-  ex_copy_string(blocks[1].topology, "quad", MAX_STR_LENGTH + 1);
-  ex_copy_string(blocks[2].topology, "hex", MAX_STR_LENGTH + 1);
-  ex_copy_string(blocks[3].topology, "tetra", MAX_STR_LENGTH + 1);
-  ex_copy_string(blocks[4].topology, "wedge", MAX_STR_LENGTH + 1);
-  ex_copy_string(blocks[5].topology, "tetra", MAX_STR_LENGTH + 1);
-  ex_copy_string(blocks[6].topology, "tri", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[0].topology, "sphere", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[1].topology, "sphere", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[2].topology, "sphere", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[3].topology, "sphere", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[4].topology, "sphere", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[5].topology, "sphere", MAX_STR_LENGTH + 1);
+  ex_copy_string(blocks[6].topology, "sphere", MAX_STR_LENGTH + 1);
 
-  blocks[0].num_nodes_per_entry = 4; /* elements in block #1 are 4-node quads  */
-  blocks[1].num_nodes_per_entry = 4; /* elements in block #2 are 4-node quads  */
-  blocks[2].num_nodes_per_entry = 8; /* elements in block #3 are 8-node hexes  */
-  blocks[3].num_nodes_per_entry = 4; /* elements in block #4 are 4-node tetras */
-  blocks[4].num_nodes_per_entry = 6; /* elements in block #5 are 6-node wedges */
-  blocks[5].num_nodes_per_entry = 8; /* elements in block #6 are 8-node tetras */
-  blocks[6].num_nodes_per_entry = 3; /* elements in block #7 are 3-node tris   */
+  blocks[0].num_nodes_per_entry = 1;
+  blocks[1].num_nodes_per_entry = 1;
+  blocks[2].num_nodes_per_entry = 1;
+  blocks[3].num_nodes_per_entry = 1;
+  blocks[4].num_nodes_per_entry = 1;
+  blocks[5].num_nodes_per_entry = 1;
+  blocks[6].num_nodes_per_entry = 1;
 
   EXCHECK(ex_put_block_params(exoid, num_elem_blk, blocks));
+
+  int connect[] = {1};
+  for (int i = 0; i < num_elem_blk; i++) {
+    EXCHECK(ex_put_conn(exoid, EX_ELEM_BLOCK, blocks[i].id, connect, NULL, NULL));
+  }
 
   /* Write element block names */
   char *block_names[] = {"block_1", "block_2", "block_3", "block_4",
