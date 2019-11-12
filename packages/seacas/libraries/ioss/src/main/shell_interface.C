@@ -76,6 +76,9 @@ void IOShell::Interface::enroll_options()
 #if defined(SEACAS_HAVE_CGNS)
                   " cgns"
 #endif
+#if defined(SEACAS_HAVE_FAODEL)
+                  " faodel"
+#endif
                   ".\n\t\tIf not specified, guess from extension or exodus is the default.",
                   "unknown");
   options_.enroll("extract_group", Ioss::GetLongOption::MandatoryValue,
