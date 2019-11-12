@@ -178,7 +178,14 @@ namespace Iofaodel {
     inline void pack(const Ioss::Region & r,
                      const Ioss::GroupingEntity& e,
                      const Ioss::Field& f, lunasa::DataObject ldo);
+    inline void pack(const Ioss::Region & r,
+                     const Ioss::GroupingEntity& e,
+                     const Ioss::Field& f, lunasa::DataObject ldo,
+                     const void *data_ptr, const size_t data_size);
 
+    inline void pack_field_data(lunasa::DataObject ldo, 
+                                const void *data_ptr_, 
+                                const size_t data_size_);
   };
 
 
@@ -229,6 +236,13 @@ namespace Iofaodel {
     const Ioss::Region & r,
     const Ioss::GroupingEntity & e,
     const Ioss::Field & f);
+
+  lunasa::DataObject to_ldo(
+    const Ioss::Region & r,
+    const Ioss::GroupingEntity & e,
+    const Ioss::Field & f, 
+    void *data,
+    size_t data_size);
 
 } // namespace Iofaodel
 #endif // Iofaodel_Serialize

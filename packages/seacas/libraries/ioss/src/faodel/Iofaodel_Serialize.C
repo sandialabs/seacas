@@ -261,7 +261,6 @@ namespace Iofaodel {
       + this->field.storage.size;
   }
 
-
   inline void Entry::add_data(const Ioss::Region & r,
                               const Ioss::GroupingEntity& e,
                               const Ioss::Property& p) {
@@ -310,7 +309,6 @@ namespace Iofaodel {
     std::memcpy(data + this->field.storage.offset,
                 f.raw_storage()->name().data(),
                 f.raw_storage()->name().size());
-
   }
 
   inline void Entry::pack(const Ioss::Region & r,
@@ -351,15 +349,20 @@ namespace Iofaodel {
                           const Ioss::GroupingEntity& e,
                           const Ioss::Field& f, lunasa::DataObject ldo) {
     this->pack(r, ldo); this->pack(e, ldo); this->pack(f, ldo);
+  }
+
+  inline void Entry::pack(const Ioss::Region & r,
+                          const Ioss::GroupingEntity& e,
+                          const Ioss::Field& f, lunasa::DataObject ldo, 
+                          const void *data_ptr_, const size_t data_size_) {
+    this->pack(r, ldo); this->pack(e, ldo); this->pack(f, ldo);
 
     // TODO Is check necessary?
     // Write TRANSIENT and REDUCTION fields if we're at a real State
     if(r.get_current_state() > 0) {
       if(f.get_role() == Ioss::Field::RoleType::TRANSIENT ||
          f.get_role() == Ioss::Field::RoleType::REDUCTION) {
-        e.get_field_data(f.get_name(),
-                         get_ptr(this->field.value, ldo),
-                         f.get_size());
+        this->pack_field_data(ldo, data_ptr_, data_size_);
       }
     }
     // Write all other fields if we're not at a read State
@@ -369,6 +372,16 @@ namespace Iofaodel {
         this->pack_field_data(ldo, data_ptr_, data_size_);
       }
     }
+  }
+
+  inline void Entry::pack_field_data(lunasa::DataObject ldo, 
+                                     const void *data_ptr_, 
+                                     const size_t data_size_) 
+  {
+    auto data(static_cast<char*>(ldo.GetDataPtr()) + this->offset);
+    std::memcpy(data + this->field.value.offset, 
+                data_ptr_,  
+                data_size_);
   }
 
   std::ostream & operator<<(std::ostream & os, const ValueEntry & entry) {
@@ -616,7 +629,25 @@ namespace Iofaodel {
     return ldo;
   }
 
+  lunasa::DataObject to_ldo(
+    const Ioss::Region & r,
+    const Ioss::GroupingEntity & e,
+    const Ioss::Field & f,
+    void *data, size_t data_size)
+  {
+    Entry entry;
+    entry.init();
+    entry.add_data(r, e, f);
 
+    auto ldo = lunasa::DataObject(
+      sizeof(Entry), entry.data_size,
+      lunasa::DataObject::AllocatorType::eager);
+
+    auto meta(static_cast<Entry*>(ldo.GetMetaPtr()));
+    *meta = entry;
+    meta->pack(r, e, f, ldo, data, data_size);
+    return ldo;
+  }
 
   std::string to_string(const Ioss::Region & r)
   {

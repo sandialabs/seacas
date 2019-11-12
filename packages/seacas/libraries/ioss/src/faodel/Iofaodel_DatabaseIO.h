@@ -125,8 +125,8 @@ namespace Iofaodel {
   private:
     void read_meta_data__() override;
 
-    bool begin__(Ioss::State state) override { return false; };
-    bool end__(Ioss::State state) override { return false; };
+    bool begin__(Ioss::State state) override { dbState = state; return true;};
+    bool end__(Ioss::State state) override { dbState = Ioss::STATE_UNKNOWN; return true;};
 
     void read_region();
     void read_entity_properties(kelpie::ObjectCapacities oc, Ioss::GroupingEntity & entity);
