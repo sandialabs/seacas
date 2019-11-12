@@ -791,7 +791,7 @@ dirman.root_node_mpi 0
   int64_t DatabaseIO::put_field_internal(const Ioss::GroupingEntity &e, const Ioss::Field &f,
       void *data, size_t data_size) const
   {
-    lunasa::DataObject ldo = to_ldo( *(get_region()), e, f );
+    lunasa::DataObject ldo = to_ldo( *(get_region()), e, f, data, data_size );
     kelpie::Key k;
     k.K1( std::to_string( parallel_rank() ) );
     k.K2("/Region/State/" + std::to_string(get_region()->get_current_state())
