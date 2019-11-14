@@ -169,7 +169,7 @@ int main(int argc, char **argv)
   EXCHECK(ex_put_names(exoid, EX_ASSEMBLY, names));
 
   {
-    int         list_100[] = {100, 200, 300, 400};
+    int64_t     list_100[] = {100, 200, 300, 400};
     ex_assembly assembly   = {assembly_ids[0], "RootName", EX_ASSEMBLY, 4, NULL};
     EXCHECK(ex_put_assembly(exoid, assembly));
 
@@ -178,19 +178,19 @@ int main(int argc, char **argv)
   }
 
   {
-    int         list_200[] = {10, 11, 12, 13};
+    int64_t     list_200[] = {10, 11, 12, 13};
     ex_assembly assembly   = {assembly_ids[1], "ChildName_2", EX_ELEM_BLOCK, 4, list_200};
     EXCHECK(ex_put_assembly(exoid, assembly));
   }
 
   {
-    int         list_300[] = {14, 15, 16};
+    int64_t     list_300[] = {14, 15, 16};
     ex_assembly assembly   = {assembly_ids[2], "ChildName_3", EX_ELEM_BLOCK, 3, list_300};
     EXCHECK(ex_put_assembly(exoid, assembly));
   }
 
   {
-    int         list_400[] = {10, 16};
+    int64_t     list_400[] = {10, 16};
     ex_assembly assembly   = {assembly_ids[3], "ChildName_4", EX_ELEM_BLOCK, 2, NULL};
     EXCHECK(ex_put_assembly(exoid, assembly));
 

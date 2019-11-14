@@ -398,7 +398,7 @@ typedef struct ex_assembly
   char *         name;
   ex_entity_type type; /* EX_ELEM_BLOCK or EX_ASSEMBLY */
   int            entity_count;
-  void_int *     entity_list;
+  int64_t *      entity_list;
 } ex_assembly;
 
 typedef struct ex_block

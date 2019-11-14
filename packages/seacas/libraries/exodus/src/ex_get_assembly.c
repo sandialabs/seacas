@@ -37,7 +37,7 @@
 #include "exodusII_int.h" // for EX_FATAL, etc
 
 /*!
- * writes the assembly parameters and optionally assembly data for one assembly
+ * reads the assembly parameters and optionally assembly data for one assembly
  * \param   exoid                   exodus file id
  * \param  *assembly                ex_assembly structure
  */
@@ -134,13 +134,7 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
   }
 
   if (assembly->entity_list != NULL) {
-    if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
-      status = nc_get_var_longlong(exoid, entlst_id, assembly->entity_list);
-    }
-    else {
-      status = nc_get_var_int(exoid, entlst_id, assembly->entity_list);
-    }
-    if (status != EX_NOERR) {
+    if ((status = nc_get_var_longlong(exoid, entlst_id, assembly->entity_list)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to read entity list for assembly %" PRId64 " in file id %d",
                assembly->id, exoid);

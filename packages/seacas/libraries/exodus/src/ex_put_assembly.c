@@ -248,13 +248,7 @@ int ex_put_assembly(int exoid, const struct ex_assembly assembly)
       }
     }
 
-    if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
-      status = nc_put_var_longlong(exoid, varid, assembly.entity_list);
-    }
-    else {
-      status = nc_put_var_int(exoid, varid, assembly.entity_list);
-    }
-    if (status != EX_NOERR) {
+    if ((status = nc_put_var_longlong(exoid, varid, assembly.entity_list)) != EX_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to output entity list for assembly %" PRId64 " in file id %d",
                assembly.id, exoid);
