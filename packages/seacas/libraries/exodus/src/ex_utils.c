@@ -42,6 +42,7 @@
 #endif
 
 #include <errno.h>
+#include <stdbool.h>
 
 #include "exodusII.h"
 #include "exodusII_int.h"
@@ -737,8 +738,8 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   int64_t *id_vals   = NULL;
   int *    stat_vals = NULL;
 
-  static int            filled     = EX_FALSE;
-  static int            sequential = EX_FALSE;
+  static bool           filled     = false;
+  static bool           sequential = false;
   struct ex__obj_stats *tmp_stats;
   int                   status;
   char                  errmsg[MAX_ERR_LENGTH];
@@ -902,21 +903,21 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     }
 
     /* check if values in stored arrays are filled with non-zeroes */
-    filled     = EX_TRUE;
-    sequential = EX_TRUE;
+    filled     = true;
+    sequential = true;
     for (i = 0; i < dim_len; i++) {
       if (id_vals[i] != i + 1) {
-        sequential = EX_FALSE;
+        sequential = false;
       }
       if (id_vals[i] == EX_INVALID_ID || id_vals[i] == NC_FILL_INT) {
-        filled     = EX_FALSE;
-        sequential = EX_FALSE;
+        filled     = false;
+        sequential = false;
         break; /* id array hasn't been completely filled with valid ids yet */
       }
     }
 
     if (filled) {
-      tmp_stats->valid_ids  = EX_TRUE;
+      tmp_stats->valid_ids  = true;
       tmp_stats->sequential = sequential;
       tmp_stats->num        = dim_len;
       tmp_stats->id_vals    = id_vals;
@@ -986,7 +987,7 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
 
     if (tmp_stats->valid_ids) {
       /* status array is valid only if ids are valid */
-      tmp_stats->valid_stat = EX_TRUE;
+      tmp_stats->valid_stat = true;
       tmp_stats->stat_vals  = stat_vals;
     }
   }
@@ -1295,7 +1296,7 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
 
   /* loop until there is not a property variable defined; the name of */
   /* the variables begin with an increment of 1 ("xx_prop1") so use cntr+1 */
-  while (EX_TRUE) {
+  while (true) {
     switch (obj_type) {
     case EX_ELEM_BLOCK: var_name = VAR_EB_PROP(cntr + 1); break;
     case EX_EDGE_BLOCK: var_name = VAR_ED_PROP(cntr + 1); break;
@@ -1607,7 +1608,7 @@ void ex__iqsort64(int64_t v[], int64_t iv[], int64_t N)
  */
 int ex_large_model(int exoid)
 {
-  static int message_output = EX_FALSE;
+  static bool message_output = false;
   EX_FUNC_ENTER();
   if (exoid < 0) {
     /* If exoid not specified, then query is to see if user specified
@@ -1619,14 +1620,14 @@ int ex_large_model(int exoid)
         if (!message_output) {
           fprintf(stderr, "EXODUS: Small model size selected via "
                           "EXODUS_LARGE_MODEL environment variable\n");
-          message_output = EX_TRUE;
+          message_output = true;
         }
         EX_FUNC_LEAVE(0);
       }
       if (!message_output) {
         fprintf(stderr, "EXODUS: Large model size selected via "
                         "EXODUS_LARGE_MODEL environment variable\n");
-        message_output = EX_TRUE;
+        message_output = true;
       }
       EX_FUNC_LEAVE(1);
     }
