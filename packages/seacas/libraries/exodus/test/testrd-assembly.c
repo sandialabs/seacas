@@ -203,7 +203,7 @@ int main(int argc, char **argv)
     EXCHECK(ex_get_names(exoid, EX_ASSEMBLY, assembly_names));
 
     ex_assembly assemblies[10];
-    int         entity[10];
+    int64_t     entity[10];
     for (i = 0; i < num_assembly; i++) {
       EXCHECK(ex_get_name(exoid, EX_ASSEMBLY, assembly_ids[i], name));
       if (strcmp(name, assembly_names[i]) != 0) {
@@ -221,7 +221,7 @@ int main(int argc, char **argv)
              assemblies[i].name, assemblies[i].id, assemblies[i].entity_count,
              ex_name_of_object(assemblies[i].type));
       for (int j = 0; j < assemblies[i].entity_count; j++) {
-        printf("%d, ", entity[j]);
+        printf("%lld, ", entity[j]);
       }
       printf("\n");
     }
