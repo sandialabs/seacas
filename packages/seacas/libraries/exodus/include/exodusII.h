@@ -241,13 +241,14 @@ sufficient.
 enum ex_option_type {
   EX_OPT_MAX_NAME_LENGTH =
       1, /**< Maximum length of names that will be returned/passed via api call. */
-  EX_OPT_COMPRESSION_TYPE,    /**<  Not currently used; default is gzip */
-  EX_OPT_COMPRESSION_LEVEL,   /**<  In the range [0..9]. A value of 0 indicates no compression */
-  EX_OPT_COMPRESSION_SHUFFLE, /**<  1 if enabled, 0 if disabled */
-  EX_OPT_INTEGER_SIZE_API, /**<  4 or 8 indicating byte size of integers used in api functions. */
-  EX_OPT_INTEGER_SIZE_DB,  /**<  Query only, returns 4 or 8 indicating byte size of integers stored
-                             on  the database. */
-  EX_OPT_ENABLE_FEATURE    /**< On database creation, enable the use of the specified features.
+  EX_OPT_COMPRESSION_TYPE  = 2, /**<  Not currently used; default is gzip */
+  EX_OPT_COMPRESSION_LEVEL = 3, /**<  In the range [0..9]. A value of 0 indicates no compression */
+  EX_OPT_COMPRESSION_SHUFFLE = 4, /**<  1 if enabled, 0 if disabled */
+  EX_OPT_INTEGER_SIZE_API =
+      5, /**<  4 or 8 indicating byte size of integers used in api functions. */
+  EX_OPT_INTEGER_SIZE_DB = 6, /**<  Query only, returns 4 or 8 indicating byte size of integers
+                            stored on  the database. */
+  EX_OPT_ENABLE_FEATURE = 7   /**< On database creation, enable the use of the specified features.
                                 Value is `ex_feature_type` or'd together. */
 };
 typedef enum ex_option_type ex_option_type;
