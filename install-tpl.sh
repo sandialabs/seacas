@@ -129,6 +129,8 @@ if [ "$MPI" == "YES" ] && [ "$CRAY" == "YES" ]
 then
     CC=cc; export CC
     CFLAGS=-static; export CFLAGS
+    CXX=CC; export CXX
+    CXXFLAGS=-static; export CXXFLAGS
     SHARED=NO
 elif [ "$MPI" == "YES" ]
 then
@@ -152,6 +154,7 @@ if [ $# -gt 0 ]; then
 	echo "${txtcyn}Environment Variables used in the script and their default values:"
 	echo ""
 	echo "   ACCESS       = ${txtgrn}${ACCESS}${txtcyn} (Automatically set to current directory)"
+        echo "   INSTALL_PATH = ${txtgrn}${INSTALL_PATH}${txtcyn}"
 	echo "   OS           = ${txtgrn}${OS}${txtcyn} (Automatically set)"
 	echo "   COMPILER     = ${COMPILER}  (gnu clang intel ibm)"
 	echo "   MPI          = ${MPI} (Parallel Build?)"

@@ -27,8 +27,8 @@ SHARED="${SHARED:-YES}"
 if [ "$MPI" == "YES" ] && [ "$CRAY" = "YES" ]
 then
   export CC=cc
-  export CXX=cxx
-elif [ "$MPI" == "YES" ]
+  export CXX=CC
+elif [ "$MPI" == "ON" ]
 then
   export CC=mpicc
   export CXX=mpicxx
