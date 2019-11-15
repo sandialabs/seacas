@@ -39,16 +39,16 @@
 
 #
 # First, set up the variables for the (backward-compatible) TriBITS way of
-# finding Netcdf.  These are used in case FIND_PACKAGE(NetCDF ...) is not
-# called or does not find NetCDF.  Also, these variables need to be non-null
+# finding Faodel.  These are used in case FIND_PACKAGE(Faodel ...) is not
+# called or does not find Faodel.  Also, these variables need to be non-null
 # in order to trigger the right behavior in the function
 # TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES().
 #
 SET(REQUIRED_HEADERS "kelpie/Kelpie.hh")
-SET(REQUIRED_LIBS_NAMES tcmalloc spinlock sbl faodel-common webhook faodel-services nnti lunasa opbox dirman kelpie)
+SET(REQUIRED_LIBS_NAMES kelpie dirman opbox lunasa nnti faodel-services whookie faodel-common sbl tcmalloc spinlock)
 
 #
-# Second, search for Netcdf components (if allowed) using the standard
+# Second, search for Faodel components (if allowed) using the standard
 # FIND_PACKAGE(Faodel ...).
 #
 TRIBITS_TPL_ALLOW_PRE_FIND_PACKAGE(Faodel Faodel_ALLOW_PREFIND)
@@ -60,24 +60,20 @@ IF (Faodel_ALLOW_PREFIND)
     "${CMAKE_MODULE_PATH}"
     "${CMAKE_CURRENT_LIST_DIR}/find_modules"
     "${CMAKE_CURRENT_LIST_DIR}/utils"
-     )
-  
-   find_package(Faodel REQUIRED CONFIG
-     HINTS
-     ${Faodel_ROOT}
-     ${Faodel_ROOT}/include
-     ${Faodel_ROOT}/include/faodel
-     ${Faodel_ROOT}/lib/cmake/Faodel
-     COMPONENTS
-     tcmalloc spinlock sbl common webhook services nnti lunasa opbox dirman kelpie
-     )
+    )
 
-   # Faodel::tcmalloc Faodel::spinlock Faodel::sbl Faodel::common Faodel::webhook Faodel::services Faodel::nnti Faodel::lunasa Faodel::opbox Faodel::dirman Faodel::kelpie
+  find_package(Faodel REQUIRED CONFIG
+    COMPONENTS
+    tcmalloc spinlock sbl common whookie services nnti lunasa opbox dirman kelpie
+    )
+
   IF (Faodel_FOUND)
-    set(TPL_Faodel_LIBRARIES ${Faodel_LIBRARIES} CACHE PATH
-      "List of semi-colon seprated (full) paths to the Faodel libraries")
-    set(TPL_Faodel_INCLUDE_DIRS ${Faodel_INCLUDE_DIRS} CACHE PATH
+    set(TPL_Faodel_INCLUDE_DIRS ${Faodel_INCLUDE_DIR} CACHE PATH
       "List of semi-colon seprated list of directories containing Faodel header files")
+    set(TPL_Faodel_LIBRARY_DIRS ${Faodel_LIBRARY_DIR} CACHE PATH
+      "List of semi-colon seprated list of directories containing Faodel library files")
+    set(TPL_Faodel_LIBRARIES Faodel::kelpie CACHE PATH
+      "List of semi-colon seprated (full) paths to the Faodel libraries")
   ENDIF()
 
 ENDIF()
@@ -88,3 +84,4 @@ ENDIF()
 TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES( Faodel
   REQUIRED_HEADERS ${REQUIRED_HEADERS}
   REQUIRED_LIBS_NAMES ${REQUIRED_LIBS_NAMES})
+

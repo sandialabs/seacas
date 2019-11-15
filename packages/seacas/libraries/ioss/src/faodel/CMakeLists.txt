@@ -18,10 +18,6 @@ TRIBITS_ADD_LIBRARY(
   SOURCES ${SOURCES}
   DEPLIBS
   Ioss
-  Boost::system
-  Boost::log
-  Faodel::lunasa
-  Faodel::kelpie
   )
 
 IF (BUILD_TESTING)
