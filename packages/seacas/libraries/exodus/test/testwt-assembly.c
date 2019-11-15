@@ -163,40 +163,26 @@ int main(int argc, char **argv)
     EXCHECK(ex_put_name(exoid, EX_ELEM_BLOCK, blocks[i].id, block_names[i]));
   }
 
-  int   assembly_ids[] = {100, 200, 300, 400};
-  char *names[]        = {"Root", "Child1", "Child2", "Child3"};
+  int64_t list_100[] = {100, 200, 300, 400};
+  int64_t list_200[] = {10, 11, 12, 13};
+  int64_t list_300[] = {14, 15, 16};
+  int64_t list_400[] = {10, 16};
 
-  EXCHECK(ex_put_names(exoid, EX_ASSEMBLY, names));
+  ex_assembly assembly[] = {{100, "RootName", EX_ASSEMBLY, 4, NULL},
+                            {200, "ChildName_2", EX_ELEM_BLOCK, 4, list_200},
+                            {300, "ChildName_3", EX_ELEM_BLOCK, 3, list_300},
+                            {400, "ChildName_4", EX_ELEM_BLOCK, 2, NULL}};
 
-  {
-    int64_t     list_100[] = {100, 200, 300, 400};
-    ex_assembly assembly   = {assembly_ids[0], "RootName", EX_ASSEMBLY, 4, NULL};
-    EXCHECK(ex_put_assembly(exoid, assembly));
-
-    assembly.entity_list = list_100;
-    EXCHECK(ex_put_assembly(exoid, assembly));
+  for (int i = 0; i < num_assembly; i++) {
+    EXCHECK(ex_put_assembly(exoid, assembly[i]));
   }
 
-  {
-    int64_t     list_200[] = {10, 11, 12, 13};
-    ex_assembly assembly   = {assembly_ids[1], "ChildName_2", EX_ELEM_BLOCK, 4, list_200};
-    EXCHECK(ex_put_assembly(exoid, assembly));
-  }
+  /* Now verify that can put entity list at a later time... */
+  assembly[0].entity_list = list_100;
+  EXCHECK(ex_put_assembly(exoid, assembly[0]));
 
-  {
-    int64_t     list_300[] = {14, 15, 16};
-    ex_assembly assembly   = {assembly_ids[2], "ChildName_3", EX_ELEM_BLOCK, 3, list_300};
-    EXCHECK(ex_put_assembly(exoid, assembly));
-  }
-
-  {
-    int64_t     list_400[] = {10, 16};
-    ex_assembly assembly   = {assembly_ids[3], "ChildName_4", EX_ELEM_BLOCK, 2, NULL};
-    EXCHECK(ex_put_assembly(exoid, assembly));
-
-    assembly.entity_list = list_400;
-    EXCHECK(ex_put_assembly(exoid, assembly));
-  }
+  assembly[3].entity_list = list_400;
+  EXCHECK(ex_put_assembly(exoid, assembly[3]));
 
   /* Add some arbitrary attributes to the assemblies */
   {
@@ -223,7 +209,7 @@ int main(int argc, char **argv)
 
     /* Make sure this works for non-assemblies also... */
     EXCHECK(ex_put_integer_attribute(exoid, EX_ELEM_BLOCK, 11, "Units", 4, units));
-    EXCHECK(ex_put_text_attribute(exoid, EX_GLOBAL, 0, "ACIS", "STEP-X-43-1547836-Rev 0"));
+    EXCHECK(ex_put_text_attribute(exoid, EX_GLOBAL, 0, "SOLID_MODEL", "STEP-X-43-1547836-Rev 0"));
   }
 
   int num_assem_vars = 4;
@@ -246,7 +232,7 @@ int main(int argc, char **argv)
         for (int var_idx = 0; var_idx < num_assem_vars; var_idx++) {
           var_vals[var_idx] = (double)(var_idx + 2) * time_val + k;
         }
-        EXCHECK(ex_put_reduction_vars(exoid, ts + 1, EX_ASSEMBLY, assembly_ids[k], num_assem_vars,
+        EXCHECK(ex_put_reduction_vars(exoid, ts + 1, EX_ASSEMBLY, assembly[k].id, num_assem_vars,
                                       var_vals));
       }
     }
