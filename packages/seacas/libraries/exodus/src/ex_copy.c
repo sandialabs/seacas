@@ -109,14 +109,7 @@ static int is_non_mesh_variable(const char *var_name)
   /* If copying just the "mesh" or "non-transient" portion of the
    * input DB, these are the variables that won't be copied:
    */
-  return (strcmp(var_name, VAR_NAME_GLO_VAR) == 0) || (strcmp(var_name, VAR_NAME_NOD_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_EDG_VAR) == 0) || (strcmp(var_name, VAR_NAME_FAC_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_ELE_VAR) == 0) || (strcmp(var_name, VAR_NAME_NSET_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_ESET_VAR) == 0) || (strcmp(var_name, VAR_NAME_FSET_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_SSET_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_ELSET_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_ASSEMBLY_VAR) == 0) || (strstr(var_name, "_red_var") != NULL) ||
-         (strncmp(var_name, "vals_", 5) == 0);
+  return (strncmp(var_name, "vals_", 5) == 0) || (strncmp(var_name, "name_", 5) == 0);
 }
 /*! \endcond */
 

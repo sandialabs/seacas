@@ -1185,7 +1185,7 @@ int ex__inc_file_item(int                    exoid,    /* file id */
 
 /*****************************************************************************
  *
- * ex__get_file_item - increment file item
+ * ex__get_file_item - return count
  *
  *****************************************************************************/
 
@@ -1608,34 +1608,12 @@ void ex__iqsort64(int64_t v[], int64_t iv[], int64_t N)
  */
 int ex_large_model(int exoid)
 {
-  static bool message_output = false;
-  EX_FUNC_ENTER();
   if (exoid < 0) {
-    /* If exoid not specified, then query is to see if user specified
-     * the large model via an environment variable
-     */
-    char *option = getenv("EXODUS_LARGE_MODEL");
-    if (option != NULL) {
-      if (option[0] == 'n' || option[0] == 'N') {
-        if (!message_output) {
-          fprintf(stderr, "EXODUS: Small model size selected via "
-                          "EXODUS_LARGE_MODEL environment variable\n");
-          message_output = true;
-        }
-        EX_FUNC_LEAVE(0);
-      }
-      if (!message_output) {
-        fprintf(stderr, "EXODUS: Large model size selected via "
-                        "EXODUS_LARGE_MODEL environment variable\n");
-        message_output = true;
-      }
-      EX_FUNC_LEAVE(1);
-    }
-
-    EX_FUNC_LEAVE(EXODUS_DEFAULT_SIZE); /* Specified in exodusII_int.h */
+    return (EXODUS_DEFAULT_SIZE); /* Specified in exodusII_int.h */
   }
 
   /* See if the ATT_FILESIZE attribute is defined in the file */
+  EX_FUNC_ENTER();
   int file_size = 0;
   int rootid    = exoid & EX_FILE_ID_MASK;
   if (nc_get_att_int(rootid, NC_GLOBAL, ATT_FILESIZE, &file_size) != NC_NOERR) {
