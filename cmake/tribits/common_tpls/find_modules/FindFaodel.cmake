@@ -180,7 +180,7 @@ else(Faodel_LIBRARIES AND Faodel_INCLUDE_DIRS)
     if (EXISTS "${Faodel_LIBRARY_DIR}")
 
       find_library(Faodel_LIBRARY
-        NAMES tcmalloc spinlock sbl faodel-common webhook faodel-services nnti lunasa opbox dirman kelpie
+        NAMES tcmalloc spinlock sbl faodel-common whookie faodel-services nnti lunasa opbox dirman kelpie
         HINTS ${Faodel_LIBRARY_DIR}
         NO_DEFAULT_PATH)
 
@@ -196,7 +196,7 @@ else(Faodel_LIBRARIES AND Faodel_INCLUDE_DIRS)
       if (EXISTS "${Faodel_ROOT}" )
 
         find_library(Faodel_LIBRARY
-          NAMES tcmalloc spinlock sbl faodel-common webhook faodel-services nnti lunasa opbox dirman kelpie
+          NAMES tcmalloc spinlock sbl faodel-common whookie faodel-services nnti lunasa opbox dirman kelpie
           HINTS ${Faodel_ROOT} ${Faodel_ROOT}/lib
           PATH_SUFFIXES "lib" "Lib"
           NO_DEFAULT_PATH)
@@ -210,7 +210,7 @@ else(Faodel_LIBRARIES AND Faodel_INCLUDE_DIRS)
     else()
 
       find_library(Faodel_LIBRARY
-        NAMES tcmalloc spinlock sbl faodel-common webhook faodel-services nnti lunasa opbox dirman kelpie
+        NAMES tcmalloc spinlock sbl faodel-common whookie faodel-services nnti lunasa opbox dirman kelpie
         PATH_SUFFIXES ${faodel_lib_suffixes})
 
     endif()
