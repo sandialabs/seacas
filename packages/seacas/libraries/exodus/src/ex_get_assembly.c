@@ -44,12 +44,10 @@
 
 int ex_get_assembly(int exoid, ex_assembly *assembly)
 {
-  struct ex__file_item *file            = NULL;
-  int                   status          = 0;
-  int                   assembly_id_ndx = 0;
-  int                   entlst_id       = 0;
-  int                   dimid           = 0;
-  size_t                len             = 0;
+  struct ex__file_item *file   = NULL;
+  int                   status = 0;
+  int                   dimid  = 0;
+  size_t                len    = 0;
   char                  errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
@@ -61,9 +59,9 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  /* First, locate index of assembly id in VAR_ID_EL_BLK array */
-  assembly_id_ndx = ex__id_lkup(exoid, EX_ASSEMBLY, assembly->id);
-  if (assembly_id_ndx <= 0) {
+  /* First, locate varid of assembly  */
+  int entlst_id = 0;
+  if ((status = nc_inq_varid(exoid, VAR_ENTRY_ASSEMBLY(assembly->id), &entlst_id)) != NC_NOERR) {
     ex_get_err(NULL, NULL, &status);
     if (status != 0) {
       if (assembly->name != NULL) {
@@ -82,22 +80,7 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
     }
   }
 
-  /* read the name */
-  if (assembly->name != NULL) {
-    int varid = 0;
-    nc_inq_varid(exoid, VAR_NAME_ASSEMBLY, &varid);
-    int db_name_size  = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);
-    int api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
-    int name_size     = db_name_size < api_name_size ? db_name_size : api_name_size;
-
-    status = ex__get_name(exoid, varid, assembly_id_ndx - 1, assembly->name, name_size, EX_ASSEMBLY,
-                          __func__);
-    if (status != NC_NOERR) {
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-  }
-
-  char *numentryptr = DIM_NUM_ENTRY_ASSEMBLY(assembly_id_ndx);
+  char *numentryptr = DIM_NUM_ENTRY_ASSEMBLY(assembly->id);
   if ((status = nc_inq_dimid(exoid, numentryptr, &dimid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate number of entities in assembly %" PRId64 " in file id %d",
@@ -117,7 +100,7 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
   assembly->entity_count = len;
 
   /* look up entity list array for this assembly id */
-  if ((status = nc_inq_varid(exoid, VAR_ENTRY_ASSEMBLY(assembly_id_ndx), &entlst_id)) != NC_NOERR) {
+  if ((status = nc_inq_varid(exoid, VAR_ENTRY_ASSEMBLY(assembly->id), &entlst_id)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate entity list array for assembly %" PRId64 " in file id %d",
              assembly->id, exoid);
@@ -131,6 +114,20 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
              assembly->id, exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  /* read the name */
+  if (assembly->name != NULL) {
+    int  name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
+    char tmp_name[EX_MAX_NAME];
+    if ((status = nc_get_att_text(exoid, entlst_id, ASSEMBLY_NAME, tmp_name)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to read assembly name for assembly %" PRId64 " in file id %d",
+               assembly->id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+    ex_copy_string(assembly->name, tmp_name, name_size + 1);
   }
 
   if (assembly->entity_list != NULL) {

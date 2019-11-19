@@ -66,7 +66,7 @@
   do {                                                                                             \
     error = (funcall);                                                                             \
     printf("after %s, error = %d\n", TOSTRING(funcall), error);                                    \
-    if (error != EX_NOERR) {                                                                       \
+    if (error != EX_NOERR && error != EX_WARN) {                                                   \
       fprintf(stderr, "Error calling %s\n", TOSTRING(funcall));                                    \
       ex_close(exoid);                                                                             \
       exit(-1);                                                                                    \
@@ -193,23 +193,17 @@ int main(int argc, char **argv)
            num_assembly);
   }
   if (num_assembly > 0) {
-    int   assembly_ids[10];
+    int assembly_ids[10];
+    ex_get_ids(exoid, EX_ASSEMBLY, assembly_ids);
+
     char *assembly_names[10];
     for (i = 0; i < num_assembly; i++) {
       assembly_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    EXCHECK(ex_get_ids(exoid, EX_ASSEMBLY, assembly_ids));
-    EXCHECK(ex_get_names(exoid, EX_ASSEMBLY, assembly_names));
-
     ex_assembly assemblies[10];
     int64_t     entity[10];
     for (i = 0; i < num_assembly; i++) {
-      EXCHECK(ex_get_name(exoid, EX_ASSEMBLY, assembly_ids[i], name));
-      if (strcmp(name, assembly_names[i]) != 0) {
-        printf("error in ex_get_name for assembly id %d\n", assembly_ids[i]);
-      }
-
       assemblies[i].id   = assembly_ids[i];
       assemblies[i].name = assembly_names[i];
       /* Clear out name to make sure still getting same name */

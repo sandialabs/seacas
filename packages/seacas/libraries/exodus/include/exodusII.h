@@ -248,31 +248,8 @@ enum ex_option_type {
       5, /**<  4 or 8 indicating byte size of integers used in api functions. */
   EX_OPT_INTEGER_SIZE_DB = 6, /**<  Query only, returns 4 or 8 indicating byte size of integers
                             stored on  the database. */
-  EX_OPT_ENABLE_FEATURE = 7   /**< On database creation, enable the use of the specified features.
-                                Value is `ex_feature_type` or'd together. */
 };
 typedef enum ex_option_type ex_option_type;
-
-/*! Values for use in ex_set_option() type EX_OPT_ENABLE_FEATURE
-
-    When a new feature is added, it can at times add a new member to an
-    existing struct.  If all values in a struct are not zeroed before
-    use, then when an older client uses the struct, the new struct
-    member may not be set or initialized and use of that member by the
-    library may result in an unintended garbage value.  To reduce the
-    chances of this happening, all features that are added will need
-    to be enabled by a call to ex_option_type() with the argument
-    EX_OPT_ENABLE_FEATURE and the value one or more of the
-    ex_feature_type members or'd together.
-
-    For example, to enable the `assembly` feature, the client would call:
-    ```
-    ex_set_option(exoid, EX_OPT_ENABLE_FEATURE, EX_ASSEMBLY);
-    ```
-*/
-
-enum ex_feature_type { EX_ENABLE_ASSEMBLY = 1 };
-typedef enum ex_feature_type ex_feature_type;
 
 /** @}*/
 

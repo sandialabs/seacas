@@ -25,6 +25,7 @@ dimensions:
 	num_entity_assembly300 = 3 ;
 	num_entity_assembly400 = 2 ;
 	num_assembly_red_var = 4 ;
+	num_entity_assembly222 = 4 ;
 variables:
 	double time_whole(time_step) ;
 	int eb_status(num_el_blk) ;
@@ -81,6 +82,11 @@ variables:
 	double vals_red_var_assembly200(time_step, num_assembly_red_var) ;
 	double vals_red_var_assembly300(time_step, num_assembly_red_var) ;
 	double vals_red_var_assembly400(time_step, num_assembly_red_var) ;
+	int assembly_entity222(num_entity_assembly222) ;
+		assembly_entity222:_id = 222 ;
+		assembly_entity222:_type = 16 ;
+		assembly_entity222:_name = "NewAssembly" ;
+		assembly_entity222:_typename = "assembly" ;
 
 // global attributes:
 		:floating_point_word_size = 8 ;
@@ -198,4 +204,6 @@ data:
   3.16, 3.24, 3.32, 3.4,
   3.18, 3.27, 3.36, 3.45,
   3.2, 3.3, 3.4, 3.5 ;
+
+ assembly_entity222 = 100, 200, 300, 400 ;
 }

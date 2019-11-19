@@ -287,8 +287,10 @@ EXODUS_EXPORT int indent;
 #define VAR_ID_FA_BLK "fa_prop1"            /**< face    block ids props   */
 #define DIM_NUM_ENTRY_ASSEMBLY(num) ex__catstr("num_entity_assembly", num)
 #define VAR_ENTRY_ASSEMBLY(num) ex__catstr("assembly_entity", num)
-#define ASSEMBLY_TYPE "_contains"
+#define ASSEMBLY_TYPE "_type"
+#define ASSEMBLY_TYPE_NAME "_typename"
 #define ASSEMBLY_NAME "_name"
+#define ASSEMBLY_ID "_id"
 
 /*! element type names for each element block      */
 #define ATT_NAME_ELB "elem_type"
@@ -676,25 +678,25 @@ typedef enum ex__element_type ex__element_type;
 
 struct ex__file_item
 {
-  int     file_id;
-  nc_type netcdf_type_code;
-  int     int64_status;
-  int     maximum_name_length;
-  int     time_varid; /* Store to avoid lookup each timestep */
+  int          file_id;
+  nc_type      netcdf_type_code;
+  int          int64_status;
+  int          maximum_name_length;
+  int          time_varid;     /* Store to avoid lookup each timestep */
+  unsigned int assembly_count; /**< client enables assembly feature */
   unsigned int
                compression_level : 4; /**< 0 (disabled) to 9 (maximum) compression level; NetCDF-4 only */
   unsigned int user_compute_wordsize : 1; /**< 0 for 4 byte or 1 for 8 byte reals */
   unsigned int shuffle : 1;               /**< 1 true, 0 false */
   unsigned int
                         file_type : 2; /**< 0 - classic, 1 -- 64 bit classic, 2 --NetCDF4,  3 --NetCDF4 classic */
-  unsigned int          is_parallel : 1;     /**< 1 true, 0 false */
-  unsigned int          is_hdf5 : 1;         /**< 1 true, 0 false */
-  unsigned int          is_pnetcdf : 1;      /**< 1 true, 0 false */
-  unsigned int          has_nodes : 1;       /**< for input only at this time */
-  unsigned int          has_edges : 1;       /**< for input only at this time */
-  unsigned int          has_faces : 1;       /**< for input only at this time */
-  unsigned int          has_elems : 1;       /**< for input only at this time */
-  unsigned int          enable_assembly : 1; /**< client enables assembly feature */
+  unsigned int          is_parallel : 1; /**< 1 true, 0 false */
+  unsigned int          is_hdf5 : 1;     /**< 1 true, 0 false */
+  unsigned int          is_pnetcdf : 1;  /**< 1 true, 0 false */
+  unsigned int          has_nodes : 1;   /**< for input only at this time */
+  unsigned int          has_edges : 1;   /**< for input only at this time */
+  unsigned int          has_faces : 1;   /**< for input only at this time */
+  unsigned int          has_elems : 1;   /**< for input only at this time */
   struct ex__file_item *next;
 };
 

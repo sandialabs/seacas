@@ -43,6 +43,15 @@
  *  reads the element block ids from the database
  */
 
+struct ncvar
+{ /* variable */
+  char    name[MAX_VAR_NAME_LENGTH];
+  nc_type type;
+  int     ndims;
+  int     dims[NC_MAX_VAR_DIMS];
+  int     natts;
+};
+
 int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
 {
   int  varid, status;
@@ -53,8 +62,50 @@ int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
   EX_FUNC_ENTER();
   ex__check_valid_file_id(exoid, __func__);
 
+  if (obj_type == EX_ASSEMBLY) {
+    int64_t               count = 0;
+    struct ex__file_item *file  = ex__find_file_item(exoid);
+    if (file) {
+      count = file->assembly_count;
+    }
+    if (count > 0) {
+      /* For assemblies, we need to get the `assembly_entity` variables and read the ids from them
+       */
+      int          num_found = 0;
+      struct ncvar var;
+      int          nvars;
+      nc_inq(exoid, NULL, &nvars, NULL, NULL);
+      for (int varid = 0; varid < nvars; varid++) {
+        nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
+        if ((strncmp(var.name, "assembly_entity", 15) == 0)) {
+          /* Query the "_id" attribute on this assembly. */
+          if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
+            int64_t id                    = 0;
+            status                        = nc_get_att_longlong(exoid, varid, ASSEMBLY_ID, &id);
+            ((int64_t *)ids)[num_found++] = id;
+          }
+          else {
+            int id                    = 0;
+            status                    = nc_get_att_int(exoid, varid, ASSEMBLY_ID, &id);
+            ((int *)ids)[num_found++] = id;
+          }
+          if (num_found == count) {
+            break;
+          }
+          if (status != NC_NOERR) {
+            snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get assembly ids in file id %d",
+                     exoid);
+            ex_err_fn(exoid, __func__, errmsg, status);
+            EX_FUNC_LEAVE(EX_FATAL);
+          }
+        }
+      }
+    }
+    EX_FUNC_LEAVE(EX_NOERR);
+  }
+
+  /* Now handle the rest of the object types */
   switch (obj_type) {
-  case EX_ASSEMBLY: varidobj = VAR_ID_ASSEMBLY; break;
   case EX_EDGE_BLOCK: varidobj = VAR_ID_ED_BLK; break;
   case EX_FACE_BLOCK: varidobj = VAR_ID_FA_BLK; break;
   case EX_ELEM_BLOCK: varidobj = VAR_ID_EL_BLK; break;
