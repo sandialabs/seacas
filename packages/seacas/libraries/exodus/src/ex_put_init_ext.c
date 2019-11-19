@@ -388,12 +388,6 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     }
   }
 
-  if (file->enable_assembly) {
-    if (ex_write_object_params(exoid, "assemblie", DIM_NUM_ASSEMBLY, VAR_STAT_ASSEMBLY,
-                               VAR_ID_ASSEMBLY, model->num_assembly, &assemdim)) {
-      goto error_ret;
-    }
-  }
   if (ex_write_object_params(exoid, "element block", DIM_NUM_EL_BLK, VAR_STAT_EL_BLK, VAR_ID_EL_BLK,
                              model->num_elem_blk, &elblkdim)) {
     goto error_ret;
@@ -481,12 +475,6 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     }
   }
 
-  if (file->enable_assembly) {
-    if (ex_write_object_names(exoid, "assembly", VAR_NAME_ASSEMBLY, assemdim, dim_str_name,
-                              model->num_assembly) != NC_NOERR) {
-      goto error_ret;
-    }
-  }
   if (ex_write_object_names(exoid, "element block", VAR_NAME_EL_BLK, elblkdim, dim_str_name,
                             model->num_elem_blk) != NC_NOERR) {
     goto error_ret;
@@ -551,11 +539,6 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
   {
     int *  invalid_ids = NULL;
     size_t maxset      = model->num_elem_blk;
-    if (file->enable_assembly) {
-      if (maxset < model->num_assembly) {
-        maxset = model->num_assembly;
-      }
-    }
     if (maxset < model->num_edge_blk) {
       maxset = model->num_edge_blk;
     }
@@ -598,10 +581,6 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
-    if (file->enable_assembly) {
-      invalidate_id_status(exoid, VAR_STAT_ASSEMBLY, VAR_ID_ASSEMBLY, model->num_assembly,
-                           invalid_ids);
-    }
     invalidate_id_status(exoid, VAR_STAT_EL_BLK, VAR_ID_EL_BLK, model->num_elem_blk, invalid_ids);
     invalidate_id_status(exoid, VAR_STAT_ED_BLK, VAR_ID_ED_BLK, model->num_edge_blk, invalid_ids);
     invalidate_id_status(exoid, VAR_STAT_FA_BLK, VAR_ID_FA_BLK, model->num_face_blk, invalid_ids);
@@ -622,9 +601,6 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
 
   /* Write dummy values to the names arrays to avoid corruption issues on some
    * platforms */
-  if (file->enable_assembly) {
-    write_dummy_names(exoid, EX_ASSEMBLY, model->num_assembly);
-  }
   write_dummy_names(exoid, EX_ELEM_BLOCK, model->num_elem_blk);
   write_dummy_names(exoid, EX_EDGE_BLOCK, model->num_edge_blk);
   write_dummy_names(exoid, EX_FACE_BLOCK, model->num_face_blk);

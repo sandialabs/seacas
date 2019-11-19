@@ -273,6 +273,13 @@ echo "begin testrd-assembly" >> test.output
 ${PREFIX} ${BINDIR}/testrd-assembly${SUFFIX} | grep -v version | ${DIFF} - ${SRCDIR}/testrd-assembly.dmp | tee testrd-assembly.res
 echo "end testrd-assembly" >> test.output
 
+echo "test-add-assembly - add an assembly to an existing file"
+echo "begin test-add-assembly" >> test.output
+${PREFIX} ${BINDIR}/test-add-assembly${SUFFIX} >> test.output
+# Filter out the "maximum_name_length" attribute. Moves around in ncdump output for nc4 vs nc3
+${NCDUMP} -d5,5 test-assembly.exo | grep -v version | grep -v _FillValue |grep -v "maximum_name_length" | ${DIFF} - ${SRCDIR}/test-add-assembly.dmp | tee test-add-assembly.res
+echo "end test-add-assembly" >> test.output
+
 echo "testwt-oned - write 1D mesh..."
 echo "begin testwt-oned" >> test.output
 ${PREFIX} ${BINDIR}/testwt-oned${SUFFIX} >> test.output

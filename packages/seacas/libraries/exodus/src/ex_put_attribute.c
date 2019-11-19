@@ -69,13 +69,25 @@ static int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
     return NC_GLOBAL;
   }
 
+  if (obj_type == EX_ASSEMBLY) {
+    if ((status = nc_inq_varid(exoid, VAR_ENTRY_ASSEMBLY(id), &varid)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to locate %s id  %" PRId64 " in id array in file id %d",
+               ex_name_of_object(obj_type), id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      return EX_FATAL;
+    }
+    return varid;
+  }
+
+  /* Everything else ... */
   /* First, locate index of this objects id `obj_type` id array */
   id_ndx = ex__id_lkup(exoid, obj_type, id);
   if (id_ndx <= 0) {
     ex_get_err(NULL, NULL, &status);
     if (status != 0) {
       if (status == EX_NULLENTITY) { /* NULL object?    */
-        EX_FUNC_LEAVE(EX_NOERR);
+        return EX_NOERR;
       }
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to locate %s id  %" PRId64 " in id array in file id %d",
@@ -86,7 +98,6 @@ static int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
   }
 
   switch (obj_type) {
-  case EX_ASSEMBLY: entryptr = VAR_ENTRY_ASSEMBLY(id_ndx); break;
   case EX_NODE_SET: entryptr = VAR_NODE_NS(id_ndx); break;
   case EX_EDGE_SET: entryptr = VAR_EDGE_ES(id_ndx); break;
   case EX_FACE_SET: entryptr = VAR_FACE_FS(id_ndx); break;

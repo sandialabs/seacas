@@ -101,7 +101,6 @@ int main(int argc, char **argv)
   printf("after ex_create for test.exo, exoid = %d\n", exoid);
   printf(" cpu word size: %d io word size: %d\n", CPU_word_size, IO_word_size);
 
-  ex_set_option(exoid, EX_OPT_ENABLE_FEATURE, EX_ENABLE_ASSEMBLY);
   /* initialize file with parameters */
   {
     num_dim       = 3;
@@ -127,6 +126,7 @@ int main(int argc, char **argv)
   double coord[] = {0.0};
   EXCHECK(ex_put_coord(exoid, coord, coord, coord));
 
+  /* ======================================================================== */
   /* write element block parameters */
   struct ex_block blocks[num_elem_blk];
   for (int i = 0; i < num_elem_blk; i++) {
@@ -163,15 +163,19 @@ int main(int argc, char **argv)
     EXCHECK(ex_put_name(exoid, EX_ELEM_BLOCK, blocks[i].id, block_names[i]));
   }
 
+  /* ======================================================================== */
+  /* Define and Output Assemblies */
   int64_t list_100[] = {100, 200, 300, 400};
   int64_t list_200[] = {10, 11, 12, 13};
   int64_t list_300[] = {14, 15, 16};
   int64_t list_400[] = {10, 16};
 
-  ex_assembly assembly[] = {{100, "RootName", EX_ASSEMBLY, 4, NULL},
-                            {200, "ChildName_2", EX_ELEM_BLOCK, 4, list_200},
-                            {300, "ChildName_3", EX_ELEM_BLOCK, 3, list_300},
-                            {400, "ChildName_4", EX_ELEM_BLOCK, 2, NULL}};
+  /* Define assemblies.  Note that first and last do not have an entity list at time of definition.
+   */
+  ex_assembly assembly[] = {{100, "Root", EX_ASSEMBLY, 4, NULL},
+                            {200, "Child2", EX_ELEM_BLOCK, 4, list_200},
+                            {300, "Child3", EX_ELEM_BLOCK, 3, list_300},
+                            {400, "Child4", EX_ELEM_BLOCK, 2, NULL}};
 
   for (int i = 0; i < num_assembly; i++) {
     EXCHECK(ex_put_assembly(exoid, assembly[i]));
@@ -184,6 +188,7 @@ int main(int argc, char **argv)
   assembly[3].entity_list = list_400;
   EXCHECK(ex_put_assembly(exoid, assembly[3]));
 
+  /* ======================================================================== */
   /* Add some arbitrary attributes to the assemblies */
   {
     double scale     = 1.5;
@@ -212,6 +217,8 @@ int main(int argc, char **argv)
     EXCHECK(ex_put_text_attribute(exoid, EX_GLOBAL, 0, "SOLID_MODEL", "STEP-X-43-1547836-Rev 0"));
   }
 
+  /* ======================================================================== */
+  /* Transient Variables */
   int num_assem_vars = 4;
   EXCHECK(ex_put_reduction_variable_param(exoid, EX_ASSEMBLY, num_assem_vars));
 

@@ -320,7 +320,6 @@ int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
               (strcmp(dim_nm, DIM_NUM_FAC_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_ELE_VAR) == 0) ||
               (strcmp(dim_nm, DIM_NUM_NSET_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_ESET_VAR) == 0) ||
               (strcmp(dim_nm, DIM_NUM_FSET_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_SSET_VAR) == 0) ||
-              (strcmp(dim_nm, DIM_NUM_ASSEMBLY_VAR) == 0) ||
               (strcmp(dim_nm, DIM_NUM_ELSET_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_GLO_VAR) == 0) ||
               (strstr(dim_nm, "_red_var") != NULL))) {
       is_filtered = 1;

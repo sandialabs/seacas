@@ -107,22 +107,20 @@ int ex_get_reduction_vars(int exoid, int time_step, ex_entity_type var_type, ex_
     EX_FUNC_LEAVE(status);
   }
 
-  /* Determine index of obj_id in VAR_ID_EL_BLK array */
-  obj_id_ndx = ex__id_lkup(exoid, var_type, obj_id);
+  /* Determine index of obj_id in VAR_ID_XXX array */
+  if (var_type == EX_ASSEMBLY) {
+    obj_id_ndx = obj_id;
+  }
+  else {
+    obj_id_ndx = ex__id_lkup(exoid, var_type, obj_id);
+  }
   if (obj_id_ndx <= 0) {
     ex_get_err(NULL, NULL, &status);
 
     if (status != 0) {
-      if (status == EX_NULLENTITY) {
-        snprintf(errmsg, MAX_ERR_LENGTH,
-                 "Warning: no %s reduction variables for NULL block %" PRId64 " in file id %d",
-                 ex_name_of_object(var_type), obj_id, exoid);
-        ex_err_fn(exoid, __func__, errmsg, EX_NULLENTITY);
-        EX_FUNC_LEAVE(EX_WARN);
-      }
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s id %" PRId64 " in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: could not find %s %" PRId64 " in file id %d",
                ex_name_of_object(var_type), obj_id, exoid);
-      ex_err_fn(exoid, __func__, errmsg, status);
+      ex_err_fn(exoid, __func__, errmsg, EX_NULLENTITY);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -131,13 +129,13 @@ int ex_get_reduction_vars(int exoid, int time_step, ex_entity_type var_type, ex_
   if ((status = nc_inq_varid(exoid, ex__name_red_var_of_object(var_type, obj_id_ndx), &varid)) !=
       NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to locate reduction variables for %s %" PRId64 " in file id %d",
+             "Warning: no reduction variables for %s %" PRId64 " in file id %d",
              ex_name_of_object(var_type), obj_id, exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
-    EX_FUNC_LEAVE(EX_FATAL);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
-  /* read values of element variable */
+  /* read values of reduction variables */
   start[0] = --time_step;
   start[1] = 0;
 

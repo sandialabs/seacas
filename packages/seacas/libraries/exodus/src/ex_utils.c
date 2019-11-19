@@ -747,12 +747,7 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   switch (id_type) {
   case EX_NODAL: return (0);
   case EX_GLOBAL: return (0);
-  case EX_ASSEMBLY:
-    id_table   = VAR_ID_ASSEMBLY;   /* id array name */
-    id_dim     = DIM_NUM_ASSEMBLY;  /* id array dimension name*/
-    stat_table = VAR_STAT_ASSEMBLY; /* id status array name */
-    tmp_stats  = ex__get_stat_ptr(exoid, &exoII_ass);
-    break;
+  case EX_ASSEMBLY: return num;
   case EX_ELEM_BLOCK:
     id_table   = VAR_ID_EL_BLK;   /* id array name */
     id_dim     = DIM_NUM_EL_BLK;  /* id array dimension name*/

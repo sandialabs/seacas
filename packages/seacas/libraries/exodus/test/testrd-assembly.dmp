@@ -72,51 +72,45 @@ num_elem_in_block =  1
 num_nodes_per_elem =  1
 num_attr =  0
 name = 'block_7'
-after ex_get_ids(exoid, EX_ASSEMBLY, assembly_ids), error = 0
-after ex_get_names(exoid, EX_ASSEMBLY, assembly_names), error = 0
-after ex_get_name(exoid, EX_ASSEMBLY, assembly_ids[i], name), error = 0
 after ex_get_assembly(exoid, &assemblies[i]), error = 0
 Assembly named 'Root' has id 100. It contains 4 entities of type 'assembly'
 	100, 200, 300, 400, 
-after ex_get_name(exoid, EX_ASSEMBLY, assembly_ids[i], name), error = 0
 after ex_get_assembly(exoid, &assemblies[i]), error = 0
-Assembly named 'Child1' has id 200. It contains 4 entities of type 'element block'
+Assembly named 'Child2' has id 200. It contains 4 entities of type 'element block'
 	10, 11, 12, 13, 
-after ex_get_name(exoid, EX_ASSEMBLY, assembly_ids[i], name), error = 0
 after ex_get_assembly(exoid, &assemblies[i]), error = 0
-Assembly named 'Child2' has id 300. It contains 3 entities of type 'element block'
+Assembly named 'Child3' has id 300. It contains 3 entities of type 'element block'
 	14, 15, 16, 
-after ex_get_name(exoid, EX_ASSEMBLY, assembly_ids[i], name), error = 0
 after ex_get_assembly(exoid, &assemblies[i]), error = 0
-Assembly named 'Child3' has id 400. It contains 2 entities of type 'element block'
+Assembly named 'Child4' has id 400. It contains 2 entities of type 'element block'
 	10, 16, 
 after ex_get_assemblies(exoid, assmbly), error = 0
 Assembly named 'Root' has id 100. It contains 4 entities of type 'assembly'
-Assembly named 'Child1' has id 200. It contains 4 entities of type 'element block'
-Assembly named 'Child2' has id 300. It contains 3 entities of type 'element block'
-Assembly named 'Child3' has id 400. It contains 2 entities of type 'element block'
+Assembly named 'Child2' has id 200. It contains 4 entities of type 'element block'
+Assembly named 'Child3' has id 300. It contains 3 entities of type 'element block'
+Assembly named 'Child4' has id 400. It contains 2 entities of type 'element block'
 Assembly named 'Root' with id 100. It contains 2 attributes:
 	Name: 'Scale', Type = 6, Value Count = 1
 		1.5
 	Name: 'Units', Type = 4, Value Count = 4
 		1	0	0	-1
 
-Assembly named 'Child1' with id 200. It contains 1 attributes:
+Assembly named 'Child2' with id 200. It contains 1 attributes:
 	Name: 'Offset', Type = 6, Value Count = 3
 		1.1	2.2	3.3
 
-Assembly named 'Child2' with id 300. It contains 2 attributes:
+Assembly named 'Child3' with id 300. It contains 2 attributes:
 	Name: 'Dimension', Type = 2, Value Count = 7
 		l	e	n	g	t	h
 	Name: 'Offset', Type = 6, Value Count = 3
 		1.1	2.2	3.3
 
-Assembly named 'Child3' with id 400. It contains 1 attributes:
+Assembly named 'Child4' with id 400. It contains 1 attributes:
 	Name: 'Units', Type = 4, Value Count = 4
 		1	0	0	-1
 
 GLOBAL contains 1 attributes:
-	Name: 'ACIS', Type = 2, Value Count = 24
+	Name: 'SOLID_MODEL', Type = 2, Value Count = 24
 after ex_get_reduction_variable_param(exoid, EX_ASSEMBLY, &num_assembly_vars), error = 0
 after ex_get_reduction_variable_names(exoid, EX_ASSEMBLY, num_assembly_vars, var_names), error = 0
 There are  4 assembly reduction variables; their names are :
