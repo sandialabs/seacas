@@ -20,7 +20,7 @@ dimensions:
 	num_nod_per_el6 = 1 ;
 	num_el_in_blk7 = 1 ;
 	num_nod_per_el7 = 1 ;
-	num_entity_assembly100 = 4 ;
+	num_entity_assembly100 = 3 ;
 	num_entity_assembly200 = 4 ;
 	num_entity_assembly300 = 3 ;
 	num_entity_assembly400 = 2 ;
@@ -137,7 +137,7 @@ data:
  connect7 =
   1 ;
 
- assembly_entity100 = 100, 200, 300, 400 ;
+ assembly_entity100 = 200, 300, 400 ;
 
  assembly_entity200 = 10, 11, 12, 13 ;
 
