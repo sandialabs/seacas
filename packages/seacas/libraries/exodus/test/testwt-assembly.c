@@ -165,14 +165,14 @@ int main(int argc, char **argv)
 
   /* ======================================================================== */
   /* Define and Output Assemblies */
-  int64_t list_100[] = {100, 200, 300, 400};
+  int64_t list_100[] = {200, 300, 400};
   int64_t list_200[] = {10, 11, 12, 13};
   int64_t list_300[] = {14, 15, 16};
   int64_t list_400[] = {10, 16};
 
   /* Define assemblies.  Note that first and last do not have an entity list at time of definition.
    */
-  ex_assembly assembly[] = {{100, "Root", EX_ASSEMBLY, 4, NULL},
+  ex_assembly assembly[] = {{100, "Root", EX_ASSEMBLY, 3, NULL},
                             {200, "Child2", EX_ELEM_BLOCK, 4, list_200},
                             {300, "Child3", EX_ELEM_BLOCK, 3, list_300},
                             {400, "Child4", EX_ELEM_BLOCK, 2, NULL}};

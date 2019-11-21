@@ -73,8 +73,8 @@ num_nodes_per_elem =  1
 num_attr =  0
 name = 'block_7'
 after ex_get_assembly(exoid, &assemblies[i]), error = 0
-Assembly named 'Root' has id 100. It contains 4 entities of type 'assembly'
-	100, 200, 300, 400, 
+Assembly named 'Root' has id 100. It contains 3 entities of type 'assembly'
+	200, 300, 400, 
 after ex_get_assembly(exoid, &assemblies[i]), error = 0
 Assembly named 'Child2' has id 200. It contains 4 entities of type 'element block'
 	10, 11, 12, 13, 
@@ -85,7 +85,7 @@ after ex_get_assembly(exoid, &assemblies[i]), error = 0
 Assembly named 'Child4' has id 400. It contains 2 entities of type 'element block'
 	10, 16, 
 after ex_get_assemblies(exoid, assmbly), error = 0
-Assembly named 'Root' has id 100. It contains 4 entities of type 'assembly'
+Assembly named 'Root' has id 100. It contains 3 entities of type 'assembly'
 Assembly named 'Child2' has id 200. It contains 4 entities of type 'element block'
 Assembly named 'Child3' has id 300. It contains 3 entities of type 'element block'
 Assembly named 'Child4' has id 400. It contains 2 entities of type 'element block'
