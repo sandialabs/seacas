@@ -137,6 +137,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a2754e2aa699821549432f2c32305e91e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a2754e2aa699821549432f2c32305e91e"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a2754e2aa699821549432f2c32305e91e">check_block_order</a> (const std::vector&lt; T * &gt; &amp;blocks)</td></tr>
 <tr class="separator:a2754e2aa699821549432f2c32305e91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adda9e39aa8daad5a8d027708d53988a6"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#adda9e39aa8daad5a8d027708d53988a6">term_width</a> ()</td></tr>
+<tr class="separator:adda9e39aa8daad5a8d027708d53988a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78ab83fa66bd69d336118e0e72a84241"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a78ab83fa66bd69d336118e0e72a84241">log_power_2</a> (uint64_t value)</td></tr>
 <tr class="separator:a78ab83fa66bd69d336118e0e72a84241"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af25be5c9b86bb94f9c0dcb39bf255250"><td class="memItemLeft" align="right" valign="top">static char **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#af25be5c9b86bb94f9c0dcb39bf255250">get_name_array</a> (size_t count, int size)</td></tr>
@@ -180,9 +182,12 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a48106bb99507951b4655783fe6ceb0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cdb54933afe453c3a00a20308c338da"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a3cdb54933afe453c3a00a20308c338da">check_non_null</a> (void *ptr, const char *type, const std::string &amp;name, const std::string &amp;func)</td></tr>
 <tr class="separator:a3cdb54933afe453c3a00a20308c338da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4345fe52d79d612a6d4779e260e0006b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a4345fe52d79d612a6d4779e260e0006b">case_strcmp</a> (const std::string &amp;s1, const std::string &amp;s2)</td></tr>
-<tr class="memdesc:a4345fe52d79d612a6d4779e260e0006b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case-insensitive string comparison.  <a href="classIoss_1_1Utils.html#a4345fe52d79d612a6d4779e260e0006b">More...</a><br /></td></tr>
-<tr class="separator:a4345fe52d79d612a6d4779e260e0006b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfe87ed59e2fbbde5bd253986eb2180e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#abfe87ed59e2fbbde5bd253986eb2180e">str_equal</a> (const std::string &amp;s1, const std::string &amp;s2)</td></tr>
+<tr class="memdesc:abfe87ed59e2fbbde5bd253986eb2180e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case-insensitive string comparison.  <a href="classIoss_1_1Utils.html#abfe87ed59e2fbbde5bd253986eb2180e">More...</a><br /></td></tr>
+<tr class="separator:abfe87ed59e2fbbde5bd253986eb2180e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1533963ccad2593ae5f10575187c120"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#ab1533963ccad2593ae5f10575187c120">substr_equal</a> (const std::string &amp;prefix, const std::string &amp;str)</td></tr>
+<tr class="memdesc:ab1533963ccad2593ae5f10575187c120"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case-insensitive substring comparison.  <a href="classIoss_1_1Utils.html#ab1533963ccad2593ae5f10575187c120">More...</a><br /></td></tr>
+<tr class="separator:ab1533963ccad2593ae5f10575187c120"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f148e3768f9322640e47ac8c0bc50c0"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a9f148e3768f9322640e47ac8c0bc50c0">platform_information</a> ()</td></tr>
 <tr class="memdesc:a9f148e3768f9322640e47ac8c0bc50c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a string containing <code>uname</code> output.  <a href="classIoss_1_1Utils.html#a9f148e3768f9322640e47ac8c0bc50c0">More...</a><br /></td></tr>
 <tr class="separator:a9f148e3768f9322640e47ac8c0bc50c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -372,52 +377,6 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a4345fe52d79d612a6d4779e260e0006b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4345fe52d79d612a6d4779e260e0006b">&#9670;&nbsp;</a></span>case_strcmp()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Ioss::Utils::case_strcmp </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>s1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>s2</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Case-insensitive string comparison. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">s1</td><td>First string </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">s2</td><td>Second string </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>0 if strings are equal, nonzero otherwise. </dd></dl>
 
 </div>
 </div>
@@ -1763,6 +1722,123 @@ template&lt;typename T &gt; </div>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abfe87ed59e2fbbde5bd253986eb2180e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfe87ed59e2fbbde5bd253986eb2180e">&#9670;&nbsp;</a></span>str_equal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ioss::Utils::str_equal </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>s1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>s2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Case-insensitive string comparison. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">s1</td><td>First string </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">s2</td><td>Second string </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if strings are equal </dd></dl>
+
+</div>
+</div>
+<a id="ab1533963ccad2593ae5f10575187c120"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1533963ccad2593ae5f10575187c120">&#9670;&nbsp;</a></span>substr_equal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ioss::Utils::substr_equal </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>prefix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Case-insensitive substring comparison. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">prefix</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">str</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if <code>str</code> begins with <code>prefix</code> or <code>prefix</code> is empty </dd></dl>
+
+</div>
+</div>
+<a id="adda9e39aa8daad5a8d027708d53988a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adda9e39aa8daad5a8d027708d53988a6">&#9670;&nbsp;</a></span>term_width()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Ioss::Utils::term_width </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

@@ -96,11 +96,13 @@ $(document).ready(function(){initNavTree('Utst__utils_8C.html','');});
 <div class="textblock"><code>#include &lt;catch.hpp&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__Utils_8h_source.html">Ioss_Utils.h</a>&gt;</code><br />
 <code>#include &lt;exception&gt;</code><br />
+<code>#include &lt;numeric&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Utst_utils.C:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Utst__utils_8C__incl.svg" width="100%" height="547"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Utst__utils_8C__incl.svg" width="100%" height="547"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -112,6 +114,10 @@ Macros</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a604c8697ba89efc47ebf07d87846830f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Utst__utils_8C.html#a604c8697ba89efc47ebf07d87846830f">TEST_CASE</a> (&quot;number_width&quot;, &quot;[number_width]&quot;)</td></tr>
 <tr class="separator:a604c8697ba89efc47ebf07d87846830f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a015dc47a93eb8b90c6c45b25e460a2d3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Utst__utils_8C.html#a015dc47a93eb8b90c6c45b25e460a2d3">TEST_CASE</a> (&quot;str_equal&quot;, &quot;[str_equal]&quot;)</td></tr>
+<tr class="separator:a015dc47a93eb8b90c6c45b25e460a2d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15279fda3ba90102b4338292908a3d5e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Utst__utils_8C.html#a15279fda3ba90102b4338292908a3d5e">TEST_CASE</a> (&quot;substr_equal&quot;, &quot;[substr_equal]&quot;)</td></tr>
+<tr class="separator:a15279fda3ba90102b4338292908a3d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f0ddd1c1690596f8e253c6ca1aa18a4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Utst__utils_8C.html#a8f0ddd1c1690596f8e253c6ca1aa18a4">TEST_CASE</a> (&quot;format_id_list&quot;, &quot;[format_id_list]&quot;)</td></tr>
 <tr class="separator:a8f0ddd1c1690596f8e253c6ca1aa18a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -132,7 +138,7 @@ Functions</h2></td></tr>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a8f0ddd1c1690596f8e253c6ca1aa18a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8f0ddd1c1690596f8e253c6ca1aa18a4">&#9670;&nbsp;</a></span>TEST_CASE() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f0ddd1c1690596f8e253c6ca1aa18a4">&#9670;&nbsp;</a></span>TEST_CASE() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -160,7 +166,7 @@ Functions</h2></td></tr>
 </div>
 </div>
 <a id="a604c8697ba89efc47ebf07d87846830f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a604c8697ba89efc47ebf07d87846830f">&#9670;&nbsp;</a></span>TEST_CASE() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a604c8697ba89efc47ebf07d87846830f">&#9670;&nbsp;</a></span>TEST_CASE() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -176,6 +182,62 @@ Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">&quot;&quot;&#160;</td>
           <td class="paramname">[number_width]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a015dc47a93eb8b90c6c45b25e460a2d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a015dc47a93eb8b90c6c45b25e460a2d3">&#9670;&nbsp;</a></span>TEST_CASE() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TEST_CASE </td>
+          <td>(</td>
+          <td class="paramtype">&quot;str_equal&quot;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&quot;&quot;&#160;</td>
+          <td class="paramname">[str_equal]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a15279fda3ba90102b4338292908a3d5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15279fda3ba90102b4338292908a3d5e">&#9670;&nbsp;</a></span>TEST_CASE() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TEST_CASE </td>
+          <td>(</td>
+          <td class="paramtype">&quot;substr_equal&quot;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&quot;&quot;&#160;</td>
+          <td class="paramname">[substr_equal]&#160;</td>
         </tr>
         <tr>
           <td></td>

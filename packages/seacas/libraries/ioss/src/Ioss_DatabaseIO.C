@@ -111,8 +111,8 @@ namespace {
   double my_max(double x1, double x2) { return x1 > x2 ? x1 : x2; }
 
   template <typename INT>
-  void calc_bounding_box(size_t ndim, size_t node_count, std::vector<double> coordinates,
-                         std::vector<INT> connectivity, double &xmin, double &ymin, double &zmin,
+  void calc_bounding_box(size_t ndim, size_t node_count, std::vector<double> &coordinates,
+                         std::vector<INT> &connectivity, double &xmin, double &ymin, double &zmin,
                          double &xmax, double &ymax, double &zmax)
   {
     std::vector<int> elem_block_nodes(node_count);
@@ -261,9 +261,7 @@ namespace Ioss {
     if (properties.exists("FIELD_SUFFIX_SEPARATOR")) {
       properties.erase("FIELD_SUFFIX_SEPARATOR");
     }
-    char tmp[2];
-    tmp[0] = separator;
-    tmp[1] = 0;
+    char tmp[2] = {separator, '\0'};
     properties.add(Property("FIELD_SUFFIX_SEPARATOR", tmp));
     fieldSeparator = separator;
   }
@@ -890,8 +888,7 @@ namespace Ioss {
         std::vector<int> entity_processor;
         css->get_field_data("entity_processor", entity_processor);
         proc_node.reserve(entity_processor.size() / 2);
-        size_t j = 0;
-        for (size_t i = 0; i < entity_processor.size(); j++, i += 2) {
+        for (size_t i = 0; i < entity_processor.size(); i += 2) {
           proc_node.emplace_back(entity_processor[i + 1], entity_processor[i]);
         }
       }

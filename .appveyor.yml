@@ -11,7 +11,8 @@ environment:
       VCPKG_DEFAULT_TRIPLET: "x64-windows"
       VCPKG_BUILD_TYPE: "release"
       LIB_ROOT: C:\Tools\vcpkg\installed\%VCPKG_DEFAULT_TRIPLET%
-
+      MINGW_DIR: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin
+      
 platform:
     - x64
 
@@ -23,6 +24,9 @@ branches:
 # Do not build feature branch with open Pull Requests
 skip_branch_with_pr: true
 
+init:
+  - cmd: set PATH=%MINGW_DIR%;%PATH%
+  
 install:
   - cmd: set SRC_DIR=%cd%
   - cmd: set INSTALL_LOC=%SRC_DIR%\install
@@ -30,34 +34,6 @@ install:
   - cmd: vcpkg install netcdf-c
   - cmd: vcpkg install matio
   - cmd: vcpkg integrate install
-  - cmd: dir C:\Tools\vcpkg\installed\x64-windows\lib
-  - cmd: dir C:\Tools\vcpkg\installed\x64-windows\bin
-  - cmd: link /dump /all C:\Tools\vcpkg\installed\x64-windows\lib\libhdf5.lib
-  - cmd: git clone https://github.com/cgns/CGNS C:\projects\cgns
-  - cmd: cd C:\projects\cgns
-  - cmd: mkdir build
-  - cmd: cd build
-  - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
-     -DCMAKE_BUILD_TYPE=Release ^
-     -DCMAKE_PREFIX_PATH:PATH=%LIB_ROOT%\lib ^
-     -DCMAKE_TOOLCHAIN_FILE=C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake ^
-     -DCMAKE_INSTALL_PREFIX=%INSTALL_LOC% ^
-     -DCGNS_BUILD_SHARED:BOOL=ON ^
-     -DCGNS_USE_SHARED:BOOL=ON ^
-     -DCGNS_ENABLE_LFS:BOOL=OFF ^
-     -DCGNS_BUILD_CGNSTOOLS:BOOL=OFF ^
-     -DCGNS_ENABLE_HDF5:BOOL=ON ^
-     -DHDF5_NEED_ZLIB:BOOL=ON ^
-     -DCGNS_ENABLE_64BIT:BOOL=ON ^
-     -DCGNS_ENABLE_SCOPING:BOOL=ON ^
-     -DCGNS_ENABLE_FORTRAN:BOOL=OFF ^
-     -DCGNS_ENABLE_PARALLEL:BOOL=OFF ^
-     -DHDF5_NEED_MPI:BOOL=OFF ^
-     -DHDF5_DIR:PATH=%LIB_ROOT% ^
-     -DHDF5_LIBRARY:PATH=%LIB_ROOT%\bin
-  - cmd: cmake --build . --verbose --config Release -- /maxcpucount:4
-  - cmd: cmake --build . --verbose --config Release --target install -- /maxcpucount:4
-  - cmd: cd C:\projects\seacas
 
 configuration: Release
 
@@ -68,8 +44,7 @@ build_script:
   - cmd: mkdir build
   - cmd: cd build
   - cmd: cmake .. -G "%CMAKE_GENERATOR%" ^
-     -DBUILD_SHARED_LIBS:BOOL=ON ^
-     -DCGNS_ROOT:PATH=%LIB_ROOT% ^
+     -DBUILD_SHARED_LIBS:BOOL=OFF ^
      -DCMAKE_BUILD_TYPE=Release ^
      -DCMAKE_CXX_FLAGS="%SUPPRESSIONS% /EHsc" ^
      -DCMAKE_C_FLAGS="%SUPPRESSIONS%" ^
@@ -91,7 +66,7 @@ build_script:
      -DSEACASProj_HIDE_DEPRECATED_CODE:BOOL=ON ^
      -DSEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON ^
      -DTPL_ENABLE_ADIOS2:BOOL=OFF ^
-     -DTPL_ENABLE_CGNS:BOOL=ON ^
+     -DTPL_ENABLE_CGNS:BOOL=OFF ^
      -DTPL_ENABLE_Kokkos:BOOL=OFF ^
      -DTPL_ENABLE_MPI:BOOL=OFF ^
      -DTPL_ENABLE_Matio:BOOL=ON ^

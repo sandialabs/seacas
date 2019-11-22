@@ -106,9 +106,12 @@ Functions</h2></td></tr>
 <tr class="memitem:af9bab93c2a1eb7f89e1117983dcf4d87"><td class="memTemplParams" colspan="2">template&lt;typename INT &gt; </td></tr>
 <tr class="memitem:af9bab93c2a1eb7f89e1117983dcf4d87"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iopx__DatabaseIO_8C_03.html#af9bab93c2a1eb7f89e1117983dcf4d87">map_nodeset_id_data</a> (const <a class="el" href="namespaceIoss.html#a57c9ce804956e5571c2124a1f67d1f12">Ioss::IntVector</a> &amp;owning_processor, <a class="el" href="namespaceIoss.html#a715acbaf3ca8e2e82d0d3a0f81ff5f1b">Ioss::Int64Vector</a> &amp;owned_nodes, int this_processor, const <a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> *ids, size_t ids_size, std::vector&lt; <a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> &gt; &amp;file_data)</td></tr>
 <tr class="separator:af9bab93c2a1eb7f89e1117983dcf4d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bf200858ba395d958859f0d60f83de8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a3bf200858ba395d958859f0d60f83de8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iopx__DatabaseIO_8C_03.html#a3bf200858ba395d958859f0d60f83de8">map_nodeset_data</a> (<a class="el" href="namespaceIoss.html#a715acbaf3ca8e2e82d0d3a0f81ff5f1b">Ioss::Int64Vector</a> &amp;owned_nodes, const T *data, std::vector&lt; T &gt; &amp;file_data, size_t offset=0, size_t stride=1)</td></tr>
-<tr class="separator:a3bf200858ba395d958859f0d60f83de8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a865c98d60d732fe8eecbad3f28cb5b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename U &gt; </td></tr>
+<tr class="memitem:a9a865c98d60d732fe8eecbad3f28cb5b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iopx__DatabaseIO_8C_03.html#a9a865c98d60d732fe8eecbad3f28cb5b">map_nodeset_data</a> (<a class="el" href="namespaceIoss.html#a715acbaf3ca8e2e82d0d3a0f81ff5f1b">Ioss::Int64Vector</a> &amp;owned_nodes, const T *data, std::vector&lt; U &gt; &amp;file_data, size_t offset=0, size_t stride=1)</td></tr>
+<tr class="separator:a9a865c98d60d732fe8eecbad3f28cb5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af48c785538b99eff27c36823b08c2daf"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af48c785538b99eff27c36823b08c2daf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iopx__DatabaseIO_8C_03.html#af48c785538b99eff27c36823b08c2daf">extract_data</a> (std::vector&lt; double &gt; &amp;local_data, T *data, size_t num_entity, size_t offset, size_t comp_count)</td></tr>
+<tr class="separator:af48c785538b99eff27c36823b08c2daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ce13a69d98c2d97a52feea0e776d24d"><td class="memTemplParams" colspan="2">template&lt;typename T , typename U &gt; </td></tr>
 <tr class="memitem:a0ce13a69d98c2d97a52feea0e776d24d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iopx__DatabaseIO_8C_03.html#a0ce13a69d98c2d97a52feea0e776d24d">map_data</a> (const <a class="el" href="namespaceIoss.html#a57c9ce804956e5571c2124a1f67d1f12">Ioss::IntVector</a> &amp;owning_processor, int this_processor, const T *data, std::vector&lt; U &gt; &amp;file_data, size_t offset=0, size_t stride=1)</td></tr>
 <tr class="separator:a0ce13a69d98c2d97a52feea0e776d24d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,6 +158,54 @@ template&lt;typename T &gt; </div>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>entity_count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af48c785538b99eff27c36823b08c2daf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af48c785538b99eff27c36823b08c2daf">&#9670;&nbsp;</a></span>extract_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void anonymous_namespace{Iopx_DatabaseIO.C}::extract_data </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>num_entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>comp_count</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -308,13 +359,13 @@ template&lt;typename INT &gt; </div>
 
 </div>
 </div>
-<a id="a3bf200858ba395d958859f0d60f83de8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3bf200858ba395d958859f0d60f83de8">&#9670;&nbsp;</a></span>map_nodeset_data()</h2>
+<a id="a9a865c98d60d732fe8eecbad3f28cb5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a865c98d60d732fe8eecbad3f28cb5b">&#9670;&nbsp;</a></span>map_nodeset_data()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T &gt; </div>
+template&lt;typename T , typename U &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void anonymous_namespace{Iopx_DatabaseIO.C}::map_nodeset_data </td>
@@ -331,7 +382,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; U &gt; &amp;&#160;</td>
           <td class="paramname"><em>file_data</em>, </td>
         </tr>
         <tr>

@@ -65,7 +65,7 @@ sys.dont_write_bytecode = True
 ONELINE = "Gather from or export to Exodus files using the Exodus library"
 
 if sys.version_info[0] >= 3:
-    raise Exception("Cannot use Python 3 yet.  Must use Python 2.X")
+    raise Exception("Python-2 version. If using python-3, try `import exodus3 as exodus`")
 
 
 def basename(file_name):

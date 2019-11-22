@@ -13,6 +13,5 @@ var Ioss__Region_8C =
     [ "numberOfBits", "Ioss__Region_8C.html#aaa7df9904c197f8f00d2ff2658583d09", null ],
     [ "orig_block_order", "Ioss__Region_8C.html#a8568bcd30308134cfe0cb60c2522322d", null ],
     [ "orig_topo_str", "Ioss__Region_8C.html#a327edd1ebc88770052114d9bb44e32ab", null ],
-    [ "report_inconsistency", "Ioss__Region_8C.html#a2f8c4edf9fcba5a6ace342c7f9231727", null ],
-    [ "uppercase", "Ioss__Region_8C.html#acd06ef87eff981abc4c9d7cfb0a4f11d", null ]
+    [ "report_inconsistency", "Ioss__Region_8C.html#a2f8c4edf9fcba5a6ace342c7f9231727", null ]
 ];

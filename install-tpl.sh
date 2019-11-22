@@ -7,7 +7,7 @@ fi
 txtred=$(tput setaf 1)    # Red
 txtgrn=$(tput setaf 2)    # Green
 txtylw=$(tput setaf 3)    # Yellow
-txtblu=$(tput setaf 4)    # Blue
+#txtblu=$(tput setaf 4)    # Blue
 #txtpur=$(tput setaf 5)    # Purple
 txtcyn=$(tput setaf 6)    # Cyan
 #txtwht=$(tput setaf 7)    # White
@@ -50,6 +50,9 @@ check_valid_yes_no BUILD
 # Force downloading and installation even if the TPL already exists in lib/include
 FORCE=${FORCE:-NO}
 check_valid_yes_no FORCE
+
+DEBUG=${DEBUG:-NO}
+check_valid_yes_no DEBUG
 
 # Shared libraries or static libraries?
 SHARED=${SHARED:-YES}
@@ -138,6 +141,7 @@ if [ $# -gt 0 ]; then
 	echo "   DOWNLOAD     = ${DOWNLOAD}"
 	echo "   BUILD        = ${BUILD}"
 	echo "   SHARED       = ${SHARED}"
+	echo "   DEBUG        = ${DEBUG}"
 	echo "   USE_PROXY    = ${USE_PROXY}"
 	echo ""
 	echo "   H5VERSION    = ${H5VERSION}"
@@ -236,7 +240,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version}
-        CRAY=${CRAY} H5VERSION=${H5VERSION} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
+        CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
@@ -277,7 +281,7 @@ then
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ${pnet_base}-${pnet_version}
-            CRAY=${CRAY} BB=${BB} SHARED=${SHARED} bash ../runconfigure.sh
+            CRAY=${CRAY} BB=${BB} DEBUG=${DEBUG} SHARED=${SHARED} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure PnetCDF. exiting.${txtrst}
@@ -326,7 +330,7 @@ then
         fi
         mkdir build
         cd build
-        CRAY=${CRAY} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
+        CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash -x ../../runcmake.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure cmake for NetCDF. exiting.${txtrst}
@@ -367,7 +371,7 @@ then
                 mkdir build
             fi
             cd build
-            CRAY=${CRAY} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure CGNS. exiting.${txtrst}
@@ -411,7 +415,7 @@ then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd matio
             ./autogen.sh
-            CRAY=${CRAY} SHARED=${SHARED} bash ../runconfigure.sh
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure MatIO. exiting.${txtrst}
@@ -458,7 +462,7 @@ then
             fi
             mkdir build
             cd build
-            CUDA=${CUDA} SHARED=${SHARED} MPI=${MPI} bash ../../runcmake.sh
+            CUDA=${CUDA} SHARED=${SHARED} DEBUG=${DEBUG} MPI=${MPI} bash ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure cmake for KOKKOS. exiting.${txtrst}
@@ -503,7 +507,7 @@ then
             fi
             mkdir build
             cd build
-            SHARED=${SHARED} MPI=${MPI} bash -x ../../runcmake.sh
+            SHARED=${SHARED} MPI=${MPI} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure cmake for ADIOS2. exiting.${txtrst}
@@ -548,7 +552,7 @@ then
             fi
             mkdir build
             cd build
-            SHARED=${SHARED} bash -x ../../runcmake.sh
+            SHARED=${SHARED} DEBUG=${DEBUG} bash -x ../../runcmake.sh
             if [[ $? != 0 ]]
             then
                 echo 1>&2 ${txtred}couldn\'t configure cmake for gtest. exiting.${txtrst}

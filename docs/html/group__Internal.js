@@ -376,7 +376,7 @@ var group__Internal =
     [ "ex__put_nemesis_version", "group__Internal.html#gaaf24b47badc59254147ae53ea21d0a3a", null ],
     [ "ex__put_nodal_var", "group__Internal.html#gadea4cacfe3af0f6245b2d973546bc4ef", null ],
     [ "ex__put_partial_nodal_var", "group__Internal.html#gaafda0a407402616fde3c5e653a2a79c1", null ],
-    [ "ex__reset_error_status", "group__Internal.html#ga9339fa5714993b24028454297ee90129", null ],
+    [ "ex__reset_error_status", "group__Internal.html#ga74d83c1a81c4c0d3200b31accfcaec04", null ],
     [ "ex__rm_file_item", "group__Internal.html#gac07b1322045e3201727a86b7c31efa07", null ],
     [ "ex__rm_stat_ptr", "group__Internal.html#ga2a41cd09d57cd2b963163200fec1daef", null ],
     [ "ex__trim", "group__Internal.html#ga72b40a2080a24437041089d1ca10d6a1", null ],

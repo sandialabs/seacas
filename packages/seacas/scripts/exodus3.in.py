@@ -1,5 +1,5 @@
 """
-exodus.py v 1.15 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.17 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -85,6 +85,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import sys
+if sys.version_info[0] < 3:
+    raise Exception("Python-3 version. If using python-2, try `import exodus2 as exodus`")
+
 from ctypes import *
 import os
 import locale
@@ -92,10 +95,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.15 (seacas-py3)"
+EXODUS_PY_VERSION = "1.16 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.15 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.16 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -111,16 +114,15 @@ Authors:
   Greg Sjaardema   (gdsjaar@sandia.gov)
 """
 
+# show the banner on first use
+SHOW_BANNER = True
+
 ## Documentation is generated on a Mac laptop using:
 ## pdoc --force --html ../lib/exodus.py
 
 sys.dont_write_bytecode = True
 
 ONELINE = "Gather from or export to Exodus files using the Exodus library"
-
-if sys.version_info[0] < 3:
-    raise Exception("Cannot use Python 2, must use Python 3.X")
-
 
 def basename(file_name):
     """
@@ -400,7 +402,7 @@ class ex_entity_type(Enum):
     EX_FACE_SET   = 9
     EX_ELEM_BLOCK = 1
     EX_ELEM_SET   = 10
-    EX_SIDE_SET = 3    
+    EX_SIDE_SET = 3
     EX_ELEM_MAP = 4
     EX_NODE_MAP = 5
     EX_EDGE_MAP = 11
@@ -541,7 +543,11 @@ class exodus:
         ...             array_type=array_type, init_params=ex_pars)
 
         """
-        print(EXODUS_PY_COPYRIGHT)
+        global SHOW_BANNER
+        if SHOW_BANNER:
+            print(EXODUS_PY_COPYRIGHT)
+            SHOW_BANNER = False
+
         if mode is None:
             mode = 'r'
 
@@ -3412,7 +3418,7 @@ class exodus:
         truth_tab : <list<bool>>
             True for variable defined in an entity, False otherwise
         """
-        if entId is not None:
+        if entId is None:
             truthTable = self.__ex_get_truth_table(objType)
         else:
             truthTable = self.__ex_get_object_truth_vector(objType, entId)
@@ -4204,7 +4210,7 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_info(self, info):
-        self.Title = create_string_buffer(info[0], MAX_LINE_LENGTH + 1)
+        self.Title = create_string_buffer(info[0].encode('ascii'), MAX_LINE_LENGTH + 1)
         self.numDim = c_longlong(info[1])
         self.numNodes = c_longlong(info[2])
         self.numElem = c_longlong(info[3])
@@ -5087,7 +5093,7 @@ class exodus:
     def __ex_put_variable_name(self, varType, varId, varName):
         var_type = c_int(get_entity_type(varType))
         var_id = c_int(varId)
-        name = create_string_buffer(varName, MAX_NAME_LENGTH + 1)
+        name = create_string_buffer(varName.encode('ascii'), MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_variable_name(self.fileId, var_type, var_id, name)
         return True
 
@@ -5118,7 +5124,7 @@ class exodus:
         for i in range(num_attr.value):
             attr_name_ptrs[i] = pointer(
                 create_string_buffer(
-                    varNames[i], len_name + 1))
+                    varNames[i].encode('ascii'), len_name + 1))
         EXODUS_LIB.ex_put_elem_attr_names(
             self.fileId, object_id, byref(attr_name_ptrs))
         return True
@@ -5356,7 +5362,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
     # If the user did not supply a exodus object to copy from, attempt to read an
     # exodus database with the name "fromFileName"
     if exoFromObj is None:
-        exoFrom = exodus(fromFileName.encode('ascii'), "r", array_type=array_type)
+        exoFrom = exodus(fromFileName, "r", array_type=array_type)
     else:
         exoFrom = exoFromObj
 

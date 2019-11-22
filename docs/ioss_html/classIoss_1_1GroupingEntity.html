@@ -106,12 +106,14 @@ $(document).ready(function(){initNavTree('classIoss_1_1GroupingEntity.html','');
 <div class="dynheader">
 Inheritance diagram for Ioss::GroupingEntity:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1GroupingEntity__inherit__graph.svg" width="534" height="480"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIoss_1_1GroupingEntity__inherit__graph.svg" width="534" height="480"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for Ioss::GroupingEntity:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1GroupingEntity__coll__graph.svg" width="100%" height="552"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIoss_1_1GroupingEntity__coll__graph.svg" width="100%" height="552"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -216,23 +218,23 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afb595dc3b710921210e25a360709f3b4"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#afb595dc3b710921210e25a360709f3b4">field_count</a> (<a class="el" href="classIoss_1_1Field.html#a4aa15b17d3fc1cd8701ddb1a6171db75">Field::RoleType</a> role) const</td></tr>
 <tr class="memdesc:afb595dc3b710921210e25a360709f3b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of fields with the given role (MESH, ATTRIBUTE, TRANSIENT, REDUCTION, etc.) in the entity's field manager.  <a href="classIoss_1_1GroupingEntity.html#afb595dc3b710921210e25a360709f3b4">More...</a><br /></td></tr>
 <tr class="separator:afb595dc3b710921210e25a360709f3b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4969f0b3bc6d6a1c63d20d3938608728"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728">get_field_data</a> (const std::string &amp;field_name, void *data, size_t data_size) const</td></tr>
-<tr class="memdesc:a4969f0b3bc6d6a1c63d20d3938608728"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read field data from the database file into memory using a pointer.  <a href="classIoss_1_1GroupingEntity.html#a4969f0b3bc6d6a1c63d20d3938608728">More...</a><br /></td></tr>
-<tr class="separator:a4969f0b3bc6d6a1c63d20d3938608728"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e4800373483590f73d92721de5bb59d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">put_field_data</a> (const std::string &amp;field_name, void *data, size_t data_size) const</td></tr>
-<tr class="memdesc:a2e4800373483590f73d92721de5bb59d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write field data from memory into the database file using a pointer.  <a href="classIoss_1_1GroupingEntity.html#a2e4800373483590f73d92721de5bb59d">More...</a><br /></td></tr>
-<tr class="separator:a2e4800373483590f73d92721de5bb59d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea644daddfe26ebaaad2e01e027c8913"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aea644daddfe26ebaaad2e01e027c8913"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#aea644daddfe26ebaaad2e01e027c8913">get_field_data</a> (const std::string &amp;field_name, std::vector&lt; T &gt; &amp;data) const</td></tr>
-<tr class="memdesc:aea644daddfe26ebaaad2e01e027c8913"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read type 'T' field data from the database file into memory using a std::vector.  <a href="classIoss_1_1GroupingEntity.html#aea644daddfe26ebaaad2e01e027c8913">More...</a><br /></td></tr>
-<tr class="separator:aea644daddfe26ebaaad2e01e027c8913"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf4cae39181ef7f0910e6e9f775b4b4f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aaf4cae39181ef7f0910e6e9f775b4b4f"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#aaf4cae39181ef7f0910e6e9f775b4b4f">put_field_data</a> (const std::string &amp;field_name, const std::vector&lt; T &gt; &amp;data) const</td></tr>
-<tr class="memdesc:aaf4cae39181ef7f0910e6e9f775b4b4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write type 'T' field data from memory into the database file using a std::vector.  <a href="classIoss_1_1GroupingEntity.html#aaf4cae39181ef7f0910e6e9f775b4b4f">More...</a><br /></td></tr>
-<tr class="separator:aaf4cae39181ef7f0910e6e9f775b4b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a115ee292f2e63afaca3949736bde2ece"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a115ee292f2e63afaca3949736bde2ece"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a115ee292f2e63afaca3949736bde2ece">put_field_data</a> (const std::string &amp;field_name, std::vector&lt; T &gt; &amp;data) const</td></tr>
-<tr class="separator:a115ee292f2e63afaca3949736bde2ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f3d6b42e6a7f68a61d00afe9132cc80"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a4f3d6b42e6a7f68a61d00afe9132cc80">get_field_data</a> (const std::string &amp;field_name, void *data, size_t data_size) const</td></tr>
+<tr class="memdesc:a4f3d6b42e6a7f68a61d00afe9132cc80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read field data from the database file into memory using a pointer.  <a href="classIoss_1_1GroupingEntity.html#a4f3d6b42e6a7f68a61d00afe9132cc80">More...</a><br /></td></tr>
+<tr class="separator:a4f3d6b42e6a7f68a61d00afe9132cc80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b65d41c5f8ebe6a5b9d90be91c40d5c"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">put_field_data</a> (const std::string &amp;field_name, void *data, size_t data_size) const</td></tr>
+<tr class="memdesc:a9b65d41c5f8ebe6a5b9d90be91c40d5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write field data from memory into the database file using a pointer.  <a href="classIoss_1_1GroupingEntity.html#a9b65d41c5f8ebe6a5b9d90be91c40d5c">More...</a><br /></td></tr>
+<tr class="separator:a9b65d41c5f8ebe6a5b9d90be91c40d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a147100ac9892721cf7b6bd22a80b8969"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a147100ac9892721cf7b6bd22a80b8969"><td class="memTemplItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a147100ac9892721cf7b6bd22a80b8969">get_field_data</a> (const std::string &amp;field_name, std::vector&lt; T &gt; &amp;data) const</td></tr>
+<tr class="memdesc:a147100ac9892721cf7b6bd22a80b8969"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read type 'T' field data from the database file into memory using a std::vector.  <a href="classIoss_1_1GroupingEntity.html#a147100ac9892721cf7b6bd22a80b8969">More...</a><br /></td></tr>
+<tr class="separator:a147100ac9892721cf7b6bd22a80b8969"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7e4a4b90e9e23e5138618e3058cd373"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aa7e4a4b90e9e23e5138618e3058cd373"><td class="memTemplItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#aa7e4a4b90e9e23e5138618e3058cd373">put_field_data</a> (const std::string &amp;field_name, const std::vector&lt; T &gt; &amp;data) const</td></tr>
+<tr class="memdesc:aa7e4a4b90e9e23e5138618e3058cd373"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write type 'T' field data from memory into the database file using a std::vector.  <a href="classIoss_1_1GroupingEntity.html#aa7e4a4b90e9e23e5138618e3058cd373">More...</a><br /></td></tr>
+<tr class="separator:aa7e4a4b90e9e23e5138618e3058cd373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3373aa56c277192203cc7d31bf010023"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3373aa56c277192203cc7d31bf010023"><td class="memTemplItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a3373aa56c277192203cc7d31bf010023">put_field_data</a> (const std::string &amp;field_name, std::vector&lt; T &gt; &amp;data) const</td></tr>
+<tr class="separator:a3373aa56c277192203cc7d31bf010023"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0178b36d697ce63d54fcab3204c15201"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Field.html#a43f29f9ba05cb45ed893455c76526c3e">Ioss::Field::BasicType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a0178b36d697ce63d54fcab3204c15201">field_int_type</a> () const</td></tr>
 <tr class="separator:a0178b36d697ce63d54fcab3204c15201"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1cd7715c7b5324175d030dceb4aa9315"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1GroupingEntity.html#a1cd7715c7b5324175d030dceb4aa9315">hash</a> () const</td></tr>
@@ -916,8 +918,8 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="aea644daddfe26ebaaad2e01e027c8913"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea644daddfe26ebaaad2e01e027c8913">&#9670;&nbsp;</a></span>get_field_data() <span class="overload">[1/2]</span></h2>
+<a id="a147100ac9892721cf7b6bd22a80b8969"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a147100ac9892721cf7b6bd22a80b8969">&#9670;&nbsp;</a></span>get_field_data() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -925,7 +927,7 @@ Friends</h2></td></tr>
 template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">int Ioss::GroupingEntity::get_field_data </td>
+          <td class="memname">int64_t Ioss::GroupingEntity::get_field_data </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>field_name</em>, </td>
@@ -956,14 +958,14 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a4969f0b3bc6d6a1c63d20d3938608728"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4969f0b3bc6d6a1c63d20d3938608728">&#9670;&nbsp;</a></span>get_field_data() <span class="overload">[2/2]</span></h2>
+<a id="a4f3d6b42e6a7f68a61d00afe9132cc80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f3d6b42e6a7f68a61d00afe9132cc80">&#9670;&nbsp;</a></span>get_field_data() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int Ioss::GroupingEntity::get_field_data </td>
+          <td class="memname">int64_t Ioss::GroupingEntity::get_field_data </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>field_name</em>, </td>
@@ -1559,8 +1561,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="aaf4cae39181ef7f0910e6e9f775b4b4f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaf4cae39181ef7f0910e6e9f775b4b4f">&#9670;&nbsp;</a></span>put_field_data() <span class="overload">[1/3]</span></h2>
+<a id="aa7e4a4b90e9e23e5138618e3058cd373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7e4a4b90e9e23e5138618e3058cd373">&#9670;&nbsp;</a></span>put_field_data() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1568,7 +1570,7 @@ template&lt;typename T &gt; </div>
 template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">int Ioss::GroupingEntity::put_field_data </td>
+          <td class="memname">int64_t Ioss::GroupingEntity::put_field_data </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>field_name</em>, </td>
@@ -1599,8 +1601,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a115ee292f2e63afaca3949736bde2ece"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a115ee292f2e63afaca3949736bde2ece">&#9670;&nbsp;</a></span>put_field_data() <span class="overload">[2/3]</span></h2>
+<a id="a3373aa56c277192203cc7d31bf010023"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3373aa56c277192203cc7d31bf010023">&#9670;&nbsp;</a></span>put_field_data() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1608,7 +1610,7 @@ template&lt;typename T &gt; </div>
 template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">int Ioss::GroupingEntity::put_field_data </td>
+          <td class="memname">int64_t Ioss::GroupingEntity::put_field_data </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>field_name</em>, </td>
@@ -1629,14 +1631,14 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a2e4800373483590f73d92721de5bb59d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e4800373483590f73d92721de5bb59d">&#9670;&nbsp;</a></span>put_field_data() <span class="overload">[3/3]</span></h2>
+<a id="a9b65d41c5f8ebe6a5b9d90be91c40d5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b65d41c5f8ebe6a5b9d90be91c40d5c">&#9670;&nbsp;</a></span>put_field_data() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int Ioss::GroupingEntity::put_field_data </td>
+          <td class="memname">int64_t Ioss::GroupingEntity::put_field_data </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>field_name</em>, </td>
