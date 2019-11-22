@@ -81,6 +81,30 @@ to configure the SEACAS CMake build.
 * `make && make install`
 * If everything works, your applications should be in `${ACCESS}/bin`
 * To install in a different location, do `INSTALL_PATH={path_to_install} ../cmake-config`
+* The default behavior can be modified via a few environment variables:
+
+| Variable        | Values          | Default | Description |
+|-----------------|:---------------:|:-------:|-------------|
+| INSTALL_PATH    | path to install | pwd | Root of install path; default is current location |
+| BUILDDIR        | {dir}   | `pwd`/build | Directory to do config and build |
+| COMPILER        | clang, gnu, intel, ibm | gnu | What compiler should be used for non-parallel build |
+| SHARED          | ON, OFF | ON  | Build and use shared libraries is ON |
+| APPLICATIONS    | ON, OFF | ON  | Should all SEACAS applications be built (see `cmake-config`) |
+| LEGACY          | ON, OFF | ON  | Should the legacy SEACAS applications be built (see `cmake-config`) |
+| FORTRAN         | ON, OFF | ON  | Should fortran libraries and applications be built (see `cmake-config`) |
+| ZOLTAN          | ON, OFF | ON  | Should zoltan library and nem_slice be built |
+| PYTHON_VER      | 2.7 3.0 | 3.0 | Minimum version of python which should be found |
+| BUILD_TYPE      | debug, release| release | what type of build |
+| DEBUG           | -none- |      | If specified, then do a debug build. Can't be used with `BUILD_TYPE` |
+| HAVE_X11        | ON, OFF | ON  | Does the system have X11 libraries and include files; used for blot, fastq |
+| THREADSAFE      | ON, OFF | OFF | Compile a thread-safe IOSS and Exodus library |
+| USE_SRUN        | ON, OFF | OFF | If MPI enabled, then use srun instead of mpiexec to run parallel tests |
+| DOXYGEN         | ON, OFF | OFF | Run doxygen on several packages during build to generate documentation |
+| OMIT_DEPRECATED | YES, NO | NO  | Should the deprecated code be omitted; NO will enable deprecated code |
+| EXTRA_WARNINGS  | YES, NO | NO  | Build with extra warnings enabled; see list in `cmake-config` |
+| SANITIZER       | many    | NO  | If not NO, build using specified sanitizer; see list in `cmake-config` |
+| GENERATOR       | many    | "Unix Makefiles" | what generator should CMake use; see cmake doc |
+* The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
 
 ## Testing
 There are a few unit tests for zoltan, exodus, and aprepro that can be run via `make test` if you configured with `-D SEACASProj_ENABLE_TESTS=ON`.
@@ -102,7 +126,7 @@ If you only want the exodus library, then follow most of the above instructions 
 	<https://github.com/gsjaardema/seacas/archive/exodus.zip> NOTE: Probably out-of-date and better to just clone entire repository.
 * You only need the netcdf and optionally hdf5 libraries
 * Use the `cmake-exodus` file instead of `cmake-config`.
-* This will build, by default, a shared exodus library and also install the exodus.py Python interface.
+* This will build, by default, a shared exodus library and also install the exodus.py and exomerge.py Python interfaces.
 
 ## Trilinos
 
@@ -136,7 +160,7 @@ Enter `spack info seacas` to see information on supported variants and other inf
 
 ## License
 
-SEACAS is licensed under the Modified BSD License.  See the LICENSE  file for details.
+SEACAS is licensed under the Modified BSD License.  See the [LICENSE](LICENSE) file for details.
 
 The following externally-developed software routines are used in some of the SEACAS applications and are under
 a separate license:

@@ -48,6 +48,7 @@
 #include <cstdlib>          // for exit, free, malloc
 #include <cstring>          // for strlen, memset, etc
 #include <ctime>            // for asctime, localtime, time, etc
+#include <numeric>
 #include <vector>           // for vector
 template <typename INT> struct ELEM_COMM_MAP;
 template <typename INT> struct NODE_COMM_MAP;
@@ -337,18 +338,6 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
   PIO_Time_Array[2] = (second() - tt1);
   total_out_time += PIO_Time_Array[2];
 
-  /*
-   * The Nemesis node maps are lists of internal, border and external
-   * FEM node numbers. These are output as local node numbers.
-   */
-  INT *nem_node_mapi =
-      (INT *)array_alloc(__FILE__, __LINE__, 1, itotal_nodes + itotal_elems, sizeof(INT));
-  INT *nem_node_mapb = nem_node_mapi + globals.Num_Internal_Nodes[iproc];
-  INT *nem_node_mape = nem_node_mapb + globals.Num_Border_Nodes[iproc];
-
-  for (size_t i1 = 0; i1 < itotal_nodes; i1++) {
-    nem_node_mapi[i1] = i1 + 1;
-  }
 
   /* Convert Elem_Map to local element numbering */
   reverse_map(globals.Elem_Map[iproc], 0, itotal_elems, &globals.GElems[iproc][0], (INT *)nullptr,
@@ -634,6 +623,17 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
 
   bytes_out += itotal_nodes * sizeof(INT);
   tt1 = second();
+
+  /*
+   * The Nemesis node maps are lists of internal, border and external
+   * FEM node numbers. These are output as local node numbers.
+   */
+  INT *nem_node_mapi =
+      (INT *)array_alloc(__FILE__, __LINE__, 1, itotal_nodes, sizeof(INT));
+  INT *nem_node_mapb = nem_node_mapi + globals.Num_Internal_Nodes[iproc];
+  INT *nem_node_mape = nem_node_mapb + globals.Num_Border_Nodes[iproc];
+
+  std::iota(nem_node_mapi, nem_node_mapi + itotal_nodes, (INT)1);
 
   if (ex_put_processor_node_maps(mesh_exoid, nem_node_mapi, nem_node_mapb, nem_node_mape,
                                  proc_for) < 0) {

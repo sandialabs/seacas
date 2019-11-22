@@ -30,31 +30,9 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IOSS_Ioss_CoordinateFrame_h
-#define IOSS_Ioss_CoordinateFrame_h
-
-#include <cstdint> // for int64_t
-#include <vector>  // for vector
-
+#ifndef IOSS_VERSION_H
+#define IOSS_VERSION_H
 namespace Ioss {
-  class DatabaseIO;
-
-  class CoordinateFrame
-  {
-  public:
-    CoordinateFrame(int64_t my_id, char my_tag, const double *point_list);
-
-    int64_t       id() const;
-    char          tag() const;
-    const double *coordinates() const;
-    const double *origin() const;
-    const double *axis_3_point() const;
-    const double *plane_1_3_point() const;
-
-  private:
-    std::vector<double> pointList_;
-    int64_t             id_;
-    char                tag_;
-  };
+  inline const char *Version() { return "2019-10-30"; }
 } // namespace Ioss
 #endif
