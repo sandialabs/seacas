@@ -360,30 +360,31 @@ def ex_obj_to_inq(objType):
     return -1  # Invalid request
 
 
-def ex_obj_to_name(objType):
+def ex_entity_type_to_objType(entity_type):
     """
-    Return the type string corresponding to the specified objType.
     """
     entity_dictionary = {
-        get_entity_type('EX_ASSEMBLY'): "assembly",
-        get_entity_type('EX_EDGE_BLOCK'): "edge block",
-        get_entity_type('EX_FACE_BLOCK'): "face block",
-        get_entity_type('EX_ELEM_BLOCK'): "element block",
-        get_entity_type('EX_NODE_SET'): "node set",
-        get_entity_type('EX_EDGE_SET'): "edge set",
-        get_entity_type('EX_FACE_SET'): "face set",
-        get_entity_type('EX_ELEM_SET'): "element set",
-        get_entity_type('EX_SIDE_SET'): "side set",
-        get_entity_type('EX_NODE_MAP'): "node map",
-        get_entity_type('EX_EDGE_MAP'): "edge map",
-        get_entity_type('EX_FACE_MAP'): "face map",
-        get_entity_type('EX_ELEM_MAP'): "element map"
+        1 : 'EX_ELEM_BLOCK',
+        2 : 'EX_NODE_SET',
+        3 : 'EX_SIDE_SET',
+        4 : 'EX_ELEM_MAP',
+        5 : 'EX_NODE_MAP',
+        6 : 'EX_EDGE_BLOCK',
+        7 : 'EX_EDGE_SET',
+        8 : 'EX_FACE_BLOCK',
+        9 : 'EX_FACE_SET',
+        10 : 'EX_ELEM_SET',
+        11 : 'EX_EDGE_MAP',
+        12 : 'EX_FACE_MAP',
+        13 : 'EX_GLOBAL',
+        14 : 'EX_NODAL',
+        15 : 'EX_COORDINATE',
+        16 : 'EX_ASSEMBLY'
     }
 
-    if objType in entity_dictionary:
-        return entity_dictionary[objType]
-    return "invalid type"  # Invalid request
-
+    if entity_type in entity_dictionary:
+        return entity_dictionary[entity_type]
+    return 'EX_INVALID'  # Invalid request
 
 class ex_entity_type(Enum):
     """
@@ -496,8 +497,6 @@ class ex_init_params(Structure):
         number of model face maps
     num_elem_maps : int
         number of model elem maps
-    num_assembly : int
-        number of assemblies
     """
     _fields_ = [("title", c_char * (MAX_LINE_LENGTH + 1)),
                 ("num_dim", c_longlong),
@@ -519,6 +518,17 @@ class ex_init_params(Structure):
                 ("num_elem_maps", c_longlong),
                 ("num_assembly", c_longlong)]
 
+class assembly:
+    def __init__(self, name, id, type):
+        self.name = name
+        self.id = id
+        self.type = type
+        self.entity_list = []
+
+    def __repr__(self):
+        return "assembly(name=%r, type=%r, id=%r, members=%r)" % (self.name,self.type,self.id,self.entity_list)
+
+
 class ex_assembly(Structure):
     """
     Structure defining the assembly parameters.
@@ -539,15 +549,15 @@ class ex_assembly(Structure):
 
 
 class attribute:
-    def __init__(self, name, type_str, id):
+    def __init__(self, name, type, id):
         self.name = name
-        self.entity_type = type_str
+        self.entity_type = type
         self.entity_id = id
         self.values = []
 
     def __repr__(self):
         return "attribute(name=%r, entity_type=%r, entity_id=%r, values=%r)" % (self.name,self.entity_type,self.entity_id,self.values)
-    
+
 
 class ex_attribute(Structure):
     """
@@ -712,7 +722,7 @@ class exodus:
         num_ns_vars = self.get_variable_number('EX_NODE_SET')
         num_ss_vars = self.get_variable_number('EX_SIDE_SET')
         num_assem_vars = self.get_reduction_variable_number('EX_ASSEMBLY')
-        
+
         print("\n Database: {0}\n"
               " Title:\t{17}\n\n"
               " Number of spatial dimensions = {1:3d}\t"
@@ -757,9 +767,6 @@ class exodus:
 
         >>> e.put_info_ext(self,info_struct)
         """
-        EX_OPT_ENABLE_FEATURE = 0x0001
-        EX_ENABLE_ASSEMBLY    = 0x0007
-
         if len(p.title) > MAX_LINE_LENGTH:
             print("WARNING: Exodus title \"{}\" exceeds maximum line length ({}). It will be truncated."
                   .format(p.title, MAX_LINE_LENGTH))
@@ -772,9 +779,7 @@ class exodus:
         self.numElemBlk = c_longlong(p.num_elem_blk)
         self.numNodeSets = c_longlong(p.num_node_sets)
         self.numSideSets = c_longlong(p.num_side_sets)
-        self.numAssembly = c_longlong(p.num_assembly)
 
-        EXODUS_LIB.ex_set_option(self.fileId, EX_OPT_ENABLE_FEATURE, EX_ENABLE_ASSEMBLY);
         EXODUS_LIB.ex_put_init_ext(self.fileId, byref(p))
         return True
 
@@ -881,7 +886,7 @@ class exodus:
                             numElemBlk, numNodeSets, numSideSets])
         return True
 
-    
+
     # --------------------------------------------------------------------
 
     def inquire(self, inquiry):
@@ -2099,8 +2104,22 @@ class exodus:
         """
 
         return self.__ex_get_attributes(objType, objId)
-    
-            
+
+
+    def put_attribute(self, attribute):
+        """
+        >>> attribute = exodus.attribute('Scale', 'EX_ASSEMBLY', 100)
+        >>> attribute.values = [1.1, 1.0, 1.2]
+        >>> attributes = exo.put_attribute(attribute)
+
+        Returns
+        -------
+            <ex_attribute list> attributes
+        """
+
+        return self.__ex_put_attribute(attribute)
+
+
     # Assemblies...
     # --------------------------------------------------------------------
     def num_assembly(self):
@@ -2113,7 +2132,7 @@ class exodus:
         -------
             <int>  num_assembly
         """
-        return self.numAssembly.value
+        return self.inquire('EX_INQ_ASSEMBLY')
 
 
     def get_assembly(self, object_id):
@@ -2124,7 +2143,18 @@ class exodus:
         """
         assem = ex_assembly(id=object_id)
         self.__ex_get_assembly(assem)
-        return assem
+        assmbly = assembly(assem.name.decode('utf8'), assem.id, ex_entity_type_to_objType(assem.type))
+        for j in range(assem.entity_count):
+            assmbly.entity_list.append(assem.entity_list[j])
+        return assmbly
+
+    def put_assembly(self, assembly):
+        """
+        reads the assembly parameters and assembly data for one assembly
+        \param   exoid                   exodus file id
+        \param  *assembly                ex_assembly structure
+        """
+        self.__ex_put_assembly(assembly)
 
 
     # element blocks
@@ -4820,24 +4850,42 @@ class exodus:
 
     # --------------------------------------------------------------------
 
+    def __ex_put_assembly(self, assembly):
+        obj_id = c_longlong(assembly.id)
+        assem = ex_assembly(id=obj_id)
+        ptr = create_string_buffer(assembly.name.encode('ascii'), MAX_NAME_LENGTH+1)
+        assem.name = cast(ptr, c_char_p)
+        assem.type = c_int(get_entity_type(assembly.type))
+        eptr = (c_longlong * len(assembly.entity_list))()
+        for i in range(len(assembly.entity_list)):
+            eptr[i] = c_longlong(assembly.entity_list[i])
+
+        assem.entity_list = eptr
+        assem.entity_count = len(assembly.entity_list)
+        EXODUS_LIB.ex_put_assembly(self.fileId, assem)
+
+    # --------------------------------------------------------------------
+
     def __ex_get_attributes(self, objType, objId):
         # Get attribute count...
         obj_type = c_int(get_entity_type(objType))
         obj_id = c_longlong(objId)
         att_count = EXODUS_LIB.ex_get_attribute_count(self.fileId, obj_type, obj_id)
-        
+
         attributes = dict()
         if att_count > 0:
             att = (ex_attribute * att_count)()
             EXODUS_LIB.ex_get_attribute_param(self.fileId, obj_type, obj_id, byref(att))
             for i in range(att_count):
                 EXODUS_LIB.ex_get_attribute(self.fileId, byref(att[i]))
-                tmp_att = attribute(att[i].name.decode('utf8'), ex_obj_to_name(att[i].entity_type), att[i].entity_id)
+                tmp_att = attribute(att[i].name.decode('utf8'), ex_entity_type_to_objType(att[i].entity_type), att[i].entity_id)
 
                 if (att[i].type == 2):
                     vals = cast(att[i].values, POINTER(c_char))
+                    tmp = []
                     for j in range(att[i].value_count-1):
-                        tmp_att.values.append(vals[j])
+                        tmp.append(vals[j])
+                    tmp_att.values = b''.join(tmp).decode('utf8')
 
                 if (att[i].type == 4):
                     vals = cast(att[i].values, POINTER(c_int))
@@ -4853,6 +4901,36 @@ class exodus:
 
         return attributes;
 
+    # --------------------------------------------------------------------
+
+    def __ex_put_attribute(self, attribute):
+        att_id = c_longlong(attribute.entity_id)
+        att = ex_attribute(entity_id=att_id)
+        att.name = attribute.name.encode('ascii')
+        att.entity_type = c_int(get_entity_type(attribute.entity_type))
+        att.value_count = len(attribute.values)
+
+        if (isinstance(attribute.values[0], int)):
+            eptr = (c_int * len(attribute.values))()
+            for i in range(len(attribute.values)):
+               eptr[i] = c_int(attribute.values[i])
+            att.values = cast(eptr, c_void_p)
+            att.type = 4
+
+        elif (isinstance(attribute.values[0], float)):
+            eptr = (c_double * len(attribute.values))()
+            for i in range(len(attribute.values)):
+              eptr[i] = c_double(attribute.values[i])
+            att.values = cast(eptr, c_void_p)
+            att.type = 6
+
+        elif (isinstance(attribute.values[0], str)):
+            eptr = (c_char * (len(attribute.values)+1))()
+            eptr = attribute.values[0].encode('ascii')
+            att.values = cast(eptr, c_void_p)
+            att.type = 2
+
+        EXODUS_LIB.ex_put_attribute(self.fileId, att)
 
     # --------------------------------------------------------------------
 
