@@ -91,6 +91,12 @@ if(USE_TRIBITS)
     SOURCES ${SOURCES}
   )
 
+  TARGET_INCLUDE_DIRECTORIES(
+    aprepro_lib
+    PUBLIC
+    ${CMAKE_INSTALL_PREFIX}/include
+    )
+
 if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
    # add a target to generate API documentation with Doxygen
    if(SEACASProj_ENABLE_DOXYGEN)

@@ -35,6 +35,11 @@ TRIBITS_ADD_LIBRARY(
 )
 
 set_property(TARGET exodus PROPERTY C_STANDARD 99)
+TARGET_INCLUDE_DIRECTORIES(
+  exodus
+  PUBLIC
+  ${CMAKE_INSTALL_PREFIX}/include
+  )
 
 # Many users of the SEACAS installations still want a static exodus library...
 if (SEACASExodus_ENABLE_STATIC)
