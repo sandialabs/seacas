@@ -74,6 +74,13 @@ IF (MINGW)
   target_link_libraries(Ioss psapi)
 ENDIF ()
 
+TARGET_INCLUDE_DIRECTORIES(
+  Ioss
+  PUBLIC
+  ${CMAKE_INSTALL_PREFIX}/include
+  )
+
+
 if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
    # add a target to generate API documentation with Doxygen
    if(SEACASProj_ENABLE_DOXYGEN)
