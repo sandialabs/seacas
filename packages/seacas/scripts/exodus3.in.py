@@ -88,7 +88,7 @@ import sys
 if sys.version_info[0] < 3:
     raise Exception("Python-3 version. If using python-2, try `import exodus2 as exodus`")
 
-from ctypes import *
+import ctypes
 import os
 import locale
 from enum import Enum
