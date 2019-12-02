@@ -1,5 +1,5 @@
 """
-exodus.py v 1.17 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.18 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -95,10 +95,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.17 (seacas-py3)"
+EXODUS_PY_VERSION = "1.18 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.17 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.18 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -792,6 +792,20 @@ class exodus:
         self.__ex_put_info([Title, numDim, numNodes, numElem,
                             numElemBlk, numNodeSets, numSideSets])
         return True
+
+    # --------------------------------------------------------------------
+
+    def num_qa_records(self):
+        """
+        get the number of qa records
+
+        >>> num_qa_recs = exo.num_qa_records()
+
+        Returns
+        -------
+        num_qa_recs : int
+        """
+        return int(self.__ex_inquire_int(ex_inquiry_map('EX_INQ_QA')))
 
     # --------------------------------------------------------------------
 
