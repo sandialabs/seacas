@@ -69,7 +69,7 @@ except:
     import exodus3 as exodus
 
 # informal version number of this module
-__version__ = 8.5
+__version__ = "8.5.1"
 VERSION = __version__
 
 # contact person for issues
@@ -7712,9 +7712,11 @@ class ExodusModel(object):
                     global_variable_name, timestep_index[0])
                 model_values[timestep_index[1]] = file_value
         # add info records
-        self.info_records += exodus_file.get_info_records()
+        if (exodus_file.num_info_records() > 0):
+            self.info_records += exodus_file.get_info_records()
         # add qa records
-        self.qa_records += exodus_file.get_qa_records()
+        if (exodus_file.num_qa_records() > 0):
+            self.qa_records += exodus_file.get_qa_records()
         # add title if one does not already exist
         # else add it to an info record
         if not self.title:
