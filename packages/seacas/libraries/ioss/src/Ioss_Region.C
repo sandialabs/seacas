@@ -30,6 +30,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <Ioss_Assembly.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_CoordinateFrame.h>
 #include <Ioss_DBUsage.h>
@@ -230,6 +231,7 @@ namespace {
     compute_hashes(region.get_sidesets(), hashes, Ioss::SIDESET);
     compute_hashes(region.get_commsets(), hashes, Ioss::COMMSET);
     compute_hashes(region.get_structured_blocks(), hashes, Ioss::STRUCTUREDBLOCK);
+    compute_hashes(region.get_assemblies(), hashes, Ioss::ASSEMBLY);
 
     auto                util = region.get_database()->util();
     std::vector<size_t> min_hash(hashes.begin(), hashes.end());
@@ -282,6 +284,10 @@ namespace {
       report_inconsistency(region.get_structured_blocks(), util);
       differ = true;
     }
+    if (!check_hashes(min_hash, max_hash, Ioss::ASSEMBLY)) {
+      report_inconsistency(region.get_assemblies(), util);
+      differ = true;
+    }
     return !differ;
   }
 
@@ -331,6 +337,7 @@ namespace Ioss {
     properties.add(Property(this, "face_block_count", Property::INTEGER));
     properties.add(Property(this, "element_block_count", Property::INTEGER));
     properties.add(Property(this, "structured_block_count", Property::INTEGER));
+    properties.add(Property(this, "assembly_count", Property::INTEGER));
     properties.add(Property(this, "side_set_count", Property::INTEGER));
     properties.add(Property(this, "node_set_count", Property::INTEGER));
     properties.add(Property(this, "edge_set_count", Property::INTEGER));
@@ -397,6 +404,10 @@ namespace Ioss {
 
       for (auto cs : commSets) {
         delete (cs);
+      }
+
+      for (auto as : assemblies) {
+        delete (as);
       }
 
       // Region owns the database pointer even though other entities use it.
@@ -1043,6 +1054,27 @@ namespace Ioss {
     return false;
   }
 
+  /** \brief Add an assembly to the region.
+   *
+   *  \param[in] assembly The assembly to add
+   *  \returns True if successful.
+   */
+  bool Region::add(Assembly *assembly)
+  {
+    check_for_duplicate_names(this, assembly);
+    IOSS_FUNC_ENTER(m_);
+
+    // Check that region is in correct state for adding entities
+    if (get_state() == STATE_DEFINE_MODEL) {
+      assemblies.push_back(assembly);
+      // Add name as alias to itself to simplify later uses...
+      add_alias__(assembly);
+
+      return true;
+    }
+    return false;
+  }
+
   /** \brief Add a coordinate frame to the region.
    *
    *  \param[in] frame The coordinate frame to add
@@ -1303,6 +1335,12 @@ namespace Ioss {
     }
     return false;
   }
+
+  /** \brief Get all the region's Assembly objects.
+   *
+   *  \returns A vector of all the region's Assembly objects.
+   */
+  const AssemblyContainer &Region::get_assemblies() const { return assemblies; }
 
   /** \brief Get all the region's NodeBlock objects.
    *
@@ -1565,6 +1603,9 @@ namespace Ioss {
     else if (io_type == SIDEBLOCK) {
       return get_sideblock(my_name);
     }
+    else if (io_type == ASSEMBLY) {
+      return get_assembly(my_name);
+    }
     return nullptr;
   }
 
@@ -1627,8 +1668,33 @@ namespace Ioss {
     if (entity != nullptr) {
       return entity;
     }
+    entity = get_assembly(my_name);
+    if (entity != nullptr) {
+      return entity;
+    }
 
     return entity;
+  }
+
+  /** \brief Get the assembly with the given name.
+   *
+   *  \param[in] my_name The name of the assembly to get.
+   *  \returns The assembly, or nullptr if not found.
+   */
+  Assembly *Region::get_assembly(const std::string &my_name) const
+  {
+    IOSS_FUNC_ENTER(m_);
+    const std::string db_name = get_alias__(my_name);
+    unsigned int      db_hash = Ioss::Utils::hash(db_name);
+
+    Assembly *ge = nullptr;
+    for (auto as : assemblies) {
+      if (db_hash == as->hash() && as->name() == db_name) {
+        ge = as;
+        break;
+      }
+    }
+    return ge;
   }
 
   /** \brief Get the node block with the given name.
@@ -1919,6 +1985,12 @@ namespace Ioss {
       }
       return true;
     }
+    if (((io_type & ASSEMBLY) != 0u) && get_assembly(my_name) != nullptr) {
+      if (my_type != nullptr) {
+        *my_type = "ASSEMBLY";
+      }
+      return true;
+    }
     if (((io_type & EDGEBLOCK) != 0u) && get_edge_block(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "EDGE_BLOCK";
@@ -2067,6 +2139,10 @@ namespace Ioss {
 
     if (my_name == "structured_block_count") {
       return Property(my_name, static_cast<int>(structuredBlocks.size()));
+    }
+
+    if (my_name == "assembly_count") {
+      return Property(my_name, static_cast<int>(assemblies.size()));
     }
 
     if (my_name == "side_set_count") {
