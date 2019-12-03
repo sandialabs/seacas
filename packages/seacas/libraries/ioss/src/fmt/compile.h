@@ -108,10 +108,10 @@ namespace internal {
   private:
     using part = format_part<Char>;
 
-    PartHandler               handler_;
-    part                      part_;
-    basic_string_view<Char>   format_str_;
-    basic_parse_context<Char> parse_context_;
+    PartHandler                      handler_;
+    part                             part_;
+    basic_string_view<Char>          format_str_;
+    basic_format_parse_context<Char> parse_context_;
 
   public:
     FMT_CONSTEXPR format_string_compiler(basic_string_view<Char> format_str, PartHandler handler)
@@ -143,9 +143,9 @@ namespace internal {
 
     FMT_CONSTEXPR const Char *on_format_specs(const Char *begin, const Char *end)
     {
-      auto                                             repl = typename part::replacement();
-      dynamic_specs_handler<basic_parse_context<Char>> handler(repl.specs, parse_context_);
-      auto                                             it = parse_format_specs(begin, end, handler);
+      auto                                                    repl = typename part::replacement();
+      dynamic_specs_handler<basic_format_parse_context<Char>> handler(repl.specs, parse_context_);
+      auto it = parse_format_specs(begin, end, handler);
       if (*it != '}')
         on_error("missing '}' in format string");
       repl.arg_id = part_.part_kind == part::kind::arg_index ? arg_ref<Char>(part_.val.arg_index)
@@ -166,7 +166,7 @@ namespace internal {
   }
 
   template <typename Range, typename Context, typename Id>
-  void format_arg(basic_parse_context<typename Range::value_type> &parse_ctx, Context &ctx,
+  void format_arg(basic_format_parse_context<typename Range::value_type> &parse_ctx, Context &ctx,
                   Id arg_id)
   {
     ctx.advance_to(visit_format_arg(arg_formatter<Range>(ctx, &parse_ctx), ctx.arg(arg_id)));
@@ -179,8 +179,8 @@ namespace internal {
         typename Context::iterator
     {
       using char_type = typename Context::char_type;
-      basic_parse_context<char_type> parse_ctx(to_string_view(cf.format_str_));
-      Context                        ctx(out.begin(), args);
+      basic_format_parse_context<char_type> parse_ctx(to_string_view(cf.format_str_));
+      Context                               ctx(out.begin(), args);
 
       const auto &parts = cf.parts();
       for (auto part_it = std::begin(parts); part_it != std::end(parts); ++part_it) {
@@ -388,6 +388,13 @@ namespace internal {
     // TODO: reserve
     format_int fi(value);
     return std::copy(fi.data(), fi.data() + fi.size(), out);
+  }
+
+  template <typename Char, typename OutputIt> OutputIt format_default(OutputIt out, double value)
+  {
+    writer w(out);
+    w.write(value);
+    return w.out();
   }
 
   template <typename Char, typename OutputIt> OutputIt format_default(OutputIt out, Char value)

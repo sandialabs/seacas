@@ -1,4 +1,4 @@
-// Formatting library for C++
+// Formatting library for C++ - legacy printf implementation
 //
 // Copyright (c) 2012 - 2016, Victor Zverovich
 // All rights reserved.
@@ -8,7 +8,7 @@
 #ifndef FMT_PRINTF_H_
 #define FMT_PRINTF_H_
 
-#include <algorithm> // std::fill_n
+#include <algorithm> // std::max
 #include <limits>    // std::numeric_limits
 
 #include "ostream.h"
@@ -359,7 +359,7 @@ private:
 
   OutputIt                                out_;
   basic_format_args<basic_printf_context> args_;
-  basic_parse_context<Char>               parse_ctx_;
+  basic_format_parse_context<Char>        parse_ctx_;
 
   static void parse_flags(format_specs &specs, const Char *&it, const Char *end);
 
@@ -389,7 +389,7 @@ public:
 
   format_arg arg(unsigned id) const { return args_.get(id); }
 
-  basic_parse_context<Char> &parse_context() { return parse_ctx_; }
+  basic_format_parse_context<Char> &parse_context() { return parse_ctx_; }
 
   FMT_CONSTEXPR void on_error(const char *message) { parse_ctx_.on_error(message); }
 
