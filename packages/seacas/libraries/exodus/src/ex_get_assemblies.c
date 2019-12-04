@@ -45,7 +45,8 @@
 int ex_get_assemblies(int exoid, ex_assembly *assembly)
 {
   /* Determine number of assemblies on database */
-  int num_assembly = ex_inquire_int(exoid, EX_INQ_ASSEMBLY);
+  int num_assembly        = ex_inquire_int(exoid, EX_INQ_ASSEMBLY);
+  int max_use_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
 
   if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
     int64_t *ids = calloc(num_assembly, sizeof(int64_t));
@@ -63,6 +64,10 @@ int ex_get_assemblies(int exoid, ex_assembly *assembly)
   }
 
   for (int i = 0; i < num_assembly; i++) {
+    if (assembly[i].name == NULL) {
+      assembly[i].name = calloc(max_use_name_length + 1, sizeof(char));
+    }
+
     int status = ex_get_assembly(exoid, &assembly[i]);
     if (status != EX_NOERR) {
       return status;
