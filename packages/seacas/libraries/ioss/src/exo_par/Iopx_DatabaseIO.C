@@ -581,6 +581,10 @@ namespace Iopx {
 
     get_commsets();
 
+    // Add assemblies now that all entities should be defined... consistent across processors
+    // (metadata)
+    get_assemblies();
+
     handle_groups();
 
     add_region_fields();
@@ -613,6 +617,7 @@ namespace Iopx {
     m_groupCount[EX_ELEM_SET] = info.num_elem_sets;
 
     m_groupCount[EX_SIDE_SET] = info.num_side_sets;
+    m_groupCount[EX_ASSEMBLY] = info.num_assembly;
 
     // Checks: node, element, blocks > 0; warning if == 0; error if < 0
     check_valid_values();

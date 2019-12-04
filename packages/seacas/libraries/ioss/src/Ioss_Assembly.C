@@ -99,7 +99,7 @@ namespace Ioss {
  *  \param[in] my_name The assembly's name.
  */
 Ioss::Assembly::Assembly(Ioss::DatabaseIO *io_database, const std::string &my_name)
-    : Ioss::GroupingEntity(io_database, my_name, 0)
+    : Ioss::GroupingEntity(io_database, my_name, 1)
 {
   properties.add(Ioss::Property(this, "member_count", Ioss::Property::INTEGER));
   properties.add(Ioss::Property(this, "member_type", Ioss::Property::INTEGER));
@@ -125,6 +125,9 @@ bool Ioss::Assembly::add(Ioss::GroupingEntity *member)
   check_is_valid(this, member);
   IOSS_FUNC_ENTER(m_);
   m_members.push_back(member);
+  if (m_members.size() == 1) {
+    m_type = member->type();
+  }
   return true;
 }
 

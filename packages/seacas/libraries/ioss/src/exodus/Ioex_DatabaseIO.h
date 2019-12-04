@@ -103,8 +103,7 @@ namespace Ioex {
 
     ~DatabaseIO() override;
 
-
-    const std::string get_format() const override {return "Exodus";}
+    const std::string get_format() const override { return "Exodus"; }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -245,6 +244,7 @@ namespace Ioex {
                       const Ioss::GroupingEntity *ge, int index, bool reduction);
 
     void get_nodeblocks();
+    void get_assemblies();
 
     void add_attribute_fields(ex_entity_type entity_type, Ioss::GroupingEntity *block,
                               int attribute_count, const std::string &type);
@@ -257,6 +257,7 @@ namespace Ioex {
                                         Ioex::VariableNameMap &variables);
     int64_t add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
                                int64_t position = 0);
+    int64_t add_reduction_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity);
 
     void add_region_fields();
     void store_reduction_field(ex_entity_type type, const Ioss::Field &field,
@@ -310,6 +311,7 @@ namespace Ioex {
 
     mutable std::map<ex_entity_type, Ioss::IntVector> m_truthTable;
     mutable std::map<ex_entity_type, VariableNameMap> m_variables;
+    mutable std::map<ex_entity_type, VariableNameMap> m_reductionVariables;
 
     mutable ValueContainer globalValues;
 
