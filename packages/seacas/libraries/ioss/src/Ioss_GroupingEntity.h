@@ -243,6 +243,9 @@ namespace Ioss {
 
     int64_t entity_count() const { return get_property("entity_count").get_int(); }
 
+    bool operator!=(const GroupingEntity &rhs);
+    bool operator==(const GroupingEntity &rhs);
+
   protected:
     void count_attributes() const;
 

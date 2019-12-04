@@ -23,4 +23,37 @@ namespace Ioss {
   const double *CoordinateFrame::origin() const { return &pointList_[0]; }
   const double *CoordinateFrame::axis_3_point() const { return &pointList_[3]; }
   const double *CoordinateFrame::plane_1_3_point() const { return &pointList_[6]; }
+
+  bool Ioss::CoordinateFrame::operator==(const Ioss::CoordinateFrame &rhs) const
+  {
+    if( this->id_ != rhs.id_ ) { 
+      printf("CoordinateFrame : ID mismatch (%ld vs. %ld)\n", this->id_, rhs.id_);
+      return false;
+    }   
+
+    if( this->pointList_ != rhs.pointList_ ) { 
+      printf("CoordinateFrame : Point list mismatch ([ ");
+      for( auto &point : this->pointList_ ) { 
+        printf("%f ", point);
+      }   
+      printf("] vs [");
+      for( auto &point : rhs.pointList_ ) { 
+        printf("%f ", point);
+      }   
+      printf("])\n");
+      return false;
+    }   
+
+    if( this->id_ != rhs.id_ ) { 
+      printf("CoordinateFrame : TAG mismatch (%d vs. %d)\n", this->tag_, rhs.tag_);
+      return false;
+    }   
+
+    return true;
+  }
+
+  bool Ioss::CoordinateFrame::operator!=(const Ioss::CoordinateFrame &rhs) const
+  {
+    return !(*this == rhs);
+  }
 } // namespace Ioss

@@ -151,3 +151,30 @@ int Ioss::SideBlock::get_consistent_side_number() const
   }
   return consistentSideNumber;
 }
+
+bool Ioss::SideBlock::operator==(const Ioss::SideBlock &rhs)
+{
+  if( this->parentTopology_ != rhs.parentTopology_ ) { 
+    printf("SideBlock: parentTopology_ mismatch\n");
+    return false;
+  }
+
+  if( this->blockMembership != rhs.blockMembership ) { 
+    printf("SideBlock: blockMembership mismatch\n");
+    return false;
+  }
+
+  if( this->consistentSideNumber != rhs.consistentSideNumber ) { 
+    printf("SideBlock: consistentSideNumber mismatch (%d vs. %d)\n",
+           this->consistentSideNumber, rhs.consistentSideNumber);
+    return false;
+  }
+
+  return Ioss::EntityBlock::operator==( rhs );
+}
+
+bool Ioss::SideBlock::operator!=(const Ioss::SideBlock &rhs)
+{
+  return !(*this == rhs);
+}
+

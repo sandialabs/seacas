@@ -9,6 +9,7 @@
 
 #include <cstdint> // for int64_t
 #include <vector>  // for vector
+#include <stdio.h>   // for printf
 
 namespace Ioss {
   class DatabaseIO;
@@ -24,6 +25,9 @@ namespace Ioss {
     const double *origin() const;
     const double *axis_3_point() const;
     const double *plane_1_3_point() const;
+
+    bool operator!=(const Ioss::CoordinateFrame &rhs) const;
+    bool operator==(const Ioss::CoordinateFrame &rhs) const;
 
   private:
     std::vector<double> pointList_{};

@@ -81,6 +81,9 @@ namespace Ioss {
     int  get_consistent_side_number() const;
     void set_consistent_side_number(int side) { consistentSideNumber = side; }
 
+    bool operator==(const SideBlock &);
+    bool operator!=(const SideBlock &);
+
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size) const override;

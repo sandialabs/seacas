@@ -311,3 +311,25 @@ Ioss::ElementTopology *Ioss::ElementTopology::boundary_type(int bnd_number) cons
   }
   return nullptr;
 }
+
+bool Ioss::ElementTopology::operator==(const Ioss::ElementTopology &rhs)
+{
+  if( this->name_.compare(rhs.name_) != 0 ) { 
+    printf("Element Topology: NAME mismatch (%s vs. %s)\n", this->name_.c_str(), rhs.name_.c_str());
+    return false;
+  }
+
+  if( this->masterElementName_.compare(rhs.masterElementName_) != 0 ) { 
+    printf("Element Topology: MASTER ELEMENT NAME mismatch (%s vs. %s)\n", 
+           this->masterElementName_.c_str(), rhs.masterElementName_.c_str());
+    return false;
+  }
+
+  return true;
+}
+
+bool Ioss::ElementTopology::operator!=(const Ioss::ElementTopology &rhs)
+{
+  return !(*this == rhs);
+}
+

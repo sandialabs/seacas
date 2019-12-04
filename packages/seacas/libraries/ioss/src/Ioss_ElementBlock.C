@@ -65,4 +65,14 @@ namespace Ioss {
   {
     return get_database()->get_bounding_box(this);
   }
+
+  bool ElementBlock::operator==(ElementBlock &rhs)
+  {
+    return EntityBlock::operator==( rhs );
+  }
+
+  bool Ioss::ElementBlock::operator!=(ElementBlock &rhs)
+  {
+    return !(*this == rhs);
+  }
 } // namespace Ioss

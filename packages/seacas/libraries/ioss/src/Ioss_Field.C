@@ -239,6 +239,47 @@ bool Ioss::Field::transform(void *data)
   return true;
 }
 
+bool Ioss::Field::operator==(Ioss::Field rhs)
+{
+  if( Ioss::Utils::str_equal(this->name_, rhs.name_) == false ) {
+    printf("FIELD name mismatch (%s v. %s)\n", this->name_.c_str(), rhs.name_.c_str());
+    return false;
+  }
+
+  if( this->type_ != rhs.type_ ) { 
+    printf("FIELD type mismatch (%d v. %d)\n", this->type_, rhs.type_);
+    return false;
+  }
+
+  if( this->role_ != rhs.role_ ) { 
+    printf("FIELD role mismatch (%d v. %d)\n", this->role_, rhs.role_);
+    return false;
+  }
+
+  if( this->rawCount_ != rhs.rawCount_ ) { 
+    printf("FIELD rawCount mismatch (%ld v. %ld)\n", this->rawCount_, rhs.rawCount_);
+    return false;
+  }
+
+  if( this->transCount_ != rhs.transCount_ ) { 
+    printf("FIELD transCount mismatch (%ld v. %ld)\n", this->transCount_, rhs.transCount_);
+    return false;
+  }
+
+  if( this->size_ != rhs.size_ ) {
+    printf("FIELD size mismatch (%ld v. %ld)\n", this->size_, rhs.size_);
+    return false;
+  }
+
+  return true;
+}
+
+bool Ioss::Field::operator!=(Ioss::Field rhs)
+{
+  return !(*this == rhs);
+}
+
+
 namespace {
   size_t internal_get_size(Ioss::Field::BasicType type, size_t count,
                            const Ioss::VariableType *storage)
