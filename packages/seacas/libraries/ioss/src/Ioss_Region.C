@@ -76,11 +76,34 @@ namespace {
   const std::string orig_topo_str() { return std::string("original_topology_type"); }
   const std::string orig_block_order() { return std::string("original_block_order"); }
 
+  template <typename T>
+  Ioss::GroupingEntity *get_entity_internal(int64_t id, const std::vector<T> &entities)
+  {
+    for (auto ent : entities) {
+      if (ent->property_exists(id_str())) {
+        if (id == ent->get_property(id_str()).get_int()) {
+          return ent;
+        }
+      }
+    }
+    return nullptr;
+  }
+
   template <typename T> size_t get_variable_count(const std::vector<T> &entities)
   {
     Ioss::NameList names;
     for (auto ent : entities) {
       ent->field_describe(Ioss::Field::TRANSIENT, &names);
+    }
+    Ioss::Utils::uniquify(names);
+    return names.size();
+  }
+
+  template <typename T> size_t get_reduction_variable_count(const std::vector<T> &entities)
+  {
+    Ioss::NameList names;
+    for (auto ent : entities) {
+      ent->field_describe(Ioss::Field::REDUCTION, &names);
     }
     Ioss::Utils::uniquify(names);
     return names.size();
@@ -480,7 +503,7 @@ namespace Ioss {
          get_property("structured_block_count").get_int(), get_property("node_set_count").get_int(),
          get_property("edge_set_count").get_int(), get_property("face_set_count").get_int(),
          get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
-         num_ts});
+         get_property("assembly_count").get_int(), num_ts});
 
     size_t num_glo_vars = field_count(Ioss::Field::TRANSIENT);
     size_t num_nod_vars = get_variable_count(get_node_blocks());
@@ -492,6 +515,7 @@ namespace Ioss {
     size_t num_es_vars  = get_variable_count(get_edgesets());
     size_t num_fs_vars  = get_variable_count(get_facesets());
     size_t num_els_vars = get_variable_count(get_elementsets());
+    size_t num_asm_vars = get_variable_count(get_assemblies());
 
     size_t                       num_ss_vars = 0;
     const Ioss::SideSetContainer fss         = get_sidesets();
@@ -508,40 +532,43 @@ namespace Ioss {
         strm,
         "\n Database: {0}\n"
         " Mesh Type = {1}, {39}\n\n"
-        " Number of spatial dimensions = {2:{24}n}\t"
+        " Spatial dimensions = {2:{24}n}\t"
         "                           {38:{23}s}\t"
-        " Number of global variables     = {26:{25}n}\n"
-        " Number of node blocks        = {7:{24}n}\t"
+        " Global variables     = {26:{25}n}\n"
+        " Node blocks        = {7:{24}n}\t"
         " Number of nodes         = {3:{23}n}\t"
-        " Number of nodal variables      = {27:{25}n}\n"
-        " Number of edge blocks        = {8:{24}n}\t"
+        " Nodal variables      = {27:{25}n}\n"
+        " Edge blocks        = {8:{24}n}\t"
         " Number of edges         = {4:{23}n}\t"
-        " Number of edge variables       = {33:{25}n}\n"
-        " Number of face blocks        = {9:{24}n}\t"
+        " Edge variables       = {33:{25}n}\n"
+        " Face blocks        = {9:{24}n}\t"
         " Number of faces         = {5:{23}n}\t"
-        " Number of face variables       = {34:{25}n}\n"
-        " Number of element blocks     = {10:{24}n}\t"
+        " Face variables       = {34:{25}n}\n"
+        " Element blocks     = {10:{24}n}\t"
         " Number of elements      = {6:{23}n}\t"
-        " Number of element variables    = {28:{25}n}\n"
-        " Number of structured blocks  = {11:{24}n}\t"
+        " Element variables    = {28:{25}n}\n"
+        " Structured blocks  = {11:{24}n}\t"
         " Number of cells         = {17:{23}n}\t"
-        " Number of structured variables = {29:{25}n}\n"
-        " Number of node sets          = {12:{24}n}\t"
+        " Structured variables = {29:{25}n}\n"
+        " Node sets          = {12:{24}n}\t"
         " Length of node list     = {18:{23}n}\t"
-        " Number of nodeset variables    = {30:{25}n}\n"
-        " Number of edge sets          = {13:{24}n}\t"
+        " Nodeset variables    = {30:{25}n}\n"
+        " Edge sets          = {13:{24}n}\t"
         " Length of edge list     = {19:{23}n}\t"
-        " Number of edgeset variables    = {35:{25}n}\n"
-        " Number of face sets          = {14:{24}n}\t"
+        " Edgeset variables    = {35:{25}n}\n"
+        " Face sets          = {14:{24}n}\t"
         " Length of face list     = {20:{23}n}\t"
-        " Number of faceset variables    = {36:{25}n}\n"
-        " Number of element sets       = {15:{24}n}\t"
+        " Faceset variables    = {36:{25}n}\n"
+        " Element sets       = {15:{24}n}\t"
         " Length of element list  = {21:{23}n}\t"
-        " Number of elementset variables = {37:{25}n}\n"
-        " Number of element side sets  = {16:{24}n}\t"
+        " Elementset variables = {37:{25}n}\n"
+        " Element side sets  = {16:{24}n}\t"
         " Length of element sides = {22:{23}n}\t"
-        " Number of sideset variables    = {31:{25}n}\n\n"
-        " Number of time steps         = {32:{24}n}\n",
+        " Sideset variables    = {31:{25}n}\n"
+        " Assemblies         = {40:{24}n}\t"
+        "                           {38:{23}s}\t"
+        " Assembly variables   = {41:{25}n}\n\n"
+        " Time steps         = {32:{24}n}\n",
         get_database()->get_filename(), mesh_type_string(),
         get_property("spatial_dimension").get_int(), get_property("node_count").get_int(),
         get_property("edge_count").get_int(), get_property("face_count").get_int(),
@@ -554,7 +581,8 @@ namespace Ioss {
         total_cells, total_ns_nodes, total_es_edges, total_fs_faces, total_es_elements, total_sides,
         num_width, sb_width, vr_width, num_glo_vars, num_nod_vars, num_ele_vars, num_str_vars,
         num_ns_vars, num_ss_vars, num_ts, num_edg_vars, num_fac_vars, num_es_vars, num_fs_vars,
-        num_els_vars, " ", get_database()->get_format());
+        num_els_vars, " ", get_database()->get_format(), get_property("assembly_count").get_int(),
+        num_asm_vars);
   }
 
   /** \brief Set the Region and the associated DatabaseIO to the given State.
@@ -1674,6 +1702,54 @@ namespace Ioss {
     }
 
     return entity;
+  }
+
+  /** \brief Get an entity of a known EntityType and specified id
+   *
+   *  \param[in] id The id of the entity to get
+   *  \param[in] io_type The known type of the entity.
+   *  \returns The entity with the given id of the given type, or nullptr if not found or if ids not
+   * supported.
+   */
+  GroupingEntity *Region::get_entity(int64_t id, EntityType io_type) const
+  {
+    if (io_type == NODEBLOCK) {
+      return get_entity_internal(id, get_node_blocks());
+    }
+    if (io_type == ELEMENTBLOCK) {
+      return get_entity_internal(id, get_element_blocks());
+    }
+    if (io_type == STRUCTUREDBLOCK) {
+      return get_entity_internal(id, get_structured_blocks());
+    }
+    if (io_type == FACEBLOCK) {
+      return get_entity_internal(id, get_face_blocks());
+    }
+    if (io_type == EDGEBLOCK) {
+      return get_entity_internal(id, get_edge_blocks());
+    }
+    if (io_type == SIDESET) {
+      return get_entity_internal(id, get_sidesets());
+    }
+    if (io_type == NODESET) {
+      return get_entity_internal(id, get_nodesets());
+    }
+    else if (io_type == EDGESET) {
+      return get_entity_internal(id, get_edgesets());
+    }
+    else if (io_type == FACESET) {
+      return get_entity_internal(id, get_facesets());
+    }
+    else if (io_type == ELEMENTSET) {
+      return get_entity_internal(id, get_elementsets());
+    }
+    else if (io_type == COMMSET) {
+      return get_entity_internal(id, get_commsets());
+    }
+    else if (io_type == ASSEMBLY) {
+      return get_entity_internal(id, get_assemblies());
+    }
+    return nullptr;
   }
 
   /** \brief Get the assembly with the given name.

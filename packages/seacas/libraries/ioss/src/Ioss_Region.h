@@ -212,6 +212,10 @@ namespace Ioss {
     StructuredBlock *get_structured_block(const std::string &my_name) const;
     Assembly *       get_assembly(const std::string &my_name) const;
 
+    // Not guaranteed to be efficient...
+    // Note that not all GroupingEntity's are guaranteed to have an 'id'...
+    GroupingEntity *get_entity(const int64_t id, EntityType io_type) const;
+
     const CoordinateFrame &get_coordinate_frame(int64_t id) const;
 
     // Add the name 'alias' as an alias for the database entity with the

@@ -59,6 +59,7 @@
 #include <utility>
 #include <vector>
 
+#include "Ioss_Assembly.h"
 #include "Ioss_CommSet.h"
 #include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
@@ -81,6 +82,7 @@
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
+#include "Ioss_SmartAssert.h"
 #include "Ioss_State.h"
 #include "Ioss_VariableType.h"
 
@@ -105,6 +107,22 @@ namespace {
   void generate_block_truth_table(Ioex::VariableNameMap &variables, Ioss::IntVector &truth_table,
                                   std::vector<T *> &blocks, char field_suffix_separator);
 
+  Ioss::EntityType map_exodus_type(ex_entity_type type)
+  {
+    switch (type) {
+    case EX_NODAL: return Ioss::NODEBLOCK;
+    case EX_NODE_SET: return Ioss::NODESET;
+    case EX_EDGE_BLOCK: return Ioss::EDGEBLOCK;
+    case EX_EDGE_SET: return Ioss::EDGESET;
+    case EX_FACE_BLOCK: return Ioss::FACEBLOCK;
+    case EX_FACE_SET: return Ioss::FACESET;
+    case EX_ELEM_BLOCK: return Ioss::ELEMENTBLOCK;
+    case EX_ELEM_SET: return Ioss::ELEMENTSET;
+    case EX_SIDE_SET: return Ioss::SIDESET;
+    case EX_ASSEMBLY: return Ioss::ASSEMBLY;
+    default: return Ioss::INVALID_TYPE;
+    }
+  }
 } // namespace
 
 namespace Ioex {
@@ -578,6 +596,62 @@ namespace Ioex {
       IOSS_ERROR(errmsg);
     }
     return step;
+  }
+
+  void DatabaseIO::get_assemblies()
+  {
+    // Query number of coordinate frames...
+    int nassem = ex_inquire_int(get_file_pointer(), EX_INQ_ASSEMBLY);
+
+    if (nassem > 0) {
+      std::vector<ex_assembly> assemblies(nassem);
+      int                      ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+
+      // Now allocate space for member list and get assemblies again...
+      for (int i = 0; i < nassem; i++) {
+        assemblies[i].entity_list = new int64_t[assemblies[i].entity_count];
+      }
+      ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+
+      for (int i = 0; i < nassem; i++) {
+        Ioss::Assembly *assem =
+            new Ioss::Assembly(get_region()->get_database(), assemblies[i].name);
+        assem->property_add(Ioss::Property("id", assemblies[i].id));
+        get_region()->add(assem);
+      }
+
+      // Now iterate again and populate member lists...
+      for (int i = 0; i < nassem; i++) {
+        Ioss::Assembly *assem = get_region()->get_assembly(assemblies[i].name);
+        assert(assem != nullptr);
+        auto type = map_exodus_type(assemblies[i].type);
+        for (int j = 0; j < assemblies[i].entity_count; j++) {
+          auto *ge = get_region()->get_entity(assemblies[i].entity_list[j], type);
+          if (ge != nullptr) {
+            assem->add(ge);
+          }
+          else {
+            std::ostringstream errmsg;
+            fmt::print(errmsg,
+                       "Error: Failed to find entity of type {} with id {} for Assembly {}.\n",
+                       type, assemblies[i].entity_list[j], assem->name());
+            IOSS_ERROR(errmsg);
+          }
+        }
+        SMART_ASSERT(assem->member_count() == assemblies[i].entity_count)
+        (assem->member_count())(assemblies[i].entity_count);
+        // Check for additional variables.
+        int attribute_count = assem->get_property("attribute_count").get_int();
+        add_attribute_fields(EX_ASSEMBLY, assem, attribute_count, "Assembly");
+        add_reduction_results_fields(EX_ASSEMBLY, assem);
+      }
+    }
   }
 
   // common
@@ -1248,6 +1322,69 @@ namespace Ioex {
         std::vector<Ioss::Field> fields;
         int64_t                  count = entity->entity_count();
         Ioss::Utils::get_fields(count, names, nvar, Ioss::Field::TRANSIENT, get_field_recognition(),
+                                get_field_separator(), local_truth, fields);
+
+        for (const auto &field : fields) {
+          entity->field_add(field);
+        }
+
+        for (int i = 0; i < nvar; i++) {
+          // Verify that all names were used for a field...
+          assert(names[i][0] == '\0' || (local_truth && local_truth[i] == 0));
+          delete[] names[i];
+        }
+        delete[] names;
+      }
+    }
+    return nvar;
+  }
+
+  // common
+  int64_t DatabaseIO::add_reduction_results_fields(ex_entity_type        type,
+                                                   Ioss::GroupingEntity *entity)
+  {
+    int nvar = 0;
+    {
+      Ioss::SerializeIO serializeIO__(this);
+
+      int ierr = ex_get_reduction_variable_param(get_file_pointer(), type, &nvar);
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+      fmt::print("Reduction Variable Count = {}\n", nvar);
+    }
+
+    if (nvar > 0) {
+      // Get the variable names and add as fields. Need to decode these
+      // into vector/tensor/... eventually, for now store all as
+      // scalars.
+      char **names = Ioss::Utils::get_name_array(nvar, maximumNameLength);
+
+      // Read the names...
+      // (Currently, names are read for every block.  We could save them...)
+      {
+        Ioss::SerializeIO serializeIO__(this);
+
+        int ierr = ex_get_reduction_variable_names(get_file_pointer(), type, nvar, names);
+        if (ierr < 0) {
+          Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+        }
+
+        // Add to VariableNameMap so can determine exodusII index given a
+        // Sierra field name.  exodusII index is just 'i+1'
+        auto variables = m_reductionVariables[type];
+        for (int i = 0; i < nvar; i++) {
+          if (lowerCaseVariableNames) {
+            Ioss::Utils::fixup_name(names[i]);
+          }
+          variables.insert(VNMValuePair(std::string(names[i]), i + 1));
+        }
+
+        int *local_truth = nullptr;
+
+        std::vector<Ioss::Field> fields;
+        int64_t                  count = 1;
+        Ioss::Utils::get_fields(count, names, nvar, Ioss::Field::REDUCTION, get_field_recognition(),
                                 get_field_separator(), local_truth, fields);
 
         for (const auto &field : fields) {
