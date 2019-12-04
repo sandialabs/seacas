@@ -51,3 +51,14 @@ Ioss::Property Ioss::EdgeSet::get_implicit_property(const std::string &my_name) 
 }
 
 void Ioss::EdgeSet::block_membership(std::vector<std::string> & /*block_members*/) {}
+
+bool Ioss::EdgeSet::operator==(const EdgeSet &rhs)
+{
+  return Ioss::EntitySet::operator==( rhs );
+}
+
+bool Ioss::EdgeSet::operator!=(const EdgeSet &rhs)
+{
+  return !(*this == rhs);
+}
+

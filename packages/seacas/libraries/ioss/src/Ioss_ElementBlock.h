@@ -40,6 +40,8 @@ namespace Ioss {
 
     void                   get_block_adjacencies(std::vector<std::string> &block_adjacency) const;
     AxisAlignedBoundingBox get_bounding_box() const;
+    bool operator==(Ioss::ElementBlock &rhs);
+    bool operator!=(Ioss::ElementBlock &rhs);
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,

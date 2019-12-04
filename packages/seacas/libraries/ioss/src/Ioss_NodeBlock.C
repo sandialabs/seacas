@@ -91,3 +91,14 @@ int64_t Ioss::NodeBlock::internal_put_field_data(const Ioss::Field &field, void 
 {
   return get_database()->put_field(this, field, data, data_size);
 }
+
+bool Ioss::NodeBlock::operator==(const Ioss::NodeBlock &rhs)
+{
+  return Ioss::EntityBlock::operator==( rhs );
+}
+
+bool Ioss::NodeBlock::operator!=(const Ioss::NodeBlock &rhs)
+{
+  return !(*this == rhs);
+}
+

@@ -92,6 +92,7 @@ namespace IOShell {
     bool reverse{false};
     bool add_processor_id_field{false};
     bool boundary_sideset{false};
+    bool compare{false};
     char fieldSuffixSeparator{'_'};
   };
 } // namespace IOShell

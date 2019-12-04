@@ -327,3 +327,99 @@ void Ioss::GroupingEntity::property_update(const std::string &property,
     nge->property_add(Ioss::Property(property, value));
   }
 }
+
+bool Ioss::GroupingEntity::operator==(const Ioss::GroupingEntity &rhs)
+{
+  if( this->entityName.compare(rhs.entityName) != 0 ) { 
+    printf("GroupingEntity: entityName mismatch (%s vs. %s)\n", 
+           this->entityName.c_str(), rhs.entityName.c_str());
+    return false;
+  }
+
+  if( this->entityCount != rhs.entityCount ) { 
+    printf("GroupingEntity: entityCount mismatch (%ld vs. %ld)\n", this->entityCount, rhs.entityCount);
+    return false;
+  }
+
+  if( this->attributeCount != rhs.attributeCount ) { 
+    printf("GroupingEntity: attributeCount mismatch (%ld vs. %ld)\n", 
+           this->attributeCount, rhs.attributeCount);
+    return false;
+  }
+
+  if( this->entityState != rhs.entityState ) { 
+    printf("GroupingEntity: entityState mismatch (%d vs. %d)\n", this->entityState, rhs.entityState);
+    return false;
+  }
+
+  if( this->hash_ != rhs.hash_ ) { 
+    printf("GroupingEntity: hash_ mismatch (0x%x vs. 0x%x)\n", this->hash_, rhs.hash_);
+    return false;
+  }
+
+  /* COMPARE properties */
+  Ioss::NameList lhs_properties, rhs_properties;
+  this->properties.describe(&lhs_properties);
+  rhs.properties.describe(&rhs_properties);
+
+  if( lhs_properties.size() != rhs_properties.size() ) { 
+    printf("GroupingEntity: NUMBER of properties are different (%ld vs. %ld)\n",
+           lhs_properties.size(), rhs_properties.size());
+  }
+
+  for( auto &lhs_property : lhs_properties ) { 
+    auto it = std::find(rhs_properties.begin(), rhs_properties.end(), lhs_property);
+    if( it == rhs_properties.end() ) { 
+      printf("WARNING: GroupingEntity: INPUT property (%s) not found in OUTPUT\n", 
+             lhs_property.c_str());
+      continue;
+    }   
+
+    if( this->properties.get(lhs_property) != rhs.properties.get(lhs_property) ) { 
+      // EMPIRICALLY, different representations (e.g., CGNS vs. Exodus) of the same mesh 
+      // can have different values for the "original_block_order" property.
+      if( lhs_property.compare("original_block_order") == 0 ) { 
+        printf("WARNING: values for \"original_block_order\" DIFFER (%d vs. %d)\n",
+        this->properties.get(lhs_property).get_int(), 
+        rhs.properties.get(lhs_property).get_int());
+      } else {
+        printf("GroupingEntity: PROPERTY (%s) mismatch\n", lhs_property.c_str());
+        return false;
+      }   
+    }
+  }
+      
+  for( auto &rhs_property : rhs_properties ) { 
+    auto it = std::find(lhs_properties.begin(), lhs_properties.end(), rhs_property);
+    if( it == lhs_properties.end() ) { 
+      printf("WARNING: GroupingEntity: OUTPUT property (%s) not found in INPUT\n", 
+             rhs_property.c_str());
+    }   
+  }
+      
+  /* COMPARE fields */
+  Ioss::NameList lhs_fields, rhs_fields;
+  this->fields.describe(&lhs_fields);
+  rhs.fields.describe(&rhs_fields);
+
+  if( lhs_fields.size() != rhs_fields.size() ) {
+    printf("GroupingEntity: NUMBER of fields are different (%ld vs. %ld)\n",
+           lhs_fields.size(), rhs_fields.size());
+    return false;
+  }
+
+  for( auto &field: lhs_fields ) {
+    if( this->fields.get(field) != rhs.fields.get(field) ) {
+      printf("GroupingEntity: FIELD (%s) mismatch\n", field.c_str());
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool Ioss::GroupingEntity::operator!=(const Ioss::GroupingEntity &rhs)
+{
+  return !(*this == rhs);
+}
+

@@ -79,3 +79,30 @@ Ioss::Property Ioss::EntityBlock::get_implicit_property(const std::string &my_na
 
   return Ioss::GroupingEntity::get_implicit_property(my_name);
 }
+
+bool Ioss::EntityBlock::operator==(const Ioss::EntityBlock &rhs)
+{
+  /* COMPARE element topologies */
+  if( *(this->topology_) != *(rhs.topology_) ) {
+    printf("EntityBlock: TOPOLOGY mismatch\n");
+    return false;
+  }
+
+  if( this->idOffset != rhs.idOffset ) {
+    printf("EntityBlock: idOffset mismatch (%ld vs. %ld)\n", this->idOffset, rhs.idOffset);
+    return false;
+  }
+
+  if( Ioss::GroupingEntity::operator!=( rhs ) ) {
+    printf("EntityBlock: GroupingEntity mismatch\n");
+    return false;
+  }
+
+  return true;
+}
+
+bool Ioss::EntityBlock::operator!=(const Ioss::EntityBlock &rhs)
+{
+  return !(*this == rhs);
+}
+

@@ -57,6 +57,9 @@ namespace Ioss {
     // An example would be 'element_block_count' for a region.
     Property get_implicit_property(const std::string &my_name) const override;
 
+    bool operator!=(const Ioss::NodeBlock &rhs);
+    bool operator==(const Ioss::NodeBlock &rhs);
+
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size) const override;

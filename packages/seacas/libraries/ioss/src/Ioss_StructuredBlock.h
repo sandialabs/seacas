@@ -288,6 +288,10 @@ namespace Ioss {
               global_offset < m_nodeOffset + get_property("node_count").get_int());
     }
 
+    /* COMPARE two StructuredBlocks */
+    bool operator!=(Ioss::StructuredBlock &rhs);
+    bool operator==(Ioss::StructuredBlock &rhs);
+
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size) const override;

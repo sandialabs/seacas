@@ -275,4 +275,84 @@ namespace Ioss {
     return os;
   }
 
+  bool StructuredBlock::operator==(Ioss::StructuredBlock &rhs)
+  {
+    if( this->m_ni != rhs.m_ni || this->m_nj != rhs.m_nj || this->m_nk != rhs.m_nk ) { 
+      printf("StructuredBlock: N mismatch (%d:%d:%d vs. %d:%d:%d)\n",
+             this->m_ni, this->m_nj, this->m_nk, rhs.m_ni, rhs.m_nj, rhs.m_nk);
+      return false;
+    }   
+
+    if( this->m_offsetI != rhs.m_offsetI ||  
+        this->m_offsetJ != rhs.m_offsetJ ||  
+        this->m_offsetK != rhs.m_offsetK ) 
+    {   
+      printf("StructuredBlock: OFFSET mismatch (%d:%d:%d vs. %d:%d:%d)\n",
+             this->m_offsetI, this->m_offsetJ, this->m_offsetK, 
+             rhs.m_offsetI, rhs.m_offsetJ, rhs.m_offsetK);
+      return false;
+    }   
+
+    if( this->m_niGlobal != rhs.m_niGlobal ||  
+        this->m_njGlobal != rhs.m_njGlobal ||  
+        this->m_nkGlobal != rhs.m_nkGlobal ) 
+    {   
+      printf("StructuredBlock: Global N mismatch (%d:%d:%d vs. %d:%d:%d)\n",
+             this->m_niGlobal, this->m_njGlobal, this->m_nkGlobal, 
+             rhs.m_niGlobal, rhs.m_njGlobal, rhs.m_nkGlobal);
+      return false;
+    }   
+
+    if( this->m_nodeOffset != rhs.m_nodeOffset ) { 
+      printf("StructuredBlock: Node Offset mismatch (%ld vs. %ld)\n",
+             this->m_nodeOffset, rhs.m_nodeOffset);
+      return false;
+    }   
+
+    if( this->m_cellOffset != rhs.m_cellOffset ) { 
+      printf("StructuredBlock: Cell Offset mismatch (%ld vs. %ld)\n",
+             this->m_cellOffset, rhs.m_cellOffset);
+      return false;
+    }
+
+    if( this->m_nodeGlobalOffset != rhs.m_nodeGlobalOffset ) {
+      printf("StructuredBlock: Node Global Offset mismatch (%ld vs. %ld)\n",
+             this->m_nodeGlobalOffset, rhs.m_nodeGlobalOffset);
+      return false;
+    }
+
+    if( this->m_cellGlobalOffset != rhs.m_cellGlobalOffset ) {
+      printf("StructuredBlock: Cell Global Offset mismatch (%ld vs. %ld)\n",
+             this->m_cellGlobalOffset, rhs.m_cellGlobalOffset);
+      return false;
+    }
+
+    if( this->m_blockLocalNodeIndex != rhs.m_blockLocalNodeIndex ) {
+      printf("StructuredBlock: Block Local Node Index mismatch\n");
+    }
+
+    if( this->m_globalIdMap != rhs.m_globalIdMap ) {
+      printf("StructuredBlock: Global ID Map mismatch\n");
+    }
+
+    // INCOMPLETE comparison
+    printf("**** ERROR ****: StructuredBlock comparison incomplete\n");
+#ifdef TODO_sllevy
+    std::vector<ZoneConnectivity>          m_zoneConnectivity;
+    std::vector<BoundaryCondition>         m_boundaryConditions;
+#endif
+
+    if( Ioss::EntityBlock::operator!=( rhs ) ) {
+      printf("StructuredBlock: EntityBlock mismatch\n");
+      return false;
+    }
+
+    return true;
+  }
+
+  bool StructuredBlock::operator!=(Ioss::StructuredBlock &rhs)
+  {
+    return !(*this == rhs);
+  }
+
 } // namespace Ioss
