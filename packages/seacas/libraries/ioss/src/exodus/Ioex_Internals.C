@@ -34,7 +34,6 @@
 #include <cassert>                 // for assert
 #include <exodus/Ioex_Internals.h> // for Internals, ElemBlock, etc
 extern "C" {
-  int nc_use_compact_storage;
 #include <exodusII_int.h> // for EX_FATAL, EX_NOERR, etc
 }
 #include <cstddef> // for size_t
@@ -872,7 +871,6 @@ int Internals::write_meta_data(Mesh &mesh)
 
     nc_redef(exodusFilePtr);
     //    Redefine the_database(exodusFilePtr);
-    nc_use_compact_storage = 1;
     // Set the database to NOFILL mode.  Only writes values we want written...
     int old_fill = 0;
 
@@ -973,7 +971,6 @@ int Internals::write_meta_data(Mesh &mesh)
   output_names(mesh.sidesets, exodusFilePtr, EX_SIDE_SET);
 
   parallelUtil.progress("End of Ioex::Internals write_meta_data");
-  nc_use_compact_storage = 0;
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
@@ -1240,9 +1237,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     // Define the node map here to avoid a later redefine call
     int dims[1];
     dims[0] = numnoddim;
-    nc_use_compact_storage = 0;
     status  = nc_def_var(exodusFilePtr, VAR_NODE_NUM_MAP, map_type, 1, dims, &varid);
-    nc_use_compact_storage = 1;
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -1298,6 +1293,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
   }
 
   size_t elem_count = 0;
@@ -1320,9 +1316,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     int dims[1];
     dims[0] = numelemdim;
     varid   = 0;
-    nc_use_compact_storage = 0;
     status  = nc_def_var(exodusFilePtr, VAR_ELEM_NUM_MAP, map_type, 1, dims, &varid);
-    nc_use_compact_storage = 1;
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -1508,6 +1502,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
         return (EX_FATAL);
       }
     }
+    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
 
     // Output the file version
     int ierr = ex__put_nemesis_version(exodusFilePtr);
@@ -1808,9 +1803,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks, bool count_onl
       dims[1] = nelnoddim;
 
       int connid;
-      nc_use_compact_storage = 0;
       status = nc_def_var(exodusFilePtr, VAR_CONN(iblk + 1), bulk_type, 2, dims, &connid);
-      nc_use_compact_storage = 1;
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         errmsg = fmt::format("Error: failed to create connectivity array for block {}"
@@ -1947,6 +1940,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
     }
   }
   return (EX_NOERR);
@@ -2079,6 +2073,7 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+      nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
     }
 
     // face connectivity array
@@ -2237,6 +2232,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
     }
 
     // edge connectivity array
@@ -2721,10 +2717,8 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets, bool count_onl
     // define variable to store node set node list here instead of in expns
     dims[0] = dimid;
     int varid;
-      nc_use_compact_storage = 0;
     status =
         nc_def_var(exodusFilePtr, VAR_NODE_NS(cur_num_node_sets + 1), bulk_type, 1, dims, &varid);
-      nc_use_compact_storage = 1;
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -2755,10 +2749,8 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets, bool count_onl
         return (EX_FATAL);
       }
       // create variable for distribution factors
-      nc_use_compact_storage = 0;
       status = nc_def_var(exodusFilePtr, VAR_FACT_NS(cur_num_node_sets + 1),
                           nc_flt_code(exodusFilePtr), 1, dims, &varid);
-      nc_use_compact_storage = 1;
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -2816,6 +2808,7 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
     }
   }
   return (EX_NOERR);
@@ -3007,6 +3000,7 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
     }
   }
   return (EX_NOERR);
@@ -3197,6 +3191,7 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
     }
   }
   return (EX_NOERR);
@@ -3330,7 +3325,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
     }
     if (elemsets[i].attributeCount > 0) {
       int numattrdim;
-      status = nc_def_dim(exodusFilePtr, DIM_NUM_ATT_IN_NS(cur_num_elem_sets + 1),
+      status = nc_def_dim(exodusFilePtr, DIM_NUM_ATT_IN_ES(cur_num_elem_sets + 1),
                           elemsets[i].attributeCount, &numattrdim);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
@@ -3343,7 +3338,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
 
       dims[0] = dimid;
       dims[1] = numattrdim;
-      status  = nc_def_var(exodusFilePtr, VAR_NSATTRIB(cur_num_elem_sets + 1),
+      status  = nc_def_var(exodusFilePtr, VAR_ESATTRIB(cur_num_elem_sets + 1),
                           nc_flt_code(exodusFilePtr), 2, dims, &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
@@ -3358,7 +3353,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
       dims[0] = numattrdim;
       dims[1] = namestrdim;
 
-      status = nc_def_var(exodusFilePtr, VAR_NAME_NSATTRIB(cur_num_elem_sets + 1), NC_CHAR, 2, dims,
+      status = nc_def_var(exodusFilePtr, VAR_NAME_ESATTRIB(cur_num_elem_sets + 1), NC_CHAR, 2, dims,
                           &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
@@ -3368,6 +3363,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
     }
   }
   return (EX_NOERR);
@@ -3561,10 +3557,8 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets, bool count_onl
 
     dims[0]   = dimid;
     int varid = 0;
-      nc_use_compact_storage = 0;
     status =
         nc_def_var(exodusFilePtr, VAR_ELEM_SS(cur_num_side_sets + 1), bulk_type, 1, dims, &varid);
-      nc_use_compact_storage = 1;
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -3582,10 +3576,8 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets, bool count_onl
     ex__compress_variable(exodusFilePtr, varid, 1);
 
     // create side list variable for side set
-      nc_use_compact_storage = 0;
     status =
         nc_def_var(exodusFilePtr, VAR_SIDE_SS(cur_num_side_sets + 1), bulk_type, 1, dims, &varid);
-    nc_use_compact_storage = 1;
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
@@ -3623,10 +3615,8 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets, bool count_onl
 
       // create distribution factor list variable for side set
       dims[0] = dimid;
-      nc_use_compact_storage = 0;
       status  = nc_def_var(exodusFilePtr, VAR_FACT_SS(cur_num_side_sets + 1),
                           nc_flt_code(exodusFilePtr), 1, dims, &varid);
-      nc_use_compact_storage = 1;
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         if (status == NC_ENAMEINUSE) {
@@ -3786,6 +3776,7 @@ namespace {
           ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
           return (EX_FATAL);
         }
+	nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
         ex__compress_variable(exodusFilePtr, varid, 1);
         i++;
       }
@@ -3866,7 +3857,6 @@ namespace {
     int         dim[2];
     int         varid;
 
-    nc_use_compact_storage = 0;
     if (nodes > 0) {
       if (ex_large_model(exodusFilePtr) == 1) {
         // node coordinate arrays -- separate storage...
@@ -3925,7 +3915,6 @@ namespace {
       }
     }
 
-    nc_use_compact_storage = 1;
     // coordinate names array
     dim[0] = dim_dim;
     dim[1] = str_dim;
@@ -3938,6 +3927,7 @@ namespace {
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
     return (EX_NOERR);
   }
 
@@ -3978,6 +3968,7 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
 
     // id array:
     int ids_type = get_type(exoid, EX_IDS_INT64_DB);
@@ -3988,6 +3979,7 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
 
     // store property name as attribute of property array variable
     status = nc_put_att_text(exoid, varid, ATT_PROP_NAME, 3, "ID");
@@ -3998,6 +3990,7 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
 
     if (name_var) {
       dim[0] = dimid;
@@ -4009,6 +4002,7 @@ namespace {
         ex_err_fn(exoid, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
     }
     return (EX_NOERR);
   }

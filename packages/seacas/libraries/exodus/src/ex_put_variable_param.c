@@ -89,6 +89,7 @@ static int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char 
     }
     return (EX_FATAL); /* exit define mode and return */
   }
+  nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
 #if NC_HAS_HDF5
   nc_def_var_fill(exoid, varid, 0, &fill);
 #endif
@@ -229,8 +230,8 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
       goto error_ret; /* exit define mode and return */
     }
     ex__compress_variable(exoid, varid, 2);
+    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
   }
-
   else if (obj_type == EX_NODAL) {
     /*
      * There are two ways to store the nodal variables. The old way *
@@ -291,6 +292,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
       }
       goto error_ret; /* exit define mode and return */
     }
+    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
   }
 
   /* netCDF variables in which to store the EXODUS obj_type variable values will

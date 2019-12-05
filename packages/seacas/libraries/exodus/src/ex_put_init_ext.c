@@ -100,6 +100,7 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
       ex_err_fn(exoid, __func__, errmsg, status);
       return (status); /* exit define mode and return */
     }
+    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
 #if NC_HAS_HDF5
     nc_def_var_fill(exoid, varid, 0, &fill);
 #endif
@@ -134,6 +135,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       ex_err_fn(exoid, __func__, errmsg, status);
       return (status); /* exit define mode and return */
     }
+    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
 
     /* type id array */
     int_type = NC_INT;
@@ -146,6 +148,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       ex_err_fn(exoid, __func__, errmsg, status);
       return (status); /* exit define mode and return */
     }
+    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
 
     /*   store property name as attribute of property array variable */
     if ((status = nc_put_att_text(exoid, varid, ATT_PROP_NAME, 3, "ID")) != NC_NOERR) {
