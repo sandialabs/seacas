@@ -162,6 +162,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
         ex_err_fn(exoid, __func__, errmsg, status);
         goto error_ret; /* exit define mode and return */
       }
+      nc_def_var_chunking(rootid, varid, NC_COMPACT, NULL);
       ex__compress_variable(rootid, varid, 3);
 
       /*   leave define mode  */

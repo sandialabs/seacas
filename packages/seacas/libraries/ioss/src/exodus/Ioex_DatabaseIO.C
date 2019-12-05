@@ -84,7 +84,6 @@
 #include "Ioss_State.h"
 #include "Ioss_VariableType.h"
 
-extern int nc_use_compact_storage;
 // ========================================================================
 // Static internal helper functions
 // ========================================================================
@@ -488,9 +487,7 @@ namespace Ioex {
       Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][0], codename, MAX_STR_LENGTH + 1);
       Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][1], version, MAX_STR_LENGTH + 1);
 
-      nc_use_compact_storage = 1;
       int ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, qa[0].qa_record);
-      nc_use_compact_storage = 0;
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -552,9 +549,7 @@ namespace Ioex {
         Ioss::Utils::copy_string(info[i], informationRecords[j], max_line_length + 1);
       }
 
-      nc_use_compact_storage = 1;
       int ierr = ex_put_info(get_file_pointer(), total_lines, info);
-      nc_use_compact_storage = 0;
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -1357,7 +1352,6 @@ namespace Ioex {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
 
-      nc_use_compact_storage = 1;
       globalValues.resize(m_variables[EX_GLOBAL].size());
       output_results_names(EX_GLOBAL, m_variables[EX_GLOBAL]);
       output_results_names(EX_NODE_BLOCK, m_variables[EX_NODE_BLOCK]);
@@ -1369,7 +1363,6 @@ namespace Ioex {
       output_results_names(EX_FACE_SET, m_variables[EX_FACE_SET]);
       output_results_names(EX_ELEM_SET, m_variables[EX_ELEM_SET]);
       output_results_names(EX_SIDE_SET, m_variables[EX_SIDE_SET]);
-      nc_use_compact_storage = 0;
     }
   }
 

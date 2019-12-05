@@ -165,7 +165,8 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
         ex_err_fn(exoid, __func__, errmsg, status);
         goto error_ret; /* exit define mode and return */
       }
-
+      nc_def_var_chunking(rootid, varid, NC_COMPACT, NULL);
+      
       /*   leave define mode  */
       if ((status = ex__leavedef(rootid, __func__)) != NC_NOERR) {
         EX_FUNC_LEAVE(EX_FATAL);
