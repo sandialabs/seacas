@@ -258,6 +258,7 @@ namespace Ioex {
     int64_t add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
                                int64_t position = 0);
     int64_t add_reduction_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity);
+    void add_mesh_reduction_fields(ex_entity_type type, int64_t id, Ioss::GroupingEntity *entity);
 
     void add_region_fields();
     void store_reduction_field(ex_entity_type type, const Ioss::Field &field,
