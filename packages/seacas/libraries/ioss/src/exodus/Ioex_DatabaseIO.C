@@ -123,6 +123,7 @@ namespace {
     default: return Ioss::INVALID_TYPE;
     }
   }
+
 } // namespace
 
 namespace Ioex {
@@ -646,6 +647,8 @@ namespace Ioex {
         }
         SMART_ASSERT(assem->member_count() == assemblies[i].entity_count)
         (assem->member_count())(assemblies[i].entity_count);
+
+        add_mesh_reduction_fields(EX_ASSEMBLY, assemblies[i].id, assem);
         // Check for additional variables.
         int attribute_count = assem->get_property("attribute_count").get_int();
         add_attribute_fields(EX_ASSEMBLY, assem, attribute_count, "Assembly");
@@ -1231,6 +1234,38 @@ namespace Ioex {
   {
     int field_count = add_results_fields(EX_GLOBAL, get_region());
     globalValues.resize(field_count);
+  }
+
+  void DatabaseIO::add_mesh_reduction_fields(ex_entity_type type, int64_t id,
+                                             Ioss::GroupingEntity *entity)
+  {
+    // Get "attributes" i.e., (MESH_REDUCTION field in IOSS speak).
+    int att_count = ex_get_attribute_count(get_file_pointer(), type, id);
+
+    if (att_count > 0) {
+      std::vector<ex_attribute> attr(att_count);
+      ex_get_attribute_param(get_file_pointer(), type, id, attr.data());
+      ex_get_attributes(get_file_pointer(), att_count, attr.data());
+
+      // Create a property on `entity` for each `attribute`
+      for (const auto att : attr) {
+        std::string storage = fmt::format("Real[{}]", att.value_count);
+        switch (att.type) {
+        case EX_INTEGER:
+          entity->field_add(
+              Ioss::Field(att.name, Ioss::Field::INTEGER, storage, Ioss::Field::MESH_REDUCTION));
+          break;
+        case EX_DOUBLE:
+          entity->field_add(
+              Ioss::Field(att.name, Ioss::Field::DOUBLE, storage, Ioss::Field::MESH_REDUCTION));
+          break;
+        case EX_CHAR:
+          entity->field_add(
+              Ioss::Field(att.name, Ioss::Field::STRING, storage, Ioss::Field::MESH_REDUCTION));
+          break;
+        }
+      }
+    }
   }
 
   // common

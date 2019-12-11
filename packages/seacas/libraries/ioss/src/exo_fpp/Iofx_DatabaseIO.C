@@ -1232,6 +1232,8 @@ namespace Iofx {
       if (nvar > 0) {
         nvar = add_results_fields(entity_type, block, iblk);
       }
+      add_reduction_results_fields(entity_type, block);
+      add_mesh_reduction_fields(entity_type, id, block);
 
       if (entity_type == EX_ELEM_BLOCK) {
         Ioss::SerializeIO serializeIO__(this);

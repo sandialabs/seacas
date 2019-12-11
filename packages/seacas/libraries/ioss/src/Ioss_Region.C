@@ -505,17 +505,17 @@ namespace Ioss {
          get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
          get_property("assembly_count").get_int(), num_ts});
 
-    size_t num_glo_vars = field_count(Ioss::Field::TRANSIENT);
-    size_t num_nod_vars = get_variable_count(get_node_blocks());
-    size_t num_edg_vars = get_variable_count(get_edge_blocks());
-    size_t num_fac_vars = get_variable_count(get_face_blocks());
-    size_t num_ele_vars = get_variable_count(get_element_blocks());
-    size_t num_str_vars = get_variable_count(get_structured_blocks());
-    size_t num_ns_vars  = get_variable_count(get_nodesets());
-    size_t num_es_vars  = get_variable_count(get_edgesets());
-    size_t num_fs_vars  = get_variable_count(get_facesets());
-    size_t num_els_vars = get_variable_count(get_elementsets());
-    size_t num_asm_vars = get_variable_count(get_assemblies());
+    size_t num_glo_vars     = field_count(Ioss::Field::TRANSIENT);
+    size_t num_nod_vars     = get_variable_count(get_node_blocks());
+    size_t num_edg_vars     = get_variable_count(get_edge_blocks());
+    size_t num_fac_vars     = get_variable_count(get_face_blocks());
+    size_t num_ele_vars     = get_variable_count(get_element_blocks());
+    size_t num_str_vars     = get_variable_count(get_structured_blocks());
+    size_t num_ns_vars      = get_variable_count(get_nodesets());
+    size_t num_es_vars      = get_variable_count(get_edgesets());
+    size_t num_fs_vars      = get_variable_count(get_facesets());
+    size_t num_els_vars     = get_variable_count(get_elementsets());
+    size_t num_asm_red_vars = get_reduction_variable_count(get_assemblies());
 
     size_t                       num_ss_vars = 0;
     const Ioss::SideSetContainer fss         = get_sidesets();
@@ -582,7 +582,7 @@ namespace Ioss {
         num_width, sb_width, vr_width, num_glo_vars, num_nod_vars, num_ele_vars, num_str_vars,
         num_ns_vars, num_ss_vars, num_ts, num_edg_vars, num_fac_vars, num_es_vars, num_fs_vars,
         num_els_vars, " ", get_database()->get_format(), get_property("assembly_count").get_int(),
-        num_asm_vars);
+        num_asm_red_vars);
   }
 
   /** \brief Set the Region and the associated DatabaseIO to the given State.
