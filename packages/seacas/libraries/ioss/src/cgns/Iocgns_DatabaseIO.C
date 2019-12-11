@@ -1826,6 +1826,7 @@ namespace Iocgns {
                 for (auto node : connect) {
                   idata[i++] = node;
                 }
+		Utils::map_cgns_connectivity(eb->topology(), num_to_get, idata);
               }
               else {
                 auto * idata = reinterpret_cast<int64_t *>(data);
@@ -1833,6 +1834,7 @@ namespace Iocgns {
                 for (auto node : connect) {
                   idata[i++] = node;
                 }
+		Utils::map_cgns_connectivity(eb->topology(), num_to_get, idata);
               }
             }
           }
