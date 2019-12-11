@@ -158,14 +158,14 @@ BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
 
 if [ ! -z ${DEBUG+x} ]
 then
-    if [ "${DEBUG}" == "ON" ] 
+    if [ "${DEBUG}" == "ON" ] || [ "${DEBUG}" == "YES" ]
     then
 	BUILD_TYPE="DEBUG"
-    elif [ "${DEBUG}" == "OFF" ] 
+    elif [ "${DEBUG}" == "OFF" ] || [ "${DEBUG}" == "NO" ]
     then
 	BUILD_TYPE="RELEASE"
     else
-	echo "ERROR: Invalid value for DEBUG ('$DEBUG'). Must be 'ON' or 'OFF'."
+	echo "ERROR: Invalid value for DEBUG ('$DEBUG'). Must be 'ON', 'OFF', 'YES', 'NO'."
 	exit
     fi
 fi
@@ -307,7 +307,7 @@ if [ "$SANITIZER" != "NO" ] ; then
 #sanitizer=integer     #: Enables checks for undefined or suspicious integer behavior.
 #sanitizer=thread      #: ThreadSanitizer, a data race detector.
 #sanitizer=memory      #: MemorySanitizer, experimental detector of uninitialized reads.
-#sanitizer=undefined   #: Fast and compatible undefined behavior checker. 
+#sanitizer=undefined   #: Fast and compatible undefined behavior checker.
 #sanitizer=dataflow    #: DataFlowSanitizer, a general data flow analysis.
 #sanitizer=cfi         #: control flow integrity checks. Requires -flto.
 #sanitizer=safe-stack  #: safe stack protection against stack-based memory corruption errors.
@@ -319,7 +319,7 @@ fi
 
 ### You can add these below to regenerate the flex and bison files for
 ### aprepro and aprepro_lib May have to touch aprepro.l aprepro.y
-### aprepro.ll and aprepro.yy to have them regenerate 
+### aprepro.ll and aprepro.yy to have them regenerate
 #-D GENERATE_FLEX_FILES=ON \
 #-D GENERATE_BISON_FILES=ON \
 
