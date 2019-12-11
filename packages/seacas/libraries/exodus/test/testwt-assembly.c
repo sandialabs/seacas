@@ -157,8 +157,8 @@ int main(int argc, char **argv)
   }
 
   /* Write element block names */
-  char *block_names[] = {"block_1", "block_2", "block_3", "block_4",
-                         "block_5", "block_6", "block_7"};
+  char *block_names[] = {"block_A", "block_B", "block_C", "block_D",
+                         "block_E", "block_F", "block_G"};
   for (int i = 0; i < num_elem_blk; i++) {
     EXCHECK(ex_put_name(exoid, EX_ELEM_BLOCK, blocks[i].id, block_names[i]));
   }

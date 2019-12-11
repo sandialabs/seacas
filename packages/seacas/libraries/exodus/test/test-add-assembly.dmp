@@ -109,13 +109,13 @@ data:
  coordz = 0 ;
 
  eb_names =
-  "block_1",
-  "block_2",
-  "block_3",
-  "block_4",
-  "block_5",
-  "block_6",
-  "block_7" ;
+  "block_A",
+  "block_B",
+  "block_C",
+  "block_D",
+  "block_E",
+  "block_F",
+  "block_G" ;
 
  coor_names =
   "",
