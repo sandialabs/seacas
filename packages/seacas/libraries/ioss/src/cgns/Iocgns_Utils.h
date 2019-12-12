@@ -95,6 +95,9 @@ namespace Iocgns {
     template <typename INT>
       static void map_cgns_connectivity(const Ioss::ElementTopology *topo, size_t element_count,
 					INT *idata);
+    template <typename INT>
+      static void unmap_cgns_connectivity(const Ioss::ElementTopology *topo, size_t element_count,
+					INT *idata);
 
     template <typename INT>
     static void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
