@@ -7,7 +7,6 @@ os:
 
 arch:
   - amd64
-  - arm64
   - ppc64xle
   
 compiler:
