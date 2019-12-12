@@ -5,6 +5,11 @@ language: c++
 os:
   - linux
 
+arch:
+  - arm64
+  - ppc64xle
+  - amd64
+  
 compiler:
   - gcc
   - clang
@@ -22,6 +27,13 @@ matrix:
     - compiler: clang
       env: SANITIZER="-fsanitize=address -fsanitize-address-use-after-scope -fsanitize=memory -fno-omit-frame-pointer -fPIC" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
     - compiler: gcc
+      arch: arm64
+      env: MPI=ON H5VERSION=V18 USE_64BIT_INT=ON
+    - compiler: gcc
+      arch: amd64
+      env: MPI=ON H5VERSION=V18 USE_64BIT_INT=ON
+    - compiler: gcc
+      arch: ppc64xle
       env: MPI=ON H5VERSION=V18 USE_64BIT_INT=ON
     - compiler: clang
       env: MPI=ON THREADSAFE=ON H5VERSION=V18 FORTRAN=OFF
