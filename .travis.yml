@@ -67,15 +67,14 @@ before_install:
     fi
   - sudo apt-get -y install libz-dev
   - sudo apt-get -y install python3
-  - export PATH=/usr/local/bin:/usr/local/cmake-3.12.4/bin:${PATH}
-  - GNU_PARALLEL=OFF ./install-tpl.sh 
+  - PATH=/usr/local/bin:/usr/local/cmake-3.12.4/bin:${PATH} cmake --version
+  - PATH=/usr/local/bin:/usr/local/cmake-3.12.4/bin:${PATH} GNU_PARALLEL=OFF ./install-tpl.sh 
 
 before_script:
 
 install:
-  - export PATH=/usr/local/bin:/usr/local/cmake-3.12.4/bin:${PATH}
-  - cmake --version
-  - ./cmake-config
+  - PATH=/usr/local/bin:/usr/local/cmake-3.12.4/bin:${PATH} cmake --version
+  - PATH=/usr/local/bin:/usr/local/cmake-3.12.4/bin:${PATH} ./cmake-config
 
 script:
   - cd build
