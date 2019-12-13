@@ -50,7 +50,6 @@ namespace internal {
     template <typename T, FMT_ENABLE_IF(!std::is_integral<T>::value)> int operator()(T)
     {
       FMT_THROW(format_error("precision is not integer"));
-      return 0;
     }
   };
 
@@ -184,7 +183,6 @@ namespace internal {
     template <typename T, FMT_ENABLE_IF(!std::is_integral<T>::value)> unsigned operator()(T)
     {
       FMT_THROW(format_error("width is not integer"));
-      return 0;
     }
   };
 
