@@ -47,6 +47,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <fmt/ostream.h>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -94,7 +95,7 @@ kelpie.type standard
 lunasa.lazy_memory_manager malloc
 lunasa.eager_memory_manager malloc
 
-config.additional_files.env_name.if_defined FAODEL_CONFIG
+#config.additional_files.env_name.if_defined FAODEL_CONFIG
 
 mpisyncstart.enable true
 dirman.root_node_mpi 0
@@ -131,15 +132,21 @@ dirman.root_node_mpi 0
         nodeBlockCount(0), elementBlockCount(0), nodesetCount(0), sidesetCount(0),
         commsetNodeCount(0), commsetElemCount(0)
   {
+    faodel_config.AppendFromReferences();
 
     /* CREATE a DHT that is distributed across all of the ranks of the communicator. */
     if( instanceCount++ == 0 ) {
+
+      std::string resource;
+      faodel_config.GetString(&resource, "dirman.resources.0", "dht:/ioss/dht");
+      std::string mpi_resource = "dirman.resources_mpi[] " + resource;
+
       int size;
       MPI_Comm_size(communicator, &size);
       if( size == 1 ) {
-        faodel_config.Append("dirman.resources_mpi[] dht:/ioss/dht 0");
+        faodel_config.Append(mpi_resource + " 0");
       } else {
-        faodel_config.Append("dirman.resources_mpi[] dht:/ioss/dht 0-" + std::to_string(size-1));
+        faodel_config.Append(mpi_resource + " 0-" + std::to_string(size-1));
       }
 
       faodel_config.Append( kelpie_config_string );
@@ -155,7 +162,17 @@ dirman.root_node_mpi 0
     pool = kelpie::Connect( kelpie_url );
 #endif
 
-    pool = kelpie::Connect( "dht:/ioss/dht" );
+    std::string s;
+    faodel_config.GetString(&s, "dirman.resources.0");
+    if( s.empty() ) {
+      std::ostringstream errmsg;
+      fmt::print(
+          errmsg,
+          "ERROR: Unable to locate Faodel resource to connect to\n");
+      IOSS_ERROR(errmsg);
+    } else {
+      pool = kelpie::Connect( s );
+    }
     dbState = Ioss::STATE_UNKNOWN;
   }
 
@@ -196,8 +213,6 @@ dirman.root_node_mpi 0
   }
 
   void DatabaseIO::read_region() {
-    const std::string pool_name("dht:/ioss/dht");
-    pool = kelpie::Connect(pool_name);
     int rank(parallel_rank());
 
     auto region(this->get_region());
