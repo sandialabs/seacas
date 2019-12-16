@@ -1,5 +1,5 @@
 """
-exodus.py v 1.18 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.18.1 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -95,10 +95,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.18 (seacas-py3)"
+EXODUS_PY_VERSION = "1.18.1 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.18 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.18.1 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -5200,7 +5200,7 @@ class exodus:
         EXODUS_LIB.ex_update(self.fileId)
         return True
 
-    # --------------------------------------------------------------------
+# --------------------------------------------------------------------
 # Utility Functions
 # --------------------------------------------------------------------
 
@@ -5825,24 +5825,27 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[], node_set_
 
 def internal_add_variables(exo, obj_type, entvars, debugPrint):
     """ Internal support function for `exodus.add_variables` """
+
+    if len(entvars) == 0:
+        return
+    
     if debugPrint:
         print("Construct Truth Table for additional variables")
-    exo.__add_variables(obj_type)
 
-    new_e_var_names = []
-    new_e_var_blks = []
+    new_var_names = []
+    new_var_blks = []
     blk_ids = exo.get_ids(obj_type)
     for item in entvars:
         if isinstance(item, tuple):
-            new_e_var_names.append(item[0])
+            new_var_names.append(item[0])
             in_blks = []
             for blk_id in item[1]:
                 if blk_id in blk_ids:
                     in_blks.append(blk_id)
-            new_e_var_blks.append(in_blks)
+            new_var_blks.append(in_blks)
         elif isinstance(item, str):
-            new_e_var_names.append(item)
-            new_e_var_blks.append(blk_ids)
+            new_var_names.append(item)
+            new_var_blks.append(blk_ids)
         else:
             print(("Warning additional variable item " +
                    item + " is not right type to add."))
@@ -5850,7 +5853,7 @@ def internal_add_variables(exo, obj_type, entvars, debugPrint):
 
     if debugPrint:
         print("Add Variables")
-    n_new_vars = len(new_e_var_names)
+    n_new_vars = len(new_var_names)
     n_old_vars = exo.get_variable_number(obj_type)
     n_vars = n_old_vars + n_new_vars
     if n_new_vars > 0:
@@ -5865,12 +5868,12 @@ def internal_add_variables(exo, obj_type, entvars, debugPrint):
                 ndx = j * n_old_vars + k
                 truth_table.append(old_truth_table[ndx])
             for m in range(n_new_vars):
-                if blk_ids[j] in new_e_var_blks[m]:
+                if blk_ids[j] in new_var_blks[m]:
                     truth_table.append(True)
                 else:
                     truth_table.append(False)
         exo.set_variable_truth_table(obj_type, truth_table)
-        for i, var_name in enumerate(new_e_var_names):
+        for i, var_name in enumerate(new_var_names):
             exo.put_variable_name(obj_type, var_name, n_old_vars + i + 1)
 
 
