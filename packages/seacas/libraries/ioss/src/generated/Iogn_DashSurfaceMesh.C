@@ -30,8 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <algorithm> // for copy
 #include <generated/Iogn_DashSurfaceMesh.h>
-#include <algorithm>                      // for copy
 #include <vector> // for vector
 
 namespace Iogn {
@@ -128,10 +128,7 @@ namespace Iogn {
     }
   }
 
-  std::string DashSurfaceMesh::get_sideset_topology() const
-  {
-    return "quad4";
-  }
+  std::string DashSurfaceMesh::get_sideset_topology() const { return "quad4"; }
 
   std::pair<std::string, int> DashSurfaceMesh::topology_type(int64_t /*block_number*/) const
   {
@@ -354,10 +351,7 @@ namespace Iogn {
     return std::make_pair(getTopologyName(topology), static_cast<int>(topology));
   }
 
-  std::string ExodusMesh::get_sideset_topology() const
-  {
-    return "quad4";
-  }
+  std::string ExodusMesh::get_sideset_topology() const { return "quad4"; }
 
   void ExodusMesh::sideset_elem_sides(int64_t setId, Ioss::Int64Vector &elem_sides) const
   {
