@@ -1433,7 +1433,7 @@ namespace Iogn {
 
   std::string GeneratedMesh::get_sideset_topology() const
   {
-    const std::string face_topo = createTets ? "tri3" : "quad4";
+    return createTets ? "tri3" : "quad4";
   }
 
   void GeneratedMesh::sideset_elem_sides(int64_t id, Ioss::Int64Vector &elem_sides) const
