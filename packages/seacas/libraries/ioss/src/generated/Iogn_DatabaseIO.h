@@ -126,6 +126,7 @@ namespace Iogn {
     void get_nodesets();
     void get_sidesets();
     void get_commsets();
+    std::string get_sideset_topology() const;
 
     const Ioss::Map &get_node_map() const;
     const Ioss::Map &get_element_map() const;

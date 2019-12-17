@@ -775,12 +775,15 @@ namespace Iogn {
     }
   }
 
+
+  std::string DatabaseIO::get_sideset_topology() const
+  {
+    return m_generatedMesh->get_sideset_topology();
+  }
+
   void DatabaseIO::get_sidesets()
   {
-    // Determine if underlying block is tet or quad...
-    Ioss::ElementBlock *block = get_region()->get_element_block("block_1");
-    assert(block != nullptr);
-    const std::string face_topo = block->topology()->shape() == Ioss::ElementShape::HEX? "quad4" : "tri3";
+    const std::string face_topo = get_sideset_topology();
 
     m_sideset_names.reserve(sidesetCount);
     for (int ifs = 0; ifs < sidesetCount; ifs++) {
