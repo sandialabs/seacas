@@ -360,8 +360,8 @@ namespace Ioss {
 #else
           if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
 #endif
-            errmsg << "ERROR: Cannot create directory '" << path_root 
-		   << "': " << std::strerror(errno) << "\n";
+            errmsg << "ERROR: Cannot create directory '" << path_root
+                   << "': " << std::strerror(errno) << "\n";
             error_found = true;
             break;
           }
