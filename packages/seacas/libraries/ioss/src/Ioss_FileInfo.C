@@ -336,60 +336,76 @@ namespace Ioss {
     return success == 0;
   }
 
-  void FileInfo::create_path(const std::string &filename, MPI_Comm communicator)
+  void FileInfo::create_path(const std::string &filename)
   {
     bool               error_found = false;
+    std::ostringstream errmsg;
+
+    Ioss::FileInfo file      = Ioss::FileInfo(filename);
+    std::string    path      = file.pathname();
+    std::string    path_root = path[0] == '/' ? "/" : "";
+
+    auto comps = tokenize(path, "/");
+    for (const auto &comp : comps) {
+      path_root += comp;
+
+      struct stat st;
+      if (stat(path_root.c_str(), &st) != 0) {
+        const int mode = 0777; // Users umask will be applied to this.
+#ifdef _MSC_VER
+        if (mkdir(path_root.c_str()) != 0 && errno != EEXIST) {
+#else
+        if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
+#endif
+          errmsg << "ERROR: Cannot create directory '" << path_root << "': " << std::strerror(errno)
+                 << "\n";
+          error_found = true;
+          break;
+        }
+      }
+      else if (!S_ISDIR(st.st_mode)) {
+        errno = ENOTDIR;
+        errmsg << "ERROR: Path '" << path_root << "' is not a directory.\n";
+        error_found = true;
+        break;
+      }
+      path_root += "/";
+    }
+
+    if (error_found) {
+      IOSS_ERROR(errmsg);
+    }
+  }
+
+  void FileInfo::create_path(const std::string &filename, MPI_Comm communicator)
+  {
+#ifdef SEACAS_HAVE_MPI
+    int                error_found = 0;
     std::ostringstream errmsg;
 
     Ioss::ParallelUtils util(communicator);
 
     if (util.parallel_rank() == 0) {
-      Ioss::FileInfo file      = Ioss::FileInfo(filename);
-      std::string    path      = file.pathname();
-      std::string    path_root = path[0] == '/' ? "/" : "";
-
-      auto comps = tokenize(path, "/");
-      for (const auto &comp : comps) {
-        path_root += comp;
-
-        struct stat st;
-        if (stat(path_root.c_str(), &st) != 0) {
-          const int mode = 0777; // Users umask will be applied to this.
-#ifdef _MSC_VER
-          if (mkdir(path_root.c_str()) != 0 && errno != EEXIST) {
-#else
-          if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
-#endif
-            errmsg << "ERROR: Cannot create directory '" << path_root
-                   << "': " << std::strerror(errno) << "\n";
-            error_found = true;
-            break;
-          }
-        }
-        else if (!S_ISDIR(st.st_mode)) {
-          errno = ENOTDIR;
-          errmsg << "ERROR: Path '" << path_root << "' is not a directory.\n";
-          error_found = true;
-          break;
-        }
-        path_root += "/";
+      try {
+        create_path(filename);
+      }
+      catch (const std::exception &x) {
+        errmsg << x.what();
+        error_found = 1;
       }
     }
     else {
-      // Give the other processors something to say in case there is an error.
-      errmsg << "ERROR: Could not create path. See processor 0 output for more details.\n";
+      errmsg << "ERROR: Could not create path '" << filename << "'.\n";
     }
 
-    // Sync all processors with error status...
-    // All processors but 0 will have error_found=false
-    // Processor 0 will have error_found = true or false depending on path
-    // result.
-    int is_error = error_found ? 1 : 0;
-    error_found  = (util.global_minmax(is_error, Ioss::ParallelUtils::DO_MAX) == 1);
+    MPI_Bcast(&error_found, 1, MPI_INT, 0, communicator);
 
     if (error_found) {
       IOSS_ERROR(errmsg);
     }
+#else
+    create_path(filename);
+#endif
   }
 
 } // namespace Ioss
