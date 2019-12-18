@@ -32,6 +32,7 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_ParallelUtils.h>
 #include <Ioss_Utils.h>
 #include <cstddef>
 #include <cstring>
@@ -55,7 +56,6 @@
 #endif
 
 #ifdef SEACAS_HAVE_MPI
-#include <Ioss_ParallelUtils.h>
 #include <numeric>
 #endif
 
