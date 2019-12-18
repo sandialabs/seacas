@@ -33,20 +33,20 @@
 #include "Ioss_CodeTypes.h"           // for IntVector
 #include "Ioss_ElementTopology.h"     // for ElementTopology
 #include <Ioss_ElementVariableType.h> // for ElementVariableType
-#include <Ioss_Hex16.h>
+#include <Ioss_Tet40.h>
 #include <cassert> // for assert
 
 //------------------------------------------------------------------------
 // Define a variable type for storage of this elements connectivity
 namespace Ioss {
-  const char *Hex16::name = "hex16";
-  class St_Hex16 : public ElementVariableType
+  const char *Tet40::name = "tetra40";
+  class St_Tet40 : public ElementVariableType
   {
   public:
-    static void factory() { static St_Hex16 registerThis; }
+    static void factory() { static St_Tet40 registerThis; }
 
   protected:
-    St_Hex16() : ElementVariableType(Ioss::Hex16::name, 16) {}
+    St_Tet40() : ElementVariableType(Ioss::Tet40::name, 40) {}
   };
 } // namespace Ioss
 
@@ -54,12 +54,12 @@ namespace Ioss {
 namespace {
   struct Constants
   {
-    static const int nnode     = 16;
-    static const int nedge     = 12;
-    static const int nedgenode = 3;
-    static const int nface     = 6;
-    static const int nfacenode = 8;
-    static const int nfaceedge = 4;
+    static const int nnode     = 40;
+    static const int nedge     = 6;
+    static const int nedgenode = 4;
+    static const int nface     = 4;
+    static const int nfacenode = 13;
+    static const int nfaceedge = 3;
     static int       edge_node_order[nedge][nedgenode];
     static int       face_node_order[nface][nfacenode];
     static int       face_edge_order[nface][nfaceedge];
@@ -67,92 +67,83 @@ namespace {
     static int       edges_per_face[nface + 1];
   };
 
-  // Edge numbers are zero-based [0..number_edges]
+  // Edge numbers are zero-based [0..number_edges)
   int Constants::edge_node_order[nedge][nedgenode] = // [edge][edge_node]
-      {{0, 1, 8},  {1, 2, 9},  {2, 3, 10}, {3, 0, 11}, {4, 5, 12}, {5, 6, 13},
-       {6, 7, 14}, {7, 4, 15}, {0, 4, -1}, {1, 5, -1}, {2, 6, -1}, {3, 7, -1}};
+      {{0, 1, 4, 5}, {1, 2, 6, 7}, {2, 0, 8, 9}, {0, 3, 10, 13}, {1, 3, 11, 14}, {2, 3, 12, 15}};
 
-  // Face numbers are zero-based [0..number_faces]
+  // Face numbers are zero-based [0..number_faces)
   int Constants::face_node_order[nface][nfacenode] = // [face][face_node]
-      {{0, 1, 5, 4, 8, 12, -1, -1}, {1, 2, 6, 5, 9, 13, -1, -1}, {2, 3, 7, 6, 10, 14, -1, -1},
-       {3, 0, 4, 7, 3, 11, 15, -1}, {0, 3, 2, 1, 11, 10, 9, 8},  {4, 5, 6, 7, 12, 13, 14, 15}};
+      {{0, 1, 3, 4, 5, 11, 14, 13, 10, 20, 21, 31, 30},
+       {1, 2, 3, 6, 7, 12, 15, 14, 11, 22, 23, 33, 32},
+       {0, 3, 2, 10, 13, 15, 12, 8, 9, 24, 34, 35, 25},
+       {0, 2, 1, 9, 8, 7, 6, 5, 4, 19, 18, 17, 16}};
 
   int Constants::face_edge_order[nface][nfaceedge] = // [face][face_edge]
-      {{0, 9, 4, 8}, {1, 10, 5, 9}, {2, 11, 6, 10}, {3, 8, 7, 11}, {3, 2, 1, 0}, {4, 5, 6, 7}};
+      {{0, 4, 3}, {1, 5, 4}, {3, 5, 2}, {2, 1, 0}};
 
   // face 0 returns number of nodes for all faces if homogeneous
   //        returns -1 if faces have differing topology
-  int Constants::nodes_per_face[nface + 1] = {-1, 6, 6, 6, 6, 8, 8};
+  int Constants::nodes_per_face[nface + 1] = {nfacenode, nfacenode, nfacenode, nfacenode,
+                                              nfacenode};
 
   // face 0 returns number of edges for all faces if homogeneous
   //        returns -1 if faces have differing topology
-  int Constants::edges_per_face[nface + 1] = {4, 4, 4, 4, 4, 4, 4};
+  int Constants::edges_per_face[nface + 1] = {nfaceedge, nfaceedge, nfaceedge, nfaceedge,
+                                              nfaceedge};
 } // namespace
 
-void Ioss::Hex16::factory()
+void Ioss::Tet40::factory()
 {
-  static Ioss::Hex16 registerThis;
-  Ioss::St_Hex16::factory();
+  static Ioss::Tet40 registerThis;
+  Ioss::St_Tet40::factory();
 }
 
-Ioss::Hex16::Hex16() : Ioss::ElementTopology(Ioss::Hex16::name, "Hexahedron_16")
+Ioss::Tet40::Tet40() : Ioss::ElementTopology(Ioss::Tet40::name, "Tetrahedron_40")
 {
-  Ioss::ElementTopology::alias(Ioss::Hex16::name, "Solid_Hex_16_3D");
+  Ioss::ElementTopology::alias(Ioss::Tet40::name, "tet40");
+  Ioss::ElementTopology::alias(Ioss::Tet40::name, "Solid_Tet_40_3D");
 }
 
-Ioss::Hex16::~Hex16() = default;
+Ioss::Tet40::~Tet40() = default;
 
-int Ioss::Hex16::parametric_dimension() const { return 3; }
-int Ioss::Hex16::spatial_dimension() const { return 3; }
-int Ioss::Hex16::order() const { return 2; }
+int Ioss::Tet40::parametric_dimension() const { return 3; }
+int Ioss::Tet40::spatial_dimension() const { return 3; }
+int Ioss::Tet40::order() const { return 3; }
 
-int Ioss::Hex16::number_corner_nodes() const { return 8; }
-int Ioss::Hex16::number_nodes() const { return Constants::nnode; }
-int Ioss::Hex16::number_edges() const { return Constants::nedge; }
-int Ioss::Hex16::number_faces() const { return Constants::nface; }
+int Ioss::Tet40::number_corner_nodes() const { return 4; }
+int Ioss::Tet40::number_nodes() const { return Constants::nnode; }
+int Ioss::Tet40::number_edges() const { return Constants::nedge; }
+int Ioss::Tet40::number_faces() const { return Constants::nface; }
 
-int Ioss::Hex16::number_nodes_edge(int edge) const
-{
-  // edge is 1-based.  0 passed in for all edges.
-  assert(edge >= 0 && edge <= number_edges());
-  if (edge == 0) {
-    return -1;
-  }
-  else if (edge <= 8) {
-    return 3;
-  }
-  else {
-    return 2;
-  }
-}
+int Ioss::Tet40::number_nodes_edge(int /* edge */) const { return Constants::nedgenode; }
 
-int Ioss::Hex16::number_nodes_face(int face) const
+int Ioss::Tet40::number_nodes_face(int face) const
 {
   // face is 1-based.  0 passed in for all faces.
   assert(face >= 0 && face <= number_faces());
   return Constants::nodes_per_face[face];
 }
 
-int Ioss::Hex16::number_edges_face(int face) const
+int Ioss::Tet40::number_edges_face(int face) const
 {
   // face is 1-based.  0 passed in for all faces.
   assert(face >= 0 && face <= number_faces());
   return Constants::edges_per_face[face];
 }
 
-Ioss::IntVector Ioss::Hex16::edge_connectivity(int edge_number) const
+Ioss::IntVector Ioss::Tet40::edge_connectivity(int edge_number) const
 {
   assert(edge_number > 0 && edge_number <= Constants::nedge);
-  Ioss::IntVector connectivity(number_nodes_edge(edge_number));
+  Ioss::IntVector connectivity(Constants::nedgenode);
 
-  for (int i = 0; i < number_nodes_edge(edge_number); i++) {
+  for (int i = 0; i < Constants::nedgenode; i++) {
     connectivity[i] = Constants::edge_node_order[edge_number - 1][i];
   }
 
   return connectivity;
 }
 
-Ioss::IntVector Ioss::Hex16::face_connectivity(int face_number) const
+Ioss::IntVector Ioss::Tet40::face_connectivity(int face_number) const
 {
   assert(face_number > 0 && face_number <= number_faces());
   Ioss::IntVector connectivity(Constants::nodes_per_face[face_number]);
@@ -164,7 +155,7 @@ Ioss::IntVector Ioss::Hex16::face_connectivity(int face_number) const
   return connectivity;
 }
 
-Ioss::IntVector Ioss::Hex16::element_connectivity() const
+Ioss::IntVector Ioss::Tet40::element_connectivity() const
 {
   Ioss::IntVector connectivity(number_nodes());
   for (int i = 0; i < number_nodes(); i++) {
@@ -173,39 +164,27 @@ Ioss::IntVector Ioss::Hex16::element_connectivity() const
   return connectivity;
 }
 
-Ioss::ElementTopology *Ioss::Hex16::face_type(int face_number) const
+Ioss::ElementTopology *Ioss::Tet40::face_type(int face_number) const
 {
   // face_number == 0 returns topology for all faces if
   // all faces are the same topology; otherwise, returns nullptr
   // face_number is 1-based.
-  assert(face_number >= 0 && face_number <= number_faces());
 
-  if (face_number == 0) {
-    return (Ioss::ElementTopology *)nullptr;
-  }
-  if (face_number <= 4) {
-    return Ioss::ElementTopology::factory("quad6");
-  }
-  return Ioss::ElementTopology::factory("quad8");
+  assert(face_number >= 0 && face_number <= number_faces());
+  return Ioss::ElementTopology::factory("tri13");
 }
 
-Ioss::ElementTopology *Ioss::Hex16::edge_type(int edge_number) const
+Ioss::ElementTopology *Ioss::Tet40::edge_type(int edge_number) const
 {
   // edge_number == 0 returns topology for all edges if
   // all edges are the same topology; otherwise, returns nullptr
   // edge_number is 1-based.
-  assert(edge_number >= 0 && edge_number <= number_edges());
 
-  if (edge_number == 0) {
-    return (Ioss::ElementTopology *)nullptr;
-  }
-  if (edge_number <= 8) {
-    return Ioss::ElementTopology::factory("edge3");
-  }
-  return Ioss::ElementTopology::factory("edge2");
+  assert(edge_number >= 0 && edge_number <= number_edges());
+  return Ioss::ElementTopology::factory("edge4");
 }
 
-Ioss::IntVector Ioss::Hex16::face_edge_connectivity(int face_number) const
+Ioss::IntVector Ioss::Tet40::face_edge_connectivity(int face_number) const
 {
   assert(face_number > 0 && face_number <= Constants::nface);
 

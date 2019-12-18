@@ -44,11 +44,13 @@ Ioss::Initializer::Initializer()
 
   Ioss::Edge2::factory();
   Ioss::Edge3::factory();
+  Ioss::Edge4::factory();
 
   Ioss::Spring2::factory();
   Ioss::Spring3::factory();
   Ioss::Beam2::factory();
   Ioss::Beam3::factory();
+  Ioss::Beam4::factory();
   Ioss::ShellLine2D2::factory();
   Ioss::ShellLine2D3::factory();
 
@@ -56,6 +58,7 @@ Ioss::Initializer::Initializer()
   Ioss::Hex16::factory();
   Ioss::Hex20::factory();
   Ioss::Hex27::factory();
+  Ioss::Hex64::factory();
 
   Ioss::Node::factory();
 
@@ -69,6 +72,7 @@ Ioss::Initializer::Initializer()
   Ioss::Quad6::factory();
   Ioss::Quad8::factory();
   Ioss::Quad9::factory();
+  Ioss::Quad16::factory();
 
   Ioss::Shell4::factory();
   Ioss::Shell8::factory();
@@ -81,11 +85,13 @@ Ioss::Initializer::Initializer()
   Ioss::Tet11::factory();
   Ioss::Tet14::factory();
   Ioss::Tet15::factory();
+  Ioss::Tet40::factory();
 
   Ioss::Tri3::factory();
   Ioss::Tri4::factory();
   Ioss::Tri6::factory();
   Ioss::Tri7::factory();
+  Ioss::Tri13::factory();
 
   Ioss::TriShell3::factory();
   Ioss::TriShell4::factory();
@@ -101,6 +107,7 @@ Ioss::Initializer::Initializer()
   Ioss::Wedge18::factory();
   Ioss::Wedge20::factory();
   Ioss::Wedge21::factory();
+  Ioss::Wedge52::factory();
 
   Ioss::Super::factory();
 }
