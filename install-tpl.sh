@@ -263,7 +263,7 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
-        pnet_version="1.11.2"
+        pnet_version="1.12.1"
 	pnet_base="pnetcdf"
         cd $ACCESS
         cd TPL/pnetcdf
@@ -323,7 +323,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
-	git checkout v4.7.1
+	git checkout v4.7.3
         if [ -d build ]
         then
             rm -rf build

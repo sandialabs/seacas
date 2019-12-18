@@ -73,7 +73,7 @@
 
 #ifndef FMT_THROW
 #if FMT_EXCEPTIONS
-#if FMT_MSC_VER
+#if FMT_MSC_VER || FMT_NVCC
 FMT_BEGIN_NAMESPACE
 namespace internal {
   template <typename Exception> inline void do_throw(const Exception &x)
