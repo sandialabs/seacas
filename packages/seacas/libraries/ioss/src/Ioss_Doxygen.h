@@ -113,6 +113,26 @@ ENABLE_FILE_GROUPS | on/[off]   | experimental
  IOSS_TIME_FILE_OPEN_CLOSE | on/[off] | show elapsed time during parallel-io file open/close/create
  CHECK_PARALLEL_CONSISTENCY | on/[off] | check Ioss::GroupingEntity parallel consistency
 
+## Setting properties via an environment variable
+
+Although the properties are usually accessed internally in the
+application calling the IOSS library, it is possible to set the
+properties externally prior to running the application via the setting
+of the environment variable `IOSS_PROPERTIES`.  The value of the
+varible is one or more colon-separated property/property-value pairs.
+For example, to set the `DECOMPOSITION_METHOD` and the `FILE_TYPE`
+externally, the following would be used:
+```
+    export IOSS_PROPERTIES="DECOMPOSITION_METHOD=rib:FILE_TYPE=netcdf4"
+```
+If the environment variable is set correctly, there should be an
+informational message output during running of the application similar
+to:
+```
+	IOSS: Adding property 'DECOMPOSITION_METHOD' with value 'rib'
+	IOSS: Adding property 'FILE_TYPE' with value 'netcdf4'
+```
+
 \section license License
 The IOSS library is licensed under the BSD open source license.
 
