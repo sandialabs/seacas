@@ -16,7 +16,6 @@
 * [License](#license)
 * [Ubuntu](#ubuntu)
 * [Contact information](#contact-information)
-* For information on building with MPI, see [README-PARALLEL.md](README-PARALLEL.md)
 * NOTE: The old imake-based build has been removed.
 
 ## Get the sources
@@ -109,21 +108,20 @@ to configure the SEACAS CMake build.
 
 ## Parallel Build
 
-For some areas of use, a parallel version of SEACAS is required.  
-This includes a "parallel-aware" version of the exodus library
-and a parallel version of the Ioss library. The modifications to the
-build process described in the README file are shown below:
+For some areas of use, a parallel version of SEACAS is required.  This
+will build a "parallel-aware" version of the exodus library and a
+parallel version of the Ioss library.
 
-The recommended method for downloading, building, and installing the
-libraries is to use the `install-tpl.sh` script described above.
-The only modification is to make sure that the mpicc
-parallel C compiler is in your path and to add the `MPI=ON` argument
-to the `install-tpl.sh` script invokation.  For example:
+The only modification to the serial build described above is to make
+sure that the mpicc parallel C compiler is in your path and to add the
+`MPI=ON` argument to the `install-tpl.sh` script invokation when
+building the TPLs.  For example:
 ```
    MPI=ON ./install-tpl.sh
 ```
 This will download all requested libraries and build them with
-parallel capability enabled (if applicable).
+parallel capability enabled (if applicable).  You can then continue
+with the steps outlined in the previous section.
 
 ## Testing
 There are a few unit tests for zoltan, exodus, and aprepro that can be run via `make test` if you configured with `-D SEACASProj_ENABLE_TESTS=ON`.
