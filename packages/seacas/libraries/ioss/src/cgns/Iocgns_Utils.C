@@ -400,7 +400,6 @@ void Iocgns::Utils::map_cgns_connectivity(const Ioss::ElementTopology *topo, siz
       // ioss: 21, 22, 23, 24, 25, 26, 27 [zero-based: 20, 21, 22, 23, 24, 25, 26]
       // cgns: 27, 21, 26, 25, 23, 22, 24 [zero-based: 26, 20, 25, 24, 22, 21, 23]
       static std::array<int, 7> hex27_map{26, 20, 25, 24, 22, 21, 23};
-      size_t                    idx = 0;
       for (size_t i = 0; i < element_count; i++) {
         size_t             con_beg = 27 * i; // start of connectivity for i'th element.
         std::array<int, 7> reorder;
@@ -443,7 +442,6 @@ void Iocgns::Utils::unmap_cgns_connectivity(const Ioss::ElementTopology *topo, s
       // ioss: 21, 22, 23, 24, 25, 26, 27 [zero-based: 20, 21, 22, 23, 24, 25, 26]
       // cgns: 27, 21, 26, 25, 23, 22, 24 [zero-based: 26, 20, 25, 24, 22, 21, 23]
       static std::array<int, 7> hex27_map{26, 20, 25, 24, 22, 21, 23};
-      size_t                    idx = 0;
       for (size_t i = 0; i < element_count; i++) {
         size_t             con_beg = 27 * i; // start of connectivity for i'th element.
         std::array<int, 7> reorder;
