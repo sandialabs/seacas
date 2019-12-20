@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['minmax_5ffactory_6333',['MinMax_Factory',['../classIotr_1_1MinMax.html#af3ffb1d59c4453d0abb4e114d843bf3b',1,'Iotr::MinMax']]]
+  ['fg_8562',['fg',['../classtext__style.html#aba4da2dafd6afe1360a856a03db2eddd',1,'text_style']]],
+  ['file_8563',['file',['../classbuffered__file.html#a686a90482e62dd1618201a3c79f9aae6',1,'buffered_file']]]
 ];

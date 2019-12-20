@@ -106,7 +106,7 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a7f09e4d2470eab1b903ca420d96e6748"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a7f09e4d2470eab1b903ca420d96e6748">check_dynamic_cast</a> (const void *ptr)</td></tr>
+<tr class="memitem:a7f09e4d2470eab1b903ca420d96e6748"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a7f09e4d2470eab1b903ca420d96e6748">check_dynamic_cast</a> (const void *<a class="el" href="format_8h.html#a3f3cc8de0a7513ebe68ed81778949f8d">ptr</a>)</td></tr>
 <tr class="separator:a7f09e4d2470eab1b903ca420d96e6748"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9e8a65a742fa904c9b21ca049616f27"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aa9e8a65a742fa904c9b21ca049616f27"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#aa9e8a65a742fa904c9b21ca049616f27">uniquify</a> (std::vector&lt; T &gt; &amp;vec, bool skip_first=false)</td></tr>
@@ -180,7 +180,7 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a48106bb99507951b4655783fe6ceb0f8"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a48106bb99507951b4655783fe6ceb0f8">lowercase</a> (std::string name)</td></tr>
 <tr class="memdesc:a48106bb99507951b4655783fe6ceb0f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a string to lower case.  <a href="classIoss_1_1Utils.html#a48106bb99507951b4655783fe6ceb0f8">More...</a><br /></td></tr>
 <tr class="separator:a48106bb99507951b4655783fe6ceb0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cdb54933afe453c3a00a20308c338da"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a3cdb54933afe453c3a00a20308c338da">check_non_null</a> (void *ptr, const char *type, const std::string &amp;name, const std::string &amp;func)</td></tr>
+<tr class="memitem:a3cdb54933afe453c3a00a20308c338da"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a3cdb54933afe453c3a00a20308c338da">check_non_null</a> (void *<a class="el" href="format_8h.html#a3f3cc8de0a7513ebe68ed81778949f8d">ptr</a>, const char *type, const std::string &amp;name, const std::string &amp;func)</td></tr>
 <tr class="separator:a3cdb54933afe453c3a00a20308c338da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfe87ed59e2fbbde5bd253986eb2180e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#abfe87ed59e2fbbde5bd253986eb2180e">str_equal</a> (const std::string &amp;s1, const std::string &amp;s2)</td></tr>
 <tr class="memdesc:abfe87ed59e2fbbde5bd253986eb2180e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case-insensitive string comparison.  <a href="classIoss_1_1Utils.html#abfe87ed59e2fbbde5bd253986eb2180e">More...</a><br /></td></tr>
@@ -1668,8 +1668,8 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Returns the number of digits required to print the number. If <code>use_commas</code> is specified, then the width will be adjusted to account for the comma used every 3 digits. (1,234,567,890 would return 13) Typically used with the <code>fmt::print()</code> functions as: </p><div class="fragment"><div class="line">fmt::print(<span class="stringliteral">&quot;{:{}n}&quot;</span>, number, <a class="code" href="classIoss_1_1Utils.html#a875232ab39ecaf79b1b668d28fb590d6">number_width</a>(number,<span class="keyword">true</span>))</div>
-<div class="line">fmt::print(&quot;{:{}d}<span class="stringliteral">&quot;, number, number_width(number,false))</span></div>
+<p>Returns the number of digits required to print the number. If <code>use_commas</code> is specified, then the width will be adjusted to account for the comma used every 3 digits. (1,234,567,890 would return 13) Typically used with the <code>fmt::print()</code> functions as: </p><div class="fragment"><div class="line"><a class="code" href="color_8h.html#a2fead8330d19b9d2f10e6ed9c59e0174">fmt::print</a>(<span class="stringliteral">&quot;{:{}n}&quot;</span>, number, <a class="code" href="classIoss_1_1Utils.html#a875232ab39ecaf79b1b668d28fb590d6">number_width</a>(number,<span class="keyword">true</span>))</div>
+<div class="line">fmt::<a class="code" href="color_8h.html#a2fead8330d19b9d2f10e6ed9c59e0174">print</a>(&quot;{:{}d}<span class="stringliteral">&quot;, number, number_width(number,false))</span></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -2085,6 +2085,7 @@ template&lt;typename T &gt; </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aclassIoss_1_1Utils_html_a875232ab39ecaf79b1b668d28fb590d6"><div class="ttname"><a href="classIoss_1_1Utils.html#a875232ab39ecaf79b1b668d28fb590d6">Ioss::Utils::number_width</a></div><div class="ttdeci">static int number_width(const size_t number, bool use_commas=false)</div><div class="ttdef"><b>Definition:</b> Ioss_Utils.h:201</div></div>
+<div class="ttc" id="acolor_8h_html_a2fead8330d19b9d2f10e6ed9c59e0174"><div class="ttname"><a href="color_8h.html#a2fead8330d19b9d2f10e6ed9c59e0174">print</a></div><div class="ttdeci">void print(std::FILE *f, const text_style &amp;ts, const S &amp;format_str, const Args &amp;... args)</div><div class="ttdef"><b>Definition:</b> color.h:549</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

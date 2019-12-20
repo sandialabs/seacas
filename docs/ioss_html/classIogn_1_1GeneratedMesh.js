@@ -40,6 +40,7 @@ var classIogn_1_1GeneratedMesh =
     [ "get_num_x", "classIogn_1_1GeneratedMesh.html#aaaed84638dcfcacc18922d35cc8348ec", null ],
     [ "get_num_y", "classIogn_1_1GeneratedMesh.html#ab14c39196bcfd234b8d737dde5d835b7", null ],
     [ "get_num_z", "classIogn_1_1GeneratedMesh.html#a67a83ff6386e9f39aee35e1604c50cc4", null ],
+    [ "get_sideset_topology", "classIogn_1_1GeneratedMesh.html#a13ed34496b9dd376be428ff3fc680eeb", null ],
     [ "get_variable_count", "classIogn_1_1GeneratedMesh.html#ac787e9970f88a517c64b943a842910c9", null ],
     [ "initialize", "classIogn_1_1GeneratedMesh.html#a3ee445d2299a764c57a2c385f2ce79fd", null ],
     [ "node_communication_map", "classIogn_1_1GeneratedMesh.html#a6153d3269cadb8a0074083ae42ec732d", null ],

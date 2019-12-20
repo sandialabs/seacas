@@ -30,6 +30,7 @@ var classIogn_1_1DatabaseIO =
     [ "get_nodeblocks", "classIogn_1_1DatabaseIO.html#acfe917b575765e8045e9bce9ac83e4f3", null ],
     [ "get_nodesets", "classIogn_1_1DatabaseIO.html#a2be4f5ada09d328eac98582837c1eadd", null ],
     [ "get_sideset_names", "classIogn_1_1DatabaseIO.html#a32d072dcaf0265986b4f4f4396fe33b1", null ],
+    [ "get_sideset_topology", "classIogn_1_1DatabaseIO.html#abbac68022962ed9e6eef906a37b7e3ef", null ],
     [ "get_sidesets", "classIogn_1_1DatabaseIO.html#a8fb6a277f2b675197194c41db4f7bc7e", null ],
     [ "get_step_times__", "classIogn_1_1DatabaseIO.html#a3eec9d41bd0d3495718a913723cdbbef", null ],
     [ "int_byte_size_db", "classIogn_1_1DatabaseIO.html#a00277dfe0d6e95d506b3ae0d95ecbfd3", null ],

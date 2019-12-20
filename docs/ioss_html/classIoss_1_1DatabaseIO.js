@@ -22,7 +22,6 @@ var classIoss_1_1DatabaseIO =
     [ "create_group", "classIoss_1_1DatabaseIO.html#aac2c775ee8130ed9f175b6c56a289f2e", null ],
     [ "create_group", "classIoss_1_1DatabaseIO.html#a78237b30809a43bc5e5f5cad9ea8b8c4", null ],
     [ "create_groups", "classIoss_1_1DatabaseIO.html#a917be08e6a067bddfb5d15f39c6aebb0", null ],
-    [ "create_path", "classIoss_1_1DatabaseIO.html#a8699adfe7e31b56a149321e7c6d9e82b", null ],
     [ "create_subgroup", "classIoss_1_1DatabaseIO.html#ad0fc842a496f5e8af148adccc21301c5", null ],
     [ "create_subgroup__", "classIoss_1_1DatabaseIO.html#a22c7ef136f347cf17c7beacb50ccbed2", null ],
     [ "decoded_filename", "classIoss_1_1DatabaseIO.html#a2086f8e605c31f9eb2af5fac410a46b2", null ],

@@ -259,7 +259,12 @@ Debugging / Profiling</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">CHECK_PARALLEL_CONSISTENCY  </td><td class="markdownTableBodyCenter">on/[off]  </td><td class="markdownTableBodyNone">check <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical:">Ioss::GroupingEntity</a> parallel consistency   </td></tr>
 </table>
-<h1><a class="anchor" id="license"></a>
+<h2><a class="anchor" id="autotoc_md9"></a>
+Setting properties via an environment variable</h2>
+<p>Although the properties are usually accessed internally in the application calling the IOSS library, it is possible to set the properties externally prior to running the application via the setting of the environment variable <code>IOSS_PROPERTIES</code>. The value of the varible is one or more colon-separated property/property-value pairs. For example, to set the <code>DECOMPOSITION_METHOD</code> and the <code>FILE_TYPE</code> externally, the following would be used: </p><div class="fragment"><div class="line">export IOSS_PROPERTIES=<span class="stringliteral">&quot;DECOMPOSITION_METHOD=rib:FILE_TYPE=netcdf4&quot;</span></div>
+</div><!-- fragment --><p> If the environment variable is set correctly, there should be an informational message output during running of the application similar to: </p><div class="fragment"><div class="line">IOSS: Adding <span class="keyword">property</span> <span class="stringliteral">&#39;DECOMPOSITION_METHOD&#39;</span> with value <span class="stringliteral">&#39;rib&#39;</span></div>
+<div class="line">IOSS: Adding <span class="keyword">property</span> <span class="stringliteral">&#39;FILE_TYPE&#39;</span> with value <span class="stringliteral">&#39;netcdf4&#39;</span></div>
+</div><!-- fragment --><h1><a class="anchor" id="license"></a>
 License</h1>
 <p>The IOSS library is licensed under the BSD open source license. </p><pre class="fragment"> Copyright (c) 1999-2017 National Technology &amp; Engineering Solutions
  of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with

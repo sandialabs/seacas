@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['databaseusage_6196',['DatabaseUsage',['../namespaceIoss.html#a4ec41517502e82a7291184cd7b68b34f',1,'Ioss']]],
-  ['datasize_6197',['DataSize',['../namespaceIoss.html#a471a5f1fc4d6837c650722e41edb2822',1,'Ioss']]]
+  ['basictype_8210',['BasicType',['../classIoss_1_1Field.html#a43f29f9ba05cb45ed893455c76526c3e',1,'Ioss::Field::BasicType()'],['../classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614',1,'Ioss::Property::BasicType()']]]
 ];
