@@ -78,6 +78,9 @@ check_valid_on_off GNU_PARALLEL
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
 check_valid_yes_no NEEDS_ZLIB
 
+NEEDS_SZIP=${NEEDS_SZIP:-NO}
+check_valid_yes_no NEEDS_SZIP
+
 KOKKOS=${KOKKOS:-OFF}
 check_valid_on_off KOKKOS
 
@@ -149,6 +152,7 @@ if [ $# -gt 0 ]; then
 	echo "   MATIO        = ${MATIO}"
 	echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
 	echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
+	echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
 	echo "   KOKKOS       = ${KOKKOS}"
 	echo "   BB           = ${BB}"
 	echo "   ADIOS2       = ${ADIOS2}"
@@ -166,6 +170,48 @@ fi
 check_exec cmake
 check_exec git
 check_exec wget
+
+if [ "$NEEDS_SZIP" == "YES" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
+    then
+	echo "${txtgrn}+++ SZIP${txtrst}"
+        szip_version="2.1.1"
+
+	cd $ACCESS
+	cd TPL
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf szip-${szip_version}
+            rm -rf szip-${szip_version}.tar.gz
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/lib-external/szip/2.1.1/src/szip-${szip_version}.tar.gz
+            tar -xzf szip-${szip_version}.tar.gz
+            rm -rf szip-${szip_version}.tar.gz
+	fi
+
+	if [ "$BUILD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd szip-${szip_version}
+            ./configure --prefix=${INSTALL_PATH}
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 ${txtred}couldn\'t configure szip. exiting.${txtrst}
+		exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 ${txtred}couldn\'t build szip. exiting.${txtrst}
+		exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
 
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
@@ -240,7 +286,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version}
-        CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
+        CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
