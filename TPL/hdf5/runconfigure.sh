@@ -15,6 +15,12 @@ then
    ZLIB_ON_OFF="--with-zlib=${INSTALL_PATH}"
 fi
 
+NEEDS_SZIP="${NEEDS_SZIP:-NO}"
+if [ "$NEEDS_SZIP" == "YES" ]
+then
+   SZIP_ON_OFF="--with-szlib=${INSTALL_PATH}"
+fi
+
 MPI="${MPI:-OFF}"
 if [ "$MPI" == "ON" ]
 then
@@ -79,9 +85,9 @@ fi
 
 if [ "${H5VERSION}" == "V18" ]
 then
-    ./configure --prefix=${INSTALL_PATH} ${ZLIB_ON_OFF} ${BUILD_MODE} ${USE_SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
+    ./configure --prefix=${INSTALL_PATH} ${ZLIB_ON_OFF} ${SZIP_ON_OFF} ${BUILD_MODE} ${USE_SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
 else
-    ./configure --prefix=${INSTALL_PATH} ${ZLIB_ON_OFF} ${BUILD_MODE} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
+    ./configure --prefix=${INSTALL_PATH} ${ZLIB_ON_OFF} ${SZIP_ON_OFF} ${BUILD_MODE} ${USE_SHARED} ${PARALLEL_ON_OFF} --with-default-api-version=v18 --enable-static-exec $1
 fi
 
 echo ""
@@ -89,5 +95,6 @@ echo "         MPI: ${MPI}"
 echo "    COMPILER: ${CC}"
 echo "       DEBUG: ${DEBUG} ${BUILD_MODE}"
 echo "      ACCESS: ${ACCESS}"
+echo "  NEEDS_SZIP: ${NEEDS_SZIP}"
 echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo ""
