@@ -262,7 +262,7 @@ then
     then
 	hdf_version="1.8.21"
     else
-	hdf_version="1.10.5"
+	hdf_version="1.10.6"
     fi
 
     cd $ACCESS
