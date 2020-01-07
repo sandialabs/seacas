@@ -3,117 +3,53 @@ var hierarchy =
     [ "ADIOS", null, [
       [ "Ioad::AdiosWrapper", "classIoad_1_1AdiosWrapper.html", null ]
     ] ],
-    [ "allocator", null, [
-      [ "basic_memory_buffer< Char >", "classbasic__memory__buffer.html", null ]
-    ] ],
-    [ "internal::ansi_color_escape< Char >", "structinternal_1_1ansi__color__escape.html", null ],
-    [ "internal::arg_converter< T, Context >", "classinternal_1_1arg__converter.html", null ],
-    [ "internal::arg_formatter_base< Range, ErrorHandler >", "classinternal_1_1arg__formatter__base.html", null ],
-    [ "internal::arg_formatter_base< Range >", "classinternal_1_1arg__formatter__base.html", [
-      [ "arg_formatter< Range >", "classarg__formatter.html", null ],
-      [ "printf_arg_formatter< Range >", "classprintf__arg__formatter.html", null ]
-    ] ],
-    [ "internal::arg_map< Context >", "classinternal_1_1arg__map.html", null ],
-    [ "internal::arg_map< basic_format_context >", "classinternal_1_1arg__map.html", null ],
-    [ "internal::arg_mapper< Context >", "structinternal_1_1arg__mapper.html", null ],
-    [ "internal::arg_ref< Char >", "structinternal_1_1arg__ref.html", null ],
-    [ "internal::arg_ref< char_type >", "structinternal_1_1arg__ref.html", null ],
-    [ "internal::format_part< Char >::argument_id", "structinternal_1_1format__part_1_1argument__id.html", null ],
     [ "Assert", "structAssert.html", null ],
     [ "assert_context", "classassert__context.html", null ],
     [ "anonymous_namespace{Ioss_SmartAssert.C}::assert_initializer", "structanonymous__namespace_02Ioss__SmartAssert_8C_03_1_1assert__initializer.html", null ],
-    [ "internal::auto_id", "structinternal_1_1auto__id.html", null ],
     [ "Ioss::AxisAlignedBoundingBox", "structIoss_1_1AxisAlignedBoundingBox.html", null ],
-    [ "basic_cstring_view< Char >", "classbasic__cstring__view.html", null ],
-    [ "internal::basic_data< T >", "structinternal_1_1basic__data.html", null ],
-    [ "internal::basic_data<>", "structinternal_1_1basic__data.html", [
-      [ "internal::data", "structinternal_1_1data.html", null ]
-    ] ],
-    [ "basic_format_arg< Context >", "classbasic__format__arg.html", null ],
-    [ "basic_format_args< Context >", "classbasic__format__args.html", null ],
-    [ "basic_format_args< basic_format_context >", "classbasic__format__args.html", null ],
-    [ "basic_format_args< basic_printf_context >", "classbasic__format__args.html", null ],
-    [ "basic_format_args< format_context >", "classbasic__format__args.html", [
-      [ "format_args", "structformat__args.html", null ]
-    ] ],
-    [ "basic_format_args< wformat_context >", "classbasic__format__args.html", [
-      [ "wformat_args", "structwformat__args.html", null ]
-    ] ],
-    [ "basic_format_context< OutputIt, Char >", "classbasic__format__context.html", null ],
-    [ "basic_format_specs< Char >", "structbasic__format__specs.html", [
-      [ "internal::dynamic_format_specs< Char >", "structinternal_1_1dynamic__format__specs.html", null ]
-    ] ],
-    [ "basic_format_specs< char_type >", "structbasic__format__specs.html", [
-      [ "internal::dynamic_format_specs< char_type >", "structinternal_1_1dynamic__format__specs.html", null ]
-    ] ],
-    [ "basic_format_specs< Context::char_type >", "structbasic__format__specs.html", null ],
-    [ "basic_format_specs< ParseContext::char_type >", "structbasic__format__specs.html", null ],
-    [ "basic_ostream", null, [
-      [ "internal::test_stream< Char >", "structinternal_1_1test__stream.html", null ]
-    ] ],
-    [ "basic_printf_context< OutputIt, Char >", "classbasic__printf__context.html", null ],
-    [ "basic_streambuf", null, [
-      [ "internal::formatbuf< Char >", "classinternal_1_1formatbuf.html", null ]
-    ] ],
-    [ "basic_string_view< Char >", "classbasic__string__view.html", null ],
-    [ "basic_string_view< char >", "classbasic__string__view.html", null ],
-    [ "basic_string_view< char8_t >", "classbasic__string__view.html", [
-      [ "u8string_view", "classu8string__view.html", null ]
-    ] ],
-    [ "basic_string_view< char_type >", "classbasic__string__view.html", null ],
-    [ "internal::basic_writer< Range >", "classinternal_1_1basic__writer.html", null ],
     [ "tsl::bhopscotch_map< Key, T, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >", "classtsl_1_1bhopscotch__map.html", null ],
     [ "tsl::bhopscotch_set< Key, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >", "classtsl_1_1bhopscotch__set.html", null ],
-    [ "internal::basic_writer< Range >::int_writer< Int, Specs >::bin_writer< BITS >", "structinternal_1_1basic__writer_1_1int__writer_1_1bin__writer.html", null ],
-    [ "internal::bits< T >", "structinternal_1_1bits.html", null ],
     [ "Ioss::BlockDecompositionData", "classIoss_1_1BlockDecompositionData.html", null ],
     [ "Ioad::DatabaseIO::BlockInfoType", "structIoad_1_1DatabaseIO_1_1BlockInfoType.html", null ],
-    [ "bool_constant", null, [
-      [ "convert_to_int< T, Char, Enable >", "structconvert__to__int.html", null ]
-    ] ],
-    [ "internal::bool_pack<... >", "structinternal_1_1bool__pack.html", null ],
     [ "Ioss::BoundaryCondition", "structIoss_1_1BoundaryCondition.html", null ],
     [ "tsl::detail_robin_hash::bucket_entry_hash< StoreHash >", "classtsl_1_1detail__robin__hash_1_1bucket__entry__hash.html", [
       [ "tsl::detail_robin_hash::bucket_entry< ValueType, StoreHash >", "classtsl_1_1detail__robin__hash_1_1bucket__entry.html", null ]
     ] ],
     [ "tsl::detail_robin_hash::bucket_entry_hash< true >", "classtsl_1_1detail__robin__hash_1_1bucket__entry__hash_3_01true_01_4.html", null ],
-    [ "internal::buffer< T >", "classinternal_1_1buffer.html", [
-      [ "basic_memory_buffer< T, SIZE, Allocator >", "classbasic__memory__buffer.html", null ]
-    ] ],
-    [ "internal::buffer< Char >", "classinternal_1_1buffer.html", [
-      [ "basic_memory_buffer< Char >", "classbasic__memory__buffer.html", null ]
-    ] ],
-    [ "internal::buffer< char >", "classinternal_1_1buffer.html", null ],
-    [ "internal::buffer< Container::value_type >", "classinternal_1_1buffer.html", [
-      [ "internal::container_buffer< Container >", "classinternal_1_1container__buffer.html", null ]
-    ] ],
-    [ "buffered_file", "classbuffered__file.html", null ],
     [ "Ioss::GetLongOption::Cell", "structIoss_1_1GetLongOption_1_1Cell.html", null ],
-    [ "internal::char_converter< Context >", "classinternal_1_1char__converter.html", null ],
-    [ "internal::char_t_impl< S, typename >", "structinternal_1_1char__t__impl.html", null ],
-    [ "internal::char_t_impl< S, enable_if_t< is_string< S >::value > >", "structinternal_1_1char__t__impl_3_01S_00_01enable__if__t_3_01is__string_3_01S_01_4_1_1value_01_4_01_4.html", null ],
-    [ "internal::arg_formatter_base< Range, ErrorHandler >::char_writer", "structinternal_1_1arg__formatter__base_1_1char__writer.html", null ],
-    [ "internal::chrono_format_checker", "structinternal_1_1chrono__format__checker.html", null ],
-    [ "internal::chrono_formatter< FormatContext, OutputIt, Rep, Period >", "structinternal_1_1chrono__formatter.html", null ],
-    [ "internal::color_type", "structinternal_1_1color__type.html", null ],
-    [ "internal::color_type::color_union", "unioninternal_1_1color__type_1_1color__union.html", null ],
     [ "Ioex::CommunicationMap", "structIoex_1_1CommunicationMap.html", null ],
     [ "Ioex::CommunicationMetaData", "structIoex_1_1CommunicationMetaData.html", null ],
-    [ "compile_string", "structcompile__string.html", null ],
-    [ "internal::compiletime_parts_provider< Format, PartsContainer >", "structinternal_1_1compiletime__parts__provider.html", null ],
-    [ "internal::compiletime_prepared_parts_collector< Parts >", "classinternal_1_1compiletime__prepared__parts__collector.html", null ],
-    [ "internal::compiletime_prepared_parts_type_provider< Format >", "classinternal_1_1compiletime__prepared__parts__type__provider.html", null ],
-    [ "internal::conditional_helper< Ts >", "structinternal_1_1conditional__helper.html", null ],
+    [ "anonymous_namespace{Ioss_Quad16.C}::Constants", "structanonymous__namespace_02Ioss__Quad16_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Quad4.C}::Constants", "structanonymous__namespace_02Ioss__Quad4_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Beam2.C}::Constants", "structanonymous__namespace_02Ioss__Beam2_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Beam3.C}::Constants", "structanonymous__namespace_02Ioss__Beam3_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Quad6.C}::Constants", "structanonymous__namespace_02Ioss__Quad6_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Quad8.C}::Constants", "structanonymous__namespace_02Ioss__Quad8_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Beam4.C}::Constants", "structanonymous__namespace_02Ioss__Beam4_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Quad9.C}::Constants", "structanonymous__namespace_02Ioss__Quad9_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Shell4.C}::Constants", "structanonymous__namespace_02Ioss__Shell4_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Shell8.C}::Constants", "structanonymous__namespace_02Ioss__Shell8_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_ShellLine2D2.C}::Constants", "structanonymous__namespace_02Ioss__ShellLine2D2_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Shell9.C}::Constants", "structanonymous__namespace_02Ioss__Shell9_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_ShellLine2D3.C}::Constants", "structanonymous__namespace_02Ioss__ShellLine2D3_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Sphere.C}::Constants", "structanonymous__namespace_02Ioss__Sphere_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Spring2.C}::Constants", "structanonymous__namespace_02Ioss__Spring2_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Spring3.C}::Constants", "structanonymous__namespace_02Ioss__Spring3_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tet10.C}::Constants", "structanonymous__namespace_02Ioss__Tet10_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tet11.C}::Constants", "structanonymous__namespace_02Ioss__Tet11_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tet14.C}::Constants", "structanonymous__namespace_02Ioss__Tet14_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tet15.C}::Constants", "structanonymous__namespace_02Ioss__Tet15_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tet16.C}::Constants", "structanonymous__namespace_02Ioss__Tet16_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Edge2.C}::Constants", "structanonymous__namespace_02Ioss__Edge2_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tet4.C}::Constants", "structanonymous__namespace_02Ioss__Tet4_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tet40.C}::Constants", "structanonymous__namespace_02Ioss__Tet40_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tet7.C}::Constants", "structanonymous__namespace_02Ioss__Tet7_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Edge2D2.C}::Constants", "structanonymous__namespace_02Ioss__Edge2D2_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tet8.C}::Constants", "structanonymous__namespace_02Ioss__Tet8_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Edge2D3.C}::Constants", "structanonymous__namespace_02Ioss__Edge2D3_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tri13.C}::Constants", "structanonymous__namespace_02Ioss__Tri13_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Edge3.C}::Constants", "structanonymous__namespace_02Ioss__Edge3_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Edge4.C}::Constants", "structanonymous__namespace_02Ioss__Edge4_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tri3.C}::Constants", "structanonymous__namespace_02Ioss__Tri3_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tri4.C}::Constants", "structanonymous__namespace_02Ioss__Tri4_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Tri4a.C}::Constants", "structanonymous__namespace_02Ioss__Tri4a_8C_03_1_1Constants.html", null ],
@@ -124,6 +60,7 @@ var hierarchy =
     [ "anonymous_namespace{Ioss_TriShell4.C}::Constants", "structanonymous__namespace_02Ioss__TriShell4_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_TriShell6.C}::Constants", "structanonymous__namespace_02Ioss__TriShell6_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_TriShell7.C}::Constants", "structanonymous__namespace_02Ioss__TriShell7_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Hex16.C}::Constants", "structanonymous__namespace_02Ioss__Hex16_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Unknown.C}::Constants", "structanonymous__namespace_02Ioss__Unknown_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Wedge12.C}::Constants", "structanonymous__namespace_02Ioss__Wedge12_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Wedge15.C}::Constants", "structanonymous__namespace_02Ioss__Wedge15_8C_03_1_1Constants.html", null ],
@@ -133,18 +70,9 @@ var hierarchy =
     [ "anonymous_namespace{Ioss_Wedge21.C}::Constants", "structanonymous__namespace_02Ioss__Wedge21_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Wedge24.C}::Constants", "structanonymous__namespace_02Ioss__Wedge24_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Wedge52.C}::Constants", "structanonymous__namespace_02Ioss__Wedge52_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Wedge6.C}::Constants", "structanonymous__namespace_02Ioss__Wedge6_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Beam2.C}::Constants", "structanonymous__namespace_02Ioss__Beam2_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Beam3.C}::Constants", "structanonymous__namespace_02Ioss__Beam3_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Beam4.C}::Constants", "structanonymous__namespace_02Ioss__Beam4_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Edge2.C}::Constants", "structanonymous__namespace_02Ioss__Edge2_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Edge2D2.C}::Constants", "structanonymous__namespace_02Ioss__Edge2D2_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Edge2D3.C}::Constants", "structanonymous__namespace_02Ioss__Edge2D3_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Edge3.C}::Constants", "structanonymous__namespace_02Ioss__Edge3_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Edge4.C}::Constants", "structanonymous__namespace_02Ioss__Edge4_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Hex16.C}::Constants", "structanonymous__namespace_02Ioss__Hex16_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Hex20.C}::Constants", "structanonymous__namespace_02Ioss__Hex20_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Hex27.C}::Constants", "structanonymous__namespace_02Ioss__Hex27_8C_03_1_1Constants.html", null ],
+    [ "anonymous_namespace{Ioss_Wedge6.C}::Constants", "structanonymous__namespace_02Ioss__Wedge6_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Hex32.C}::Constants", "structanonymous__namespace_02Ioss__Hex32_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Hex64.C}::Constants", "structanonymous__namespace_02Ioss__Hex64_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Hex8.C}::Constants", "structanonymous__namespace_02Ioss__Hex8_8C_03_1_1Constants.html", null ],
@@ -155,27 +83,7 @@ var hierarchy =
     [ "anonymous_namespace{Ioss_Pyramid19.C}::Constants", "structanonymous__namespace_02Ioss__Pyramid19_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Pyramid5.C}::Constants", "structanonymous__namespace_02Ioss__Pyramid5_8C_03_1_1Constants.html", null ],
     [ "anonymous_namespace{Ioss_Quad12.C}::Constants", "structanonymous__namespace_02Ioss__Quad12_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Quad16.C}::Constants", "structanonymous__namespace_02Ioss__Quad16_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Quad4.C}::Constants", "structanonymous__namespace_02Ioss__Quad4_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Quad6.C}::Constants", "structanonymous__namespace_02Ioss__Quad6_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Quad8.C}::Constants", "structanonymous__namespace_02Ioss__Quad8_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Quad9.C}::Constants", "structanonymous__namespace_02Ioss__Quad9_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Shell4.C}::Constants", "structanonymous__namespace_02Ioss__Shell4_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Shell8.C}::Constants", "structanonymous__namespace_02Ioss__Shell8_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Shell9.C}::Constants", "structanonymous__namespace_02Ioss__Shell9_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_ShellLine2D2.C}::Constants", "structanonymous__namespace_02Ioss__ShellLine2D2_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_ShellLine2D3.C}::Constants", "structanonymous__namespace_02Ioss__ShellLine2D3_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Sphere.C}::Constants", "structanonymous__namespace_02Ioss__Sphere_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Spring2.C}::Constants", "structanonymous__namespace_02Ioss__Spring2_8C_03_1_1Constants.html", null ],
-    [ "anonymous_namespace{Ioss_Spring3.C}::Constants", "structanonymous__namespace_02Ioss__Spring3_8C_03_1_1Constants.html", null ],
     [ "Ioss::CoordinateFrame", "classIoss_1_1CoordinateFrame.html", null ],
-    [ "internal::counting_iterator< T >", "classinternal_1_1counting__iterator.html", null ],
-    [ "internal::custom_formatter< Context >", "classinternal_1_1custom__formatter.html", null ],
-    [ "internal::custom_value< Context >", "structinternal_1_1custom__value.html", null ],
-    [ "internal::custom_value< basic_format_context >", "structinternal_1_1custom__value.html", null ],
-    [ "internal::custom_value< basic_printf_context >", "structinternal_1_1custom__value.html", null ],
-    [ "internal::custom_value< format_context >", "structinternal_1_1custom__value.html", null ],
-    [ "internal::custom_value< wformat_context >", "structinternal_1_1custom__value.html", null ],
     [ "Iogn::DashSurfaceData", "structIogn_1_1DashSurfaceData.html", null ],
     [ "Ioss::Property::Data", "unionIoss_1_1Property_1_1Data.html", null ],
     [ "Ioss::DatabaseIO", "classIoss_1_1DatabaseIO.html", [
@@ -195,17 +103,12 @@ var hierarchy =
     ] ],
     [ "anonymous_namespace{Ioss_Utils.C}::DataPool", "structanonymous__namespace_02Ioss__Utils_8C_03_1_1DataPool.html", null ],
     [ "anonymous_namespace{io_shell_ts.C}::DataPool", "structanonymous__namespace_02io__shell__ts_8C_03_1_1DataPool.html", null ],
-    [ "internal::basic_writer< Range >::int_writer< Int, Specs >::dec_writer", "structinternal_1_1basic__writer_1_1int__writer_1_1dec__writer.html", null ],
-    [ "internal::decimal_formatter", "classinternal_1_1decimal__formatter.html", null ],
     [ "Ioss::Decomposition< INT >", "classIoss_1_1Decomposition.html", null ],
+    [ "Iopx::DecompositionData< INT >", "classIopx_1_1DecompositionData.html", null ],
     [ "Iocgns::DecompositionDataBase", "classIocgns_1_1DecompositionDataBase.html", [
       [ "Iocgns::DecompositionData< INT >", "classIocgns_1_1DecompositionData.html", null ]
     ] ],
-    [ "Iopx::DecompositionDataBase", "classIopx_1_1DecompositionDataBase.html", [
-      [ "Iopx::DecompositionData< INT >", "classIopx_1_1DecompositionData.html", null ]
-    ] ],
-    [ "internal::basic_writer< Range >::double_writer", "structinternal_1_1basic__writer_1_1double__writer.html", null ],
-    [ "dynamic_formatter< Char >", "classdynamic__formatter.html", null ],
+    [ "Iopx::DecompositionDataBase", "classIopx_1_1DecompositionDataBase.html", null ],
     [ "Ioex::EdgeBlock", "structIoex_1_1EdgeBlock.html", null ],
     [ "Ioex::EdgeSet", "structIoex_1_1EdgeSet.html", null ],
     [ "Iodw::Utils::ElemBlock", "structIodw_1_1Utils_1_1ElemBlock.html", null ],
@@ -278,27 +181,12 @@ var hierarchy =
       [ "Ioss::Wedge6", "classIoss_1_1Wedge6.html", null ]
     ] ],
     [ "Ioex::ElemSet", "structIoex_1_1ElemSet.html", null ],
-    [ "internal::compiletime_prepared_parts_type_provider< Format >::empty", "structinternal_1_1compiletime__prepared__parts__type__provider_1_1empty.html", null ],
     [ "Engine", null, [
       [ "Ioad::AdiosWrapper", "classIoad_1_1AdiosWrapper.html", null ]
     ] ],
-    [ "internal::arg_map< Context >::entry", "structinternal_1_1arg__map_1_1entry.html", null ],
-    [ "error_code", "classerror__code.html", null ],
-    [ "internal::error_handler", "structinternal_1_1error__handler.html", [
-      [ "basic_parse_context< Char >", "classbasic__parse__context.html", null ],
-      [ "basic_parse_context< char_type >", "classbasic__parse__context.html", null ],
-      [ "dynamic_formatter< Char >::null_handler", "structdynamic__formatter_1_1null__handler.html", null ],
-      [ "format_handler< ArgFormatter, Char, Context >", "structformat__handler.html", null ],
-      [ "internal::arg_formatter_base< Range, ErrorHandler >::cstring_spec_handler", "structinternal_1_1arg__formatter__base_1_1cstring__spec__handler.html", null ],
-      [ "internal::format_preparation_handler< Char, PartsContainer >", "classinternal_1_1format__preparation__handler.html", null ]
-    ] ],
-    [ "ErrorHandler", null, [
-      [ "basic_parse_context< Char, ErrorHandler >", "classbasic__parse__context.html", null ],
-      [ "internal::arg_formatter_base< Range, ErrorHandler >::char_spec_handler", "structinternal_1_1arg__formatter__base_1_1char__spec__handler.html", null ],
-      [ "internal::char_specs_checker< ErrorHandler >", "classinternal_1_1char__specs__checker.html", null ],
-      [ "internal::cstring_type_checker< ErrorHandler >", "classinternal_1_1cstring__type__checker.html", null ],
-      [ "internal::float_type_checker< ErrorHandler >", "classinternal_1_1float__type__checker.html", null ],
-      [ "internal::int_type_checker< ErrorHandler >", "classinternal_1_1int__type__checker.html", null ]
+    [ "equal_to", null, [
+      [ "tsl::detail_hopscotch_hash::hopscotch_hash< Key, KeySelect, void, std::hash< Key >, std::equal_to< Key >, std::allocator< Key >, 62, false, tsl::hh::power_of_two_growth_policy< 2 >, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
+      [ "tsl::detail_robin_hash::robin_hash< Key, KeySelect, void, std::hash< Key >, std::equal_to< Key >, std::allocator< Key >, false, tsl::rh::power_of_two_growth_policy< 2 > >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ]
     ] ],
     [ "Ioss::ETRegistry", "classIoss_1_1ETRegistry.html", null ],
     [ "Iogn::ExodusData", "structIogn_1_1ExodusData.html", null ],
@@ -317,16 +205,7 @@ var hierarchy =
       [ "Iotr::Tensor_Factory", "classIotr_1_1Tensor__Factory.html", null ],
       [ "Iotr::VM_Factory", "classIotr_1_1VM__Factory.html", null ]
     ] ],
-    [ "internal::fallback_formatter< T, Char, Enable >", "structinternal_1_1fallback__formatter.html", null ],
-    [ "internal::fallback_uintptr", "structinternal_1_1fallback__uintptr.html", null ],
     [ "false_type", null, [
-      [ "internal::is_contiguous_back_insert_iterator< OutputIt >", "structinternal_1_1is__contiguous__back__insert__iterator.html", null ],
-      [ "internal::is_range_< T, _ >", "structinternal_1_1is__range__.html", null ],
-      [ "internal::iterator_category< It, Enable >", "structinternal_1_1iterator__category.html", null ],
-      [ "is_char< T >", "structis__char.html", null ],
-      [ "is_contiguous< Container >", "structis__contiguous.html", [
-        [ "internal::is_contiguous_back_insert_iterator< std::back_insert_iterator< Container > >", "structinternal_1_1is__contiguous__back__insert__iterator_3_01std_1_1back__insert__iterator_3_01Container_01_4_01_4.html", null ]
-      ] ],
       [ "tsl::detail_hopscotch_hash::has_is_transparent< T, typename >", "structtsl_1_1detail__hopscotch__hash_1_1has__is__transparent.html", null ],
       [ "tsl::detail_hopscotch_hash::has_key_compare< T, typename >", "structtsl_1_1detail__hopscotch__hash_1_1has__key__compare.html", null ],
       [ "tsl::detail_hopscotch_hash::is_power_of_two_policy< U >", "structtsl_1_1detail__hopscotch__hash_1_1is__power__of__two__policy.html", null ],
@@ -338,46 +217,7 @@ var hierarchy =
     [ "Ioss::Field", "classIoss_1_1Field.html", null ],
     [ "Ioad::DatabaseIO::FieldInfoType", "structIoad_1_1DatabaseIO_1_1FieldInfoType.html", null ],
     [ "Ioss::FieldManager", "classIoss_1_1FieldManager.html", null ],
-    [ "file", "classfile.html", null ],
     [ "Ioss::FileInfo", "classIoss_1_1FileInfo.html", null ],
-    [ "internal::fill_t< Char >", "structinternal_1_1fill__t.html", null ],
-    [ "internal::fill_t< char_type >", "structinternal_1_1fill__t.html", null ],
-    [ "internal::fill_t< Context::char_type >", "structinternal_1_1fill__t.html", null ],
-    [ "internal::fill_t< ParseContext::char_type >", "structinternal_1_1fill__t.html", null ],
-    [ "internal::fixed_handler", "structinternal_1_1fixed__handler.html", null ],
-    [ "float_spec_handler", "structfloat__spec__handler.html", null ],
-    [ "format_arg_store< Context, Args >", "classformat__arg__store.html", null ],
-    [ "formatter< TupleT, Char, enable_if_t< fmt::is_tuple_like< TupleT >::value > >::format_each< FormatContext >", "structformatter_3_01TupleT_00_01Char_00_01enable__if__t_3_01fmt_1_1is__tuple__like_3_01TupleT_017dda5bdd4f9999aa10b91515bc0de86b.html", null ],
-    [ "format_int", "classformat__int.html", null ],
-    [ "internal::format_part< Char >", "structinternal_1_1format__part.html", null ],
-    [ "internal::format_part< char_type >", "structinternal_1_1format__part.html", null ],
-    [ "internal::compiletime_prepared_parts_type_provider< Format >::format_parts_array< N >", "structinternal_1_1compiletime__prepared__parts__type__provider_1_1format__parts__array.html", null ],
-    [ "internal::format_string_checker< Char, ErrorHandler, Args >", "classinternal_1_1format__string__checker.html", null ],
-    [ "format_to_n_result< OutputIt >", "structformat__to__n__result.html", null ],
-    [ "formatter< T, Char, Enable >", "structformatter.html", null ],
-    [ "formatter< basic_string_view< Char >, Char >", "structformatter.html", [
-      [ "formatter< Char[N], Char >", "structformatter_3_01Char_0fN_0e_00_01Char_01_4.html", null ],
-      [ "internal::fallback_formatter< T, Char, enable_if_t< is_streamable< T, Char >::value > >", "structinternal_1_1fallback__formatter_3_01T_00_01Char_00_01enable__if__t_3_01is__streamable_3_0105289f9fbc16beec2647eb32164f6572.html", null ]
-    ] ],
-    [ "formatter< const void *, Char >", "structformatter.html", [
-      [ "formatter< void *, Char >", "structformatter_3_01void_01_5_00_01Char_01_4.html", null ]
-    ] ],
-    [ "formatter< RangeT, Char, enable_if_t< fmt::is_range< RangeT, Char >::value > >", "structformatter_3_01RangeT_00_01Char_00_01enable__if__t_3_01fmt_1_1is__range_3_01RangeT_00_01Char_01_4_1_1value_01_4_01_4.html", null ],
-    [ "formatter< std::chrono::duration< Rep, Period >, Char >", "structformatter_3_01std_1_1chrono_1_1duration_3_01Rep_00_01Period_01_4_00_01Char_01_4.html", null ],
-    [ "formatter< std::iterator_traits< It >::value_type, Char >", "structformatter.html", [
-      [ "formatter< arg_join< It, Char >, Char >", "structformatter_3_01arg__join_3_01It_00_01Char_01_4_00_01Char_01_4.html", null ]
-    ] ],
-    [ "formatter< std::tm, Char >", "structformatter_3_01std_1_1tm_00_01Char_01_4.html", null ],
-    [ "formatter< T, Char, enable_if_t< internal::type_constant< T, Char >::value !=internal::custom_type > >", "structformatter_3_01T_00_01Char_00_01enable__if__t_3_01internal_1_1type__constant_3_01T_00_01Chaa03725677ef4ce7a9cd896296c6d2219.html", null ],
-    [ "formatter< TupleT, Char, enable_if_t< fmt::is_tuple_like< TupleT >::value > >", "structformatter_3_01TupleT_00_01Char_00_01enable__if__t_3_01fmt_1_1is__tuple__like_3_01TupleT_01_4_1_1value_01_4_01_4.html", null ],
-    [ "formatting_base< Char >", "structformatting__base.html", [
-      [ "formatting_range< Char, Enable >", "structformatting__range.html", null ],
-      [ "formatting_range< Char >", "structformatting__range.html", null ],
-      [ "formatting_tuple< Char, Enable >", "structformatting__tuple.html", null ],
-      [ "formatting_tuple< Char >", "structformatting__tuple.html", null ]
-    ] ],
-    [ "internal::fp", "classinternal_1_1fp.html", null ],
-    [ "internal::gen_digits_params", "structinternal_1_1gen__digits__params.html", null ],
     [ "Iogs::GeneratedMesh", "classIogs_1_1GeneratedMesh.html", null ],
     [ "Iogn::GeneratedMesh", "classIogn_1_1GeneratedMesh.html", [
       [ "Iogn::DashSurfaceMesh", "classIogn_1_1DashSurfaceMesh.html", null ],
@@ -385,10 +225,8 @@ var hierarchy =
     ] ],
     [ "Ioss::GetLongOption", "classIoss_1_1GetLongOption.html", null ],
     [ "anonymous_namespace{cth_pressure_map.C}::Globals", "structanonymous__namespace_02cth__pressure__map_8C_03_1_1Globals.html", null ],
-    [ "anonymous_namespace{sphgen.C}::Globals", "structanonymous__namespace_02sphgen_8C_03_1_1Globals.html", null ],
     [ "anonymous_namespace{shell_to_hex.C}::Globals", "structanonymous__namespace_02shell__to__hex_8C_03_1_1Globals.html", null ],
-    [ "internal::grisu_shortest_handler< GRISU_VERSION >", "structinternal_1_1grisu__shortest__handler.html", null ],
-    [ "internal::basic_writer< Range >::grisu_writer", "classinternal_1_1basic__writer_1_1grisu__writer.html", null ],
+    [ "anonymous_namespace{sphgen.C}::Globals", "structanonymous__namespace_02sphgen_8C_03_1_1Globals.html", null ],
     [ "Ioss::GroupingEntity", "classIoss_1_1GroupingEntity.html", [
       [ "Ioex::SuperElement", "classIoex_1_1SuperElement.html", null ],
       [ "Ioss::CommSet", "classIoss_1_1CommSet.html", null ],
@@ -427,28 +265,17 @@ var hierarchy =
       ] ]
     ] ],
     [ "GrowthPolicy", null, [
-      [ "tsl::detail_hopscotch_hash::hopscotch_hash< Key, KeySelect, void, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
-      [ "tsl::detail_hopscotch_hash::hopscotch_hash< std::pair< const Key, T >, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
-      [ "tsl::detail_hopscotch_hash::hopscotch_hash< std::pair< Key, T >, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
-      [ "tsl::detail_robin_hash::robin_hash< Key, KeySelect, void, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ],
-      [ "tsl::detail_robin_hash::robin_hash< std::pair< Key, T >, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ],
       [ "tsl::detail_hopscotch_hash::hopscotch_hash< ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
       [ "tsl::detail_robin_hash::robin_hash< ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ]
     ] ],
-    [ "basic_format_arg< Context >::handle", "classbasic__format__arg_1_1handle.html", null ],
-    [ "Handler", null, [
-      [ "internal::specs_checker< Handler >", "classinternal_1_1specs__checker.html", null ]
+    [ "hash", null, [
+      [ "tsl::detail_hopscotch_hash::hopscotch_hash< Key, KeySelect, void, std::hash< Key >, std::equal_to< Key >, std::allocator< Key >, 62, false, tsl::hh::power_of_two_growth_policy< 2 >, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
+      [ "tsl::detail_robin_hash::robin_hash< Key, KeySelect, void, std::hash< Key >, std::equal_to< Key >, std::allocator< Key >, false, tsl::rh::power_of_two_growth_policy< 2 > >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ]
     ] ],
     [ "Hash", null, [
-      [ "tsl::detail_hopscotch_hash::hopscotch_hash< Key, KeySelect, void, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
-      [ "tsl::detail_hopscotch_hash::hopscotch_hash< std::pair< const Key, T >, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
-      [ "tsl::detail_hopscotch_hash::hopscotch_hash< std::pair< Key, T >, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
-      [ "tsl::detail_robin_hash::robin_hash< Key, KeySelect, void, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ],
-      [ "tsl::detail_robin_hash::robin_hash< std::pair< Key, T >, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ],
       [ "tsl::detail_hopscotch_hash::hopscotch_hash< ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
       [ "tsl::detail_robin_hash::robin_hash< ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ]
     ] ],
-    [ "internal::basic_writer< Range >::int_writer< Int, Specs >::hex_writer", "structinternal_1_1basic__writer_1_1int__writer_1_1hex__writer.html", null ],
     [ "tsl::detail_hopscotch_hash::hopscotch_bucket_hash< StoreHash >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket__hash.html", [
       [ "tsl::detail_hopscotch_hash::hopscotch_bucket< ValueType, NeighborhoodSize, StoreHash >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html", null ]
     ] ],
@@ -456,29 +283,17 @@ var hierarchy =
     [ "tsl::detail_hopscotch_hash::hopscotch_hash< ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer >::hopscotch_iterator< IsConst >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html", null ],
     [ "tsl::hopscotch_map< Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >", "classtsl_1_1hopscotch__map.html", null ],
     [ "tsl::hopscotch_set< Key, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >", "classtsl_1_1hopscotch__set.html", null ],
-    [ "internal::id_adapter< Handler, Char >", "structinternal_1_1id__adapter.html", null ],
     [ "anonymous_namespace{Ioss_Map.C}::IdPairCompare", "classanonymous__namespace_02Ioss__Map_8C_03_1_1IdPairCompare.html", null ],
     [ "anonymous_namespace{Ioss_Map.C}::IdPairEqual", "classanonymous__namespace_02Ioss__Map_8C_03_1_1IdPairEqual.html", null ],
-    [ "internal::basic_writer< Range >::inf_or_nan_writer", "structinternal_1_1basic__writer_1_1inf__or__nan__writer.html", null ],
-    [ "Iotr::Initializer", "classIotr_1_1Initializer.html", null ],
-    [ "Ioss::Init::Initializer", "classIoss_1_1Init_1_1Initializer.html", null ],
-    [ "Ioad::Initializer", "classIoad_1_1Initializer.html", null ],
-    [ "Ioss::Initializer", "classIoss_1_1Initializer.html", null ],
     [ "Iocgns::Initializer", "classIocgns_1_1Initializer.html", null ],
-    [ "internal::int_checker< IsSigned >", "structinternal_1_1int__checker.html", null ],
-    [ "internal::int_checker< true >", "structinternal_1_1int__checker_3_01true_01_4.html", null ],
-    [ "internal::basic_writer< Range >::int_writer< Int, Specs >", "structinternal_1_1basic__writer_1_1int__writer.html", null ],
-    [ "internal::integer_sequence< T, N >", "structinternal_1_1integer__sequence.html", null ],
-    [ "internal::integer_sequence< T, Ns... >", "structinternal_1_1integer__sequence.html", [
-      [ "internal::make_integer_sequence< T, 0, Ns... >", "structinternal_1_1make__integer__sequence_3_01T_00_010_00_01Ns_8_8_8_01_4.html", null ]
-    ] ],
-    [ "integral_constant", null, [
-      [ "internal::type_constant< T, Char >", "structinternal_1_1type__constant.html", null ]
-    ] ],
-    [ "anonymous_namespace{cgns_decomp.C}::Interface", "classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html", null ],
-    [ "Info::Interface", "classInfo_1_1Interface.html", null ],
-    [ "IOShell::Interface", "classIOShell_1_1Interface.html", null ],
+    [ "Ioad::Initializer", "classIoad_1_1Initializer.html", null ],
+    [ "Iotr::Initializer", "classIotr_1_1Initializer.html", null ],
+    [ "Ioss::Initializer", "classIoss_1_1Initializer.html", null ],
+    [ "Ioss::Init::Initializer", "classIoss_1_1Init_1_1Initializer.html", null ],
     [ "Skinner::Interface", "classSkinner_1_1Interface.html", null ],
+    [ "Info::Interface", "classInfo_1_1Interface.html", null ],
+    [ "anonymous_namespace{cgns_decomp.C}::Interface", "classanonymous__namespace_02cgns__decomp_8C_03_1_1Interface.html", null ],
+    [ "IOShell::Interface", "classIOShell_1_1Interface.html", null ],
     [ "Ioex::Internals", "classIoex_1_1Internals.html", null ],
     [ "IO", null, [
       [ "Ioad::AdiosWrapper", "classIoad_1_1AdiosWrapper.html", null ]
@@ -495,90 +310,44 @@ var hierarchy =
       [ "Iovs::IOFactory", "classIovs_1_1IOFactory.html", null ]
     ] ],
     [ "Iodw::Utils::IossToDW", "classIodw_1_1Utils_1_1IossToDW.html", null ],
-    [ "is_base_of", null, [
-      [ "is_compile_string< S >", "structis__compile__string.html", null ]
-    ] ],
-    [ "is_class", null, [
-      [ "internal::is_string< S >", "structinternal_1_1is__string.html", null ]
-    ] ],
-    [ "internal::is_like_std_string< T >", "classinternal_1_1is__like__std__string.html", null ],
     [ "Ioss::Private::is_null_finder< T >", "structIoss_1_1Private_1_1is__null__finder.html", null ],
     [ "Ioss::Private::is_null_finder< char * >", "structIoss_1_1Private_1_1is__null__finder_3_01char_01_5_01_4.html", null ],
     [ "Ioss::Private::is_null_finder< const char * >", "structIoss_1_1Private_1_1is__null__finder_3_01const_01char_01_5_01_4.html", null ],
-    [ "internal::is_output_iterator< It >", "classinternal_1_1is__output__iterator.html", null ],
-    [ "is_range< T, Char >", "structis__range.html", null ],
-    [ "internal::is_streamable< T, Char >", "classinternal_1_1is__streamable.html", null ],
-    [ "is_tuple_like< T >", "structis__tuple__like.html", null ],
-    [ "internal::is_tuple_like_< T >", "classinternal_1_1is__tuple__like__.html", null ],
-    [ "internal::is_zero_int", "classinternal_1_1is__zero__int.html", null ],
-    [ "internal::iterator_category< It, void_t< typename It::iterator_category > >", "structinternal_1_1iterator__category_3_01It_00_01void__t_3_01typename_01It_1_1iterator__category_01_4_01_4.html", null ],
-    [ "internal::iterator_category< T * >", "structinternal_1_1iterator__category_3_01T_01_5_01_4.html", null ],
     [ "KeyEqual", null, [
-      [ "tsl::detail_hopscotch_hash::hopscotch_hash< Key, KeySelect, void, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
-      [ "tsl::detail_hopscotch_hash::hopscotch_hash< std::pair< const Key, T >, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
-      [ "tsl::detail_hopscotch_hash::hopscotch_hash< std::pair< Key, T >, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
-      [ "tsl::detail_robin_hash::robin_hash< Key, KeySelect, void, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ],
-      [ "tsl::detail_robin_hash::robin_hash< std::pair< Key, T >, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ],
       [ "tsl::detail_hopscotch_hash::hopscotch_hash< ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy, OverflowContainer >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ],
       [ "tsl::detail_robin_hash::robin_hash< ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ]
     ] ],
     [ "tsl::bhopscotch_map< Key, T, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >::KeySelect", "classtsl_1_1bhopscotch__map_1_1KeySelect.html", null ],
     [ "tsl::bhopscotch_set< Key, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >::KeySelect", "classtsl_1_1bhopscotch__set_1_1KeySelect.html", null ],
-    [ "tsl::hopscotch_map< Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >::KeySelect", "classtsl_1_1hopscotch__map_1_1KeySelect.html", null ],
     [ "tsl::hopscotch_set< Key, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >::KeySelect", "classtsl_1_1hopscotch__set_1_1KeySelect.html", null ],
+    [ "tsl::hopscotch_map< Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >::KeySelect", "classtsl_1_1hopscotch__map_1_1KeySelect.html", null ],
     [ "tsl::robin_map< Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >::KeySelect", "classtsl_1_1robin__map_1_1KeySelect.html", null ],
     [ "tsl::robin_set< Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >::KeySelect", "classtsl_1_1robin__set_1_1KeySelect.html", null ],
     [ "Iohb::Layout", "classIohb_1_1Layout.html", null ],
-    [ "internal::locale_ref", "classinternal_1_1locale__ref.html", null ],
-    [ "internal::make_integer_sequence< T, N, Ns >", "structinternal_1_1make__integer__sequence.html", null ],
-    [ "make_unsigned", null, [
-      [ "internal::make_unsigned_or_bool< T >", "structinternal_1_1make__unsigned__or__bool.html", null ]
-    ] ],
-    [ "internal::make_unsigned_or_bool< bool >", "structinternal_1_1make__unsigned__or__bool_3_01bool_01_4.html", null ],
-    [ "internal::make_unsigned_or_unchanged< T, INTEGRAL >", "structinternal_1_1make__unsigned__or__unchanged.html", null ],
-    [ "internal::make_unsigned_or_unchanged< T, true >", "structinternal_1_1make__unsigned__or__unchanged_3_01T_00_01true_01_4.html", null ],
-    [ "tsl::detail_hopscotch_hash::make_void< T >", "structtsl_1_1detail__hopscotch__hash_1_1make__void.html", null ],
     [ "tsl::detail_robin_hash::make_void< T >", "structtsl_1_1detail__robin__hash_1_1make__void.html", null ],
+    [ "tsl::detail_hopscotch_hash::make_void< T >", "structtsl_1_1detail__hopscotch__hash_1_1make__void.html", null ],
     [ "Ioss::Map", "classIoss_1_1Map.html", null ],
     [ "Ioex::Mesh", "classIoex_1_1Mesh.html", null ],
     [ "Ioss::MeshCopyOptions", "structIoss_1_1MeshCopyOptions.html", null ],
     [ "tsl::hh::mod_growth_policy< GrowthFactor >", "classtsl_1_1hh_1_1mod__growth__policy.html", null ],
     [ "tsl::rh::mod_growth_policy< GrowthFactor >", "classtsl_1_1rh_1_1mod__growth__policy.html", null ],
-    [ "monostate", "structmonostate.html", null ],
-    [ "internal::named_arg_base< Char >", "structinternal_1_1named__arg__base.html", [
-      [ "internal::named_arg< T, Char >", "structinternal_1_1named__arg.html", null ]
-    ] ],
-    [ "internal::named_arg_base< char_type >", "structinternal_1_1named__arg__base.html", null ],
-    [ "internal::format_part< Char >::named_argument_id", "structinternal_1_1format__part_1_1named__argument__id.html", null ],
     [ "Ioex::NodeBlock", "structIoex_1_1NodeBlock.html", null ],
     [ "Ioex::NodeSet", "structIoex_1_1NodeSet.html", null ],
-    [ "internal::null< T >", "structinternal_1_1null.html", null ],
-    [ "internal::basic_writer< Range >::int_writer< Int, Specs >::num_writer", "structinternal_1_1basic__writer_1_1int__writer_1_1num__writer.html", null ],
-    [ "internal::numeric_specs_checker< ErrorHandler >", "classinternal_1_1numeric__specs__checker.html", null ],
-    [ "internal::numeric_specs_checker< Handler >", "classinternal_1_1numeric__specs__checker.html", null ],
     [ "numpunct", null, [
       [ "anonymous_namespace{io_shell_ts.C}::my_numpunct", "structanonymous__namespace_02io__shell__ts_8C_03_1_1my__numpunct.html", null ]
     ] ],
-    [ "internal::output_range< OutputIt, T >", "classinternal_1_1output__range.html", null ],
-    [ "internal::output_range< std::back_insert_iterator< buffer< T > >, T >", "classinternal_1_1output__range.html", [
-      [ "internal::buffer_range< T >", "classinternal_1_1buffer__range.html", null ]
-    ] ],
-    [ "internal::basic_writer< Range >::padded_int_writer< F >", "structinternal_1_1basic__writer_1_1padded__int__writer.html", null ],
     [ "Ioss::ParallelUtils", "classIoss_1_1ParallelUtils.html", null ],
     [ "anonymous_namespace{io_shell_ts.C}::param", "structanonymous__namespace_02io__shell__ts_8C_03_1_1param.html", null ],
-    [ "formatter< std::chrono::duration< Rep, Period >, Char >::parse_range", "structformatter_3_01std_1_1chrono_1_1duration_3_01Rep_00_01Period_01_4_00_01Char_01_4_1_1parse__range.html", null ],
-    [ "internal::part_counter< Char >", "structinternal_1_1part__counter.html", null ],
-    [ "internal::basic_writer< Range >::pointer_writer< UIntPtr >", "structinternal_1_1basic__writer_1_1pointer__writer.html", null ],
-    [ "tsl::hh::power_of_two_growth_policy< GrowthFactor >", "classtsl_1_1hh_1_1power__of__two__growth__policy.html", null ],
     [ "tsl::rh::power_of_two_growth_policy< GrowthFactor >", "classtsl_1_1rh_1_1power__of__two__growth__policy.html", null ],
-    [ "internal::precision_adapter< SpecHandler, Char >", "structinternal_1_1precision__adapter.html", null ],
-    [ "internal::precision_checker< ErrorHandler >", "classinternal_1_1precision__checker.html", null ],
-    [ "internal::prepared_format< Format, PreparedPartsProvider, Args >", "classinternal_1_1prepared__format.html", null ],
-    [ "tsl::hh::prime_growth_policy", "classtsl_1_1hh_1_1prime__growth__policy.html", null ],
+    [ "tsl::hh::power_of_two_growth_policy< GrowthFactor >", "classtsl_1_1hh_1_1power__of__two__growth__policy.html", null ],
+    [ "tsl::hh::power_of_two_growth_policy< 2 >", "classtsl_1_1hh_1_1power__of__two__growth__policy.html", [
+      [ "tsl::detail_hopscotch_hash::hopscotch_hash< Key, KeySelect, void, std::hash< Key >, std::equal_to< Key >, std::allocator< Key >, 62, false, tsl::hh::power_of_two_growth_policy< 2 >, overflow_container_type >", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", null ]
+    ] ],
+    [ "tsl::rh::power_of_two_growth_policy< 2 >", "classtsl_1_1rh_1_1power__of__two__growth__policy.html", [
+      [ "tsl::detail_robin_hash::robin_hash< Key, KeySelect, void, std::hash< Key >, std::equal_to< Key >, std::allocator< Key >, false, tsl::rh::power_of_two_growth_policy< 2 > >", "classtsl_1_1detail__robin__hash_1_1robin__hash.html", null ]
+    ] ],
     [ "tsl::rh::prime_growth_policy", "classtsl_1_1rh_1_1prime__growth__policy.html", null ],
-    [ "printf_formatter< T >", "structprintf__formatter.html", null ],
-    [ "internal::printf_precision_handler", "classinternal_1_1printf__precision__handler.html", null ],
-    [ "internal::printf_width_handler< Char >", "classinternal_1_1printf__width__handler.html", null ],
+    [ "tsl::hh::prime_growth_policy", "classtsl_1_1hh_1_1prime__growth__policy.html", null ],
     [ "Iodw::Utils::Property", "structIodw_1_1Utils_1_1Property.html", null ],
     [ "Iodw::meta::Property", "structIodw_1_1meta_1_1Property.html", null ],
     [ "Ioss::Property", "classIoss_1_1Property.html", null ],
@@ -590,16 +359,10 @@ var hierarchy =
     [ "Iodw::meta::Region", "structIodw_1_1meta_1_1Region.html", null ],
     [ "Iodw::Utils::RegionKeys", "structIodw_1_1Utils_1_1RegionKeys.html", null ],
     [ "Ioss::Registry", "classIoss_1_1Registry.html", null ],
-    [ "rgb", "structrgb.html", null ],
     [ "tsl::detail_robin_hash::robin_hash< ValueType, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >::robin_iterator< IsConst >", "classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html", null ],
     [ "tsl::robin_map< Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1robin__map.html", null ],
     [ "tsl::robin_map< cgsize_t, cgsize_t >", "classtsl_1_1robin__map.html", null ],
     [ "tsl::robin_set< Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >", "classtsl_1_1robin__set.html", null ],
-    [ "runtime_error", null, [
-      [ "format_error", "classformat__error.html", null ],
-      [ "system_error", "classsystem__error.html", null ]
-    ] ],
-    [ "internal::runtime_parts_provider< PartsContainer >", "classinternal_1_1runtime__parts__provider.html", null ],
     [ "anonymous_namespace{Iocgns_DatabaseIO.C}::SBlock", "structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1SBlock.html", null ],
     [ "ScopeGuardImplBase", "classScopeGuardImplBase.html", [
       [ "ObjScopeGuardImpl0< Obj, MemFun >", "classObjScopeGuardImpl0.html", null ],
@@ -610,7 +373,6 @@ var hierarchy =
       [ "ScopeGuardImpl2< F, P1, P2 >", "classScopeGuardImpl2.html", null ],
       [ "ScopeGuardImpl3< F, P1, P2, P3 >", "classScopeGuardImpl3.html", null ]
     ] ],
-    [ "internal::output_range< OutputIt, T >::sentinel", "structinternal_1_1output__range_1_1sentinel.html", null ],
     [ "Ioss::SerializeIO", "classIoss_1_1SerializeIO.html", null ],
     [ "Ioss::SetDecompositionData", "classIoss_1_1SetDecompositionData.html", null ],
     [ "Iogn::SharedNode", "structIogn_1_1SharedNode.html", null ],
@@ -621,26 +383,10 @@ var hierarchy =
     [ "tsl::detail_hopscotch_hash::smallest_type_for_min_bits< MinBits, typename std::enable_if<(MinBits > 32) &&(MinBits<=64)>::type >", "classtsl_1_1detail__hopscotch__hash_1_1smallest__type__for__min__bits_3_01MinBits_00_01typename_fe29c6c59c80ed5cd5c6be9f314a950d.html", null ],
     [ "tsl::detail_hopscotch_hash::smallest_type_for_min_bits< MinBits, typename std::enable_if<(MinBits > 8) &&(MinBits<=16)>::type >", "classtsl_1_1detail__hopscotch__hash_1_1smallest__type__for__min__bits_3_01MinBits_00_01typename_38eb39da08c68efde66083547ec62577.html", null ],
     [ "tsl::detail_hopscotch_hash::smallest_type_for_min_bits< NeighborhoodSize+NB_RESERVED_BITS_IN_NEIGHBORHOOD >", "classtsl_1_1detail__hopscotch__hash_1_1smallest__type__for__min__bits.html", null ],
-    [ "formatter< std::chrono::duration< Rep, Period >, Char >::spec_handler", "structformatter_3_01std_1_1chrono_1_1duration_3_01Rep_00_01Period_01_4_00_01Char_01_4_1_1spec__handler.html", null ],
-    [ "internal::format_part< Char >::specification", "structinternal_1_1format__part_1_1specification.html", null ],
-    [ "internal::specs_setter< Char >", "classinternal_1_1specs__setter.html", null ],
-    [ "internal::specs_setter< Context::char_type >", "classinternal_1_1specs__setter.html", [
-      [ "internal::specs_handler< ParseContext, Context >", "classinternal_1_1specs__handler.html", null ]
-    ] ],
-    [ "internal::specs_setter< ParseContext::char_type >", "classinternal_1_1specs__setter.html", [
-      [ "internal::dynamic_specs_handler< ParseContext >", "classinternal_1_1dynamic__specs__handler.html", null ]
-    ] ],
-    [ "internal::sprintf_specs", "structinternal_1_1sprintf__specs.html", null ],
-    [ "internal::std_string_view< T >", "structinternal_1_1std__string__view.html", null ],
     [ "Ioss::StorageInitializer", "classIoss_1_1StorageInitializer.html", null ],
-    [ "internal::basic_writer< Range >::str_writer< Char >", "structinternal_1_1basic__writer_1_1str__writer.html", null ],
     [ "anonymous_namespace{Ioss_SmartAssert.C}::stream_holder", "structanonymous__namespace_02Ioss__SmartAssert_8C_03_1_1stream__holder.html", null ],
-    [ "internal::string_value< Char >", "structinternal_1_1string__value.html", null ],
-    [ "internal::string_value< char_type >", "structinternal_1_1string__value.html", null ],
-    [ "internal::string_view_metadata", "structinternal_1_1string__view__metadata.html", null ],
     [ "Iocgns::StructuredZoneData", "classIocgns_1_1StructuredZoneData.html", null ],
     [ "Ioss::Suffix", "structIoss_1_1Suffix.html", null ],
-    [ "text_style", "classtext__style.html", null ],
     [ "Iopg::TopologyMapCompare", "structIopg_1_1TopologyMapCompare.html", null ],
     [ "Ioex::TopologyMapCompare", "structIoex_1_1TopologyMapCompare.html", null ],
     [ "Ioss::Tracer", "classIoss_1_1Tracer.html", null ],
@@ -654,39 +400,17 @@ var hierarchy =
       [ "Iotr::VectorMagnitude", "classIotr_1_1VectorMagnitude.html", null ]
     ] ],
     [ "true_type", null, [
-      [ "internal::is_like_std_string< fmt::basic_string_view< Char > >", "structinternal_1_1is__like__std__string_3_01fmt_1_1basic__string__view_3_01Char_01_4_01_4.html", null ],
-      [ "internal::is_range_< T, conditional_t< false, conditional_helper< decltype(std::declval< T >().begin()), decltype(std::declval< T >().end())>, void > >", "structinternal_1_1is__range___3_01T_00_01conditional__t_3_01false_00_01conditional__helper_3_01ddcdd363b04da56ec70280bf106515bbc.html", null ],
-      [ "is_char< char >", "structis__char_3_01char_01_4.html", null ],
-      [ "is_char< char16_t >", "structis__char_3_01char16__t_01_4.html", null ],
-      [ "is_char< char32_t >", "structis__char_3_01char32__t_01_4.html", null ],
-      [ "is_char< char8_t >", "structis__char_3_01char8__t_01_4.html", null ],
-      [ "is_char< wchar_t >", "structis__char_3_01wchar__t_01_4.html", null ],
-      [ "is_contiguous< internal::buffer< Char > >", "structis__contiguous_3_01internal_1_1buffer_3_01Char_01_4_01_4.html", null ],
-      [ "is_contiguous< std::basic_string< Char > >", "structis__contiguous_3_01std_1_1basic__string_3_01Char_01_4_01_4.html", null ],
       [ "tsl::detail_hopscotch_hash::has_is_transparent< T, typename make_void< typename T::is_transparent >::type >", "structtsl_1_1detail__hopscotch__hash_1_1has__is__transparent_3_01T_00_01typename_01make__void_3_4161f4fa4fd3878927de0d276981ca6f.html", null ],
       [ "tsl::detail_hopscotch_hash::has_key_compare< T, typename make_void< typename T::key_compare >::type >", "structtsl_1_1detail__hopscotch__hash_1_1has__key__compare_3_01T_00_01typename_01make__void_3_01t11ab6b781ff7a6e1b9bc460857c74cb1.html", null ],
       [ "tsl::detail_hopscotch_hash::is_power_of_two_policy< tsl::hh::power_of_two_growth_policy< GrowthFactor > >", "structtsl_1_1detail__hopscotch__hash_1_1is__power__of__two__policy_3_01tsl_1_1hh_1_1power__of__te11f121c31544671593cb2afd25c377f.html", null ],
       [ "tsl::detail_robin_hash::has_is_transparent< T, typename make_void< typename T::is_transparent >::type >", "structtsl_1_1detail__robin__hash_1_1has__is__transparent_3_01T_00_01typename_01make__void_3_01ty718636ff8fc74d73885502911b06edfb.html", null ],
       [ "tsl::detail_robin_hash::is_power_of_two_policy< tsl::rh::power_of_two_growth_policy< GrowthFactor > >", "structtsl_1_1detail__robin__hash_1_1is__power__of__two__policy_3_01tsl_1_1rh_1_1power__of__two__a1a28c2963ea7bfc09f131241d081ae6.html", null ]
     ] ],
-    [ "internal::truncating_iterator< OutputIt, Enable >", "classinternal_1_1truncating__iterator.html", null ],
-    [ "internal::truncating_iterator_base< OutputIt >", "classinternal_1_1truncating__iterator__base.html", [
-      [ "internal::truncating_iterator< OutputIt, std::false_type >", "classinternal_1_1truncating__iterator_3_01OutputIt_00_01std_1_1false__type_01_4.html", null ],
-      [ "internal::truncating_iterator< OutputIt, std::true_type >", "classinternal_1_1truncating__iterator_3_01OutputIt_00_01std_1_1true__type_01_4.html", null ]
-    ] ],
     [ "Iocgns::Utils", "classIocgns_1_1Utils.html", null ],
     [ "Ioss::Utils", "classIoss_1_1Utils.html", null ],
-    [ "internal::format_part< Char >::value", "unioninternal_1_1format__part_1_1value.html", null ],
-    [ "internal::value< Context >", "classinternal_1_1value.html", null ],
-    [ "internal::arg_ref< Char >::value", "unioninternal_1_1arg__ref_1_1value.html", null ],
-    [ "internal::format_part< Char >::argument_id::value", "unioninternal_1_1format__part_1_1argument__id_1_1value.html", null ],
-    [ "internal::value< basic_format_context >", "classinternal_1_1value.html", null ],
-    [ "internal::value< basic_printf_context >", "classinternal_1_1value.html", null ],
-    [ "internal::value< format_context >", "classinternal_1_1value.html", null ],
-    [ "internal::value< wformat_context >", "classinternal_1_1value.html", null ],
-    [ "tsl::robin_map< Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >::ValueSelect", "classtsl_1_1robin__map_1_1ValueSelect.html", null ],
-    [ "tsl::bhopscotch_map< Key, T, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >::ValueSelect", "classtsl_1_1bhopscotch__map_1_1ValueSelect.html", null ],
     [ "tsl::hopscotch_map< Key, T, Hash, KeyEqual, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >::ValueSelect", "classtsl_1_1hopscotch__map_1_1ValueSelect.html", null ],
+    [ "tsl::bhopscotch_map< Key, T, Hash, KeyEqual, Compare, Allocator, NeighborhoodSize, StoreHash, GrowthPolicy >::ValueSelect", "classtsl_1_1bhopscotch__map_1_1ValueSelect.html", null ],
+    [ "tsl::robin_map< Key, T, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy >::ValueSelect", "classtsl_1_1robin__map_1_1ValueSelect.html", null ],
     [ "Ioss::VariableType", "classIoss_1_1VariableType.html", [
       [ "Ioss::Asym_Tensor_01", "classIoss_1_1Asym__Tensor__01.html", null ],
       [ "Ioss::Asym_Tensor_02", "classIoss_1_1Asym__Tensor__02.html", null ],
@@ -782,15 +506,6 @@ var hierarchy =
       [ "Ioss::Vector_3D", "classIoss_1_1Vector__3D.html", null ]
     ] ],
     [ "vector3d", "classvector3d.html", null ],
-    [ "internal::view", "structinternal_1_1view.html", [
-      [ "arg_join< It, Char >", "structarg__join.html", null ]
-    ] ],
-    [ "internal::void_t_impl< Ts >", "structinternal_1_1void__t__impl.html", null ],
-    [ "internal::width_adapter< SpecHandler, Char >", "structinternal_1_1width__adapter.html", null ],
-    [ "internal::width_checker< ErrorHandler >", "classinternal_1_1width__checker.html", null ],
     [ "Ioss::ZoneConnectivity", "structIoss_1_1ZoneConnectivity.html", null ],
-    [ "Iocgns::ZoneData", "classIocgns_1_1ZoneData.html", null ],
-    [ "Allocator", null, [
-      [ "basic_memory_buffer< T, SIZE, Allocator >", "classbasic__memory__buffer.html", null ]
-    ] ]
+    [ "Iocgns::ZoneData", "classIocgns_1_1ZoneData.html", null ]
 ];

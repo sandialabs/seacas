@@ -1,4 +1,0 @@
-var structinternal_1_1iterator__category_3_01It_00_01void__t_3_01typename_01It_1_1iterator__category_01_4_01_4 =
-[
-    [ "type", "structinternal_1_1iterator__category_3_01It_00_01void__t_3_01typename_01It_1_1iterator__category_01_4_01_4.html#a9e5df5e6c1a234602a3c51f6f1f48f07", null ]
-];

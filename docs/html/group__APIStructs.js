@@ -89,10 +89,10 @@ var group__APIStructs =
       [ "num_sset", "structex__var__params.html#aefe319b017db1ae1a32f37b89edfd871", null ],
       [ "sset_var_tab", "structex__var__params.html#abbb143a69fefc08e10f2373f860697f9", null ]
     ] ],
-    [ "ex_block", "group__APIStructs.html#gaba1420f7a98c7bb441829dbbc1fa6ed4", null ],
-    [ "ex_block_params", "group__APIStructs.html#gabcda51a5f89c020efe1882eaaba88663", null ],
-    [ "ex_init_params", "group__APIStructs.html#ga1068d38d81d5f0aec97f9cc4cb766223", null ],
-    [ "ex_set", "group__APIStructs.html#ga9f0814c288cab36f5387a6f587935acb", null ],
-    [ "ex_set_specs", "group__APIStructs.html#ga569247f892d2c0635089dc030d5bd04f", null ],
-    [ "ex_var_params", "group__APIStructs.html#ga29cb2cf460c32e72c2991cc801604b68", null ]
+    [ "ex_block", "group__APIStructs.html#ga0cd967356021ff87f4649e050a511741", null ],
+    [ "ex_block_params", "group__APIStructs.html#gae6da75f139e94d673c54bfbc8c810c23", null ],
+    [ "ex_init_params", "group__APIStructs.html#ga22b281d59c8b35651b546081b0daaeb4", null ],
+    [ "ex_set", "group__APIStructs.html#gaabf4117930e1c6c5201e38b900274cdd", null ],
+    [ "ex_set_specs", "group__APIStructs.html#ga1d41c6b1174f2d155063110da9f2316d", null ],
+    [ "ex_var_params", "group__APIStructs.html#ga2ab4d9b3af86ef8ca0e90afc0bbddd46", null ]
 ];

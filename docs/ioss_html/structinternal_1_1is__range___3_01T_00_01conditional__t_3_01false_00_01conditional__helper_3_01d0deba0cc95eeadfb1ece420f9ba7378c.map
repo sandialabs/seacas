@@ -1,4 +1,0 @@
-<map id="internal::is_range_&lt; T, conditional_t&lt; false, conditional_helper&lt; decltype(std::declval&lt; T &gt;().begin()), decltype(std::declval&lt; T &gt;().end())&gt;, void &gt; &gt;" name="internal::is_range_&lt; T, conditional_t&lt; false, conditional_helper&lt; decltype(std::declval&lt; T &gt;().begin()), decltype(std::declval&lt; T &gt;().end())&gt;, void &gt; &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="5,79,168,184"/>
-<area shape="rect" id="node2" title=" " alt="" coords="48,5,125,31"/>
-</map>

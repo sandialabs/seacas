@@ -1,9 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,183,103,208"/>
-<area shape="rect" id="node2" href="$classbasic__parse__context.html" title=" " alt="" coords="169,5,325,44"/>
-<area shape="rect" id="node3" href="$structinternal_1_1arg__formatter__base_1_1char__spec__handler.html" title=" " alt="" coords="151,68,343,120"/>
-<area shape="rect" id="node4" href="$classinternal_1_1char__specs__checker.html" title=" " alt="" coords="160,144,334,183"/>
-<area shape="rect" id="node5" href="$classinternal_1_1cstring__type__checker.html" title=" " alt="" coords="160,207,334,245"/>
-<area shape="rect" id="node6" href="$classinternal_1_1float__type__checker.html" title=" " alt="" coords="160,269,334,308"/>
-<area shape="rect" id="node7" href="$classinternal_1_1int__type__checker.html" title=" " alt="" coords="160,332,334,371"/>
+<area shape="rect" id="node1" href="$structIodw_1_1meta_1_1Region.html" title=" " alt="" coords="5,5,142,31"/>
 </map>

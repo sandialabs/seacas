@@ -1,6 +1,12 @@
 var group__FileOptions =
 [
+    [ "ex_compression_type", "group__FileOptions.html#ga87e0d0f4c6cb6c14212e40803399f0bf", null ],
     [ "ex_option_type", "group__FileOptions.html#gac4a53e402cb75c7f820f58feac64cb78", null ],
+    [ "ex_compression_type", "group__FileOptions.html#ga74ed4d0f70c2a2e257a7d57289d15668", [
+      [ "EX_COMPRESS_ZLIB", "group__FileOptions.html#gga74ed4d0f70c2a2e257a7d57289d15668a50070e49274822b7339b876cfdb6d28d", null ],
+      [ "EX_COMPRESS_GZIP", "group__FileOptions.html#gga74ed4d0f70c2a2e257a7d57289d15668aab24c7e8887ba97fe7465a07f135f7ef", null ],
+      [ "EX_COMPRESS_SZIP", "group__FileOptions.html#gga74ed4d0f70c2a2e257a7d57289d15668a99067303d35d76d779bb102f4c63bfec", null ]
+    ] ],
     [ "ex_option_type", "group__FileOptions.html#ga790e5d19a7cc9c2f8d4fd5a49a2c5dd0", [
       [ "EX_OPT_MAX_NAME_LENGTH", "group__FileOptions.html#gga790e5d19a7cc9c2f8d4fd5a49a2c5dd0a690fd05bb9e592b5826a22e0271b55cc", null ],
       [ "EX_OPT_COMPRESSION_TYPE", "group__FileOptions.html#gga790e5d19a7cc9c2f8d4fd5a49a2c5dd0aedde3d779bfa7984bb2aa0864e595f67", null ],

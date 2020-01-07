@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['numeric_5fsystem_8225',['numeric_system',['../namespaceinternal.html#a16e2a1195ca0f5beab658685f71df86b',1,'internal']]]
+  ['topology_6381',['Topology',['../namespaceIogn.html#a05c78571e9bf222ffa337fa31ed95006',1,'Iogn']]],
+  ['trantype_6382',['TranType',['../classIotr_1_1Tensor.html#a79c78784d81275843c4c5b4927caf39b',1,'Iotr::Tensor']]]
 ];

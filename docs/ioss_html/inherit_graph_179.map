@@ -1,9 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structinternal_1_1error__handler.html" title=" " alt="" coords="5,169,158,195"/>
-<area shape="rect" id="node2" href="$classbasic__parse__context.html" title=" " alt="" coords="244,5,388,44"/>
-<area shape="rect" id="node3" href="$classbasic__parse__context.html" title=" " alt="" coords="244,68,388,107"/>
-<area shape="rect" id="node4" href="$structdynamic__formatter_1_1null__handler.html" title=" " alt="" coords="243,131,389,169"/>
-<area shape="rect" id="node5" href="$structformat__handler.html" title=" " alt="" coords="215,193,418,232"/>
-<area shape="rect" id="node6" href="$structinternal_1_1arg__formatter__base_1_1cstring__spec__handler.html" title=" " alt="" coords="220,256,412,308"/>
-<area shape="rect" id="node7" href="$classinternal_1_1format__preparation__handler.html" title=" " alt="" coords="206,332,427,371"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,40,105,65"/>
+<area shape="rect" id="node2" href="$classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html" title=" " alt="" coords="153,5,456,97"/>
+<area shape="rect" id="node3" href="$classtsl_1_1detail__robin__hash_1_1robin__hash.html" title=" " alt="" coords="212,121,397,200"/>
+<area shape="rect" id="node4" title=" " alt="" coords="29,91,82,116"/>
+<area shape="rect" id="node5" title=" " alt="" coords="16,143,94,168"/>
 </map>
