@@ -28,11 +28,11 @@ namespace internal {
 
     kind part_kind;
     union value {
-      unsigned                arg_index;
+      int                     arg_index;
       basic_string_view<Char> str;
       replacement             repl;
 
-      FMT_CONSTEXPR value(unsigned index = 0) : arg_index(index) {}
+      FMT_CONSTEXPR value(int index = 0) : arg_index(index) {}
       FMT_CONSTEXPR value(basic_string_view<Char> s) : str(s) {}
       FMT_CONSTEXPR value(replacement r) : repl(r) {}
     } val;
@@ -41,7 +41,7 @@ namespace internal {
 
     FMT_CONSTEXPR format_part(kind k = kind::arg_index, value v = {}) : part_kind(k), val(v) {}
 
-    static FMT_CONSTEXPR format_part make_arg_index(unsigned index)
+    static FMT_CONSTEXPR format_part make_arg_index(int index)
     {
       return format_part(kind::arg_index, index);
     }
@@ -70,7 +70,7 @@ namespace internal {
     }
 
     FMT_CONSTEXPR void on_arg_id() { ++num_parts; }
-    FMT_CONSTEXPR void on_arg_id(unsigned) { ++num_parts; }
+    FMT_CONSTEXPR void on_arg_id(int) { ++num_parts; }
     FMT_CONSTEXPR void on_arg_id(basic_string_view<Char>) { ++num_parts; }
 
     FMT_CONSTEXPR void on_replacement_field(const Char *) {}
@@ -127,7 +127,7 @@ namespace internal {
 
     FMT_CONSTEXPR void on_arg_id() { part_ = part::make_arg_index(parse_context_.next_arg_id()); }
 
-    FMT_CONSTEXPR void on_arg_id(unsigned id)
+    FMT_CONSTEXPR void on_arg_id(int id)
     {
       parse_context_.check_arg_id(id);
       part_ = part::make_arg_index(id);
@@ -540,8 +540,6 @@ template <typename CompiledFormat, typename... Args,
 std::basic_string<Char> format(const CompiledFormat &cf, const Args &... args)
 {
   basic_memory_buffer<Char> buffer;
-  using range   = buffer_range<Char>;
-  using context = buffer_context<Char>;
   cf.format(std::back_inserter(buffer), args...);
   return to_string(buffer);
 }

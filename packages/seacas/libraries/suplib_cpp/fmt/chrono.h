@@ -649,7 +649,7 @@ namespace internal {
 
   template <typename T, FMT_ENABLE_IF(std::is_integral<T>::value)> inline T mod(T x, int y)
   {
-    return x % y;
+    return x % static_cast<T>(y);
   }
   template <typename T, FMT_ENABLE_IF(std::is_floating_point<T>::value)> inline T mod(T x, int y)
   {
@@ -749,7 +749,7 @@ namespace internal {
     using char_type = typename FormatContext::char_type;
 
     explicit chrono_formatter(FormatContext &ctx, OutputIt o, std::chrono::duration<Rep, Period> d)
-        : context(ctx), out(o), val(d.count()), negative(false)
+        : context(ctx), out(o), val(static_cast<rep>(d.count())), negative(false)
     {
       if (d.count() < 0) {
         val      = 0 - val;
@@ -1011,8 +1011,8 @@ private:
     void on_error(const char *msg) { FMT_THROW(format_error(msg)); }
     void on_fill(Char fill) { f.specs.fill[0] = fill; }
     void on_align(align_t align) { f.specs.align = align; }
-    void on_width(unsigned width) { f.specs.width = width; }
-    void on_precision(unsigned _precision) { f.precision = _precision; }
+    void on_width(int width) { f.specs.width = width; }
+    void on_precision(int _precision) { f.precision = _precision; }
     void end_precision() {}
 
     template <typename Id> void on_dynamic_width(Id arg_id) { f.width_ref = make_arg_ref(arg_id); }
