@@ -32,12 +32,15 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_StandardElementTypes.h>
+#include <locale>
 #if defined IOSS_THREADSAFE
 #include <mutex>
 #endif
 
 Ioss::Initializer::Initializer()
 {
+  std::locale::global(std::locale(""));
+
   // List all storage types here with a call to their factory method.
   // This is Used to get the linker to pull in all needed libraries.
   Ioss::Sphere::factory();
