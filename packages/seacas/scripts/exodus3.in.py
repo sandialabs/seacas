@@ -2887,7 +2887,7 @@ class exodus:
         """
         names = self.get_variable_names('EX_NODE_SET')
         var_id = names.index(name) + 1
-        (numSetNodes, _numSetDistFacts) = self.get_set_params(object_id, 'EX_NODE_SET')
+        (numSetNodes, _numSetDistFacts) = self.get_set_params('EX_NODE_SET', object_id)
         self.__ex_put_var(step, 'EX_NODE_SET', var_id, object_id, numSetNodes, values)
         return True
 
@@ -3610,7 +3610,7 @@ class exodus:
         """
         names = self.get_variable_names('EX_SIDE_SET')
         var_id = names.index(name) + 1
-        (numSetSides, _numSetDistFacts) = self.get_set_params(object_id, 'EX_SIDE_SET')
+        (numSetSides, _numSetDistFacts) = self.get_set_params('EX_SIDE_SET', object_id)
         self.__ex_put_var(step, 'EX_SIDE_SET', var_id, object_id, numSetSides, values)
         return True
 
@@ -3854,10 +3854,10 @@ class exodus:
         # adjust one of them
         values[names.index(name)] = ctypes.c_double(value)
         # write them all
-        EXODUS_LIB.ex_put_var(self.fileId,
-                              ctypes.c_int(step),
-                              ctypes.c_int(numVals),
-                              values)
+        EXODUS_LIB.ex_put_glob_vars(self.fileId,
+                                    ctypes.c_int(step),
+                                    ctypes.c_int(numVals),
+                                    values)
         return True
 
     # --------------------------------------------------------------------
@@ -4767,6 +4767,8 @@ class exodus:
             numAttrsPerElem):
         obj_type = ctypes.c_int(get_entity_type(object_type))
         block_id = ctypes.c_longlong(object_id)
+        if type(eType) == str:
+            eType = eType.encode('ascii')
         elem_type = ctypes.create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
         num_elem_this_blk = ctypes.c_longlong(numElems)
         num_nodes_per_elem = ctypes.c_longlong(numNodesPerElem)
