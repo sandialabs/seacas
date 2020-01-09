@@ -112,6 +112,7 @@ var namespaces_dup =
     [ "anonymous_namespace{shell_interface.C}", "namespaceanonymous__namespace_02shell__interface_8C_03.html", null ],
     [ "anonymous_namespace{shell_to_hex.C}", "namespaceanonymous__namespace_02shell__to__hex_8C_03.html", null ],
     [ "anonymous_namespace{skinner.C}", "namespaceanonymous__namespace_02skinner_8C_03.html", null ],
+    [ "anonymous_namespace{skinner_interface.C}", "namespaceanonymous__namespace_02skinner__interface_8C_03.html", null ],
     [ "anonymous_namespace{sphgen.C}", "namespaceanonymous__namespace_02sphgen_8C_03.html", null ],
     [ "anonymous_namespace{struc_to_unstruc.C}", "namespaceanonymous__namespace_02struc__to__unstruc_8C_03.html", null ],
     [ "anonymous_namespace{UnitTestIofxDatabaseIO.C}", "namespaceanonymous__namespace_02UnitTestIofxDatabaseIO_8C_03.html", null ],

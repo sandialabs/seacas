@@ -3121,7 +3121,7 @@
 <g id="node245" class="node">
 <title>Node301</title>
 <g id="a_node245"><a xlink:href="Ioss__FileInfo_8h.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="24464.43,-385.5 24464.43,-403.5 24561.57,-403.5 24561.57,-385.5 24464.43,-385.5"/>
+<polygon fill="white" stroke="red" points="24464.43,-385.5 24464.43,-403.5 24561.57,-403.5 24561.57,-385.5 24464.43,-385.5"/>
 <text text-anchor="middle" x="24513" y="-391.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/Ioss_FileInfo.h</text>
 </a>
 </g>
