@@ -15,8 +15,7 @@
 #include <type_traits>
 
 // The fmt library version in the form major * 10000 + minor * 100 + patch.
-#define FMT_VERSION 60100
-
+#define FMT_VERSION 60102
 #ifndef FMT_HEADER_ONLY
 #define FMT_HEADER_ONLY
 #endif
@@ -69,7 +68,8 @@
 #ifndef FMT_USE_CONSTEXPR
 #define FMT_USE_CONSTEXPR                                                                          \
   (FMT_HAS_FEATURE(cxx_relaxed_constexpr) || FMT_MSC_VER >= 1910 ||                                \
-   (FMT_GCC_VERSION >= 600 && __cplusplus >= 201402L))
+   (FMT_GCC_VERSION >= 600 && __cplusplus >= 201402L)) &&                                          \
+      !FMT_NVCC
 #endif
 #if FMT_USE_CONSTEXPR
 #define FMT_CONSTEXPR constexpr
@@ -167,15 +167,10 @@
 #endif
 
 #if !defined(FMT_HEADER_ONLY) && defined(_WIN32)
-#if FMT_MSC_VER
-#define FMT_NO_W4275 __pragma(warning(suppress : 4275))
-#else
-#define FMT_NO_W4275
-#endif
 #ifdef FMT_EXPORT
-#define FMT_API FMT_NO_W4275 __declspec(dllexport)
+#define FMT_API __declspec(dllexport)
 #elif defined(FMT_SHARED)
-#define FMT_API FMT_NO_W4275 __declspec(dllimport)
+#define FMT_API __declspec(dllimport)
 #define FMT_EXTERN_TEMPLATE_API FMT_API
 #endif
 #endif
@@ -229,7 +224,7 @@ namespace internal {
     using type = void;
   };
 
-  void assert_fail(const char *file, int line, const char *message);
+  FMT_API void assert_fail(const char *file, int line, const char *message);
 
 #ifndef FMT_ASSERT
 #ifdef NDEBUG
@@ -252,7 +247,7 @@ namespace internal {
 
 #ifdef FMT_USE_INT128
 // Do nothing.
-#elif defined(__SIZEOF_INT128__) && !FMT_NVCC
+#elif defined(__SIZEOF_INT128__)
 #define FMT_USE_INT128 1
   using int128_t                                 = __int128_t;
   using uint128_t                                = __uint128_t;
@@ -940,7 +935,7 @@ namespace internal {
     template <typename T,
               FMT_ENABLE_IF(std::is_constructible<std_string_view<char_type>, T>::value &&
                             !std::is_constructible<basic_string_view<char_type>, T>::value &&
-                            !is_string<T>::value)>
+                            !is_string<T>::value && !has_formatter<T, Context>::value)>
     FMT_CONSTEXPR basic_string_view<char_type> map(const T &val)
     {
       return std_string_view<char_type>(val);
@@ -981,7 +976,8 @@ namespace internal {
               FMT_ENABLE_IF(!is_string<T>::value && !is_char<T>::value &&
                             !std::is_constructible<basic_string_view<char_type>, T>::value &&
                             (has_formatter<T, Context>::value ||
-                             has_fallback_formatter<T, Context>::value))>
+                             (has_fallback_formatter<T, Context>::value &&
+                              !std::is_constructible<std_string_view<char_type>, T>::value)))>
     FMT_CONSTEXPR const T &map(const T &val)
     {
       return val;
@@ -1260,7 +1256,6 @@ private:
 public:
   static constexpr unsigned long long types =
       is_packed ? internal::encode_types<Context, Args...>() : internal::is_unpacked_bit | num_args;
-  FMT_DEPRECATED static constexpr unsigned long long TYPES = types;
 
   format_arg_store(const Args &... args) : data_{internal::make_arg<is_packed, Context>(args)...} {}
 };
@@ -1342,8 +1337,7 @@ public:
    \endrst
    */
   template <typename... Args>
-  basic_format_args(const format_arg_store<Context, Args...> &store)
-      : types_(static_cast<unsigned long long>(store.types))
+  basic_format_args(const format_arg_store<Context, Args...> &store) : types_(store.types)
   {
     set_data(store.data_);
   }
@@ -1464,11 +1458,9 @@ namespace internal {
   inline format_arg_store<buffer_context<Char>, remove_reference_t<Args>...>
   make_args_checked(const S &format_str, const remove_reference_t<Args> &... args)
   {
-#ifndef __INTEL_COMPILER
     static_assert(all_true<(!std::is_base_of<view, remove_reference_t<Args>>() ||
                             !std::is_reference<Args>())...>::value,
                   "passing views as lvalues is disallowed");
-#endif
     check_format_string<remove_const_t<remove_reference_t<Args>>...>(format_str);
     return {args...};
   }
