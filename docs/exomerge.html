@@ -21,23 +21,41 @@
 </header>
 <section id="section-intro">
 <p>Exomerge is a lightweight Python interface for manipulating ExodusII files.</p>
-<p>Copyright 2018 National Technology and Engineering Solutions of Sandia.
-Under
-the terms of Contract DE-NA-0003525, there is a non-exclusive license for use
-of this work by or on behalf of the U.S. Government.
-Export of this program
-may require a license from the United States Government.</p>
-<p>This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.</p>
-<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.
-See the GNU General Public License for more details.</p>
-<p>You should have received a copy of the GNU General Public License along with
-this program.
-If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+<p>Copyright (c) 2012-2019, National Technology &amp; Engineering Solutions
+of Sandia, LLC (NTESS).
+Under the terms of Contract DE-NA0003525 with
+NTESS, the U.S. Government retains certain rights in this software.</p>
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:</p>
+<ul>
+<li>
+<p>Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.</p>
+</li>
+<li>
+<p>Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following
+disclaimer in the documentation and/or other materials provided
+with the distribution.</p>
+</li>
+<li>
+<p>Neither the name of NTESS nor the names of its
+contributors may be used to endorse or promote products derived
+from this software without specific prior written permission.</p>
+</li>
+</ul>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 <p>Author: Tim Kostka (tdkostk@sandia.gov)
 Created: May 3, 2012</p>
 <p>Simple example:</p>
@@ -54,27 +72,43 @@ $ pydoc exomerge.ExodusModel.delete_element_block</p>
 Exodus files" (SAND2013-0725)</p>
 <p>For additional information or to provide feedback or feature requests, please
 contact the author.</p>
+<p>This is the python-3 version</p>
 <details class="source">
 <summary>Source code</summary>
 <pre><code class="python">&#34;&#34;&#34;
 Exomerge is a lightweight Python interface for manipulating ExodusII files.
 
-Copyright 2018 National Technology and Engineering Solutions of Sandia.  Under
-the terms of Contract DE-NA-0003525, there is a non-exclusive license for use
-of this work by or on behalf of the U.S. Government.  Export of this program
-may require a license from the United States Government.
+Copyright (c) 2012-2019, National Technology &amp; Engineering Solutions
+of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+NTESS, the U.S. Government retains certain rights in this software.
 
-This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+* Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
 
-You should have received a copy of the GNU General Public License along with
-this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+* Redistributions in binary form must reproduce the above
+  copyright notice, this list of conditions and the following
+  disclaimer in the documentation and/or other materials provided
+  with the distribution.
+
+* Neither the name of NTESS nor the names of its
+  contributors may be used to endorse or promote products derived
+  from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+&#34;AS IS&#34; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Author: Tim Kostka (tdkostk@sandia.gov)
 Created: May 3, 2012
@@ -96,6 +130,7 @@ Exodus files&#34; (SAND2013-0725)
 For additional information or to provide feedback or feature requests, please
 contact the author.
 
+This is the python-3 version
 &#34;&#34;&#34;
 
 # import standard modules
@@ -115,12 +150,18 @@ import colorsys
 import difflib
 import operator
 
+if sys.version_info[0] &lt; 3:
+    raise Exception(&#34;Python-3 version. If using python-2, try `import exomerge2 as exomerge`&#34;)
+
 # import exodus module
 # (exodus.py should be in the same directory as this file)
-import exodus
+try:
+    import exodus
+except:
+    import exodus3 as exodus
 
 # informal version number of this module
-__version__ = 8.5
+__version__ = &#34;8.6.0&#34;
 VERSION = __version__
 
 # contact person for issues
@@ -397,7 +438,7 @@ class ExodusModel(object):
         global SHOW_BANNER
         if SHOW_BANNER:
             print((&#39;\n\nYou are using Exomerge v%s -- A lightweight Python &#39;
-                   &#39;interface for manipulating\nExodusII files.&#39; % (VERSION)))
+                   &#39;interface for manipulating\nExodusII files. (Python-3 version)&#39; % (VERSION)))
             # print out the exodus banner after formatting it to fit within
             # 79 characters
             exodus_text = exodus.EXODUS_PY_COPYRIGHT
@@ -464,7 +505,7 @@ class ExodusModel(object):
             trial = name + &#39;s&#39;
             if trial in names:
                 return getattr(self, trial)
-        # if the name appears to be plural, seach for the singular version
+        # if the name appears to be plural, search for the singular version
         if name.endswith(&#39;s&#39;):
             trial = name[:-1]
             if not trial.endswith(&#39;s&#39;) and trial in names:
@@ -757,9 +798,9 @@ class ExodusModel(object):
         element_block_ids = self._format_element_block_id_list(
             element_block_ids)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         if new_element_block_id is not None:
             if self.element_block_exists(new_element_block_id):
                 self._exists_error(new_element_block_id, &#39;element block&#39;)
@@ -1553,13 +1594,13 @@ class ExodusModel(object):
         [element_block_id] = self._format_element_block_id_list(
             [element_block_id], single=True)
         [node_field_name] = self._format_id_list([node_field_name],
-                                               self.get_node_field_names(),
-                                               &#39;node field&#39;,
-                                               single=True)
+                                                 self.get_node_field_names(),
+                                                 &#39;node field&#39;,
+                                                 single=True)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         # verify block is actually a tri3 block
         if self._get_element_type(element_block_id) != &#39;tri3&#39;:
             self._error(
@@ -1716,13 +1757,13 @@ class ExodusModel(object):
         element_block_ids = self._format_element_block_id_list(
             element_block_ids)
         [node_field_name] = self._format_id_list([node_field_name],
-                                               self.get_node_field_names(),
-                                               &#39;node field&#39;,
-                                               single=True)
+                                                 self.get_node_field_names(),
+                                                 &#39;node field&#39;,
+                                                 single=True)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         timestep_index = self.timesteps.index(timestep)
         if displacement_timestep == &#39;auto&#39;:
             if self.displacement_field_exists():
@@ -1963,7 +2004,7 @@ class ExodusModel(object):
         exporters[extension](filename, *args, **kwargs)
 
     def _error_evaluating_expression(self, expression, var):
-        &#34;&#34;&#34;Throw an error saying we could not evalute the given expression.&#34;&#34;&#34;
+        &#34;&#34;&#34;Throw an error saying we could not evaluate the given expression.&#34;&#34;&#34;
         self._error(
             &#39;Invalid expression&#39;,
             &#39;An error occurred while trying to evaluate the given &#39;
@@ -3150,9 +3191,9 @@ class ExodusModel(object):
         [element_block_id] = self._format_element_block_id_list(
             [element_block_id], single=True)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         timestep_index = self._get_internal_timestep_index(timestep)
         if not self.element_field_exists(element_field_name, element_block_id):
             self._missing_on_entity_error(element_field_name, &#39;element field&#39;,
@@ -3165,7 +3206,7 @@ class ExodusModel(object):
                                   side_set_id=&#39;auto&#39;,
                                   timestep=&#39;last&#39;):
         &#34;&#34;&#34;
-        Return the list of side set field vlaues.
+        Return the list of side set field values.
 
         The actual list of values is returned, so any modifications to it will
         be stored in the model.
@@ -3185,9 +3226,9 @@ class ExodusModel(object):
             &#39;side set field&#39;,
             single=True)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         timestep_index = self._get_internal_timestep_index(timestep)
         if not self.side_set_field_exists(side_set_field_name, side_set_id):
             self._missing_on_entity_error(side_set_field_name,
@@ -3221,9 +3262,9 @@ class ExodusModel(object):
             &#39;node set field&#39;,
             single=True)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         timestep_index = self._get_internal_timestep_index(timestep)
         if not self.node_set_field_exists(node_set_field_name, node_set_id):
             self._missing_on_entity_error(node_set_field_name,
@@ -3393,9 +3434,9 @@ class ExodusModel(object):
     def _get_internal_timestep_index(self, timestep):
         &#34;&#34;&#34;Return the local timestep index.&#34;&#34;&#34;
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         return self.timesteps.index(timestep)
 
     def _create_element_field_truth_table(self, element_block_ids,
@@ -3948,9 +3989,9 @@ class ExodusModel(object):
                        entity_name_list_function, entity_objects):
         &#34;&#34;&#34;Rename an entity.&#34;&#34;&#34;
         [entity_name] = self._format_id_list([entity_name],
-                                           entity_name_list_function(),
-                                           entity_type,
-                                           single=True)
+                                             entity_name_list_function(),
+                                             entity_type,
+                                             single=True)
         if new_entity_name == entity_name:
             return
         if new_entity_name in entity_name_list_function():
@@ -4213,7 +4254,7 @@ class ExodusModel(object):
         side set field on a particular field, pass in &#39;side_set_ids&#39;.
 
         To set the value of the field, pass in &#39;value&#39;.  By default this is
-        0 for displacement fiels and NaN for all other fields.
+        0 for displacement fields and NaN for all other fields.
 
         Example:
         &gt;&gt;&gt; model.create_side_set_field(&#39;temperature&#39;, 13, 298.15)
@@ -4363,7 +4404,7 @@ class ExodusModel(object):
         transforms.append((&#39;&lt;&#39;, &#39;((R) - (L)) - abs((R) - (L))&#39;))
         transforms.append((&#39;==&#39;, &#39;abs((L) - (R))&#39;))
         transforms.append((&#39;=&#39;, &#39;abs((L) - (R))&#39;))
-        # replace occurances of each transform
+        # replace occurrences of each transform
         for separator, transform in transforms:
             while separator in expression:
                 # ensure parenthesis count is identical
@@ -4902,9 +4943,9 @@ class ExodusModel(object):
 
         &#34;&#34;&#34;
         [node_field_name] = self._format_id_list([node_field_name],
-                                               self.get_node_field_names(),
-                                               &#39;node field&#39;,
-                                               single=True)
+                                                 self.get_node_field_names(),
+                                                 &#39;node field&#39;,
+                                                 single=True)
         timestep_index = self._get_internal_timestep_index(timestep)
         return self.node_fields[node_field_name][timestep_index]
 
@@ -5314,7 +5355,7 @@ class ExodusModel(object):
                 self._warning(
                     &#39;Fields not defined.&#39;,
                     &#39;Not all of the requested element fields are &#39;
-                    &#39;defined on element block %s.  The everaged &#39;
+                    &#39;defined on element block %s.  The averaged &#39;
                     &#39;field will not be created.&#39; % element_block_id)
                 continue
             # create the field if it doesn&#39;t exist
@@ -5374,7 +5415,7 @@ class ExodusModel(object):
         default_value = self._get_default_field_value(node_field_name)
         # process each timestep
         for timestep_index in range(len(self.timesteps)):
-            # initialze node field
+            # initialize node field
             node_field_values = [0.0] * len(self.nodes)
             node_field_elements = [0] * len(self.nodes)
             # for each element block
@@ -5425,9 +5466,9 @@ class ExodusModel(object):
 
         &#34;&#34;&#34;
         [node_field_name] = self._format_id_list([node_field_name],
-                                               self.get_node_field_names(),
-                                               &#39;node field&#39;,
-                                               single=True)
+                                                 self.get_node_field_names(),
+                                                 &#39;node field&#39;,
+                                                 single=True)
         element_block_ids = self._format_element_block_id_list(
             element_block_ids)
         # format the arguments
@@ -5730,7 +5771,7 @@ class ExodusModel(object):
         Return the total number of elements in the given element blocks.
 
         Example:
-        &gt;&gt;&gt; print object.get_element_count()
+        &gt;&gt;&gt; print((&#39; %d elements&#39; % (object.get_element_count())))
 
         &#34;&#34;&#34;
         element_block_ids = self._format_element_block_id_list(
@@ -6519,9 +6560,9 @@ class ExodusModel(object):
 
         &#34;&#34;&#34;
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         if self.timestep_exists(new_timestep):
             self._exists_warning(new_timestep, &#39;timestep&#39;)
             return
@@ -7763,9 +7804,11 @@ class ExodusModel(object):
                     global_variable_name, timestep_index[0])
                 model_values[timestep_index[1]] = file_value
         # add info records
-        self.info_records += exodus_file.get_info_records()
+        if (exodus_file.num_info_records() &gt; 0):
+            self.info_records += exodus_file.get_info_records()
         # add qa records
-        self.qa_records += exodus_file.get_qa_records()
+        if (exodus_file.num_qa_records() &gt; 0):
+            self.qa_records += exodus_file.get_qa_records()
         # add title if one does not already exist
         # else add it to an info record
         if not self.title:
@@ -9059,7 +9102,7 @@ following two statements.</p>
         global SHOW_BANNER
         if SHOW_BANNER:
             print((&#39;\n\nYou are using Exomerge v%s -- A lightweight Python &#39;
-                   &#39;interface for manipulating\nExodusII files.&#39; % (VERSION)))
+                   &#39;interface for manipulating\nExodusII files. (Python-3 version)&#39; % (VERSION)))
             # print out the exodus banner after formatting it to fit within
             # 79 characters
             exodus_text = exodus.EXODUS_PY_COPYRIGHT
@@ -9126,7 +9169,7 @@ following two statements.</p>
             trial = name + &#39;s&#39;
             if trial in names:
                 return getattr(self, trial)
-        # if the name appears to be plural, seach for the singular version
+        # if the name appears to be plural, search for the singular version
         if name.endswith(&#39;s&#39;):
             trial = name[:-1]
             if not trial.endswith(&#39;s&#39;) and trial in names:
@@ -9419,9 +9462,9 @@ following two statements.</p>
         element_block_ids = self._format_element_block_id_list(
             element_block_ids)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         if new_element_block_id is not None:
             if self.element_block_exists(new_element_block_id):
                 self._exists_error(new_element_block_id, &#39;element block&#39;)
@@ -10215,13 +10258,13 @@ following two statements.</p>
         [element_block_id] = self._format_element_block_id_list(
             [element_block_id], single=True)
         [node_field_name] = self._format_id_list([node_field_name],
-                                               self.get_node_field_names(),
-                                               &#39;node field&#39;,
-                                               single=True)
+                                                 self.get_node_field_names(),
+                                                 &#39;node field&#39;,
+                                                 single=True)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         # verify block is actually a tri3 block
         if self._get_element_type(element_block_id) != &#39;tri3&#39;:
             self._error(
@@ -10378,13 +10421,13 @@ following two statements.</p>
         element_block_ids = self._format_element_block_id_list(
             element_block_ids)
         [node_field_name] = self._format_id_list([node_field_name],
-                                               self.get_node_field_names(),
-                                               &#39;node field&#39;,
-                                               single=True)
+                                                 self.get_node_field_names(),
+                                                 &#39;node field&#39;,
+                                                 single=True)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         timestep_index = self.timesteps.index(timestep)
         if displacement_timestep == &#39;auto&#39;:
             if self.displacement_field_exists():
@@ -10625,7 +10668,7 @@ following two statements.</p>
         exporters[extension](filename, *args, **kwargs)
 
     def _error_evaluating_expression(self, expression, var):
-        &#34;&#34;&#34;Throw an error saying we could not evalute the given expression.&#34;&#34;&#34;
+        &#34;&#34;&#34;Throw an error saying we could not evaluate the given expression.&#34;&#34;&#34;
         self._error(
             &#39;Invalid expression&#39;,
             &#39;An error occurred while trying to evaluate the given &#39;
@@ -11812,9 +11855,9 @@ following two statements.</p>
         [element_block_id] = self._format_element_block_id_list(
             [element_block_id], single=True)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         timestep_index = self._get_internal_timestep_index(timestep)
         if not self.element_field_exists(element_field_name, element_block_id):
             self._missing_on_entity_error(element_field_name, &#39;element field&#39;,
@@ -11827,7 +11870,7 @@ following two statements.</p>
                                   side_set_id=&#39;auto&#39;,
                                   timestep=&#39;last&#39;):
         &#34;&#34;&#34;
-        Return the list of side set field vlaues.
+        Return the list of side set field values.
 
         The actual list of values is returned, so any modifications to it will
         be stored in the model.
@@ -11847,9 +11890,9 @@ following two statements.</p>
             &#39;side set field&#39;,
             single=True)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         timestep_index = self._get_internal_timestep_index(timestep)
         if not self.side_set_field_exists(side_set_field_name, side_set_id):
             self._missing_on_entity_error(side_set_field_name,
@@ -11883,9 +11926,9 @@ following two statements.</p>
             &#39;node set field&#39;,
             single=True)
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         timestep_index = self._get_internal_timestep_index(timestep)
         if not self.node_set_field_exists(node_set_field_name, node_set_id):
             self._missing_on_entity_error(node_set_field_name,
@@ -12055,9 +12098,9 @@ following two statements.</p>
     def _get_internal_timestep_index(self, timestep):
         &#34;&#34;&#34;Return the local timestep index.&#34;&#34;&#34;
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         return self.timesteps.index(timestep)
 
     def _create_element_field_truth_table(self, element_block_ids,
@@ -12610,9 +12653,9 @@ following two statements.</p>
                        entity_name_list_function, entity_objects):
         &#34;&#34;&#34;Rename an entity.&#34;&#34;&#34;
         [entity_name] = self._format_id_list([entity_name],
-                                           entity_name_list_function(),
-                                           entity_type,
-                                           single=True)
+                                             entity_name_list_function(),
+                                             entity_type,
+                                             single=True)
         if new_entity_name == entity_name:
             return
         if new_entity_name in entity_name_list_function():
@@ -12875,7 +12918,7 @@ following two statements.</p>
         side set field on a particular field, pass in &#39;side_set_ids&#39;.
 
         To set the value of the field, pass in &#39;value&#39;.  By default this is
-        0 for displacement fiels and NaN for all other fields.
+        0 for displacement fields and NaN for all other fields.
 
         Example:
         &gt;&gt;&gt; model.create_side_set_field(&#39;temperature&#39;, 13, 298.15)
@@ -13025,7 +13068,7 @@ following two statements.</p>
         transforms.append((&#39;&lt;&#39;, &#39;((R) - (L)) - abs((R) - (L))&#39;))
         transforms.append((&#39;==&#39;, &#39;abs((L) - (R))&#39;))
         transforms.append((&#39;=&#39;, &#39;abs((L) - (R))&#39;))
-        # replace occurances of each transform
+        # replace occurrences of each transform
         for separator, transform in transforms:
             while separator in expression:
                 # ensure parenthesis count is identical
@@ -13564,9 +13607,9 @@ following two statements.</p>
 
         &#34;&#34;&#34;
         [node_field_name] = self._format_id_list([node_field_name],
-                                               self.get_node_field_names(),
-                                               &#39;node field&#39;,
-                                               single=True)
+                                                 self.get_node_field_names(),
+                                                 &#39;node field&#39;,
+                                                 single=True)
         timestep_index = self._get_internal_timestep_index(timestep)
         return self.node_fields[node_field_name][timestep_index]
 
@@ -13976,7 +14019,7 @@ following two statements.</p>
                 self._warning(
                     &#39;Fields not defined.&#39;,
                     &#39;Not all of the requested element fields are &#39;
-                    &#39;defined on element block %s.  The everaged &#39;
+                    &#39;defined on element block %s.  The averaged &#39;
                     &#39;field will not be created.&#39; % element_block_id)
                 continue
             # create the field if it doesn&#39;t exist
@@ -14036,7 +14079,7 @@ following two statements.</p>
         default_value = self._get_default_field_value(node_field_name)
         # process each timestep
         for timestep_index in range(len(self.timesteps)):
-            # initialze node field
+            # initialize node field
             node_field_values = [0.0] * len(self.nodes)
             node_field_elements = [0] * len(self.nodes)
             # for each element block
@@ -14087,9 +14130,9 @@ following two statements.</p>
 
         &#34;&#34;&#34;
         [node_field_name] = self._format_id_list([node_field_name],
-                                               self.get_node_field_names(),
-                                               &#39;node field&#39;,
-                                               single=True)
+                                                 self.get_node_field_names(),
+                                                 &#39;node field&#39;,
+                                                 single=True)
         element_block_ids = self._format_element_block_id_list(
             element_block_ids)
         # format the arguments
@@ -14392,7 +14435,7 @@ following two statements.</p>
         Return the total number of elements in the given element blocks.
 
         Example:
-        &gt;&gt;&gt; print object.get_element_count()
+        &gt;&gt;&gt; print((&#39; %d elements&#39; % (object.get_element_count())))
 
         &#34;&#34;&#34;
         element_block_ids = self._format_element_block_id_list(
@@ -15181,9 +15224,9 @@ following two statements.</p>
 
         &#34;&#34;&#34;
         [timestep] = self._format_id_list([timestep],
-                                        self.get_timesteps(),
-                                        &#39;timestep&#39;,
-                                        single=True)
+                                          self.get_timesteps(),
+                                          &#39;timestep&#39;,
+                                          single=True)
         if self.timestep_exists(new_timestep):
             self._exists_warning(new_timestep, &#39;timestep&#39;)
             return
@@ -16425,9 +16468,11 @@ following two statements.</p>
                     global_variable_name, timestep_index[0])
                 model_values[timestep_index[1]] = file_value
         # add info records
-        self.info_records += exodus_file.get_info_records()
+        if (exodus_file.num_info_records() &gt; 0):
+            self.info_records += exodus_file.get_info_records()
         # add qa records
-        self.qa_records += exodus_file.get_qa_records()
+        if (exodus_file.num_qa_records() &gt; 0):
+            self.qa_records += exodus_file.get_qa_records()
         # add title if one does not already exist
         # else add it to an info record
         if not self.title:
@@ -18540,7 +18585,7 @@ field.</p>
     default_value = self._get_default_field_value(node_field_name)
     # process each timestep
     for timestep_index in range(len(self.timesteps)):
-        # initialze node field
+        # initialize node field
         node_field_values = [0.0] * len(self.nodes)
         node_field_elements = [0] * len(self.nodes)
         # for each element block
@@ -18664,9 +18709,9 @@ average of the values in each node of that element.</p>
 
     &#34;&#34;&#34;
     [node_field_name] = self._format_id_list([node_field_name],
-                                           self.get_node_field_names(),
-                                           &#39;node field&#39;,
-                                           single=True)
+                                             self.get_node_field_names(),
+                                             &#39;node field&#39;,
+                                             single=True)
     element_block_ids = self._format_element_block_id_list(
         element_block_ids)
     # format the arguments
@@ -18913,9 +18958,9 @@ object.copy_timestep(0.0, 1.0)</p></section>
 
     &#34;&#34;&#34;
     [timestep] = self._format_id_list([timestep],
-                                    self.get_timesteps(),
-                                    &#39;timestep&#39;,
-                                    single=True)
+                                      self.get_timesteps(),
+                                      &#39;timestep&#39;,
+                                      single=True)
     if self.timestep_exists(new_timestep):
         self._exists_warning(new_timestep, &#39;timestep&#39;)
         return
@@ -19073,7 +19118,7 @@ each other through one or more nodes.</p></section>
             self._warning(
                 &#39;Fields not defined.&#39;,
                 &#39;Not all of the requested element fields are &#39;
-                &#39;defined on element block %s.  The everaged &#39;
+                &#39;defined on element block %s.  The averaged &#39;
                 &#39;field will not be created.&#39; % element_block_id)
             continue
         # create the field if it doesn&#39;t exist
@@ -19649,7 +19694,7 @@ To create a
 side set field on a particular field, pass in 'side_set_ids'.</p>
 <p>To set the value of the field, pass in 'value'.
 By default this is
-0 for displacement fiels and NaN for all other fields.</p>
+0 for displacement fields and NaN for all other fields.</p>
 <p>Example:</p>
 <pre><code>&gt;&gt;&gt; model.create_side_set_field('temperature', 13, 298.15)
 </code></pre></section>
@@ -19666,7 +19711,7 @@ By default this is
     side set field on a particular field, pass in &#39;side_set_ids&#39;.
 
     To set the value of the field, pass in &#39;value&#39;.  By default this is
-    0 for displacement fiels and NaN for all other fields.
+    0 for displacement fields and NaN for all other fields.
 
     Example:
     &gt;&gt;&gt; model.create_side_set_field(&#39;temperature&#39;, 13, 298.15)
@@ -20930,13 +20975,13 @@ displacements at the last timestep will be applied.</p>
     element_block_ids = self._format_element_block_id_list(
         element_block_ids)
     [node_field_name] = self._format_id_list([node_field_name],
-                                           self.get_node_field_names(),
-                                           &#39;node field&#39;,
-                                           single=True)
+                                             self.get_node_field_names(),
+                                             &#39;node field&#39;,
+                                             single=True)
     [timestep] = self._format_id_list([timestep],
-                                    self.get_timesteps(),
-                                    &#39;timestep&#39;,
-                                    single=True)
+                                      self.get_timesteps(),
+                                      &#39;timestep&#39;,
+                                      single=True)
     timestep_index = self.timesteps.index(timestep)
     if displacement_timestep == &#39;auto&#39;:
         if self.displacement_field_exists():
@@ -21409,7 +21454,7 @@ displacements at the last timestep will be applied.</p>
 <dd>
 <section class="desc"><p>Return the total number of elements in the given element blocks.</p>
 <p>Example:</p>
-<pre><code>&gt;&gt;&gt; print object.get_element_count()
+<pre><code>&gt;&gt;&gt; print((' %d elements' % (object.get_element_count())))
 </code></pre></section>
 <details class="source">
 <summary>Source code</summary>
@@ -21418,7 +21463,7 @@ displacements at the last timestep will be applied.</p>
     Return the total number of elements in the given element blocks.
 
     Example:
-    &gt;&gt;&gt; print object.get_element_count()
+    &gt;&gt;&gt; print((&#39; %d elements&#39; % (object.get_element_count())))
 
     &#34;&#34;&#34;
     element_block_ids = self._format_element_block_id_list(
@@ -21555,9 +21600,9 @@ be stored in the model.</p>
     [element_block_id] = self._format_element_block_id_list(
         [element_block_id], single=True)
     [timestep] = self._format_id_list([timestep],
-                                    self.get_timesteps(),
-                                    &#39;timestep&#39;,
-                                    single=True)
+                                      self.get_timesteps(),
+                                      &#39;timestep&#39;,
+                                      single=True)
     timestep_index = self._get_internal_timestep_index(timestep)
     if not self.element_field_exists(element_field_name, element_block_id):
         self._missing_on_entity_error(element_field_name, &#39;element field&#39;,
@@ -21725,9 +21770,9 @@ list will be retained in the model.</p>
 
     &#34;&#34;&#34;
     [node_field_name] = self._format_id_list([node_field_name],
-                                           self.get_node_field_names(),
-                                           &#39;node field&#39;,
-                                           single=True)
+                                             self.get_node_field_names(),
+                                             &#39;node field&#39;,
+                                             single=True)
     timestep_index = self._get_internal_timestep_index(timestep)
     return self.node_fields[node_field_name][timestep_index]</code></pre>
 </details>
@@ -21808,9 +21853,9 @@ be stored in the model.</p>
         &#39;node set field&#39;,
         single=True)
     [timestep] = self._format_id_list([timestep],
-                                    self.get_timesteps(),
-                                    &#39;timestep&#39;,
-                                    single=True)
+                                      self.get_timesteps(),
+                                      &#39;timestep&#39;,
+                                      single=True)
     timestep_index = self._get_internal_timestep_index(timestep)
     if not self.node_set_field_exists(node_set_field_name, node_set_id):
         self._missing_on_entity_error(node_set_field_name,
@@ -22028,7 +22073,7 @@ side set, pass a side set id.</p>
 <span>def <span class="ident">get_side_set_field_values</span></span>(<span>self, side_set_field_name, side_set_id='auto', timestep='last')</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Return the list of side set field vlaues.</p>
+<section class="desc"><p>Return the list of side set field values.</p>
 <p>The actual list of values is returned, so any modifications to it will
 be stored in the model.</p>
 <p>Examples:</p>
@@ -22045,7 +22090,7 @@ be stored in the model.</p>
                               side_set_id=&#39;auto&#39;,
                               timestep=&#39;last&#39;):
     &#34;&#34;&#34;
-    Return the list of side set field vlaues.
+    Return the list of side set field values.
 
     The actual list of values is returned, so any modifications to it will
     be stored in the model.
@@ -22065,9 +22110,9 @@ be stored in the model.</p>
         &#39;side set field&#39;,
         single=True)
     [timestep] = self._format_id_list([timestep],
-                                    self.get_timesteps(),
-                                    &#39;timestep&#39;,
-                                    single=True)
+                                      self.get_timesteps(),
+                                      &#39;timestep&#39;,
+                                      single=True)
     timestep_index = self._get_internal_timestep_index(timestep)
     if not self.side_set_field_exists(side_set_field_name, side_set_id):
         self._missing_on_entity_error(side_set_field_name,
@@ -22552,9 +22597,11 @@ following syntax.</p>
                 global_variable_name, timestep_index[0])
             model_values[timestep_index[1]] = file_value
     # add info records
-    self.info_records += exodus_file.get_info_records()
+    if (exodus_file.num_info_records() &gt; 0):
+        self.info_records += exodus_file.get_info_records()
     # add qa records
-    self.qa_records += exodus_file.get_qa_records()
+    if (exodus_file.num_qa_records() &gt; 0):
+        self.qa_records += exodus_file.get_qa_records()
     # add title if one does not already exist
     # else add it to an info record
     if not self.title:
@@ -23479,9 +23526,9 @@ deleted.</p>
     element_block_ids = self._format_element_block_id_list(
         element_block_ids)
     [timestep] = self._format_id_list([timestep],
-                                    self.get_timesteps(),
-                                    &#39;timestep&#39;,
-                                    single=True)
+                                      self.get_timesteps(),
+                                      &#39;timestep&#39;,
+                                      single=True)
     if new_element_block_id is not None:
         if self.element_block_exists(new_element_block_id):
             self._exists_error(new_element_block_id, &#39;element block&#39;)
