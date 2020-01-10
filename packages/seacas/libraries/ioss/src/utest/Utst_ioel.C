@@ -352,13 +352,13 @@ bool test_element(const std::string &type)
 	    continue;
 	  }
 
-	  if (edge_conn.size() != order + 1) {
+	  if (edge_conn.size() != size_t(order) + 1) {
 	    fmt::print(stderr, "\n\tInvalid edge connectivity count. ({} must equal {})", edge_conn.size(), order+1);
               result = false;
             }
 
 	  if (order > 1 && face_conn.size() < fncn + (order-1) * num_edges_face) {
-	    fmt::print(stderr, "\n\tInvalid face connectivity count ({} must be greater than {} + {}*{}).", 
+	    fmt::print(stderr, "\n\tInvalid face connectivity count ({} must be greater than {} + {}*{}).",
 		       face_conn.size(), fncn, order-1, num_edges_face);
               result = false;
             }
