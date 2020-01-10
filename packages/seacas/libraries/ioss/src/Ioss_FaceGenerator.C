@@ -120,10 +120,10 @@ namespace {
     int num_face_per_elem = topo->number_faces();
     assert(num_face_per_elem <= 6);
     std::array<Ioss::IntVector, 6> face_conn;
-    std::array<int, 6>             face_count{};
+    std::array<int, 6>             face_node_count{};
     for (int face = 0; face < num_face_per_elem; face++) {
       face_conn[face]  = topo->face_connectivity(face + 1);
-      face_count[face] = topo->face_type(face + 1)->number_corner_nodes();
+      face_node_count[face] = topo->face_type(face + 1)->number_corner_nodes();
     }
 
     int    num_node_per_elem = topo->number_nodes();
@@ -132,9 +132,9 @@ namespace {
     for (size_t elem = 0, offset = 0; elem < num_elem; elem++, offset += num_node_per_elem) {
       for (int face = 0; face < num_face_per_elem; face++) {
         size_t id = 0;
-        assert(face_count[face] <= 4);
+        assert(face_node_count[face] <= 4);
         std::array<size_t, 4> conn = {{0, 0, 0, 0}};
-        for (int j = 0; j < face_count[face]; j++) {
+        for (int j = 0; j < face_node_count[face]; j++) {
           size_t fnode = offset + face_conn[face][j];
           size_t gnode = connectivity[fnode];
           conn[j]      = ids[gnode - 1];
