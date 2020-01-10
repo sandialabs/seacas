@@ -535,7 +535,7 @@ namespace {
             if (elmt_map != nullptr) {
               // Iterate map to find an entry equal to `set1_id`.  Its position is then the file1 id
               // of the element.
-              for (int i = 0; i < file1.Num_Elmts(); i++) {
+              for (size_t i = 0; i < file1.Num_Elmts(); i++) {
                 if (elmt_map[i] == set1_id - 1) {
                   set1_id = i + 1;
                   break;
