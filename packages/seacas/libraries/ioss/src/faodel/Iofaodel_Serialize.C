@@ -352,12 +352,21 @@ namespace Iofaodel {
                           const Ioss::Field& f, lunasa::DataObject ldo) {
     this->pack(r, ldo); this->pack(e, ldo); this->pack(f, ldo);
 
+    // TODO Is check necessary?
+    // Write TRANSIENT and REDUCTION fields if we're at a real State
     if(r.get_current_state() > 0) {
       if(f.get_role() == Ioss::Field::RoleType::TRANSIENT ||
          f.get_role() == Ioss::Field::RoleType::REDUCTION) {
         e.get_field_data(f.get_name(),
                          get_ptr(this->field.value, ldo),
                          f.get_size());
+      }
+    }
+    // Write all other fields if we're not at a read State
+    else {
+      if(f.get_role() != Ioss::Field::RoleType::TRANSIENT &&
+         f.get_role() != Ioss::Field::RoleType::REDUCTION) {
+        this->pack_field_data(ldo, data_ptr_, data_size_);
       }
     }
   }
