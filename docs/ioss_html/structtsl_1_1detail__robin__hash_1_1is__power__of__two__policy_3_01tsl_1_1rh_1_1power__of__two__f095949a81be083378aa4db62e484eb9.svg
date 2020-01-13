@@ -25,8 +25,8 @@
 <g id="node2" class="node">
 <title>Node2</title>
 <g id="a_node2"><a xlink:title=" ">
-<polygon fill="white" stroke="#bfbfbf" points="55.72,-85.5 55.72,-103.5 113.41,-103.5 113.41,-85.5 55.72,-85.5"/>
-<text text-anchor="middle" x="84.56" y="-91.5" font-family="Helvetica,sans-Serif" font-size="10.00">true_type</text>
+<polygon fill="white" stroke="#bfbfbf" points="46.27,-85.5 46.27,-103.5 122.86,-103.5 122.86,-85.5 46.27,-85.5"/>
+<text text-anchor="middle" x="84.56" y="-91.5" font-family="Helvetica,sans-Serif" font-size="10.00">std::true_type</text>
 </a>
 </g>
 </g>

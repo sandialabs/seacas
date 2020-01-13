@@ -1,5 +1,5 @@
 """
-exodus.py v 1.18.1 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.18.2 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -95,10 +95,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.18.1 (seacas-py3)"
+EXODUS_PY_VERSION = "1.18.2 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.18.1 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.18.2 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -2887,7 +2887,7 @@ class exodus:
         """
         names = self.get_variable_names('EX_NODE_SET')
         var_id = names.index(name) + 1
-        (numSetNodes, _numSetDistFacts) = self.get_set_params(object_id, 'EX_NODE_SET')
+        (numSetNodes, _numSetDistFacts) = self.get_set_params('EX_NODE_SET', object_id)
         self.__ex_put_var(step, 'EX_NODE_SET', var_id, object_id, numSetNodes, values)
         return True
 
@@ -3610,7 +3610,7 @@ class exodus:
         """
         names = self.get_variable_names('EX_SIDE_SET')
         var_id = names.index(name) + 1
-        (numSetSides, _numSetDistFacts) = self.get_set_params(object_id, 'EX_SIDE_SET')
+        (numSetSides, _numSetDistFacts) = self.get_set_params('EX_SIDE_SET', object_id)
         self.__ex_put_var(step, 'EX_SIDE_SET', var_id, object_id, numSetSides, values)
         return True
 
@@ -3854,10 +3854,10 @@ class exodus:
         # adjust one of them
         values[names.index(name)] = ctypes.c_double(value)
         # write them all
-        EXODUS_LIB.ex_put_var(self.fileId,
-                              ctypes.c_int(step),
-                              ctypes.c_int(numVals),
-                              values)
+        EXODUS_LIB.ex_put_glob_vars(self.fileId,
+                                    ctypes.c_int(step),
+                                    ctypes.c_int(numVals),
+                                    values)
         return True
 
     # --------------------------------------------------------------------
@@ -4767,6 +4767,8 @@ class exodus:
             numAttrsPerElem):
         obj_type = ctypes.c_int(get_entity_type(object_type))
         block_id = ctypes.c_longlong(object_id)
+        if type(eType) == str:
+            eType = eType.encode('ascii')
         elem_type = ctypes.create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
         num_elem_this_blk = ctypes.c_longlong(numElems)
         num_nodes_per_elem = ctypes.c_longlong(numNodesPerElem)
@@ -5776,7 +5778,7 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[], node_set_
     if not isinstance(side_set_vars, list):
         raise Exception("ERROR: side_set_vars is not a list.")
 
-    if exo.modeChar is 'r':
+    if exo.modeChar == 'r':
         raise Exception(
             "ERROR: variables cannot be added to an exodus object in read only mode")
 

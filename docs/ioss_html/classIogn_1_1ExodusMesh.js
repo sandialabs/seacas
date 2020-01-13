@@ -17,6 +17,7 @@ var classIogn_1_1ExodusMesh =
     [ "element_map", "classIogn_1_1ExodusMesh.html#aec704d94557fd943f21fc1a050cb6062", null ],
     [ "element_map", "classIogn_1_1ExodusMesh.html#add86edcc62c60a937435152d5609aed7", null ],
     [ "element_map", "classIogn_1_1ExodusMesh.html#a228bc43d440665c9ffa7a971ff2a205d", null ],
+    [ "get_sideset_topology", "classIogn_1_1ExodusMesh.html#a9705985e48db0d45f8228e4ce4499d84", null ],
     [ "node_communication_map", "classIogn_1_1ExodusMesh.html#ae6f9c1b7479ec7356fda8d3ec624bdf3", null ],
     [ "node_count", "classIogn_1_1ExodusMesh.html#a60b7772a5af42b5fb26ae6b0c78863a0", null ],
     [ "node_count_proc", "classIogn_1_1ExodusMesh.html#ab886006a170dcb74faa6ecd375c1f459", null ],

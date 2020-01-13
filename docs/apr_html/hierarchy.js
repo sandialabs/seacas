@@ -12,6 +12,9 @@ var hierarchy =
     [ "array_ddd_init", "structarray__ddd__init.html", null ],
     [ "trmclr::Attribute", "structtrmclr_1_1Attribute.html", null ],
     [ "trmclr::Background", "structtrmclr_1_1Background.html", null ],
+    [ "Base", null, [
+      [ "SEAMS::Parser::basic_symbol< Base >", "structSEAMS_1_1Parser_1_1basic__symbol.html", null ]
+    ] ],
     [ "SEAMS::Parser::by_state", "structSEAMS_1_1Parser_1_1by__state.html", [
       [ "SEAMS::Parser::basic_symbol< by_state >", "structSEAMS_1_1Parser_1_1basic__symbol.html", [
         [ "SEAMS::Parser::stack_symbol_type", "structSEAMS_1_1Parser_1_1stack__symbol__type.html", null ]
@@ -65,8 +68,5 @@ var hierarchy =
     [ "SEAMS::symrec::value", "structSEAMS_1_1symrec_1_1value.html", null ],
     [ "var_init", "structvar__init.html", null ],
     [ "yy_buffer_state", "structyy__buffer__state.html", null ],
-    [ "yy_trans_info", "structyy__trans__info.html", null ],
-    [ "Base", null, [
-      [ "SEAMS::Parser::basic_symbol< Base >", "structSEAMS_1_1Parser_1_1basic__symbol.html", null ]
-    ] ]
+    [ "yy_trans_info", "structyy__trans__info.html", null ]
 ];

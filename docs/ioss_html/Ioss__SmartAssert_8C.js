@@ -14,5 +14,5 @@ var Ioss__SmartAssert_8C =
     [ "set_default_log_name", "Ioss__SmartAssert_8C.html#a6d59cb9b7209b1b22c0d721b0b86d8ac", null ],
     [ "set_default_log_stream", "Ioss__SmartAssert_8C.html#a9fdc4110be9d98c49455b4410d54c52e", null ],
     [ "default_logger_info", "Ioss__SmartAssert_8C.html#a6faf8a1037147087612ce8b36e38867b", null ],
-    [ "init", "Ioss__SmartAssert_8C.html#a31da04f4b9036739ba58a51e9b256831", null ]
+    [ "init", "Ioss__SmartAssert_8C.html#a2b61037a91c672393622d19bd2918655", null ]
 ];

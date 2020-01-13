@@ -84,7 +84,7 @@ except:
     import exodus3 as exodus
 
 # informal version number of this module
-__version__ = "8.6.0"
+__version__ = "8.6.1"
 VERSION = __version__
 
 # contact person for issues
@@ -1484,7 +1484,7 @@ class ExodusModel(object):
         self._create_averaged_nodes(new_nodes, [])
         # create the new element block
         self.create_element_block(new_element_block_id,
-                                  ['tri3', len(connectivity) / 3, 3, 0],
+                                  ['tri3', len(connectivity) // 3, 3, 0],
                                   connectivity)
 
     @staticmethod
@@ -1627,7 +1627,7 @@ class ExodusModel(object):
                                        len(triangles))
         self.create_element_block(
             new_element_block_id,
-            ['tri3', len(new_connectivity) / 3, 3, 0], new_connectivity)
+            ['tri3', len(new_connectivity) // 3, 3, 0], new_connectivity)
         self.create_element_field('interval', new_element_block_id, 0.0)
         fields = self._get_element_block_fields(new_element_block_id)
         field = fields['interval']
@@ -1874,9 +1874,9 @@ class ExodusModel(object):
         # create the STL file
         connectivity = self.get_connectivity(triangle_element_block_id)
         with open(filename, 'wb') as output:
-            output.write(' ' * 80)
-            output.write(struct.pack('<l', len(connectivity) / 3))
-            for element_index in range(len(connectivity) / 3):
+            output.write(b' ' * 80)
+            output.write(struct.pack('<l', len(connectivity) // 3))
+            for element_index in range(len(connectivity) // 3):
                 tri = connectivity[element_index * 3:(element_index + 1) * 3]
                 normal = (c[tri[1]][1] * c[tri[2]][2] -
                           c[tri[2]][1] * c[tri[1]][2],
@@ -2648,7 +2648,7 @@ class ExodusModel(object):
             new_nodes_per_element = self.NODES_PER_ELEMENT[new_element_type]
             self.create_element_block(temporary_element_block_id, [
                 new_element_type,
-                len(new_connectivity) / new_nodes_per_element,
+                len(new_connectivity) // new_nodes_per_element,
                 new_nodes_per_element, 0
             ], new_connectivity)
             temporary_fields = self._get_element_block_fields(
@@ -2874,7 +2874,7 @@ class ExodusModel(object):
         temporary_element_block_id = self._new_element_block_id()
         self.create_element_block(temporary_element_block_id, [
             new_element_type,
-            len(new_connectivity) / new_nodes_per_element,
+            len(new_connectivity) // new_nodes_per_element,
             new_nodes_per_element, 0
         ], new_connectivity)
         temporary_element_fields = self._get_element_block_fields(
@@ -5243,7 +5243,7 @@ class ExodusModel(object):
         # create the actual element block
         self.create_element_block(new_element_block_id, [
             formula[0],
-            len(connectivity) / nodes_per_element, nodes_per_element, 0
+            len(connectivity) // nodes_per_element, nodes_per_element, 0
         ], connectivity)
 
     def create_averaged_element_field(self,
@@ -5414,7 +5414,7 @@ class ExodusModel(object):
                 element_field_values = [0.0] * element_count
                 # for each node within each element
                 for connectivity_index, node_index in enumerate(connectivity):
-                    element_index = connectivity_index / nodes_per_element
+                    element_index = connectivity_index // nodes_per_element
                     element_field_values[element_index] += node_field[
                         timestep_index][node_index]
                 # average each value
@@ -5699,7 +5699,7 @@ class ExodusModel(object):
         """
         element_block_ids = self._format_element_block_id_list(
             element_block_ids)
-        return sum(self.element_blocks[x][1][1] for x in element_block_ids)
+        return int(sum(self.element_blocks[x][1][1] for x in element_block_ids))
 
     def process_element_fields(self, element_block_ids='all'):
         """
@@ -6822,7 +6822,9 @@ class ExodusModel(object):
                 if node[d] > bounds[d][1]:
                     bounds[d][1] = node[d]
         relative = max([bound[1] - bound[0] for bound in bounds])
-        absolute = max([abs(x) for x in bound for bound in bounds])
+        abs0 = max([abs(bound[0]) for bound in bounds])
+        abs1 = max([abs(bound[1]) for bound in bounds])
+        absolute = max([abs0, abs1])
         return max(relative, absolute)
 
     @staticmethod
@@ -8004,6 +8006,9 @@ class ExodusModel(object):
 
     def _get_thickness_from_volume_and_area(self, volume, area):
         """Return the thickness of a disk given the volume and area."""
+        if volume == 0.0:
+            return 0
+
         # max phi (for a sphere) is 6^(-1/3) * pi^(-1/6)
         phi = math.pow(volume, 1 / 3.0) / math.pow(area, 1 / 2.0)
         # find a solution, if possible
@@ -8125,7 +8130,7 @@ class ExodusModel(object):
             nodes_per_element = self.NODES_PER_ELEMENT[element_type]
             info = [
                 element_type,
-                len(connectivity) / nodes_per_element, nodes_per_element, 0
+                len(connectivity) // nodes_per_element, nodes_per_element, 0
             ]
             self.create_element_block(new_id, info, connectivity)
             new_block_ids.append(new_id)
@@ -8418,7 +8423,7 @@ class ExodusModel(object):
         for element_block_id in element_block_ids:
             _, _, connectivity, _ = self.element_blocks[element_block_id]
             nodes_per_element = self.get_nodes_per_element(element_block_id)
-            element_count = len(connectivity) / nodes_per_element
+            element_count = len(connectivity) // nodes_per_element
             for element_index in range(element_count):
                 local_node = connectivity[element_index *
                                           nodes_per_element:(element_index +

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.6.3" />
 <title>exodus API documentation</title>
-<meta name="description" content="exodus.py v 1.15 (seacas-beta) is a python wrapper of some of the exodus library
+<meta name="description" content="exodus.py v 1.18.2 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version) …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -21,7 +21,7 @@
 <h1 class="title">Module <code>exodus</code></h1>
 </header>
 <section id="section-intro">
-<p>exodus.py v 1.15 (seacas-beta) is a python wrapper of some of the exodus library
+<p>exodus.py v 1.18.2 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)</p>
 <p>Exodus is a common database for multiple application codes (mesh
 generators, analysis codes, visualization software, etc.) affording
@@ -117,7 +117,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 <details class="source">
 <summary>Source code</summary>
 <pre><code class="python">&#34;&#34;&#34;
-exodus.py v 1.15 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.18.2 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -203,17 +203,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 &#34;&#34;&#34;
 
 import sys
-from ctypes import *
+if sys.version_info[0] &lt; 3:
+    raise Exception(&#34;Python-3 version. If using python-2, try `import exodus2 as exodus`&#34;)
+
+import ctypes
 import os
 import locale
 from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = &#34;1.15 (seacas-py3)&#34;
+EXODUS_PY_VERSION = &#34;1.18.2 (seacas-py3)&#34;
 
 EXODUS_PY_COPYRIGHT = &#34;&#34;&#34;
-You are using exodus.py v 1.15 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.18.2 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &amp;
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -229,16 +232,15 @@ Authors:
   Greg Sjaardema   (gdsjaar@sandia.gov)
 &#34;&#34;&#34;
 
+# show the banner on first use
+SHOW_BANNER = True
+
 ## Documentation is generated on a Mac laptop using:
 ## pdoc --force --html ../lib/exodus.py
 
 sys.dont_write_bytecode = True
 
 ONELINE = &#34;Gather from or export to Exodus files using the Exodus library&#34;
-
-if sys.version_info[0] &lt; 3:
-    raise Exception(&#34;Cannot use Python 2, must use Python 3.X&#34;)
-
 
 def basename(file_name):
     &#34;&#34;&#34;
@@ -277,19 +279,41 @@ try:
 except locale.Error:
     locale.setlocale(locale.LC_ALL, &#39;C&#39;)
 
+class ex_options(Enum):
+    &#34;&#34;&#34;
+    `ex_opts()` function codes - codes are OR&#39;ed into exopts
+
+    Parameters
+    ----------
+    EX_DEFAULT
+         Application responsible for calling `ex_err()` to get error and warning messages to output; library is quiet
+    EX_VERBOSE
+         Verbose mode -- output all error and warning messages
+    EX_DEBUG
+         Output Debug messages
+    EX_ABORT
+         If an error is detected, library will abort instead of letting application decide
+    EX_NULLVERBOSE
+         Output error and warning messages for NULL Entity errors and warnings
+    &#34;&#34;&#34;
+    EX_DEFAULT     = 0
+    EX_VERBOSE     = 1
+    EX_DEBUG       = 2
+    EX_ABORT       = 4
+    EX_NULLVERBOSE = 8
+
 ACCESS = os.getenv(&#39;ACCESS&#39;, &#39;/Users/gdsjaar/src/seacas&#39;)
 if os.uname()[0] == &#39;Darwin&#39;:
     EXODUS_SO = ACCESS + &#34;/lib/libexodus.dylib&#34;
 else:
     EXODUS_SO = ACCESS + &#34;/lib/libexodus.so&#34;
-EXODUS_LIB = cdll.LoadLibrary(EXODUS_SO)
+EXODUS_LIB = ctypes.cdll.LoadLibrary(EXODUS_SO)
 
 MAX_STR_LENGTH = 32      # match exodus default
 MAX_NAME_LENGTH = 256     # match exodus default
 MAX_LINE_LENGTH = 80      # match exodus default
 
 EX_API_VERSION_NODOT = getExodusVersion()
-EX_VERBOSE = 1  # verbose mode message flag
 if EX_API_VERSION_NODOT &gt;= 608:
     EX_READ = 0x0002  # ex_open(): open file for reading (default)
 else:
@@ -337,7 +361,7 @@ EX_MPIPOSIX = 0x40000  # \deprecated As of libhdf5 1.8.13.
 EX_PNETCDF = 0x80000
 
 # set exodus error output option
-exErrPrintMode = c_int(EX_VERBOSE)
+exErrPrintMode = ctypes.c_int(ex_options.EX_VERBOSE.value)
 EXODUS_LIB.ex_opts(exErrPrintMode)
 
 
@@ -496,7 +520,7 @@ class ex_entity_type(Enum):
     EX_FACE_SET   = 9
     EX_ELEM_BLOCK = 1
     EX_ELEM_SET   = 10
-    EX_SIDE_SET = 3    
+    EX_SIDE_SET = 3
     EX_ELEM_MAP = 4
     EX_NODE_MAP = 5
     EX_EDGE_MAP = 11
@@ -514,7 +538,7 @@ def get_entity_type(varType):
 
 
 # init params struct
-class ex_init_params(Structure):
+class ex_init_params(ctypes.Structure):
     &#34;&#34;&#34;
     Parameters defining the model dimension, note that many are optional.
 
@@ -555,24 +579,24 @@ class ex_init_params(Structure):
     num_elem_maps : int
         number of model elem maps
     &#34;&#34;&#34;
-    _fields_ = [(&#34;title&#34;, c_char * (MAX_LINE_LENGTH + 1)),
-                (&#34;num_dim&#34;, c_longlong),
-                (&#34;num_nodes&#34;, c_longlong),
-                (&#34;num_edge&#34;, c_longlong),
-                (&#34;num_edge_blk&#34;, c_longlong),
-                (&#34;num_face&#34;, c_longlong),
-                (&#34;num_face_blk&#34;, c_longlong),
-                (&#34;num_elem&#34;, c_longlong),
-                (&#34;num_elem_blk&#34;, c_longlong),
-                (&#34;num_node_sets&#34;, c_longlong),
-                (&#34;num_edge_sets&#34;, c_longlong),
-                (&#34;num_face_sets&#34;, c_longlong),
-                (&#34;num_side_sets&#34;, c_longlong),
-                (&#34;num_elem_sets&#34;, c_longlong),
-                (&#34;num_node_maps&#34;, c_longlong),
-                (&#34;num_edge_maps&#34;, c_longlong),
-                (&#34;num_face_maps&#34;, c_longlong),
-                (&#34;num_elem_maps&#34;, c_longlong)]
+    _fields_ = [(&#34;title&#34;, ctypes.c_char * (MAX_LINE_LENGTH + 1)),
+                (&#34;num_dim&#34;, ctypes.c_longlong),
+                (&#34;num_nodes&#34;, ctypes.c_longlong),
+                (&#34;num_edge&#34;, ctypes.c_longlong),
+                (&#34;num_edge_blk&#34;, ctypes.c_longlong),
+                (&#34;num_face&#34;, ctypes.c_longlong),
+                (&#34;num_face_blk&#34;, ctypes.c_longlong),
+                (&#34;num_elem&#34;, ctypes.c_longlong),
+                (&#34;num_elem_blk&#34;, ctypes.c_longlong),
+                (&#34;num_node_sets&#34;, ctypes.c_longlong),
+                (&#34;num_edge_sets&#34;, ctypes.c_longlong),
+                (&#34;num_face_sets&#34;, ctypes.c_longlong),
+                (&#34;num_side_sets&#34;, ctypes.c_longlong),
+                (&#34;num_elem_sets&#34;, ctypes.c_longlong),
+                (&#34;num_node_maps&#34;, ctypes.c_longlong),
+                (&#34;num_edge_maps&#34;, ctypes.c_longlong),
+                (&#34;num_face_maps&#34;, ctypes.c_longlong),
+                (&#34;num_elem_maps&#34;, ctypes.c_longlong)]
 
 
 #
@@ -637,7 +661,11 @@ class exodus:
         ...             array_type=array_type, init_params=ex_pars)
 
         &#34;&#34;&#34;
-        print(EXODUS_PY_COPYRIGHT)
+        global SHOW_BANNER
+        if SHOW_BANNER:
+            print(EXODUS_PY_COPYRIGHT)
+            SHOW_BANNER = False
+
         if mode is None:
             mode = &#39;r&#39;
 
@@ -677,10 +705,10 @@ class exodus:
                 assert None not in info
                 self.__ex_put_info(info)
 
-            self.numTimes = c_int(0)
+            self.numTimes = ctypes.c_int(0)
         else:
             self.__ex_get_info()
-            self.numTimes = c_int(
+            self.numTimes = ctypes.c_int(
                 self.__ex_inquire_int(
                     ex_inquiry_map(&#39;EX_INQ_TIME&#39;)))
 
@@ -769,15 +797,15 @@ class exodus:
                   .format(p.title, MAX_LINE_LENGTH))
             p.title = p.title[-1*MAX_LINE_LENGTH:]
 
-        self.Title = create_string_buffer(p.title, MAX_LINE_LENGTH + 1)
-        self.numDim = c_longlong(p.num_dim)
-        self.numNodes = c_longlong(p.num_nodes)
-        self.numElem = c_longlong(p.num_elem)
-        self.numElemBlk = c_longlong(p.num_elem_blk)
-        self.numNodeSets = c_longlong(p.num_node_sets)
-        self.numSideSets = c_longlong(p.num_side_sets)
+        self.Title = ctypes.create_string_buffer(p.title, MAX_LINE_LENGTH + 1)
+        self.numDim = ctypes.c_longlong(p.num_dim)
+        self.numNodes = ctypes.c_longlong(p.num_nodes)
+        self.numElem = ctypes.c_longlong(p.num_elem)
+        self.numElemBlk = ctypes.c_longlong(p.num_elem_blk)
+        self.numNodeSets = ctypes.c_longlong(p.num_node_sets)
+        self.numSideSets = ctypes.c_longlong(p.num_side_sets)
 
-        EXODUS_LIB.ex_put_init_ext(self.fileId, byref(p))
+        EXODUS_LIB.ex_put_init_ext(self.fileId, ctypes.byref(p))
         return True
 
 
@@ -802,8 +830,8 @@ class exodus:
         exo_copy : exodus object
         &#34;&#34;&#34;
         fileId = EXODUS_LIB.ex_create_int(fileName.encode(&#39;ascii&#39;), EX_NOCLOBBER,
-                                          byref(self.comp_ws),
-                                          byref(self.io_ws),
+                                          ctypes.byref(self.comp_ws),
+                                          ctypes.byref(self.io_ws),
                                           EX_API_VERSION_NODOT)
 
         i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
@@ -882,6 +910,20 @@ class exodus:
         self.__ex_put_info([Title, numDim, numNodes, numElem,
                             numElemBlk, numNodeSets, numSideSets])
         return True
+
+    # --------------------------------------------------------------------
+
+    def num_qa_records(self):
+        &#34;&#34;&#34;
+        get the number of qa records
+
+        &gt;&gt;&gt; num_qa_recs = exo.num_qa_records()
+
+        Returns
+        -------
+        num_qa_recs : int
+        &#34;&#34;&#34;
+        return int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_QA&#39;)))
 
     # --------------------------------------------------------------------
 
@@ -1061,7 +1103,7 @@ class exodus:
         Returns
         -------
             if array_type == &#39;ctype&#39; :
-              &lt;list&lt;c_double&gt;&gt;  time_vals
+              &lt;list&lt;ctypes.c_double&gt;&gt;  time_vals
 
             if array_type == &#39;numpy&#39; :
               &lt;np_array&lt;double&gt;&gt;  time_vals
@@ -1095,7 +1137,7 @@ class exodus:
             True = successful execution
         &#34;&#34;&#34;
         self.__ex_put_time(step, value)
-        self.numTimes = c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_TIME&#39;)))
+        self.numTimes = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_TIME&#39;)))
         return True
 
     #
@@ -1176,9 +1218,9 @@ class exodus:
         -------
 
             if array_type == &#39;ctype&#39;:
-              &lt;list&lt;c_double&gt;&gt;  x_coords  global x-direction coordinates
-              &lt;list&lt;c_double&gt;&gt;  y_coords  global y-direction coordinates
-              &lt;list&lt;c_double&gt;&gt;  z_coords  global z-direction coordinates
+              &lt;list&lt;ctypes.c_double&gt;&gt;  x_coords  global x-direction coordinates
+              &lt;list&lt;ctypes.c_double&gt;&gt;  y_coords  global y-direction coordinates
+              &lt;list&lt;ctypes.c_double&gt;&gt;  z_coords  global z-direction coordinates
 
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;double&gt;&gt;  x_coords  global x-direction coordinates
@@ -1346,7 +1388,7 @@ class exodus:
 
         Returns
         -------
-            &lt;list&lt;c_int&gt;&gt;  node_id_map
+            &lt;list&lt;ctypes.c_int&gt;&gt;  node_id_map
         &#34;&#34;&#34;
         nodeNumMap = self.__ex_get_node_num_map()
         return nodeNumMap
@@ -1572,7 +1614,7 @@ class exodus:
         -------
 
             if array_type == &#39;ctype&#39;:
-              &lt;list&lt;c_double&gt;&gt;  nvar_vals
+              &lt;list&lt;ctypes.c_double&gt;&gt;  nvar_vals
 
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;double&gt;&gt;  nvar_vals
@@ -1699,7 +1741,7 @@ class exodus:
 
         Returns
         -------
-            &lt;list&lt;c_int&gt;&gt;  elem_id_map
+            &lt;list&lt;ctypes.c_int&gt;&gt;  elem_id_map
         &#34;&#34;&#34;
         elemNumMap = self.__ex_get_elem_num_map()
         return elemNumMap
@@ -2310,7 +2352,7 @@ class exodus:
         -------
 
             if array_type == &#39;ctype&#39;:
-              &lt;list&lt;c_double&gt;&gt;  evar_vals
+              &lt;list&lt;ctypes.c_double&gt;&gt;  evar_vals
 
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;double&gt;&gt;  evar_vals
@@ -2922,7 +2964,7 @@ class exodus:
         -------
 
             if array_type == &#39;ctype&#39;:
-              &lt;list&lt;c_double&gt;&gt;  nsvar_vals
+              &lt;list&lt;ctypes.c_double&gt;&gt;  nsvar_vals
 
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;double&gt;&gt;  nsvar_vals
@@ -3508,7 +3550,7 @@ class exodus:
         truth_tab : &lt;list&lt;bool&gt;&gt;
             True for variable defined in an entity, False otherwise
         &#34;&#34;&#34;
-        if entId is not None:
+        if entId is None:
             truthTable = self.__ex_get_truth_table(objType)
         else:
             truthTable = self.__ex_get_object_truth_vector(objType, entId)
@@ -3646,7 +3688,7 @@ class exodus:
         -------
 
             if array_type == &#39;ctype&#39;:
-              &lt;list&lt;c_double&gt;&gt;  ssvar_vals
+              &lt;list&lt;ctypes.c_double&gt;&gt;  ssvar_vals
 
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;double&gt;&gt;  ssvar_vals
@@ -3922,17 +3964,17 @@ class exodus:
         names = self.get_variable_names(&#39;EX_GLOBAL&#39;)
         # get all values
         numVals = self.get_variable_number(&#39;EX_GLOBAL&#39;)
-        values = (c_double * numVals)()
+        values = (ctypes.c_double * numVals)()
         for i in range(numVals):
-            values[i] = c_double(
+            values[i] = ctypes.c_double(
                 self.get_global_variable_value(
                     names[i], step))
         # adjust one of them
-        values[names.index(name)] = c_double(value)
+        values[names.index(name)] = ctypes.c_double(value)
         # write them all
         EXODUS_LIB.ex_put_var(self.fileId,
-                              c_int(step),
-                              c_int(numVals),
+                              ctypes.c_int(step),
+                              ctypes.c_int(numVals),
                               values)
         return True
 
@@ -3957,12 +3999,12 @@ class exodus:
             True = successful execution
         &#34;&#34;&#34;
         numVals = self.get_variable_number(&#39;EX_GLOBAL&#39;)
-        gvalues = (c_double * numVals)()
+        gvalues = (ctypes.c_double * numVals)()
         for i in range(numVals):
-            gvalues[i] = c_double(values[i])
+            gvalues[i] = ctypes.c_double(values[i])
         EXODUS_LIB.ex_put_glob_vars(self.fileId,
-                                    c_int(step),
-                                    c_int(numVals),
+                                    ctypes.c_int(step),
+                                    ctypes.c_int(numVals),
                                     gvalues)
         return True
 
@@ -4024,14 +4066,14 @@ class exodus:
             True = successful execution
         &#34;&#34;&#34;
 
-        ebType = get_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-        EXODUS_LIB.ex_put_block(self.fileId, ebType, c_longlong(blkID),
-                                create_string_buffer(b&#34;NFACED&#34;),
-                                c_longlong(num_elems_this_blk),
-                                c_longlong(0),
-                                c_longlong(0),
-                                c_longlong(num_faces),
-                                c_longlong(num_attr_per_elem))
+        ebType = ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;))
+        EXODUS_LIB.ex_put_block(self.fileId, ebType, ctypes.c_longlong(blkID),
+                                ctypes.create_string_buffer(b&#34;NFACED&#34;),
+                                ctypes.c_longlong(num_elems_this_blk),
+                                ctypes.c_longlong(0),
+                                ctypes.c_longlong(0),
+                                ctypes.c_longlong(num_faces),
+                                ctypes.c_longlong(num_attr_per_elem))
         return True
 
     # --------------------------------------------------------------------
@@ -4058,14 +4100,14 @@ class exodus:
         status : bool
             True = successful execution
         &#34;&#34;&#34;
-        fbType = get_entity_type(&#39;EX_FACE_BLOCK&#39;)
-        EXODUS_LIB.ex_put_block(self.fileId, fbType, c_longlong(blkID),
-                                create_string_buffer(b&#34;NSIDED&#34;),
-                                c_longlong(num_faces_this_blk),
-                                c_longlong(num_nodes),
-                                c_longlong(0),
-                                c_longlong(0),
-                                c_longlong(num_attr_per_face))
+        fbType = ctypes.c_int(get_entity_type(&#39;EX_FACE_BLOCK&#39;))
+        EXODUS_LIB.ex_put_block(self.fileId, fbType, ctypes.c_longlong(blkID),
+                                ctypes.create_string_buffer(b&#34;NSIDED&#34;),
+                                ctypes.c_longlong(num_faces_this_blk),
+                                ctypes.c_longlong(num_nodes),
+                                ctypes.c_longlong(0),
+                                ctypes.c_longlong(0),
+                                ctypes.c_longlong(num_attr_per_face))
         return True
 
     # --------------------------------------------------------------------
@@ -4091,11 +4133,11 @@ class exodus:
         status : bool
             True = successful execution
         &#34;&#34;&#34;
-        ebType = get_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-        entity_counts = (c_int * len(entityCounts))()
+        ebType = ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;))
+        entity_counts = (ctypes.c_int * len(entityCounts))()
         entity_counts[:] = entityCounts
         EXODUS_LIB.ex_put_entity_count_per_polyhedra(
-            self.fileId, ebType, c_longlong(blkID), entity_counts)
+            self.fileId, ebType, ctypes.c_longlong(blkID), entity_counts)
         return True
 
     # --------------------------------------------------------------------
@@ -4121,11 +4163,11 @@ class exodus:
         status : bool
             True = successful execution
         &#34;&#34;&#34;
-        ebType = get_entity_type(&#39;EX_FACE_BLOCK&#39;)
-        entity_counts = (c_int * len(entityCounts))()
+        ebType = ctypes.c_int(get_entity_type(&#39;EX_FACE_BLOCK&#39;))
+        entity_counts = (ctypes.c_int * len(entityCounts))()
         entity_counts[:] = entityCounts
         EXODUS_LIB.ex_put_entity_count_per_polyhedra(
-            self.fileId, ebType, c_longlong(blkID), entity_counts)
+            self.fileId, ebType, ctypes.c_longlong(blkID), entity_counts)
         return True
 
     # --------------------------------------------------------------------
@@ -4151,10 +4193,10 @@ class exodus:
         status : bool
             True = successful execution
         &#34;&#34;&#34;
-        ebType = get_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-        elem_face_conn = (c_int * len(elemFaceConn))()
+        ebType = ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;))
+        elem_face_conn = (ctypes.c_int * len(elemFaceConn))()
         elem_face_conn[:] = elemFaceConn
-        EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_longlong(blkId),
+        EXODUS_LIB.ex_put_conn(self.fileId, ebType, ctypes.c_longlong(blkId),
                                None, None, elem_face_conn)
         return True
 
@@ -4181,10 +4223,10 @@ class exodus:
         status : bool
             True = successful execution
         &#34;&#34;&#34;
-        ebType = get_entity_type(&#39;EX_FACE_BLOCK&#39;)
-        node_conn = (c_int * len(faceNodeConn))()
+        ebType = ctypes.c_int(get_entity_type(&#39;EX_FACE_BLOCK&#39;))
+        node_conn = (ctypes.c_int * len(faceNodeConn))()
         node_conn[:] = faceNodeConn
-        EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_longlong(blkId),
+        EXODUS_LIB.ex_put_conn(self.fileId, ebType, ctypes.c_longlong(blkId),
                                node_conn, None, None)
         return True
 
@@ -4238,27 +4280,27 @@ class exodus:
                 self.modeChar +
                 &#34; unrecognized.&#34;)
 
-        self.comp_ws = c_int(8)
-        self.io_ws = c_int(io_size)
-        self.version = c_float(0.0)
+        self.comp_ws = ctypes.c_int(8)
+        self.io_ws = ctypes.c_int(io_size)
+        self.version = ctypes.c_float(0.0)
         if self.modeChar.lower() in [&#34;a&#34;, &#34;r&#34;]:  # open existing file
             self.fileId = EXODUS_LIB.ex_open_int(self.fileName.encode(&#39;ascii&#39;), self.mode,
-                                                 byref(self.comp_ws),
-                                                 byref(self.io_ws),
-                                                 byref(self.version),
+                                                 ctypes.byref(self.comp_ws),
+                                                 ctypes.byref(self.io_ws),
+                                                 ctypes.byref(self.version),
                                                  EX_API_VERSION_NODOT)
         else:  # create file
             if io_size == 0:
                 io_size = 8
-                self.io_ws = c_int(io_size)
+                self.io_ws = ctypes.c_int(io_size)
             self.__create()
 
     # --------------------------------------------------------------------
 
     def __create(self):
         self.fileId = EXODUS_LIB.ex_create_int(self.fileName.encode(&#39;ascii&#39;), self.mode,
-                                               byref(self.comp_ws),
-                                               byref(self.io_ws),
+                                               ctypes.byref(self.comp_ws),
+                                               ctypes.byref(self.io_ws),
                                                EX_API_VERSION_NODOT)
 
     # --------------------------------------------------------------------
@@ -4273,40 +4315,40 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_info(self):
-        self.Title = create_string_buffer(MAX_LINE_LENGTH + 1)
+        self.Title = ctypes.create_string_buffer(MAX_LINE_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            self.numDim = c_longlong(0)
-            self.numNodes = c_longlong(0)
-            self.numElem = c_longlong(0)
-            self.numElemBlk = c_longlong(0)
-            self.numNodeSets = c_longlong(0)
-            self.numSideSets = c_longlong(0)
+            self.numDim = ctypes.c_longlong(0)
+            self.numNodes = ctypes.c_longlong(0)
+            self.numElem = ctypes.c_longlong(0)
+            self.numElemBlk = ctypes.c_longlong(0)
+            self.numNodeSets = ctypes.c_longlong(0)
+            self.numSideSets = ctypes.c_longlong(0)
         else:
-            self.numDim = c_int(0)
-            self.numNodes = c_int(0)
-            self.numElem = c_int(0)
-            self.numElemBlk = c_int(0)
-            self.numNodeSets = c_int(0)
-            self.numSideSets = c_int(0)
+            self.numDim = ctypes.c_int(0)
+            self.numNodes = ctypes.c_int(0)
+            self.numElem = ctypes.c_int(0)
+            self.numElemBlk = ctypes.c_int(0)
+            self.numNodeSets = ctypes.c_int(0)
+            self.numSideSets = ctypes.c_int(0)
         EXODUS_LIB.ex_get_init(
             self.fileId, self.Title,
-            byref(self.numDim),
-            byref(self.numNodes),
-            byref(self.numElem),
-            byref(self.numElemBlk),
-            byref(self.numNodeSets),
-            byref(self.numSideSets))
+            ctypes.byref(self.numDim),
+            ctypes.byref(self.numNodes),
+            ctypes.byref(self.numElem),
+            ctypes.byref(self.numElemBlk),
+            ctypes.byref(self.numNodeSets),
+            ctypes.byref(self.numSideSets))
 
     # --------------------------------------------------------------------
 
     def __ex_put_info(self, info):
-        self.Title = create_string_buffer(info[0], MAX_LINE_LENGTH + 1)
-        self.numDim = c_longlong(info[1])
-        self.numNodes = c_longlong(info[2])
-        self.numElem = c_longlong(info[3])
-        self.numElemBlk = c_longlong(info[4])
-        self.numNodeSets = c_longlong(info[5])
-        self.numSideSets = c_longlong(info[6])
+        self.Title = ctypes.create_string_buffer(info[0].encode(&#39;ascii&#39;), MAX_LINE_LENGTH + 1)
+        self.numDim = ctypes.c_longlong(info[1])
+        self.numNodes = ctypes.c_longlong(info[2])
+        self.numElem = ctypes.c_longlong(info[3])
+        self.numElemBlk = ctypes.c_longlong(info[4])
+        self.numNodeSets = ctypes.c_longlong(info[5])
+        self.numSideSets = ctypes.c_longlong(info[6])
         EXODUS_LIB.ex_put_init(
             self.fileId,
             self.Title,
@@ -4323,27 +4365,27 @@ class exodus:
     def __ex_put_concat_elem_blk(self, elemBlkIDs, elemType, numElemThisBlk,
                                  numNodesPerElem, numAttr, defineMaps):
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_IDS_INT64_API:
-            elem_blk_ids = (c_longlong * len(elemBlkIDs))()
+            elem_blk_ids = (ctypes.c_longlong * len(elemBlkIDs))()
             elem_blk_ids[:] = elemBlkIDs
-            num_elem_this_blk = (c_longlong
+            num_elem_this_blk = (ctypes.c_longlong
                                  * len(elemBlkIDs))()
             num_elem_this_blk[:] = numElemThisBlk
-            num_nodes_per_elem = (c_longlong * len(elemBlkIDs))()
+            num_nodes_per_elem = (ctypes.c_longlong * len(elemBlkIDs))()
             num_nodes_per_elem[:] = numNodesPerElem
-            num_attr = (c_longlong * len(elemBlkIDs))()
+            num_attr = (ctypes.c_longlong * len(elemBlkIDs))()
             num_attr[:] = numAttr
         else:
-            elem_blk_ids = (c_int * len(elemBlkIDs))()
+            elem_blk_ids = (ctypes.c_int * len(elemBlkIDs))()
             elem_blk_ids[:] = elemBlkIDs
-            num_elem_this_blk = (c_int * len(elemBlkIDs))()
+            num_elem_this_blk = (ctypes.c_int * len(elemBlkIDs))()
             num_elem_this_blk[:] = numElemThisBlk
-            num_nodes_per_elem = (c_int * len(elemBlkIDs))()
+            num_nodes_per_elem = (ctypes.c_int * len(elemBlkIDs))()
             num_nodes_per_elem[:] = numNodesPerElem
-            num_attr = (c_int * len(elemBlkIDs))()
+            num_attr = (ctypes.c_int * len(elemBlkIDs))()
             num_attr[:] = numAttr
-        elem_type = (c_char_p * len(elemBlkIDs))()
+        elem_type = (ctypes.c_char_p * len(elemBlkIDs))()
         elem_type[:] = elemType
-        define_maps = c_int(defineMaps)
+        define_maps = ctypes.c_int(defineMaps)
         EXODUS_LIB.ex_put_concat_elem_block(
             self.fileId,
             elem_blk_ids,
@@ -4356,14 +4398,14 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_qa(self):
-        num_qa_recs = c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_QA&#39;)))
-        qa_rec_ptrs = ((POINTER(c_char * (MAX_STR_LENGTH + 1)) * 4) * num_qa_recs.value)()
+        num_qa_recs = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_QA&#39;)))
+        qa_rec_ptrs = ((ctypes.POINTER(ctypes.c_char * (MAX_STR_LENGTH + 1)) * 4) * num_qa_recs.value)()
         for i in range(num_qa_recs.value):
             for j in range(4):
-                qa_rec_ptrs[i][j] = pointer(
-                    create_string_buffer(MAX_STR_LENGTH + 1))
+                qa_rec_ptrs[i][j] = ctypes.pointer(
+                    ctypes.create_string_buffer(MAX_STR_LENGTH + 1))
         if num_qa_recs.value:
-            EXODUS_LIB.ex_get_qa(self.fileId, byref(qa_rec_ptrs))
+            EXODUS_LIB.ex_get_qa(self.fileId, ctypes.byref(qa_rec_ptrs))
         qa_recs = []
         for qara in qa_rec_ptrs:
             qa_rec_list = []
@@ -4377,24 +4419,24 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_qa(self, qaRecs):
-        num_qa_recs = c_int(len(qaRecs))
-        qa_rec_ptrs = ((POINTER(c_char * (MAX_STR_LENGTH + 1)) * 4) * num_qa_recs.value)()
+        num_qa_recs = ctypes.c_int(len(qaRecs))
+        qa_rec_ptrs = ((ctypes.POINTER(ctypes.c_char * (MAX_STR_LENGTH + 1)) * 4) * num_qa_recs.value)()
         for i in range(num_qa_recs.value):
             for j in range(4):
-                qa_rec_ptrs[i][j] = pointer(create_string_buffer(
+                qa_rec_ptrs[i][j] = ctypes.pointer(ctypes.create_string_buffer(
                     str(qaRecs[i][j]).encode(&#39;ascii&#39;), MAX_STR_LENGTH + 1))
-        EXODUS_LIB.ex_put_qa(self.fileId, num_qa_recs, byref(qa_rec_ptrs))
+        EXODUS_LIB.ex_put_qa(self.fileId, num_qa_recs, ctypes.byref(qa_rec_ptrs))
         return True
 
     # --------------------------------------------------------------------
 
     def _ex_get_info_recs_quietly(self):
-        num_infos = c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_INFO&#39;)))
-        info_ptrs = (POINTER(c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
+        num_infos = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_INFO&#39;)))
+        info_ptrs = (ctypes.POINTER(ctypes.c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
         for i in range(num_infos.value):
-            info_ptrs[i] = pointer(create_string_buffer(MAX_LINE_LENGTH + 1))
+            info_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(MAX_LINE_LENGTH + 1))
         if num_infos.value:
-            EXODUS_LIB.ex_get_info(self.fileId, byref(info_ptrs))
+            EXODUS_LIB.ex_get_info(self.fileId, ctypes.byref(info_ptrs))
         info_recs = []
         for irp in info_ptrs:
             info_recs.append(irp.contents.value.decode(&#34;utf8&#34;))
@@ -4403,11 +4445,11 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_info_recs(self):
-        num_infos = c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_INFO&#39;)))
-        info_ptrs = (POINTER(c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
+        num_infos = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_INFO&#39;)))
+        info_ptrs = (ctypes.POINTER(ctypes.c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
         for i in range(num_infos.value):
-            info_ptrs[i] = pointer(create_string_buffer(MAX_LINE_LENGTH + 1))
-        EXODUS_LIB.ex_get_info(self.fileId, byref(info_ptrs))
+            info_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(MAX_LINE_LENGTH + 1))
+        EXODUS_LIB.ex_get_info(self.fileId, ctypes.byref(info_ptrs))
         info_recs = []
         for irp in info_ptrs:
             info_recs.append(irp.contents.value.decode(&#34;utf8&#34;))
@@ -4421,28 +4463,28 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_info_recs(self, infoRecs):
-        num_infos = c_int(len(infoRecs))
-        info_ptrs = (POINTER(c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
+        num_infos = ctypes.c_int(len(infoRecs))
+        info_ptrs = (ctypes.POINTER(ctypes.c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
         for i in range(num_infos.value):
-            info_ptrs[i] = pointer(create_string_buffer(
+            info_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(
                 str(infoRecs[i]).encode(&#39;ascii&#39;), MAX_LINE_LENGTH + 1))
-        EXODUS_LIB.ex_put_info(self.fileId, num_infos, byref(info_ptrs))
+        EXODUS_LIB.ex_put_info(self.fileId, num_infos, ctypes.byref(info_ptrs))
         return True
 
     # --------------------------------------------------------------------
 
     def __ex_inquire_float(self, inq_id):
-        dummy_char = create_string_buffer(MAX_LINE_LENGTH + 1)
-        ret_float = c_float(0.0)
+        dummy_char = ctypes.create_string_buffer(MAX_LINE_LENGTH + 1)
+        ret_float = ctypes.c_float(0.0)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_INQ_INT64_API:
-            dummy_int = c_longlong(0)
+            dummy_int = ctypes.c_longlong(0)
         else:
-            dummy_int = c_int(0)
+            dummy_int = ctypes.c_int(0)
         val = EXODUS_LIB.ex_inquire(
             self.fileId,
             inq_id,
-            byref(dummy_int),
-            byref(ret_float),
+            ctypes.byref(dummy_int),
+            ctypes.byref(ret_float),
             dummy_char)
         if val &lt; 0:
             raise Exception(
@@ -4468,12 +4510,12 @@ class exodus:
 
     def __ex_get_coord_names(self):
         coord_name_ptrs = (
-            POINTER(c_char * (MAX_NAME_LENGTH + 1)) * self.numDim.value)()
+            ctypes.POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * self.numDim.value)()
         for i in range(self.numDim.value):
-            coord_name_ptrs[i] = pointer(
-                create_string_buffer(
+            coord_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     MAX_NAME_LENGTH + 1))
-        EXODUS_LIB.ex_get_coord_names(self.fileId, byref(coord_name_ptrs))
+        EXODUS_LIB.ex_get_coord_names(self.fileId, ctypes.byref(coord_name_ptrs))
         coord_names = []
         for cnp in coord_name_ptrs:
             coord_names.append(cnp.contents.value.decode(&#39;utf8&#39;))
@@ -4483,66 +4525,66 @@ class exodus:
 
     def __ex_put_coord_names(self, names):
         coord_name_ptrs = (
-            POINTER(c_char * (MAX_NAME_LENGTH + 1)) * self.numDim.value)()
+            ctypes.POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * self.numDim.value)()
         assert len(names) == self.numDim.value
         for i in range(self.numDim.value):
-            coord_name_ptrs[i] = pointer(
-                create_string_buffer(
+            coord_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     names[i].encode(&#39;ascii&#39;), MAX_NAME_LENGTH + 1))
-        EXODUS_LIB.ex_put_coord_names(self.fileId, byref(coord_name_ptrs))
+        EXODUS_LIB.ex_put_coord_names(self.fileId, ctypes.byref(coord_name_ptrs))
 
     # --------------------------------------------------------------------
 
     def __ex_get_all_times(self):
-        self.times = (c_double * self.numTimes.value)()
-        EXODUS_LIB.ex_get_all_times(self.fileId, byref(self.times))
+        self.times = (ctypes.c_double * self.numTimes.value)()
+        EXODUS_LIB.ex_get_all_times(self.fileId, ctypes.byref(self.times))
 
     # --------------------------------------------------------------------
 
     def __ex_get_time(self, timeStep):
-        time_step = c_int(timeStep)
-        time_val = c_double(0.0)
-        EXODUS_LIB.ex_get_time(self.fileId, time_step, byref(time_val))
+        time_step = ctypes.c_int(timeStep)
+        time_val = ctypes.c_double(0.0)
+        EXODUS_LIB.ex_get_time(self.fileId, time_step, ctypes.byref(time_val))
         return time_val.value()
 
     # --------------------------------------------------------------------
 
     def __ex_put_time(self, timeStep, timeVal):
-        time_step = c_int(timeStep)
-        time_val = c_double(timeVal)
-        EXODUS_LIB.ex_put_time(self.fileId, time_step, byref(time_val))
+        time_step = ctypes.c_int(timeStep)
+        time_val = ctypes.c_double(timeVal)
+        EXODUS_LIB.ex_put_time(self.fileId, time_step, ctypes.byref(time_val))
         return True
 
     # --------------------------------------------------------------------
 
     def __ex_get_name(self, objType, objId):
-        obj_type = c_int(get_entity_type(objType))
-        obj_id = c_longlong(objId)
-        obj_name = create_string_buffer(MAX_NAME_LENGTH + 1)
-        EXODUS_LIB.ex_get_name(self.fileId, obj_type, obj_id, byref(obj_name))
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
+        obj_name = ctypes.create_string_buffer(MAX_NAME_LENGTH + 1)
+        EXODUS_LIB.ex_get_name(self.fileId, obj_type, obj_id, ctypes.byref(obj_name))
         return obj_name.value.decode(&#39;utf8&#39;)
 
     # --------------------------------------------------------------------
 
     def __ex_put_name(self, objType, objId, objName):
-        obj_type = c_int(get_entity_type(objType))
-        obj_id = c_longlong(objId)
-        obj_name = create_string_buffer(objName.encode(&#39;ascii&#39;), MAX_NAME_LENGTH + 1)
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
+        obj_name = ctypes.create_string_buffer(objName.encode(&#39;ascii&#39;), MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_name(self.fileId, obj_type, obj_id, obj_name)
 
     # --------------------------------------------------------------------
 
     def __ex_get_names(self, objType):
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        num_objs = c_int(self.__ex_inquire_int(inqType)).value
-        obj_name_ptrs = (POINTER(c_char * (MAX_NAME_LENGTH + 1)) * num_objs)()
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
+        obj_name_ptrs = (ctypes.POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * num_objs)()
         for i in range(num_objs):
-            obj_name_ptrs[i] = pointer(
-                create_string_buffer(
+            obj_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     MAX_NAME_LENGTH + 1))
 
-        obj_type = c_int(get_entity_type(objType))
-        EXODUS_LIB.ex_get_names(self.fileId, obj_type, byref(obj_name_ptrs))
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        EXODUS_LIB.ex_get_names(self.fileId, obj_type, ctypes.byref(obj_name_ptrs))
         obj_names = []
         for onp in obj_name_ptrs:
             obj_names.append(onp.contents.value.decode(&#39;utf8&#39;))
@@ -4552,89 +4594,89 @@ class exodus:
 
     def __ex_put_names(self, objType, objNames):
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        numObjs = c_int(self.__ex_inquire_int(inqType)).value
+        numObjs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
         assert numObjs == len(objNames)
-        obj_name_ptrs = (POINTER(c_char * (MAX_NAME_LENGTH + 1)) * numObjs)()
-        obj_type = c_int(get_entity_type(objType))
+        obj_name_ptrs = (ctypes.POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * numObjs)()
+        obj_type = ctypes.c_int(get_entity_type(objType))
         for i in range(numObjs):
-            obj_name_ptrs[i] = pointer(
-                create_string_buffer(
+            obj_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     objNames[i].encode(&#39;ascii&#39;), MAX_NAME_LENGTH + 1))
-        EXODUS_LIB.ex_put_names(self.fileId, obj_type, byref(obj_name_ptrs))
+        EXODUS_LIB.ex_put_names(self.fileId, obj_type, ctypes.byref(obj_name_ptrs))
 
     # --------------------------------------------------------------------
 
     def __ex_get_ids(self, objType):
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        numObjs = c_int(self.__ex_inquire_int(inqType)).value
+        numObjs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_IDS_INT64_API:
-            ids = (c_longlong * numObjs)()
+            ids = (ctypes.c_longlong * numObjs)()
         else:
-            ids = (c_int * numObjs)()
+            ids = (ctypes.c_int * numObjs)()
         if numObjs &gt; 0:
-            obj_type = c_int(get_entity_type(objType))
-            EXODUS_LIB.ex_get_ids(self.fileId, obj_type, byref(ids))
+            obj_type = ctypes.c_int(get_entity_type(objType))
+            EXODUS_LIB.ex_get_ids(self.fileId, obj_type, ctypes.byref(ids))
         return ids
 
     # --------------------------------------------------------------------
 
     def __ex_get_node_set(self, nodeSetId):
-        node_set_id = c_longlong(nodeSetId)
+        node_set_id = ctypes.c_longlong(nodeSetId)
         num_node_set_nodes = self.__ex_get_set_param(&#39;EX_NODE_SET&#39;, nodeSetId)[0]
         if num_node_set_nodes == 0:
             return []
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            set_nodes = (c_longlong * num_node_set_nodes)()
+            set_nodes = (ctypes.c_longlong * num_node_set_nodes)()
         else:
-            set_nodes = (c_int * num_node_set_nodes)()
-        EXODUS_LIB.ex_get_node_set(self.fileId, node_set_id, byref(set_nodes))
+            set_nodes = (ctypes.c_int * num_node_set_nodes)()
+        EXODUS_LIB.ex_get_node_set(self.fileId, node_set_id, ctypes.byref(set_nodes))
         return set_nodes
 
     # --------------------------------------------------------------------
 
     def __ex_put_node_set(self, nodeSetId, nodeSetNodes):
-        node_set_id = c_longlong(nodeSetId)
+        node_set_id = ctypes.c_longlong(nodeSetId)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            node_set_nodes = (c_longlong * len(nodeSetNodes))()
+            node_set_nodes = (ctypes.c_longlong * len(nodeSetNodes))()
             for i, node_set_node in enumerate(nodeSetNodes):
-                node_set_nodes[i] = c_longlong(node_set_node)
+                node_set_nodes[i] = ctypes.c_longlong(node_set_node)
         else:
-            node_set_nodes = (c_int * len(nodeSetNodes))()
+            node_set_nodes = (ctypes.c_int * len(nodeSetNodes))()
             for i, node_set_node in enumerate(nodeSetNodes):
-                node_set_nodes[i] = c_int(node_set_node)
+                node_set_nodes[i] = ctypes.c_int(node_set_node)
         EXODUS_LIB.ex_put_node_set(self.fileId, node_set_id, node_set_nodes)
 
     # --------------------------------------------------------------------
 
     def __ex_get_node_set_dist_fact(self, nodeSetId):
-        node_set_id = c_longlong(nodeSetId)
+        node_set_id = ctypes.c_longlong(nodeSetId)
         num_node_set_nodes = self.__ex_get_set_param(&#39;EX_NODE_SET&#39;, nodeSetId)[0]
-        set_dfs = (c_double * num_node_set_nodes)()
+        set_dfs = (ctypes.c_double * num_node_set_nodes)()
         EXODUS_LIB.ex_get_node_set_dist_fact(
-            self.fileId, node_set_id, byref(set_dfs))
+            self.fileId, node_set_id, ctypes.byref(set_dfs))
         return set_dfs
 
     # --------------------------------------------------------------------
 
     def __ex_put_node_set_dist_fact(self, nodeSetId, nodeSetDistFact):
-        node_set_id = c_longlong(nodeSetId)
-        node_set_dist_fact = (c_double * len(nodeSetDistFact))()
+        node_set_id = ctypes.c_longlong(nodeSetId)
+        node_set_dist_fact = (ctypes.c_double * len(nodeSetDistFact))()
         for i, dist_fact in enumerate(nodeSetDistFact):
-            node_set_dist_fact[i] = c_double(dist_fact)
+            node_set_dist_fact[i] = ctypes.c_double(dist_fact)
         EXODUS_LIB.ex_put_node_set_dist_fact(
             self.fileId, node_set_id, node_set_dist_fact)
 
     # --------------------------------------------------------------------
 
     def __ex_get_object_truth_vector(self, objType, entId):
-        obj_type = get_entity_type(objType)
-        entity_id = c_longlong(entId)
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        entity_id = ctypes.c_longlong(entId)
         variable_count = self.__ex_get_variable_param(objType)
-        truth_table = (c_int * (variable_count.value))()
+        truth_table = (ctypes.c_int * (variable_count.value))()
 
         EXODUS_LIB.ex_get_object_truth_vector(self.fileId, obj_type,
                                               entity_id, variable_count,
-                                              byref(truth_table))
+                                              ctypes.byref(truth_table))
         truthTab = []
         for val in truth_table:
             if val:
@@ -4647,15 +4689,15 @@ class exodus:
 
     def __ex_get_truth_table(self, objType):
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        num_objs = c_int(self.__ex_inquire_int(inqType)).value
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
 
-        obj_type = get_entity_type(objType)
+        obj_type = ctypes.c_int(get_entity_type(objType))
         variable_count = self.__ex_get_variable_param(objType)
 
-        truth_table = (c_int * (num_objs * variable_count.value))()
+        truth_table = (ctypes.c_int * (num_objs * variable_count.value))()
         EXODUS_LIB.ex_get_truth_table(self.fileId, obj_type,
                                       num_objs, variable_count,
-                                      byref(truth_table))
+                                      ctypes.byref(truth_table))
         truthTab = []
         for val in truth_table:
             if val:
@@ -4668,19 +4710,19 @@ class exodus:
 
     def __ex_put_truth_table(self, objType, truthTab):
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        num_objs = c_int(self.__ex_inquire_int(inqType)).value
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
 
-        obj_type = get_entity_type(objType)
+        obj_type = ctypes.c_int(get_entity_type(objType))
         num_vars = self.__ex_get_variable_param(objType).value
 
         assert len(truthTab) == (num_objs * num_vars)
 
-        truth_tab = (c_int * (num_objs * num_vars))()
+        truth_tab = (ctypes.c_int * (num_objs * num_vars))()
         for i, boolVal in enumerate(truthTab):
             if boolVal:
-                truth_tab[i] = c_int(1)
+                truth_tab[i] = ctypes.c_int(1)
             else:
-                truth_tab[i] = c_int(0)
+                truth_tab[i] = ctypes.c_int(0)
 
         EXODUS_LIB.ex_put_truth_table(
             self.fileId, obj_type, num_objs, num_vars, truth_tab)
@@ -4689,61 +4731,61 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_coord(self):
-        self.coordsX = (c_double * self.numNodes.value)()
-        self.coordsY = (c_double * self.numNodes.value)()
-        self.coordsZ = (c_double * self.numNodes.value)()
+        self.coordsX = (ctypes.c_double * self.numNodes.value)()
+        self.coordsY = (ctypes.c_double * self.numNodes.value)()
+        self.coordsZ = (ctypes.c_double * self.numNodes.value)()
         EXODUS_LIB.ex_get_coord(
             self.fileId,
-            byref(self.coordsX),
-            byref(self.coordsY),
-            byref(self.coordsZ))
+            ctypes.byref(self.coordsX),
+            ctypes.byref(self.coordsY),
+            ctypes.byref(self.coordsZ))
 
     # --------------------------------------------------------------------
 
     def __ex_put_coord(self, xCoords, yCoords, zCoords):
-        self.coordsX = (c_double * self.numNodes.value)()
-        self.coordsY = (c_double * self.numNodes.value)()
-        self.coordsZ = (c_double * self.numNodes.value)()
+        self.coordsX = (ctypes.c_double * self.numNodes.value)()
+        self.coordsY = (ctypes.c_double * self.numNodes.value)()
+        self.coordsZ = (ctypes.c_double * self.numNodes.value)()
         for i in range(self.numNodes.value):
             self.coordsX[i] = float(xCoords[i])
             self.coordsY[i] = float(yCoords[i])
             self.coordsZ[i] = float(zCoords[i])
         EXODUS_LIB.ex_put_coord(
             self.fileId,
-            byref(self.coordsX),
-            byref(self.coordsY),
-            byref(self.coordsZ))
+            ctypes.byref(self.coordsX),
+            ctypes.byref(self.coordsY),
+            ctypes.byref(self.coordsZ))
 
     # --------------------------------------------------------------------
 
     def __ex_get_partial_coord(self, startNodeId, numNodes):
-        start_node_num = c_longlong(startNodeId)
-        num_nodes = c_longlong(numNodes)
-        coordsX = (c_double * numNodes)()
-        coordsY = (c_double * numNodes)()
-        coordsZ = (c_double * numNodes)()
+        start_node_num = ctypes.c_longlong(startNodeId)
+        num_nodes = ctypes.c_longlong(numNodes)
+        coordsX = (ctypes.c_double * numNodes)()
+        coordsY = (ctypes.c_double * numNodes)()
+        coordsZ = (ctypes.c_double * numNodes)()
         EXODUS_LIB.ex_get_partial_coord(
             self.fileId,
             start_node_num,
             num_nodes,
-            byref(coordsX),
-            byref(coordsY),
-            byref(coordsZ))
+            ctypes.byref(coordsX),
+            ctypes.byref(coordsY),
+            ctypes.byref(coordsZ))
         return list(coordsX), list(coordsY), list(coordsZ)
 
     # --------------------------------------------------------------------
 
     def __ex_get_id_map(self, objType):
         inqType = ex_obj_to_inq(objType)
-        obj_type = c_int(get_entity_type(objType))
-        inq_type = c_int(ex_inquiry_map(inqType))
-        num_objs = c_int(self.__ex_inquire_int(inq_type))
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        inq_type = ctypes.c_int(ex_inquiry_map(inqType))
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inq_type))
         numObjs = num_objs.value
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_IDS_INT64_API:
-            id_map = (c_longlong * numObjs)()
+            id_map = (ctypes.c_longlong * numObjs)()
         else:
-            id_map = (c_int * numObjs)()
-        EXODUS_LIB.ex_get_id_map(self.fileId, obj_type, byref(id_map))
+            id_map = (ctypes.c_int * numObjs)()
+        EXODUS_LIB.ex_get_id_map(self.fileId, obj_type, ctypes.byref(id_map))
         idMap = []
         for i in range(numObjs):
             idMap.append(id_map[i])
@@ -4755,80 +4797,80 @@ class exodus:
 
     def __ex_put_id_map(self, objType, idMap):
         inqType = ex_obj_to_inq(objType)
-        obj_type = c_int(get_entity_type(objType))
-        inq_type = c_int(ex_inquiry_map(inqType))
-        num_objs = c_int(self.__ex_inquire_int(inq_type))
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        inq_type = ctypes.c_int(ex_inquiry_map(inqType))
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inq_type))
         numObjs = num_objs.value
         assert numObjs == len(idMap)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_IDS_INT64_API:
-            id_map = (c_longlong * numObjs)()
+            id_map = (ctypes.c_longlong * numObjs)()
             for i in range(numObjs):
-                id_map[i] = c_longlong(idMap[i])
+                id_map[i] = ctypes.c_longlong(idMap[i])
         else:
-            id_map = (c_int * numObjs)()
+            id_map = (ctypes.c_int * numObjs)()
             for i in range(numObjs):
-                id_map[i] = c_int(idMap[i])
-        EXODUS_LIB.ex_put_id_map(self.fileId, obj_type, byref(id_map))
+                id_map[i] = ctypes.c_int(idMap[i])
+        EXODUS_LIB.ex_put_id_map(self.fileId, obj_type, ctypes.byref(id_map))
         return True
 
     # --------------------------------------------------------------------
 
     def __ex_get_elem_num_map(self):
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_MAPS_INT64_API:
-            elemNumMap = (c_longlong * self.numElem.value)()
+            elemNumMap = (ctypes.c_longlong * self.numElem.value)()
         else:
-            elemNumMap = (c_int * self.numElem.value)()
-        EXODUS_LIB.ex_get_elem_num_map(self.fileId, byref(elemNumMap))
+            elemNumMap = (ctypes.c_int * self.numElem.value)()
+        EXODUS_LIB.ex_get_elem_num_map(self.fileId, ctypes.byref(elemNumMap))
         return elemNumMap
 
     # --------------------------------------------------------------------
 
     def __ex_get_node_num_map(self):
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_MAPS_INT64_API:
-            nodeNumMap = (c_longlong * self.numNodes.value)()
+            nodeNumMap = (ctypes.c_longlong * self.numNodes.value)()
         else:
-            nodeNumMap = (c_int * self.numNodes.value)()
-        EXODUS_LIB.ex_get_node_num_map(self.fileId, byref(nodeNumMap))
+            nodeNumMap = (ctypes.c_int * self.numNodes.value)()
+        EXODUS_LIB.ex_get_node_num_map(self.fileId, ctypes.byref(nodeNumMap))
         return nodeNumMap
 
     # --------------------------------------------------------------------
 
     def __ex_get_elem_order_map(self):
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_MAPS_INT64_API:
-            elemOrderMap = (c_longlong * self.numElem.value)()
+            elemOrderMap = (ctypes.c_longlong * self.numElem.value)()
         else:
-            elemOrderMap = (c_int * self.numElem.value)()
-        EXODUS_LIB.ex_get_map(self.fileId, byref(elemOrderMap))
+            elemOrderMap = (ctypes.c_int * self.numElem.value)()
+        EXODUS_LIB.ex_get_map(self.fileId, ctypes.byref(elemOrderMap))
         return elemOrderMap
 
     # --------------------------------------------------------------------
 
     def __ex_get_block(self, object_type, object_id):
-        obj_type = c_int(get_entity_type(object_type))
-        block_id = c_longlong(object_id)
-        blk_type = create_string_buffer(MAX_STR_LENGTH + 1)
+        obj_type = ctypes.c_int(get_entity_type(object_type))
+        block_id = ctypes.c_longlong(object_id)
+        blk_type = ctypes.create_string_buffer(MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            num_elem_this_blk = c_longlong(0)
-            num_nodes_per_elem = c_longlong(0)
-            num_edges_per_elem = c_longlong(0)
-            num_faces_per_elem = c_longlong(0)
-            num_attr = c_longlong(0)
+            num_elem_this_blk = ctypes.c_longlong(0)
+            num_nodes_per_elem = ctypes.c_longlong(0)
+            num_edges_per_elem = ctypes.c_longlong(0)
+            num_faces_per_elem = ctypes.c_longlong(0)
+            num_attr = ctypes.c_longlong(0)
         else:
-            num_elem_this_blk = c_int(0)
-            num_nodes_per_elem = c_int(0)
-            num_edges_per_elem = c_int(0)
-            num_faces_per_elem = c_int(0)
-            num_attr = c_int(0)
+            num_elem_this_blk = ctypes.c_int(0)
+            num_nodes_per_elem = ctypes.c_int(0)
+            num_edges_per_elem = ctypes.c_int(0)
+            num_faces_per_elem = ctypes.c_int(0)
+            num_attr = ctypes.c_int(0)
         EXODUS_LIB.ex_get_block(
             self.fileId,
             obj_type,
             block_id,
             blk_type,
-            byref(num_elem_this_blk),
-            byref(num_nodes_per_elem),
-            byref(num_edges_per_elem),
-            byref(num_faces_per_elem),
-            byref(num_attr))
+            ctypes.byref(num_elem_this_blk),
+            ctypes.byref(num_nodes_per_elem),
+            ctypes.byref(num_edges_per_elem),
+            ctypes.byref(num_faces_per_elem),
+            ctypes.byref(num_attr))
         return blk_type, num_elem_this_blk, num_nodes_per_elem, num_attr
 
     # --------------------------------------------------------------------
@@ -4841,14 +4883,14 @@ class exodus:
             numElems,
             numNodesPerElem,
             numAttrsPerElem):
-        obj_type = c_int(get_entity_type(object_type))
-        block_id = c_longlong(object_id)
-        elem_type = create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
-        num_elem_this_blk = c_longlong(numElems)
-        num_nodes_per_elem = c_longlong(numNodesPerElem)
-        num_edges_per_elem = c_longlong(0)
-        num_faces_per_elem = c_longlong(0)
-        num_attr = c_longlong(numAttrsPerElem)
+        obj_type = ctypes.c_int(get_entity_type(object_type))
+        block_id = ctypes.c_longlong(object_id)
+        elem_type = ctypes.create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
+        num_elem_this_blk = ctypes.c_longlong(numElems)
+        num_nodes_per_elem = ctypes.c_longlong(numNodesPerElem)
+        num_edges_per_elem = ctypes.c_longlong(0)
+        num_faces_per_elem = ctypes.c_longlong(0)
+        num_attr = ctypes.c_longlong(numAttrsPerElem)
         EXODUS_LIB.ex_put_block(self.fileId, obj_type, block_id, elem_type,
                                 num_elem_this_blk, num_nodes_per_elem,
                                 num_edges_per_elem, num_faces_per_elem, num_attr)
@@ -4858,17 +4900,17 @@ class exodus:
     def __ex_get_elem_conn(self, object_id):
         (_elem_type, num_elem_this_blk, num_nodes_per_elem,
          _num_attr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
-        elem_block_id = c_longlong(object_id)
+        elem_block_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
             elem_block_connectivity = (
-                c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
+                ctypes.c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
         else:
             elem_block_connectivity = (
-                c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
+                ctypes.c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
         EXODUS_LIB.ex_get_elem_conn(
             self.fileId,
             elem_block_id,
-            byref(elem_block_connectivity))
+            ctypes.byref(elem_block_connectivity))
         return elem_block_connectivity, num_elem_this_blk, num_nodes_per_elem
 
     # --------------------------------------------------------------------
@@ -4876,17 +4918,17 @@ class exodus:
     def __ex_put_elem_conn(self, object_id, connectivity):
         (_elem_type, num_elem_this_blk, num_nodes_per_elem,
          _num_attr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
-        elem_block_id = c_longlong(object_id)
+        elem_block_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
             elem_block_connectivity = (
-                c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
+                ctypes.c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
             for i in range(num_elem_this_blk.value * num_nodes_per_elem.value):
-                elem_block_connectivity[i] = c_longlong(connectivity[i])
+                elem_block_connectivity[i] = ctypes.c_longlong(connectivity[i])
         else:
             elem_block_connectivity = (
-                c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
+                ctypes.c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
             for i in range(num_elem_this_blk.value * num_nodes_per_elem.value):
-                elem_block_connectivity[i] = c_int(connectivity[i])
+                elem_block_connectivity[i] = ctypes.c_int(connectivity[i])
         EXODUS_LIB.ex_put_elem_conn(
             self.fileId,
             elem_block_id,
@@ -4895,10 +4937,10 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_one_attr(self, objType, elemBlkID, attrIndx, Attr):
-        elem_blk_id = c_longlong(elemBlkID)
-        obj_type = c_int(objType)
-        attr_index = c_longlong(attrIndx)
-        attrib = (c_double * len(Attr))()
+        elem_blk_id = ctypes.c_longlong(elemBlkID)
+        obj_type = ctypes.c_int(objType)
+        attr_index = ctypes.c_longlong(attrIndx)
+        attrib = (ctypes.c_double * len(Attr))()
         for i, attr in enumerate(Attr):
             attrib[i] = float(attr)
         EXODUS_LIB.ex_put_one_attr(
@@ -4911,55 +4953,55 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_one_attr(self, objType, elemBlkID, attrIndx):
-        elem_blk_id = c_longlong(elemBlkID)
-        obj_type = c_int(objType)
-        attr_index = c_longlong(attrIndx)
+        elem_blk_id = ctypes.c_longlong(elemBlkID)
+        obj_type = ctypes.c_int(objType)
+        attr_index = ctypes.c_longlong(attrIndx)
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        num_objs = c_int(self.__ex_inquire_int(inqType)).value
-        attrib = (c_double * num_objs)()
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
+        attrib = (ctypes.c_double * num_objs)()
         EXODUS_LIB.ex_get_one_attr(
             self.fileId,
             obj_type,
             elem_blk_id,
             attr_index,
-            byref(attrib))
+            ctypes.byref(attrib))
         return attrib
 
     # --------------------------------------------------------------------
 
     def __ex_put_elem_attr(self, elemBlkID, Attr):
-        elem_blk_id = c_longlong(elemBlkID)
-        attrib = (c_double * len(Attr))()
+        elem_blk_id = ctypes.c_longlong(elemBlkID)
+        attrib = (ctypes.c_double * len(Attr))()
         for i, attr in enumerate(Attr):
-            attrib[i] = c_double(attr)
+            attrib[i] = ctypes.c_double(attr)
         EXODUS_LIB.ex_put_attr(
             self.fileId,
-            get_entity_type(&#39;EX_ELEM_BLOCK&#39;),
+            ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;)),
             elem_blk_id,
             attrib)
 
     # --------------------------------------------------------------------
 
     def __ex_get_elem_attr(self, elemBlkID):
-        elem_blk_id = c_longlong(elemBlkID)
+        elem_blk_id = ctypes.c_longlong(elemBlkID)
         numAttrThisBlk = self.num_attr(elemBlkID)
         numElemsThisBlk = self.num_elems_in_blk(elemBlkID)
         totalAttr = numAttrThisBlk * numElemsThisBlk
-        attrib = (c_double * totalAttr)()
+        attrib = (ctypes.c_double * totalAttr)()
         EXODUS_LIB.ex_get_attr(
             self.fileId,
-            get_entity_type(&#39;EX_ELEM_BLOCK&#39;),
+            ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;)),
             elem_blk_id,
-            byref(attrib))
+            ctypes.byref(attrib))
         return attrib
 
     # --------------------------------------------------------------------
 
     def __ex_get_variable_param(self, varType):
-        var_type = c_int(get_entity_type(varType))
-        num_vars = c_int()
+        var_type = ctypes.c_int(get_entity_type(varType))
+        num_vars = ctypes.c_int()
         EXODUS_LIB.ex_get_variable_param(
-            self.fileId, var_type, byref(num_vars))
+            self.fileId, var_type, ctypes.byref(num_vars))
         return num_vars
 
     # --------------------------------------------------------------------
@@ -4967,19 +5009,19 @@ class exodus:
     def __ex_get_variable_names(self, varType):
         num_vars = self.__ex_get_variable_param(varType)
         var_name_ptrs = (
-            POINTER(c_char * (MAX_NAME_LENGTH + 1)) * num_vars.value)()
+            ctypes.POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * num_vars.value)()
 
         for i in range(num_vars.value):
-            var_name_ptrs[i] = pointer(
-                create_string_buffer(
+            var_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     MAX_NAME_LENGTH + 1))
 
-        var_type = c_int(get_entity_type(varType))
+        var_type = ctypes.c_int(get_entity_type(varType))
         EXODUS_LIB.ex_get_variable_names(
             self.fileId,
             var_type,
             num_vars,
-            byref(var_name_ptrs))
+            ctypes.byref(var_name_ptrs))
         var_names = []
         for vnp in var_name_ptrs:
             var_names.append(vnp.contents.value.decode(&#39;utf8&#39;))
@@ -4988,12 +5030,12 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_var(self, timeStep, varType, varId, blkId, numValues):
-        step = c_int(timeStep)
-        var_type = c_int(get_entity_type(varType))
-        var_id = c_int(varId)
-        block_id = c_longlong(blkId)
-        num_values = c_longlong(numValues)
-        var_vals = (c_double * num_values.value)()
+        step = ctypes.c_int(timeStep)
+        var_type = ctypes.c_int(get_entity_type(varType))
+        var_id = ctypes.c_int(varId)
+        block_id = ctypes.c_longlong(blkId)
+        num_values = ctypes.c_longlong(numValues)
+        var_vals = (ctypes.c_double * num_values.value)()
         EXODUS_LIB.ex_get_var(
             self.fileId,
             step,
@@ -5007,12 +5049,12 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_var(self, timeStep, varType, varId, blkId, numValues, values):
-        step = c_int(timeStep)
-        var_type = c_int(get_entity_type(varType))
-        var_id = c_int(varId)
-        block_id = c_longlong(blkId)
-        num_values = c_longlong(numValues)
-        var_vals = (c_double * num_values.value)()
+        step = ctypes.c_int(timeStep)
+        var_type = ctypes.c_int(get_entity_type(varType))
+        var_id = ctypes.c_int(varId)
+        block_id = ctypes.c_longlong(blkId)
+        num_values = ctypes.c_longlong(numValues)
+        var_vals = (ctypes.c_double * num_values.value)()
         for i in range(num_values.value):
             var_vals[i] = float(values[i])
         EXODUS_LIB.ex_put_var(
@@ -5028,41 +5070,41 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_side_set_node_list_len(self, object_id):
-        side_set_id = c_longlong(object_id)
+        side_set_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            side_set_node_list_len = c_longlong(0)
+            side_set_node_list_len = ctypes.c_longlong(0)
         else:
-            side_set_node_list_len = c_int(0)
+            side_set_node_list_len = ctypes.c_int(0)
         EXODUS_LIB.ex_get_side_set_node_list_len(
-            self.fileId, side_set_id, byref(side_set_node_list_len))
+            self.fileId, side_set_id, ctypes.byref(side_set_node_list_len))
         return side_set_node_list_len
 
     # --------------------------------------------------------------------
 
     def __ex_get_set_param(self, objType, object_id):
-        object_type = c_int(get_entity_type(objType))
-        side_set_id = c_longlong(object_id)
+        object_type = ctypes.c_int(get_entity_type(objType))
+        side_set_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            num_side_in_set = c_longlong(0)
-            num_dist_fact_in_set = c_longlong(0)
+            num_side_in_set = ctypes.c_longlong(0)
+            num_dist_fact_in_set = ctypes.c_longlong(0)
         else:
-            num_side_in_set = c_int(0)
-            num_dist_fact_in_set = c_int(0)
+            num_side_in_set = ctypes.c_int(0)
+            num_dist_fact_in_set = ctypes.c_int(0)
         EXODUS_LIB.ex_get_set_param(
             self.fileId,
             object_type,
             side_set_id,
-            byref(num_side_in_set),
-            byref(num_dist_fact_in_set))
+            ctypes.byref(num_side_in_set),
+            ctypes.byref(num_dist_fact_in_set))
         return int(num_side_in_set.value), int(num_dist_fact_in_set.value)
 
     # --------------------------------------------------------------------
 
     def __ex_put_set_param(self, objType, object_id, numSides, numDistFacts):
-        object_type = c_int(get_entity_type(objType))
-        side_set_id = c_longlong(object_id)
-        num_side_in_set = c_longlong(numSides)
-        num_dist_fact_in_set = c_longlong(numDistFacts)
+        object_type = ctypes.c_int(get_entity_type(objType))
+        side_set_id = ctypes.c_longlong(object_id)
+        num_side_in_set = ctypes.c_longlong(numSides)
+        num_dist_fact_in_set = ctypes.c_longlong(numDistFacts)
         EXODUS_LIB.ex_put_set_param(
             self.fileId,
             object_type,
@@ -5074,37 +5116,37 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_side_set(self, sideSetId):
-        side_set_id = c_longlong(sideSetId)
+        side_set_id = ctypes.c_longlong(sideSetId)
         (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_set_param(&#39;EX_SIDE_SET&#39;, sideSetId)
         if num_side_in_set == 0:
             return [], []
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            side_set_elem_list = (c_longlong * num_side_in_set)()
-            side_set_side_list = (c_longlong * num_side_in_set)()
+            side_set_elem_list = (ctypes.c_longlong * num_side_in_set)()
+            side_set_side_list = (ctypes.c_longlong * num_side_in_set)()
         else:
-            side_set_elem_list = (c_int * num_side_in_set)()
-            side_set_side_list = (c_int * num_side_in_set)()
+            side_set_elem_list = (ctypes.c_int * num_side_in_set)()
+            side_set_side_list = (ctypes.c_int * num_side_in_set)()
         EXODUS_LIB.ex_get_side_set(self.fileId, side_set_id,
-                                   byref(side_set_elem_list),
-                                   byref(side_set_side_list))
+                                   ctypes.byref(side_set_elem_list),
+                                   ctypes.byref(side_set_side_list))
         return side_set_elem_list, side_set_side_list
 
     # --------------------------------------------------------------------
 
     def __ex_put_side_set(self, object_id, sideSetElements, sideSetSides):
-        side_set_id = c_longlong(object_id)
+        side_set_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            side_set_elem_list = (c_longlong * len(sideSetElements))()
-            side_set_side_list = (c_longlong * len(sideSetSides))()
+            side_set_elem_list = (ctypes.c_longlong * len(sideSetElements))()
+            side_set_side_list = (ctypes.c_longlong * len(sideSetSides))()
             for i, sse in enumerate(sideSetElements):
-                side_set_elem_list[i] = c_longlong(sse)
-                side_set_side_list[i] = c_longlong(sideSetSides[i])
+                side_set_elem_list[i] = ctypes.c_longlong(sse)
+                side_set_side_list[i] = ctypes.c_longlong(sideSetSides[i])
         else:
-            side_set_elem_list = (c_int * len(sideSetElements))()
-            side_set_side_list = (c_int * len(sideSetSides))()
+            side_set_elem_list = (ctypes.c_int * len(sideSetElements))()
+            side_set_side_list = (ctypes.c_int * len(sideSetSides))()
             for i, sse in enumerate(sideSetElements):
-                side_set_elem_list[i] = c_int(sse)
-                side_set_side_list[i] = c_int(sideSetSides[i])
+                side_set_elem_list[i] = ctypes.c_int(sse)
+                side_set_side_list[i] = ctypes.c_int(sideSetSides[i])
         EXODUS_LIB.ex_put_side_set(
             self.fileId,
             side_set_id,
@@ -5115,51 +5157,51 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_side_set_dist_fact(self, sideSetId):
-        side_set_id = c_longlong(sideSetId)
+        side_set_id = ctypes.c_longlong(sideSetId)
         side_set_node_list_len = self.__ex_get_side_set_node_list_len(
             sideSetId)
-        set_dfs = (c_double * side_set_node_list_len.value)()
+        set_dfs = (ctypes.c_double * side_set_node_list_len.value)()
         EXODUS_LIB.ex_get_side_set_dist_fact(
-            self.fileId, side_set_id, byref(set_dfs))
+            self.fileId, side_set_id, ctypes.byref(set_dfs))
         return set_dfs
 
     # --------------------------------------------------------------------
 
     def __ex_put_side_set_dist_fact(self, sideSetId, sideSetDistFact):
-        side_set_id = c_longlong(sideSetId)
-        side_set_dist_fact = (c_double * len(sideSetDistFact))()
+        side_set_id = ctypes.c_longlong(sideSetId)
+        side_set_dist_fact = (ctypes.c_double * len(sideSetDistFact))()
         for i, df in enumerate(sideSetDistFact):
-            side_set_dist_fact[i] = c_double(df)
+            side_set_dist_fact[i] = ctypes.c_double(df)
         EXODUS_LIB.ex_put_side_set_dist_fact(
             self.fileId, side_set_id, side_set_dist_fact)
 
     # --------------------------------------------------------------------
 
     def __ex_get_side_set_node_list(self, object_id):
-        side_set_id = c_longlong(object_id)
+        side_set_id = ctypes.c_longlong(object_id)
         side_set_node_list_len = self.__ex_get_side_set_node_list_len(object_id)
         (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_set_param(&#39;EX_SIDE_SET&#39;, object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            side_set_node_cnt_list = (c_longlong * num_side_in_set)()
-            side_set_node_list = (c_longlong * side_set_node_list_len.value)()
+            side_set_node_cnt_list = (ctypes.c_longlong * num_side_in_set)()
+            side_set_node_list = (ctypes.c_longlong * side_set_node_list_len.value)()
         else:
-            side_set_node_cnt_list = (c_int * num_side_in_set)()
-            side_set_node_list = (c_int * side_set_node_list_len.value)()
+            side_set_node_cnt_list = (ctypes.c_int * num_side_in_set)()
+            side_set_node_list = (ctypes.c_int * side_set_node_list_len.value)()
         EXODUS_LIB.ex_get_side_set_node_list(self.fileId, side_set_id,
-                                             byref(side_set_node_cnt_list),
-                                             byref(side_set_node_list))
+                                             ctypes.byref(side_set_node_cnt_list),
+                                             ctypes.byref(side_set_node_list))
         return side_set_node_cnt_list, side_set_node_list
 
     # --------------------------------------------------------------------
 
     def __ex_put_variable_param(self, varType, numVars):
-        num_vars = c_int(numVars)
+        num_vars = ctypes.c_int(numVars)
         current_num = self.__ex_get_variable_param(varType)
         if current_num.value == num_vars.value:
             # print &#34;value already set&#34;
             return True
 
-        var_type = c_int(get_entity_type(varType))
+        var_type = ctypes.c_int(get_entity_type(varType))
         errorInt = EXODUS_LIB.ex_put_variable_param(
             self.fileId, var_type, num_vars)
         if errorInt != 0:
@@ -5172,32 +5214,32 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_variable_name(self, varType, varId):
-        var_type = c_int(varType)
-        var_id = c_int(varId)
-        name = create_string_buffer(MAX_NAME_LENGTH + 1)
+        var_type = ctypes.c_int(varType)
+        var_id = ctypes.c_int(varId)
+        name = ctypes.create_string_buffer(MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_get_variable_name(self.fileId, var_type, var_id, name)
         return name.decode(&#39;utf8&#39;)
 
     # --------------------------------------------------------------------
 
     def __ex_put_variable_name(self, varType, varId, varName):
-        var_type = c_int(get_entity_type(varType))
-        var_id = c_int(varId)
-        name = create_string_buffer(varName, MAX_NAME_LENGTH + 1)
+        var_type = ctypes.c_int(get_entity_type(varType))
+        var_id = ctypes.c_int(varId)
+        name = ctypes.create_string_buffer(varName.encode(&#39;ascii&#39;), MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_variable_name(self.fileId, var_type, var_id, name)
         return True
 
     # --------------------------------------------------------------------
 
     def __ex_get_elem_attr_names(self, blkId):
-        object_id = c_longlong(blkId)
-        num_attr = c_int(self.num_attr(blkId))
+        object_id = ctypes.c_longlong(blkId)
+        num_attr = ctypes.c_int(self.num_attr(blkId))
         len_name = self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_MAX_READ_NAME_LENGTH&#39;))
-        attr_name_ptrs = (POINTER(c_char * (len_name + 1)) * num_attr.value)()
+        attr_name_ptrs = (ctypes.POINTER(ctypes.c_char * (len_name + 1)) * num_attr.value)()
         for i in range(num_attr.value):
-            attr_name_ptrs[i] = pointer(create_string_buffer(len_name + 1))
+            attr_name_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(len_name + 1))
         EXODUS_LIB.ex_get_elem_attr_names(
-            self.fileId, object_id, byref(attr_name_ptrs))
+            self.fileId, object_id, ctypes.byref(attr_name_ptrs))
         attr_names = []
         for cnp in attr_name_ptrs:
             attr_names.append(cnp.contents.value.decode(&#39;utf8&#39;))
@@ -5206,32 +5248,32 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_elem_attr_names(self, blkId, varNames):
-        object_id = c_int(blkId)
-        num_attr = c_int(self.num_attr(blkId))
+        object_id = ctypes.c_int(blkId)
+        num_attr = ctypes.c_int(self.num_attr(blkId))
         len_name = self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_MAX_READ_NAME_LENGTH&#39;))
-        attr_name_ptrs = (POINTER(c_char * (len_name + 1)) * num_attr.value)()
+        attr_name_ptrs = (ctypes.POINTER(ctypes.c_char * (len_name + 1)) * num_attr.value)()
         assert len(varNames) == num_attr.value
         for i in range(num_attr.value):
-            attr_name_ptrs[i] = pointer(
-                create_string_buffer(
-                    varNames[i], len_name + 1))
+            attr_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
+                    varNames[i].encode(&#39;ascii&#39;), len_name + 1))
         EXODUS_LIB.ex_put_elem_attr_names(
-            self.fileId, object_id, byref(attr_name_ptrs))
+            self.fileId, object_id, ctypes.byref(attr_name_ptrs))
         return True
 
     # --------------------------------------------------------------------
 
     def __ex_get_prop_names(self, varType, inqType):
-        var_type = c_int(get_entity_type(varType))
-        num_props = c_int(self.__ex_inquire_int(ex_inquiry_map(inqType)))
+        var_type = ctypes.c_int(get_entity_type(varType))
+        num_props = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(inqType)))
         prop_name_ptrs = (
-            POINTER(c_char * (MAX_STR_LENGTH + 1)) * num_props.value)()
+            ctypes.POINTER(ctypes.c_char * (MAX_STR_LENGTH + 1)) * num_props.value)()
         for i in range(num_props.value):
-            prop_name_ptrs[i] = pointer(
-                create_string_buffer(
+            prop_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     MAX_STR_LENGTH + 1))
         EXODUS_LIB.ex_get_prop_names(
-            self.fileId, var_type, byref(prop_name_ptrs))
+            self.fileId, var_type, ctypes.byref(prop_name_ptrs))
         prop_names = []
         for cnp in prop_name_ptrs:
             prop_names.append(cnp.contents.value.decode(&#39;utf8&#39;))
@@ -5240,33 +5282,33 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_prop(self, objType, objId, propName):
-        obj_type = c_int(get_entity_type(objType))
-        obj_id = c_longlong(objId)
-        prop_name = create_string_buffer(propName.encode(&#39;ascii&#39;), MAX_STR_LENGTH + 1)
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
+        prop_name = ctypes.create_string_buffer(propName.encode(&#39;ascii&#39;), MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_IDS_INT64_API:
-            prop_val = c_longlong(0)
+            prop_val = ctypes.c_longlong(0)
         else:
-            prop_val = c_int(0)
+            prop_val = ctypes.c_int(0)
         EXODUS_LIB.ex_get_prop(
             self.fileId,
             obj_type,
             obj_id,
-            byref(prop_name),
-            byref(prop_val))
+            ctypes.byref(prop_name),
+            ctypes.byref(prop_val))
         return prop_val.value
 
     # --------------------------------------------------------------------
 
     def __ex_put_prop(self, objType, objId, propName, propVal):
-        obj_type = c_int(get_entity_type(objType))
-        obj_id = c_longlong(objId)
-        prop_name = create_string_buffer(propName.encode(&#39;ascii&#39;), MAX_STR_LENGTH + 1)
-        prop_val = c_longlong(propVal)
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
+        prop_name = ctypes.create_string_buffer(propName.encode(&#39;ascii&#39;), MAX_STR_LENGTH + 1)
+        prop_val = ctypes.c_longlong(propVal)
         EXODUS_LIB.ex_put_prop(
             self.fileId,
             obj_type,
             obj_id,
-            byref(prop_name),
+            ctypes.byref(prop_name),
             prop_val)
         return True
 
@@ -5276,7 +5318,7 @@ class exodus:
         EXODUS_LIB.ex_update(self.fileId)
         return True
 
-    # --------------------------------------------------------------------
+# --------------------------------------------------------------------
 # Utility Functions
 # --------------------------------------------------------------------
 
@@ -5452,7 +5494,7 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
     # If the user did not supply a exodus object to copy from, attempt to read an
     # exodus database with the name &#34;fromFileName&#34;
     if exoFromObj is None:
-        exoFrom = exodus(fromFileName.encode(&#39;ascii&#39;), &#34;r&#34;, array_type=array_type)
+        exoFrom = exodus(fromFileName, &#34;r&#34;, array_type=array_type)
     else:
         exoFrom = exoFromObj
 
@@ -5852,7 +5894,7 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[], node_set_
     if not isinstance(side_set_vars, list):
         raise Exception(&#34;ERROR: side_set_vars is not a list.&#34;)
 
-    if exo.modeChar is &#39;r&#39;:
+    if exo.modeChar == &#39;r&#39;:
         raise Exception(
             &#34;ERROR: variables cannot be added to an exodus object in read only mode&#34;)
 
@@ -5901,24 +5943,27 @@ def add_variables(exo, global_vars=[], nodal_vars=[], element_vars=[], node_set_
 
 def internal_add_variables(exo, obj_type, entvars, debugPrint):
     &#34;&#34;&#34; Internal support function for `exodus.add_variables` &#34;&#34;&#34;
+
+    if len(entvars) == 0:
+        return
+    
     if debugPrint:
         print(&#34;Construct Truth Table for additional variables&#34;)
-    exo.__add_variables(obj_type)
 
-    new_e_var_names = []
-    new_e_var_blks = []
+    new_var_names = []
+    new_var_blks = []
     blk_ids = exo.get_ids(obj_type)
     for item in entvars:
         if isinstance(item, tuple):
-            new_e_var_names.append(item[0])
+            new_var_names.append(item[0])
             in_blks = []
             for blk_id in item[1]:
                 if blk_id in blk_ids:
                     in_blks.append(blk_id)
-            new_e_var_blks.append(in_blks)
+            new_var_blks.append(in_blks)
         elif isinstance(item, str):
-            new_e_var_names.append(item)
-            new_e_var_blks.append(blk_ids)
+            new_var_names.append(item)
+            new_var_blks.append(blk_ids)
         else:
             print((&#34;Warning additional variable item &#34; +
                    item + &#34; is not right type to add.&#34;))
@@ -5926,7 +5971,7 @@ def internal_add_variables(exo, obj_type, entvars, debugPrint):
 
     if debugPrint:
         print(&#34;Add Variables&#34;)
-    n_new_vars = len(new_e_var_names)
+    n_new_vars = len(new_var_names)
     n_old_vars = exo.get_variable_number(obj_type)
     n_vars = n_old_vars + n_new_vars
     if n_new_vars &gt; 0:
@@ -5941,12 +5986,12 @@ def internal_add_variables(exo, obj_type, entvars, debugPrint):
                 ndx = j * n_old_vars + k
                 truth_table.append(old_truth_table[ndx])
             for m in range(n_new_vars):
-                if blk_ids[j] in new_e_var_blks[m]:
+                if blk_ids[j] in new_var_blks[m]:
                     truth_table.append(True)
                 else:
                     truth_table.append(False)
         exo.set_variable_truth_table(obj_type, truth_table)
-        for i, var_name in enumerate(new_e_var_names):
+        for i, var_name in enumerate(new_var_names):
             exo.put_variable_name(obj_type, var_name, n_old_vars + i + 1)
 
 
@@ -6161,7 +6206,7 @@ See <a title="exodus.copy_mesh" href="#exodus.copy_mesh"><code>copy_mesh()</code
     if not isinstance(side_set_vars, list):
         raise Exception(&#34;ERROR: side_set_vars is not a list.&#34;)
 
-    if exo.modeChar is &#39;r&#39;:
+    if exo.modeChar == &#39;r&#39;:
         raise Exception(
             &#34;ERROR: variables cannot be added to an exodus object in read only mode&#34;)
 
@@ -6619,7 +6664,7 @@ later.</p></section>
     # If the user did not supply a exodus object to copy from, attempt to read an
     # exodus database with the name &#34;fromFileName&#34;
     if exoFromObj is None:
-        exoFrom = exodus(fromFileName.encode(&#39;ascii&#39;), &#34;r&#34;, array_type=array_type)
+        exoFrom = exodus(fromFileName, &#34;r&#34;, array_type=array_type)
     else:
         exoFrom = exoFromObj
 
@@ -6932,24 +6977,27 @@ found.</p></section>
 <summary>Source code</summary>
 <pre><code class="python">def internal_add_variables(exo, obj_type, entvars, debugPrint):
     &#34;&#34;&#34; Internal support function for `exodus.add_variables` &#34;&#34;&#34;
+
+    if len(entvars) == 0:
+        return
+    
     if debugPrint:
         print(&#34;Construct Truth Table for additional variables&#34;)
-    exo.__add_variables(obj_type)
 
-    new_e_var_names = []
-    new_e_var_blks = []
+    new_var_names = []
+    new_var_blks = []
     blk_ids = exo.get_ids(obj_type)
     for item in entvars:
         if isinstance(item, tuple):
-            new_e_var_names.append(item[0])
+            new_var_names.append(item[0])
             in_blks = []
             for blk_id in item[1]:
                 if blk_id in blk_ids:
                     in_blks.append(blk_id)
-            new_e_var_blks.append(in_blks)
+            new_var_blks.append(in_blks)
         elif isinstance(item, str):
-            new_e_var_names.append(item)
-            new_e_var_blks.append(blk_ids)
+            new_var_names.append(item)
+            new_var_blks.append(blk_ids)
         else:
             print((&#34;Warning additional variable item &#34; +
                    item + &#34; is not right type to add.&#34;))
@@ -6957,7 +7005,7 @@ found.</p></section>
 
     if debugPrint:
         print(&#34;Add Variables&#34;)
-    n_new_vars = len(new_e_var_names)
+    n_new_vars = len(new_var_names)
     n_old_vars = exo.get_variable_number(obj_type)
     n_vars = n_old_vars + n_new_vars
     if n_new_vars &gt; 0:
@@ -6972,12 +7020,12 @@ found.</p></section>
                 ndx = j * n_old_vars + k
                 truth_table.append(old_truth_table[ndx])
             for m in range(n_new_vars):
-                if blk_ids[j] in new_e_var_blks[m]:
+                if blk_ids[j] in new_var_blks[m]:
                     truth_table.append(True)
                 else:
                     truth_table.append(False)
         exo.set_variable_truth_table(obj_type, truth_table)
-        for i, var_name in enumerate(new_e_var_names):
+        for i, var_name in enumerate(new_var_names):
             exo.put_variable_name(obj_type, var_name, n_old_vars + i + 1)</code></pre>
 </details>
 </dd>
@@ -7301,7 +7349,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     EX_FACE_SET   = 9
     EX_ELEM_BLOCK = 1
     EX_ELEM_SET   = 10
-    EX_SIDE_SET = 3    
+    EX_SIDE_SET = 3
     EX_ELEM_MAP = 4
     EX_NODE_MAP = 5
     EX_EDGE_MAP = 11
@@ -7427,7 +7475,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
 </dl></section>
 <details class="source">
 <summary>Source code</summary>
-<pre><code class="python">class ex_init_params(Structure):
+<pre><code class="python">class ex_init_params(ctypes.Structure):
     &#34;&#34;&#34;
     Parameters defining the model dimension, note that many are optional.
 
@@ -7468,24 +7516,24 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     num_elem_maps : int
         number of model elem maps
     &#34;&#34;&#34;
-    _fields_ = [(&#34;title&#34;, c_char * (MAX_LINE_LENGTH + 1)),
-                (&#34;num_dim&#34;, c_longlong),
-                (&#34;num_nodes&#34;, c_longlong),
-                (&#34;num_edge&#34;, c_longlong),
-                (&#34;num_edge_blk&#34;, c_longlong),
-                (&#34;num_face&#34;, c_longlong),
-                (&#34;num_face_blk&#34;, c_longlong),
-                (&#34;num_elem&#34;, c_longlong),
-                (&#34;num_elem_blk&#34;, c_longlong),
-                (&#34;num_node_sets&#34;, c_longlong),
-                (&#34;num_edge_sets&#34;, c_longlong),
-                (&#34;num_face_sets&#34;, c_longlong),
-                (&#34;num_side_sets&#34;, c_longlong),
-                (&#34;num_elem_sets&#34;, c_longlong),
-                (&#34;num_node_maps&#34;, c_longlong),
-                (&#34;num_edge_maps&#34;, c_longlong),
-                (&#34;num_face_maps&#34;, c_longlong),
-                (&#34;num_elem_maps&#34;, c_longlong)]</code></pre>
+    _fields_ = [(&#34;title&#34;, ctypes.c_char * (MAX_LINE_LENGTH + 1)),
+                (&#34;num_dim&#34;, ctypes.c_longlong),
+                (&#34;num_nodes&#34;, ctypes.c_longlong),
+                (&#34;num_edge&#34;, ctypes.c_longlong),
+                (&#34;num_edge_blk&#34;, ctypes.c_longlong),
+                (&#34;num_face&#34;, ctypes.c_longlong),
+                (&#34;num_face_blk&#34;, ctypes.c_longlong),
+                (&#34;num_elem&#34;, ctypes.c_longlong),
+                (&#34;num_elem_blk&#34;, ctypes.c_longlong),
+                (&#34;num_node_sets&#34;, ctypes.c_longlong),
+                (&#34;num_edge_sets&#34;, ctypes.c_longlong),
+                (&#34;num_face_sets&#34;, ctypes.c_longlong),
+                (&#34;num_side_sets&#34;, ctypes.c_longlong),
+                (&#34;num_elem_sets&#34;, ctypes.c_longlong),
+                (&#34;num_node_maps&#34;, ctypes.c_longlong),
+                (&#34;num_edge_maps&#34;, ctypes.c_longlong),
+                (&#34;num_face_maps&#34;, ctypes.c_longlong),
+                (&#34;num_elem_maps&#34;, ctypes.c_longlong)]</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -7863,6 +7911,78 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
 </dd>
 </dl>
 </dd>
+<dt id="exodus.ex_options"><code class="flex name class">
+<span>class <span class="ident">ex_options</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p><code>ex_opts()</code> function codes - codes are OR'ed into exopts</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>EX_DEFAULT</code></strong></dt>
+<dd>Application responsible for calling <code>ex_err()</code> to get error and warning messages to output; library is quiet</dd>
+<dt><strong><code>EX_VERBOSE</code></strong></dt>
+<dd>Verbose mode &ndash; output all error and warning messages</dd>
+<dt><strong><code>EX_DEBUG</code></strong></dt>
+<dd>Output Debug messages</dd>
+<dt><strong><code>EX_ABORT</code></strong></dt>
+<dd>If an error is detected, library will abort instead of letting application decide</dd>
+<dt><strong><code>EX_NULLVERBOSE</code></strong></dt>
+<dd>Output error and warning messages for NULL Entity errors and warnings</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class ex_options(Enum):
+    &#34;&#34;&#34;
+    `ex_opts()` function codes - codes are OR&#39;ed into exopts
+
+    Parameters
+    ----------
+    EX_DEFAULT
+         Application responsible for calling `ex_err()` to get error and warning messages to output; library is quiet
+    EX_VERBOSE
+         Verbose mode -- output all error and warning messages
+    EX_DEBUG
+         Output Debug messages
+    EX_ABORT
+         If an error is detected, library will abort instead of letting application decide
+    EX_NULLVERBOSE
+         Output error and warning messages for NULL Entity errors and warnings
+    &#34;&#34;&#34;
+    EX_DEFAULT     = 0
+    EX_VERBOSE     = 1
+    EX_DEBUG       = 2
+    EX_ABORT       = 4
+    EX_NULLVERBOSE = 8</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="exodus.ex_options.EX_ABORT"><code class="name">var <span class="ident">EX_ABORT</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="exodus.ex_options.EX_DEBUG"><code class="name">var <span class="ident">EX_DEBUG</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="exodus.ex_options.EX_DEFAULT"><code class="name">var <span class="ident">EX_DEFAULT</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="exodus.ex_options.EX_NULLVERBOSE"><code class="name">var <span class="ident">EX_NULLVERBOSE</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="exodus.ex_options.EX_VERBOSE"><code class="name">var <span class="ident">EX_VERBOSE</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+</dl>
+</dd>
 <dt id="exodus.exodus"><code class="flex name class">
 <span>class <span class="ident">exodus</span></span>
 <span>(</span><span>file, mode=None, array_type='ctype', title=None, numDims=None, numNodes=None, numElems=None, numBlocks=None, numNodeSets=None, numSideSets=None, init_params=None, io_size=0)</span>
@@ -7980,7 +8100,11 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         ...             array_type=array_type, init_params=ex_pars)
 
         &#34;&#34;&#34;
-        print(EXODUS_PY_COPYRIGHT)
+        global SHOW_BANNER
+        if SHOW_BANNER:
+            print(EXODUS_PY_COPYRIGHT)
+            SHOW_BANNER = False
+
         if mode is None:
             mode = &#39;r&#39;
 
@@ -8020,10 +8144,10 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
                 assert None not in info
                 self.__ex_put_info(info)
 
-            self.numTimes = c_int(0)
+            self.numTimes = ctypes.c_int(0)
         else:
             self.__ex_get_info()
-            self.numTimes = c_int(
+            self.numTimes = ctypes.c_int(
                 self.__ex_inquire_int(
                     ex_inquiry_map(&#39;EX_INQ_TIME&#39;)))
 
@@ -8112,15 +8236,15 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
                   .format(p.title, MAX_LINE_LENGTH))
             p.title = p.title[-1*MAX_LINE_LENGTH:]
 
-        self.Title = create_string_buffer(p.title, MAX_LINE_LENGTH + 1)
-        self.numDim = c_longlong(p.num_dim)
-        self.numNodes = c_longlong(p.num_nodes)
-        self.numElem = c_longlong(p.num_elem)
-        self.numElemBlk = c_longlong(p.num_elem_blk)
-        self.numNodeSets = c_longlong(p.num_node_sets)
-        self.numSideSets = c_longlong(p.num_side_sets)
+        self.Title = ctypes.create_string_buffer(p.title, MAX_LINE_LENGTH + 1)
+        self.numDim = ctypes.c_longlong(p.num_dim)
+        self.numNodes = ctypes.c_longlong(p.num_nodes)
+        self.numElem = ctypes.c_longlong(p.num_elem)
+        self.numElemBlk = ctypes.c_longlong(p.num_elem_blk)
+        self.numNodeSets = ctypes.c_longlong(p.num_node_sets)
+        self.numSideSets = ctypes.c_longlong(p.num_side_sets)
 
-        EXODUS_LIB.ex_put_init_ext(self.fileId, byref(p))
+        EXODUS_LIB.ex_put_init_ext(self.fileId, ctypes.byref(p))
         return True
 
 
@@ -8145,8 +8269,8 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         exo_copy : exodus object
         &#34;&#34;&#34;
         fileId = EXODUS_LIB.ex_create_int(fileName.encode(&#39;ascii&#39;), EX_NOCLOBBER,
-                                          byref(self.comp_ws),
-                                          byref(self.io_ws),
+                                          ctypes.byref(self.comp_ws),
+                                          ctypes.byref(self.io_ws),
                                           EX_API_VERSION_NODOT)
 
         i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
@@ -8225,6 +8349,20 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         self.__ex_put_info([Title, numDim, numNodes, numElem,
                             numElemBlk, numNodeSets, numSideSets])
         return True
+
+    # --------------------------------------------------------------------
+
+    def num_qa_records(self):
+        &#34;&#34;&#34;
+        get the number of qa records
+
+        &gt;&gt;&gt; num_qa_recs = exo.num_qa_records()
+
+        Returns
+        -------
+        num_qa_recs : int
+        &#34;&#34;&#34;
+        return int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_QA&#39;)))
 
     # --------------------------------------------------------------------
 
@@ -8404,7 +8542,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         Returns
         -------
             if array_type == &#39;ctype&#39; :
-              &lt;list&lt;c_double&gt;&gt;  time_vals
+              &lt;list&lt;ctypes.c_double&gt;&gt;  time_vals
 
             if array_type == &#39;numpy&#39; :
               &lt;np_array&lt;double&gt;&gt;  time_vals
@@ -8438,7 +8576,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
             True = successful execution
         &#34;&#34;&#34;
         self.__ex_put_time(step, value)
-        self.numTimes = c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_TIME&#39;)))
+        self.numTimes = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_TIME&#39;)))
         return True
 
     #
@@ -8519,9 +8657,9 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         -------
 
             if array_type == &#39;ctype&#39;:
-              &lt;list&lt;c_double&gt;&gt;  x_coords  global x-direction coordinates
-              &lt;list&lt;c_double&gt;&gt;  y_coords  global y-direction coordinates
-              &lt;list&lt;c_double&gt;&gt;  z_coords  global z-direction coordinates
+              &lt;list&lt;ctypes.c_double&gt;&gt;  x_coords  global x-direction coordinates
+              &lt;list&lt;ctypes.c_double&gt;&gt;  y_coords  global y-direction coordinates
+              &lt;list&lt;ctypes.c_double&gt;&gt;  z_coords  global z-direction coordinates
 
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;double&gt;&gt;  x_coords  global x-direction coordinates
@@ -8689,7 +8827,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
 
         Returns
         -------
-            &lt;list&lt;c_int&gt;&gt;  node_id_map
+            &lt;list&lt;ctypes.c_int&gt;&gt;  node_id_map
         &#34;&#34;&#34;
         nodeNumMap = self.__ex_get_node_num_map()
         return nodeNumMap
@@ -8915,7 +9053,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         -------
 
             if array_type == &#39;ctype&#39;:
-              &lt;list&lt;c_double&gt;&gt;  nvar_vals
+              &lt;list&lt;ctypes.c_double&gt;&gt;  nvar_vals
 
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;double&gt;&gt;  nvar_vals
@@ -9042,7 +9180,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
 
         Returns
         -------
-            &lt;list&lt;c_int&gt;&gt;  elem_id_map
+            &lt;list&lt;ctypes.c_int&gt;&gt;  elem_id_map
         &#34;&#34;&#34;
         elemNumMap = self.__ex_get_elem_num_map()
         return elemNumMap
@@ -9653,7 +9791,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         -------
 
             if array_type == &#39;ctype&#39;:
-              &lt;list&lt;c_double&gt;&gt;  evar_vals
+              &lt;list&lt;ctypes.c_double&gt;&gt;  evar_vals
 
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;double&gt;&gt;  evar_vals
@@ -10265,7 +10403,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         -------
 
             if array_type == &#39;ctype&#39;:
-              &lt;list&lt;c_double&gt;&gt;  nsvar_vals
+              &lt;list&lt;ctypes.c_double&gt;&gt;  nsvar_vals
 
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;double&gt;&gt;  nsvar_vals
@@ -10851,7 +10989,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         truth_tab : &lt;list&lt;bool&gt;&gt;
             True for variable defined in an entity, False otherwise
         &#34;&#34;&#34;
-        if entId is not None:
+        if entId is None:
             truthTable = self.__ex_get_truth_table(objType)
         else:
             truthTable = self.__ex_get_object_truth_vector(objType, entId)
@@ -10989,7 +11127,7 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         -------
 
             if array_type == &#39;ctype&#39;:
-              &lt;list&lt;c_double&gt;&gt;  ssvar_vals
+              &lt;list&lt;ctypes.c_double&gt;&gt;  ssvar_vals
 
             if array_type == &#39;numpy&#39;:
               &lt;np_array&lt;double&gt;&gt;  ssvar_vals
@@ -11265,17 +11403,17 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         names = self.get_variable_names(&#39;EX_GLOBAL&#39;)
         # get all values
         numVals = self.get_variable_number(&#39;EX_GLOBAL&#39;)
-        values = (c_double * numVals)()
+        values = (ctypes.c_double * numVals)()
         for i in range(numVals):
-            values[i] = c_double(
+            values[i] = ctypes.c_double(
                 self.get_global_variable_value(
                     names[i], step))
         # adjust one of them
-        values[names.index(name)] = c_double(value)
+        values[names.index(name)] = ctypes.c_double(value)
         # write them all
         EXODUS_LIB.ex_put_var(self.fileId,
-                              c_int(step),
-                              c_int(numVals),
+                              ctypes.c_int(step),
+                              ctypes.c_int(numVals),
                               values)
         return True
 
@@ -11300,12 +11438,12 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
             True = successful execution
         &#34;&#34;&#34;
         numVals = self.get_variable_number(&#39;EX_GLOBAL&#39;)
-        gvalues = (c_double * numVals)()
+        gvalues = (ctypes.c_double * numVals)()
         for i in range(numVals):
-            gvalues[i] = c_double(values[i])
+            gvalues[i] = ctypes.c_double(values[i])
         EXODUS_LIB.ex_put_glob_vars(self.fileId,
-                                    c_int(step),
-                                    c_int(numVals),
+                                    ctypes.c_int(step),
+                                    ctypes.c_int(numVals),
                                     gvalues)
         return True
 
@@ -11367,14 +11505,14 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
             True = successful execution
         &#34;&#34;&#34;
 
-        ebType = get_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-        EXODUS_LIB.ex_put_block(self.fileId, ebType, c_longlong(blkID),
-                                create_string_buffer(b&#34;NFACED&#34;),
-                                c_longlong(num_elems_this_blk),
-                                c_longlong(0),
-                                c_longlong(0),
-                                c_longlong(num_faces),
-                                c_longlong(num_attr_per_elem))
+        ebType = ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;))
+        EXODUS_LIB.ex_put_block(self.fileId, ebType, ctypes.c_longlong(blkID),
+                                ctypes.create_string_buffer(b&#34;NFACED&#34;),
+                                ctypes.c_longlong(num_elems_this_blk),
+                                ctypes.c_longlong(0),
+                                ctypes.c_longlong(0),
+                                ctypes.c_longlong(num_faces),
+                                ctypes.c_longlong(num_attr_per_elem))
         return True
 
     # --------------------------------------------------------------------
@@ -11401,14 +11539,14 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         status : bool
             True = successful execution
         &#34;&#34;&#34;
-        fbType = get_entity_type(&#39;EX_FACE_BLOCK&#39;)
-        EXODUS_LIB.ex_put_block(self.fileId, fbType, c_longlong(blkID),
-                                create_string_buffer(b&#34;NSIDED&#34;),
-                                c_longlong(num_faces_this_blk),
-                                c_longlong(num_nodes),
-                                c_longlong(0),
-                                c_longlong(0),
-                                c_longlong(num_attr_per_face))
+        fbType = ctypes.c_int(get_entity_type(&#39;EX_FACE_BLOCK&#39;))
+        EXODUS_LIB.ex_put_block(self.fileId, fbType, ctypes.c_longlong(blkID),
+                                ctypes.create_string_buffer(b&#34;NSIDED&#34;),
+                                ctypes.c_longlong(num_faces_this_blk),
+                                ctypes.c_longlong(num_nodes),
+                                ctypes.c_longlong(0),
+                                ctypes.c_longlong(0),
+                                ctypes.c_longlong(num_attr_per_face))
         return True
 
     # --------------------------------------------------------------------
@@ -11434,11 +11572,11 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         status : bool
             True = successful execution
         &#34;&#34;&#34;
-        ebType = get_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-        entity_counts = (c_int * len(entityCounts))()
+        ebType = ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;))
+        entity_counts = (ctypes.c_int * len(entityCounts))()
         entity_counts[:] = entityCounts
         EXODUS_LIB.ex_put_entity_count_per_polyhedra(
-            self.fileId, ebType, c_longlong(blkID), entity_counts)
+            self.fileId, ebType, ctypes.c_longlong(blkID), entity_counts)
         return True
 
     # --------------------------------------------------------------------
@@ -11464,11 +11602,11 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         status : bool
             True = successful execution
         &#34;&#34;&#34;
-        ebType = get_entity_type(&#39;EX_FACE_BLOCK&#39;)
-        entity_counts = (c_int * len(entityCounts))()
+        ebType = ctypes.c_int(get_entity_type(&#39;EX_FACE_BLOCK&#39;))
+        entity_counts = (ctypes.c_int * len(entityCounts))()
         entity_counts[:] = entityCounts
         EXODUS_LIB.ex_put_entity_count_per_polyhedra(
-            self.fileId, ebType, c_longlong(blkID), entity_counts)
+            self.fileId, ebType, ctypes.c_longlong(blkID), entity_counts)
         return True
 
     # --------------------------------------------------------------------
@@ -11494,10 +11632,10 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         status : bool
             True = successful execution
         &#34;&#34;&#34;
-        ebType = get_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-        elem_face_conn = (c_int * len(elemFaceConn))()
+        ebType = ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;))
+        elem_face_conn = (ctypes.c_int * len(elemFaceConn))()
         elem_face_conn[:] = elemFaceConn
-        EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_longlong(blkId),
+        EXODUS_LIB.ex_put_conn(self.fileId, ebType, ctypes.c_longlong(blkId),
                                None, None, elem_face_conn)
         return True
 
@@ -11524,10 +11662,10 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
         status : bool
             True = successful execution
         &#34;&#34;&#34;
-        ebType = get_entity_type(&#39;EX_FACE_BLOCK&#39;)
-        node_conn = (c_int * len(faceNodeConn))()
+        ebType = ctypes.c_int(get_entity_type(&#39;EX_FACE_BLOCK&#39;))
+        node_conn = (ctypes.c_int * len(faceNodeConn))()
         node_conn[:] = faceNodeConn
-        EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_longlong(blkId),
+        EXODUS_LIB.ex_put_conn(self.fileId, ebType, ctypes.c_longlong(blkId),
                                node_conn, None, None)
         return True
 
@@ -11581,27 +11719,27 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
                 self.modeChar +
                 &#34; unrecognized.&#34;)
 
-        self.comp_ws = c_int(8)
-        self.io_ws = c_int(io_size)
-        self.version = c_float(0.0)
+        self.comp_ws = ctypes.c_int(8)
+        self.io_ws = ctypes.c_int(io_size)
+        self.version = ctypes.c_float(0.0)
         if self.modeChar.lower() in [&#34;a&#34;, &#34;r&#34;]:  # open existing file
             self.fileId = EXODUS_LIB.ex_open_int(self.fileName.encode(&#39;ascii&#39;), self.mode,
-                                                 byref(self.comp_ws),
-                                                 byref(self.io_ws),
-                                                 byref(self.version),
+                                                 ctypes.byref(self.comp_ws),
+                                                 ctypes.byref(self.io_ws),
+                                                 ctypes.byref(self.version),
                                                  EX_API_VERSION_NODOT)
         else:  # create file
             if io_size == 0:
                 io_size = 8
-                self.io_ws = c_int(io_size)
+                self.io_ws = ctypes.c_int(io_size)
             self.__create()
 
     # --------------------------------------------------------------------
 
     def __create(self):
         self.fileId = EXODUS_LIB.ex_create_int(self.fileName.encode(&#39;ascii&#39;), self.mode,
-                                               byref(self.comp_ws),
-                                               byref(self.io_ws),
+                                               ctypes.byref(self.comp_ws),
+                                               ctypes.byref(self.io_ws),
                                                EX_API_VERSION_NODOT)
 
     # --------------------------------------------------------------------
@@ -11616,40 +11754,40 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_info(self):
-        self.Title = create_string_buffer(MAX_LINE_LENGTH + 1)
+        self.Title = ctypes.create_string_buffer(MAX_LINE_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            self.numDim = c_longlong(0)
-            self.numNodes = c_longlong(0)
-            self.numElem = c_longlong(0)
-            self.numElemBlk = c_longlong(0)
-            self.numNodeSets = c_longlong(0)
-            self.numSideSets = c_longlong(0)
+            self.numDim = ctypes.c_longlong(0)
+            self.numNodes = ctypes.c_longlong(0)
+            self.numElem = ctypes.c_longlong(0)
+            self.numElemBlk = ctypes.c_longlong(0)
+            self.numNodeSets = ctypes.c_longlong(0)
+            self.numSideSets = ctypes.c_longlong(0)
         else:
-            self.numDim = c_int(0)
-            self.numNodes = c_int(0)
-            self.numElem = c_int(0)
-            self.numElemBlk = c_int(0)
-            self.numNodeSets = c_int(0)
-            self.numSideSets = c_int(0)
+            self.numDim = ctypes.c_int(0)
+            self.numNodes = ctypes.c_int(0)
+            self.numElem = ctypes.c_int(0)
+            self.numElemBlk = ctypes.c_int(0)
+            self.numNodeSets = ctypes.c_int(0)
+            self.numSideSets = ctypes.c_int(0)
         EXODUS_LIB.ex_get_init(
             self.fileId, self.Title,
-            byref(self.numDim),
-            byref(self.numNodes),
-            byref(self.numElem),
-            byref(self.numElemBlk),
-            byref(self.numNodeSets),
-            byref(self.numSideSets))
+            ctypes.byref(self.numDim),
+            ctypes.byref(self.numNodes),
+            ctypes.byref(self.numElem),
+            ctypes.byref(self.numElemBlk),
+            ctypes.byref(self.numNodeSets),
+            ctypes.byref(self.numSideSets))
 
     # --------------------------------------------------------------------
 
     def __ex_put_info(self, info):
-        self.Title = create_string_buffer(info[0], MAX_LINE_LENGTH + 1)
-        self.numDim = c_longlong(info[1])
-        self.numNodes = c_longlong(info[2])
-        self.numElem = c_longlong(info[3])
-        self.numElemBlk = c_longlong(info[4])
-        self.numNodeSets = c_longlong(info[5])
-        self.numSideSets = c_longlong(info[6])
+        self.Title = ctypes.create_string_buffer(info[0].encode(&#39;ascii&#39;), MAX_LINE_LENGTH + 1)
+        self.numDim = ctypes.c_longlong(info[1])
+        self.numNodes = ctypes.c_longlong(info[2])
+        self.numElem = ctypes.c_longlong(info[3])
+        self.numElemBlk = ctypes.c_longlong(info[4])
+        self.numNodeSets = ctypes.c_longlong(info[5])
+        self.numSideSets = ctypes.c_longlong(info[6])
         EXODUS_LIB.ex_put_init(
             self.fileId,
             self.Title,
@@ -11666,27 +11804,27 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     def __ex_put_concat_elem_blk(self, elemBlkIDs, elemType, numElemThisBlk,
                                  numNodesPerElem, numAttr, defineMaps):
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_IDS_INT64_API:
-            elem_blk_ids = (c_longlong * len(elemBlkIDs))()
+            elem_blk_ids = (ctypes.c_longlong * len(elemBlkIDs))()
             elem_blk_ids[:] = elemBlkIDs
-            num_elem_this_blk = (c_longlong
+            num_elem_this_blk = (ctypes.c_longlong
                                  * len(elemBlkIDs))()
             num_elem_this_blk[:] = numElemThisBlk
-            num_nodes_per_elem = (c_longlong * len(elemBlkIDs))()
+            num_nodes_per_elem = (ctypes.c_longlong * len(elemBlkIDs))()
             num_nodes_per_elem[:] = numNodesPerElem
-            num_attr = (c_longlong * len(elemBlkIDs))()
+            num_attr = (ctypes.c_longlong * len(elemBlkIDs))()
             num_attr[:] = numAttr
         else:
-            elem_blk_ids = (c_int * len(elemBlkIDs))()
+            elem_blk_ids = (ctypes.c_int * len(elemBlkIDs))()
             elem_blk_ids[:] = elemBlkIDs
-            num_elem_this_blk = (c_int * len(elemBlkIDs))()
+            num_elem_this_blk = (ctypes.c_int * len(elemBlkIDs))()
             num_elem_this_blk[:] = numElemThisBlk
-            num_nodes_per_elem = (c_int * len(elemBlkIDs))()
+            num_nodes_per_elem = (ctypes.c_int * len(elemBlkIDs))()
             num_nodes_per_elem[:] = numNodesPerElem
-            num_attr = (c_int * len(elemBlkIDs))()
+            num_attr = (ctypes.c_int * len(elemBlkIDs))()
             num_attr[:] = numAttr
-        elem_type = (c_char_p * len(elemBlkIDs))()
+        elem_type = (ctypes.c_char_p * len(elemBlkIDs))()
         elem_type[:] = elemType
-        define_maps = c_int(defineMaps)
+        define_maps = ctypes.c_int(defineMaps)
         EXODUS_LIB.ex_put_concat_elem_block(
             self.fileId,
             elem_blk_ids,
@@ -11699,14 +11837,14 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_qa(self):
-        num_qa_recs = c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_QA&#39;)))
-        qa_rec_ptrs = ((POINTER(c_char * (MAX_STR_LENGTH + 1)) * 4) * num_qa_recs.value)()
+        num_qa_recs = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_QA&#39;)))
+        qa_rec_ptrs = ((ctypes.POINTER(ctypes.c_char * (MAX_STR_LENGTH + 1)) * 4) * num_qa_recs.value)()
         for i in range(num_qa_recs.value):
             for j in range(4):
-                qa_rec_ptrs[i][j] = pointer(
-                    create_string_buffer(MAX_STR_LENGTH + 1))
+                qa_rec_ptrs[i][j] = ctypes.pointer(
+                    ctypes.create_string_buffer(MAX_STR_LENGTH + 1))
         if num_qa_recs.value:
-            EXODUS_LIB.ex_get_qa(self.fileId, byref(qa_rec_ptrs))
+            EXODUS_LIB.ex_get_qa(self.fileId, ctypes.byref(qa_rec_ptrs))
         qa_recs = []
         for qara in qa_rec_ptrs:
             qa_rec_list = []
@@ -11720,24 +11858,24 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_put_qa(self, qaRecs):
-        num_qa_recs = c_int(len(qaRecs))
-        qa_rec_ptrs = ((POINTER(c_char * (MAX_STR_LENGTH + 1)) * 4) * num_qa_recs.value)()
+        num_qa_recs = ctypes.c_int(len(qaRecs))
+        qa_rec_ptrs = ((ctypes.POINTER(ctypes.c_char * (MAX_STR_LENGTH + 1)) * 4) * num_qa_recs.value)()
         for i in range(num_qa_recs.value):
             for j in range(4):
-                qa_rec_ptrs[i][j] = pointer(create_string_buffer(
+                qa_rec_ptrs[i][j] = ctypes.pointer(ctypes.create_string_buffer(
                     str(qaRecs[i][j]).encode(&#39;ascii&#39;), MAX_STR_LENGTH + 1))
-        EXODUS_LIB.ex_put_qa(self.fileId, num_qa_recs, byref(qa_rec_ptrs))
+        EXODUS_LIB.ex_put_qa(self.fileId, num_qa_recs, ctypes.byref(qa_rec_ptrs))
         return True
 
     # --------------------------------------------------------------------
 
     def _ex_get_info_recs_quietly(self):
-        num_infos = c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_INFO&#39;)))
-        info_ptrs = (POINTER(c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
+        num_infos = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_INFO&#39;)))
+        info_ptrs = (ctypes.POINTER(ctypes.c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
         for i in range(num_infos.value):
-            info_ptrs[i] = pointer(create_string_buffer(MAX_LINE_LENGTH + 1))
+            info_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(MAX_LINE_LENGTH + 1))
         if num_infos.value:
-            EXODUS_LIB.ex_get_info(self.fileId, byref(info_ptrs))
+            EXODUS_LIB.ex_get_info(self.fileId, ctypes.byref(info_ptrs))
         info_recs = []
         for irp in info_ptrs:
             info_recs.append(irp.contents.value.decode(&#34;utf8&#34;))
@@ -11746,11 +11884,11 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_info_recs(self):
-        num_infos = c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_INFO&#39;)))
-        info_ptrs = (POINTER(c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
+        num_infos = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_INFO&#39;)))
+        info_ptrs = (ctypes.POINTER(ctypes.c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
         for i in range(num_infos.value):
-            info_ptrs[i] = pointer(create_string_buffer(MAX_LINE_LENGTH + 1))
-        EXODUS_LIB.ex_get_info(self.fileId, byref(info_ptrs))
+            info_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(MAX_LINE_LENGTH + 1))
+        EXODUS_LIB.ex_get_info(self.fileId, ctypes.byref(info_ptrs))
         info_recs = []
         for irp in info_ptrs:
             info_recs.append(irp.contents.value.decode(&#34;utf8&#34;))
@@ -11764,28 +11902,28 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_put_info_recs(self, infoRecs):
-        num_infos = c_int(len(infoRecs))
-        info_ptrs = (POINTER(c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
+        num_infos = ctypes.c_int(len(infoRecs))
+        info_ptrs = (ctypes.POINTER(ctypes.c_char * (MAX_LINE_LENGTH + 1)) * num_infos.value)()
         for i in range(num_infos.value):
-            info_ptrs[i] = pointer(create_string_buffer(
+            info_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(
                 str(infoRecs[i]).encode(&#39;ascii&#39;), MAX_LINE_LENGTH + 1))
-        EXODUS_LIB.ex_put_info(self.fileId, num_infos, byref(info_ptrs))
+        EXODUS_LIB.ex_put_info(self.fileId, num_infos, ctypes.byref(info_ptrs))
         return True
 
     # --------------------------------------------------------------------
 
     def __ex_inquire_float(self, inq_id):
-        dummy_char = create_string_buffer(MAX_LINE_LENGTH + 1)
-        ret_float = c_float(0.0)
+        dummy_char = ctypes.create_string_buffer(MAX_LINE_LENGTH + 1)
+        ret_float = ctypes.c_float(0.0)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_INQ_INT64_API:
-            dummy_int = c_longlong(0)
+            dummy_int = ctypes.c_longlong(0)
         else:
-            dummy_int = c_int(0)
+            dummy_int = ctypes.c_int(0)
         val = EXODUS_LIB.ex_inquire(
             self.fileId,
             inq_id,
-            byref(dummy_int),
-            byref(ret_float),
+            ctypes.byref(dummy_int),
+            ctypes.byref(ret_float),
             dummy_char)
         if val &lt; 0:
             raise Exception(
@@ -11811,12 +11949,12 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
 
     def __ex_get_coord_names(self):
         coord_name_ptrs = (
-            POINTER(c_char * (MAX_NAME_LENGTH + 1)) * self.numDim.value)()
+            ctypes.POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * self.numDim.value)()
         for i in range(self.numDim.value):
-            coord_name_ptrs[i] = pointer(
-                create_string_buffer(
+            coord_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     MAX_NAME_LENGTH + 1))
-        EXODUS_LIB.ex_get_coord_names(self.fileId, byref(coord_name_ptrs))
+        EXODUS_LIB.ex_get_coord_names(self.fileId, ctypes.byref(coord_name_ptrs))
         coord_names = []
         for cnp in coord_name_ptrs:
             coord_names.append(cnp.contents.value.decode(&#39;utf8&#39;))
@@ -11826,66 +11964,66 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
 
     def __ex_put_coord_names(self, names):
         coord_name_ptrs = (
-            POINTER(c_char * (MAX_NAME_LENGTH + 1)) * self.numDim.value)()
+            ctypes.POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * self.numDim.value)()
         assert len(names) == self.numDim.value
         for i in range(self.numDim.value):
-            coord_name_ptrs[i] = pointer(
-                create_string_buffer(
+            coord_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     names[i].encode(&#39;ascii&#39;), MAX_NAME_LENGTH + 1))
-        EXODUS_LIB.ex_put_coord_names(self.fileId, byref(coord_name_ptrs))
+        EXODUS_LIB.ex_put_coord_names(self.fileId, ctypes.byref(coord_name_ptrs))
 
     # --------------------------------------------------------------------
 
     def __ex_get_all_times(self):
-        self.times = (c_double * self.numTimes.value)()
-        EXODUS_LIB.ex_get_all_times(self.fileId, byref(self.times))
+        self.times = (ctypes.c_double * self.numTimes.value)()
+        EXODUS_LIB.ex_get_all_times(self.fileId, ctypes.byref(self.times))
 
     # --------------------------------------------------------------------
 
     def __ex_get_time(self, timeStep):
-        time_step = c_int(timeStep)
-        time_val = c_double(0.0)
-        EXODUS_LIB.ex_get_time(self.fileId, time_step, byref(time_val))
+        time_step = ctypes.c_int(timeStep)
+        time_val = ctypes.c_double(0.0)
+        EXODUS_LIB.ex_get_time(self.fileId, time_step, ctypes.byref(time_val))
         return time_val.value()
 
     # --------------------------------------------------------------------
 
     def __ex_put_time(self, timeStep, timeVal):
-        time_step = c_int(timeStep)
-        time_val = c_double(timeVal)
-        EXODUS_LIB.ex_put_time(self.fileId, time_step, byref(time_val))
+        time_step = ctypes.c_int(timeStep)
+        time_val = ctypes.c_double(timeVal)
+        EXODUS_LIB.ex_put_time(self.fileId, time_step, ctypes.byref(time_val))
         return True
 
     # --------------------------------------------------------------------
 
     def __ex_get_name(self, objType, objId):
-        obj_type = c_int(get_entity_type(objType))
-        obj_id = c_longlong(objId)
-        obj_name = create_string_buffer(MAX_NAME_LENGTH + 1)
-        EXODUS_LIB.ex_get_name(self.fileId, obj_type, obj_id, byref(obj_name))
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
+        obj_name = ctypes.create_string_buffer(MAX_NAME_LENGTH + 1)
+        EXODUS_LIB.ex_get_name(self.fileId, obj_type, obj_id, ctypes.byref(obj_name))
         return obj_name.value.decode(&#39;utf8&#39;)
 
     # --------------------------------------------------------------------
 
     def __ex_put_name(self, objType, objId, objName):
-        obj_type = c_int(get_entity_type(objType))
-        obj_id = c_longlong(objId)
-        obj_name = create_string_buffer(objName.encode(&#39;ascii&#39;), MAX_NAME_LENGTH + 1)
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
+        obj_name = ctypes.create_string_buffer(objName.encode(&#39;ascii&#39;), MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_name(self.fileId, obj_type, obj_id, obj_name)
 
     # --------------------------------------------------------------------
 
     def __ex_get_names(self, objType):
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        num_objs = c_int(self.__ex_inquire_int(inqType)).value
-        obj_name_ptrs = (POINTER(c_char * (MAX_NAME_LENGTH + 1)) * num_objs)()
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
+        obj_name_ptrs = (ctypes.POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * num_objs)()
         for i in range(num_objs):
-            obj_name_ptrs[i] = pointer(
-                create_string_buffer(
+            obj_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     MAX_NAME_LENGTH + 1))
 
-        obj_type = c_int(get_entity_type(objType))
-        EXODUS_LIB.ex_get_names(self.fileId, obj_type, byref(obj_name_ptrs))
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        EXODUS_LIB.ex_get_names(self.fileId, obj_type, ctypes.byref(obj_name_ptrs))
         obj_names = []
         for onp in obj_name_ptrs:
             obj_names.append(onp.contents.value.decode(&#39;utf8&#39;))
@@ -11895,89 +12033,89 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
 
     def __ex_put_names(self, objType, objNames):
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        numObjs = c_int(self.__ex_inquire_int(inqType)).value
+        numObjs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
         assert numObjs == len(objNames)
-        obj_name_ptrs = (POINTER(c_char * (MAX_NAME_LENGTH + 1)) * numObjs)()
-        obj_type = c_int(get_entity_type(objType))
+        obj_name_ptrs = (ctypes.POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * numObjs)()
+        obj_type = ctypes.c_int(get_entity_type(objType))
         for i in range(numObjs):
-            obj_name_ptrs[i] = pointer(
-                create_string_buffer(
+            obj_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     objNames[i].encode(&#39;ascii&#39;), MAX_NAME_LENGTH + 1))
-        EXODUS_LIB.ex_put_names(self.fileId, obj_type, byref(obj_name_ptrs))
+        EXODUS_LIB.ex_put_names(self.fileId, obj_type, ctypes.byref(obj_name_ptrs))
 
     # --------------------------------------------------------------------
 
     def __ex_get_ids(self, objType):
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        numObjs = c_int(self.__ex_inquire_int(inqType)).value
+        numObjs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_IDS_INT64_API:
-            ids = (c_longlong * numObjs)()
+            ids = (ctypes.c_longlong * numObjs)()
         else:
-            ids = (c_int * numObjs)()
+            ids = (ctypes.c_int * numObjs)()
         if numObjs &gt; 0:
-            obj_type = c_int(get_entity_type(objType))
-            EXODUS_LIB.ex_get_ids(self.fileId, obj_type, byref(ids))
+            obj_type = ctypes.c_int(get_entity_type(objType))
+            EXODUS_LIB.ex_get_ids(self.fileId, obj_type, ctypes.byref(ids))
         return ids
 
     # --------------------------------------------------------------------
 
     def __ex_get_node_set(self, nodeSetId):
-        node_set_id = c_longlong(nodeSetId)
+        node_set_id = ctypes.c_longlong(nodeSetId)
         num_node_set_nodes = self.__ex_get_set_param(&#39;EX_NODE_SET&#39;, nodeSetId)[0]
         if num_node_set_nodes == 0:
             return []
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            set_nodes = (c_longlong * num_node_set_nodes)()
+            set_nodes = (ctypes.c_longlong * num_node_set_nodes)()
         else:
-            set_nodes = (c_int * num_node_set_nodes)()
-        EXODUS_LIB.ex_get_node_set(self.fileId, node_set_id, byref(set_nodes))
+            set_nodes = (ctypes.c_int * num_node_set_nodes)()
+        EXODUS_LIB.ex_get_node_set(self.fileId, node_set_id, ctypes.byref(set_nodes))
         return set_nodes
 
     # --------------------------------------------------------------------
 
     def __ex_put_node_set(self, nodeSetId, nodeSetNodes):
-        node_set_id = c_longlong(nodeSetId)
+        node_set_id = ctypes.c_longlong(nodeSetId)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            node_set_nodes = (c_longlong * len(nodeSetNodes))()
+            node_set_nodes = (ctypes.c_longlong * len(nodeSetNodes))()
             for i, node_set_node in enumerate(nodeSetNodes):
-                node_set_nodes[i] = c_longlong(node_set_node)
+                node_set_nodes[i] = ctypes.c_longlong(node_set_node)
         else:
-            node_set_nodes = (c_int * len(nodeSetNodes))()
+            node_set_nodes = (ctypes.c_int * len(nodeSetNodes))()
             for i, node_set_node in enumerate(nodeSetNodes):
-                node_set_nodes[i] = c_int(node_set_node)
+                node_set_nodes[i] = ctypes.c_int(node_set_node)
         EXODUS_LIB.ex_put_node_set(self.fileId, node_set_id, node_set_nodes)
 
     # --------------------------------------------------------------------
 
     def __ex_get_node_set_dist_fact(self, nodeSetId):
-        node_set_id = c_longlong(nodeSetId)
+        node_set_id = ctypes.c_longlong(nodeSetId)
         num_node_set_nodes = self.__ex_get_set_param(&#39;EX_NODE_SET&#39;, nodeSetId)[0]
-        set_dfs = (c_double * num_node_set_nodes)()
+        set_dfs = (ctypes.c_double * num_node_set_nodes)()
         EXODUS_LIB.ex_get_node_set_dist_fact(
-            self.fileId, node_set_id, byref(set_dfs))
+            self.fileId, node_set_id, ctypes.byref(set_dfs))
         return set_dfs
 
     # --------------------------------------------------------------------
 
     def __ex_put_node_set_dist_fact(self, nodeSetId, nodeSetDistFact):
-        node_set_id = c_longlong(nodeSetId)
-        node_set_dist_fact = (c_double * len(nodeSetDistFact))()
+        node_set_id = ctypes.c_longlong(nodeSetId)
+        node_set_dist_fact = (ctypes.c_double * len(nodeSetDistFact))()
         for i, dist_fact in enumerate(nodeSetDistFact):
-            node_set_dist_fact[i] = c_double(dist_fact)
+            node_set_dist_fact[i] = ctypes.c_double(dist_fact)
         EXODUS_LIB.ex_put_node_set_dist_fact(
             self.fileId, node_set_id, node_set_dist_fact)
 
     # --------------------------------------------------------------------
 
     def __ex_get_object_truth_vector(self, objType, entId):
-        obj_type = get_entity_type(objType)
-        entity_id = c_longlong(entId)
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        entity_id = ctypes.c_longlong(entId)
         variable_count = self.__ex_get_variable_param(objType)
-        truth_table = (c_int * (variable_count.value))()
+        truth_table = (ctypes.c_int * (variable_count.value))()
 
         EXODUS_LIB.ex_get_object_truth_vector(self.fileId, obj_type,
                                               entity_id, variable_count,
-                                              byref(truth_table))
+                                              ctypes.byref(truth_table))
         truthTab = []
         for val in truth_table:
             if val:
@@ -11990,15 +12128,15 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
 
     def __ex_get_truth_table(self, objType):
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        num_objs = c_int(self.__ex_inquire_int(inqType)).value
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
 
-        obj_type = get_entity_type(objType)
+        obj_type = ctypes.c_int(get_entity_type(objType))
         variable_count = self.__ex_get_variable_param(objType)
 
-        truth_table = (c_int * (num_objs * variable_count.value))()
+        truth_table = (ctypes.c_int * (num_objs * variable_count.value))()
         EXODUS_LIB.ex_get_truth_table(self.fileId, obj_type,
                                       num_objs, variable_count,
-                                      byref(truth_table))
+                                      ctypes.byref(truth_table))
         truthTab = []
         for val in truth_table:
             if val:
@@ -12011,19 +12149,19 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
 
     def __ex_put_truth_table(self, objType, truthTab):
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        num_objs = c_int(self.__ex_inquire_int(inqType)).value
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
 
-        obj_type = get_entity_type(objType)
+        obj_type = ctypes.c_int(get_entity_type(objType))
         num_vars = self.__ex_get_variable_param(objType).value
 
         assert len(truthTab) == (num_objs * num_vars)
 
-        truth_tab = (c_int * (num_objs * num_vars))()
+        truth_tab = (ctypes.c_int * (num_objs * num_vars))()
         for i, boolVal in enumerate(truthTab):
             if boolVal:
-                truth_tab[i] = c_int(1)
+                truth_tab[i] = ctypes.c_int(1)
             else:
-                truth_tab[i] = c_int(0)
+                truth_tab[i] = ctypes.c_int(0)
 
         EXODUS_LIB.ex_put_truth_table(
             self.fileId, obj_type, num_objs, num_vars, truth_tab)
@@ -12032,61 +12170,61 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_coord(self):
-        self.coordsX = (c_double * self.numNodes.value)()
-        self.coordsY = (c_double * self.numNodes.value)()
-        self.coordsZ = (c_double * self.numNodes.value)()
+        self.coordsX = (ctypes.c_double * self.numNodes.value)()
+        self.coordsY = (ctypes.c_double * self.numNodes.value)()
+        self.coordsZ = (ctypes.c_double * self.numNodes.value)()
         EXODUS_LIB.ex_get_coord(
             self.fileId,
-            byref(self.coordsX),
-            byref(self.coordsY),
-            byref(self.coordsZ))
+            ctypes.byref(self.coordsX),
+            ctypes.byref(self.coordsY),
+            ctypes.byref(self.coordsZ))
 
     # --------------------------------------------------------------------
 
     def __ex_put_coord(self, xCoords, yCoords, zCoords):
-        self.coordsX = (c_double * self.numNodes.value)()
-        self.coordsY = (c_double * self.numNodes.value)()
-        self.coordsZ = (c_double * self.numNodes.value)()
+        self.coordsX = (ctypes.c_double * self.numNodes.value)()
+        self.coordsY = (ctypes.c_double * self.numNodes.value)()
+        self.coordsZ = (ctypes.c_double * self.numNodes.value)()
         for i in range(self.numNodes.value):
             self.coordsX[i] = float(xCoords[i])
             self.coordsY[i] = float(yCoords[i])
             self.coordsZ[i] = float(zCoords[i])
         EXODUS_LIB.ex_put_coord(
             self.fileId,
-            byref(self.coordsX),
-            byref(self.coordsY),
-            byref(self.coordsZ))
+            ctypes.byref(self.coordsX),
+            ctypes.byref(self.coordsY),
+            ctypes.byref(self.coordsZ))
 
     # --------------------------------------------------------------------
 
     def __ex_get_partial_coord(self, startNodeId, numNodes):
-        start_node_num = c_longlong(startNodeId)
-        num_nodes = c_longlong(numNodes)
-        coordsX = (c_double * numNodes)()
-        coordsY = (c_double * numNodes)()
-        coordsZ = (c_double * numNodes)()
+        start_node_num = ctypes.c_longlong(startNodeId)
+        num_nodes = ctypes.c_longlong(numNodes)
+        coordsX = (ctypes.c_double * numNodes)()
+        coordsY = (ctypes.c_double * numNodes)()
+        coordsZ = (ctypes.c_double * numNodes)()
         EXODUS_LIB.ex_get_partial_coord(
             self.fileId,
             start_node_num,
             num_nodes,
-            byref(coordsX),
-            byref(coordsY),
-            byref(coordsZ))
+            ctypes.byref(coordsX),
+            ctypes.byref(coordsY),
+            ctypes.byref(coordsZ))
         return list(coordsX), list(coordsY), list(coordsZ)
 
     # --------------------------------------------------------------------
 
     def __ex_get_id_map(self, objType):
         inqType = ex_obj_to_inq(objType)
-        obj_type = c_int(get_entity_type(objType))
-        inq_type = c_int(ex_inquiry_map(inqType))
-        num_objs = c_int(self.__ex_inquire_int(inq_type))
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        inq_type = ctypes.c_int(ex_inquiry_map(inqType))
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inq_type))
         numObjs = num_objs.value
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_IDS_INT64_API:
-            id_map = (c_longlong * numObjs)()
+            id_map = (ctypes.c_longlong * numObjs)()
         else:
-            id_map = (c_int * numObjs)()
-        EXODUS_LIB.ex_get_id_map(self.fileId, obj_type, byref(id_map))
+            id_map = (ctypes.c_int * numObjs)()
+        EXODUS_LIB.ex_get_id_map(self.fileId, obj_type, ctypes.byref(id_map))
         idMap = []
         for i in range(numObjs):
             idMap.append(id_map[i])
@@ -12098,80 +12236,80 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
 
     def __ex_put_id_map(self, objType, idMap):
         inqType = ex_obj_to_inq(objType)
-        obj_type = c_int(get_entity_type(objType))
-        inq_type = c_int(ex_inquiry_map(inqType))
-        num_objs = c_int(self.__ex_inquire_int(inq_type))
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        inq_type = ctypes.c_int(ex_inquiry_map(inqType))
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inq_type))
         numObjs = num_objs.value
         assert numObjs == len(idMap)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_IDS_INT64_API:
-            id_map = (c_longlong * numObjs)()
+            id_map = (ctypes.c_longlong * numObjs)()
             for i in range(numObjs):
-                id_map[i] = c_longlong(idMap[i])
+                id_map[i] = ctypes.c_longlong(idMap[i])
         else:
-            id_map = (c_int * numObjs)()
+            id_map = (ctypes.c_int * numObjs)()
             for i in range(numObjs):
-                id_map[i] = c_int(idMap[i])
-        EXODUS_LIB.ex_put_id_map(self.fileId, obj_type, byref(id_map))
+                id_map[i] = ctypes.c_int(idMap[i])
+        EXODUS_LIB.ex_put_id_map(self.fileId, obj_type, ctypes.byref(id_map))
         return True
 
     # --------------------------------------------------------------------
 
     def __ex_get_elem_num_map(self):
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_MAPS_INT64_API:
-            elemNumMap = (c_longlong * self.numElem.value)()
+            elemNumMap = (ctypes.c_longlong * self.numElem.value)()
         else:
-            elemNumMap = (c_int * self.numElem.value)()
-        EXODUS_LIB.ex_get_elem_num_map(self.fileId, byref(elemNumMap))
+            elemNumMap = (ctypes.c_int * self.numElem.value)()
+        EXODUS_LIB.ex_get_elem_num_map(self.fileId, ctypes.byref(elemNumMap))
         return elemNumMap
 
     # --------------------------------------------------------------------
 
     def __ex_get_node_num_map(self):
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_MAPS_INT64_API:
-            nodeNumMap = (c_longlong * self.numNodes.value)()
+            nodeNumMap = (ctypes.c_longlong * self.numNodes.value)()
         else:
-            nodeNumMap = (c_int * self.numNodes.value)()
-        EXODUS_LIB.ex_get_node_num_map(self.fileId, byref(nodeNumMap))
+            nodeNumMap = (ctypes.c_int * self.numNodes.value)()
+        EXODUS_LIB.ex_get_node_num_map(self.fileId, ctypes.byref(nodeNumMap))
         return nodeNumMap
 
     # --------------------------------------------------------------------
 
     def __ex_get_elem_order_map(self):
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_MAPS_INT64_API:
-            elemOrderMap = (c_longlong * self.numElem.value)()
+            elemOrderMap = (ctypes.c_longlong * self.numElem.value)()
         else:
-            elemOrderMap = (c_int * self.numElem.value)()
-        EXODUS_LIB.ex_get_map(self.fileId, byref(elemOrderMap))
+            elemOrderMap = (ctypes.c_int * self.numElem.value)()
+        EXODUS_LIB.ex_get_map(self.fileId, ctypes.byref(elemOrderMap))
         return elemOrderMap
 
     # --------------------------------------------------------------------
 
     def __ex_get_block(self, object_type, object_id):
-        obj_type = c_int(get_entity_type(object_type))
-        block_id = c_longlong(object_id)
-        blk_type = create_string_buffer(MAX_STR_LENGTH + 1)
+        obj_type = ctypes.c_int(get_entity_type(object_type))
+        block_id = ctypes.c_longlong(object_id)
+        blk_type = ctypes.create_string_buffer(MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            num_elem_this_blk = c_longlong(0)
-            num_nodes_per_elem = c_longlong(0)
-            num_edges_per_elem = c_longlong(0)
-            num_faces_per_elem = c_longlong(0)
-            num_attr = c_longlong(0)
+            num_elem_this_blk = ctypes.c_longlong(0)
+            num_nodes_per_elem = ctypes.c_longlong(0)
+            num_edges_per_elem = ctypes.c_longlong(0)
+            num_faces_per_elem = ctypes.c_longlong(0)
+            num_attr = ctypes.c_longlong(0)
         else:
-            num_elem_this_blk = c_int(0)
-            num_nodes_per_elem = c_int(0)
-            num_edges_per_elem = c_int(0)
-            num_faces_per_elem = c_int(0)
-            num_attr = c_int(0)
+            num_elem_this_blk = ctypes.c_int(0)
+            num_nodes_per_elem = ctypes.c_int(0)
+            num_edges_per_elem = ctypes.c_int(0)
+            num_faces_per_elem = ctypes.c_int(0)
+            num_attr = ctypes.c_int(0)
         EXODUS_LIB.ex_get_block(
             self.fileId,
             obj_type,
             block_id,
             blk_type,
-            byref(num_elem_this_blk),
-            byref(num_nodes_per_elem),
-            byref(num_edges_per_elem),
-            byref(num_faces_per_elem),
-            byref(num_attr))
+            ctypes.byref(num_elem_this_blk),
+            ctypes.byref(num_nodes_per_elem),
+            ctypes.byref(num_edges_per_elem),
+            ctypes.byref(num_faces_per_elem),
+            ctypes.byref(num_attr))
         return blk_type, num_elem_this_blk, num_nodes_per_elem, num_attr
 
     # --------------------------------------------------------------------
@@ -12184,14 +12322,14 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
             numElems,
             numNodesPerElem,
             numAttrsPerElem):
-        obj_type = c_int(get_entity_type(object_type))
-        block_id = c_longlong(object_id)
-        elem_type = create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
-        num_elem_this_blk = c_longlong(numElems)
-        num_nodes_per_elem = c_longlong(numNodesPerElem)
-        num_edges_per_elem = c_longlong(0)
-        num_faces_per_elem = c_longlong(0)
-        num_attr = c_longlong(numAttrsPerElem)
+        obj_type = ctypes.c_int(get_entity_type(object_type))
+        block_id = ctypes.c_longlong(object_id)
+        elem_type = ctypes.create_string_buffer(eType.upper(), MAX_NAME_LENGTH + 1)
+        num_elem_this_blk = ctypes.c_longlong(numElems)
+        num_nodes_per_elem = ctypes.c_longlong(numNodesPerElem)
+        num_edges_per_elem = ctypes.c_longlong(0)
+        num_faces_per_elem = ctypes.c_longlong(0)
+        num_attr = ctypes.c_longlong(numAttrsPerElem)
         EXODUS_LIB.ex_put_block(self.fileId, obj_type, block_id, elem_type,
                                 num_elem_this_blk, num_nodes_per_elem,
                                 num_edges_per_elem, num_faces_per_elem, num_attr)
@@ -12201,17 +12339,17 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     def __ex_get_elem_conn(self, object_id):
         (_elem_type, num_elem_this_blk, num_nodes_per_elem,
          _num_attr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
-        elem_block_id = c_longlong(object_id)
+        elem_block_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
             elem_block_connectivity = (
-                c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
+                ctypes.c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
         else:
             elem_block_connectivity = (
-                c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
+                ctypes.c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
         EXODUS_LIB.ex_get_elem_conn(
             self.fileId,
             elem_block_id,
-            byref(elem_block_connectivity))
+            ctypes.byref(elem_block_connectivity))
         return elem_block_connectivity, num_elem_this_blk, num_nodes_per_elem
 
     # --------------------------------------------------------------------
@@ -12219,17 +12357,17 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     def __ex_put_elem_conn(self, object_id, connectivity):
         (_elem_type, num_elem_this_blk, num_nodes_per_elem,
          _num_attr) = self.__ex_get_block(&#39;EX_ELEM_BLOCK&#39;, object_id)
-        elem_block_id = c_longlong(object_id)
+        elem_block_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
             elem_block_connectivity = (
-                c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
+                ctypes.c_longlong * (num_elem_this_blk.value * num_nodes_per_elem.value))()
             for i in range(num_elem_this_blk.value * num_nodes_per_elem.value):
-                elem_block_connectivity[i] = c_longlong(connectivity[i])
+                elem_block_connectivity[i] = ctypes.c_longlong(connectivity[i])
         else:
             elem_block_connectivity = (
-                c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
+                ctypes.c_int * (num_elem_this_blk.value * num_nodes_per_elem.value))()
             for i in range(num_elem_this_blk.value * num_nodes_per_elem.value):
-                elem_block_connectivity[i] = c_int(connectivity[i])
+                elem_block_connectivity[i] = ctypes.c_int(connectivity[i])
         EXODUS_LIB.ex_put_elem_conn(
             self.fileId,
             elem_block_id,
@@ -12238,10 +12376,10 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_put_one_attr(self, objType, elemBlkID, attrIndx, Attr):
-        elem_blk_id = c_longlong(elemBlkID)
-        obj_type = c_int(objType)
-        attr_index = c_longlong(attrIndx)
-        attrib = (c_double * len(Attr))()
+        elem_blk_id = ctypes.c_longlong(elemBlkID)
+        obj_type = ctypes.c_int(objType)
+        attr_index = ctypes.c_longlong(attrIndx)
+        attrib = (ctypes.c_double * len(Attr))()
         for i, attr in enumerate(Attr):
             attrib[i] = float(attr)
         EXODUS_LIB.ex_put_one_attr(
@@ -12254,55 +12392,55 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_one_attr(self, objType, elemBlkID, attrIndx):
-        elem_blk_id = c_longlong(elemBlkID)
-        obj_type = c_int(objType)
-        attr_index = c_longlong(attrIndx)
+        elem_blk_id = ctypes.c_longlong(elemBlkID)
+        obj_type = ctypes.c_int(objType)
+        attr_index = ctypes.c_longlong(attrIndx)
         inqType = ex_inquiry_map(ex_obj_to_inq(objType))
-        num_objs = c_int(self.__ex_inquire_int(inqType)).value
-        attrib = (c_double * num_objs)()
+        num_objs = ctypes.c_int(self.__ex_inquire_int(inqType)).value
+        attrib = (ctypes.c_double * num_objs)()
         EXODUS_LIB.ex_get_one_attr(
             self.fileId,
             obj_type,
             elem_blk_id,
             attr_index,
-            byref(attrib))
+            ctypes.byref(attrib))
         return attrib
 
     # --------------------------------------------------------------------
 
     def __ex_put_elem_attr(self, elemBlkID, Attr):
-        elem_blk_id = c_longlong(elemBlkID)
-        attrib = (c_double * len(Attr))()
+        elem_blk_id = ctypes.c_longlong(elemBlkID)
+        attrib = (ctypes.c_double * len(Attr))()
         for i, attr in enumerate(Attr):
-            attrib[i] = c_double(attr)
+            attrib[i] = ctypes.c_double(attr)
         EXODUS_LIB.ex_put_attr(
             self.fileId,
-            get_entity_type(&#39;EX_ELEM_BLOCK&#39;),
+            ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;)),
             elem_blk_id,
             attrib)
 
     # --------------------------------------------------------------------
 
     def __ex_get_elem_attr(self, elemBlkID):
-        elem_blk_id = c_longlong(elemBlkID)
+        elem_blk_id = ctypes.c_longlong(elemBlkID)
         numAttrThisBlk = self.num_attr(elemBlkID)
         numElemsThisBlk = self.num_elems_in_blk(elemBlkID)
         totalAttr = numAttrThisBlk * numElemsThisBlk
-        attrib = (c_double * totalAttr)()
+        attrib = (ctypes.c_double * totalAttr)()
         EXODUS_LIB.ex_get_attr(
             self.fileId,
-            get_entity_type(&#39;EX_ELEM_BLOCK&#39;),
+            ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;)),
             elem_blk_id,
-            byref(attrib))
+            ctypes.byref(attrib))
         return attrib
 
     # --------------------------------------------------------------------
 
     def __ex_get_variable_param(self, varType):
-        var_type = c_int(get_entity_type(varType))
-        num_vars = c_int()
+        var_type = ctypes.c_int(get_entity_type(varType))
+        num_vars = ctypes.c_int()
         EXODUS_LIB.ex_get_variable_param(
-            self.fileId, var_type, byref(num_vars))
+            self.fileId, var_type, ctypes.byref(num_vars))
         return num_vars
 
     # --------------------------------------------------------------------
@@ -12310,19 +12448,19 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     def __ex_get_variable_names(self, varType):
         num_vars = self.__ex_get_variable_param(varType)
         var_name_ptrs = (
-            POINTER(c_char * (MAX_NAME_LENGTH + 1)) * num_vars.value)()
+            ctypes.POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * num_vars.value)()
 
         for i in range(num_vars.value):
-            var_name_ptrs[i] = pointer(
-                create_string_buffer(
+            var_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     MAX_NAME_LENGTH + 1))
 
-        var_type = c_int(get_entity_type(varType))
+        var_type = ctypes.c_int(get_entity_type(varType))
         EXODUS_LIB.ex_get_variable_names(
             self.fileId,
             var_type,
             num_vars,
-            byref(var_name_ptrs))
+            ctypes.byref(var_name_ptrs))
         var_names = []
         for vnp in var_name_ptrs:
             var_names.append(vnp.contents.value.decode(&#39;utf8&#39;))
@@ -12331,12 +12469,12 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_var(self, timeStep, varType, varId, blkId, numValues):
-        step = c_int(timeStep)
-        var_type = c_int(get_entity_type(varType))
-        var_id = c_int(varId)
-        block_id = c_longlong(blkId)
-        num_values = c_longlong(numValues)
-        var_vals = (c_double * num_values.value)()
+        step = ctypes.c_int(timeStep)
+        var_type = ctypes.c_int(get_entity_type(varType))
+        var_id = ctypes.c_int(varId)
+        block_id = ctypes.c_longlong(blkId)
+        num_values = ctypes.c_longlong(numValues)
+        var_vals = (ctypes.c_double * num_values.value)()
         EXODUS_LIB.ex_get_var(
             self.fileId,
             step,
@@ -12350,12 +12488,12 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_put_var(self, timeStep, varType, varId, blkId, numValues, values):
-        step = c_int(timeStep)
-        var_type = c_int(get_entity_type(varType))
-        var_id = c_int(varId)
-        block_id = c_longlong(blkId)
-        num_values = c_longlong(numValues)
-        var_vals = (c_double * num_values.value)()
+        step = ctypes.c_int(timeStep)
+        var_type = ctypes.c_int(get_entity_type(varType))
+        var_id = ctypes.c_int(varId)
+        block_id = ctypes.c_longlong(blkId)
+        num_values = ctypes.c_longlong(numValues)
+        var_vals = (ctypes.c_double * num_values.value)()
         for i in range(num_values.value):
             var_vals[i] = float(values[i])
         EXODUS_LIB.ex_put_var(
@@ -12371,41 +12509,41 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_side_set_node_list_len(self, object_id):
-        side_set_id = c_longlong(object_id)
+        side_set_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            side_set_node_list_len = c_longlong(0)
+            side_set_node_list_len = ctypes.c_longlong(0)
         else:
-            side_set_node_list_len = c_int(0)
+            side_set_node_list_len = ctypes.c_int(0)
         EXODUS_LIB.ex_get_side_set_node_list_len(
-            self.fileId, side_set_id, byref(side_set_node_list_len))
+            self.fileId, side_set_id, ctypes.byref(side_set_node_list_len))
         return side_set_node_list_len
 
     # --------------------------------------------------------------------
 
     def __ex_get_set_param(self, objType, object_id):
-        object_type = c_int(get_entity_type(objType))
-        side_set_id = c_longlong(object_id)
+        object_type = ctypes.c_int(get_entity_type(objType))
+        side_set_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            num_side_in_set = c_longlong(0)
-            num_dist_fact_in_set = c_longlong(0)
+            num_side_in_set = ctypes.c_longlong(0)
+            num_dist_fact_in_set = ctypes.c_longlong(0)
         else:
-            num_side_in_set = c_int(0)
-            num_dist_fact_in_set = c_int(0)
+            num_side_in_set = ctypes.c_int(0)
+            num_dist_fact_in_set = ctypes.c_int(0)
         EXODUS_LIB.ex_get_set_param(
             self.fileId,
             object_type,
             side_set_id,
-            byref(num_side_in_set),
-            byref(num_dist_fact_in_set))
+            ctypes.byref(num_side_in_set),
+            ctypes.byref(num_dist_fact_in_set))
         return int(num_side_in_set.value), int(num_dist_fact_in_set.value)
 
     # --------------------------------------------------------------------
 
     def __ex_put_set_param(self, objType, object_id, numSides, numDistFacts):
-        object_type = c_int(get_entity_type(objType))
-        side_set_id = c_longlong(object_id)
-        num_side_in_set = c_longlong(numSides)
-        num_dist_fact_in_set = c_longlong(numDistFacts)
+        object_type = ctypes.c_int(get_entity_type(objType))
+        side_set_id = ctypes.c_longlong(object_id)
+        num_side_in_set = ctypes.c_longlong(numSides)
+        num_dist_fact_in_set = ctypes.c_longlong(numDistFacts)
         EXODUS_LIB.ex_put_set_param(
             self.fileId,
             object_type,
@@ -12417,37 +12555,37 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_side_set(self, sideSetId):
-        side_set_id = c_longlong(sideSetId)
+        side_set_id = ctypes.c_longlong(sideSetId)
         (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_set_param(&#39;EX_SIDE_SET&#39;, sideSetId)
         if num_side_in_set == 0:
             return [], []
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            side_set_elem_list = (c_longlong * num_side_in_set)()
-            side_set_side_list = (c_longlong * num_side_in_set)()
+            side_set_elem_list = (ctypes.c_longlong * num_side_in_set)()
+            side_set_side_list = (ctypes.c_longlong * num_side_in_set)()
         else:
-            side_set_elem_list = (c_int * num_side_in_set)()
-            side_set_side_list = (c_int * num_side_in_set)()
+            side_set_elem_list = (ctypes.c_int * num_side_in_set)()
+            side_set_side_list = (ctypes.c_int * num_side_in_set)()
         EXODUS_LIB.ex_get_side_set(self.fileId, side_set_id,
-                                   byref(side_set_elem_list),
-                                   byref(side_set_side_list))
+                                   ctypes.byref(side_set_elem_list),
+                                   ctypes.byref(side_set_side_list))
         return side_set_elem_list, side_set_side_list
 
     # --------------------------------------------------------------------
 
     def __ex_put_side_set(self, object_id, sideSetElements, sideSetSides):
-        side_set_id = c_longlong(object_id)
+        side_set_id = ctypes.c_longlong(object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            side_set_elem_list = (c_longlong * len(sideSetElements))()
-            side_set_side_list = (c_longlong * len(sideSetSides))()
+            side_set_elem_list = (ctypes.c_longlong * len(sideSetElements))()
+            side_set_side_list = (ctypes.c_longlong * len(sideSetSides))()
             for i, sse in enumerate(sideSetElements):
-                side_set_elem_list[i] = c_longlong(sse)
-                side_set_side_list[i] = c_longlong(sideSetSides[i])
+                side_set_elem_list[i] = ctypes.c_longlong(sse)
+                side_set_side_list[i] = ctypes.c_longlong(sideSetSides[i])
         else:
-            side_set_elem_list = (c_int * len(sideSetElements))()
-            side_set_side_list = (c_int * len(sideSetSides))()
+            side_set_elem_list = (ctypes.c_int * len(sideSetElements))()
+            side_set_side_list = (ctypes.c_int * len(sideSetSides))()
             for i, sse in enumerate(sideSetElements):
-                side_set_elem_list[i] = c_int(sse)
-                side_set_side_list[i] = c_int(sideSetSides[i])
+                side_set_elem_list[i] = ctypes.c_int(sse)
+                side_set_side_list[i] = ctypes.c_int(sideSetSides[i])
         EXODUS_LIB.ex_put_side_set(
             self.fileId,
             side_set_id,
@@ -12458,51 +12596,51 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_side_set_dist_fact(self, sideSetId):
-        side_set_id = c_longlong(sideSetId)
+        side_set_id = ctypes.c_longlong(sideSetId)
         side_set_node_list_len = self.__ex_get_side_set_node_list_len(
             sideSetId)
-        set_dfs = (c_double * side_set_node_list_len.value)()
+        set_dfs = (ctypes.c_double * side_set_node_list_len.value)()
         EXODUS_LIB.ex_get_side_set_dist_fact(
-            self.fileId, side_set_id, byref(set_dfs))
+            self.fileId, side_set_id, ctypes.byref(set_dfs))
         return set_dfs
 
     # --------------------------------------------------------------------
 
     def __ex_put_side_set_dist_fact(self, sideSetId, sideSetDistFact):
-        side_set_id = c_longlong(sideSetId)
-        side_set_dist_fact = (c_double * len(sideSetDistFact))()
+        side_set_id = ctypes.c_longlong(sideSetId)
+        side_set_dist_fact = (ctypes.c_double * len(sideSetDistFact))()
         for i, df in enumerate(sideSetDistFact):
-            side_set_dist_fact[i] = c_double(df)
+            side_set_dist_fact[i] = ctypes.c_double(df)
         EXODUS_LIB.ex_put_side_set_dist_fact(
             self.fileId, side_set_id, side_set_dist_fact)
 
     # --------------------------------------------------------------------
 
     def __ex_get_side_set_node_list(self, object_id):
-        side_set_id = c_longlong(object_id)
+        side_set_id = ctypes.c_longlong(object_id)
         side_set_node_list_len = self.__ex_get_side_set_node_list_len(object_id)
         (num_side_in_set, _num_dist_fact_in_set) = self.__ex_get_set_param(&#39;EX_SIDE_SET&#39;, object_id)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_BULK_INT64_API:
-            side_set_node_cnt_list = (c_longlong * num_side_in_set)()
-            side_set_node_list = (c_longlong * side_set_node_list_len.value)()
+            side_set_node_cnt_list = (ctypes.c_longlong * num_side_in_set)()
+            side_set_node_list = (ctypes.c_longlong * side_set_node_list_len.value)()
         else:
-            side_set_node_cnt_list = (c_int * num_side_in_set)()
-            side_set_node_list = (c_int * side_set_node_list_len.value)()
+            side_set_node_cnt_list = (ctypes.c_int * num_side_in_set)()
+            side_set_node_list = (ctypes.c_int * side_set_node_list_len.value)()
         EXODUS_LIB.ex_get_side_set_node_list(self.fileId, side_set_id,
-                                             byref(side_set_node_cnt_list),
-                                             byref(side_set_node_list))
+                                             ctypes.byref(side_set_node_cnt_list),
+                                             ctypes.byref(side_set_node_list))
         return side_set_node_cnt_list, side_set_node_list
 
     # --------------------------------------------------------------------
 
     def __ex_put_variable_param(self, varType, numVars):
-        num_vars = c_int(numVars)
+        num_vars = ctypes.c_int(numVars)
         current_num = self.__ex_get_variable_param(varType)
         if current_num.value == num_vars.value:
             # print &#34;value already set&#34;
             return True
 
-        var_type = c_int(get_entity_type(varType))
+        var_type = ctypes.c_int(get_entity_type(varType))
         errorInt = EXODUS_LIB.ex_put_variable_param(
             self.fileId, var_type, num_vars)
         if errorInt != 0:
@@ -12515,32 +12653,32 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_variable_name(self, varType, varId):
-        var_type = c_int(varType)
-        var_id = c_int(varId)
-        name = create_string_buffer(MAX_NAME_LENGTH + 1)
+        var_type = ctypes.c_int(varType)
+        var_id = ctypes.c_int(varId)
+        name = ctypes.create_string_buffer(MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_get_variable_name(self.fileId, var_type, var_id, name)
         return name.decode(&#39;utf8&#39;)
 
     # --------------------------------------------------------------------
 
     def __ex_put_variable_name(self, varType, varId, varName):
-        var_type = c_int(get_entity_type(varType))
-        var_id = c_int(varId)
-        name = create_string_buffer(varName, MAX_NAME_LENGTH + 1)
+        var_type = ctypes.c_int(get_entity_type(varType))
+        var_id = ctypes.c_int(varId)
+        name = ctypes.create_string_buffer(varName.encode(&#39;ascii&#39;), MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_variable_name(self.fileId, var_type, var_id, name)
         return True
 
     # --------------------------------------------------------------------
 
     def __ex_get_elem_attr_names(self, blkId):
-        object_id = c_longlong(blkId)
-        num_attr = c_int(self.num_attr(blkId))
+        object_id = ctypes.c_longlong(blkId)
+        num_attr = ctypes.c_int(self.num_attr(blkId))
         len_name = self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_MAX_READ_NAME_LENGTH&#39;))
-        attr_name_ptrs = (POINTER(c_char * (len_name + 1)) * num_attr.value)()
+        attr_name_ptrs = (ctypes.POINTER(ctypes.c_char * (len_name + 1)) * num_attr.value)()
         for i in range(num_attr.value):
-            attr_name_ptrs[i] = pointer(create_string_buffer(len_name + 1))
+            attr_name_ptrs[i] = ctypes.pointer(ctypes.create_string_buffer(len_name + 1))
         EXODUS_LIB.ex_get_elem_attr_names(
-            self.fileId, object_id, byref(attr_name_ptrs))
+            self.fileId, object_id, ctypes.byref(attr_name_ptrs))
         attr_names = []
         for cnp in attr_name_ptrs:
             attr_names.append(cnp.contents.value.decode(&#39;utf8&#39;))
@@ -12549,32 +12687,32 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_put_elem_attr_names(self, blkId, varNames):
-        object_id = c_int(blkId)
-        num_attr = c_int(self.num_attr(blkId))
+        object_id = ctypes.c_int(blkId)
+        num_attr = ctypes.c_int(self.num_attr(blkId))
         len_name = self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_MAX_READ_NAME_LENGTH&#39;))
-        attr_name_ptrs = (POINTER(c_char * (len_name + 1)) * num_attr.value)()
+        attr_name_ptrs = (ctypes.POINTER(ctypes.c_char * (len_name + 1)) * num_attr.value)()
         assert len(varNames) == num_attr.value
         for i in range(num_attr.value):
-            attr_name_ptrs[i] = pointer(
-                create_string_buffer(
-                    varNames[i], len_name + 1))
+            attr_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
+                    varNames[i].encode(&#39;ascii&#39;), len_name + 1))
         EXODUS_LIB.ex_put_elem_attr_names(
-            self.fileId, object_id, byref(attr_name_ptrs))
+            self.fileId, object_id, ctypes.byref(attr_name_ptrs))
         return True
 
     # --------------------------------------------------------------------
 
     def __ex_get_prop_names(self, varType, inqType):
-        var_type = c_int(get_entity_type(varType))
-        num_props = c_int(self.__ex_inquire_int(ex_inquiry_map(inqType)))
+        var_type = ctypes.c_int(get_entity_type(varType))
+        num_props = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(inqType)))
         prop_name_ptrs = (
-            POINTER(c_char * (MAX_STR_LENGTH + 1)) * num_props.value)()
+            ctypes.POINTER(ctypes.c_char * (MAX_STR_LENGTH + 1)) * num_props.value)()
         for i in range(num_props.value):
-            prop_name_ptrs[i] = pointer(
-                create_string_buffer(
+            prop_name_ptrs[i] = ctypes.pointer(
+                ctypes.create_string_buffer(
                     MAX_STR_LENGTH + 1))
         EXODUS_LIB.ex_get_prop_names(
-            self.fileId, var_type, byref(prop_name_ptrs))
+            self.fileId, var_type, ctypes.byref(prop_name_ptrs))
         prop_names = []
         for cnp in prop_name_ptrs:
             prop_names.append(cnp.contents.value.decode(&#39;utf8&#39;))
@@ -12583,33 +12721,33 @@ and <code>blkIds</code> is a list of block ids to add it to.</dd>
     # --------------------------------------------------------------------
 
     def __ex_get_prop(self, objType, objId, propName):
-        obj_type = c_int(get_entity_type(objType))
-        obj_id = c_longlong(objId)
-        prop_name = create_string_buffer(propName.encode(&#39;ascii&#39;), MAX_STR_LENGTH + 1)
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
+        prop_name = ctypes.create_string_buffer(propName.encode(&#39;ascii&#39;), MAX_STR_LENGTH + 1)
         if EXODUS_LIB.ex_int64_status(self.fileId) &amp; EX_IDS_INT64_API:
-            prop_val = c_longlong(0)
+            prop_val = ctypes.c_longlong(0)
         else:
-            prop_val = c_int(0)
+            prop_val = ctypes.c_int(0)
         EXODUS_LIB.ex_get_prop(
             self.fileId,
             obj_type,
             obj_id,
-            byref(prop_name),
-            byref(prop_val))
+            ctypes.byref(prop_name),
+            ctypes.byref(prop_val))
         return prop_val.value
 
     # --------------------------------------------------------------------
 
     def __ex_put_prop(self, objType, objId, propName, propVal):
-        obj_type = c_int(get_entity_type(objType))
-        obj_id = c_longlong(objId)
-        prop_name = create_string_buffer(propName.encode(&#39;ascii&#39;), MAX_STR_LENGTH + 1)
-        prop_val = c_longlong(propVal)
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
+        prop_name = ctypes.create_string_buffer(propName.encode(&#39;ascii&#39;), MAX_STR_LENGTH + 1)
+        prop_val = ctypes.c_longlong(propVal)
         EXODUS_LIB.ex_put_prop(
             self.fileId,
             obj_type,
             obj_id,
-            byref(prop_name),
+            ctypes.byref(prop_name),
             prop_val)
         return True
 
@@ -12690,8 +12828,8 @@ new exodus object</p>
     exo_copy : exodus object
     &#34;&#34;&#34;
     fileId = EXODUS_LIB.ex_create_int(fileName.encode(&#39;ascii&#39;), EX_NOCLOBBER,
-                                      byref(self.comp_ws),
-                                      byref(self.io_ws),
+                                      ctypes.byref(self.comp_ws),
+                                      ctypes.byref(self.io_ws),
                                       EX_API_VERSION_NODOT)
 
     i64Status = EXODUS_LIB.ex_int64_status(self.fileId)
@@ -13026,9 +13164,9 @@ direction, a length exo.num_nodes() list is returned</p>
 </code></pre>
 <h2 id="returns">Returns</h2>
 <pre><code>if array_type == 'ctype':
-  &lt;list&lt;c_double&gt;&gt;  x_coords  global x-direction coordinates
-  &lt;list&lt;c_double&gt;&gt;  y_coords  global y-direction coordinates
-  &lt;list&lt;c_double&gt;&gt;  z_coords  global z-direction coordinates
+  &lt;list&lt;ctypes.c_double&gt;&gt;  x_coords  global x-direction coordinates
+  &lt;list&lt;ctypes.c_double&gt;&gt;  y_coords  global y-direction coordinates
+  &lt;list&lt;ctypes.c_double&gt;&gt;  z_coords  global z-direction coordinates
 
 if array_type == 'numpy':
   &lt;np_array&lt;double&gt;&gt;  x_coords  global x-direction coordinates
@@ -13048,9 +13186,9 @@ if array_type == 'numpy':
     -------
 
         if array_type == &#39;ctype&#39;:
-          &lt;list&lt;c_double&gt;&gt;  x_coords  global x-direction coordinates
-          &lt;list&lt;c_double&gt;&gt;  y_coords  global y-direction coordinates
-          &lt;list&lt;c_double&gt;&gt;  z_coords  global z-direction coordinates
+          &lt;list&lt;ctypes.c_double&gt;&gt;  x_coords  global x-direction coordinates
+          &lt;list&lt;ctypes.c_double&gt;&gt;  y_coords  global y-direction coordinates
+          &lt;list&lt;ctypes.c_double&gt;&gt;  z_coords  global z-direction coordinates
 
         if array_type == &#39;numpy&#39;:
           &lt;np_array&lt;double&gt;&gt;  x_coords  global x-direction coordinates
@@ -13422,7 +13560,7 @@ element <em>INDEX</em></p>
 <pre><code>&gt;&gt;&gt; elem_id_map = exo.get_elem_num_map()
 </code></pre>
 <h2 id="returns">Returns</h2>
-<pre><code>&lt;list&lt;c_int&gt;&gt;  elem_id_map
+<pre><code>&lt;list&lt;ctypes.c_int&gt;&gt;  elem_id_map
 </code></pre></section>
 <details class="source">
 <summary>Source code</summary>
@@ -13443,7 +13581,7 @@ element <em>INDEX</em></p>
 
     Returns
     -------
-        &lt;list&lt;c_int&gt;&gt;  elem_id_map
+        &lt;list&lt;ctypes.c_int&gt;&gt;  elem_id_map
     &#34;&#34;&#34;
     elemNumMap = self.__ex_get_elem_num_map()
     return elemNumMap</code></pre>
@@ -13692,7 +13830,7 @@ block, element variable name, and time step</p>
 </dl>
 <h2 id="returns">Returns</h2>
 <pre><code>if array_type == 'ctype':
-  &lt;list&lt;c_double&gt;&gt;  evar_vals
+  &lt;list&lt;ctypes.c_double&gt;&gt;  evar_vals
 
 if array_type == 'numpy':
   &lt;np_array&lt;double&gt;&gt;  evar_vals
@@ -13720,7 +13858,7 @@ if array_type == 'numpy':
     -------
 
         if array_type == &#39;ctype&#39;:
-          &lt;list&lt;c_double&gt;&gt;  evar_vals
+          &lt;list&lt;ctypes.c_double&gt;&gt;  evar_vals
 
         if array_type == &#39;numpy&#39;:
           &lt;np_array&lt;double&gt;&gt;  evar_vals
@@ -14149,7 +14287,7 @@ points to the node <em>ID</em> for each node <em>INDEX</em></p>
 <pre><code>&gt;&gt;&gt; node_id_map = exo.get_node_num_map()
 </code></pre>
 <h2 id="returns">Returns</h2>
-<pre><code>&lt;list&lt;c_int&gt;&gt;  node_id_map
+<pre><code>&lt;list&lt;ctypes.c_int&gt;&gt;  node_id_map
 </code></pre></section>
 <details class="source">
 <summary>Source code</summary>
@@ -14169,7 +14307,7 @@ points to the node <em>ID</em> for each node <em>INDEX</em></p>
 
     Returns
     -------
-        &lt;list&lt;c_int&gt;&gt;  node_id_map
+        &lt;list&lt;ctypes.c_int&gt;&gt;  node_id_map
     &#34;&#34;&#34;
     nodeNumMap = self.__ex_get_node_num_map()
     return nodeNumMap</code></pre>
@@ -14550,7 +14688,7 @@ one variable value per node in the set</p>
 </code></pre>
 <h2 id="returns">Returns</h2>
 <pre><code>if array_type == 'ctype':
-  &lt;list&lt;c_double&gt;&gt;  nsvar_vals
+  &lt;list&lt;ctypes.c_double&gt;&gt;  nsvar_vals
 
 if array_type == 'numpy':
   &lt;np_array&lt;double&gt;&gt;  nsvar_vals
@@ -14577,7 +14715,7 @@ if array_type == 'numpy':
     -------
 
         if array_type == &#39;ctype&#39;:
-          &lt;list&lt;c_double&gt;&gt;  nsvar_vals
+          &lt;list&lt;ctypes.c_double&gt;&gt;  nsvar_vals
 
         if array_type == &#39;numpy&#39;:
           &lt;np_array&lt;double&gt;&gt;  nsvar_vals
@@ -14661,7 +14799,7 @@ and time step</p>
 </code></pre>
 <h2 id="returns">Returns</h2>
 <pre><code>if array_type == 'ctype':
-  &lt;list&lt;c_double&gt;&gt;  nvar_vals
+  &lt;list&lt;ctypes.c_double&gt;&gt;  nvar_vals
 
 if array_type == 'numpy':
   &lt;np_array&lt;double&gt;&gt;  nvar_vals
@@ -14684,7 +14822,7 @@ if array_type == 'numpy':
     -------
 
         if array_type == &#39;ctype&#39;:
-          &lt;list&lt;c_double&gt;&gt;  nvar_vals
+          &lt;list&lt;ctypes.c_double&gt;&gt;  nvar_vals
 
         if array_type == &#39;numpy&#39;:
           &lt;np_array&lt;double&gt;&gt;  nvar_vals
@@ -15264,7 +15402,7 @@ one variable value per side in the set</p>
 </code></pre>
 <h2 id="returns">Returns</h2>
 <pre><code>if array_type == 'ctype':
-  &lt;list&lt;c_double&gt;&gt;  ssvar_vals
+  &lt;list&lt;ctypes.c_double&gt;&gt;  ssvar_vals
 
 if array_type == 'numpy':
   &lt;np_array&lt;double&gt;&gt;  ssvar_vals
@@ -15290,7 +15428,7 @@ if array_type == 'numpy':
     -------
 
         if array_type == &#39;ctype&#39;:
-          &lt;list&lt;c_double&gt;&gt;  ssvar_vals
+          &lt;list&lt;ctypes.c_double&gt;&gt;  ssvar_vals
 
         if array_type == &#39;numpy&#39;:
           &lt;np_array&lt;double&gt;&gt;  ssvar_vals
@@ -15385,7 +15523,7 @@ of input deck file lines is returned</p>
 </code></pre>
 <h2 id="returns">Returns</h2>
 <pre><code>if array_type == 'ctype' :
-  &lt;list&lt;c_double&gt;&gt;  time_vals
+  &lt;list&lt;ctypes.c_double&gt;&gt;  time_vals
 
 if array_type == 'numpy' :
   &lt;np_array&lt;double&gt;&gt;  time_vals
@@ -15401,7 +15539,7 @@ if array_type == 'numpy' :
     Returns
     -------
         if array_type == &#39;ctype&#39; :
-          &lt;list&lt;c_double&gt;&gt;  time_vals
+          &lt;list&lt;ctypes.c_double&gt;&gt;  time_vals
 
         if array_type == &#39;numpy&#39; :
           &lt;np_array&lt;double&gt;&gt;  time_vals
@@ -15511,7 +15649,7 @@ cycling faster than entity index</p>
     truth_tab : &lt;list&lt;bool&gt;&gt;
         True for variable defined in an entity, False otherwise
     &#34;&#34;&#34;
-    if entId is not None:
+    if entId is None:
         truthTable = self.__ex_get_truth_table(objType)
     else:
         truthTable = self.__ex_get_object_truth_vector(objType, entId)
@@ -15856,6 +15994,33 @@ cycling faster than entity index</p>
     return nodesPerElem.value</code></pre>
 </details>
 </dd>
+<dt id="exodus.exodus.num_qa_records"><code class="name flex">
+<span>def <span class="ident">num_qa_records</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>get the number of qa records</p>
+<pre><code>&gt;&gt;&gt; num_qa_recs = exo.num_qa_records()
+</code></pre>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>num_qa_recs</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def num_qa_records(self):
+    &#34;&#34;&#34;
+    get the number of qa records
+
+    &gt;&gt;&gt; num_qa_recs = exo.num_qa_records()
+
+    Returns
+    -------
+    num_qa_recs : int
+    &#34;&#34;&#34;
+    return int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_QA&#39;)))</code></pre>
+</details>
+</dd>
 <dt id="exodus.exodus.num_side_sets"><code class="name flex">
 <span>def <span class="ident">num_side_sets</span></span>(<span>self)</span>
 </code></dt>
@@ -15947,12 +16112,12 @@ at a specified time step</p>
         True = successful execution
     &#34;&#34;&#34;
     numVals = self.get_variable_number(&#39;EX_GLOBAL&#39;)
-    gvalues = (c_double * numVals)()
+    gvalues = (ctypes.c_double * numVals)()
     for i in range(numVals):
-        gvalues[i] = c_double(values[i])
+        gvalues[i] = ctypes.c_double(values[i])
     EXODUS_LIB.ex_put_glob_vars(self.fileId,
-                                c_int(step),
-                                c_int(numVals),
+                                ctypes.c_int(step),
+                                ctypes.c_int(numVals),
                                 gvalues)
     return True</code></pre>
 </details>
@@ -16391,10 +16556,10 @@ if array_type == 'numpy':
     status : bool
         True = successful execution
     &#34;&#34;&#34;
-    ebType = get_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-    elem_face_conn = (c_int * len(elemFaceConn))()
+    ebType = ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;))
+    elem_face_conn = (ctypes.c_int * len(elemFaceConn))()
     elem_face_conn[:] = elemFaceConn
-    EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_longlong(blkId),
+    EXODUS_LIB.ex_put_conn(self.fileId, ebType, ctypes.c_longlong(blkId),
                            None, None, elem_face_conn)
     return True</code></pre>
 </details>
@@ -16705,11 +16870,11 @@ if array_type == 'numpy':
     status : bool
         True = successful execution
     &#34;&#34;&#34;
-    ebType = get_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-    entity_counts = (c_int * len(entityCounts))()
+    ebType = ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;))
+    entity_counts = (ctypes.c_int * len(entityCounts))()
     entity_counts[:] = entityCounts
     EXODUS_LIB.ex_put_entity_count_per_polyhedra(
-        self.fileId, ebType, c_longlong(blkID), entity_counts)
+        self.fileId, ebType, ctypes.c_longlong(blkID), entity_counts)
     return True</code></pre>
 </details>
 </dd>
@@ -16757,10 +16922,10 @@ if array_type == 'numpy':
     status : bool
         True = successful execution
     &#34;&#34;&#34;
-    ebType = get_entity_type(&#39;EX_FACE_BLOCK&#39;)
-    node_conn = (c_int * len(faceNodeConn))()
+    ebType = ctypes.c_int(get_entity_type(&#39;EX_FACE_BLOCK&#39;))
+    node_conn = (ctypes.c_int * len(faceNodeConn))()
     node_conn[:] = faceNodeConn
-    EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_longlong(blkId),
+    EXODUS_LIB.ex_put_conn(self.fileId, ebType, ctypes.c_longlong(blkId),
                            node_conn, None, None)
     return True</code></pre>
 </details>
@@ -16873,17 +17038,17 @@ name and time step</p>
     names = self.get_variable_names(&#39;EX_GLOBAL&#39;)
     # get all values
     numVals = self.get_variable_number(&#39;EX_GLOBAL&#39;)
-    values = (c_double * numVals)()
+    values = (ctypes.c_double * numVals)()
     for i in range(numVals):
-        values[i] = c_double(
+        values[i] = ctypes.c_double(
             self.get_global_variable_value(
                 names[i], step))
     # adjust one of them
-    values[names.index(name)] = c_double(value)
+    values[names.index(name)] = ctypes.c_double(value)
     # write them all
     EXODUS_LIB.ex_put_var(self.fileId,
-                          c_int(step),
-                          c_int(numVals),
+                          ctypes.c_int(step),
+                          ctypes.c_int(numVals),
                           values)
     return True</code></pre>
 </details>
@@ -17023,15 +17188,15 @@ points to the node <em>ID</em> for each node <em>INDEX</em></p>
               .format(p.title, MAX_LINE_LENGTH))
         p.title = p.title[-1*MAX_LINE_LENGTH:]
 
-    self.Title = create_string_buffer(p.title, MAX_LINE_LENGTH + 1)
-    self.numDim = c_longlong(p.num_dim)
-    self.numNodes = c_longlong(p.num_nodes)
-    self.numElem = c_longlong(p.num_elem)
-    self.numElemBlk = c_longlong(p.num_elem_blk)
-    self.numNodeSets = c_longlong(p.num_node_sets)
-    self.numSideSets = c_longlong(p.num_side_sets)
+    self.Title = ctypes.create_string_buffer(p.title, MAX_LINE_LENGTH + 1)
+    self.numDim = ctypes.c_longlong(p.num_dim)
+    self.numNodes = ctypes.c_longlong(p.num_nodes)
+    self.numElem = ctypes.c_longlong(p.num_elem)
+    self.numElemBlk = ctypes.c_longlong(p.num_elem_blk)
+    self.numNodeSets = ctypes.c_longlong(p.num_node_sets)
+    self.numSideSets = ctypes.c_longlong(p.num_side_sets)
 
-    EXODUS_LIB.ex_put_init_ext(self.fileId, byref(p))
+    EXODUS_LIB.ex_put_init_ext(self.fileId, ctypes.byref(p))
     return True</code></pre>
 </details>
 </dd>
@@ -17206,11 +17371,11 @@ if array_type == 'numpy':
     status : bool
         True = successful execution
     &#34;&#34;&#34;
-    ebType = get_entity_type(&#39;EX_FACE_BLOCK&#39;)
-    entity_counts = (c_int * len(entityCounts))()
+    ebType = ctypes.c_int(get_entity_type(&#39;EX_FACE_BLOCK&#39;))
+    entity_counts = (ctypes.c_int * len(entityCounts))()
     entity_counts[:] = entityCounts
     EXODUS_LIB.ex_put_entity_count_per_polyhedra(
-        self.fileId, ebType, c_longlong(blkID), entity_counts)
+        self.fileId, ebType, ctypes.c_longlong(blkID), entity_counts)
     return True</code></pre>
 </details>
 </dd>
@@ -17705,14 +17870,14 @@ name and time step</p>
         True = successful execution
     &#34;&#34;&#34;
 
-    ebType = get_entity_type(&#39;EX_ELEM_BLOCK&#39;)
-    EXODUS_LIB.ex_put_block(self.fileId, ebType, c_longlong(blkID),
-                            create_string_buffer(b&#34;NFACED&#34;),
-                            c_longlong(num_elems_this_blk),
-                            c_longlong(0),
-                            c_longlong(0),
-                            c_longlong(num_faces),
-                            c_longlong(num_attr_per_elem))
+    ebType = ctypes.c_int(get_entity_type(&#39;EX_ELEM_BLOCK&#39;))
+    EXODUS_LIB.ex_put_block(self.fileId, ebType, ctypes.c_longlong(blkID),
+                            ctypes.create_string_buffer(b&#34;NFACED&#34;),
+                            ctypes.c_longlong(num_elems_this_blk),
+                            ctypes.c_longlong(0),
+                            ctypes.c_longlong(0),
+                            ctypes.c_longlong(num_faces),
+                            ctypes.c_longlong(num_attr_per_elem))
     return True</code></pre>
 </details>
 </dd>
@@ -17759,14 +17924,14 @@ name and time step</p>
     status : bool
         True = successful execution
     &#34;&#34;&#34;
-    fbType = get_entity_type(&#39;EX_FACE_BLOCK&#39;)
-    EXODUS_LIB.ex_put_block(self.fileId, fbType, c_longlong(blkID),
-                            create_string_buffer(b&#34;NSIDED&#34;),
-                            c_longlong(num_faces_this_blk),
-                            c_longlong(num_nodes),
-                            c_longlong(0),
-                            c_longlong(0),
-                            c_longlong(num_attr_per_face))
+    fbType = ctypes.c_int(get_entity_type(&#39;EX_FACE_BLOCK&#39;))
+    EXODUS_LIB.ex_put_block(self.fileId, fbType, ctypes.c_longlong(blkID),
+                            ctypes.create_string_buffer(b&#34;NSIDED&#34;),
+                            ctypes.c_longlong(num_faces_this_blk),
+                            ctypes.c_longlong(num_nodes),
+                            ctypes.c_longlong(0),
+                            ctypes.c_longlong(0),
+                            ctypes.c_longlong(num_attr_per_face))
     return True</code></pre>
 </details>
 </dd>
@@ -18233,7 +18398,7 @@ variable value per side in the set</p>
         True = successful execution
     &#34;&#34;&#34;
     self.__ex_put_time(step, value)
-    self.numTimes = c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_TIME&#39;)))
+    self.numTimes = ctypes.c_int(self.__ex_inquire_int(ex_inquiry_map(&#39;EX_INQ_TIME&#39;)))
     return True</code></pre>
 </details>
 </dd>
@@ -18885,6 +19050,16 @@ Number of time steps         = 5
 </ul>
 </li>
 <li>
+<h4><code><a title="exodus.ex_options" href="#exodus.ex_options">ex_options</a></code></h4>
+<ul class="">
+<li><code><a title="exodus.ex_options.EX_ABORT" href="#exodus.ex_options.EX_ABORT">EX_ABORT</a></code></li>
+<li><code><a title="exodus.ex_options.EX_DEBUG" href="#exodus.ex_options.EX_DEBUG">EX_DEBUG</a></code></li>
+<li><code><a title="exodus.ex_options.EX_DEFAULT" href="#exodus.ex_options.EX_DEFAULT">EX_DEFAULT</a></code></li>
+<li><code><a title="exodus.ex_options.EX_NULLVERBOSE" href="#exodus.ex_options.EX_NULLVERBOSE">EX_NULLVERBOSE</a></code></li>
+<li><code><a title="exodus.ex_options.EX_VERBOSE" href="#exodus.ex_options.EX_VERBOSE">EX_VERBOSE</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="exodus.exodus" href="#exodus.exodus">exodus</a></code></h4>
 <ul class="">
 <li><code><a title="exodus.exodus.close" href="#exodus.exodus.close">close</a></code></li>
@@ -18970,6 +19145,7 @@ Number of time steps         = 5
 <li><code><a title="exodus.exodus.num_nodes" href="#exodus.exodus.num_nodes">num_nodes</a></code></li>
 <li><code><a title="exodus.exodus.num_nodes_in_node_set" href="#exodus.exodus.num_nodes_in_node_set">num_nodes_in_node_set</a></code></li>
 <li><code><a title="exodus.exodus.num_nodes_per_elem" href="#exodus.exodus.num_nodes_per_elem">num_nodes_per_elem</a></code></li>
+<li><code><a title="exodus.exodus.num_qa_records" href="#exodus.exodus.num_qa_records">num_qa_records</a></code></li>
 <li><code><a title="exodus.exodus.num_side_sets" href="#exodus.exodus.num_side_sets">num_side_sets</a></code></li>
 <li><code><a title="exodus.exodus.num_times" href="#exodus.exodus.num_times">num_times</a></code></li>
 <li><code><a title="exodus.exodus.put_all_global_variable_values" href="#exodus.exodus.put_all_global_variable_values">put_all_global_variable_values</a></code></li>

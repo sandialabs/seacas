@@ -17,6 +17,7 @@ var classIogn_1_1DashSurfaceMesh =
     [ "element_map", "classIogn_1_1DashSurfaceMesh.html#aeb1bfe7aa74b200a929fa793bc25d8bc", null ],
     [ "element_map", "classIogn_1_1DashSurfaceMesh.html#a4c1de5eb0c10e2929ec573e70c3ca572", null ],
     [ "element_map", "classIogn_1_1DashSurfaceMesh.html#ac08b8f95bd7794f6cb612120e466f1a6", null ],
+    [ "get_sideset_topology", "classIogn_1_1DashSurfaceMesh.html#a2fb99491593dcc22d02826a2a0bb6fa9", null ],
     [ "node_communication_map", "classIogn_1_1DashSurfaceMesh.html#ae703ff2253e8e1aa7693075385f3d546", null ],
     [ "node_count", "classIogn_1_1DashSurfaceMesh.html#a13b6b845ed21ea83a5d780f2cf64b581", null ],
     [ "node_count_proc", "classIogn_1_1DashSurfaceMesh.html#ab81dedbf022d41158f771138b84859d5", null ],

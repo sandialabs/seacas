@@ -8,6 +8,8 @@ var classIoss_1_1FileInfo =
     [ "~FileInfo", "classIoss_1_1FileInfo.html#a7c6ac576dbd38370df67b53ce4316b53", null ],
     [ "accessed", "classIoss_1_1FileInfo.html#a371e2d957e822f09354e5351a17a22ab", null ],
     [ "basename", "classIoss_1_1FileInfo.html#a3999c96b72ab41961a6e9043f729e840", null ],
+    [ "create_path", "classIoss_1_1FileInfo.html#a7743b567c1542fab53ab1b9df5f0e1e5", null ],
+    [ "create_path", "classIoss_1_1FileInfo.html#a7299d6f727113b4bc1b8d85312eb2dd7", null ],
     [ "created", "classIoss_1_1FileInfo.html#a6d9eb07f2276873625d5ee6d35d6d359", null ],
     [ "exists", "classIoss_1_1FileInfo.html#a7f7349cd0c418d9fdaa12a9088604193", null ],
     [ "extension", "classIoss_1_1FileInfo.html#aff6f82db2f93ce3685e0c1620ec0dbfc", null ],

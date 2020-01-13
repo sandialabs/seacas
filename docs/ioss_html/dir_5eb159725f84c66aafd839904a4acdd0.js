@@ -17,7 +17,7 @@ var dir_5eb159725f84c66aafd839904a4acdd0 =
     ] ],
     [ "shell_to_hex.C", "shell__to__hex_8C.html", "shell__to__hex_8C" ],
     [ "skinner.C", "skinner_8C.html", "skinner_8C" ],
-    [ "skinner_interface.C", "skinner__interface_8C.html", null ],
+    [ "skinner_interface.C", "skinner__interface_8C.html", "skinner__interface_8C" ],
     [ "skinner_interface.h", "skinner__interface_8h.html", [
       [ "Interface", "classSkinner_1_1Interface.html", "classSkinner_1_1Interface" ]
     ] ],
