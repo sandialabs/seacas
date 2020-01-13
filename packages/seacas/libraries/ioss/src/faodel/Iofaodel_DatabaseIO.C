@@ -773,7 +773,8 @@ dirman.root_node_mpi 0
     lunasa::DataObject ldo;
     kelpie::Key k;
     k.K1( std::to_string( parallel_rank() ) );
-    k.K2(to_string(e) + to_string(f));
+    k.K2("/Region/State/" + std::to_string(get_region()->get_current_state())
+         + to_string(e) + to_string(f));
     pool.Need( k, &ldo );
 
     auto meta(static_cast<Entry*>(ldo.GetMetaPtr()));
@@ -793,7 +794,9 @@ dirman.root_node_mpi 0
     lunasa::DataObject ldo = to_ldo( *(get_region()), e, f );
     kelpie::Key k;
     k.K1( std::to_string( parallel_rank() ) );
-    k.K2(to_string(e) + to_string(f));
+    k.K2("/Region/State/" + std::to_string(get_region()->get_current_state())
+         + to_string(e) + to_string(f));
+    std::cerr << "K2: " << k.K2() << std::endl;
     pool.Publish( k, ldo );
     return 0;
   }
