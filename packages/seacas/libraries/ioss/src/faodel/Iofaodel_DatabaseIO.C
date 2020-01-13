@@ -796,7 +796,6 @@ dirman.root_node_mpi 0
     k.K1( std::to_string( parallel_rank() ) );
     k.K2("/Region/State/" + std::to_string(get_region()->get_current_state())
          + to_string(e) + to_string(f));
-    std::cerr << "K2: " << k.K2() << std::endl;
     pool.Publish( k, ldo );
     return 0;
   }

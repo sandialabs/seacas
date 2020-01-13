@@ -631,10 +631,20 @@ namespace Iofaodel {
   }
   std::string to_string(const Ioss::GroupingEntity & e)
   {
-    return std::string(
-      "/Entity/" + e.type_string() +
-      "/" + e.name()
-      );
+      // Don't use the region name as it may be unreliable
+      // That is, it's not property of the Region.
+      if(e.type_string() == "Region") {
+          return std::string(
+              "/Entity/" + e.type_string()
+              );
+      }
+      else
+      {
+          return std::string(
+              "/Entity/" + e.type_string() +
+              "/" + e.name()
+              );
+      }
   }
   std::string to_string(const Ioss::Property & p)
   {
