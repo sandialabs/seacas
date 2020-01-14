@@ -247,7 +247,7 @@ namespace internal {
 
 #ifdef FMT_USE_INT128
 // Do nothing.
-#elif defined(__SIZEOF_INT128__)
+#elif defined(__SIZEOF_INT128__) && !FMT_NVCC
 #define FMT_USE_INT128 1
   using int128_t                                 = __int128_t;
   using uint128_t                                = __uint128_t;
@@ -1458,7 +1458,7 @@ namespace internal {
   inline format_arg_store<buffer_context<Char>, remove_reference_t<Args>...>
   make_args_checked(const S &format_str, const remove_reference_t<Args> &... args)
   {
-   static_assert(all_true<(!std::is_base_of<view, remove_reference_t<Args>>::value ||
+    static_assert(all_true<(!std::is_base_of<view, remove_reference_t<Args>>::value ||
                             !std::is_reference<Args>::value)...>::value,
                   "passing views as lvalues is disallowed");
     check_format_string<remove_const_t<remove_reference_t<Args>>...>(format_str);
