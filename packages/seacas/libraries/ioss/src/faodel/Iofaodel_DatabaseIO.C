@@ -218,13 +218,19 @@ dirman.root_node_mpi 0
     auto region(this->get_region());
     {
       kelpie::ObjectCapacities oc;
-      pool.List( kelpie::Key(std::to_string(rank), "/Region/can.ex2/State/-1/Entity/REGION//Properties*"), &oc);
+      std::stringstream key_string; 
+      key_string << "/Region/" << region->name() << "/State/-1/Entity/Region" <<
+                    "/Name/" << region->name() << "/Property/*";
+      pool.List( kelpie::Key(std::to_string(rank), key_string.str()), &oc );
       this->read_entity_properties(oc, *(this->get_region()));
     }
 
     {
       kelpie::ObjectCapacities oc;
-      pool.List( kelpie::Key(std::to_string(rank), "/Region/can.ex2/State/-1/Entity/REGION//Fields*"), &oc);
+      std::stringstream key_string; 
+      key_string << "/Region/" << region->name() << "/State/-1/Entity/Region" <<
+                    "/Name/" << region->name() << "/Field/*";
+      pool.List( kelpie::Key(std::to_string(rank), key_string.str()), &oc );
       this->read_entity_fields(oc, *(this->get_region()));
     }
 
