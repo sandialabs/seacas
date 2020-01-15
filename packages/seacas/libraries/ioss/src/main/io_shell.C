@@ -438,7 +438,7 @@ namespace {
       }
 
       // NOTE: 'input_region' owns 'dbi' pointer at this time...
-      Ioss::Region input_region(dbi, "region");
+      Ioss::Region input_region(dbi, "region_1");
 
       if (input_region.mesh_type() == Ioss::MeshType::HYBRID) {
         fmt::print(stderr,
@@ -500,7 +500,7 @@ namespace {
       }
 
       // NOTE: 'output_region' owns 'dbo' pointer at this time...
-      Ioss::Region output_region(dbo, "region");
+      Ioss::Region output_region(dbo, "region_2");
 
       if (output_region.mesh_type() == Ioss::MeshType::HYBRID) {
         fmt::print(stderr,
