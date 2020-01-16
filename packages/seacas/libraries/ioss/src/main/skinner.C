@@ -80,8 +80,8 @@ namespace {
       if (name.length() > max_name) {
         max_name = name.length();
       }
-      auto face_width = Ioss::Utils::number_width(boundary_faces[name].size());
-      max_face        = face_width > max_face ? face_width : max_face;
+      size_t face_width = Ioss::Utils::number_width(boundary_faces[name].size());
+      max_face          = face_width > max_face ? face_width : max_face;
     }
     max_name += 4; // Padding
     max_face += 4;
