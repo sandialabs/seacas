@@ -101,10 +101,7 @@ static int is_truth_table_variable(const char *var_name)
   /* If copying just the "mesh" or "non-transient" portion of the
    * input DB, these are the variables that won't be copied:
    */
-  return (strcmp(var_name, VAR_EBLK_TAB) == 0) || (strcmp(var_name, VAR_FBLK_TAB) == 0) ||
-         (strcmp(var_name, VAR_ELEM_TAB) == 0) || (strcmp(var_name, VAR_ELSET_TAB) == 0) ||
-         (strcmp(var_name, VAR_SSET_TAB) == 0) || (strcmp(var_name, VAR_FSET_TAB) == 0) ||
-         (strcmp(var_name, VAR_ESET_TAB) == 0) || (strcmp(var_name, VAR_NSET_TAB) == 0);
+  return (strstr(var_name, "_var_tab") != NULL);
 }
 
 static int is_non_mesh_variable(const char *var_name)
@@ -112,22 +109,7 @@ static int is_non_mesh_variable(const char *var_name)
   /* If copying just the "mesh" or "non-transient" portion of the
    * input DB, these are the variables that won't be copied:
    */
-  return (strcmp(var_name, VAR_NAME_GLO_VAR) == 0) || (strcmp(var_name, VAR_GLO_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_NOD_VAR) == 0) || (strcmp(var_name, VAR_NOD_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_EDG_VAR) == 0) || (strcmp(var_name, VAR_NAME_FAC_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_ELE_VAR) == 0) || (strcmp(var_name, VAR_NAME_NSET_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_ESET_VAR) == 0) || (strcmp(var_name, VAR_NAME_FSET_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_SSET_VAR) == 0) ||
-         (strcmp(var_name, VAR_NAME_ELSET_VAR) == 0) ||
-         (strncmp(var_name, "vals_elset_var", 14) == 0) ||
-         (strncmp(var_name, "vals_sset_var", 13) == 0) ||
-         (strncmp(var_name, "vals_fset_var", 13) == 0) ||
-         (strncmp(var_name, "vals_eset_var", 13) == 0) ||
-         (strncmp(var_name, "vals_nset_var", 13) == 0) ||
-         (strncmp(var_name, "vals_nod_var", 12) == 0) ||
-         (strncmp(var_name, "vals_edge_var", 13) == 0) ||
-         (strncmp(var_name, "vals_face_var", 13) == 0) ||
-         (strncmp(var_name, "vals_elem_var", 13) == 0);
+  return (strncmp(var_name, "vals_", 5) == 0) || (strncmp(var_name, "name_", 5) == 0);
 }
 /*! \endcond */
 
@@ -338,7 +320,8 @@ int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
               (strcmp(dim_nm, DIM_NUM_FAC_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_ELE_VAR) == 0) ||
               (strcmp(dim_nm, DIM_NUM_NSET_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_ESET_VAR) == 0) ||
               (strcmp(dim_nm, DIM_NUM_FSET_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_SSET_VAR) == 0) ||
-              (strcmp(dim_nm, DIM_NUM_ELSET_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_GLO_VAR) == 0))) {
+              (strcmp(dim_nm, DIM_NUM_ELSET_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_GLO_VAR) == 0) ||
+              (strstr(dim_nm, "_red_var") != NULL))) {
       is_filtered = 1;
     }
     else {
@@ -821,6 +804,7 @@ void update_structs(int out_exoid)
   update_internal_structs(out_exoid, EX_INQ_EDGE_BLK, ex__get_counter_list(EX_EDGE_BLOCK));
   update_internal_structs(out_exoid, EX_INQ_FACE_BLK, ex__get_counter_list(EX_FACE_BLOCK));
   update_internal_structs(out_exoid, EX_INQ_ELEM_BLK, ex__get_counter_list(EX_ELEM_BLOCK));
+  update_internal_structs(out_exoid, EX_INQ_ASSEMBLY, ex__get_counter_list(EX_ASSEMBLY));
 
   update_internal_structs(out_exoid, EX_INQ_NODE_SETS, ex__get_counter_list(EX_NODE_SET));
   update_internal_structs(out_exoid, EX_INQ_EDGE_SETS, ex__get_counter_list(EX_EDGE_SET));

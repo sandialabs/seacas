@@ -102,6 +102,9 @@ IF ( NETCDF_NCDUMP_BINARY )
     testwt-compress
     testwt-results
     testwt-oned
+    testwt-assembly
+    testrd-assembly
+    test-add-assembly
   )
 
   IF (SEACASExodus_ENABLE_THREADSAFE)

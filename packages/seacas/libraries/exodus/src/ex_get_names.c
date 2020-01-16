@@ -69,6 +69,13 @@ int ex_get_names(int exoid, ex_entity_type obj_type, char **names)
   /* inquire previously defined dimensions and variables  */
 
   switch (obj_type) {
+    /* ======== ASSEMBLY ========= */
+#if 0
+  case EX_ASSEMBLY:
+    ex__get_dimension(exoid, DIM_NUM_ASSEMBLY, "assembly", &num_entity, &temp, __func__);
+    status = nc_inq_varid(exoid, VAR_NAME_ASSEMBLY, &varid);
+    break;
+#endif
   /*  ======== BLOCKS ========= */
   case EX_EDGE_BLOCK:
     ex__get_dimension(exoid, DIM_NUM_ED_BLK, "edge block", &num_entity, &temp, __func__);
