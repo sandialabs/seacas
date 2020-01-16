@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2019 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -149,7 +149,8 @@ error = ex_put_variable_names (exoid, EX_NODAL, num_nod_vars, var_names);
 
 */
 
-int ex_put_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char *var_names[])
+int ex_put_reduction_variable_names(int exoid, ex_entity_type obj_type, int num_vars,
+                                    char *var_names[])
 {
   int  varid, status;
   char errmsg[MAX_ERR_LENGTH];
@@ -161,35 +162,34 @@ int ex_put_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
   case EX_GLOBAL:
     ex_put_var_names_int(exoid, "global", DIM_NUM_GLO_VAR, VAR_NAME_GLO_VAR, &varid);
     break;
-  case EX_NODAL:
-    ex_put_var_names_int(exoid, "nodal", DIM_NUM_NOD_VAR, VAR_NAME_NOD_VAR, &varid);
-    break;
   case EX_ASSEMBLY:
-    ex_put_var_names_int(exoid, "assembly", DIM_NUM_ASSEMBLY_VAR, VAR_NAME_ASSEMBLY_VAR, &varid);
+    ex_put_var_names_int(exoid, "assembly", DIM_NUM_ASSEMBLY_RED_VAR, VAR_NAME_ASSEMBLY_RED_VAR,
+                         &varid);
     break;
   case EX_EDGE_BLOCK:
-    ex_put_var_names_int(exoid, "edge", DIM_NUM_EDG_VAR, VAR_NAME_EDG_VAR, &varid);
+    ex_put_var_names_int(exoid, "edge", DIM_NUM_EDG_RED_VAR, VAR_NAME_EDG_RED_VAR, &varid);
     break;
   case EX_FACE_BLOCK:
-    ex_put_var_names_int(exoid, "face", DIM_NUM_FAC_VAR, VAR_NAME_FAC_VAR, &varid);
+    ex_put_var_names_int(exoid, "face", DIM_NUM_FAC_RED_VAR, VAR_NAME_FAC_RED_VAR, &varid);
     break;
   case EX_ELEM_BLOCK:
-    ex_put_var_names_int(exoid, "element", DIM_NUM_ELE_VAR, VAR_NAME_ELE_VAR, &varid);
+    ex_put_var_names_int(exoid, "element", DIM_NUM_ELE_RED_VAR, VAR_NAME_ELE_RED_VAR, &varid);
     break;
   case EX_NODE_SET:
-    ex_put_var_names_int(exoid, "node set", DIM_NUM_NSET_VAR, VAR_NAME_NSET_VAR, &varid);
+    ex_put_var_names_int(exoid, "node set", DIM_NUM_NSET_RED_VAR, VAR_NAME_NSET_RED_VAR, &varid);
     break;
   case EX_EDGE_SET:
-    ex_put_var_names_int(exoid, "edge set", DIM_NUM_ESET_VAR, VAR_NAME_ESET_VAR, &varid);
+    ex_put_var_names_int(exoid, "edge set", DIM_NUM_ESET_RED_VAR, VAR_NAME_ESET_RED_VAR, &varid);
     break;
   case EX_FACE_SET:
-    ex_put_var_names_int(exoid, "face set", DIM_NUM_FSET_VAR, VAR_NAME_FSET_VAR, &varid);
+    ex_put_var_names_int(exoid, "face set", DIM_NUM_FSET_RED_VAR, VAR_NAME_FSET_RED_VAR, &varid);
     break;
   case EX_SIDE_SET:
-    ex_put_var_names_int(exoid, "side set", DIM_NUM_SSET_VAR, VAR_NAME_SSET_VAR, &varid);
+    ex_put_var_names_int(exoid, "side set", DIM_NUM_SSET_RED_VAR, VAR_NAME_SSET_RED_VAR, &varid);
     break;
   case EX_ELEM_SET:
-    ex_put_var_names_int(exoid, "element set", DIM_NUM_ELSET_VAR, VAR_NAME_ELSET_VAR, &varid);
+    ex_put_var_names_int(exoid, "element set", DIM_NUM_ELSET_RED_VAR, VAR_NAME_ELSET_RED_VAR,
+                         &varid);
     break;
   default:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",

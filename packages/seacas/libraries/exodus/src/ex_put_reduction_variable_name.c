@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2019 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -34,15 +34,14 @@
  */
 /*****************************************************************************
  *
- * expnam - ex_put_names
- *
- * environment - UNIX
+ * expvnm - ex_put_variable_name
  *
  * entry conditions -
  *   input parameters:
- *       int     exoid       exodus file id
- *       int     obj_type    object type
- *       char*   names       ptr array of entity names
+ *       int     exoid                   exodus file id
+ *       int     obj_type                variable type: G,N, or E
+ *       int     var_num                 variable number name to write 1..num_var
+ *       char*   var_name                ptr of variable name
  *
  * exit conditions -
  *
@@ -52,68 +51,57 @@
  *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
-#include "exodusII_int.h" // for EX_FATAL, etc
+#include "exodusII_int.h" // for EX_WARN, etc
 
 /*!
- * writes the entity names to the database
- * \param exoid       exodus file id
- * \param obj_type    object type
- * \param names       ptr array of entity names
+\ingroup ResultsData
+
+ * writes the name of a particular results variable to the database
+ *  \param     exoid                   exodus file id
+ *  \param     obj_type                variable type
+ *  \param     var_num                 variable number name to write 1..num_var
+ *  \param    *var_name                ptr of variable name
  */
 
-int ex_put_names(int exoid, ex_entity_type obj_type, char *names[])
+int ex_put_reduction_variable_name(int exoid, ex_entity_type obj_type, int var_num,
+                                   const char *var_name)
 {
-  int    status;
-  int    varid;
-  size_t num_entity;
-  char   errmsg[MAX_ERR_LENGTH];
-
-  const char *vname = NULL;
+  int         status;
+  int         varid;
+  char        errmsg[MAX_ERR_LENGTH];
+  const char *vname;
 
   EX_FUNC_ENTER();
+
   ex__check_valid_file_id(exoid, __func__);
 
+  /* inquire previously defined variables  */
   switch (obj_type) {
-    /*  ======== ASSEMBLY ========= */
-    /*  case EX_ASSEMBLY: vname = VAR_NAME_ASSEMBLY; break; */
-
-  /*  ======== BLOCKS ========= */
-  case EX_EDGE_BLOCK: vname = VAR_NAME_ED_BLK; break;
-  case EX_FACE_BLOCK: vname = VAR_NAME_FA_BLK; break;
-  case EX_ELEM_BLOCK: vname = VAR_NAME_EL_BLK; break;
-
-  /*  ======== SETS ========= */
-  case EX_NODE_SET: vname = VAR_NAME_NS; break;
-  case EX_EDGE_SET: vname = VAR_NAME_ES; break;
-  case EX_FACE_SET: vname = VAR_NAME_FS; break;
-  case EX_SIDE_SET: vname = VAR_NAME_SS; break;
-  case EX_ELEM_SET: vname = VAR_NAME_ELS; break;
-
-  /*  ======== MAPS ========= */
-  case EX_NODE_MAP: vname = VAR_NAME_NM; break;
-  case EX_EDGE_MAP: vname = VAR_NAME_EDM; break;
-  case EX_FACE_MAP: vname = VAR_NAME_FAM; break;
-  case EX_ELEM_MAP: vname = VAR_NAME_EM; break;
-
-  /*  ======== ERROR (Invalid type) ========= */
+  case EX_GLOBAL: vname = VAR_NAME_GLO_VAR; break;
+  case EX_EDGE_BLOCK: vname = VAR_NAME_EDG_RED_VAR; break;
+  case EX_FACE_BLOCK: vname = VAR_NAME_FAC_RED_VAR; break;
+  case EX_ELEM_BLOCK: vname = VAR_NAME_ELE_RED_VAR; break;
+  case EX_NODE_SET: vname = VAR_NAME_NSET_RED_VAR; break;
+  case EX_EDGE_SET: vname = VAR_NAME_ESET_RED_VAR; break;
+  case EX_FACE_SET: vname = VAR_NAME_FSET_RED_VAR; break;
+  case EX_SIDE_SET: vname = VAR_NAME_SSET_RED_VAR; break;
+  case EX_ELEM_SET: vname = VAR_NAME_ELSET_RED_VAR; break;
   default:
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid type specified in file id %d", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type (%d) given for file id %d",
+             obj_type, exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
-    EX_FUNC_LEAVE(EX_FATAL);
+    EX_FUNC_LEAVE(EX_WARN);
   }
-
-  ex__get_dimension(exoid, ex__dim_num_objects(obj_type), ex_name_of_object(obj_type), &num_entity,
-                    &varid, __func__);
 
   if ((status = nc_inq_varid(exoid, vname, &varid)) != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s names in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s variables names stored in file id %d",
              ex_name_of_object(obj_type), exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
-    EX_FUNC_LEAVE(EX_FATAL);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
-  /* write EXODUS entitynames */
-  status = ex__put_names(exoid, varid, num_entity, names, obj_type, "", __func__);
+  /* write EXODUS variable name */
+  status = ex__put_name(exoid, varid, var_num - 1, var_name, obj_type, "variable", __func__);
 
   EX_FUNC_LEAVE(status);
 }

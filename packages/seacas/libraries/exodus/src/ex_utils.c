@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2019 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -42,6 +42,7 @@
 #endif
 
 #include <errno.h>
+#include <stdbool.h>
 
 #include "exodusII.h"
 #include "exodusII_int.h"
@@ -58,6 +59,7 @@ struct ex__obj_stats *exoII_em  = 0;
 struct ex__obj_stats *exoII_edm = 0;
 struct ex__obj_stats *exoII_fam = 0;
 struct ex__obj_stats *exoII_nm  = 0;
+struct ex__obj_stats *exoII_ass = 0;
 
 /*****************************************************************************
  *
@@ -517,6 +519,7 @@ char *ex_name_of_object(ex_entity_type obj_type)
 {
   /* Thread-safe and reentrant */
   switch (obj_type) {
+  case EX_ASSEMBLY: return "assembly";
   case EX_COORDINATE: /* kluge so some wrapper functions work */ return "coordinate";
   case EX_NODAL: return "nodal";
   case EX_EDGE_BLOCK: return "edge block";
@@ -587,6 +590,7 @@ char *ex__dim_num_objects(ex_entity_type obj_type)
 {
   switch (obj_type) {
   case EX_NODAL: return DIM_NUM_NODES;
+  case EX_ASSEMBLY: return DIM_NUM_ASSEMBLY;
   case EX_ELEM_BLOCK: return DIM_NUM_EL_BLK;
   case EX_EDGE_BLOCK: return DIM_NUM_ED_BLK;
   case EX_FACE_BLOCK: return DIM_NUM_FA_BLK;
@@ -601,8 +605,8 @@ char *ex__dim_num_objects(ex_entity_type obj_type)
   case EX_NODE_MAP: return DIM_NUM_NM;
   default: {
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: object type %d not supported in call to ex__dim_num_objects", obj_type);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
+             __func__);
     ex_err(__func__, errmsg, EX_BADPARAM);
     return (NULL);
   }
@@ -625,7 +629,13 @@ char *ex__dim_num_entries_in_object(ex_entity_type obj_type, int idx)
   case EX_FACE_SET: return DIM_NUM_FACE_FS(idx);
   case EX_SIDE_SET: return DIM_NUM_SIDE_SS(idx);
   case EX_ELEM_SET: return DIM_NUM_ELE_ELS(idx);
-  default: return NULL;
+  default: {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
+             __func__);
+    ex_err(__func__, errmsg, EX_BADPARAM);
+    return NULL;
+  }
   }
 }
 
@@ -636,6 +646,7 @@ char *ex__dim_num_entries_in_object(ex_entity_type obj_type, int idx)
 char *ex__name_var_of_object(ex_entity_type obj_type, int i, int j)
 {
   switch (obj_type) {
+  case EX_ASSEMBLY: return VAR_ASSEMBLY_VAR(i, j);
   case EX_EDGE_BLOCK: return VAR_EDGE_VAR(i, j);
   case EX_FACE_BLOCK: return VAR_FACE_VAR(i, j);
   case EX_ELEM_BLOCK: return VAR_ELEM_VAR(i, j);
@@ -644,7 +655,39 @@ char *ex__name_var_of_object(ex_entity_type obj_type, int i, int j)
   case EX_FACE_SET: return VAR_FS_VAR(i, j);
   case EX_SIDE_SET: return VAR_SS_VAR(i, j);
   case EX_ELEM_SET: return VAR_ELS_VAR(i, j);
-  default: return NULL;
+  default: {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
+             __func__);
+    ex_err(__func__, errmsg, EX_BADPARAM);
+    return (NULL);
+  }
+  }
+}
+
+/*!
+  \internal
+  \undoc
+*/
+char *ex__name_red_var_of_object(ex_entity_type obj_type, int id)
+{
+  switch (obj_type) {
+  case EX_ASSEMBLY: return VAR_ASSEMBLY_RED_VAR(id);
+  case EX_EDGE_BLOCK: return VAR_EDGE_RED_VAR(id);
+  case EX_FACE_BLOCK: return VAR_FACE_RED_VAR(id);
+  case EX_ELEM_BLOCK: return VAR_ELEM_RED_VAR(id);
+  case EX_NODE_SET: return VAR_NS_RED_VAR(id);
+  case EX_EDGE_SET: return VAR_ES_RED_VAR(id);
+  case EX_FACE_SET: return VAR_FS_RED_VAR(id);
+  case EX_SIDE_SET: return VAR_SS_RED_VAR(id);
+  case EX_ELEM_SET: return VAR_ELS_RED_VAR(id);
+  default: {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported in call to %s", obj_type,
+             __func__);
+    ex_err(__func__, errmsg, EX_BADPARAM);
+    return (NULL);
+  }
   }
 }
 
@@ -695,8 +738,8 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   int64_t *id_vals   = NULL;
   int *    stat_vals = NULL;
 
-  static int            filled     = EX_FALSE;
-  static int            sequential = EX_FALSE;
+  static bool           filled     = false;
+  static bool           sequential = false;
   struct ex__obj_stats *tmp_stats;
   int                   status;
   char                  errmsg[MAX_ERR_LENGTH];
@@ -704,6 +747,7 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   switch (id_type) {
   case EX_NODAL: return (0);
   case EX_GLOBAL: return (0);
+  case EX_ASSEMBLY: return num;
   case EX_ELEM_BLOCK:
     id_table   = VAR_ID_EL_BLK;   /* id array name */
     id_dim     = DIM_NUM_EL_BLK;  /* id array dimension name*/
@@ -854,21 +898,21 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     }
 
     /* check if values in stored arrays are filled with non-zeroes */
-    filled     = EX_TRUE;
-    sequential = EX_TRUE;
+    filled     = true;
+    sequential = true;
     for (i = 0; i < dim_len; i++) {
       if (id_vals[i] != i + 1) {
-        sequential = EX_FALSE;
+        sequential = false;
       }
       if (id_vals[i] == EX_INVALID_ID || id_vals[i] == NC_FILL_INT) {
-        filled     = EX_FALSE;
-        sequential = EX_FALSE;
+        filled     = false;
+        sequential = false;
         break; /* id array hasn't been completely filled with valid ids yet */
       }
     }
 
     if (filled) {
-      tmp_stats->valid_ids  = EX_TRUE;
+      tmp_stats->valid_ids  = true;
       tmp_stats->sequential = sequential;
       tmp_stats->num        = dim_len;
       tmp_stats->id_vals    = id_vals;
@@ -938,7 +982,7 @@ int ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
 
     if (tmp_stats->valid_ids) {
       /* status array is valid only if ids are valid */
-      tmp_stats->valid_stat = EX_TRUE;
+      tmp_stats->valid_stat = true;
       tmp_stats->stat_vals  = stat_vals;
     }
   }
@@ -1047,11 +1091,12 @@ static struct ex__list_item *ed_ctr_list = 0; /* edge blocks */
 static struct ex__list_item *fa_ctr_list = 0; /* face blocks */
 static struct ex__list_item *eb_ctr_list = 0; /* element blocks */
 /* structures to hold number of sets of that type for each file id */
-static struct ex__list_item *ns_ctr_list  = 0; /* node sets */
-static struct ex__list_item *es_ctr_list  = 0; /* edge sets */
-static struct ex__list_item *fs_ctr_list  = 0; /* face sets */
-static struct ex__list_item *ss_ctr_list  = 0; /* side sets */
-static struct ex__list_item *els_ctr_list = 0; /* element sets */
+static struct ex__list_item *ns_ctr_list   = 0; /* node sets */
+static struct ex__list_item *es_ctr_list   = 0; /* edge sets */
+static struct ex__list_item *fs_ctr_list   = 0; /* face sets */
+static struct ex__list_item *ss_ctr_list   = 0; /* side sets */
+static struct ex__list_item *els_ctr_list  = 0; /* element sets */
+static struct ex__list_item *assm_ctr_list = 0; /* assemblies */
 /* structures to hold number of maps of that type for each file id */
 static struct ex__list_item *nm_ctr_list  = 0; /* node maps */
 static struct ex__list_item *edm_ctr_list = 0; /* edge maps */
@@ -1067,6 +1112,7 @@ struct ex__list_item **ex__get_counter_list(ex_entity_type obj_type)
   /* Thread-safe, but is dealing with globals */
   /* Only called from a routine which will be using locks */
   switch (obj_type) {
+  case EX_ASSEMBLY: return &assm_ctr_list;
   case EX_ELEM_BLOCK: return &eb_ctr_list;
   case EX_NODE_SET: return &ns_ctr_list;
   case EX_SIDE_SET: return &ss_ctr_list;
@@ -1134,7 +1180,7 @@ int ex__inc_file_item(int                    exoid,    /* file id */
 
 /*****************************************************************************
  *
- * ex__get_file_item - increment file item
+ * ex__get_file_item - return count
  *
  *****************************************************************************/
 
@@ -1245,7 +1291,7 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
 
   /* loop until there is not a property variable defined; the name of */
   /* the variables begin with an increment of 1 ("xx_prop1") so use cntr+1 */
-  while (EX_TRUE) {
+  while (true) {
     switch (obj_type) {
     case EX_ELEM_BLOCK: var_name = VAR_EB_PROP(cntr + 1); break;
     case EX_EDGE_BLOCK: var_name = VAR_ED_PROP(cntr + 1); break;
@@ -1255,6 +1301,7 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
     case EX_FACE_SET: var_name = VAR_FS_PROP(cntr + 1); break;
     case EX_SIDE_SET: var_name = VAR_SS_PROP(cntr + 1); break;
     case EX_ELEM_SET: var_name = VAR_ELS_PROP(cntr + 1); break;
+    case EX_ASSEMBLY: var_name = VAR_ASSEMBLY_PROP(cntr + 1); break;
     case EX_ELEM_MAP: var_name = VAR_EM_PROP(cntr + 1); break;
     case EX_FACE_MAP: var_name = VAR_FAM_PROP(cntr + 1); break;
     case EX_EDGE_MAP: var_name = VAR_EDM_PROP(cntr + 1); break;
@@ -1556,34 +1603,12 @@ void ex__iqsort64(int64_t v[], int64_t iv[], int64_t N)
  */
 int ex_large_model(int exoid)
 {
-  static int message_output = EX_FALSE;
-  EX_FUNC_ENTER();
   if (exoid < 0) {
-    /* If exoid not specified, then query is to see if user specified
-     * the large model via an environment variable
-     */
-    char *option = getenv("EXODUS_LARGE_MODEL");
-    if (option != NULL) {
-      if (option[0] == 'n' || option[0] == 'N') {
-        if (!message_output) {
-          fprintf(stderr, "EXODUS: Small model size selected via "
-                          "EXODUS_LARGE_MODEL environment variable\n");
-          message_output = EX_TRUE;
-        }
-        EX_FUNC_LEAVE(0);
-      }
-      if (!message_output) {
-        fprintf(stderr, "EXODUS: Large model size selected via "
-                        "EXODUS_LARGE_MODEL environment variable\n");
-        message_output = EX_TRUE;
-      }
-      EX_FUNC_LEAVE(1);
-    }
-
-    EX_FUNC_LEAVE(EXODUS_DEFAULT_SIZE); /* Specified in exodusII_int.h */
+    return (EXODUS_DEFAULT_SIZE); /* Specified in exodusII_int.h */
   }
 
   /* See if the ATT_FILESIZE attribute is defined in the file */
+  EX_FUNC_ENTER();
   int file_size = 0;
   int rootid    = exoid & EX_FILE_ID_MASK;
   if (nc_get_att_int(rootid, NC_GLOBAL, ATT_FILESIZE, &file_size) != NC_NOERR) {

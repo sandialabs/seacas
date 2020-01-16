@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2019 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -37,8 +37,8 @@
 #include "exodusII_int.h" // for ex__compress_variable, etc
 
 /*! \cond INTERNAL */
-static int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_name,
-                                 char *variable_name)
+static int ex__prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_name,
+                                  char *variable_name)
 {
   int status;
   int dimid;
@@ -125,7 +125,6 @@ described. Use one
 | ex_entity_type|  description              |
 |---------------|---------------------------|
 | #EX_GLOBAL     |  Global entity type       |
-| #EX_NODAL      |  Nodal entity type        |
 | #EX_NODE_SET   |  Node Set entity type     |
 | #EX_EDGE_BLOCK |  Edge Block entity type   |
 | #EX_EDGE_SET   |  Edge Set entity type     |
@@ -149,9 +148,9 @@ error = ex_put_variable_param (exoid, EX_GLOBAL, num_glo_vars);
 
  */
 
-int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
+int ex_put_reduction_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
 {
-  int  time_dim, num_nod_dim, dimid, dim_str_name, varid;
+  int  time_dim, dimid, dim_str_name, varid;
   int  dims[3];
   char errmsg[MAX_ERR_LENGTH];
   int  status;
@@ -168,10 +167,10 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     EX_FUNC_LEAVE(EX_WARN);
   }
 
-  if (obj_type != EX_NODAL && obj_type != EX_NODE_SET && obj_type != EX_EDGE_BLOCK &&
-      obj_type != EX_EDGE_SET && obj_type != EX_FACE_BLOCK && obj_type != EX_FACE_SET &&
-      obj_type != EX_ELEM_BLOCK && obj_type != EX_ELEM_SET && obj_type != EX_SIDE_SET &&
-      obj_type != EX_GLOBAL && obj_type != EX_ASSEMBLY) {
+  if (obj_type != EX_NODE_SET && obj_type != EX_EDGE_BLOCK && obj_type != EX_EDGE_SET &&
+      obj_type != EX_FACE_BLOCK && obj_type != EX_FACE_SET && obj_type != EX_ELEM_BLOCK &&
+      obj_type != EX_ELEM_SET && obj_type != EX_SIDE_SET && obj_type != EX_GLOBAL &&
+      obj_type != EX_ASSEMBLY) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",
              obj_type, exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
@@ -183,13 +182,6 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate time dimension in file id %d", exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
-  }
-
-  if ((status = nc_inq_dimid(exoid, DIM_NUM_NODES, &num_nod_dim)) != NC_NOERR) {
-    if (obj_type == EX_NODAL) {
-      EX_FUNC_LEAVE(EX_NOERR); /* Probably no nodes on database (e.g., badly
-                            load-balanced parallel run) */
-    }
   }
 
   if ((status = nc_inq_dimid(exoid, DIM_STR_NAME, &dim_str_name)) < 0) {
@@ -208,8 +200,8 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
 
   /* define dimensions and variables */
   if (obj_type == EX_GLOBAL) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "global", DIM_NUM_GLO_VAR,
-                                        VAR_NAME_GLO_VAR)) != EX_NOERR) {
+    if ((status = ex__prepare_result_var(exoid, num_vars, "global", DIM_NUM_GLO_VAR,
+                                         VAR_NAME_GLO_VAR)) != EX_NOERR) {
       goto error_ret;
     }
 
@@ -231,83 +223,62 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     ex__compress_variable(exoid, varid, 2);
   }
 
-  else if (obj_type == EX_NODAL) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "nodal", DIM_NUM_NOD_VAR,
-                                        VAR_NAME_NOD_VAR)) != EX_NOERR) {
-      goto error_ret;
-    }
-
-    int i;
-    for (i = 1; i <= num_vars; i++) {
-      dims[0] = time_dim;
-      dims[1] = num_nod_dim;
-      if ((status = nc_def_var(exoid, VAR_NOD_VAR_NEW(i), nc_flt_code(exoid), 2, dims, &varid)) !=
-          NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define nodal variable %d in file id %d",
-                 i, exoid);
-        ex_err_fn(exoid, __func__, errmsg, status);
-        goto error_ret; /* exit define mode and return */
-      }
-      ex__compress_variable(exoid, varid, 2);
-    }
-  }
-
   /* netCDF variables in which to store the EXODUS obj_type variable values will
    * be defined in ex_put_*_var_tab or ex_put_*_var; at this point, we
    * don't know what obj_type variables are valid for which obj_type blocks
    * (the info that is stored in the obj_type variable truth table)
    */
   else if (obj_type == EX_ELEM_BLOCK) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "element", DIM_NUM_ELE_VAR,
-                                        VAR_NAME_ELE_VAR)) != EX_NOERR) {
+    if ((status = ex__prepare_result_var(exoid, num_vars, "element", DIM_NUM_ELE_RED_VAR,
+                                         VAR_NAME_ELE_RED_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_NODE_SET) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "nodeset", DIM_NUM_NSET_VAR,
-                                        VAR_NAME_NSET_VAR)) != EX_NOERR) {
+    if ((status = ex__prepare_result_var(exoid, num_vars, "nodeset", DIM_NUM_NSET_RED_VAR,
+                                         VAR_NAME_NSET_RED_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_SIDE_SET) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "sideset", DIM_NUM_SSET_VAR,
-                                        VAR_NAME_SSET_VAR)) != EX_NOERR) {
+    if ((status = ex__prepare_result_var(exoid, num_vars, "sideset", DIM_NUM_SSET_RED_VAR,
+                                         VAR_NAME_SSET_RED_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_ASSEMBLY) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "assembly", DIM_NUM_ASSEMBLY_VAR,
-                                        VAR_NAME_ASSEMBLY_VAR)) != EX_NOERR) {
+    if ((status = ex__prepare_result_var(exoid, num_vars, "assembly", DIM_NUM_ASSEMBLY_RED_VAR,
+                                         VAR_NAME_ASSEMBLY_RED_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_EDGE_BLOCK) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "edge", DIM_NUM_EDG_VAR,
-                                        VAR_NAME_EDG_VAR)) != EX_NOERR) {
+    if ((status = ex__prepare_result_var(exoid, num_vars, "edge", DIM_NUM_EDG_RED_VAR,
+                                         VAR_NAME_EDG_RED_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_FACE_BLOCK) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "face", DIM_NUM_FAC_VAR,
-                                        VAR_NAME_FAC_VAR)) != EX_NOERR) {
+    if ((status = ex__prepare_result_var(exoid, num_vars, "face", DIM_NUM_FAC_RED_VAR,
+                                         VAR_NAME_FAC_RED_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_EDGE_SET) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "edgeset", DIM_NUM_ESET_VAR,
-                                        VAR_NAME_ESET_VAR)) != EX_NOERR) {
+    if ((status = ex__prepare_result_var(exoid, num_vars, "edgeset", DIM_NUM_ESET_RED_VAR,
+                                         VAR_NAME_ESET_RED_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_FACE_SET) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "faceset", DIM_NUM_FSET_VAR,
-                                        VAR_NAME_FSET_VAR)) != EX_NOERR) {
+    if ((status = ex__prepare_result_var(exoid, num_vars, "faceset", DIM_NUM_FSET_RED_VAR,
+                                         VAR_NAME_FSET_RED_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_ELEM_SET) {
-    if ((status = ex_prepare_result_var(exoid, num_vars, "elementset", DIM_NUM_ELSET_VAR,
-                                        VAR_NAME_ELSET_VAR)) != EX_NOERR) {
+    if ((status = ex__prepare_result_var(exoid, num_vars, "elementset", DIM_NUM_ELSET_RED_VAR,
+                                         VAR_NAME_ELSET_RED_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
