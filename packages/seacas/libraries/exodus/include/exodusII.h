@@ -219,6 +219,7 @@ enum ex_inquiry {
   EX_INQ_FULL_GROUP_NAME = 58, /**< inquire full "/"-separated path name of this (exoid) group */
   EX_INQ_THREADSAFE      = 59, /**< Returns 1 if library is thread-safe; 0 otherwise */
   EX_INQ_ASSEMBLY        = 60, /**< inquire number of assemblies */
+  EX_INQ_BLOB            = 61, /**< inquire number of blobs */
   EX_INQ_INVALID         = -1
 };
 
@@ -284,6 +285,7 @@ enum ex_entity_type {
   EX_GLOBAL     = 13, /**< global "block" for variables*/
   EX_COORDINATE = 15, /**< kluge so some internal wrapper functions work */
   EX_ASSEMBLY   = 16, /**< assembly property code */
+  EX_BLOB       = 17, /**< blob property code */
   EX_INVALID    = -1
 };
 typedef enum ex_entity_type ex_entity_type;
@@ -364,6 +366,7 @@ typedef struct ex_init_params
   int64_t num_face_maps;
   int64_t num_elem_maps;
   int64_t num_assembly;
+  int64_t num_blob;
 } ex_init_params;
 
 enum ex_type { EX_INTEGER = NC_INT, EX_DOUBLE = NC_DOUBLE, EX_CHAR = NC_CHAR };
@@ -379,6 +382,13 @@ typedef struct ex_attribute
   size_t         value_count;
   void *         values; /* not accessed if NULL */
 } ex_attribute;
+
+typedef struct ex_blob
+{
+  int64_t        id;
+  char *         name;
+  int64_t        num_entry;
+} ex_blob;
 
 typedef struct ex_assembly
 {
@@ -923,6 +933,12 @@ EXODUS_EXPORT int ex_get_assembly(int exoid, struct ex_assembly *assembly);
 
 EXODUS_EXPORT int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembly);
 EXODUS_EXPORT int ex_get_assemblies(int exoid, struct ex_assembly *assembly);
+
+EXODUS_EXPORT int ex_put_blob(int exoid, const struct ex_blob blob);
+EXODUS_EXPORT int ex_get_blob(int exoid, struct ex_blob *blob);
+
+EXODUS_EXPORT int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blob);
+EXODUS_EXPORT int ex_get_blobs(int exoid, struct ex_blob *blob);
 
 /*  Write arbitrary integer, double, or text attributes on an entity */
 EXODUS_EXPORT int ex_put_attribute(int exoid, ex_attribute attributes);
