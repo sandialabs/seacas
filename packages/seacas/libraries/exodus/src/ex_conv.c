@@ -236,6 +236,7 @@ int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
   new_file->time_varid            = -1;
   new_file->compression_algorithm = EX_COMPRESS_GZIP;
   new_file->assembly_count        = 0;
+  new_file->blob_count            = 0;
   new_file->compression_level     = 0;
   new_file->shuffle               = 0;
   new_file->file_type             = filetype - 1;

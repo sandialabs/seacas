@@ -249,6 +249,7 @@ EXODUS_EXPORT int indent;
 #define ATT_INT64_STATUS "int64_status"
 
 #define DIM_NUM_ASSEMBLY "num_assembly"     /**< number of assemblies       */
+#define DIM_NUM_BLOB "num_blob"             /**< number of blobs       */
 #define DIM_NUM_NODES "num_nodes"           /**< number of nodes                */
 #define DIM_NUM_DIM "num_dim"               /**< number of dimensions; 2- or 3-d*/
 #define DIM_NUM_EDGE "num_edge"             /**< number of edges (over all blks)*/

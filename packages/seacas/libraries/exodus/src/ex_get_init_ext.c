@@ -242,6 +242,7 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
       file->has_faces      = info->num_face > 0;
       file->has_elems      = info->num_elem > 0;
       file->assembly_count = info->num_assembly;
+      file->blob_count     = info->num_blob;
     }
   }
   EX_FUNC_LEAVE(EX_NOERR);
