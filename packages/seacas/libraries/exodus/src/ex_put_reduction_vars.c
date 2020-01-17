@@ -46,7 +46,7 @@ static int ex__look_up_var(int exoid, ex_entity_type var_type, ex_entity_id obj_
   char   errmsg[MAX_ERR_LENGTH];
 
   if (var_type == EX_ASSEMBLY) {
-    status = nc_inq_varid(exoid, VAR_ENTRY_ASSEMBLY(obj_id), varid);
+    status = nc_inq_varid(exoid, VAR_ENTITY_ASSEMBLY(obj_id), varid);
     if (status != 0) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to locate %s id %" PRId64 " in %s array in file id %d",

@@ -61,7 +61,7 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
 
   /* First, locate varid of assembly  */
   int entlst_id = 0;
-  if ((status = nc_inq_varid(exoid, VAR_ENTRY_ASSEMBLY(assembly->id), &entlst_id)) != NC_NOERR) {
+  if ((status = nc_inq_varid(exoid, VAR_ENTITY_ASSEMBLY(assembly->id), &entlst_id)) != NC_NOERR) {
     ex_get_err(NULL, NULL, &status);
     if (status != 0) {
       if (assembly->name != NULL) {
@@ -80,7 +80,7 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
     }
   }
 
-  char *numentryptr = DIM_NUM_ENTRY_ASSEMBLY(assembly->id);
+  char *numentryptr = DIM_NUM_ENTITY_ASSEMBLY(assembly->id);
   if ((status = nc_inq_dimid(exoid, numentryptr, &dimid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate number of entities in assembly %" PRId64 " in file id %d",
@@ -100,7 +100,7 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
   assembly->entity_count = len;
 
   /* look up entity list array for this assembly id */
-  if ((status = nc_inq_varid(exoid, VAR_ENTRY_ASSEMBLY(assembly->id), &entlst_id)) != NC_NOERR) {
+  if ((status = nc_inq_varid(exoid, VAR_ENTITY_ASSEMBLY(assembly->id), &entlst_id)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate entity list array for assembly %" PRId64 " in file id %d",
              assembly->id, exoid);
@@ -109,7 +109,7 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
   }
 
   /* Get the type of entities stored in the entity list... */
-  if ((status = nc_get_att_int(exoid, entlst_id, ASSEMBLY_TYPE, &assembly->type)) != NC_NOERR) {
+  if ((status = nc_get_att_int(exoid, entlst_id, EX_ATTRIBUTE_TYPE, &assembly->type)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get assembly %" PRId64 " type in file id %d",
              assembly->id, exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
@@ -120,7 +120,7 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
   if (assembly->name != NULL) {
     int  name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
     char tmp_name[EX_MAX_NAME];
-    if ((status = nc_get_att_text(exoid, entlst_id, ASSEMBLY_NAME, tmp_name)) != NC_NOERR) {
+    if ((status = nc_get_att_text(exoid, entlst_id, EX_ATTRIBUTE_NAME, tmp_name)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to read assembly name for assembly %" PRId64 " in file id %d",
                assembly->id, exoid);

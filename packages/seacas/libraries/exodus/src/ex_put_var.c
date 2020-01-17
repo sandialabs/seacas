@@ -275,10 +275,6 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
     status = ex__put_nodal_var(exoid, time_step, var_index, num_entries_this_obj, var_vals);
     EX_FUNC_LEAVE(status);
     break;
-  case EX_ASSEMBLY:
-    status = ex_look_up_var(exoid, var_type, var_index, obj_id, VAR_ID_ASSEMBLY, VAR_ASSEMBLY_TAB,
-                            DIM_NUM_ASSEMBLY, DIM_NUM_ASSEMBLY_VAR, &varid);
-    break;
   case EX_EDGE_BLOCK:
     status = ex_look_up_var(exoid, var_type, var_index, obj_id, VAR_ID_ED_BLK, VAR_EBLK_TAB,
                             DIM_NUM_ED_BLK, DIM_NUM_EDG_VAR, &varid);
