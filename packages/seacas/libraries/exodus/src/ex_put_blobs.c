@@ -44,7 +44,7 @@
 
 int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
 {
-  int  dimid, status, dims[1];
+  int  dimid, status, n1dim, dims[1];
   char errmsg[MAX_ERR_LENGTH];
 
   int int_type;
@@ -61,107 +61,100 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
 
   int *entlst_id = (int *)calloc(count, sizeof(int));
 
-  bool in_define = false;
+  if ((status = nc_redef(exoid)) != NC_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
+    ex_err_fn(exoid, __func__, errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  status = nc_inq_dimid(exoid, DIM_N1, &n1dim);
+  if (status != NC_NOERR) {
+    if ((status = nc_def_dim(exoid, DIM_N1, 1L, &n1dim)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to define number \"1\" dimension in file id %d", exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      goto error_ret; /* exit define mode and return */
+    }
+  }
+
   for (size_t i = 0; i < count; i++) {
-    /* See if an blob with this id has already been defined or exists on file... */
-    if ((status = nc_inq_varid(exoid, VAR_ENTITY_BLOB(blobs[i].id), &entlst_id[i])) !=
-        NC_NOERR) {
-      /* Blob has not already been defined */
-      /* put netcdf file into define mode  */
-      if (!in_define) {
-        if ((status = nc_redef(exoid)) != NC_NOERR) {
-          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode",
-                   exoid);
-          ex_err_fn(exoid, __func__, errmsg, status);
-          EX_FUNC_LEAVE(EX_FATAL);
-        }
-        in_define = true;
-      }
+    char *numentryptr = DIM_NUM_VALUES_BLOB(blobs[i].id);
 
-      char *numentryptr = DIM_NUM_VALUES_BLOB(blobs[i].id);
-
-      /* define dimensions and variables */
-      if ((status = nc_def_dim(exoid, numentryptr, blobs[i].num_entry, &dimid)) !=
-          NC_NOERR) {
-        if (status == NC_ENAMEINUSE) {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: blob %" PRId64 " -- size already defined in file id %d",
-                   blobs[i].id, exoid);
-          ex_err_fn(exoid, __func__, errmsg, status);
-        }
-        else {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: failed to define number of entries in blob %" PRId64
-                   " in file id %d",
-                   blobs[i].id, exoid);
-          ex_err_fn(exoid, __func__, errmsg, status);
-        }
-        goto error_ret;
-      }
-
-      int_type = NC_INT;
-      if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
-        int_type = NC_INT64;
-      }
-
-      /* create variable array in which to store the entry lists */
-      dims[0] = dimid;
-      if ((status = nc_def_var(exoid, VAR_ENTITY_BLOB(blobs[i].id), int_type, 1, dims,
-                               &entlst_id[i])) != NC_NOERR) {
-        if (status == NC_ENAMEINUSE) {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: entry list already exists for blob %" PRId64 " in file id %d",
-                   blobs[i].id, exoid);
-          ex_err_fn(exoid, __func__, errmsg, status);
-        }
-        else {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: failed to create entry list for blob %" PRId64 " in file id %d",
-                   blobs[i].id, exoid);
-          ex_err_fn(exoid, __func__, errmsg, status);
-        }
-        goto error_ret; /* exit define mode and return */
-      }
-      ex__compress_variable(exoid, entlst_id[i], 1);
-
-      if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
-        status =
-            nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &blobs[i].id);
-      }
-      else {
-        int id = blobs[i].id;
-        status = nc_put_att_int(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT, 1, &id);
-      }
-      if (status != NC_NOERR) {
+    /* define dimensions and variables */
+    if ((status = nc_def_dim(exoid, numentryptr, blobs[i].num_entry, &dimid)) != NC_NOERR) {
+      if (status == NC_ENAMEINUSE) {
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to store blob id %" PRId64 " in file id %d", blobs[i].id,
+                 "ERROR: blob %" PRId64 " -- size already defined in file id %d", blobs[i].id,
                  exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
-        goto error_ret; /* exit define mode and return */
       }
-
-      if ((status = nc_put_att_text(exoid, entlst_id[i], EX_ATTRIBUTE_NAME,
-                                    strlen(blobs[i].name) + 1, blobs[i].name)) !=
-          NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store blob name %s in file id %d",
-                 blobs[i].name, exoid);
+      else {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define number of entries in blob %" PRId64 " in file id %d",
+                 blobs[i].id, exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
-        goto error_ret; /* exit define mode and return */
       }
+      goto error_ret;
+    }
 
-      /* Increment blob count */
-      struct ex__file_item *file = ex__find_file_item(exoid);
-      if (file) {
-        file->blob_count++;
+    int_type = NC_INT;
+    if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
+      int_type = NC_INT64;
+    }
+
+    /* create a variable just as a way to have a blob and its attributes; values not used for
+     * anything */
+    dims[0] = n1dim;
+    if ((status = nc_def_var(exoid, VAR_ENTITY_BLOB(blobs[i].id), NC_INT, 1, dims,
+                             &entlst_id[i])) != NC_NOERR) {
+      if (status == NC_ENAMEINUSE) {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: entity already exists for blob %" PRId64 " in file id %d", blobs[i].id,
+                 exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
       }
+      else {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to create entity for blob %" PRId64 " in file id %d", blobs[i].id,
+                 exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+      }
+      goto error_ret; /* exit define mode and return */
+    }
+    ex__compress_variable(exoid, entlst_id[i], 1);
+
+    if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
+      status = nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &blobs[i].id);
+    }
+    else {
+      int id = blobs[i].id;
+      status = nc_put_att_int(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT, 1, &id);
+    }
+    if (status != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store blob id %" PRId64 " in file id %d",
+               blobs[i].id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      goto error_ret; /* exit define mode and return */
+    }
+
+    if ((status = nc_put_att_text(exoid, entlst_id[i], EX_ATTRIBUTE_NAME, strlen(blobs[i].name) + 1,
+                                  blobs[i].name)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store blob name %s in file id %d",
+               blobs[i].name, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      goto error_ret; /* exit define mode and return */
+    }
+
+    /* Increment blob count */
+    struct ex__file_item *file = ex__find_file_item(exoid);
+    if (file) {
+      file->blob_count++;
     }
   }
   /* leave define mode  */
-  if (in_define) {
-    if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
-      free(entlst_id);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
+  if ((status = ex__leavedef(exoid, __func__)) != NC_NOERR) {
+    free(entlst_id);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   free(entlst_id);
@@ -169,9 +162,7 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
 
 /* Fatal error: exit definition mode and return */
 error_ret:
-  if (in_define) {
-    ex__leavedef(exoid, __func__);
-  }
+  ex__leavedef(exoid, __func__);
   free(entlst_id);
   EX_FUNC_LEAVE(EX_FATAL);
 }

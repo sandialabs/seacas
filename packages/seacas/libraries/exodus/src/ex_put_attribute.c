@@ -80,6 +80,17 @@ static int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
     return varid;
   }
 
+  if (obj_type == EX_BLOB) {
+    if ((status = nc_inq_varid(exoid, VAR_ENTITY_BLOB(id), &varid)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to locate %s id  %" PRId64 " in id array in file id %d",
+               ex_name_of_object(obj_type), id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      return EX_FATAL;
+    }
+    return varid;
+  }
+
   /* Everything else ... */
   /* First, locate index of this objects id `obj_type` id array */
   id_ndx = ex__id_lkup(exoid, obj_type, id);

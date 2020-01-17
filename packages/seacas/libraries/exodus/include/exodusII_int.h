@@ -248,41 +248,41 @@ EXODUS_EXPORT int indent;
 #define ATT_MAX_NAME_LENGTH "maximum_name_length"
 #define ATT_INT64_STATUS "int64_status"
 
-#define DIM_NUM_ASSEMBLY "num_assembly"     /**< number of assemblies       */
-#define DIM_NUM_BLOB "num_blob"             /**< number of blobs       */
-#define DIM_NUM_NODES "num_nodes"           /**< number of nodes                */
-#define DIM_NUM_DIM "num_dim"               /**< number of dimensions; 2- or 3-d*/
-#define DIM_NUM_EDGE "num_edge"             /**< number of edges (over all blks)*/
-#define DIM_NUM_FACE "num_face"             /**< number of faces (over all blks)*/
-#define DIM_NUM_ELEM "num_elem"             /**< number of elements             */
-#define DIM_NUM_EL_BLK "num_el_blk"         /**< number of element blocks       */
-#define DIM_NUM_ED_BLK "num_ed_blk"         /**< number of edge blocks          */
-#define DIM_NUM_FA_BLK "num_fa_blk"         /**< number of face blocks          */
-#define VAR_COORD "coord"                   /**< nodal coordinates         */
-#define VAR_COORD_X "coordx"                /**< X-dimension coordinate    */
-#define VAR_COORD_Y "coordy"                /**< Y-dimension coordinate    */
-#define VAR_COORD_Z "coordz"                /**< Z-dimension coordinate    */
-#define VAR_NAME_COOR "coor_names"          /**< names of coordinates      */
-#define VAR_NAME_EL_BLK "eb_names"          /**< names of element blocks   */
-#define VAR_NAME_NS "ns_names"              /**< names of node sets        */
-#define VAR_NAME_SS "ss_names"              /**< names of side sets        */
-#define VAR_NAME_EM "emap_names"            /**< names of element maps     */
-#define VAR_NAME_EDM "edmap_names"          /**< names of edge    maps     */
-#define VAR_NAME_FAM "famap_names"          /**< names of face    maps     */
-#define VAR_NAME_NM "nmap_names"            /**< names of node    maps     */
-#define VAR_NAME_ED_BLK "ed_names"          /**< names of edge    blocks   */
-#define VAR_NAME_FA_BLK "fa_names"          /**< names of face    blocks   */
-#define VAR_NAME_ES "es_names"              /**< names of edge    sets     */
-#define VAR_NAME_FS "fs_names"              /**< names of face    sets     */
-#define VAR_NAME_ELS "els_names"            /**< names of element sets     */
-#define VAR_STAT_EL_BLK "eb_status"         /**< element block status      */
-#define VAR_STAT_ECONN "econn_status"       /**< element block edge status */
-#define VAR_STAT_FCONN "fconn_status"       /**< element block face status */
-#define VAR_STAT_ED_BLK "ed_status"         /**< edge    block status      */
-#define VAR_STAT_FA_BLK "fa_status"         /**< face    block status      */
-#define VAR_ID_EL_BLK "eb_prop1"            /**< element block ids props   */
-#define VAR_ID_ED_BLK "ed_prop1"            /**< edge    block ids props   */
-#define VAR_ID_FA_BLK "fa_prop1"            /**< face    block ids props   */
+#define DIM_NUM_ASSEMBLY "num_assembly" /**< number of assemblies       */
+#define DIM_NUM_BLOB "num_blob"         /**< number of blobs       */
+#define DIM_NUM_NODES "num_nodes"       /**< number of nodes                */
+#define DIM_NUM_DIM "num_dim"           /**< number of dimensions; 2- or 3-d*/
+#define DIM_NUM_EDGE "num_edge"         /**< number of edges (over all blks)*/
+#define DIM_NUM_FACE "num_face"         /**< number of faces (over all blks)*/
+#define DIM_NUM_ELEM "num_elem"         /**< number of elements             */
+#define DIM_NUM_EL_BLK "num_el_blk"     /**< number of element blocks       */
+#define DIM_NUM_ED_BLK "num_ed_blk"     /**< number of edge blocks          */
+#define DIM_NUM_FA_BLK "num_fa_blk"     /**< number of face blocks          */
+#define VAR_COORD "coord"               /**< nodal coordinates         */
+#define VAR_COORD_X "coordx"            /**< X-dimension coordinate    */
+#define VAR_COORD_Y "coordy"            /**< Y-dimension coordinate    */
+#define VAR_COORD_Z "coordz"            /**< Z-dimension coordinate    */
+#define VAR_NAME_COOR "coor_names"      /**< names of coordinates      */
+#define VAR_NAME_EL_BLK "eb_names"      /**< names of element blocks   */
+#define VAR_NAME_NS "ns_names"          /**< names of node sets        */
+#define VAR_NAME_SS "ss_names"          /**< names of side sets        */
+#define VAR_NAME_EM "emap_names"        /**< names of element maps     */
+#define VAR_NAME_EDM "edmap_names"      /**< names of edge    maps     */
+#define VAR_NAME_FAM "famap_names"      /**< names of face    maps     */
+#define VAR_NAME_NM "nmap_names"        /**< names of node    maps     */
+#define VAR_NAME_ED_BLK "ed_names"      /**< names of edge    blocks   */
+#define VAR_NAME_FA_BLK "fa_names"      /**< names of face    blocks   */
+#define VAR_NAME_ES "es_names"          /**< names of edge    sets     */
+#define VAR_NAME_FS "fs_names"          /**< names of face    sets     */
+#define VAR_NAME_ELS "els_names"        /**< names of element sets     */
+#define VAR_STAT_EL_BLK "eb_status"     /**< element block status      */
+#define VAR_STAT_ECONN "econn_status"   /**< element block edge status */
+#define VAR_STAT_FCONN "fconn_status"   /**< element block face status */
+#define VAR_STAT_ED_BLK "ed_status"     /**< edge    block status      */
+#define VAR_STAT_FA_BLK "fa_status"     /**< face    block status      */
+#define VAR_ID_EL_BLK "eb_prop1"        /**< element block ids props   */
+#define VAR_ID_ED_BLK "ed_prop1"        /**< edge    block ids props   */
+#define VAR_ID_FA_BLK "fa_prop1"        /**< face    block ids props   */
 #define DIM_NUM_ENTITY_ASSEMBLY(num) ex__catstr("num_entity_assembly", num)
 #define VAR_ENTITY_ASSEMBLY(num) ex__catstr("assembly_entity", num)
 #define DIM_NUM_VALUES_BLOB(num) ex__catstr("num_values_blob", num)
@@ -475,6 +475,10 @@ EXODUS_EXPORT int indent;
 #define VAR_NAME_ASSEMBLY_VAR "name_assembly_var" /**< names of assembly variables*/
 #define VAR_ASSEMBLY_VAR(num1, num2) ex__catstr2("vals_assembly_var", num1, "assembly", num2)
 
+#define DIM_NUM_BLOB_VAR "num_blob_var"   /**< number of blob variables    */
+#define VAR_NAME_BLOB_VAR "name_blob_var" /**< names of blob variables*/
+#define VAR_BLOB_VAR(num1, num2) ex__catstr2("vals_blob_var", num1, "blob", num2)
+
 #define DIM_NUM_ELE_VAR "num_elem_var"   /**< number of element variables    */
 #define VAR_NAME_ELE_VAR "name_elem_var" /**< names of element variables*/
 /*! values of element variable num1 in element block num2                    */
@@ -516,6 +520,10 @@ EXODUS_EXPORT int indent;
 #define DIM_NUM_ASSEMBLY_RED_VAR "num_assembly_red_var"   /**< number of assembly variables    */
 #define VAR_NAME_ASSEMBLY_RED_VAR "name_assembly_red_var" /**< names of assembly variables*/
 #define VAR_ASSEMBLY_RED_VAR(num) ex__catstr("vals_red_var_assembly", num)
+
+#define DIM_NUM_BLOB_RED_VAR "num_blob_red_var"   /**< number of blob variables    */
+#define VAR_NAME_BLOB_RED_VAR "name_blob_red_var" /**< names of blob variables*/
+#define VAR_BLOB_RED_VAR(num) ex__catstr("vals_red_var_blob", num)
 
 #define DIM_NUM_ELE_RED_VAR "num_elem_red_var"   /**< number of element variables    */
 #define VAR_NAME_ELE_RED_VAR "name_elem_red_var" /**< names of element variables*/
@@ -565,6 +573,7 @@ EXODUS_EXPORT int indent;
 /*! general dimension of length MAX_LINE_LENGTH used for long strings   */
 #define DIM_LIN "len_line"
 #define DIM_N4 "four"
+#define DIM_N1 "blob_entity"
 /*! unlimited (expandable) dimension for time steps*/
 #define DIM_TIME "time_step"
 #define VAR_ELEM_NUM_MAP "elem_num_map" /**< element numbering map     */
@@ -593,6 +602,7 @@ EXODUS_EXPORT int indent;
 #define VAR_NM_PROP(num) ex__catstr("nm_prop", num)
 /*! list of the numth property for all assemblies      */
 #define VAR_ASSEMBLY_PROP(num) ex__catstr("assembly_prop", num)
+#define VAR_BLOB_PROP(num) ex__catstr("blob_prop", num)
 
 #define DIM_NUM_CFRAMES "num_cframes"
 #define DIM_NUM_CFRAME9 "num_cframes_9"
@@ -682,9 +692,9 @@ struct ex__file_item
   nc_type      netcdf_type_code;
   int          int64_status;
   int          maximum_name_length;
-  int          time_varid;     /* Store to avoid lookup each timestep */
-  unsigned int assembly_count; 
-  unsigned int blob_count; 
+  int          time_varid; /* Store to avoid lookup each timestep */
+  unsigned int assembly_count;
+  unsigned int blob_count;
   unsigned int
       compression_algorithm : 2; /**< GZIP/ZLIB, SZIP, more may be supported by NetCDF soon */
   unsigned int

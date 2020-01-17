@@ -56,6 +56,17 @@ static int ex__look_up_var(int exoid, ex_entity_type var_type, ex_entity_id obj_
     }
     obj_id_ndx = obj_id;
   }
+  else if (var_type == EX_BLOB) {
+    status = nc_inq_varid(exoid, VAR_ENTITY_BLOB(obj_id), varid);
+    if (status != 0) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to locate %s id %" PRId64 " in %s array in file id %d",
+               ex_name_of_object(var_type), obj_id, var_obj_id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      return (EX_FATAL);
+    }
+    obj_id_ndx = obj_id;
+  }
   else {
     /* Determine index of obj_id in var_obj_id array */
     obj_id_ndx = ex__id_lkup(exoid, var_type, obj_id);
@@ -215,6 +226,9 @@ int ex_put_reduction_vars(int exoid, int time_step, ex_entity_type var_type, ex_
     break;
   case EX_ASSEMBLY:
     status = ex__look_up_var(exoid, var_type, obj_id, 0, DIM_NUM_ASSEMBLY_RED_VAR, &varid);
+    break;
+  case EX_BLOB:
+    status = ex__look_up_var(exoid, var_type, obj_id, 0, DIM_NUM_BLOB_RED_VAR, &varid);
     break;
   case EX_EDGE_BLOCK:
     status = ex__look_up_var(exoid, var_type, obj_id, VAR_ID_ED_BLK, DIM_NUM_EDG_RED_VAR, &varid);

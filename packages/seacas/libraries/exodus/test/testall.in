@@ -280,6 +280,13 @@ ${PREFIX} ${BINDIR}/test-add-assembly${SUFFIX} >> test.output
 ${NCDUMP} -d5,5 test-assembly.exo | grep -v version | grep -v _FillValue |grep -v "maximum_name_length" | ${DIFF} - ${SRCDIR}/test-add-assembly.dmp | tee test-add-assembly.res
 echo "end test-add-assembly" >> test.output
 
+echo "testwt-blob - write file containing blob data"
+echo "begin testwt-blob" >> test.output
+${PREFIX} ${BINDIR}/testwt-blob${SUFFIX} >> test.output
+echo "end testwt-blob" >> test.output
+# Filter out the "maximum_name_length" attribute. Moves around in ncdump output for nc4 vs nc3
+${NCDUMP} -d5,5 test-blob.exo | grep -v version | grep -v _FillValue |grep -v "maximum_name_length" | ${DIFF} - ${SRCDIR}/testwt-blob.dmp | tee testwt-blob.res
+
 echo "testwt-oned - write 1D mesh..."
 echo "begin testwt-oned" >> test.output
 ${PREFIX} ${BINDIR}/testwt-oned${SUFFIX} >> test.output

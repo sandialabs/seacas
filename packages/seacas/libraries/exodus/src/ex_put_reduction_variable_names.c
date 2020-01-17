@@ -166,6 +166,9 @@ int ex_put_reduction_variable_names(int exoid, ex_entity_type obj_type, int num_
     ex_put_var_names_int(exoid, "assembly", DIM_NUM_ASSEMBLY_RED_VAR, VAR_NAME_ASSEMBLY_RED_VAR,
                          &varid);
     break;
+  case EX_BLOB:
+    ex_put_var_names_int(exoid, "blob", DIM_NUM_BLOB_RED_VAR, VAR_NAME_BLOB_RED_VAR, &varid);
+    break;
   case EX_EDGE_BLOCK:
     ex_put_var_names_int(exoid, "edge", DIM_NUM_EDG_RED_VAR, VAR_NAME_EDG_RED_VAR, &varid);
     break;
