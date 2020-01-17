@@ -52,6 +52,67 @@ struct ncvar
   int     natts;
 };
 
+static int ex_get_nonstandard_ids(int exoid, ex_entity_type obj_type, void_int *ids)
+{
+  int status;
+  char errmsg[MAX_ERR_LENGTH];
+
+  int64_t               count = 0;
+  struct ex__file_item *file  = ex__find_file_item(exoid);
+  if (file) {
+    if (obj_type == EX_ASSEMBLY) {
+      count = file->assembly_count;
+    }
+    else if (obj_type == EX_BLOB) {
+      count = file->blob_count;
+    }
+  }
+
+  if (count > 0) {
+      /* For assemblies, we need to get the `assembly_entity` variables and read the ids from them
+       * For blobs, we need to get the `blob_entity` variables and read the ids from them
+       */
+      int          num_found = 0;
+      struct ncvar var;
+      int          nvars;
+      nc_inq(exoid, NULL, &nvars, NULL, NULL);
+      char *type = NULL;
+      if (obj_type == EX_ASSEMBLY) {
+	type = "assembly_entity";
+      }
+      else if (obj_type == EX_BLOB) {
+	type = "blob_entity";
+      }
+
+      for (int varid = 0; varid < nvars; varid++) {
+        nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
+        if ((strncmp(var.name, type, strlen(type)) == 0)) {
+          /* Query the "_id" attribute on this object type. */
+          if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
+            int64_t id                    = 0;
+            status                        = nc_get_att_longlong(exoid, varid, EX_ATTRIBUTE_ID, &id);
+            ((int64_t *)ids)[num_found++] = id;
+          }
+          else {
+            int id                    = 0;
+            status                    = nc_get_att_int(exoid, varid, EX_ATTRIBUTE_ID, &id);
+            ((int *)ids)[num_found++] = id;
+          }
+          if (num_found == count) {
+            break;
+          }
+          if (status != NC_NOERR) {
+            snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s ids in file id %d",
+                     ex_name_of_object(obj_type), exoid);
+            ex_err_fn(exoid, __func__, errmsg, status);
+            return EX_FATAL;
+          }
+        }
+      }
+    }
+  return EX_NOERR;
+}
+
 int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
 {
   int  varid, status;
@@ -62,46 +123,9 @@ int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
   EX_FUNC_ENTER();
   ex__check_valid_file_id(exoid, __func__);
 
-  if (obj_type == EX_ASSEMBLY) {
-    int64_t               count = 0;
-    struct ex__file_item *file  = ex__find_file_item(exoid);
-    if (file) {
-      count = file->assembly_count;
-    }
-    if (count > 0) {
-      /* For assemblies, we need to get the `assembly_entity` variables and read the ids from them
-       */
-      int          num_found = 0;
-      struct ncvar var;
-      int          nvars;
-      nc_inq(exoid, NULL, &nvars, NULL, NULL);
-      for (int varid = 0; varid < nvars; varid++) {
-        nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
-        if ((strncmp(var.name, "assembly_entity", 15) == 0)) {
-          /* Query the "_id" attribute on this assembly. */
-          if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
-            int64_t id                    = 0;
-            status                        = nc_get_att_longlong(exoid, varid, ASSEMBLY_ID, &id);
-            ((int64_t *)ids)[num_found++] = id;
-          }
-          else {
-            int id                    = 0;
-            status                    = nc_get_att_int(exoid, varid, ASSEMBLY_ID, &id);
-            ((int *)ids)[num_found++] = id;
-          }
-          if (num_found == count) {
-            break;
-          }
-          if (status != NC_NOERR) {
-            snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get assembly ids in file id %d",
-                     exoid);
-            ex_err_fn(exoid, __func__, errmsg, status);
-            EX_FUNC_LEAVE(EX_FATAL);
-          }
-        }
-      }
-    }
-    EX_FUNC_LEAVE(EX_NOERR);
+  if (obj_type == EX_ASSEMBLY || obj_type == EX_BLOB) {
+    status = ex_get_nonstandard_ids(exoid, obj_type, ids);
+    EX_FUNC_LEAVE(status);
   }
 
   /* Now handle the rest of the object types */

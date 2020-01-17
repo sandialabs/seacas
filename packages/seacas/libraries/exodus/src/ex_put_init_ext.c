@@ -237,7 +237,7 @@ static void invalidate_id_status(int exoid, const char *var_stat, const char *va
 
 int ex_put_init_ext(int exoid, const ex_init_params *model)
 {
-  int numdimdim, numnoddim, assemdim, elblkdim, edblkdim, fablkdim, esetdim, fsetdim, elsetdim,
+  int numdimdim, numnoddim, elblkdim, edblkdim, fablkdim, esetdim, fsetdim, elsetdim,
       nsetdim, ssetdim, dim_str_name, dim[2], temp;
   int nmapdim, edmapdim, famapdim, emapdim, timedim;
   int status;

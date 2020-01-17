@@ -70,7 +70,7 @@ static int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
   }
 
   if (obj_type == EX_ASSEMBLY) {
-    if ((status = nc_inq_varid(exoid, VAR_ENTRY_ASSEMBLY(id), &varid)) != NC_NOERR) {
+    if ((status = nc_inq_varid(exoid, VAR_ENTITY_ASSEMBLY(id), &varid)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to locate %s id  %" PRId64 " in id array in file id %d",
                ex_name_of_object(obj_type), id, exoid);

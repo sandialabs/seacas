@@ -262,7 +262,6 @@ EXODUS_EXPORT int indent;
 #define VAR_COORD_Y "coordy"                /**< Y-dimension coordinate    */
 #define VAR_COORD_Z "coordz"                /**< Z-dimension coordinate    */
 #define VAR_NAME_COOR "coor_names"          /**< names of coordinates      */
-#define VAR_NAME_ASSEMBLY "assembly_names"  /**< names of assemblies */
 #define VAR_NAME_EL_BLK "eb_names"          /**< names of element blocks   */
 #define VAR_NAME_NS "ns_names"              /**< names of node sets        */
 #define VAR_NAME_SS "ss_names"              /**< names of side sets        */
@@ -275,22 +274,22 @@ EXODUS_EXPORT int indent;
 #define VAR_NAME_ES "es_names"              /**< names of edge    sets     */
 #define VAR_NAME_FS "fs_names"              /**< names of face    sets     */
 #define VAR_NAME_ELS "els_names"            /**< names of element sets     */
-#define VAR_STAT_ASSEMBLY "assembly_status" /**< assembly status   */
 #define VAR_STAT_EL_BLK "eb_status"         /**< element block status      */
 #define VAR_STAT_ECONN "econn_status"       /**< element block edge status */
 #define VAR_STAT_FCONN "fconn_status"       /**< element block face status */
 #define VAR_STAT_ED_BLK "ed_status"         /**< edge    block status      */
 #define VAR_STAT_FA_BLK "fa_status"         /**< face    block status      */
-#define VAR_ID_ASSEMBLY "assembly_prop1"    /**< assembly ids props   */
 #define VAR_ID_EL_BLK "eb_prop1"            /**< element block ids props   */
 #define VAR_ID_ED_BLK "ed_prop1"            /**< edge    block ids props   */
 #define VAR_ID_FA_BLK "fa_prop1"            /**< face    block ids props   */
-#define DIM_NUM_ENTRY_ASSEMBLY(num) ex__catstr("num_entity_assembly", num)
-#define VAR_ENTRY_ASSEMBLY(num) ex__catstr("assembly_entity", num)
-#define ASSEMBLY_TYPE "_type"
-#define ASSEMBLY_TYPE_NAME "_typename"
-#define ASSEMBLY_NAME "_name"
-#define ASSEMBLY_ID "_id"
+#define DIM_NUM_ENTITY_ASSEMBLY(num) ex__catstr("num_entity_assembly", num)
+#define VAR_ENTITY_ASSEMBLY(num) ex__catstr("assembly_entity", num)
+#define DIM_NUM_VALUES_BLOB(num) ex__catstr("num_values_blob", num)
+#define VAR_ENTITY_BLOB(num) ex__catstr("blob_entity", num)
+#define EX_ATTRIBUTE_TYPE "_type"
+#define EX_ATTRIBUTE_TYPENAME "_typename"
+#define EX_ATTRIBUTE_NAME "_name"
+#define EX_ATTRIBUTE_ID "_id"
 
 /*! element type names for each element block      */
 #define ATT_NAME_ELB "elem_type"
@@ -683,7 +682,8 @@ struct ex__file_item
   int          int64_status;
   int          maximum_name_length;
   int          time_varid;     /* Store to avoid lookup each timestep */
-  unsigned int assembly_count; /**< client enables assembly feature */
+  unsigned int assembly_count; 
+  unsigned int blob_count; 
   unsigned int
       compression_algorithm : 2; /**< GZIP/ZLIB, SZIP, more may be supported by NetCDF soon */
   unsigned int

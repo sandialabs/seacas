@@ -64,7 +64,7 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
   bool in_define = false;
   for (size_t i = 0; i < count; i++) {
     /* See if an assembly with this id has already been defined or exists on file... */
-    if ((status = nc_inq_varid(exoid, VAR_ENTRY_ASSEMBLY(assemblies[i].id), &entlst_id[i])) !=
+    if ((status = nc_inq_varid(exoid, VAR_ENTITY_ASSEMBLY(assemblies[i].id), &entlst_id[i])) !=
         NC_NOERR) {
       /* Assembly has not already been defined */
       /* put netcdf file into define mode  */
@@ -86,7 +86,7 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
         ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
       }
 
-      char *numentryptr = DIM_NUM_ENTRY_ASSEMBLY(assemblies[i].id);
+      char *numentryptr = DIM_NUM_ENTITY_ASSEMBLY(assemblies[i].id);
 
       /* define dimensions and variables */
       if ((status = nc_def_dim(exoid, numentryptr, assemblies[i].entity_count, &dimid)) !=
@@ -114,7 +114,7 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
 
       /* create variable array in which to store the entry lists */
       dims[0] = dimid;
-      if ((status = nc_def_var(exoid, VAR_ENTRY_ASSEMBLY(assemblies[i].id), int_type, 1, dims,
+      if ((status = nc_def_var(exoid, VAR_ENTITY_ASSEMBLY(assemblies[i].id), int_type, 1, dims,
                                &entlst_id[i])) != NC_NOERR) {
         if (status == NC_ENAMEINUSE) {
           snprintf(errmsg, MAX_ERR_LENGTH,
@@ -134,11 +134,11 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
 
       if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
         status =
-            nc_put_att_longlong(exoid, entlst_id[i], ASSEMBLY_ID, NC_INT64, 1, &assemblies[i].id);
+            nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &assemblies[i].id);
       }
       else {
         int id = assemblies[i].id;
-        status = nc_put_att_int(exoid, entlst_id[i], ASSEMBLY_ID, NC_INT, 1, &id);
+        status = nc_put_att_int(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT, 1, &id);
       }
       if (status != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
@@ -148,7 +148,7 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
         goto error_ret; /* exit define mode and return */
       }
 
-      if ((status = nc_put_att_int(exoid, entlst_id[i], ASSEMBLY_TYPE, NC_INT, 1,
+      if ((status = nc_put_att_int(exoid, entlst_id[i], EX_ATTRIBUTE_TYPE, NC_INT, 1,
                                    &assemblies[i].type)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store assembly type %d in file id %d",
                  assemblies[i].type, exoid);
@@ -156,7 +156,7 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
         goto error_ret; /* exit define mode and return */
       }
 
-      if ((status = nc_put_att_text(exoid, entlst_id[i], ASSEMBLY_NAME,
+      if ((status = nc_put_att_text(exoid, entlst_id[i], EX_ATTRIBUTE_NAME,
                                     strlen(assemblies[i].name) + 1, assemblies[i].name)) !=
           NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store assembly name %s in file id %d",
@@ -167,7 +167,7 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
 
       {
         char *contains = ex_name_of_object(assemblies[i].type);
-        if ((status = nc_put_att_text(exoid, entlst_id[i], ASSEMBLY_TYPE_NAME, strlen(contains) + 1,
+        if ((status = nc_put_att_text(exoid, entlst_id[i], EX_ATTRIBUTE_TYPENAME, strlen(contains) + 1,
                                       contains)) != NC_NOERR) {
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to store assembly type name %s in file id %d", assemblies[i].name,
