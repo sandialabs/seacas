@@ -19,6 +19,7 @@
 #ifndef FMT_HEADER_ONLY
 #define FMT_HEADER_ONLY
 #endif
+#define FMT_STATIC_THOUSANDS_SEPARATOR ','
 
 #ifdef __has_feature
 #define FMT_HAS_FEATURE(x) __has_feature(x)
