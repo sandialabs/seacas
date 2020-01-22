@@ -63,7 +63,7 @@ static void ex__get_entity_count(int exoid, ex_init_params *info)
     if (strncmp(dim_nm, "num_entity_assembly", 19) == 0) {
       info->num_assembly++;
     }
-    else if (strncmp(dim_nm, "num_entry_blob", 14) == 0) {
+    else if (strncmp(dim_nm, "num_values_blob", 15) == 0) {
       info->num_blob++;
     }
   }
@@ -131,6 +131,8 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
   info->num_edge_maps = 0;
   info->num_face_maps = 0;
   info->num_elem_maps = 0;
+  info->num_assembly  = 0;
+  info->num_blob      = 0;
 
   dimid = 0;
   if (ex_get_dim_value(exoid, "dimension count", DIM_NUM_DIM, dimid, &info->num_dim) != EX_NOERR) {

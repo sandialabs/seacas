@@ -287,6 +287,11 @@ echo "end testwt-blob" >> test.output
 # Filter out the "maximum_name_length" attribute. Moves around in ncdump output for nc4 vs nc3
 ${NCDUMP} -d5,5 test-blob.exo | grep -v version | grep -v _FillValue |grep -v "maximum_name_length" | ${DIFF} - ${SRCDIR}/testwt-blob.dmp | tee testwt-blob.res
 
+echo "testrd-blob - read file containing blob data"
+echo "begin testrd-blob" >> test.output
+${PREFIX} ${BINDIR}/testrd-blob${SUFFIX} | grep -v version | ${DIFF} - ${SRCDIR}/testrd-blob.dmp | tee testrd-blob.res
+echo "end testrd-blob" >> test.output
+
 echo "testwt-oned - write 1D mesh..."
 echo "begin testwt-oned" >> test.output
 ${PREFIX} ${BINDIR}/testwt-oned${SUFFIX} >> test.output

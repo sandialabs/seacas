@@ -57,6 +57,7 @@ int ex_get_reduction_variable_name(int exoid, ex_entity_type obj_type, int var_n
   switch (obj_type) {
   case EX_GLOBAL: vname = VAR_NAME_GLO_VAR; break;
   case EX_ASSEMBLY: vname = VAR_NAME_ASSEMBLY_RED_VAR; break;
+  case EX_BLOB: vname = VAR_NAME_BLOB_RED_VAR; break;
   case EX_EDGE_BLOCK: vname = VAR_NAME_EDG_RED_VAR; break;
   case EX_FACE_BLOCK: vname = VAR_NAME_FAC_RED_VAR; break;
   case EX_ELEM_BLOCK: vname = VAR_NAME_ELE_RED_VAR; break;

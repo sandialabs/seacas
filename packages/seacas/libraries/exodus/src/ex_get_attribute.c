@@ -106,6 +106,7 @@ static int ex__get_varid(int exoid, ex_entity_type obj_type, ex_entity_id id)
 
   switch (obj_type) {
   case EX_ASSEMBLY: entryptr = VAR_ENTITY_ASSEMBLY(id_ndx); break;
+  case EX_BLOB: entryptr = VAR_ENTITY_BLOB(id_ndx); break;
   case EX_NODE_SET: entryptr = VAR_NODE_NS(id_ndx); break;
   case EX_EDGE_SET: entryptr = VAR_EDGE_ES(id_ndx); break;
   case EX_FACE_SET: entryptr = VAR_FACE_FS(id_ndx); break;

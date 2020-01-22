@@ -171,7 +171,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
   if (obj_type != EX_NODAL && obj_type != EX_NODE_SET && obj_type != EX_EDGE_BLOCK &&
       obj_type != EX_EDGE_SET && obj_type != EX_FACE_BLOCK && obj_type != EX_FACE_SET &&
       obj_type != EX_ELEM_BLOCK && obj_type != EX_ELEM_SET && obj_type != EX_SIDE_SET &&
-      obj_type != EX_GLOBAL && obj_type != EX_ASSEMBLY) {
+      obj_type != EX_GLOBAL && obj_type != EX_ASSEMBLY && obj_type != EX_BLOB) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",
              obj_type, exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
@@ -278,6 +278,12 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
   else if (obj_type == EX_ASSEMBLY) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "assembly", DIM_NUM_ASSEMBLY_VAR,
                                         VAR_NAME_ASSEMBLY_VAR)) != EX_NOERR) {
+      goto error_ret;
+    }
+  }
+  else if (obj_type == EX_BLOB) {
+    if ((status = ex_prepare_result_var(exoid, num_vars, "blob", DIM_NUM_BLOB_VAR,
+                                        VAR_NAME_BLOB_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
