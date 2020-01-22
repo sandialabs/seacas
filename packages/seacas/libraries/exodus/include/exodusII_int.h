@@ -453,7 +453,8 @@ EXODUS_EXPORT int indent;
 #define DIM_NUM_INFO "num_info"             /**< number of information records  */
 #define VAR_INFO "info_records"             /**< information records       */
 #define VAR_WHOLE_TIME "time_whole"         /**< simulation times for whole time steps */
-#define VAR_ASSEMBLY_TAB "assembly_var_tab" /**< element variable truth table */
+#define VAR_ASSEMBLY_TAB "assembly_var_tab" /**< assembly variable truth table */
+#define VAR_BLOB_TAB "blob_var_tab"         /**< blob variable truth table */
 #define VAR_ELEM_TAB "elem_var_tab"         /**< element variable truth table */
 #define VAR_EBLK_TAB "edge_var_tab"         /**< edge variable truth table */
 #define VAR_FBLK_TAB "face_var_tab"         /**< face variable truth table */

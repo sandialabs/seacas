@@ -623,6 +623,8 @@ char *ex__dim_num_entries_in_object(ex_entity_type obj_type, int idx)
 {
   switch (obj_type) {
   case EX_NODAL: return DIM_NUM_NODES;
+  case EX_ASSEMBLY: return DIM_NUM_ENTITY_ASSEMBLY(idx);
+  case EX_BLOB: return DIM_NUM_VALUES_BLOB(idx);
   case EX_EDGE_BLOCK: return DIM_NUM_ED_IN_EBLK(idx);
   case EX_FACE_BLOCK: return DIM_NUM_FA_IN_FBLK(idx);
   case EX_ELEM_BLOCK: return DIM_NUM_EL_IN_BLK(idx);

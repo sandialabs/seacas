@@ -96,6 +96,7 @@ int ex_get_reduction_variable_param(int exoid, ex_entity_type obj_type, int *num
   switch (obj_type) {
   case EX_GLOBAL: dnumvar = DIM_NUM_GLO_VAR; break;
   case EX_ASSEMBLY: dnumvar = DIM_NUM_ASSEMBLY_RED_VAR; break;
+  case EX_BLOB: dnumvar = DIM_NUM_BLOB_RED_VAR; break;
   case EX_EDGE_BLOCK: dnumvar = DIM_NUM_EDG_RED_VAR; break;
   case EX_FACE_BLOCK: dnumvar = DIM_NUM_FAC_RED_VAR; break;
   case EX_ELEM_BLOCK: dnumvar = DIM_NUM_ELE_RED_VAR; break;

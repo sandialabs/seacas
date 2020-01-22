@@ -225,10 +225,10 @@ int ex_put_reduction_vars(int exoid, int time_step, ex_entity_type var_type, ex_
     return ex_put_var(exoid, time_step, var_type, 1, 1, num_variables, var_vals);
     break;
   case EX_ASSEMBLY:
-    status = ex__look_up_var(exoid, var_type, obj_id, 0, DIM_NUM_ASSEMBLY_RED_VAR, &varid);
+    status = ex__look_up_var(exoid, var_type, obj_id, "assembly", DIM_NUM_ASSEMBLY_RED_VAR, &varid);
     break;
   case EX_BLOB:
-    status = ex__look_up_var(exoid, var_type, obj_id, 0, DIM_NUM_BLOB_RED_VAR, &varid);
+    status = ex__look_up_var(exoid, var_type, obj_id, "blob", DIM_NUM_BLOB_RED_VAR, &varid);
     break;
   case EX_EDGE_BLOCK:
     status = ex__look_up_var(exoid, var_type, obj_id, VAR_ID_ED_BLK, DIM_NUM_EDG_RED_VAR, &varid);
