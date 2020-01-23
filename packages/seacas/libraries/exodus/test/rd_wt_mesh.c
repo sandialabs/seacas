@@ -81,7 +81,7 @@ typedef double realtyp;
 void get_file_name(const char *base, const char *ext, int rank, int nprocs, const char *other,
                    char *output);
 
-int parse_input(int argc, char *argv[], int *exodus, int *close_files, char *file_name,
+int parse_input(int argc, char *argv[], bool *exodus, bool *close_files, char *file_name,
                 int *num_nodal_fields, int *num_global_fields, int *num_element_fields,
                 int *files_per_domain, int *num_iterations, int *sleep_time);
 
@@ -296,7 +296,7 @@ int main(int argc, char **argv)
  *
  ***********************************************************************/
 
-int parse_input(int argc, char *argv[], int *exodus, int *close_files, char *file_name,
+int parse_input(int argc, char *argv[], bool *exodus, bool *close_files, char *file_name,
                 int *num_nodal_fields, int *num_global_fields, int *num_element_fields,
                 int *files_per_domain, int *num_iterations, int *sleep_time)
 {

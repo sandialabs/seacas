@@ -491,6 +491,10 @@ namespace Iofx {
 
     get_commsets();
 
+    // Add assemblies now that all entities should be defined... consistent across processors
+    // (metadata)
+    get_assemblies();
+
     handle_groups();
 
     add_region_fields();
@@ -530,6 +534,7 @@ namespace Iofx {
     m_groupCount[EX_ELEM_SET] = info.num_elem_sets;
 
     m_groupCount[EX_SIDE_SET] = info.num_side_sets;
+    m_groupCount[EX_ASSEMBLY] = info.num_assembly;
 
     if (nodeCount == 0) {
       fmt::print(IOSS_WARNING, "No nodes were found in the model, file '{}'\n", decoded_filename());
@@ -1227,6 +1232,8 @@ namespace Iofx {
       if (nvar > 0) {
         nvar = add_results_fields(entity_type, block, iblk);
       }
+      add_reduction_results_fields(entity_type, block);
+      add_mesh_reduction_fields(entity_type, id, block);
 
       if (entity_type == EX_ELEM_BLOCK) {
         Ioss::SerializeIO serializeIO__(this);

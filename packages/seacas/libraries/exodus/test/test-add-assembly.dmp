@@ -20,7 +20,7 @@ dimensions:
 	num_nod_per_el6 = 1 ;
 	num_el_in_blk7 = 1 ;
 	num_nod_per_el7 = 1 ;
-	num_entity_assembly100 = 4 ;
+	num_entity_assembly100 = 3 ;
 	num_entity_assembly200 = 4 ;
 	num_entity_assembly300 = 3 ;
 	num_entity_assembly400 = 2 ;
@@ -109,13 +109,13 @@ data:
  coordz = 0 ;
 
  eb_names =
-  "block_1",
-  "block_2",
-  "block_3",
-  "block_4",
-  "block_5",
-  "block_6",
-  "block_7" ;
+  "block_A",
+  "block_B",
+  "block_C",
+  "block_D",
+  "block_E",
+  "block_F",
+  "block_G" ;
 
  coor_names =
   "",
@@ -143,7 +143,7 @@ data:
  connect7 =
   1 ;
 
- assembly_entity100 = 100, 200, 300, 400 ;
+ assembly_entity100 = 200, 300, 400 ;
 
  assembly_entity200 = 10, 11, 12, 13 ;
 
