@@ -1,5 +1,5 @@
 """
-exodus.py v 1.18.2 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.19.0 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 3 Version)
 
 Exodus is a common database for multiple application codes (mesh
@@ -95,10 +95,10 @@ from enum import Enum
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.18.2 (seacas-py3)"
+EXODUS_PY_VERSION = "1.19.0 (seacas-py3)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.18.2 (seacas-py3), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.19.0 (seacas-py3), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -317,6 +317,7 @@ class ex_inquiry(Enum):
         # inquire size of floating-point values stored on database
         EX_INQ_DB_FLOAT_SIZE = 51
         EX_INQ_ASSEMBLY = 60
+        EX_INQ_BLOB = 61
         EX_INQ_INVALID = -1
 
 
@@ -341,6 +342,7 @@ def ex_obj_to_inq(objType):
     """
     entity_dictionary = {
         'EX_ASSEMBLY': 'EX_INQ_ASSEMBLY',
+        'EX_BLOB': 'EX_INQ_BLOB',
         'EX_EDGE_BLOCK': 'EX_INQ_EDGE_BLK',
         'EX_FACE_BLOCK': 'EX_INQ_FACE_BLK',
         'EX_ELEM_BLOCK': 'EX_INQ_ELEM_BLK',
@@ -366,6 +368,7 @@ def ex_obj_to_name(objType):
     """
     entity_dictionary = {
         get_entity_type('EX_ASSEMBLY'): "assembly",
+        get_entity_type('EX_BLOB'): "blob",
         get_entity_type('EX_EDGE_BLOCK'): "edge block",
         get_entity_type('EX_FACE_BLOCK'): "face block",
         get_entity_type('EX_ELEM_BLOCK'): "element block",
@@ -425,6 +428,8 @@ class ex_entity_type(Enum):
          kluge so some internal wrapper functions work
     EX_ASSEMBLY
          assemblies (collections of other entities)
+    EX_BLOB
+         blob (arbitrary sized binary object)
     EX_INVALID
          invalid
     """
@@ -445,6 +450,7 @@ class ex_entity_type(Enum):
     EX_GLOBAL     = 13
     EX_COORDINATE = 15
     EX_ASSEMBLY   = 16
+    EX_BLOB   = 17
     EX_INVALID    = -1
 
 
@@ -498,28 +504,31 @@ class ex_init_params(ctypes.Structure):
         number of model elem maps
     num_assembly : int
         number of assemblies
+    num_blob : int
+        number of blobs
     """
-    _fields_ = [("title", c_char * (MAX_LINE_LENGTH + 1)),
-                ("num_dim", c_longlong),
-                ("num_nodes", c_longlong),
-                ("num_edge", c_longlong),
-                ("num_edge_blk", c_longlong),
-                ("num_face", c_longlong),
-                ("num_face_blk", c_longlong),
-                ("num_elem", c_longlong),
-                ("num_elem_blk", c_longlong),
-                ("num_node_sets", c_longlong),
-                ("num_edge_sets", c_longlong),
-                ("num_face_sets", c_longlong),
-                ("num_side_sets", c_longlong),
-                ("num_elem_sets", c_longlong),
-                ("num_node_maps", c_longlong),
-                ("num_edge_maps", c_longlong),
-                ("num_face_maps", c_longlong),
-                ("num_elem_maps", c_longlong),
-                ("num_assembly", c_longlong)]
+    _fields_ = [("title", ctypes.c_char * (MAX_LINE_LENGTH + 1)),
+                ("num_dim", ctypes.c_longlong),
+                ("num_nodes", ctypes.c_longlong),
+                ("num_edge", ctypes.c_longlong),
+                ("num_edge_blk", ctypes.c_longlong),
+                ("num_face", ctypes.c_longlong),
+                ("num_face_blk", ctypes.c_longlong),
+                ("num_elem", ctypes.c_longlong),
+                ("num_elem_blk", ctypes.c_longlong),
+                ("num_node_sets", ctypes.c_longlong),
+                ("num_edge_sets", ctypes.c_longlong),
+                ("num_face_sets", ctypes.c_longlong),
+                ("num_side_sets", ctypes.c_longlong),
+                ("num_elem_sets", ctypes.c_longlong),
+                ("num_node_maps", ctypes.c_longlong),
+                ("num_edge_maps", ctypes.c_longlong),
+                ("num_face_maps", ctypes.c_longlong),
+                ("num_elem_maps", ctypes.c_longlong),
+                ("num_assembly", ctypes.c_longlong),
+                ("num_blob", ctypes.c_longlong)]
 
-class ex_assembly(Structure):
+class ex_assembly(ctypes.Structure):
     """
     Structure defining the assembly parameters.
 
@@ -531,12 +540,26 @@ class ex_assembly(Structure):
     entity_count : int
     entity_list : void_int *
     """
-    _fields_ = [("id", c_longlong),
-                ("name", c_char_p),
-                ("type", c_int),
-                ("entity_count", c_int),
-                ("entity_list", POINTER(c_longlong))]
+    _fields_ = [("id", ctypes.c_longlong),
+                ("name", ctypes.c_char_p),
+                ("type", ctypes.c_int),
+                ("entity_count", ctypes.c_int),
+                ("entity_list", ctypes.POINTER(ctypes.c_longlong))]
 
+
+class ex_blob(ctypes.Structure):
+    """
+    Structure defining the blob parameters.
+
+    Parameters
+    ----------
+    id : int64_t
+    name : char *
+    num_entry : int64_t
+    """
+    _fields_ = [("id", ctypes.c_longlong),
+                ("name", ctypes.c_char_p),
+                ("num_entry", ctypes.c_longlong)]
 
 class attribute:
     def __init__(self, name, type_str, id):
@@ -548,18 +571,16 @@ class attribute:
     def __repr__(self):
         return "attribute(name=%r, entity_type=%r, entity_id=%r, values=%r)" % (self.name,self.entity_type,self.entity_id,self.values)
     
->>>>>>> origin/exodus_assembly
-
-class ex_attribute(Structure):
+class ex_attribute(ctypes.Structure):
     """
     Used for accessing underlying exodus library...
     """
-    _fields_ = [("entity_type", c_int),
-                ("entity_id", c_longlong),
-                ("name", c_char * 256),
-                ("type", c_int),
-                ("value_count", c_longlong),
-                ("values", c_void_p)]
+    _fields_ = [("entity_type", ctypes.c_int),
+                ("entity_id", ctypes.c_longlong),
+                ("name", ctypes.c_char * 256),
+                ("type", ctypes.c_int),
+                ("value_count", ctypes.c_longlong),
+                ("values", ctypes.c_void_p)]
 
 #
 # ----------------------------------------------------------------------
@@ -578,7 +599,7 @@ class exodus:
     def __init__(self, file, mode=None, array_type='ctype', title=None,
                  numDims=None, numNodes=None, numElems=None, numBlocks=None,
                  numNodeSets=None, numSideSets=None, numAssembly=None,
-                 init_params=None, io_size=0):
+                 numBlob=None, init_params=None, io_size=0):
         """
         Open exodus database for data insertion/extraction.
 
@@ -685,14 +706,15 @@ class exodus:
         Outputs a summary of the exodus file data. Output is similar to:
         ```
         Database: base_ioshell_copy.e
-        Title:	GeneratedMesh: 10x10x10+nodeset:xyz+sideset:XYZ+times:5+variables:global,10,elem
+        Title:	This is the title
 
         Number of spatial dimensions = 3		                              	 Number of global variables     = 10
         Number of node blocks        = 1	 Number of nodes              = 1,331	 Number of nodal variables      =  2
         Number of element blocks     = 1	 Number of elements           = 1,000	 Number of element variables    =  5
         Number of node sets          = 3	 Length of node list          =   363	 Number of nodeset variables    =  4
         Number of element side sets  = 3	 Length of element sides      =   300	 Number of sideset variables    =  3
-        Number of assemblies         = 0         	                              	 Number of assembly variables   = 10
+        Number of assemblies         = 4         	                              	 Number of assembly variables   = 10
+        Number of blobs              = 0         	                              	 Number of blob     variables   =  0
         Number of time steps         = 5
         ```
         """
@@ -713,6 +735,7 @@ class exodus:
         num_ns_vars = self.get_variable_number('EX_NODE_SET')
         num_ss_vars = self.get_variable_number('EX_SIDE_SET')
         num_assem_vars = self.get_reduction_variable_number('EX_ASSEMBLY')
+        num_blob_vars = self.get_reduction_variable_number('EX_BLOB')
         
         print("\n Database: {0}\n"
               " Title:\t{17}\n\n"
@@ -734,6 +757,9 @@ class exodus:
               " Number of assemblies         = {18:3n}\t"
               "                                   {2:11s}\t"
               " Number of assembly red vars    = {19:6d}\n"
+              " Number of blobs              = {20:3n}\t"
+              "                                   {2:11s}\t"
+              " Number of blob red vars        = {21:6d}\n"
               " Number of time steps         = {16:3n}\n"
               .format(self.fileName,
                       self.num_dimensions(), "",
@@ -745,7 +771,9 @@ class exodus:
                       self.num_side_sets(),
                       total_ns_nodes, total_sides,
                       num_glo_vars, num_nod_vars, num_ele_vars,
-                      num_ns_vars, num_ss_vars, self.num_times(), self.title(), self.num_assembly(), num_assem_vars))
+                      num_ns_vars, num_ss_vars, self.num_times(), self.title(), 
+                      self.num_assembly(), num_assem_vars, 
+                      self.num_blob(), num_blob_vars))
     #
     # build the info struct
     #
@@ -758,9 +786,6 @@ class exodus:
 
         >>> e.put_info_ext(self,info_struct)
         """
-        EX_OPT_ENABLE_FEATURE = 0x0001
-        EX_ENABLE_ASSEMBLY    = 0x0007
-
         if len(p.title) > MAX_LINE_LENGTH:
             print("WARNING: Exodus title \"{}\" exceeds maximum line length ({}). It will be truncated."
                   .format(p.title, MAX_LINE_LENGTH))
@@ -773,7 +798,7 @@ class exodus:
         self.numElemBlk = ctypes.c_longlong(p.num_elem_blk)
         self.numNodeSets = ctypes.c_longlong(p.num_node_sets)
         self.numSideSets = ctypes.c_longlong(p.num_side_sets)
-        self.numAssembly = c_longlong(p.num_assembly)
+        self.numAssembly = ctypes.c_longlong(p.num_assembly)
 
         EXODUS_LIB.ex_put_init_ext(self.fileId, ctypes.byref(p))
         return True
@@ -2138,6 +2163,32 @@ class exodus:
         """
         assem = ex_assembly(id=object_id)
         self.__ex_get_assembly(assem)
+        return assem
+
+
+    # Blobs...
+    # --------------------------------------------------------------------
+    def num_blob(self):
+        """
+        get the number of blobs in the model
+
+        >>> num_assembly = exo.num_blob()
+
+        Returns
+        -------
+            <int>  num_blob
+        """
+        return self.numBlob.value
+
+
+    def get_blob(self, object_id):
+        """
+        reads the blob parameters and blob data for one blob
+        \param   exoid                   exodus file id
+        \param  *blob                    ex_blob structure
+        """
+        assem = ex_blob(id=object_id)
+        self.__ex_get_blob(assem)
         return assem
 
 
@@ -4525,6 +4576,7 @@ class exodus:
             self.numNodeSets = ctypes.c_longlong(0)
             self.numSideSets = ctypes.c_longlong(0)
             self.numAssembly = ctypes.c_longlong(0)
+            self.numBlob = ctypes.c_longlong(0)
         else:
             self.numDim = ctypes.c_int(0)
             self.numNodes = ctypes.c_int(0)
@@ -4533,6 +4585,7 @@ class exodus:
             self.numNodeSets = ctypes.c_int(0)
             self.numSideSets = ctypes.c_int(0)
             self.numAssembly = ctypes.c_int(0)
+            self.numBlob = ctypes.c_int(0)
         EXODUS_LIB.ex_get_init(
             self.fileId, self.Title,
             ctypes.byref(self.numDim),
@@ -4824,42 +4877,51 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_assembly(self, assem_struct):
-        EXODUS_LIB.ex_get_assembly(self.fileId, byref(assem_struct))
+        EXODUS_LIB.ex_get_assembly(self.fileId, ctypes.byref(assem_struct))
         ptr = create_string_buffer(MAX_NAME_LENGTH+1)
-        assem_struct.name = cast(ptr, c_char_p)
-        eptr = (c_longlong * assem_struct.entity_count)()
+        assem_struct.name = cast(ptr, ctypes.c_char_p)
+        eptr = (ctypes.c_longlong * assem_struct.entity_count)()
         assem_struct.entity_list = eptr
-        EXODUS_LIB.ex_get_assembly(self.fileId, byref(assem_struct))
+        EXODUS_LIB.ex_get_assembly(self.fileId, ctypes.byref(assem_struct))
+
+
+    # --------------------------------------------------------------------
+
+    def __ex_get_blob(self, blob_struct):
+        EXODUS_LIB.ex_get_blob(self.fileId, ctypes.byref(blob_struct))
+        ptr = create_string_buffer(MAX_NAME_LENGTH+1)
+        blob_struct.name = cast(ptr, ctypes.c_char_p)
+        EXODUS_LIB.ex_get_blob(self.fileId, ctypes.byref(blob_struct))
 
 
     # --------------------------------------------------------------------
 
     def __ex_get_attributes(self, objType, objId):
         # Get attribute count...
-        obj_type = c_int(get_entity_type(objType))
-        obj_id = c_longlong(objId)
+        obj_type = ctypes.c_int(get_entity_type(objType))
+        obj_id = ctypes.c_longlong(objId)
         att_count = EXODUS_LIB.ex_get_attribute_count(self.fileId, obj_type, obj_id)
         
         attributes = dict()
         if att_count > 0:
             att = (ex_attribute * att_count)()
-            EXODUS_LIB.ex_get_attribute_param(self.fileId, obj_type, obj_id, byref(att))
+            EXODUS_LIB.ex_get_attribute_param(self.fileId, obj_type, obj_id, ctypes.byref(att))
             for i in range(att_count):
-                EXODUS_LIB.ex_get_attribute(self.fileId, byref(att[i]))
+                EXODUS_LIB.ex_get_attribute(self.fileId, ctypes.byref(att[i]))
                 tmp_att = attribute(att[i].name.decode('utf8'), ex_obj_to_name(att[i].entity_type), att[i].entity_id)
 
                 if (att[i].type == 2):
-                    vals = cast(att[i].values, POINTER(c_char))
+                    vals = cast(att[i].values, POINTER(ctypes.c_char))
                     for j in range(att[i].value_count-1):
                         tmp_att.values.append(vals[j])
 
                 if (att[i].type == 4):
-                    vals = cast(att[i].values, POINTER(c_int))
+                    vals = cast(att[i].values, POINTER(ctypes.c_int))
                     for j in range(att[i].value_count):
                         tmp_att.values.append(vals[j])
 
                 if (att[i].type == 6):
-                    vals = cast(att[i].values, POINTER(c_double))
+                    vals = cast(att[i].values, POINTER(ctypes.c_double))
                     for j in range(att[i].value_count):
                         tmp_att.values.append(vals[j])
 
@@ -5322,13 +5384,13 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_reduction_variable_param(self, varType, numVars):
-        num_vars = c_int(numVars)
+        num_vars = ctypes.c_int(numVars)
         current_num = self.__ex_get_reduction_variable_param(varType)
         if current_num.value == num_vars.value:
             # print "value already set"
             return True
 
-        var_type = c_int(get_entity_type(varType))
+        var_type = ctypes.c_int(get_entity_type(varType))
         errorInt = EXODUS_LIB.ex_put_reduction_variable_param(
             self.fileId, var_type, num_vars)
         if errorInt != 0:
@@ -5341,17 +5403,17 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_reduction_variable_param(self, varType):
-        var_type = c_int(get_entity_type(varType))
-        num_vars = c_int()
+        var_type = ctypes.c_int(get_entity_type(varType))
+        num_vars = ctypes.c_int()
         EXODUS_LIB.ex_get_reduction_variable_param(
-            self.fileId, var_type, byref(num_vars))
+            self.fileId, var_type, ctypes.byref(num_vars))
         return num_vars
 
     # --------------------------------------------------------------------
 
     def __ex_get_reduction_variable_name(self, varType, varId):
-        var_type = c_int(varType)
-        var_id = c_int(varId)
+        var_type = ctypes.c_int(varType)
+        var_id = ctypes.c_int(varId)
         name = create_string_buffer(MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_get_reduction_variable_name(self.fileId, var_type, var_id, name)
         return name.decode('utf8')
@@ -5359,8 +5421,8 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_reduction_variable_name(self, varType, varId, varName):
-        var_type = c_int(get_entity_type(varType))
-        var_id = c_int(varId)
+        var_type = ctypes.c_int(get_entity_type(varType))
+        var_id = ctypes.c_int(varId)
         name = create_string_buffer(varName.encode('ascii'), MAX_NAME_LENGTH + 1)
         EXODUS_LIB.ex_put_reduction_variable_name(self.fileId, var_type, var_id, name)
         return True
@@ -5370,19 +5432,19 @@ class exodus:
     def __ex_get_reduction_variable_names(self, varType):
         num_vars = self.__ex_get_reduction_variable_param(varType)
         var_name_ptrs = (
-            POINTER(c_char * (MAX_NAME_LENGTH + 1)) * num_vars.value)()
+            POINTER(ctypes.c_char * (MAX_NAME_LENGTH + 1)) * num_vars.value)()
 
         for i in range(num_vars.value):
             var_name_ptrs[i] = pointer(
                 create_string_buffer(
                     MAX_NAME_LENGTH + 1))
 
-        var_type = c_int(get_entity_type(varType))
+        var_type = ctypes.c_int(get_entity_type(varType))
         EXODUS_LIB.ex_get_reduction_variable_names(
             self.fileId,
             var_type,
             num_vars,
-            byref(var_name_ptrs))
+            ctypes.byref(var_name_ptrs))
         var_names = []
         for vnp in var_name_ptrs:
             var_names.append(vnp.contents.value.decode('utf8'))
@@ -5391,11 +5453,11 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_get_reduction_vars(self, timeStep, varType, blkId, numValues):
-        step = c_int(timeStep)
-        var_type = c_int(get_entity_type(varType))
-        block_id = c_longlong(blkId)
-        num_values = c_longlong(numValues)
-        var_vals = (c_double * num_values.value)()
+        step = ctypes.c_int(timeStep)
+        var_type = ctypes.c_int(get_entity_type(varType))
+        block_id = ctypes.c_longlong(blkId)
+        num_values = ctypes.c_longlong(numValues)
+        var_vals = (ctypes.c_double * num_values.value)()
         EXODUS_LIB.ex_get_reduction_vars(
             self.fileId,
             step,
@@ -5408,11 +5470,11 @@ class exodus:
     # --------------------------------------------------------------------
 
     def __ex_put_reduction_vars(self, timeStep, varType, blkId, numValues, values):
-        step = c_int(timeStep)
-        var_type = c_int(get_entity_type(varType))
-        block_id = c_longlong(blkId)
-        num_values = c_longlong(numValues)
-        var_vals = (c_double * num_values.value)()
+        step = ctypes.c_int(timeStep)
+        var_type = ctypes.c_int(get_entity_type(varType))
+        block_id = ctypes.c_longlong(blkId)
+        num_values = ctypes.c_longlong(numValues)
+        var_vals = (ctypes.c_double * num_values.value)()
         for i in range(num_values.value):
             var_vals[i] = float(values[i])
         EXODUS_LIB.ex_put_reduction_vars(
@@ -5868,7 +5930,8 @@ def copy_mesh(fromFileName, toFileName, exoFromObj=None,
                              num_elem_blk=exoFrom.num_blks(),
                              num_node_sets=exoFrom.num_node_sets(),
                              num_side_sets=exoFrom.num_side_sets(),
-                             num_assembly=exoFrom.num_assembly())
+                             num_assembly=exoFrom.num_assembly(),
+                             num_blob=exoFrom.num_blob())
 
     exo_to = exodus(toFileName, mode="w", array_type=array_type,
                     title=title, init_params=ex_pars)
