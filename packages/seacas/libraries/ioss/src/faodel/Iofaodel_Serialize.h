@@ -81,6 +81,7 @@ class StructuredBlock;
 
 
 namespace Iofaodel {
+#if 0
 
   // Map operations for Ioss types --------------------------------------------
   // Function that access Ioss types and return void
@@ -244,5 +245,23 @@ namespace Iofaodel {
     void *data,
     size_t data_size);
 
+
+  kelpie::Key make_key(int parallel_rank,
+                       const Ioss::Region & region,
+                       const Ioss::GroupingEntity & grouping_entity,
+                       const Ioss::Field & field);
+
+  kelpie::Key make_key(int parallel_rank,
+                       const Ioss::Region & region,
+                       const Ioss::GroupingEntity & grouping_entity,
+                       const Ioss::Property & property);
+
+
+  kelpie::Key make_key(int parallel_rank,
+                       const Ioss::Region & region,
+                       const Ioss::GroupingEntity & grouping_entity);
+
+
+#endif
 } // namespace Iofaodel
 #endif // Iofaodel_Serialize
