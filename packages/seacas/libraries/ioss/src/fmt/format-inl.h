@@ -373,9 +373,9 @@ namespace internal {
     template <int SHIFT> friend fp normalize(fp value)
     {
 #ifdef __NVCC__
-      static const int double_significand_size = std::numeric_limits<double>::digits - 1;
-      static const uint64_t implicit_bit = 1ull << double_significand_size;
-      static const int significand_size = bits<uint64_t>::value;
+      static const int      double_significand_size = std::numeric_limits<double>::digits - 1;
+      static const uint64_t implicit_bit            = 1ull << double_significand_size;
+      static const int      significand_size        = bits<uint64_t>::value;
 
       // Handle subnormals.
       const auto shifted_implicit_bit = implicit_bit << SHIFT;
@@ -1162,7 +1162,7 @@ namespace internal {
       precision = (precision >= 0 ? precision : 6) - 1;
 
     // Build the format string.
-    enum { max_format_size = 7 }; // Ths longest format is "%#.*Le".
+    enum { max_format_size = 7 }; // The longest format is "%#.*Le".
     char  format[max_format_size];
     char *format_ptr = format;
     *format_ptr++    = '%';
