@@ -30,6 +30,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <Ioss_Assembly.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_CoordinateFrame.h>
 #include <Ioss_DBUsage.h>
@@ -75,11 +76,34 @@ namespace {
   const std::string orig_topo_str() { return std::string("original_topology_type"); }
   const std::string orig_block_order() { return std::string("original_block_order"); }
 
+  template <typename T>
+  Ioss::GroupingEntity *get_entity_internal(int64_t id, const std::vector<T> &entities)
+  {
+    for (auto ent : entities) {
+      if (ent->property_exists(id_str())) {
+        if (id == ent->get_property(id_str()).get_int()) {
+          return ent;
+        }
+      }
+    }
+    return nullptr;
+  }
+
   template <typename T> size_t get_variable_count(const std::vector<T> &entities)
   {
     Ioss::NameList names;
     for (auto ent : entities) {
       ent->field_describe(Ioss::Field::TRANSIENT, &names);
+    }
+    Ioss::Utils::uniquify(names);
+    return names.size();
+  }
+
+  template <typename T> size_t get_reduction_variable_count(const std::vector<T> &entities)
+  {
+    Ioss::NameList names;
+    for (auto ent : entities) {
+      ent->field_describe(Ioss::Field::REDUCTION, &names);
     }
     Ioss::Utils::uniquify(names);
     return names.size();
@@ -230,6 +254,7 @@ namespace {
     compute_hashes(region.get_sidesets(), hashes, Ioss::SIDESET);
     compute_hashes(region.get_commsets(), hashes, Ioss::COMMSET);
     compute_hashes(region.get_structured_blocks(), hashes, Ioss::STRUCTUREDBLOCK);
+    compute_hashes(region.get_assemblies(), hashes, Ioss::ASSEMBLY);
 
     auto                util = region.get_database()->util();
     std::vector<size_t> min_hash(hashes.begin(), hashes.end());
@@ -282,6 +307,10 @@ namespace {
       report_inconsistency(region.get_structured_blocks(), util);
       differ = true;
     }
+    if (!check_hashes(min_hash, max_hash, Ioss::ASSEMBLY)) {
+      report_inconsistency(region.get_assemblies(), util);
+      differ = true;
+    }
     return !differ;
   }
 
@@ -331,6 +360,7 @@ namespace Ioss {
     properties.add(Property(this, "face_block_count", Property::INTEGER));
     properties.add(Property(this, "element_block_count", Property::INTEGER));
     properties.add(Property(this, "structured_block_count", Property::INTEGER));
+    properties.add(Property(this, "assembly_count", Property::INTEGER));
     properties.add(Property(this, "side_set_count", Property::INTEGER));
     properties.add(Property(this, "node_set_count", Property::INTEGER));
     properties.add(Property(this, "edge_set_count", Property::INTEGER));
@@ -397,6 +427,10 @@ namespace Ioss {
 
       for (auto cs : commSets) {
         delete (cs);
+      }
+
+      for (auto as : assemblies) {
+        delete (as);
       }
 
       // Region owns the database pointer even though other entities use it.
@@ -469,18 +503,19 @@ namespace Ioss {
          get_property("structured_block_count").get_int(), get_property("node_set_count").get_int(),
          get_property("edge_set_count").get_int(), get_property("face_set_count").get_int(),
          get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
-         num_ts});
+         get_property("assembly_count").get_int(), num_ts});
 
-    size_t num_glo_vars = field_count(Ioss::Field::TRANSIENT);
-    size_t num_nod_vars = get_variable_count(get_node_blocks());
-    size_t num_edg_vars = get_variable_count(get_edge_blocks());
-    size_t num_fac_vars = get_variable_count(get_face_blocks());
-    size_t num_ele_vars = get_variable_count(get_element_blocks());
-    size_t num_str_vars = get_variable_count(get_structured_blocks());
-    size_t num_ns_vars  = get_variable_count(get_nodesets());
-    size_t num_es_vars  = get_variable_count(get_edgesets());
-    size_t num_fs_vars  = get_variable_count(get_facesets());
-    size_t num_els_vars = get_variable_count(get_elementsets());
+    size_t num_glo_vars     = field_count(Ioss::Field::TRANSIENT);
+    size_t num_nod_vars     = get_variable_count(get_node_blocks());
+    size_t num_edg_vars     = get_variable_count(get_edge_blocks());
+    size_t num_fac_vars     = get_variable_count(get_face_blocks());
+    size_t num_ele_vars     = get_variable_count(get_element_blocks());
+    size_t num_str_vars     = get_variable_count(get_structured_blocks());
+    size_t num_ns_vars      = get_variable_count(get_nodesets());
+    size_t num_es_vars      = get_variable_count(get_edgesets());
+    size_t num_fs_vars      = get_variable_count(get_facesets());
+    size_t num_els_vars     = get_variable_count(get_elementsets());
+    size_t num_asm_red_vars = get_reduction_variable_count(get_assemblies());
 
     size_t                       num_ss_vars = 0;
     const Ioss::SideSetContainer fss         = get_sidesets();
@@ -529,7 +564,10 @@ namespace Ioss {
         " Elementset variables = {37:{25}n}\n"
         " Element side sets  = {16:{24}n}\t"
         " Length of element sides = {22:{23}n}\t"
-        " Sideset variables    = {31:{25}n}\n\n"
+        " Sideset variables    = {31:{25}n}\n"
+        " Assemblies         = {40:{24}n}\t"
+        "                           {38:{23}s}\t"
+        " Assembly variables   = {41:{25}n}\n\n"
         " Time steps         = {32:{24}n}\n",
         get_database()->get_filename(), mesh_type_string(),
         get_property("spatial_dimension").get_int(), get_property("node_count").get_int(),
@@ -543,7 +581,8 @@ namespace Ioss {
         total_cells, total_ns_nodes, total_es_edges, total_fs_faces, total_es_elements, total_sides,
         num_width, sb_width, vr_width, num_glo_vars, num_nod_vars, num_ele_vars, num_str_vars,
         num_ns_vars, num_ss_vars, num_ts, num_edg_vars, num_fac_vars, num_es_vars, num_fs_vars,
-        num_els_vars, " ", get_database()->get_format());
+        num_els_vars, " ", get_database()->get_format(), get_property("assembly_count").get_int(),
+        num_asm_red_vars);
   }
 
   /** \brief Set the Region and the associated DatabaseIO to the given State.
@@ -1043,6 +1082,27 @@ namespace Ioss {
     return false;
   }
 
+  /** \brief Add an assembly to the region.
+   *
+   *  \param[in] assembly The assembly to add
+   *  \returns True if successful.
+   */
+  bool Region::add(Assembly *assembly)
+  {
+    check_for_duplicate_names(this, assembly);
+    IOSS_FUNC_ENTER(m_);
+
+    // Check that region is in correct state for adding entities
+    if (get_state() == STATE_DEFINE_MODEL) {
+      assemblies.push_back(assembly);
+      // Add name as alias to itself to simplify later uses...
+      add_alias__(assembly);
+
+      return true;
+    }
+    return false;
+  }
+
   /** \brief Add a coordinate frame to the region.
    *
    *  \param[in] frame The coordinate frame to add
@@ -1303,6 +1363,12 @@ namespace Ioss {
     }
     return false;
   }
+
+  /** \brief Get all the region's Assembly objects.
+   *
+   *  \returns A vector of all the region's Assembly objects.
+   */
+  const AssemblyContainer &Region::get_assemblies() const { return assemblies; }
 
   /** \brief Get all the region's NodeBlock objects.
    *
@@ -1565,6 +1631,9 @@ namespace Ioss {
     else if (io_type == SIDEBLOCK) {
       return get_sideblock(my_name);
     }
+    else if (io_type == ASSEMBLY) {
+      return get_assembly(my_name);
+    }
     return nullptr;
   }
 
@@ -1627,8 +1696,81 @@ namespace Ioss {
     if (entity != nullptr) {
       return entity;
     }
+    entity = get_assembly(my_name);
+    if (entity != nullptr) {
+      return entity;
+    }
 
     return entity;
+  }
+
+  /** \brief Get an entity of a known EntityType and specified id
+   *
+   *  \param[in] id The id of the entity to get
+   *  \param[in] io_type The known type of the entity.
+   *  \returns The entity with the given id of the given type, or nullptr if not found or if ids not
+   * supported.
+   */
+  GroupingEntity *Region::get_entity(int64_t id, EntityType io_type) const
+  {
+    if (io_type == NODEBLOCK) {
+      return get_entity_internal(id, get_node_blocks());
+    }
+    if (io_type == ELEMENTBLOCK) {
+      return get_entity_internal(id, get_element_blocks());
+    }
+    if (io_type == STRUCTUREDBLOCK) {
+      return get_entity_internal(id, get_structured_blocks());
+    }
+    if (io_type == FACEBLOCK) {
+      return get_entity_internal(id, get_face_blocks());
+    }
+    if (io_type == EDGEBLOCK) {
+      return get_entity_internal(id, get_edge_blocks());
+    }
+    if (io_type == SIDESET) {
+      return get_entity_internal(id, get_sidesets());
+    }
+    if (io_type == NODESET) {
+      return get_entity_internal(id, get_nodesets());
+    }
+    else if (io_type == EDGESET) {
+      return get_entity_internal(id, get_edgesets());
+    }
+    else if (io_type == FACESET) {
+      return get_entity_internal(id, get_facesets());
+    }
+    else if (io_type == ELEMENTSET) {
+      return get_entity_internal(id, get_elementsets());
+    }
+    else if (io_type == COMMSET) {
+      return get_entity_internal(id, get_commsets());
+    }
+    else if (io_type == ASSEMBLY) {
+      return get_entity_internal(id, get_assemblies());
+    }
+    return nullptr;
+  }
+
+  /** \brief Get the assembly with the given name.
+   *
+   *  \param[in] my_name The name of the assembly to get.
+   *  \returns The assembly, or nullptr if not found.
+   */
+  Assembly *Region::get_assembly(const std::string &my_name) const
+  {
+    IOSS_FUNC_ENTER(m_);
+    const std::string db_name = get_alias__(my_name);
+    unsigned int      db_hash = Ioss::Utils::hash(db_name);
+
+    Assembly *ge = nullptr;
+    for (auto as : assemblies) {
+      if (db_hash == as->hash() && as->name() == db_name) {
+        ge = as;
+        break;
+      }
+    }
+    return ge;
   }
 
   /** \brief Get the node block with the given name.
@@ -1919,6 +2061,12 @@ namespace Ioss {
       }
       return true;
     }
+    if (((io_type & ASSEMBLY) != 0u) && get_assembly(my_name) != nullptr) {
+      if (my_type != nullptr) {
+        *my_type = "ASSEMBLY";
+      }
+      return true;
+    }
     if (((io_type & EDGEBLOCK) != 0u) && get_edge_block(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "EDGE_BLOCK";
@@ -2067,6 +2215,10 @@ namespace Ioss {
 
     if (my_name == "structured_block_count") {
       return Property(my_name, static_cast<int>(structuredBlocks.size()));
+    }
+
+    if (my_name == "assembly_count") {
+      return Property(my_name, static_cast<int>(assemblies.size()));
     }
 
     if (my_name == "side_set_count") {

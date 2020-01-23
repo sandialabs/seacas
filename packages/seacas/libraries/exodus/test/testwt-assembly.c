@@ -157,22 +157,22 @@ int main(int argc, char **argv)
   }
 
   /* Write element block names */
-  char *block_names[] = {"block_1", "block_2", "block_3", "block_4",
-                         "block_5", "block_6", "block_7"};
+  char *block_names[] = {"block_A", "block_B", "block_C", "block_D",
+                         "block_E", "block_F", "block_G"};
   for (int i = 0; i < num_elem_blk; i++) {
     EXCHECK(ex_put_name(exoid, EX_ELEM_BLOCK, blocks[i].id, block_names[i]));
   }
 
   /* ======================================================================== */
   /* Define and Output Assemblies */
-  int64_t list_100[] = {100, 200, 300, 400};
+  int64_t list_100[] = {200, 300, 400};
   int64_t list_200[] = {10, 11, 12, 13};
   int64_t list_300[] = {14, 15, 16};
   int64_t list_400[] = {10, 16};
 
   /* Define assemblies.  Note that first and last do not have an entity list at time of definition.
    */
-  ex_assembly assembly[] = {{100, "Root", EX_ASSEMBLY, 4, NULL},
+  ex_assembly assembly[] = {{100, "Root", EX_ASSEMBLY, 3, NULL},
                             {200, "Child2", EX_ELEM_BLOCK, 4, list_200},
                             {300, "Child3", EX_ELEM_BLOCK, 3, list_300},
                             {400, "Child4", EX_ELEM_BLOCK, 2, NULL}};

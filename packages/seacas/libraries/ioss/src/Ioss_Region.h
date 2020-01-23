@@ -49,6 +49,7 @@
 #include <utility>         // for pair
 #include <vector>          // for vector
 namespace Ioss {
+  class Assembly;
   class CommSet;
   class EdgeBlock;
   class EdgeSet;
@@ -68,6 +69,8 @@ namespace Ioss {
 namespace Ioss {
 
   class CoordinateFrame;
+
+  using AssemblyContainer = std::vector<Ioss::Assembly *>;
 
   using NodeBlockContainer    = std::vector<NodeBlock *>;
   using EdgeBlockContainer    = std::vector<EdgeBlock *>;
@@ -174,6 +177,7 @@ namespace Ioss {
     bool add(ElementSet *elementset);
     bool add(CommSet *commset);
     bool add(StructuredBlock *structured_block);
+    bool add(Assembly *assembly);
     bool add(const CoordinateFrame &frame);
 
     const NodeBlockContainer &      get_node_blocks() const;
@@ -187,6 +191,7 @@ namespace Ioss {
     const ElementSetContainer &     get_elementsets() const;
     const CommSetContainer &        get_commsets() const;
     const StructuredBlockContainer &get_structured_blocks() const;
+    const AssemblyContainer &       get_assemblies() const;
     const CoordinateFrameContainer &get_coordinate_frames() const;
 
     // Retrieve the Grouping Entity with the specified name.
@@ -205,6 +210,11 @@ namespace Ioss {
     ElementSet *     get_elementset(const std::string &my_name) const;
     CommSet *        get_commset(const std::string &my_name) const;
     StructuredBlock *get_structured_block(const std::string &my_name) const;
+    Assembly *       get_assembly(const std::string &my_name) const;
+
+    // Not guaranteed to be efficient...
+    // Note that not all GroupingEntity's are guaranteed to have an 'id'...
+    GroupingEntity *get_entity(const int64_t id, EntityType io_type) const;
 
     const CoordinateFrame &get_coordinate_frame(int64_t id) const;
 
@@ -299,6 +309,7 @@ namespace Ioss {
     CommSetContainer           commSets;
     CoordinateFrameContainer   coordinateFrames;
     StructuredBlockContainer   structuredBlocks;
+    AssemblyContainer          assemblies;
     mutable StateTimeContainer stateTimes;
 
     int         currentState;

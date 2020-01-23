@@ -52,8 +52,9 @@ namespace Ioss {
     REGION          = 2048,
     SUPERELEMENT    = 4096,
     STRUCTUREDBLOCK = 8192,
-    INVALID_TYPE    = 16384
+    ASSEMBLY        = 16384,
+    INVALID_TYPE    = 32678
   };
-  constexpr int entityTypeCount = 14;
+  constexpr int entityTypeCount = 15;
 } // namespace Ioss
 #endif

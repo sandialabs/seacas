@@ -30,8 +30,10 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <Ioss_Assembly.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_Region.h>
+#include <Ioss_SmartAssert.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
 #include <Ioss_Version.h>
