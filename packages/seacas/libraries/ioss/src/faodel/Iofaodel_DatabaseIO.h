@@ -123,7 +123,15 @@ namespace Iofaodel {
     const std::string get_format() const override;
 
   private:
+    bool put_properties();
+
+    void finalize_database() override;
+
     void read_meta_data__() override;
+
+
+    bool begin_state__(int /* state */, double /* time */) override;
+    bool end_state__(int /* state */, double /* time */) override;
 
     bool begin__(Ioss::State state) override { dbState = state; return true;};
     bool end__(Ioss::State state) override { dbState = Ioss::STATE_UNKNOWN; return true;};
@@ -140,16 +148,16 @@ namespace Iofaodel {
      */
     void get_step_times__() override;
 
-    void get_edgeblocks();
-    void get_elemblocks();
-    void get_faceblocks();
+    void get_edgeblocks(){};
+    void get_elemblocks(){};
+    void get_faceblocks(){};
     void get_nodeblocks();
 
-    void get_edgesets();
-    void get_elemsets();
-    void get_facesets();
-    void get_nodesets();
-    void get_sidesets();
+    void get_edgesets(){};
+    void get_elemsets(){};
+    void get_facesets(){};
+    void get_nodesets(){};
+    void get_sidesets(){};
 
     int get_side_connectivity(const Ioss::SideBlock *fb, int id, int side_count, int *fconnect,
                               size_t data_size) const;
@@ -251,6 +259,9 @@ namespace Iofaodel {
 
     mutable kelpie::Pool pool;
     faodel::Configuration faodel_config;
+
+    using PropertyPair = std::pair<std::string, bool>;
+    std::vector<PropertyPair> property_publish_state;
   };
 } // namespace Iofaodel
 #endif // Iofaodel_DatabaseIO_h

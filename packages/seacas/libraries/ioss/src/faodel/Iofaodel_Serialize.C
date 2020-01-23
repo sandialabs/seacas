@@ -45,6 +45,7 @@
 #include <Ioss_SideSet.h>
 
 namespace Iofaodel {
+#if 0
 
   size_t data_size(const Ioss::Property & p) {
     auto type = p.get_type();
@@ -717,4 +718,71 @@ namespace Iofaodel {
       );
   }
 
+  kelpie::Key make_key(int rank,
+                       const Ioss::Region & region,
+                       const Ioss::GroupingEntity & grouping_entity,
+                       const Ioss::Field & field)
+  {
+      auto region_name = region.name();
+      if(region_name.empty()) {
+          region_name="UNNAMED";
+      }
+      auto grouping_entity_name = grouping_entity.name();
+      if(grouping_entity_name.empty()) {
+          grouping_entity_name="UNNAMED";
+      }
+      return kelpie::Key(
+          std::to_string(rank),
+          "/Region/" + region_name +
+          "/State/" + std::to_string(region.get_current_state()) +
+          "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
+          "/Field/RoleType/" + to_string(field.get_role()) +
+          "/BasicType/" + to_string(field.get_type()) +
+          "/Name/" + to_string(field.get_type()) + "/Name/" + field.get_name()
+          );
+  }
+
+  kelpie::Key make_key(int rank,
+                       const Ioss::Region & region,
+                       const Ioss::GroupingEntity & grouping_entity,
+                       const Ioss::Property & property)
+  {
+      auto region_name = region.name();
+      if(region_name.empty()) {
+          region_name="UNNAMED";
+      }
+      auto grouping_entity_name = grouping_entity.name();
+      if(grouping_entity_name.empty()) {
+          grouping_entity_name="UNNAMED";
+      }
+      return kelpie::Key(
+          std::to_string(rank),
+          "/Region/" + region_name +
+          "/State/" + std::to_string(region.get_current_state()) +
+          "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
+          "/Property/BasicType/" + to_string(property.get_type()) + "/Name/" + property.get_name()
+          );
+  }
+
+  kelpie::Key make_key(int rank,
+                       const Ioss::Region & region,
+                       const Ioss::GroupingEntity & grouping_entity)
+  {
+      auto region_name = region.name();
+      if(region_name.empty()) {
+          region_name="UNNAMED";
+      }
+      auto grouping_entity_name = grouping_entity.name();
+      if(grouping_entity_name.empty()) {
+          grouping_entity_name="UNNAMED";
+      }
+      return kelpie::Key(
+          std::to_string(rank),
+          "/Region/" + region_name +
+          "/State/" + std::to_string(region.get_current_state()) +
+          "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name
+          );
+  }
+
+#endif
 } // namespace Iofaodel
