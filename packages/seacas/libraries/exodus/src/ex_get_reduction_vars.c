@@ -108,12 +108,7 @@ int ex_get_reduction_vars(int exoid, int time_step, ex_entity_type var_type, ex_
   }
 
   /* Determine index of obj_id in VAR_ID_XXX array */
-  if (var_type == EX_ASSEMBLY) {
-    obj_id_ndx = obj_id;
-  }
-  else {
-    obj_id_ndx = ex__id_lkup(exoid, var_type, obj_id);
-  }
+  obj_id_ndx = ex__id_lkup(exoid, var_type, obj_id);
   if (obj_id_ndx <= 0) {
     ex_get_err(NULL, NULL, &status);
 

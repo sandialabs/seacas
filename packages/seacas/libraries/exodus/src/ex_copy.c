@@ -321,7 +321,8 @@ int cpy_dimension(int in_exoid, int out_exoid, int mesh_only)
               (strcmp(dim_nm, DIM_NUM_NSET_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_ESET_VAR) == 0) ||
               (strcmp(dim_nm, DIM_NUM_FSET_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_SSET_VAR) == 0) ||
               (strcmp(dim_nm, DIM_NUM_ELSET_VAR) == 0) || (strcmp(dim_nm, DIM_NUM_GLO_VAR) == 0) ||
-              (strstr(dim_nm, "_red_var") != NULL))) {
+              (strcmp(dim_nm, DIM_NUM_ASSEMBLY_VAR) == 0) ||
+              (strcmp(dim_nm, DIM_NUM_BLOB_VAR) == 0) || (strstr(dim_nm, "_red_var") != NULL))) {
       is_filtered = 1;
     }
     else {
@@ -805,6 +806,7 @@ void update_structs(int out_exoid)
   update_internal_structs(out_exoid, EX_INQ_FACE_BLK, ex__get_counter_list(EX_FACE_BLOCK));
   update_internal_structs(out_exoid, EX_INQ_ELEM_BLK, ex__get_counter_list(EX_ELEM_BLOCK));
   update_internal_structs(out_exoid, EX_INQ_ASSEMBLY, ex__get_counter_list(EX_ASSEMBLY));
+  update_internal_structs(out_exoid, EX_INQ_BLOB, ex__get_counter_list(EX_BLOB));
 
   update_internal_structs(out_exoid, EX_INQ_NODE_SETS, ex__get_counter_list(EX_NODE_SET));
   update_internal_structs(out_exoid, EX_INQ_EDGE_SETS, ex__get_counter_list(EX_EDGE_SET));
