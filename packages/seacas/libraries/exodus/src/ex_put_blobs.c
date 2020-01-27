@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -37,7 +37,7 @@
 #include "exodusII_int.h"
 #include <stdbool.h>
 /*!
- * writes the blob parameters and optionally blob data for 1 or more blobs
+ * writes the blob parameters for 1 or more blobs
  * \param   exoid                   exodus file id
  * \param  *blob                array of ex_blob structures
  */
@@ -52,12 +52,6 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
   EX_FUNC_ENTER();
 
   ex__check_valid_file_id(exoid, __func__);
-
-  /* Note that this routine can be called:
-     1) just define the blobs
-     2) just output the blob data (after a previous call to define)
-     3) define and output the blob data in one call.
-  */
 
   int *entlst_id = (int *)calloc(count, sizeof(int));
 
@@ -157,6 +151,19 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
+  /* Output dummy data for the blob var; */
+  long dummy = 0;
+  for (size_t i = 0; i < count; i++) {
+    status = EX_NOERR;
+    if ((status = nc_put_var_long(exoid, entlst_id[i], &dummy)) != EX_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to output dummy value for blob %" PRId64 " in file id %d",
+               blobs[i].id, exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+      free(entlst_id);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+  }
   free(entlst_id);
   EX_FUNC_LEAVE(EX_NOERR);
 
