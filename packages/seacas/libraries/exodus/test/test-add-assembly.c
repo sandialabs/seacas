@@ -56,23 +56,14 @@
 int main(int argc, char **argv)
 {
   int  exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets, num_assembly;
-  int  num_assembly_vars;
   int  num_side_sets, error;
-  int  i;
   int *ids;
-  int *num_elem_in_block  = NULL;
-  int *num_nodes_per_elem = NULL;
-  int *num_attr           = NULL;
   int  CPU_word_size, IO_word_size;
   int  idum;
 
   float version;
   float fdum;
 
-  char *var_names[10];
-  char *block_names[10];
-  char  name[MAX_STR_LENGTH + 1];
-  char  elem_type[MAX_STR_LENGTH + 1];
   char  title_chk[MAX_LINE_LENGTH + 1];
   char *cdum = 0;
 
