@@ -134,29 +134,6 @@ namespace {
 #endif
   };
 
-  std::pair<std::string, int> decompose_name(const std::string &name, bool is_parallel)
-  {
-    int         proc = 0;
-    std::string zname{name};
-
-    if (is_parallel) {
-      // Name should/might be of the form `basename_proc-#`.  Strip
-      // off the `_proc-#` portion and return just the basename.
-      auto tokens = Ioss::tokenize(zname, "_");
-      zname       = tokens[0];
-      if (tokens.size() >= 2) {
-        size_t idx = tokens.size() - 1;
-        if (tokens[idx].substr(0, 5) == "proc-") {
-          auto ptoken = Ioss::tokenize(tokens[idx], "-");
-          proc        = std::stoi(ptoken[1]);
-          idx--;
-          zname = tokens[idx];
-        }
-      }
-    }
-    return std::make_pair(zname, proc);
-  }
-
 #ifdef SEACAS_HAVE_MPI
   void add_zgc_fpp(int cgns_file_ptr, Ioss::StructuredBlock *block,
                    const std::map<std::string, int> &zone_name_map, int myProcessor,
@@ -178,7 +155,7 @@ namespace {
       CGCHECK(cg_1to1_read(cgns_file_ptr, base, db_zone, ii + 1, connectname, donorname,
                            range.data(), donor_range.data(), transform.data()));
 
-      auto        donorname_proc = decompose_name(donorname, isParallel);
+      auto        donorname_proc = Iocgns::Utils::decompose_name(donorname, isParallel);
       std::string donor_name     = donorname_proc.first;
 
       // Get number of nodes shared with other "previous" zones...
@@ -204,7 +181,7 @@ namespace {
       range_end[1] += offset[1];
       range_end[2] += offset[2];
 
-      auto con_name = decompose_name(connectname, isParallel).first;
+      auto con_name = Iocgns::Utils::decompose_name(connectname, isParallel).first;
       block->m_zoneConnectivity.emplace_back(con_name, zone, donor_name, donor_zone, transform,
                                              range_beg, range_end, donor_beg, donor_end, offset);
 
@@ -324,10 +301,10 @@ namespace {
       CGCHECK(cg_1to1_read(cgns_file_ptr, base, zone, i + 1, connectname, donorname, range.data(),
                            donor_range.data(), transform.data()));
 
-      auto        donorname_proc = decompose_name(donorname, true);
+      auto        donorname_proc = Iocgns::Utils::decompose_name(donorname, true);
       std::string donor_name     = donorname_proc.first;
-
-      if (donor_name == zone_name) {
+      auto        donor_proc     =  donorname_proc.second;
+      if (donor_name == zone_name && donor_proc >= 0 && donor_proc != myProcessor) {
         // Determine which face of the zone on this processor is
         // shared with the other processor...
         int face = find_face(range);
@@ -685,7 +662,7 @@ namespace Iocgns {
       assert(size[7] == 0);
       assert(size[8] == 0);
 
-      auto        name_proc = decompose_name(zname, isParallel);
+      auto        name_proc = Iocgns::Utils::decompose_name(zname, isParallel);
       std::string zone_name = name_proc.first;
       int         proc      = name_proc.second;
       assert(proc == myProcessor);
@@ -979,7 +956,7 @@ namespace Iocgns {
     char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
     CGCHECKM(cg_zone_read(get_file_pointer(), base, zone, zone_name, size));
 
-    auto        name_proc = decompose_name(zone_name, isParallel);
+    auto        name_proc = Iocgns::Utils::decompose_name(zone_name, isParallel);
     std::string zname     = name_proc.first;
     int         proc      = name_proc.second;
     if (proc != myProcessor) {
@@ -1029,7 +1006,7 @@ namespace Iocgns {
       CGCHECKM(cg_1to1_read(get_file_pointer(), base, zone, i + 1, connectname, donorname,
                             range.data(), donor_range.data(), transform.data()));
 
-      auto        donorname_proc = decompose_name(donorname, isParallel);
+      auto        donorname_proc = Iocgns::Utils::decompose_name(donorname, isParallel);
       std::string donor_name     = donorname_proc.first;
 
       // Get number of nodes shared with other "previous" zones...
