@@ -601,6 +601,7 @@ namespace Ioex {
 
   void DatabaseIO::get_assemblies()
   {
+    Ioss::SerializeIO serializeIO__(this);
     // Query number of coordinate frames...
     int nassem = ex_inquire_int(get_file_pointer(), EX_INQ_ASSEMBLY);
 
@@ -1240,6 +1241,7 @@ namespace Ioex {
                                              Ioss::GroupingEntity *entity)
   {
     // Get "attributes" i.e., (MESH_REDUCTION field in IOSS speak).
+    Ioss::SerializeIO serializeIO__(this);
     int att_count = ex_get_attribute_count(get_file_pointer(), type, id);
 
     if (att_count > 0) {
@@ -1386,7 +1388,6 @@ namespace Ioex {
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
-      fmt::print("Reduction Variable Count = {}\n", nvar);
     }
 
     if (nvar > 0) {
