@@ -254,12 +254,13 @@ int read_mesh_params(const std::string &exo_file, Problem_Description *problem,
       ex_close(exoid);
       return 0;
     }
-    mesh->eb_npe[cnt]  = nodes_in_elem;
-    mesh->eb_type[cnt] = get_elem_type(elem_type, nodes_in_elem, mesh->num_dims);
 
     if (mesh->eb_cnts[cnt] == 0) {
       continue;
     }
+
+    mesh->eb_npe[cnt]  = nodes_in_elem;
+    mesh->eb_type[cnt] = get_elem_type(elem_type, nodes_in_elem, mesh->num_dims);
 
     if (cnt == 0) {
       sphere->end[0] = mesh->eb_cnts[cnt];
