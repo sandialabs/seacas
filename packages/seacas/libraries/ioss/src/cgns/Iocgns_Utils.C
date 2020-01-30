@@ -1229,6 +1229,12 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
         CGERR(cg_1to1_write(file_ptr, base, db_zone, connect_name.c_str(), donor_name.c_str(),
                             owner_range.data(), donor_range.data(), zgc.m_transform.data(),
                             &zgc_idx));
+
+	if (zgc.is_from_decomp()) {
+	  CGERR(cg_goto(file_ptr, base, "Zone_t", db_zone, "ZoneGridConnectivity", 0,
+			"GridConnectivity1to1_t", zgc_idx, "end"));
+	  CGERR(cg_descriptor_write("Decomp", "is_decomp"));
+	}
       }
     }
   }
