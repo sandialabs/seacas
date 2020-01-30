@@ -100,20 +100,20 @@ namespace {
   {
     bool has_decomp_flag = false;
     if (cg_goto(cgns_file_ptr, base, "Zone_t", zone, "ZoneGridConnectivity", 0,
-		"GridConnectivity1to1_t", zgc_idx, "end") == CG_OK) {
+                "GridConnectivity1to1_t", zgc_idx, "end") == CG_OK) {
       int ndescriptor = 0;
       cg_ndescriptors(&ndescriptor);
       if (ndescriptor > 0) {
-	for (int i=0; i < ndescriptor; i++) {
-	  char name[33];
-	  char *text;
-	  cg_descriptor_read(i+1, name, &text);
-	  if (strcmp(name, "Decomp") == 0) {
-	    has_decomp_flag = true;
-	    break;
-	  }
-	  cg_free(text);
-	}
+        for (int i = 0; i < ndescriptor; i++) {
+          char  name[33];
+          char *text;
+          cg_descriptor_read(i + 1, name, &text);
+          if (strcmp(name, "Decomp") == 0) {
+            has_decomp_flag = true;
+            break;
+          }
+          cg_free(text);
+        }
       }
     }
     return has_decomp_flag;
@@ -180,7 +180,7 @@ namespace {
 
       bool is_decomp = false;
       if (isParallel) {
-	is_decomp = has_decomp_descriptor(cgns_file_ptr, base, db_zone, ii+1);
+        is_decomp = has_decomp_descriptor(cgns_file_ptr, base, db_zone, ii + 1);
       }
 
       auto        donorname_proc = Iocgns::Utils::decompose_name(donorname, isParallel);
@@ -215,7 +215,7 @@ namespace {
 
       block->m_zoneConnectivity.back().m_ownerProcessor = myProcessor;
       block->m_zoneConnectivity.back().m_donorProcessor = donorname_proc.second;
-      block->m_zoneConnectivity.back().m_fromDecomp = is_decomp;
+      block->m_zoneConnectivity.back().m_fromDecomp     = is_decomp;
     }
   }
 
@@ -328,8 +328,8 @@ namespace {
     bool has_decomp_flag = false;
     for (int i = 0; i < nconn; i++) {
       if (has_decomp_descriptor(cgns_file_ptr, base, zone, i + 1)) {
-	has_decomp_flag = true;
-	break;
+        has_decomp_flag = true;
+        break;
       }
     }
 
@@ -349,19 +349,19 @@ namespace {
 
       auto        donorname_proc = Iocgns::Utils::decompose_name(donorname, true);
       std::string donor_name     = donorname_proc.first;
-      auto        donor_proc     =  donorname_proc.second;
+      auto        donor_proc     = donorname_proc.second;
 
       bool is_from_decomp = false;
       if (has_decomp_flag) {
-	is_from_decomp = has_decomp_descriptor(cgns_file_ptr, base, zone, i+1);
+        is_from_decomp = has_decomp_descriptor(cgns_file_ptr, base, zone, i + 1);
       }
       else {
-	is_from_decomp = donor_name == zone_name && donor_proc >= 0 && donor_proc != myProcessor;
+        is_from_decomp = donor_name == zone_name && donor_proc >= 0 && donor_proc != myProcessor;
       }
 
       if (is_from_decomp) {
-	// See if the descriptor named "Decomp" exists as a child of this ZGC.
-	// If so, then
+        // See if the descriptor named "Decomp" exists as a child of this ZGC.
+        // If so, then
         // Determine which face of the zone on this processor is
         // shared with the other processor...
         int face = find_face(range);
