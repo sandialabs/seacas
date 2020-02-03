@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -30,32 +30,49 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IOSS_Ioss_EntityType_H
-#define IOSS_Ioss_EntityType_H
+#include <Ioss_Blob.h>
+#include <Ioss_DatabaseIO.h>
+#include <Ioss_GroupingEntity.h>
+#include <Ioss_Property.h>
+#include <Ioss_PropertyManager.h>
+#include <Ioss_Region.h>
+#include <algorithm>
+#include <cstddef>
+#include <fmt/ostream.h>
+#include <string>
+#include <vector>
+
+namespace {
+  const std::string id_str() { return std::string("id"); }
+} // namespace
 
 namespace Ioss {
-  /** \brief The particular type of GroupingEntity.
-   */
-  enum EntityType {
-    NODEBLOCK       = 1,
-    EDGEBLOCK       = 2,
-    FACEBLOCK       = 4,
-    ELEMENTBLOCK    = 8,
-    NODESET         = 16,
-    EDGESET         = 32,
-    FACESET         = 64,
-    ELEMENTSET      = 128,
-    SIDESET         = 256,
-    SURFACE         = 256, //: Same as sideset
-    COMMSET         = 512,
-    SIDEBLOCK       = 1024,
-    REGION          = 2048,
-    SUPERELEMENT    = 4096,
-    STRUCTUREDBLOCK = 8192,
-    ASSEMBLY        = 16384,
-    BLOB            = 32768,
-    INVALID_TYPE    = 65536
-  };
-  constexpr int entityTypeCount = 16;
+  class Field;
 } // namespace Ioss
-#endif
+
+/** \brief Create an blob with no members initially.
+ *
+ *  \param[in] io_database The database associated with the region containing the blob.
+ *  \param[in] my_name The blob's name.
+ */
+Ioss::Blob::Blob(Ioss::DatabaseIO *io_database, const std::string &my_name, int64_t item_count)
+    : Ioss::GroupingEntity(io_database, my_name, item_count)
+{
+}
+
+int64_t Ioss::Blob::internal_get_field_data(const Ioss::Field &field, void *data,
+                                            size_t data_size) const
+{
+  return get_database()->get_field(this, field, data, data_size);
+}
+
+int64_t Ioss::Blob::internal_put_field_data(const Ioss::Field &field, void *data,
+                                            size_t data_size) const
+{
+  return get_database()->put_field(this, field, data, data_size);
+}
+
+Ioss::Property Ioss::Blob::get_implicit_property(const std::string &my_name) const
+{
+  return Ioss::GroupingEntity::get_implicit_property(my_name);
+}

@@ -50,6 +50,7 @@
 #include <vector>          // for vector
 namespace Ioss {
   class Assembly;
+  class Blob;
   class CommSet;
   class EdgeBlock;
   class EdgeSet;
@@ -71,6 +72,7 @@ namespace Ioss {
   class CoordinateFrame;
 
   using AssemblyContainer = std::vector<Ioss::Assembly *>;
+  using BlobContainer     = std::vector<Ioss::Blob *>;
 
   using NodeBlockContainer    = std::vector<NodeBlock *>;
   using EdgeBlockContainer    = std::vector<EdgeBlock *>;
@@ -178,6 +180,7 @@ namespace Ioss {
     bool add(CommSet *commset);
     bool add(StructuredBlock *structured_block);
     bool add(Assembly *assembly);
+    bool add(Blob *blob);
     bool add(const CoordinateFrame &frame);
 
     const NodeBlockContainer &      get_node_blocks() const;
@@ -192,6 +195,7 @@ namespace Ioss {
     const CommSetContainer &        get_commsets() const;
     const StructuredBlockContainer &get_structured_blocks() const;
     const AssemblyContainer &       get_assemblies() const;
+    const BlobContainer &           get_blobs() const;
     const CoordinateFrameContainer &get_coordinate_frames() const;
 
     // Retrieve the Grouping Entity with the specified name.
@@ -211,6 +215,7 @@ namespace Ioss {
     CommSet *        get_commset(const std::string &my_name) const;
     StructuredBlock *get_structured_block(const std::string &my_name) const;
     Assembly *       get_assembly(const std::string &my_name) const;
+    Blob *           get_blob(const std::string &my_name) const;
 
     // Not guaranteed to be efficient...
     // Note that not all GroupingEntity's are guaranteed to have an 'id'...
@@ -310,6 +315,7 @@ namespace Ioss {
     CoordinateFrameContainer   coordinateFrames;
     StructuredBlockContainer   structuredBlocks;
     AssemblyContainer          assemblies;
+    BlobContainer              blobs;
     mutable StateTimeContainer stateTimes;
 
     int         currentState;
