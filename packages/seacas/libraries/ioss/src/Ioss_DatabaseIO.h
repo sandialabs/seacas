@@ -53,6 +53,7 @@
 
 namespace Ioss {
   class Assembly;
+  class Blob;
   class CommSet;
   class EdgeBlock;
   class EdgeSet;
@@ -781,6 +782,11 @@ namespace Ioss {
     {
       return 0;
     }
+    virtual int64_t get_field_internal(const Blob * /*bl*/, const Field & /*field*/,
+                                       void * /*data*/, size_t /*data_size*/) const
+    {
+      return 0;
+    }
     virtual int64_t get_field_internal(const StructuredBlock * /*sb*/, const Field & /*field*/,
                                        void * /*data*/, size_t /*data_size*/) const
     {
@@ -812,6 +818,11 @@ namespace Ioss {
     virtual int64_t put_field_internal(const CommSet *cs, const Field &field, void *data,
                                        size_t data_size) const = 0;
     virtual int64_t put_field_internal(const Assembly * /*as*/, const Field & /*field*/,
+                                       void * /*data*/, size_t /*data_size*/) const
+    {
+      return 0;
+    }
+    virtual int64_t put_field_internal(const Blob * /*bl*/, const Field & /*field*/,
                                        void * /*data*/, size_t /*data_size*/) const
     {
       return 0;
