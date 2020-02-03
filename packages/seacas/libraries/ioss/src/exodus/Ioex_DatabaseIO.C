@@ -60,6 +60,7 @@
 #include <vector>
 
 #include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
 #include "Ioss_CommSet.h"
 #include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
@@ -120,6 +121,7 @@ namespace {
     case EX_ELEM_SET: return Ioss::ELEMENTSET;
     case EX_SIDE_SET: return Ioss::SIDESET;
     case EX_ASSEMBLY: return Ioss::ASSEMBLY;
+    case EX_BLOB: return Ioss::BLOB;
     default: return Ioss::INVALID_TYPE;
     }
   }
@@ -654,6 +656,46 @@ namespace Ioex {
         int attribute_count = assem->get_property("attribute_count").get_int();
         add_attribute_fields(EX_ASSEMBLY, assem, attribute_count, "Assembly");
         add_reduction_results_fields(EX_ASSEMBLY, assem);
+      }
+    }
+  }
+
+  void DatabaseIO::get_blobs()
+  {
+    Ioss::SerializeIO serializeIO__(this);
+    // Query number of coordinate frames...
+    int nblob = ex_inquire_int(get_file_pointer(), EX_INQ_BLOB);
+
+    if (nblob > 0) {
+      std::vector<ex_blob> blobs(nblob);
+      int max_name_length = ex_inquire_int(exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      for (int i = 0; i < nblob; i++) {
+        blobs[i].name = new char[max_name_length + 1];
+      }
+
+      int ierr = ex_get_blobs(get_file_pointer(), blobs.data());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+
+      for (int i = 0; i < nblob; i++) {
+        Ioss::Blob *blob =
+            new Ioss::Blob(get_region()->get_database(), blobs[i].name, blobs[i].num_entry);
+        blob->property_add(Ioss::Property("id", blobs[i].id));
+        get_region()->add(blob);
+      }
+
+      // Now iterate again and populate member lists...
+      for (int i = 0; i < nblob; i++) {
+        Ioss::Blob *blob = get_region()->get_blob(blobs[i].name);
+        assert(blob != nullptr);
+
+        add_mesh_reduction_fields(EX_BLOB, blobs[i].id, blob);
+        // Check for additional variables.
+        int attribute_count = blob->get_property("attribute_count").get_int();
+        add_attribute_fields(EX_BLOB, blob, attribute_count, "Blob");
+        //        add_reduction_results_fields(EX_BLOB, blob);
+        add_results_fields(EX_BLOB, blob);
       }
     }
   }
@@ -1242,7 +1284,7 @@ namespace Ioex {
   {
     // Get "attributes" i.e., (MESH_REDUCTION field in IOSS speak).
     Ioss::SerializeIO serializeIO__(this);
-    int att_count = ex_get_attribute_count(get_file_pointer(), type, id);
+    int               att_count = ex_get_attribute_count(get_file_pointer(), type, id);
 
     if (att_count > 0) {
       std::vector<ex_attribute> attr(att_count);
@@ -1301,7 +1343,7 @@ namespace Ioex {
         // Read and store the truth table (Should be there since we only
         // get to this routine if there are variables...)
 
-        if (type == EX_NODE_BLOCK || type == EX_GLOBAL) {
+        if (type == EX_NODE_BLOCK || type == EX_GLOBAL || type == EX_BLOB || type == EX_ASSEMBLY) {
           // These types don't have a truth table in the exodus api...
           // They do in Ioss just for some consistency...
           std::fill(truth_table.begin(), truth_table.end(), 1);

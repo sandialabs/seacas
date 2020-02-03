@@ -495,6 +495,8 @@ namespace Iofx {
     // (metadata)
     get_assemblies();
 
+    get_blobs();
+
     handle_groups();
 
     add_region_fields();
@@ -535,6 +537,7 @@ namespace Iofx {
 
     m_groupCount[EX_SIDE_SET] = info.num_side_sets;
     m_groupCount[EX_ASSEMBLY] = info.num_assembly;
+    m_groupCount[EX_BLOB]     = info.num_blob;
 
     if (nodeCount == 0) {
       fmt::print(IOSS_WARNING, "No nodes were found in the model, file '{}'\n", decoded_filename());

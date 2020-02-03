@@ -245,6 +245,7 @@ namespace Ioex {
 
     void get_nodeblocks();
     void get_assemblies();
+    void get_blobs();
 
     void add_attribute_fields(ex_entity_type entity_type, Ioss::GroupingEntity *block,
                               int attribute_count, const std::string &type);

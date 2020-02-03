@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -59,6 +59,7 @@ namespace {
   void info_sidesets(Ioss::Region &region, const Info::Interface &interFace);
   void info_coordinate_frames(Ioss::Region &region);
   void info_assemblies(Ioss::Region &region);
+  void info_blob(Ioss::Region &region);
 
   void info_aliases(const Ioss::Region &region, const Ioss::GroupingEntity *ige, bool nl_pre,
                     bool nl_post);
@@ -297,6 +298,21 @@ namespace {
       fmt::print("\n");
       info_fields(as, Ioss::Field::MESH_REDUCTION, "\tAttributes (Reduction): ", "\t");
       info_fields(as, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
+    }
+  }
+
+  void info_blobs(Ioss::Region &region)
+  {
+    const auto &blobs = region.get_blobs();
+    for (auto blob : blobs) {
+      fmt::print("\n{} id: {:6d}, contains: {} item(s).\n", name(blob), id(blob),
+                 blob->entity_count());
+
+      info_aliases(region, blob, true, false);
+      fmt::print("\n");
+      info_fields(blob, Ioss::Field::MESH_REDUCTION, "\tAttributes (Reduction): ", "\t");
+      info_fields(blob, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
+      info_fields(blob, Ioss::Field::TRANSIENT, "\tTransient:  ", "\t");
     }
   }
 
@@ -641,6 +657,7 @@ namespace Ioss {
           info_elementsets(region);
 
           info_sidesets(region, interFace);
+          info_blobs(region);
           info_coordinate_frames(region);
         }
       }
