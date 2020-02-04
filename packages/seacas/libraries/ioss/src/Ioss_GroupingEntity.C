@@ -194,6 +194,11 @@ Ioss::Property Ioss::GroupingEntity::get_implicit_property(const std::string &my
  */
 void Ioss::GroupingEntity::field_add(const Ioss::Field &new_field)
 {
+  if (new_field.get_role() == Ioss::Field::REDUCTION) {
+    fields.add(new_field);
+    return;
+  }
+
   size_t entity_size = entity_count();
   size_t field_size  = new_field.raw_count();
   if (field_size == 0 && entity_size != 0) {

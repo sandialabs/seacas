@@ -139,6 +139,42 @@ namespace Ioex {
     }
   }
 
+  Ioss::EntityType map_exodus_type(ex_entity_type type)
+  {
+    switch (type) {
+    case EX_ASSEMBLY: return Ioss::ASSEMBLY;
+    case EX_BLOB: return Ioss::BLOB;
+    case EX_EDGE_BLOCK: return Ioss::EDGEBLOCK;
+    case EX_EDGE_SET: return Ioss::EDGESET;
+    case EX_ELEM_BLOCK: return Ioss::ELEMENTBLOCK;
+    case EX_ELEM_SET: return Ioss::ELEMENTSET;
+    case EX_FACE_BLOCK: return Ioss::FACEBLOCK;
+    case EX_FACE_SET: return Ioss::FACESET;
+    case EX_NODAL: return Ioss::NODEBLOCK;
+    case EX_NODE_SET: return Ioss::NODESET;
+    case EX_SIDE_SET: return Ioss::SIDESET;
+    default: return Ioss::INVALID_TYPE;
+    }
+  }
+
+  ex_entity_type map_exodus_type(Ioss::EntityType type)
+  {
+    switch (type) {
+    case Ioss::ASSEMBLY: return EX_ASSEMBLY;
+    case Ioss::BLOB: return EX_BLOB;
+    case Ioss::EDGEBLOCK: return EX_EDGE_BLOCK;
+    case Ioss::EDGESET: return EX_EDGE_SET;
+    case Ioss::ELEMENTBLOCK: return EX_ELEM_BLOCK;
+    case Ioss::ELEMENTSET: return EX_ELEM_SET;
+    case Ioss::FACEBLOCK: return EX_FACE_BLOCK;
+    case Ioss::FACESET: return EX_FACE_SET;
+    case Ioss::NODEBLOCK: return EX_NODAL;
+    case Ioss::NODESET: return EX_NODE_SET;
+    case Ioss::SIDESET: return EX_SIDE_SET;
+    default: return EX_INVALID;
+    }
+  }
+
   bool read_last_time_attribute(int exodusFilePtr, double *value)
   {
     // Check whether the "last_written_time" attribute exists.  If it does,
