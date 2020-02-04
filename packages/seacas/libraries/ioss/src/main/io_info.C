@@ -311,8 +311,8 @@ namespace {
       info_aliases(region, blob, true, false);
       fmt::print("\n");
       info_fields(blob, Ioss::Field::MESH_REDUCTION, "\tAttributes (Reduction): ", "\t");
-      info_fields(blob, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
       info_fields(blob, Ioss::Field::TRANSIENT, "\tTransient:  ", "\t");
+      info_fields(blob, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
     }
   }
 

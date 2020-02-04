@@ -108,24 +108,6 @@ namespace {
   void generate_block_truth_table(Ioex::VariableNameMap &variables, Ioss::IntVector &truth_table,
                                   std::vector<T *> &blocks, char field_suffix_separator);
 
-  Ioss::EntityType map_exodus_type(ex_entity_type type)
-  {
-    switch (type) {
-    case EX_NODAL: return Ioss::NODEBLOCK;
-    case EX_NODE_SET: return Ioss::NODESET;
-    case EX_EDGE_BLOCK: return Ioss::EDGEBLOCK;
-    case EX_EDGE_SET: return Ioss::EDGESET;
-    case EX_FACE_BLOCK: return Ioss::FACEBLOCK;
-    case EX_FACE_SET: return Ioss::FACESET;
-    case EX_ELEM_BLOCK: return Ioss::ELEMENTBLOCK;
-    case EX_ELEM_SET: return Ioss::ELEMENTSET;
-    case EX_SIDE_SET: return Ioss::SIDESET;
-    case EX_ASSEMBLY: return Ioss::ASSEMBLY;
-    case EX_BLOB: return Ioss::BLOB;
-    default: return Ioss::INVALID_TYPE;
-    }
-  }
-
 } // namespace
 
 namespace Ioex {
@@ -634,7 +616,7 @@ namespace Ioex {
       for (int i = 0; i < nassem; i++) {
         Ioss::Assembly *assem = get_region()->get_assembly(assemblies[i].name);
         assert(assem != nullptr);
-        auto type = map_exodus_type(assemblies[i].type);
+        auto type = Ioex::map_exodus_type(assemblies[i].type);
         for (int j = 0; j < assemblies[i].entity_count; j++) {
           auto *ge = get_region()->get_entity(assemblies[i].entity_list[j], type);
           if (ge != nullptr) {
@@ -669,8 +651,8 @@ namespace Ioex {
     if (nblob > 0) {
       std::vector<ex_blob> blobs(nblob);
       int max_name_length = ex_inquire_int(exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-      for (int i = 0; i < nblob; i++) {
-        blobs[i].name = new char[max_name_length + 1];
+      for (auto &bl : blobs) {
+        bl.name = new char[max_name_length + 1];
       }
 
       int ierr = ex_get_blobs(get_file_pointer(), blobs.data());
@@ -678,24 +660,27 @@ namespace Ioex {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
 
-      for (int i = 0; i < nblob; i++) {
-        Ioss::Blob *blob =
-            new Ioss::Blob(get_region()->get_database(), blobs[i].name, blobs[i].num_entry);
-        blob->property_add(Ioss::Property("id", blobs[i].id));
+      for (const auto &bl : blobs) {
+        Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, bl.num_entry);
+        blob->property_add(Ioss::Property("id", bl.id));
         get_region()->add(blob);
       }
 
       // Now iterate again and populate member lists...
-      for (int i = 0; i < nblob; i++) {
-        Ioss::Blob *blob = get_region()->get_blob(blobs[i].name);
+      for (const auto &bl : blobs) {
+        Ioss::Blob *blob = get_region()->get_blob(bl.name);
         assert(blob != nullptr);
 
-        add_mesh_reduction_fields(EX_BLOB, blobs[i].id, blob);
+        add_mesh_reduction_fields(EX_BLOB, bl.id, blob);
         // Check for additional variables.
         int attribute_count = blob->get_property("attribute_count").get_int();
         add_attribute_fields(EX_BLOB, blob, attribute_count, "Blob");
-        //        add_reduction_results_fields(EX_BLOB, blob);
+        add_reduction_results_fields(EX_BLOB, blob);
         add_results_fields(EX_BLOB, blob);
+      }
+
+      for (auto &bl : blobs) {
+        delete[] bl.name;
       }
     }
   }

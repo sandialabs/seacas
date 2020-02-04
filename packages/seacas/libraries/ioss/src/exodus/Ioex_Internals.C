@@ -33,6 +33,7 @@
 #include <Ioss_Utils.h>            // for IOSS_WARNING
 #include <cassert>                 // for assert
 #include <exodus/Ioex_Internals.h> // for Internals, ElemBlock, etc
+#include <exodus/Ioex_Utils.h>
 extern "C" {
 #include <exodusII_int.h> // for EX_FATAL, EX_NOERR, etc
 }
@@ -46,6 +47,8 @@ extern "C" {
 #include <string>   // for string, operator==, etc
 #include <vector>   // for vector
 
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
 #include "Ioss_EdgeBlock.h"
 #include "Ioss_EdgeSet.h"
 #include "Ioss_ElementBlock.h"
@@ -119,6 +122,36 @@ Redefine::~Redefine()
   }
   catch (...) {
   }
+}
+
+Assembly::Assembly(const Ioss::Assembly &other)
+{
+  if (other.property_exists("db_name")) {
+    name = other.get_property("db_name").get_string();
+  }
+  else {
+    name = other.name();
+  }
+
+  if (other.property_exists("id")) {
+    id = other.get_property("id").get_int();
+  }
+  else {
+    id = 1;
+  }
+  entityCount    = other.entity_count();
+  attributeCount = other.get_property("attribute_count").get_int();
+  type           = Ioex::map_exodus_type(other.get_member_type());
+}
+
+Assembly &Assembly::operator=(const Assembly &other)
+{
+  name           = other.name;
+  id             = other.id;
+  entityCount    = other.entityCount;
+  attributeCount = other.attributeCount;
+  type           = other.type;
+  return *this;
 }
 
 NodeBlock::NodeBlock(const Ioss::NodeBlock &other)
@@ -913,6 +946,10 @@ int Internals::write_meta_data(Mesh &mesh)
     if ((ierr = put_metadata(mesh.sidesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
+
+    if ((ierr = put_metadata(mesh.blobs)) != EX_NOERR) {
+      EX_FUNC_LEAVE(ierr);
+    }
   }
 
   // NON-Define mode output...
@@ -1693,6 +1730,80 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
       if (status != EX_NOERR) {
         return (EX_FATAL);
       }
+    }
+  }
+  return (EX_NOERR);
+}
+
+int Internals::put_metadata(const std::vector<Blob> &blobs)
+{
+  if (blobs.empty()) {
+    return EX_NOERR;
+  }
+
+  std::string errmsg;
+  int         status;
+
+  int n1dim;
+  if ((status = nc_def_dim(exodusFilePtr, DIM_N1, 1L, &n1dim)) != NC_NOERR) {
+    ex_opts(EX_VERBOSE);
+    errmsg =
+        fmt::format("Error: failed to define number \"1\" dimension in file id {}", exodusFilePtr);
+    ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+    return (EX_FATAL);
+  }
+
+  int int_type = NC_INT;
+  if (ex_int64_status(exodusFilePtr) & EX_IDS_INT64_DB) {
+    int_type = NC_INT64;
+  }
+
+  for (const auto &blob : blobs) {
+    char *numentryptr = DIM_NUM_VALUES_BLOB(blob.id);
+
+    // define dimensions and variables
+    int dimid;
+    if ((status = nc_def_dim(exodusFilePtr, numentryptr, blob.entityCount, &dimid)) != NC_NOERR) {
+      ex_opts(EX_VERBOSE);
+      errmsg = fmt::format("Error: failed to define number of entries in blob {} in file id {}",
+                           blob.id, exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
+    }
+
+    // create a variable just as a way to have a blob and its attributes; values not used for
+    // anything
+    int dims[] = {n1dim};
+    int entlst;
+    if ((status = nc_def_var(exodusFilePtr, VAR_ENTITY_BLOB(blob.id), NC_INT, 1, dims, &entlst)) !=
+        NC_NOERR) {
+      errmsg = fmt::format("Error: failed to create entity for blob {} in file id {}", blob.id,
+                           exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
+    }
+    ex__compress_variable(exodusFilePtr, entlst, 1);
+
+    if (ex_int64_status(exodusFilePtr) & EX_IDS_INT64_DB) {
+      status = nc_put_att_longlong(exodusFilePtr, entlst, EX_ATTRIBUTE_ID, NC_INT64, 1, &blob.id);
+    }
+    else {
+      int id = blob.id;
+      status = nc_put_att_int(exodusFilePtr, entlst, EX_ATTRIBUTE_ID, NC_INT, 1, &id);
+    }
+    if (status != NC_NOERR) {
+      errmsg =
+          fmt::format("Error: failed to store blob id {} in file id {}", blob.id, exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
+    }
+
+    if ((status = nc_put_att_text(exodusFilePtr, entlst, EX_ATTRIBUTE_NAME, blob.name.length() + 1,
+                                  blob.name.c_str())) != NC_NOERR) {
+      errmsg = fmt::format("Error: failed to store blob name {} in file id {}", blob.name,
+                           exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
     }
   }
   return (EX_NOERR);

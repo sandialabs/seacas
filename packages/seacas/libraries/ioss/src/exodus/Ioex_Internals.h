@@ -41,33 +41,17 @@
 #include <string>               // for string
 #include <vector>               // for vector
 namespace Ioss {
+  class Assembly;
+  class Blob;
   class EdgeBlock;
-} // namespace Ioss
-namespace Ioss {
   class EdgeSet;
-} // namespace Ioss
-namespace Ioss {
   class ElementBlock;
-} // namespace Ioss
-namespace Ioss {
   class ElementSet;
-} // namespace Ioss
-namespace Ioss {
   class FaceBlock;
-} // namespace Ioss
-namespace Ioss {
   class FaceSet;
-} // namespace Ioss
-namespace Ioss {
   class NodeBlock;
-} // namespace Ioss
-namespace Ioss {
   class NodeSet;
-} // namespace Ioss
-namespace Ioss {
   class SideBlock;
-} // namespace Ioss
-namespace Ioss {
   class SideSet;
 } // namespace Ioss
 
@@ -127,8 +111,47 @@ namespace Ioex {
     int64_t     localOwnedCount{0};
     int64_t     attributeCount{0};
     int64_t     procOffset{0};
+  };
 
-  private:
+  struct Assembly
+  {
+    Assembly()                      = default;
+    Assembly(const Assembly &other) = default;
+    explicit Assembly(const Ioss::Assembly &other);
+
+    Assembly &operator=(const Assembly &other);
+
+    ~Assembly() = default;
+
+    bool operator==(const Assembly &) const;
+    bool operator!=(const Assembly &other) const { return !(*this == other); }
+
+    std::string    name{};
+    entity_id      id{0};
+    int64_t        entityCount{0};
+    int64_t        attributeCount{0};
+    ex_entity_type type{};
+  };
+
+  struct Blob
+  {
+    Blob()                  = default;
+    Blob(const Blob &other) = default;
+    explicit Blob(const Ioss::Blob &other);
+
+    Blob &operator=(const Blob &other);
+
+    ~Blob() = default;
+
+    bool operator==(const Blob &) const;
+    bool operator!=(const Blob &other) const { return !(*this == other); }
+
+    std::string name{};
+    entity_id   id{0};
+    int64_t     entityCount{0};
+    int64_t     localOwnedCount{0};
+    int64_t     attributeCount{0};
+    int64_t     procOffset{0};
   };
 
   struct EdgeBlock
@@ -377,6 +400,8 @@ namespace Ioex {
     int  dimensionality{};
     bool file_per_processor{true};
 
+    std::vector<Assembly>  assemblies;
+    std::vector<Blob>      blobs;
     std::vector<NodeBlock> nodeblocks;
     std::vector<EdgeBlock> edgeblocks;
     std::vector<FaceBlock> faceblocks;
@@ -416,6 +441,8 @@ namespace Ioex {
     void get_global_counts(Mesh &mesh);
 
     int put_metadata(const Mesh &mesh, const CommunicationMetaData &comm);
+    int put_metadata(const std::vector<Assembly> &assemblies, bool count_only = false);
+    int put_metadata(const std::vector<Blob> &blobs);
     int put_metadata(const std::vector<NodeBlock> &nodeblocks, bool count_only = false);
     int put_metadata(const std::vector<EdgeBlock> &blocks, bool count_only = false);
     int put_metadata(const std::vector<FaceBlock> &blocks, bool count_only = false);
@@ -429,6 +456,8 @@ namespace Ioex {
     int put_metadata(const std::vector<SideSet> &sidesets, bool count_only = false);
 
     int put_non_define_data(const CommunicationMetaData &comm);
+    int put_non_define_data(const std::vector<Assembly> &assemblies);
+    int put_non_define_data(const std::vector<Blob> &blobs);
     int put_non_define_data(const std::vector<NodeBlock> &nodeblocks);
     int put_non_define_data(const std::vector<EdgeBlock> &blocks);
     int put_non_define_data(const std::vector<FaceBlock> &blocks);
