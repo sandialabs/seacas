@@ -103,6 +103,8 @@ namespace Iofx {
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::Blob *reg, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
     int64_t get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Field &field, void *data,
@@ -134,6 +136,8 @@ namespace Iofx {
                                size_t data_size) const override;
 
     int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
+    int64_t put_field_internal(const Ioss::Blob *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;

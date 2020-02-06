@@ -47,8 +47,6 @@
 #include <vector>    // for vector
 namespace Ioss {
   class Field;
-} // namespace Ioss
-namespace Ioss {
   class GroupingEntity;
   class Region;
   class SideBlock;

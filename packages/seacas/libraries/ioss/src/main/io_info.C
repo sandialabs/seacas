@@ -66,6 +66,8 @@ namespace {
 
   void info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
                    const std::string &header, const std::string &suffix = "\n\t");
+  void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
+                     const std::string &header, const std::string &suffix = "\n\t");
 
   void file_info(const Info::Interface &interFace);
   void group_info(Info::Interface &interFace);
@@ -296,7 +298,7 @@ namespace {
 
       info_aliases(region, as, true, false);
       fmt::print("\n");
-      info_fields(as, Ioss::Field::MESH_REDUCTION, "\tAttributes (Reduction): ", "\t");
+      info_property(as, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
       info_fields(as, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
     }
   }
@@ -310,7 +312,7 @@ namespace {
 
       info_aliases(region, blob, true, false);
       fmt::print("\n");
-      info_fields(blob, Ioss::Field::MESH_REDUCTION, "\tAttributes (Reduction): ", "\t");
+      info_property(blob, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
       info_fields(blob, Ioss::Field::TRANSIENT, "\tTransient:  ", "\t");
       info_fields(blob, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
     }
@@ -330,7 +332,7 @@ namespace {
       info_aliases(region, eb, true, false);
       fmt::print("\n");
       info_fields(eb, Ioss::Field::ATTRIBUTE, "\n\tAttributes: ");
-      info_fields(eb, Ioss::Field::MESH_REDUCTION, "\tAttributes (Reduction): ", "\t");
+      info_property(eb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
 
       if (interFace.adjacencies()) {
         std::vector<std::string> blocks;
@@ -581,6 +583,47 @@ namespace {
       if (cur_out + max_width >= width) {
         fmt::print("\n\t");
         cur_out = 8;
+      }
+    }
+    if (!header.empty()) {
+      fmt::print("\n");
+    }
+  }
+
+  void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
+                     const std::string &header, const std::string &suffix)
+  {
+    Ioss::NameList properties;
+    ige->property_describe(origin, &properties);
+
+    if (properties.empty()) {
+      return;
+    }
+
+    if (!header.empty()) {
+      fmt::print("{}{}", header, suffix);
+    }
+
+    int num_out = 0;
+    for (const auto &property_name : properties) {
+      fmt::print("{:>s}: ", property_name);
+      auto prop = ige->get_property(property_name);
+      switch (prop.get_type()) {
+      case Ioss::Property::BasicType::REAL: fmt::print("{}\t", prop.get_real()); break;
+      case Ioss::Property::BasicType::INTEGER: fmt::print("{}\t", prop.get_int()); break;
+      case Ioss::Property::BasicType::STRING: fmt::print("'{}'\t", prop.get_string()); break;
+      case Ioss::Property::BasicType::VEC_INTEGER:
+        fmt::print("{}\t", fmt::join(prop.get_vec_int(), "  "));
+        break;
+      case Ioss::Property::BasicType::VEC_DOUBLE:
+        fmt::print("{}\t", fmt::join(prop.get_vec_double(), "  "));
+        break;
+      default:; // Do nothing
+      }
+      num_out++;
+      if (num_out >= 3) {
+        fmt::print("\n\t");
+        num_out = 8;
       }
     }
     if (!header.empty()) {

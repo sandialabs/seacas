@@ -52,15 +52,15 @@ namespace Ioss {
     enum BasicType { INVALID = -1, REAL, INTEGER, POINTER, STRING, VEC_INTEGER, VEC_DOUBLE };
     enum Origin { INTERNAL = -1, IMPLICIT, EXTERNAL, ATTRIBUTE };
 
-    Property();
-    Property(std::string name, int64_t value);
-    Property(std::string name, int value);
-    Property(std::string name, double value);
-    Property(std::string name, const std::string &value);
-    Property(std::string name, const char *value);
-    Property(std::string name, void *value);
-    Property(std::string name, const std::vector<int64_t> &value);
-    Property(std::string name, const std::vector<double> &value);
+    Property() = default;
+    Property(std::string name, int64_t value, Origin origin = INTERNAL);
+    Property(std::string name, int value, Origin origin = INTERNAL);
+    Property(std::string name, double value, Origin origin = INTERNAL);
+    Property(std::string name, const std::string &value, Origin origin = INTERNAL);
+    Property(std::string name, const char *value, Origin origin = INTERNAL);
+    Property(std::string name, void *value, Origin origin = INTERNAL);
+    Property(std::string name, const std::vector<int> &value, Origin origin = INTERNAL);
+    Property(std::string name, const std::vector<double> &value, Origin origin = INTERNAL);
 
     // To set implicit property
     Property(const GroupingEntity *ge, std::string name, BasicType type);
@@ -70,12 +70,15 @@ namespace Ioss {
 
     ~Property();
 
-    std::string          get_string() const;
-    int64_t              get_int() const;
-    double               get_real() const;
-    void *               get_pointer() const;
-    std::vector<double>  get_vec_double() const;
-    std::vector<int64_t> get_vec_int() const;
+    std::string         get_string() const;
+    int64_t             get_int() const;
+    double              get_real() const;
+    void *              get_pointer() const;
+    std::vector<double> get_vec_double() const;
+    std::vector<int>    get_vec_int() const;
+
+    void   set_origin(Origin origin) { origin_ = origin; }
+    Origin get_origin() const { return origin_; }
 
     /** \brief Tells whether the property is calculated, rather than stored.
      *
@@ -115,30 +118,30 @@ namespace Ioss {
     BasicType get_type() const { return type_; }
 
   private:
-    std::string name_;
-    BasicType   type_;
+    std::string name_{};
+    BasicType   type_{INVALID};
+
+    /// True if property is calculated rather than stored.
+    /// False if property is stored in 'data_'
+    Origin origin_{INTERNAL};
 
     bool get_value(int64_t *value) const;
     bool get_value(double *value) const;
     bool get_value(std::string *value) const;
     bool get_value(void *&value) const;
     bool get_value(std::vector<double> *value) const;
-    bool get_value(std::vector<int64_t> *value) const;
-
-    /// True if property is calculated rather than stored.
-    /// False if property is stored in 'data_'
-    Origin origin_{INTERNAL};
+    bool get_value(std::vector<int> *value) const;
 
     /// The actual value of the property.  Use 'type_' to
     /// discriminate the actual type of the property.
     union Data {
       std::string *         sval;
-      void *                pval;
+      void *                pval{nullptr};
       const GroupingEntity *ge;
       double                rval;
       int64_t               ival;
       std::vector<double> * dvec;
-      std::vector<int64_t> *ivec;
+      std::vector<int> *    ivec;
     };
     Data data_{};
   };

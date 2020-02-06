@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -192,6 +192,7 @@ namespace Ioss {
     bool     property_exists(const std::string &property_name) const;
     Property get_property(const std::string &property_name) const;
     int      property_describe(NameList *names) const;
+    int      property_describe(Ioss::Property::Origin origin, NameList *names) const;
     size_t   property_count() const;
     /** Add a property, or change its value if it already exists with
         a different value */
@@ -366,6 +367,12 @@ inline Ioss::Property Ioss::GroupingEntity::get_property(const std::string &prop
 inline int Ioss::GroupingEntity::property_describe(NameList *names) const
 {
   return properties.describe(names);
+}
+
+inline int Ioss::GroupingEntity::property_describe(Ioss::Property::Origin origin,
+                                                   NameList *             names) const
+{
+  return properties.describe(origin, names);
 }
 
 /** \brief Get the number of properties defined in the property manager for this entity.
