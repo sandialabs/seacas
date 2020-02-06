@@ -64,16 +64,13 @@ namespace {
   }
 } // namespace
 
-/** \brief Create an explicit, empty property having no name, INVALID type
- */
-Ioss::Property::Property() : name_(""), type_(INVALID) { data_.pval = nullptr; }
-
 /** \brief Create an INTEGER type property.
  *
  *  \param[in] name The property name.
  *  \param[in] value The property value.
  */
-Ioss::Property::Property(std::string name, int value) : name_(std::move(name)), type_(INTEGER)
+Ioss::Property::Property(std::string name, int value, Origin origin)
+    : name_(std::move(name)), type_(INTEGER), origin_(origin)
 {
   data_.ival = value;
 }
@@ -83,7 +80,8 @@ Ioss::Property::Property(std::string name, int value) : name_(std::move(name)), 
  *  \param[in] name The property name.
  *  \param[in] value The property value.
  */
-Ioss::Property::Property(std::string name, int64_t value) : name_(std::move(name)), type_(INTEGER)
+Ioss::Property::Property(std::string name, int64_t value, Origin origin)
+    : name_(std::move(name)), type_(INTEGER), origin_(origin)
 {
   data_.ival = value;
 }
@@ -93,7 +91,8 @@ Ioss::Property::Property(std::string name, int64_t value) : name_(std::move(name
  *  \param[in] name The property name.
  *  \param[in] value The property value.
  */
-Ioss::Property::Property(std::string name, double value) : name_(std::move(name)), type_(REAL)
+Ioss::Property::Property(std::string name, double value, Origin origin)
+    : name_(std::move(name)), type_(REAL), origin_(origin)
 {
   data_.rval = value;
 }
@@ -103,8 +102,8 @@ Ioss::Property::Property(std::string name, double value) : name_(std::move(name)
  *  \param[in] name The property name.
  *  \param[in] value The property value.
  */
-Ioss::Property::Property(std::string name, const std::string &value)
-    : name_(std::move(name)), type_(STRING)
+Ioss::Property::Property(std::string name, const std::string &value, Origin origin)
+    : name_(std::move(name)), type_(STRING), origin_(origin)
 {
   data_.sval = new std::string(value);
 }
@@ -114,10 +113,10 @@ Ioss::Property::Property(std::string name, const std::string &value)
  *  \param[in] name The property name.
  *  \param[in] value The property value.
  */
-Ioss::Property::Property(std::string name, const std::vector<int64_t> &value)
-    : name_(std::move(name)), type_(VEC_INTEGER)
+Ioss::Property::Property(std::string name, const std::vector<int> &value, Origin origin)
+    : name_(std::move(name)), type_(VEC_INTEGER), origin_(origin)
 {
-  data_.ivec = new std::vector<int64_t>(value);
+  data_.ivec = new std::vector<int>(value);
 }
 
 /** \brief Create a VEC_DOUBLE type property.
@@ -125,8 +124,8 @@ Ioss::Property::Property(std::string name, const std::vector<int64_t> &value)
  *  \param[in] name The property name.
  *  \param[in] value The property value.
  */
-Ioss::Property::Property(std::string name, const std::vector<double> &value)
-    : name_(std::move(name)), type_(VEC_DOUBLE)
+Ioss::Property::Property(std::string name, const std::vector<double> &value, Origin origin)
+    : name_(std::move(name)), type_(VEC_DOUBLE), origin_(origin)
 {
   data_.dvec = new std::vector<double>(value);
 }
@@ -136,8 +135,8 @@ Ioss::Property::Property(std::string name, const std::vector<double> &value)
  *  \param[in] name The property name.
  *  \param[in] value The property value.
  */
-Ioss::Property::Property(std::string name, const char *value)
-    : name_(std::move(name)), type_(STRING)
+Ioss::Property::Property(std::string name, const char *value, Origin origin)
+    : name_(std::move(name)), type_(STRING), origin_(origin)
 {
   data_.sval = new std::string(value);
 }
@@ -147,7 +146,8 @@ Ioss::Property::Property(std::string name, const char *value)
  *  \param[in] name The property name.
  *  \param[in] value The property value.
  */
-Ioss::Property::Property(std::string name, void *value) : name_(std::move(name)), type_(POINTER)
+Ioss::Property::Property(std::string name, void *value, Origin origin)
+    : name_(std::move(name)), type_(POINTER), origin_(origin)
 {
   data_.pval = value;
 }
@@ -178,7 +178,7 @@ Ioss::Property::Property(const Ioss::Property &from)
     data_.dvec = new std::vector<double>(*(from.data_.dvec));
   }
   else if (!is_implicit() && type_ == VEC_INTEGER) {
-    data_.ivec = new std::vector<int64_t>(*(from.data_.ivec));
+    data_.ivec = new std::vector<int>(*(from.data_.ivec));
   }
   else {
     data_ = from.data_;
@@ -236,10 +236,10 @@ std::vector<double> Ioss::Property::get_vec_double() const
  *
  *  \returns The VEC_INT-type property value
  */
-std::vector<int64_t> Ioss::Property::get_vec_int() const
+std::vector<int> Ioss::Property::get_vec_int() const
 {
-  std::vector<int64_t> value;
-  bool                 valid = get_value(&value);
+  std::vector<int> value;
+  bool             valid = get_value(&value);
   if (!valid) {
     error_message(*this, "vector<int>");
   }
@@ -330,7 +330,7 @@ bool Ioss::Property::get_value(std::string *value) const
   return valid_request;
 }
 
-bool Ioss::Property::get_value(std::vector<int64_t> *value) const
+bool Ioss::Property::get_value(std::vector<int> *value) const
 {
   bool valid_request = type_ == VEC_INTEGER ? true : false;
   if (is_explicit()) {

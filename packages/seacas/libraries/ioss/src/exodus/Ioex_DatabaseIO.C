@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -980,6 +980,9 @@ namespace Ioex {
   void DatabaseIO::store_reduction_field(ex_entity_type type, const Ioss::Field &field,
                                          const Ioss::GroupingEntity *ge, void *variables) const
   {
+    if (type != EX_GLOBAL) {
+      return;
+    }
     const Ioss::VariableType *var_type = field.transformed_storage();
 
     Ioss::Field::BasicType ioss_type = field.get_type();
@@ -1267,7 +1270,9 @@ namespace Ioex {
   void DatabaseIO::add_mesh_reduction_fields(ex_entity_type type, int64_t id,
                                              Ioss::GroupingEntity *entity)
   {
-    // Get "attributes" i.e., (MESH_REDUCTION field in IOSS speak).
+    // Get "global attributes"
+    // These are single key-value per grouping entity
+    // Stored as Ioss::Property with origin of ATTRIBUTE
     Ioss::SerializeIO serializeIO__(this);
     int               att_count = ex_get_attribute_count(get_file_pointer(), type, id);
 
@@ -1281,16 +1286,32 @@ namespace Ioex {
         std::string storage = fmt::format("Real[{}]", att.value_count);
         switch (att.type) {
         case EX_INTEGER:
-          entity->field_add(
-              Ioss::Field(att.name, Ioss::Field::INTEGER, storage, Ioss::Field::MESH_REDUCTION));
+          if (att.value_count == 1) {
+            entity->property_add(
+                Ioss::Property(att.name, *(int *)att.values, Ioss::Property::ATTRIBUTE));
+          }
+          else {
+            const int *      idata = static_cast<int *>(att.values);
+            std::vector<int> tmp(att.value_count);
+            std::copy(idata, idata + att.value_count, tmp.begin());
+            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
+          }
           break;
         case EX_DOUBLE:
-          entity->field_add(
-              Ioss::Field(att.name, Ioss::Field::DOUBLE, storage, Ioss::Field::MESH_REDUCTION));
+          if (att.value_count == 1) {
+            entity->property_add(
+                Ioss::Property(att.name, *(double *)att.values, Ioss::Property::ATTRIBUTE));
+          }
+          else {
+            const double *      idata = static_cast<double *>(att.values);
+            std::vector<double> tmp(att.value_count);
+            std::copy(idata, idata + att.value_count, tmp.begin());
+            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
+          }
           break;
         case EX_CHAR:
-          entity->field_add(
-              Ioss::Field(att.name, Ioss::Field::STRING, storage, Ioss::Field::MESH_REDUCTION));
+          entity->property_add(
+              Ioss::Property(att.name, (char *)att.values, Ioss::Property::ATTRIBUTE));
           break;
         }
       }
@@ -1435,7 +1456,7 @@ namespace Ioex {
 
         // Add to VariableNameMap so can determine exodusII index given a
         // Sierra field name.  exodusII index is just 'i+1'
-        auto variables = m_reductionVariables[type];
+        auto &variables = m_reductionVariables[type];
         for (int i = 0; i < nvar; i++) {
           if (lowerCaseVariableNames) {
             Ioss::Utils::fixup_name(names[i]);
@@ -1497,6 +1518,9 @@ namespace Ioex {
       const Ioss::ElementSetContainer &elementsets = get_region()->get_elementsets();
       internal_write_results_metadata(EX_ELEM_SET, elementsets, glob_index);
 
+      const auto &blobs = get_region()->get_blobs();
+      internal_write_results_metadata(EX_BLOB, blobs, glob_index);
+
       {
         int                           index    = 0;
         const Ioss::SideSetContainer &sidesets = get_region()->get_sidesets();
@@ -1550,6 +1574,8 @@ namespace Ioex {
 
       globalValues.resize(m_variables[EX_GLOBAL].size());
       output_results_names(EX_GLOBAL, m_variables[EX_GLOBAL]);
+      output_results_names(EX_BLOB, m_variables[EX_BLOB]);
+      output_results_names(EX_ASSEMBLY, m_variables[EX_ASSEMBLY]);
       output_results_names(EX_NODE_BLOCK, m_variables[EX_NODE_BLOCK]);
       output_results_names(EX_EDGE_BLOCK, m_variables[EX_EDGE_BLOCK]);
       output_results_names(EX_FACE_BLOCK, m_variables[EX_FACE_BLOCK]);
@@ -1567,10 +1593,12 @@ namespace Ioex {
   void DatabaseIO::internal_write_results_metadata(ex_entity_type type, std::vector<T *> entities,
                                                    int &glob_index)
   {
-    int index = 0;
+    int index     = 0;
+    int red_index = 0;
     for (const auto &entity : entities) {
-      glob_index = gather_names(type, m_variables[type], entity, glob_index, true);
-      index      = gather_names(type, m_variables[type], entity, index, false);
+      //      glob_index = gather_names(type, m_variables[EX_GLOBAL], entity, glob_index, true);
+      red_index = gather_names(type, m_reductionVariables[type], entity, red_index, true);
+      index     = gather_names(type, m_variables[type], entity, index, false);
     }
     generate_block_truth_table(m_variables[type], m_truthTable[type], entities,
                                get_field_separator());

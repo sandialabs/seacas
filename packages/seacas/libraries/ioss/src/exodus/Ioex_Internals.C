@@ -154,6 +154,34 @@ Assembly &Assembly::operator=(const Assembly &other)
   return *this;
 }
 
+Blob::Blob(const Ioss::Blob &other)
+{
+  if (other.property_exists("db_name")) {
+    name = other.get_property("db_name").get_string();
+  }
+  else {
+    name = other.name();
+  }
+
+  if (other.property_exists("id")) {
+    id = other.get_property("id").get_int();
+  }
+  else {
+    id = 1;
+  }
+  entityCount    = other.entity_count();
+  attributeCount = other.get_property("attribute_count").get_int();
+}
+
+Blob &Blob::operator=(const Blob &other)
+{
+  name           = other.name;
+  id             = other.id;
+  entityCount    = other.entityCount;
+  attributeCount = other.attributeCount;
+  return *this;
+}
+
 NodeBlock::NodeBlock(const Ioss::NodeBlock &other)
 {
   if (other.property_exists("db_name")) {
@@ -808,6 +836,24 @@ void Mesh::populate(Ioss::Region *region)
     nodeblocks.push_back(N);
   }
 
+  // Assemblies --
+  {
+    const auto &assem = region->get_assemblies();
+    for (auto &assembly : assem) {
+      Ioex::Assembly T(*(assembly));
+      assemblies.push_back(T);
+    }
+  }
+
+  // Blobs --
+  {
+    const auto &blbs = region->get_blobs();
+    for (auto &blob : blbs) {
+      Ioex::Blob T(*(blob));
+      blobs.push_back(T);
+    }
+  }
+
   // Edge Blocks --
   {
     const Ioss::EdgeBlockContainer &edge_blocks = region->get_edge_blocks();
@@ -950,6 +996,10 @@ int Internals::write_meta_data(Mesh &mesh)
     if ((ierr = put_metadata(mesh.blobs)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
+
+    if ((ierr = put_metadata(mesh.assemblies)) != EX_NOERR) {
+      EX_FUNC_LEAVE(ierr);
+    }
   }
 
   // NON-Define mode output...
@@ -986,6 +1036,14 @@ int Internals::write_meta_data(Mesh &mesh)
   }
 
   if ((ierr = put_non_define_data(mesh.sidesets)) != EX_NOERR) {
+    EX_FUNC_LEAVE(ierr);
+  }
+
+  if ((ierr = put_non_define_data(mesh.blobs)) != EX_NOERR) {
+    EX_FUNC_LEAVE(ierr);
+  }
+
+  if ((ierr = put_non_define_data(mesh.assemblies)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
@@ -1733,6 +1791,14 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     }
   }
   return (EX_NOERR);
+}
+
+int Internals::put_metadata(const std::vector<Assembly> &assemblies)
+{
+  if (assemblies.empty()) {
+    return EX_NOERR;
+  }
+  return EX_NOERR;
 }
 
 int Internals::put_metadata(const std::vector<Blob> &blobs)
@@ -2568,6 +2634,33 @@ int Internals::put_non_define_data(const CommunicationMetaData &comm)
   }
   return (EX_NOERR);
 }
+
+int Internals::put_non_define_data(const std::vector<Blob> &blobs)
+{
+  int status;
+  int entlst_id;
+
+  for (const auto &blob : blobs) {
+    if ((status = nc_inq_varid(exodusFilePtr, VAR_ENTITY_BLOB(blob.id), &entlst_id)) != NC_NOERR) {
+      std::string errmsg =
+          fmt::format("Error: failed to locate entity list array for blob {} in file id {}",
+                      blob.id, exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
+    }
+
+    long dummy = 0;
+    if ((status = nc_put_var_long(exodusFilePtr, entlst_id, &dummy)) != EX_NOERR) {
+      std::string errmsg = fmt::format(
+          "Error: failed to output dummy value for blob {} in file id {}", blob.id, exodusFilePtr);
+      ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+      return (EX_FATAL);
+    }
+  }
+  return EX_NOERR;
+}
+
+int Internals::put_non_define_data(const std::vector<Assembly> &assemblies) { return EX_NOERR; }
 
 int Internals::put_non_define_data(const std::vector<ElemBlock> &blocks)
 {

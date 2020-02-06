@@ -441,7 +441,7 @@ namespace Ioex {
     void get_global_counts(Mesh &mesh);
 
     int put_metadata(const Mesh &mesh, const CommunicationMetaData &comm);
-    int put_metadata(const std::vector<Assembly> &assemblies, bool count_only = false);
+    int put_metadata(const std::vector<Assembly> &assemblies);
     int put_metadata(const std::vector<Blob> &blobs);
     int put_metadata(const std::vector<NodeBlock> &nodeblocks, bool count_only = false);
     int put_metadata(const std::vector<EdgeBlock> &blocks, bool count_only = false);
