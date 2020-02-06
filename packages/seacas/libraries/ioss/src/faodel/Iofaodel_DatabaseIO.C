@@ -210,9 +210,9 @@ dirman.root_node_mpi 0
         this->usage() == Ioss::DatabaseUsage::WRITE_HEARTBEAT) {
 
       // write states to LDO
-      pool.Publish(
-          make_states_key(parallel_rank(), *get_region()),
-          pack_states(*get_region()));
+      // pool.Publish(
+          // make_states_key(parallel_rank(), *get_region()),
+          // pack_states(*get_region()));
 
       // write properties to LDOs and publish
       this->put_properties();
@@ -265,16 +265,22 @@ dirman.root_node_mpi 0
           lunasa::DataObject::AllocatorType::eager);
       pool.Need(oc.keys[0], oc.capacities[0], &ldo);
 
-      auto meta = static_cast<time_steps_t*>(ldo.GetMetaPtr());
+      auto meta = static_cast<Iofaodel::meta_entry_t*>(ldo.GetMetaPtr());
 
-      auto raw_data = static_cast<void*>(
-          static_cast<char*>(ldo.GetDataPtr()) + meta->value.offset);
+      auto entry = static_cast<Iofaodel::state_entry_t*>(
+          static_cast<void*>(
+            static_cast<char*>(ldo.GetDataPtr()) + meta->value.offset));
 
-      auto data = static_cast<time_steps_t::basic_type*>(raw_data);
+      auto data = static_cast<Iofaodel::state_entry_t::basic_type*>(
+          static_cast<void*>(entry->data + entry->value.offset));
 
-      for(int id(0); id < meta->count; id++)
-        get_region()->add_state(data[id]);
+      for(auto state(1); state <= entry->count; state++)
+        get_region()->add_state(data[state-1]);
     }
+    // TODO
+    // else {
+    // Report error of not having 1 set of time steps
+    // }
   }
 
   void DatabaseIO::read_region() {

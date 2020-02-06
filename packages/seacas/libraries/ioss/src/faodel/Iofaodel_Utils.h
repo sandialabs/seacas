@@ -46,41 +46,35 @@ namespace Iofaodel {
   // Keys and LDOs go together, the pair below makes publishing easy
   using DataPair = std::pair<kelpie::Key, lunasa::DataObject>;
 
+
   struct value_entry_t {
     size_t offset, size;
   };
 
-  struct time_steps_t {
+
+  struct meta_entry_t {
+    enum class IossType {IossProperty, IossField, IofaodelStates};
+    IossType ioss_type;
+    value_entry_t value; // offset from LDO::GetDataPtr and size
+    // NOTE an added char data[0] would point to the next meta_entry_T
+  };
+
+
+  struct state_entry_t {
     using basic_type = double;
     size_t count;
     value_entry_t value;
-
-    explicit time_steps_t(const Ioss::Region & r);
-  };
-
-  struct state_data_t {
-    using id_type = int64_t;
-    using time_type = double;
-    size_t state_count;
-    value_entry_t ids;
-    value_entry_t times;
     char data[0];
 
-    explicit state_data_t(const Ioss::Region & r);
+    explicit state_entry_t(const Ioss::Region & r);
   };
 
+  
   lunasa::DataObject pack_states(const Ioss::Region & r);
+
 
   kelpie::Key make_states_key(int parallel_rank,
       const Ioss::Region & region);
-
-
-  struct meta_entry_t {
-    enum class IossType {IossProperty, IossField};
-    IossType ioss_type;
-    value_entry_t value;
-    // NOTE an added char data[0] would point to the next meta_entry_T
-  };
 
   kelpie::Key make_key(int parallel_rank,
       const Ioss::Region & region,
