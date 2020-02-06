@@ -35,38 +35,44 @@
 
 namespace Iofaodel {
 
-  state_data_t::state_data_t(const Ioss::Region & r)
-    : state_count(r.get_property("state_count").get_int()),
-    ids{0, sizeof(state_data_t::id_type) * state_count},
-    times{ids.offset + ids.size, sizeof(state_data_t::time_type) * state_count}
-  {
-  }
-
-  time_steps_t::time_steps_t(const Ioss::Region & r)
+  state_entry_t::state_entry_t(const Ioss::Region & r)
     : count(r.get_property("state_count").get_int()),
-    value{0, count * sizeof(time_steps_t::basic_type)}
+    value{0, count * sizeof(state_entry_t::basic_type)}
   {
   }
 
   lunasa::DataObject pack_states(const Ioss::Region & r)
   {
-    time_steps_t tmp(r);
+    // meta, entry, data, data_size
+    auto state_count = r.get_property("state_count").get_int();
+
+    // std::cerr << "state count: " << state_count << std::endl;
+    auto data_size = state_count * sizeof(state_entry_t::basic_type);
 
     auto ldo = lunasa::DataObject(
-        sizeof(state_data_t),
-        tmp.value.size,
+        sizeof(meta_entry_t),
+        sizeof(state_entry_t) + data_size,
         lunasa::DataObject::AllocatorType::eager);
 
-    auto meta = static_cast<time_steps_t*>(ldo.GetMetaPtr());
-    std::memcpy(meta, &tmp, ldo.GetMetaSize());
+    auto meta = static_cast<meta_entry_t*>(ldo.GetMetaPtr());
+    meta->ioss_type = meta_entry_t::IossType::IofaodelStates;
+    meta->value.offset = 0;
+    meta->value.size = sizeof(state_entry_t) + data_size;
 
-    auto raw_data = static_cast<void*>(
-        static_cast<char*>(ldo.GetDataPtr()) + meta->value.offset);
+    auto entry = static_cast<state_entry_t*>(
+        static_cast<void*>(
+          static_cast<char*>(ldo.GetDataPtr()) + meta->value.offset
+          )
+        );
+    entry->count = state_count;
+    entry->value.offset = 0;
+    entry->value.size = data_size;
 
-    auto data = static_cast<time_steps_t::basic_type*>(raw_data);
+    auto data = static_cast<Iofaodel::state_entry_t::basic_type*>(
+        static_cast<void*>(entry->data + entry->value.offset));
 
-    for(auto i = 0; i <= meta->count; i++) 
-      data[i] = r.get_state_time(i + 1);
+    for(auto state(1); state <= entry->count; state++)
+      data[state-1] = r.get_state_time(state);
 
     return ldo;
   };
@@ -226,26 +232,5 @@ namespace Iofaodel {
       default:                                return std::string("INVALID_TYPE");
     };
   }
-
-
-  DataPair pack_time_steps(const Ioss::Region & region) {
-    int state_count = region.get_property("state_count").get_int();
-    std::vector<int> states(state_count);
-    std::vector<double> times(state_count);
-    for(auto state = 1; state <= state_count; ++state) {
-      states[state-1] = state;
-      times[state-1] = region.get_state_time(state);
-    }
-
-    // time_step_t time_step {
-      // states{}
-// 
-    // };
-
-
-    DataPair pair;
-    return pair;
-  }
-
 
 } // namespace Iofaodel

@@ -95,7 +95,7 @@ namespace Iofaodel {
       field_entry.data_size};
 
     auto ldo = lunasa::DataObject(
-            sizeof(field_entry_t),
+            sizeof(meta_entry_t),
             sizeof(field_entry_t) + field_entry.data_size,
             lunasa::DataObject::AllocatorType::eager);
 
@@ -109,8 +109,7 @@ namespace Iofaodel {
 
     auto entry = static_cast<field_entry_t*>(ldo.GetDataPtr());
     auto name_ptr = static_cast<char*>(entry->data) + entry->name.offset;
-    auto value_ptr = static_cast<void*>(
-        static_cast<char*>(entry->data) + entry->value.offset);
+    auto value_ptr = static_cast<void*>(entry->data + entry->value.offset);
     auto storage_ptr = static_cast<char*>(entry->data) + entry->storage.offset;
 
     // copy name to data section
