@@ -271,7 +271,7 @@ void ex__update_max_name_length(int exoid, int length)
   \internal
   \undoc
 */
-int ex__put_names(int exoid, int varid, size_t num_entity, char **names, ex_entity_type obj_type,
+int ex__put_names(int exoid, int varid, size_t num_names, char **names, ex_entity_type obj_type,
                   const char *subtype, const char *routine)
 {
   size_t i;
@@ -289,7 +289,7 @@ int ex__put_names(int exoid, int varid, size_t num_entity, char **names, ex_enti
   /* inquire previously defined dimensions  */
   name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
-  if (!(int_names = calloc(num_entity * name_length, 1))) {
+  if (!(int_names = calloc(num_names * name_length, 1))) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to allocate memory for internal int_names "
              "array in file id %d",
@@ -298,7 +298,7 @@ int ex__put_names(int exoid, int varid, size_t num_entity, char **names, ex_enti
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  for (i = 0; i < num_entity; i++) {
+  for (i = 0; i < num_names; i++) {
     if (names != NULL && *names != NULL && *names[i] != '\0') {
       found_name = 1;
       ex_copy_string(&int_names[idx], names[i], name_length);
@@ -394,7 +394,7 @@ int ex__put_name(int exoid, int varid, size_t index, const char *name, ex_entity
   \internal
   \undoc
 */
-int ex__get_names(int exoid, int varid, size_t num_entity, char **names, ex_entity_type obj_type,
+int ex__get_names(int exoid, int varid, size_t num_names, char **names, ex_entity_type obj_type,
                   const char *routine)
 {
   size_t i;
@@ -407,7 +407,7 @@ int ex__get_names(int exoid, int varid, size_t num_entity, char **names, ex_enti
   int api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
   int name_size     = db_name_size < api_name_size ? db_name_size : api_name_size;
 
-  for (i = 0; i < num_entity; i++) {
+  for (i = 0; i < num_names; i++) {
     status = ex__get_name(exoid, varid, i, names[i], name_size, obj_type, routine);
     if (status != NC_NOERR) {
       return (status);
