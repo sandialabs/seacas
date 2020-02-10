@@ -1572,19 +1572,42 @@ namespace Ioex {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
 
+      // Blob and Assembly net supported in ex_put_all_var_param_ext...
+      ierr = ex_put_variable_param(get_file_pointer(), EX_BLOB, m_variables[EX_BLOB].size());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+      ierr =
+          ex_put_variable_param(get_file_pointer(), EX_ASSEMBLY, m_variables[EX_ASSEMBLY].size());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+
       globalValues.resize(m_variables[EX_GLOBAL].size());
-      output_results_names(EX_GLOBAL, m_variables[EX_GLOBAL]);
-      output_results_names(EX_BLOB, m_variables[EX_BLOB]);
-      output_results_names(EX_ASSEMBLY, m_variables[EX_ASSEMBLY]);
-      output_results_names(EX_NODE_BLOCK, m_variables[EX_NODE_BLOCK]);
-      output_results_names(EX_EDGE_BLOCK, m_variables[EX_EDGE_BLOCK]);
-      output_results_names(EX_FACE_BLOCK, m_variables[EX_FACE_BLOCK]);
-      output_results_names(EX_ELEM_BLOCK, m_variables[EX_ELEM_BLOCK]);
-      output_results_names(EX_NODE_SET, m_variables[EX_NODE_SET]);
-      output_results_names(EX_EDGE_SET, m_variables[EX_EDGE_SET]);
-      output_results_names(EX_FACE_SET, m_variables[EX_FACE_SET]);
-      output_results_names(EX_ELEM_SET, m_variables[EX_ELEM_SET]);
-      output_results_names(EX_SIDE_SET, m_variables[EX_SIDE_SET]);
+      output_results_names(EX_GLOBAL, m_variables[EX_GLOBAL], false);
+      output_results_names(EX_BLOB, m_variables[EX_BLOB], false);
+      output_results_names(EX_ASSEMBLY, m_variables[EX_ASSEMBLY], false);
+      output_results_names(EX_NODE_BLOCK, m_variables[EX_NODE_BLOCK], false);
+      output_results_names(EX_EDGE_BLOCK, m_variables[EX_EDGE_BLOCK], false);
+      output_results_names(EX_FACE_BLOCK, m_variables[EX_FACE_BLOCK], false);
+      output_results_names(EX_ELEM_BLOCK, m_variables[EX_ELEM_BLOCK], false);
+      output_results_names(EX_NODE_SET, m_variables[EX_NODE_SET], false);
+      output_results_names(EX_EDGE_SET, m_variables[EX_EDGE_SET], false);
+      output_results_names(EX_FACE_SET, m_variables[EX_FACE_SET], false);
+      output_results_names(EX_ELEM_SET, m_variables[EX_ELEM_SET], false);
+      output_results_names(EX_SIDE_SET, m_variables[EX_SIDE_SET], false);
+
+      output_results_names(EX_BLOB, m_reductionVariables[EX_BLOB], true);
+      output_results_names(EX_ASSEMBLY, m_reductionVariables[EX_ASSEMBLY], true);
+      output_results_names(EX_NODE_BLOCK, m_reductionVariables[EX_NODE_BLOCK], true);
+      output_results_names(EX_EDGE_BLOCK, m_reductionVariables[EX_EDGE_BLOCK], true);
+      output_results_names(EX_FACE_BLOCK, m_reductionVariables[EX_FACE_BLOCK], true);
+      output_results_names(EX_ELEM_BLOCK, m_reductionVariables[EX_ELEM_BLOCK], true);
+      output_results_names(EX_NODE_SET, m_reductionVariables[EX_NODE_SET], true);
+      output_results_names(EX_EDGE_SET, m_reductionVariables[EX_EDGE_SET], true);
+      output_results_names(EX_FACE_SET, m_reductionVariables[EX_FACE_SET], true);
+      output_results_names(EX_ELEM_SET, m_reductionVariables[EX_ELEM_SET], true);
+      output_results_names(EX_SIDE_SET, m_reductionVariables[EX_SIDE_SET], true);
     }
   }
 
@@ -1659,6 +1682,7 @@ namespace Ioex {
         for (int i = 1; i <= var_type->component_count(); i++) {
           std::string var_string = var_type->label_name(field_name, i, field_suffix_separator);
 
+#if 0
           // Add to 'VariableNameMap variables' so can determine
           // exodusII index given a Sierra field name.  exodusII index
           // is just 'i+1'
@@ -1669,7 +1693,7 @@ namespace Ioex {
               var_string = ge->name() + ":" + var_string;
             }
           }
-
+#endif
           if (variables.find(var_string) == variables.end()) {
             variables.insert(VNMValuePair(var_string, ++new_index));
           }
@@ -1750,7 +1774,8 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::output_results_names(ex_entity_type type, VariableNameMap &variables) const
+  void DatabaseIO::output_results_names(ex_entity_type type, VariableNameMap &variables,
+                                        bool reduction) const
   {
     bool lowercase_names =
         (properties.exists("VARIABLE_NAME_CASE") &&
@@ -1798,7 +1823,14 @@ namespace Ioex {
               name_length, maximumNameLength, get_filename());
         }
       }
-      int ierr = ex_put_variable_names(get_file_pointer(), type, var_count, TOPTR(var_names));
+      int ierr = 0;
+      if (reduction) {
+        ierr =
+            ex_put_reduction_variable_names(get_file_pointer(), type, var_count, TOPTR(var_names));
+      }
+      else {
+        ierr = ex_put_variable_names(get_file_pointer(), type, var_count, TOPTR(var_names));
+      }
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }

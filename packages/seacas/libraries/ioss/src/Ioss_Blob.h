@@ -53,8 +53,9 @@ namespace Ioss {
   class Blob : public GroupingEntity
   {
   public:
-    Blob()  = default; // Used for template typing only
-    ~Blob() = default;
+    Blob()                  = default; // Used for template typing only
+    Blob(const Blob &other) = default;
+    ~Blob()                 = default;
 
     Blob(DatabaseIO *io_database, const std::string &my_name, int64_t item_count);
 

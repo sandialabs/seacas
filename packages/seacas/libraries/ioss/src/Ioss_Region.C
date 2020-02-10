@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -117,6 +117,20 @@ namespace {
       count += ent->entity_count();
     }
     return count;
+  }
+
+  void update_database(const Ioss::Region *region, Ioss::GroupingEntity *entity)
+  {
+    entity->reset_database(region->get_database());
+  }
+
+  void update_database(const Ioss::Region *region, Ioss::SideSet *sset)
+  {
+    sset->reset_database(region->get_database());
+    const auto &blocks = sset->get_side_blocks();
+    for (const auto &block : blocks) {
+      block->reset_database(region->get_database());
+    }
   }
 
   void check_for_duplicate_names(const Ioss::Region *region, const Ioss::GroupingEntity *entity)
@@ -1040,6 +1054,7 @@ namespace Ioss {
   bool Region::add(StructuredBlock *structured_block)
   {
     check_for_duplicate_names(this, structured_block);
+    update_database(this, structured_block);
     IOSS_FUNC_ENTER(m_);
 
     // Check that region is in correct state for adding entities
@@ -1085,6 +1100,7 @@ namespace Ioss {
   bool Region::add(NodeBlock *node_block)
   {
     check_for_duplicate_names(this, node_block);
+    update_database(this, node_block);
     IOSS_FUNC_ENTER(m_);
 
     // Check that region is in correct state for adding entities
@@ -1106,6 +1122,7 @@ namespace Ioss {
   bool Region::add(Assembly *assembly)
   {
     check_for_duplicate_names(this, assembly);
+    update_database(this, assembly);
     IOSS_FUNC_ENTER(m_);
 
     // Check that region is in correct state for adding entities
@@ -1127,6 +1144,7 @@ namespace Ioss {
   bool Region::add(Blob *blob)
   {
     check_for_duplicate_names(this, blob);
+    update_database(this, blob);
     IOSS_FUNC_ENTER(m_);
 
     // Check that region is in correct state for adding entities
@@ -1164,6 +1182,7 @@ namespace Ioss {
   bool Region::add(ElementBlock *element_block)
   {
     check_for_duplicate_names(this, element_block);
+    update_database(this, element_block);
     IOSS_FUNC_ENTER(m_);
 
     // Check that region is in correct state for adding entities
@@ -1225,6 +1244,7 @@ namespace Ioss {
   bool Region::add(FaceBlock *face_block)
   {
     check_for_duplicate_names(this, face_block);
+    update_database(this, face_block);
     IOSS_FUNC_ENTER(m_);
 
     // Check that region is in correct state for adding entities
@@ -1260,6 +1280,7 @@ namespace Ioss {
   bool Region::add(EdgeBlock *edge_block)
   {
     check_for_duplicate_names(this, edge_block);
+    update_database(this, edge_block);
     IOSS_FUNC_ENTER(m_);
 
     // Check that region is in correct state for adding entities
@@ -1295,6 +1316,7 @@ namespace Ioss {
   bool Region::add(SideSet *sideset)
   {
     check_for_duplicate_names(this, sideset);
+    update_database(this, sideset);
     IOSS_FUNC_ENTER(m_);
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
@@ -1314,6 +1336,7 @@ namespace Ioss {
   bool Region::add(NodeSet *nodeset)
   {
     check_for_duplicate_names(this, nodeset);
+    update_database(this, nodeset);
     IOSS_FUNC_ENTER(m_);
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
@@ -1333,6 +1356,7 @@ namespace Ioss {
   bool Region::add(EdgeSet *edgeset)
   {
     check_for_duplicate_names(this, edgeset);
+    update_database(this, edgeset);
     IOSS_FUNC_ENTER(m_);
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
@@ -1352,6 +1376,7 @@ namespace Ioss {
   bool Region::add(FaceSet *faceset)
   {
     check_for_duplicate_names(this, faceset);
+    update_database(this, faceset);
     IOSS_FUNC_ENTER(m_);
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
@@ -1371,6 +1396,7 @@ namespace Ioss {
   bool Region::add(ElementSet *elementset)
   {
     check_for_duplicate_names(this, elementset);
+    update_database(this, elementset);
     IOSS_FUNC_ENTER(m_);
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
@@ -1390,6 +1416,7 @@ namespace Ioss {
   bool Region::add(CommSet *commset)
   {
     check_for_duplicate_names(this, commset);
+    update_database(this, commset);
     IOSS_FUNC_ENTER(m_);
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {

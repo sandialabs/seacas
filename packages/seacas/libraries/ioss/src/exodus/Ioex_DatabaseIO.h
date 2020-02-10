@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -239,7 +239,8 @@ namespace Ioex {
 
     void generate_sideset_truth_table();
 
-    void output_results_names(ex_entity_type type, VariableNameMap &variables) const;
+    void output_results_names(ex_entity_type type, VariableNameMap &variables,
+                              bool reduction) const;
     int  gather_names(ex_entity_type type, VariableNameMap &variables,
                       const Ioss::GroupingEntity *ge, int index, bool reduction);
 

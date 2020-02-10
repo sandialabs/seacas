@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -103,7 +103,9 @@ namespace Iofx {
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::Blob *reg, const Ioss::Field &field, void *data,
+    int64_t get_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::Assembly *assem, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -137,7 +139,9 @@ namespace Iofx {
 
     int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::Blob *reg, const Ioss::Field &field, void *data,
+    int64_t put_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
+    int64_t put_field_internal(const Ioss::Assembly *assem, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;

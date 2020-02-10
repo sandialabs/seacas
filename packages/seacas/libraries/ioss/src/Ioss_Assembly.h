@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 2019, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -55,6 +55,7 @@ namespace Ioss {
   public:
     Assembly()  = default; // Used for template typing only
     ~Assembly() = default;
+    Assembly(const Assembly &);
 
     Assembly(DatabaseIO *io_database, const std::string &my_name);
 

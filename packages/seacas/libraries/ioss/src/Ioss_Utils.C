@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -1486,12 +1486,14 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
     dbi->progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
 
+    output_region.output_summary(std::cout);
+
     if (options.verbose && rank == 0) {
-      fmt::print(stderr, "Maximum Field size = {:n} bytes.\n", max_field_size);
+      fmt::print(stderr, " Maximum Field size = {:n} bytes.\n", max_field_size);
     }
     data_pool.data.resize(max_field_size);
     if (options.verbose && rank == 0) {
-      fmt::print(stderr, "Resize finished...\n");
+      fmt::print(stderr, " Resize finished...\n");
     }
 
     if (options.debug && rank == 0) {
@@ -1664,6 +1666,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
     output_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
 
+#if 0
     for (int i = 0; i < 2; i++) {
       auto field_type = Ioss::Field::TRANSIENT;
       if (i > 0) {
@@ -1673,10 +1676,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       // For each 'TRANSIENT' and 'REDUCTION' field in the node blocks and element
       // blocks, transfer to the output node and element blocks.
       transfer_fields(&region, &output_region, field_type);
-      transfer_fields(region.get_assemblies(), output_region, field_type, options, rank);
-      transfer_fields(region.get_blobs(), output_region, field_type, options, rank);
 
-      transfer_fields(region.get_node_blocks(), output_region, field_type, options, rank);
       transfer_fields(region.get_edge_blocks(), output_region, field_type, options, rank);
       transfer_fields(region.get_face_blocks(), output_region, field_type, options, rank);
       transfer_fields(region.get_element_blocks(), output_region, field_type, options, rank);
@@ -1737,6 +1737,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
         }
       }
     }
+#endif
     if (options.debug && rank == 0) {
       fmt::print(stderr, "END STATE_DEFINE_TRANSIENT... \n");
     }
@@ -1894,10 +1895,8 @@ namespace {
         fmt::print(stderr, " Number of Coordinates per Node = {:14n}\n", degree);
         fmt::print(stderr, " Number of Nodes                = {:14n}\n", num_nodes);
       }
-      auto nb = new Ioss::NodeBlock(output_region.get_database(), name, num_nodes, degree);
+      auto nb = new Ioss::NodeBlock(*inb);
       output_region.add(nb);
-
-      transfer_properties(inb, nb);
 
       if (output_region.get_database()->needs_shared_node_information()) {
         // If the "owning_processor" field exists on the input
@@ -1916,7 +1915,6 @@ namespace {
           nb->put_field_data("owning_processor", pool.data.data(), isize);
         }
       }
-      transfer_mesh_info(inb, nb);
     }
     if (options.debug && rank == 0) {
       fmt::print(stderr, "\n");
@@ -1971,16 +1969,11 @@ namespace {
         if (options.debug && rank == 0) {
           fmt::print(stderr, "{}, ", name);
         }
-        std::string type  = iblock->get_property("topology_type").get_string();
-        size_t      count = iblock->entity_count();
+        size_t count = iblock->entity_count();
         total_entities += count;
 
-        auto block = new T(output_region.get_database(), name, type, count);
-        if (iblock->property_exists("original_block_order")) {
-          block->property_add(iblock->get_property("original_block_order"));
-        }
+        auto block = new T(*iblock);
         output_region.add(block);
-        transfer_mesh_info(iblock, block);
       }
       if (options.verbose && rank == 0) {
         fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*blocks.begin())->type_string() + "s",
@@ -2093,32 +2086,8 @@ namespace {
       if (options.debug && rank == 0) {
         fmt::print(stderr, "{}, ", name);
       }
-
-      auto        surf = new Ioss::SideSet(output_region.get_database(), name);
-      const auto &fbs  = ss->get_side_blocks();
-      for (const auto &fb : fbs) {
-        const std::string &fbname = fb->name();
-        if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", fbname);
-        }
-        std::string fbtype   = fb->get_property("topology_type").get_string();
-        std::string partype  = fb->get_property("parent_topology_type").get_string();
-        size_t      num_side = fb->entity_count();
-        total_sides += num_side;
-
-        auto block =
-            new Ioss::SideBlock(output_region.get_database(), fbname, fbtype, partype, num_side);
-        surf->add(block);
-        transfer_mesh_info(fb, block);
-        if (fb->parent_block() != nullptr) {
-          auto               fb_name = fb->parent_block()->name();
-          Ioss::EntityBlock *parent =
-              dynamic_cast<Ioss::EntityBlock *>(output_region.get_entity(fb_name));
-          block->set_parent_block(parent);
-        }
-      }
+      auto surf = new Ioss::SideSet(*ss);
       output_region.add(surf);
-      transfer_mesh_info(ss, surf);
     }
     if (options.verbose && rank == 0 && !fss.empty()) {
       fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*fss.begin())->type_string() + "s",
@@ -2144,9 +2113,8 @@ namespace {
         }
         size_t count = set->entity_count();
         total_entities += count;
-        auto o_set = new T(output_region.get_database(), name, count);
+        auto o_set = new T(*set);
         output_region.add(o_set);
-        transfer_mesh_info(set, o_set);
       }
 
       if (options.verbose && rank == 0) {
@@ -2171,9 +2139,8 @@ namespace {
         if (options.debug && rank == 0) {
           fmt::print(stderr, "{}, ", name);
         }
-        auto o_assem = new Ioss::Assembly(output_region.get_database(), name);
+        auto o_assem = new Ioss::Assembly(*assm);
         output_region.add(o_assem);
-        transfer_mesh_info(assm, o_assem);
       }
 
       if (options.verbose && rank == 0) {
@@ -2189,7 +2156,28 @@ namespace {
                       const Ioss::MeshCopyOptions &options, int rank)
   {
     const auto &blobs = region.get_blobs();
-    transfer_sets(blobs, output_region, options, rank);
+    if (!blobs.empty()) {
+      size_t total_entities = 0;
+      for (const auto &blob : blobs) {
+        const std::string &name = blob->name();
+        if (options.debug && rank == 0) {
+          fmt::print(stderr, "{}, ", name);
+        }
+        size_t count = blob->entity_count();
+        total_entities += count;
+        auto o_blob = new Ioss::Blob(*blob);
+        output_region.add(o_blob);
+      }
+
+      if (options.verbose && rank == 0) {
+        fmt::print(stderr, " Number of {:20s} = {:14n}", (*blobs.begin())->type_string() + "s",
+                   blobs.size());
+        fmt::print(stderr, "\tLength of entity list = {:14n}\n", total_entities);
+      }
+      if (options.debug && rank == 0) {
+        fmt::print(stderr, "\n");
+      }
+    }
   }
 
   void transfer_nodesets(Ioss::Region &region, Ioss::Region &output_region,
@@ -2229,12 +2217,8 @@ namespace {
       if (options.debug && rank == 0) {
         fmt::print(stderr, "{}, ", name);
       }
-      std::string type  = ics->get_property("entity_type").get_string();
-      size_t      count = ics->entity_count();
-      auto        cs    = new Ioss::CommSet(output_region.get_database(), name, type, count);
+      auto cs = new Ioss::CommSet(*ics);
       output_region.add(cs);
-      transfer_mesh_info(ics, cs);
-      transfer_fields(ics, cs, Ioss::Field::COMMUNICATION);
     }
     if (options.debug && rank == 0) {
       fmt::print(stderr, "\n");

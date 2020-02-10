@@ -1,4 +1,4 @@
-// Copyright(C) 2019 National Technology & Engineering Solutions
+// Copyright(C) 2019, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -103,6 +103,12 @@ Ioss::Assembly::Assembly(Ioss::DatabaseIO *io_database, const std::string &my_na
 {
   properties.add(Ioss::Property(this, "member_count", Ioss::Property::INTEGER));
   properties.add(Ioss::Property(this, "member_type", Ioss::Property::INTEGER));
+}
+
+Ioss::Assembly::Assembly(const Ioss::Assembly &other) : GroupingEntity(other)
+{
+  m_members = other.m_members;
+  m_type    = other.m_type;
 }
 
 const Ioss::EntityContainer &Ioss::Assembly::get_members() const { return m_members; }
