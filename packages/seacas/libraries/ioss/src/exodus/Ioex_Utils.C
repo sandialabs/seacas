@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -153,6 +153,7 @@ namespace Ioex {
     case EX_NODAL: return Ioss::NODEBLOCK;
     case EX_NODE_SET: return Ioss::NODESET;
     case EX_SIDE_SET: return Ioss::SIDESET;
+    case EX_GLOBAL: return Ioss::REGION;
     default: return Ioss::INVALID_TYPE;
     }
   }
@@ -160,6 +161,7 @@ namespace Ioex {
   ex_entity_type map_exodus_type(Ioss::EntityType type)
   {
     switch (type) {
+    case Ioss::REGION: return EX_GLOBAL;
     case Ioss::ASSEMBLY: return EX_ASSEMBLY;
     case Ioss::BLOB: return EX_BLOB;
     case Ioss::EDGEBLOCK: return EX_EDGE_BLOCK;
