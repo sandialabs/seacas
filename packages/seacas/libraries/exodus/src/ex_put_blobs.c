@@ -47,8 +47,6 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
   int  dimid, status, n1dim, dims[1];
   char errmsg[MAX_ERR_LENGTH];
 
-  int int_type;
-
   EX_FUNC_ENTER();
 
   ex__check_valid_file_id(exoid, __func__);
@@ -91,11 +89,6 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
       goto error_ret;
     }
 
-    int_type = NC_INT;
-    if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
-      int_type = NC_INT64;
-    }
-
     /* create a variable just as a way to have a blob and its attributes; values not used for
      * anything */
     dims[0] = n1dim;
@@ -118,7 +111,8 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
     ex__compress_variable(exoid, entlst_id[i], 1);
 
     if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
-      status = nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &blobs[i].id);
+      long long id = blobs[i].id;
+      status = nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &id);
     }
     else {
       int id = blobs[i].id;

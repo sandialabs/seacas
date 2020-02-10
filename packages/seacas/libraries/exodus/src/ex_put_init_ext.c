@@ -247,12 +247,10 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
   int header_size, fixed_var_size, iows;
 #endif
   char                  errmsg[MAX_ERR_LENGTH];
-  struct ex__file_item *file;
 
   EX_FUNC_ENTER();
+  ex__check_valid_file_id(exoid, __func__);
   int rootid = exoid & EX_FILE_ID_MASK;
-
-  file = ex__find_file_item(exoid);
 
   if (rootid == exoid && nc_inq_dimid(exoid, DIM_NUM_DIM, &temp) == NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: initialization already done for file id %d", exoid);
