@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 National Technology & Engineering Solutions
+ * Copyright (c) 2019, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -276,10 +276,15 @@ int ex_get_attribute(int exoid, ex_attribute *attr)
   int  varid;
 
   EX_FUNC_ENTER();
-  varid = ex__get_varid(exoid, attr->entity_type, attr->entity_id);
-  if (varid <= 0) {
-    /* Error message handled in ex__get_varid */
-    EX_FUNC_LEAVE(varid);
+  if (attr->entity_type == EX_GLOBAL) {
+    varid = NC_GLOBAL;
+  }
+  else {
+    varid = ex__get_varid(exoid, attr->entity_type, attr->entity_id);
+    if (varid <= 0) {
+      /* Error message handled in ex__get_varid */
+      EX_FUNC_LEAVE(varid);
+    }
   }
 
   /* If attr->values is NULL, then this routine should allocate memory
