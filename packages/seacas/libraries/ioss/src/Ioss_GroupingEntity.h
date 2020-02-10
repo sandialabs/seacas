@@ -97,7 +97,7 @@ namespace Ioss {
 
     GroupingEntity() = default;
     GroupingEntity(DatabaseIO *io_database, const std::string &my_name, int64_t entity_count);
-    GroupingEntity(const GroupingEntity &) = delete;
+    GroupingEntity(const GroupingEntity &);
     GroupingEntity &operator=(const GroupingEntity &) = delete;
 
     virtual ~GroupingEntity();
@@ -106,6 +106,7 @@ namespace Ioss {
 
     DatabaseIO * get_database() const;
     void         set_database(DatabaseIO *io_database);
+    void         reset_database(DatabaseIO *io_database);
     virtual void delete_database();
 
     /** Return the GroupingEntity pointer of the "object" that this

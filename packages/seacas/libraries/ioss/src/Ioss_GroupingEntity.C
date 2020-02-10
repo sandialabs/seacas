@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -75,6 +75,13 @@ Ioss::GroupingEntity::GroupingEntity(Ioss::DatabaseIO *io_database, const std::s
   }
 }
 
+Ioss::GroupingEntity::GroupingEntity(const Ioss::GroupingEntity &other)
+    : properties(other.properties), fields(other.fields), entityCount(other.entityCount),
+      entityName(other.entityName), attributeCount(other.attributeCount),
+      entityState(other.entityState), hash_(other.hash_)
+{
+}
+
 Ioss::GroupingEntity::~GroupingEntity()
 {
   // Only deleted by owning entity (Ioss::Region)
@@ -137,6 +144,12 @@ std::string Ioss::GroupingEntity::get_filename() const
 void Ioss::GroupingEntity::set_database(Ioss::DatabaseIO *io_database)
 {
   assert(database_ == nullptr);   // Must be unset if we are setting it.
+  assert(io_database != nullptr); // Must be set to valid value
+  database_ = io_database;
+}
+
+void Ioss::GroupingEntity::reset_database(Ioss::DatabaseIO *io_database)
+{
   assert(io_database != nullptr); // Must be set to valid value
   database_ = io_database;
 }

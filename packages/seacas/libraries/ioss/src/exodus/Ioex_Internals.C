@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -139,9 +139,15 @@ Assembly::Assembly(const Ioss::Assembly &other)
   else {
     id = 1;
   }
-  entityCount    = other.entity_count();
+  entityCount    = other.member_count();
   attributeCount = other.get_property("attribute_count").get_int();
   type           = Ioex::map_exodus_type(other.get_member_type());
+
+  const auto &members = other.get_members();
+  for (const auto &member : members) {
+    assert(member->property_exists("id"));
+    memberIdList.push_back(member->get_property("id").get_int());
+  }
 }
 
 Assembly &Assembly::operator=(const Assembly &other)
@@ -1798,6 +1804,56 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
   if (assemblies.empty()) {
     return EX_NOERR;
   }
+  int  status, dims[1];
+  char errmsg[MAX_ERR_LENGTH];
+
+  ex__check_valid_file_id(exodusFilePtr, __func__);
+
+  int int_type = NC_INT;
+  if (ex_int64_status(exodusFilePtr) & EX_IDS_INT64_DB) {
+    int_type = NC_INT64;
+  }
+
+  for (size_t i = 0; i < assemblies.size(); i++) {
+    char *numentryptr = DIM_NUM_ENTITY_ASSEMBLY(assemblies[i].id);
+
+    /* define dimensions and variables */
+    int dimid;
+    nc_def_dim(exodusFilePtr, numentryptr, assemblies[i].entityCount, &dimid);
+
+    /* create variable array in which to store the entry lists */
+    int entlst_id;
+    dims[0] = dimid;
+    nc_def_var(exodusFilePtr, VAR_ENTITY_ASSEMBLY(assemblies[i].id), int_type, 1, dims, &entlst_id);
+    ex__compress_variable(exodusFilePtr, entlst_id, 1);
+
+    if (ex_int64_status(exodusFilePtr) & EX_IDS_INT64_DB) {
+      nc_put_att_longlong(exodusFilePtr, entlst_id, EX_ATTRIBUTE_ID, NC_INT64, 1,
+                          &assemblies[i].id);
+    }
+    else {
+      int id = assemblies[i].id;
+      nc_put_att_int(exodusFilePtr, entlst_id, EX_ATTRIBUTE_ID, NC_INT, 1, &id);
+    }
+
+    int type = assemblies[i].type;
+    nc_put_att_int(exodusFilePtr, entlst_id, EX_ATTRIBUTE_TYPE, NC_INT, 1, &type);
+
+    nc_put_att_text(exodusFilePtr, entlst_id, EX_ATTRIBUTE_NAME, assemblies[i].name.size() + 1,
+                    assemblies[i].name.c_str());
+
+    {
+      char *contains = ex_name_of_object(assemblies[i].type);
+      nc_put_att_text(exodusFilePtr, entlst_id, EX_ATTRIBUTE_TYPENAME, strlen(contains) + 1,
+                      contains);
+    }
+
+    /* Increment assembly count */
+    struct ex__file_item *file = ex__find_file_item(exodusFilePtr);
+    if (file) {
+      file->assembly_count++;
+    }
+  }
   return EX_NOERR;
 }
 
@@ -2660,7 +2716,25 @@ int Internals::put_non_define_data(const std::vector<Blob> &blobs)
   return EX_NOERR;
 }
 
-int Internals::put_non_define_data(const std::vector<Assembly> &assemblies) { return EX_NOERR; }
+int Internals::put_non_define_data(const std::vector<Assembly> &assemblies)
+{
+  for (const auto &assembly : assemblies) {
+    int status = EX_NOERR;
+    if (!assembly.memberIdList.empty()) {
+      int entlst_id = 0;
+      nc_inq_varid(exodusFilePtr, VAR_ENTITY_ASSEMBLY(assembly.id), &entlst_id);
+      if ((status = nc_put_var_longlong(exodusFilePtr, entlst_id, assembly.memberIdList.data())) !=
+          EX_NOERR) {
+        std::string errmsg =
+            fmt::format("Error: failed to output entity list for assembly {} in file {}",
+                        assembly.id, exodusFilePtr);
+        ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
+        return EX_FATAL;
+      }
+    }
+  }
+  return EX_NOERR;
+}
 
 int Internals::put_non_define_data(const std::vector<ElemBlock> &blocks)
 {

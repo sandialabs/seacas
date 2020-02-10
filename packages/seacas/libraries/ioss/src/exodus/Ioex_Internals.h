@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2017 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -126,11 +126,12 @@ namespace Ioex {
     bool operator==(const Assembly &) const;
     bool operator!=(const Assembly &other) const { return !(*this == other); }
 
-    std::string    name{};
-    entity_id      id{0};
-    int64_t        entityCount{0};
-    int64_t        attributeCount{0};
-    ex_entity_type type{};
+    std::string          name{};
+    entity_id            id{0};
+    int64_t              entityCount{0};
+    int64_t              attributeCount{0};
+    ex_entity_type       type{};
+    std::vector<int64_t> memberIdList;
   };
 
   struct Blob
