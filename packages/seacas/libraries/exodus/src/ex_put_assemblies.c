@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -133,8 +133,9 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
       ex__compress_variable(exoid, entlst_id[i], 1);
 
       if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
+	long long tmp = assemblies[i].id;
         status =
-            nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &assemblies[i].id);
+            nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &tmp);
       }
       else {
         int id = assemblies[i].id;

@@ -1804,8 +1804,7 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
   if (assemblies.empty()) {
     return EX_NOERR;
   }
-  int  status, dims[1];
-  char errmsg[MAX_ERR_LENGTH];
+  int  dims[1];
 
   ex__check_valid_file_id(exodusFilePtr, __func__);
 
@@ -1828,8 +1827,9 @@ int Internals::put_metadata(const std::vector<Assembly> &assemblies)
     ex__compress_variable(exodusFilePtr, entlst_id, 1);
 
     if (ex_int64_status(exodusFilePtr) & EX_IDS_INT64_DB) {
+      long long tmp = assemblies[i].id;
       nc_put_att_longlong(exodusFilePtr, entlst_id, EX_ATTRIBUTE_ID, NC_INT64, 1,
-                          &assemblies[i].id);
+                          &tmp);
     }
     else {
       int id = assemblies[i].id;
@@ -1907,7 +1907,8 @@ int Internals::put_metadata(const std::vector<Blob> &blobs)
     ex__compress_variable(exodusFilePtr, entlst, 1);
 
     if (ex_int64_status(exodusFilePtr) & EX_IDS_INT64_DB) {
-      status = nc_put_att_longlong(exodusFilePtr, entlst, EX_ATTRIBUTE_ID, NC_INT64, 1, &blob.id);
+      long long tmp = blob.id;
+      status = nc_put_att_longlong(exodusFilePtr, entlst, EX_ATTRIBUTE_ID, NC_INT64, 1, &tmp);
     }
     else {
       int id = blob.id;
@@ -2723,7 +2724,7 @@ int Internals::put_non_define_data(const std::vector<Assembly> &assemblies)
     if (!assembly.memberIdList.empty()) {
       int entlst_id = 0;
       nc_inq_varid(exodusFilePtr, VAR_ENTITY_ASSEMBLY(assembly.id), &entlst_id);
-      if ((status = nc_put_var_longlong(exodusFilePtr, entlst_id, assembly.memberIdList.data())) !=
+      if ((status = nc_put_var_longlong(exodusFilePtr, entlst_id, (long long int *)assembly.memberIdList.data())) !=
           EX_NOERR) {
         std::string errmsg =
             fmt::format("Error: failed to output entity list for assembly {} in file {}",
