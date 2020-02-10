@@ -1666,20 +1666,11 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
     output_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
 
-#if 0
     for (int i = 0; i < 2; i++) {
       auto field_type = Ioss::Field::TRANSIENT;
       if (i > 0) {
         field_type = Ioss::Field::REDUCTION;
       }
-
-      // For each 'TRANSIENT' and 'REDUCTION' field in the node blocks and element
-      // blocks, transfer to the output node and element blocks.
-      transfer_fields(&region, &output_region, field_type);
-
-      transfer_fields(region.get_edge_blocks(), output_region, field_type, options, rank);
-      transfer_fields(region.get_face_blocks(), output_region, field_type, options, rank);
-      transfer_fields(region.get_element_blocks(), output_region, field_type, options, rank);
 
       // Structured Blocks -- Contain a NodeBlock that also needs its fields transferred...
       const auto &sbs = region.get_structured_blocks();
@@ -1696,48 +1687,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
           transfer_fields(&inb, &onb, field_type);
         }
       }
-
-      transfer_fields(region.get_nodesets(), output_region, field_type, options, rank);
-      transfer_fields(region.get_edgesets(), output_region, field_type, options, rank);
-      transfer_fields(region.get_facesets(), output_region, field_type, options, rank);
-      transfer_fields(region.get_elementsets(), output_region, field_type, options, rank);
-
-      // Side Sets
-      {
-        const auto &fss = region.get_sidesets();
-        for (const auto &ifs : fss) {
-          const std::string &name = ifs->name();
-          if (options.debug && rank == 0) {
-            fmt::print(stderr, "{}, ", name);
-          }
-
-          // Find matching output sideset
-          Ioss::SideSet *ofs = output_region.get_sideset(name);
-          if (ofs != nullptr) {
-            transfer_fields(ifs, ofs, field_type);
-
-            const auto &fbs = ifs->get_side_blocks();
-            for (const auto &ifb : fbs) {
-
-              // Find matching output sideblock
-              const std::string &fbname = ifb->name();
-              if (options.debug && rank == 0) {
-                fmt::print(stderr, "{}, ", fbname);
-              }
-
-              Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
-              if (ofb != nullptr) {
-                transfer_fields(ifb, ofb, field_type);
-              }
-            }
-          }
-        }
-        if (options.debug && rank == 0) {
-          fmt::print(stderr, "\n");
-        }
-      }
     }
-#endif
     if (options.debug && rank == 0) {
       fmt::print(stderr, "END STATE_DEFINE_TRANSIENT... \n");
     }
@@ -2088,7 +2038,21 @@ namespace {
       }
       auto surf = new Ioss::SideSet(*ss);
       output_region.add(surf);
+
+      // Fix up the optional 'owner_block' in copied SideBlocks...
+      const auto &fbs = ss->get_side_blocks();
+      for (const auto &ifb : fbs) {
+        if (ifb->parent_block() != nullptr) {
+          auto               fb_name = ifb->parent_block()->name();
+          Ioss::EntityBlock *parent =
+              dynamic_cast<Ioss::EntityBlock *>(output_region.get_entity(fb_name));
+
+          Ioss::SideBlock *ofb = surf->get_side_block(ifb->name());
+          ofb->set_parent_block(parent);
+        }
+      }
     }
+
     if (options.verbose && rank == 0 && !fss.empty()) {
       fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*fss.begin())->type_string() + "s",
                  fss.size());
@@ -2133,7 +2097,6 @@ namespace {
   {
     const auto &assem = region.get_assemblies();
     if (!assem.empty()) {
-      size_t total_entities = 0;
       for (const auto &assm : assem) {
         const std::string &name = assm->name();
         if (options.debug && rank == 0) {
