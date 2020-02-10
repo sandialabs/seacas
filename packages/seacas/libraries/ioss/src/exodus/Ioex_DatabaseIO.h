@@ -52,6 +52,8 @@
 #include <vector>
 
 namespace Ioss {
+  class Assembly;
+  class Blob;
   class GroupingEntity;
   class Region;
   class EntityBlock;
@@ -180,6 +182,10 @@ namespace Ioex {
                                size_t data_size) const override             = 0;
     int64_t get_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const override             = 0;
+    int64_t get_field_internal(const Ioss::Assembly *as, const Ioss::Field &field, void *data,
+                               size_t data_size) const override             = 0;
+    int64_t get_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
+                               size_t data_size) const override             = 0;
 
     int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override             = 0;
@@ -206,6 +212,10 @@ namespace Ioex {
     int64_t put_field_internal(const Ioss::SideSet *fs, const Ioss::Field &field, void *data,
                                size_t data_size) const override             = 0;
     int64_t put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
+                               size_t data_size) const override             = 0;
+    int64_t put_field_internal(const Ioss::Assembly *as, const Ioss::Field &field, void *data,
+                               size_t data_size) const override             = 0;
+    int64_t put_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
                                size_t data_size) const override             = 0;
 
     virtual void write_meta_data() = 0;

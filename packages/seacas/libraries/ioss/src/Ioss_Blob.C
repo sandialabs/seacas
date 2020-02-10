@@ -42,10 +42,6 @@
 #include <string>
 #include <vector>
 
-namespace {
-  const std::string id_str() { return std::string("id"); }
-} // namespace
-
 namespace Ioss {
   class Field;
 } // namespace Ioss

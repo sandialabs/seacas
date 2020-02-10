@@ -89,7 +89,7 @@ static int ex_get_nonstandard_ids(int exoid, ex_entity_type obj_type, void_int *
         if ((strncmp(var.name, type, strlen(type)) == 0)) {
           /* Query the "_id" attribute on this object type. */
           if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
-            int64_t id                    = 0;
+            long long id                    = 0;
             status                        = nc_get_att_longlong(exoid, varid, EX_ATTRIBUTE_ID, &id);
             ((int64_t *)ids)[num_found++] = id;
           }

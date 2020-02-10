@@ -196,7 +196,7 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
   for (size_t i = 0; i < count; i++) {
     status = EX_NOERR;
     if (assemblies[i].entity_list != NULL) {
-      if ((status = nc_put_var_longlong(exoid, entlst_id[i], assemblies[i].entity_list)) !=
+      if ((status = nc_put_var_longlong(exoid, entlst_id[i], (long long *)assemblies[i].entity_list)) !=
           EX_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to output entity list for assembly %" PRId64 " in file id %d",

@@ -541,7 +541,6 @@ namespace Ioss {
     size_t num_fs_vars       = get_variable_count(get_facesets());
     size_t num_els_vars      = get_variable_count(get_elementsets());
     size_t num_asm_red_vars  = get_reduction_variable_count(get_assemblies());
-    size_t num_blob_red_vars = get_reduction_variable_count(get_blobs());
     size_t num_blob_vars     = get_variable_count(get_blobs());
 
     size_t                       num_ss_vars = 0;

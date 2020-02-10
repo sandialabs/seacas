@@ -131,7 +131,7 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
   }
 
   if (assembly->entity_list != NULL) {
-    if ((status = nc_get_var_longlong(exoid, entlst_id, assembly->entity_list)) != NC_NOERR) {
+    if ((status = nc_get_var_longlong(exoid, entlst_id, (long long int *)assembly->entity_list)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to read entity list for assembly %" PRId64 " in file id %d",
                assembly->id, exoid);

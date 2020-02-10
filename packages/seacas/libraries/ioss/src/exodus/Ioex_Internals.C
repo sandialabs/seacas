@@ -1874,11 +1874,6 @@ int Internals::put_metadata(const std::vector<Blob> &blobs)
     return (EX_FATAL);
   }
 
-  int int_type = NC_INT;
-  if (ex_int64_status(exodusFilePtr) & EX_IDS_INT64_DB) {
-    int_type = NC_INT64;
-  }
-
   for (const auto &blob : blobs) {
     char *numentryptr = DIM_NUM_VALUES_BLOB(blob.id);
 
