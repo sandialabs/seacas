@@ -133,9 +133,8 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
       ex__compress_variable(exoid, entlst_id[i], 1);
 
       if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
-	long long tmp = assemblies[i].id;
-        status =
-            nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &tmp);
+        long long tmp = assemblies[i].id;
+        status = nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &tmp);
       }
       else {
         int id = assemblies[i].id;
@@ -168,8 +167,8 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
 
       {
         char *contains = ex_name_of_object(assemblies[i].type);
-        if ((status = nc_put_att_text(exoid, entlst_id[i], EX_ATTRIBUTE_TYPENAME, strlen(contains) + 1,
-                                      contains)) != NC_NOERR) {
+        if ((status = nc_put_att_text(exoid, entlst_id[i], EX_ATTRIBUTE_TYPENAME,
+                                      strlen(contains) + 1, contains)) != NC_NOERR) {
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to store assembly type name %s in file id %d", assemblies[i].name,
                    exoid);
