@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -151,7 +151,7 @@ error = ex_put_variable_param (exoid, EX_GLOBAL, num_glo_vars);
 
 int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
 {
-  int  time_dim, num_nod_dim, dimid, dim_str_name, varid;
+  int  time_dim, num_nod_dim = 0, dimid, dim_str_name, varid;
   int  dims[3];
   char errmsg[MAX_ERR_LENGTH];
   int  status;
@@ -185,10 +185,10 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  if ((status = nc_inq_dimid(exoid, DIM_NUM_NODES, &num_nod_dim)) != NC_NOERR) {
-    if (obj_type == EX_NODAL) {
+  if (obj_type == EX_NODAL) {
+    if ((status = nc_inq_dimid(exoid, DIM_NUM_NODES, &num_nod_dim)) != NC_NOERR) {
       EX_FUNC_LEAVE(EX_NOERR); /* Probably no nodes on database (e.g., badly
-                            load-balanced parallel run) */
+                                  load-balanced parallel run) */
     }
   }
 

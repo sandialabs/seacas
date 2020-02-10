@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 National Technology & Engineering Solutions
+ * Copyright (c) 2019, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -53,24 +53,20 @@
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 
-static int ex_put_var_names_int(int exoid, char *tname, char *dnumvar, char *vnames, int *varid)
+static int ex_put_var_names_int(int exoid, ex_entity_type obj_type, int num_vars, char *tname,
+                                char *dnumvar, char *vnames, int *varid)
 {
   int  status;
   int  dimid;
   char errmsg[MAX_ERR_LENGTH];
 
   if ((status = nc_inq_dimid(exoid, dnumvar, &dimid)) != NC_NOERR) {
-    if (status == NC_EBADDIM) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no %s variables defined in file id %d", tname,
-               exoid);
-      ex_err_fn(exoid, __func__, errmsg, status);
+    if (status != NC_NOERR) {
+      /* ex_put_reduction_variable_param was not called.  Call it now */
+      EX_FUNC_UNLOCK();
+      ex_put_reduction_variable_param(exoid, obj_type, num_vars);
+      EX_FUNC_ENTER();
     }
-    else {
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to locate number of %s variables in file id %d", tname, exoid);
-      ex_err_fn(exoid, __func__, errmsg, status);
-    }
-    return (EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, vnames, varid)) != NC_NOERR) {
@@ -160,39 +156,48 @@ int ex_put_reduction_variable_names(int exoid, ex_entity_type obj_type, int num_
 
   switch (obj_type) {
   case EX_GLOBAL:
-    ex_put_var_names_int(exoid, "global", DIM_NUM_GLO_VAR, VAR_NAME_GLO_VAR, &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "global", DIM_NUM_GLO_VAR, VAR_NAME_GLO_VAR,
+                         &varid);
     break;
   case EX_ASSEMBLY:
-    ex_put_var_names_int(exoid, "assembly", DIM_NUM_ASSEMBLY_RED_VAR, VAR_NAME_ASSEMBLY_RED_VAR,
-                         &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "assembly", DIM_NUM_ASSEMBLY_RED_VAR,
+                         VAR_NAME_ASSEMBLY_RED_VAR, &varid);
     break;
   case EX_BLOB:
-    ex_put_var_names_int(exoid, "blob", DIM_NUM_BLOB_RED_VAR, VAR_NAME_BLOB_RED_VAR, &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "blob", DIM_NUM_BLOB_RED_VAR,
+                         VAR_NAME_BLOB_RED_VAR, &varid);
     break;
   case EX_EDGE_BLOCK:
-    ex_put_var_names_int(exoid, "edge", DIM_NUM_EDG_RED_VAR, VAR_NAME_EDG_RED_VAR, &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "edge", DIM_NUM_EDG_RED_VAR,
+                         VAR_NAME_EDG_RED_VAR, &varid);
     break;
   case EX_FACE_BLOCK:
-    ex_put_var_names_int(exoid, "face", DIM_NUM_FAC_RED_VAR, VAR_NAME_FAC_RED_VAR, &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "face", DIM_NUM_FAC_RED_VAR,
+                         VAR_NAME_FAC_RED_VAR, &varid);
     break;
   case EX_ELEM_BLOCK:
-    ex_put_var_names_int(exoid, "element", DIM_NUM_ELE_RED_VAR, VAR_NAME_ELE_RED_VAR, &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "element", DIM_NUM_ELE_RED_VAR,
+                         VAR_NAME_ELE_RED_VAR, &varid);
     break;
   case EX_NODE_SET:
-    ex_put_var_names_int(exoid, "node set", DIM_NUM_NSET_RED_VAR, VAR_NAME_NSET_RED_VAR, &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "node set", DIM_NUM_NSET_RED_VAR,
+                         VAR_NAME_NSET_RED_VAR, &varid);
     break;
   case EX_EDGE_SET:
-    ex_put_var_names_int(exoid, "edge set", DIM_NUM_ESET_RED_VAR, VAR_NAME_ESET_RED_VAR, &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "edge set", DIM_NUM_ESET_RED_VAR,
+                         VAR_NAME_ESET_RED_VAR, &varid);
     break;
   case EX_FACE_SET:
-    ex_put_var_names_int(exoid, "face set", DIM_NUM_FSET_RED_VAR, VAR_NAME_FSET_RED_VAR, &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "face set", DIM_NUM_FSET_RED_VAR,
+                         VAR_NAME_FSET_RED_VAR, &varid);
     break;
   case EX_SIDE_SET:
-    ex_put_var_names_int(exoid, "side set", DIM_NUM_SSET_RED_VAR, VAR_NAME_SSET_RED_VAR, &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "side set", DIM_NUM_SSET_RED_VAR,
+                         VAR_NAME_SSET_RED_VAR, &varid);
     break;
   case EX_ELEM_SET:
-    ex_put_var_names_int(exoid, "element set", DIM_NUM_ELSET_RED_VAR, VAR_NAME_ELSET_RED_VAR,
-                         &varid);
+    ex_put_var_names_int(exoid, obj_type, num_vars, "element set", DIM_NUM_ELSET_RED_VAR,
+                         VAR_NAME_ELSET_RED_VAR, &varid);
     break;
   default:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",

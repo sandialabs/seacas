@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2019 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -175,6 +175,11 @@ extern EX_errval_t *exerrval_get();
     return;                                                                                        \
   } while (0)
 
+#define EX_FUNC_UNLOCK()                                                                           \
+  do {                                                                                             \
+    ex__mutex_unlock(&EX_g);                                                                       \
+  } while (0)
+
 #else
 
 /* Enable this to output tracing information from the API functions */
@@ -203,6 +208,11 @@ EXODUS_EXPORT int indent;
     fprintf(stderr, "%d Leave: %s\n", indent, __func__);                                           \
     return;                                                                                        \
   } while (0)
+#define EX_FUNC_UNLOCK()                                                                           \
+  do {                                                                                             \
+    indent--;                                                                                      \
+    fprintf(stderr, "%d Unlock: %s\n", indent, __func__);                                          \
+  } while (0)
 #else
 #define EX_FUNC_ENTER()                                                                            \
   {                                                                                                \
@@ -211,6 +221,7 @@ EXODUS_EXPORT int indent;
 #define EX_FUNC_ENTER_INT()
 #define EX_FUNC_LEAVE(error) return error
 #define EX_FUNC_VOID() return
+#define EX_FUNC_UNLOCK()
 #endif
 #endif
 
