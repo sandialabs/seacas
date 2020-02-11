@@ -46,7 +46,7 @@ namespace Ioss {
   class Field;
 } // namespace Ioss
 
-/** \brief Create an blob with no members initially.
+/** \brief Create a blob with no members initially.
  *
  *  \param[in] io_database The database associated with the region containing the blob.
  *  \param[in] my_name The blob's name.
