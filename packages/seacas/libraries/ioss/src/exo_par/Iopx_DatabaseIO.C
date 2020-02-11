@@ -5,7 +5,7 @@
 //    strange cases
 //
 //
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -37,12 +37,6 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
 #include <algorithm>
 #include <cassert>
 #include <cctype>
@@ -51,11 +45,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <exo_par/Iopx_DatabaseIO.h>
-#include <exo_par/Iopx_DecompositionData.h>
-#include <exodus/Ioex_Internals.h>
-#include <exodus/Ioex_Utils.h>
-#include <exodusII.h>
 #include <fmt/ostream.h>
 #include <functional>
 #include <iostream>
@@ -70,32 +59,46 @@
 #include <utility>
 #include <vector>
 
-#include "Ioss_CommSet.h"
-#include "Ioss_CoordinateFrame.h"
-#include "Ioss_DBUsage.h"
-#include "Ioss_DatabaseIO.h"
-#include "Ioss_EdgeBlock.h"
-#include "Ioss_EdgeSet.h"
-#include "Ioss_ElementBlock.h"
-#include "Ioss_ElementSet.h"
-#include "Ioss_EntityBlock.h"
-#include "Ioss_EntitySet.h"
-#include "Ioss_EntityType.h"
-#include "Ioss_FaceBlock.h"
-#include "Ioss_FaceSet.h"
-#include "Ioss_Field.h"
-#include "Ioss_GroupingEntity.h"
-#include "Ioss_Map.h"
-#include "Ioss_NodeBlock.h"
-#include "Ioss_NodeSet.h"
-#include "Ioss_Property.h"
-#include "Ioss_Region.h"
-#include "Ioss_SideBlock.h"
-#include "Ioss_SideSet.h"
-#include "Ioss_State.h"
-#include "Ioss_VariableType.h"
+#include <exo_par/Iopx_DatabaseIO.h>
+#include <exo_par/Iopx_DecompositionData.h>
+#include <exodus/Ioex_Internals.h>
+#include <exodus/Ioex_Utils.h>
+#include <exodusII.h>
 
-#include "Ioss_FileInfo.h"
+#include <Ioss_Assembly.h>
+#include <Ioss_Blob.h>
+#include <Ioss_CodeTypes.h>
+#include <Ioss_ElementTopology.h>
+#include <Ioss_FileInfo.h>
+#include <Ioss_ParallelUtils.h>
+#include <Ioss_SurfaceSplit.h>
+#include <Ioss_Utils.h>
+#include <Ioss_CommSet.h>
+#include <Ioss_CoordinateFrame.h>
+#include <Ioss_DBUsage.h>
+#include <Ioss_DatabaseIO.h>
+#include <Ioss_EdgeBlock.h>
+#include <Ioss_EdgeSet.h>
+#include <Ioss_ElementBlock.h>
+#include <Ioss_ElementSet.h>
+#include <Ioss_EntityBlock.h>
+#include <Ioss_EntitySet.h>
+#include <Ioss_EntityType.h>
+#include <Ioss_FaceBlock.h>
+#include <Ioss_FaceSet.h>
+#include <Ioss_Field.h>
+#include <Ioss_GroupingEntity.h>
+#include <Ioss_Map.h>
+#include <Ioss_NodeBlock.h>
+#include <Ioss_NodeSet.h>
+#include <Ioss_Property.h>
+#include <Ioss_Region.h>
+#include <Ioss_SideBlock.h>
+#include <Ioss_SideSet.h>
+#include <Ioss_State.h>
+#include <Ioss_VariableType.h>
+
+#include <Ioss_FileInfo.h>
 #undef MPICPP
 
 // ========================================================================
@@ -1762,6 +1765,99 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
   return num_to_get;
 }
 
+int64_t DatabaseIO::get_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
+                                       size_t data_size) const
+{
+  {
+    Ioss::SerializeIO serializeIO__(this);
+
+    size_t num_to_get = field.verify(data_size);
+    if (num_to_get > 0) {
+
+      Ioss::Field::RoleType role = field.get_role();
+      if (role == Ioss::Field::MESH) {
+        if (field.get_name() == "ids") {
+          // Map the local ids in this node block
+          // (1...node_count) to global node ids.
+          //          get_map(EX_BLOB).map_implicit_data(data, field, num_to_get, 0);
+        }
+
+        else if (field.get_name() == "connectivity") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
+        }
+        else if (field.get_name() == "connectivity_raw") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
+        }
+        else {
+          num_to_get = Ioss::Utils::field_warning(blob, field, "input");
+        }
+      }
+      else if (role == Ioss::Field::TRANSIENT) {
+        // Check if the specified field exists on this blob.
+        // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
+        // exist on the database as scalars with the appropriate
+        // extensions.
+
+        // Read in each component of the variable and transfer into
+        // 'data'.  Need temporary storage area of size 'number of
+        // items in this blob.
+        num_to_get = read_transient_field(EX_BLOB, m_variables[EX_BLOB], field, blob, data);
+      }
+      else if (role == Ioss::Field::ATTRIBUTE) {
+        num_to_get = read_attribute_field(EX_BLOB, field, blob, data);
+      }
+    }
+    return num_to_get;
+  }
+}
+
+int64_t DatabaseIO::get_field_internal(const Ioss::Assembly *assembly, const Ioss::Field &field,
+                                       void *data, size_t data_size) const
+{
+  {
+    Ioss::SerializeIO serializeIO__(this);
+
+    size_t num_to_get = field.verify(data_size);
+    if (num_to_get > 0) {
+
+      Ioss::Field::RoleType role = field.get_role();
+      if (role == Ioss::Field::MESH) {
+        if (field.get_name() == "ids") {
+          // Map the local ids in this node block
+          // (1...node_count) to global node ids.
+          //          get_map(EX_ASSEMBLY).map_implicit_data(data, field, num_to_get, 0);
+        }
+
+        else if (field.get_name() == "connectivity") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
+        }
+        else if (field.get_name() == "connectivity_raw") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
+        }
+        else {
+          num_to_get = Ioss::Utils::field_warning(assembly, field, "input");
+        }
+      }
+      else if (role == Ioss::Field::TRANSIENT) {
+        // Check if the specified field exists on this assembly.
+        // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
+        // exist on the database as scalars with the appropriate
+        // extensions.
+
+        // Read in each component of the variable and transfer into
+        // 'data'.  Need temporary storage area of size 'number of
+        // items in this assembly.
+        num_to_get =
+            read_transient_field(EX_ASSEMBLY, m_variables[EX_ASSEMBLY], field, assembly, data);
+      }
+      else if (role == Ioss::Field::ATTRIBUTE) {
+        num_to_get = read_attribute_field(EX_ASSEMBLY, field, assembly, data);
+      }
+    }
+    return num_to_get;
+  }
+}
+
 int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
                                        void *data, size_t data_size) const
 {
@@ -3269,6 +3365,118 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
   return num_to_get;
 }
 
+int64_t DatabaseIO::put_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
+                                       size_t data_size) const
+{
+  {
+    Ioss::SerializeIO serializeIO__(this);
+
+    size_t num_to_get = field.verify(data_size);
+    if (num_to_get > 0) {
+
+      Ioss::Field::RoleType role = field.get_role();
+
+      if (role == Ioss::Field::MESH) {
+        if (field.get_name() == "ids") {
+          // The ids coming in are the global ids; their position is the
+          // local id -1 (That is, data[0] contains the global id of local
+          // node 1)
+          //          handle_node_ids(data, num_to_get);
+        }
+        else if (field.get_name() == "connectivity") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
+        }
+        else if (field.get_name() == "connectivity_raw") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
+        }
+        else if (field.get_name() == "node_connectivity_status") {
+          // Do nothing, input only field.
+        }
+        else if (field.get_name() == "implicit_ids") {
+          // Do nothing, input only field.
+        }
+        else {
+          return Ioss::Utils::field_warning(blob, field, "mesh output");
+        }
+      }
+      else if (role == Ioss::Field::TRANSIENT) {
+        // Check if the specified field exists on this node block.
+        // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
+        // exist on the database as scalars with the appropriate
+        // extensions.
+
+        // Transfer each component of the variable into 'data' and then
+        // output.  Need temporary storage area of size 'number of
+        // nodes in this block.
+        write_entity_transient_field(EX_BLOB, field, blob, num_to_get, data);
+      }
+      else if (role == Ioss::Field::REDUCTION) {
+        store_reduction_field(EX_BLOB, field, blob, data);
+      }
+      else if (role == Ioss::Field::ATTRIBUTE) {
+        num_to_get = write_attribute_field(EX_BLOB, field, blob, data);
+      }
+    }
+    return num_to_get;
+  }
+}
+
+int64_t DatabaseIO::put_field_internal(const Ioss::Assembly *assembly, const Ioss::Field &field,
+                                       void *data, size_t data_size) const
+{
+  {
+    Ioss::SerializeIO serializeIO__(this);
+
+    size_t num_to_get = field.verify(data_size);
+    if (num_to_get > 0) {
+
+      Ioss::Field::RoleType role = field.get_role();
+
+      if (role == Ioss::Field::MESH) {
+        if (field.get_name() == "ids") {
+          // The ids coming in are the global ids; their position is the
+          // local id -1 (That is, data[0] contains the global id of local
+          // node 1)
+          //          handle_node_ids(data, num_to_get);
+        }
+        else if (field.get_name() == "connectivity") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
+        }
+        else if (field.get_name() == "connectivity_raw") {
+          // Do nothing, just handles an idiosyncrasy of the GroupingEntity
+        }
+        else if (field.get_name() == "node_connectivity_status") {
+          // Do nothing, input only field.
+        }
+        else if (field.get_name() == "implicit_ids") {
+          // Do nothing, input only field.
+        }
+        else {
+          return Ioss::Utils::field_warning(assembly, field, "mesh output");
+        }
+      }
+      else if (role == Ioss::Field::TRANSIENT) {
+        // Check if the specified field exists on this node block.
+        // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
+        // exist on the database as scalars with the appropriate
+        // extensions.
+
+        // Transfer each component of the variable into 'data' and then
+        // output.  Need temporary storage area of size 'number of
+        // nodes in this block.
+        write_entity_transient_field(EX_ASSEMBLY, field, assembly, num_to_get, data);
+      }
+      else if (role == Ioss::Field::REDUCTION) {
+        store_reduction_field(EX_ASSEMBLY, field, assembly, data);
+      }
+      else if (role == Ioss::Field::ATTRIBUTE) {
+        num_to_get = write_attribute_field(EX_ASSEMBLY, field, assembly, data);
+      }
+    }
+    return num_to_get;
+  }
+}
+
 int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
                                        void *data, size_t data_size) const
 {
@@ -4269,6 +4477,34 @@ void DatabaseIO::write_meta_data()
   }
   else {
     Ioss::Utils::copy_string(the_title, "IOSS Output Default Title");
+  }
+
+  // Assemblies --
+  {
+    const auto &assemblies = region->get_assemblies();
+    // Set ids of all entities that have "id" property...
+    for (auto &assem : assemblies) {
+      Ioex::set_id(assem, EX_ASSEMBLY, &ids_);
+    }
+
+    for (auto &assem : assemblies) {
+      Ioex::get_id(assem, EX_ASSEMBLY, &ids_);
+    }
+    m_groupCount[EX_ASSEMBLY] = assemblies.size();
+  }
+
+  // Blobs --
+  {
+    const auto &blobs = region->get_blobs();
+    // Set ids of all entities that have "id" property...
+    for (auto &blob : blobs) {
+      Ioex::set_id(blob, EX_BLOB, &ids_);
+    }
+
+    for (auto &blob : blobs) {
+      Ioex::get_id(blob, EX_BLOB, &ids_);
+    }
+    m_groupCount[EX_BLOB] = blobs.size();
   }
 
   // Edge Blocks --
