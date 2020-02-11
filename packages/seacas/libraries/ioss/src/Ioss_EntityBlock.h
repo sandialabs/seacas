@@ -119,10 +119,10 @@ namespace Ioss {
     EntityBlock(const EntityBlock &) = default;
     EntityBlock &operator=(const EntityBlock &) = delete;
 
-    ElementTopology *topology_;
+    ElementTopology *topology_{nullptr};
 
   protected:
-    size_t idOffset;
+    size_t idOffset{0};
   };
 } // namespace Ioss
 #endif
