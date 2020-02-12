@@ -2182,6 +2182,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
         num_to_get =
             read_transient_field(EX_NODE_BLOCK, m_variables[EX_NODE_BLOCK], field, nb, data);
       }
+      else if (role == Ioss::Field::REDUCTION) {
+        get_reduction_field(EX_NODE_BLOCK, field, nb, data);
+      }
       else if (role == Ioss::Field::ATTRIBUTE) {
         num_to_get = read_attribute_field(EX_NODE_BLOCK, field, nb, data);
       }
@@ -2227,6 +2230,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::Blob *blob, const Ioss::Field
         // 'data'.  Need temporary storage area of size 'number of
         // items in this blob.
         num_to_get = read_transient_field(EX_BLOB, m_variables[EX_BLOB], field, blob, data);
+      }
+      else if (role == Ioss::Field::REDUCTION) {
+        get_reduction_field(EX_BLOB, field, blob, data);
       }
       else if (role == Ioss::Field::ATTRIBUTE) {
         num_to_get = read_attribute_field(EX_BLOB, field, blob, data);
@@ -2274,6 +2280,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::Assembly *assembly, const Ios
         // items in this assembly.
         num_to_get =
             read_transient_field(EX_ASSEMBLY, m_variables[EX_ASSEMBLY], field, assembly, data);
+      }
+      else if (role == Ioss::Field::REDUCTION) {
+        get_reduction_field(EX_ASSEMBLY, field, assembly, data);
       }
       else if (role == Ioss::Field::ATTRIBUTE) {
         num_to_get = read_attribute_field(EX_ASSEMBLY, field, assembly, data);
@@ -2437,7 +2446,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
             read_transient_field(EX_ELEM_BLOCK, m_variables[EX_ELEM_BLOCK], field, eb, data);
       }
       else if (role == Ioss::Field::REDUCTION) {
-        num_to_get = Ioss::Utils::field_warning(eb, field, "input reduction");
+        get_reduction_field(EX_ELEM_BLOCK, field, eb, data);
       }
     }
     return num_to_get;
@@ -2518,7 +2527,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
             read_transient_field(EX_FACE_BLOCK, m_variables[EX_FACE_BLOCK], field, eb, data);
       }
       else if (role == Ioss::Field::REDUCTION) {
-        num_to_get = Ioss::Utils::field_warning(eb, field, "input reduction");
+        get_reduction_field(EX_FACE_BLOCK, field, eb, data);
       }
     }
     return num_to_get;
@@ -2589,7 +2598,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Fi
             read_transient_field(EX_EDGE_BLOCK, m_variables[EX_EDGE_BLOCK], field, eb, data);
       }
       else if (role == Ioss::Field::REDUCTION) {
-        num_to_get = Ioss::Utils::field_warning(eb, field, "input reduction");
+        get_reduction_field(EX_EDGE_BLOCK, field, eb, data);
       }
     }
     return num_to_get;
@@ -2670,6 +2679,9 @@ int64_t DatabaseIO::get_Xset_field_internal(ex_entity_type type, const Ioss::Ent
       }
       else if (role == Ioss::Field::ATTRIBUTE) {
         num_to_get = read_attribute_field(type, field, ns, data);
+      }
+      else if (role == Ioss::Field::REDUCTION) {
+        get_reduction_field(type, field, ns, data);
       }
       else if (role == Ioss::Field::TRANSIENT) {
         // Check if the specified field exists on this node block.
@@ -2769,9 +2781,11 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeSet *ns, const Ioss::Fiel
     else if (role == Ioss::Field::ATTRIBUTE) {
       num_to_get = Ioss::Utils::field_warning(ns, field, "input");
     }
+    else if (role == Ioss::Field::REDUCTION) {
+      num_to_get = Ioss::Utils::field_warning(ns, field, "input");
+    }
     else if (role == Ioss::Field::TRANSIENT) {
       // Filtered not currently implemented for transient or attributes....
-      num_to_get = Ioss::Utils::field_warning(ns, field, "input");
     }
   }
   return num_to_get;
