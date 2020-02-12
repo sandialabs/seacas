@@ -113,7 +113,7 @@ namespace Iofaodel {
         "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
         "/Field/RoleType/" + to_string(field.get_role()) +
         "/BasicType/" + to_string(field.get_type()) +
-        "/Name/" + to_string(field.get_type()) + "/Name/" + field.get_name()
+        "/Name/" + field.get_name()
         );
   }
 
@@ -159,6 +159,91 @@ namespace Iofaodel {
         );
   }
 
+
+  kelpie::Key entity_search_key(int rank,
+      const Ioss::Region & region,
+      const std::string & entity)
+  {
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/State/" + std::to_string(region.get_current_state()) +
+        "/Entity/" + entity + "/*"
+        );
+  }
+
+  kelpie::Key entity_search_key(int rank,
+      const Ioss::Region & region,
+      const Ioss::GroupingEntity & grouping_entity)
+  {
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }
+    auto grouping_entity_name = grouping_entity.name();
+    if(grouping_entity_name.empty()) {
+      grouping_entity_name="UNNAMED";
+    }
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/State/" + std::to_string(region.get_current_state()) +
+        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name
+        + "*"
+        );
+  }
+
+
+
+
+  kelpie::Key property_search_key(int rank,
+      const Ioss::Region & region,
+      const Ioss::GroupingEntity & grouping_entity)
+  {
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }
+    auto grouping_entity_name = grouping_entity.name();
+    if(grouping_entity_name.empty()) {
+      grouping_entity_name="UNNAMED";
+    }
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/State/" + std::to_string(region.get_current_state()) +
+        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
+        "/Property/*"
+        );
+  }
+
+
+
+
+  kelpie::Key field_search_key(int rank,
+      const Ioss::Region & region,
+      const Ioss::GroupingEntity & grouping_entity)
+  {
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }
+    auto grouping_entity_name = grouping_entity.name();
+    if(grouping_entity_name.empty()) {
+      grouping_entity_name="UNNAMED";
+    }
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/State/" + std::to_string(region.get_current_state()) +
+        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
+        "/Field/*"
+        );
+  }
 
   std::string to_string(const Ioss::Property::BasicType & t)
   {
@@ -231,6 +316,42 @@ namespace Iofaodel {
       case Ioss::EntityType::INVALID_TYPE:    return std::string("INVALID_TYPE");
       default:                                return std::string("INVALID_TYPE");
     };
+  }
+
+  std::set<std::string> get_entity_names(const std::vector<kelpie::Key> & keys,
+      std::string target)
+  {
+    std::set<std::string> names;
+    for(auto k : keys)
+    {
+      std::string front("Entity/" + target + "/Name/");
+      auto begin = k.K2().find(front);
+      if(begin != std::string::npos) {
+
+        {
+          std::string back = std::string("/Property/BasicType");
+          auto end = k.K2().find(back);
+          if(end != std::string::npos) {
+            auto name = k.K2().substr(begin + front.size(),
+                end - begin - front.size());
+            names.insert(name);
+          }
+        }
+
+        {
+          std::string back = std::string("/Field/RoleType");
+          auto end = k.K2().find(back);
+          if(end != std::string::npos) {
+            auto name = k.K2().substr(begin + front.size(),
+                end - begin - front.size());
+            names.insert(name);
+          }
+        }
+
+      }
+    }
+
+    return names;
   }
 
 } // namespace Iofaodel

@@ -40,6 +40,7 @@
 #include <kelpie/Key.hh>
 #include <lunasa/DataObject.hh>
 
+#include <set>
 
 namespace Iofaodel {
 
@@ -90,10 +91,29 @@ namespace Iofaodel {
       const Ioss::Region & region,
       const Ioss::GroupingEntity & grouping_entity);
 
+  kelpie::Key entity_search_key(int rank,
+      const Ioss::Region & region,
+      const std::string & entity_name);
+
+  kelpie::Key entity_search_key(int rank,
+      const Ioss::Region & region,
+      const Ioss::GroupingEntity & entity);
+
+  kelpie::Key property_search_key(int parallel_rank,
+      const Ioss::Region & region,
+      const Ioss::GroupingEntity & grouping_entity);
+
+  kelpie::Key field_search_key(int parallel_rank,
+      const Ioss::Region & region,
+      const Ioss::GroupingEntity & grouping_entity);
+
   std::string to_string(const Ioss::Property::BasicType & t);
   std::string to_string(const Ioss::Field::BasicType & t);
   std::string to_string(const Ioss::Field::RoleType & t);
   std::string to_string(const Ioss::EntityType & t);
+
+  std::set<std::string> get_entity_names(const std::vector<kelpie::Key> & keys,
+      std::string target);
 
 } // namespace
 
