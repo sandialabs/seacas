@@ -132,5 +132,16 @@ namespace Iofaodel {
     return ldo;
   }
 
+  int64_t property_get_int(lunasa::DataObject ldo)
+  {
+    auto prop(static_cast<Iofaodel::property_entry_t*>(ldo.GetDataPtr()));
+    auto value_ptr = static_cast<void*>(prop->data + prop->value.offset);
+    return *(static_cast<int64_t*>(value_ptr));
+  }
 
+  std::string property_get_string(lunasa::DataObject ldo)
+  {
+    auto prop(static_cast<Iofaodel::property_entry_t*>(ldo.GetDataPtr()));
+    return std::string(prop->data + prop->value.offset, prop->value.size);
+  }
 } // namespace

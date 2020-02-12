@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include <lunasa/DataObject.hh>
 
 namespace Iofaodel {
 
@@ -47,8 +48,9 @@ namespace Iofaodel {
 
     explicit property_entry_t(const Ioss::Property & property,
         const size_t start = 0);
-
   };
 
+  int64_t property_get_int(lunasa::DataObject ldo);
+  std::string property_get_string(lunasa::DataObject ldo);
 
 } // namespace

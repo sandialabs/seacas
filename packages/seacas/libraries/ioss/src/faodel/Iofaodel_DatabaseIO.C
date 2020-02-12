@@ -62,6 +62,10 @@
 #include "faodel-services/MPISyncStart.hh"
 // #include "Iofaodel_Serialize.h"
 
+#if 1
+#define PRINT_KEYS
+#endif
+
 namespace {
   // Output a message that the operation is unsupported and die...
   void unsupported(const char *operation)
@@ -193,9 +197,10 @@ dirman.root_node_mpi 0
     map_properties(*(get_region()),
         [this](const Ioss::Region & r,
           const Ioss::GroupingEntity & e, const Ioss::Property & p) {
-          auto key = make_key(parallel_rank(), r, e, p);
-          auto ldo = pack_property(r, e, p);
-          this->pool.Publish( key, ldo );
+          this->pool.Publish(
+              make_key(parallel_rank(), r, e, p),
+              pack_property(r, e, p)
+              );
         }
         );
     return true;
@@ -210,10 +215,10 @@ dirman.root_node_mpi 0
         this->usage() == Ioss::DatabaseUsage::WRITE_HEARTBEAT) {
 
       // write states to LDO
-      // pool.Publish(
-          // make_states_key(parallel_rank(), *get_region()),
-          // pack_states(*get_region()));
-
+      pool.Publish(
+          make_states_key(parallel_rank(), *get_region()),
+          pack_states(*get_region()));
+ 
       // write properties to LDOs and publish
       this->put_properties();
     }
@@ -284,13 +289,11 @@ dirman.root_node_mpi 0
   }
 
   void DatabaseIO::read_region() {
-    auto rank = std::to_string(parallel_rank());
-    auto region(this->get_region());
 
     {
       // Region Properties
       kelpie::ObjectCapacities oc;
-      auto search_key = kelpie::Key(rank, "/Region/UNNAMED/State/-1/Entity/Region/Name/UNNAMED/Property/*");
+      auto search_key = property_search_key(parallel_rank(), *(get_region()), *(get_region()));
       pool.List(search_key, &oc);
       this->read_entity_properties(oc, *(this->get_region()));
     }
@@ -298,7 +301,7 @@ dirman.root_node_mpi 0
     {
       // Region Fields
       kelpie::ObjectCapacities oc;
-      auto search_key = kelpie::Key(rank, "/Region/UNNAMED/State/-1/Entity/Region/Name/UNNAMED/Field/*");
+      auto search_key = field_search_key(parallel_rank(), *(get_region()), *(get_region()));
       pool.List(search_key, &oc);
       this->read_entity_fields(oc, *(this->get_region()));
     }
@@ -308,6 +311,7 @@ dirman.root_node_mpi 0
   void DatabaseIO::read_entity_properties(kelpie::ObjectCapacities oc,
       Ioss::GroupingEntity & entity)
   {
+    // TODO do we need to update default properties upon construction?
     // Properties
     for(size_t i=0; i<oc.keys.size(); i++) {
       lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
@@ -360,112 +364,68 @@ dirman.root_node_mpi 0
               field->role_type,
               field->raw_count)
             );
-      } else {
-        std::cerr << "Field " << field_name << " already exists! " << std::endl;
       }
     }
   }
 
 
-#if 0
-  lunasa::DataObject key_to_Entry( const std::vector< kelpie::Key >::iterator& key_iter,
-      kelpie::ObjectCapacities& oc,
-      kelpie::Pool pool,
-      Entry*& entry )
-  {
-    size_t id( key_iter - oc.keys.begin() );
-    lunasa::DataObject ldo(0, oc.capacities[id], lunasa::DataObject::AllocatorType::eager);
-    pool.Need(oc.keys[id], oc.capacities[id], &ldo);
-    entry = static_cast<Entry*>(ldo.GetMetaPtr());
-    return ldo;
-  }
-
-
-  std::vector<kelpie::Key>::iterator substr_to_iterator(const std::string & substr,
-      kelpie::ObjectCapacities & oc)
-  {
-    return
-      std::find_if(oc.keys.begin(), oc.keys.end(),
-          [&substr](const kelpie::Key & k) {
-            if(k.K2().find(substr) != std::string::npos)
-              return true;
-            return false;
-          }
-          );
-  }
-
-
-  std::string key_to_string(const std::vector< kelpie::Key >::iterator& key,
-      kelpie::ObjectCapacities& oc,
-      kelpie::Pool pool
-      )
-  {
-    Entry * meta;
-    auto ldo = key_to_Entry(key, oc, pool, meta);
-    return get_string(meta->property.value, ldo);
-  }
-
-
-
-  int64_t key_to_int(const std::vector< kelpie::Key >::iterator& key,
-      kelpie::ObjectCapacities& oc,
-      kelpie::Pool pool
-      )
-  {
-    Entry * meta;
-    auto ldo = key_to_Entry(key, oc, pool, meta);
-    return *(get_int64_ptr(meta->property.value, ldo));
-  }
-
-
-  double key_to_double(const std::vector< kelpie::Key >::iterator& key,
-      kelpie::ObjectCapacities& oc,
-      kelpie::Pool pool
-      )
-  {
-    Entry * meta;
-    auto ldo = key_to_Entry(key, oc, pool, meta);
-    return *(get_double_ptr(meta->property.value, ldo));
-  }
 
 
   void DatabaseIO::get_edgeblocks()
   {
-    // Root of the second key
-    std::string root("/Region/can.ex2/State/-1/Entity/FACEBLOCK");
-
+    std::string type_string("EdgeBlock");
     kelpie::ObjectCapacities oc;
-    pool.List(kelpie::Key(std::to_string(parallel_rank()), root+ "*"), &oc);
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    pool.List(search_key, &oc);
 
-    // for(auto key : block_keys) {
-    for(auto key : oc.keys) {
-      if(key.K2().find("/Properties/") == std::string::npos &&
-          key.K2().find("/Fields/") == std::string::npos) {
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
+      bool have_entity_count(false);
+      int64_t entity_count(0);
+      bool have_original_edge_type(false);
+      std::string original_edge_type;
 
-        auto name = substr_to_iterator(key.K2() + "/Properties/name", oc);
-        auto topo = substr_to_iterator(key.K2() + "/Properties/topology_type", oc);
-        auto count = substr_to_iterator(key.K2() + "/Properties/entity_count", oc);
+      for(int i = 0; i < oc.keys.size(); i++)
+      {
 
-        // If these values exist we can create an Ioss::ElementBlock
-        if(name != oc.keys.end() && topo != oc.keys.end() && count != oc.keys.end()) {
+        if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
 
-          auto *block = new Ioss::FaceBlock(this,
-              key_to_string(name, oc, pool),
-              key_to_string(topo, oc, pool),
-              key_to_int(count, oc, pool));
+          if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            entity_count = property_get_int(ldo);
+            have_entity_count = true;
+          }
 
-          // Get Property keys for this ElementBlock
-          kelpie::ObjectCapacities properties;
-          pool.List(kelpie::Key(std::to_string(parallel_rank()), key.K2() + "/Properties*"), &properties);
-          this->read_entity_properties(properties, *block);
+          if(oc.keys[i].K2().find("original_edge_type") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            original_edge_type = property_get_int(ldo);
+            have_original_edge_type = true;
+          }
 
-          // Get Field keys for this ElementBlock
-          kelpie::ObjectCapacities fields;
-          pool.List(kelpie::Key(std::to_string(parallel_rank()), key.K2() + "/Fields*"), &fields);
-          this->read_entity_properties(fields, *block);
-
-          this->get_region()->add(block);
         }
+      }
+
+      if(have_entity_count && have_original_edge_type) {
+        auto block = new Ioss::EdgeBlock(this, entity_name,
+            original_edge_type, entity_count);
+
+        // Add Properties that aren't created in the CTor
+        auto property_search = property_search_key(parallel_rank(), *(get_region()), *block);
+        kelpie::ObjectCapacities property_oc;
+        pool.List(property_search, &property_oc);
+        this->read_entity_properties(property_oc, *block);
+
+
+        // Add fields that aren't created in the CTor
+        auto field_search = field_search_key(parallel_rank(), *(get_region()), *block);
+        kelpie::ObjectCapacities field_oc;
+        pool.List(field_search, &field_oc);
+        this->read_entity_fields(field_oc, *block);
+
+        this->get_region()->add(block);
       }
     }
   }
@@ -474,209 +434,427 @@ dirman.root_node_mpi 0
 
   void DatabaseIO::get_elemblocks()
   {
-    // Root of the second key
-    std::string root("/Region/can.ex2/State/-1/Entity/ELEMENTBLOCK");
+    std::string type_string("ElementBlock");
     kelpie::ObjectCapacities oc;
-    pool.List(kelpie::Key(std::to_string(parallel_rank()), root + "*"), &oc);
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    pool.List(search_key, &oc);
 
-    for(auto key : oc.keys) {
-      if(key.K2().find("/Properties/") != std::string::npos ||
-          key.K2().find("/Fields/") != std::string::npos)
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
+      bool have_entity_count(false);
+      int64_t entity_count(0);
+      bool have_original_topology_type(false);
+      std::string original_topology_type;
+
+      for(int i = 0; i < oc.keys.size(); i++)
       {
-        continue;
+
+        if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
+
+          if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            entity_count = property_get_int(ldo);
+            have_entity_count = true;
+          }
+
+          if(oc.keys[i].K2().find("original_topology_type") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            original_topology_type = property_get_string(ldo);
+            have_original_topology_type = true;
+          }
+
+        }
       }
 
-      auto name = substr_to_iterator(key.K2() + "/Properties/name", oc);
-      auto topo = substr_to_iterator(key.K2() + "/Properties/topology_type", oc);
-      auto count = substr_to_iterator(key.K2() + "/Properties/entity_count", oc);
+      if(have_entity_count && have_original_topology_type) {
+        auto block = new Ioss::ElementBlock(this, entity_name,
+            original_topology_type, entity_count);
 
-      // If these values exist we can create an Ioss::ElementBlock
-      if(name != oc.keys.end() &&
-          topo != oc.keys.end() &&
-          count != oc.keys.end())
-      {
+        // Add Properties that aren't created in the CTor
+        auto property_search = property_search_key(parallel_rank(), *(get_region()), *block);
+        kelpie::ObjectCapacities property_oc;
+        pool.List(property_search, &property_oc);
+        this->read_entity_properties(property_oc, *block);
 
-        auto *block = new Ioss::ElementBlock(this,
-            key_to_string(name, oc, pool),
-            key_to_string(topo, oc, pool),
-            key_to_int(count, oc, pool));
 
-        // Get Property keys for this ElementBlock
-        kelpie::ObjectCapacities properties;
-        pool.List(kelpie::Key(std::to_string(parallel_rank()), key.K2() + "/Properties*"), &properties);
-        this->read_entity_properties(properties, *block);
+        // Add fields that aren't created in the CTor
+        auto field_search = field_search_key(parallel_rank(), *(get_region()), *block);
+        kelpie::ObjectCapacities field_oc;
+        pool.List(field_search, &field_oc);
+        this->read_entity_fields(field_oc, *block);
 
-        // Get Field keys for this ElementBlock
-        kelpie::ObjectCapacities fields;
-        pool.List(kelpie::Key(std::to_string(parallel_rank()), key.K2() + "/Fields*"), &fields);
-        this->read_entity_fields(fields, *block);
+        // Add TRANSIENT fields that aren't created in the CTor 
+        auto field_search_debug = field_search_key(parallel_rank(), 1, *(get_region()), *block);
+        kelpie::ObjectCapacities field_oc_debug;
+        pool.List(field_search_debug, &field_oc_debug);
+        this->read_entity_fields(field_oc_debug, *block);
 
         this->get_region()->add(block);
       }
     }
   }
+
 
   void DatabaseIO::get_faceblocks()
   {
-    // UNTESTED
-#if 0
-    // Root of the second key
-    std::string root("/Region/can.ex2/State/-1/Entity/FACEBLOCK");
-
+    std::string type_string("FaceBlock");
     kelpie::ObjectCapacities oc;
-    pool.List(kelpie::Key(std::to_string(parallel_rank()), root+ "*"), &oc);
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    pool.List(search_key, &oc);
 
-    // for(auto key : block_keys) {
-    for(auto key : oc.keys) {
-      if(key.K2().find("/Properties/") != std::string::npos ||
-          key.K2().find("/Fields/") != std::string::npos)
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
+      bool have_entity_count(false);
+      int64_t entity_count(0);
+      bool have_original_topology_type(false);
+      std::string original_topology_type;
+
+      for(int i = 0; i < oc.keys.size(); i++)
       {
-        continue;
+
+        if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
+
+          if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            entity_count = property_get_int(ldo);
+            have_entity_count = true;
+          }
+
+          if(oc.keys[i].K2().find("original_topology_type") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            original_topology_type = property_get_string(ldo);
+            have_original_topology_type = true;
+          }
+
+        }
       }
 
-      auto name = substr_to_iterator(key.K2() + "/Properties/name", oc);
-      auto dof = substr_to_iterator(key.K2() + "/Properties/component_degree", oc);
-      auto count = substr_to_iterator(key.K2() + "/Properties/entity_count", oc);
+      if(have_entity_count && have_original_topology_type) {
+        auto block = new Ioss::FaceBlock(this, entity_name,
+            original_topology_type, entity_count);
 
-      // If these values exist we can create an Ioss::ElementBlock
-      if(name != oc.keys.end() &&
-          dof != oc.keys.end() &&
-          count != oc.keys.end())
-      {
+        // Add Properties that aren't created in the CTor
+        auto property_search = property_search_key(parallel_rank(), *(get_region()), *block);
+        kelpie::ObjectCapacities property_oc;
+        pool.List(property_search, &property_oc);
+        this->read_entity_properties(property_oc, *block);
 
-        auto *block = new Ioss::FaceBlock(this,
-            key_to_string(name, oc, pool),
-            key_to_int(count, oc, pool),
-            key_to_int(dof, oc, pool));
 
-        // Get Property keys for this ElementBlock
-        kelpie::ObjectCapacities properties;
-        pool.List(kelpie::Key(std::to_string(parallel_rank()), key.K2() + "/Properties*"), &properties);
-        this->read_entity_properties(properties, *block);
-
-        // Get Field keys for this ElementBlock
-        kelpie::ObjectCapacities fields;
-        pool.List(kelpie::Key(std::to_string(parallel_rank()), key.K2() + "/Fields*"), &fields);
-        this->read_entity_properties(fields, *block);
+        // Add fields that aren't created in the CTor
+        auto field_search = field_search_key(parallel_rank(), *(get_region()), *block);
+        kelpie::ObjectCapacities field_oc;
+        pool.List(field_search, &field_oc);
+        this->read_entity_fields(field_oc, *block);
 
         this->get_region()->add(block);
       }
     }
-#endif
   }
-#endif
+
 
   void DatabaseIO::get_nodeblocks()
   {
-    auto rank = std::to_string(parallel_rank());
-    auto region(this->get_region());
+    std::string type_string("NodeBlock");
     kelpie::ObjectCapacities oc;
-    auto search_key = kelpie::Key(rank, "/Region/UNNAMED/State/-1/Entity/NodeBlock/*");
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
     pool.List(search_key, &oc);
 
-    // for(auto key : block_keys) {
-    for(auto key : oc.keys) {
-      // create each nodeblock
-      // add properties
-      // add fields
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
+      bool have_entity_count(false);
+      int64_t entity_count(0);
+      bool have_component_degree(false);
+      int64_t component_degree(0);
+
+      for(int i = 0; i < oc.keys.size(); i++)
+      {
+
+        if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
+
+          if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            entity_count = property_get_int(ldo);
+            have_entity_count = true;
+          }
+
+          if(oc.keys[i].K2().find("component_degree") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            component_degree = property_get_int(ldo);
+            have_component_degree = true;
+          }
+
+        }
+      }
+
+      if(have_entity_count && have_component_degree) {
+        // Creates a new NodeBlock with default Properties and Fields
+        auto block = new Ioss::NodeBlock(this, entity_name, entity_count, component_degree);
+
+        // Add Properties that aren't created in the CTor
+        auto property_search = property_search_key(parallel_rank(), *(get_region()), *block);
+        kelpie::ObjectCapacities property_oc;
+        pool.List(property_search, &property_oc);
+        this->read_entity_properties(property_oc, *block);
+
+
+        // Add fields that aren't created in the CTor
+        auto field_search = field_search_key(parallel_rank(), *(get_region()), *block);
+        kelpie::ObjectCapacities field_oc;
+        pool.List(field_search, &field_oc);
+        this->read_entity_fields(field_oc, *block);
+
+        // Add TRANSIENT fields that aren't created in the CTor
+        auto field_search_debug = field_search_key(parallel_rank(), 1, *(get_region()), *block);
+        kelpie::ObjectCapacities field_oc_debug;
+        pool.List(field_search_debug, &field_oc_debug);
+        this->read_entity_fields(field_oc_debug, *block);
+
+        this->get_region()->add(block);
+      }
     }
   }
 
-#if 0
 
   void DatabaseIO::get_edgesets()
   {
+    std::string type_string("EdgeSet");
+    kelpie::ObjectCapacities oc;
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    pool.List(search_key, &oc);
+
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
+      bool have_entity_count(false);
+      int64_t entity_count(0);
+      bool have_component_degree(false);
+      int64_t component_degree(0);
+
+      for(int i = 0; i < oc.keys.size(); i++)
+      {
+
+        if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
+
+          if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            entity_count = property_get_int(ldo);
+            have_entity_count = true;
+          }
+
+        }
+      }
+
+      if(have_entity_count && have_component_degree) {
+        auto entity = new Ioss::EdgeSet(this, entity_name, entity_count);
+
+        // Add Properties that aren't created in the CTor
+        auto property_search = property_search_key(parallel_rank(), *(get_region()), *entity);
+        kelpie::ObjectCapacities property_oc;
+        pool.List(property_search, &property_oc);
+        this->read_entity_properties(property_oc, *entity);
+
+
+        // Add fields that aren't created in the CTor
+        auto field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
+        kelpie::ObjectCapacities field_oc;
+        pool.List(field_search, &field_oc);
+        this->read_entity_fields(field_oc, *entity);
+
+        this->get_region()->add(entity);
+      }
+    }
   }
 
   void DatabaseIO::get_elemsets()
   {
+    std::string type_string("ElementSet");
+    kelpie::ObjectCapacities oc;
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    pool.List(search_key, &oc);
+
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
+      bool have_entity_count(false);
+      int64_t entity_count(0);
+      bool have_component_degree(false);
+      int64_t component_degree(0);
+
+      for(int i = 0; i < oc.keys.size(); i++)
+      {
+
+        if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
+
+          if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            entity_count = property_get_int(ldo);
+            have_entity_count = true;
+          }
+
+        }
+      }
+
+      if(have_entity_count && have_component_degree) {
+        auto entity = new Ioss::ElementSet(this, entity_name, entity_count);
+
+        // Add Properties that aren't created in the CTor
+        auto property_search = property_search_key(parallel_rank(), *(get_region()), *entity);
+        kelpie::ObjectCapacities property_oc;
+        pool.List(property_search, &property_oc);
+        this->read_entity_properties(property_oc, *entity);
+
+
+        // Add fields that aren't created in the CTor
+        auto field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
+        kelpie::ObjectCapacities field_oc;
+        pool.List(field_search, &field_oc);
+        this->read_entity_fields(field_oc, *entity);
+
+        this->get_region()->add(entity);
+      }
+    }
   }
 
   void DatabaseIO::get_facesets()
   {
+    std::string type_string("FaceSet");
+    kelpie::ObjectCapacities oc;
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    pool.List(search_key, &oc);
+
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
+      bool have_entity_count(false);
+      int64_t entity_count(0);
+      bool have_component_degree(false);
+      int64_t component_degree(0);
+
+      for(int i = 0; i < oc.keys.size(); i++)
+      {
+
+        if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
+
+          if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            entity_count = property_get_int(ldo);
+            have_entity_count = true;
+          }
+
+        }
+      }
+
+      if(have_entity_count && have_component_degree) {
+        auto entity = new Ioss::FaceSet(this, entity_name, entity_count);
+
+        // Add Properties that aren't created in the CTor
+        auto property_search = property_search_key(parallel_rank(), *(get_region()), *entity);
+        kelpie::ObjectCapacities property_oc;
+        pool.List(property_search, &property_oc);
+        this->read_entity_properties(property_oc, *entity);
+
+
+        // Add fields that aren't created in the CTor
+        auto field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
+        kelpie::ObjectCapacities field_oc;
+        pool.List(field_search, &field_oc);
+        this->read_entity_fields(field_oc, *entity);
+
+        this->get_region()->add(entity);
+      }
+    }
   }
 
   void DatabaseIO::get_nodesets()
   {
-    // Root of the second key
-    std::string root("/Region/can.ex2/State/-1/Entity/NODESET");
-
+    std::string type_string("NodeSet");
     kelpie::ObjectCapacities oc;
-    pool.List(kelpie::Key(std::to_string(parallel_rank()), root+ "*"), &oc);
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    pool.List(search_key, &oc);
 
-    // for(auto key : block_keys) {
-    for(auto key : oc.keys) {
-      if(key.K2().find("/Properties/") != std::string::npos ||
-          key.K2().find("/Fields/") != std::string::npos)
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
+      bool have_entity_count(false);
+      int64_t entity_count(0);
+
+      for(int i = 0; i < oc.keys.size(); i++)
       {
-        continue;
+        std::string entity_name_search = "/" + entity_name + "/";
+        if(oc.keys[i].K2().find(entity_name_search) != std::string::npos) {
+
+          if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
+            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+            pool.Need(oc.keys[i], &ldo);
+            entity_count = property_get_int(ldo);
+            have_entity_count = true;
+          }
+
+        }
       }
 
-      auto name = substr_to_iterator(key.K2() + "/Properties/name", oc);
-      auto count = substr_to_iterator(key.K2() + "/Properties/entity_count", oc);
+      if(have_entity_count) {
+        auto entity = new Ioss::NodeSet(this, entity_name, entity_count);
 
-      // If these values exist we can create an Ioss::ElementBlock
-      if(name != oc.keys.end() &&
-          count != oc.keys.end())
-      {
+        // Add Properties that aren't created in the CTor
+        auto property_search = property_search_key(parallel_rank(), *(get_region()), *entity);
+        kelpie::ObjectCapacities property_oc;
+        pool.List(property_search, &property_oc);
+        this->read_entity_properties(property_oc, *entity);
 
-        auto *set = new Ioss::NodeSet(this,
-            key_to_string(name, oc, pool),
-            key_to_int(count, oc, pool));
 
-        // Get Property keys for this Elementset
-        kelpie::ObjectCapacities properties;
-        pool.List(kelpie::Key(std::to_string(parallel_rank()), key.K2() + "/Properties*"), &properties);
-        this->read_entity_properties(properties, *set);
+        // Add fields that aren't created in the CTor
+        auto field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
+        kelpie::ObjectCapacities field_oc;
+        pool.List(field_search, &field_oc);
+        this->read_entity_fields(field_oc, *entity);
 
-        // Get Field keys for this Elementset
-        kelpie::ObjectCapacities fields;
-        pool.List(kelpie::Key(std::to_string(parallel_rank()), key.K2() + "/Fields*"), &fields);
-        this->read_entity_properties(fields, *set);
-
-        this->get_region()->add(set);
+        this->get_region()->add(entity);
       }
     }
   }
 
   void DatabaseIO::get_sidesets()
   {
-    // Root of the second key
-    std::string root("/Region/can.ex2/State/-1/Entity/SIDESET");
-
+    std::string type_string("SideSet");
     kelpie::ObjectCapacities oc;
-    pool.List(kelpie::Key(std::to_string(parallel_rank()), root+ "*"), &oc);
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    pool.List(search_key, &oc);
 
-    for(auto key : oc.keys) {
-      if(key.K2().find("/Properties/") != std::string::npos ||
-          key.K2().find("/Fields/") != std::string::npos)
-      {
-        continue;
-      }
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
 
-      auto name = substr_to_iterator(key.K2() + "/Properties/name", oc);
+      auto entity = new Ioss::SideSet(this, entity_name);
 
-      // If these values exist we can create an Ioss::ElementBlock
-      if(name != oc.keys.end())
-      {
+      // Add Properties that aren't created in the CTor
+      auto property_search = property_search_key(parallel_rank(), *(get_region()), *entity);
+      kelpie::ObjectCapacities property_oc;
+      pool.List(property_search, &property_oc);
+      this->read_entity_properties(property_oc, *entity);
 
-        auto *set = new Ioss::SideSet(this, key_to_string(name, oc, pool));
 
-        // Get Property keys for this Elementset
-        kelpie::ObjectCapacities properties;
-        pool.List(kelpie::Key(std::to_string(parallel_rank()), key.K2() + "/Properties*"), &properties);
-        this->read_entity_properties(properties, *set);
+      // Add fields that aren't created in the CTor
+      auto field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
+      kelpie::ObjectCapacities field_oc;
+      pool.List(field_search, &field_oc);
+      this->read_entity_fields(field_oc, *entity);
 
-        // Get Field keys for this Elementset
-        kelpie::ObjectCapacities fields;
-        pool.List(kelpie::Key(std::to_string(parallel_rank()), key.K2() + "/Fields*"), &fields);
-        this->read_entity_properties(fields, *set);
-
-        this->get_region()->add(set);
-      }
+      this->get_region()->add(entity);
     }
   }
-#endif
 
 
   void DatabaseIO::read_communication_metadata() {}
@@ -868,7 +1046,7 @@ dirman.root_node_mpi 0
       void *data, size_t data_size) const
   {
     auto key = make_key(parallel_rank(), *(get_region()), e, f);
-    auto ldo = pack_field(*(get_region()), e, f);
+    auto ldo = pack_field(*(get_region()), e, f, data, data_size);
     pool.Publish( key, ldo );
     return 0;
   }
