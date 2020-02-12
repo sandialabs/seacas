@@ -326,7 +326,7 @@ namespace Ioex {
     mutable std::map<ex_entity_type, VariableNameMap> m_variables;
     mutable std::map<ex_entity_type, VariableNameMap> m_reductionVariables;
 
-    mutable ValueContainer globalValues;
+    mutable std::map<ex_entity_type, std::map<int64_t, ValueContainer>> m_reductionValues;
 
     mutable std::vector<unsigned char> nodeConnectivityStatus;
 

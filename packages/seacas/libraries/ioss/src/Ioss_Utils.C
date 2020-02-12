@@ -1666,6 +1666,8 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
     output_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
 
+    transfer_fields(&region, &output_region, Ioss::Field::TRANSIENT);
+
     for (int i = 0; i < 2; i++) {
       auto field_type = Ioss::Field::TRANSIENT;
       if (i > 0) {
