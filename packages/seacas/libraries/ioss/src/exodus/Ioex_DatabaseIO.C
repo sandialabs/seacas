@@ -1614,7 +1614,7 @@ namespace Ioex {
           const Ioss::SideBlockContainer &side_blocks = sideset->get_side_blocks();
           for (const auto &block : side_blocks) {
             glob_index =
-                gather_names(EX_SIDE_SET, m_variables[EX_SIDE_SET], block, glob_index, true);
+                gather_names(EX_SIDE_SET, m_reductionVariables[EX_SIDE_SET], block, glob_index, true);
             index = gather_names(EX_SIDE_SET, m_variables[EX_SIDE_SET], block, index, false);
           }
         }
