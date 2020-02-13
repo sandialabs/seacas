@@ -1666,30 +1666,28 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
     output_region.begin_mode(Ioss::STATE_DEFINE_TRANSIENT);
 
+    // NOTE: For most types, the fields are transferred from input to output
+    //       via the copy constructor.  The "special" ones are handled here.
     transfer_fields(&region, &output_region, Ioss::Field::TRANSIENT);
 
-    for (int i = 0; i < 2; i++) {
-      auto field_type = Ioss::Field::TRANSIENT;
-      if (i > 0) {
-        field_type = Ioss::Field::REDUCTION;
-      }
+    // Structured Blocks -- Contain a NodeBlock that also needs its fields transferred...
+    const auto &sbs = region.get_structured_blocks();
+    for (const auto &isb : sbs) {
 
-      // Structured Blocks -- Contain a NodeBlock that also needs its fields transferred...
-      const auto &sbs = region.get_structured_blocks();
-      for (const auto &isb : sbs) {
+      // Find matching output structured block
+      const std::string &    name = isb->name();
+      Ioss::StructuredBlock *osb  = output_region.get_structured_block(name);
+      if (osb != nullptr) {
+        transfer_fields(isb, osb, Ioss::Field::TRANSIENT);
+        transfer_fields(isb, osb, Ioss::Field::REDUCTION);
 
-        // Find matching output structured block
-        const std::string &    name = isb->name();
-        Ioss::StructuredBlock *osb  = output_region.get_structured_block(name);
-        if (osb != nullptr) {
-          transfer_fields(isb, osb, field_type);
-
-          auto &inb = isb->get_node_block();
-          auto &onb = osb->get_node_block();
-          transfer_fields(&inb, &onb, field_type);
-        }
+        auto &inb = isb->get_node_block();
+        auto &onb = osb->get_node_block();
+        transfer_fields(&inb, &onb, Ioss::Field::TRANSIENT);
+        transfer_fields(&inb, &onb, Ioss::Field::REDUCTION);
       }
     }
+
     if (options.debug && rank == 0) {
       fmt::print(stderr, "END STATE_DEFINE_TRANSIENT... \n");
     }
