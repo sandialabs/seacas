@@ -1666,6 +1666,8 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
     // NOTE: For most types, the fields are transferred from input to output
     //       via the copy constructor.  The "special" ones are handled here.
+    // The below lines handle both methods of handling global variables...
+    transfer_fields(&region, &output_region, Ioss::Field::REDUCTION);
     transfer_fields(&region, &output_region, Ioss::Field::TRANSIENT);
 
     // Structured Blocks -- Contain a NodeBlock that also needs its fields transferred...
@@ -1819,7 +1821,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   Ioss::Utils::clear(data_pool.data);
 
   output_region.output_summary(std::cout);
-
 }
 
 namespace {
