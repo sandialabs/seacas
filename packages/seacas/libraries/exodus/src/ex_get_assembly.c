@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -118,8 +118,8 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
 
   /* read the name */
   if (assembly->name != NULL) {
-    int  name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
-    char tmp_name[EX_MAX_NAME];
+    int  name_size             = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
+    char tmp_name[EX_MAX_NAME] = "";
     if ((status = nc_get_att_text(exoid, entlst_id, EX_ATTRIBUTE_NAME, tmp_name)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to read assembly name for assembly %" PRId64 " in file id %d",
@@ -131,7 +131,8 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
   }
 
   if (assembly->entity_list != NULL) {
-    if ((status = nc_get_var_longlong(exoid, entlst_id, (long long int *)assembly->entity_list)) != NC_NOERR) {
+    if ((status = nc_get_var_longlong(exoid, entlst_id, (long long int *)assembly->entity_list)) !=
+        NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to read entity list for assembly %" PRId64 " in file id %d",
                assembly->id, exoid);

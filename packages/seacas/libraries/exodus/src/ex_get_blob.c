@@ -72,8 +72,8 @@ int ex_get_blob(int exoid, ex_blob *blob)
         EX_FUNC_LEAVE(EX_NOERR);
       }
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to locate blob id  %" PRId64 " in id array in file id %d",
-               blob->id, exoid);
+               "ERROR: failed to locate blob id  %" PRId64 " in id array in file id %d", blob->id,
+               exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
@@ -90,8 +90,8 @@ int ex_get_blob(int exoid, ex_blob *blob)
 
   if ((status = nc_inq_dimlen(exoid, dimid, &len)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to get number of entities in blob %" PRId64 " in file id %d",
-             blob->id, exoid);
+             "ERROR: failed to get number of entities in blob %" PRId64 " in file id %d", blob->id,
+             exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -109,12 +109,12 @@ int ex_get_blob(int exoid, ex_blob *blob)
 
   /* read the name */
   if (blob->name != NULL) {
-    int  name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
-    char tmp_name[EX_MAX_NAME];
+    int  name_size             = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
+    char tmp_name[EX_MAX_NAME] = "";
     if ((status = nc_get_att_text(exoid, entlst_id, EX_ATTRIBUTE_NAME, tmp_name)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to read blob name for blob %" PRId64 " in file id %d",
-               blob->id, exoid);
+               "ERROR: failed to read blob name for blob %" PRId64 " in file id %d", blob->id,
+               exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
