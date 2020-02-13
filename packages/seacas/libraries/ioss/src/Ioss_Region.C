@@ -530,18 +530,32 @@ namespace Ioss {
          get_property("element_set_count").get_int(), get_property("side_set_count").get_int(),
          get_property("assembly_count").get_int(), get_property("blob_count").get_int(), num_ts});
 
-    size_t num_glo_vars      = field_count(Ioss::Field::TRANSIENT);
-    size_t num_nod_vars      = get_variable_count(get_node_blocks());
-    size_t num_edg_vars      = get_variable_count(get_edge_blocks());
-    size_t num_fac_vars      = get_variable_count(get_face_blocks());
-    size_t num_ele_vars      = get_variable_count(get_element_blocks());
-    size_t num_str_vars      = get_variable_count(get_structured_blocks());
-    size_t num_ns_vars       = get_variable_count(get_nodesets());
-    size_t num_es_vars       = get_variable_count(get_edgesets());
-    size_t num_fs_vars       = get_variable_count(get_facesets());
-    size_t num_els_vars      = get_variable_count(get_elementsets());
+    // Global variables transitioning from TRANSIENT to REDUCTION..
+    size_t num_glo_vars  = field_count(Ioss::Field::TRANSIENT);
+    size_t num_nod_vars  = get_variable_count(get_node_blocks());
+    size_t num_edg_vars  = get_variable_count(get_edge_blocks());
+    size_t num_fac_vars  = get_variable_count(get_face_blocks());
+    size_t num_ele_vars  = get_variable_count(get_element_blocks());
+    size_t num_str_vars  = get_variable_count(get_structured_blocks());
+    size_t num_ns_vars   = get_variable_count(get_nodesets());
+    size_t num_es_vars   = get_variable_count(get_edgesets());
+    size_t num_fs_vars   = get_variable_count(get_facesets());
+    size_t num_els_vars  = get_variable_count(get_elementsets());
+    size_t num_asm_vars  = get_variable_count(get_assemblies());
+    size_t num_blob_vars = get_variable_count(get_blobs());
+
+    size_t num_glo_red_vars  = field_count(Ioss::Field::REDUCTION);
+    size_t num_nod_red_vars  = get_variable_count(get_node_blocks());
+    size_t num_edg_red_vars  = get_variable_count(get_edge_blocks());
+    size_t num_fac_red_vars  = get_variable_count(get_face_blocks());
+    size_t num_ele_red_vars  = get_variable_count(get_element_blocks());
+    size_t num_str_red_vars  = get_variable_count(get_structured_blocks());
+    size_t num_ns_red_vars   = get_variable_count(get_nodesets());
+    size_t num_es_red_vars   = get_variable_count(get_edgesets());
+    size_t num_fs_red_vars   = get_variable_count(get_facesets());
+    size_t num_els_red_vars  = get_variable_count(get_elementsets());
     size_t num_asm_red_vars  = get_reduction_variable_count(get_assemblies());
-    size_t num_blob_vars     = get_variable_count(get_blobs());
+    size_t num_blob_red_vars = get_variable_count(get_blobs());
 
     size_t                       num_ss_vars = 0;
     const Ioss::SideSetContainer fss         = get_sidesets();
@@ -558,45 +572,48 @@ namespace Ioss {
         strm,
         "\n Database: {0}\n"
         " Mesh Type = {1}, {39}\n\n"
+        "                      {38:{24}s}\t"
+        "                 {38:{23}s}\t"
+        " Variables : Transient / Reduction\n"
         " Spatial dimensions = {2:{24}n}\t"
-        "                           {38:{23}s}\t"
-        " Global variables     = {26:{25}n}\n"
+        "                 {38:{23}s}\t"
+        " Global     = {26:{25}n}\t{44:{25}n}\n"
         " Node blocks        = {7:{24}n}\t"
-        " Number of nodes         = {3:{23}n}\t"
-        " Nodal variables      = {27:{25}n}\n"
+        " nodes         = {3:{23}n}\t"
+        " Nodal      = {27:{25}n}\t{45:{25}n}\n"
         " Edge blocks        = {8:{24}n}\t"
-        " Number of edges         = {4:{23}n}\t"
-        " Edge variables       = {33:{25}n}\n"
+        " edges         = {4:{23}n}\t"
+        " Edge       = {33:{25}n}\t{46:{25}n}\n"
         " Face blocks        = {9:{24}n}\t"
-        " Number of faces         = {5:{23}n}\t"
-        " Face variables       = {34:{25}n}\n"
+        " faces         = {5:{23}n}\t"
+        " Face       = {34:{25}n}\t{47:{25}n}\n"
         " Element blocks     = {10:{24}n}\t"
-        " Number of elements      = {6:{23}n}\t"
-        " Element variables    = {28:{25}n}\n"
+        " elements      = {6:{23}n}\t"
+        " Element    = {28:{25}n}\t{48:{25}n}\n"
         " Structured blocks  = {11:{24}n}\t"
-        " Number of cells         = {17:{23}n}\t"
-        " Structured variables = {29:{25}n}\n"
+        " cells         = {17:{23}n}\t"
+        " Structured = {29:{25}n}\t{49:{25}n}\n"
         " Node sets          = {12:{24}n}\t"
-        " Length of node list     = {18:{23}n}\t"
-        " Nodeset variables    = {30:{25}n}\n"
+        " node list     = {18:{23}n}\t"
+        " Nodeset    = {30:{25}n}\t{50:{25}n}\n"
         " Edge sets          = {13:{24}n}\t"
-        " Length of edge list     = {19:{23}n}\t"
-        " Edgeset variables    = {35:{25}n}\n"
+        " edge list     = {19:{23}n}\t"
+        " Edgeset    = {35:{25}n}\t{51:{25}n}\n"
         " Face sets          = {14:{24}n}\t"
-        " Length of face list     = {20:{23}n}\t"
-        " Faceset variables    = {36:{25}n}\n"
+        " face list     = {20:{23}n}\t"
+        " Faceset    = {36:{25}n}\t{52:{25}n}\n"
         " Element sets       = {15:{24}n}\t"
-        " Length of element list  = {21:{23}n}\t"
-        " Elementset variables = {37:{25}n}\n"
+        " element list  = {21:{23}n}\t"
+        " Elementset = {37:{25}n}\t{53:{25}n}\n"
         " Element side sets  = {16:{24}n}\t"
-        " Length of element sides = {22:{23}n}\t"
-        " Sideset variables    = {31:{25}n}\n"
+        " element sides = {22:{23}n}\t"
+        " Sideset    = {31:{25}n}\n"
         " Assemblies         = {40:{24}n}\t"
-        "                           {38:{23}s}\t"
-        " Assembly variables   = {41:{25}n}\n"
+        "                 {38:{23}s}\t"
+        " Assembly   = {41:{25}n}\t{54:{25}n}\n"
         " Blobs              = {42:{24}n}\t"
-        "                           {38:{23}s}\t"
-        " Blob variables       = {43:{25}n}\n\n"
+        "                 {38:{23}s}\t"
+        " Blob       = {43:{25}n}\t{55:{25}n}\n\n"
         " Time steps         = {32:{24}n}\n",
         get_database()->get_filename(), mesh_type_string(),
         get_property("spatial_dimension").get_int(), get_property("node_count").get_int(),
@@ -611,7 +628,10 @@ namespace Ioss {
         num_width, sb_width, vr_width, num_glo_vars, num_nod_vars, num_ele_vars, num_str_vars,
         num_ns_vars, num_ss_vars, num_ts, num_edg_vars, num_fac_vars, num_es_vars, num_fs_vars,
         num_els_vars, " ", get_database()->get_format(), get_property("assembly_count").get_int(),
-        num_asm_red_vars, get_property("blob_count").get_int(), num_blob_vars);
+        num_asm_vars, get_property("blob_count").get_int(), num_blob_vars, num_glo_red_vars,
+        num_nod_red_vars, num_edg_red_vars, num_fac_red_vars, num_ele_red_vars, num_str_red_vars,
+        num_ns_red_vars, num_es_red_vars, num_fs_red_vars, num_els_red_vars, num_asm_red_vars,
+        num_blob_red_vars);
   }
 
   /** \brief Set the Region and the associated DatabaseIO to the given State.
