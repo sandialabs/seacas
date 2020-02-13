@@ -1486,8 +1486,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
     dbi->progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
 
-    output_region.output_summary(std::cout);
-
     if (options.verbose && rank == 0) {
       fmt::print(stderr, " Maximum Field size = {:n} bytes.\n", max_field_size);
     }
@@ -1819,6 +1817,9 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   output_region.end_mode(Ioss::STATE_TRANSIENT);
   dbi->progress("END STATE_TRANSIENT (end) ... ");
   Ioss::Utils::clear(data_pool.data);
+
+  output_region.output_summary(std::cout);
+
 }
 
 namespace {
