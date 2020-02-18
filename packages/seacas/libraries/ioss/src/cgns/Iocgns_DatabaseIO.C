@@ -4,7 +4,7 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists for unstructured
 
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -74,6 +74,7 @@
 #include "Ioss_ElementTopology.h"
 #include "Ioss_EntityType.h"
 #include "Ioss_FaceBlock.h"
+#include "Ioss_FaceGenerator.h"
 #include "Ioss_FaceSet.h"
 #include "Ioss_Field.h"
 #include "Ioss_FileInfo.h"
@@ -96,6 +97,7 @@ extern char hdf5_access[64];
 
 namespace {
 
+#ifdef SEACAS_HAVE_MPI
   bool has_decomp_descriptor(int cgns_file_ptr, int base, int zone, int zgc_idx)
   {
     bool has_decomp_flag = false;
@@ -118,6 +120,7 @@ namespace {
     }
     return has_decomp_flag;
   }
+#endif
 
   template <typename T> void pack(int &idx, std::vector<int> &pack, T *from, int count)
   {
@@ -2182,40 +2185,89 @@ namespace Iocgns {
         int                   nodes_per_face = sb->topology()->number_nodes();
         std::vector<cgsize_t> elements(nodes_per_face * num_to_get); // Not needed, but can't skip
 
-        // We get:
-        // *  num_to_get parent elements,
-        // *  num_to_get zeros (other parent element for face, but on boundary so 0)
-        // *  num_to_get face_on_element
-        // *  num_to_get zeros (face on other parent element)
+        // The parent information will be formatted as:
+        // *  `num_to_get` parent elements,
+        // *  `num_to_get` zeros (other parent element for face, but on boundary so 0)
+        // *  `num_to_get` face_on_element
+        // *  `num_to_get` zeros (face on other parent element)
         std::vector<cgsize_t> parent(4 * num_to_get);
 
         CGCHECKM(
             cg_elements_read(get_file_pointer(), base, zone, sect, TOPTR(elements), TOPTR(parent)));
 
-        size_t offset = m_zoneOffset[zone - 1];
-        if (field.get_type() == Ioss::Field::INT32) {
-          int *  idata = reinterpret_cast<int *>(data);
-          size_t j     = 0;
-          for (ssize_t i = 0; i < num_to_get; i++) {
-            idata[j++] = parent[num_to_get * 0 + i] + offset; // Element
-            idata[j++] = parent[num_to_get * 2 + i];
-            assert(parent[num_to_get * 1 + i] == 0);
-            assert(parent[num_to_get * 3 + i] == 0);
+        // See if the file contained `parent` data -- Some mesh generators only write the face
+        // connectivity information.  We prefer the `parent/face_on_element` data, but if that does
+        // not exist, then need to generate it based on the face connectivity information...
+
+        if (parent[0] == 0) {
+          // Don't have the parent/face_on_element data ... generate.
+          Ioss::Utils::clear(parent);
+
+          if (m_boundaryFaces.empty()) {
+            Utils::generate_boundary_faces(get_region(), m_boundaryFaces);
           }
-          // Adjust face numbers to IOSS convention instead of CGNS convention...
-          Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
+
+          // Now, iterate the face connectivity vector and find a match in `m_boundaryFaces`
+          int *    i32data = reinterpret_cast<int *>(data);
+          int64_t *i64data = reinterpret_cast<int64_t *>(data);
+
+          size_t             idx      = 0;
+          size_t             j        = 0;
+          const std::string &name     = sb->parent_block()->name();
+          auto &             boundary = m_boundaryFaces[name];
+          for (int iface = 0; iface < num_to_get; iface++) {
+            std::array<size_t, 4> conn = {{0, 0, 0, 0}};
+            for (int i = 0; i < nodes_per_face; i++) {
+              conn[i] = elements[idx++];
+              Ioss::Face face(conn);
+              // See if face is in m_boundaryFaces
+              // If not, error
+              // If so, then get parent element and element side.
+              auto it = boundary.find(face);
+              if (it != boundary.end()) {
+                cgsize_t fid = (*it).element[0];
+#if IOSS_DEBUG_OUTPUT
+                fmt::print("Connectivity: {} {} {} {} maps to element {}, face {}\n", conn[0],
+                           conn[1], conn[2], conn[3], fid / 10, fid % 10 + 1);
+#endif
+                if (field.get_type() == Ioss::Field::INT32) {
+                  i32data[j++] = fid / 10;
+                  i32data[j++] = fid % 10 + 1;
+                }
+                else {
+                  i64data[j++] = fid / 10;
+                  i64data[j++] = fid % 10 + 1;
+                }
+              }
+            }
+          }
         }
         else {
-          int64_t *idata = reinterpret_cast<int64_t *>(data);
-          size_t   j     = 0;
-          for (ssize_t i = 0; i < num_to_get; i++) {
-            idata[j++] = parent[num_to_get * 0 + i] + offset; // Element
-            idata[j++] = parent[num_to_get * 2 + i];
-            assert(parent[num_to_get * 1 + i] == 0);
-            assert(parent[num_to_get * 3 + i] == 0);
+          size_t offset = m_zoneOffset[zone - 1];
+          if (field.get_type() == Ioss::Field::INT32) {
+            int *  idata = reinterpret_cast<int *>(data);
+            size_t j     = 0;
+            for (ssize_t i = 0; i < num_to_get; i++) {
+              idata[j++] = parent[num_to_get * 0 + i] + offset; // Element
+              idata[j++] = parent[num_to_get * 2 + i];
+              assert(parent[num_to_get * 1 + i] == 0);
+              assert(parent[num_to_get * 3 + i] == 0);
+            }
+            // Adjust face numbers to IOSS convention instead of CGNS convention...
+            Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
           }
-          // Adjust face numbers to IOSS convention instead of CGNS convention...
-          Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
+          else {
+            int64_t *idata = reinterpret_cast<int64_t *>(data);
+            size_t   j     = 0;
+            for (ssize_t i = 0; i < num_to_get; i++) {
+              idata[j++] = parent[num_to_get * 0 + i] + offset; // Element
+              idata[j++] = parent[num_to_get * 2 + i];
+              assert(parent[num_to_get * 1 + i] == 0);
+              assert(parent[num_to_get * 3 + i] == 0);
+            }
+            // Adjust face numbers to IOSS convention instead of CGNS convention...
+            Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
+          }
         }
       }
       else {
