@@ -127,7 +127,6 @@ namespace Ioss {
   {
   public:
     explicit FaceGenerator(Ioss::Region &region);
-    FaceGenerator(Ioss::NodeBlock *nb, Ioss::ElementBlock *eb);
     ~FaceGenerator() = default;
 
     static size_t id_hash(size_t global_id);
