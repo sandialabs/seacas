@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2018 National Technology & Engineering Solutions
+// Copyright(C) 1999-2018, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -34,6 +34,7 @@
 
 #include <Ioss_Beam2.h>
 #include <Ioss_Beam3.h>
+#include <Ioss_FaceGenerator.h>
 #include <Ioss_Hex20.h>
 #include <Ioss_Hex27.h>
 #include <Ioss_Hex8.h>
@@ -359,6 +360,36 @@ namespace {
       assert(block->field_count(Ioss::Field::TRANSIENT) == (size_t)fld_count[i]);
     }
   }
+
+#if IOSS_DEBUG_OUTPUT
+  void output_table(const Ioss::ElementBlockContainer &            ebs,
+                    std::map<std::string, Ioss::FaceUnorderedSet> &boundary_faces)
+  {
+    // Get maximum name and face_count length...
+    size_t max_name = std::string("Block Name").length();
+    size_t max_face = std::string("Face Count").length();
+    for (auto eb : ebs) {
+      const std::string &name = eb->name();
+      if (name.length() > max_name) {
+        max_name = name.length();
+      }
+      size_t face_width = Ioss::Utils::number_width(boundary_faces[name].size());
+      max_face          = face_width > max_face ? face_width : max_face;
+    }
+    max_name += 4; // Padding
+    max_face += 4;
+
+    fmt::print("\t+{2:-^{0}}+{2:-^{1}}+\n", max_name, max_face, "");
+    fmt::print("\t|{2:^{0}}|{3:^{1}}|\n", max_name, max_face, "Block Name", "Face Count");
+    fmt::print("\t+{2:-^{0}}+{2:-^{1}}+\n", max_name, max_face, "");
+    for (auto eb : ebs) {
+      const std::string &name = eb->name();
+      fmt::print("\t|{2:^{0}}|{3:{1}n}  |\n", max_name, max_face - 2, name,
+                 boundary_faces[name].size());
+    }
+    fmt::print("\t+{2:-^{0}}+{2:-^{1}}+\n", max_name, max_face, "");
+  }
+#endif
 } // namespace
 
 std::pair<std::string, int> Iocgns::Utils::decompose_name(const std::string &name, bool is_parallel)
@@ -1731,6 +1762,7 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
   // * data     (cgsize_t * 7) (bocotype + range[6])
 
   int num_bcs = 0;
+
   CGCHECKNP(cg_nbocos(cgns_file_ptr, base, zone, &num_bcs));
 
   std::vector<int>  bc_data(7 * num_bcs);
@@ -1781,6 +1813,29 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
     bool is_parallel_io = true;
     add_bc_to_block(block, boco_name, fam_name, ibc, range, bocotype, is_parallel_io);
   }
+}
+
+void Iocgns::Utils::generate_boundary_faces(
+    Ioss::Region *region, std::map<std::string, Ioss::FaceUnorderedSet> &boundary_faces)
+{
+  // See if we already generated the faces for this model...
+  Ioss::FaceGenerator face_generator(*region);
+  face_generator.generate_faces((cgsize_t)0, true);
+
+  const Ioss::ElementBlockContainer &ebs = region->get_element_blocks();
+  for (auto eb : ebs) {
+    const std::string &name     = eb->name();
+    auto &             boundary = boundary_faces[name];
+    auto &             faces    = face_generator.faces(name);
+    for (auto &face : faces) {
+      if (face.elementCount_ == 1) {
+        boundary.insert(face);
+      }
+    }
+  }
+#if IOSS_DEBUG_OUTPUT
+  output_table(ebs, boundary_faces);
+#endif
 }
 
 void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                    cgns_file_ptr,
