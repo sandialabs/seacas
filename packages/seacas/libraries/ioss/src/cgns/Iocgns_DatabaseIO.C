@@ -41,7 +41,6 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
 #include <bitset>
-#include <cassert>
 #include <cgns/Iocgns_DatabaseIO.h>
 #include <cgns/Iocgns_Utils.h>
 #ifdef SEACAS_HAVE_MPI
@@ -88,6 +87,7 @@
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
+#include "Ioss_SmartAssert.h"
 #include "Ioss_State.h"
 #include "Ioss_StructuredBlock.h"
 #include "Ioss_Utils.h"
@@ -300,8 +300,8 @@ namespace {
 #ifndef NDEBUG
     bool is_z = range[2] == range[5];
 #endif
-    assert(is_x || is_y || is_z);
-    assert((is_x ? 1 : 0) + (is_y ? 1 : 0) + (is_z ? 1 : 0) == 1);
+    SMART_ASSERT(is_x || is_y || is_z);
+    SMART_ASSERT((is_x ? 1 : 0) + (is_y ? 1 : 0) + (is_z ? 1 : 0) == 1);
     int idx = is_x ? 0 : is_y ? 1 : 2;
 
     // Which face on this block?
@@ -382,9 +382,9 @@ namespace {
   {
     // Stored in format:  "-myproc, -local_zone, face, shared_proc" for each shared face.
     for (size_t i = 0; i < adjacency.size(); i += 4) {
-      assert(adjacency[i] <= 0); // -proc
+      SMART_ASSERT(adjacency[i] <= 0); // -proc
       if (adjacency[i] == -b.proc) {
-        assert(adjacency[i + 1] < 0);
+        SMART_ASSERT(adjacency[i + 1] < 0);
         if (adjacency[i + 1] == -b.local_zone) {
           b.adjacency.emplace_back(adjacency[i + 2], adjacency[i + 3]);
           b.face_adj.set(adjacency[i + 2]);
@@ -399,7 +399,7 @@ namespace {
   void add_empty_bc(Ioss::SideSet *sset, Ioss::StructuredBlock *block, int base, int zone, int face,
                     const std::string &fam_name, const std::string &boco_name)
   {
-    assert(sset != nullptr);
+    SMART_ASSERT(sset != nullptr);
 
     Ioss::IJK_t empty_range{{0, 0, 0}};
 
@@ -590,7 +590,7 @@ namespace Iocgns {
       }
 #endif
     }
-    assert(m_cgnsFilePtr >= 0);
+    SMART_ASSERT(m_cgnsFilePtr >= 0);
   }
 
   void DatabaseIO::closeDatabase__() const
@@ -686,7 +686,7 @@ namespace Iocgns {
 
   void DatabaseIO::create_structured_block_fpp(int base, int num_zones, size_t & /* num_node */)
   {
-    assert(isParallel);
+    SMART_ASSERT(isParallel);
     PAR_UNUSED(base);
     PAR_UNUSED(num_zones);
 #ifdef SEACAS_HAVE_MPI
@@ -714,18 +714,18 @@ namespace Iocgns {
       char     zname[CGNS_MAX_NAME_LENGTH + 1];
       CGCHECKM(cg_zone_read(get_file_pointer(), base, zone, zname, size));
 
-      assert(size[0] - 1 == size[3]);
-      assert(size[1] - 1 == size[4]);
-      assert(size[2] - 1 == size[5]);
+      SMART_ASSERT(size[0] - 1 == size[3]);
+      SMART_ASSERT(size[1] - 1 == size[4]);
+      SMART_ASSERT(size[2] - 1 == size[5]);
 
-      assert(size[6] == 0);
-      assert(size[7] == 0);
-      assert(size[8] == 0);
+      SMART_ASSERT(size[6] == 0);
+      SMART_ASSERT(size[7] == 0);
+      SMART_ASSERT(size[8] == 0);
 
       auto        name_proc = Iocgns::Utils::decompose_name(zname, isParallel);
       std::string zone_name = name_proc.first;
       int         proc      = name_proc.second;
-      assert(proc == myProcessor);
+      SMART_ASSERT(proc == myProcessor);
 
       zone_data[id++] = proc;
       pack(id, zone_data, &size[3], 3); // Packing 3,4,5
@@ -742,7 +742,7 @@ namespace Iocgns {
                                     adjacency);
 
       zone_data[id++] = zone;
-      assert(id % INT_PER_ZONE == 0);
+      SMART_ASSERT(id % INT_PER_ZONE == 0);
     }
 
     // Now gather all information to processor 0
@@ -871,7 +871,7 @@ namespace Iocgns {
           pack(id, all_data, block.offset.data(), 3);
         }
       }
-      assert(id % OUT_INT_PER_ZONE == 0);
+      SMART_ASSERT(id % OUT_INT_PER_ZONE == 0);
     }
     MPI_Bcast(&tot_zones, 1, MPI_INT, 0, util().communicator());
     zone_data.resize(tot_zones * OUT_INT_PER_ZONE);
@@ -983,7 +983,7 @@ namespace Iocgns {
       // Now create the missing (empty) BC on each processor.
       for (const auto &bc_name : bc) {
         auto split_name = Ioss::tokenize(bc_name, "/");
-        assert(split_name.size() == 2);
+        SMART_ASSERT(split_name.size() == 2);
         bool has_name = false;
         for (auto &sbc : block->m_boundaryConditions) {
           if (sbc.m_bcName == split_name[1]) {
@@ -995,7 +995,7 @@ namespace Iocgns {
           // Create an empty BC with that name...
           int            face = -1;
           Ioss::SideSet *sset = get_region()->get_sideset(split_name[0]);
-          assert(sset != nullptr);
+          SMART_ASSERT(sset != nullptr);
           add_empty_bc(sset, block, base, zone, face, split_name[0], split_name[1]);
         }
       }
@@ -1010,7 +1010,7 @@ namespace Iocgns {
 
   void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node)
   {
-    assert(!isParallel);
+    SMART_ASSERT(!isParallel);
 
     cgsize_t size[9];
     char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
@@ -1030,13 +1030,13 @@ namespace Iocgns {
 
     m_zoneNameMap[zname] = zone;
 
-    assert(size[0] - 1 == size[3]);
-    assert(size[1] - 1 == size[4]);
-    assert(size[2] - 1 == size[5]);
+    SMART_ASSERT(size[0] - 1 == size[3]);
+    SMART_ASSERT(size[1] - 1 == size[4]);
+    SMART_ASSERT(size[2] - 1 == size[5]);
 
-    assert(size[6] == 0);
-    assert(size[7] == 0);
-    assert(size[8] == 0);
+    SMART_ASSERT(size[6] == 0);
+    SMART_ASSERT(size[7] == 0);
+    SMART_ASSERT(size[8] == 0);
 
     int index_dim = 0;
     CGCHECKM(cg_index_dim(get_file_pointer(), base, zone, &index_dim));
@@ -1106,7 +1106,8 @@ namespace Iocgns {
       int zone = 1;
 #endif
       for (const auto &sb : blocks) {
-        assert(sb->get_property("zone").get_int() == zone++); // Modification of zone OK in assert
+        SMART_ASSERT(sb->get_property("zone").get_int() ==
+                     zone++); // Modification of zone OK in SMART_ASSERT
         my_offsets.push_back(sb->get_property("offset_i").get_int());
         my_offsets.push_back(sb->get_property("offset_j").get_int());
         my_offsets.push_back(sb->get_property("offset_k").get_int());
@@ -1124,7 +1125,7 @@ namespace Iocgns {
       for (auto &conn : block->m_zoneConnectivity) {
         if (conn.m_donorZone < 0) {
           auto donor_iter = m_zoneNameMap.find(conn.m_donorName);
-          assert(donor_iter != m_zoneNameMap.end());
+          SMART_ASSERT(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
         }
         if (proc_count > 1) {
@@ -1282,7 +1283,7 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("node_count", (int64_t)total_block_nodes));
         eblock->property_add(Ioss::Property("original_block_order", zone));
 
-        assert(is == 1); // For now, assume each zone has only a single element block.
+        SMART_ASSERT(is == 1); // For now, assume each zone has only a single element block.
         bool added = get_region()->add(eblock);
         if (!added) {
           delete eblock;
@@ -1451,7 +1452,7 @@ namespace Iocgns {
       std::vector<size_t> I_nodes(node_count);
       for (size_t i = 0; i < I_map->size(); i++) {
         auto global = I_map->map()[i + 1] - 1;
-        assert(global < node_count);
+        SMART_ASSERT(global < node_count);
         I_nodes[global] = i + 1;
       }
       for (auto J = I + 1; J != blocks.end(); J++) {
@@ -1461,7 +1462,7 @@ namespace Iocgns {
         std::vector<cgsize_t> point_list_donor;
         for (size_t i = 0; i < J_map->size(); i++) {
           auto global = J_map->map()[i + 1] - 1;
-          assert(global < node_count);
+          SMART_ASSERT(global < node_count);
           if (I_nodes[global] > 0) {
             // Have a match between nodes used by two different blocks,
             // They are adjacent...
@@ -1543,7 +1544,7 @@ namespace Iocgns {
   {
     if (!is_input()) {
       m_timesteps.push_back(time);
-      assert(m_timesteps.size() == (size_t)state);
+      SMART_ASSERT(m_timesteps.size() == (size_t)state);
     }
 
     if (!is_input()) {
@@ -1684,7 +1685,7 @@ namespace Iocgns {
           std::iota(idata, idata + num_to_get, 1);
         }
         else {
-          assert(field.get_type() == Ioss::Field::INT32);
+          SMART_ASSERT(field.get_type() == Ioss::Field::INT32);
           int *idata = static_cast<int *>(data);
           std::iota(idata, idata + num_to_get, 1);
         }
@@ -1772,7 +1773,7 @@ namespace Iocgns {
           Utils::find_solution_index(get_file_pointer(), base, zone, step, CG_Vertex);
 
       double *rdata = static_cast<double *>(data);
-      assert(num_to_get == sb->get_property("node_count").get_int());
+      SMART_ASSERT(num_to_get == sb->get_property("node_count").get_int());
       cgsize_t rmin[3] = {0, 0, 0};
       cgsize_t rmax[3] = {0, 0, 0};
       if (num_to_get > 0) {
@@ -1784,8 +1785,8 @@ namespace Iocgns {
         rmax[1] = rmin[1] + sb->get_property("nj").get_int();
         rmax[2] = rmin[2] + sb->get_property("nk").get_int();
 
-        assert(num_to_get ==
-               (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+        SMART_ASSERT(num_to_get ==
+                     (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
       }
 
       auto var_type               = field.transformed_storage();
@@ -1845,7 +1846,7 @@ namespace Iocgns {
         if (field.get_name() == "connectivity" || field.get_name() == "connectivity_raw") {
           // TODO(gdsjaar): Need to map local to global...
           int element_nodes = eb->topology()->number_nodes();
-          assert(field.raw_storage()->component_count() == element_nodes);
+          SMART_ASSERT(field.raw_storage()->component_count() == element_nodes);
 
           if (my_element_count > 0) {
             int field_byte_size = (field.get_type() == Ioss::Field::INT32) ? 32 : 64;
@@ -1904,7 +1905,7 @@ namespace Iocgns {
             std::iota(idata, idata + my_element_count, eb_offset_plus_one);
           }
           else {
-            assert(field.get_type() == Ioss::Field::INT32);
+            SMART_ASSERT(field.get_type() == Ioss::Field::INT32);
             int *idata = static_cast<int *>(data);
             std::iota(idata, idata + my_element_count, eb_offset_plus_one);
           }
@@ -1916,7 +1917,7 @@ namespace Iocgns {
             std::iota(idata, idata + my_element_count, eb_offset_plus_one);
           }
           else {
-            assert(field.get_type() == Ioss::Field::INT32);
+            SMART_ASSERT(field.get_type() == Ioss::Field::INT32);
             int *idata = static_cast<int *>(data);
             std::iota(idata, idata + my_element_count, eb_offset_plus_one);
           }
@@ -1990,7 +1991,7 @@ namespace Iocgns {
     }
 
     if (cell_field) {
-      assert(num_to_get == sb->get_property("cell_count").get_int());
+      SMART_ASSERT(num_to_get == sb->get_property("cell_count").get_int());
       if (num_to_get > 0) {
         rmin[0] = 1;
         rmin[1] = 1;
@@ -2003,7 +2004,7 @@ namespace Iocgns {
     }
     else {
       // cell nodal field.
-      assert(num_to_get == sb->get_property("node_count").get_int());
+      SMART_ASSERT(num_to_get == sb->get_property("node_count").get_int());
       if (num_to_get > 0) {
         rmin[0] = 1;
         rmin[1] = 1;
@@ -2015,8 +2016,8 @@ namespace Iocgns {
       }
     }
 
-    assert(num_to_get ==
-           (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+    SMART_ASSERT(num_to_get ==
+                 (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
 
     double *rdata = static_cast<double *>(data);
 
@@ -2082,7 +2083,7 @@ namespace Iocgns {
           sb->get_cell_node_ids(idata, true);
         }
         else {
-          assert(field.get_type() == Ioss::Field::INT32);
+          SMART_ASSERT(field.get_type() == Ioss::Field::INT32);
           int *idata = static_cast<int *>(data);
           sb->get_cell_node_ids(idata, true);
         }
@@ -2093,7 +2094,7 @@ namespace Iocgns {
           sb->get_cell_ids(idata, true);
         }
         else {
-          assert(field.get_type() == Ioss::Field::INT32);
+          SMART_ASSERT(field.get_type() == Ioss::Field::INT32);
           int *idata = static_cast<int *>(data);
           sb->get_cell_ids(idata, true);
         }
@@ -2211,34 +2212,48 @@ namespace Iocgns {
           int *    i32data = reinterpret_cast<int *>(data);
           int64_t *i64data = reinterpret_cast<int64_t *>(data);
 
-          size_t             idx      = 0;
-          size_t             j        = 0;
-          const std::string &name     = sb->parent_block()->name();
-          auto &             boundary = m_boundaryFaces[name];
+          size_t             offset           = 0;
+          size_t             j                = 0;
+          const std::string &name             = sb->parent_block()->name();
+          auto &             boundary         = m_boundaryFaces[name];
+          int                num_corner_nodes = sb->topology()->number_corner_nodes();
+          SMART_ASSERT(num_corner_nodes == 3 || num_corner_nodes == 4)(num_corner_nodes);
+
           for (int iface = 0; iface < num_to_get; iface++) {
             std::array<size_t, 4> conn = {{0, 0, 0, 0}};
-            for (int i = 0; i < nodes_per_face; i++) {
-              conn[i] = elements[idx++];
-              Ioss::Face face(conn);
-              // See if face is in m_boundaryFaces
-              // If not, error
-              // If so, then get parent element and element side.
-              auto it = boundary.find(face);
-              if (it != boundary.end()) {
-                cgsize_t fid = (*it).element[0];
+
+            for (int i = 0; i < num_corner_nodes; i++) {
+              conn[i] = elements[offset + i];
+            }
+            offset += nodes_per_face;
+
+            Ioss::Face face(conn);
+            // See if face is in m_boundaryFaces
+            // If not, error
+            // If so, then get parent element and element side.
+            auto it = boundary.find(face);
+            if (it != boundary.end()) {
+              cgsize_t fid = (*it).element[0];
 #if IOSS_DEBUG_OUTPUT
-                fmt::print("Connectivity: {} {} {} {} maps to element {}, face {}\n", conn[0],
-                           conn[1], conn[2], conn[3], fid / 10, fid % 10 + 1);
+              fmt::print("Connectivity: {} {} {} {} maps to element {}, face {}\n", conn[0],
+                         conn[1], conn[2], conn[3], fid / 10, fid % 10 + 1);
 #endif
-                if (field.get_type() == Ioss::Field::INT32) {
-                  i32data[j++] = fid / 10;
-                  i32data[j++] = fid % 10 + 1;
-                }
-                else {
-                  i64data[j++] = fid / 10;
-                  i64data[j++] = fid % 10 + 1;
-                }
+              if (field.get_type() == Ioss::Field::INT32) {
+                i32data[j++] = fid / 10;
+                i32data[j++] = fid % 10 + 1;
               }
+              else {
+                i64data[j++] = fid / 10;
+                i64data[j++] = fid % 10 + 1;
+              }
+            }
+            else {
+              std::ostringstream errmsg;
+              fmt::print(errmsg,
+                         "ERROR: CGNS: Could not find face with connectivity {} {} {} {} on "
+                         "sideblock {} with parent {}.",
+                         conn[0], conn[1], conn[2], conn[3], sb->name(), name);
+              IOSS_ERROR(errmsg);
             }
           }
         }
@@ -2250,8 +2265,8 @@ namespace Iocgns {
             for (ssize_t i = 0; i < num_to_get; i++) {
               idata[j++] = parent[num_to_get * 0 + i] + offset; // Element
               idata[j++] = parent[num_to_get * 2 + i];
-              assert(parent[num_to_get * 1 + i] == 0);
-              assert(parent[num_to_get * 3 + i] == 0);
+              SMART_ASSERT(parent[num_to_get * 1 + i] == 0);
+              SMART_ASSERT(parent[num_to_get * 3 + i] == 0);
             }
             // Adjust face numbers to IOSS convention instead of CGNS convention...
             Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
@@ -2262,8 +2277,8 @@ namespace Iocgns {
             for (ssize_t i = 0; i < num_to_get; i++) {
               idata[j++] = parent[num_to_get * 0 + i] + offset; // Element
               idata[j++] = parent[num_to_get * 2 + i];
-              assert(parent[num_to_get * 1 + i] == 0);
-              assert(parent[num_to_get * 3 + i] == 0);
+              SMART_ASSERT(parent[num_to_get * 1 + i] == 0);
+              SMART_ASSERT(parent[num_to_get * 3 + i] == 0);
             }
             // Adjust face numbers to IOSS convention instead of CGNS convention...
             Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
@@ -2316,32 +2331,32 @@ namespace Iocgns {
       bool cell_field = Utils::is_cell_field(field);
 
       if (cell_field) {
-        assert(num_to_get == sb->get_property("cell_count").get_int());
+        SMART_ASSERT(num_to_get == sb->get_property("cell_count").get_int());
       }
 
       double *rdata = static_cast<double *>(data);
 
       int crd_idx = 0;
       if (field.get_name() == "mesh_model_coordinates_x") {
-        assert(!cell_field);
+        SMART_ASSERT(!cell_field);
         CGCHECKM(cg_coord_write(get_file_pointer(), base, zone, CG_RealDouble, "CoordinateX", rdata,
                                 &crd_idx));
       }
 
       else if (field.get_name() == "mesh_model_coordinates_y") {
-        assert(!cell_field);
+        SMART_ASSERT(!cell_field);
         CGCHECKM(cg_coord_write(get_file_pointer(), base, zone, CG_RealDouble, "CoordinateY", rdata,
                                 &crd_idx));
       }
 
       else if (field.get_name() == "mesh_model_coordinates_z") {
-        assert(!cell_field);
+        SMART_ASSERT(!cell_field);
         CGCHECKM(cg_coord_write(get_file_pointer(), base, zone, CG_RealDouble, "CoordinateZ", rdata,
                                 &crd_idx));
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
-        assert(!cell_field);
+        SMART_ASSERT(!cell_field);
         int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
 
         // Data required by upper classes store x0, y0, z0, ... xn,
@@ -2435,7 +2450,7 @@ namespace Iocgns {
           // This blocks zone has not been defined.
           // Get the "node block" for this element block...
           int element_nodes = eb->topology()->number_nodes();
-          assert(field.raw_storage()->component_count() == element_nodes);
+          SMART_ASSERT(field.raw_storage()->component_count() == element_nodes);
 
           Ioss::MapContainer nodes;
           nodes.reserve(element_nodes * num_to_get + 1);
@@ -2454,7 +2469,7 @@ namespace Iocgns {
             }
           }
           Ioss::Utils::uniquify(nodes, true);
-          assert(nodes[0] == 0);
+          SMART_ASSERT(nodes[0] == 0);
 
           // Now, we have the node count and cell count so we can create a zone...
           int      base    = 1;
