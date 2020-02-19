@@ -111,6 +111,14 @@ if (TPL_ENABLE_MPI)
   )
 endif()
 
+TRIBITS_ADD_ADVANCED_TEST(create_path_fpp
+   TEST_0 CMND rm ARGS -rf create_path_test_directory
+   TEST_1 EXEC io_shell ARGS --in_type generated 100x100x100 create_path_test_directory/1/2/3/4/5/tmp.g
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS ${NPROCS}
+   TEST_2 CMND ls ARGS -1 create_path_test_directory/1/2/3/4/5/
+   )
+
 TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus64
    TEST_0 EXEC io_shell ARGS -64 ${DECOMP_ARG} ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
      NOEXEPREFIX NOEXESUFFIX
