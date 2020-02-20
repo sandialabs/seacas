@@ -2689,3 +2689,57 @@ void Iocgns::Utils::show_config()
   fmt::print(stderr, "\t\tHDF5 Multi-Dataset NOT Available.\n\n");
 #endif
 }
+
+namespace {
+  void create_face(Ioss::FaceUnorderedSet &faces, size_t id, std::array<size_t, 4> &conn,
+                   size_t element, int local_face)
+  {
+    Ioss::Face face(id, conn);
+    auto       face_iter = faces.insert(face);
+
+    (*(face_iter.first)).add_element(element * 10 + local_face);
+  }
+}
+
+void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, int num_elem,
+				      const cgsize_t *connectivity,
+				      Ioss::FaceUnorderedSet &boundary)
+{
+  // Only handle continuum elements at this time...
+  if (topo->parametric_dimension() != 3) {
+    return;
+  }
+
+  int num_face_per_elem = topo->number_faces();
+  assert(num_face_per_elem <= 6);
+  std::array<Ioss::IntVector, 6> face_conn;
+  std::array<int, 6>             face_node_count{};
+  for (int face = 0; face < num_face_per_elem; face++) {
+    face_conn[face]       = topo->face_connectivity(face + 1);
+    face_node_count[face] = topo->face_type(face + 1)->number_corner_nodes();
+  }
+
+  Ioss::FaceUnorderedSet all_faces;
+  int    num_node_per_elem = topo->number_nodes();
+  for (size_t elem = 0, offset = 0; elem < num_elem; elem++, offset += num_node_per_elem) {
+    for (int face = 0; face < num_face_per_elem; face++) {
+      size_t id = 0;
+      assert(face_node_count[face] <= 4);
+      std::array<size_t, 4> conn = {{0, 0, 0, 0}};
+      for (int j = 0; j < face_node_count[face]; j++) {
+	size_t fnode = offset + face_conn[face][j];
+	size_t lnode = connectivity[fnode]; // local since "connectivity_raw"
+	conn[j]      = lnode;
+	id += Ioss::FaceGenerator::id_hash(lnode);
+      }
+      create_face(all_faces, id, conn, elem+1, face);
+    }
+  }
+
+  // All faces generated for this element block; now extract boundary faces...
+  for (auto &face : all_faces) {
+    if (face.elementCount_ == 1) {
+      boundary.insert(face);
+    }
+  }
+}

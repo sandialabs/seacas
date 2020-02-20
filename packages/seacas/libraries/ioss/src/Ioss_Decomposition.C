@@ -1457,6 +1457,9 @@ namespace Ioss {
   template void Decomposition<int>::communicate_set_data(int *file_data, int *ioss_data,
                                                          const SetDecompositionData &set,
                                                          size_t comp_count) const;
+  template void Decomposition<int>::communicate_set_data(long *file_data, long *ioss_data,
+                                                         const SetDecompositionData &set,
+                                                         size_t comp_count) const;
   template void Decomposition<int64_t>::communicate_set_data(double *file_data, double *ioss_data,
                                                              const SetDecompositionData &set,
                                                              size_t comp_count) const;
