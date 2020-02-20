@@ -129,7 +129,7 @@ namespace Ioss {
 
     std::string name_{};
     int64_t     id_{0};
-    int         zone_{0};
+    int         zone_{0}; // Zone of the element block that this set is on
     int         section_{0};
     size_t      fileCount{0}; // Number of nodes in nodelist for file decomposition
     int         root_{0};     // Lowest number processor that has nodes for this nodest
@@ -207,6 +207,8 @@ namespace Ioss {
       }
     }
 
+    // Zero out some large arrays usually not needed after decomposition
+    void release_memory();
     void decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)
         Zoltan &zz,
