@@ -2699,11 +2699,11 @@ namespace {
 
     (*(face_iter.first)).add_element(element * 10 + local_face);
   }
-}
+} // namespace
 
 void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, int num_elem,
-				      const cgsize_t *connectivity,
-				      Ioss::FaceUnorderedSet &boundary)
+                                         const cgsize_t *        connectivity,
+                                         Ioss::FaceUnorderedSet &boundary)
 {
   // Only handle continuum elements at this time...
   if (topo->parametric_dimension() != 3) {
@@ -2720,19 +2720,19 @@ void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, int num_el
   }
 
   Ioss::FaceUnorderedSet all_faces;
-  int    num_node_per_elem = topo->number_nodes();
+  int                    num_node_per_elem = topo->number_nodes();
   for (size_t elem = 0, offset = 0; elem < num_elem; elem++, offset += num_node_per_elem) {
     for (int face = 0; face < num_face_per_elem; face++) {
       size_t id = 0;
       assert(face_node_count[face] <= 4);
       std::array<size_t, 4> conn = {{0, 0, 0, 0}};
       for (int j = 0; j < face_node_count[face]; j++) {
-	size_t fnode = offset + face_conn[face][j];
-	size_t lnode = connectivity[fnode]; // local since "connectivity_raw"
-	conn[j]      = lnode;
-	id += Ioss::FaceGenerator::id_hash(lnode);
+        size_t fnode = offset + face_conn[face][j];
+        size_t lnode = connectivity[fnode]; // local since "connectivity_raw"
+        conn[j]      = lnode;
+        id += Ioss::FaceGenerator::id_hash(lnode);
       }
-      create_face(all_faces, id, conn, elem+1, face);
+      create_face(all_faces, id, conn, elem + 1, face);
     }
   }
 
