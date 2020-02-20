@@ -4,7 +4,7 @@ EXTRA_ARGS=$@
 #MPI="${MPI:-ON}"
 MPI="${MPI:-OFF}"
 
-USE_64BIT_INT="${USE_64BIT_INT:-OFF}"
+USE_64BIT_INT="${USE_64BIT_INT:-ON}"
 
 echo "MPI set to ${MPI}"
 
