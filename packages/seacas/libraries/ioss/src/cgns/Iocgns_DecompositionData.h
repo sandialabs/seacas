@@ -52,6 +52,7 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Decomposition.h>
+#include <Ioss_FaceGenerator.h>
 #include <Ioss_Field.h>
 #include <Ioss_MeshType.h>
 #include <Ioss_PropertyManager.h>
@@ -113,7 +114,7 @@ namespace Iocgns {
     virtual void get_node_coordinates(int filePtr, double *ioss_data,
                                       const Ioss::Field &field) const = 0;
 
-    void get_block_connectivity(int filePtr, void *data, int blk_seq) const;
+    void get_block_connectivity(int filePtr, void *data, int blk_seq, bool raw_ids = false) const;
 
     void get_element_field(int filePtr, int solution_index, int blk_seq, int field_index,
                            double *data) const;
@@ -181,7 +182,8 @@ namespace Iocgns {
       m_decomposition.communicate_element_data(file_data, ioss_data, comp_count);
     }
 
-    void communicate_set_data(INT *file_data, INT *ioss_data, const Ioss::SetDecompositionData &set,
+    template <typename T>
+    void communicate_set_data(T *file_data, T *ioss_data, const Ioss::SetDecompositionData &set,
                               size_t comp_count) const
     {
       m_decomposition.communicate_set_data(file_data, ioss_data, set, comp_count);
@@ -200,7 +202,7 @@ namespace Iocgns {
       m_decomposition.communicate_block_data(file_data, ioss_data, block, comp_count);
     }
 
-    void get_block_connectivity(int filePtr, INT *data, int blk_seq) const;
+    void get_block_connectivity(int filePtr, INT *data, int blk_seq, bool raw_ids) const;
 
     void get_element_field(int filePtr, int solution_index, int blk_seq, int field_index,
                            double *data) const;
@@ -267,6 +269,8 @@ namespace Iocgns {
 
     double      m_loadBalanceThreshold{1.4};
     std::string m_lineDecomposition{};
+
+    mutable std::map<int, Ioss::FaceUnorderedSet> m_boundaryFaces;
 
   public:
     Ioss::Decomposition<INT> m_decomposition;
