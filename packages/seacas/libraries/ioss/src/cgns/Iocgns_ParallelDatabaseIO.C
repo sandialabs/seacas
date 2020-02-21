@@ -1541,15 +1541,6 @@ namespace Iocgns {
       if (field.get_name() == "element_side_raw" || field.get_name() == "element_side") {
 
         decomp->get_sideset_element_side(get_file_pointer(), sset, data);
-
-        if (field.get_type() == Ioss::Field::INT32) {
-          int *idata = (int *)data;
-          Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
-        }
-        else {
-          int64_t *idata = (int64_t *)data;
-          Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
-        }
         return num_to_get;
       }
       else {
