@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2008-2017 National Technology & Engineering Solutions
+ * Copyright(C) 2008-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -59,9 +59,6 @@ void excpus_(FTNREAL *cpusec)
 
 #if defined(__NO_CYGWIN_OPTION__)
 #include <windows.h>
-#else
-#include <sys/resource.h>
-#include <sys/time.h>
 #endif
 #if defined ADDC_
     void excpus_(FTNREAL *cpusec)
