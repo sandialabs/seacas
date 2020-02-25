@@ -568,8 +568,6 @@ namespace Catch {
 
 // start catch_interfaces_testcase.h
 
-#include <vector>
-
 namespace Catch {
 
   class TestSpec;
