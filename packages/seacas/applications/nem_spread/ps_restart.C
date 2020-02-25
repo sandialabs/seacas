@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2017 National Technology & Engineering Solutions of
+ * Copyright (C) 2009-2017, 2020 National Technology & Engineering Solutions of
  * Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -1087,13 +1087,6 @@ namespace {
 
     return count;
   }
-
-#if defined(__PUMAGON__)
-#include <stdio.h>
-#else
-#include <unistd.h>
-#endif
-#include <climits>
 
   int get_free_descriptor_count()
   {
