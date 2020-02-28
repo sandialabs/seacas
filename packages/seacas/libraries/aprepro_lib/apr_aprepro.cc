@@ -51,7 +51,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.14 (2019/11/20)";
+  const char *       version_string = "5.15 (2020/02/28)";
 
   void output_copyright();
 
@@ -93,6 +93,9 @@ namespace SEAMS {
       for (symrec *ptr = sym_table[hashval]; ptr != nullptr;) {
         symrec *save = ptr;
         ptr          = ptr->next;
+	if (save->type == Parser::token::AVAR) {
+	  delete save->value.avar;
+	}
         delete save;
       }
     }
