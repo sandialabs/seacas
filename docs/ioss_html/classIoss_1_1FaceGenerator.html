@@ -84,6 +84,7 @@ $(document).ready(function(){initNavTree('classIoss_1_1FaceGenerator.html',''); 
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classIoss_1_1FaceGenerator-members.html">List of all members</a>  </div>
@@ -110,9 +111,20 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a439ae8226b7d6a2b67d34e129f6121f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71ec4d72380b499106d9e7aebd6bd803"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">FaceUnorderedSet</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FaceGenerator.html#a71ec4d72380b499106d9e7aebd6bd803">faces</a> (const std::string &amp;name=&quot;ALL&quot;)</td></tr>
 <tr class="separator:a71ec4d72380b499106d9e7aebd6bd803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f26fe83f872b07c689f1e3e97badbbd"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FaceGenerator.html#a5f26fe83f872b07c689f1e3e97badbbd">node_id_hash</a> (size_t local_node_id) const</td></tr>
+<tr class="memdesc:a5f26fe83f872b07c689f1e3e97badbbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a local node id (0-based), return the hashed value.  <a href="classIoss_1_1FaceGenerator.html#a5f26fe83f872b07c689f1e3e97badbbd">More...</a><br /></td></tr>
+<tr class="separator:a5f26fe83f872b07c689f1e3e97badbbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aab02c1b4c03d49054dccfff3e48876a7"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FaceGenerator.html#aab02c1b4c03d49054dccfff3e48876a7">id_hash</a> (size_t global_id)</td></tr>
+<tr class="separator:aab02c1b4c03d49054dccfff3e48876a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
+<tr class="memitem:a565ada5193ec4f092753a852e0483c0c"><td class="memTemplParams" colspan="2">template&lt;typename INT &gt; </td></tr>
+<tr class="memitem:a565ada5193ec4f092753a852e0483c0c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1FaceGenerator.html#a565ada5193ec4f092753a852e0483c0c">hash_node_ids</a> (const std::vector&lt; <a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> &gt; &amp;node_ids)</td></tr>
+<tr class="separator:a565ada5193ec4f092753a852e0483c0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a890056e94c3c2cb78e7dcc290a0dd905"><td class="memTemplParams" colspan="2">template&lt;typename INT &gt; </td></tr>
 <tr class="memitem:a890056e94c3c2cb78e7dcc290a0dd905"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classIoss_1_1FaceGenerator.html#a890056e94c3c2cb78e7dcc290a0dd905">generate_block_faces</a> (<a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a>)</td></tr>
 <tr class="separator:a890056e94c3c2cb78e7dcc290a0dd905"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,6 +138,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a14c13527f1a61e7dfd8618f59b3b27fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a235c66b13fbf2a2fd48a7a3bbf115a94"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">FaceUnorderedSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FaceGenerator.html#a235c66b13fbf2a2fd48a7a3bbf115a94">faces_</a></td></tr>
 <tr class="separator:a235c66b13fbf2a2fd48a7a3bbf115a94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67da94ea24f73534223dbaf78a5996da"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1FaceGenerator.html#a67da94ea24f73534223dbaf78a5996da">hashIds_</a></td></tr>
+<tr class="separator:a67da94ea24f73534223dbaf78a5996da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a4fdd55ff4808742a55303a1d399441a6"></a>
@@ -292,6 +306,88 @@ template&lt;typename INT &gt; </div>
 
 </div>
 </div>
+<a id="a565ada5193ec4f092753a852e0483c0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a565ada5193ec4f092753a852e0483c0c">&#9670;&nbsp;</a></span>hash_node_ids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename INT &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::FaceGenerator::hash_node_ids </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="Ioss__StructuredBlock_8h.html#a04c332034f73e7eb3f559958838d3668">INT</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>node_ids</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aab02c1b4c03d49054dccfff3e48876a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab02c1b4c03d49054dccfff3e48876a7">&#9670;&nbsp;</a></span>id_hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Ioss::FaceGenerator::id_hash </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>global_id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5f26fe83f872b07c689f1e3e97badbbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f26fe83f872b07c689f1e3e97badbbd">&#9670;&nbsp;</a></span>node_id_hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Ioss::FaceGenerator::node_id_hash </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>local_node_id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Given a local node id (0-based), return the hashed value. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a235c66b13fbf2a2fd48a7a3bbf115a94"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a235c66b13fbf2a2fd48a7a3bbf115a94">&#9670;&nbsp;</a></span>faces_</h2>
@@ -304,6 +400,28 @@ template&lt;typename INT &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::map&lt;std::string, <a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">FaceUnorderedSet</a>&gt; Ioss::FaceGenerator::faces_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a67da94ea24f73534223dbaf78a5996da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67da94ea24f73534223dbaf78a5996da">&#9670;&nbsp;</a></span>hashIds_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;size_t&gt; Ioss::FaceGenerator::hashIds_</td>
         </tr>
       </table>
   </td>
