@@ -56,6 +56,9 @@ void excpus_(FTNREAL *cpusec)
 #if defined(aix) || defined(__VACPP__) || defined(hpux) || defined(sun) || defined(sgi) ||         \
     defined(__osf__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 
+#include <sys/resource.h>
+#include <sys/time.h>
+
 #if defined(__NO_CYGWIN_OPTION__)
 #include <windows.h>
 #else
