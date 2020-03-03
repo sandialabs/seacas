@@ -322,7 +322,7 @@ TRIBITS_ADD_ADVANCED_TEST(cgns_bc_no_parents_to_exodus
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1
    TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_bc_parents.gold exodus_bc_parents.e
-  COMM serial
+  COMM mpi serial
   XHOSTTYPE Windows
   )
 
@@ -331,7 +331,7 @@ TRIBITS_ADD_ADVANCED_TEST(cgns_Q2_bc_no_parents_to_exodus
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1
    TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_Q2_bc_parents.gold exodus_Q2_bc_parents.e
-  COMM serial
+  COMM mpi serial
   XHOSTTYPE Windows
   )
 
