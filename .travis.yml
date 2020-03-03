@@ -23,10 +23,6 @@ matrix:
     - os: osx
   include:
     - compiler: clang
-      env: SANITIZER="address -fsanitize-address-use-after-scope" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
-    - compiler: clang
-      env: SANITIZER="memory" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
-    - compiler: clang
       env: SANITIZER="undefined" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
     - compiler: gcc
       arch: amd64
