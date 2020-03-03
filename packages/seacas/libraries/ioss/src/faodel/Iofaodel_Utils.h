@@ -107,6 +107,10 @@ namespace Iofaodel {
       const Ioss::Region & region,
       const Ioss::GroupingEntity & grouping_entity);
 
+  kelpie::Key field_search_key(int parallel_rank,
+      int state, const Ioss::Region & region,
+      const Ioss::GroupingEntity & grouping_entity);
+
   std::string to_string(const Ioss::Property::BasicType & t);
   std::string to_string(const Ioss::Field::BasicType & t);
   std::string to_string(const Ioss::Field::RoleType & t);

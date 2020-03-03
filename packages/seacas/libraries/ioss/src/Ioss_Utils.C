@@ -3070,13 +3070,16 @@ namespace {
       // 'connectivity' field, but it is only interesting on the
       // Ioss::ElementBlock class. On the other classes, it just
       // generates overhead...
+
       if (field_name == "connectivity" && ige->type() != Ioss::ELEMENTBLOCK) {
         continue;
       }
       if (field_name == "ids") {
         continue;
       }
-      if (Ioss::Utils::substr_equal(prefix, field_name)) {
+
+      if ((prefix.empty() ||
+           std::strncmp(prefix.c_str(), field_name.c_str(), prefix.length()) == 0)) {
         assert(oge->field_exists(field_name));
         transfer_field_data_internal(ige, oge, pool, field_name, options);
       }
@@ -3147,7 +3150,9 @@ namespace {
     assert(pool.data.size() >= isize);
 
     switch (options.data_storage_type) {
-    case 1: ige->get_field_data(field_name, pool.data.data(), isize); break;
+    case 1: 
+      ige->get_field_data(field_name, pool.data.data(), isize); 
+      break;
     case 2:
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         ige->get_field_data(field_name, pool.data);
@@ -3241,7 +3246,9 @@ namespace {
     }
 
     switch (options.data_storage_type) {
-    case 1: oge->put_field_data(field_name, pool.data.data(), isize); break;
+    case 1: 
+      oge->put_field_data(field_name, pool.data.data(), isize); 
+      break;
     case 2:
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         oge->put_field_data(field_name, pool.data);
@@ -3379,12 +3386,21 @@ namespace {
         continue;
       }
 
+      // ALLOW the regions to have different names (when copying between databases, io_shell
+      // will create "region_1" (input) and "region_2" (output))
+      if( ige->type() == Ioss::REGION && property.compare("name") == 0 ) {
+        continue;
+      }
+
       Ioss::Property ige_property = ige->get_property(property);
       Ioss::Property oge_property = oge->get_property(property);
       if( ige_property != oge_property ) {
         if( ige_property.get_type() == Ioss::Property::STRING ) {
           printf("PROPERTY (%s): input (%s) not equal to output (%s)\n",
                  property.c_str(), ige_property.get_string().c_str(), oge_property.get_string().c_str());
+        } else if( ige_property.get_type() == Ioss::Property::INTEGER ) {
+          printf("PROPERTY (%s): input (%d) not equal to output (%d)\n",
+                 property.c_str(), ige_property.get_int(), oge_property.get_int());
         } else {
           printf("PROPERTY (%s): input not equal to output\n", property.c_str());
         }

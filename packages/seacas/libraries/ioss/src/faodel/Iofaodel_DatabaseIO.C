@@ -486,6 +486,12 @@ dirman.root_node_mpi 0
         pool.List(field_search, &field_oc);
         this->read_entity_fields(field_oc, *block);
 
+        // Add TRANSIENT fields that aren't created in the CTor 
+        auto field_search_debug = field_search_key(parallel_rank(), 1, *(get_region()), *block);
+        kelpie::ObjectCapacities field_oc_debug;
+        pool.List(field_search_debug, &field_oc_debug);
+        this->read_entity_fields(field_oc_debug, *block);
+
         this->get_region()->add(block);
       }
     }
@@ -605,6 +611,12 @@ dirman.root_node_mpi 0
         kelpie::ObjectCapacities field_oc;
         pool.List(field_search, &field_oc);
         this->read_entity_fields(field_oc, *block);
+
+        // Add TRANSIENT fields that aren't created in the CTor
+        auto field_search_debug = field_search_key(parallel_rank(), 1, *(get_region()), *block);
+        kelpie::ObjectCapacities field_oc_debug;
+        pool.List(field_search_debug, &field_oc_debug);
+        this->read_entity_fields(field_oc_debug, *block);
 
         this->get_region()->add(block);
       }
@@ -777,13 +789,11 @@ dirman.root_node_mpi 0
     {
       bool have_entity_count(false);
       int64_t entity_count(0);
-      bool have_component_degree(false);
-      int64_t component_degree(0);
 
       for(int i = 0; i < oc.keys.size(); i++)
       {
-
-        if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
+        std::string entity_name_search = "/" + entity_name + "/";
+        if(oc.keys[i].K2().find(entity_name_search) != std::string::npos) {
 
           if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
             lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
@@ -795,7 +805,7 @@ dirman.root_node_mpi 0
         }
       }
 
-      if(have_entity_count && have_component_degree) {
+      if(have_entity_count) {
         auto entity = new Ioss::NodeSet(this, entity_name, entity_count);
 
         // Add Properties that aren't created in the CTor
@@ -1036,7 +1046,7 @@ dirman.root_node_mpi 0
       void *data, size_t data_size) const
   {
     auto key = make_key(parallel_rank(), *(get_region()), e, f);
-    auto ldo = pack_field(*(get_region()), e, f);
+    auto ldo = pack_field(*(get_region()), e, f, data, data_size);
     pool.Publish( key, ldo );
     return 0;
   }

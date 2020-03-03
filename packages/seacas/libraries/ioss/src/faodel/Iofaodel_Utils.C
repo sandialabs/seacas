@@ -88,7 +88,7 @@ namespace Iofaodel {
     return kelpie::Key(
         std::to_string(rank),
         "/Region/" + region_name +
-        "/TimeSteps/"
+        "/TimeSteps/*"
         );
   }
 
@@ -240,6 +240,32 @@ namespace Iofaodel {
         std::to_string(rank),
         "/Region/" + region_name +
         "/State/" + std::to_string(region.get_current_state()) +
+        "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
+        "/Field/*"
+        );
+  }
+
+  kelpie::Key field_search_key(int rank, int state,
+      const Ioss::Region & region,
+      const Ioss::GroupingEntity & grouping_entity)
+  {
+    // The default Region state is -1. When the mesh data is being read from Faodel, the state 
+    // has not yet been updated.  This version of the function allows the caller to specify which 
+    // state it should be reading keys for.  This is required to allow Iofaodel::DatabaseIO to 
+    // identify the TRANSIENT fields in the Faodel key structure.
+
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }
+    auto grouping_entity_name = grouping_entity.name();
+    if(grouping_entity_name.empty()) {
+      grouping_entity_name="UNNAMED";
+    }
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/State/" + std::to_string(state) + 
         "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
         "/Field/*"
         );
