@@ -54,26 +54,20 @@ void excpus_(FTNREAL *cpusec)
 #endif /* interix */
 
 #if defined(aix) || defined(__VACPP__) || defined(hpux) || defined(sun) || defined(sgi) ||         \
-    defined(__osf__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__) ||         \
-    defined(p6)
+    defined(__osf__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 
 #if defined(__NO_CYGWIN_OPTION__)
 #include <windows.h>
+#else
+#include <sys/resource.h>
+#include <sys/time.h>
 #endif
+
 #if defined ADDC_
     void excpus_(FTNREAL *cpusec)
 #else
     void excpus(FTNREAL *cpusec)
 #endif
-#endif
-
-#if defined(paragon) || defined(pumagon) || defined(cougar)
-
-#include <nx.h>
-#include <stdio.h>
-#include <sys/resource.h>
-#include <sys/time.h>
-        void excpus_(FTNREAL *cpusec)
 #endif
 
 {
@@ -117,19 +111,5 @@ void excpus_(FTNREAL *cpusec)
   secs    = rusage.ru_utime.tv_sec + rusage.ru_stime.tv_sec;
   mics    = rusage.ru_utime.tv_usec + rusage.ru_stime.tv_usec;
   *cpusec = (FTNREAL)secs + ((FTNREAL)mics / 1.e6);
-#endif
-
-#if defined(pumagon)
-  *cpusec = dclock();
-#endif
-
-#if defined(cougar)
-  double tickval;
-  tickval = dclock();
-  *cpusec = tickval;
-#endif
-
-#if defined(p6)
-  *cpusec = 0.0;
 #endif
 }
