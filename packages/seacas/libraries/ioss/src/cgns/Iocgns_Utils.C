@@ -2701,7 +2701,7 @@ namespace {
   }
 } // namespace
 
-void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, int num_elem,
+void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, size_t num_elem,
                                          const cgsize_t *        connectivity,
                                          Ioss::FaceUnorderedSet &boundary)
 {

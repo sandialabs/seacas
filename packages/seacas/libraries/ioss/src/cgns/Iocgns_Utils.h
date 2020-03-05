@@ -232,7 +232,7 @@ namespace Iocgns {
     static void   assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData *> &zones,
                                         std::vector<size_t> &work_vector, bool verbose);
     static void   show_config();
-    static void   generate_block_faces(Ioss::ElementTopology *topo, int num_elem,
+    static void   generate_block_faces(Ioss::ElementTopology *topo, size_t num_elem,
                                        const cgsize_t *connectivity, Ioss::FaceUnorderedSet &faces);
   };
 } // namespace Iocgns
