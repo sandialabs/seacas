@@ -325,6 +325,7 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_to_exodus_double_block
   XHOSTTYPE Windows
   )
 
+IF (NOT SEACASIoss_ENABLE_THREADSAFE)
 TRIBITS_ADD_ADVANCED_TEST(cgns_bc_no_parents_to_exodus
    TEST_0 EXEC io_shell ARGS ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/BC_without_parents.cgns exodus_bc_parents.e
      NOEXEPREFIX NOEXESUFFIX
@@ -342,6 +343,7 @@ TRIBITS_ADD_ADVANCED_TEST(cgns_Q2_bc_no_parents_to_exodus
   COMM mpi serial
   XHOSTTYPE Windows
   )
+ENDIF()
 
 TRIBITS_ADD_ADVANCED_TEST(unstructured_cgns_to_exodus
    TEST_0 EXEC io_shell ARGS ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/generated.cgns exodus_generated.e
