@@ -189,7 +189,8 @@ namespace Iocgns {
 
     static void
     generate_boundary_faces(Ioss::Region *                                 region,
-                            std::map<std::string, Ioss::FaceUnorderedSet> &boundary_faces);
+                            std::map<std::string, Ioss::FaceUnorderedSet> &boundary_faces,
+			    Ioss::Field::BasicType field_type);
 
     static void write_flow_solution_metadata(int file_ptr, Ioss::Region *region, int state,
                                              int *vertex_solution_index,
