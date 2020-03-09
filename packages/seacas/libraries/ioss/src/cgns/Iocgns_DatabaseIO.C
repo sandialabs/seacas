@@ -2205,7 +2205,7 @@ namespace Iocgns {
           Ioss::Utils::clear(parent);
 
           if (m_boundaryFaces.empty()) {
-            Utils::generate_boundary_faces(get_region(), m_boundaryFaces);
+            Utils::generate_boundary_faces(get_region(), m_boundaryFaces, field.get_type());
           }
 
           // Now, iterate the face connectivity vector and find a match in `m_boundaryFaces`
