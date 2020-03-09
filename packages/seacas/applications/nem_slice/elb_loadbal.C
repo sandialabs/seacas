@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2017 National Technology & Engineering Solutions of
+ * Copyright (C) 2009-2017, 2020 National Technology & Engineering Solutions of
  * Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -2731,6 +2731,10 @@ namespace {
       goto End;
     }
     ierr = Zoltan_Set_Param(zz, "RETURN_LISTS", "PARTITION_ASSIGNMENTS");
+    if (ierr == ZOLTAN_FATAL) {
+      fmt::print(stderr, "Error returned from Zoltan_Set_Param ({}:{})\n", __FILE__, __LINE__);
+      goto End;
+    }
     if (vwgt != nullptr) {
       ierr = Zoltan_Set_Param(zz, "OBJ_WEIGHT_DIM", "1");
       if (ierr == ZOLTAN_FATAL) {
