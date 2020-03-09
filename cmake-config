@@ -56,8 +56,8 @@ then
 
   if [ "$COMPILER" == "clang" ]
   then
-      CXX=clang++
-      CC=clang
+      CXX=/opt/local/bin/clang++-mp-8.0
+      CC=clang-mp-8.0
       FC=gfortran-mp-7
       CFLAGS="-Wall -Wunused -pedantic"
       CXXFLAGS="-Wall -Wunused -pedantic"
@@ -70,6 +70,17 @@ then
       FC=ifort
       CFLAGS="-Wall -Wunused"
       CXXFLAGS="-Wall -Wunused"
+  fi
+
+  # When building:  "scan-build make -j8"
+  if [ "$COMPILER" == "analyzer" ]
+  then
+      CXX=/opt/local/libexec/llvm-8.0/libexec/c++-analyzer
+      CC=/opt/local/libexec/llvm-8.0/libexec/ccc-analyzer
+      FC=gfortran
+      CFLAGS="-Wall -Wunused"
+      CXXFLAGS="-Wall -Wunused"
+      FORTRAN="OFF"
   fi
 
   if [ "$COMPILER" == "ibm" ]
@@ -349,7 +360,7 @@ fi
 
 rm -f CMakeCache.txt
 ###------------------------------------------------------------------------
-cmake -G "${GENERATOR}" \
+scan-build-mp-8.0 cmake -G "${GENERATOR}" \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
