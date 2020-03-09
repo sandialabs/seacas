@@ -1815,13 +1815,18 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
   }
 }
 
-void Iocgns::Utils::generate_boundary_faces(
-    Ioss::Region *region, std::map<std::string, Ioss::FaceUnorderedSet> &boundary_faces)
+void Iocgns::Utils::generate_boundary_faces(Ioss::Region *region,
+					    std::map<std::string, Ioss::FaceUnorderedSet> &boundary_faces,
+					    Ioss::Field::BasicType field_type)
 {
   // See if we already generated the faces for this model...
   Ioss::FaceGenerator face_generator(*region);
-  face_generator.generate_faces((cgsize_t)0, true);
-
+  if (field_type == Ioss::Field::INT32) {
+    face_generator.generate_faces((int)0, true);
+  }
+  else {
+    face_generator.generate_faces((int64_t)0, true);
+  }
   const Ioss::ElementBlockContainer &ebs = region->get_element_blocks();
   for (auto eb : ebs) {
     const std::string &name     = eb->name();
