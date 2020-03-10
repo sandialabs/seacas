@@ -612,7 +612,6 @@ namespace Iocgns {
     size_t p_start = decomp_elem_offset();
     size_t p_end   = p_start + decomp_elem_count();
 
-    assert(sizeof(INT) == sizeof(cgsize_t));
     size_t sum    = 0; // Size of adjacency vector.
     size_t offset = 0;
 
