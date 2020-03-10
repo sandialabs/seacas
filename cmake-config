@@ -360,7 +360,7 @@ fi
 
 rm -f CMakeCache.txt
 ###------------------------------------------------------------------------
-scan-build-mp-8.0 cmake -G "${GENERATOR}" \
+cmake -G "${GENERATOR}" \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
