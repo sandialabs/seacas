@@ -119,7 +119,7 @@ int Ioss::Wedge12::number_nodes_edge(int edge) const
   if (edge == 0) {
     return -1;
   }
-  else if (edge <= 6) {
+  if (edge <= 6) {
     return 3;
   }
   else {

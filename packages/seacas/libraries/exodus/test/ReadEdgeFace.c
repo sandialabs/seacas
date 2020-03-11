@@ -153,9 +153,8 @@ int cReadEdgeFace(int argc, char **argv)
       fprintf(stdout, "=== %ss: none\n\n", obj_typenames[i]);
       continue;
     }
-    else {
-      fprintf(stdout, "=== %ss: %d\n", obj_typenames[i], nids);
-    }
+
+    fprintf(stdout, "=== %ss: %d\n", obj_typenames[i], nids);
 
     ids       = (int *)malloc(nids * sizeof(int));
     obj_names = (char **)malloc(nids * sizeof(char *));

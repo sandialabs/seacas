@@ -1603,11 +1603,10 @@ namespace {
               if (nelem < 2) {
                 break;
               }
-              else {
-                nhold = nelem;
-                for (int ncnt2 = 0; ncnt2 < nelem; ncnt2++) {
-                  hold_elem[ncnt2] = hold_elem[pt_list[ncnt2]];
-                }
+
+              nhold = nelem;
+              for (int ncnt2 = 0; ncnt2 < nelem; ncnt2++) {
+                hold_elem[ncnt2] = hold_elem[pt_list[ncnt2]];
               }
             }
           }

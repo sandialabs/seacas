@@ -881,7 +881,6 @@ void NemSpread<T, INT>::read_side_set_ids(int mesh_exoid, INT num_elem_in_ssets[
     print_line("=", 79);
     fmt::print("\n");
   }
-  return;
 }
 
 /*****************************************************************************/

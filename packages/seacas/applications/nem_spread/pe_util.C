@@ -96,7 +96,6 @@ void gen_disk_map(struct Parallel_IO *pio_info, int proc_info[], int /*proc*/, i
 
     pio_info->RDsk_List[iproc][1] = proc_id;
   }
-  return;
 }
 
 /*****************************************************************************/

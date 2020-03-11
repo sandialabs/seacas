@@ -2503,7 +2503,6 @@ namespace {
 #endif
     default: return;
     }
-    return;
   }
 
   void transfer_qa_info(Ioss::Region &in, Ioss::Region &out)

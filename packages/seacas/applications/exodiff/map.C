@@ -1053,9 +1053,8 @@ template <typename INT> double Find_Min_Coord_Sep(ExoII_Read<INT> &file)
         if (tmp >= min) {
           break;
         }
-        else {
-          min = tmp;
-        }
+
+        min = tmp;
       }
     }
     break;
@@ -1067,10 +1066,9 @@ template <typename INT> double Find_Min_Coord_Sep(ExoII_Read<INT> &file)
         if (delr > min) {
           break;
         }
-        else {
-          double tmp = dist_sqrd(x[indx[i]], y[indx[i]], x[indx[j]], y[indx[j]]);
-          min        = min < tmp ? min : tmp;
-        }
+
+        double tmp = dist_sqrd(x[indx[i]], y[indx[i]], x[indx[j]], y[indx[j]]);
+        min        = min < tmp ? min : tmp;
       }
     }
     break;
@@ -1082,11 +1080,10 @@ template <typename INT> double Find_Min_Coord_Sep(ExoII_Read<INT> &file)
         if (delr > min) {
           break;
         }
-        else {
-          double tmp =
-              dist_sqrd(x[indx[i]], y[indx[i]], z[indx[i]], x[indx[j]], y[indx[j]], z[indx[j]]);
-          min = min < tmp ? min : tmp;
-        }
+
+        double tmp =
+            dist_sqrd(x[indx[i]], y[indx[i]], z[indx[i]], x[indx[j]], y[indx[j]], z[indx[j]]);
+        min = min < tmp ? min : tmp;
       }
     }
     break;
