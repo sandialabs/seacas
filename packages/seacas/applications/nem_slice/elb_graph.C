@@ -473,11 +473,10 @@ namespace {
                     if (nelem < 2) {
                       break;
                     }
-                    else {
-                      nhold = nelem;
-                      for (size_t i = 0; i < nelem; i++) {
-                        hold_elem[i] = hold_elem[pt_list[i]];
-                      }
+
+                    nhold = nelem;
+                    for (size_t i = 0; i < nelem; i++) {
+                      hold_elem[i] = hold_elem[pt_list[i]];
                     }
                   }
                 }
@@ -516,13 +515,12 @@ namespace {
                       }
                       break;
                     }
-                    else {
-                      /*
-                       * if there aren't multiple elements in the intersection,
-                       * then check the opposite corners (1 & 3)
-                       */
-                      inode = 1;
-                    }
+
+                    /*
+                     * if there aren't multiple elements in the intersection,
+                     * then check the opposite corners (1 & 3)
+                     */
+                    inode = 1;
                   }
                 } /* "if (!hflag)" */
 

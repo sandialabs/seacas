@@ -139,7 +139,7 @@ bool Tolerance::Diff(double v1, double v2) const
   if (type == ULPS_FLOAT_) {
     return !AlmostEqualUlpsFloat(v1, v2, static_cast<int>(value));
   }
-  else if (type == ULPS_DOUBLE_) {
+  if (type == ULPS_DOUBLE_) {
     return !AlmostEqualUlpsDouble(v1, v2, static_cast<int>(value));
   }
   else if (type == EIGEN_REL_) {
@@ -176,7 +176,7 @@ const char *Tolerance::typestr() const
   if (type == ABSOLUTE_) {
     return "absolute";
   }
-  else if (type == COMBINED_) {
+  if (type == COMBINED_) {
     return "combined";
   }
   else if (type == ULPS_FLOAT_) {
@@ -207,7 +207,7 @@ const char *Tolerance::abrstr() const
   if (type == ABSOLUTE_) {
     return "abs";
   }
-  else if (type == COMBINED_) {
+  if (type == COMBINED_) {
     return "com";
   }
   else if (type == ULPS_FLOAT_) {

@@ -319,7 +319,7 @@ namespace {
         if (p[qn - 1] == '/' || *p == 0) {
           return;
         }
-        else if (i < 0) {
+        if (i < 0) {
           stop = -i;
           for (c = last; c <= stop; c++) {
             chgrp(n, c, blkids, nblks, prob);
