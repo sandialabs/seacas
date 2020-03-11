@@ -63,7 +63,7 @@ namespace Ioss {
     void add_suffix(size_t which, const std::string &suffix) { suffixList[which - 1] = suffix; }
 
   private:
-    std::vector<std::string> suffixList;
+    std::vector<std::string> suffixList{};
   };
 } // namespace Ioss
 

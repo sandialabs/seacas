@@ -49,7 +49,7 @@ namespace {
       }
       out_ = nullptr;
     }
-    std::ostream *out_;
+    std::ostream *out_{};
     bool          owns_;
   };
   // information about the stream we write to, in case
