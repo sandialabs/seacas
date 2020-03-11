@@ -108,7 +108,7 @@ namespace {
 
   Ioss::PropertyManager set_properties(const Info::Interface &interFace)
   {
-    Ioss::PropertyManager properties;
+    Ioss::PropertyManager properties{};
     if (!interFace.decomp_method().empty()) {
       properties.add(Ioss::Property("DECOMPOSITION_METHOD", interFace.decomp_method()));
     }
