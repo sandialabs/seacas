@@ -87,10 +87,10 @@ namespace {
 
 struct NodeInfo
 {
-  NodeInfo() : id(0), x(0.0), y(0.0), z(0.0) {}
+  NodeInfo() {}
   NodeInfo(size_t id_, double x_, double y_, double z_) : id(id_), x(x_), y(y_), z(z_) {}
-  size_t id;
-  double x, y, z;
+  size_t id{0};
+  double x{0.0}, y{0.0}, z{0.0};
 
   bool operator==(const NodeInfo &other) const
   {

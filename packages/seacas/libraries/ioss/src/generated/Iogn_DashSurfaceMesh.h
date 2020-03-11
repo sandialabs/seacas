@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -50,9 +50,9 @@ namespace Iogn {
 
   struct SharedNode
   {
-    SharedNode() : nodeId(-1), procId(-1) {}
-    int nodeId;
-    int procId;
+    SharedNode() = default;
+    int nodeId{-1};
+    int procId{-1};
   };
 
   enum Topology { Beam2 = 2, Shell4 = 4, Hex8 = 8 };
@@ -75,7 +75,7 @@ namespace Iogn {
     const std::vector<int>              localNumberOfElementsInBlock;
     const std::vector<Topology>         blockTopologicalData;
 
-    const int globalNumberOfNodes;
+    const int globalNumberOfNodes{0};
 
     const std::vector<int> globalIdsOfLocalElements;
     const std::vector<int> globalIdsOfLocalNodes;
@@ -90,7 +90,7 @@ namespace Iogn {
     std::vector<std::vector<int>>         sidesetConnectivity;
     std::vector<std::vector<std::string>> sidesetTouchingBlocks;
 
-    ExodusData() : globalNumberOfNodes(0) {}
+    ExodusData() {}
     ExodusData(const std::vector<double>           coords,
                const std::vector<std::vector<int>> elemBlockConnectivity,
                const std::vector<int>              globalNumOfElemsInBlock,
