@@ -66,6 +66,6 @@ extern void error_add(int                level,
                                                     * was reported */
 );
 
-extern void error_report(void);
+extern void error_report();
 
 #endif /* _EXOIILB_ERR_CONST_H_ */
