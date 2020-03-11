@@ -553,8 +553,9 @@ int read_exo_mesh(char *file_name, int rank, int *num_dim, int num_domains, int 
     if (err) {
       printf("after ex_get_variable_param, error = %d\n", err);
       ex_close(exoid);
-      if (globals)
+      if (globals) {
         free(globals);
+      }
       return (1);
     }
     *num_element_fields = num_vars;

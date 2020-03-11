@@ -239,9 +239,8 @@ namespace {
     if ((ex_int64_status(err) & EX_ALL_INT64_DB) != 0) {
       return 8;
     }
-    else {
-      return 4;
-    }
+
+    return 4;
   }
 
   template <typename INT> TimeInterp get_surrounding_times(double time, ExoII_Read<INT> &file)
@@ -400,9 +399,8 @@ int main(int argc, char *argv[])
   if (interFace.exit_status_switch && diff_flag) {
     return 2;
   }
-  else {
-    return 0;
-  }
+
+  return 0;
 }
 
 namespace {
@@ -1020,7 +1018,7 @@ double FileDiff(double v1, double v2, TOLERANCE_TYPE_enum type)
   if (type == IGNORE_) { // ignore
     return 0.0;
   }
-  else if (type == RELATIVE_) { // relative diff
+  if (type == RELATIVE_) { // relative diff
     if (v1 == 0.0 && v2 == 0.0) {
       return 0.0;
     }
@@ -1087,10 +1085,9 @@ template <typename INT> size_t global_elmt_num(ExoII_Read<INT> &file, size_t b_i
     if (b_idx == b) {
       return g + e_idx + 1;
     }
-    else {
-      SMART_ASSERT(file.Get_Elmt_Block_by_Index(b) != 0);
-      g += file.Get_Elmt_Block_by_Index(b)->Size();
-    }
+
+    SMART_ASSERT(file.Get_Elmt_Block_by_Index(b) != 0);
+    g += file.Get_Elmt_Block_by_Index(b)->Size();
   }
   SMART_ASSERT(0);
   return 0;
