@@ -81,8 +81,8 @@ int obj_sizeinq[] = {EX_INQ_EDGE,
                      -1,
                      -1};
 
-#define OBJECT_IS_BLOCK(i) ((i >= 0) && (i < 3))
-#define OBJECT_IS_SET(i) ((i > 2) && (i < 8))
+#define OBJECT_IS_BLOCK(i) (((i) >= 0) && ((i) < 3))
+#define OBJECT_IS_SET(i) (((i) > 2) && ((i) < 8))
 
 int cReadEdgeFace(int argc, char **argv)
 {
