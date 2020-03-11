@@ -383,7 +383,7 @@ namespace tsl {
         if (STORE_HASH && sizeof(std::size_t) == sizeof(truncated_hash_type)) {
           return true;
         }
-        else if (STORE_HASH && is_power_of_two_policy<GrowthPolicy>::value) {
+        if (STORE_HASH && is_power_of_two_policy<GrowthPolicy>::value) {
           tsl_rh_assert(my_bucket_count > 0);
           return (my_bucket_count - 1) <= std::numeric_limits<truncated_hash_type>::max();
         }
@@ -857,9 +857,8 @@ namespace tsl {
 
           return 1;
         }
-        else {
-          return 0;
-        }
+
+        return 0;
       }
 
       void swap(robin_hash &other)

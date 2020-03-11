@@ -662,7 +662,7 @@ bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
   if (index & CG_VERTEX_FIELD_ID) {
     return false;
   }
-  else if (index & CG_CELL_CENTER_FIELD_ID) {
+  if (index & CG_CELL_CENTER_FIELD_ID) {
     return true;
   }
   return !(field.get_name() == "mesh_model_coordinates" ||

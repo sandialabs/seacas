@@ -176,8 +176,6 @@ void clean_string(char inp_str[], const char *tokens)
 
   } /* End "while(inp_str[i] != '\0')" */
 
-  return;
-
 } /*---------------- End clean_string() -----------------*/
 
 /*****************************************************************************/
@@ -197,6 +195,4 @@ void string_to_lower(char in_string[], const char cval)
       in_string[cnt] = tolower(in_string[cnt]);
     }
   }
-
-  return;
 }

@@ -1,4 +1,4 @@
-/* Copyright 2017 Los Alamos-2017 National Security, LLC */
+/* Copyright 2017, 2020 Los Alamos-2017 National Security, LLC */
 
 #include "elb.h" // for LB_Description<INT>, etc
 #include "elb_elem.h"
@@ -107,8 +107,9 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
     E_Type etype = mesh->elem_type[i];
 
     // Only hexes and wedges can be stacked in columns
-    if (!is_hex(etype) && !is_wedge(etype))
+    if (!is_hex(etype) && !is_wedge(etype)) {
       continue;
+    }
 
     // retrieve the faces of this element - faces are described by the
     // local numbering of nodes with respect to the element node list
@@ -117,9 +118,11 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
     int  nelnodes = get_elem_info(NNODES, etype);
 
     float elcoord[27][3];
-    for (int j = 0; j < nelnodes; j++)
-      for (int d = 0; d < 3; d++)
+    for (int j = 0; j < nelnodes; j++) {
+      for (int d = 0; d < 3; d++) {
         elcoord[j][d] = mesh->coords[elnodes[j] + d * nnod];
+      }
+    }
 
     int top_side0 = 0, bot_side0 = 0;
     int nelfaces = get_elem_info(NSIDES, etype);
@@ -133,12 +136,12 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
 
       int nfn = 4;
       if (is_wedge(etype)) {
-        if (j < 3)
+        if (j < 3) {
           // lateral faces of wedge according to Exodus II - cannot be
           // up/down faces in a column
           continue;
-        else
-          nfn = 3;
+        }
+        nfn = 3;
       }
 
       // Nodes of the side/face
@@ -148,12 +151,13 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       int fnodes_loc[9];
       for (int k = 0; k < nfn; k++) {
         bool found = false;
-        for (int k2 = 0; k2 < nelnodes; k2++)
+        for (int k2 = 0; k2 < nelnodes; k2++) {
           if (fnodes[k] == elnodes[k2]) {
             fnodes_loc[k] = k2;
             found         = true;
             break;
           }
+        }
         if (!found)
           Gen_Error(0, "FATAL: side/face node not found in element node list?");
       }
@@ -167,8 +171,9 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
         }
 
         // cross product to get normal corner
-        for (int d = 0; d < 3; d++)
+        for (int d = 0; d < 3; d++) {
           normal[d] = v0[(d + 1) % 3] * v1[(d + 2) % 3] - v0[(d + 2) % 3] * v1[(d + 1) % 3];
+        }
       }
       else {
         for (int k = 0; k < nfn; k++) {
@@ -179,20 +184,24 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
           }
 
           // cross product to get normal at corner - add to face normal
-          for (int d = 0; d < 3; d++)
+          for (int d = 0; d < 3; d++) {
             normal[d] += v0[(d + 1) % 3] * v1[(d + 2) % 3] - v0[(d + 2) % 3] * v1[(d + 1) % 3];
+          }
         }
         double len = normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2];
         if (len > 1.0e-24) { // Don't normalize nearly zero-length vectors
-          for (double &d : normal)
+          for (double &d : normal) {
             d /= len;
+          }
         }
       }
       if (fabs(normal[2]) > 1.0e-12) { // non-zero
-        if (normal[2] > 0.0)
+        if (normal[2] > 0.0) {
           top_side0 = j + 1; // side id counting starts from 1
-        else
+        }
+        else {
           bot_side0 = j + 1;
+        }
         count++;
       }
     } // for (j = 0; j < nelfaces; j++)
@@ -203,7 +212,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       Gen_Error(1, "WARNING: Mesh may not be strictly columnar. Initial partitioning unchanged.");
       return 0;
     }
-    else if (count < 2) {
+    if (count < 2) {
 #ifdef DEBUG
       Gen_Error(1, "WARNING: could not find up and down faces for element.");
 #endif
@@ -228,8 +237,9 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       int        nadj = graph->start[cur_elem + 1] - graph->start[cur_elem];
       INT const *adj  = graph->adj.data() + graph->start[cur_elem];
       find_adjacent_element(cur_elem, etype, top_side, nadj, adj, mesh, &adj_elem, &adj_side);
-      if (adj_elem == -1)
+      if (adj_elem == -1) {
         upsearch_done = true;
+      }
       else {
         above_list.push_back(adj_elem);
         cur_elem = adj_elem;
@@ -263,8 +273,9 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       int        nadj = graph->start[cur_elem + 1] - graph->start[cur_elem];
       INT const *adj  = graph->adj.data() + graph->start[cur_elem];
       find_adjacent_element(cur_elem, etype, bot_side, nadj, adj, mesh, &adj_elem, &adj_side);
-      if (adj_elem == -1)
+      if (adj_elem == -1) {
         downsearch_done = true;
+      }
       else {
         below_list.push_back(adj_elem);
         cur_elem = adj_elem;

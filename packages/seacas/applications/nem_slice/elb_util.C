@@ -171,8 +171,6 @@ void string_to_lower(char in_string[], char cval)
       in_string[cnt] = tolower(in_string[cnt]);
     }
   }
-
-  return;
 }
 
 /*****************************************************************************/
@@ -216,8 +214,6 @@ void clean_string(char inp_str[], const char *tokens)
     i++;
 
   } /* End "while(inp_str[i] != '\0')" */
-
-  return;
 
 } /*---------------- End clean_string() -----------------*/
 
@@ -395,7 +391,6 @@ void find_first_last(INT val, size_t vecsize, INT *vector, INT *first, INT *last
       *last = vecsize - 1;
     }
   }
-  return;
 }
 
 /*****************************************************************************
@@ -541,7 +536,7 @@ namespace {
     if (ra1 < ra2) {
       return 1;
     }
-    else if (ra1 > ra2) {
+    if (ra1 > ra2) {
       return 0;
     }
     assert(ra1 == ra2);
@@ -549,7 +544,7 @@ namespace {
     if (rb1 < rb2) {
       return 1;
     }
-    else if (rb1 > rb2) {
+    if (rb1 > rb2) {
       return 0;
     }
     assert(rb1 == rb2);
@@ -557,7 +552,7 @@ namespace {
     if (rc1 < rc2) {
       return 1;
     }
-    else if (rc1 > rc2) {
+    if (rc1 > rc2) {
       return 0;
     }
     assert(rc1 == rc2);
@@ -565,9 +560,8 @@ namespace {
     if (rd1 < rd2) {
       return 1;
     }
-    else {
-      return 0;
-    }
+
+    return 0;
   }
 
   template <typename INT> int is_less_than4v(INT *v1, INT *v2, INT *v3, INT *v4, size_t i, size_t j)
@@ -575,7 +569,7 @@ namespace {
     if (v1[i] < v1[j]) {
       return 1;
     }
-    else if (v1[i] > v1[j]) {
+    if (v1[i] > v1[j]) {
       return 0;
     }
     assert(v1[i] == v1[j]);
@@ -583,7 +577,7 @@ namespace {
     if (v2[i] < v2[j]) {
       return 1;
     }
-    else if (v2[i] > v2[j]) {
+    if (v2[i] > v2[j]) {
       return 0;
     }
     assert(v2[i] == v2[j]);
@@ -591,7 +585,7 @@ namespace {
     if (v3[i] < v3[j]) {
       return 1;
     }
-    else if (v3[i] > v3[j]) {
+    if (v3[i] > v3[j]) {
       return 0;
     }
     assert(v3[i] == v3[j]);
@@ -599,9 +593,8 @@ namespace {
     if (v4[i] < v4[j]) {
       return 1;
     }
-    else {
-      return 0;
-    }
+
+    return 0;
   }
 
   template <typename INT> void swap4(INT *v1, INT *v2, INT *v3, INT *v4, size_t i, size_t j)
@@ -698,7 +691,7 @@ namespace {
     if (ra1 < ra2) {
       return 1;
     }
-    else if (ra1 > ra2) {
+    if (ra1 > ra2) {
       return 0;
     }
     assert(ra1 == ra2);
@@ -706,9 +699,8 @@ namespace {
     if (rb1 < rb2) {
       return 1;
     }
-    else {
-      return 0;
-    }
+
+    return 0;
   }
 
   template <typename INT> int is_less_than2v(INT *v1, INT *v2, size_t i, size_t j)
@@ -716,7 +708,7 @@ namespace {
     if (v1[i] < v1[j]) {
       return 1;
     }
-    else if (v1[i] > v1[j]) {
+    if (v1[i] > v1[j]) {
       return 0;
     }
     assert(v1[i] == v1[j]);
@@ -724,9 +716,8 @@ namespace {
     if (v2[i] < v2[j]) {
       return 1;
     }
-    else {
-      return 0;
-    }
+
+    return 0;
   }
 
   template <typename INT> void swap2(INT *v1, INT *v2, size_t i, size_t j)
