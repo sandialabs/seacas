@@ -82,7 +82,7 @@ namespace SEAMS {
 
   const char *do_exodus_info(char *filename, char *prefix)
   {
-    char *ret_string = NULL;
+    char *ret_string = nullptr;
 
     // Open the specified exodusII file, read the info records
     // then parse them as input to aprepro.
@@ -128,7 +128,7 @@ namespace SEAMS {
 
   const char *do_exodus_info_range(char *filename, char *beg, char *end)
   {
-    char *ret_string = NULL;
+    char *ret_string = nullptr;
 
     // Open the specified exodusII file, read the info records
     // then parse them as input to aprepro.

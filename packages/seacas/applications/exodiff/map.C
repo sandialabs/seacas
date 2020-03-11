@@ -83,7 +83,7 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
   std::fill(elmt_map, elmt_map + num_elmts, -1);
 
   // Create storage for midpoints.
-  double *x2 = new double[num_elmts];
+  auto *  x2 = new double[num_elmts];
   double *y2 = nullptr, *z2 = nullptr;
   if (dim > 1) {
     y2 = new double[num_elmts];
@@ -391,7 +391,7 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
   std::fill(elmt_map, elmt_map + num_elmts1, -1);
 
   // Create storage for midpoints.
-  double *x2 = new double[num_elmts2];
+  auto *  x2 = new double[num_elmts2];
   double *y2 = nullptr, *z2 = nullptr;
   if (dim > 1) {
     y2 = new double[num_elmts2];

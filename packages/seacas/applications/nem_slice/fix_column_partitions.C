@@ -184,8 +184,8 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
         }
         double len = normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2];
         if (len > 1.0e-24) { // Don't normalize nearly zero-length vectors
-          for (int d = 0; d < 3; d++)
-            normal[d] /= len;
+          for (double &d : normal)
+            d /= len;
         }
       }
       if (fabs(normal[2]) > 1.0e-12) { // non-zero
