@@ -68,7 +68,7 @@ namespace Excn {
 
     IntVector truthTable[3];
 
-    std::string title;
+    std::string title{};
     int         dimensionality{0};
     int64_t     nodeCount{0};
     int64_t     elementCount{0};
@@ -98,7 +98,7 @@ namespace Excn {
 
     char                     elType[MAX_STR_LENGTH + 1]{};
     std::string              name_{""};
-    std::vector<std::string> attributeNames;
+    std::vector<std::string> attributeNames{};
     int64_t                  id{0};
     int64_t                  elementCount{0};
     int                      nodesPerElement{0};
@@ -133,9 +133,9 @@ namespace Excn {
     int          position_{-1};
     std::string  name_{""};
 
-    std::vector<INT> nodeSetNodes;
-    std::vector<INT> nodeOrderMap;
-    DistVector       distFactors;
+    std::vector<INT> nodeSetNodes{};
+    std::vector<INT> nodeOrderMap{};
+    DistVector       distFactors{};
 
     size_t entity_count() const { return nodeCount; }
 
@@ -168,9 +168,9 @@ namespace Excn {
     int          position_{-1};
     std::string  name_{""};
 
-    std::vector<INT> elems;
-    std::vector<INT> sides;
-    DistVector       distFactors;
+    std::vector<INT> elems{};
+    std::vector<INT> sides{};
+    DistVector       distFactors{};
 
     size_t entity_count() const { return sideCount; }
 
@@ -201,8 +201,8 @@ namespace Excn {
     CommunicationMetaData(const CommunicationMetaData &) = delete;
     CommunicationMetaData &operator=(const CommunicationMetaData &other) = delete;
 
-    std::vector<CommunicationMap> nodeMap;
-    std::vector<CommunicationMap> elementMap;
+    std::vector<CommunicationMap> nodeMap{};
+    std::vector<CommunicationMap> elementMap{};
 
     int     processorId{0};
     int     processorCount{0};

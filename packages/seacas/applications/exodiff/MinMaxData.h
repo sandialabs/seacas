@@ -99,7 +99,7 @@ public:
     }
   }
 
-  double min_val;
+  double min_val{};
   int    min_step{0};
   size_t min_id{0};
   size_t min_blk{0};

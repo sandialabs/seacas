@@ -48,7 +48,7 @@ template <typename T> struct Restart_Description
   int Flag{-1}; /* Indicates whether restart info is to be processed */
 
   int              Num_Times{-1}; /* The number of time indices to spread */
-  std::vector<int> Time_Idx;      /* Time indices to read, need to keep track of all */
+  std::vector<int> Time_Idx{};    /* Time indices to read, need to keep track of all */
   T                Time{};        /* time value */
 
   int NVar_Glob{-1}; /* Number of global variables read */
@@ -57,15 +57,15 @@ template <typename T> struct Restart_Description
   int NVar_Nset{-1}; /* Number of nodeset variables read */
   int NVar_Sset{-1}; /* Number of sideset variables read */
 
-  std::vector<int> GElem_TT; /* Global Elemental variable truth table */
-  std::vector<int> GNset_TT; /* Global Elemental variable truth table */
-  std::vector<int> GSset_TT; /* Global Elemental variable truth table */
+  std::vector<int> GElem_TT{}; /* Global Elemental variable truth table */
+  std::vector<int> GNset_TT{}; /* Global Elemental variable truth table */
+  std::vector<int> GSset_TT{}; /* Global Elemental variable truth table */
 
   /*
    * To be able to support single or double precision exodus files,
    * need to have both float and double pointers here.
    */
-  std::vector<T> Glob_Vals;              /* Global variable values, only one per variable *
+  std::vector<T> Glob_Vals{};            /* Global variable values, only one per variable *
                                           * and processor                                 */
   std::vector<std::vector<T>> Elem_Vals; /* Element variable values for each processor */
   std::vector<std::vector<T>> Node_Vals; /* Nodal variable values for each processor */

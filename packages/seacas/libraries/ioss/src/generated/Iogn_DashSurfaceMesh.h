@@ -69,18 +69,18 @@ namespace Iogn {
 
   struct ExodusData
   {
-    std::vector<double>                 coordinates;
+    std::vector<double>                 coordinates{};
     const std::vector<std::vector<int>> elementBlockConnectivity;
-    const std::vector<int>              globalNumberOfElementsInBlock;
-    const std::vector<int>              localNumberOfElementsInBlock;
-    const std::vector<Topology>         blockTopologicalData;
+    const std::vector<int>              globalNumberOfElementsInBlock{};
+    const std::vector<int>              localNumberOfElementsInBlock{};
+    const std::vector<Topology>         blockTopologicalData{};
 
     const int globalNumberOfNodes{0};
 
-    const std::vector<int> globalIdsOfLocalElements;
-    const std::vector<int> globalIdsOfLocalNodes;
+    const std::vector<int> globalIdsOfLocalElements{};
+    const std::vector<int> globalIdsOfLocalNodes{};
 
-    std::vector<SharedNode> sharedNodes;
+    std::vector<SharedNode> sharedNodes{};
 
     // A sideset' is basically an exodus sideset.  A
     // sideset has a list of elements and a corresponding local
@@ -113,9 +113,9 @@ namespace Iogn {
 
   struct DashSurfaceData
   {
-    const std::vector<double> coordinates;
-    const std::vector<int>    surfaceAConnectivity;
-    const std::vector<int>    surfaceBConnectivity;
+    const std::vector<double> coordinates{};
+    const std::vector<int>    surfaceAConnectivity{};
+    const std::vector<int>    surfaceBConnectivity{};
 
     int globalNumberOfNodes{};
     int globalNumberOfElements{};
@@ -123,10 +123,10 @@ namespace Iogn {
     int globalNumberOfElementsSurface1{};
     int globalNumberOfElementsSurface2{};
 
-    std::vector<int> globalIdsOfLocalElements;
-    std::vector<int> globalIdsOfLocalNodes;
+    std::vector<int> globalIdsOfLocalElements{};
+    std::vector<int> globalIdsOfLocalNodes{};
 
-    std::vector<SharedNode> sharedNodes;
+    std::vector<SharedNode> sharedNodes{};
 
     DashSurfaceData(const std::vector<double> &coords, const std::vector<int> &connectivity1,
                     const std::vector<int> &connectivity2)

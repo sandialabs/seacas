@@ -648,7 +648,7 @@ int main(int argc, char *argv[])
 
   Ioss::Init::Initializer io;
 
-  Ioss::PropertyManager properties;
+  Ioss::PropertyManager properties{};
   Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(in_type, interFace.filename, Ioss::READ_RESTART,
                                                   (MPI_Comm)MPI_COMM_WORLD, properties);
   if (dbi == nullptr || !dbi->ok()) {

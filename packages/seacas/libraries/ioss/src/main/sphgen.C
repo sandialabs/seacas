@@ -66,7 +66,7 @@ namespace {
 
   struct Globals
   {
-    std::string working_directory;
+    std::string working_directory{};
     double      scale_factor{};
   };
 
