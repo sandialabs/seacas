@@ -93,9 +93,9 @@ namespace SEAMS {
       for (symrec *ptr = sym_table[hashval]; ptr != nullptr;) {
         symrec *save = ptr;
         ptr          = ptr->next;
-	if (save->type == Parser::token::AVAR) {
-	  delete save->value.avar;
-	}
+        if (save->type == Parser::token::AVAR) {
+          delete save->value.avar;
+        }
         delete save;
       }
     }
@@ -862,7 +862,7 @@ namespace SEAMS {
     }
 
     if (!original.empty()) {
-      history_data hist;
+      history_data hist{};
       hist.original     = original;
       hist.substitution = substitution;
       hist.index        = outputStream.empty() ? std::streampos(0) : outputStream.top()->tellp();

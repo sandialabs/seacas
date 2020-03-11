@@ -104,7 +104,7 @@ template <typename INT> struct LB_Description
   int         num_sects{-1};
   int         cnctd_dom{-1};
   int         outfile{-1};
-  std::string file;
+  std::string file{};
 
   /* Calculated quantities */
   int *vertex2proc{nullptr};
@@ -116,7 +116,7 @@ template <typename INT> struct LB_Description
   std::vector<std::vector<INT>> ext_procs;
 
   /* Elemental */
-  std::vector<std::vector<std::vector<INT>>> born_procs;
+  std::vector<std::vector<std::vector<INT>>> born_procs{};
   std::vector<std::vector<INT>>              int_elems;
   std::vector<std::vector<INT>>              bor_elems;
   std::vector<std::vector<INT>>              e_cmap_elems;
@@ -173,8 +173,8 @@ template <typename INT> struct Weight_Description
   int type{-1};   /* See weight type below for possible types */
   int ow_read{0}; /* 1 if element block settings overwrite exodus file read */
 
-  std::string exo_filename;
-  std::string exo_varname;
+  std::string exo_filename{};
+  std::string exo_varname{};
 
   int exo_tindx{-1};
   int exo_vindx{-1};
@@ -183,14 +183,14 @@ template <typename INT> struct Weight_Description
   int nvals{0};
 
   /* vectors to hold element block weights */
-  std::vector<INT> elemblk;     /* Id of element block */
-  std::vector<INT> elemblk_wgt; /* Weight of that element block */
+  std::vector<INT> elemblk{};     /* Id of element block */
+  std::vector<INT> elemblk_wgt{}; /* Weight of that element block */
 
   /* vector to indicate if weight value has already been overwritten */
-  std::vector<INT> ow;
+  std::vector<INT> ow{};
 
-  std::vector<int>   vertices;
-  std::vector<float> edges;
+  std::vector<int>   vertices{};
+  std::vector<float> edges{};
 
   Weight_Description<INT>() {}
 };
@@ -202,10 +202,10 @@ template <typename INT> struct Mesh_Description
   size_t              num_elems{0};
   size_t              num_dims{0};
   size_t              num_el_blks{0};
-  std::vector<INT>    eb_cnts;
-  std::vector<INT>    eb_ids;
-  std::vector<INT>    eb_npe;
-  std::vector<E_Type> eb_type;
+  std::vector<INT>    eb_cnts{};
+  std::vector<INT>    eb_ids{};
+  std::vector<INT>    eb_npe{};
+  std::vector<E_Type> eb_type{};
   size_t              num_node_sets{0};
   size_t              num_side_sets{0};
   size_t              max_np_elem{0};
@@ -234,8 +234,8 @@ template <typename INT> struct Graph_Description
 {
   size_t                        nadj{0};
   int                           max_nsur{0};
-  std::vector<INT>              adj;
-  std::vector<INT>              start;
+  std::vector<INT>              adj{};
+  std::vector<INT>              start{};
   std::vector<std::vector<INT>> sur_elem;
   Graph_Description<INT>() {}
 };

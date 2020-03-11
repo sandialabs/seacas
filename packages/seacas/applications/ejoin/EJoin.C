@@ -303,7 +303,7 @@ double ejoin(SystemInterface &interFace, std::vector<Ioss::Region *> &part_mesh,
   size_t part_count = interFace.inputFiles_.size();
   SMART_ASSERT(part_count == part_mesh.size());
 
-  Ioss::PropertyManager properties;
+  Ioss::PropertyManager properties{};
   if (sizeof(INT) == 8) {
     properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
     properties.add(Ioss::Property("INTEGER_SIZE_API", 8));

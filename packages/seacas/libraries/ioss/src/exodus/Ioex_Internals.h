@@ -330,8 +330,8 @@ namespace Ioex {
     CommunicationMetaData()                              = default;
     CommunicationMetaData(const CommunicationMetaData &) = delete;
 
-    std::vector<CommunicationMap> nodeMap;
-    std::vector<CommunicationMap> elementMap;
+    std::vector<CommunicationMap> nodeMap{};
+    std::vector<CommunicationMap> elementMap{};
     int                           processorId{0};
     int                           processorCount{0};
     int64_t                       globalNodes{0};
@@ -375,15 +375,15 @@ namespace Ioex {
     int  dimensionality{};
     bool file_per_processor{true};
 
-    std::vector<NodeBlock> nodeblocks;
-    std::vector<EdgeBlock> edgeblocks;
-    std::vector<FaceBlock> faceblocks;
-    std::vector<ElemBlock> elemblocks;
-    std::vector<NodeSet>   nodesets;
-    std::vector<EdgeSet>   edgesets;
-    std::vector<FaceSet>   facesets;
-    std::vector<ElemSet>   elemsets;
-    std::vector<SideSet>   sidesets;
+    std::vector<NodeBlock> nodeblocks{};
+    std::vector<EdgeBlock> edgeblocks{};
+    std::vector<FaceBlock> faceblocks{};
+    std::vector<ElemBlock> elemblocks{};
+    std::vector<NodeSet>   nodesets{};
+    std::vector<EdgeSet>   edgesets{};
+    std::vector<FaceSet>   facesets{};
+    std::vector<ElemSet>   elemsets{};
+    std::vector<SideSet>   sidesets{};
     CommunicationMetaData  comm;
   };
 
