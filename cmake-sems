@@ -26,7 +26,7 @@ THREADSAFE_IO_LIBS=OFF
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
 
-### TPLs -- 
+### TPLs --
 ### Using SEMS (Software Engineering Maintenance & Support) provided libraries...
 ### https://sems.sandia.gov/
 module purge
@@ -39,18 +39,18 @@ module load sems-zlib/1.2.8/base
 if [ "$MPI" == "ON" ]
 then
   module load sems-openmpi/1.10.1
-  module load sems-hdf5/1.8.12/parallel
-  module load sems-netcdf/4.4.1/exo_parallel
+  module load sems-hdf5/1.10.6/parallel
+  module load sems-netcdf/4.7.3/parallel
   module load sems-parmetis/4.0.3/64bit_parallel
 else
-  module load sems-hdf5/1.8.12/base
-  module load sems-netcdf/4.4.1/exo
+  module load sems-hdf5/1.10.6/base
+  module load sems-netcdf/4.7.3/base
 fi
 
 HAVE_NETCDF=ON
 
 # NOTE: CGNS, MATIO, PNETCDF, and DATAWAREHOUSE TPLs  are currently not supported by SEMS.
-#       To use them you will need to install them following the directions in 
+#       To use them you will need to install them following the directions in
 #       README.md, enable them below, and add the appropriate defines below:
 #
 # -D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
@@ -118,7 +118,7 @@ then
                 -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
-    
+
 rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
@@ -160,6 +160,8 @@ ${DW_SYMBOLS} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
 -D HDF5_NO_SYSTEM_PATHS=ON \
+-D PNetCDF_LIBRARIES=${SEMS_NETCDF_ROOT}/lib/libpnetcdf.a \
+-D PNetCDF_INCLUDE_DIRS=${SEMS_NETCDF_ROOT}/include/ \
 \
 $EXTRA_ARGS \
 ..
