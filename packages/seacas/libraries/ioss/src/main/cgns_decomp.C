@@ -705,7 +705,7 @@ int main(int argc, char *argv[])
 #endif
 
 namespace {
-  int term_width(void)
+  int term_width()
   {
     int cols = 100;
     if (isatty(fileno(stdout))) {

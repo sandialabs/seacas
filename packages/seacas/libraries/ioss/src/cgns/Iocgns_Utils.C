@@ -1815,9 +1815,9 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
   }
 }
 
-void Iocgns::Utils::generate_boundary_faces(Ioss::Region *region,
-					    std::map<std::string, Ioss::FaceUnorderedSet> &boundary_faces,
-					    Ioss::Field::BasicType field_type)
+void Iocgns::Utils::generate_boundary_faces(
+    Ioss::Region *region, std::map<std::string, Ioss::FaceUnorderedSet> &boundary_faces,
+    Ioss::Field::BasicType field_type)
 {
   // See if we already generated the faces for this model...
   Ioss::FaceGenerator face_generator(*region);
@@ -2061,8 +2061,8 @@ void Iocgns::Utils::add_transient_variables(int cgns_file_ptr, const std::vector
             (block->type() == Ioss::STRUCTUREDBLOCK)
                 ? &(dynamic_cast<Ioss::StructuredBlock *>(block)->get_node_block())
                 : region->get_node_blocks()[0];
-        Ioss::NodeBlock *nb           = const_cast<Ioss::NodeBlock *>(cnb);
-        size_t           entity_count = nb->entity_count();
+        auto * nb           = const_cast<Ioss::NodeBlock *>(cnb);
+        size_t entity_count = nb->entity_count();
         Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
                                 enable_field_recognition, suffix_separator, nullptr, fields);
         size_t index = 1;

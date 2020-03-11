@@ -351,7 +351,8 @@ namespace Ioex {
 
   struct CommunicationMetaData
   {
-    CommunicationMetaData() = default;
+    CommunicationMetaData()                              = default;
+    CommunicationMetaData(const CommunicationMetaData &) = delete;
 
     std::vector<CommunicationMap> nodeMap;
     std::vector<CommunicationMap> elementMap;
@@ -368,9 +369,6 @@ namespace Ioex {
     int64_t                       elementsInternal{0};
     int64_t                       elementsBorder{0};
     bool                          outputNemesis{false};
-
-  private:
-    CommunicationMetaData(const CommunicationMetaData &);
   };
 
   class Redefine
@@ -473,7 +471,7 @@ namespace Ioex {
 
     int max_name_length() const { return maximumNameLength; }
 
-    int                 exodusFilePtr;
+    int                 exodusFilePtr{0};
     int                 nodeMapVarID[3];
     int                 elementMapVarID[2];
     int                 commIndexVar{0};

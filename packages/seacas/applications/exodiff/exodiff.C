@@ -1,4 +1,4 @@
-// Copyright(C) 2008-2017 National Technology & Engineering Solutions
+// Copyright(C) 2008-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -65,17 +65,17 @@ SystemInterface interFace;
 
 struct TimeInterp
 {
-  TimeInterp() : step1(-1), step2(-1), time(0.0), proportion(0.0) {}
+  TimeInterp() = default;
 
-  int step1; // step at beginning of interval. -1 if time prior to time at step1
-  int step2; // step at end of interval. -1 if time after time at step2
+  int step1{-1}; // step at beginning of interval. -1 if time prior to time at step1
+  int step2{-1}; // step at end of interval. -1 if time after time at step2
 
-  double time; // Time being interpolated to.
+  double time{0.0}; // Time being interpolated to.
 
   // If t1 = time at step1 and t2 = time at step2,
   // then proportion = (time-t1)/(t2-t1)
   // Or, value at time = (1.0-proportion)*v1 + proportion*v2
-  double proportion;
+  double proportion{0.0};
 };
 
 std::string Date()
@@ -1774,12 +1774,12 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         diff_flag = true;
       }
 
-      double  v2    = 0;
-      double *vals2 = nullptr;
+      double        v2    = 0;
+      const double *vals2 = nullptr;
       if (!interFace.summary_flag) {
         // Without mapping, get result for this nset
         nset2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
-        vals2 = (double *)nset2->Get_Results(vidx2);
+        vals2 = nset2->Get_Results(vidx2);
 
         if (vals2 == nullptr) {
           Error(fmt::format("Could not find variable '{}' in nodeset {}, file 2.\n", name,
@@ -1954,11 +1954,11 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, con
         diff_flag = true;
       }
 
-      double  v2    = 0;
-      double *vals2 = nullptr;
+      double        v2    = 0;
+      const double *vals2 = nullptr;
       if (!interFace.summary_flag) {
         sset2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
-        vals2 = (double *)sset2->Get_Results(vidx2);
+        vals2 = sset2->Get_Results(vidx2);
 
         if (vals2 == nullptr) {
           Error(fmt::format("Could not find variable '{}' in sideset {}, file 2.\n", name,
@@ -2121,7 +2121,7 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
       same1 = Equal_Values(vals1, range1.second, &value1);
     }
 
-    double *vals2 = (double *)sset2->Distribution_Factors();
+    auto *vals2 = sset2->Distribution_Factors();
 
     if (vals2 == nullptr) {
       Error(

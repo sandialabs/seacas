@@ -152,8 +152,8 @@ namespace tsl {
       using distance_type = std::int_least16_t;
 
       bucket_entry() noexcept
-          : bucket_hash(), m_dist_from_ideal_bucket(EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET),
-            m_last_bucket(false)
+          : bucket_hash(), m_dist_from_ideal_bucket(EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET)
+
       {
         tsl_rh_assert(empty());
       }
@@ -297,7 +297,7 @@ namespace tsl {
       static const distance_type EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET = -1;
 
       distance_type m_dist_from_ideal_bucket;
-      bool          m_last_bucket;
+      bool          m_last_bucket{false};
       storage       m_value;
     };
 
@@ -428,7 +428,7 @@ namespace tsl {
         using reference         = value_type &;
         using pointer           = value_type *;
 
-        robin_iterator() noexcept {}
+        robin_iterator() noexcept = default;
 
         // Copy constructor from iterator to const_iterator.
         template <bool TIsConst = IsConst, typename std::enable_if<TIsConst>::type * = nullptr>

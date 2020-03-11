@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2010-2017 National Technology & Engineering Solutions
+ * Copyright(C) 2010-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -159,14 +159,14 @@ namespace Excn {
   template <typename INT> class SideSet
   {
   public:
-    SideSet() : id(0), sideCount(0), dfCount(0), offset_(-1), position_(-1), name_("") {}
+    SideSet() = default;
 
-    ex_entity_id id;
-    int64_t      sideCount;
-    int64_t      dfCount;
-    int64_t      offset_;
-    int          position_;
-    std::string  name_;
+    ex_entity_id id{0};
+    int64_t      sideCount{0};
+    int64_t      dfCount{0};
+    int64_t      offset_{-1};
+    int          position_{-1};
+    std::string  name_{""};
 
     std::vector<INT> elems;
     std::vector<INT> sides;

@@ -64,8 +64,8 @@ namespace Excn {
   private:
     std::vector<std::string> disk_names;
 
-    int number_of_raids;
-    int raid_offset;
+    int number_of_raids{0};
+    int raid_offset{0};
 
     void create_disk_names();
 
