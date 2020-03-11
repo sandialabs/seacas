@@ -49,7 +49,7 @@
 
 /* Macro for maximum value */
 #ifndef MAX
-#define MAX(x, y) ((x > y) ? x : y)
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #endif
 
 /*

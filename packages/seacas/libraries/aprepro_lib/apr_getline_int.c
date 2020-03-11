@@ -94,7 +94,7 @@ struct termio new_termio, old_termio;
 #define LOCAL_PATH_DELIM_STR "/"
 #define _StrFindLocalPathDelim(a) strchr(a, LOCAL_PATH_DELIM)
 #define _StrRFindLocalPathDelim(a) strrchr(a, LOCAL_PATH_DELIM)
-#define IsLocalPathDelim(c) (c == LOCAL_PATH_DELIM)
+#define IsLocalPathDelim(c) ((c) == LOCAL_PATH_DELIM)
 #endif
 
 /********************* C library headers ********************************/
