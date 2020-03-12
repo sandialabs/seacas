@@ -664,7 +664,7 @@ namespace Iocgns {
     return true;
   }
 
-  void DatabaseIO::finalize_database()
+  void DatabaseIO::finalize_database() const
   {
     if (is_input()) {
       return;
@@ -674,7 +674,10 @@ namespace Iocgns {
       return;
     }
 
-    Utils::finalize_database(get_file_pointer(), m_timesteps, get_region(), myProcessor, false);
+    if (!m_dbFinalized) {
+      Utils::finalize_database(get_file_pointer(), m_timesteps, get_region(), myProcessor, false);
+      m_dbFinalized = true;
+    }
   }
 
   int64_t DatabaseIO::node_global_to_local__(int64_t global, bool /*must_exist*/) const
