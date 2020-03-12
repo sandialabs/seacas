@@ -643,8 +643,9 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">    <span class="keywordflow">if</span> (err) {</div>
 <div class="line">      printf(<span class="stringliteral">&quot;after ex_get_variable_param, error = %d\n&quot;</span>, err);</div>
 <div class="line">      <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
-<div class="line">      <span class="keywordflow">if</span> (globals)</div>
+<div class="line">      <span class="keywordflow">if</span> (globals) {</div>
 <div class="line">        free(globals);</div>
+<div class="line">      }</div>
 <div class="line">      <span class="keywordflow">return</span> (1);</div>
 <div class="line">    }</div>
 <div class="line">    *num_element_fields = num_vars;</div>
