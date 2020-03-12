@@ -128,8 +128,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a1deaba96f1a8171154442d06492f3c57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12c1aefe782b155aefa999e5bb235c3d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a12c1aefe782b155aefa999e5bb235c3d">map_ioss_face_to_cgns</a> (const <a class="el" href="classIoss_1_1ElementTopology.html">Ioss::ElementTopology</a> *parent_topo, size_t num_to_get, std::vector&lt; cgsize_t &gt; &amp;data)</td></tr>
 <tr class="separator:a12c1aefe782b155aefa999e5bb235c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3611e0c1db0672eb3633e195ceca395"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ae3611e0c1db0672eb3633e195ceca395">generate_boundary_faces</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, std::map&lt; std::string, <a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">Ioss::FaceUnorderedSet</a> &gt; &amp;boundary_faces)</td></tr>
-<tr class="separator:ae3611e0c1db0672eb3633e195ceca395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e003b21d58839551d71d8af57f22de3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a0e003b21d58839551d71d8af57f22de3">generate_boundary_faces</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, std::map&lt; std::string, <a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">Ioss::FaceUnorderedSet</a> &gt; &amp;boundary_faces, <a class="el" href="classIoss_1_1Field.html#a43f29f9ba05cb45ed893455c76526c3e">Ioss::Field::BasicType</a> field_type)</td></tr>
+<tr class="separator:a0e003b21d58839551d71d8af57f22de3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55d3993836a0030b5fee5a28449cf9e0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a55d3993836a0030b5fee5a28449cf9e0">write_flow_solution_metadata</a> (int file_ptr, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, int state, int *vertex_solution_index, int *cell_center_solution_index, bool is_parallel_io)</td></tr>
 <tr class="separator:a55d3993836a0030b5fee5a28449cf9e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a023f147650f0a22fda854f67fcc2e05c"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a023f147650f0a22fda854f67fcc2e05c">find_solution_index</a> (int cgns_file_ptr, int base, int zone, int step, CG_GridLocation_t location)</td></tr>
@@ -170,8 +170,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a171e83bdb57a7f8efc36b8660ab54e16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86f09b01938ea51b0685461593b529ba"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a86f09b01938ea51b0685461593b529ba">show_config</a> ()</td></tr>
 <tr class="separator:a86f09b01938ea51b0685461593b529ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a000d0b06a409e3260150eb503518c624"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a000d0b06a409e3260150eb503518c624">generate_block_faces</a> (<a class="el" href="classIoss_1_1ElementTopology.html">Ioss::ElementTopology</a> *topo, int num_elem, const cgsize_t *connectivity, <a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">Ioss::FaceUnorderedSet</a> &amp;faces)</td></tr>
-<tr class="separator:a000d0b06a409e3260150eb503518c624"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a208994955937cd75d68606db4d52298c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a208994955937cd75d68606db4d52298c">generate_block_faces</a> (<a class="el" href="classIoss_1_1ElementTopology.html">Ioss::ElementTopology</a> *topo, size_t num_elem, const cgsize_t *connectivity, <a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">Ioss::FaceUnorderedSet</a> &amp;faces)</td></tr>
+<tr class="separator:a208994955937cd75d68606db4d52298c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -816,8 +816,8 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a000d0b06a409e3260150eb503518c624"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a000d0b06a409e3260150eb503518c624">&#9670;&nbsp;</a></span>generate_block_faces()</h2>
+<a id="a208994955937cd75d68606db4d52298c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a208994955937cd75d68606db4d52298c">&#9670;&nbsp;</a></span>generate_block_faces()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -834,7 +834,7 @@ Static Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>num_elem</em>, </td>
         </tr>
         <tr>
@@ -864,8 +864,8 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ae3611e0c1db0672eb3633e195ceca395"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3611e0c1db0672eb3633e195ceca395">&#9670;&nbsp;</a></span>generate_boundary_faces()</h2>
+<a id="a0e003b21d58839551d71d8af57f22de3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e003b21d58839551d71d8af57f22de3">&#9670;&nbsp;</a></span>generate_boundary_faces()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -883,7 +883,13 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::map&lt; std::string, <a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">Ioss::FaceUnorderedSet</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>boundary_faces</em>&#160;</td>
+          <td class="paramname"><em>boundary_faces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Field.html#a43f29f9ba05cb45ed893455c76526c3e">Ioss::Field::BasicType</a>&#160;</td>
+          <td class="paramname"><em>field_type</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

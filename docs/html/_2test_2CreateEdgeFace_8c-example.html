@@ -87,7 +87,7 @@ $(document).ready(function(){initNavTree('_2test_2CreateEdgeFace_8c-example.html
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><span class="comment">/*</span></div>
-<div class="line"><span class="comment"> * Copyright (c) 2005-2017 National Technology &amp; Engineering Solutions</span></div>
+<div class="line"><span class="comment"> * Copyright (c) 2005-2017, 2020 National Technology &amp; Engineering Solutions</span></div>
 <div class="line"><span class="comment"> * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with</span></div>
 <div class="line"><span class="comment"> * NTESS, the U.S. Government retains certain rights in this software.</span></div>
 <div class="line"><span class="comment"> *</span></div>
@@ -570,11 +570,6 @@ $(document).ready(function(){initNavTree('_2test_2CreateEdgeFace_8c-example.html
 <div class="line">  <span class="keywordflow">if</span> (concatResult) {</div>
 <div class="line">    <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a70"></a><a class="code" href="group__ResultsData.html#ga1081b59c3c29c0136ae88ca96566c2bf">ex_put_all_var_param_ext</a>(exoid, &amp;varParams),</div>
 <div class="line">            <span class="stringliteral">&quot;Unable to write result variable parameter information.\n&quot;</span>);</div>
-<div class="line"> </div>
-<div class="line">    free(varParams.<a class="code" href="structex__var__params.html#a979e02caa2ce61c2961209669dbddf83">edge_var_tab</a>);</div>
-<div class="line">    free(varParams.<a class="code" href="structex__var__params.html#a03d81111469cf13f994006f3844640bd">face_var_tab</a>);</div>
-<div class="line">    free(varParams.<a class="code" href="structex__var__params.html#a3e5b9f83f76ebf523353078d008580e2">elem_var_tab</a>);</div>
-<div class="line">    free(varParams.<a class="code" href="structex__var__params.html#aa27fc4c7d6b377bcab20b68279143f70">fset_var_tab</a>);</div>
 <div class="line">  }</div>
 <div class="line">  <span class="keywordflow">else</span> {</div>
 <div class="line">    <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a71"></a><a class="code" href="group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91">ex_put_variable_param</a>(exoid, <a name="a72"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, 2),</div>
@@ -649,6 +644,10 @@ $(document).ready(function(){initNavTree('_2test_2CreateEdgeFace_8c-example.html
 <div class="line"> </div>
 <div class="line">  <a class="code" href="ex__copy_8c.html#aa2e0fbcf16ac768c9978cff9920e8e9a">EXCHECK</a>(<a name="a77"></a><a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid), <span class="stringliteral">&quot;Unable to close database.\n&quot;</span>);</div>
 <div class="line"> </div>
+<div class="line">  free(varParams.<a class="code" href="structex__var__params.html#a979e02caa2ce61c2961209669dbddf83">edge_var_tab</a>);</div>
+<div class="line">  free(varParams.<a class="code" href="structex__var__params.html#a03d81111469cf13f994006f3844640bd">face_var_tab</a>);</div>
+<div class="line">  free(varParams.<a class="code" href="structex__var__params.html#a3e5b9f83f76ebf523353078d008580e2">elem_var_tab</a>);</div>
+<div class="line">  free(varParams.<a class="code" href="structex__var__params.html#aa27fc4c7d6b377bcab20b68279143f70">fset_var_tab</a>);</div>
 <div class="line">  <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="line"> </div>
