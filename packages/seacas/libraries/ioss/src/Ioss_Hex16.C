@@ -121,9 +121,8 @@ int Ioss::Hex16::number_nodes_edge(int edge) const
   if (edge <= 8) {
     return 3;
   }
-  else {
-    return 2;
-  }
+
+  return 2;
 }
 
 int Ioss::Hex16::number_nodes_face(int face) const
