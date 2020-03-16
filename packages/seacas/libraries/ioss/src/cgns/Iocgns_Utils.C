@@ -1378,9 +1378,9 @@ CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
 }
 
 void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *region, int state,
-                                                 int *vertex_solution_index,
-                                                 int *cell_center_solution_index,
-                                                 bool is_parallel_io)
+                                                 const int *vertex_solution_index,
+                                                 const int *cell_center_solution_index,
+                                                 bool       is_parallel_io)
 {
   std::string c_name = fmt::format("CellCenterSolutionAtStep{:05}", state);
   std::string v_name = fmt::format("VertexSolutionAtStep{:05}", state);
@@ -1396,7 +1396,8 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *reg
     int base = block->get_property("base").get_int();
     int zone = get_db_zone(block);
     if (has_nodal_fields) {
-      CGERR(cg_sol_write(file_ptr, base, zone, v_name.c_str(), CG_Vertex, vertex_solution_index));
+      CGERR(cg_sol_write(file_ptr, base, zone, v_name.c_str(), CG_Vertex,
+                         (int *)vertex_solution_index));
       CGERR(
           cg_goto(file_ptr, base, "Zone_t", zone, "FlowSolution_t", *vertex_solution_index, "end"));
       CGERR(cg_gridlocation_write(CG_Vertex));
@@ -1404,7 +1405,7 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *reg
     }
     if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
       CGERR(cg_sol_write(file_ptr, base, zone, c_name.c_str(), CG_CellCenter,
-                         cell_center_solution_index));
+                         (int *)cell_center_solution_index));
       CGERR(cg_goto(file_ptr, base, "Zone_t", zone, "FlowSolution_t", *cell_center_solution_index,
                     "end"));
       CGERR(cg_descriptor_write("Step", step.c_str()));
@@ -2677,7 +2678,9 @@ void Iocgns::Utils::show_config()
   fmt::print(stderr, "\t\tParallel NOT enabled\n");
 #endif
 #if CG_BUILD_HDF5
-  unsigned major, minor, release;
+  unsigned major;
+  unsigned minor;
+  unsigned release;
   H5get_libversion(&major, &minor, &release);
   fmt::print(stderr, "\t\tHDF5 enabled ({}.{}.{})\n", major, minor, release);
 #else

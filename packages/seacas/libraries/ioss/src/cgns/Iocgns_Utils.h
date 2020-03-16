@@ -190,11 +190,12 @@ namespace Iocgns {
     static void
     generate_boundary_faces(Ioss::Region *                                 region,
                             std::map<std::string, Ioss::FaceUnorderedSet> &boundary_faces,
-			    Ioss::Field::BasicType field_type);
+                            Ioss::Field::BasicType                         field_type);
 
     static void write_flow_solution_metadata(int file_ptr, Ioss::Region *region, int state,
-                                             int *vertex_solution_index,
-                                             int *cell_center_solution_index, bool is_parallel_io);
+                                             const int *vertex_solution_index,
+                                             const int *cell_center_solution_index,
+                                             bool       is_parallel_io);
     static int  find_solution_index(int cgns_file_ptr, int base, int zone, int step,
                                     CG_GridLocation_t location);
     static Ioss::MeshType check_mesh_type(int cgns_file_ptr);

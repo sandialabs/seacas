@@ -129,7 +129,7 @@ namespace {
     }
   }
 
-  template <typename T> void unpack(int &idx, T *pack, T *to, int count)
+  template <typename T> void unpack(int &idx, const T *pack, T *to, int count)
   {
     for (int i = 0; i < count; i++) {
       to[i] = pack[idx++];
@@ -139,7 +139,7 @@ namespace {
   struct SBlock
   {
     SBlock() = default;
-    SBlock(char *names, int *data) : name(std::string{names})
+    SBlock(char *names, const int *data) : name(std::string{names})
     {
       int idx = 0;
       proc    = data[idx++];
