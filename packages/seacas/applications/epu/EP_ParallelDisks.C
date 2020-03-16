@@ -45,7 +45,7 @@
 #endif
 
 /*****************************************************************************/
-Excn::ParallelDisks::ParallelDisks() {}
+Excn::ParallelDisks::ParallelDisks() = default;
 
 /*****************************************************************************/
 Excn::ParallelDisks::~ParallelDisks() = default;

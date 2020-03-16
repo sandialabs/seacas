@@ -229,9 +229,10 @@ namespace {
       return 0;
     }
 
-    int   ws = 0, comp_ws = 8;
-    float dumb = 0.0;
-    int   err  = ex_open(file_name.c_str(), EX_READ, &comp_ws, &ws, &dumb);
+    int   ws      = 0;
+    int   comp_ws = 8;
+    float dumb    = 0.0;
+    int   err     = ex_open(file_name.c_str(), EX_READ, &comp_ws, &ws, &dumb);
     if (err < 0) {
       Error(fmt::format("Couldn't open file \"{}\".\n", file_name));
       return 0;
@@ -1025,7 +1026,7 @@ double FileDiff(double v1, double v2, TOLERANCE_TYPE_enum type)
     double max = fabs(v1) < fabs(v2) ? fabs(v2) : fabs(v1);
     return (v1 - v2) / max;
   }
-  else if (type == COMBINED_) {
+  if (type == COMBINED_) {
     // if (Abs(x - y) <= Max(absTol, relTol * Max(Abs(x), Abs(y))))
     // In the current implementation, absTol == relTol;
     // In summary, use abs tolerance if both values are less than 1.0;
@@ -2357,7 +2358,8 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
                     const INT *node_id_map, const INT *elem_id_map)
 {
   int name_length = 0;
-  int i, n;
+  int i;
+  int n;
 
   fmt::print("# NOTES:  - The min/max values are reporting the min/max in absolute value.\n"
              "#         - Time values (t) are 1-offset time step numbers.\n"

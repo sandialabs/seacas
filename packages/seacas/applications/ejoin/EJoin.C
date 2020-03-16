@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
 
     debug_level = interFace.debug();
 
-    if ((debug_level & 64) != 0u) {
+    if ((debug_level & 64) != 0U) {
       ex_opts(EX_VERBOSE | EX_DEBUG);
     }
     else {
