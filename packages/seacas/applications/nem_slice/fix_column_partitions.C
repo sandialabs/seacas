@@ -124,8 +124,9 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       }
     }
 
-    int top_side0 = 0, bot_side0 = 0;
-    int nelfaces = get_elem_info(NSIDES, etype);
+    int top_side0 = 0;
+    int bot_side0 = 0;
+    int nelfaces  = get_elem_info(NSIDES, etype);
 
     // Find top and bottom faces by eliminating lateral faces under
     // the assumption that lateral face normals have no Z component
@@ -164,7 +165,8 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
 
       double normal[3] = {0.0, 0.0, 0.0};
       if (nfn == 3) {
-        double v0[3], v1[3];
+        double v0[3];
+        double v1[3];
         for (int d = 0; d < 3; d++) {
           v0[d] = elcoord[fnodes_loc[1]][d] - elcoord[fnodes_loc[0]][d];
           v1[d] = elcoord[fnodes_loc[nfn - 1]][d] - elcoord[fnodes_loc[0]][d];
@@ -177,7 +179,8 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       }
       else {
         for (int k = 0; k < nfn; k++) {
-          double v0[3], v1[3];
+          double v0[3];
+          double v1[3];
           for (int d = 0; d < 3; d++) {
             v0[d] = elcoord[fnodes_loc[(k + 1) % nfn]][d] - elcoord[fnodes_loc[k]][d];
             v1[d] = elcoord[fnodes_loc[(k - 1 + nfn) % nfn]][d] - elcoord[fnodes_loc[k]][d];

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2017 National Technology & Engineering Solutions of
+ * Copyright (C) 2009-2017, 2020 National Technology & Engineering Solutions of
  * Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -108,7 +108,11 @@ int token_compare(char *token, const char *key)
 /*****************************************************************************/
 void strip_string(char inp_str[], const char *tokens)
 {
-  int i, j, itok, ntokes, bval;
+  int i;
+  int j;
+  int itok;
+  int ntokes;
+  int bval;
 
   i      = 0;
   ntokes = strlen(tokens);
@@ -159,7 +163,8 @@ void strip_string(char inp_str[], const char *tokens)
 /*****************************************************************************/
 void string_to_lower(char in_string[], char cval)
 {
-  int len, cnt;
+  int len;
+  int cnt;
 
   len = strlen(in_string);
   for (cnt = 0; cnt < len; cnt++) {
@@ -178,7 +183,12 @@ void string_to_lower(char in_string[], char cval)
 /*****************************************************************************/
 void clean_string(char inp_str[], const char *tokens)
 {
-  int i, j, itok, ntokes, bval, inplen;
+  int i;
+  int j;
+  int itok;
+  int ntokes;
+  int bval;
+  int inplen;
 
   ntokes = strlen(tokens);
   inplen = strlen(inp_str);
@@ -261,7 +271,8 @@ namespace {
   template <typename INT> void gds_qsort(INT v[], size_t left, size_t right)
   {
     size_t pivot;
-    size_t i, j;
+    size_t i;
+    size_t j;
 
     if (left + GDS_QSORT_CUTOFF <= right) {
       pivot = gds_median3(v, left, right);
@@ -291,7 +302,8 @@ namespace {
 
   template <typename INT> void gds_isort(INT v[], size_t N)
   {
-    size_t i, j;
+    size_t i;
+    size_t j;
     size_t ndx = 0;
     INT    small_val;
     INT    tmp;
@@ -455,7 +467,8 @@ template <typename INT> ssize_t in_list(INT value, std::vector<INT> vector)
  *****************************************************************************/
 int roundfloat(float value)
 {
-  float high, low;
+  float high;
+  float low;
   int   ans;
 
   high = std::ceil(value);
