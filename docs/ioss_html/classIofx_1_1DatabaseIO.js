@@ -2,7 +2,7 @@ var classIofx_1_1DatabaseIO =
 [
     [ "DatabaseIO", "classIofx_1_1DatabaseIO.html#a110bb403ce564c6fb84811934b3ed913", null ],
     [ "DatabaseIO", "classIofx_1_1DatabaseIO.html#a3c49257517f093e5c2bb00fd2d04988a", null ],
-    [ "~DatabaseIO", "classIofx_1_1DatabaseIO.html#a712720a034311981df62c77c8840654b", null ],
+    [ "~DatabaseIO", "classIofx_1_1DatabaseIO.html#adf76c8eecf403c40739dbf764b318709", null ],
     [ "check_valid_file_ptr", "classIofx_1_1DatabaseIO.html#a1c76ab6f580b73c7fb860dc0e28f778c", null ],
     [ "compute_node_status", "classIofx_1_1DatabaseIO.html#ad75e4caa91245e475085bd6f5b2e632f", null ],
     [ "gather_communication_metadata", "classIofx_1_1DatabaseIO.html#a9431d774e8dfc0f85eb641cbf0a316af", null ],

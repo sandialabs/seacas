@@ -220,7 +220,7 @@ namespace internal {
 
   inline bool is_big_endian()
   {
-    auto u = 1u;
+    const auto u = 1u;
     struct bytes
     {
       char data[sizeof(u)];
@@ -1910,11 +1910,10 @@ namespace internal {
       if (!value) {
         FMT_THROW(format_error("string pointer is null"));
       }
-      else {
-        auto                         length = std::char_traits<char_type>::length(value);
-        basic_string_view<char_type> sv(value, length);
-        specs_ ? writer_.write(sv, *specs_) : writer_.write(sv);
-      }
+
+      auto                         length = std::char_traits<char_type>::length(value);
+      basic_string_view<char_type> sv(value, length);
+      specs_ ? writer_.write(sv, *specs_) : writer_.write(sv);
     }
 
   public:

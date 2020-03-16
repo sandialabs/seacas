@@ -80,8 +80,8 @@ namespace {
       if (name.length() > max_name) {
         max_name = name.length();
       }
-      auto face_width = Ioss::Utils::number_width(boundary_faces[name].size());
-      max_face        = face_width > max_face ? face_width : max_face;
+      size_t face_width = Ioss::Utils::number_width(boundary_faces[name].size());
+      max_face          = face_width > max_face ? face_width : max_face;
     }
     max_name += 4; // Padding
     max_face += 4;
@@ -356,7 +356,7 @@ namespace {
 
   Ioss::PropertyManager set_properties(Skinner::Interface &interFace)
   {
-    Ioss::PropertyManager properties;
+    Ioss::PropertyManager properties{};
     if (interFace.ints_64_bit()) {
       properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));

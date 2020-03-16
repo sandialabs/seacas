@@ -169,8 +169,8 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">                     -1,</div>
 <div class="line">                     -1};</div>
 <div class="line"> </div>
-<div class="line"><span class="preprocessor">#define OBJECT_IS_BLOCK(i) ((i &gt;= 0) &amp;&amp; (i &lt; 3))</span></div>
-<div class="line"><span class="preprocessor">#define OBJECT_IS_SET(i) ((i &gt; 2) &amp;&amp; (i &lt; 8))</span></div>
+<div class="line"><span class="preprocessor">#define OBJECT_IS_BLOCK(i) (((i) &gt;= 0) &amp;&amp; ((i) &lt; 3))</span></div>
+<div class="line"><span class="preprocessor">#define OBJECT_IS_SET(i) (((i) &gt; 2) &amp;&amp; ((i) &lt; 8))</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> <a name="a32"></a><a class="code" href="exodusII__test_8h.html#a7a32fbc02a63f8a7db845d3431945157">cReadEdgeFace</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv)</div>
 <div class="line">{</div>
@@ -241,9 +241,8 @@ $(document).ready(function(){initNavTree('_2test_2ReadEdgeFace_8c-example.html',
 <div class="line">      fprintf(stdout, <span class="stringliteral">&quot;=== %ss: none\n\n&quot;</span>, obj_typenames[i]);</div>
 <div class="line">      <span class="keywordflow">continue</span>;</div>
 <div class="line">    }</div>
-<div class="line">    <span class="keywordflow">else</span> {</div>
-<div class="line">      fprintf(stdout, <span class="stringliteral">&quot;=== %ss: %d\n&quot;</span>, obj_typenames[i], nids);</div>
-<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    fprintf(stdout, <span class="stringliteral">&quot;=== %ss: %d\n&quot;</span>, obj_typenames[i], nids);</div>
 <div class="line"> </div>
 <div class="line">    ids       = (<span class="keywordtype">int</span> *)malloc(nids * <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
 <div class="line">    obj_names = (<span class="keywordtype">char</span> **)malloc(nids * <span class="keyword">sizeof</span>(<span class="keywordtype">char</span> *));</div>

@@ -40,5 +40,5 @@ var group__Utilities =
     [ "ex_strerror", "group__Utilities.html#gad8366f1fe4b33f38de0776451c53a166", null ],
     [ "ex_update", "group__Utilities.html#gafffa0ac5ec86658fb22ed6af7f5530cc", null ],
     [ "nc_flt_code", "group__Utilities.html#ga0bcb99c4a23dde165c0a75e9acfb3d55", null ],
-    [ "exodus_unused_symbol_dummy_1", "group__Utilities.html#ga6b95d19f24054c23e566c8e37cc1bf4f", null ]
+    [ "exodus_unused_symbol_dummy_ex_create_par", "group__Utilities.html#ga8e5ee50efe4c9740f9306ef0c2922c99", null ]
 ];

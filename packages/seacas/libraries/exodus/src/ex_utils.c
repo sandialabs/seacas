@@ -556,7 +556,7 @@ ex_entity_type ex_var_type_to_ex_entity_type(char var_type)
   if (var_lower == 'e') {
     return EX_ELEM_BLOCK;
   }
-  else if (var_lower == 'm') {
+  if (var_lower == 'm') {
     return EX_NODE_SET;
   }
   else if (var_lower == 'd') {
@@ -1668,7 +1668,7 @@ void ex__compress_variable(int exoid, int varid, int type)
         }
       }
       else if (file->compression_algorithm == EX_COMPRESS_SZIP) {
-#if NC_HAS_SZIP
+#if NC_HAS_SZIP__DISABLED
         /* See: https://support.hdfgroup.org/doc_resource/SZIP/ and
                 https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetSzip
            for details on SZIP library and parameters.
@@ -1681,8 +1681,7 @@ void ex__compress_variable(int exoid, int varid, int type)
 #else
         char errmsg[MAX_ERR_LENGTH];
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: Compression algorithm SZIP is not supported in the underlying NetCDF/HDF5 "
-                 "libraries.");
+                 "ERROR: Compression algorithm SZIP is not supported yet (EXPERIMENTAL).");
         ex_err_fn(exoid, __func__, errmsg, EX_BADFILEID);
 #endif
       }

@@ -97,8 +97,6 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aecd864dff8eb0533740b7deea169e33d"><td class="memItemLeft" align="right" valign="top">std::pair&lt; std::string, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#aecd864dff8eb0533740b7deea169e33d">decompose_name</a> (const std::string &amp;name, bool is_parallel)</td></tr>
-<tr class="separator:aecd864dff8eb0533740b7deea169e33d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b8dc13ccaa987729b8b60d50ded3a80"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a8b8dc13ccaa987729b8b60d50ded3a80">power_2</a> (int count)</td></tr>
 <tr class="separator:a8b8dc13ccaa987729b8b60d50ded3a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94857b49d46525263574fa357a76a037"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a94857b49d46525263574fa357a76a037">overlaps</a> (const <a class="el" href="structanonymous__namespace_02Iocgns__Utils_8C_03_1_1Range.html">Range</a> &amp;a, const <a class="el" href="structanonymous__namespace_02Iocgns__Utils_8C_03_1_1Range.html">Range</a> &amp;b)</td></tr>
@@ -117,6 +115,8 @@ Functions</h2></td></tr>
 <tr class="separator:a4c54bc0484fe7e8e600447952b9a745d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a397d516e435535ef9fae83c788a399db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#a397d516e435535ef9fae83c788a399db">consolidate_zgc</a> (const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region)</td></tr>
 <tr class="separator:a397d516e435535ef9fae83c788a399db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add0288fa140797358e9ae8ba79d08c18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Iocgns__Utils_8C_03.html#add0288fa140797358e9ae8ba79d08c18">create_face</a> (<a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">Ioss::FaceUnorderedSet</a> &amp;faces, size_t id, std::array&lt; size_t, 4 &gt; &amp;conn, size_t element, int local_face)</td></tr>
+<tr class="separator:add0288fa140797358e9ae8ba79d08c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a7cc9a7da58d1b8d94b1fb5b78e6222e6"></a>
@@ -223,23 +223,41 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aecd864dff8eb0533740b7deea169e33d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aecd864dff8eb0533740b7deea169e33d">&#9670;&nbsp;</a></span>decompose_name()</h2>
+<a id="add0288fa140797358e9ae8ba79d08c18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add0288fa140797358e9ae8ba79d08c18">&#9670;&nbsp;</a></span>create_face()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::pair&lt;std::string, int&gt; anonymous_namespace{Iocgns_Utils.C}::decompose_name </td>
+          <td class="memname">void anonymous_namespace{Iocgns_Utils.C}::create_face </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
+          <td class="paramtype"><a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">Ioss::FaceUnorderedSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>faces</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>is_parallel</em>&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::array&lt; size_t, 4 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>conn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>element</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>local_face</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
