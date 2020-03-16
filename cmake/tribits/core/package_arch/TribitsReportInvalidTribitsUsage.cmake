@@ -37,46 +37,51 @@
 # ************************************************************************
 # @HEADER
 
-IF (MESSAGE_WRAPPER_INCLUDED)
+IF (__TribitsReportInvalidTribitsUsage_INCLUDED__)
   RETURN()
+ELSE()
+  SET(__TribitsReportInvalidTribitsUsage_INCLUDED__ TRUE)
 ENDIF()
-SET(MESSAGE_WRAPPER_INCLUDED TRUE)
 
-INCLUDE(GlobalSet)
+INCLUDE(MessageWrapper)
 
+# Called to report incorrect usage
 #
-# @FUNCTION: MESSAGE_WRAPPER()
+# Usage:
 #
-# Function that wraps the standard CMake/CTest ``MESSAGE()`` function call in
-# order to allow unit testing to intercept the output.
+#   TRIBITS_REPORT_INVALID_TRIBITS_USAGE("<err_msg0>" "<err_msg1>" ...)
 #
-# Usage::
+# Depending on the value of ${PROJECT_NAME}_ASSERT_CORRECT_TRIBITS_USAGE, this
+# function will:
 #
-#   MESSAGE_WRAPPER(...)
+#   * FATAL_ERROR: Calls MESSAGE(FATAL_ERROR "<error_message>")
+#   * SEND_ERROR: Calls MESSAGE(SEND_ERROR "<error_message>")
+#   * WARNING: Calls MESSAGE(WARNING "<error_message>")
+#   * IGNORE: Does not call MESSAGE() at all and is silent
 #
-# This function takes exactly the same arguments as built-in ``MESSAGE()``
-# function.  However, when the variable ``MESSAGE_WRAPPER_UNIT_TEST_MODE`` is
-# set to ``TRUE``, then this function will not call ``MESSAGE(...)`` but
-# instead will prepend set to the global variable ``MESSAGE_WRAPPER_INPUT``
-# the input argument that would have gone to ``MESSAGE()``.  To capture just
-# this call's input, first call::
+# If '${${PROJECT_NAME}_ASSERT_CORRECT_TRIBITS_USAGE}' is empty on call, then
+# `FATAL_ERROR` will be used.
 #
-#   GLOBAL_NULL_SET(MESSAGE_WRAPPER_INPUT)
-#
-# before calling this function (or the functions/macros that call this
-# function).
-#
-# This function allows one to unit test other user-defined CMake macros and
-# functions that call this function to catch error conditions without stopping
-# the CMake program.  Otherwise, this is used to capture print messages to
-# verify that they say the right thing.
-#
-FUNCTION(MESSAGE_WRAPPER)
-  #MESSAGE("MESSAGE_WRAPPER: ${ARGN}")
-  IF (MESSAGE_WRAPPER_UNIT_TEST_MODE)
-    GLOBAL_SET(MESSAGE_WRAPPER_INPUT "${MESSAGE_WRAPPER_INPUT}" ${ARGN})
+FUNCTION(TRIBITS_REPORT_INVALID_TRIBITS_USAGE)
+  IF ("${${PROJECT_NAME}_ASSERT_CORRECT_TRIBITS_USAGE}" STREQUAL "")
+    SET(${PROJECT_NAME}_ASSERT_CORRECT_TRIBITS_USAGE FATAL_ERROR)
+  ENDIF()
+  SET(PRINT_ERR_MSG)
+  IF (${PROJECT_NAME}_ASSERT_CORRECT_TRIBITS_USAGE STREQUAL "FATAL_ERROR")
+    SET(PRINT_ERR_MSG FATAL_ERROR)
+  ELSEIF (${PROJECT_NAME}_ASSERT_CORRECT_TRIBITS_USAGE STREQUAL "SEND_ERROR")
+    SET(PRINT_ERR_MSG SEND_ERROR)
+  ELSEIF (${PROJECT_NAME}_ASSERT_CORRECT_TRIBITS_USAGE STREQUAL "WARNING")
+    SET(PRINT_ERR_MSG WARNING)
+  ELSEIF (${PROJECT_NAME}_ASSERT_CORRECT_TRIBITS_USAGE STREQUAL "IGNORE")
+    SET(PRINT_ERR_MSG)
   ELSE()
-    MESSAGE(${ARGN})
+    MESSAGE_WRAPPER(FATAL_ERROR "Error, invalid value for"
+      " ${PROJECT_NAME}_ASSERT_CORRECT_TRIBITS_USAGE ="
+      " '${${PROJECT_NAME}_ASSERT_CORRECT_TRIBITS_USAGE}'!"
+      "  Value values include 'FATAL_ERROR', 'SEND_ERROR', 'WARNING', and 'IGNORE'!")
+  ENDIF()
+  IF (PRINT_ERR_MSG)
+    MESSAGE_WRAPPER(${PRINT_ERR_MSG} ${ARGN})
   ENDIF()
 ENDFUNCTION()
-
