@@ -83,7 +83,8 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_params(
  */
 
 {
-  int   exoid, cpu_ws = 0;
+  int   exoid;
+  int   cpu_ws = 0;
   float vers;
   int   max_name_length = 0;
 
@@ -158,8 +159,10 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
   std::vector<INT> ns_ids_global(globals.Num_Node_Set);
   std::vector<INT> ns_cnts_global(globals.Num_Node_Set);
 
-  INT ***eb_map_ptr = nullptr, **eb_cnts_local = nullptr;
-  int    exoid = 0, *par_exoid = nullptr;
+  INT ***eb_map_ptr    = nullptr;
+  INT ** eb_cnts_local = nullptr;
+  int    exoid         = 0;
+  int *  par_exoid     = nullptr;
 
   float       vers;
   std::string cTemp;
