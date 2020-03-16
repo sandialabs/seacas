@@ -146,7 +146,8 @@ namespace {
     file2.Load_Nodal_Coordinates();
 
     const auto *  x1 = file1.X_Coords();
-    const double *y1 = x1, *z1 = x1;
+    const double *y1 = x1;
+    const double *z1 = x1;
     if (file1.Dimension() > 1) {
       y1 = file1.Y_Coords();
     }
@@ -155,7 +156,8 @@ namespace {
     }
 
     const auto *  x2 = file2.X_Coords();
-    const double *y2 = x2, *z2 = x2;
+    const double *y2 = x2;
+    const double *z2 = x2;
     if (file2.Dimension() > 1) {
       y2 = file2.Y_Coords();
     }
@@ -163,7 +165,8 @@ namespace {
       z2 = file2.Z_Coords();
     }
 
-    double max = 0.0, norm;
+    double max = 0.0;
+    double norm;
     for (size_t n = 0; n < file1.Num_Nodes() && (is_same || interFace.show_all_diffs); ++n) {
       // Should this node be processed...
       if (node_map == nullptr || node_map[n] >= 0) {
