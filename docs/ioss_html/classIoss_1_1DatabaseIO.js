@@ -32,7 +32,7 @@ var classIoss_1_1DatabaseIO =
     [ "end_state", "classIoss_1_1DatabaseIO.html#a2a8b8a75ef5d213472689bb10b3a5b92", null ],
     [ "end_state__", "classIoss_1_1DatabaseIO.html#ad94aed23c473370e80e29a5b04f81870", null ],
     [ "entity_field_support", "classIoss_1_1DatabaseIO.html#af0fe729073a510495e3bdfc56c548329", null ],
-    [ "finalize_database", "classIoss_1_1DatabaseIO.html#aa6ba97639a8796347bf0edbb0588046f", null ],
+    [ "finalize_database", "classIoss_1_1DatabaseIO.html#ae4bde3c206c2b37faa200522997aa98c", null ],
     [ "flush_database", "classIoss_1_1DatabaseIO.html#a6b8de4070f16af017990177cc2ca526f", null ],
     [ "flush_database__", "classIoss_1_1DatabaseIO.html#afe9f123be89f09b3fb6ee22abefa47a3", null ],
     [ "get_block_adjacencies", "classIoss_1_1DatabaseIO.html#aced27ca42bbc7db5e4d8b059b00fd8cb", null ],
