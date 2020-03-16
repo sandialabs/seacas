@@ -17,7 +17,7 @@ var classvector3d =
     [ "operator==", "classvector3d.html#acd8a0f4c25828928fac9bbb8812a2e90", null ],
     [ "plane_normal", "classvector3d.html#abc5513772b1ef3470c1cfa6c0bd0c193", null ],
     [ "reverse", "classvector3d.html#ab06beef76f82be26ef7bbb74aa4eb9bf", null ],
-    [ "set", "classvector3d.html#a40aeb0c77d513bc47de18833192077c2", null ],
+    [ "set", "classvector3d.html#a60ffd4a12c34004037bb90ca43907c33", null ],
     [ "set", "classvector3d.html#a0e54310bd3515c46231e13cc6c60575c", null ],
     [ "x", "classvector3d.html#af4cca8e451e9f8fa283be0d920bb7ed2", null ],
     [ "y", "classvector3d.html#a30cf53e8b0ca4463eb9eeece5630f195", null ],
