@@ -72,10 +72,10 @@
 #include <vector>
 
 namespace {
-  const std::string id_str() { return std::string("id"); }
-  const std::string db_name_str() { return std::string("db_name"); }
-  const std::string orig_topo_str() { return std::string("original_topology_type"); }
-  const std::string orig_block_order() { return std::string("original_block_order"); }
+  std::string id_str() { return std::string("id"); }
+  std::string db_name_str() { return std::string("db_name"); }
+  std::string orig_topo_str() { return std::string("original_topology_type"); }
+  std::string orig_block_order() { return std::string("original_block_order"); }
 
   template <typename T>
   Ioss::GroupingEntity *get_entity_internal(int64_t id, const std::vector<T> &entities)

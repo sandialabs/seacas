@@ -710,7 +710,9 @@ namespace {
     int cols = 100;
     if (isatty(fileno(stdout))) {
 #ifdef TIOCGSIZE
-      struct ttysize ts;
+      struct ttysize ts
+      {
+      };
       ioctl(STDIN_FILENO, TIOCGSIZE, &ts);
       cols = ts.ts_cols;
 #elif defined(TIOCGWINSZ)
