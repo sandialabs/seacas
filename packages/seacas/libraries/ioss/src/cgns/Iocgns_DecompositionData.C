@@ -407,6 +407,14 @@ namespace Iocgns {
       global_element_count += total_block_elem;
     }
 
+    if (global_element_count < m_decomposition.m_processorCount) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+		 "ERROR: CGNS: Element Count ({}) is less than Processor Count ({}). No decomposition possible.",
+		 global_element_count, m_decomposition.m_processorCount);
+      IOSS_ERROR(errmsg);
+    }
+
     // Generate element_dist/node_dist --  size m_decomposition.m_processorCount + 1
     // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
     m_decomposition.generate_entity_distributions(global_cell_node_count, global_element_count);
