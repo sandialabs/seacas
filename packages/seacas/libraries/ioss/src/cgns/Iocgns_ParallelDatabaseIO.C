@@ -1439,7 +1439,7 @@ namespace Iocgns {
       if (field.get_name() == "connectivity_raw" || field.get_name() == "connectivity") {
 
         // The connectivity is stored in a 1D array.
-        // The element_node index varies fastet
+        // The element_node index varies fastest
         int order = eb->get_property("original_block_order").get_int();
         decomp->get_block_connectivity(get_file_pointer(), data, order);
         if (field.get_type() == Ioss::Field::INT32) {
