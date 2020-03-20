@@ -306,6 +306,13 @@ dirman.root_node_mpi 0
       this->read_entity_fields(oc, *(this->get_region()));
     }
 
+    {
+      // Region TRANSIENT Fields
+      kelpie::ObjectCapacities oc;
+      auto search_key = field_search_key(parallel_rank(), 1, *(get_region()), *(get_region()));
+      pool.List(search_key, &oc);
+      this->read_entity_fields(oc, *(this->get_region()));
+    }
   }
 
   void DatabaseIO::read_entity_properties(kelpie::ObjectCapacities oc,
