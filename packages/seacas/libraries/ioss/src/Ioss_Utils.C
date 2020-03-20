@@ -2188,6 +2188,7 @@ bool Ioss::Utils::compare_database(Ioss::Region &input_region, Ioss::Region &out
     return false;
   }
 
+
   rc = compare_field_data(input_region.get_structured_blocks(),
                           output_region.get_structured_blocks(), data_pool,
                           Ioss::Field::ATTRIBUTE, options);
@@ -2259,6 +2260,7 @@ bool Ioss::Utils::compare_database(Ioss::Region &input_region, Ioss::Region &out
     return false;
   }
 
+
   // Side Sets
   if (input_region.mesh_type() == Ioss::MeshType::UNSTRUCTURED) {
     // This should have already been checked.
@@ -2299,6 +2301,8 @@ bool Ioss::Utils::compare_database(Ioss::Region &input_region, Ioss::Region &out
       const auto &in_sbs = ifs->get_side_blocks();
       const auto &out_sbs = (*it)->get_side_blocks();
 
+// TEMPORARILY DISABLED
+#if 0
       // This should have already been checked.
       assert( in_sbs.size() == out_sbs.size() );
 
@@ -2328,6 +2332,7 @@ bool Ioss::Utils::compare_database(Ioss::Region &input_region, Ioss::Region &out
           return false;
         }
       }
+#endif
     }
   }
 
@@ -2442,6 +2447,8 @@ bool Ioss::Utils::compare_database(Ioss::Region &input_region, Ioss::Region &out
           const auto &in_sbs = iss->get_side_blocks();
           const auto &out_sbs = (*it)->get_side_blocks();
 
+// TEMPORARILY DISABLED
+#if 0
           if( in_sbs.size() != out_sbs.size() ) {
             printf("NUMBER of SIDE BLOCKs don't match (%ld vs. %ld)\n",
                    in_sbs.size(), out_sbs.size());
@@ -2469,6 +2476,7 @@ bool Ioss::Utils::compare_database(Ioss::Region &input_region, Ioss::Region &out
               return false;
             }
           }
+#endif
         }
       }
     }
@@ -2603,6 +2611,8 @@ bool Ioss::Utils::compare_database(Ioss::Region &input_region, Ioss::Region &out
           const auto &in_sbs = iss->get_side_blocks();
           const auto &out_sbs = (*it)->get_side_blocks();
 
+// TEMPORARILY DISABLED
+#if 0
           if( in_sbs.size() != out_sbs.size() ) {
             printf("NUMBER of SIDE BLOCKs don't match (%ld vs. %ld)\n",
                    in_sbs.size(), out_sbs.size());
@@ -2630,11 +2640,13 @@ bool Ioss::Utils::compare_database(Ioss::Region &input_region, Ioss::Region &out
               return false;
             }
           }
+#endif
         }
 
       }
     }
   }
+
 
   Ioss::Utils::clear(data_pool.data);
   return true;
