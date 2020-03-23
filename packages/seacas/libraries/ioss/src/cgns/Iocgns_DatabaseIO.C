@@ -2884,6 +2884,10 @@ namespace Iocgns {
     int     zone       = Iocgns::Utils::get_db_zone(parent_block);
     ssize_t num_to_get = field.verify(data_size);
 
+    if (num_to_get == 0) {
+      return num_to_get;
+    }
+
     Ioss::Field::RoleType role = field.get_role();
 
     if (role == Ioss::Field::MESH) {
