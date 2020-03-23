@@ -1203,6 +1203,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
 
         std::string donor_name   = zgc.m_donorName;
         std::string connect_name = zgc.m_connectionName;
+        std::string original_name = zgc.m_connectionName;
         if (is_parallel && !is_parallel_io) {
           if (zgc.is_from_decomp()) {
             connect_name = std::to_string(zgc.m_ownerGUID) + "--" + std::to_string(zgc.m_donorGUID);
@@ -1265,6 +1266,12 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
           CGERR(cg_goto(file_ptr, base, "Zone_t", db_zone, "ZoneGridConnectivity", 0,
                         "GridConnectivity1to1_t", zgc_idx, "end"));
           CGERR(cg_descriptor_write("Decomp", "is_decomp"));
+        }
+        else if (original_name != connect_name) {
+          fmt::print(stderr, "ZGC: {} -> {}\n", connect_name, original_name);
+          CGERR(cg_goto(file_ptr, base, "Zone_t", db_zone, "ZoneGridConnectivity", 0,
+                        "GridConnectivity1to1_t", zgc_idx, "end"));
+          CGERR(cg_descriptor_write("OriginalName", original_name.c_str()));
         }
       }
     }
