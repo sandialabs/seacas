@@ -129,6 +129,33 @@ namespace {
     }
     return has_decomp_flag;
   }
+
+  void zgc_check_descriptor(int cgns_file_ptr, int base, int zone, int zgc_idx, Ioss::ZoneConnectivity &zgc)
+  {
+    if (cg_goto(cgns_file_ptr, base, "Zone_t", zone, "ZoneGridConnectivity", 0,
+                "GridConnectivity1to1_t", zgc_idx, "end") == CG_OK) {
+      int ndescriptor = 0;
+      cg_ndescriptors(&ndescriptor);
+      if (ndescriptor > 0) {
+        for (int i = 0; i < ndescriptor; i++) {
+          char  name[33];
+          char *text = nullptr;
+          cg_descriptor_read(i + 1, name, &text);
+          if (strcmp(name, "OriginalName") == 0) {
+            zgc.m_connectionName = text;
+            cg_free(text);
+            break;
+          }
+          if (strcmp(name, "Decomp") == 0) {
+            zgc.m_fromDecomp = true;
+            cg_free(text);
+            break;
+          }
+          cg_free(text);
+        }
+      }
+    }
+  }
 #endif
 
   template <typename T> void pack(int &idx, std::vector<int> &pack, T *from, int count)
@@ -190,11 +217,6 @@ namespace {
       CGCHECK(cg_1to1_read(cgns_file_ptr, base, db_zone, ii + 1, connectname, donorname,
                            range.data(), donor_range.data(), transform.data()));
 
-      bool is_decomp = false;
-      if (isParallel) {
-        is_decomp = has_decomp_descriptor(cgns_file_ptr, base, db_zone, ii + 1);
-      }
-
       auto        donorname_proc = Iocgns::Utils::decompose_name(donorname, isParallel);
       std::string donor_name     = donorname_proc.first;
 
@@ -227,7 +249,12 @@ namespace {
 
       block->m_zoneConnectivity.back().m_ownerProcessor = myProcessor;
       block->m_zoneConnectivity.back().m_donorProcessor = donorname_proc.second;
-      block->m_zoneConnectivity.back().m_fromDecomp     = is_decomp;
+
+      if (isParallel) {
+        zgc_check_descriptor(cgns_file_ptr, base, db_zone, ii + 1,
+                             block->m_zoneConnectivity.back());
+      }
+
     }
   }
 
