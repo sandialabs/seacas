@@ -3,7 +3,7 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists for unstructured
 
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -2356,6 +2356,14 @@ namespace Iocgns {
         //       the data so would have to generate it.  This may cause problems
         //       with codes that use the downstream data if they base the BC off
         //       of the nodes instead of the element/side info.
+        std::vector<cgsize_t> point_range{cg_start, cg_end};
+        CGCHECKM(cg_boco_write(get_file_pointer(), base, zone, name.c_str(), CG_FamilySpecified,
+                               CG_PointRange, 2, point_range.data(), &sect));
+        CGCHECKM(
+            cg_goto(get_file_pointer(), base, "Zone_t", zone, "ZoneBC_t", 1, "BC_t", sect, "end"));
+        CGCHECKM(cg_famname_write(name.c_str()));
+        CGCHECKM(cg_boco_gridlocation_write(get_file_pointer(), base, zone, sect, CG_FaceCenter));
+
         CGCHECKM(cgp_section_write(get_file_pointer(), base, zone, name.c_str(), type, cg_start,
                                    cg_end, 0, &sect));
 
