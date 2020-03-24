@@ -2718,7 +2718,8 @@ namespace {
 
 void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, size_t num_elem,
                                          const cgsize_t *        connectivity,
-                                         Ioss::FaceUnorderedSet &boundary)
+                                         Ioss::FaceUnorderedSet &boundary,
+					 const cgsize_t *zone_local_zone_global)
 {
   // Only handle continuum elements at this time...
   if (topo->parametric_dimension() != 3) {
@@ -2747,7 +2748,8 @@ void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, size_t num
         conn[j]      = lnode;
         id += Ioss::FaceGenerator::id_hash(lnode);
       }
-      create_face(all_faces, id, conn, elem + 1, face);
+      auto elem_id = zone_local_zone_global[elem];
+      create_face(all_faces, id, conn, elem_id, face);
     }
   }
 

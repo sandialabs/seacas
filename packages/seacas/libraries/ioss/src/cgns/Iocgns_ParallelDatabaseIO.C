@@ -1452,8 +1452,8 @@ namespace Iocgns {
         }
       }
       else if (field.get_name() == "ids" || field.get_name() == "implicit_ids") {
-        // Map the local ids in this node block
-        // (1...node_count) to global node ids.
+        // Map the local ids in this element block
+        // (1..element_count) to global element ids.
         get_map(entity_type::ELEM).map_implicit_data(data, field, num_to_get, eb->get_offset());
       }
       else {
