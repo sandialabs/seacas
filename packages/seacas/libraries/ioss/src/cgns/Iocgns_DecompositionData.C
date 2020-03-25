@@ -841,9 +841,9 @@ namespace Iocgns {
 	    // Should map the connectivity from cgns to ioss, but only use the lower order which is
 	    // same.
 	    Iocgns::Utils::generate_block_faces(topo, blk.ioss_count(),
-						(cgsize_t *)connectivity.data(),
+						connectivity,
 						m_boundaryFaces[sset.zone()],
-						(cgsize_t *)zone_local_zone_global.data());
+						zone_local_zone_global);
 	  }
 
 	  // TODO: Should we filter down to just corner nodes?
