@@ -261,7 +261,7 @@ dirman.root_node_mpi 0
 
   void DatabaseIO::get_step_times__()
   {
-    auto search_key = make_states_key(parallel_rank(), *get_region());
+    auto search_key = make_states_search_key(parallel_rank(), *get_region());
     kelpie::ObjectCapacities oc;
     pool.List(search_key, &oc);
     if(oc.keys.size() == 1)
