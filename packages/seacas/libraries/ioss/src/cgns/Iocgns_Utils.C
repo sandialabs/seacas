@@ -2716,10 +2716,11 @@ namespace {
   }
 } // namespace
 
+template <typename INT>
 void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, size_t num_elem,
-                                         const cgsize_t *        connectivity,
+                                         const std::vector<INT> &connectivity,
                                          Ioss::FaceUnorderedSet &boundary,
-					 const cgsize_t *zone_local_zone_global)
+					 const std::vector<INT> &zone_local_zone_global)
 {
   // Only handle continuum elements at this time...
   if (topo->parametric_dimension() != 3) {
@@ -2760,3 +2761,12 @@ void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, size_t num
     }
   }
 }
+
+template void Iocgns::Utils::generate_block_faces<int>(Ioss::ElementTopology *topo, size_t num_elem,
+						       const std::vector<int> &connectivity,
+						       Ioss::FaceUnorderedSet &boundary,
+						       const std::vector<int> &zone_local_zone_global);
+template void Iocgns::Utils::generate_block_faces<int64_t>(Ioss::ElementTopology *topo, size_t num_elem,
+							   const std::vector<int64_t> &connectivity,
+							   Ioss::FaceUnorderedSet &boundary,
+							   const std::vector<int64_t> &zone_local_zone_global);
