@@ -78,6 +78,21 @@ namespace Iofaodel {
   };
 
 
+  kelpie::Key make_states_search_key(int rank,
+      const Ioss::Region & region)
+  {
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/TimeSteps*"
+        );
+  }
+
+
   kelpie::Key make_states_key(int rank,
       const Ioss::Region & region)
   {
@@ -88,7 +103,7 @@ namespace Iofaodel {
     return kelpie::Key(
         std::to_string(rank),
         "/Region/" + region_name +
-        "/TimeSteps/*"
+        "/TimeSteps"
         );
   }
 

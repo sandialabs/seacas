@@ -74,6 +74,9 @@ namespace Iofaodel {
   lunasa::DataObject pack_states(const Ioss::Region & r);
 
 
+  kelpie::Key make_states_search_key(int parallel_rank,
+      const Ioss::Region & region);
+
   kelpie::Key make_states_key(int parallel_rank,
       const Ioss::Region & region);
 
