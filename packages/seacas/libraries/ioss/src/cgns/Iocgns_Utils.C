@@ -678,7 +678,7 @@ namespace {
   {
     assert(zgc_i.m_transform == zgc_j.m_transform);
     for (int i = 0; i < 3; i++) {
-      if (zgc_i.m_transform[i] > 0) {
+      if (zgc_i.m_ownerRangeBeg[i] <= zgc_i.m_ownerRangeEnd[i]) {
         zgc_i.m_ownerRangeBeg[i] = std::min(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
         zgc_i.m_ownerRangeEnd[i] = std::max(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
       }
@@ -686,8 +686,15 @@ namespace {
         zgc_i.m_ownerRangeBeg[i] = std::max(zgc_i.m_ownerRangeBeg[i], zgc_j.m_ownerRangeBeg[i]);
         zgc_i.m_ownerRangeEnd[i] = std::min(zgc_i.m_ownerRangeEnd[i], zgc_j.m_ownerRangeEnd[i]);
       }
-      zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
-      zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+
+      if (zgc_i.m_donorRangeBeg[i] <= zgc_i.m_donorRangeEnd[i]) {
+	zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+	zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+      }
+      else {
+	zgc_i.m_donorRangeBeg[i] = std::max(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+	zgc_i.m_donorRangeEnd[i] = std::min(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+      }
     }
   }
 #endif
@@ -828,12 +835,12 @@ namespace {
 
       // Consolidate down to the minimum set that has the union of all ranges.
       for (size_t i = 0; i < zgc.size(); i++) {
-        if (zgc[i].m_ownerZone > 0 && zgc[i].m_donorZone > 0) {
+        if (zgc[i].is_active()) {
           auto owner_zone = zgc[i].m_ownerZone;
           auto donor_zone = zgc[i].m_donorZone;
 
           for (size_t j = i + 1; j < zgc.size(); j++) {
-            if (zgc[j].m_connectionName == zgc[i].m_connectionName &&
+            if (zgc[j].is_active() && zgc[j].m_connectionName == zgc[i].m_connectionName &&
                 zgc[j].m_ownerZone == owner_zone) {
               if (zgc[j].m_donorZone == donor_zone) {
                 // Found another instance of the "same" zgc...  Union the ranges
@@ -841,8 +848,8 @@ namespace {
                 assert(zgc[i].is_valid());
 
                 // Flag the 'j' instance so it is processed only this time.
-                zgc[j].m_ownerZone = -1;
-                zgc[j].m_donorZone = -1;
+		zgc[j].m_isActive = false;
+
               }
               else {
                 // We have a bad zgc -- name and owner_zone match, but not donor_zone.
@@ -861,9 +868,8 @@ namespace {
       // Cull out all 'non-active' zgc instances (owner and donor zone <= 0)
       zgc.erase(std::remove_if(zgc.begin(), zgc.end(),
                                [](Ioss::ZoneConnectivity &z) {
-                                 return (z.m_ownerZone == -1 && z.m_donorZone == -1) ||
-                                        z.is_from_decomp() || !z.is_active();
-                               }),
+                                 return !z.is_active();
+			       }),
                 zgc.end());
 
       count = (int)zgc.size();
@@ -1268,7 +1274,6 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
           CGERR(cg_descriptor_write("Decomp", "is_decomp"));
         }
         else if (original_name != connect_name) {
-          fmt::print(stderr, "ZGC: {} -> {}\n", connect_name, original_name);
           CGERR(cg_goto(file_ptr, base, "Zone_t", db_zone, "ZoneGridConnectivity", 0,
                         "GridConnectivity1to1_t", zgc_idx, "end"));
           CGERR(cg_descriptor_write("OriginalName", original_name.c_str()));
