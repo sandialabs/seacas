@@ -236,10 +236,10 @@ namespace Iocgns {
     static void   show_config();
 
     template <typename INT>
-      static void generate_block_faces(Ioss::ElementTopology *topo, size_t num_elem,
-				       const std::vector<INT> &connectivity,
-				       Ioss::FaceUnorderedSet &boundary,
-				       const std::vector<INT> &zone_local_zone_global);
+    static void generate_block_faces(Ioss::ElementTopology *topo, size_t num_elem,
+                                     const std::vector<INT> &connectivity,
+                                     Ioss::FaceUnorderedSet &boundary,
+                                     const std::vector<INT> &zone_local_zone_global);
   };
 } // namespace Iocgns
 

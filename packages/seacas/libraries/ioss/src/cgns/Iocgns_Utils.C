@@ -688,12 +688,12 @@ namespace {
       }
 
       if (zgc_i.m_donorRangeBeg[i] <= zgc_i.m_donorRangeEnd[i]) {
-	zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
-	zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+        zgc_i.m_donorRangeBeg[i] = std::min(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+        zgc_i.m_donorRangeEnd[i] = std::max(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
       }
       else {
-	zgc_i.m_donorRangeBeg[i] = std::max(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
-	zgc_i.m_donorRangeEnd[i] = std::min(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
+        zgc_i.m_donorRangeBeg[i] = std::max(zgc_i.m_donorRangeBeg[i], zgc_j.m_donorRangeBeg[i]);
+        zgc_i.m_donorRangeEnd[i] = std::min(zgc_i.m_donorRangeEnd[i], zgc_j.m_donorRangeEnd[i]);
       }
     }
   }
@@ -848,8 +848,7 @@ namespace {
                 assert(zgc[i].is_valid());
 
                 // Flag the 'j' instance so it is processed only this time.
-		zgc[j].m_isActive = false;
-
+                zgc[j].m_isActive = false;
               }
               else {
                 // We have a bad zgc -- name and owner_zone match, but not donor_zone.
@@ -867,9 +866,7 @@ namespace {
 
       // Cull out all 'non-active' zgc instances (owner and donor zone <= 0)
       zgc.erase(std::remove_if(zgc.begin(), zgc.end(),
-                               [](Ioss::ZoneConnectivity &z) {
-                                 return !z.is_active();
-			       }),
+                               [](Ioss::ZoneConnectivity &z) { return !z.is_active(); }),
                 zgc.end());
 
       count = (int)zgc.size();
@@ -1207,8 +1204,8 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
                                              zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[0],
                                              zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]}};
 
-        std::string donor_name   = zgc.m_donorName;
-        std::string connect_name = zgc.m_connectionName;
+        std::string donor_name    = zgc.m_donorName;
+        std::string connect_name  = zgc.m_connectionName;
         std::string original_name = zgc.m_connectionName;
         if (is_parallel && !is_parallel_io) {
           if (zgc.is_from_decomp()) {
@@ -2725,7 +2722,7 @@ template <typename INT>
 void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, size_t num_elem,
                                          const std::vector<INT> &connectivity,
                                          Ioss::FaceUnorderedSet &boundary,
-					 const std::vector<INT> &zone_local_zone_global)
+                                         const std::vector<INT> &zone_local_zone_global)
 {
   // Only handle continuum elements at this time...
   if (topo->parametric_dimension() != 3) {
@@ -2767,11 +2764,9 @@ void Iocgns::Utils::generate_block_faces(Ioss::ElementTopology *topo, size_t num
   }
 }
 
-template void Iocgns::Utils::generate_block_faces<int>(Ioss::ElementTopology *topo, size_t num_elem,
-						       const std::vector<int> &connectivity,
-						       Ioss::FaceUnorderedSet &boundary,
-						       const std::vector<int> &zone_local_zone_global);
-template void Iocgns::Utils::generate_block_faces<int64_t>(Ioss::ElementTopology *topo, size_t num_elem,
-							   const std::vector<int64_t> &connectivity,
-							   Ioss::FaceUnorderedSet &boundary,
-							   const std::vector<int64_t> &zone_local_zone_global);
+template void Iocgns::Utils::generate_block_faces<int>(
+    Ioss::ElementTopology *topo, size_t num_elem, const std::vector<int> &connectivity,
+    Ioss::FaceUnorderedSet &boundary, const std::vector<int> &zone_local_zone_global);
+template void Iocgns::Utils::generate_block_faces<int64_t>(
+    Ioss::ElementTopology *topo, size_t num_elem, const std::vector<int64_t> &connectivity,
+    Ioss::FaceUnorderedSet &boundary, const std::vector<int64_t> &zone_local_zone_global);
