@@ -407,7 +407,7 @@ namespace Iocgns {
       global_element_count += total_block_elem;
     }
 
-    if (global_element_count < m_decomposition.m_processorCount) {
+    if (global_element_count < (size_t)m_decomposition.m_processorCount) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
 		 "ERROR: CGNS: Element Count ({}) is less than Processor Count ({}). No decomposition possible.",
@@ -797,7 +797,6 @@ namespace Iocgns {
       assert(1 == 0);
     }
     else {
-      size_t offset = 0;
       for (auto &sset : m_sideSets) {
 
         auto                  topology = Ioss::ElementTopology::factory(sset.topologyType, true);
@@ -847,18 +846,14 @@ namespace Iocgns {
 	  }
 
 	  // TODO: Should we filter down to just corner nodes?
-	  auto                  topo = Ioss::ElementTopology::factory(sset.topologyType, true);
-	  int                   nodes_per_face = topo->number_nodes();
 	  // Now, iterate the face connectivity vector and see if
 	  // there is a match in `m_boundaryFaces`
 	  size_t offset           = 0;
-	  size_t j                = 0;
 	  auto & boundary         = m_boundaryFaces[sset.zone()];
-	  int    num_corner_nodes = topo->number_corner_nodes();
+	  int    num_corner_nodes = topology->number_corner_nodes();
 	  SMART_ASSERT(num_corner_nodes == 3 || num_corner_nodes == 4)(num_corner_nodes);
-	  size_t element_id_offset = m_decomposition.m_elementOffset;
 
-	  for (int iface = 0; iface < sset.file_count(); iface++) {
+	  for (size_t iface = 0; iface < sset.file_count(); iface++) {
 	    std::array<size_t, 4> conn = {{0, 0, 0, 0}};
 
 	    for (int i = 0; i < num_corner_nodes; i++) {
@@ -1089,8 +1084,6 @@ namespace Iocgns {
       // on this processor, then assume the face is on this processor...
 
       // TODO: Should we filter down to just corner nodes?
-      auto                  topo = Ioss::ElementTopology::factory(sset.topologyType, true);
-      int                   nodes_per_face = topo->number_nodes();
       std::vector<cgsize_t> face_nodes(sset.entitylist_map.size() * nodes_per_face);
       communicate_set_data(nodes.data(), face_nodes.data(), sset, nodes_per_face);
 
@@ -1103,11 +1096,10 @@ namespace Iocgns {
       assert(!m_boundaryFaces[sset.zone()].empty());
       auto & boundary         = m_boundaryFaces[sset.zone()];
 
-      int    num_corner_nodes = topo->number_corner_nodes();
+      int    num_corner_nodes = topology->number_corner_nodes();
       SMART_ASSERT(num_corner_nodes == 3 || num_corner_nodes == 4)(num_corner_nodes);
-      size_t element_id_offset = m_decomposition.m_elementOffset;
 
-      for (int iface = 0; iface < sset.ioss_count(); iface++) {
+      for (size_t iface = 0; iface < sset.ioss_count(); iface++) {
         std::array<size_t, 4> conn = {{0, 0, 0, 0}};
 
         for (int i = 0; i < num_corner_nodes; i++) {
