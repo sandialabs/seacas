@@ -1251,8 +1251,8 @@ namespace Iocgns {
           std::vector<cgsize_t> points(npnts);
           std::vector<cgsize_t> donors(npnts);
 
-          CGCHECKM(cg_conn_read(get_file_pointer(), base, zone, i + 1, TOPTR(points),
-                                donor_datatype, TOPTR(donors)));
+          CGCHECKM(cg_conn_read(get_file_pointer(), base, zone, i + 1, points.data(),
+                                donor_datatype, donors.data()));
 
           // Fill in entries in m_blockLocalNodeMap for the shared nodes...
           auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
@@ -1508,18 +1508,18 @@ namespace Iocgns {
           const auto &d1_name = (*J)->name();
           CGCHECKM(cg_conn_write(get_file_pointer(), base, zone, name.c_str(), CG_Vertex,
                                  CG_Abutting1to1, CG_PointList, point_list.size(),
-                                 TOPTR(point_list), d1_name.c_str(), CG_Unstructured,
+                                 point_list.data(), d1_name.c_str(), CG_Unstructured,
                                  CG_PointListDonor, CG_DataTypeNull, point_list_donor.size(),
-                                 TOPTR(point_list_donor), &gc_idx));
+                                 point_list_donor.data(), &gc_idx));
 
           name                = fmt::format("{}_to_{}", (*J)->name(), (*I)->name());
           const auto &d2_name = (*I)->name();
 
           CGCHECKM(cg_conn_write(get_file_pointer(), base, dzone, name.c_str(), CG_Vertex,
                                  CG_Abutting1to1, CG_PointList, point_list_donor.size(),
-                                 TOPTR(point_list_donor), d2_name.c_str(), CG_Unstructured,
+                                 point_list_donor.data(), d2_name.c_str(), CG_Unstructured,
                                  CG_PointListDonor, CG_DataTypeNull, point_list.size(),
-                                 TOPTR(point_list), &gc_idx));
+                                 point_list.data(), &gc_idx));
         }
       }
     }
@@ -1639,7 +1639,7 @@ namespace Iocgns {
         cgsize_t            num_coord = block_map.size();
         std::vector<double> coord(num_coord);
         CGCHECKM(cg_coord_read(get_file_pointer(), base, zone, ordinate, CG_RealDouble, &first,
-                               &num_coord, TOPTR(coord)));
+                               &num_coord, coord.data()));
 
         // Map to global coordinate position...
         for (cgsize_t i = 0; i < num_coord; i++) {
@@ -2087,7 +2087,7 @@ namespace Iocgns {
         auto coord_lambda = [this, base, zone, &coord, rmin, rmax, phys_dimension, num_to_get,
                              &rdata](const char *ord_name, int ordinate) {
           CGCHECKM(cg_coord_read(get_file_pointer(), base, zone, ord_name, CG_RealDouble, rmin,
-                                 rmax, TOPTR(coord)));
+                                 rmax, coord.data()));
 
           // Map to global coordinate position...
           for (cgsize_t i = 0; i < num_to_get; i++) {
@@ -2224,7 +2224,7 @@ namespace Iocgns {
         std::vector<cgsize_t> parent(4 * num_to_get);
 
         CGCHECKM(
-            cg_elements_read(get_file_pointer(), base, zone, sect, TOPTR(elements), TOPTR(parent)));
+            cg_elements_read(get_file_pointer(), base, zone, sect, elements.data(), parent.data()));
 
         // See if the file contained `parent` data -- Some mesh generators only write the face
         // connectivity information.  We prefer the `parent/face_on_element` data, but if that does
@@ -2408,7 +2408,7 @@ namespace Iocgns {
           }
 
           CGCHECKM(cg_coord_write(get_file_pointer(), base, zone, CG_RealDouble, ord_name,
-                                  TOPTR(coord), &crd_index));
+                                  coord.data(), &crd_index));
         };
         // End of lambda...
         // ========================================================================
@@ -2691,16 +2691,16 @@ namespace Iocgns {
             // Output this zones coordinates...
             int crd_idx = 0;
             CGCHECKM(cg_coord_write(get_file_pointer(), base, zone, CG_RealDouble, "CoordinateX",
-                                    TOPTR(x), &crd_idx));
+                                    x.data(), &crd_idx));
 
             if (spatial_dim > 1) {
               CGCHECKM(cg_coord_write(get_file_pointer(), base, zone, CG_RealDouble, "CoordinateY",
-                                      TOPTR(y), &crd_idx));
+                                      y.data(), &crd_idx));
             }
 
             if (spatial_dim > 2) {
               CGCHECKM(cg_coord_write(get_file_pointer(), base, zone, CG_RealDouble, "CoordinateZ",
-                                      TOPTR(z), &crd_idx));
+                                      z.data(), &crd_idx));
             }
           }
         }
@@ -2732,7 +2732,7 @@ namespace Iocgns {
             // Output this zones coordinates...
             int crd_idx = 0;
             CGCHECKM(cg_coord_write(get_file_pointer(), base, zone, CG_RealDouble,
-                                    cgns_name.c_str(), TOPTR(xyz), &crd_idx));
+                                    cgns_name.c_str(), xyz.data(), &crd_idx));
           }
         }
       }
@@ -2945,7 +2945,7 @@ namespace Iocgns {
           Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
         }
 
-        CGCHECKM(cg_parent_data_write(get_file_pointer(), base, zone, sect, TOPTR(parent)));
+        CGCHECKM(cg_parent_data_write(get_file_pointer(), base, zone, sect, parent.data()));
         return num_to_get;
       }
       else if (field.get_name() == "distribution_factors") {

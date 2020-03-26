@@ -964,7 +964,7 @@ namespace Ioss {
         IOSS_ERROR(errmsg);
       }
 
-      result = MPI_Waitall(req_cnt, TOPTR(request), TOPTR(status));
+      result = MPI_Waitall(req_cnt, request.data(), status.data());
 
       if (result != MPI_SUCCESS) {
         fmt::print(stderr, "ERROR: MPI_Waitall error on processor {} in {}", util().parallel_rank(),
@@ -1026,7 +1026,7 @@ namespace Ioss {
       }
 
       std::vector<unsigned> out_data(element_blocks.size() * bits_size);
-      MPI_Allreduce((void *)TOPTR(data), TOPTR(out_data), static_cast<int>(data.size()),
+      MPI_Allreduce((void *)data.data(), out_data.data(), static_cast<int>(data.size()),
                     MPI_UNSIGNED, MPI_BOR, util().communicator());
 
       offset = 0;
