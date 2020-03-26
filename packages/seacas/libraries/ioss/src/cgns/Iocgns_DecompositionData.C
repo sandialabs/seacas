@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -456,14 +456,14 @@ namespace Iocgns {
       std::vector<double> y;
       std::vector<double> z;
 
-      get_file_node_coordinates(filePtr, 0, TOPTR(x));
+      get_file_node_coordinates(filePtr, 0, x.data());
       if (m_decomposition.m_spatialDimension > 1) {
         y.resize(decomp_node_count());
-        get_file_node_coordinates(filePtr, 1, TOPTR(y));
+        get_file_node_coordinates(filePtr, 1, y.data());
       }
       if (m_decomposition.m_spatialDimension > 2) {
         z.resize(decomp_node_count());
-        get_file_node_coordinates(filePtr, 2, TOPTR(z));
+        get_file_node_coordinates(filePtr, 2, z.data());
       }
 
       m_decomposition.calculate_element_centroids(x, y, z);
@@ -575,8 +575,8 @@ namespace Iocgns {
           std::vector<cgsize_t> points(npnts);
           std::vector<cgsize_t> donors(npnts);
 
-          CGCHECK2(cg_conn_read(filePtr, base, zone, i + 1, TOPTR(points), donor_datatype,
-                                TOPTR(donors)));
+          CGCHECK2(cg_conn_read(filePtr, base, zone, i + 1, points.data(), donor_datatype,
+                                donors.data()));
 
           for (int j = 0; j < npnts; j++) {
             // Convert to 0-based global id by subtracting 1 and adding zone.m_nodeOffset
@@ -762,7 +762,7 @@ namespace Iocgns {
 #endif
       block.fileSectionOffset = blk_start;
       CGCHECK2(cgp_elements_read_data(filePtr, base, zone, section, blk_start, blk_end,
-                                      TOPTR(connectivity)));
+                                      connectivity.data()));
       size_t el          = 0;
       INT    zone_offset = block.zoneNodeOffset;
 
@@ -811,8 +811,8 @@ namespace Iocgns {
         // *  num_to_get zeros (face on other parent element)
         std::vector<cgsize_t> parent(4 * sset.file_count());
 
-        CGCHECK2(cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(nodes),
-                                  TOPTR(parent)));
+        CGCHECK2(cg_elements_read(filePtr, base, sset.zone(), sset.section(), nodes.data(),
+                                  parent.data()));
 
         if (parent[0] == 0) {
           // Get rid of 'parent' list -- not used.
@@ -897,7 +897,7 @@ namespace Iocgns {
         }
 
         std::vector<int> has_elems(m_sideSets.size() * m_decomposition.m_processorCount);
-        MPI_Allgather(TOPTR(has_elems_local), has_elems_local.size(), MPI_INT, TOPTR(has_elems),
+        MPI_Allgather(has_elems_local.data(), has_elems_local.size(), MPI_INT, has_elems.data(),
                       has_elems_local.size(), MPI_INT, m_decomposition.m_comm);
 
         for (size_t i = 0; i < m_sideSets.size(); i++) {
@@ -967,18 +967,18 @@ namespace Iocgns {
   {
     std::vector<double> tmp(decomp_node_count());
     if (field.get_name() == "mesh_model_coordinates_x") {
-      get_file_node_coordinates(filePtr, 0, TOPTR(tmp));
-      communicate_node_data(TOPTR(tmp), ioss_data, 1);
+      get_file_node_coordinates(filePtr, 0, tmp.data());
+      communicate_node_data(tmp.data(), ioss_data, 1);
     }
 
     else if (field.get_name() == "mesh_model_coordinates_y") {
-      get_file_node_coordinates(filePtr, 1, TOPTR(tmp));
-      communicate_node_data(TOPTR(tmp), ioss_data, 1);
+      get_file_node_coordinates(filePtr, 1, tmp.data());
+      communicate_node_data(tmp.data(), ioss_data, 1);
     }
 
     else if (field.get_name() == "mesh_model_coordinates_z") {
-      get_file_node_coordinates(filePtr, 2, TOPTR(tmp));
-      communicate_node_data(TOPTR(tmp), ioss_data, 1);
+      get_file_node_coordinates(filePtr, 2, tmp.data());
+      communicate_node_data(tmp.data(), ioss_data, 1);
     }
 
     else if (field.get_name() == "mesh_model_coordinates") {
@@ -999,8 +999,8 @@ namespace Iocgns {
       // and 1 communicate_node_data call.
       //
       for (int d = 0; d < m_decomposition.m_spatialDimension; d++) {
-        get_file_node_coordinates(filePtr, d, TOPTR(tmp));
-        communicate_node_data(TOPTR(tmp), TOPTR(ioss_tmp), 1);
+        get_file_node_coordinates(filePtr, d, tmp.data());
+        communicate_node_data(tmp.data(), ioss_tmp.data(), 1);
 
         size_t index = d;
         for (size_t i = 0; i < ioss_node_count(); i++) {
@@ -1048,7 +1048,7 @@ namespace Iocgns {
       offset += count;
       beg = end;
     }
-    communicate_node_data(TOPTR(tmp), ioss_data, 1);
+    communicate_node_data(tmp.data(), ioss_data, 1);
   }
 
   template void DecompositionData<int>::get_sideset_element_side(
@@ -1070,7 +1070,7 @@ namespace Iocgns {
     std::vector<cgsize_t> parent(4 * sset.file_count());
 
     CGCHECK2(
-        cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(nodes), TOPTR(parent)));
+        cg_elements_read(filePtr, base, sset.zone(), sset.section(), nodes.data(), parent.data()));
 
     if (parent[0] == 0) {
       // Get rid of 'parent' list -- not used.
@@ -1154,7 +1154,7 @@ namespace Iocgns {
       Utils::map_cgns_face_to_ioss(topo, sset.file_count(), element_side.data());
       // The above was all on root processor for this side set, now need to send data to other
       // processors that own any of the elements in the sideset.
-      communicate_set_data(TOPTR(element_side), ioss_data, sset, 2);
+      communicate_set_data(element_side.data(), ioss_data, sset, 2);
     }
   }
 
@@ -1174,7 +1174,7 @@ namespace Iocgns {
     int                   base = 1;
     CGCHECK2(cgp_elements_read_data(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
                                     blk.fileSectionOffset + blk.file_count() - 1,
-                                    TOPTR(file_conn)));
+                                    file_conn.data()));
 
     if (!raw_ids) {
       // Map from zone-local node numbers to global implicit
