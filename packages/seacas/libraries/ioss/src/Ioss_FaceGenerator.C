@@ -266,7 +266,7 @@ namespace {
       // For now, use all-to-all; optimization is just send to processors with
       // data...
       std::vector<INT> check_count(proc_count);
-      MPI_Alltoall(TOPTR(potential_count), 1, Ioss::mpi_type((INT)0), TOPTR(check_count), 1,
+      MPI_Alltoall(potential_count.data(), 1, Ioss::mpi_type((INT)0), check_count.data(), 1,
                    Ioss::mpi_type((INT)0), region.get_database()->util().communicator());
 
       const int            values_per_face = 6; // id, 4-node-conn, element
