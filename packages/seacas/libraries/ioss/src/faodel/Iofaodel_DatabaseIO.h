@@ -138,6 +138,7 @@ namespace Iofaodel {
 
     void read_region();
     void read_entity_properties(kelpie::ObjectCapacities oc, Ioss::GroupingEntity & entity);
+    Ioss::Property read_property(lunasa::DataObject &ldo);
     void read_entity_fields(kelpie::ObjectCapacities oc, Ioss::GroupingEntity & entity);
 
     void read_communication_metadata();

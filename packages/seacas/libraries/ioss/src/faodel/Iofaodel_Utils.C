@@ -41,6 +41,52 @@ namespace Iofaodel {
   {
   }
 
+  sideblock_entry_t::sideblock_entry_t(const Ioss::SideBlock & sb)
+    : entity_count(sb.entity_count())
+  {
+  }
+
+  /* Each SideSet may reference one or more SideBlocks.  This function collects
+     and serializes the keys that identify the SideBlocks that are referenced by
+     a given SideSet. */
+  lunasa::DataObject pack_sideblock(const Ioss::SideBlock & sb)
+  { 
+    // meta, entry, data, data_size
+    auto ldo = lunasa::DataObject(
+    sizeof(meta_entry_t),
+    sizeof(sideblock_entry_t),
+    lunasa::DataObject::AllocatorType::eager);
+    
+    auto meta = static_cast<meta_entry_t*>(ldo.GetMetaPtr());
+    meta->ioss_type = meta_entry_t::IossType::IofaodelSideBlock;
+    meta->value.offset = 0;
+    meta->value.size = sizeof(sideblock_entry_t);
+    
+    auto entry = static_cast<sideblock_entry_t*>(
+      static_cast<void*>(
+        static_cast<char*>(ldo.GetDataPtr()) + meta->value.offset
+      )
+    );
+
+    entry->entity_count = sb.entity_count();
+
+    return ldo;
+  }
+
+  int64_t unpack_sideblocks(lunasa::DataObject ldo)
+  {
+    auto meta = static_cast<meta_entry_t*>(ldo.GetMetaPtr());
+    assert(meta->ioss_type == meta_entry_t::IossType::IofaodelSideBlock);
+
+    auto entry = static_cast<sideblock_entry_t*>(
+      static_cast<void*>(
+        static_cast<char*>(ldo.GetDataPtr()) + meta->value.offset
+      )
+    );
+
+    return entry->entity_count;
+  }
+
   lunasa::DataObject pack_states(const Ioss::Region & r)
   {
     // meta, entry, data, data_size
@@ -105,6 +151,43 @@ namespace Iofaodel {
         "/Region/" + region_name +
         "/TimeSteps"
         );
+  }
+
+
+  kelpie::Key make_sideblocks_search_key(int rank,
+      const Ioss::Region & region,
+      const Ioss::SideSet & sideset)
+  {
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }   
+
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/SideSet/" + sideset.name() +
+        "/SideBlock/*"
+        );  
+  }
+
+
+  kelpie::Key make_sideblock_key(int rank,
+      const Ioss::Region & region,
+      const Ioss::SideSet & sideset,
+      const Ioss::SideBlock & sideblock)
+  {
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }   
+
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/SideSet/" + sideset.name() +
+        "/SideBlock/" + sideblock.name()
+        );  
   }
 
 
@@ -237,6 +320,26 @@ namespace Iofaodel {
   }
 
 
+  kelpie::Key make_property_key(int rank,
+      const Ioss::Region & region,
+      const std::string & entity_type,
+      const std::string & entity_name,
+      const std::string & property_type,
+      const std::string & property_name)
+  {
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }
+
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/State/" + std::to_string(region.get_current_state()) +
+        "/Entity/" + entity_type + "/Name/" + entity_name +
+        "/Property/BasicType/" + property_type + "/Name/" + property_name
+        );
+  }
 
 
   kelpie::Key field_search_key(int rank,
@@ -357,6 +460,19 @@ namespace Iofaodel {
       case Ioss::EntityType::INVALID_TYPE:    return std::string("INVALID_TYPE");
       default:                                return std::string("INVALID_TYPE");
     };
+  }
+
+  std::string get_entity_name(const kelpie::Key &k, std::string target)
+  {
+    std::string name;
+
+    std::string front(target + "/");
+    auto begin = k.K2().find(front);
+    if(begin != std::string::npos) {
+      name = k.K2().substr(begin + front.size());
+    }
+    
+    return name;
   }
 
   std::set<std::string> get_entity_names(const std::vector<kelpie::Key> & keys,

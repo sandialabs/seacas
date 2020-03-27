@@ -42,6 +42,7 @@
 #include <Ioss_NodeBlock.h>
 #include <Ioss_NodeSet.h>
 #include <Ioss_SideSet.h>
+#include <Ioss_SideBlock.h>
 
 #include <algorithm>
 #include <cctype>
@@ -219,6 +220,18 @@ dirman.root_node_mpi 0
           make_states_key(parallel_rank(), *get_region()),
           pack_states(*get_region()));
  
+      auto sidesets = get_region()->get_sidesets();
+      for( auto sideset : sidesets ) {
+        auto sideblocks = sideset->get_side_blocks();
+        for( auto sideblock : sideblocks ) {
+          auto sideblock_key = make_sideblock_key(parallel_rank(), *(get_region()), *sideset, *sideblock);
+
+          /* PUBLISH the SideBlocks that the SideSet references. */
+          auto ldo = pack_sideblock(*sideblock);
+          pool.Publish(sideblock_key, ldo);
+        }    
+      }    
+
       // write properties to LDOs and publish
       this->put_properties();
     }
@@ -346,6 +359,33 @@ dirman.root_node_mpi 0
     }
   }
 
+  Ioss::Property DatabaseIO::read_property(lunasa::DataObject &ldo)
+  {
+    // Properties
+    auto meta(static_cast<meta_entry_t*>(ldo.GetMetaPtr()));
+    auto prop = static_cast<Iofaodel::property_entry_t*>(
+      static_cast<void*>(
+        static_cast<char*>(ldo.GetDataPtr()) + meta->value.offset
+      )    
+    );   
+    
+    std::string property_name(prop->data + prop->name.offset, prop->name.size);
+    Ioss::Property *property = nullptr;
+    
+    auto value_ptr = static_cast<void*>(prop->data + prop->value.offset);
+    if(prop->basic_type == Ioss::Property::BasicType::STRING) {
+      std::string value(prop->data + prop->value.offset, prop->value.size);
+      property = new Ioss::Property(property_name, value);
+    } else if(prop->basic_type == Ioss::Property::BasicType::INTEGER) {
+      double val = 0.0; 
+      property = new Ioss::Property(property_name, *(reinterpret_cast<int64_t*>(value_ptr)));
+    } else if(prop->basic_type == Ioss::Property::BasicType::REAL) {
+      property = new Ioss::Property(property_name, *(reinterpret_cast<double*>(value_ptr)));
+    }    
+    
+    return *property;
+  }
+
   void DatabaseIO::read_entity_fields(kelpie::ObjectCapacities oc, Ioss::GroupingEntity & entity)
   {
     // Fields
@@ -393,7 +433,7 @@ dirman.root_node_mpi 0
       bool have_original_edge_type(false);
       std::string original_edge_type;
 
-      for(int i = 0; i < oc.keys.size(); i++)
+      for(size_t i = 0; i < oc.keys.size(); i++)
       {
 
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
@@ -454,7 +494,7 @@ dirman.root_node_mpi 0
       bool have_original_topology_type(false);
       std::string original_topology_type;
 
-      for(int i = 0; i < oc.keys.size(); i++)
+      for(size_t i = 0; i < oc.keys.size(); i++)
       {
 
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
@@ -520,7 +560,7 @@ dirman.root_node_mpi 0
       bool have_original_topology_type(false);
       std::string original_topology_type;
 
-      for(int i = 0; i < oc.keys.size(); i++)
+      for(size_t i = 0; i < oc.keys.size(); i++)
       {
 
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
@@ -646,7 +686,7 @@ dirman.root_node_mpi 0
       bool have_component_degree(false);
       int64_t component_degree(0);
 
-      for(int i = 0; i < oc.keys.size(); i++)
+      for(size_t i = 0; i < oc.keys.size(); i++)
       {
 
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
@@ -697,7 +737,7 @@ dirman.root_node_mpi 0
       bool have_component_degree(false);
       int64_t component_degree(0);
 
-      for(int i = 0; i < oc.keys.size(); i++)
+      for(size_t i = 0; i < oc.keys.size(); i++)
       {
 
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
@@ -748,7 +788,7 @@ dirman.root_node_mpi 0
       bool have_component_degree(false);
       int64_t component_degree(0);
 
-      for(int i = 0; i < oc.keys.size(); i++)
+      for(size_t i = 0; i < oc.keys.size(); i++)
       {
 
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
@@ -797,7 +837,7 @@ dirman.root_node_mpi 0
       bool have_entity_count(false);
       int64_t entity_count(0);
 
-      for(int i = 0; i < oc.keys.size(); i++)
+      for(size_t i = 0; i < oc.keys.size(); i++)
       {
         std::string entity_name_search = "/" + entity_name + "/";
         if(oc.keys[i].K2().find(entity_name_search) != std::string::npos) {
@@ -843,7 +883,6 @@ dirman.root_node_mpi 0
     auto entity_names = get_entity_names(oc.keys, type_string);
     for(auto entity_name : entity_names)
     {
-
       auto entity = new Ioss::SideSet(this, entity_name);
 
       // Add Properties that aren't created in the CTor
@@ -852,13 +891,53 @@ dirman.root_node_mpi 0
       pool.List(property_search, &property_oc);
       this->read_entity_properties(property_oc, *entity);
 
-
       // Add fields that aren't created in the CTor
       auto field_search = field_search_key(parallel_rank(), *(get_region()), *entity);
       kelpie::ObjectCapacities field_oc;
       pool.List(field_search, &field_oc);
       this->read_entity_fields(field_oc, *entity);
 
+      // FIND the SideBlocks that this SideSet references
+      auto sideblocks_key = make_sideblocks_search_key(parallel_rank(), *(get_region()), *entity);
+      kelpie::ObjectCapacities sideblocks_search_oc;
+      pool.List(sideblocks_key, &sideblocks_search_oc);
+
+      for( size_t i = 0; i < sideblocks_search_oc.Size(); i++ ) {
+        lunasa::DataObject ldo(0, sideblocks_search_oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+        pool.Need(sideblocks_search_oc.keys[i], sideblocks_search_oc.capacities[i], &ldo);
+        int64_t entity_count = unpack_sideblocks(ldo);
+
+        auto sideblock_name = get_entity_name(sideblocks_search_oc.keys[i], "SideBlock");
+        auto property_key = make_property_key(parallel_rank(), *(get_region()),
+                                              "SideBlock", sideblock_name, "STRING", "topology_type");
+        lunasa::DataObject property_ldo;
+        pool.Need( property_key, &property_ldo );
+        Ioss::Property topo_property = this->read_property(property_ldo);
+        
+        property_key = make_property_key(parallel_rank(), *(get_region()),
+                                         "SideBlock", sideblock_name, "STRING", "parent_topology_type");
+        pool.Need( property_key, &property_ldo );
+        Ioss::Property parent_topo_property = this->read_property(property_ldo);
+        
+        
+        auto sideblock = new Ioss::SideBlock(this, sideblock_name, topo_property.get_string(),
+        parent_topo_property.get_string(), entity_count);
+        
+        // Add Properties that aren't created in the CTor
+        auto sideblock_property_search = property_search_key(parallel_rank(), *(get_region()), *sideblock);
+        kelpie::ObjectCapacities sideblock_property_oc;
+        pool.List(sideblock_property_search, &sideblock_property_oc);
+        this->read_entity_properties(sideblock_property_oc, *sideblock);
+
+        // Add fields that aren't created in the CTor
+        auto sideblock_field_search = field_search_key(parallel_rank(), *(get_region()), *sideblock);
+        kelpie::ObjectCapacities sideblock_field_oc;
+        pool.List(sideblock_field_search, &sideblock_field_oc);
+        this->read_entity_fields(sideblock_field_oc, *sideblock);
+        
+        entity->add(sideblock);
+      }
+      
       this->get_region()->add(entity);
     }
   }

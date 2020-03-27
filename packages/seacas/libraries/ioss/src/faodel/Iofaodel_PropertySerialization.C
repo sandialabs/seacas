@@ -1,6 +1,6 @@
 #include "Iofaodel_PropertySerialization.h"
 #include "Iofaodel_Utils.h"
-#include <Iofaodel_Serialize.h>
+#include "Iofaodel_Serialize.h"
 
 #ifdef NDEBUG
 #undef NDEBUG
@@ -60,8 +60,14 @@ namespace Iofaodel {
     for(auto entity : region.get_nodesets())
       map_properties(region, *entity, op);
 
-    for(auto entity : region.get_sidesets())
-      map_properties(region, *entity, op);
+    for(auto sideset : region.get_sidesets()) {
+      map_properties(region, *sideset, op);
+      for(auto sideblock : sideset->get_side_blocks()) {
+        printf("[map_properties] SIDEBLOCK = %s\n", sideblock->name().c_str());
+        fflush(stdout);
+        map_properties(region, *sideblock, op);
+      }   
+    }
   }
 
 
