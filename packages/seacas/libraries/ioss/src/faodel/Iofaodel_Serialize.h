@@ -48,6 +48,7 @@
 #include <Ioss_Property.h>   // for Region
 #include <Ioss_Region.h>
 #include <Ioss_Region.h>   // for Region
+#include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
 #include <Ioss_State.h>      // for State
 #include <Ioss_StructuredBlock.h>

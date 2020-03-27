@@ -266,8 +266,8 @@ bool Ioss::Field::operator==(Ioss::Field rhs)
     return false;
   }
 
-  if( this->size_ != rhs.size_ ) {
-    printf("FIELD size mismatch (%ld v. %ld)\n", this->size_, rhs.size_);
+  if( this->get_size() != rhs.get_size() ) {
+    printf("FIELD size mismatch (%ld v. %ld)\n", this->get_size(), rhs.get_size());
     return false;
   }
 

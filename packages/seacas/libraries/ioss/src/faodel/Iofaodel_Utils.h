@@ -33,6 +33,7 @@
 #ifndef Iofaodel_Utils_h
 #define Iofaodel_Utils_h
 
+#warning "**** INCLUDE Iofaodel_Utils ****"
 #include <Ioss_Region.h>
 #include <Ioss_GroupingEntity.h>
 #include <Ioss_Property.h>
@@ -54,7 +55,7 @@ namespace Iofaodel {
 
 
   struct meta_entry_t {
-    enum class IossType {IossProperty, IossField, IofaodelStates};
+    enum class IossType {IossProperty, IossField, IofaodelStates, IofaodelSideBlock};
     IossType ioss_type;
     value_entry_t value; // offset from LDO::GetDataPtr and size
     // NOTE an added char data[0] would point to the next meta_entry_T
@@ -70,15 +71,32 @@ namespace Iofaodel {
     explicit state_entry_t(const Ioss::Region & r);
   };
 
+  struct sideblock_entry_t {
+    int64_t entity_count;
+
+    explicit sideblock_entry_t(const Ioss::SideBlock & sb);
+  };
+
   
   lunasa::DataObject pack_states(const Ioss::Region & r);
 
+  lunasa::DataObject pack_sideblock(const Ioss::SideBlock & sb);
+  int64_t unpack_sideblocks(lunasa::DataObject ldo);
 
   kelpie::Key make_states_search_key(int parallel_rank,
       const Ioss::Region & region);
 
   kelpie::Key make_states_key(int parallel_rank,
       const Ioss::Region & region);
+
+  kelpie::Key make_sideblocks_search_key(int rank,
+      const Ioss::Region & region,
+      const Ioss::SideSet & sideset);
+
+  kelpie::Key make_sideblock_key(int rank,
+      const Ioss::Region & region,
+      const Ioss::SideSet & sideset,
+      const Ioss::SideBlock & sideblock);
 
   kelpie::Key make_key(int parallel_rank,
       const Ioss::Region & region,
@@ -106,6 +124,13 @@ namespace Iofaodel {
       const Ioss::Region & region,
       const Ioss::GroupingEntity & grouping_entity);
 
+  kelpie::Key make_property_key(int rank,
+      const Ioss::Region & region,
+      const std::string & entity_type,
+      const std::string & entity_name,
+      const std::string & property_type,
+      const std::string & property_name);
+
   kelpie::Key field_search_key(int parallel_rank,
       const Ioss::Region & region,
       const Ioss::GroupingEntity & grouping_entity);
@@ -119,6 +144,7 @@ namespace Iofaodel {
   std::string to_string(const Ioss::Field::RoleType & t);
   std::string to_string(const Ioss::EntityType & t);
 
+  std::string get_entity_name(const kelpie::Key &k, std::string target);
   std::set<std::string> get_entity_names(const std::vector<kelpie::Key> & keys,
       std::string target);
 
