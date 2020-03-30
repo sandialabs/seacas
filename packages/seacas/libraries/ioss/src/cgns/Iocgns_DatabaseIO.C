@@ -680,11 +680,11 @@ namespace Iocgns {
 
   void DatabaseIO::closeDatabase__() const
   {
-    if (m_cgnsFilePtr != -1) {
+    if (m_cgnsFilePtr > 0) {
       CGCHECKM(cg_close(m_cgnsFilePtr));
       closeDW();
+      m_cgnsFilePtr = -1;
     }
-    m_cgnsFilePtr = -1;
   }
 
   bool DatabaseIO::check_valid_file_open(int status) const
