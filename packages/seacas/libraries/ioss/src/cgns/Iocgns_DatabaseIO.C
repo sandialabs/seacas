@@ -96,6 +96,55 @@
 extern char hdf5_access[64];
 
 namespace {
+  struct ZoneBC
+  {
+    ZoneBC(const std::string &bc_name, std::array<cgsize_t, 2> &point_range)
+        : name(bc_name), range_beg(point_range[0]), range_end(point_range[1])
+    {
+    }
+
+    std::string name;
+    cgsize_t    range_beg;
+    cgsize_t    range_end;
+  };
+
+  std::vector<ZoneBC> parse_zonebc_sideblocks(int cgns_file_ptr, int base, int zone,
+                                              int myProcessor)
+  {
+    int num_bc;
+    CGCHECK(cg_nbocos(cgns_file_ptr, base, zone, &num_bc));
+
+    std::vector<ZoneBC> zonebc;
+    zonebc.reserve(num_bc);
+
+    for (int i = 0; i < num_bc; i++) {
+      char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
+      CG_BCType_t       boco_type;
+      CG_PointSetType_t ptset_type;
+      cgsize_t          num_pnts;
+      cgsize_t          normal_list_size; // ignore
+      CG_DataType_t     normal_data_type; // ignore
+      int               num_dataset;      // ignore
+      CGCHECK(cg_boco_info(cgns_file_ptr, base, zone, i + 1, boco_name, &boco_type, &ptset_type,
+                           &num_pnts, nullptr, &normal_list_size, &normal_data_type, &num_dataset));
+
+      if (num_pnts != 2 || ptset_type != CG_PointRange) {
+        std::ostringstream errmsg;
+        fmt::print(
+            errmsg,
+            "CGNS: In Zone {}, boundary condition '{}' has a PointSetType of '{}' and {} points.\n"
+            "      The type must be 'PointRange' and there must be 2 points.",
+            zone, boco_name, cg_PointSetTypeName(ptset_type), num_pnts);
+        IOSS_ERROR(errmsg);
+      }
+
+      std::array<cgsize_t, 2> point_range;
+      CGCHECK(cg_boco_read(cgns_file_ptr, base, zone, i + 1, point_range.data(), nullptr));
+      zonebc.emplace_back(boco_name, point_range);
+    }
+    return zonebc;
+  }
+
   size_t global_to_zone_local_idx(size_t i, const Ioss::Map *block_map, Ioss::Map &nodeMap,
                                   bool isParallel)
   {
@@ -1287,6 +1336,13 @@ namespace Iocgns {
     CGCHECKM(cg_nsections(get_file_pointer(), base, zone, &num_sections));
 
     // ========================================================================
+    // Read the ZoneBC_t node to get list of SideBlocks to define on this zone
+    // The BC_t nodes in the ZoneBC_t give the element range for each SideBlock
+    // which can be matched up below with the Elements_t nodes to get contents
+    // of the SideBlocks.
+    auto zonebc = parse_zonebc_sideblocks(get_file_pointer(), base, zone, myProcessor);
+
+    // ========================================================================
     // Read the sections and create an element block for the ones that
     // define elements.  Some define boundary conditions...
     Ioss::ElementBlock *eblock = nullptr;
@@ -1331,14 +1387,30 @@ namespace Iocgns {
       }
       else {
         // This is a boundary-condition -- sideset (?)
-        // See if there is an existing sideset with this name...
-        Ioss::SideSet *sset = get_region()->get_sideset(section_name);
+        // Search zonebc (if it exists) for an entry such that the element ranges overlap.
+        Ioss::SideSet *sset = nullptr;
+
+        if (!zonebc.empty()) {
+          size_t i = 0;
+          for (; i < zonebc.size(); i++) {
+            if (zonebc[i].range_beg >= el_start && zonebc[i].range_end <= el_end) {
+              break;
+            }
+          }
+          if (i < zonebc.size()) {
+            // See if there is an existing sideset with this name...
+            sset = get_region()->get_sideset(zonebc[i].name);
+          }
+        }
+        else {
+          sset = get_region()->get_sideset(section_name);
+        }
 
         if (sset != nullptr) {
           std::string block_name = fmt::format("{}/{}", zone_name, section_name);
           std::string face_topo  = Utils::map_cgns_to_topology_type(e_type);
 #if IOSS_DEBUG_OUTPUT
-          fmt::print("Added sideset {} of topo '{}' with {} faces\n", block_name, face_topo,
+          fmt::print("Added sideblock {} of topo '{}' with {} faces\n", block_name, face_topo,
                      num_entity);
 #endif
           std::string parent_topo = eblock == nullptr ? "unknown" : eblock->topology()->name();
