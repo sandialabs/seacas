@@ -250,7 +250,7 @@ namespace Iocgns {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(stderr, "File Open Time = {}\n", duration);
+          fmt::print(stderr, "{} File Open Time = {}\n", is_input() ? "Input" : "Output", duration);
         }
       }
 
@@ -294,7 +294,7 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::closeDatabase__() const
   {
-    if (m_cgnsFilePtr != -1) {
+    if (m_cgnsFilePtr > 0) {
       bool do_timer = false;
       Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
       double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
@@ -305,12 +305,12 @@ namespace Iocgns {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(stderr, "File Close Time = {}\n", duration);
+          fmt::print(stderr, "{} File Close Time = {}\n", is_input() ? "Input" : "Output", duration);
         }
       }
       closeDW();
+      m_cgnsFilePtr = -1;
     }
-    m_cgnsFilePtr = -1;
   }
 
   void ParallelDatabaseIO::finalize_database() const
@@ -947,7 +947,7 @@ namespace Iocgns {
     Utils::write_flow_solution_metadata(get_file_pointer(), get_region(), state,
                                         &m_currentVertexSolutionIndex,
                                         &m_currentCellCenterSolutionIndex, true);
-    m_dbFinalized == false;
+    m_dbFinalized = false;
     return true;
   }
 
