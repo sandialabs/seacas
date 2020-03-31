@@ -1248,8 +1248,8 @@ namespace Iocgns {
 #if IOSS_DEBUG_OUTPUT
           fmt::print("Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
 #endif
-          std::vector<cgsize_t> points(npnts);
-          std::vector<cgsize_t> donors(npnts);
+          CGNSIntVector points(npnts);
+          CGNSIntVector donors(npnts);
 
           CGCHECKM(cg_conn_read(get_file_pointer(), base, zone, i + 1, points.data(),
                                 donor_datatype, donors.data()));
@@ -1510,8 +1510,8 @@ namespace Iocgns {
       for (auto J = I + 1; J != blocks.end(); J++) {
         int                   dzone = (*J)->get_property("zone").get_int();
         const auto &          J_map = m_globalToBlockLocalNodeMap[dzone];
-        std::vector<cgsize_t> point_list;
-        std::vector<cgsize_t> point_list_donor;
+        CGNSIntVector point_list;
+        CGNSIntVector point_list_donor;
         for (size_t i = 0; i < J_map->size(); i++) {
           auto global = J_map->map()[i + 1];
           // See if this global id exists in I_map...
@@ -1909,7 +1909,7 @@ namespace Iocgns {
               Utils::map_cgns_connectivity(eb->topology(), num_to_get, idata);
             }
             else {
-              std::vector<cgsize_t> connect(element_nodes * num_to_get);
+              CGNSIntVector connect(element_nodes * num_to_get);
               CGCHECKM(
                   cg_elements_read(get_file_pointer(), base, zone, sect, connect.data(), nullptr));
               if (field.get_type() == Ioss::Field::INT32) {
@@ -2237,14 +2237,14 @@ namespace Iocgns {
         // TODO(gdsjaar): ? Possibly rewrite using cgi_read_int_data so can skip reading element
         // connectivity
         int                   nodes_per_face = sb->topology()->number_nodes();
-        std::vector<cgsize_t> elements(nodes_per_face * num_to_get); // Not needed, but can't skip
+        CGNSIntVector elements(nodes_per_face * num_to_get); // Not needed, but can't skip
 
         // The parent information will be formatted as:
         // *  `num_to_get` parent elements,
         // *  `num_to_get` zeros (other parent element for face, but on boundary so 0)
         // *  `num_to_get` face_on_element
         // *  `num_to_get` zeros (face on other parent element)
-        std::vector<cgsize_t> parent(4 * num_to_get);
+        CGNSIntVector parent(4 * num_to_get);
 
         CGCHECKM(
             cg_elements_read(get_file_pointer(), base, zone, sect, elements.data(), parent.data()));
@@ -2560,7 +2560,7 @@ namespace Iocgns {
                                         num_to_get, 0, (cgsize_t *)data, &sect));
             }
             else {
-              std::vector<cgsize_t> connect;
+              CGNSIntVector connect;
               connect.reserve(element_nodes * num_to_get);
               if (field.get_type() == Ioss::Field::INT32) {
                 auto *idata = reinterpret_cast<int *>(data);
@@ -2931,7 +2931,7 @@ namespace Iocgns {
 	// This is the name of the BC_t node 
 	auto sb_name = Iocgns::Utils::decompose_sb_name(sb->name());
 
-        std::vector<cgsize_t> point_range{cg_start, cg_end};
+        CGNSIntVector point_range{cg_start, cg_end};
         CGCHECKM(cg_boco_write(get_file_pointer(), base, zone, name.c_str(), CG_FamilySpecified,
                                CG_PointRange, 2, point_range.data(), &sect));
         CGCHECKM(
@@ -2945,7 +2945,7 @@ namespace Iocgns {
         sb->property_update("section", sect);
 
         size_t                offset = m_zoneOffset[zone - 1];
-        std::vector<cgsize_t> parent(4 * num_to_get);
+        CGNSIntVector parent(4 * num_to_get);
 
         if (field.get_type() == Ioss::Field::INT32) {
           int *  idata = reinterpret_cast<int *>(data);
