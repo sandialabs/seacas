@@ -449,14 +449,14 @@ namespace Iocgns {
     int id = 0;
     for (auto &sset : decomp->m_sideSets) {
       // See if there is an Ioss::SideSet with a matching name...
-      Ioss::SideSet *ioss_sset = get_region()->get_sideset(sset.name());
+      Ioss::SideSet *ioss_sset = get_region()->get_sideset(sset.ss_name());
       if (ioss_sset != nullptr) {
         auto        zone       = decomp->m_zones[sset.zone()];
         std::string block_name = fmt::format("{}/{}", zone.m_name, sset.name());
         std::string face_topo  = sset.topologyType;
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(stderr, "Processor {}: Added sideblock {} of topo {} with {} faces\n",
-                   myProcessor, block_name, face_topo, sset.ioss_count());
+        fmt::print(stderr, "Processor {}: Added sideblock '{}' of topo {} with {} faces to sset '{}'\n",
+                   myProcessor, block_name, face_topo, sset.ioss_count(), ioss_sset->name());
 #endif
         const auto &block = decomp->m_elementBlocks[sset.parentBlockIndex];
 
@@ -2339,9 +2339,6 @@ namespace Iocgns {
       // Handle the MESH fields required for a CGNS file model.
       // (The 'genesis' portion)
       if (field.get_name() == "element_side") {
-        // Get name from parent sideset...
-        auto &name = sb->owner()->name();
-
         CG_ElementType_t type = Utils::map_topology_to_cgns(sb->topology()->name());
         int              sect = 0;
 
@@ -2356,6 +2353,11 @@ namespace Iocgns {
         //       the data so would have to generate it.  This may cause problems
         //       with codes that use the downstream data if they base the BC off
         //       of the nodes instead of the element/side info.
+        // Get name from parent sideset...  This is name of the ZoneBC entry
+        auto &name = sb->owner()->name();
+	// This is the name of the BC_t node 
+	auto sb_name = Iocgns::Utils::decompose_sb_name(sb->name());
+
         std::vector<cgsize_t> point_range{cg_start, cg_end};
         CGCHECKM(cg_boco_write(get_file_pointer(), base, zone, name.c_str(), CG_FamilySpecified,
                                CG_PointRange, 2, point_range.data(), &sect));
@@ -2364,7 +2366,7 @@ namespace Iocgns {
         CGCHECKM(cg_famname_write(name.c_str()));
         CGCHECKM(cg_boco_gridlocation_write(get_file_pointer(), base, zone, sect, CG_FaceCenter));
 
-        CGCHECKM(cgp_section_write(get_file_pointer(), base, zone, name.c_str(), type, cg_start,
+        CGCHECKM(cgp_section_write(get_file_pointer(), base, zone, sb_name.c_str(), type, cg_start,
                                    cg_end, 0, &sect));
 
         sb->property_update("section", sect);
