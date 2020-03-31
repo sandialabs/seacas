@@ -305,7 +305,8 @@ namespace Iocgns {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(stderr, "{} File Close Time = {}\n", is_input() ? "Input" : "Output", duration);
+          fmt::print(stderr, "{} File Close Time = {}\n", is_input() ? "Input" : "Output",
+                     duration);
         }
       }
       closeDW();
@@ -455,7 +456,8 @@ namespace Iocgns {
         std::string block_name = fmt::format("{}/{}", zone.m_name, sset.name());
         std::string face_topo  = sset.topologyType;
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(stderr, "Processor {}: Added sideblock '{}' of topo {} with {} faces to sset '{}'\n",
+        fmt::print(stderr,
+                   "Processor {}: Added sideblock '{}' of topo {} with {} faces to sset '{}'\n",
                    myProcessor, block_name, face_topo, sset.ioss_count(), ioss_sset->name());
 #endif
         const auto &block = decomp->m_elementBlocks[sset.parentBlockIndex];
@@ -2355,8 +2357,8 @@ namespace Iocgns {
         //       of the nodes instead of the element/side info.
         // Get name from parent sideset...  This is name of the ZoneBC entry
         auto &name = sb->owner()->name();
-	// This is the name of the BC_t node 
-	auto sb_name = Iocgns::Utils::decompose_sb_name(sb->name());
+        // This is the name of the BC_t node
+        auto sb_name = Iocgns::Utils::decompose_sb_name(sb->name());
 
         CGNSIntVector point_range{cg_start, cg_end};
         CGCHECKM(cg_boco_write(get_file_pointer(), base, zone, name.c_str(), CG_FamilySpecified,
