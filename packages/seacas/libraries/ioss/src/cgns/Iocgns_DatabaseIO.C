@@ -1508,8 +1508,8 @@ namespace Iocgns {
       const auto &I_map = m_globalToBlockLocalNodeMap[zone];
 
       for (auto J = I + 1; J != blocks.end(); J++) {
-        int                   dzone = (*J)->get_property("zone").get_int();
-        const auto &          J_map = m_globalToBlockLocalNodeMap[dzone];
+        int           dzone = (*J)->get_property("zone").get_int();
+        const auto &  J_map = m_globalToBlockLocalNodeMap[dzone];
         CGNSIntVector point_list;
         CGNSIntVector point_list_donor;
         for (size_t i = 0; i < J_map->size(); i++) {
@@ -2236,7 +2236,7 @@ namespace Iocgns {
 
         // TODO(gdsjaar): ? Possibly rewrite using cgi_read_int_data so can skip reading element
         // connectivity
-        int                   nodes_per_face = sb->topology()->number_nodes();
+        int           nodes_per_face = sb->topology()->number_nodes();
         CGNSIntVector elements(nodes_per_face * num_to_get); // Not needed, but can't skip
 
         // The parent information will be formatted as:
@@ -2700,7 +2700,7 @@ namespace Iocgns {
 
             for (size_t i = 0; i < block_map->size(); i++) {
               auto idx = global_to_zone_local_idx(i, block_map, nodeMap, isParallel);
-              SMART_ASSERT(idx < num_to_get)(i)(idx)(num_to_get);
+              SMART_ASSERT(idx < (size_t)num_to_get)(i)(idx)(num_to_get);
               x[i] = rdata[idx * spatial_dim + 0];
               if (spatial_dim > 1) {
                 y[i] = rdata[idx * spatial_dim + 1];
@@ -2737,7 +2737,7 @@ namespace Iocgns {
 
             for (size_t i = 0; i < block_map->size(); i++) {
               auto idx = global_to_zone_local_idx(i, block_map, nodeMap, isParallel);
-              SMART_ASSERT(idx < num_to_get)(i)(idx)(num_to_get);
+              SMART_ASSERT(idx < (size_t)num_to_get)(i)(idx)(num_to_get);
               xyz[i] = rdata[idx];
             }
 
@@ -2928,8 +2928,8 @@ namespace Iocgns {
         //       of the nodes instead of the element/side info.
         // Get name from parent sideset...  This is name of the ZoneBC entry
         auto &name = sb->owner()->name();
-	// This is the name of the BC_t node 
-	auto sb_name = Iocgns::Utils::decompose_sb_name(sb->name());
+        // This is the name of the BC_t node
+        auto sb_name = Iocgns::Utils::decompose_sb_name(sb->name());
 
         CGNSIntVector point_range{cg_start, cg_end};
         CGCHECKM(cg_boco_write(get_file_pointer(), base, zone, name.c_str(), CG_FamilySpecified,
@@ -2944,7 +2944,7 @@ namespace Iocgns {
 
         sb->property_update("section", sect);
 
-        size_t                offset = m_zoneOffset[zone - 1];
+        size_t        offset = m_zoneOffset[zone - 1];
         CGNSIntVector parent(4 * num_to_get);
 
         if (field.get_type() == Ioss::Field::INT32) {
