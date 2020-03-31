@@ -96,55 +96,6 @@
 extern char hdf5_access[64];
 
 namespace {
-  struct ZoneBC
-  {
-    ZoneBC(const std::string &bc_name, std::array<cgsize_t, 2> &point_range)
-        : name(bc_name), range_beg(point_range[0]), range_end(point_range[1])
-    {
-    }
-
-    std::string name;
-    cgsize_t    range_beg;
-    cgsize_t    range_end;
-  };
-
-  std::vector<ZoneBC> parse_zonebc_sideblocks(int cgns_file_ptr, int base, int zone,
-                                              int myProcessor)
-  {
-    int num_bc;
-    CGCHECK(cg_nbocos(cgns_file_ptr, base, zone, &num_bc));
-
-    std::vector<ZoneBC> zonebc;
-    zonebc.reserve(num_bc);
-
-    for (int i = 0; i < num_bc; i++) {
-      char              boco_name[CGNS_MAX_NAME_LENGTH + 1];
-      CG_BCType_t       boco_type;
-      CG_PointSetType_t ptset_type;
-      cgsize_t          num_pnts;
-      cgsize_t          normal_list_size; // ignore
-      CG_DataType_t     normal_data_type; // ignore
-      int               num_dataset;      // ignore
-      CGCHECK(cg_boco_info(cgns_file_ptr, base, zone, i + 1, boco_name, &boco_type, &ptset_type,
-                           &num_pnts, nullptr, &normal_list_size, &normal_data_type, &num_dataset));
-
-      if (num_pnts != 2 || ptset_type != CG_PointRange) {
-        std::ostringstream errmsg;
-        fmt::print(
-            errmsg,
-            "CGNS: In Zone {}, boundary condition '{}' has a PointSetType of '{}' and {} points.\n"
-            "      The type must be 'PointRange' and there must be 2 points.",
-            zone, boco_name, cg_PointSetTypeName(ptset_type), num_pnts);
-        IOSS_ERROR(errmsg);
-      }
-
-      std::array<cgsize_t, 2> point_range;
-      CGCHECK(cg_boco_read(cgns_file_ptr, base, zone, i + 1, point_range.data(), nullptr));
-      zonebc.emplace_back(boco_name, point_range);
-    }
-    return zonebc;
-  }
-
   size_t global_to_zone_local_idx(size_t i, const Ioss::Map *block_map, Ioss::Map &nodeMap,
                                   bool isParallel)
   {
@@ -1340,7 +1291,7 @@ namespace Iocgns {
     // The BC_t nodes in the ZoneBC_t give the element range for each SideBlock
     // which can be matched up below with the Elements_t nodes to get contents
     // of the SideBlocks.
-    auto zonebc = parse_zonebc_sideblocks(get_file_pointer(), base, zone, myProcessor);
+    auto zonebc = Utils::parse_zonebc_sideblocks(get_file_pointer(), base, zone, myProcessor);
 
     // ========================================================================
     // Read the sections and create an element block for the ones that
@@ -2963,9 +2914,6 @@ namespace Iocgns {
       // Handle the MESH fields required for a CGNS file model.
       // (The 'genesis' portion)
       if (field.get_name() == "element_side") {
-        // Get name from parent sideset...
-        auto &name = sb->owner()->name();
-
         CG_ElementType_t type = Utils::map_topology_to_cgns(sb->topology()->name());
         int              sect = 0;
 
@@ -2978,6 +2926,11 @@ namespace Iocgns {
         //       the data so would have to generate it.  This may cause problems
         //       with codes that use the downstream data if they base the BC off
         //       of the nodes instead of the element/side info.
+        // Get name from parent sideset...  This is name of the ZoneBC entry
+        auto &name = sb->owner()->name();
+	// This is the name of the BC_t node 
+	auto sb_name = Iocgns::Utils::decompose_sb_name(sb->name());
+
         std::vector<cgsize_t> point_range{cg_start, cg_end};
         CGCHECKM(cg_boco_write(get_file_pointer(), base, zone, name.c_str(), CG_FamilySpecified,
                                CG_PointRange, 2, point_range.data(), &sect));
@@ -2986,7 +2939,7 @@ namespace Iocgns {
         CGCHECKM(cg_famname_write(name.c_str()));
         CGCHECKM(cg_boco_gridlocation_write(get_file_pointer(), base, zone, sect, CG_FaceCenter));
 
-        CGCHECKM(cg_section_partial_write(get_file_pointer(), base, zone, name.c_str(), type,
+        CGCHECKM(cg_section_partial_write(get_file_pointer(), base, zone, sb_name.c_str(), type,
                                           cg_start, cg_end, 0, &sect));
 
         sb->property_update("section", sect);
