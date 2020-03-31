@@ -46,6 +46,7 @@
 #include <map>
 #include <string> // for string
 
+#include <cgns/Iocgns_Defines.h>
 #include <cgnslib.h>
 
 namespace Ioss {
@@ -228,7 +229,7 @@ namespace Iocgns {
     mutable std::vector<size_t>
                                                           m_bcOffset; // The BC Section element offsets in unstructured output.
     mutable std::vector<double>                           m_timesteps;
-    std::vector<std::vector<cgsize_t>>                    m_blockLocalNodeMap;
+    std::vector<CGNSIntVector>                            m_blockLocalNodeMap;
     std::map<std::string, int>                            m_zoneNameMap;
     mutable std::map<int, Ioss::Map *>                    m_globalToBlockLocalNodeMap;
     mutable std::map<std::string, Ioss::FaceUnorderedSet> m_boundaryFaces;

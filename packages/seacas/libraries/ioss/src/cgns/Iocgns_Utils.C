@@ -1061,7 +1061,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     if (is_parallel_io) {
       region.get_database()->progress("\t\tBoundary Conditions");
     }
-    std::vector<cgsize_t> bc_range(sb->m_boundaryConditions.size() * 6);
+    CGNSIntVector bc_range(sb->m_boundaryConditions.size() * 6);
     size_t                idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
       for (size_t i = 0; i < 3; i++) {
