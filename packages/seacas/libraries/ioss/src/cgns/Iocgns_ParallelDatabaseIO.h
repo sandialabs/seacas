@@ -47,6 +47,7 @@
 #include <string>   // for string
 
 #include <cgns/Iocgns_DecompositionData.h>
+#include <cgns/Iocgns_Defines.h>
 
 #include <cgnslib.h>
 
@@ -72,8 +73,6 @@ namespace Ioss {
 } // namespace Ioss
 
 namespace Iocgns {
-
-  using CGNSIntVector = std::vector<cgsize_t>;
 
   class ParallelDatabaseIO : public Ioss::DatabaseIO
   {

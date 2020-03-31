@@ -92,8 +92,8 @@ namespace {
 #endif
   }
 
-  void map_local_to_global_implicit(Iocgns::CGNSIntVector &data, ssize_t count,
-                                    const Iocgns::CGNSIntVector &global_implicit_map)
+  void map_local_to_global_implicit(CGNSIntVector &data, ssize_t count,
+                                    const CGNSIntVector &global_implicit_map)
   {
     for (ssize_t i = 0; i < count; i++) {
       data[i] = global_implicit_map[data[i] - 1];
@@ -874,8 +874,8 @@ namespace Iocgns {
             common.resize(size);
             MPI_Bcast(common.data(), 2 * size, MPI_INT, 0, util().communicator());
 
-            std::vector<cgsize_t> point_list;
-            std::vector<cgsize_t> point_list_donor;
+            CGNSIntVector point_list;
+            CGNSIntVector point_list_donor;
             point_list.reserve(common.size());
             point_list_donor.reserve(common.size());
 
@@ -2358,7 +2358,7 @@ namespace Iocgns {
 	// This is the name of the BC_t node 
 	auto sb_name = Iocgns::Utils::decompose_sb_name(sb->name());
 
-        std::vector<cgsize_t> point_range{cg_start, cg_end};
+        CGNSIntVector point_range{cg_start, cg_end};
         CGCHECKM(cg_boco_write(get_file_pointer(), base, zone, name.c_str(), CG_FamilySpecified,
                                CG_PointRange, 2, point_range.data(), &sect));
         CGCHECKM(
