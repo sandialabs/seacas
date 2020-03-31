@@ -40,8 +40,8 @@
 #include <cgns/Iocgns_DecompositionData.h>
 #include <cgns/Iocgns_Utils.h>
 #include <fmt/color.h>
-#include <fmt/ostream.h>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <tokenize.h>
 
 #include <cgnsconfig.h>
@@ -326,9 +326,9 @@ namespace Iocgns {
 	  // This should work, but doesn't... 
           fmt::print(stderr, "{}\n", fmt::join(zgcs, "\n"));
 #else
-	  for (auto &zgc : zgcs) {
-	    fmt::print(stderr, "{}\n", zgc);
-	  }
+          for (auto &zgc : zgcs) {
+            fmt::print(stderr, "{}\n", zgc);
+          }
 #endif
         }
 #endif
@@ -642,7 +642,8 @@ namespace Iocgns {
       // The BC_t nodes in the ZoneBC_t give the element range for each SideBlock
       // which can be matched up below with the Elements_t nodes to get contents
       // of the SideBlocks.
-      auto zonebc = Utils::parse_zonebc_sideblocks(filePtr, base, zone, m_decomposition.m_processor);
+      auto zonebc =
+          Utils::parse_zonebc_sideblocks(filePtr, base, zone, m_decomposition.m_processor);
 
       cgsize_t size[3];
       char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
@@ -704,28 +705,28 @@ namespace Iocgns {
         else {
           // This is a boundary-condition -- sideset (?)
           std::string bc_name(section_name);
-	  std::string ss_name;
-	  // Search zonebc (if it exists) for an entry such that the element ranges overlap.
-	  if (!zonebc.empty()) {
-	    size_t i = 0;
-	    for (; i < zonebc.size(); i++) {
-	      if (zonebc[i].range_beg >= el_start && zonebc[i].range_end <= el_end) {
-		break;
-	      }
-	    }
-	    if (i < zonebc.size()) {
-	      ss_name = zonebc[i].name;
-	    }
-	  }
-	  else {
-	    ss_name = section_name;
-	  }
+          std::string ss_name;
+          // Search zonebc (if it exists) for an entry such that the element ranges overlap.
+          if (!zonebc.empty()) {
+            size_t i = 0;
+            for (; i < zonebc.size(); i++) {
+              if (zonebc[i].range_beg >= el_start && zonebc[i].range_end <= el_end) {
+                break;
+              }
+            }
+            if (i < zonebc.size()) {
+              ss_name = zonebc[i].name;
+            }
+          }
+          else {
+            ss_name = section_name;
+          }
 
           Ioss::SetDecompositionData sset;
           sset.zone_            = zone;
           sset.section_         = is;
           sset.name_            = bc_name;
-	  sset.ss_name_         = ss_name;
+          sset.ss_name_         = ss_name;
           sset.fileCount        = num_entity;
           sset.topologyType     = Utils::map_cgns_to_topology_type(e_type);
           sset.parentBlockIndex = last_blk_location;
@@ -782,10 +783,10 @@ namespace Iocgns {
 
       // Get the connectivity (raw) for this portion of elements...
       CGNSIntVector connectivity(overlap * element_nodes);
-      INT                   blk_start = std::max(b_start, p_start) - b_start + 1;
-      INT                   blk_end   = blk_start + overlap - 1;
-      blk_start                       = blk_start < 0 ? 0 : blk_start;
-      blk_end                         = blk_end < 0 ? 0 : blk_end;
+      INT           blk_start = std::max(b_start, p_start) - b_start + 1;
+      INT           blk_end   = blk_start + overlap - 1;
+      blk_start               = blk_start < 0 ? 0 : blk_start;
+      blk_end                 = blk_end < 0 ? 0 : blk_end;
 #if IOSS_DEBUG_OUTPUT
       if (rank == 0) {
         fmt::print(stderr, "Processor {} has {} elements on element block {}\t({} to {})\n",
@@ -832,8 +833,8 @@ namespace Iocgns {
     else {
       for (auto &sset : m_sideSets) {
 
-        auto                  topology = Ioss::ElementTopology::factory(sset.topologyType, true);
-        int                   nodes_per_face = topology->number_nodes();
+        auto          topology       = Ioss::ElementTopology::factory(sset.topologyType, true);
+        int           nodes_per_face = topology->number_nodes();
         CGNSIntVector nodes(nodes_per_face * sset.file_count());
 
         // We get:
@@ -1095,8 +1096,8 @@ namespace Iocgns {
     std::vector<INT> element_side;
     int              base = 1;
 
-    auto                  topology       = Ioss::ElementTopology::factory(sset.topologyType, true);
-    int                   nodes_per_face = topology->number_nodes();
+    auto          topology       = Ioss::ElementTopology::factory(sset.topologyType, true);
+    int           nodes_per_face = topology->number_nodes();
     CGNSIntVector nodes(nodes_per_face * sset.file_count());
 
     CGNSIntVector parent(4 * sset.file_count());
@@ -1201,9 +1202,9 @@ namespace Iocgns {
   void DecompositionData<INT>::get_block_connectivity(int filePtr, INT *data, int blk_seq,
                                                       bool raw_ids) const
   {
-    auto                  blk = m_elementBlocks[blk_seq];
+    auto          blk = m_elementBlocks[blk_seq];
     CGNSIntVector file_conn(blk.file_count() * blk.nodesPerEntity);
-    int                   base = 1;
+    int           base = 1;
     CGCHECK2(cgp_elements_read_data(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
                                     blk.fileSectionOffset + blk.file_count() - 1,
                                     file_conn.data()));
