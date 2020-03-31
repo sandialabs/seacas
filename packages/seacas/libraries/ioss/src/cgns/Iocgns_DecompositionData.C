@@ -629,6 +629,13 @@ namespace Iocgns {
 
     CGCHECK2(cg_nzones(filePtr, base, &num_zones));
     for (int zone = 1; zone <= num_zones; zone++) {
+      // ========================================================================
+      // Read the ZoneBC_t node to get list of SideBlocks to define on this zone
+      // The BC_t nodes in the ZoneBC_t give the element range for each SideBlock
+      // which can be matched up below with the Elements_t nodes to get contents
+      // of the SideBlocks.
+      auto zonebc = Utils::parse_zonebc_sideblocks(filePtr, base, zone, m_decomposition.m_processor);
+
       cgsize_t size[3];
       char     zone_name[CGNS_MAX_NAME_LENGTH + 1];
       CGCHECK2(cg_zone_read(filePtr, base, zone, zone_name, size));
@@ -688,12 +695,29 @@ namespace Iocgns {
         }
         else {
           // This is a boundary-condition -- sideset (?)
-          std::string ss_name(section_name);
+          std::string bc_name(section_name);
+	  std::string ss_name;
+	  // Search zonebc (if it exists) for an entry such that the element ranges overlap.
+	  if (!zonebc.empty()) {
+	    size_t i = 0;
+	    for (; i < zonebc.size(); i++) {
+	      if (zonebc[i].range_beg >= el_start && zonebc[i].range_end <= el_end) {
+		break;
+	      }
+	    }
+	    if (i < zonebc.size()) {
+	      ss_name = zonebc[i].name;
+	    }
+	  }
+	  else {
+	    ss_name = section_name;
+	  }
 
           Ioss::SetDecompositionData sset;
           sset.zone_            = zone;
           sset.section_         = is;
-          sset.name_            = ss_name;
+          sset.name_            = bc_name;
+	  sset.ss_name_         = ss_name;
           sset.fileCount        = num_entity;
           sset.topologyType     = Utils::map_cgns_to_topology_type(e_type);
           sset.parentBlockIndex = last_blk_location;
