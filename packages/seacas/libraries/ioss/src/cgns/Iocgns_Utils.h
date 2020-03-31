@@ -42,6 +42,7 @@
 #include <Ioss_SideSet.h>
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
+#include <cgns/Iocgns_Defines.h>
 #include <cgnslib.h>
 #include <ostream>
 #include <string>
@@ -226,7 +227,7 @@ namespace Iocgns {
     }
 
     static void map_ioss_face_to_cgns(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
-                                      std::vector<cgsize_t> &data)
+                                      CGNSIntVector &data)
     {
       // The {topo}_map[] arrays map from CGNS face# to IOSS face#.
       // See http://cgns.github.io/CGNS_docs_current/sids/conv.html#unstructgrid
