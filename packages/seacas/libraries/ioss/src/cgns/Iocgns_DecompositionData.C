@@ -41,6 +41,7 @@
 #include <cgns/Iocgns_Utils.h>
 #include <fmt/color.h>
 #include <fmt/ostream.h>
+#include <fmt/format.h>
 #include <tokenize.h>
 
 #include <cgnsconfig.h>
@@ -321,7 +322,14 @@ namespace Iocgns {
               zone->m_name, zone->m_zone, zone->m_proc, zone->m_adam->m_zone, zone->work(),
               zone_node_count);
           auto zgcs = zone->m_zoneConnectivity;
-          fmt::print(stderr, "{}\n", fmt::join(zgcs.begin(), zgcs.end(), "\n"));
+#if 0
+	  // This should work, but doesn't... 
+          fmt::print(stderr, "{}\n", fmt::join(zgcs, "\n"));
+#else
+	  for (auto &zgc : zgcs) {
+	    fmt::print(stderr, "{}\n", zgc);
+	  }
+#endif
         }
 #endif
       }
