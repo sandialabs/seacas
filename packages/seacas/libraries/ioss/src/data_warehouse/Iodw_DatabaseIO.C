@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010
+// Copyright(C) 1999-2010, 2020
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
@@ -57,8 +57,9 @@ namespace {
   // Output a message that the operation is unsupported and die...
   void unsupported(const char *operation)
   {
-    std::cerr << "ERROR: Unsupported functionality called: " << operation << '\n';
-    std::abort();
+    std::ostringstream errmsg;
+    std::errmsg << "ERROR: Unsupported functionality called: " << operation << '\n';
+    IOSS_ERROR(errmsg);
   }
 
   int get_file_pointer() { return 0; }
