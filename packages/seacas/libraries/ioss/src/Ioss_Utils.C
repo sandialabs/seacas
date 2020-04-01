@@ -1435,10 +1435,11 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
     dbi->progress("DEFINING MODEL");
     if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
-      if (options.verbose && rank == 0) {
-        fmt::print(stderr, "ERROR: Could not put output region into define model state\n");
+      if (options.verbose) {
+        std::ostringstream errmsg;
+        fmt::print(errmsg, "ERROR: Could not put output region into define model state\n");
+        IOSS_ERROR(errmsg);
       }
-      std::exit(EXIT_FAILURE);
     }
 
     // Get all properties of input database...
