@@ -470,7 +470,9 @@ namespace Iofx {
     {
       Ioss::SerializeIO serializeIO__(this);
 
-      Ioex::check_processor_info(get_file_pointer(), util().parallel_size(), myProcessor);
+      if (isParallel) {
+	Ioex::check_processor_info(get_file_pointer(), util().parallel_size(), myProcessor);
+      }
 
       read_region();
       read_communication_metadata();
