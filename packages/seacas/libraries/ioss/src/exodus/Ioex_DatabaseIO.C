@@ -1559,15 +1559,14 @@ namespace Ioex {
       // try changing DIM_STR_NAME value and see if works...)
       if (name_length > static_cast<size_t>(maximumNameLength)) {
         if (myProcessor == 0) {
-          fmt::print(
-              IOSS_WARNING,
-              "WARNING: There are variables names whose name length ({0}) exceeds the current "
-              "maximum name length ({1})\n         set for this database ({2}).\n"
-              "         You should either reduce the length of the variable name, or "
-              "set the 'MAXIMUM_NAME_LENGTH' property\n"
-              "         to at least {0}.\n         Contact gdsjaar@sandia.gov for more "
-              "information.\n\n",
-              name_length, maximumNameLength, get_filename());
+          fmt::print(Ioss::WARNING(),
+                     "There are variables names whose name length ({0}) exceeds the current "
+                     "maximum name length ({1})\n         set for this database ({2}).\n"
+                     "         You should either reduce the length of the variable name, or "
+                     "set the 'MAXIMUM_NAME_LENGTH' property\n"
+                     "         to at least {0}.\n         Contact gdsjaar@sandia.gov for more "
+                     "information.\n\n",
+                     name_length, maximumNameLength, get_filename());
         }
       }
       int ierr = ex_put_variable_names(get_file_pointer(), type, var_count, var_names.data());
@@ -1821,7 +1820,7 @@ namespace Ioex {
         else if (Ioss::Utils::str_equal(type, "sphere-mass")) {
           if (attribute_count != 10) {
             if (myProcessor == 0) {
-              fmt::print(IOSS_WARNING,
+              fmt::print(Ioss::WARNING(),
                          "For element block '{}' of type '{}' there were {} attributes instead of "
                          "the expected 10 attributes "
                          "known to the IO Subsystem. "

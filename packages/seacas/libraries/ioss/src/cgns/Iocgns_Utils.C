@@ -204,14 +204,13 @@ namespace {
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(fam_name);
     if (sset == nullptr) {
       if (block->get_database()->parallel_rank() == 0) {
-        fmt::print(
-            IOSS_WARNING,
-            "WARNING: On block '{}', found the boundary condition named '{}' in family '{}'.\n"
-            "         This family was not previously defined at the top-level of the file"
-            " which is not normal.\n"
-            "         Check your file to make sure this does not "
-            "indicate a problem with the mesh.\n",
-            block->name(), boco_name, fam_name);
+        fmt::print(Ioss::WARNING(),
+                   "On block '{}', found the boundary condition named '{}' in family '{}'.\n"
+                   "         This family was not previously defined at the top-level of the file"
+                   " which is not normal.\n"
+                   "         Check your file to make sure this does not "
+                   "indicate a problem with the mesh.\n",
+                   block->name(), boco_name, fam_name);
       }
 
       // Need to create a new sideset since didn't see this earlier.
@@ -272,7 +271,7 @@ namespace {
       // Check that the 'bocotype' value matches the value of the property.
       auto old_bocotype = sset->get_property("bc_type").get_int();
       if (old_bocotype != bocotype && bocotype != CG_FamilySpecified) {
-        fmt::print(IOSS_WARNING,
+        fmt::print(Ioss::WARNING(),
                    "On sideset '{}', the boundary condition type was previously set to {}"
                    " which does not match the current value of {}. It will keep the old value.\n",
                    sset->name(), old_bocotype, bocotype);
@@ -1235,7 +1234,7 @@ std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
   case CG_HEXA_20: topology = Ioss::Hex20::name; break;
   case CG_HEXA_27: topology = Ioss::Hex27::name; break;
   default:
-    fmt::print(stderr, "WARNING: Found topology of type {} which is not currently supported.\n",
+    fmt::print(Ioss::WARNING(), "Found topology of type {} which is not currently supported.\n",
                cg_ElementTypeName(type));
     topology = Ioss::Unknown::name;
   }
@@ -1309,7 +1308,7 @@ CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
     topo = CG_HEXA_27;
   }
   else {
-    fmt::print(stderr, "WARNING: Found topology of type {} which is not currently supported.\n",
+    fmt::print(Ioss::WARNING(), "Found topology of type {} which is not currently supported.\n",
                name);
   }
   return topo;
@@ -1421,10 +1420,9 @@ int Iocgns::Utils::find_solution_index(int cgns_file_ptr, int base, int zone, in
     return step;
   }
 
-  fmt::print(
-      stderr,
-      "WARNING: CGNS: Could not find valid solution index for step {}, zone {}, and location {}\n",
-      step, zone, GridLocationName[location]);
+  fmt::print(Ioss::WARNING(),
+             "CGNS: Could not find valid solution index for step {}, zone {}, and location {}\n",
+             step, zone, GridLocationName[location]);
   return 0;
 }
 
@@ -1483,10 +1481,8 @@ void Iocgns::Utils::add_sidesets(int cgns_file_ptr, Ioss::DatabaseIO *db)
       }
       else {
         if (db->parallel_rank() == 0) {
-          fmt::print(
-              IOSS_WARNING,
-              "*** WARNING: Skipping BC with name '{}' since FamBC_UserId is equal to 0.\n\n",
-              ss_name);
+          fmt::print(Ioss::WARNING(),
+                     "Skipping BC with name '{}' since FamBC_UserId is equal to 0.\n\n", ss_name);
         }
       }
     }
@@ -1740,11 +1736,10 @@ void Iocgns::Utils::add_structured_boundary_conditions_pio(int                  
       int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
                        (range[2] == range[5] ? 1 : 0);
       if (same_count != 1) {
-        fmt::print(
-            stderr,
-            "WARNING: CGNS: Skipping Boundary Condition '{}' on block '{}'. It is applied to "
-            "{}. This code only supports surfaces.\n",
-            boco_name, block->name(), (same_count == 2 ? "an edge" : "a vertex"));
+        fmt::print(Ioss::WARNING(),
+                   "CGNS: Skipping Boundary Condition '{}' on block '{}'. It is applied to "
+                   "{}. This code only supports surfaces.\n",
+                   boco_name, block->name(), (same_count == 2 ? "an edge" : "a vertex"));
         continue;
       }
     }
@@ -1826,8 +1821,8 @@ void Iocgns::Utils::add_structured_boundary_conditions_fpp(int                  
     int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
                      (range[2] == range[5] ? 1 : 0);
     if (same_count != 1) {
-      fmt::print(stderr,
-                 "WARNING: CGNS: Skipping Boundary Condition '{}' on block '{}'. It is applied to "
+      fmt::print(Ioss::WARNING(),
+                 "CGNS: Skipping Boundary Condition '{}' on block '{}'. It is applied to "
                  "{}. This code only supports surfaces.\n",
                  boco_name, block->name(), (same_count == 2 ? "an edge" : "a vertex"));
       continue;
@@ -2177,7 +2172,7 @@ void Iocgns::Utils::set_line_decomposition(int cgns_file_ptr, const std::string 
           }
           else if (zone->m_lineOrdinal != ordinal && rank == 0) {
             fmt::print(
-                IOSS_WARNING,
+                Ioss::WARNING(),
                 "CGNS: Zone {0} named {1} has multiple line decomposition ordinal "
                 "specifications. Both ordinal {2} and {3} have been specified.  Keeping {3}\n",
                 izone, zone->m_name, ordinal, zone->m_lineOrdinal);

@@ -57,7 +57,6 @@ namespace Ioss {
 } // namespace Ioss
 
 #define IOSS_ERROR(errmsg) throw std::runtime_error((errmsg).str())
-#define IOSS_WARNING std::cerr
 
 namespace {
   // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
@@ -84,7 +83,6 @@ namespace {
 } // namespace
 
 namespace Ioss {
-
   /* \brief Utility methods.
    */
   class Utils
@@ -92,6 +90,16 @@ namespace Ioss {
   public:
     Utils()  = default;
     ~Utils() = default;
+
+    static std::ostream *m_warningStream;
+    static std::string   m_preWarningText;
+
+    static void set_warning_stream(std::ostream &warning_stream)
+    {
+      m_warningStream = &warning_stream;
+    }
+
+    static void set_pre_warning_text(const std::string &text) { m_preWarningText = text; }
 
     static void check_dynamic_cast(const void *ptr)
     {
@@ -479,5 +487,12 @@ namespace Ioss {
     static void copy_database(Ioss::Region &region, Ioss::Region &output_region,
                               Ioss::MeshCopyOptions &options);
   };
+
+  inline std::ostream &WARNING()
+  {
+    *Utils::m_warningStream << Utils::m_preWarningText;
+    return *Utils::m_warningStream;
+  }
+
 } // namespace Ioss
 #endif
