@@ -104,8 +104,9 @@ namespace Ioss {
     static void check_dynamic_cast(const void *ptr)
     {
       if (ptr == nullptr) {
-        std::cerr << "INTERNAL ERROR: Invalid dynamic cast returned nullptr\n";
-        exit(EXIT_FAILURE);
+        std::ostringstream errmsg;
+        errmsg << "INTERNAL ERROR: Invalid dynamic cast returned nullptr\n";
+        IOSS_ERROR(errmsg);
       }
     }
 
@@ -152,13 +153,13 @@ namespace Ioss {
           return p - 1;
         }
       }
-      std::cerr << "FATAL ERROR: find_index_location. Searching for " << node << " in:\n";
+      std::ostringstream errmsg;
+      errmsg << "FATAL ERROR: find_index_location. Searching for " << node << " in:\n";
       for (auto idx : index) {
-        std::cerr << idx << ", ";
+        errmsg << idx << ", ";
       }
-      std::cerr << "\n";
-      assert(1 == 0); // Cannot happen...
-      return 0;
+      errmsg << "\n";
+      IOSS_ERROR(errmsg);
 #else
       return std::distance(index.begin(), std::upper_bound(index.begin(), index.end(), node)) - 1;
 #endif
