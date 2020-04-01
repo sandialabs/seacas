@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -96,6 +96,9 @@
 #include <Ioss_SubSystem.h>
 
 #include <fstream>
+
+std::ostream *Ioss::Utils::m_warningStream  = &std::cerr;
+std::string   Ioss::Utils::m_preWarningText = "\nIOSS WARNING: ";
 
 // For copy_database...
 namespace {
@@ -474,8 +477,8 @@ std::string Ioss::Utils::local_filename(const std::string &relative_filename,
 int Ioss::Utils::field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
                                const std::string &inout)
 {
-  fmt::print(IOSS_WARNING, "{} '{}'. Unknown {} field '{}'\n", ge->type_string(), ge->name(), inout,
-             field.get_name());
+  fmt::print(Ioss::WARNING(), "{} '{}'. Unknown {} field '{}'\n", ge->type_string(), ge->name(),
+             inout, field.get_name());
   return -4;
 }
 

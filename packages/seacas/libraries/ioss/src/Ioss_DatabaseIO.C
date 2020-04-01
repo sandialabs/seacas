@@ -99,7 +99,8 @@ namespace {
     unsigned int       min_hash   = util.global_minmax(hash_code, Ioss::ParallelUtils::DO_MIN);
     if (max_hash != min_hash) {
       const std::string &ge_name = ge->name();
-      fmt::print(IOSS_WARNING, "Parallel inconsistency detected for {} field '{}' on entity '{}'\n",
+      fmt::print(Ioss::WARNING(),
+                 "Parallel inconsistency detected for {} field '{}' on entity '{}'\n",
                  in_out == 0 ? "writing" : "reading", field_name, ge_name);
       return false;
     }
@@ -302,8 +303,8 @@ namespace Ioss {
         }
         else {
           if (myProcessor == 0) {
-            fmt::print(IOSS_WARNING,
-                       "\nWARNING: DataWarp enabled via Ioss property `ENABLE_DATAWARP`, but\n"
+            fmt::print(Ioss::WARNING(),
+                       "DataWarp enabled via Ioss property `ENABLE_DATAWARP`, but\n"
                        "         burst buffer path was not specified via `DW_JOB_STRIPED` or "
                        "`DW_JOB_PRIVATE`\n"
                        "         environment variables (typically set by queuing system)\n"
@@ -544,8 +545,8 @@ namespace Ioss {
   void DatabaseIO::create_group(EntityType /*type*/, const std::string &type_name,
                                 const std::vector<std::string> &group_spec, const T * /*set_type*/)
   {
-    fmt::print(IOSS_WARNING,
-               "WARNING: Grouping of {0} sets is not yet implemented.\n"
+    fmt::print(Ioss::WARNING(),
+               "Grouping of {0} sets is not yet implemented.\n"
                "         Skipping the creation of {0} set '{1}'\n\n",
                type_name, group_spec[0]);
   }
@@ -599,11 +600,10 @@ namespace Ioss {
         }
       }
       else {
-        fmt::print(
-            IOSS_WARNING,
-            "WARNING: While creating the grouped surface '{}', the surface '{}' does not exist. "
-            "This surface will skipped and not added to the group.\n\n",
-            group_spec[0], group_spec[i]);
+        fmt::print(Ioss::WARNING(),
+                   "While creating the grouped surface '{}', the surface '{}' does not exist. "
+                   "This surface will skipped and not added to the group.\n\n",
+                   group_spec[0], group_spec[i]);
       }
     }
   }

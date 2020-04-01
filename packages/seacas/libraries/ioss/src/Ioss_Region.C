@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -742,8 +742,8 @@ namespace Ioss {
     if (!get_database()->is_input() && !stateTimes.empty() && time <= stateTimes.back()) {
       // Check that time is increasing...
       if (!warning_output) {
-        fmt::print(IOSS_WARNING,
-                   "IOSS WARNING: Current time {} is not greater than previous time {} in\n\t{}.\n"
+        fmt::print(Ioss::WARNING(),
+                   "Current time {} is not greater than previous time {} in\n\t{}.\n"
                    "This may cause problems in applications that assume monotonically increasing "
                    "time values.\n",
                    time, stateTimes.back(), get_database()->get_filename());

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -30,11 +30,11 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_Utils.h>            // for IOSS_WARNING
-#include <cassert>                 // for assert
-#include <exodus/Ioex_Internals.h> // for Internals, ElemBlock, etc
+#include <Ioss_Utils.h>
+#include <cassert>
+#include <exodus/Ioex_Internals.h>
 extern "C" {
-#include <exodusII_int.h> // for EX_FATAL, EX_NOERR, etc
+#include <exodusII_int.h>
 }
 #include <cstddef> // for size_t
 #include <cstdio>  // for nullptr
