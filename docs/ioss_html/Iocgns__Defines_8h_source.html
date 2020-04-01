@@ -86,7 +86,7 @@ $(document).ready(function(){initNavTree('Iocgns__Defines_8h_source.html',''); i
 <div class="title">Iocgns_Defines.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="Iocgns__Defines_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">// Copyright(C) 2018 National Technology &amp; Engineering Solutions</span></div>
+<a href="Iocgns__Defines_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">// Copyright(C) 2018, 2020 National Technology &amp; Engineering Solutions</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// NTESS, the U.S. Government retains certain rights in this software.</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">//</span></div>
@@ -120,12 +120,16 @@ $(document).ready(function(){initNavTree('Iocgns__Defines_8h_source.html',''); i
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#ifndef IOSS_IOCGNS_DEFINES_H</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#define IOSS_IOCGNS_DEFINES_H</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="Iocgns__Defines_8h.html#a56a010a6149738473f67fb8c53199846">   36</a></span>&#160;<span class="preprocessor">#define CGNS_MAX_NAME_LENGTH 255</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &lt;cgnstypes.h&gt;</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="Iocgns__Defines_8h.html#a56a010a6149738473f67fb8c53199846">   38</a></span>&#160;<span class="preprocessor">#define CGNS_MAX_NAME_LENGTH 255</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="Iocgns__Defines_8h.html#a72b2525a4e0ad56eff45b37af0f4097b">   39</a></span>&#160;<span class="keyword">using</span> <a class="code" href="Iocgns__Defines_8h.html#a72b2525a4e0ad56eff45b37af0f4097b">CGNSIntVector</a> = std::vector&lt;cgsize_t&gt;;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aIocgns__Defines_8h_html_a72b2525a4e0ad56eff45b37af0f4097b"><div class="ttname"><a href="Iocgns__Defines_8h.html#a72b2525a4e0ad56eff45b37af0f4097b">CGNSIntVector</a></div><div class="ttdeci">std::vector&lt; cgsize_t &gt; CGNSIntVector</div><div class="ttdef"><b>Definition:</b> Iocgns_Defines.h:39</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

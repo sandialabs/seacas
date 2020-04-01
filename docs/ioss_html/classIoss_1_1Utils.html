@@ -85,6 +85,7 @@ $(document).ready(function(){initNavTree('classIoss_1_1Utils.html',''); initResi
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classIoss_1_1Utils-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">Ioss::Utils Class Reference</div>  </div>
@@ -102,6 +103,10 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ad48fc6ac832ebb5b9be062ef6dc7ea29"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#ad48fc6ac832ebb5b9be062ef6dc7ea29">set_warning_stream</a> (std::ostream &amp;warning_stream)</td></tr>
+<tr class="separator:ad48fc6ac832ebb5b9be062ef6dc7ea29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a045c5b10deb49ae979c0aaa16e672621"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a045c5b10deb49ae979c0aaa16e672621">set_pre_warning_text</a> (const std::string &amp;text)</td></tr>
+<tr class="separator:a045c5b10deb49ae979c0aaa16e672621"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f09e4d2470eab1b903ca420d96e6748"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a7f09e4d2470eab1b903ca420d96e6748">check_dynamic_cast</a> (const void *ptr)</td></tr>
 <tr class="separator:a7f09e4d2470eab1b903ca420d96e6748"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9e8a65a742fa904c9b21ca049616f27"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
@@ -222,6 +227,13 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a4e36dabba48e8770c4914a42d648ad3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24de37b7a335e4d98eb046f9ee0adb8d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#a24de37b7a335e4d98eb046f9ee0adb8d">copy_database</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;output_region, <a class="el" href="structIoss_1_1MeshCopyOptions.html">Ioss::MeshCopyOptions</a> &amp;options)</td></tr>
 <tr class="separator:a24de37b7a335e4d98eb046f9ee0adb8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:abf10820381eef7686fcfd93d5ed1564a"><td class="memItemLeft" align="right" valign="top">static std::ostream *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#abf10820381eef7686fcfd93d5ed1564a">m_warningStream</a> = &amp;std::cerr</td></tr>
+<tr class="separator:abf10820381eef7686fcfd93d5ed1564a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaffd080dc749edf50ef715f3a26c32d8"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Utils.html#aaffd080dc749edf50ef715f3a26c32d8">m_preWarningText</a> = &quot;\nIOSS WARNING: &quot;</td></tr>
+<tr class="separator:aaffd080dc749edf50ef715f3a26c32d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a7b26e085790c47979ee6fa2b463812c3"></a>
@@ -1724,6 +1736,58 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a045c5b10deb49ae979c0aaa16e672621"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a045c5b10deb49ae979c0aaa16e672621">&#9670;&nbsp;</a></span>set_pre_warning_text()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void Ioss::Utils::set_pre_warning_text </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad48fc6ac832ebb5b9be062ef6dc7ea29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad48fc6ac832ebb5b9be062ef6dc7ea29">&#9670;&nbsp;</a></span>set_warning_stream()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void Ioss::Utils::set_warning_stream </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>warning_stream</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="abfe87ed59e2fbbde5bd253986eb2180e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abfe87ed59e2fbbde5bd253986eb2180e">&#9670;&nbsp;</a></span>str_equal()</h2>
 
@@ -2074,13 +2138,58 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aaffd080dc749edf50ef715f3a26c32d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaffd080dc749edf50ef715f3a26c32d8">&#9670;&nbsp;</a></span>m_preWarningText</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::Utils::m_preWarningText = &quot;\nIOSS WARNING: &quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abf10820381eef7686fcfd93d5ed1564a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf10820381eef7686fcfd93d5ed1564a">&#9670;&nbsp;</a></span>m_warningStream</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream * Ioss::Utils::m_warningStream = &amp;std::cerr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/<a class="el" href="Ioss__Utils_8h_source.html">Ioss_Utils.h</a></li>
 <li>src/<a class="el" href="Ioss__Utils_8C.html">Ioss_Utils.C</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aclassIoss_1_1Utils_html_a875232ab39ecaf79b1b668d28fb590d6"><div class="ttname"><a href="classIoss_1_1Utils.html#a875232ab39ecaf79b1b668d28fb590d6">Ioss::Utils::number_width</a></div><div class="ttdeci">static int number_width(const size_t number, bool use_commas=false)</div><div class="ttdef"><b>Definition:</b> Ioss_Utils.h:195</div></div>
+<div class="ttc" id="aclassIoss_1_1Utils_html_a875232ab39ecaf79b1b668d28fb590d6"><div class="ttname"><a href="classIoss_1_1Utils.html#a875232ab39ecaf79b1b668d28fb590d6">Ioss::Utils::number_width</a></div><div class="ttdeci">static int number_width(const size_t number, bool use_commas=false)</div><div class="ttdef"><b>Definition:</b> Ioss_Utils.h:204</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

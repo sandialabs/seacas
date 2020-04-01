@@ -105,6 +105,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a989c64d96a2aeb4697729d3c99b9a8d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7e7ad1574f78d9fef05a3da000bf91e"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SetDecompositionData.html#ad7e7ad1574f78d9fef05a3da000bf91e">name</a> () const</td></tr>
 <tr class="separator:ad7e7ad1574f78d9fef05a3da000bf91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebd192ba62e1956ae6fcaa2fc1e6720c"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SetDecompositionData.html#aebd192ba62e1956ae6fcaa2fc1e6720c">ss_name</a> () const</td></tr>
+<tr class="separator:aebd192ba62e1956ae6fcaa2fc1e6720c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf06a66c293a58c1f94f92b417f5a9fb"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SetDecompositionData.html#acf06a66c293a58c1f94f92b417f5a9fb">id</a> () const</td></tr>
 <tr class="separator:acf06a66c293a58c1f94f92b417f5a9fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fc265aa4a3cdb85a782c052ee321a3e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SetDecompositionData.html#a7fc265aa4a3cdb85a782c052ee321a3e">zone</a> () const</td></tr>
@@ -126,6 +128,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a9d858981c4a8f20bec9f54e9b416eca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeea4b8514e26e78a7ef5bd9f2a53323c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SetDecompositionData.html#aeea4b8514e26e78a7ef5bd9f2a53323c">name_</a> {}</td></tr>
 <tr class="separator:aeea4b8514e26e78a7ef5bd9f2a53323c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49e4d520beabf7f6b3a2b7a4d2c1ef95"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SetDecompositionData.html#a49e4d520beabf7f6b3a2b7a4d2c1ef95">ss_name_</a> {}</td></tr>
+<tr class="separator:a49e4d520beabf7f6b3a2b7a4d2c1ef95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef67c31f4103de3d8ea4e9d89bbae296"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SetDecompositionData.html#aef67c31f4103de3d8ea4e9d89bbae296">id_</a> {0}</td></tr>
 <tr class="separator:aef67c31f4103de3d8ea4e9d89bbae296"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbeb7ab82bb3fcc3a3b67ebbbf4d6344"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1SetDecompositionData.html#acbeb7ab82bb3fcc3a3b67ebbbf4d6344">zone_</a> {0}</td></tr>
@@ -405,6 +409,31 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aebd192ba62e1956ae6fcaa2fc1e6720c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebd192ba62e1956ae6fcaa2fc1e6720c">&#9670;&nbsp;</a></span>ss_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; Ioss::SetDecompositionData::ss_name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a7fc265aa4a3cdb85a782c052ee321a3e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7fc265aa4a3cdb85a782c052ee321a3e">&#9670;&nbsp;</a></span>zone()</h2>
 
@@ -609,6 +638,20 @@ Public Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="Ioss__CodeTypes_8h.html#a161d2f0d69c09838316e4ea9a74f02d7">MPI_Comm</a> Ioss::SetDecompositionData::setComm_ {MPI_COMM_NULL}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a49e4d520beabf7f6b3a2b7a4d2c1ef95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49e4d520beabf7f6b3a2b7a4d2c1ef95">&#9670;&nbsp;</a></span>ss_name_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Ioss::SetDecompositionData::ss_name_ {}</td>
         </tr>
       </table>
 </div><div class="memdoc">
