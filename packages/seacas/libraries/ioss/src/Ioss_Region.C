@@ -200,7 +200,7 @@ namespace {
                  " {} not consistently defined on all processors.\n\t\t"
                  "Check that name and id matches across processors.\n",
                  (count == 1 ? "is" : "are"));
-      fmt::print(stderr, "{}", errmsg.str());
+      IOSS_ERROR(errmsg);
     }
   }
 
