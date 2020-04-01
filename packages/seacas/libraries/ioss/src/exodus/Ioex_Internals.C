@@ -35,7 +35,7 @@
 #include <exodus/Ioex_Internals.h> // for Internals, ElemBlock, etc
 #include <exodus/Ioex_Utils.h>
 extern "C" {
-#include <exodusII_int.h> // for EX_FATAL, EX_NOERR, etc
+#include <exodusII_int.h>
 }
 #include <cstddef> // for size_t
 #include <cstdio>  // for nullptr

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -164,6 +164,9 @@ namespace {
   void file_copy(IOShell::Interface &interFace, int rank)
   {
     Ioss::PropertyManager properties = set_properties(interFace);
+
+    Ioss::Utils::set_warning_stream(std::cout);
+    Ioss::Utils::set_pre_warning_text("GREG: ");
 
     bool first = true;
     for (const auto &inpfile : interFace.inputFile) {

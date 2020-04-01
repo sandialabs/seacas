@@ -292,7 +292,7 @@ namespace Iopg {
     nodeBlockCount = 1;
 
     if (nodeCount == 0) {
-      IOSS_WARNING << "No nodes were found in the model, file '" << decoded_filename() << "'";
+      Ioss::WARNING() << "No nodes were found in the model, file '" << decoded_filename() << "'";
     }
     else if (nodeCount < 0) {
       // NOTE: Code will not continue past this call...
@@ -303,7 +303,8 @@ namespace Iopg {
     }
 
     if (elementCount == 0) {
-      IOSS_WARNING << "No elements were found in the model, file: '" << decoded_filename() << "'";
+      Ioss::WARNING() << "No elements were found in the model, file: '" << decoded_filename()
+                      << "'";
     }
 
     if (elementCount < 0) {

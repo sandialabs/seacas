@@ -99,6 +99,9 @@
 
 #include <fstream>
 
+std::ostream *Ioss::Utils::m_warningStream  = &std::cerr;
+std::string   Ioss::Utils::m_preWarningText = "\nIOSS WARNING: ";
+
 // For copy_database...
 namespace {
   auto initial_time = std::chrono::high_resolution_clock::now();
@@ -480,8 +483,8 @@ std::string Ioss::Utils::local_filename(const std::string &relative_filename,
 int Ioss::Utils::field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
                                const std::string &inout)
 {
-  fmt::print(IOSS_WARNING, "{} '{}'. Unknown {} field '{}'\n", ge->type_string(), ge->name(), inout,
-             field.get_name());
+  fmt::print(Ioss::WARNING(), "{} '{}'. Unknown {} field '{}'\n", ge->type_string(), ge->name(),
+             inout, field.get_name());
   return -4;
 }
 
