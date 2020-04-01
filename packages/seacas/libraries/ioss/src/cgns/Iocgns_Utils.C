@@ -2208,11 +2208,10 @@ void Iocgns::Utils::decompose_model(std::vector<Iocgns::StructuredZoneData *> &z
   }
 
   if (avg_work < 1.0) {
-    if (rank == 0) {
-      fmt::print(stderr, "ERROR: Model size too small to distribute over {} processors.\n",
-                 proc_count);
-    }
-    std::exit(EXIT_FAILURE);
+    std::ostringstream errmsg;
+    fmt::print(errmsg, "ERROR: Model size too small to distribute over {} processors.\n",
+               proc_count);
+    IOSS_ERROR(errmsg);
   }
 
   if (verbose) {
