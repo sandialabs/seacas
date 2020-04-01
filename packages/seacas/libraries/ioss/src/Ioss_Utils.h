@@ -89,8 +89,21 @@ namespace Ioss {
     Utils()  = default;
     ~Utils() = default;
 
+    static std::ostream *m_outputStream;
+    static std::ostream *m_debugStream;
     static std::ostream *m_warningStream;
     static std::string   m_preWarningText;
+
+    static void set_all_streams(std::ostream &out_stream)
+    {
+      m_outputStream  = &out_stream;
+      m_debugStream   = &out_stream;
+      m_warningStream = &out_stream;
+    }
+
+    static void set_output_stream(std::ostream &output_stream) { m_outputStream = &output_stream; }
+
+    static void set_debug_stream(std::ostream &debug_stream) { m_debugStream = &debug_stream; }
 
     static void set_warning_stream(std::ostream &warning_stream)
     {
@@ -486,6 +499,10 @@ namespace Ioss {
     static void copy_database(Ioss::Region &region, Ioss::Region &output_region,
                               Ioss::MeshCopyOptions &options);
   };
+
+  inline std::ostream &OUTPUT() { return *Utils::m_outputStream; }
+
+  inline std::ostream &DEBUG() { return *Utils::m_debugStream; }
 
   inline std::ostream &WARNING()
   {

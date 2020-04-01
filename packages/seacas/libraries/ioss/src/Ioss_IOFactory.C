@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -134,15 +134,15 @@ int Ioss::IOFactory::describe(NameList *names)
 
 void Ioss::IOFactory::show_configuration()
 {
-  fmt::print(stderr, "\nIOSS Library Version '{}'\n\n", Ioss::Version());
+  fmt::print(Ioss::OUTPUT(), "\nIOSS Library Version '{}'\n\n", Ioss::Version());
   NameList db_types;
   describe(&db_types);
-  fmt::print(stderr, "Supported database types:\n\t");
+  fmt::print(Ioss::OUTPUT(), "Supported database types:\n\t");
   for (const auto &db_type : db_types) {
-    fmt::print(stderr, "{} ", db_type);
+    fmt::print(Ioss::OUTPUT(), "{} ", db_type);
   }
 
-  fmt::print(stderr, "\n\nThird-Party Library Configuration Information:\n\n");
+  fmt::print(Ioss::OUTPUT(), "\n\nThird-Party Library Configuration Information:\n\n");
 
   // Each database type may appear multiple times in the registry
   // due to aliasing (i.e. exodus, genesis, exodusII, ...)

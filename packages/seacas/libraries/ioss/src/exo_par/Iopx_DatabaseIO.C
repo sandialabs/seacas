@@ -315,12 +315,12 @@ namespace Iopx {
           std::ostringstream errmsg;
           fmt::print(errmsg, "ERROR: Unable to {} exodus database file '{}' on processors:\n\t{}",
                      open_create, get_filename(), error_list);
+          fmt::print(errmsg, "\n");
           if (error_msg != nullptr) {
             *error_msg = errmsg.str();
           }
           if (write_message && myProcessor == 0) {
-            fmt::print(errmsg, "\n");
-            fmt::print(stderr, "{}", errmsg.str());
+            fmt::print(Ioss::OUTPUT(), "{}", errmsg.str());
           }
         }
         if (bad_count != nullptr) {
@@ -388,7 +388,7 @@ namespace Iopx {
       double t_end    = Ioss::Utils::timer();
       double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       if (myProcessor == 0) {
-        fmt::print(stderr, "File Open Time = {}\n", duration);
+        fmt::print(Ioss::DEBUG(), "File Open Time = {}\n", duration);
       }
     }
 
@@ -499,7 +499,7 @@ namespace Iopx {
       double      duration    = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
       std::string open_create = fileExists ? "Open" : "Create";
       if (myProcessor == 0) {
-        fmt::print(stderr, "File {} Time = {}\n", open_create, duration);
+        fmt::print(Ioss::DEBUG(), "File {} Time = {}\n", open_create, duration);
       }
     }
 
