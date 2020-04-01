@@ -1,11 +1,9 @@
 var Iocgns__DatabaseIO_8C =
 [
-    [ "ZoneBC", "structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1ZoneBC.html", "structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1ZoneBC" ],
     [ "SBlock", "structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1SBlock.html", "structanonymous__namespace_02Iocgns__DatabaseIO_8C_03_1_1SBlock" ],
     [ "global_to_zone_local_idx", "Iocgns__DatabaseIO_8C.html#a4190d05b8bb9df0471cc7a2842a7a4eb", null ],
     [ "handle_block_ids", "Iocgns__DatabaseIO_8C.html#a5255667c2c507d6d37ab83ab2d2997c6", null ],
     [ "pack", "Iocgns__DatabaseIO_8C.html#a6fa6b22b4e74710bdbc5185f90a845ec", null ],
-    [ "parse_zonebc_sideblocks", "Iocgns__DatabaseIO_8C.html#af2477fab5fa3010248f34d202f242f74", null ],
     [ "unpack", "Iocgns__DatabaseIO_8C.html#a79737b9b35b0003d9c913159a318710d", null ],
     [ "hdf5_access", "Iocgns__DatabaseIO_8C.html#ab8b80723fab5c1525ef668d02f864b5c", null ]
 ];
