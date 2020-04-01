@@ -300,28 +300,28 @@ namespace Iopx {
     // Reading a corrupt mesh in which there are elements not in an element block
     // can cause hard to track down problems...
     if (decomposition.m_globalElementCount != decomposition.m_fileBlockIndex[block_count]) {
-      if (m_processor == 0) {
-        fmt::print(stderr,
-                   "ERROR: The sum of the element counts in each element block gives a total of {} "
-                   "elements.\n"
-                   "       This does not match the total element count of {} which indicates a "
-                   "corrupt mesh description.\n"
-                   "       Contact gdsjaar@sandia.gov for more details.\n",
-                   decomposition.m_fileBlockIndex[block_count], decomposition.m_globalElementCount);
-      }
-      exit(EXIT_FAILURE);
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: The sum of the element counts in each element block gives a total of {} "
+                 "elements.\n"
+                 "       This does not match the total element count of {} which indicates a "
+                 "corrupt mesh description.\n"
+                 "       Contact gdsjaar@sandia.gov for more details.\n",
+                 decomposition.m_fileBlockIndex[block_count], decomposition.m_globalElementCount);
+      IOSS_ERROR(errmsg);
     }
 
     // Make sure 'sum' can fit in INT...
     INT tmp_sum = (INT)sum;
     if ((size_t)tmp_sum != sum) {
+      std::ostringstream errmsg;
       fmt::print(
-          stderr,
+          errmsg,
           "ERROR: The decomposition of this mesh requires 64-bit integers, but is being\n"
           "       run with 32-bit integer code. Please rerun with the property INTEGER_SIZE_API\n"
           "       set to 8. The details of how to do this vary with the code that is being run.\n"
           "       Contact gdsjaar@sandia.gov for more details.\n");
-      exit(EXIT_FAILURE);
+      IOSS_ERROR(errmsg);
     }
 
     decomposition.m_pointer.reserve(decomp_elem_count() + 1);
@@ -419,15 +419,14 @@ namespace Iopx {
 
     size_t one = 1;
     if (entitylist_size >= one << 31) {
-      if (m_processor == 0) {
-        fmt::print(stderr,
-                   "ERROR: The sum of the {} entity counts is larger than 2.1 Billion "
-                   " which cannot be correctly handled with the current IOSS decomposition "
-                   "implementation.\n"
-                   "       Contact gdsjaar@sandia.gov for more details.\n",
-                   set_type_name);
-      }
-      exit(EXIT_FAILURE);
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "ERROR: The sum of the {} entity counts is larger than 2.1 Billion "
+                 " which cannot be correctly handled with the current IOSS decomposition "
+                 "implementation.\n"
+                 "       Contact gdsjaar@sandia.gov for more details.\n",
+                 set_type_name);
+      IOSS_ERROR(errmsg);
     }
 
     std::vector<INT> entitylist(max_size);
@@ -1043,15 +1042,18 @@ namespace Iopx {
     }
 
     if (type != EX_NODE_SET && type != EX_SIDE_SET) {
-      fmt::print(stderr,
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
                  "ERROR: Invalid set type specified in get_decomp_set. Only node set or side set "
                  "supported\n");
+      IOSS_ERROR(errmsg);
     }
     else {
-      std::string typestr = type == EX_NODE_SET ? "node set" : "side set";
-      fmt::print(stderr, "ERROR: Count not find {} {}\n", typestr, id);
+      std::string        typestr = type == EX_NODE_SET ? "node set" : "side set";
+      std::ostringstream errmsg;
+      fmt::print(errmsg, "ERROR: Count not find {} {}\n", typestr, id);
+      IOSS_ERROR(errmsg);
     }
-    exit(EXIT_FAILURE);
     return node_sets[0];
   }
 
@@ -1601,9 +1603,11 @@ namespace Iopx {
                             comm_, &status);
 
       if (result != MPI_SUCCESS) {
-        fmt::print(stderr,
+        std::ostringstream errmsg;
+        fmt::print(errmsg,
                    "ERROR: MPI_Recv error on processor {} receiving nodes_per_face sideset data",
                    m_processor);
+        IOSS_ERROR(errmsg);
       }
       df_count = nodes_per_face.back();
     }
@@ -1642,9 +1646,11 @@ namespace Iopx {
           MPI_Recv(file_data.data(), file_data.size(), MPI_DOUBLE, set.root_, 333, comm_, &status);
 
       if (result != MPI_SUCCESS) {
-        fmt::print(stderr,
+        std::ostringstream errmsg;
+        fmt::print(errmsg,
                    "ERROR: MPI_Recv error on processor {} receiving nodes_per_face sideset data",
                    m_processor);
+        IOSS_ERROR(errmsg);
       }
     }
 
