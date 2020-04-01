@@ -368,7 +368,7 @@ namespace {
               fmt::print(stderr, "\tWriting step {:n} to {}\n", step_min + 1, filename);
             }
             else {
-              fmt::print("\tWriting steps {:n}..{:n} to {}\n", step_min + 1, step_max + 1,
+              fmt::print(stderr, "\tWriting steps {:n}..{:n} to {}\n", step_min + 1, step_max + 1,
                          filename);
             }
           }
