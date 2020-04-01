@@ -298,7 +298,7 @@ namespace Ioss {
           usingDataWarp = true;
           dwPath        = bb_path;
           if (myProcessor == 0) {
-            fmt::print(stderr, "\nDataWarp Burst Buffer Enabled.  Path = `{}`\n\n", dwPath);
+            fmt::print(Ioss::OUTPUT(), "\nDataWarp Burst Buffer Enabled.  Path = `{}`\n\n", dwPath);
           }
         }
         else {
@@ -336,7 +336,7 @@ namespace Ioss {
 #if defined SEACAS_HAVE_DATAWARP
 #if IOSS_DEBUG_OUTPUT
         if (myProcessor == 0) {
-          fmt::print(stderr, "DW: dw_wait_file_stage({});\n", bb_file.filename());
+          fmt::print(Ioss::DEBUG(), "DW: dw_wait_file_stage({});\n", bb_file.filename());
         }
 #endif
         int dwret = dw_wait_file_stage(bb_file.filename().c_str());
@@ -348,7 +348,7 @@ namespace Ioss {
         }
 #else
         // Used to debug DataWarp logic on systems without DataWarp...
-        fmt::print(stderr, "DW: (FAKE) dw_wait_file_stage({});\n", bb_file.filename());
+        fmt::print(Ioss::DEBUG(), "DW: (FAKE) dw_wait_file_stage({});\n", bb_file.filename());
 #endif
       }
       set_dwname(bb_file.filename());
@@ -370,7 +370,7 @@ namespace Ioss {
         dw_query_file_stage(get_dwname().c_str(), &complete, &pending, &deferred, &failed);
 #if IOSS_DEBUG_OUTPUT
         auto initial = std::chrono::high_resolution_clock::now();
-        fmt::print(stderr, "Query: {}, {}, {}, {}\n", complete, pending, deferred, failed);
+        fmt::print(Ioss::DEBUG(), "Query: {}, {}, {}, {}\n", complete, pending, deferred, failed);
 #endif
         if (pending > 0) {
           int dwret = dw_wait_file_stage(get_dwname().c_str());
@@ -382,12 +382,12 @@ namespace Ioss {
           }
 #if IOSS_DEBUG_OUTPUT
           dw_query_file_stage(get_dwname().c_str(), &complete, &pending, &deferred, &failed);
-          fmt::print(stderr, "Query: {}, {}, {}, {}\n", complete, pending, deferred, failed);
+          fmt::print(Ioss::DEBUG(), "Query: {}, {}, {}, {}\n", complete, pending, deferred, failed);
 #endif
         }
 
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(stderr, "\nDW: BEGIN dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
+        fmt::print(Ioss::DEBUG(), "\nDW: BEGIN dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
                    get_dwname(), get_pfsname());
 #endif
         int ret =
@@ -396,7 +396,7 @@ namespace Ioss {
 #if IOSS_DEBUG_OUTPUT
         auto                          time_now = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> diff     = time_now - initial;
-        fmt::print(stderr, "\nDW: END dw_stage_file_out({})\n", diff.count());
+        fmt::print(Ioss::DEBUG(), "\nDW: END dw_stage_file_out({})\n", diff.count());
 #endif
         if (ret < 0) {
           std::ostringstream errmsg;
@@ -405,7 +405,7 @@ namespace Ioss {
           IOSS_ERROR(errmsg);
         }
 #else
-        fmt::print(stderr, "\nDW: (FAKE) dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
+        fmt::print(Ioss::DEBUG(), "\nDW: (FAKE) dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
                    get_dwname(), get_pfsname());
 #endif
       }
@@ -1182,7 +1182,7 @@ namespace {
       if (util.parallel_size() > 1) {
         fmt::print(strm, "\tTot: {} (ms)\n", total);
       }
-      fmt::print(stderr, "{}", strm.str());
+      fmt::print(Ioss::DEBUG(), "{}", strm.str());
     }
   }
 
@@ -1224,7 +1224,7 @@ namespace {
           fmt::print(strm, " T:{:8d}", total);
         }
         fmt::print(strm, "\t{}/{}\n", name, field.get_name());
-        fmt::print(stderr, "{}", strm.str());
+        fmt::print(Ioss::DEBUG(), "{}", strm.str());
       }
     }
     else {

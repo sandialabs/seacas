@@ -143,7 +143,7 @@ namespace Ioex {
     // Set exodusII warning level.
     if (util().get_environment("EX_DEBUG", isParallel)) {
       fmt::print(
-          stderr,
+          Ioss::DEBUG(),
           "IOEX: Setting EX_VERBOSE|EX_DEBUG because EX_DEBUG environment variable is set.\n");
       ex_opts(EX_VERBOSE | EX_DEBUG);
     }
@@ -151,14 +151,15 @@ namespace Ioex {
     if (!is_input()) {
       if (util().get_environment("EX_MODE", exodusMode, isParallel)) {
         fmt::print(
-            stderr,
+            Ioss::OUTPUT(),
             "IOEX: Exodus create mode set to {} from value of EX_MODE environment variable.\n",
             exodusMode);
       }
 
       if (util().get_environment("EX_MINIMIZE_OPEN_FILES", isParallel)) {
-        fmt::print(stderr, "IOEX: Minimizing open files because EX_MINIMIZE_OPEN_FILES environment "
-                           "variable is set.\n");
+        fmt::print(Ioss::OUTPUT(),
+                   "IOEX: Minimizing open files because EX_MINIMIZE_OPEN_FILES environment "
+                   "variable is set.\n");
         minimizeOpenFiles = true;
       }
       else {
@@ -335,7 +336,7 @@ namespace Ioex {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(stderr, "File Close Time = {}\n", duration);
+          fmt::print(Ioss::DEBUG(), "File Close Time = {}\n", duration);
         }
       }
     }
@@ -387,8 +388,9 @@ namespace Ioex {
     // Check byte-size of integers stored on the database...
     if ((ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
       if (myProcessor == 0) {
-        fmt::print(stderr, "IOSS: Input database contains 8-byte integers. Setting Ioss to use "
-                           "8-byte integers.\n");
+        fmt::print(Ioss::OUTPUT(),
+                   "IOSS: Input database contains 8-byte integers. Setting Ioss to use "
+                   "8-byte integers.\n");
       }
       ex_set_int64_status(exodusFilePtr, EX_ALL_INT64_API);
       set_int_byte_size_api(Ioss::USE_INT64_API);

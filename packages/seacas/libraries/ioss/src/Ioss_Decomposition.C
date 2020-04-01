@@ -170,7 +170,7 @@ namespace {
     common_nodes = par_util.global_minmax(common_nodes, Ioss::ParallelUtils::DO_MIN);
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(stderr, "Setting common_nodes to {}\n", common_nodes);
+    fmt::print(Ioss::DEBUG(), "Setting common_nodes to {}\n", common_nodes);
 #endif
     return common_nodes;
   }
@@ -318,13 +318,13 @@ namespace Ioss {
   {
     show_progress(__func__);
     if (m_processor == 0) {
-      fmt::print(stderr,
+      fmt::print(Ioss::OUTPUT(),
                  "\nIOSS: Using decomposition method '{}' for {:n} elements on {} processors.\n",
                  m_method, m_globalElementCount, m_processorCount);
 
       if ((size_t)m_processorCount > m_globalElementCount) {
-        fmt::print(stderr,
-                   "\nWARNING: Decomposing {} elements across {} processors will "
+        fmt::print(Ioss::WARNING(),
+                   "Decomposing {} elements across {} processors will "
                    "result in some processors with *NO* elements.\n",
                    m_globalElementCount, m_processorCount);
       }
@@ -441,7 +441,8 @@ namespace Ioss {
     }
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(stderr, "Processor {} communicates {} nodes from and {} nodes to other processors\n",
+    fmt::print(Ioss::DEBUG(),
+               "Processor {} communicates {} nodes from and {} nodes to other processors\n",
                m_processor, sumr, sums);
 #endif
     // Build the list telling the other processors which of their nodes I will
@@ -724,7 +725,7 @@ namespace Ioss {
     show_progress("\tmetis_decompose Communication 2 finished");
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(stderr, "Processor {}:\t{} local, {} imported and {} exported elements\n",
+    fmt::print(Ioss::DEBUG(), "Processor {}:\t{} local, {} imported and {} exported elements\n",
                m_processor, m_elementCount - exp_size, imp_size, exp_size);
 #endif
   }
@@ -760,7 +761,7 @@ namespace Ioss {
                                    &ncon, &common_nodes, &nparts, tp_wgts.data(), ub_vec.data(),
                                    options.data(), &edge_cuts, elem_partition, &m_comm);
 #if IOSS_DEBUG_OUTPUT
-      fmt::print(stderr, "Edge Cuts = {}\n", edge_cuts);
+      fmt::print(Ioss::DEBUG(), "Edge Cuts = {}\n", edge_cuts);
 #endif
       if (rc != METIS_OK) {
         std::ostringstream errmsg;
@@ -792,7 +793,7 @@ namespace Ioss {
                                     &edge_cuts, elem_partition, &m_comm);
 
 #if IOSS_DEBUG_OUTPUT
-      fmt::print(stderr, "Edge Cuts = {}\n", edge_cuts);
+      fmt::print(Ioss::DEBUG(), "Edge Cuts = {}\n", edge_cuts);
 #endif
       METIS_Free(dual_xadj);
       METIS_Free(dual_adjacency);
@@ -876,7 +877,7 @@ namespace Ioss {
     show_progress("\tZoltan lb_partition finished");
 
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(stderr, "Processor {}:\t{} local, {} imported and {} exported elements\n",
+    fmt::print(Ioss::DEBUG(), "Processor {}:\t{} local, {} imported and {} exported elements\n",
                m_processor, m_elementCount - num_export, num_import, num_export);
 #endif
 
@@ -1187,8 +1188,8 @@ namespace Ioss {
           nodes.push_back(i + m_nodeOffset);
           found_count++;
 #if IOSS_DEBUG_OUTPUT
-          fmt::print(stderr, "Processor {}:\tNode {} not connected to any elements\n", m_processor,
-                     i + m_nodeOffset + 1);
+          fmt::print(Ioss::DEBUG(), "Processor {}:\tNode {} not connected to any elements\n",
+                     m_processor, i + m_nodeOffset + 1);
 #endif
         }
       }
@@ -1217,7 +1218,7 @@ namespace Ioss {
 // Map that converts nodes from the global index (1-based) to a
 // local-per-processor index (1-based)
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(stderr, "Processor {}:\tNode Count = {}\n", m_processor, nodes.size());
+    fmt::print(Ioss::DEBUG(), "Processor {}:\tNode Count = {}\n", m_processor, nodes.size());
 #endif
     nodeGTL.swap(nodes);
     for (size_t i = 0; i < nodeGTL.size(); i++) {
@@ -1344,7 +1345,8 @@ namespace Ioss {
       m_nodeCommMap[i] = node_global_to_local(m_nodeCommMap[i] + 1);
     }
 #if IOSS_DEBUG_OUTPUT
-    fmt::print(stderr, "Processor {} has {} shared nodes\n", m_processor, m_nodeCommMap.size() / 2);
+    fmt::print(Ioss::DEBUG(), "Processor {} has {} shared nodes\n", m_processor,
+               m_nodeCommMap.size() / 2);
 #endif
     show_progress(__func__);
   }

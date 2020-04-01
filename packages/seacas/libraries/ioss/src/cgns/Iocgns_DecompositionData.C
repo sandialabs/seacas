@@ -182,7 +182,8 @@ namespace {
 
 #if IOSS_DEBUG_OUTPUT
         if (rank == 0) {
-          fmt::print(stderr, "Adding zgc {} to {} donor: {}\n", connectname, zone_name, donorname);
+          fmt::print(Ioss::DEBUG(), "Adding zgc {} to {} donor: {}\n", connectname, zone_name,
+                     donorname);
         }
 #endif
         zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
@@ -317,17 +318,17 @@ namespace Iocgns {
           auto zone_node_count =
               (zone->m_ordinal[0] + 1) * (zone->m_ordinal[1] + 1) * (zone->m_ordinal[2] + 1);
           fmt::print(
-              stderr,
+              Ioss::DEBUG(),
               "Zone {}({}) assigned to processor {}, Adam zone = {}, Cells = {}, Nodes = {}\n",
               zone->m_name, zone->m_zone, zone->m_proc, zone->m_adam->m_zone, zone->work(),
               zone_node_count);
           auto zgcs = zone->m_zoneConnectivity;
 #if 0
 	  // This should work, but doesn't... 
-          fmt::print(stderr, "{}\n", fmt::join(zgcs, "\n"));
+          fmt::print(Ioss::DEBUG(), "{}\n", fmt::join(zgcs, "\n"));
 #else
           for (auto &zgc : zgcs) {
-            fmt::print(stderr, "{}\n", zgc);
+            fmt::print(Ioss::DEBUG(), "{}\n", zgc);
           }
 #endif
         }
@@ -339,7 +340,7 @@ namespace Iocgns {
     if (rank == 0) {
       int z = 1;
       fmt::print(
-          stderr,
+          Ioss::OUTPUT(),
           "     n    proc  parent    imin    imax    jmin    jmax    kmin    kmax          work\n");
       auto tmp_zone(m_structuredZones);
       std::sort(tmp_zone.begin(), tmp_zone.end(),
@@ -349,7 +350,7 @@ namespace Iocgns {
 
       for (auto &zone : tmp_zone) {
         if (zone->is_active()) {
-          fmt::print(stderr, "{:6d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:14n}\n", z++,
+          fmt::print(Ioss::OUTPUT(), "{:6d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:8d}{:14n}\n", z++,
                      zone->m_proc, zone->m_adam->m_zone, zone->m_offset[0] + 1,
                      zone->m_ordinal[0] + zone->m_offset[0] + 1, zone->m_offset[1] + 1,
                      zone->m_ordinal[1] + zone->m_offset[1] + 1, zone->m_offset[2] + 1,
@@ -367,7 +368,8 @@ namespace Iocgns {
 #if IOSS_DEBUG_OUTPUT
     MPI_Barrier(m_decomposition.m_comm);
     if (rank == 0) {
-      fmt::print(fg(fmt::color::green), "Returning from decomposition\n");
+      fmt::print(Ioss::DEBUG(), "{}",
+                 fmt::format(fg(fmt::color::green), "Returning from decomposition\n"));
     }
 #endif
   }
@@ -450,7 +452,7 @@ namespace Iocgns {
 
 #if IOSS_DEBUG_OUTPUT
     if (rank == 0) {
-      fmt::print(stderr,
+      fmt::print(Ioss::DEBUG(),
                  "Processor {0} has {1} elements; offset = {2}\n"
                  "Processor {0} has {3} nodes; offset = {4}.\n",
                  m_decomposition.m_processor, decomp_elem_count(), decomp_elem_offset(),
@@ -576,7 +578,7 @@ namespace Iocgns {
         if (dz != zone) {
 #if IOSS_DEBUG_OUTPUT
           if (m_decomposition.m_processor == 0) {
-            fmt::print(stderr, "Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
+            fmt::print(Ioss::DEBUG(), "Zone {} shares {} nodes with {}\n", zone, npnts, donorname);
           }
 #endif
           // The 'ids' in 'points' and 'donors' will be zone-local 1-based.
@@ -599,7 +601,7 @@ namespace Iocgns {
             m_zoneSharedMap.insert({point, donor});
 #if IOSS_DEBUG_OUTPUT
             if (m_decomposition.m_processor == 0) {
-              fmt::print(stderr, "Inserted {} to {}\n", point, donor);
+              fmt::print(Ioss::DEBUG(), "Inserted {} to {}\n", point, donor);
             }
 #endif
           }
@@ -751,15 +753,14 @@ namespace Iocgns {
     // Make sure 'sum' can fit in INT...
     INT tmp_sum = (INT)sum;
     if ((size_t)tmp_sum != sum) {
-      if (rank == 0) {
-        fmt::print(
-            stderr,
-            "ERROR: The decomposition of this mesh requires 64-bit integers, but is being\n"
-            "       run with 32-bit integer code. Please rerun with the property INTEGER_SIZE_API\n"
-            "       set to 8. The details of how to do this vary with the code that is being run.\n"
-            "       Contact gdsjaar@sandia.gov for more details.\n");
-      }
-      exit(EXIT_FAILURE);
+      std::ostringstream errmsg;
+      fmt::print(
+          errmsg,
+          "ERROR: The decomposition of this mesh requires 64-bit integers, but is being\n"
+          "       run with 32-bit integer code. Please rerun with the property INTEGER_SIZE_API\n"
+          "       set to 8. The details of how to do this vary with the code that is being run.\n"
+          "       Contact gdsjaar@sandia.gov for more details.\n");
+      IOSS_ERROR(errmsg);
     }
 
     // Now, populate the vectors...
@@ -789,7 +790,7 @@ namespace Iocgns {
       blk_end                 = blk_end < 0 ? 0 : blk_end;
 #if IOSS_DEBUG_OUTPUT
       if (rank == 0) {
-        fmt::print(stderr, "Processor {} has {} elements on element block {}\t({} to {})\n",
+        fmt::print(Ioss::DEBUG(), "Processor {} has {} elements on element block {}\t({} to {})\n",
                    m_decomposition.m_processor, overlap, block.name(), blk_start, blk_end);
       }
 #endif
@@ -979,7 +980,7 @@ namespace Iocgns {
 #if IOSS_DEBUG_OUTPUT
       if (rank == 0) {
         fmt::print(
-            stderr,
+            Ioss::DEBUG(),
             "{}: reading {} nodes from zone {} starting at {} with an offset of {} ending at {}\n",
             m_decomposition.m_processor, count, zone, start, offset, finish);
       }
@@ -1149,8 +1150,8 @@ namespace Iocgns {
         if (it != boundary.end()) {
           cgsize_t fid = (*it).element[0];
 #if IOSS_DEBUG_OUTPUT
-          fmt::print("Connectivity: {} {} {} {} maps to element {}, face {}\n", conn[0], conn[1],
-                     conn[2], conn[3], fid / 10, fid % 10 + 1);
+          fmt::print(Ioss::DEBUG(), "Connectivity: {} {} {} {} maps to element {}, face {}\n",
+                     conn[0], conn[1], conn[2], conn[3], fid / 10, fid % 10 + 1);
 #endif
           ioss_data[j++] = fid / 10 + zone_element_id_offset;
           ioss_data[j++] = fid % 10 + 1;

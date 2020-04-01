@@ -165,9 +165,6 @@ namespace {
   {
     Ioss::PropertyManager properties = set_properties(interFace);
 
-    Ioss::Utils::set_warning_stream(std::cout);
-    Ioss::Utils::set_pre_warning_text("GREG: ");
-
     bool first = true;
     for (const auto &inpfile : interFace.inputFile) {
 

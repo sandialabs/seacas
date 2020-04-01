@@ -250,7 +250,8 @@ namespace Iocgns {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(stderr, "{} File Open Time = {}\n", is_input() ? "Input" : "Output", duration);
+          fmt::print(Ioss::DEBUG(), "{} File Open Time = {}\n", is_input() ? "Input" : "Output",
+                     duration);
         }
       }
 
@@ -305,7 +306,7 @@ namespace Iocgns {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(stderr, "{} File Close Time = {}\n", is_input() ? "Input" : "Output",
+          fmt::print(Ioss::DEBUG(), "{} File Close Time = {}\n", is_input() ? "Input" : "Output",
                      duration);
         }
       }
@@ -440,8 +441,8 @@ namespace Iocgns {
       eblock->property_add(Ioss::Property("original_block_order", i++));
       get_region()->add(eblock);
 #if IOSS_DEBUG_OUTPUT
-      fmt::print(stderr, "Added block {}, IOSS topology = '{}' with {} element.\n", block.name(),
-                 element_topo, block.ioss_count());
+      fmt::print(Ioss::DEBUG(), "Added block {}, IOSS topology = '{}' with {} element.\n",
+                 block.name(), element_topo, block.ioss_count());
 #endif
     }
 
@@ -456,7 +457,7 @@ namespace Iocgns {
         std::string block_name = fmt::format("{}/{}", zone.m_name, sset.name());
         std::string face_topo  = sset.topologyType;
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(stderr,
+        fmt::print(Ioss::DEBUG(),
                    "Processor {}: Added sideblock '{}' of topo {} with {} faces to sset '{}'\n",
                    myProcessor, block_name, face_topo, sset.ioss_count(), ioss_sset->name());
 #endif
@@ -588,8 +589,8 @@ namespace Iocgns {
         block->property_add(Ioss::Property("guid", guid));
 
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(stderr, "Added block {}, Structured with ID = {}, GUID = {}\n", block_name,
-                   zone->m_adam->m_zone, guid);
+        fmt::print(Ioss::DEBUG(), "Added block {}, Structured with ID = {}, GUID = {}\n",
+                   block_name, zone->m_adam->m_zone, guid);
 #endif
       }
     }
@@ -851,17 +852,17 @@ namespace Iocgns {
             common = intersect(I_nodes, J_nodes);
 
 #if IOSS_DEBUG_OUTPUT
-            fmt::print(stderr, "Zone {}: {}, Donor Zone {}: {} Common: {}\n\t", zone,
+            fmt::print(Ioss::DEBUG(), "Zone {}: {}, Donor Zone {}: {} Common: {}\n\t", zone,
                        I_nodes.size(), dzone, J_nodes.size(), common.size());
 
             for (const auto &p : common) {
-              fmt::print(stderr, "{}, ", p.first);
+              fmt::print(Ioss::DEBUG(), "{}, ", p.first);
             }
-            fmt::print(stderr, "\n\t");
+            fmt::print(Ioss::DEBUG(), "\n\t");
             for (const auto &p : common) {
-              fmt::print(stderr, "{}, ", p.second);
+              fmt::print(Ioss::DEBUG(), "{}, ", p.second);
             }
-            fmt::print(stderr, "\n");
+            fmt::print(Ioss::DEBUG(), "\n");
 #endif
           }
 

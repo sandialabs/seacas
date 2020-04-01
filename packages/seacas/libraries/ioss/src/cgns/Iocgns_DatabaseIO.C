@@ -683,13 +683,13 @@ namespace Iocgns {
       }
       if (status != CG_OK) {
         if (ok_count != 0 || util().parallel_size() <= 2) {
-          fmt::print(stderr, "[{}] CGNS Error: '{}'\n", myProcessor, cg_get_error());
+          fmt::print(errmsg, "[{}] CGNS Error: '{}'\n", myProcessor, cg_get_error());
         }
         else {
           // Since error on all processors, assume the same error on all and only print
           // the error from processor 0.
           if (myProcessor == 0) {
-            fmt::print(stderr, "CGNS Error: '{}'\n", cg_get_error());
+            fmt::print(errmsg, "CGNS Error: '{}'\n", cg_get_error());
           }
         }
       }
@@ -841,8 +841,8 @@ namespace Iocgns {
           set_block_offset(bbeg, bend, blocks, proc_block_map);
 
 #if IOSS_DEBUG_OUTPUT
-          fmt::print(stderr, "Range of blocks for {} is {} to {} Global I,J,K = {} {} {}\n", b.name,
-                     i, j - 1, b.glob_range[0], b.glob_range[1], b.glob_range[2]);
+          fmt::print(Ioss::DEBUG(), "Range of blocks for {} is {} to {} Global I,J,K = {} {} {}\n",
+                     b.name, i, j - 1, b.glob_range[0], b.glob_range[1], b.glob_range[2]);
 #endif
           // All processors need to know about it...
           for (int p = 0; p < proc_count; p++) {
@@ -884,8 +884,8 @@ namespace Iocgns {
 
 #if IOSS_DEBUG_OUTPUT
       for (const auto &b : resolved_blocks) {
-        fmt::print(stderr, "{} {} {} ({} {} {}) ({} {} {}) ({} {} {}) [{}]\n", b.name, b.proc,
-                   b.local_zone, b.range[0], b.range[1], b.range[2], b.glob_range[0],
+        fmt::print(Ioss::DEBUG(), "{} {} {} ({} {} {}) ({} {} {}) ({} {} {}) [{}]\n", b.name,
+                   b.proc, b.local_zone, b.range[0], b.range[1], b.range[2], b.glob_range[0],
                    b.glob_range[1], b.glob_range[2], b.offset[0], b.offset[1], b.offset[2],
                    b.face_adj);
       }
@@ -1396,8 +1396,9 @@ namespace Iocgns {
     CGCHECKM(cg_nbases(get_file_pointer(), &n_bases));
     if (n_bases != 1) {
       std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "CGNS: Too many bases; only support files with a single bases at this time");
+      fmt::print(
+          errmsg,
+          "ERROR: CGNS: Too many bases; only support files with a single bases at this time");
       IOSS_ERROR(errmsg);
     }
 
@@ -2225,7 +2226,7 @@ namespace Iocgns {
       int64_t entity_count = sb->entity_count();
       if (num_to_get != entity_count) {
         std::ostringstream errmsg;
-        fmt::print("ERROR: Partial field input not yet implemented for side blocks");
+        fmt::print(errmsg, "ERROR: Partial field input not yet implemented for side blocks");
         IOSS_ERROR(errmsg);
       }
     }

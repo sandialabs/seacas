@@ -100,6 +100,8 @@
 #include <fstream>
 
 std::ostream *Ioss::Utils::m_warningStream  = &std::cerr;
+std::ostream *Ioss::Utils::m_debugStream    = &std::cerr;
+std::ostream *Ioss::Utils::m_outputStream   = &std::cerr;
 std::string   Ioss::Utils::m_preWarningText = "\nIOSS WARNING: ";
 
 // For copy_database...
@@ -1437,7 +1439,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   if (!appending) {
 
     if (options.debug && rank == 0) {
-      fmt::print(stderr, "DEFINING MODEL ... \n");
+      fmt::print(Ioss::DEBUG(), "DEFINING MODEL ... \n");
     }
     dbi->progress("DEFINING MODEL");
     if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
@@ -1483,7 +1485,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     transfer_blobs(region, output_region, options, rank);
 
     if (options.debug && rank == 0) {
-      fmt::print(stderr, "END STATE_DEFINE_MODEL...\n");
+      fmt::print(Ioss::DEBUG(), "END STATE_DEFINE_MODEL...\n");
     }
     dbi->progress("END STATE_DEFINE_MODEL");
 
@@ -1491,15 +1493,15 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     dbi->progress("output_region.end_mode(Ioss::STATE_DEFINE_MODEL) finished");
 
     if (options.verbose && rank == 0) {
-      fmt::print(stderr, " Maximum Field size = {:n} bytes.\n", max_field_size);
+      fmt::print(Ioss::DEBUG(), "Maximum Field size = {:n} bytes.\n", max_field_size);
     }
     data_pool.data.resize(max_field_size);
     if (options.verbose && rank == 0) {
-      fmt::print(stderr, " Resize finished...\n");
+      fmt::print(Ioss::DEBUG(), "Resize finished...\n");
     }
 
     if (options.debug && rank == 0) {
-      fmt::print(stderr, "TRANSFERRING MESH FIELD DATA ...\n");
+      fmt::print(Ioss::DEBUG(), "TRANSFERRING MESH FIELD DATA ...\n");
     }
     dbi->progress("TRANSFERRING MESH FIELD DATA ... ");
 
@@ -1536,7 +1538,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     for (const auto &isb : sbs) {
       const std::string &name = isb->name();
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "{}, ", name);
+        fmt::print(Ioss::DEBUG(), "{}, ", name);
       }
       // Find matching output structured block
       Ioss::StructuredBlock *osb = output_region.get_structured_block(name);
@@ -1547,7 +1549,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
         auto &inb = isb->get_node_block();
         auto &onb = osb->get_node_block();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "NB: {}, ", inb.name());
+          fmt::print(Ioss::DEBUG(), "NB: {}, ", inb.name());
         }
 
         transfer_field_data(&inb, &onb, data_pool, Ioss::Field::MESH, options);
@@ -1607,7 +1609,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       for (const auto &ifs : fss) {
         const std::string &name = ifs->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
         // Find matching output sideset
         Ioss::SideSet *ofs = output_region.get_sideset(name);
@@ -1622,7 +1624,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
             // Find matching output sideblock
             const std::string &fbname = ifb->name();
             if (options.debug && rank == 0) {
-              fmt::print(stderr, "{}, ", fbname);
+              fmt::print(Ioss::DEBUG(), "{}, ", fbname);
             }
             Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
 
@@ -1634,11 +1636,11 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
         }
       }
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "\n");
+        fmt::print(Ioss::DEBUG(), "\n");
       }
     }
     if (options.debug && rank == 0) {
-      fmt::print(stderr, "END STATE_MODEL... \n");
+      fmt::print(Ioss::DEBUG(), "END STATE_MODEL... \n");
     }
     dbi->progress("END STATE_MODEL... ");
     output_region.end_mode(Ioss::STATE_MODEL);
@@ -1656,13 +1658,13 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   } // !appending
 
   if (options.debug && rank == 0) {
-    fmt::print(stderr, "DEFINING TRANSIENT FIELDS ... \n");
+    fmt::print(Ioss::DEBUG(), "DEFINING TRANSIENT FIELDS ... \n");
   }
   dbi->progress("DEFINING TRANSIENT FIELDS ... ");
 
   if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
     if (options.verbose && rank == 0) {
-      fmt::print(stderr, "\nNumber of time steps on database = {}\n\n",
+      fmt::print(Ioss::DEBUG(), "\nNumber of time steps on database = {}\n\n",
                  region.get_property("state_count").get_int());
     }
 
@@ -1692,15 +1694,54 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       }
     }
 
+    transfer_fields(region.get_nodesets(), output_region, Ioss::Field::TRANSIENT, options, rank);
+    transfer_fields(region.get_edgesets(), output_region, Ioss::Field::TRANSIENT, options, rank);
+    transfer_fields(region.get_facesets(), output_region, Ioss::Field::TRANSIENT, options, rank);
+    transfer_fields(region.get_elementsets(), output_region, Ioss::Field::TRANSIENT, options, rank);
+
+    // Side Sets
+    {
+      const auto &fss = region.get_sidesets();
+      for (const auto &ifs : fss) {
+        const std::string &name = ifs->name();
+        if (options.debug && rank == 0) {
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
+        }
+
+        // Find matching output sideset
+        Ioss::SideSet *ofs = output_region.get_sideset(name);
+        if (ofs != nullptr) {
+          transfer_fields(ifs, ofs, Ioss::Field::TRANSIENT);
+
+          const auto &fbs = ifs->get_side_blocks();
+          for (const auto &ifb : fbs) {
+
+            // Find matching output sideblock
+            const std::string &fbname = ifb->name();
+            if (options.debug && rank == 0) {
+              fmt::print(Ioss::DEBUG(), "{}, ", fbname);
+            }
+
+            Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
+            if (ofb != nullptr) {
+              transfer_fields(ifb, ofb, Ioss::Field::TRANSIENT);
+            }
+          }
+        }
+      }
+      if (options.debug && rank == 0) {
+        fmt::print(Ioss::DEBUG(), "\n");
+      }
+    }
     if (options.debug && rank == 0) {
-      fmt::print(stderr, "END STATE_DEFINE_TRANSIENT... \n");
+      fmt::print(Ioss::DEBUG(), "END STATE_DEFINE_TRANSIENT... \n");
     }
     dbi->progress("END STATE_DEFINE_TRANSIENT... ");
     output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
   }
 
   if (options.debug && rank == 0) {
-    fmt::print(stderr, "TRANSFERRING TRANSIENT FIELDS ... \n");
+    fmt::print(Ioss::DEBUG(), "TRANSFERRING TRANSIENT FIELDS ... \n");
   }
   dbi->progress("TRANSFERRING TRANSIENT FIELDS... ");
 
@@ -1731,37 +1772,36 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
         field_type = Ioss::Field::REDUCTION;
       }
 
-      transfer_field_data(&region, &output_region, data_pool, field_type, options);
-
+    transfer_field_data(&region, &output_region, data_pool, field_type, options);
+	    
       transfer_field_data(region.get_assemblies(), output_region, data_pool, field_type, options);
       transfer_field_data(region.get_blobs(), output_region, data_pool, field_type, options);
 
-      if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
-        transfer_field_data(region.get_node_blocks(), output_region, data_pool, field_type,
-                            options);
-      }
-      transfer_field_data(region.get_edge_blocks(), output_region, data_pool, field_type, options);
-      transfer_field_data(region.get_face_blocks(), output_region, data_pool, field_type, options);
-      transfer_field_data(region.get_element_blocks(), output_region, data_pool, field_type,
-                          options);
+    if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
+      transfer_field_data(region.get_node_blocks(), output_region, data_pool, options);
+    }
+    transfer_field_data(region.get_edge_blocks(), output_region, data_pool,                         options);
+    transfer_field_data(region.get_face_blocks(), output_region, data_pool, 
+                        options);
+    transfer_field_data(region.get_element_blocks(), output_region, data_pool,
+                        options);
 
-      {
-        // Structured Blocks -- handle embedded NodeBlock also.
-        const auto &sbs = region.get_structured_blocks();
-        for (const auto &isb : sbs) {
-          const std::string &name = isb->name();
-          if (options.debug && rank == 0) {
-            fmt::print(stderr, "{}, ", name);
-          }
-          // Find matching output structured block
-          Ioss::StructuredBlock *osb = output_region.get_structured_block(name);
-          if (osb != nullptr) {
-            transfer_field_data(isb, osb, data_pool, field_type, options);
+    {
+      // Structured Blocks -- handle embedded NodeBlock also.
+      const auto &sbs = region.get_structured_blocks();
+      for (const auto &isb : sbs) {
+        const std::string &name = isb->name();
+        if (options.debug && rank == 0) {
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
+        }
+        // Find matching output structured block
+        Ioss::StructuredBlock *osb = output_region.get_structured_block(name);
+        if (osb != nullptr) {
+          transfer_field_data(isb, osb, data_pool, options);
 
-            auto &inb = isb->get_node_block();
-            auto &onb = osb->get_node_block();
-            transfer_field_data(&inb, &onb, data_pool, field_type, options);
-          }
+          auto &inb = isb->get_node_block();
+          auto &onb = osb->get_node_block();
+          transfer_field_data(&inb, &onb, data_pool, options);
         }
       }
 
@@ -1770,14 +1810,14 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       transfer_field_data(region.get_facesets(), output_region, data_pool, field_type, options);
       transfer_field_data(region.get_elementsets(), output_region, data_pool, field_type, options);
 
-      // Side Sets
-      {
-        const auto &fss = region.get_sidesets();
-        for (const auto &ifs : fss) {
-          const std::string &name = ifs->name();
-          if (options.debug && rank == 0) {
-            fmt::print(stderr, "{}, ", name);
-          }
+    // Side Sets
+    {
+      const auto &fss = region.get_sidesets();
+      for (const auto &ifs : fss) {
+        const std::string &name = ifs->name();
+        if (options.debug && rank == 0) {
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
+        }
 
           // Find matching output sideset
           Ioss::SideSet *ofs = output_region.get_sideset(name);
@@ -1787,11 +1827,11 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
             const auto &fbs = ifs->get_side_blocks();
             for (const auto &ifb : fbs) {
 
-              // Find matching output sideblock
-              const std::string &fbname = ifb->name();
-              if (options.debug && rank == 0) {
-                fmt::print(stderr, "{}, ", fbname);
-              }
+            // Find matching output sideblock
+            const std::string &fbname = ifb->name();
+            if (options.debug && rank == 0) {
+              fmt::print(Ioss::DEBUG(), "{}, ", fbname);
+            }
 
               Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
               if (ofb != nullptr) {
@@ -1816,7 +1856,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
   }
   if (options.debug && rank == 0) {
-    fmt::print(stderr, "END STATE_TRANSIENT... \n");
+    fmt::print(Ioss::DEBUG(), "END STATE_TRANSIENT... \n");
   }
   dbi->progress("END STATE_TRANSIENT (begin) ... ");
 
@@ -1843,13 +1883,13 @@ namespace {
     for (const auto &inb : nbs) {
       const std::string &name = inb->name();
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "{}, ", name);
+        fmt::print(Ioss::DEBUG(), "{}, ", name);
       }
       size_t num_nodes = inb->entity_count();
       size_t degree    = inb->get_property("component_degree").get_int();
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of Coordinates per Node = {:14n}\n", degree);
-        fmt::print(stderr, " Number of Nodes                = {:14n}\n", num_nodes);
+        fmt::print(Ioss::DEBUG(), " Number of Coordinates per Node = {:14n}\n", degree);
+        fmt::print(Ioss::DEBUG(), " Number of Nodes                = {:14n}\n", num_nodes);
       }
       auto nb = new Ioss::NodeBlock(*inb);
       output_region.add(nb);
@@ -1873,7 +1913,7 @@ namespace {
       }
     }
     if (options.debug && rank == 0) {
-      fmt::print(stderr, "\n");
+      fmt::print(Ioss::DEBUG(), "\n");
     }
   }
 
@@ -1884,7 +1924,7 @@ namespace {
     for (const auto &entity : entities) {
       const std::string &name = entity->name();
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "{}, ", name);
+        fmt::print(Ioss::DEBUG(), "{}, ", name);
       }
 
       // Find the corresponding output node_block...
@@ -1894,7 +1934,7 @@ namespace {
       }
     }
     if (options.debug && rank == 0) {
-      fmt::print(stderr, "\n");
+      fmt::print(Ioss::DEBUG(), "\n");
     }
   }
 
@@ -1923,7 +1963,7 @@ namespace {
       for (const auto &iblock : blocks) {
         const std::string &name = iblock->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
         size_t count = iblock->entity_count();
         total_entities += count;
@@ -1932,13 +1972,13 @@ namespace {
         output_region.add(block);
       }
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*blocks.begin())->type_string() + "s",
-                   blocks.size());
-        fmt::print(stderr, " Number of {:20s} = {:14n}\n",
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n",
+                   (*blocks.begin())->type_string() + "s", blocks.size());
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n",
                    (*blocks.begin())->contains_string() + "s", total_entities);
       }
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "\n");
+        fmt::print(Ioss::DEBUG(), "\n");
       }
     }
   }
@@ -1958,7 +1998,7 @@ namespace {
           const auto &       iblock = blocks[i];
           const std::string &name   = iblock->name();
           if (options.debug && rank == 0) {
-            fmt::print(stderr, "{}, ", name);
+            fmt::print(Ioss::DEBUG(), "{}, ", name);
           }
           size_t count = iblock->entity_count();
           total_entities += count;
@@ -1971,7 +2011,7 @@ namespace {
           auto &inb = iblock->get_node_block();
           auto &onb = block->get_node_block();
           if (options.debug && rank == 0) {
-            fmt::print(stderr, "(NB: {}), ", inb.name());
+            fmt::print(Ioss::DEBUG(), "(NB: {}), ", inb.name());
           }
           transfer_mesh_info(&inb, &onb);
         }
@@ -1980,7 +2020,7 @@ namespace {
         for (const auto &iblock : blocks) {
           const std::string &name = iblock->name();
           if (options.debug && rank == 0) {
-            fmt::print(stderr, "{}, ", name);
+            fmt::print(Ioss::DEBUG(), "{}, ", name);
           }
           size_t count = iblock->entity_count();
           total_entities += count;
@@ -1993,20 +2033,20 @@ namespace {
           auto &inb = iblock->get_node_block();
           auto &onb = block->get_node_block();
           if (options.debug && rank == 0) {
-            fmt::print(stderr, "(NB: {}), ", inb.name());
+            fmt::print(Ioss::DEBUG(), "(NB: {}), ", inb.name());
           }
           transfer_mesh_info(&inb, &onb);
         }
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*blocks.begin())->type_string() + "s",
-                   blocks.size());
-        fmt::print(stderr, " Number of {:20s} = {:14n}\n",
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n",
+                   (*blocks.begin())->type_string() + "s", blocks.size());
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n",
                    (*blocks.begin())->contains_string() + "s", total_entities);
       }
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "\n");
+        fmt::print(Ioss::DEBUG(), "\n");
       }
     }
   }
@@ -2040,7 +2080,7 @@ namespace {
     for (const auto &ss : fss) {
       const std::string &name = ss->name();
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "{}, ", name);
+        fmt::print(Ioss::DEBUG(), "{}, ", name);
       }
       auto surf = new Ioss::SideSet(*ss);
       output_region.add(surf);
@@ -2060,13 +2100,13 @@ namespace {
     }
 
     if (options.verbose && rank == 0 && !fss.empty()) {
-      fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*fss.begin())->type_string() + "s",
+      fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n", (*fss.begin())->type_string() + "s",
                  fss.size());
-      fmt::print(stderr, " Number of {:20s} = {:14n}\n", (*fss.begin())->contains_string() + "s",
-                 total_sides);
+      fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}\n",
+                 (*fss.begin())->contains_string() + "s", total_sides);
     }
     if (options.debug && rank == 0) {
-      fmt::print(stderr, "\n");
+      fmt::print(Ioss::DEBUG(), "\n");
     }
   }
 
@@ -2079,7 +2119,7 @@ namespace {
       for (const auto &set : sets) {
         const std::string &name = set->name();
         if (options.debug && rank == 0) {
-          fmt::print(stderr, "{}, ", name);
+          fmt::print(Ioss::DEBUG(), "{}, ", name);
         }
         size_t count = set->entity_count();
         total_entities += count;
@@ -2088,12 +2128,12 @@ namespace {
       }
 
       if (options.verbose && rank == 0) {
-        fmt::print(stderr, " Number of {:20s} = {:14n}", (*sets.begin())->type_string() + "s",
-                   sets.size());
-        fmt::print(stderr, "\tLength of entity list = {:14n}\n", total_entities);
+        fmt::print(Ioss::DEBUG(), " Number of {:20s} = {:14n}",
+                   (*sets.begin())->type_string() + "s", sets.size());
+        fmt::print(Ioss::DEBUG(), "\tLength of entity list = {:14n}\n", total_entities);
       }
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "\n");
+        fmt::print(Ioss::DEBUG(), "\n");
       }
     }
   }
@@ -2184,13 +2224,13 @@ namespace {
     for (const auto &ics : css) {
       const std::string &name = ics->name();
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "{}, ", name);
+        fmt::print(Ioss::DEBUG(), "{}, ", name);
       }
       auto cs = new Ioss::CommSet(*ics);
       output_region.add(cs);
     }
     if (options.debug && rank == 0) {
-      fmt::print(stderr, "\n");
+      fmt::print(Ioss::DEBUG(), "\n");
     }
   }
 
@@ -2411,7 +2451,7 @@ namespace {
 #endif
     default:
       if (field_name == "mesh_model_coordinates") {
-        fmt::print(stderr, "data_storage option not recognized.");
+        fmt::print(Ioss::DEBUG(), "data_storage option not recognized.");
       }
       return;
     }
@@ -2533,7 +2573,7 @@ namespace {
   void show_step(int istep, double time, const Ioss::MeshCopyOptions &options, int rank)
   {
     if (options.verbose && rank == 0) {
-      fmt::print(stderr, "\r\tTime step {:5d} at time {:10.5e}", istep, time);
+      fmt::print(Ioss::DEBUG(), "\r\tTime step {:5d} at time {:10.5e}", istep, time);
     }
   }
 
