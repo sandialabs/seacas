@@ -747,7 +747,7 @@ namespace Iopx {
           // 0... Need better warnings which won't overload in the
           // worst case...
           fmt::print(
-              IOSS_WARNING,
+              Ioss::WARNING(),
               "Skipping step {:n} at time {} in database file\n\t{}.\nThe data for that step "
               "is possibly corrupt.\n",
               i + 1, tsteps[i], get_filename());
@@ -4846,7 +4846,7 @@ void DatabaseIO::check_valid_values() const
         }
 
         if (!bad_proc.empty()) {
-          fmt::print(IOSS_WARNING, "WARNING: No {} on processor{}:\n\t{}\n\n", label[j],
+          fmt::print(Ioss::WARNING(), "No {} on processor{}:\n\t{}\n\n", label[j],
                      bad_proc.size() > 1 ? "s" : "", Ioss::Utils::format_id_list(bad_proc, ":"));
           if (j == 0) {
             break;

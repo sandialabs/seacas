@@ -471,7 +471,7 @@ namespace Iofx {
       Ioss::SerializeIO serializeIO__(this);
 
       if (isParallel) {
-	Ioex::check_processor_info(get_file_pointer(), util().parallel_size(), myProcessor);
+        Ioex::check_processor_info(get_file_pointer(), util().parallel_size(), myProcessor);
       }
 
       read_region();
@@ -543,7 +543,8 @@ namespace Iofx {
     m_groupCount[EX_BLOB]     = info.num_blob;
 
     if (nodeCount == 0) {
-      fmt::print(IOSS_WARNING, "No nodes were found in the model, file '{}'\n", decoded_filename());
+      fmt::print(Ioss::WARNING(), "No nodes were found in the model, file '{}'\n",
+                 decoded_filename());
     }
     else if (nodeCount < 0) {
       // NOTE: Code will not continue past this call...
@@ -556,7 +557,7 @@ namespace Iofx {
     }
 
     if (elementCount == 0) {
-      fmt::print(IOSS_WARNING, "No elements were found in the model, file '{}'\n",
+      fmt::print(Ioss::WARNING(), "No elements were found in the model, file '{}'\n",
                  decoded_filename());
     }
 
@@ -741,7 +742,7 @@ namespace Iofx {
             // a warning if there is a corrupt step on processor
             // 0... Need better warnings which won't overload in the
             // worst case...
-            fmt::print(IOSS_WARNING,
+            fmt::print(Ioss::WARNING(),
                        "Skipping step {:n} at time {} in database file\n\t{}.\n"
                        "\tThe data for that step is possibly corrupt since the last time written "
                        "successfully was {}.\n",
