@@ -133,21 +133,21 @@ namespace Iodw {
 
   void DatabaseIO::read_communication_metadata() {}
 
-  void DatabaseIO::get_edgeblocks() { std::cout << "\tget_edgeblocks" << std::endl; }
+  void DatabaseIO::get_edgeblocks() { std::cerr << "\tget_edgeblocks\n"; }
 
-  void DatabaseIO::get_elemblocks() { std::cout << "\tget_elemblocks" << std::endl; }
+  void DatabaseIO::get_elemblocks() { std::cerr << "\tget_elemblocks\n"; }
 
-  void DatabaseIO::get_faceblocks() { std::cout << "\tget_faceblocks" << std::endl; }
+  void DatabaseIO::get_faceblocks() { std::cerr << "\tget_faceblocks\n"; }
 
-  void DatabaseIO::get_nodeblocks() { std::cout << "\tget_nodeblocks" << std::endl; }
+  void DatabaseIO::get_nodeblocks() { std::cerr << "\tget_nodeblocks\n"; }
 
-  void DatabaseIO::get_edgesets() { std::cout << "\tget_edgesets" << std::endl; }
+  void DatabaseIO::get_edgesets() { std::cerr << "\tget_edgesets\n"; }
 
-  void DatabaseIO::get_elemsets() { std::cout << "\tget_elemsets" << std::endl; }
+  void DatabaseIO::get_elemsets() { std::cerr << "\tget_elemsets\n"; }
 
-  void DatabaseIO::get_facesets() { std::cout << "\tget_facesets" << std::endl; }
+  void DatabaseIO::get_facesets() { std::cerr << "\tget_facesets\n"; }
 
-  void DatabaseIO::get_nodesets() { std::cout << "\tget_nodesets" << std::endl; }
+  void DatabaseIO::get_nodesets() { std::cerr << "\tget_nodesets\n"; }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
                                          void *data, size_t data_size) const

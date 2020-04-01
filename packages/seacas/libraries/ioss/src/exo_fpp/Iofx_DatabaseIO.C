@@ -317,7 +317,7 @@ namespace Iofx {
     if (do_timer) {
       double t_end    = Ioss::Utils::timer();
       double duration = t_end - t_begin;
-      fmt::print(stderr, "File Open Time = {}\n", duration);
+      fmt::print(Ioss::DEBUG(), "Input File Open Time = {}\n", duration);
     }
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
@@ -433,7 +433,7 @@ namespace Iofx {
 
       if (!Ioss::SerializeIO::inMyGroup()) {
         std::ostringstream errmsg;
-        fmt::print("ERROR: Process {} is attempting to do I/O while {} owns the token",
+        fmt::print(errmsg, "ERROR: Process {} is attempting to do I/O while {} owns the token",
                    Ioss::SerializeIO::getRank(), Ioss::SerializeIO::getOwner());
         IOSS_ERROR(errmsg);
       }
@@ -794,21 +794,24 @@ namespace Iofx {
 
     if (isParallel && num_proc != util().parallel_size() && util().parallel_size() > 1) {
       std::ostringstream errmsg;
-      fmt::print("ERROR: Exodus file was decomposed for {} processors; application is currently "
+      fmt::print(errmsg,
+                 "ERROR: Exodus file was decomposed for {} processors; application is currently "
                  "being run on {} processors",
                  num_proc, util().parallel_size());
       IOSS_ERROR(errmsg);
     }
     if (num_proc_in_file != 1) {
       std::ostringstream errmsg;
-      fmt::print("ERROR: Exodus file contains data for {} processors; application requires 1 "
+      fmt::print(errmsg,
+                 "ERROR: Exodus file contains data for {} processors; application requires 1 "
                  "processor per file.",
                  num_proc_in_file);
       IOSS_ERROR(errmsg);
     }
     if (file_type[0] != 'p') {
       std::ostringstream errmsg;
-      fmt::print("ERROR: Exodus file contains scalar nemesis data; application requires parallel "
+      fmt::print(errmsg,
+                 "ERROR: Exodus file contains scalar nemesis data; application requires parallel "
                  "nemesis data.");
       IOSS_ERROR(errmsg);
     }
@@ -2885,7 +2888,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
     int64_t entity_count = fb->entity_count();
     if (num_to_get != entity_count) {
       std::ostringstream errmsg;
-      fmt::print("ERROR: Partial field input not yet implemented for side blocks");
+      fmt::print(errmsg, "ERROR: Partial field input not yet implemented for side blocks");
       IOSS_ERROR(errmsg);
     }
 
@@ -3527,7 +3530,8 @@ int64_t DatabaseIO::read_ss_transient_field(const Ioss::Field &field, int64_t id
     }
     else {
       std::ostringstream errmsg;
-      fmt::print("IOSS_ERROR: Field storage type must be either integer or double.\n"
+      fmt::print(errmsg,
+                 "IOSS_ERROR: Field storage type must be either integer or double.\n"
                  "       Field '{}' is invalid.\n",
                  field.get_name());
       IOSS_ERROR(errmsg);
@@ -3794,7 +3798,8 @@ int64_t DatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, int64_t id
 
     if (block == nullptr) {
       std::ostringstream errmsg;
-      fmt::print("INTERNAL ERROR: Could not find element block containing element with id {}. "
+      fmt::print(errmsg,
+                 "INTERNAL ERROR: Could not find element block containing element with id {}. "
                  "Something is wrong in the Iofx::DatabaseIO class. Please report.\n",
                  elem_id);
       IOSS_ERROR(errmsg);
@@ -3804,8 +3809,8 @@ int64_t DatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, int64_t id
 
     if (topo == nullptr) {
       std::ostringstream errmsg;
-      fmt::print("INTERNAL ERROR: Could not find topology of element block boundary. "
-                 "Something is wrong in the Iofx::DatabaseIO class. Please report.\n");
+      fmt::print(errmsg, "INTERNAL ERROR: Could not find topology of element block boundary. "
+                         "Something is wrong in the Iofx::DatabaseIO class. Please report.\n");
       IOSS_ERROR(errmsg);
     }
 
@@ -4791,7 +4796,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
     }
     else {
       std::ostringstream errmsg;
-      fmt::print("ERROR: Invalid commset type {}", type);
+      fmt::print(errmsg, "ERROR: Invalid commset type {}", type);
       IOSS_ERROR(errmsg);
     }
   }

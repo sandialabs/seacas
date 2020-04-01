@@ -371,22 +371,23 @@ namespace Iogn {
       }
 
       else if (option[0] == "help") {
-        fmt::print(stderr, "\nValid Options for GeneratedMesh parameter string:\n"
-                           "\tIxJxK -- specifies intervals; must be first option. Ex: 4x10x12\n"
-                           "\toffset:xoff, yoff, zoff\n"
-                           "\tscale: xscl, yscl, zscl\n"
-                           "\tzdecomp:n1,n2,n3,...,n#proc\n"
-                           "\tbbox: xmin, ymin, zmin, xmax, ymax, zmax\n"
-                           "\trotate: axis,angle,axis,angle,...\n"
-                           "\tshell:xXyYzZ (specifies which plane to apply shell)\n"
-                           "\tnodeset:xXyYzZ (specifies which plane to apply nodeset)\n"
-                           "\tsideset:xXyYzZ (specifies which plane to apply sideset)\n"
-                           "\ttets (split each hex into 6 tets)\n"
-                           "\tvariables:type,count,...  "
-                           "type=global|element|node|nodal|nodeset|sideset|surface\n"
-                           "\ttimes:count (number of timesteps to generate)\n"
-                           "\tshow -- show mesh parameters\n"
-                           "\thelp -- show this list\n\n");
+        fmt::print(Ioss::OUTPUT(),
+                   "\nValid Options for GeneratedMesh parameter string:\n"
+                   "\tIxJxK -- specifies intervals; must be first option. Ex: 4x10x12\n"
+                   "\toffset:xoff, yoff, zoff\n"
+                   "\tscale: xscl, yscl, zscl\n"
+                   "\tzdecomp:n1,n2,n3,...,n#proc\n"
+                   "\tbbox: xmin, ymin, zmin, xmax, ymax, zmax\n"
+                   "\trotate: axis,angle,axis,angle,...\n"
+                   "\tshell:xXyYzZ (specifies which plane to apply shell)\n"
+                   "\tnodeset:xXyYzZ (specifies which plane to apply nodeset)\n"
+                   "\tsideset:xXyYzZ (specifies which plane to apply sideset)\n"
+                   "\ttets (split each hex into 6 tets)\n"
+                   "\tvariables:type,count,...  "
+                   "type=global|element|node|nodal|nodeset|sideset|surface\n"
+                   "\ttimes:count (number of timesteps to generate)\n"
+                   "\tshow -- show mesh parameters\n"
+                   "\thelp -- show this list\n\n");
       }
 
       else if (option[0] == "show") {
@@ -404,7 +405,7 @@ namespace Iogn {
   void GeneratedMesh::show_parameters() const
   {
     if (myProcessor == 0) {
-      fmt::print(stderr,
+      fmt::print(Ioss::OUTPUT(),
                  "\nMesh Parameters:\n"
                  "\tIntervals: {} by {} by {}\n"
                  "\tX = {} * (0..{}) + {}\tRange: {} <= X <= {}\n"
@@ -422,14 +423,14 @@ namespace Iogn {
                  timestep_count());
 
       if (doRotation) {
-        fmt::print(stderr, "\tRotation Matrix: \n\t");
+        fmt::print(Ioss::OUTPUT(), "\tRotation Matrix: \n\t");
         for (auto &elem : rotmat) {
           for (double jj : elem) {
-            fmt::print("{:14.e}\t", jj);
+            fmt::print(Ioss::OUTPUT(), "{:14.e}\t", jj);
           }
-          fmt::print("\n\t");
+          fmt::print(Ioss::OUTPUT(), "\n\t");
         }
-        fmt::print("\n");
+        fmt::print(Ioss::OUTPUT(), "\n");
       }
     }
   }
@@ -1543,8 +1544,8 @@ namespace Iogn {
       n3 = 2;
     }
     else {
-      fmt::print(stderr, "\nInvalid axis specification '{}'. Valid options are 'x', 'y', or 'z'\n",
-                 axis);
+      fmt::print(Ioss::WARNING(),
+                 "\nInvalid axis specification '{}'. Valid options are 'x', 'y', or 'z'\n", axis);
       return;
     }
 
