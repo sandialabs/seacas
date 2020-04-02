@@ -91,11 +91,20 @@ namespace Ioss {
     Utils()  = default;
     ~Utils() = default;
 
-    static std::ostream *m_outputStream;
-    static std::ostream *m_debugStream;
-    static std::ostream *m_warningStream;
-    static std::string   m_preWarningText;
+    /**
+     * \defgroup IossStreams Streams used for IOSS output
+     *@{
+     */
+    static std::ostream
+        *m_outputStream; ///< general informational output (very rare). Default std::cerr
+    static std::ostream *m_debugStream;   ///< debug output when requested. Default std::cerr
+    static std::ostream *m_warningStream; ///< IOSS warning output. Default std::cerr
+    static std::string m_preWarningText;  ///< is a string that prepends all warning message output.
+                                          ///< Default is "\nIOSS WARNING: "
 
+    /** \brief set the stream for all streams (output, debug, and warning) to the specified
+     * `out_stream`
+     */
     static void set_all_streams(std::ostream &out_stream)
     {
       m_outputStream  = &out_stream;
@@ -103,16 +112,27 @@ namespace Ioss {
       m_warningStream = &out_stream;
     }
 
+    /** \brief set the output stream to the specified `output_stream`
+     */
     static void set_output_stream(std::ostream &output_stream) { m_outputStream = &output_stream; }
 
+    /** \brief set the debug stream to the specified `debug_stream`
+     */
     static void set_debug_stream(std::ostream &debug_stream) { m_debugStream = &debug_stream; }
 
+    /** \brief set the warning stream to the specified `warning_stream`
+     */
     static void set_warning_stream(std::ostream &warning_stream)
     {
       m_warningStream = &warning_stream;
     }
 
+    /** \brief set the pre-warning text
+     * Sets the text output prior to a warning to the specified text.
+     * Pass an empty string to disable this.  Default is `"\nIOSS WARNING: "`
+     */
     static void set_pre_warning_text(const std::string &text) { m_preWarningText = text; }
+    /** @}*/
 
     static void check_dynamic_cast(const void *ptr)
     {
