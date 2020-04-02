@@ -226,7 +226,7 @@ namespace Iofx {
           IOSS_ERROR(errmsg);
         }
         else {
-          std::cerr << errmsg.str();
+          Ioss::WARNING() << errmsg.str();
         }
         return false;
       }
@@ -267,12 +267,12 @@ namespace Iofx {
             fmt::print(errmsg, "ERROR: Unable to {} database '{}' of type 'exodusII'", open_create,
                        get_filename());
           }
+          fmt::print(errmsg, "\n");
           if (error_msg != nullptr) {
             *error_msg = errmsg.str();
           }
           if (write_message && myProcessor == 0) {
-            fmt::print(errmsg, "\n");
-            std::cerr << errmsg.str();
+            Ioss::WARNING() << errmsg.str();
           }
         }
         if (bad_count != nullptr) {
