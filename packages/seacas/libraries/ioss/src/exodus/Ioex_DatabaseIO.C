@@ -1912,10 +1912,10 @@ namespace Ioex {
       int ierr = 0;
       if (reduction) {
         ierr =
-            ex_put_reduction_variable_names(get_file_pointer(), type, var_count, TOPTR(var_names));
+            ex_put_reduction_variable_names(get_file_pointer(), type, var_count, var_names.data());
       }
       else {
-        ierr = ex_put_variable_names(get_file_pointer(), type, var_count, TOPTR(var_names));
+        ierr = ex_put_variable_names(get_file_pointer(), type, var_count, var_names.data());
       }
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
