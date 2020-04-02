@@ -3,7 +3,7 @@
 # ************************************************************************
 #
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016 Sandia Corporation
+#                    Copyright 2016, 2020 Sandia Corporation
 #
 # Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 # the U.S. Government retains certain rights in this software.
@@ -273,8 +273,6 @@ if ( NetCDF_ROOT OR NetCDF_BIN_DIR )
                         OUTPUT_VARIABLE _stdout
                         ERROR_VARIABLE  _stderr
                        )
-        message(STATUS "${netcdf_config} --has-hdf5 returned error '${_stderr}'")
-        message(STATUS "${netcdf_config} --has-hdf5 returned output '${_stdout}'")
         string(REGEX MATCH "yes|no" _hdf5_answer ${_stdout})
         message(STATUS "${netcdf_config} --has-hdf5 returned '${_hdf5_answer}'")
         string(COMPARE EQUAL "${_hdf5_answer}" "yes" _has_hdf5)
