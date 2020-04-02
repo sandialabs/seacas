@@ -40,6 +40,9 @@ var classIoss_1_1Utils =
     [ "number_width", "classIoss_1_1Utils.html#a875232ab39ecaf79b1b668d28fb590d6", null ],
     [ "platform_information", "classIoss_1_1Utils.html#a9f148e3768f9322640e47ac8c0bc50c0", null ],
     [ "power_2", "classIoss_1_1Utils.html#a4f3b2d6a6ac736d341fee8db95c6fc4b", null ],
+    [ "set_all_streams", "classIoss_1_1Utils.html#a7af757ffd44f52d47d805f6120b9780b", null ],
+    [ "set_debug_stream", "classIoss_1_1Utils.html#a1f09ce7b06fc5b354cf55d5c670f7d59", null ],
+    [ "set_output_stream", "classIoss_1_1Utils.html#a7f4aecc2cd2326658cf1d0b6e99cae5a", null ],
     [ "set_pre_warning_text", "classIoss_1_1Utils.html#a045c5b10deb49ae979c0aaa16e672621", null ],
     [ "set_warning_stream", "classIoss_1_1Utils.html#ad48fc6ac832ebb5b9be062ef6dc7ea29", null ],
     [ "str_equal", "classIoss_1_1Utils.html#abfe87ed59e2fbbde5bd253986eb2180e", null ],
@@ -51,6 +54,8 @@ var classIoss_1_1Utils =
     [ "uniquify", "classIoss_1_1Utils.html#aa9e8a65a742fa904c9b21ca049616f27", null ],
     [ "uppercase", "classIoss_1_1Utils.html#a42aa6b77482c4da5ffde6c5980533e22", null ],
     [ "variable_name_kluge", "classIoss_1_1Utils.html#acf20ca98385d9714d71360ea6caaba2b", null ],
+    [ "m_debugStream", "classIoss_1_1Utils.html#a1eb916cc5f67303b54405f9c41b6af67", null ],
+    [ "m_outputStream", "classIoss_1_1Utils.html#a2d3c7d0de4f5c105cf5b7805261e0111", null ],
     [ "m_preWarningText", "classIoss_1_1Utils.html#aaffd080dc749edf50ef715f3a26c32d8", null ],
     [ "m_warningStream", "classIoss_1_1Utils.html#abf10820381eef7686fcfd93d5ed1564a", null ]
 ];
