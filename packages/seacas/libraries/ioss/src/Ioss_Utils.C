@@ -1694,45 +1694,6 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       }
     }
 
-    transfer_fields(region.get_nodesets(), output_region, Ioss::Field::TRANSIENT, options, rank);
-    transfer_fields(region.get_edgesets(), output_region, Ioss::Field::TRANSIENT, options, rank);
-    transfer_fields(region.get_facesets(), output_region, Ioss::Field::TRANSIENT, options, rank);
-    transfer_fields(region.get_elementsets(), output_region, Ioss::Field::TRANSIENT, options, rank);
-
-    // Side Sets
-    {
-      const auto &fss = region.get_sidesets();
-      for (const auto &ifs : fss) {
-        const std::string &name = ifs->name();
-        if (options.debug && rank == 0) {
-          fmt::print(Ioss::DEBUG(), "{}, ", name);
-        }
-
-        // Find matching output sideset
-        Ioss::SideSet *ofs = output_region.get_sideset(name);
-        if (ofs != nullptr) {
-          transfer_fields(ifs, ofs, Ioss::Field::TRANSIENT);
-
-          const auto &fbs = ifs->get_side_blocks();
-          for (const auto &ifb : fbs) {
-
-            // Find matching output sideblock
-            const std::string &fbname = ifb->name();
-            if (options.debug && rank == 0) {
-              fmt::print(Ioss::DEBUG(), "{}, ", fbname);
-            }
-
-            Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
-            if (ofb != nullptr) {
-              transfer_fields(ifb, ofb, Ioss::Field::TRANSIENT);
-            }
-          }
-        }
-      }
-      if (options.debug && rank == 0) {
-        fmt::print(Ioss::DEBUG(), "\n");
-      }
-    }
     if (options.debug && rank == 0) {
       fmt::print(Ioss::DEBUG(), "END STATE_DEFINE_TRANSIENT... \n");
     }
@@ -1772,36 +1733,37 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
         field_type = Ioss::Field::REDUCTION;
       }
 
-    transfer_field_data(&region, &output_region, data_pool, field_type, options);
-	    
+      transfer_field_data(&region, &output_region, data_pool, field_type, options);
+
       transfer_field_data(region.get_assemblies(), output_region, data_pool, field_type, options);
       transfer_field_data(region.get_blobs(), output_region, data_pool, field_type, options);
 
-    if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
-      transfer_field_data(region.get_node_blocks(), output_region, data_pool, options);
-    }
-    transfer_field_data(region.get_edge_blocks(), output_region, data_pool,                         options);
-    transfer_field_data(region.get_face_blocks(), output_region, data_pool, 
-                        options);
-    transfer_field_data(region.get_element_blocks(), output_region, data_pool,
-                        options);
+      if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
+        transfer_field_data(region.get_node_blocks(), output_region, data_pool, field_type,
+                            options);
+      }
+      transfer_field_data(region.get_edge_blocks(), output_region, data_pool, field_type, options);
+      transfer_field_data(region.get_face_blocks(), output_region, data_pool, field_type, options);
+      transfer_field_data(region.get_element_blocks(), output_region, data_pool, field_type,
+                          options);
 
-    {
-      // Structured Blocks -- handle embedded NodeBlock also.
-      const auto &sbs = region.get_structured_blocks();
-      for (const auto &isb : sbs) {
-        const std::string &name = isb->name();
-        if (options.debug && rank == 0) {
-          fmt::print(Ioss::DEBUG(), "{}, ", name);
-        }
-        // Find matching output structured block
-        Ioss::StructuredBlock *osb = output_region.get_structured_block(name);
-        if (osb != nullptr) {
-          transfer_field_data(isb, osb, data_pool, options);
+      {
+        // Structured Blocks -- handle embedded NodeBlock also.
+        const auto &sbs = region.get_structured_blocks();
+        for (const auto &isb : sbs) {
+          const std::string &name = isb->name();
+          if (options.debug && rank == 0) {
+            fmt::print(Ioss::DEBUG(), "{}, ", name);
+          }
+          // Find matching output structured block
+          Ioss::StructuredBlock *osb = output_region.get_structured_block(name);
+          if (osb != nullptr) {
+            transfer_field_data(isb, osb, data_pool, field_type, options);
 
-          auto &inb = isb->get_node_block();
-          auto &onb = osb->get_node_block();
-          transfer_field_data(&inb, &onb, data_pool, options);
+            auto &inb = isb->get_node_block();
+            auto &onb = osb->get_node_block();
+            transfer_field_data(&inb, &onb, data_pool, field_type, options);
+          }
         }
       }
 
@@ -1810,14 +1772,14 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
       transfer_field_data(region.get_facesets(), output_region, data_pool, field_type, options);
       transfer_field_data(region.get_elementsets(), output_region, data_pool, field_type, options);
 
-    // Side Sets
-    {
-      const auto &fss = region.get_sidesets();
-      for (const auto &ifs : fss) {
-        const std::string &name = ifs->name();
-        if (options.debug && rank == 0) {
-          fmt::print(Ioss::DEBUG(), "{}, ", name);
-        }
+      // Side Sets
+      {
+        const auto &fss = region.get_sidesets();
+        for (const auto &ifs : fss) {
+          const std::string &name = ifs->name();
+          if (options.debug && rank == 0) {
+            fmt::print(Ioss::DEBUG(), "{}, ", name);
+          }
 
           // Find matching output sideset
           Ioss::SideSet *ofs = output_region.get_sideset(name);
@@ -1827,11 +1789,11 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
             const auto &fbs = ifs->get_side_blocks();
             for (const auto &ifb : fbs) {
 
-            // Find matching output sideblock
-            const std::string &fbname = ifb->name();
-            if (options.debug && rank == 0) {
-              fmt::print(Ioss::DEBUG(), "{}, ", fbname);
-            }
+              // Find matching output sideblock
+              const std::string &fbname = ifb->name();
+              if (options.debug && rank == 0) {
+                fmt::print(Ioss::DEBUG(), "{}, ", fbname);
+              }
 
               Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
               if (ofb != nullptr) {
