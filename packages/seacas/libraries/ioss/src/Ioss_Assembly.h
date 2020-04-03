@@ -61,8 +61,11 @@ namespace Ioss {
 
     std::string type_string() const override { return "Assembly"; }
     std::string short_type_string() const override { return "assembly"; }
-    std::string contains_string() const override { return m_members[0]->type_string(); }
-    EntityType  type() const override { return ASSEMBLY; }
+    std::string contains_string() const override
+    {
+      return m_members.empty() ? "<EMPTY>" : m_members[0]->type_string();
+    }
+    EntityType type() const override { return ASSEMBLY; }
 
     EntityType get_member_type() const { return m_type; }
 

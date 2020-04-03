@@ -50,6 +50,14 @@ namespace {
     // the current type.
     const std::string &name = member->name();
 
+    // Don't add an assembly to itself...
+    if (assem == member) {
+      std::ostringstream errmsg;
+      fmt::print(errmsg,
+                 "\nERROR: Attempting to add assembly '{}' to itself.  This is not allowed.", name);
+      IOSS_ERROR(errmsg);
+    }
+
     // See if there is a member with this name...
     const Ioss::GroupingEntity *old_ge = assem->get_member(name);
 
@@ -65,11 +73,11 @@ namespace {
       }
       std::ostringstream errmsg;
       fmt::print(errmsg,
-                 "\nERROR: There are multiple assembly members with the same name "
+                 "\nERROR: There are multiple assembly members named '{}' "
                  "defined in assembly '{}' in the database file '{}'.\n"
                  "\tBoth {} {} and {} {} are named '{}'.  All names must be unique.",
-                 assem->name(), filename, member->type_string(), id1, old_ge->type_string(), id2,
-                 name);
+                 name, assem->name(), filename, member->type_string(), id1, old_ge->type_string(),
+                 id2, name);
       IOSS_ERROR(errmsg);
     }
 
@@ -78,10 +86,10 @@ namespace {
         std::ostringstream errmsg;
         std::string        filename = assem->get_database()->get_filename();
         fmt::print(errmsg,
-                   "\nERROR: The entity type of {} ({}) does not match the entity type of "
-                   "assembly {} which is {}. An assembly's member entities must be "
+                   "\nERROR: The entity type of '{}' ({}) does not match the entity type of "
+                   "assembly '{}' ({}).\n\tAn assembly's member entities must be "
                    "homogeneous. In the database file '{}'.\n",
-                   member->name(), member->type_string(), assem->name(), assem->get_member_type(),
+                   member->name(), member->type_string(), assem->name(), assem->contains_string(),
                    filename);
         IOSS_ERROR(errmsg);
       }
