@@ -61,6 +61,12 @@ TRIBITS_ADD_EXECUTABLE(
   SOURCES io_info_main.C
   )
 TRIBITS_ADD_EXECUTABLE(
+  io_assembly
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES io_assembly.C assembly_interface.C
+  )
+TRIBITS_ADD_EXECUTABLE(
   sphgen
   NOEXEPREFIX
   NOEXESUFFIX
@@ -204,6 +210,7 @@ ENDIF()
 install_executable(io_shell)
 install_executable(shell_to_hex)
 install_executable(io_info)
+install_executable(io_assembly)
 install_executable(sphgen)
 install_executable(skinner)
 
