@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -116,7 +116,7 @@ namespace Ioss {
     const std::string mesh_type_string() const;
     bool              node_major() const;
 
-    void output_summary(std::ostream &strm, bool do_transient = true);
+    void output_summary(std::ostream &strm, bool do_transient = true) const;
 
     bool supports_field_type(Ioss::EntityType fld_type) const;
 
