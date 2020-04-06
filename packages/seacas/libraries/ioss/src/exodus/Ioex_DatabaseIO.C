@@ -645,7 +645,7 @@ namespace Ioex {
             IOSS_ERROR(errmsg);
           }
         }
-        SMART_ASSERT(assem->member_count() == assemblies[i].entity_count)
+        SMART_ASSERT(assem->member_count() == (size_t)assemblies[i].entity_count)
         (assem->member_count())(assemblies[i].entity_count);
 
         add_mesh_reduction_fields(EX_ASSEMBLY, assemblies[i].id, assem);
