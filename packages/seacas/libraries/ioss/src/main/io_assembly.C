@@ -32,16 +32,13 @@
 
 #include "info_interface.h"
 
-#include <Ionit_Initializer.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_Getline.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
+#include <cassert>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
+#include <regex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -49,8 +46,10 @@
 #include <exodusII.h>
 #endif
 
+#include <Ionit_Initializer.h>
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
+#include <Ioss_CodeTypes.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_CoordinateFrame.h>
 #include <Ioss_DBUsage.h>
@@ -63,6 +62,7 @@
 #include <Ioss_FaceBlock.h>
 #include <Ioss_FaceSet.h>
 #include <Ioss_Field.h>
+#include <Ioss_Getline.h>
 #include <Ioss_GroupingEntity.h>
 #include <Ioss_IOFactory.h>
 #include <Ioss_NodeBlock.h>
@@ -72,10 +72,10 @@
 #include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
 #include <Ioss_StructuredBlock.h>
+#include <Ioss_SurfaceSplit.h>
+#include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
 #include <tokenize.h>
-
-#include <cassert>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -87,14 +87,42 @@
 
 namespace {
   std::string codename;
-  std::string version = "1.05";
+  std::string version = "0.2";
 
-  // Data space shared by most field input/output routines...
-  std::vector<char> data;
+  Ioss::EntityType get_entity_type(const std::string &type)
+  {
+    if (Ioss::Utils::substr_equal(type, "elementblock")) {
+      return Ioss::ELEMENTBLOCK;
+    }
+    else if (Ioss::Utils::substr_equal(type, "block")) {
+      return Ioss::ELEMENTBLOCK;
+    }
+    else if (Ioss::Utils::substr_equal(type, "nodeset")) {
+      return Ioss::NODESET;
+    }
+    else if (Ioss::Utils::substr_equal(type, "nodelist")) {
+      return Ioss::NODESET;
+    }
+    else if (Ioss::Utils::substr_equal(type, "sideset")) {
+      return Ioss::SIDESET;
+    }
+    else if (Ioss::Utils::substr_equal(type, "surface")) {
+      return Ioss::SIDESET;
+    }
+    else if (Ioss::Utils::substr_equal(type, "assembly")) {
+      return Ioss::ASSEMBLY;
+    }
+    else if (Ioss::Utils::substr_equal(type, "blob")) {
+      return Ioss::BLOB;
+    }
+    return Ioss::INVALID_TYPE;
+  }
 
-  void handle_help(const std::string &tokens);
-  void handle_list(const std::vector<std::string> &tokens, const Ioss::Region &region);
-  bool handle_assm(const std::vector<std::string> &tokens, Ioss::Region &region);
+  Ioss::NameList get_name_list(const Ioss::Region &region, Ioss::EntityType type);
+  void           handle_help(const std::string &tokens);
+  void           handle_list(const std::vector<std::string> &tokens, const Ioss::Region &region);
+  bool           handle_assm(const std::vector<std::string> &tokens, Ioss::Region &region);
+  void           update_assembly_info(Ioss::Region &region);
 
   void set_db_properties(const Info::Interface &interFace, Ioss::DatabaseIO *dbi);
 
@@ -196,7 +224,9 @@ int main(int argc, char *argv[])
     if (tokens.empty()) {
       continue;
     }
-    if (Ioss::Utils::substr_equal(tokens[0], "exit")) {
+    if (Ioss::Utils::substr_equal(tokens[0], "exit") ||
+        Ioss::Utils::substr_equal(tokens[0], "quit") ||
+        Ioss::Utils::substr_equal(tokens[0], "end")) {
       break;
     }
     if (Ioss::Utils::str_equal(tokens[0], "help")) {
@@ -211,10 +241,7 @@ int main(int argc, char *argv[])
   }
 
   if (changed) {
-    region.end_mode(Ioss::STATE_DEFINE_MODEL);
-  }
-  if (changed) {
-    fmt::print("\nDatabase changed. Updating assembly definitions.\n");
+    update_assembly_info(region);
   }
   else {
     fmt::print("\nDatabase unchanged. No update required.\n");
@@ -406,29 +433,35 @@ namespace {
     bool all = Ioss::Utils::substr_equal(topic, "help");
     if (all) {
       fmt::print("\n\tHELP [list | assembly]\n");
+      fmt::print("\n\tEND | EXIT | QUIT\n");
+      fmt::print("\t\tEnd command input and output changed assembly definitions (if any).\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "list")) {
-      fmt::print("\n\tLIST summary|element block|assembly|nodeset|sideset|blobs\n");
+      fmt::print("\n\tLIST summary|element block|assembly|nodeset|sideset|blobs\n\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "assembly")) {
-      fmt::print(
-          "\tFor all commands, if an assembly named `name` does not exist, it will be created.\n");
-      fmt::print("\n\tASSEMBLY {{name}}\n");
+      fmt::print("\n\tFor all commands, if an assembly named `name` does not exist, it will be "
+                 "created.\n");
+      fmt::print("\tASSEMBLY {{name}}\n");
       fmt::print("\t\tCreates an empty assembly named `name` if it does not exist.\n");
 
       fmt::print("\n\tASSEMBLY {{name}} ADD {{name1}} {{name2}} ... {{namen}}\n");
       fmt::print("\t\tAdds the specified entities to the assembly.  All entities must be the same "
                  "type.\n");
 
-      fmt::print("\n\tASSEMBLY {{name}} ADD {{type}} MATCH {{regex}}\n");
+      fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} MATCHES {{regex}}\n");
       fmt::print("\t\tAdds the entities of the specified type to the assembly.\n"
                  "\t\tAll entities whose name matches the {{regex}} will be added.\n");
 
-      fmt::print("\n\tASSEMBLY {{name}} ADD {{type}} ID {{id}} TO {{id}} BY {{step}}\n");
+      fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} NAMED {{list of one or more names}}\n");
+      fmt::print("\t\tAdds the entities of the specified type to the assembly.\n"
+                 "\t\tAll entities whose names are listed will be added.\n");
+
+      fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} RANGE {{id}} TO {{id}} BY {{step}}\n");
       fmt::print("\t\tAdds the entities of the specified type to the assembly.\n"
                  "\t\tAll entities whose id matches the specified range will be added.\n");
 
-      fmt::print("\n\tASSEMBLY {{name}} ADD {{type}} ID {{id}}, {{id2}}, ..., {{idn}}\n");
+      fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} IDS {{id}}, {{id2}}, ..., {{idn}}\n");
       fmt::print(
           "\t\tAdds the entities of the specified type to the assembly.\n"
           "\t\tAll entities whose id matches an id in the list will be added.\n"
@@ -478,7 +511,7 @@ namespace {
         // New assembly...
         assem = new Ioss::Assembly(region.get_database(), tokens[1]);
         region.add(assem);
-        changed = true;
+        // Don't set changed to true; only set if members modified
       }
     }
     else {
@@ -491,23 +524,163 @@ namespace {
       return false;
     }
 
-    try {
-      if (tokens.size() > 2) {
-        fmt::print("{}\n", fmt::join(tokens.begin() + 3, tokens.end(), ", "));
-        for (size_t i = 3; i < tokens.size(); i++) {
-          auto *member = region.get_entity(tokens[i]);
-          if (member != nullptr) {
-            assem->add(member);
-            changed = true;
-            fmt::print("Added {}\n", tokens[i]);
+    fmt::print("TOKENS: {}\n", fmt::join(tokens.begin(), tokens.end(), ", "));
+    if (tokens.size() > 2) {
+      try {
+        if (Ioss::Utils::substr_equal(tokens[2], "add")) {
+          // List of names ...
+          for (size_t i = 3; i < tokens.size(); i++) {
+            auto *member = region.get_entity(tokens[i]);
+            if (member != nullptr) {
+              if (assem->add(member)) {
+                changed = true;
+              }
+              fmt::print("Added {}\n", tokens[i]);
+            }
           }
         }
+        else if (Ioss::Utils::substr_equal(tokens[2], "type")) {
+          // Determine type of add...
+          Ioss::EntityType type = get_entity_type(tokens[3]);
+          if (type == Ioss::INVALID_TYPE) {
+            fmt::print(stderr, "ERROR: Unrecognized entity type: '{}'\n", tokens[3]);
+            return changed;
+          }
+          if (Ioss::Utils::substr_equal(tokens[4], "matches")) {
+            // regex match on names
+            // Get list of all names for this entity type...
+            Ioss::NameList names = get_name_list(region, type);
+
+            std::regex reg(tokens[5], std::regex::extended);
+
+            // Check for match against all names in list...
+            for (const auto &name : names) {
+              if (std::regex_match(name, reg)) {
+                const auto *entity = region.get_entity(name, type);
+                if (entity != nullptr) {
+                  if (assem->add(entity)) {
+                    changed = true;
+                  }
+                }
+              }
+            }
+          }
+          else if (Ioss::Utils::substr_equal(tokens[4], "named")) {
+            // list of names
+            for (size_t i = 5; i < tokens.size(); i++) {
+              const auto *entity = region.get_entity(tokens[i], type);
+              if (entity != nullptr) {
+                if (assem->add(entity)) {
+                  fmt::print(stderr, "Adding: {}\n", entity->name());
+                  changed = true;
+                }
+              }
+            }
+          }
+          else if (Ioss::Utils::substr_equal(tokens[4], "ids")) {
+            // list of ids
+            for (size_t i = 5; i < tokens.size(); i++) {
+              size_t      id     = std::stod(tokens[i]);
+              const auto *entity = region.get_entity(id, type);
+              if (entity != nullptr) {
+                if (assem->add(entity)) {
+                  fmt::print(stderr, "Adding: {}\n", entity->name());
+                  changed = true;
+                }
+              }
+            }
+          }
+          else if (Ioss::Utils::substr_equal(tokens[4], "range")) {
+            //     0        1     2     3      4      5    6    7    8     9
+            // ASSEMBLY {{name}} ADD {{type}} RANGE {{id}} TO {{id}} BY {{step}}
+            size_t begin = std::stod(tokens[5]);
+            size_t end   = begin;
+            size_t step  = 1;
+            if (tokens.size() >= 8 && Ioss::Utils::substr_equal(tokens[6], "to")) {
+              end = std::stod(tokens[7]);
+            }
+            if (tokens.size() >= 10 && Ioss::Utils::substr_equal(tokens[8], "by")) {
+              step = std::stod(tokens[9]);
+            }
+            for (size_t id = begin; id <= end; id += step) {
+              const auto *entity = region.get_entity(id, type);
+              if (entity != nullptr) {
+                if (assem->add(entity)) {
+                  changed = true;
+                }
+              }
+            }
+          }
+        }
+        else {
+          fmt::print(stderr, "ERROR: Unrecognized assembly option '{}'.\n", tokens[2]);
+          return changed;
+        }
+      }
+      catch (const std::exception &x) {
+        fmt::print("{}\n", x.what());
       }
     }
-    catch (const std::exception &x) {
-      fmt::print("{}\n", x.what());
+
+    if (changed) {
+      assem->property_add(Ioss::Property("changed", true));
+    }
+    else {
+      fmt::print(Ioss::WARNING(), "Command did not modify assembly '{}'\n", assem->name());
     }
 
     return changed;
+  }
+
+  template <typename T> Ioss::NameList get_entity_names(const std::vector<T *> &entity_list)
+  {
+    Ioss::NameList names;
+    names.reserve(entity_list.size());
+
+    for (const auto *entity : entity_list) {
+      names.push_back(entity->name());
+    }
+    return names;
+  }
+
+  Ioss::NameList get_name_list(const Ioss::Region &region, Ioss::EntityType type)
+  {
+    Ioss::NameList names;
+    switch (type) {
+    case Ioss::ELEMENTBLOCK: {
+      const auto &entities = region.get_element_blocks();
+      names                = get_entity_names(entities);
+    } break;
+    case Ioss::NODESET: {
+      const auto &entities = region.get_nodesets();
+      names                = get_entity_names(entities);
+    } break;
+    case Ioss::SIDESET: {
+      const auto &entities = region.get_sidesets();
+      names                = get_entity_names(entities);
+    } break;
+    case Ioss::ASSEMBLY: {
+      const auto &entities = region.get_assemblies();
+      names                = get_entity_names(entities);
+    } break;
+    case Ioss::BLOB: {
+      const auto &entities = region.get_blobs();
+      names                = get_entity_names(entities);
+    } break;
+    default: break;
+    }
+    return names;
+  }
+
+  void update_assembly_info(Ioss::Region &region)
+  {
+    region.end_mode(Ioss::STATE_DEFINE_MODEL);
+    fmt::print("\nDatabase changed. Updating assembly definitions.\n");
+    const auto &assemblies = region.get_assemblies();
+    for (const auto *assembly : assemblies) {
+      if (assembly->property_exists("changed")) {
+        fmt::print(stderr, "Assembly '{}' was modified...\n", assembly->name());
+      }
+    }
   }
 } // nameSpace
