@@ -46,7 +46,7 @@ namespace Ioss {
 
 namespace Ioss {
 
-  using EntityContainer = std::vector<Ioss::GroupingEntity *>;
+  using EntityContainer = std::vector<const Ioss::GroupingEntity *>;
 
   /** \brief A homogeneous collection of other GroupingEntities.
    */
@@ -69,9 +69,9 @@ namespace Ioss {
 
     EntityType get_member_type() const { return m_type; }
 
-    bool                   add(GroupingEntity *member);
+    bool                   add(const GroupingEntity *member);
     const EntityContainer &get_members() const;
-    GroupingEntity *       get_member(const std::string &my_name) const;
+    const GroupingEntity * get_member(const std::string &my_name) const;
     size_t                 member_count() const { return m_members.size(); }
 
     // Handle implicit properties -- These are calcuated from data stored

@@ -121,10 +121,10 @@ Ioss::Assembly::Assembly(const Ioss::Assembly &other) : GroupingEntity(other)
 
 const Ioss::EntityContainer &Ioss::Assembly::get_members() const { return m_members; }
 
-Ioss::GroupingEntity *Ioss::Assembly::get_member(const std::string &my_name) const
+const Ioss::GroupingEntity *Ioss::Assembly::get_member(const std::string &my_name) const
 {
   IOSS_FUNC_ENTER(m_);
-  Ioss::GroupingEntity *ge = nullptr;
+  const Ioss::GroupingEntity *ge = nullptr;
   for (auto mem : m_members) {
     if (mem->name() == my_name) {
       ge = mem;
@@ -134,7 +134,7 @@ Ioss::GroupingEntity *Ioss::Assembly::get_member(const std::string &my_name) con
   return ge;
 }
 
-bool Ioss::Assembly::add(Ioss::GroupingEntity *member)
+bool Ioss::Assembly::add(const Ioss::GroupingEntity *member)
 {
   check_is_valid(this, member);
   IOSS_FUNC_ENTER(m_);
