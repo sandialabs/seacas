@@ -46,7 +46,7 @@ namespace Ioss {
 
 namespace Ioss {
 
-  using EntityContainer = std::vector<Ioss::GroupingEntity *>;
+  using EntityContainer = std::vector<const Ioss::GroupingEntity *>;
 
   /** \brief A homogeneous collection of other GroupingEntities.
    */
