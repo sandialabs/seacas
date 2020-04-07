@@ -50,7 +50,7 @@ namespace Assembly {
 
     std::string filename() const { return filename_; }
     std::string type() const { return filetype_; }
-    bool        modify_existing_assembly() const { return modifyExistingAssembly_; }
+    bool        modify_existing_assembly() const { return allowModification_; }
 
   private:
     void enroll_options();
@@ -58,7 +58,7 @@ namespace Assembly {
     Ioss::GetLongOption options_;
     std::string         filetype_{"exodus"};
     std::string         filename_{};
-    bool                modifyExistingAssembly_{false};
+    bool                allowModification_{false};
   };
 } // namespace Assembly
 #endif
