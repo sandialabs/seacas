@@ -326,7 +326,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage(std::cerr);
-    fmt::print(stderr, "\n\tCan also set options via IO_SHELL_OPTIONS environment variable.");
+    fmt::print(stderr, "\n\tCan also set options via IO_SHELL_OPTIONS environment variable.\n\n");
     fmt::print(stderr, "\t->->-> Send email to gdsjaar@sandia.gov for {} support.<-<-<-\n",
                options_.program_name());
     exit(EXIT_SUCCESS);
