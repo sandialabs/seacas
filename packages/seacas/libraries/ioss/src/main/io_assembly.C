@@ -87,6 +87,10 @@
 #include <cgnslib.h>
 #endif
 
+#if defined(_MSC_VER)
+#include <io.h>
+#define isatty _isatty
+#endif
 // ========================================================================
 
 namespace {
