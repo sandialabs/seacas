@@ -145,6 +145,19 @@ bool Ioss::Assembly::add(const Ioss::GroupingEntity *member)
   return true;
 }
 
+bool Ioss::Assembly::remove(const Ioss::GroupingEntity *removal)
+{
+  IOSS_FUNC_ENTER(m_);
+  for (size_t i = 0; i < m_members.size(); i++) {
+    if (m_members[i] == removal) {
+      m_members.erase(m_members.begin() + i);
+      fmt::print("Removed '{}'\n", removal->name());
+      return true;
+    }
+  }
+  return false;
+}
+
 int64_t Ioss::Assembly::internal_get_field_data(const Ioss::Field &field, void *data,
                                                 size_t data_size) const
 {
