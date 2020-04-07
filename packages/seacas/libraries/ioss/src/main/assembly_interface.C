@@ -71,6 +71,13 @@ void Assembly::Interface::enroll_options()
 
   options_.enroll("version", Ioss::GetLongOption::NoValue, "Print version and exit", nullptr);
 
+  options_.enroll("allow_modifications", Ioss::GetLongOption::NoValue,
+                  "By default, io_assembly will only allow creation of new assemblies.\n"
+                  "\t\tIf this option is specified, then can modify assemblies that already exist "
+                  "in database.\n"
+                  "\t\tThis will cause the database to be rewritten. Without this option, it is "
+                  "updated in place.",
+                  nullptr);
   options_.enroll("db_type", Ioss::GetLongOption::MandatoryValue,
                   "Database Type: generated"
 #if defined(SEACAS_HAVE_PAMGEN)
@@ -88,6 +95,8 @@ void Assembly::Interface::enroll_options()
                   ".",
                   "unknown");
   options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue, "(alias for db_type)", nullptr);
+  options_.enroll("copyright", Ioss::GetLongOption::NoValue, "Show copyright and license data.",
+                  nullptr);
 }
 
 bool Assembly::Interface::parse_options(int argc, char **argv)
@@ -122,8 +131,8 @@ bool Assembly::Interface::parse_options(int argc, char **argv)
     exit(0);
   }
 
-  if (options_.retrieve("modify_existing_assembly") != nullptr) {
-    modifyExistingAssembly_ = true;
+  if (options_.retrieve("allow_modifications") != nullptr) {
+    allowModification_ = true;
   }
 
   {

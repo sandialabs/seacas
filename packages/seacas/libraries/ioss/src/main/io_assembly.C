@@ -34,12 +34,14 @@
 
 #include <cassert>
 #include <cstddef>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <regex>
 #include <string>
+#include <unistd.h>
 #include <utility>
 #include <vector>
 #if defined(SEACAS_HAVE_EXODUS)
@@ -63,6 +65,7 @@
 #include <Ioss_FaceBlock.h>
 #include <Ioss_FaceSet.h>
 #include <Ioss_Field.h>
+#include <Ioss_FileInfo.h>
 #include <Ioss_Getline.h>
 #include <Ioss_GroupingEntity.h>
 #include <Ioss_IOFactory.h>
@@ -88,7 +91,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "0.2";
+  std::string version = "0.5";
 
   Ioss::EntityType get_entity_type(const std::string &type)
   {
@@ -122,8 +125,8 @@ namespace {
   Ioss::NameList get_name_list(const Ioss::Region &region, Ioss::EntityType type);
   void           handle_help(const std::string &tokens);
   void           handle_list(const std::vector<std::string> &tokens, const Ioss::Region &region);
-  bool           handle_assm(const std::vector<std::string> &tokens, Ioss::Region &region);
-  void           update_assembly_info(Ioss::Region &region);
+  bool handle_assm(const std::vector<std::string> &tokens, Ioss::Region &region, bool allow_modify);
+  void update_assembly_info(Ioss::Region &region, const Assembly::Interface &interFace);
 
   void set_db_properties(const Assembly::Interface &interFace, Ioss::DatabaseIO *dbi);
 
@@ -182,16 +185,17 @@ int main(int argc, char *argv[])
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
-  Assembly::Interface interFace;
-  interFace.parse_options(argc, argv);
-
-  Ioss::Init::Initializer io;
-
   codename   = argv[0];
   size_t ind = codename.find_last_of('/', codename.size());
   if (ind != std::string::npos) {
     codename = codename.substr(ind + 1, codename.size());
   }
+
+  fmt::print("\n *** {}, Version {}\n", codename, version);
+  Assembly::Interface interFace;
+  interFace.parse_options(argc, argv);
+
+  Ioss::Init::Initializer io;
 
   std::string inpfile    = interFace.filename();
   std::string input_type = interFace.type();
@@ -217,14 +221,22 @@ int main(int argc, char *argv[])
 
   region.output_summary(std::cout, true);
 
-  bool changed = false;
+  bool from_term = (isatty(0) != 0 && isatty(1) != 0);
+  bool changed   = false;
   while (1) {
-    const char *input = getline_int("\nCOMMAND> ");
-    if (input[0] == '\0') {
-      break;
+    std::string input;
+    if (from_term) {
+      const char *cinput = getline_int("\nCOMMAND> ");
+      if (input[0] == '\0') {
+        break;
+      }
+      if (cinput) {
+        gl_histadd(cinput);
+      }
+      input = cinput;
     }
-    if (input) {
-      gl_histadd(input);
+    else {
+      std::getline(std::cin, input);
     }
 
     // NOTE: getline_int returns the trailing '\n'
@@ -247,12 +259,13 @@ int main(int argc, char *argv[])
       handle_list(tokens, region);
     }
     else if (Ioss::Utils::substr_equal(tokens[0], "assembly")) {
-      changed |= handle_assm(tokens, region);
+      bool allow_modify = interFace.modify_existing_assembly();
+      changed |= handle_assm(tokens, region, allow_modify);
     }
   }
 
   if (changed) {
-    update_assembly_info(region);
+    update_assembly_info(region, interFace);
   }
   else {
     fmt::print("\n\t*** Database unchanged. No update required.\n");
@@ -456,6 +469,9 @@ namespace {
       fmt::print("\t\tAdds the specified entities to the assembly.  All entities must be the same "
                  "type.\n");
 
+      fmt::print("\n\tASSEMBLY {{name}} REMOVE {{name1}} {{name2}} ... {{namen}}\n");
+      fmt::print("\t\tRemoves the specified entities from the assembly.\n");
+
       fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} MATCHES {{regex}}\n");
       fmt::print("\t\tAdds the entities of the specified type to the assembly.\n"
                  "\t\tAll entities whose name matches the {{regex}} will be added.\n");
@@ -466,7 +482,8 @@ namespace {
 
       fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} RANGE {{id}} TO {{id}} BY {{step}}\n");
       fmt::print("\t\tAdds the entities of the specified type to the assembly.\n"
-                 "\t\tAll entities whose id matches the specified range will be added.\n");
+                 "\t\tAll entities whose id matches the specified range will be added.\n"
+                 "\t\tNo message will be output for ids not matching an entity.\n");
 
       fmt::print("\n\tASSEMBLY {{name}} TYPE {{type}} IDS {{id}}, {{id2}}, ..., {{idn}}\n");
       fmt::print(
@@ -507,7 +524,7 @@ namespace {
       handle_help("list");
     }
   }
-  bool handle_assm(const std::vector<std::string> &tokens, Ioss::Region &region)
+  bool handle_assm(const std::vector<std::string> &tokens, Ioss::Region &region, bool allow_modify)
   {
     bool            changed = false;
     Ioss::Assembly *assem   = nullptr;
@@ -521,7 +538,7 @@ namespace {
         assem->property_add(Ioss::Property("id", my_id));
         assem->property_add(Ioss::Property("created", 1));
         region.add(assem);
-        fmt::print(stderr, "\t*** Created Assembly '{}' with id {}.\n", tokens[1], my_id);
+        fmt::print("\t*** Created Assembly '{}' with id {}.\n", tokens[1], my_id);
         // Don't set changed to true; only set if members modified
       }
     }
@@ -531,7 +548,7 @@ namespace {
     }
 
     if (assem == nullptr) {
-      fmt::print(stderr, "ERROR: Unable to create or access assembly '{}'\n", tokens[1]);
+      fmt::print(stderr, "ERROR: Unable to create or access assembly '{}'.\n", tokens[1]);
       return false;
     }
 
@@ -539,8 +556,11 @@ namespace {
     if (assem->property_exists("created")) {
       created = assem->get_property("created").get_int() == 1;
     }
-    if (!created) {
-      fmt::print("\t*** ERROR: Unable to modify an existing assembly ({}).\n", tokens[1]);
+    if (!allow_modify && !created) {
+      fmt::print(stderr,
+                 "ERROR: Unable to modify an existing assembly '{}'.  Restart with "
+                 "`--allow_modifications` option.\n",
+                 tokens[1]);
       return false;
     }
 
@@ -552,6 +572,17 @@ namespace {
             auto *member = region.get_entity(tokens[i]);
             if (member != nullptr) {
               if (assem->add(member)) {
+                changed = true;
+              }
+            }
+          }
+        }
+        else if (Ioss::Utils::substr_equal(tokens[2], "remove")) {
+          // List of names ...
+          for (size_t i = 3; i < tokens.size(); i++) {
+            auto *member = region.get_entity(tokens[i]);
+            if (member != nullptr) {
+              if (assem->remove(member)) {
                 changed = true;
               }
             }
@@ -608,7 +639,7 @@ namespace {
           }
           else if (Ioss::Utils::substr_equal(tokens[4], "range")) {
             //     0        1     2     3      4      5    6    7    8     9
-            // ASSEMBLY {{name}} ADD {{type}} RANGE {{id}} TO {{id}} BY {{step}}
+            // ASSEMBLY {{name}} TYPE {{type}} RANGE {{id}} TO {{id}} BY {{step}}
             size_t begin = std::stod(tokens[5]);
             size_t end   = begin;
             size_t step  = 1;
@@ -688,10 +719,12 @@ namespace {
     return names;
   }
 
-  void update_assembly_info(Ioss::Region &region)
+  void update_assembly_info(Ioss::Region &region, const Assembly::Interface &interFace)
   {
     // Assembly ids -- maybe set at definition time so can add to other assemblies more easily.
     std::vector<Ioex::Assembly> ex_assemblies;
+
+    bool modify_existing = false;
 
     region.end_mode(Ioss::STATE_DEFINE_MODEL);
     fmt::print("\n\t*** Database changed. Updating assembly definitions.\n");
@@ -699,10 +732,53 @@ namespace {
     for (const auto *assembly : assemblies) {
       if (assembly->property_exists("changed")) {
         ex_assemblies.emplace_back(*assembly);
+        if (!assembly->property_exists("created")) {
+          fmt::print("\t*** Modifying assembly {}\n", assembly->name());
+          modify_existing = true;
+        }
+        else {
+          fmt::print("\t*** Creating assembly {}\n", assembly->name());
+        }
       }
     }
 
     int exoid = region.get_database()->get_file_pointer();
-    Ioex::Internals::update_assembly_data(exoid, ex_assemblies);
+    if (modify_existing) {
+      // Need to create a temporary database to copy the database into.
+      // Make sure has same int size as current.
+      int                   byte_size = region.get_database()->int_byte_size_db();
+      Ioss::PropertyManager properties;
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", byte_size));
+      std::string       out_file  = interFace.filename() + ".mod";
+      std::string       file_type = interFace.type();
+      Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(file_type, out_file, Ioss::WRITE_RESTART,
+                                                      (MPI_Comm)MPI_COMM_WORLD, properties);
+
+      if (dbo == nullptr || !dbo->ok(true)) {
+        std::exit(EXIT_FAILURE);
+      }
+      // NOTE: 'region' owns 'db' pointer at this time...
+      Ioss::Region reg_out(dbo, "region_tmp");
+
+      int out_exoid = reg_out.get_database()->get_file_pointer();
+      Ioex::Internals::update_assembly_data(out_exoid, ex_assemblies, 1);
+      Ioex::Internals::copy_database(exoid, out_exoid);
+      Ioex::Internals::update_assembly_data(out_exoid, ex_assemblies, 2);
+
+      // Now, remove old file and replace with new...
+      region.get_database()->closeDatabase();
+      reg_out.get_database()->closeDatabase();
+      Ioss::FileInfo in_file(interFace.filename());
+      in_file.remove_file();
+
+      if (std::rename(out_file.c_str(), interFace.filename().c_str()) != 0) {
+        fmt::print(stderr, "ERROR: Could not update modified file {} to {}.\n", out_file,
+                   interFace.filename());
+        return;
+      }
+    }
+    else {
+      Ioex::Internals::update_assembly_data(exoid, ex_assemblies);
+    }
   }
 } // nameSpace
