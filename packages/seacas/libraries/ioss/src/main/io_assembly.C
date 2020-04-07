@@ -30,7 +30,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "info_interface.h"
+#include "assembly_interface.h"
 
 #include <cassert>
 #include <cstddef>
@@ -46,6 +46,7 @@
 #include <exodusII.h>
 #endif
 
+#include <Ioex_Internals.h>
 #include <Ionit_Initializer.h>
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
@@ -124,7 +125,7 @@ namespace {
   bool           handle_assm(const std::vector<std::string> &tokens, Ioss::Region &region);
   void           update_assembly_info(Ioss::Region &region);
 
-  void set_db_properties(const Info::Interface &interFace, Ioss::DatabaseIO *dbi);
+  void set_db_properties(const Assembly::Interface &interFace, Ioss::DatabaseIO *dbi);
 
   void info_elementblock(const Ioss::Region &region);
 #if 0
@@ -143,7 +144,7 @@ namespace {
     return entity->type_string() + " '" + entity->name() + "'";
   }
 
-  int64_t id(Ioss::GroupingEntity *entity)
+  int64_t id(const Ioss::GroupingEntity *entity)
   {
     int64_t id = -1;
     if (entity->property_exists("id")) {
@@ -152,12 +153,24 @@ namespace {
     return id;
   }
 
-  Ioss::PropertyManager set_properties(const Info::Interface &interFace)
+  int64_t get_next_assembly_id(const Ioss::Region &region)
+  {
+    static int64_t next_id = 0;
+    if (next_id == 0) {
+      const auto &assemblies = region.get_assemblies();
+      for (const auto *assembly : assemblies) {
+        auto my_id = id(assembly);
+        next_id    = std::max(next_id, my_id);
+      }
+      next_id = (next_id / 100);
+    }
+    ++next_id;
+    return next_id * 100;
+  }
+
+  Ioss::PropertyManager set_properties(const Assembly::Interface &interFace)
   {
     Ioss::PropertyManager properties{};
-    if (!interFace.decomp_method().empty()) {
-      properties.add(Ioss::Property("DECOMPOSITION_METHOD", interFace.decomp_method()));
-    }
     return properties;
   }
 } // namespace
@@ -169,15 +182,10 @@ int main(int argc, char *argv[])
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
-  Info::Interface interFace;
+  Assembly::Interface interFace;
   interFace.parse_options(argc, argv);
 
   Ioss::Init::Initializer io;
-
-  if (interFace.show_config()) {
-    Ioss::IOFactory::show_configuration();
-    exit(EXIT_SUCCESS);
-  }
 
   codename   = argv[0];
   size_t ind = codename.find_last_of('/', codename.size());
@@ -225,8 +233,11 @@ int main(int argc, char *argv[])
       continue;
     }
     if (Ioss::Utils::substr_equal(tokens[0], "exit") ||
-        Ioss::Utils::substr_equal(tokens[0], "quit") ||
         Ioss::Utils::substr_equal(tokens[0], "end")) {
+      break;
+    }
+    if (Ioss::Utils::substr_equal(tokens[0], "quit")) {
+      changed = false;
       break;
     }
     if (Ioss::Utils::str_equal(tokens[0], "help")) {
@@ -244,7 +255,7 @@ int main(int argc, char *argv[])
     update_assembly_info(region);
   }
   else {
-    fmt::print("\nDatabase unchanged. No update required.\n");
+    fmt::print("\n\t*** Database unchanged. No update required.\n");
   }
   fmt::print("\n{} execution successful.\n", codename);
   return EXIT_SUCCESS;
@@ -257,7 +268,7 @@ namespace {
     bool                                  parallel = region.get_database()->is_parallel();
     const Ioss::StructuredBlockContainer &sbs      = region.get_structured_blocks();
     if (sbs.empty()) {
-      fmt::print("\n\tThere are no structured blocks in this model.\n");
+      fmt::print("\n\t*** There are no structured blocks in this model.\n");
       return;
     }
     for (auto sb : sbs) {
@@ -301,7 +312,7 @@ namespace {
   {
     const auto &assem = region.get_assemblies();
     if (assem.empty()) {
-      fmt::print("\n\tThere are no assemblies in this model.\n");
+      fmt::print("\n\t*** There are no assemblies in this model.\n");
       return;
     }
     for (auto as : assem) {
@@ -318,7 +329,7 @@ namespace {
   {
     const auto &blobs = region.get_blobs();
     if (blobs.empty()) {
-      fmt::print("\n\tThere are no blobs in this model.\n");
+      fmt::print("\n\t*** There are no blobs in this model.\n");
       return;
     }
     for (auto blob : blobs) {
@@ -331,7 +342,7 @@ namespace {
   {
     const Ioss::ElementBlockContainer &ebs = region.get_element_blocks();
     if (ebs.empty()) {
-      fmt::print("\n\tThere are no element blocks in this model.\n");
+      fmt::print("\n\t*** There are no element blocks in this model.\n");
       return;
     }
     for (auto eb : ebs) {
@@ -348,7 +359,7 @@ namespace {
   {
     const Ioss::SideSetContainer &fss = region.get_sidesets();
     if (fss.empty()) {
-      fmt::print("\n\tThere are no side sets in this model.\n");
+      fmt::print("\n\t*** There are no side sets in this model.\n");
       return;
     }
     for (auto fs : fss) {
@@ -376,7 +387,7 @@ namespace {
   {
     const Ioss::NodeSetContainer &nss = region.get_nodesets();
     if (nss.empty()) {
-      fmt::print("\n\tThere are no node sets in this model.\n");
+      fmt::print("\n\t*** There are no node sets in this model.\n");
       return;
     }
     for (auto ns : nss) {
@@ -413,19 +424,13 @@ namespace {
   }
 #endif
 
-  void set_db_properties(const Info::Interface &interFace, Ioss::DatabaseIO *dbi)
+  void set_db_properties(const Assembly::Interface &interFace, Ioss::DatabaseIO *dbi)
   {
     std::string inpfile = interFace.filename();
 
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
-
-    if (interFace.use_generic_names()) {
-      dbi->set_use_generic_canonical_name(true);
-    }
-
-    dbi->set_surface_split_type(Ioss::int_to_surface_split(interFace.surface_split_scheme()));
   }
 
   void handle_help(const std::string &topic)
@@ -433,8 +438,10 @@ namespace {
     bool all = Ioss::Utils::substr_equal(topic, "help");
     if (all) {
       fmt::print("\n\tHELP [list | assembly]\n");
-      fmt::print("\n\tEND | EXIT | QUIT\n");
+      fmt::print("\n\tEND | EXIT\n");
       fmt::print("\t\tEnd command input and output changed assembly definitions (if any).\n");
+      fmt::print("\n\tQUIT\n");
+      fmt::print("\t\tEnd command input and exit with no changes to database.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "list")) {
       fmt::print("\n\tLIST summary|element block|assembly|nodeset|sideset|blobs\n\n");
@@ -509,8 +516,12 @@ namespace {
       assem = region.get_assembly(tokens[1]);
       if (assem == nullptr) {
         // New assembly...
-        assem = new Ioss::Assembly(region.get_database(), tokens[1]);
+        assem      = new Ioss::Assembly(region.get_database(), tokens[1]);
+        auto my_id = get_next_assembly_id(region);
+        assem->property_add(Ioss::Property("id", my_id));
+        assem->property_add(Ioss::Property("created", 1));
         region.add(assem);
+        fmt::print(stderr, "\t*** Created Assembly '{}' with id {}.\n", tokens[1], my_id);
         // Don't set changed to true; only set if members modified
       }
     }
@@ -524,7 +535,15 @@ namespace {
       return false;
     }
 
-    fmt::print("TOKENS: {}\n", fmt::join(tokens.begin(), tokens.end(), ", "));
+    bool created = false;
+    if (assem->property_exists("created")) {
+      created = assem->get_property("created").get_int() == 1;
+    }
+    if (!created) {
+      fmt::print("\t*** ERROR: Unable to modify an existing assembly ({}).\n", tokens[1]);
+      return false;
+    }
+
     if (tokens.size() > 2) {
       try {
         if (Ioss::Utils::substr_equal(tokens[2], "add")) {
@@ -535,7 +554,6 @@ namespace {
               if (assem->add(member)) {
                 changed = true;
               }
-              fmt::print("Added {}\n", tokens[i]);
             }
           }
         }
@@ -571,7 +589,6 @@ namespace {
               const auto *entity = region.get_entity(tokens[i], type);
               if (entity != nullptr) {
                 if (assem->add(entity)) {
-                  fmt::print(stderr, "Adding: {}\n", entity->name());
                   changed = true;
                 }
               }
@@ -584,7 +601,6 @@ namespace {
               const auto *entity = region.get_entity(id, type);
               if (entity != nullptr) {
                 if (assem->add(entity)) {
-                  fmt::print(stderr, "Adding: {}\n", entity->name());
                   changed = true;
                 }
               }
@@ -674,13 +690,19 @@ namespace {
 
   void update_assembly_info(Ioss::Region &region)
   {
+    // Assembly ids -- maybe set at definition time so can add to other assemblies more easily.
+    std::vector<Ioex::Assembly> ex_assemblies;
+
     region.end_mode(Ioss::STATE_DEFINE_MODEL);
-    fmt::print("\nDatabase changed. Updating assembly definitions.\n");
+    fmt::print("\n\t*** Database changed. Updating assembly definitions.\n");
     const auto &assemblies = region.get_assemblies();
     for (const auto *assembly : assemblies) {
       if (assembly->property_exists("changed")) {
-        fmt::print(stderr, "Assembly '{}' was modified...\n", assembly->name());
+        ex_assemblies.emplace_back(*assembly);
       }
     }
+
+    int exoid = region.get_database()->get_file_pointer();
+    Ioex::Internals::update_assembly_data(exoid, ex_assemblies);
   }
 } // nameSpace

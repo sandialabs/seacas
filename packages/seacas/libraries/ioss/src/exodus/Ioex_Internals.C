@@ -1066,6 +1066,18 @@ int Internals::write_meta_data(Mesh &mesh)
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
+void Internals::update_assembly_data(int exoid, std::vector<Assembly> &assemblies)
+{
+  Ioss::ParallelUtils pm(MPI_COMM_WORLD);
+  Internals           internal{exoid, 0, pm};
+
+  {
+    Redefine the_database(exoid);
+    internal.put_metadata(assemblies);
+  }
+  internal.put_non_define_data(assemblies);
+}
+
 void Internals::get_global_counts(Mesh &mesh)
 {
   PAR_UNUSED(mesh);
