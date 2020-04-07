@@ -427,7 +427,10 @@ namespace Ioex {
 
     /* Special use for updating assembly data in-place in existing db file */
     /* See src/main/io_assembly.C for current use */
-    static void update_assembly_data(int filePtr, std::vector<Assembly> &assemblies);
+    static void update_assembly_data(int filePtr, std::vector<Assembly> &assemblies, int stage = 0);
+
+    // Simple wrapper around `ex_copy`, but keeps users from including `exodusII.h`
+    static void copy_database(int in_file, int out_file, bool transient_also = true);
 
   private:
     void get_global_counts(Mesh &mesh);

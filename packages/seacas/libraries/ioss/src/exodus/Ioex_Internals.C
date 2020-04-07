@@ -1066,16 +1066,27 @@ int Internals::write_meta_data(Mesh &mesh)
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
-void Internals::update_assembly_data(int exoid, std::vector<Assembly> &assemblies)
+void Internals::copy_database(int in_file, int out_file, bool transient_also)
+{
+  ex_copy(in_file, out_file);
+  if (transient_also) {
+    ex_copy_transient(in_file, out_file);
+  }
+}
+
+void Internals::update_assembly_data(int exoid, std::vector<Assembly> &assemblies, int stage)
 {
   Ioss::ParallelUtils pm(MPI_COMM_WORLD);
   Internals           internal{exoid, 0, pm};
 
-  {
+  if (stage == 0 || stage == 1) {
     Redefine the_database(exoid);
     internal.put_metadata(assemblies);
   }
-  internal.put_non_define_data(assemblies);
+
+  if (stage == 0 || stage == 2) {
+    internal.put_non_define_data(assemblies);
+  }
 }
 
 void Internals::get_global_counts(Mesh &mesh)
