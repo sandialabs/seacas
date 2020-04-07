@@ -425,16 +425,9 @@ namespace Ioex {
 
     int write_meta_data(Mesh &mesh);
 
-    /*!  A restart file may contain an attribute which contains
-     *   information about the processor count and current processor id
-     *   * when the file was written.  This code checks whether that
-     *   information matches the current processor count and id.  If it
-     *   * exists, but doesn't match, a warning message is printed.
-     *   Eventually, this will be used to determine whether certain
-     *   decomposition-related data in the file is valid or has been
-     *   invalidated by a join/re-spread to a different number of
-     *   processors.
-     */
+    /* Special use for updating assembly data in-place in existing db file */
+    /* See src/main/io_assembly.C for current use */
+    static void update_assembly_data(int filePtr, std::vector<Assembly> &assemblies);
 
   private:
     void get_global_counts(Mesh &mesh);
