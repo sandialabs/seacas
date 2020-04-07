@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -604,6 +604,7 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   int     nbr_dim;
   int     var_in_id;
   int     var_out_id;
+  size_t  dim_max;
   size_t  dim_str[NC_MAX_VAR_DIMS];
   size_t  dim_cnt[NC_MAX_VAR_DIMS];
   size_t  var_sz = 1L;
@@ -641,11 +642,15 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
        the void_ptr is large enough to hold new dimension */
     EXCHECKF(nc_inq_dimlen(in_id, dim_id_in[idx], &dim_in));
     EXCHECKF(nc_inq_dimlen(out_id, dim_id_out[idx], &dim_out));
-    dim_cnt[idx] = dim_in > dim_out ? dim_in : dim_out;
-    dim_str[idx] = 0;
 
     /* Initialize the indicial offset and stride arrays */
-    var_sz *= dim_cnt[idx];
+    dim_max = dim_in > dim_out ? dim_in : dim_out;
+    var_sz *= dim_max;
+
+    /* Handle case where output variable is smaller than input (rare, but happens) */
+    dim_cnt[idx] = dim_out > 0 ? dim_out : dim_in;
+    dim_str[idx] = 0;
+
   } /* end loop over dim */
 
   /* Allocate enough space to hold the variable */
