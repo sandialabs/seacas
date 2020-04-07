@@ -76,7 +76,6 @@
 #include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
 #include <Ioss_StructuredBlock.h>
-#include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
 #include <tokenize.h>
@@ -162,6 +161,9 @@ namespace {
 
   int64_t get_next_assembly_id(const Ioss::Region &region)
   {
+    // Determines the current maximum assembly id and then
+    // returns ids larger than that value.  The ids it
+    // returns are multiples of 100 just because.
     static int64_t next_id = 0;
     if (next_id == 0) {
       const auto &assemblies = region.get_assemblies();
@@ -231,7 +233,7 @@ int main(int argc, char *argv[])
     std::string input;
     if (from_term) {
       const char *cinput = getline_int("\nCOMMAND> ");
-      if (input[0] == '\0') {
+      if (cinput[0] == '\0') {
         break;
       }
       if (cinput) {
@@ -461,7 +463,7 @@ namespace {
       fmt::print("\t\tEnd command input and exit with no changes to database.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "list")) {
-      fmt::print("\n\tLIST summary|element block|assembly|nodeset|sideset|blobs\n\n");
+      fmt::print("\n\tLIST summary|element block|block|assembly|nodeset|sideset|blob\n\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "assembly")) {
       fmt::print("\n\tFor all commands, if an assembly named `name` does not exist, it will be "
@@ -507,7 +509,8 @@ namespace {
                Ioss::Utils::substr_equal(tokens[1], "block")) {
         info_elementblock(region);
       }
-      else if (Ioss::Utils::substr_equal(tokens[1], "assembly")) {
+      else if (Ioss::Utils::substr_equal(tokens[1], "assembly") ||
+               Ioss::Utils::substr_equal(tokens[1], "assemblies")) {
         info_assemblies(region);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "nodeset")) {
@@ -528,6 +531,7 @@ namespace {
       handle_help("list");
     }
   }
+
   bool handle_assm(const std::vector<std::string> &tokens, Ioss::Region &region, bool allow_modify)
   {
     bool            changed = false;
@@ -725,10 +729,8 @@ namespace {
 
   void update_assembly_info(Ioss::Region &region, const Assembly::Interface &interFace)
   {
-    // Assembly ids -- maybe set at definition time so can add to other assemblies more easily.
     std::vector<Ioex::Assembly> ex_assemblies;
-
-    bool modify_existing = false;
+    bool                        modify_existing = false;
 
     region.end_mode(Ioss::STATE_DEFINE_MODEL);
     fmt::print("\n\t*** Database changed. Updating assembly definitions.\n");
