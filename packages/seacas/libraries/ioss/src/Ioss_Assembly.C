@@ -151,7 +151,6 @@ bool Ioss::Assembly::remove(const Ioss::GroupingEntity *removal)
   for (size_t i = 0; i < m_members.size(); i++) {
     if (m_members[i] == removal) {
       m_members.erase(m_members.begin() + i);
-      fmt::print("Removed '{}'\n", removal->name());
       return true;
     }
   }
