@@ -127,10 +127,12 @@ namespace {
   }
 
   Ioss::NameList get_name_list(const Ioss::Region &region, Ioss::EntityType type);
-  void           handle_help(const std::string &tokens);
+  void           handle_help(const std::string &topic);
+  bool           handle_delete(const std::vector<std::string> &tokens, Ioss::Region &region);
   void           handle_list(const std::vector<std::string> &tokens, const Ioss::Region &region);
-  bool handle_assm(const std::vector<std::string> &tokens, Ioss::Region &region, bool allow_modify);
-  void update_assembly_info(Ioss::Region &region, const Assembly::Interface &interFace);
+  bool           handle_assembly(const std::vector<std::string> &tokens, Ioss::Region &region,
+                                 bool allow_modify);
+  void           update_assembly_info(Ioss::Region &region, const Assembly::Interface &interFace);
 
   void set_db_properties(const Assembly::Interface &interFace, Ioss::DatabaseIO *dbi);
 
@@ -228,8 +230,10 @@ int main(int argc, char *argv[])
 
   region.output_summary(std::cout, true);
 
-  bool from_term = (isatty(0) != 0 && isatty(1) != 0);
-  bool changed   = false;
+  bool from_term    = (isatty(0) != 0 && isatty(1) != 0);
+  bool changed      = false;
+  bool allow_modify = interFace.modify_existing_assembly();
+
   while (1) {
     std::string input;
     if (from_term) {
@@ -259,15 +263,26 @@ int main(int argc, char *argv[])
       changed = false;
       break;
     }
+
     if (Ioss::Utils::str_equal(tokens[0], "help")) {
       handle_help(tokens.back());
+    }
+    else if (Ioss::Utils::substr_equal(tokens[0], "allow") &&
+             Ioss::Utils::substr_equal(tokens[1], "modifications")) {
+      allow_modify = true;
+      fmt::print("\t*** Modifications to existing assemblies now allowed.\n");
     }
     else if (Ioss::Utils::substr_equal(tokens[0], "list")) {
       handle_list(tokens, region);
     }
+    else if (Ioss::Utils::substr_equal(tokens[0], "delete")) {
+      handle_delete(tokens, region);
+    }
     else if (Ioss::Utils::substr_equal(tokens[0], "assembly")) {
-      bool allow_modify = interFace.modify_existing_assembly();
-      changed |= handle_assm(tokens, region, allow_modify);
+      changed |= handle_assembly(tokens, region, allow_modify);
+    }
+    else {
+      fmt::print("\tWARNING: Unrecognized command: {}\n", fmt::join(tokens, " "));
     }
   }
 
@@ -462,6 +477,13 @@ namespace {
       fmt::print("\t\tEnd command input and output changed assembly definitions (if any).\n");
       fmt::print("\n\tQUIT\n");
       fmt::print("\t\tEnd command input and exit with no changes to database.\n");
+
+      fmt::print("\n\tALLOW MODIFICATIONS\n");
+      fmt::print("\t\tBy default, io_assembly will only allow creation of new assemblies.\n"
+                 "\t\tIf this command is specified, then can modify assemblies that already exist "
+                 "in database.\n"
+                 "\t\tThis will cause the database to be rewritten. Without this option, it is "
+                 "updated in place.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "list")) {
       fmt::print("\n\tLIST summary|element block|block|assembly|nodeset|sideset|blob\n\n");
@@ -497,6 +519,12 @@ namespace {
           "\t\tAdds the entities of the specified type to the assembly.\n"
           "\t\tAll entities whose id matches an id in the list will be added.\n"
           "\t\tA warning message will be output if there is no entity with the requested id.\n");
+
+      fmt::print("\n\tDELETE {{name}}\n");
+      fmt::print("\t\tRemove the assembly with the specified name.\n"
+                 "\t\tCurrently only supported for assemblies created during this execution; not "
+                 "for assemblies\n"
+                 "\t\texisting on the input database.\n");
     }
   }
 
@@ -533,7 +561,47 @@ namespace {
     }
   }
 
-  bool handle_assm(const std::vector<std::string> &tokens, Ioss::Region &region, bool allow_modify)
+  bool handle_delete(const std::vector<std::string> &tokens, Ioss::Region &region)
+  {
+    // Returns true if requested assembly was deleted.
+    // False if assembly does not exist, or was not deletable (not created during this run)
+    // NOTE: If the assembly is a member of other assemblies, it will be removed from them
+    //       Since currently, the removed assembly must have been created during this run,
+    //       then it also must have been added to the other assemblies also during this run,
+    //       so the modified flag has already been set on them and we shouldn't have to
+    //       do anything else here to track whether in modify mode or to mark assemblies
+    //       as modified.  Once allow the deletion of existing assemblies, then will have
+    //       to do better tracking of what other assemblies were modified as a result of
+    //       removing/deleting this assembly.
+    if (tokens.size() > 1) {
+      Ioss::Assembly *assem = region.get_assembly(tokens[1]);
+      if (assem == nullptr) {
+        fmt::print("\t*** Requested Assembly '{}' does not exist.\n", tokens[1]);
+        return false;
+      }
+      else {
+        if (assem->property_exists("created")) {
+          if (region.remove(assem)) {
+            fmt::print("\t***Assembly '{}' deleted successfully.\n", tokens[1]);
+            return true;
+          }
+        }
+        else {
+          fmt::print("\t*** Requested Assembly '{}' was not created during this execution.  Not "
+                     "deleteable.\n",
+                     tokens[1]);
+          return false;
+        }
+      }
+    }
+    else {
+      handle_help("delete");
+    }
+    return false;
+  }
+
+  bool handle_assembly(const std::vector<std::string> &tokens, Ioss::Region &region,
+                       bool allow_modify)
   {
     bool            changed = false;
     Ioss::Assembly *assem   = nullptr;
@@ -567,8 +635,8 @@ namespace {
     }
     if (!allow_modify && !created) {
       fmt::print(stderr,
-                 "ERROR: Unable to modify an existing assembly '{}'.  Restart with "
-                 "`--allow_modifications` option.\n",
+                 "ERROR: Unable to modify an existing assembly '{}'.\n\tRestart with "
+                 "`--allow_modifications` option or enter 'ALLOW MODIFICATIONS' command\n",
                  tokens[1]);
       return false;
     }

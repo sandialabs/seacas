@@ -183,6 +183,9 @@ namespace Ioss {
     bool add(Blob *blob);
     bool add(const CoordinateFrame &frame);
 
+    // Special purpose...
+    bool remove(Assembly *assembly);
+
     const NodeBlockContainer &      get_node_blocks() const;
     const EdgeBlockContainer &      get_edge_blocks() const;
     const FaceBlockContainer &      get_face_blocks() const;

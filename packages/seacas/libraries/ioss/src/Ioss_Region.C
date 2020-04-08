@@ -1113,6 +1113,40 @@ namespace Ioss {
     return false;
   }
 
+  /** \brief Remove an assembly to the region.
+   *
+   *  \param[in] assembly The assembly to remove
+   *  \returns True if successful.
+   *
+   *  Checks other assemblies for uses of this assembly and removes
+   * if from their member lists.
+   */
+  bool Region::remove(Assembly *removal)
+  {
+    IOSS_FUNC_ENTER(m_);
+
+    bool changed = false;
+    // Check that region is in correct state for modifying entities
+    if (get_state() == STATE_DEFINE_MODEL) {
+      // Check all existing assemblies to see if any contain this assembly:
+      for (auto *assembly : assemblies) {
+        bool removed = assembly->remove(removal);
+        if (removed) {
+          changed = true;
+        }
+      }
+
+      // Now remove this assembly...
+      for (size_t i = 0; i < assemblies.size(); i++) {
+        if (assemblies[i] == removal) {
+          assemblies.erase(assemblies.begin() + i);
+          changed = true;
+        }
+      }
+    }
+    return changed;
+  }
+
   /** \brief Add an assembly to the region.
    *
    *  \param[in] assembly The assembly to add
