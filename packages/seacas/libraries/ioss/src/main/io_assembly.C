@@ -81,6 +81,7 @@
 #include <Ioss_VariableType.h>
 #include <tokenize.h>
 
+#include <fmt/color.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #if defined(SEACAS_HAVE_CGNS)
@@ -200,7 +201,7 @@ int main(int argc, char *argv[])
     codename = codename.substr(ind + 1, codename.size());
   }
 
-  fmt::print("\n *** {}, Version {}\n", codename, version);
+  fmt::print(fg(fmt::color::cyan), "\n *** {}, Version {}\n", codename, version);
   Assembly::Interface interFace;
   interFace.parse_options(argc, argv);
 
@@ -237,7 +238,8 @@ int main(int argc, char *argv[])
   while (1) {
     std::string input;
     if (from_term) {
-      const char *cinput = getline_int("\nCOMMAND> ");
+      fmt::print(fg(fmt::terminal_color::magenta), "\n");
+      const char *cinput = getline_int("COMMAND> ");
       if (cinput[0] == '\0') {
         break;
       }
@@ -270,7 +272,7 @@ int main(int argc, char *argv[])
     else if (Ioss::Utils::substr_equal(tokens[0], "allow") &&
              Ioss::Utils::substr_equal(tokens[1], "modifications")) {
       allow_modify = true;
-      fmt::print("\t*** Modifications to existing assemblies now allowed.\n");
+      fmt::print(fg(fmt::color::cyan), "\t*** Modifications to existing assemblies now allowed.\n");
     }
     else if (Ioss::Utils::substr_equal(tokens[0], "list")) {
       handle_list(tokens, region);
@@ -282,7 +284,8 @@ int main(int argc, char *argv[])
       changed |= handle_assembly(tokens, region, allow_modify);
     }
     else {
-      fmt::print("\tWARNING: Unrecognized command: {}\n", fmt::join(tokens, " "));
+      fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized command: {}\n",
+                 tokens[0]);
     }
   }
 
@@ -290,7 +293,7 @@ int main(int argc, char *argv[])
     update_assembly_info(region, interFace);
   }
   else {
-    fmt::print("\n\t*** Database unchanged. No update required.\n");
+    fmt::print(fg(fmt::color::cyan), "\n\t*** Database unchanged. No update required.\n");
   }
   fmt::print("\n{} execution successful.\n", codename);
   return EXIT_SUCCESS;
@@ -351,8 +354,16 @@ namespace {
       return;
     }
     for (auto as : assem) {
-      fmt::print("\n{} id: {:6d}, contains: {} member(s) of type {:>10s}.\n\tMembers: ", name(as),
-                 id(as), as->member_count(), as->contains_string());
+      std::string modifier;
+      if (as->property_exists("created")) {
+        modifier = " [created]";
+      }
+      else if (as->property_exists("modified")) {
+        modifier = " [modified]";
+      }
+
+      fmt::print("\n{} id: {:6d}, contains: {} member(s) of type {:>10s}.{}\n\tMembers: ", name(as),
+                 id(as), as->member_count(), as->contains_string(), modifier);
       for (const auto mem : as->get_members()) {
         fmt::print("'{}' ", mem->name());
       }
@@ -552,7 +563,8 @@ namespace {
         info_blobs(region);
       }
       else {
-        fmt::print(stderr, "\tWARNING: Unrecognized list option '{}'\n", tokens[1]);
+        fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized list option '{}'\n",
+                   tokens[1]);
         handle_help("list");
       }
     }
@@ -576,18 +588,21 @@ namespace {
     if (tokens.size() > 1) {
       Ioss::Assembly *assem = region.get_assembly(tokens[1]);
       if (assem == nullptr) {
-        fmt::print("\t*** Requested Assembly '{}' does not exist.\n", tokens[1]);
+        fmt::print(stderr, fg(fmt::color::yellow),
+                   "WARNING: Requested Assembly '{}' does not exist.\n", tokens[1]);
         return false;
       }
       else {
         if (assem->property_exists("created")) {
           if (region.remove(assem)) {
-            fmt::print("\t***Assembly '{}' deleted successfully.\n", tokens[1]);
+            fmt::print(fg(fmt::color::cyan), "\t***Assembly '{}' deleted successfully.\n",
+                       tokens[1]);
             return true;
           }
         }
         else {
-          fmt::print("\t*** Requested Assembly '{}' was not created during this execution.  Not "
+          fmt::print(stderr, fg(fmt::color::red),
+                     "ERROR: Requested Assembly '{}' was not created during this execution.  Not "
                      "deleteable.\n",
                      tokens[1]);
           return false;
@@ -615,7 +630,8 @@ namespace {
         assem->property_add(Ioss::Property("id", my_id));
         assem->property_add(Ioss::Property("created", 1));
         region.add(assem);
-        fmt::print("\t*** Created Assembly '{}' with id {}.\n", tokens[1], my_id);
+        fmt::print(fg(fmt::color::cyan), "\t*** Created Assembly '{}' with id {}.\n", tokens[1],
+                   my_id);
         // Don't set changed to true; only set if members modified
       }
     }
@@ -625,7 +641,9 @@ namespace {
     }
 
     if (assem == nullptr) {
-      fmt::print(stderr, "ERROR: Unable to create or access assembly '{}'.\n", tokens[1]);
+
+      fmt::print(stderr, fg(fmt::color::red), "ERROR: Unable to create or access assembly '{}'.\n",
+                 tokens[1]);
       return false;
     }
 
@@ -634,7 +652,7 @@ namespace {
       created = assem->get_property("created").get_int() == 1;
     }
     if (!allow_modify && !created) {
-      fmt::print(stderr,
+      fmt::print(stderr, fg(fmt::color::red),
                  "ERROR: Unable to modify an existing assembly '{}'.\n\tRestart with "
                  "`--allow_modifications` option or enter 'ALLOW MODIFICATIONS' command\n",
                  tokens[1]);
@@ -651,6 +669,10 @@ namespace {
               if (assem->add(member)) {
                 changed = true;
               }
+            }
+            else {
+              fmt::print(fg(fmt::color::yellow), "\t*** Entity '{}' does not exist. Not added.\n",
+                         tokens[i]);
             }
           }
         }
@@ -669,7 +691,8 @@ namespace {
           // Determine type of add...
           Ioss::EntityType type = get_entity_type(tokens[3]);
           if (type == Ioss::INVALID_TYPE) {
-            fmt::print(stderr, "ERROR: Unrecognized entity type: '{}'\n", tokens[3]);
+            fmt::print(stderr, fg(fmt::color::red), "ERROR: Unrecognized entity type: '{}'\n",
+                       tokens[3]);
             return changed;
           }
           if (Ioss::Utils::substr_equal(tokens[4], "matches")) {
@@ -737,20 +760,22 @@ namespace {
           }
         }
         else {
-          fmt::print(stderr, "ERROR: Unrecognized assembly option '{}'.\n", tokens[2]);
+          fmt::print(stderr, fg(fmt::color::red), "ERROR: Unrecognized assembly option '{}'.\n",
+                     tokens[2]);
           return changed;
         }
       }
       catch (const std::exception &x) {
-        fmt::print("{}\n", x.what());
+        fmt::print(stderr, fg(fmt::color::red), "{}\n", x.what());
       }
     }
 
     if (changed) {
-      assem->property_add(Ioss::Property("changed", true));
+      assem->property_add(Ioss::Property("modified", true));
     }
     else {
-      fmt::print(Ioss::WARNING(), "Command did not modify assembly '{}'\n", assem->name());
+      fmt::print(stderr, fg(fmt::color::yellow), "WARNING: Command did not modify assembly '{}'\n",
+                 assem->name());
     }
 
     return changed;
@@ -802,17 +827,17 @@ namespace {
     bool                        modify_existing = false;
 
     region.end_mode(Ioss::STATE_DEFINE_MODEL);
-    fmt::print("\n\t*** Database changed. Updating assembly definitions.\n");
+    fmt::print(fg(fmt::color::cyan), "\n\t*** Database changed. Updating assembly definitions.\n");
     const auto &assemblies = region.get_assemblies();
     for (const auto *assembly : assemblies) {
-      if (assembly->property_exists("changed")) {
+      if (assembly->property_exists("modified")) {
         ex_assemblies.emplace_back(*assembly);
         if (!assembly->property_exists("created")) {
-          fmt::print("\t*** Modifying assembly {}\n", assembly->name());
+          fmt::print(fg(fmt::color::cyan), "\t*** Modifying assembly '{}'\n", assembly->name());
           modify_existing = true;
         }
         else {
-          fmt::print("\t*** Creating assembly {}\n", assembly->name());
+          fmt::print(fg(fmt::color::cyan), "\t*** Creating assembly '{}'\n", assembly->name());
         }
       }
     }
@@ -847,8 +872,8 @@ namespace {
       in_file.remove_file();
 
       if (std::rename(out_file.c_str(), interFace.filename().c_str()) != 0) {
-        fmt::print(stderr, "ERROR: Could not update modified file {} to {}.\n", out_file,
-                   interFace.filename());
+        fmt::print(stderr, fg(fmt::color::red), "ERROR: Could not update modified file {} to {}.\n",
+                   out_file, interFace.filename());
         return;
       }
     }
