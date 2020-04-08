@@ -37,6 +37,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <regex>
@@ -96,7 +97,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "0.5";
+  std::string version = "0.6 (2020-04-08)";
 
   Ioss::EntityType get_entity_type(const std::string &type)
   {
@@ -131,6 +132,7 @@ namespace {
   void           handle_help(const std::string &topic);
   bool           handle_delete(const std::vector<std::string> &tokens, Ioss::Region &region);
   void           handle_list(const std::vector<std::string> &tokens, const Ioss::Region &region);
+  void           handle_graph(const std::vector<std::string> &tokens, const Ioss::Region &region);
   bool           handle_assembly(const std::vector<std::string> &tokens, Ioss::Region &region,
                                  bool allow_modify);
   void           update_assembly_info(Ioss::Region &region, const Assembly::Interface &interFace);
@@ -276,6 +278,9 @@ int main(int argc, char *argv[])
     }
     else if (Ioss::Utils::substr_equal(tokens[0], "list")) {
       handle_list(tokens, region);
+    }
+    else if (Ioss::Utils::substr_equal(tokens[0], "graph")) {
+      handle_graph(tokens, region);
     }
     else if (Ioss::Utils::substr_equal(tokens[0], "delete")) {
       handle_delete(tokens, region);
@@ -537,6 +542,14 @@ namespace {
                  "for assemblies\n"
                  "\t\texisting on the input database.\n");
     }
+    if (all || Ioss::Utils::substr_equal(topic, "graph")) {
+      fmt::print("\tGRAPH OUTPUT [filename]\n");
+      fmt::print(
+          "\t\tCreate a 'dot' input file with the structure of the assembly graph.\n"
+          "\t\tFile is named 'filename' or defaults to 'assembly.dot' if filename not given.\n");
+      fmt::print("\tGRAPH CHECK [NOT IMPLEMENTED]\n");
+      fmt::print("\t\tCheck validity of assembly graph--are there any cycles.\n");
+    }
   }
 
   void handle_list(const std::vector<std::string> &tokens, const Ioss::Region &region)
@@ -570,6 +583,160 @@ namespace {
     }
     else {
       handle_help("list");
+    }
+  }
+
+  class Graph
+  {
+    std::map<std::string, int>    m_vertices;
+    std::vector<std::string>      m_vertex;
+    std::vector<std::vector<int>> m_adj; // Pointer to an array containing adjacency std::lists
+
+    bool is_cyclic_internal(int v, std::vector<bool> &visited, std::vector<bool> &recStack);
+    int  vertex(const std::string &node);
+    int  size() const { return (int)m_vertices.size(); }
+
+  public:
+    Graph()  = default; // Constructor
+    ~Graph() = default;
+
+    void add_edge(const std::string &v, const std::string &w); // to add an edge to graph
+    bool is_cyclic(); // returns true if there is a cycle in this graph
+  };
+
+  int Graph::vertex(const std::string &node)
+  {
+    if (m_vertices.find(node) == m_vertices.end()) {
+      int index        = size();
+      m_vertices[node] = index;
+      m_vertex.push_back(node);
+      //      fmt::print("Node {} is index {}\n", node, index);
+    }
+    assert(node == m_vertex[m_vertices[node]]);
+    return m_vertices[node];
+  }
+
+  void Graph::add_edge(const std::string &v, const std::string &w)
+  {
+    int vv = vertex(v);
+    int ww = vertex(w);
+    if ((int)m_adj.size() <= vv) {
+      m_adj.resize(vv + 1);
+    }
+    assert((int)m_adj.size() > vv);
+    m_adj[vv].push_back(ww); // Add w to v’s std::list.
+  }
+
+  // This function is a variation of DFSUtil() in https://www.geeksforgeeks.org/archives/18212
+  bool Graph::is_cyclic_internal(int v, std::vector<bool> &visited, std::vector<bool> &recStack)
+  {
+    if (visited[v] == false) {
+      // Mark the current node as visited and part of recursion stack
+      visited[v]  = true;
+      recStack[v] = true;
+
+      // Recur for all the m_vertices adjacent to this vertex
+      for (auto i = m_adj[v].begin(); i != m_adj[v].end(); ++i) {
+        if (!visited[*i] && is_cyclic_internal(*i, visited, recStack)) {
+          if (*i != 0 && v != 0) {
+            fmt::print(fg(fmt::color::yellow), "\t*** Cycle contains {} -> {}\n", m_vertex[v],
+                       m_vertex[*i]);
+          }
+          return true;
+        }
+        else if (recStack[*i]) {
+          if (*i != 0 && v != 0) {
+            fmt::print(fg(fmt::color::yellow), "\t*** Cycle contains {} -> {}\n", m_vertex[v],
+                       m_vertex[*i]);
+          }
+          return true;
+        }
+      }
+    }
+    recStack[v] = false; // remove the vertex from recursion stack
+    return false;
+  }
+
+  // Returns true if the graph contains a cycle, else false.
+  // This function is a variation of DFS() in https://www.geeksforgeeks.org/archives/18212
+  bool Graph::is_cyclic()
+  {
+    // Mark all the m_vertices as not visited and not part of recursion
+    // stack
+    std::vector<bool> visited(size());
+    std::vector<bool> recStack(size());
+    for (int i = 0; i < size(); i++) {
+      visited[i]  = false;
+      recStack[i] = false;
+    }
+
+    // Call the recursive helper function to detect cycle in different
+    // DFS trees
+    for (int i = 0; i < size(); i++)
+      if (is_cyclic_internal(i, visited, recStack))
+        return true;
+
+    return false;
+  }
+
+  void handle_graph(const std::vector<std::string> &tokens, const Ioss::Region &region)
+  {
+    if (tokens.size() == 1) {
+      handle_help("graph");
+      return;
+    }
+
+    if (Ioss::Utils::substr_equal(tokens[1], "output")) {
+      std::string filename = "assembly.dot";
+      if (tokens.size() > 2) {
+        filename = tokens[2];
+      }
+      // Create a file containing a 'dot' representation of the assembly graph.
+      std::ofstream dot(filename);
+      fmt::print(dot, "digraph assemblies {{\n"
+                      "node [shape=rectangle]; ");
+      const auto &assemblies = region.get_assemblies();
+      for (const auto *assembly : assemblies) {
+        fmt::print(dot, "{} ", assembly->name());
+      }
+      fmt::print(dot, ";\nnode [shape=oval];\n");
+
+      for (const auto *assembly : assemblies) {
+        const auto &members = assembly->get_members();
+        for (const auto *member : members) {
+          fmt::print(dot, "{} -> {}\n", assembly->name(), member->name());
+        }
+      }
+      fmt::print(dot, "}}\n");
+      fmt::print(fg(fmt::color::cyan), "\t*** Assembly graph output to '{}'.\n", filename);
+    }
+    else if (Ioss::Utils::substr_equal(tokens[1], "check")) {
+      // Check graph for cycles.
+      Graph       assem;
+      const auto &assemblies = region.get_assemblies();
+      for (const auto *assembly : assemblies) {
+        assem.add_edge(region.name(), assembly->name());
+      }
+      for (const auto *assembly : assemblies) {
+        const auto &members = assembly->get_members();
+        for (const auto *member : members) {
+          assem.add_edge(assembly->name(), member->name());
+        }
+      }
+      if (assem.is_cyclic()) {
+        fmt::print(stderr, fg(fmt::color::yellow),
+                   "\tWARNING: Assembly graph is invalid--contains at least one cycle.\n",
+                   tokens[1]);
+      }
+      else {
+        fmt::print(stderr, fg(fmt::color::cyan), "\t*** Assembly graph is valid--no cycles.\n",
+                   tokens[1]);
+      }
+    }
+    else {
+      fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized graph option '{}'\n",
+                 tokens[1]);
+      handle_help("graph");
     }
   }
 
