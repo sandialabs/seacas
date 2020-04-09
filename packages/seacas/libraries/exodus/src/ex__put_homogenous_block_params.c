@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -44,62 +44,34 @@
  */
 int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct ex_block *blocks)
 {
-  size_t i;
-  int    conn_int_type;
-  int    status;
-  int    att_name_varid      = -1;
-  int    varid, dimid, dims[2], blk_id_ndx, blk_stat, strdim;
-  size_t start[2];
-  size_t num_blk;
-  int    cur_num_blk, numblkdim, numattrdim;
-  int    nnodperentdim = -1;
-  int    nedgperentdim = -1;
-  int    nfacperentdim = -1;
-  int    connid        = 0;
-  int    npeid;
-  char   errmsg[MAX_ERR_LENGTH];
-  const char *dnumblk     = NULL;
-  const char *vblkids     = NULL;
-  const char *vblksta     = NULL;
-  const char *vnodcon     = NULL;
-  const char *vnpecnt     = NULL;
-  const char *vedgcon     = NULL;
-  const char *vfaccon     = NULL;
-  const char *vconn       = NULL;
-  const char *vattnam     = NULL;
-  const char *vblkatt     = NULL;
-  const char *dneblk      = NULL;
-  const char *dnape       = NULL;
-  const char *dnnpe       = NULL;
-  const char *dnepe       = NULL;
-  const char *dnfpe       = NULL;
-#if NC_HAS_HDF5
-  int fill = NC_FILL_CHAR;
-#endif
+
+  int  status;
+  int  varid, dims[2];
+  char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
   ex__check_valid_file_id(exoid, __func__);
 
+  const char *vblkids = NULL;
+  const char *vblksta = NULL;
+
   switch (blocks[0].type) {
   case EX_EDGE_BLOCK:
-    dnumblk = DIM_NUM_ED_BLK;
     vblkids = VAR_ID_ED_BLK;
     vblksta = VAR_STAT_ED_BLK;
     break;
   case EX_FACE_BLOCK:
-    dnumblk = DIM_NUM_FA_BLK;
     vblkids = VAR_ID_FA_BLK;
     vblksta = VAR_STAT_FA_BLK;
     break;
   case EX_ELEM_BLOCK:
-    dnumblk = DIM_NUM_EL_BLK;
     vblkids = VAR_ID_EL_BLK;
     vblksta = VAR_STAT_EL_BLK;
     break;
   default:
     snprintf(errmsg, MAX_ERR_LENGTH,
-	     "ERROR: Bad block type (%d) specified for all blocks file id %d", blocks[0].type,
-	     exoid);
+             "ERROR: Bad block type (%d) specified for all blocks file id %d", blocks[0].type,
+             exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -108,20 +80,20 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
     long long *ids = NULL;
     if (!(ids = malloc(block_count * sizeof(long long)))) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-	       "ERROR: failed to allocate memory for block ids "
-	       "array in file id %d",
-	       exoid);
+               "ERROR: failed to allocate memory for block ids "
+               "array in file id %d",
+               exoid);
       ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
-    for (i = 0; i < block_count; i++) {
+    for (size_t i = 0; i < block_count; i++) {
       ids[i] = (long long)blocks[i].id;
     }
     /* write out block id to previously defined id array variable*/
     if ((status = nc_inq_varid(exoid, vblkids, &varid)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s ids in file id %d",
-	       ex_name_of_object(blocks[0].type), exoid);
+               ex_name_of_object(blocks[0].type), exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       free(ids);
       EX_FUNC_LEAVE(EX_FATAL);
@@ -141,14 +113,14 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
     int *stat = NULL;
     if (!(stat = malloc(block_count * sizeof(int)))) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-	       "ERROR: failed to allocate memory for status array "
-	       "array in file id %d",
-	       exoid);
+               "ERROR: failed to allocate memory for status array "
+               "array in file id %d",
+               exoid);
       ex_err_fn(exoid, __func__, errmsg, EX_MEMFAIL);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
-    for (i = 0; i < block_count; i++) {
+    for (size_t i = 0; i < block_count; i++) {
       stat[i] = (blocks[i].num_entry == 0) ? 0 : 1;
     }
 
@@ -161,9 +133,8 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
     }
 
     if ((status = nc_put_var_int(exoid, varid, stat)) != NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to store %s status to file id %d",
-               ex_name_of_object(blocks[i].type), exoid);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s status to file id %d",
+               ex_name_of_object(blocks[0].type), exoid);
       ex_err_fn(exoid, __func__, errmsg, status);
       free(stat);
       EX_FUNC_LEAVE(EX_FATAL);
@@ -180,18 +151,32 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
   }
 
   /* inquire previously defined dimensions  */
+  int strdim = 0;
   if ((status = nc_inq_dimid(exoid, DIM_STR_NAME, &strdim)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get string length in file id %d", exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
     goto error_ret;
   }
 
-  for (i = 0; i < block_count; i++) {
-    blk_id_ndx = 1 + ex__inc_file_item(exoid, ex__get_counter_list(blocks[i].type));
+  for (size_t i = 0; i < block_count; i++) {
+    int blk_id_ndx = 1 + ex__inc_file_item(exoid, ex__get_counter_list(blocks[i].type));
 
     if (blocks[i].num_entry == 0) { /* Is this a NULL element block? */
       continue;
     }
+
+    const char *vnodcon = NULL;
+    const char *vnpecnt = NULL;
+    const char *vedgcon = NULL;
+    const char *vfaccon = NULL;
+    const char *vconn   = NULL;
+    const char *vattnam = NULL;
+    const char *vblkatt = NULL;
+    const char *dneblk  = NULL;
+    const char *dnape   = NULL;
+    const char *dnnpe   = NULL;
+    const char *dnepe   = NULL;
+    const char *dnfpe   = NULL;
 
     switch (blocks[i].type) {
     case EX_EDGE_BLOCK:
@@ -236,6 +221,7 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
     }
 
     /* define some dimensions and variables*/
+    int numblkdim = 0;
     if ((status = nc_def_dim(exoid, dneblk, blocks[i].num_entry, &numblkdim)) != NC_NOERR) {
       if (status == NC_ENAMEINUSE) { /* duplicate entry */
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s %" PRId64 " already defined in file id %d",
@@ -251,6 +237,7 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
       goto error_ret; /* exit define mode and return */
     }
 
+    int nnodperentdim = -1;
     if (dnnpe && blocks[i].num_nodes_per_entry > 0) {
       /* A nfaced block would not have any nodes defined... */
       if ((status = nc_def_dim(exoid, dnnpe, blocks[i].num_nodes_per_entry, &nnodperentdim)) !=
@@ -263,6 +250,7 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
       }
     }
 
+    int nedgperentdim = -1;
     if (dnepe && blocks[i].num_edges_per_entry > 0) {
       if ((status = nc_def_dim(exoid, dnepe, blocks[i].num_edges_per_entry, &nedgperentdim)) !=
           NC_NOERR) {
@@ -274,6 +262,7 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
       }
     }
 
+    int nfacperentdim = -1;
     if (dnfpe && blocks[i].num_faces_per_entry > 0) {
       if ((status = nc_def_dim(exoid, dnfpe, blocks[i].num_faces_per_entry, &nfacperentdim)) !=
           NC_NOERR) {
@@ -288,6 +277,7 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
     /* element attribute array */
     if (blocks[i].num_attribute > 0) {
 
+      int numattrdim = 0;
       if ((status = nc_def_dim(exoid, dnape, blocks[i].num_attribute, &numattrdim)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to define number of attributes in %s %" PRId64 " in file id %d",
@@ -327,6 +317,7 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
       dims[0] = numattrdim;
       dims[1] = strdim;
 
+      int att_name_varid = -1;
       if ((status = nc_def_var(exoid, vattnam, NC_CHAR, 2, dims, &att_name_varid)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to define %s attribute name array in file id %d",
@@ -335,33 +326,33 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
         goto error_ret; /* exit define mode and return */
       }
 #if NC_HAS_HDF5
+      int fill = NC_FILL_CHAR;
       nc_def_var_fill(exoid, att_name_varid, 0, &fill);
 #endif
     }
 
-    conn_int_type = NC_INT;
+    int conn_int_type = NC_INT;
     if (ex_int64_status(exoid) & EX_BULK_INT64_DB) {
       conn_int_type = NC_INT64;
     }
 
     /* element connectivity array */
-      if (blocks[i].num_nodes_per_entry > 0) {
-        /* "Normal" (non-polyhedra) element block type */
-        dims[0] = numblkdim;
-        dims[1] = nnodperentdim;
+    if (blocks[i].num_nodes_per_entry > 0) {
+      /* "Normal" (non-polyhedra) element block type */
+      dims[0] = numblkdim;
+      dims[1] = nnodperentdim;
 
-        if ((status = nc_def_var(exoid, vnodcon, conn_int_type, 2, dims, &connid)) != NC_NOERR) {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: failed to create connectivity array for %s %" PRId64 " in file id %d",
-                   ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
-          ex_err_fn(exoid, __func__, errmsg, status);
-          goto error_ret; /* exit define mode and return */
-        }
-        ex__compress_variable(exoid, connid, 1);
+      int connid = 0;
+      if ((status = nc_def_var(exoid, vnodcon, conn_int_type, 2, dims, &connid)) != NC_NOERR) {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to create connectivity array for %s %" PRId64 " in file id %d",
+                 ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        goto error_ret; /* exit define mode and return */
       }
+      ex__compress_variable(exoid, connid, 1);
 
-    /* store element type as attribute of connectivity variable */
-    if (connid > 0) {
+      /* store element type as attribute of connectivity variable */
       if ((status = nc_put_att_text(exoid, connid, ATT_NAME_ELB, strlen(blocks[i].topology) + 1,
                                     blocks[i].topology)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s type name %s in file id %d",
@@ -371,33 +362,31 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
       }
     }
 
-      if (vedgcon && blocks[i].num_edges_per_entry) {
-        dims[0] = numblkdim;
-        dims[1] = nedgperentdim;
+    if (vedgcon && blocks[i].num_edges_per_entry) {
+      dims[0] = numblkdim;
+      dims[1] = nedgperentdim;
 
-        if ((status = nc_def_var(exoid, vedgcon, conn_int_type, 2, dims, &varid)) != NC_NOERR) {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: failed to create edge connectivity array for %s %" PRId64
-                   " in file id %d",
-                   ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
-          ex_err_fn(exoid, __func__, errmsg, status);
-          goto error_ret; /* exit define mode and return */
-        }
+      if ((status = nc_def_var(exoid, vedgcon, conn_int_type, 2, dims, &varid)) != NC_NOERR) {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to create edge connectivity array for %s %" PRId64 " in file id %d",
+                 ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        goto error_ret; /* exit define mode and return */
       }
+    }
 
-      if (vfaccon && blocks[i].num_faces_per_entry) {
-        dims[0] = numblkdim;
-        dims[1] = nfacperentdim;
+    if (vfaccon && blocks[i].num_faces_per_entry) {
+      dims[0] = numblkdim;
+      dims[1] = nfacperentdim;
 
-        if ((status = nc_def_var(exoid, vfaccon, conn_int_type, 2, dims, &varid)) != NC_NOERR) {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: failed to create face connectivity array for %s %" PRId64
-                   " in file id %d",
-                   ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
-          ex_err_fn(exoid, __func__, errmsg, status);
-          goto error_ret; /* exit define mode and return */
-        }
+      if ((status = nc_def_var(exoid, vfaccon, conn_int_type, 2, dims, &varid)) != NC_NOERR) {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to create face connectivity array for %s %" PRId64 " in file id %d",
+                 ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        goto error_ret; /* exit define mode and return */
       }
+    }
   }
 
   /* leave define mode  */
@@ -406,7 +395,7 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
   }
 
   /* ======================================================================== */
-  for (i = 0; i < block_count; i++) {
+  for (size_t i = 0; i < block_count; i++) {
     switch (blocks[i].type) {
     case EX_EDGE_BLOCK: vblkids = VAR_ID_ED_BLK; break;
     case EX_FACE_BLOCK: vblkids = VAR_ID_FA_BLK; break;
@@ -414,6 +403,7 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
     default: EX_FUNC_LEAVE(EX_FATAL); /* should have been handled earlier; quiet compiler here */
     }
 
+    int att_name_varid = -1;
     nc_inq_varid(exoid, vblkids, &att_name_varid);
 
     if (blocks[i].num_attribute > 0 && att_name_varid >= 0) {
@@ -421,14 +411,14 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
          write anything; avoids corruption in some cases.
       */
       size_t count[2];
+      size_t start[2];
       char * text = "";
-      size_t j;
 
       count[0] = 1;
       start[1] = 0;
       count[1] = strlen(text) + 1;
 
-      for (j = 0; j < blocks[i].num_attribute; j++) {
+      for (size_t j = 0; j < blocks[i].num_attribute; j++) {
         start[0] = j;
         nc_put_vara_text(exoid, att_name_varid, start, count, text);
       }
