@@ -30,7 +30,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "assembly_interface.h"
+#include "modify_interface.h"
 
 #include <cassert>
 #include <cstddef>
@@ -145,9 +145,9 @@ namespace {
   bool           handle_assembly(const std::vector<std::string> &tokens, Ioss::Region &region,
                                  bool allow_modify);
   bool           handle_attribute(const std::vector<std::string> &tokens, Ioss::Region &region);
-  void           update_assembly_info(Ioss::Region &region, const Assembly::Interface &interFace);
+  void           update_assembly_info(Ioss::Region &region, const Modify::Interface &interFace);
 
-  void set_db_properties(const Assembly::Interface &interFace, Ioss::DatabaseIO *dbi);
+  void set_db_properties(const Modify::Interface &interFace, Ioss::DatabaseIO *dbi);
 
   void info_entity(const Ioss::StructuredBlock *sb, bool show_property = false);
   void info_entity(const Ioss::NodeBlock *nb, bool show_property = false);
@@ -205,7 +205,7 @@ namespace {
     return next_id * 100;
   }
 
-  Ioss::PropertyManager set_properties(const Assembly::Interface &interFace)
+  Ioss::PropertyManager set_properties(const Modify::Interface &interFace)
   {
     Ioss::PropertyManager properties{};
     return properties;
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
   }
 
   fmt::print(fg(fmt::color::cyan), "\n *** {}, Version {}\n", codename, version);
-  Assembly::Interface interFace;
+  Modify::Interface interFace;
   interFace.parse_options(argc, argv);
 
   Ioss::Init::Initializer io;
@@ -444,7 +444,7 @@ namespace {
     }
   }
 
-  void set_db_properties(const Assembly::Interface &interFace, Ioss::DatabaseIO *dbi)
+  void set_db_properties(const Modify::Interface &interFace, Ioss::DatabaseIO *dbi)
   {
     std::string inpfile = interFace.filename();
 
@@ -464,7 +464,7 @@ namespace {
       fmt::print("\t\tEnd command input and exit with no changes to database.\n");
 
       fmt::print("\n\tALLOW MODIFICATIONS\n");
-      fmt::print("\t\tBy default, io_assembly will only allow creation of new assemblies.\n"
+      fmt::print("\t\tBy default, io_modify will only allow creation of new assemblies.\n"
                  "\t\tIf this command is specified, then can modify assemblies that already exist "
                  "in database.\n"
                  "\t\tThis will cause the database to be rewritten. Without this option, it is "
@@ -1045,7 +1045,7 @@ namespace {
     return names;
   }
 
-  void update_assembly_info(Ioss::Region &region, const Assembly::Interface &interFace)
+  void update_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
   {
     std::vector<Ioex::Assembly> ex_assemblies;
     bool                        modify_existing = false;

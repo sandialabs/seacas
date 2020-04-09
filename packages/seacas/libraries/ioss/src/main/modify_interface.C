@@ -34,8 +34,8 @@
 #include "Ioss_CodeTypes.h"
 #include "Ioss_FileInfo.h"
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
-#include "assembly_interface.h"
 #include "fmt/ostream.h"
+#include "modify_interface.h"
 #include <cstddef>  // for nullptr
 #include <cstdlib>  // for exit, EXIT_SUCCESS, getenv
 #include <iostream> // for operator<<, basic_ostream, etc
@@ -59,11 +59,11 @@ namespace {
   }
 } // namespace
 
-Assembly::Interface::Interface() { enroll_options(); }
+Modify::Interface::Interface() { enroll_options(); }
 
-Assembly::Interface::~Interface() = default;
+Modify::Interface::~Interface() = default;
 
-void Assembly::Interface::enroll_options()
+void Modify::Interface::enroll_options()
 {
   options_.usage("[options] basename");
 
@@ -72,7 +72,7 @@ void Assembly::Interface::enroll_options()
   options_.enroll("version", Ioss::GetLongOption::NoValue, "Print version and exit", nullptr);
 
   options_.enroll("allow_modifications", Ioss::GetLongOption::NoValue,
-                  "By default, io_assembly will only allow creation of new assemblies.\n"
+                  "By default, io_modify will only allow creation of new assemblies.\n"
                   "\t\tIf this option is specified, then can modify assemblies that already exist "
                   "in database.\n"
                   "\t\tThis will cause the database to be rewritten. Without this option, it is "
@@ -99,14 +99,14 @@ void Assembly::Interface::enroll_options()
                   nullptr);
 }
 
-bool Assembly::Interface::parse_options(int argc, char **argv)
+bool Modify::Interface::parse_options(int argc, char **argv)
 {
   // Get options from environment variable also...
-  char *options = getenv("IO_ASSEMBLY_OPTIONS");
+  char *options = getenv("IO_MODIFY_OPTIONS");
   if (options != nullptr) {
     fmt::print(
         stderr,
-        "\nThe following options were specified via the IO_ASSEMBLY_OPTIONS environment variable:\n"
+        "\nThe following options were specified via the IO_MODIFY_OPTIONS environment variable:\n"
         "\t{}\n\n",
         options);
     options_.parse(options, Ioss::GetLongOption::basename(*argv));
@@ -119,8 +119,7 @@ bool Assembly::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage(std::cerr);
-    fmt::print(stderr,
-               "\n\tCan also set options via IO_ASSEMBLY_OPTIONS environment variable.\n\n");
+    fmt::print(stderr, "\n\tCan also set options via IO_MODIFY_OPTIONS environment variable.\n\n");
     fmt::print(stderr, "\t->->-> Send email to gdsjaar@sandia.gov for {} support.<-<-<-\n",
                options_.program_name());
     exit(EXIT_SUCCESS);

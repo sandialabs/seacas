@@ -31,15 +31,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef info_SystemInterface_h
-#define info_SystemInterface_h
+#ifndef modify_SystemInterface_h
+#define modify_SystemInterface_h
 
 #include "Ioss_GetLongOpt.h" // for GetLongOption
 #include <string>            // for string
 
 /** \brief A special namespace for the io_info demonstration program interFace.
  */
-namespace Assembly {
+namespace Modify {
   class Interface
   {
   public:
@@ -60,5 +60,5 @@ namespace Assembly {
     std::string         filename_{};
     bool                allowModification_{false};
   };
-} // namespace Assembly
+} // namespace Modify
 #endif
