@@ -115,9 +115,6 @@ namespace {
                              char suffix_separator);
 
   template <typename T>
-  void write_reduction_attributes(int exoid, const std::vector<T *> &entities);
-
-  template <typename T>
   void generate_block_truth_table(Ioex::VariableNameMap &variables, Ioss::IntVector &truth_table,
                                   std::vector<T *> &blocks, char field_suffix_separator);
 
@@ -2301,18 +2298,18 @@ namespace Ioex {
     // Write "reduction" attributes...
     std::vector<Ioss::Region *> regions;
     regions.push_back(get_region());
-    write_reduction_attributes(get_file_pointer(), regions);
-    write_reduction_attributes(get_file_pointer(), get_region()->get_nodesets());
-    write_reduction_attributes(get_file_pointer(), get_region()->get_nodesets());
-    write_reduction_attributes(get_file_pointer(), get_region()->get_edgesets());
-    write_reduction_attributes(get_file_pointer(), get_region()->get_facesets());
-    write_reduction_attributes(get_file_pointer(), get_region()->get_elementsets());
-    write_reduction_attributes(get_file_pointer(), get_region()->get_node_blocks());
-    write_reduction_attributes(get_file_pointer(), get_region()->get_edge_blocks());
-    write_reduction_attributes(get_file_pointer(), get_region()->get_face_blocks());
-    write_reduction_attributes(get_file_pointer(), get_region()->get_element_blocks());
-    write_reduction_attributes(get_file_pointer(), get_region()->get_assemblies());
-    write_reduction_attributes(get_file_pointer(), get_region()->get_blobs());
+    Ioex::write_reduction_attributes(get_file_pointer(), regions);
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_nodesets());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_nodesets());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_edgesets());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_facesets());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_elementsets());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_node_blocks());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_edge_blocks());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_face_blocks());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_element_blocks());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_assemblies());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_blobs());
 
     // Write coordinate names...
     char const *labels[3];
@@ -2330,47 +2327,6 @@ namespace Ioex {
 } // namespace Ioex
 
 namespace {
-  template <typename T> void write_reduction_attributes(int exoid, const std::vector<T *> &entities)
-  {
-    // For the entity, write all "reduction attributes"
-    for (const auto &ge : entities) {
-      Ioss::NameList properties;
-      ge->property_describe(Ioss::Property::Origin::ATTRIBUTE, &properties);
-
-      auto type = Ioex::map_exodus_type(ge->type());
-      auto id   = type == EX_GLOBAL ? 0 : ge->get_property("id").get_int();
-
-      double  rval = 0.0;
-      int64_t ival = 0;
-      for (const auto &property_name : properties) {
-        auto prop = ge->get_property(property_name);
-
-        switch (prop.get_type()) {
-        case Ioss::Property::BasicType::REAL:
-          rval = prop.get_real();
-          ex_put_double_attribute(exoid, type, id, property_name.c_str(), 1, &rval);
-          break;
-        case Ioss::Property::BasicType::INTEGER:
-          ival = prop.get_int();
-          ex_put_integer_attribute(exoid, type, id, property_name.c_str(), 1, &ival);
-          break;
-        case Ioss::Property::BasicType::STRING:
-          ex_put_text_attribute(exoid, type, id, property_name.c_str(), prop.get_string().c_str());
-          break;
-        case Ioss::Property::BasicType::VEC_INTEGER:
-          ex_put_integer_attribute(exoid, type, id, property_name.c_str(),
-                                   prop.get_vec_int().size(), prop.get_vec_int().data());
-          break;
-        case Ioss::Property::BasicType::VEC_DOUBLE:
-          ex_put_double_attribute(exoid, type, id, property_name.c_str(),
-                                  prop.get_vec_double().size(), prop.get_vec_double().data());
-          break;
-        default:; // Do nothing
-        }
-      }
-    }
-  }
-
   template <typename T>
   void write_attribute_names(int exoid, ex_entity_type type, const std::vector<T *> &entities,
                              const char suffix_separator)
