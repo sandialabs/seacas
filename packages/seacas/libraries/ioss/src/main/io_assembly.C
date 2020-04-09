@@ -80,6 +80,7 @@
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
+#include <exodus/Ioex_Utils.h>
 #include <tokenize.h>
 
 #include <fmt/color.h>
@@ -99,6 +100,8 @@ namespace {
   std::string codename;
   std::string version = "0.6 (2020-04-08)";
 
+  std::vector<Ioss::GroupingEntity *> attributes_modified;
+
   Ioss::EntityType get_entity_type(const std::string &type)
   {
     if (Ioss::Utils::substr_equal(type, "elementblock")) {
@@ -106,6 +109,12 @@ namespace {
     }
     else if (Ioss::Utils::substr_equal(type, "block")) {
       return Ioss::ELEMENTBLOCK;
+    }
+    else if (Ioss::Utils::substr_equal(type, "structuredblock")) {
+      return Ioss::STRUCTUREDBLOCK;
+    }
+    else if (Ioss::Utils::substr_equal(type, "nodeblock")) {
+      return Ioss::NODEBLOCK;
     }
     else if (Ioss::Utils::substr_equal(type, "nodeset")) {
       return Ioss::NODESET;
@@ -135,21 +144,34 @@ namespace {
   void           handle_graph(const std::vector<std::string> &tokens, const Ioss::Region &region);
   bool           handle_assembly(const std::vector<std::string> &tokens, Ioss::Region &region,
                                  bool allow_modify);
+  bool           handle_attribute(const std::vector<std::string> &tokens, Ioss::Region &region);
   void           update_assembly_info(Ioss::Region &region, const Assembly::Interface &interFace);
 
   void set_db_properties(const Assembly::Interface &interFace, Ioss::DatabaseIO *dbi);
 
-  void info_elementblock(const Ioss::Region &region);
-#if 0
-  void info_structuredblock(const Ioss::Region &region);
-  void info_aliases(const Ioss::Region &region, const Ioss::GroupingEntity *ige, bool nl_pre,
-                    bool nl_post);
-#endif
-  void info_nodesets(const Ioss::Region &region);
+  void info_entity(const Ioss::StructuredBlock *sb, bool show_property = false);
+  void info_entity(const Ioss::NodeBlock *nb, bool show_property = false);
+  void info_entity(const Ioss::ElementBlock *eb, bool show_property = false);
+  void info_entity(const Ioss::NodeSet *ns, bool show_property = false);
+  void info_entity(const Ioss::SideSet *ss, bool show_property = false);
+  void info_entity(const Ioss::Assembly *as, bool show_property = false);
+  void info_entity(const Ioss::Blob *blob, bool show_property = false);
 
-  void info_sidesets(const Ioss::Region &region);
-  void info_assemblies(const Ioss::Region &region);
-  void info_blobs(const Ioss::Region &region);
+  template <typename T>
+  void info_entities(const std::vector<T *> &entities, const std::string &type,
+                     bool show_property = false)
+  {
+    if (entities.empty()) {
+      fmt::print("\n\t*** There are no {} in this model.\n", type);
+      return;
+    }
+    for (const T *ge : entities) {
+      info_entity(ge, show_property);
+    }
+  }
+
+  void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
+                     const std::string &header, const std::string &suffix = "\n\t");
 
   std::string name(const Ioss::GroupingEntity *entity)
   {
@@ -288,6 +310,9 @@ int main(int argc, char *argv[])
     else if (Ioss::Utils::substr_equal(tokens[0], "assembly")) {
       changed |= handle_assembly(tokens, region, allow_modify);
     }
+    else if (Ioss::Utils::substr_equal(tokens[0], "attribute")) {
+      changed |= handle_attribute(tokens, region);
+    }
     else {
       fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized command: {}\n",
                  tokens[0]);
@@ -305,175 +330,119 @@ int main(int argc, char *argv[])
 }
 
 namespace {
-#if 0
-  void info_structuredblock(const Ioss::Region &region)
+  void info_entity(const Ioss::StructuredBlock *sb, bool show_property)
   {
-    bool                                  parallel = region.get_database()->is_parallel();
-    const Ioss::StructuredBlockContainer &sbs      = region.get_structured_blocks();
-    if (sbs.empty()) {
-      fmt::print("\n\t*** There are no structured blocks in this model.\n");
-      return;
+    fmt::print("\n{} {}", name(sb), sb->get_property("ni_global").get_int());
+
+    int64_t num_dim = sb->get_property("component_degree").get_int();
+    if (num_dim > 1) {
+      fmt::print("x{}", sb->get_property("nj_global").get_int());
     }
-    for (auto sb : sbs) {
-      int64_t num_cell = sb->get_property("cell_count").get_int();
-      int64_t num_node = sb->get_property("node_count").get_int();
-      int64_t num_dim  = sb->get_property("component_degree").get_int();
-
-      fmt::print("\n{} {}", name(sb), sb->get_property("ni_global").get_int());
-      if (num_dim > 1) {
-        fmt::print("x{}", sb->get_property("nj_global").get_int());
-      }
-      if (num_dim > 2) {
-        fmt::print("x{}", sb->get_property("nk_global").get_int());
-      }
-
-      if (parallel) {
-        fmt::print(" [{}x{}x{}, Offset = {}, {}, {}] ", sb->get_property("ni").get_int(),
-                   sb->get_property("nj").get_int(), sb->get_property("nk").get_int(),
-                   sb->get_property("offset_i").get_int(), sb->get_property("offset_j").get_int(),
-                   sb->get_property("offset_k").get_int());
-      }
-      fmt::print("{:14n} cells, {:14n} nodes\n", num_cell, num_node);
-
-      if (!sb->m_zoneConnectivity.empty()) {
-        fmt::print("\tConnectivity with other blocks:\n");
-        for (const auto &zgc : sb->m_zoneConnectivity) {
-          fmt::print("{}\n", zgc);
-        }
-      }
-      if (!sb->m_boundaryConditions.empty()) {
-        fmt::print("\tBoundary Conditions:\n");
-        for (const auto &bc : sb->m_boundaryConditions) {
-          fmt::print("{}\n", bc);
-        }
-      }
+    if (num_dim > 2) {
+      fmt::print("x{}", sb->get_property("nk_global").get_int());
     }
-  }
-#endif
 
-  void info_assemblies(const Ioss::Region &region)
-  {
-    const auto &assem = region.get_assemblies();
-    if (assem.empty()) {
-      fmt::print("\n\t*** There are no assemblies in this model.\n");
-      return;
-    }
-    for (auto as : assem) {
-      std::string modifier;
-      if (as->property_exists("created")) {
-        modifier = " [created]";
-      }
-      else if (as->property_exists("modified")) {
-        modifier = " [modified]";
-      }
+    fmt::print(" [{}x{}x{}, Offset = {}, {}, {}] ", sb->get_property("ni").get_int(),
+               sb->get_property("nj").get_int(), sb->get_property("nk").get_int(),
+               sb->get_property("offset_i").get_int(), sb->get_property("offset_j").get_int(),
+               sb->get_property("offset_k").get_int());
 
-      fmt::print("\n{} id: {:6d}, contains: {} member(s) of type {:>10s}.{}\n\tMembers: ", name(as),
-                 id(as), as->member_count(), as->contains_string(), modifier);
-      for (const auto mem : as->get_members()) {
-        fmt::print("'{}' ", mem->name());
-      }
-      fmt::print("\n");
+    int64_t num_cell = sb->get_property("cell_count").get_int();
+    int64_t num_node = sb->get_property("node_count").get_int();
+    fmt::print("{:14n} cells, {:14n} nodes\n", num_cell, num_node);
+    if (show_property) {
+      info_property(sb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
-  void info_blobs(const Ioss::Region &region)
+  void info_entity(const Ioss::Assembly *as, bool show_property)
   {
-    const auto &blobs = region.get_blobs();
-    if (blobs.empty()) {
-      fmt::print("\n\t*** There are no blobs in this model.\n");
-      return;
+    std::string modifier;
+    if (as->property_exists("created")) {
+      modifier = " [created]";
     }
-    for (auto blob : blobs) {
-      fmt::print("\n{} id: {:6d}, contains: {} item(s).\n", name(blob), id(blob),
-                 blob->entity_count());
+    else if (as->property_exists("modified")) {
+      modifier = " [modified]";
+    }
+
+    fmt::print("\n{} id: {:6d}, contains: {} member(s) of type {:>10s}.{}\n\tMembers: ", name(as),
+               id(as), as->member_count(), as->contains_string(), modifier);
+    for (const auto mem : as->get_members()) {
+      fmt::print("'{}' ", mem->name());
+    }
+    fmt::print("\n");
+    if (show_property) {
+      info_property(as, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
-  void info_elementblock(const Ioss::Region &region)
+  void info_entity(const Ioss::Blob *blob, bool show_property)
   {
-    const Ioss::ElementBlockContainer &ebs = region.get_element_blocks();
-    if (ebs.empty()) {
-      fmt::print("\n\t*** There are no element blocks in this model.\n");
-      return;
-    }
-    for (auto eb : ebs) {
-      int64_t num_elem = eb->entity_count();
-
-      std::string type       = eb->get_property("topology_type").get_string();
-      int64_t     num_attrib = eb->get_property("attribute_count").get_int();
-      fmt::print("\n{} id: {:6d}, topology: {:>10s}, {:14n} elements, {:3d} attributes.\n",
-                 name(eb), id(eb), type, num_elem, num_attrib);
+    fmt::print("\n{} id: {:6d}, contains: {} item(s).\n", name(blob), id(blob),
+               blob->entity_count());
+    if (show_property) {
+      info_property(blob, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
-  void info_sidesets(const Ioss::Region &region)
+  void info_entity(const Ioss::ElementBlock *eb, bool show_property)
   {
-    const Ioss::SideSetContainer &fss = region.get_sidesets();
-    if (fss.empty()) {
-      fmt::print("\n\t*** There are no side sets in this model.\n");
-      return;
+    int64_t num_elem = eb->entity_count();
+
+    std::string type       = eb->get_property("topology_type").get_string();
+    int64_t     num_attrib = eb->get_property("attribute_count").get_int();
+    fmt::print("\n{} id: {:6d}, topology: {:>10s}, {:14n} elements, {:3d} attributes.\n", name(eb),
+               id(eb), type, num_elem, num_attrib);
+    if (show_property) {
+      info_property(eb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
-    for (auto fs : fss) {
-      fmt::print("\n{} id: {:6d}", name(fs), id(fs));
-      if (fs->property_exists("bc_type")) {
+  }
+
+  void info_entity(const Ioss::SideSet *ss, bool show_property)
+  {
+    fmt::print("\n{} id: {:6d}", name(ss), id(ss));
+    if (ss->property_exists("bc_type")) {
 #if defined(SEACAS_HAVE_CGNS)
-        auto bc_type = fs->get_property("bc_type").get_int();
-        fmt::print(", boundary condition type: {} ({})\n", BCTypeName[bc_type], bc_type);
+      auto bc_type = ss->get_property("bc_type").get_int();
+      fmt::print(", boundary condition type: {} ({})\n", BCTypeName[bc_type], bc_type);
 #else
-        fmt::print(", boundary condition type: {}\n", fs->get_property("bc_type").get_int());
+      fmt::print(", boundary condition type: {}\n", ss->get_property("bc_type").get_int());
 #endif
-      }
-      const Ioss::SideBlockContainer &fbs = fs->get_side_blocks();
-      for (auto fb : fbs) {
-        int64_t count      = fb->entity_count();
-        int64_t num_attrib = fb->get_property("attribute_count").get_int();
-        int64_t num_dist   = fb->get_property("distribution_factor_count").get_int();
-        fmt::print("\t{}, {:8n} sides, {:3d} attributes, {:8n} distribution factors.\n", name(fb),
-                   count, num_attrib, num_dist);
-      }
+    }
+    const Ioss::SideBlockContainer &fbs = ss->get_side_blocks();
+    for (auto fb : fbs) {
+      int64_t count      = fb->entity_count();
+      int64_t num_attrib = fb->get_property("attribute_count").get_int();
+      int64_t num_dist   = fb->get_property("distribution_factor_count").get_int();
+      fmt::print("\t{}, {:8n} sides, {:3d} attributes, {:8n} distribution factors.\n", name(fb),
+                 count, num_attrib, num_dist);
+    }
+    if (show_property) {
+      info_property(ss, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
-  void info_nodesets(const Ioss::Region &region)
+  void info_entity(const Ioss::NodeSet *ns, bool show_property)
   {
-    const Ioss::NodeSetContainer &nss = region.get_nodesets();
-    if (nss.empty()) {
-      fmt::print("\n\t*** There are no node sets in this model.\n");
-      return;
-    }
-    for (auto ns : nss) {
-      int64_t count      = ns->entity_count();
-      int64_t num_attrib = ns->get_property("attribute_count").get_int();
-      int64_t num_dist   = ns->get_property("distribution_factor_count").get_int();
-      fmt::print("\n{} id: {:6d}, {:8n} nodes, {:3d} attributes, {:8n} distribution factors.\n",
-                 name(ns), id(ns), count, num_attrib, num_dist);
+    int64_t count      = ns->entity_count();
+    int64_t num_attrib = ns->get_property("attribute_count").get_int();
+    int64_t num_dist   = ns->get_property("distribution_factor_count").get_int();
+    fmt::print("\n{} id: {:6d}, {:8n} nodes, {:3d} attributes, {:8n} distribution factors.\n",
+               name(ns), id(ns), count, num_attrib, num_dist);
+    if (show_property) {
+      info_property(ns, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
-#if 0
-  void info_aliases(const Ioss::Region &region, const Ioss::GroupingEntity *ige, bool nl_pre,
-                    bool nl_post)
+  void info_entity(const Ioss::NodeBlock *nb, bool show_property)
   {
-    std::vector<std::string> aliases;
-    if (region.get_aliases(ige->name(), aliases) > 0) {
-      if (nl_pre) {
-        fmt::print("\n");
-      }
-      fmt::print("\tAliases: ");
-      for (size_t i = 0; i < aliases.size(); i++) {
-        if (aliases[i] != ige->name()) {
-          if (i > 0) {
-            fmt::print(", ");
-          }
-          fmt::print("{}", aliases[i]);
-        }
-      }
-      if (nl_post) {
-        fmt::print("\n");
-      }
+    int64_t num_nodes  = nb->entity_count();
+    int64_t num_attrib = nb->get_property("attribute_count").get_int();
+    fmt::print("\n{} {:14n} nodes, {:3d} attributes.\n", name(nb), num_nodes, num_attrib);
+    if (show_property) {
+      info_property(nb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
-#endif
 
   void set_db_properties(const Assembly::Interface &interFace, Ioss::DatabaseIO *dbi)
   {
@@ -543,12 +512,23 @@ namespace {
                  "\t\texisting on the input database.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "graph")) {
-      fmt::print("\tGRAPH OUTPUT [filename]\n");
+      fmt::print("\n\tGRAPH OUTPUT [filename]\n");
       fmt::print(
           "\t\tCreate a 'dot' input file with the structure of the assembly graph.\n"
           "\t\tFile is named 'filename' or defaults to 'assembly.dot' if filename not given.\n");
       fmt::print("\tGRAPH CHECK [NOT IMPLEMENTED]\n");
       fmt::print("\t\tCheck validity of assembly graph--are there any cycles.\n");
+    }
+    if (all || Ioss::Utils::substr_equal(topic, "attribute")) {
+      // ATTRIBUTE {{ent_name}} ADD {{att_name}} STRING {{value}}
+      // ATTRIBUTE {{ent_name}} ADD {{att_name}} DOUBLE {{values...}}
+      // ATTRIBUTE {{ent_name}} ADD {{att_name}} INTEGER {{values...}}
+      // ATTRIBUTE LIST {{ent_name}} ...
+      fmt::print("\n\tATTRIBUTE {{ent_name}} ADD {{att_name}} STRING {{value}}\n");
+      fmt::print("\tATTRIBUTE {{ent_name}} ADD {{att_name}} DOUBLE {{values...}}\n");
+      fmt::print("\tATTRIBUTE {{ent_name}} NAME {{att_name}} INTEGER {{values...}}\n");
+      fmt::print("\t\tAdd an attribute to the specified entity ('type' and 'name').\n"
+                 "\t\tThe attribute will be named 'att_name' with value(s) 'values...'\n");
     }
   }
 
@@ -558,22 +538,28 @@ namespace {
       if (Ioss::Utils::substr_equal(tokens[1], "summary")) {
         region.output_summary(std::cout);
       }
-      else if (Ioss::Utils::substr_equal(tokens[1], "element") ||
+      else if (Ioss::Utils::substr_equal(tokens[1], "elementblock") ||
                Ioss::Utils::substr_equal(tokens[1], "block")) {
-        info_elementblock(region);
+        info_entities(region.get_element_blocks(), "Element Blocks");
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "assembly") ||
                Ioss::Utils::substr_equal(tokens[1], "assemblies")) {
-        info_assemblies(region);
+        info_entities(region.get_assemblies(), "Assemblies");
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "nodeset")) {
-        info_nodesets(region);
+        info_entities(region.get_nodesets(), "NodeSets");
+      }
+      else if (Ioss::Utils::substr_equal(tokens[1], "nodeblock")) {
+        info_entities(region.get_node_blocks(), "Node Block");
+      }
+      else if (Ioss::Utils::substr_equal(tokens[1], "structuredlock")) {
+        info_entities(region.get_structured_blocks(), "Structured Blocks");
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "sideset")) {
-        info_sidesets(region);
+        info_entities(region.get_sidesets(), "SideSets");
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "blobs")) {
-        info_blobs(region);
+        info_entities(region.get_blobs(), "Blobs");
       }
       else {
         fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized list option '{}'\n",
@@ -778,6 +764,77 @@ namespace {
     }
     else {
       handle_help("delete");
+    }
+    return false;
+  }
+
+  bool handle_attribute(const std::vector<std::string> &tokens, Ioss::Region &region)
+  {
+    //     0          1        2       3         4       5...
+    // ATTRIBUTE {{ent_name}} ADD {{att_name}} STRING {{value}}
+    // ATTRIBUTE {{ent_name}} ADD {{att_name}} DOUBLE {{values...}}
+    // ATTRIBUTE {{ent_name}} ADD {{att_name}} INTEGER {{values...}}
+    // ATTRIBUTE LIST {{ent_name}} ...
+
+    // Get requested entity...
+    if (Ioss::Utils::substr_equal(tokens[2], "add")) {
+      // Must be at least 6 tokens...
+      if (tokens.size() < 6) {
+        fmt::print(stderr, fg(fmt::color::red),
+                   "ERROR: ATTRIBUTE Command does not have enough tokens to be valid.\n"
+                   "\t\t{}\n",
+                   fmt::join(tokens, " "));
+        handle_help("attribute");
+        return false;
+      }
+
+      auto *ge = region.get_entity(tokens[1]);
+      if (ge == nullptr) {
+        fmt::print(stderr, fg(fmt::color::red), "ERROR: Entity '{}' not found.\n", tokens[1]);
+        return false;
+      }
+
+      // Now get name of attribute/property to create...
+      std::string att_name = tokens[3];
+
+      // Now, the attribute type and whether vector or scalar...
+      size_t value_count = tokens.size() - 5;
+      if (Ioss::Utils::substr_equal(tokens[4], "string")) {
+        std::string value = tokens[5];
+        for (size_t i = 6; i < tokens.size(); i++) {
+          value += " " + tokens[i];
+        }
+        ge->property_add(Ioss::Property(att_name, value, Ioss::Property::ATTRIBUTE));
+      }
+      else if (Ioss::Utils::substr_equal(tokens[4], "double")) {
+        std::vector<double> values(value_count);
+        for (size_t i = 0; i < value_count; i++) {
+          double val = std::stod(tokens[i + 5]);
+          values[i]  = val;
+        }
+        ge->property_add(Ioss::Property(att_name, values, Ioss::Property::ATTRIBUTE));
+      }
+      else if (Ioss::Utils::substr_equal(tokens[4], "integer")) {
+        std::vector<int> values(value_count);
+        for (size_t i = 0; i < value_count; i++) {
+          int val   = std::stoi(tokens[i + 5]);
+          values[i] = val;
+        }
+        ge->property_add(Ioss::Property(att_name, values, Ioss::Property::ATTRIBUTE));
+      }
+      attributes_modified.push_back(ge);
+      return true;
+    }
+    else if (Ioss::Utils::substr_equal(tokens[1], "list")) {
+      for (size_t i = 2; i < tokens.size(); i++) {
+        auto *ge = region.get_entity(tokens[i]);
+        if (ge != nullptr) {
+          std::string prefix =
+              fmt::format("\n{} id: {:6d}\n\tAttributes (Reduction): ", name(ge), id(ge));
+          info_property(ge, Ioss::Property::ATTRIBUTE, prefix, "\t");
+        }
+      }
+      return false;
     }
     return false;
   }
@@ -1031,6 +1088,7 @@ namespace {
       Ioex::Internals::update_assembly_data(out_exoid, ex_assemblies, 1);
       Ioex::Internals::copy_database(exoid, out_exoid);
       Ioex::Internals::update_assembly_data(out_exoid, ex_assemblies, 2);
+      Ioex::write_reduction_attributes(exoid, attributes_modified);
 
       // Now, remove old file and replace with new...
       region.get_database()->closeDatabase();
@@ -1046,6 +1104,52 @@ namespace {
     }
     else {
       Ioex::Internals::update_assembly_data(exoid, ex_assemblies);
+      Ioex::write_reduction_attributes(exoid, attributes_modified);
     }
   }
+
+  void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
+                     const std::string &header, const std::string &suffix)
+  {
+    Ioss::NameList properties;
+    ige->property_describe(origin, &properties);
+
+    if (properties.empty()) {
+      if (!header.empty()) {
+        fmt::print("{}{} *** No attributes ***\n", header, suffix);
+      }
+      return;
+    }
+
+    if (!header.empty()) {
+      fmt::print("{}{}", header, suffix);
+    }
+
+    int num_out = 0;
+    for (const auto &property_name : properties) {
+      fmt::print("{:>s}: ", property_name);
+      auto prop = ige->get_property(property_name);
+      switch (prop.get_type()) {
+      case Ioss::Property::BasicType::REAL: fmt::print("{}\t", prop.get_real()); break;
+      case Ioss::Property::BasicType::INTEGER: fmt::print("{}\t", prop.get_int()); break;
+      case Ioss::Property::BasicType::STRING: fmt::print("'{}'\t", prop.get_string()); break;
+      case Ioss::Property::BasicType::VEC_INTEGER:
+        fmt::print("{}\t", fmt::join(prop.get_vec_int(), "  "));
+        break;
+      case Ioss::Property::BasicType::VEC_DOUBLE:
+        fmt::print("{}\t", fmt::join(prop.get_vec_double(), "  "));
+        break;
+      default:; // Do nothing
+      }
+      num_out++;
+      if (num_out >= 3) {
+        fmt::print("\n\t");
+        num_out = 8;
+      }
+    }
+    if (!header.empty()) {
+      fmt::print("\n");
+    }
+  }
+
 } // nameSpace
