@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2017 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -127,5 +127,14 @@ namespace Ioex {
                                       Ioex::TopologyMap &    side_map,
                                       Ioss::SurfaceSplitType split_type,
                                       const std::string &    surface_name);
+
+  void                       write_reduction_attributes(int exoid, const Ioss::GroupingEntity *ge);
+  template <typename T> void write_reduction_attributes(int exoid, const std::vector<T *> &entities)
+  {
+    // For the entity, write all "reduction attributes"
+    for (const auto &ge : entities) {
+      write_reduction_attributes(exoid, ge);
+    }
+  }
 } // namespace Ioex
 #endif

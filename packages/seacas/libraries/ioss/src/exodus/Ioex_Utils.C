@@ -717,4 +717,41 @@ namespace Ioex {
     }
   }
 
+  void write_reduction_attributes(int exoid, const Ioss::GroupingEntity *ge)
+  {
+    Ioss::NameList properties;
+    ge->property_describe(Ioss::Property::Origin::ATTRIBUTE, &properties);
+
+    auto type = Ioex::map_exodus_type(ge->type());
+    auto id   = type == EX_GLOBAL ? 0 : ge->get_property("id").get_int();
+
+    double  rval = 0.0;
+    int64_t ival = 0;
+    for (const auto &property_name : properties) {
+      auto prop = ge->get_property(property_name);
+
+      switch (prop.get_type()) {
+      case Ioss::Property::BasicType::REAL:
+        rval = prop.get_real();
+        ex_put_double_attribute(exoid, type, id, property_name.c_str(), 1, &rval);
+        break;
+      case Ioss::Property::BasicType::INTEGER:
+        ival = prop.get_int();
+        ex_put_integer_attribute(exoid, type, id, property_name.c_str(), 1, &ival);
+        break;
+      case Ioss::Property::BasicType::STRING:
+        ex_put_text_attribute(exoid, type, id, property_name.c_str(), prop.get_string().c_str());
+        break;
+      case Ioss::Property::BasicType::VEC_INTEGER:
+        ex_put_integer_attribute(exoid, type, id, property_name.c_str(), prop.get_vec_int().size(),
+                                 prop.get_vec_int().data());
+        break;
+      case Ioss::Property::BasicType::VEC_DOUBLE:
+        ex_put_double_attribute(exoid, type, id, property_name.c_str(),
+                                prop.get_vec_double().size(), prop.get_vec_double().data());
+        break;
+      default:; // Do nothing
+      }
+    }
+  }
 } // namespace Ioex
