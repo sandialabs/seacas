@@ -59,6 +59,7 @@ namespace {
   void info_sidesets(Ioss::Region &region, const Info::Interface &interFace);
   void info_coordinate_frames(Ioss::Region &region);
   void info_assemblies(Ioss::Region &region);
+  void info_region(Ioss::Region &region);
   void info_blob(Ioss::Region &region);
 
   void info_aliases(const Ioss::Region &region, const Ioss::GroupingEntity *ige, bool nl_pre,
@@ -284,6 +285,13 @@ namespace {
                    bbox.xmin, bbox.ymin, bbox.zmin, bbox.xmax, bbox.ymax, bbox.zmax);
       }
     }
+  }
+
+  void info_region(Ioss::Region &region)
+  {
+    fmt::print("\nRegion '{}' (global)\n", region.name());
+    info_property(&region, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+    info_fields(&region, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
   }
 
   void info_assemblies(Ioss::Region &region)
@@ -573,8 +581,14 @@ namespace {
       max_width = max_width > (int)field_name.length() ? max_width : field_name.length();
     }
 
-    auto width   = Ioss::Utils::term_width();
-    int  cur_out = 8; // Tab width...
+    auto width = Ioss::Utils::term_width();
+    if (width == 0) {
+      width = 80;
+    }
+    int cur_out = 8; // Tab width...
+    if (!header.empty()) {
+      cur_out = header.size() + suffix.size() + 16; // Assume 2 tabs...
+    }
     for (const auto &field_name : fields) {
       const Ioss::VariableType *var_type   = ige->get_field(field_name).raw_storage();
       int                       comp_count = var_type->component_count();
@@ -687,6 +701,7 @@ namespace Ioss {
 
         if (!interFace.summary()) {
 
+          info_region(region);
           info_assemblies(region);
           info_nodeblock(region, interFace);
           info_edgeblock(region);
