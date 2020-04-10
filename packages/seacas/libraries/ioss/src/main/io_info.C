@@ -60,7 +60,7 @@ namespace {
   void info_coordinate_frames(Ioss::Region &region);
   void info_assemblies(Ioss::Region &region);
   void info_region(Ioss::Region &region);
-  void info_blob(Ioss::Region &region);
+  void info_blobs(Ioss::Region &region);
 
   void info_aliases(const Ioss::Region &region, const Ioss::GroupingEntity *ige, bool nl_pre,
                     bool nl_post);
