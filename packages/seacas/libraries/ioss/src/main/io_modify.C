@@ -119,10 +119,16 @@ namespace {
     else if (Ioss::Utils::substr_equal(type, "nodeset")) {
       return Ioss::NODESET;
     }
+    else if (Ioss::Utils::substr_equal(type, "nset")) {
+      return Ioss::NODESET;
+    }
     else if (Ioss::Utils::substr_equal(type, "nodelist")) {
       return Ioss::NODESET;
     }
     else if (Ioss::Utils::substr_equal(type, "sideset")) {
+      return Ioss::SIDESET;
+    }
+    else if (Ioss::Utils::substr_equal(type, "sset")) {
       return Ioss::SIDESET;
     }
     else if (Ioss::Utils::substr_equal(type, "surface")) {
@@ -140,7 +146,8 @@ namespace {
   Ioss::NameList get_name_list(const Ioss::Region &region, Ioss::EntityType type);
   void           handle_help(const std::string &topic);
   bool           handle_delete(const std::vector<std::string> &tokens, Ioss::Region &region);
-  void           handle_list(const std::vector<std::string> &tokens, const Ioss::Region &region);
+  void           handle_list(const std::vector<std::string> &tokens, const Ioss::Region &region,
+                             bool show_attribute = false);
   void           handle_graph(const std::vector<std::string> &tokens, const Ioss::Region &region);
   bool           handle_assembly(const std::vector<std::string> &tokens, Ioss::Region &region,
                                  bool allow_modify);
@@ -156,6 +163,7 @@ namespace {
   void info_entity(const Ioss::SideSet *ss, bool show_property = false);
   void info_entity(const Ioss::Assembly *as, bool show_property = false);
   void info_entity(const Ioss::Blob *blob, bool show_property = false);
+  void info_entity(const Ioss::Region &region, bool show_property = false);
 
   template <typename T>
   void info_entities(const std::vector<T *> &entities, const std::string &type,
@@ -250,7 +258,7 @@ int main(int argc, char *argv[])
   set_db_properties(interFace, dbi);
 
   // NOTE: 'region' owns 'db' pointer at this time...
-  Ioss::Region region(dbi, "region_1");
+  Ioss::Region region(dbi, "region");
   region.begin_mode(Ioss::STATE_DEFINE_MODEL);
 
   region.output_summary(std::cout, true);
@@ -352,6 +360,14 @@ namespace {
     fmt::print("{:14n} cells, {:14n} nodes\n", num_cell, num_node);
     if (show_property) {
       info_property(sb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+    }
+  }
+
+  void info_entity(const Ioss::Region &region, bool show_property)
+  {
+    fmt::print("\nRegion (global)\n");
+    if (show_property) {
+      info_property(&region, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -520,46 +536,53 @@ namespace {
       fmt::print("\t\tCheck validity of assembly graph--are there any cycles.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "attribute")) {
-      // ATTRIBUTE {{ent_name}} ADD {{att_name}} STRING {{value}}
-      // ATTRIBUTE {{ent_name}} ADD {{att_name}} DOUBLE {{values...}}
-      // ATTRIBUTE {{ent_name}} ADD {{att_name}} INTEGER {{values...}}
-      // ATTRIBUTE LIST {{ent_name}} ...
-      fmt::print("\n\tATTRIBUTE {{ent_name}} ADD {{att_name}} STRING {{value}}\n");
+      fmt::print("\n\tATTRIBUTE {{ent_name}} ADD {{att_name}} STRING {{values...}}\n");
       fmt::print("\tATTRIBUTE {{ent_name}} ADD {{att_name}} DOUBLE {{values...}}\n");
       fmt::print("\tATTRIBUTE {{ent_name}} NAME {{att_name}} INTEGER {{values...}}\n");
       fmt::print("\t\tAdd an attribute to the specified entity ('type' and 'name').\n"
-                 "\t\tThe attribute will be named 'att_name' with value(s) 'values...'\n");
+                 "\t\tThe attribute will be named 'att_name' with value(s) 'values...'\n"
+                 "\t\tCan also modify the values of an existing attribute.'\n");
+      fmt::print("\tATTRIBUTE LIST {{ent_name...}}\n"
+                 "\t\tList attributes for the selected entities\n");
+      fmt::print("\tATTRIBUTE {{ent_type}} LIST\n"
+                 "\t\tList attributes for all entities in the specified entity type\n");
     }
   }
 
-  void handle_list(const std::vector<std::string> &tokens, const Ioss::Region &region)
+  void handle_list(const std::vector<std::string> &tokens, const Ioss::Region &region,
+                   bool show_attribute)
   {
     if (tokens.size() > 1) {
       if (Ioss::Utils::substr_equal(tokens[1], "summary")) {
         region.output_summary(std::cout);
       }
+      else if (Ioss::Utils::substr_equal(tokens[1], "region")) {
+        info_entity(region, show_attribute);
+      }
       else if (Ioss::Utils::substr_equal(tokens[1], "elementblock") ||
                Ioss::Utils::substr_equal(tokens[1], "block")) {
-        info_entities(region.get_element_blocks(), "Element Blocks");
+        info_entities(region.get_element_blocks(), "Element Blocks", show_attribute);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "assembly") ||
                Ioss::Utils::substr_equal(tokens[1], "assemblies")) {
-        info_entities(region.get_assemblies(), "Assemblies");
+        info_entities(region.get_assemblies(), "Assemblies", show_attribute);
       }
-      else if (Ioss::Utils::substr_equal(tokens[1], "nodeset")) {
-        info_entities(region.get_nodesets(), "NodeSets");
+      else if (Ioss::Utils::substr_equal(tokens[1], "nodeset") ||
+               Ioss::Utils::substr_equal(tokens[1], "nset")) {
+        info_entities(region.get_nodesets(), "NodeSets", show_attribute);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "nodeblock")) {
-        info_entities(region.get_node_blocks(), "Node Block");
+        info_entities(region.get_node_blocks(), "Node Block", show_attribute);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "structuredlock")) {
-        info_entities(region.get_structured_blocks(), "Structured Blocks");
+        info_entities(region.get_structured_blocks(), "Structured Blocks", show_attribute);
       }
-      else if (Ioss::Utils::substr_equal(tokens[1], "sideset")) {
-        info_entities(region.get_sidesets(), "SideSets");
+      else if (Ioss::Utils::substr_equal(tokens[1], "sideset") ||
+               Ioss::Utils::substr_equal(tokens[1], "sset")) {
+        info_entities(region.get_sidesets(), "SideSets", show_attribute);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "blobs")) {
-        info_entities(region.get_blobs(), "Blobs");
+        info_entities(region.get_blobs(), "Blobs", show_attribute);
       }
       else {
         fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized list option '{}'\n",
@@ -771,10 +794,11 @@ namespace {
   bool handle_attribute(const std::vector<std::string> &tokens, Ioss::Region &region)
   {
     //     0          1        2       3         4       5...
-    // ATTRIBUTE {{ent_name}} ADD {{att_name}} STRING {{value}}
+    // ATTRIBUTE {{ent_name}} ADD {{att_name}} STRING {{values...}}
     // ATTRIBUTE {{ent_name}} ADD {{att_name}} DOUBLE {{values...}}
     // ATTRIBUTE {{ent_name}} ADD {{att_name}} INTEGER {{values...}}
     // ATTRIBUTE LIST {{ent_name}} ...
+    // ATTRIBUTE {{ent_type}} LIST
 
     // Get requested entity...
     if (Ioss::Utils::substr_equal(tokens[2], "add")) {
@@ -788,7 +812,13 @@ namespace {
         return false;
       }
 
-      auto *ge = region.get_entity(tokens[1]);
+      Ioss::GroupingEntity *ge = nullptr;
+      if (Ioss::Utils::substr_equal(tokens[1], "region")) {
+        ge = &region;
+      }
+      else {
+        ge = region.get_entity(tokens[1]);
+      }
       if (ge == nullptr) {
         fmt::print(stderr, fg(fmt::color::red), "ERROR: Entity '{}' not found.\n", tokens[1]);
         return false;
@@ -809,31 +839,70 @@ namespace {
       else if (Ioss::Utils::substr_equal(tokens[4], "double")) {
         std::vector<double> values(value_count);
         for (size_t i = 0; i < value_count; i++) {
-          double val = std::stod(tokens[i + 5]);
-          values[i]  = val;
+          try {
+            double val = std::stod(tokens[i + 5]);
+            values[i]  = val;
+          }
+          catch (const std::exception &x) {
+            fmt::print(stderr, fg(fmt::color::red), "ERROR: Invalid double value entered: {}. {}\n",
+                       tokens[i + 5], x.what());
+            return false;
+          }
         }
+
         ge->property_add(Ioss::Property(att_name, values, Ioss::Property::ATTRIBUTE));
       }
       else if (Ioss::Utils::substr_equal(tokens[4], "integer")) {
         std::vector<int> values(value_count);
         for (size_t i = 0; i < value_count; i++) {
-          int val   = std::stoi(tokens[i + 5]);
-          values[i] = val;
+          try {
+            int val   = std::stoi(tokens[i + 5]);
+            values[i] = val;
+          }
+          catch (const std::exception &x) {
+            fmt::print(stderr, fg(fmt::color::red),
+                       "ERROR: Invalid integer value entered: {}. {}\n", tokens[i + 5], x.what());
+            return false;
+          }
         }
         ge->property_add(Ioss::Property(att_name, values, Ioss::Property::ATTRIBUTE));
+      }
+      else {
+        fmt::print(stderr, fg(fmt::color::red),
+                   "ERROR: Unrecognized attribute type '{}' for attribute {}.\n", tokens[4],
+                   att_name);
+        handle_help("attribute");
+        return false;
       }
       attributes_modified.push_back(ge);
       return true;
     }
     else if (Ioss::Utils::substr_equal(tokens[1], "list")) {
+      // ATTRIBUTE LIST {{ent_name}} ...
       for (size_t i = 2; i < tokens.size(); i++) {
-        auto *ge = region.get_entity(tokens[i]);
+        Ioss::GroupingEntity *ge = nullptr;
+        if (Ioss::Utils::substr_equal(tokens[1], "region")) {
+          ge = &region;
+        }
+        else {
+          ge = region.get_entity(tokens[1]);
+        }
         if (ge != nullptr) {
           std::string prefix =
               fmt::format("\n{} id: {:6d}\n\tAttributes (Reduction): ", name(ge), id(ge));
           info_property(ge, Ioss::Property::ATTRIBUTE, prefix, "\t");
         }
       }
+      return false;
+    }
+    else if (Ioss::Utils::substr_equal(tokens[2], "list")) {
+      // ATTRIBUTE {{ent_type}} LIST
+      handle_list(tokens, region, true);
+      return false;
+    }
+    else {
+      fmt::print(stderr, fg(fmt::color::red), "ERROR: Unrecognized attribute command.\n");
+      handle_help("attribute");
       return false;
     }
     return false;
@@ -952,7 +1021,7 @@ namespace {
           else if (Ioss::Utils::substr_equal(tokens[4], "ids")) {
             // list of ids
             for (size_t i = 5; i < tokens.size(); i++) {
-              size_t      id     = std::stod(tokens[i]);
+              size_t      id     = std::stoul(tokens[i]);
               const auto *entity = region.get_entity(id, type);
               if (entity != nullptr) {
                 if (assem->add(entity)) {
@@ -964,14 +1033,14 @@ namespace {
           else if (Ioss::Utils::substr_equal(tokens[4], "range")) {
             //     0        1     2     3      4      5    6    7    8     9
             // ASSEMBLY {{name}} TYPE {{type}} RANGE {{id}} TO {{id}} BY {{step}}
-            size_t begin = std::stod(tokens[5]);
+            size_t begin = std::stoul(tokens[5]);
             size_t end   = begin;
             size_t step  = 1;
             if (tokens.size() >= 8 && Ioss::Utils::substr_equal(tokens[6], "to")) {
-              end = std::stod(tokens[7]);
+              end = std::stoul(tokens[7]);
             }
             if (tokens.size() >= 10 && Ioss::Utils::substr_equal(tokens[8], "by")) {
-              step = std::stod(tokens[9]);
+              step = std::stoul(tokens[9]);
             }
             for (size_t id = begin; id <= end; id += step) {
               const auto *entity = region.get_entity(id, type);
@@ -1144,7 +1213,7 @@ namespace {
       num_out++;
       if (num_out >= 3) {
         fmt::print("\n\t");
-        num_out = 8;
+        num_out = 0;
       }
     }
     if (!header.empty()) {
