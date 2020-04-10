@@ -1410,19 +1410,19 @@ int Ioss::Utils::log_power_2(uint64_t value)
 
 int Ioss::Utils::term_width()
 {
-  int cols = 100;
+  int cols = 0;
   if (isatty(fileno(stdout))) {
-#ifdef TIOCGSIZE
-    struct ttysize ts;
-    ioctl(STDIN_FILENO, TIOCGSIZE, &ts);
-    cols = ts.ts_cols;
-#elif defined(TIOCGWINSZ)
+#if defined(TIOCGWINSZ)
     struct winsize ts;
-    ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &ts);
     cols = ts.ws_col;
+#elif TIOCGSIZE
+    struct ttysize ts;
+    ioctl(STDOUT_FILENO, TIOCGSIZE, &ts);
+    cols = ts.ts_cols;
 #endif /* TIOCGSIZE */
   }
-  return cols;
+  return cols != 0 ? cols : 100;
 }
 
 void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_region,
