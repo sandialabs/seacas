@@ -141,7 +141,6 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: No %ss defined in file id %d",
                ex_name_of_object(blocks[i].type), exoid);
       ex_err_fn(exoid, __func__, errmsg, EX_LASTERR);
-      free(blocks_to_define);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
