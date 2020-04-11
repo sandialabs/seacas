@@ -146,7 +146,8 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
     }
 
     if (block_count == num_blk) {
-      return ex__put_homogenous_block_params(exoid, block_count, blocks);
+      status = ex__put_homogenous_block_params(exoid, block_count, blocks);
+      EX_FUNC_LEAVE(status);
     }
   }
 
