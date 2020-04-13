@@ -72,7 +72,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "0.6 (2020-04-08)";
+  std::string version = "0.8 (2020-04-13)";
 
   std::vector<Ioss::GroupingEntity *> attributes_modified;
 
@@ -140,15 +140,26 @@ namespace {
   void info_entity(const Ioss::Region &region, bool show_property = false);
 
   template <typename T>
-  void info_entities(const std::vector<T *> &entities, const std::string &type,
+  void info_entities(const std::vector<T *> &entities, const std::vector<std::string> &tokens,
+                     const Ioss::Region &region, const std::string &type,
                      bool show_property = false)
   {
     if (entities.empty()) {
       fmt::print("\n\t*** There are no {} in this model.\n", type);
       return;
     }
-    for (const T *ge : entities) {
-      info_entity(ge, show_property);
+    if (tokens.size() > 2) {
+      for (size_t i = 2; i < tokens.size(); i++) {
+        const T *ge = dynamic_cast<T *>(region.get_entity(tokens[i]));
+        if (ge != nullptr) {
+          info_entity(ge, show_property);
+        }
+      }
+    }
+    else {
+      for (const T *ge : entities) {
+        info_entity(ge, show_property);
+      }
     }
   }
 
@@ -447,7 +458,7 @@ namespace {
   {
     bool all = Ioss::Utils::substr_equal(topic, "help");
     if (all) {
-      fmt::print("\n\tHELP [list | assembly]\n");
+      fmt::print("\n\tHELP [list | assembly | graph | attribute]\n");
       fmt::print("\n\tEND | EXIT\n");
       fmt::print("\t\tEnd command input and output changed assembly definitions (if any).\n");
       fmt::print("\n\tQUIT\n");
@@ -461,7 +472,8 @@ namespace {
                  "updated in place.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "list")) {
-      fmt::print("\n\tLIST summary|element block|block|assembly|nodeset|sideset|blob\n\n");
+      fmt::print("\n\tLIST summary|elementblock|block|assembly|nodeset|sideset|blob\n\n");
+      fmt::print("\n\tLIST elementblock|block|assembly|nodeset|sideset|blob {names...}\n\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "assembly")) {
       fmt::print("\n\tFor all commands, if an assembly named `name` does not exist, it will be "
@@ -506,7 +518,7 @@ namespace {
       fmt::print(
           "\t\tCreate a 'dot' input file with the structure of the assembly graph.\n"
           "\t\tFile is named 'filename' or defaults to 'assembly.dot' if filename not given.\n");
-      fmt::print("\tGRAPH CHECK [NOT IMPLEMENTED]\n");
+      fmt::print("\tGRAPH CHECK\n");
       fmt::print("\t\tCheck validity of assembly graph--are there any cycles.\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "attribute")) {
@@ -535,28 +547,35 @@ namespace {
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "elementblock") ||
                Ioss::Utils::substr_equal(tokens[1], "block")) {
-        info_entities(region.get_element_blocks(), "Element Blocks", show_attribute);
+        const auto &entities = region.get_element_blocks();
+        info_entities(entities, tokens, region, "Element Blocks", show_attribute);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "assembly") ||
                Ioss::Utils::substr_equal(tokens[1], "assemblies")) {
-        info_entities(region.get_assemblies(), "Assemblies", show_attribute);
+        const auto &entities = region.get_assemblies();
+        info_entities(entities, tokens, region, "Assemblies", show_attribute);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "nodeset") ||
                Ioss::Utils::substr_equal(tokens[1], "nset")) {
-        info_entities(region.get_nodesets(), "NodeSets", show_attribute);
+        const auto &entities = region.get_nodesets();
+        info_entities(entities, tokens, region, "NodeSets", show_attribute);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "nodeblock")) {
-        info_entities(region.get_node_blocks(), "Node Block", show_attribute);
+        const auto &entities = region.get_node_blocks();
+        info_entities(entities, tokens, region, "Node Block", show_attribute);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "structuredlock")) {
-        info_entities(region.get_structured_blocks(), "Structured Blocks", show_attribute);
+        const auto &entities = region.get_structured_blocks();
+        info_entities(entities, tokens, region, "Structured Blocks", show_attribute);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "sideset") ||
                Ioss::Utils::substr_equal(tokens[1], "sset")) {
-        info_entities(region.get_sidesets(), "SideSets", show_attribute);
+        const auto &entities = region.get_sidesets();
+        info_entities(entities, tokens, region, "SideSets", show_attribute);
       }
       else if (Ioss::Utils::substr_equal(tokens[1], "blobs")) {
-        info_entities(region.get_blobs(), "Blobs", show_attribute);
+        const auto &entities = region.get_blobs();
+        info_entities(entities, tokens, region, "Blobs", show_attribute);
       }
       else {
         fmt::print(stderr, fg(fmt::color::yellow), "\tWARNING: Unrecognized list option '{}'\n",
@@ -855,11 +874,11 @@ namespace {
       // ATTRIBUTE LIST {{ent_name}} ...
       for (size_t i = 2; i < tokens.size(); i++) {
         Ioss::GroupingEntity *ge = nullptr;
-        if (Ioss::Utils::substr_equal(tokens[1], "region")) {
+        if (Ioss::Utils::substr_equal(tokens[i], "region")) {
           ge = &region;
         }
         else {
-          ge = region.get_entity(tokens[1]);
+          ge = region.get_entity(tokens[i]);
         }
         if (ge != nullptr) {
           std::string prefix =
