@@ -2772,7 +2772,14 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
     int     ierr = 0;
     var_index    = variables.find(var_name)->second;
     assert(var_index > 0);
-    ierr = decomp->get_var(get_file_pointer(), step, type, var_index, id, num_entity, temp);
+    if (type == EX_BLOB) {
+      size_t offset = ge->get_property("processor_offset").get_int();
+      ierr          = ex_get_partial_var(get_file_pointer(), step, type, var_index, id, offset + 1,
+                                num_entity, temp.data());
+    }
+    else {
+      ierr = decomp->get_var(get_file_pointer(), step, type, var_index, id, num_entity, temp);
+    }
     if (ierr < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }
