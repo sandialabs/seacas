@@ -68,11 +68,6 @@
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
 #include <Ioss_CodeTypes.h>
-#include <Ioss_ElementTopology.h>
-#include <Ioss_FileInfo.h>
-#include <Ioss_ParallelUtils.h>
-#include <Ioss_SurfaceSplit.h>
-#include <Ioss_Utils.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_CoordinateFrame.h>
 #include <Ioss_DBUsage.h>
@@ -81,21 +76,26 @@
 #include <Ioss_EdgeSet.h>
 #include <Ioss_ElementBlock.h>
 #include <Ioss_ElementSet.h>
+#include <Ioss_ElementTopology.h>
 #include <Ioss_EntityBlock.h>
 #include <Ioss_EntitySet.h>
 #include <Ioss_EntityType.h>
 #include <Ioss_FaceBlock.h>
 #include <Ioss_FaceSet.h>
 #include <Ioss_Field.h>
+#include <Ioss_FileInfo.h>
 #include <Ioss_GroupingEntity.h>
 #include <Ioss_Map.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_NodeSet.h>
+#include <Ioss_ParallelUtils.h>
 #include <Ioss_Property.h>
 #include <Ioss_Region.h>
 #include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
 #include <Ioss_State.h>
+#include <Ioss_SurfaceSplit.h>
+#include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
 
 #include <Ioss_FileInfo.h>
@@ -1762,6 +1762,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(EX_NODE_BLOCK, field, nb, data);
   }
+  else if (role == Ioss::Field::REDUCTION) {
+    num_to_get = read_reduction_field(EX_NODE_BLOCK, field, nb, data);
+  }
   return num_to_get;
 }
 
@@ -1805,6 +1808,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::Blob *blob, const Ioss::Field
       }
       else if (role == Ioss::Field::ATTRIBUTE) {
         num_to_get = read_attribute_field(EX_BLOB, field, blob, data);
+      }
+      else if (role == Ioss::Field::REDUCTION) {
+        get_reduction_field(EX_BLOB, field, blob, data);
       }
     }
     return num_to_get;
@@ -1852,6 +1858,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::Assembly *assembly, const Ios
       }
       else if (role == Ioss::Field::ATTRIBUTE) {
         num_to_get = read_attribute_field(EX_ASSEMBLY, field, assembly, data);
+      }
+      else if (role == Ioss::Field::REDUCTION) {
+        num_to_get = read_reduction_field(EX_ASSEMBLY, field, assembly, data);
       }
     }
     return num_to_get;
@@ -1965,6 +1974,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(EX_ELEM_BLOCK, field, eb, data);
   }
+  else if (role == Ioss::Field::REDUCTION) {
+    num_to_get = read_reduction_field(EX_ELEM_BLOCK, field, eb, data);
+  }
   else if (role == Ioss::Field::TRANSIENT) {
     // Check if the specified field exists on this element block.
     // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
@@ -2039,6 +2051,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(EX_FACE_BLOCK, field, eb, data);
   }
+  else if (role == Ioss::Field::REDUCTION) {
+    num_to_get = read_reduction_field(EX_FACE_BLOCK, field, eb, data);
+  }
   else if (role == Ioss::Field::TRANSIENT) {
     // Check if the specified field exists on this element block.
     // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
@@ -2102,6 +2117,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Fi
   }
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(EX_EDGE_BLOCK, field, eb, data);
+  }
+  else if (role == Ioss::Field::REDUCTION) {
+    num_to_get = read_reduction_field(EX_EDGE_BLOCK, field, eb, data);
   }
   else if (role == Ioss::Field::TRANSIENT) {
     // Check if the specified field exists on this element block.
@@ -2173,6 +2191,9 @@ int64_t DatabaseIO::get_Xset_field_internal(ex_entity_type type, const Ioss::Ent
   }
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(type, field, ns, data);
+  }
+  else if (role == Ioss::Field::REDUCTION) {
+    num_to_get = read_reduction_field(type, field, ns, data);
   }
   else if (role == Ioss::Field::TRANSIENT) {
     // Check if the specified field exists on this node block.
