@@ -683,7 +683,6 @@ namespace Ioex {
 
       for (const auto &bl : blobs) {
 #ifdef SEACAS_HAVE_MPI
-        if (usingParallelIO) {
           // Each blob is spread across all processors (should support a minimum size...)
           // Determine size of blob on each rank and offset from beginning of blob.
           size_t per_proc = bl.num_entry / parallel_size();
@@ -700,7 +699,6 @@ namespace Ioex {
           Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, count);
           blob->property_add(Ioss::Property("processor_offset", (int64_t)offset));
           blob->property_add(Ioss::Property("global_size", (int64_t)bl.num_entry));
-        }
 #else
         Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, bl.num_entry);
 #endif
