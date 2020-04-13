@@ -1762,9 +1762,6 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(EX_NODE_BLOCK, field, nb, data);
   }
-  else if (role == Ioss::Field::REDUCTION) {
-    num_to_get = read_reduction_field(EX_NODE_BLOCK, field, nb, data);
-  }
   return num_to_get;
 }
 
@@ -1858,9 +1855,6 @@ int64_t DatabaseIO::get_field_internal(const Ioss::Assembly *assembly, const Ios
       }
       else if (role == Ioss::Field::ATTRIBUTE) {
         num_to_get = read_attribute_field(EX_ASSEMBLY, field, assembly, data);
-      }
-      else if (role == Ioss::Field::REDUCTION) {
-        num_to_get = read_reduction_field(EX_ASSEMBLY, field, assembly, data);
       }
     }
     return num_to_get;
@@ -1974,9 +1968,6 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(EX_ELEM_BLOCK, field, eb, data);
   }
-  else if (role == Ioss::Field::REDUCTION) {
-    num_to_get = read_reduction_field(EX_ELEM_BLOCK, field, eb, data);
-  }
   else if (role == Ioss::Field::TRANSIENT) {
     // Check if the specified field exists on this element block.
     // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
@@ -2051,9 +2042,6 @@ int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(EX_FACE_BLOCK, field, eb, data);
   }
-  else if (role == Ioss::Field::REDUCTION) {
-    num_to_get = read_reduction_field(EX_FACE_BLOCK, field, eb, data);
-  }
   else if (role == Ioss::Field::TRANSIENT) {
     // Check if the specified field exists on this element block.
     // Note that 'higher-order' storage types (e.g. SYM_TENSOR)
@@ -2117,9 +2105,6 @@ int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Fi
   }
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(EX_EDGE_BLOCK, field, eb, data);
-  }
-  else if (role == Ioss::Field::REDUCTION) {
-    num_to_get = read_reduction_field(EX_EDGE_BLOCK, field, eb, data);
   }
   else if (role == Ioss::Field::TRANSIENT) {
     // Check if the specified field exists on this element block.
@@ -2191,9 +2176,6 @@ int64_t DatabaseIO::get_Xset_field_internal(ex_entity_type type, const Ioss::Ent
   }
   else if (role == Ioss::Field::ATTRIBUTE) {
     num_to_get = read_attribute_field(type, field, ns, data);
-  }
-  else if (role == Ioss::Field::REDUCTION) {
-    num_to_get = read_reduction_field(type, field, ns, data);
   }
   else if (role == Ioss::Field::TRANSIENT) {
     // Check if the specified field exists on this node block.
