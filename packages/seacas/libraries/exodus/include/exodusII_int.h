@@ -862,6 +862,8 @@ int ex__get_file_type(int exoid, char *ftype);
 
 int ex__put_nemesis_version(int exoid);
 
+int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct ex_block *blocks);
+
 int ne__check_file_version(int exoid);
 
 int ne__id_lkup(int          exoid,       /* NetCDF/Exodus file ID */

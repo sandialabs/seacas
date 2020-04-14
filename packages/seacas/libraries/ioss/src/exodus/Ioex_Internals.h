@@ -401,6 +401,7 @@ namespace Ioex {
 
     std::vector<Assembly>  assemblies{};
     std::vector<Blob>      blobs{};
+
     std::vector<NodeBlock> nodeblocks{};
     std::vector<EdgeBlock> edgeblocks{};
     std::vector<FaceBlock> faceblocks{};
