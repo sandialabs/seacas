@@ -2146,7 +2146,7 @@ namespace {
         fmt::print(stderr, "\tLength of entity list = {:14n}\n", total_entities);
       }
       if (options.debug && rank == 0) {
-        fmt::print(stderr, "\n");
+        fmt::print(Ioss::DEBUG(), "\n");
       }
     }
   }
