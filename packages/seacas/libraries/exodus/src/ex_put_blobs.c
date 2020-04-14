@@ -112,7 +112,7 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
 
     if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
       long long id = blobs[i].id;
-      status = nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &id);
+      status       = nc_put_att_longlong(exoid, entlst_id[i], EX_ATTRIBUTE_ID, NC_INT64, 1, &id);
     }
     else {
       int id = blobs[i].id;
@@ -148,7 +148,6 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
   /* Output dummy data for the blob var; */
   long dummy = 0;
   for (size_t i = 0; i < count; i++) {
-    status = EX_NOERR;
     if ((status = nc_put_var_long(exoid, entlst_id[i], &dummy)) != EX_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to output dummy value for blob %" PRId64 " in file id %d",

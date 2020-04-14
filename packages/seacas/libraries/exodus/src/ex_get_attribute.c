@@ -68,8 +68,7 @@ static bool ex__is_internal_attribute(const char *name, ex_entity_type obj_type)
            ((strcmp(name, "api_version") == 0) || (strcmp(name, "version") == 0) ||
             (strcmp(name, "floating_point_word_size") == 0) || (strcmp(name, "file_size") == 0) ||
             (strcmp(name, "maximum_name_length") == 0) || (strcmp(name, "int64_status") == 0) ||
-            (strcmp(name, "title") == 0) || (strcmp(name, "title") == 0) ||
-            (strcmp(name, "nemesis_file_version") == 0) ||
+            (strcmp(name, "title") == 0) || (strcmp(name, "nemesis_file_version") == 0) ||
             (strcmp(name, "nemesis_api_version") == 0) || (strcmp(name, "processor_info") == 0) ||
             (strcmp(name, "last_written_time") == 0))) {
     return true;

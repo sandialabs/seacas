@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -94,10 +94,11 @@ error = ex_put_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars,
 int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_var, int *var_tab)
 {
   int    numelblkdim, numelvardim, timedim, dims[2], varid;
-  char * sta_type, *tab_type;
+  char * sta_type   = NULL;
+  char * tab_type   = NULL;
   size_t num_entity = 0;
   size_t num_var_db = 0;
-  int *  stat_vals;
+  int *  stat_vals  = NULL;
   int    i, j, k;
   int    status;
   char   errmsg[MAX_ERR_LENGTH];

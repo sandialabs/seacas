@@ -55,11 +55,14 @@
 
 int main(int argc, char **argv)
 {
-  int exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_assembly, num_blob;
-  int num_red_vars, num_vars;
+  int exoid;
+  int num_blob;
+  int num_red_vars;
+  int num_vars;
   int error;
   int i;
-  int CPU_word_size, IO_word_size;
+  int CPU_word_size;
+  int IO_word_size;
   int idum;
 
   float version;
@@ -111,12 +114,7 @@ int main(int argc, char **argv)
     printf("num_node_sets = %" PRId64 "\n", par.num_node_sets);
     printf("num_side_sets = %" PRId64 "\n", par.num_side_sets);
 
-    num_dim      = par.num_dim;
-    num_elem     = par.num_elem;
-    num_nodes    = par.num_nodes;
-    num_elem_blk = par.num_elem_blk;
-    num_assembly = par.num_assembly;
-    num_blob     = par.num_blob;
+    num_blob = par.num_blob;
   }
 
   /* Read blob information */

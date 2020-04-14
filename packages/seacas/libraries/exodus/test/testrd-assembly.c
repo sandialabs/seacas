@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 National Technology & Engineering Solutions
+ * Copyright (c) 2019, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -75,9 +75,9 @@
 
 int main(int argc, char **argv)
 {
-  int  exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets, num_assembly;
+  int  exoid, num_elem_blk, num_assembly;
   int  num_assembly_vars;
-  int  num_side_sets, error;
+  int  error;
   int  i;
   int *ids;
   int *num_elem_in_block  = NULL;
@@ -139,19 +139,13 @@ int main(int argc, char **argv)
     printf("num_node_sets = %" PRId64 "\n", par.num_node_sets);
     printf("num_side_sets = %" PRId64 "\n", par.num_side_sets);
 
-    num_dim       = par.num_dim;
-    num_elem      = par.num_elem;
-    num_nodes     = par.num_nodes;
-    num_elem_blk  = par.num_elem_blk;
-    num_node_sets = par.num_node_sets;
-    num_side_sets = par.num_side_sets;
-    num_assembly  = par.num_assembly;
-
     /* Check that ex_inquire gives same title */
     EXCHECK(ex_inquire(exoid, EX_INQ_TITLE, &idum, &fdum, title_chk));
     if (strcmp(par.title, title_chk) != 0) {
       printf("error in ex_inquire for EX_INQ_TITLE %s, vs %s\n", par.title, title_chk);
     }
+    num_elem_blk = par.num_elem_blk;
+    num_assembly = par.num_assembly;
   }
 
   /* read element block parameters */
