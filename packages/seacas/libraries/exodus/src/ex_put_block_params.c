@@ -255,7 +255,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
       blk_stat = 0;                 /* change element block status to NULL */
     }
     else {
-      blk_stat = 1; /* change element block status to EX_EX_TRUE */
+      blk_stat = 1; /* change element block status to TRUE */
     }
 
     if ((status = nc_inq_varid(exoid, vblksta, &varid)) != NC_NOERR) {

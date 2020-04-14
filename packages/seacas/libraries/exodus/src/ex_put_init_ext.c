@@ -237,8 +237,8 @@ static void invalidate_id_status(int exoid, const char *var_stat, const char *va
 
 int ex_put_init_ext(int exoid, const ex_init_params *model)
 {
-  int numdimdim, numnoddim, elblkdim, edblkdim, fablkdim, esetdim, fsetdim, elsetdim, nsetdim,
-      ssetdim, dim_str_name, dim[2], temp;
+  int numdimdim, numnoddim, elblkdim, edblkdim, fablkdim, esetdim, fsetdim, elsetdim,
+      nsetdim, ssetdim, dim_str_name, dim[2], temp;
   int nmapdim, edmapdim, famapdim, emapdim, timedim;
   int status;
   int title_len;
@@ -246,12 +246,11 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
   /* used for header size calculations which are turned off for now */
   int header_size, fixed_var_size, iows;
 #endif
-  char errmsg[MAX_ERR_LENGTH];
+  char                  errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  int rootid = exoid & EX_FILE_ID_MASK;
-
   ex__check_valid_file_id(exoid, __func__);
+  int rootid = exoid & EX_FILE_ID_MASK;
 
   if (rootid == exoid && nc_inq_dimid(exoid, DIM_NUM_DIM, &temp) == NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: initialization already done for file id %d", exoid);

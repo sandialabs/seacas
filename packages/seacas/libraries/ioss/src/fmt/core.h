@@ -20,6 +20,7 @@
 #ifndef FMT_HEADER_ONLY
 #define FMT_HEADER_ONLY
 #endif
+#define FMT_STATIC_THOUSANDS_SEPARATOR ','
 
 // The fmt library version in the form major * 10000 + minor * 100 + patch.
 #define FMT_VERSION 60200

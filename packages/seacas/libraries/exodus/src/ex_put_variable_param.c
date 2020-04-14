@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -151,7 +151,7 @@ error = ex_put_variable_param (exoid, EX_GLOBAL, num_glo_vars);
 
 int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
 {
-  int  time_dim, num_nod_dim, dimid, dim_str_name, varid;
+  int  time_dim, num_nod_dim = 0, dimid, dim_str_name, varid;
   int  dims[3];
   char errmsg[MAX_ERR_LENGTH];
   int  status;
@@ -171,7 +171,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
   if (obj_type != EX_NODAL && obj_type != EX_NODE_SET && obj_type != EX_EDGE_BLOCK &&
       obj_type != EX_EDGE_SET && obj_type != EX_FACE_BLOCK && obj_type != EX_FACE_SET &&
       obj_type != EX_ELEM_BLOCK && obj_type != EX_ELEM_SET && obj_type != EX_SIDE_SET &&
-      obj_type != EX_GLOBAL) {
+      obj_type != EX_GLOBAL && obj_type != EX_ASSEMBLY && obj_type != EX_BLOB) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",
              obj_type, exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
@@ -185,10 +185,10 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  if ((status = nc_inq_dimid(exoid, DIM_NUM_NODES, &num_nod_dim)) != NC_NOERR) {
-    if (obj_type == EX_NODAL) {
+  if (obj_type == EX_NODAL) {
+    if ((status = nc_inq_dimid(exoid, DIM_NUM_NODES, &num_nod_dim)) != NC_NOERR) {
       EX_FUNC_LEAVE(EX_NOERR); /* Probably no nodes on database (e.g., badly
-                            load-balanced parallel run) */
+                                  load-balanced parallel run) */
     }
   }
 
@@ -272,6 +272,18 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
   else if (obj_type == EX_SIDE_SET) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "sideset", DIM_NUM_SSET_VAR,
                                         VAR_NAME_SSET_VAR)) != EX_NOERR) {
+      goto error_ret;
+    }
+  }
+  else if (obj_type == EX_ASSEMBLY) {
+    if ((status = ex_prepare_result_var(exoid, num_vars, "assembly", DIM_NUM_ASSEMBLY_VAR,
+                                        VAR_NAME_ASSEMBLY_VAR)) != EX_NOERR) {
+      goto error_ret;
+    }
+  }
+  else if (obj_type == EX_BLOB) {
+    if ((status = ex_prepare_result_var(exoid, num_vars, "blob", DIM_NUM_BLOB_VAR,
+                                        VAR_NAME_BLOB_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }

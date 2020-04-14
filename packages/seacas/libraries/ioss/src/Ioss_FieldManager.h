@@ -51,8 +51,9 @@ namespace Ioss {
   class FieldManager
   {
   public:
-    FieldManager()                     = default;
-    FieldManager(const FieldManager &) = delete;
+    FieldManager() = default;
+    FieldManager(const FieldManager &other) { fields = other.fields; }
+
     FieldManager &operator=(const FieldManager &) = delete;
     ~FieldManager()                               = default;
 
