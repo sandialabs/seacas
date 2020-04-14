@@ -1126,6 +1126,9 @@ void Internals::get_global_counts(Mesh &mesh)
     counts.push_back(sideset.entityCount);
     counts.push_back(sideset.dfCount);
   }
+  for (auto &blob : mesh.blobs) {
+    counts.push_back(blob.entityCount);
+  }
 
   // Now gather this information on each processor so
   // they can determine the offsets and totals...
@@ -1198,6 +1201,10 @@ void Internals::get_global_counts(Mesh &mesh)
     sideset.entityCount  = global_counts[j++];
     sideset.dfProcOffset = offsets[j];
     sideset.dfCount      = global_counts[j++];
+  }
+  for (auto &blob : mesh.blobs) {
+    blob.procOffset = offsets[j];
+    blob.entityCount = global_counts[j++];
   }
 #endif
 }
