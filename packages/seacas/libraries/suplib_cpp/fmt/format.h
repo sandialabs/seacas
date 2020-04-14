@@ -1847,7 +1847,6 @@ class arg_formatter_base {
 
   struct char_writer {
     char_type value;
-
     size_t size() const { return 1; }
     size_t width() const { return 1; }
 
