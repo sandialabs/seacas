@@ -64,8 +64,7 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
   bool in_define = false;
   for (size_t i = 0; i < count; i++) {
     /* See if an assembly with this id has already been defined or exists on file... */
-    if ((status = nc_inq_varid(exoid, VAR_ENTITY_ASSEMBLY(assemblies[i].id), &entlst_id[i])) !=
-        NC_NOERR) {
+    if (nc_inq_varid(exoid, VAR_ENTITY_ASSEMBLY(assemblies[i].id), &entlst_id[i]) != NC_NOERR) {
       /* Assembly has not already been defined */
       /* put netcdf file into define mode  */
       if (!in_define) {
@@ -196,8 +195,8 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
   for (size_t i = 0; i < count; i++) {
     status = EX_NOERR;
     if (assemblies[i].entity_list != NULL) {
-      if ((status = nc_put_var_longlong(exoid, entlst_id[i], (long long *)assemblies[i].entity_list)) !=
-          EX_NOERR) {
+      if ((status = nc_put_var_longlong(exoid, entlst_id[i],
+                                        (long long *)assemblies[i].entity_list)) != EX_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to output entity list for assembly %" PRId64 " in file id %d",
                  assemblies[i].id, exoid);

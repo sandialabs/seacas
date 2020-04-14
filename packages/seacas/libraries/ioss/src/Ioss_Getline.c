@@ -1,7 +1,7 @@
 /* Based on: "$Id: getline.c,v 3.11 1993/12/02 15:54:31 thewalt Exp thewalt $"; */
 
 /*
- * Copyright (C) 1991, 1992, 1993 by Chris Thewalt (thewalt@ce.berkeley.edu)
+ * Copyright (C) 1991, 1992, 1993, 2020 by Chris Thewalt (thewalt@ce.berkeley.edu)
  *
  * Permission to use, copy, modify, and distribute this software
  * for any purpose and without fee is hereby granted, provided
@@ -312,9 +312,9 @@ int pc_keymap(int c)
 static int gl_getc(void)
 /* get a character without echoing it to screen */
 {
-  int c;
 #ifdef __unix__
   char ch;
+  int  c;
   while ((c = read(0, &ch, 1)) == -1) {
     if (errno != EINTR) {
       break;
@@ -323,7 +323,7 @@ static int gl_getc(void)
   c = (ch <= 0) ? -1 : ch;
 #endif /* __unix__ */
 #ifdef MSDOS
-  c = _bios_keybrd(_NKEYBRD_READ);
+  int c = _bios_keybrd(_NKEYBRD_READ);
   if ((c & 0377) == 224) {
     c = pc_keymap((c >> 8) & 0377);
   }
@@ -332,7 +332,7 @@ static int gl_getc(void)
   }
 #endif /* MSDOS */
 #ifdef __windows__
-  c = (int)_getch();
+  int c = (int)_getch();
   if ((c == 0) || (c == 0xE0)) {
     /* Read key code */
     c = (int)_getch();
@@ -1537,7 +1537,8 @@ static void gl_beep(void)
 static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize, int tabtab)
 {
   char * startp;
-  size_t startoff, amt;
+  size_t startoff;
+  size_t amt = 0;
   int    c;
   int    qmode;
   char * qstart;
@@ -1669,7 +1670,6 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize, int tabtab)
   /* We now have an array strings, whose last element is NULL. */
   strtoadd  = NULL;
   strtoadd1 = NULL;
-  amt       = 0;
 
   addquotes = (gl_filename_quoting_desired > 0) ||
               ((gl_filename_quoting_desired < 0) &&
@@ -1681,7 +1681,6 @@ static int gl_do_tab_completion(char *buf, int *loc, size_t bufsize, int tabtab)
   }
   else if ((nused > 1) && (mlen > 0)) {
     /* Find the greatest amount that matches. */
-    glen = 1;
     for (glen = 1;; glen++) {
       allmatch = 1;
       for (i = 1; i < nused; i++) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 National Technology & Engineering Solutions
+ * Copyright (c) 2019, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -55,10 +55,12 @@
 
 int main(int argc, char **argv)
 {
-  int  exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets, num_assembly;
-  int  num_side_sets, error;
+  int  exoid;
+  int  num_assembly;
+  int  error;
   int *ids;
-  int  CPU_word_size, IO_word_size;
+  int  CPU_word_size;
+  int  IO_word_size;
   int  idum;
 
   float version;
@@ -110,13 +112,7 @@ int main(int argc, char **argv)
     printf("num_node_sets = %" PRId64 "\n", par.num_node_sets);
     printf("num_side_sets = %" PRId64 "\n", par.num_side_sets);
 
-    num_dim       = par.num_dim;
-    num_elem      = par.num_elem;
-    num_nodes     = par.num_nodes;
-    num_elem_blk  = par.num_elem_blk;
-    num_node_sets = par.num_node_sets;
-    num_side_sets = par.num_side_sets;
-    num_assembly  = par.num_assembly;
+    num_assembly = par.num_assembly;
 
     /* Check that ex_inquire gives same title */
     EXCHECK(ex_inquire(exoid, EX_INQ_TITLE, &idum, &fdum, title_chk));

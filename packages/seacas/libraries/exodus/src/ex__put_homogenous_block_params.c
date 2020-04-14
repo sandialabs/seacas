@@ -165,10 +165,8 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
     }
 
     const char *vnodcon = NULL;
-    const char *vnpecnt = NULL;
     const char *vedgcon = NULL;
     const char *vfaccon = NULL;
-    const char *vconn   = NULL;
     const char *vattnam = NULL;
     const char *vblkatt = NULL;
     const char *dneblk  = NULL;
@@ -199,7 +197,6 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
       vblkatt = VAR_FATTRIB(blk_id_ndx);
       vattnam = VAR_NAME_FATTRIB(blk_id_ndx);
       vnodcon = VAR_FBCONN(blk_id_ndx);
-      vnpecnt = VAR_FBEPEC(blk_id_ndx);
       vedgcon = 0;
       vfaccon = 0;
       break;
@@ -212,7 +209,6 @@ int ex__put_homogenous_block_params(int exoid, size_t block_count, const struct 
       vblkatt = VAR_ATTRIB(blk_id_ndx);
       vattnam = VAR_NAME_ATTRIB(blk_id_ndx);
       vnodcon = VAR_CONN(blk_id_ndx);
-      vnpecnt = VAR_EBEPEC(blk_id_ndx);
       vedgcon = VAR_ECONN(blk_id_ndx);
       vfaccon = VAR_FCONN(blk_id_ndx);
       break;
