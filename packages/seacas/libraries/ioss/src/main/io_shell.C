@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
   double end = Ioss::Utils::timer();
 
   if (rank == 0 && !interFace.quiet) {
-    fmt::print(stderr, "\n\n\tTotal Execution time = {} seconds\n", end - begin);
+    fmt::print(stderr, "\n\n\tTotal Execution time = {:.5} seconds\n", end - begin);
   }
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
@@ -365,7 +365,7 @@ namespace {
               fmt::print(stderr, "\tWriting step {:n} to {}\n", step_min + 1, filename);
             }
             else {
-              fmt::print("\tWriting steps {:n}..{:n} to {}\n", step_min + 1, step_max + 1,
+              fmt::print(stderr, "\tWriting steps {:n}..{:n} to {}\n", step_min + 1, step_max + 1,
                          filename);
             }
           }

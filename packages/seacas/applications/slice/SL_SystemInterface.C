@@ -1,4 +1,4 @@
-// Copyright(C) 2016-2017 National Technology & Engineering Solutions of
+// Copyright(C) 2016-2017, 2020 National Technology & Engineering Solutions of
 // Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -85,7 +85,7 @@ void SystemInterface::enroll_options()
 
   options_.enroll("debug", GetLongOption::MandatoryValue, "Debug level: 0, 1, 2, 4 or'd", "0");
 
-  options_.enroll("input_type", GetLongOption::MandatoryValue,
+  options_.enroll("in_type", GetLongOption::MandatoryValue,
                   "File format for input mesh file (default = exodus)", "exodusii");
 
   options_.enroll("method", GetLongOption::MandatoryValue,
@@ -230,7 +230,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   {
-    const char *temp = options_.retrieve("input_type");
+    const char *temp = options_.retrieve("in_type");
     inputFormat_     = temp;
   }
 

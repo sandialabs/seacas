@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -56,6 +56,8 @@ namespace Ioss {
     NodeBlock(DatabaseIO *io_database, const std::string &my_name, int64_t node_count,
               int64_t degrees_of_freedom);
 
+    NodeBlock(const NodeBlock &);
+
     ~NodeBlock() override;
 
     std::string type_string() const override { return "NodeBlock"; }
@@ -65,7 +67,7 @@ namespace Ioss {
 
     bool is_nonglobal_nodeblock() const { return properties.exists("IOSS_INTERNAL_CONTAINED_IN"); }
 
-    virtual const GroupingEntity *contained_in() const override
+    const GroupingEntity *contained_in() const override
     {
       if (properties.exists("IOSS_INTERNAL_CONTAINED_IN")) {
         auto ge = properties.get("IOSS_INTERNAL_CONTAINED_IN").get_pointer();

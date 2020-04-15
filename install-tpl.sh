@@ -72,11 +72,17 @@ check_valid_on_off CGNS
 MATIO=${MATIO:-ON}
 check_valid_on_off MATIO
 
+METIS=${METIS:-OFF}
+check_valid_on_off METIS
+
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
 check_valid_on_off GNU_PARALLEL
 
 NEEDS_ZLIB=${NEEDS_ZLIB:-NO}
 check_valid_yes_no NEEDS_ZLIB
+
+NEEDS_SZIP=${NEEDS_SZIP:-NO}
+check_valid_yes_no NEEDS_SZIP
 
 KOKKOS=${KOKKOS:-OFF}
 check_valid_on_off KOKKOS
@@ -149,6 +155,7 @@ if [ $# -gt 0 ]; then
 	echo "   MATIO        = ${MATIO}"
 	echo "   GNU_PARALLEL = ${GNU_PARALLEL}"
 	echo "   NEEDS_ZLIB   = ${NEEDS_ZLIB}"
+	echo "   NEEDS_SZIP   = ${NEEDS_SZIP}"
 	echo "   KOKKOS       = ${KOKKOS}"
 	echo "   BB           = ${BB}"
 	echo "   ADIOS2       = ${ADIOS2}"
@@ -166,6 +173,48 @@ fi
 check_exec cmake
 check_exec git
 check_exec wget
+
+if [ "$NEEDS_SZIP" == "YES" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libsz.${LD_EXT} ]
+    then
+	echo "${txtgrn}+++ SZIP${txtrst}"
+        szip_version="2.1.1"
+
+	cd $ACCESS
+	cd TPL
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf szip-${szip_version}
+            rm -rf szip-${szip_version}.tar.gz
+            wget --no-check-certificate https://support.hdfgroup.org/ftp/lib-external/szip/2.1.1/src/szip-${szip_version}.tar.gz
+            tar -xzf szip-${szip_version}.tar.gz
+            rm -rf szip-${szip_version}.tar.gz
+	fi
+
+	if [ "$BUILD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd szip-${szip_version}
+            ./configure --prefix=${INSTALL_PATH}
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 ${txtred}couldn\'t configure szip. exiting.${txtrst}
+		exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+		echo 1>&2 ${txtred}couldn\'t build szip. exiting.${txtrst}
+		exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ SZIP already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
 
 if [ "$NEEDS_ZLIB" == "YES" ]
 then
@@ -216,7 +265,7 @@ then
     then
 	hdf_version="1.8.21"
     else
-	hdf_version="1.10.5"
+	hdf_version="1.10.6"
     fi
 
     cd $ACCESS
@@ -240,7 +289,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd hdf5-${hdf_version}
-        CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} MPI=${MPI} bash ../runconfigure.sh
+        CRAY=${CRAY} H5VERSION=${H5VERSION} DEBUG=${DEBUG} SHARED=${SHARED} NEEDS_ZLIB=${NEEDS_ZLIB} NEEDS_SZIP=${NEEDS_SZIP} MPI=${MPI} bash ../runconfigure.sh
         if [[ $? != 0 ]]
         then
             echo 1>&2 ${txtred}couldn\'t configure hdf5. exiting.${txtrst}
@@ -263,7 +312,7 @@ then
     if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libpnetcdf.a ]
     then
         echo "${txtgrn}+++ PnetCDF${txtrst}"
-        pnet_version="1.11.2"
+        pnet_version="1.12.1"
 	pnet_base="pnetcdf"
         cd $ACCESS
         cd TPL/pnetcdf
@@ -323,7 +372,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
-	git checkout v4.7.1
+	git checkout v4.7.3
         if [ -d build ]
         then
             rm -rf build
@@ -389,6 +438,47 @@ then
 	echo "${txtylw}+++ CGNS already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
+
+# =================== INSTALL METIS  ===============
+if [ "$METIS" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmetis.a ]
+    then
+	echo "${txtgrn}+++ Metis${txtrst}"
+	cd $ACCESS
+	cd TPL/metis
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf metis-5.1.0
+            wget --no-check-certificate https://github.com/scivision/METIS/raw/master/metis-5.1.0.tar.gz
+	    tar zxvf metis-5.1.0.tar.gz
+	fi
+
+	if [ "$BUILD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd metis-5.1.0
+	    sed 's/TYPEWIDTH 32/TYPEWIDTH 64/' include/metis.h > tmp
+	    mv tmp include/metis.h
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure Metis. exiting.${txtrst}
+                exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build Metis. exiting.${txtrst}
+                exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ Metis already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
 
 # =================== INSTALL MATIO  ===============
 if [ "$MATIO" == "ON" ]
@@ -500,7 +590,7 @@ then
         then
 	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
             cd ADIOS2
-#	    git checkout 8c2135169ad534c30c503ad2bb8be0507facf63b
+	    git checkout v2.5.0
             if [ -d build ]
             then
                 rm -rf build
