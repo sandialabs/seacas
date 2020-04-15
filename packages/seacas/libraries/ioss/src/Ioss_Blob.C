@@ -50,6 +50,7 @@ namespace Ioss {
  *
  *  \param[in] io_database The database associated with the region containing the blob.
  *  \param[in] my_name The blob's name.
+ *  \param[in] item_count The number of items stored in this blob
  */
 Ioss::Blob::Blob(Ioss::DatabaseIO *io_database, const std::string &my_name, int64_t item_count)
     : Ioss::GroupingEntity(io_database, my_name, item_count)

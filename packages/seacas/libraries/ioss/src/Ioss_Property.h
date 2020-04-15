@@ -50,7 +50,13 @@ namespace Ioss {
   {
   public:
     enum BasicType { INVALID = -1, REAL, INTEGER, POINTER, STRING, VEC_INTEGER, VEC_DOUBLE };
-    enum Origin { INTERNAL = -1, IMPLICIT, EXTERNAL, ATTRIBUTE };
+    enum Origin {
+      INTERNAL = -1, //<! Property is for internal use
+      IMPLICIT, //<! Property is calculated on the fly based on current state of entity containing
+                // property
+      EXTERNAL, //<! Property was created by client
+      ATTRIBUTE //<! Property created from an Exodus or Database Attribute
+    };
 
     Property() = default;
     Property(std::string name, int64_t value, Origin origin = INTERNAL);
