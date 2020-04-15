@@ -389,6 +389,7 @@ var exodusII__int_8h =
     [ "ex__reset_error_status", "group__Internal.html#ga74d83c1a81c4c0d3200b31accfcaec04", null ],
     [ "ex__rm_file_item", "group__Internal.html#gac07b1322045e3201727a86b7c31efa07", null ],
     [ "ex__rm_stat_ptr", "group__Internal.html#ga2a41cd09d57cd2b963163200fec1daef", null ],
+    [ "ex__set_compact_storage", "group__Internal.html#ga3117e278aceec23768137b88d4016a09", null ],
     [ "ex__trim", "group__Internal.html#ga72b40a2080a24437041089d1ca10d6a1", null ],
     [ "ex__update_max_name_length", "group__Internal.html#gaf94a8a293630c4c13ff878e5f6ebde1f", null ],
     [ "nc_flt_code", "group__Internal.html#ga0bcb99c4a23dde165c0a75e9acfb3d55", null ],

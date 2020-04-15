@@ -785,6 +785,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga5ce6ed8df605d568e749065b4678cf52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2a41cd09d57cd2b963163200fec1daef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga2a41cd09d57cd2b963163200fec1daef">ex__rm_stat_ptr</a> (int exoid, struct <a class="el" href="structex____obj__stats.html">ex__obj_stats</a> **obj_ptr)</td></tr>
 <tr class="separator:ga2a41cd09d57cd2b963163200fec1daef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3117e278aceec23768137b88d4016a09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga3117e278aceec23768137b88d4016a09">ex__set_compact_storage</a> (int exoid, int varid)</td></tr>
+<tr class="separator:ga3117e278aceec23768137b88d4016a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga87ef88cfa27b66d5d64aee24bb289a1a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga87ef88cfa27b66d5d64aee24bb289a1a">ex__compress_variable</a> (int exoid, int varid, int type)</td></tr>
 <tr class="separator:ga87ef88cfa27b66d5d64aee24bb289a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga70aa2d8fa483a41b3fdbaef475526e8d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga70aa2d8fa483a41b3fdbaef475526e8d">ex__id_lkup</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> id_type, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> num)</td></tr>
@@ -7664,6 +7666,34 @@ ptr --------—&gt; list item structure</h2>
 
 </div>
 </div>
+<a id="ga3117e278aceec23768137b88d4016a09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3117e278aceec23768137b88d4016a09">&#9670;&nbsp;</a></span>ex__set_compact_storage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ex__set_compact_storage </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>varid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ga72b40a2080a24437041089d1ca10d6a1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga72b40a2080a24437041089d1ca10d6a1">&#9670;&nbsp;</a></span>ex__trim()</h2>
 
@@ -7981,7 +8011,7 @@ ptr --------—&gt; list item structure</h2>
 <div class="ttc" id="agroup__Utilities_html_ga1b8122836266615fd2795736dc21e2ae"><div class="ttname"><a href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a></div><div class="ttdeci">int64_t ex_inquire_int(int exoid, ex_inquiry req_info)</div><div class="ttdef"><b>Definition:</b> ex_inquire.c:976</div></div>
 <div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:116</div></div>
 <div class="ttc" id="aexodusII_8h_html_a4d51e0740116cc60e2daa4aef1757ad2"><div class="ttname"><a href="exodusII_8h.html#a4d51e0740116cc60e2daa4aef1757ad2">ex_get_glob_var_time</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step, int end_time_step, void *glob_var_vals)</div><div class="ttdef"><b>Definition:</b> ex_get_glob_var_time.c:103</div></div>
-<div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:761</div></div>
+<div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:762</div></div>
 <div class="ttc" id="agroup__ResultsData_html_ga65af6a2020057488a89b28238993562b"><div class="ttname"><a href="group__ResultsData.html#ga65af6a2020057488a89b28238993562b">ex_get_var_time</a></div><div class="ttdeci">int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t id, int beg_time_step, int end_time_step, void *var_vals)</div><div class="ttdef"><b>Definition:</b> ex_get_var_time.c:71</div></div>
 <div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a></div><div class="ttdeci">@ EX_NODAL</div><div class="ttdef"><b>Definition:</b> exodusII.h:268</div></div>
 <div class="ttc" id="aexodusII_8h_html_adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631"><div class="ttname"><a href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631">EX_INQ_TIME</a></div><div class="ttdeci">@ EX_INQ_TIME</div><div class="ttdef"><b>Definition:</b> exodusII.h:173</div></div>
