@@ -261,11 +261,15 @@ fi
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
-    if [ "${H5VERSION}" == "V18" ]
-    then
+    if [ "${H5VERSION}" == "V18" ]; then
 	hdf_version="1.8.21"
-    else
+    elif [ "${H5VERSION}" == "V110" ]; then
 	hdf_version="1.10.6"
+    elif [ "${H5VERSION}" == "V112" ]; then
+	hdf_version="1.12.0"
+    else
+	echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
+	exit 1
     fi
 
     cd $ACCESS
@@ -451,6 +455,7 @@ then
 	then
 	    echo "${txtgrn}+++ Downloading...${txtrst}"
             rm -rf metis-5.1.0
+            rm -f metis-5.1.0.tar.gz
             wget --no-check-certificate https://github.com/scivision/METIS/raw/master/metis-5.1.0.tar.gz
 	    tar zxvf metis-5.1.0.tar.gz
 	fi
