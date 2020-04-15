@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -869,8 +869,7 @@ int Internals::write_meta_data(Mesh &mesh)
     maximumNameLength = get_max_name_length(mesh.elemsets, maximumNameLength);
     maximumNameLength = get_max_name_length(mesh.sidesets, maximumNameLength);
 
-    nc_redef(exodusFilePtr);
-    //    Redefine the_database(exodusFilePtr);
+    Redefine the_database(exodusFilePtr);
     // Set the database to NOFILL mode.  Only writes values we want written...
     int old_fill = 0;
 
@@ -913,10 +912,6 @@ int Internals::write_meta_data(Mesh &mesh)
     if ((ierr = put_metadata(mesh.sidesets)) != EX_NOERR) {
       EX_FUNC_LEAVE(ierr);
     }
-
-    parallelUtil.progress("Before nc_enddef");
-    nc_enddef(exodusFilePtr);
-    parallelUtil.progress("After nc_enddef");
   }
 
   // NON-Define mode output...
@@ -932,12 +927,10 @@ int Internals::write_meta_data(Mesh &mesh)
     EX_FUNC_LEAVE(ierr);
   }
 
-  parallelUtil.progress("Before non_define_data elemblocks");
   if ((ierr = put_non_define_data(mesh.elemblocks)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
-  parallelUtil.progress("Before non_define_data nodesets");
   if ((ierr = put_non_define_data(mesh.nodesets)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
@@ -954,13 +947,11 @@ int Internals::write_meta_data(Mesh &mesh)
     EX_FUNC_LEAVE(ierr);
   }
 
-  parallelUtil.progress("Before non_define_data sidesets");
   if ((ierr = put_non_define_data(mesh.sidesets)) != EX_NOERR) {
     EX_FUNC_LEAVE(ierr);
   }
 
   // For now, put entity names using the ExodusII api...
-  parallelUtil.progress("Before output names...");
   output_names(mesh.edgeblocks, exodusFilePtr, EX_EDGE_BLOCK);
   output_names(mesh.faceblocks, exodusFilePtr, EX_FACE_BLOCK);
   output_names(mesh.elemblocks, exodusFilePtr, EX_ELEM_BLOCK);
@@ -970,7 +961,6 @@ int Internals::write_meta_data(Mesh &mesh)
   output_names(mesh.elemsets, exodusFilePtr, EX_ELEM_SET);
   output_names(mesh.sidesets, exodusFilePtr, EX_SIDE_SET);
 
-  parallelUtil.progress("End of Ioex::Internals write_meta_data");
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
@@ -1293,7 +1283,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
-    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+    ex__set_compact_storage(exodusFilePtr, varid);
   }
 
   size_t elem_count = 0;
@@ -1502,7 +1492,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
         return (EX_FATAL);
       }
     }
-    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+    ex__set_compact_storage(exodusFilePtr, varid);
 
     // Output the file version
     int ierr = ex__put_nemesis_version(exodusFilePtr);
@@ -1940,7 +1930,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
-    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
   }
   return (EX_NOERR);
@@ -2073,7 +2063,7 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
-      nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
 
     // face connectivity array
@@ -2232,7 +2222,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
-    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
 
     // edge connectivity array
@@ -2808,7 +2798,7 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
-    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
   }
   return (EX_NOERR);
@@ -3000,7 +2990,7 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
-    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
   }
   return (EX_NOERR);
@@ -3191,7 +3181,7 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
-    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
   }
   return (EX_NOERR);
@@ -3363,7 +3353,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
-    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
   }
   return (EX_NOERR);
@@ -3776,7 +3766,7 @@ namespace {
           ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
           return (EX_FATAL);
         }
-	nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+        ex__set_compact_storage(exodusFilePtr, varid);
         ex__compress_variable(exodusFilePtr, varid, 1);
         i++;
       }
@@ -3927,7 +3917,7 @@ namespace {
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
-    nc_def_var_chunking(exodusFilePtr, varid, NC_COMPACT, NULL);
+    ex__set_compact_storage(exodusFilePtr, varid);
     return (EX_NOERR);
   }
 
@@ -3968,7 +3958,7 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
-    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
+    ex__set_compact_storage(exoid, varid);
 
     // id array:
     int ids_type = get_type(exoid, EX_IDS_INT64_DB);
@@ -3979,7 +3969,7 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
-    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
+    ex__set_compact_storage(exoid, varid);
 
     // store property name as attribute of property array variable
     status = nc_put_att_text(exoid, varid, ATT_PROP_NAME, 3, "ID");
@@ -3990,7 +3980,7 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
-    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
+    ex__set_compact_storage(exoid, varid);
 
     if (name_var) {
       dim[0] = dimid;
@@ -4002,7 +3992,7 @@ namespace {
         ex_err_fn(exoid, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
-    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
+      ex__set_compact_storage(exoid, varid);
     }
     return (EX_NOERR);
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -100,7 +100,7 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
       ex_err_fn(exoid, __func__, errmsg, status);
       return (status); /* exit define mode and return */
     }
-    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
+    ex__set_compact_storage(exoid, varid);
 #if NC_HAS_HDF5
     nc_def_var_fill(exoid, varid, 0, &fill);
 #endif
@@ -135,7 +135,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       ex_err_fn(exoid, __func__, errmsg, status);
       return (status); /* exit define mode and return */
     }
-    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
+    ex__set_compact_storage(exoid, varid);
 
     /* type id array */
     int_type = NC_INT;
@@ -148,7 +148,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       ex_err_fn(exoid, __func__, errmsg, status);
       return (status); /* exit define mode and return */
     }
-    nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
+    ex__set_compact_storage(exoid, varid);
 
     /*   store property name as attribute of property array variable */
     if ((status = nc_put_att_text(exoid, varid, ATT_PROP_NAME, 3, "ID")) != NC_NOERR) {
