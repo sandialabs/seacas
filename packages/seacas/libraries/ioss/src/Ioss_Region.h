@@ -184,7 +184,7 @@ namespace Ioss {
     bool add(const CoordinateFrame &frame);
 
     // Special purpose...
-    bool remove(Assembly *assembly);
+    bool remove(Assembly *removal);
 
     const NodeBlockContainer &      get_node_blocks() const;
     const EdgeBlockContainer &      get_edge_blocks() const;
