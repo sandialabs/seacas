@@ -72,6 +72,9 @@ check_valid_on_off CGNS
 MATIO=${MATIO:-ON}
 check_valid_on_off MATIO
 
+METIS=${METIS:-OFF}
+check_valid_on_off METIS
+
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
 check_valid_on_off GNU_PARALLEL
 
@@ -435,6 +438,47 @@ then
 	echo "${txtylw}+++ CGNS already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
+
+# =================== INSTALL METIS  ===============
+if [ "$METIS" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmetis.a ]
+    then
+	echo "${txtgrn}+++ Metis${txtrst}"
+	cd $ACCESS
+	cd TPL/metis
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf metis-5.1.0
+            wget --no-check-certificate https://github.com/scivision/METIS/raw/master/metis-5.1.0.tar.gz
+	    tar zxvf metis-5.1.0.tar.gz
+	fi
+
+	if [ "$BUILD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd metis-5.1.0
+	    sed 's/TYPEWIDTH 32/TYPEWIDTH 64/' include/metis.h > tmp
+	    mv tmp include/metis.h
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure Metis. exiting.${txtrst}
+                exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build Metis. exiting.${txtrst}
+                exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ Metis already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
 
 # =================== INSTALL MATIO  ===============
 if [ "$MATIO" == "ON" ]
