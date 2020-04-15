@@ -1115,7 +1115,7 @@ namespace Ioss {
 
   /** \brief Remove an assembly to the region.
    *
-   *  \param[in] assembly The assembly to remove
+   *  \param[in] removal The assembly to remove
    *  \returns True if successful.
    *
    *  Checks other assemblies for uses of this assembly and removes
