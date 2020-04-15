@@ -1,36 +1,9 @@
 /*
- * Copyright(C) 2010-2017 National Technology & Engineering Solutions
+ * Copyright(C) 2010-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *
- *     * Redistributions in binary form must reproduce the above
- *       copyright notice, this list of conditions and the following
- *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.
- *
- *     * Neither the name of NTESS nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * See packages/seacas/LICENSE file for details.
  */
 // concatenates EXODUS/GENESIS output from parallel processors to a single file
 
@@ -58,16 +31,6 @@
 #include "smart_assert.h"
 
 #include <exodusII.h>
-#ifdef PARALLEL_AWARE_EXODUS
-#ifndef DISABLE_PARALLEL_EPU
-#define ENABLE_PARALLEL_EPU 1
-#endif
-#endif
-
-#if ENABLE_PARALLEL_EPU
-#include <mpi.h>
-#endif
-
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -138,7 +101,7 @@ namespace {
 
   void LOG(const std::string message)
   {
-    if (debug_level & 1) {
+    if ((debug_level & 1) != 0u) {
       fmt::print("{}", time_stamp(tsFormat));
     }
     if (rank == 0) {
@@ -380,7 +343,7 @@ int main(int argc, char *argv[])
     //  64 -- exodus verbose.
     debug_level = interFace.debug();
 
-    if ((debug_level & 64) != 0u) {
+    if ((debug_level & 64) != 0U) {
       ex_opts(EX_VERBOSE | EX_DEBUG);
     }
     else {
@@ -1695,7 +1658,7 @@ namespace {
         }
       }
 
-      if ((debug_level & 4) != 0u) {
+      if ((debug_level & 4) != 0U) {
         fmt::print("\nGetting element block info for processor {}...\n", p);
       }
       else {
@@ -1705,7 +1668,7 @@ namespace {
       }
 
       for (size_t b = 0; b < global.count(EBLK); b++) {
-        if ((debug_level & 4) != 0u) {
+        if ((debug_level & 4) != 0U) {
           fmt::print("Block {}, Id = {}", b, block_id[b]);
         }
 
@@ -1763,7 +1726,7 @@ namespace {
           }
           free_name_array(names, temp_block.num_attribute);
         }
-        if ((debug_level & 4) != 0u) {
+        if ((debug_level & 4) != 0U) {
           fmt::print(", Name = '{}', Elements = {:12n}, Nodes/element = {}, Attributes = {}\n",
                      blocks[p][b].name_, blocks[p][b].entity_count(), blocks[p][b].nodesPerElement,
                      blocks[p][b].attributeCount);

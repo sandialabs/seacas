@@ -196,7 +196,7 @@ bool Info::Interface::parse_options(int argc, char **argv)
         "\nThe following options were specified via the IO_INFO_OPTIONS environment variable:\n"
         "\t{}\n\n",
         options);
-    options_.parse(options, options_.basename(*argv));
+    options_.parse(options, Ioss::GetLongOption::basename(*argv));
   }
 
   int option_index = options_.parse(argc, argv);
@@ -206,8 +206,10 @@ bool Info::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage(std::cerr);
-    fmt::print(stderr, "\n\tCan also set options via IO_INFO_OPTIONS environment variable.\n\n");
-    fmt::print(stderr, "\n\t->->-> Send email to gdsjaar@sandia.gov for epu support.<-<-<-\n");
+    fmt::print(stderr,
+               "\n\tCan also set options via IO_INFO_OPTIONS environment variable.\n\n"
+               "\t->->-> Send email to gdsjaar@sandia.gov for {} support.<-<-<-\n",
+               options_.program_name());
     exit(EXIT_SUCCESS);
   }
 

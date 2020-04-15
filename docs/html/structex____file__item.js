@@ -1,5 +1,8 @@
 var structex____file__item =
 [
+    [ "assembly_count", "structex____file__item.html#a850d6d5e1e13003da36e5d92ed1d9339", null ],
+    [ "blob_count", "structex____file__item.html#afa535ba6f5773c6d4652a40eb6746c08", null ],
+    [ "compression_algorithm", "structex____file__item.html#a23edbd530e63e89516827167988080ab", null ],
     [ "compression_level", "structex____file__item.html#acbdac31e3543c39dd39891b10fe881ab", null ],
     [ "file_id", "structex____file__item.html#ad4a215b000fd5b6051aad2625d09443c", null ],
     [ "file_type", "structex____file__item.html#ab95112c72cc7c84d750258411443b655", null ],

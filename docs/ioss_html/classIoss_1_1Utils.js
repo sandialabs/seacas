@@ -40,6 +40,11 @@ var classIoss_1_1Utils =
     [ "number_width", "classIoss_1_1Utils.html#a875232ab39ecaf79b1b668d28fb590d6", null ],
     [ "platform_information", "classIoss_1_1Utils.html#a9f148e3768f9322640e47ac8c0bc50c0", null ],
     [ "power_2", "classIoss_1_1Utils.html#a4f3b2d6a6ac736d341fee8db95c6fc4b", null ],
+    [ "set_all_streams", "group__IossStreams.html#ga7af757ffd44f52d47d805f6120b9780b", null ],
+    [ "set_debug_stream", "group__IossStreams.html#ga1f09ce7b06fc5b354cf55d5c670f7d59", null ],
+    [ "set_output_stream", "group__IossStreams.html#ga7f4aecc2cd2326658cf1d0b6e99cae5a", null ],
+    [ "set_pre_warning_text", "group__IossStreams.html#ga045c5b10deb49ae979c0aaa16e672621", null ],
+    [ "set_warning_stream", "group__IossStreams.html#gad48fc6ac832ebb5b9be062ef6dc7ea29", null ],
     [ "str_equal", "classIoss_1_1Utils.html#abfe87ed59e2fbbde5bd253986eb2180e", null ],
     [ "substr_equal", "classIoss_1_1Utils.html#ab1533963ccad2593ae5f10575187c120", null ],
     [ "term_width", "classIoss_1_1Utils.html#adda9e39aa8daad5a8d027708d53988a6", null ],
@@ -48,5 +53,9 @@ var classIoss_1_1Utils =
     [ "to_string", "classIoss_1_1Utils.html#a990b5cbc6a8633828fea90c8d0378441", null ],
     [ "uniquify", "classIoss_1_1Utils.html#aa9e8a65a742fa904c9b21ca049616f27", null ],
     [ "uppercase", "classIoss_1_1Utils.html#a42aa6b77482c4da5ffde6c5980533e22", null ],
-    [ "variable_name_kluge", "classIoss_1_1Utils.html#acf20ca98385d9714d71360ea6caaba2b", null ]
+    [ "variable_name_kluge", "classIoss_1_1Utils.html#acf20ca98385d9714d71360ea6caaba2b", null ],
+    [ "m_debugStream", "group__IossStreams.html#ga1eb916cc5f67303b54405f9c41b6af67", null ],
+    [ "m_outputStream", "group__IossStreams.html#ga2d3c7d0de4f5c105cf5b7805261e0111", null ],
+    [ "m_preWarningText", "group__IossStreams.html#gaaffd080dc749edf50ef715f3a26c32d8", null ],
+    [ "m_warningStream", "group__IossStreams.html#gabf10820381eef7686fcfd93d5ed1564a", null ]
 ];

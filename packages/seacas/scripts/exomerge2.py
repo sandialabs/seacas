@@ -1,22 +1,37 @@
 """
 Exomerge is a lightweight Python interface for manipulating ExodusII files.
 
-Copyright 2018 National Technology and Engineering Solutions of Sandia.  Under
-the terms of Contract DE-NA-0003525, there is a non-exclusive license for use
-of this work by or on behalf of the U.S. Government.  Export of this program
-may require a license from the United States Government.
+Copyright (c) 2012-2020, National Technology & Engineering Solutions
+of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+NTESS, the U.S. Government retains certain rights in this software.
 
-This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+* Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
 
-You should have received a copy of the GNU General Public License along with
-this program.  If not, see <http://www.gnu.org/licenses/>.
+* Redistributions in binary form must reproduce the above
+  copyright notice, this list of conditions and the following
+  disclaimer in the documentation and/or other materials provided
+  with the distribution.
+
+* Neither the name of NTESS nor the names of its
+  contributors may be used to endorse or promote products derived
+  from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Author: Tim Kostka (tdkostk@sandia.gov)
 Created: May 3, 2012
@@ -69,7 +84,7 @@ except:
     import exodus2 as exodus
 
 # informal version number of this module
-__version__ = 8.5
+__version__ = 8.6
 VERSION = __version__
 
 # contact person for issues
@@ -2857,7 +2872,6 @@ class ExodusModel(object):
         [element_block_id] = self._format_element_block_id_list(
             [element_block_id],
             single=True)
-        element_count = self.get_element_count(element_block_id)
         old_element_type = self._get_standard_element_type(
             self._get_element_type(element_block_id))
         new_element_type = self._get_standard_element_type(new_element_type)
@@ -5239,7 +5253,6 @@ class ExodusModel(object):
         face_type = set()
         element_types = set()
         for id_, members in members_by_block.items():
-            connectivity = self.get_connectivity(id_)
             element_types.add(self._get_element_type(id_))
             face_mapping = self._get_face_mapping_from_id(id_)
             numbers = set(x for _, x in members)
@@ -6549,12 +6562,6 @@ class ExodusModel(object):
                 four_steps[3] = 2 * four_steps[2] - four_steps[1]
             else:
                 four_steps[3] = steps[index + 2]
-            if nearby < timestep:
-                nearby = [nearby,
-                          steps[steps.index(nearby) + 1]]
-            else:
-                nearby = [steps[steps.index(nearby) - 1],
-                          nearby]
             # find interpolation coefficients
             coefficients = self._cubic_interpolation(timestep, *four_steps)
             formula = [[steps[index], coefficients[1]],
@@ -8247,31 +8254,6 @@ class ExodusModel(object):
         area = self.get_side_set_area(side_set_id)
         self.delete_side_set(side_set_id)
         return self._get_thickness_from_volume_and_area(volume, area)
-        # max phi (for a sphere) is 6^(-1/3) * pi^(-1/6)
-        phi = math.pow(volume, 1 / 3.0) / math.pow(area, 1 / 2.0)
-        # find a solution, if possible
-        max_alpha = math.pi ** (-1.0 / 6) * 6.0 ** (-1.0 / 3)
-        low = 0.0
-        high = max_alpha
-        a = 1.0
-        b = 1.5 - 1 / (16 * math.pi * phi ** 6)
-        c = 0.75
-        d = 0.125
-        high_value = a * high ** 3 + b * high ** 2 + c * high + d
-        for _ in range(53):
-            mid = (low + high) / 2
-            mid_value = a * high ** 3 + b * high ** 2 + c * high + d
-            if (high_value > 0) == (mid_value > 0):
-                high_value = mid_value
-                high = mid
-            else:
-                low = mid
-        # in the case this fails, return NaN
-        if low == 0 or high == max_alpha:
-            return float('nan')
-        alpha = (low + high) / 2.0
-        height = (volume * 4 * alpha ** 2 / math.pi) ** (1.0 / 3)
-        return height
 
     def get_element_block_extents(self, element_block_ids='all'):
         """

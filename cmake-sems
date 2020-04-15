@@ -8,6 +8,8 @@ MPI="${MPI:-OFF}"
 BUILD_TYPE="${BUILD_TYPE:-Release}"
 #BUILD_TYPE=Debug
 
+SHARED="${SHARED:-ON}"
+
 ### Define to YES to *disable* all exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
 
@@ -20,13 +22,16 @@ ACCESS=$(cd ..; pwd)
 ### below to "OFF". It will disable blot and fastq
 HAVE_X11=ON
 
+### Python Version...
+PYTHON_VER=${PYTHON_VER:-"3.0"}
+
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE_IO_LIBS=OFF
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
 
-### TPLs -- 
+### TPLs --
 ### Using SEMS (Software Engineering Maintenance & Support) provided libraries...
 ### https://sems.sandia.gov/
 module purge
@@ -38,31 +43,33 @@ module load sems-zlib/1.2.8/base
 
 if [ "$MPI" == "ON" ]
 then
-  module load sems-openmpi/1.10.1
-  module load sems-hdf5/1.8.12/parallel
-  module load sems-netcdf/4.4.1/exo_parallel
+  module load sems-openmpi
+  module load sems-hdf5/1.10.6/parallel
+  module load sems-netcdf/4.7.3/parallel
   module load sems-parmetis/4.0.3/64bit_parallel
+  module load sems-cgns/4.1.1/parallel
 else
-  module load sems-hdf5/1.8.12/base
-  module load sems-netcdf/4.4.1/exo
+  module load sems-hdf5/1.10.6/base
+  module load sems-netcdf/4.7.3/base
+  module load sems-cgns/4.1.1/base
 fi
 
 HAVE_NETCDF=ON
+HAVE_CGNS=ON
 
-# NOTE: CGNS, MATIO, PNETCDF, and DATAWAREHOUSE TPLs  are currently not supported by SEMS.
-#       To use them you will need to install them following the directions in 
+# NOTE: MATIO, and DATAWAREHOUSE TPLs  are currently not supported by SEMS.
+#       To use them you will need to install them following the directions in
 #       README.md, enable them below, and add the appropriate defines below:
 #
 # -D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
 # -D TPL_Matio_INCLUDE_DIRS:PATH=${MATIO_PATH}/include \
-# -D CGNS_ROOT:PATH=${CGNS_PATH} \
 
 HAVE_MATIO=OFF
-HAVE_CGNS=OFF
 HAVE_DATAWAREHOUSE=OFF
 
 NETCDF_PATH=${SEMS_NETCDF_ROOT}
 HDF5_PATH=${SEMS_HDF5_ROOT}
+CGNS_PATH=${SEMS_CGNS_ROOT}
 
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
@@ -118,7 +125,7 @@ then
                 -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
-    
+
 rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
@@ -152,6 +159,7 @@ cmake  \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
 -D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
+-D PythonInterp_FIND_VERSION:STRING=${PYTHON_VER} \
 \
 ${KOKKOS_SYMBOLS} \
 ${DW_SYMBOLS} \
@@ -160,6 +168,27 @@ ${DW_SYMBOLS} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
 -D HDF5_NO_SYSTEM_PATHS=ON \
+-D CGNS_ROOT:PATH=${CGNS_PATH} \
+-D PNetCDF_LIBRARIES=${SEMS_NETCDF_ROOT}/lib/libpnetcdf.a \
+-D PNetCDF_INCLUDE_DIRS=${SEMS_NETCDF_ROOT}/include/ \
 \
 $EXTRA_ARGS \
 ..
+
+
+echo ""
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
+echo "  "
+echo "         CC: ${CC}"
+echo "        CXX: ${CXX}"
+echo "         FC: ${FC}"
+echo "        MPI: ${MPI}"
+echo "     SHARED: ${SHARED}"
+echo " BUILD_TYPE: ${BUILD_TYPE}"
+echo " THREADSAFE: ${THREADSAFE_IO_LIBS}"
+echo " PYTHON_VER: ${PYTHON_VER}"
+echo " "
+echo "     NETCDF: ${HAVE_NETCDF}"
+echo "      MATIO: ${HAVE_MATIO}"
+echo "       CGNS: ${HAVE_CGNS}"

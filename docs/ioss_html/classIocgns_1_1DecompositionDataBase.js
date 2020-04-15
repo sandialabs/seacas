@@ -11,7 +11,7 @@ var classIocgns_1_1DecompositionDataBase =
     [ "decomp_node_count", "classIocgns_1_1DecompositionDataBase.html#a8689af4ce1bb9d74f3d3dde7bcc8fb52", null ],
     [ "decomp_node_offset", "classIocgns_1_1DecompositionDataBase.html#a2b2a8697cae8770b1466e479ad8dbfb9", null ],
     [ "decompose_model", "classIocgns_1_1DecompositionDataBase.html#ae75d3ee50894370c6c6d7648462f0329", null ],
-    [ "get_block_connectivity", "classIocgns_1_1DecompositionDataBase.html#a8dc971e2118463b864956e9824360885", null ],
+    [ "get_block_connectivity", "classIocgns_1_1DecompositionDataBase.html#a2717e44e65e7009b894002149adf4bed", null ],
     [ "get_commset_node_size", "classIocgns_1_1DecompositionDataBase.html#a9361554b3840ab028004856aee4a771a", null ],
     [ "get_element_field", "classIocgns_1_1DecompositionDataBase.html#a9b9779ecaf5da2da625814b5653148af", null ],
     [ "get_node_coordinates", "classIocgns_1_1DecompositionDataBase.html#a2301575a06e847c107826c8d04512754", null ],

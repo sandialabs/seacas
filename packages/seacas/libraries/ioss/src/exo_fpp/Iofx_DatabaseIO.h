@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -86,7 +86,7 @@ namespace Iofx {
                MPI_Comm communicator, const Ioss::PropertyManager &props);
     DatabaseIO(const DatabaseIO &from) = delete;
     DatabaseIO &operator=(const DatabaseIO &from) = delete;
-    ~DatabaseIO() override{};
+    ~DatabaseIO() override                        = default;
 
     // Kluge -- a few applications need access so can diretly access exodus API
     int get_file_pointer() const override; // Open file and set exodusFilePtr.
@@ -102,6 +102,10 @@ namespace Iofx {
                               bool abort_if_error) const;
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::Assembly *assem, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -134,6 +138,10 @@ namespace Iofx {
                                size_t data_size) const override;
 
     int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
+    int64_t put_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
+                               size_t data_size) const override;
+    int64_t put_field_internal(const Ioss::Assembly *assem, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;

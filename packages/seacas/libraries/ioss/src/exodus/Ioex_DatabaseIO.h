@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -52,6 +52,8 @@
 #include <vector>
 
 namespace Ioss {
+  class Assembly;
+  class Blob;
   class GroupingEntity;
   class Region;
   class EntityBlock;
@@ -103,8 +105,7 @@ namespace Ioex {
 
     ~DatabaseIO() override;
 
-
-    const std::string get_format() const override {return "Exodus";}
+    const std::string get_format() const override { return "Exodus"; }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -181,6 +182,10 @@ namespace Ioex {
                                size_t data_size) const override             = 0;
     int64_t get_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const override             = 0;
+    int64_t get_field_internal(const Ioss::Assembly *as, const Ioss::Field &field, void *data,
+                               size_t data_size) const override             = 0;
+    int64_t get_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
+                               size_t data_size) const override             = 0;
 
     int64_t put_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override             = 0;
@@ -208,6 +213,10 @@ namespace Ioex {
                                size_t data_size) const override             = 0;
     int64_t put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const override             = 0;
+    int64_t put_field_internal(const Ioss::Assembly *as, const Ioss::Field &field, void *data,
+                               size_t data_size) const override             = 0;
+    int64_t put_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
+                               size_t data_size) const override             = 0;
 
     virtual void write_meta_data() = 0;
     void         write_results_metadata(bool gather_data = true);
@@ -220,7 +229,7 @@ namespace Ioex {
       closeDW();
     }
 
-    virtual int get_file_pointer() const override = 0; // Open file and set exodusFilePtr.
+    int get_file_pointer() const override = 0; // Open file and set exodusFilePtr.
 
     virtual int free_file_pointer() const; // Close file and set exodusFilePtr.
 
@@ -240,11 +249,14 @@ namespace Ioex {
 
     void generate_sideset_truth_table();
 
-    void output_results_names(ex_entity_type type, VariableNameMap &variables) const;
+    void output_results_names(ex_entity_type type, VariableNameMap &variables,
+                              bool reduction) const;
     int  gather_names(ex_entity_type type, VariableNameMap &variables,
                       const Ioss::GroupingEntity *ge, int index, bool reduction);
 
     void get_nodeblocks();
+    void get_assemblies();
+    void get_blobs();
 
     void add_attribute_fields(ex_entity_type entity_type, Ioss::GroupingEntity *block,
                               int attribute_count, const std::string &type);
@@ -257,6 +269,8 @@ namespace Ioex {
                                         Ioex::VariableNameMap &variables);
     int64_t add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
                                int64_t position = 0);
+    int64_t add_reduction_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity);
+    void add_mesh_reduction_fields(ex_entity_type type, int64_t id, Ioss::GroupingEntity *entity);
 
     void add_region_fields();
     void store_reduction_field(ex_entity_type type, const Ioss::Field &field,
@@ -310,8 +324,9 @@ namespace Ioex {
 
     mutable std::map<ex_entity_type, Ioss::IntVector> m_truthTable;
     mutable std::map<ex_entity_type, VariableNameMap> m_variables;
+    mutable std::map<ex_entity_type, VariableNameMap> m_reductionVariables;
 
-    mutable ValueContainer globalValues;
+    mutable std::map<ex_entity_type, std::map<int64_t, ValueContainer>> m_reductionValues;
 
     mutable std::vector<unsigned char> nodeConnectivityStatus;
 

@@ -1,6 +1,7 @@
 var classIoss_1_1SideBlock =
 [
     [ "SideBlock", "classIoss_1_1SideBlock.html#a8c6f360c5e9506f7cb62f40945bfc792", null ],
+    [ "SideBlock", "classIoss_1_1SideBlock.html#a6027ec0e049032ba717648e4f966605b", null ],
     [ "block_membership", "classIoss_1_1SideBlock.html#ad31a4170f11254f07e88a6d9accbe7e3", null ],
     [ "contained_in", "classIoss_1_1SideBlock.html#a73f5294832ab55c907f84aec93d0556e", null ],
     [ "contains_string", "classIoss_1_1SideBlock.html#aa672ae655e87effecd352dc6618692ae", null ],

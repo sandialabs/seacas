@@ -29,6 +29,7 @@ var classIoss_1_1Decomposition =
     [ "metis_decompose", "classIoss_1_1Decomposition.html#a07163869ec455fcb55d000c1a93ee20b", null ],
     [ "needs_centroids", "classIoss_1_1Decomposition.html#a51353af2e4d75c5573ce45d5c66b7a69", null ],
     [ "node_global_to_local", "classIoss_1_1Decomposition.html#adadfc48b12e85a1c41d8d593a6b28e8c", null ],
+    [ "release_memory", "classIoss_1_1Decomposition.html#acc889732ceb2a2f969e93549a3093ac8", null ],
     [ "show_progress", "classIoss_1_1Decomposition.html#a6601c1ffc3b352378b9b042a19e093b5", null ],
     [ "simple_decompose", "classIoss_1_1Decomposition.html#a7c75d0f15d796ff944e70fba13ad7697", null ],
     [ "simple_node_decompose", "classIoss_1_1Decomposition.html#a64dc2ff22327c3a80ed5918e626ba242", null ],

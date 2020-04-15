@@ -1,5 +1,7 @@
 var structex__init__params =
 [
+    [ "num_assembly", "structex__init__params.html#aa815755a52e6774fbb9ebabbc82c987d", null ],
+    [ "num_blob", "structex__init__params.html#ae6e00ae43c90c986671b03a5cfaddd52", null ],
     [ "num_dim", "structex__init__params.html#aab62ab1d8e6bd13f2db73bad2bcf82a2", null ],
     [ "num_edge", "structex__init__params.html#a1625c8711864906ef8d58d05567c708d", null ],
     [ "num_edge_blk", "structex__init__params.html#af1519720ea373ba198ab0d1e00ed5466", null ],

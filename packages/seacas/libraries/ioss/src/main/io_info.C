@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -58,12 +58,17 @@ namespace {
 
   void info_sidesets(Ioss::Region &region, const Info::Interface &interFace);
   void info_coordinate_frames(Ioss::Region &region);
+  void info_assemblies(Ioss::Region &region);
+  void info_region(Ioss::Region &region);
+  void info_blobs(Ioss::Region &region);
 
   void info_aliases(const Ioss::Region &region, const Ioss::GroupingEntity *ige, bool nl_pre,
                     bool nl_post);
 
   void info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
-                   const std::string &header);
+                   const std::string &header, const std::string &suffix = "\n\t");
+  void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
+                     const std::string &header, const std::string &suffix = "\n\t");
 
   void file_info(const Info::Interface &interFace);
   void group_info(Info::Interface &interFace);
@@ -73,7 +78,9 @@ namespace {
     int64_t             num_dist = ge->get_property("distribution_factor_count").get_int();
     std::vector<double> df;
     // Do even if num_dist == 0 so parallel does not assert.
-    ge->get_field_data("distribution_factors", df);
+    if (ge->field_exists("distribution_factors")) {
+      ge->get_field_data("distribution_factors", df);
+    }
     if (num_dist > 0) {
       auto mm = std::minmax_element(df.begin(), df.end());
       fmt::print("{}Distribution Factors: ", prefix);
@@ -102,7 +109,7 @@ namespace {
 
   Ioss::PropertyManager set_properties(const Info::Interface &interFace)
   {
-    Ioss::PropertyManager properties;
+    Ioss::PropertyManager properties{};
     if (!interFace.decomp_method().empty()) {
       properties.add(Ioss::Property("DECOMPOSITION_METHOD", interFace.decomp_method()));
     }
@@ -139,7 +146,7 @@ namespace {
 
     int              num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
     std::vector<int> children(num_children);
-    ex_get_group_ids(exoid, nullptr, TOPTR(children));
+    ex_get_group_ids(exoid, nullptr, children.data());
     prefix += '\t';
     for (int i = 0; i < num_children; i++) {
       print_groups(children[i], prefix);
@@ -255,6 +262,7 @@ namespace {
 
       info_aliases(region, sb, true, false);
       info_fields(sb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
+      info_fields(sb, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ", "\t");
       info_nodeblock(region, sb->get_node_block(), interFace, "\t");
       fmt::print("\n");
 
@@ -279,6 +287,45 @@ namespace {
     }
   }
 
+  void info_region(Ioss::Region &region)
+  {
+    fmt::print("\nRegion '{}' (global)\n", region.name());
+    info_property(&region, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+    info_fields(&region, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
+  }
+
+  void info_assemblies(Ioss::Region &region)
+  {
+    const auto &assem = region.get_assemblies();
+    for (auto as : assem) {
+      fmt::print("\n{} id: {:6d}, contains: {} member(s) of type {:>10s}.\n\tMembers: ", name(as),
+                 id(as), as->member_count(), as->contains_string());
+      for (const auto mem : as->get_members()) {
+        fmt::print("'{}', ", mem->name());
+      }
+
+      info_aliases(region, as, true, false);
+      fmt::print("\n");
+      info_property(as, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      info_fields(as, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
+    }
+  }
+
+  void info_blobs(Ioss::Region &region)
+  {
+    const auto &blobs = region.get_blobs();
+    for (auto blob : blobs) {
+      fmt::print("\n{} id: {:6d}, contains: {} item(s).\n", name(blob), id(blob),
+                 blob->entity_count());
+
+      info_aliases(region, blob, true, false);
+      fmt::print("\n");
+      info_property(blob, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      info_fields(blob, Ioss::Field::TRANSIENT, "\tTransient:  ", "\t");
+      info_fields(blob, Ioss::Field::REDUCTION, "\tTransient  (Reduction):  ", "\t");
+    }
+  }
+
   void info_elementblock(Ioss::Region &region, const Info::Interface &interFace)
   {
     const Ioss::ElementBlockContainer &ebs = region.get_element_blocks();
@@ -291,7 +338,9 @@ namespace {
                  id(eb), type, num_elem, num_attrib);
 
       info_aliases(region, eb, true, false);
+      fmt::print("\n");
       info_fields(eb, Ioss::Field::ATTRIBUTE, "\n\tAttributes: ");
+      info_property(eb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
 
       if (interFace.adjacencies()) {
         std::vector<std::string> blocks;
@@ -302,7 +351,7 @@ namespace {
         }
       }
       info_fields(eb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
-      fmt::print("\n");
+      info_fields(eb, Ioss::Field::REDUCTION, "\n\tTransient  (Reduction):  ");
 
       if (interFace.compute_bbox()) {
         Ioss::AxisAlignedBoundingBox bbox = eb->get_bounding_box();
@@ -336,6 +385,7 @@ namespace {
         }
 #endif
       info_fields(eb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
+      info_fields(eb, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ");
       fmt::print("\n");
     }
   }
@@ -363,6 +413,7 @@ namespace {
         }
 #endif
       info_fields(eb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
+      info_fields(eb, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ");
       fmt::print("\n");
     }
   }
@@ -382,6 +433,7 @@ namespace {
       }
       info_aliases(region, fs, true, false);
       info_fields(fs, Ioss::Field::TRANSIENT, "\n\tTransient: ");
+      info_fields(fs, Ioss::Field::REDUCTION, "\n\tTransient (Reduction):  ");
       if (interFace.adjacencies()) {
         std::vector<std::string> blocks;
         fs->block_membership(blocks);
@@ -400,6 +452,7 @@ namespace {
                    count, num_attrib, num_dist);
         info_df(fb, "\t\t");
         info_fields(fb, Ioss::Field::TRANSIENT, "\t\tTransient: ");
+        info_fields(fb, Ioss::Field::REDUCTION, "\t\tTransient (Reduction):  ");
       }
     }
   }
@@ -417,6 +470,7 @@ namespace {
       info_df(ns, "\t");
       info_fields(ns, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
       info_fields(ns, Ioss::Field::TRANSIENT, "\tTransient:  ");
+      info_fields(ns, Ioss::Field::REDUCTION, "\tTransient (Reduction):  ");
     }
   }
 
@@ -432,6 +486,7 @@ namespace {
       info_df(ns, "\t");
       info_fields(ns, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
       info_fields(ns, Ioss::Field::TRANSIENT, "\tTransient:  ");
+      info_fields(ns, Ioss::Field::REDUCTION, "\tTransient (Reduction):  ");
     }
   }
 
@@ -447,6 +502,7 @@ namespace {
       info_df(fs, "\t");
       info_fields(fs, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
       info_fields(fs, Ioss::Field::TRANSIENT, "\tTransient:  ");
+      info_fields(fs, Ioss::Field::REDUCTION, "\tTransient (Reduction):  ");
     }
   }
 
@@ -460,6 +516,7 @@ namespace {
       info_df(es, "\t");
       info_fields(es, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
       info_fields(es, Ioss::Field::TRANSIENT, "\tTransient:  ");
+      info_fields(es, Ioss::Field::REDUCTION, "\tTransient (Reduction):  ");
     }
   }
 
@@ -504,7 +561,7 @@ namespace {
   }
 
   void info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
-                   const std::string &header)
+                   const std::string &header, const std::string &suffix)
   {
     Ioss::NameList fields;
     ige->field_describe(role, &fields);
@@ -514,7 +571,7 @@ namespace {
     }
 
     if (!header.empty()) {
-      fmt::print("{}\n\t", header);
+      fmt::print("{}{}", header, suffix);
     }
     // Iterate through results fields and transfer to output
     // database...
@@ -525,15 +582,62 @@ namespace {
     }
 
     auto width = Ioss::Utils::term_width();
+    if (width == 0) {
+      width = 80;
+    }
     int cur_out = 8; // Tab width...
+    if (!header.empty()) {
+      cur_out = header.size() + suffix.size() + 16; // Assume 2 tabs...
+    }
     for (const auto &field_name : fields) {
       const Ioss::VariableType *var_type   = ige->get_field(field_name).raw_storage();
       int                       comp_count = var_type->component_count();
       fmt::print("{1:>{0}s}:{2}  ", max_width, field_name, comp_count);
       cur_out += max_width + 4;
       if (cur_out + max_width >= width) {
-	fmt::print("\n\t");
-	cur_out = 8;
+        fmt::print("\n\t");
+        cur_out = 8;
+      }
+    }
+    if (!header.empty()) {
+      fmt::print("\n");
+    }
+  }
+
+  void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
+                     const std::string &header, const std::string &suffix)
+  {
+    Ioss::NameList properties;
+    ige->property_describe(origin, &properties);
+
+    if (properties.empty()) {
+      return;
+    }
+
+    if (!header.empty()) {
+      fmt::print("{}{}", header, suffix);
+    }
+
+    int num_out = 0;
+    for (const auto &property_name : properties) {
+      fmt::print("{:>s}: ", property_name);
+      auto prop = ige->get_property(property_name);
+      switch (prop.get_type()) {
+      case Ioss::Property::BasicType::REAL: fmt::print("{}\t", prop.get_real()); break;
+      case Ioss::Property::BasicType::INTEGER: fmt::print("{}\t", prop.get_int()); break;
+      case Ioss::Property::BasicType::STRING: fmt::print("'{}'\t", prop.get_string()); break;
+      case Ioss::Property::BasicType::VEC_INTEGER:
+        fmt::print("{}\t", fmt::join(prop.get_vec_int(), "  "));
+        break;
+      case Ioss::Property::BasicType::VEC_DOUBLE:
+        fmt::print("{}\t", fmt::join(prop.get_vec_double(), "  "));
+        break;
+      default:; // Do nothing
+      }
+      num_out++;
+      if (num_out >= 3) {
+        fmt::print("\n\t");
+        num_out = 8;
       }
     }
     if (!header.empty()) {
@@ -595,8 +699,10 @@ namespace Ioss {
         }
         region.output_summary(std::cout, true);
 
-        if (interFace.summary() == 0) {
+        if (!interFace.summary()) {
 
+          info_region(region);
+          info_assemblies(region);
           info_nodeblock(region, interFace);
           info_edgeblock(region);
           info_faceblock(region);
@@ -609,6 +715,7 @@ namespace Ioss {
           info_elementsets(region);
 
           info_sidesets(region, interFace);
+          info_blobs(region);
           info_coordinate_frames(region);
         }
       }

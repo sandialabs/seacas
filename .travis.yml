@@ -5,6 +5,9 @@ language: c++
 os:
   - linux
 
+arch:
+  - amd64
+  
 compiler:
   - gcc
   - clang
@@ -20,8 +23,15 @@ matrix:
     - os: osx
   include:
     - compiler: clang
-      env: SANITIZER="-fsanitize=address -fsanitize-address-use-after-scope -fsanitize=memory -fno-omit-frame-pointer -fPIC" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
+      env: SANITIZER="undefined" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
     - compiler: gcc
+      arch: amd64
+      env: MPI=ON H5VERSION=V18 USE_64BIT_INT=OFF
+    - compiler: gcc
+      arch: amd64
+      env: MPI=ON H5VERSION=V110 USE_64BIT_INT=OFF
+    - compiler: gcc
+      arch: amd64
       env: MPI=ON H5VERSION=V18 USE_64BIT_INT=ON
     - compiler: clang
       env: MPI=ON THREADSAFE=ON H5VERSION=V18 FORTRAN=OFF
@@ -53,28 +63,15 @@ before_install:
        sudo apt-get -y install gfortran-7
        sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 90
     fi
+  - sudo apt-get -y install cmake
   - sudo apt-get -y install libz-dev
   - sudo apt-get -y install python3
+  - cmake --version
   - GNU_PARALLEL=OFF ./install-tpl.sh 
 
 before_script:
 
 install:
-  ############################################################################
-  # Install a recent CMake
-  ############################################################################
-  - DEPS_DIR="${HOME}/deps"
-  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.0-Linux-x86_64.tar.gz"
-      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-    else
-      brew install cmake || brew upgrade cmake
-    fi
-  - cd -
   - cmake --version
   - ./cmake-config
 

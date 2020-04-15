@@ -59,6 +59,8 @@
 #include <utility>
 #include <vector>
 
+#include "Ioss_Assembly.h"
+#include "Ioss_Blob.h"
 #include "Ioss_CommSet.h"
 #include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
@@ -81,13 +83,24 @@
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
+#include "Ioss_SmartAssert.h"
 #include "Ioss_State.h"
 #include "Ioss_VariableType.h"
+
+// Transitioning from treating global variables as Ioss::Field::TRANSIENT
+// to Ioss::Field::REDUCTION.  To get the old behavior, define the value
+// below to '1'.  Not sure if how new behavior will affect STK and Trilinos...
+#define GLOBALS_ARE_TRANSIENT 0
 
 // ========================================================================
 // Static internal helper functions
 // ========================================================================
 namespace {
+  std::vector<ex_entity_type> exodus_types({EX_GLOBAL, EX_BLOB, EX_ASSEMBLY, EX_NODE_BLOCK,
+                                            EX_EDGE_BLOCK, EX_FACE_BLOCK, EX_ELEM_BLOCK,
+                                            EX_NODE_SET, EX_EDGE_SET, EX_FACE_SET, EX_ELEM_SET,
+                                            EX_SIDE_SET});
+
   const size_t max_line_length = MAX_LINE_LENGTH;
 
   const char *complex_suffix[] = {".re", ".im"};
@@ -127,7 +140,7 @@ namespace Ioex {
     // Set exodusII warning level.
     if (util().get_environment("EX_DEBUG", isParallel)) {
       fmt::print(
-          stderr,
+          Ioss::DEBUG(),
           "IOEX: Setting EX_VERBOSE|EX_DEBUG because EX_DEBUG environment variable is set.\n");
       ex_opts(EX_VERBOSE | EX_DEBUG);
     }
@@ -135,14 +148,15 @@ namespace Ioex {
     if (!is_input()) {
       if (util().get_environment("EX_MODE", exodusMode, isParallel)) {
         fmt::print(
-            stderr,
+            Ioss::OUTPUT(),
             "IOEX: Exodus create mode set to {} from value of EX_MODE environment variable.\n",
             exodusMode);
       }
 
       if (util().get_environment("EX_MINIMIZE_OPEN_FILES", isParallel)) {
-        fmt::print(stderr, "IOEX: Minimizing open files because EX_MINIMIZE_OPEN_FILES environment "
-                           "variable is set.\n");
+        fmt::print(Ioss::OUTPUT(),
+                   "IOEX: Minimizing open files because EX_MINIMIZE_OPEN_FILES environment "
+                   "variable is set.\n");
         minimizeOpenFiles = true;
       }
       else {
@@ -319,7 +333,7 @@ namespace Ioex {
         double t_end    = Ioss::Utils::timer();
         double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
         if (myProcessor == 0) {
-          fmt::print(stderr, "File Close Time = {}\n", duration);
+          fmt::print(Ioss::DEBUG(), "File Close Time = {}\n", duration);
         }
       }
     }
@@ -371,8 +385,9 @@ namespace Ioex {
     // Check byte-size of integers stored on the database...
     if ((ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
       if (myProcessor == 0) {
-        fmt::print(stderr, "IOSS: Input database contains 8-byte integers. Setting Ioss to use "
-                           "8-byte integers.\n");
+        fmt::print(Ioss::OUTPUT(),
+                   "IOSS: Input database contains 8-byte integers. Setting Ioss to use "
+                   "8-byte integers.\n");
       }
       ex_set_int64_status(exodusFilePtr, EX_ALL_INT64_API);
       set_int_byte_size_api(Ioss::USE_INT64_API);
@@ -561,6 +576,145 @@ namespace Ioex {
     return step;
   }
 
+  void DatabaseIO::get_assemblies()
+  {
+    Ioss::SerializeIO serializeIO__(this);
+    // Query number of coordinate frames...
+    int nassem = ex_inquire_int(get_file_pointer(), EX_INQ_ASSEMBLY);
+
+    if (nassem > 0) {
+      std::vector<ex_assembly> assemblies(nassem);
+      int                      ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+
+      // Now allocate space for member list and get assemblies again...
+      for (int i = 0; i < nassem; i++) {
+        assemblies[i].entity_list = new int64_t[assemblies[i].entity_count];
+      }
+      ierr = ex_get_assemblies(get_file_pointer(), assemblies.data());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+
+      for (int i = 0; i < nassem; i++) {
+        Ioss::Assembly *assem =
+            new Ioss::Assembly(get_region()->get_database(), assemblies[i].name);
+        assem->property_add(Ioss::Property("id", assemblies[i].id));
+        get_region()->add(assem);
+      }
+
+      // Now iterate again and populate member lists...
+      for (int i = 0; i < nassem; i++) {
+        Ioss::Assembly *assem = get_region()->get_assembly(assemblies[i].name);
+        assert(assem != nullptr);
+        auto type = Ioex::map_exodus_type(assemblies[i].type);
+        for (int j = 0; j < assemblies[i].entity_count; j++) {
+          auto *ge = get_region()->get_entity(assemblies[i].entity_list[j], type);
+          if (ge != nullptr) {
+            assem->add(ge);
+          }
+          else {
+            std::ostringstream errmsg;
+            fmt::print(errmsg,
+                       "Error: Failed to find entity of type {} with id {} for Assembly {}.\n",
+                       type, assemblies[i].entity_list[j], assem->name());
+            IOSS_ERROR(errmsg);
+          }
+        }
+        SMART_ASSERT(assem->member_count() == (size_t)assemblies[i].entity_count)
+        (assem->member_count())(assemblies[i].entity_count);
+
+        add_mesh_reduction_fields(EX_ASSEMBLY, assemblies[i].id, assem);
+        // Check for additional variables.
+        int attribute_count = assem->get_property("attribute_count").get_int();
+        add_attribute_fields(EX_ASSEMBLY, assem, attribute_count, "Assembly");
+        add_reduction_results_fields(EX_ASSEMBLY, assem);
+      }
+
+      // If there are any reduction results fields ("REDUCTION"), then need to
+      // allocate space for the values to be stored on each timestep...
+      if (!m_reductionVariables[EX_ASSEMBLY].empty()) {
+        size_t size = m_reductionVariables[EX_ASSEMBLY].size();
+        for (const auto &assembly : assemblies) {
+          m_reductionValues[EX_ASSEMBLY][assembly.id].resize(size);
+        }
+      }
+    }
+  }
+
+  void DatabaseIO::get_blobs()
+  {
+    Ioss::SerializeIO serializeIO__(this);
+    // Query number of coordinate frames...
+    int nblob = ex_inquire_int(get_file_pointer(), EX_INQ_BLOB);
+
+    if (nblob > 0) {
+      std::vector<ex_blob> blobs(nblob);
+      int max_name_length = ex_inquire_int(exodusFilePtr, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+      for (auto &bl : blobs) {
+        bl.name = new char[max_name_length + 1];
+      }
+
+      int ierr = ex_get_blobs(get_file_pointer(), blobs.data());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+
+      for (const auto &bl : blobs) {
+#ifdef SEACAS_HAVE_MPI
+          // Each blob is spread across all processors (should support a minimum size...)
+          // Determine size of blob on each rank and offset from beginning of blob.
+          size_t per_proc = bl.num_entry / parallel_size();
+          size_t extra    = bl.num_entry % parallel_size();
+          size_t count    = per_proc + (myProcessor < extra ? 1 : 0);
+
+          size_t offset = 0;
+          if (myProcessor < extra) {
+            offset = (per_proc + 1) * myProcessor;
+          }
+          else {
+            offset = (per_proc + 1) * extra + per_proc * (myProcessor - extra);
+          }
+          Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, count);
+          blob->property_add(Ioss::Property("processor_offset", (int64_t)offset));
+          blob->property_add(Ioss::Property("global_size", (int64_t)bl.num_entry));
+#else
+        Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, bl.num_entry);
+#endif
+        blob->property_add(Ioss::Property("id", bl.id));
+        get_region()->add(blob);
+      }
+
+      // Now iterate again and populate member lists...
+      for (const auto &bl : blobs) {
+        Ioss::Blob *blob = get_region()->get_blob(bl.name);
+        assert(blob != nullptr);
+
+        add_mesh_reduction_fields(EX_BLOB, bl.id, blob);
+        // Check for additional variables.
+        int attribute_count = blob->get_property("attribute_count").get_int();
+        add_attribute_fields(EX_BLOB, blob, attribute_count, "Blob");
+        add_reduction_results_fields(EX_BLOB, blob);
+        add_results_fields(EX_BLOB, blob);
+      }
+
+      // If there are any reduction results fields ("REDUCTION"), then need to
+      // allocate space for the values to be stored on each timestep...
+      if (!m_reductionVariables[EX_BLOB].empty()) {
+        size_t size = m_reductionVariables[EX_BLOB].size();
+        for (const auto &blob : blobs) {
+          m_reductionValues[EX_BLOB][blob.id].resize(size);
+        }
+      }
+
+      for (auto &bl : blobs) {
+        delete[] bl.name;
+      }
+    }
+  }
+
   // common
   void DatabaseIO::get_nodeblocks()
   {
@@ -584,7 +738,15 @@ namespace Ioex {
     }
 
     add_attribute_fields(EX_NODE_BLOCK, block, num_attr, "");
+    add_reduction_results_fields(EX_NODE_BLOCK, block);
     add_results_fields(EX_NODE_BLOCK, block);
+
+    // If there are any reduction results fields ("REDUCTION"), then need to
+    // allocate space for the values to be stored on each timestep...
+    if (!m_reductionVariables[EX_NODE_BLOCK].empty()) {
+      size_t size = m_reductionVariables[EX_NODE_BLOCK].size();
+      m_reductionValues[EX_NODE_BLOCK][1].resize(size);
+    }
 
     bool added = get_region()->add(block);
     if (!added) {
@@ -865,6 +1027,8 @@ namespace Ioex {
     int *    ivar   = static_cast<int *>(variables);
     int64_t *ivar64 = static_cast<int64_t *>(variables);
 
+    int64_t id = type == EX_GLOBAL ? 0 : ge->get_property("id").get_int();
+
     // Note that if the field's basic type is COMPLEX, then each component of
     // the VariableType is a complex variable consisting of a real and
     // imaginary part.  Since exodus cannot handle complex variables,
@@ -895,35 +1059,47 @@ namespace Ioex {
       for (int i = 0; i < comp_count; i++) {
         std::string var_name = var_type->label_name(field_name, i + 1, field_suffix_separator);
 
-        // If this is not a global variable, prepend the name to avoid
-        // name collisions...
-        if (type != EX_GLOBAL) {
-          var_name = ge->name() + ":" + var_name;
+#if GLOBALS_ARE_TRANSIENT
+        if (type == EX_GLOBAL) {
+          SMART_ASSERT(m_variables[type].find(var_name) != m_variables[type].end())(type)(var_name);
+          var_index = m_variables[type].find(var_name)->second;
         }
-        assert(m_variables[EX_GLOBAL].find(var_name) != m_variables[EX_GLOBAL].end());
-        var_index = m_variables[EX_GLOBAL].find(var_name)->second;
+        else {
+          SMART_ASSERT(m_reductionVariables[type].find(var_name) !=
+                       m_reductionVariables[type].end())
+          (type)(var_name);
+          var_index = m_reductionVariables[type].find(var_name)->second;
+        }
+#else
+        SMART_ASSERT(m_reductionVariables[type].find(var_name) != m_reductionVariables[type].end())
+        (type)(var_name);
+        var_index = m_reductionVariables[type].find(var_name)->second;
+#endif
 
-        assert(static_cast<int>(globalValues.size()) >= var_index);
+        SMART_ASSERT(static_cast<int>(m_reductionValues[type][id].size()) >= var_index)
+        (id)(m_reductionValues[type][id].size())(var_index);
 
         // Transfer from 'variables' array.
         if (ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::COMPLEX) {
-          globalValues[var_index - 1] = rvar[i];
+          m_reductionValues[type][id][var_index - 1] = rvar[i];
         }
         else if (ioss_type == Ioss::Field::INTEGER) {
-          globalValues[var_index - 1] = ivar[i];
+          m_reductionValues[type][id][var_index - 1] = ivar[i];
         }
         else if (ioss_type == Ioss::Field::INT64) {
-          globalValues[var_index - 1] = ivar64[i]; // FIX 64 UNSAFE
+          m_reductionValues[type][id][var_index - 1] = ivar64[i]; // FIX 64 UNSAFE
         }
       }
     }
   }
 
   // common
-  void DatabaseIO::get_reduction_field(ex_entity_type /*unused*/, const Ioss::Field &field,
-                                       const Ioss::GroupingEntity * /* ge */, void *variables) const
+  void DatabaseIO::get_reduction_field(ex_entity_type type, const Ioss::Field &field,
+                                       const Ioss::GroupingEntity *ge, void *variables) const
   {
     const Ioss::VariableType *var_type = field.raw_storage();
+
+    int64_t id = type == EX_GLOBAL ? 0 : ge->get_property("id").get_int();
 
     Ioss::Field::BasicType ioss_type = field.get_type();
     assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
@@ -934,28 +1110,41 @@ namespace Ioex {
 
     // get number of components, cycle through each component
     // and add suffix to base 'field_name'.  Look up index
-    // of this name in 'm_variables[EX_GLOBAL]' map
+    // of this name in 'm_variables[type]' map
     char field_suffix_separator = get_field_separator();
 
     int comp_count = var_type->component_count();
     for (int i = 0; i < comp_count; i++) {
+      int                var_index  = 0;
       const std::string &field_name = field.get_name();
       std::string        var_name = var_type->label_name(field_name, i + 1, field_suffix_separator);
 
-      assert(m_variables[EX_GLOBAL].find(var_name) != m_variables[EX_GLOBAL].end());
-      int var_index = m_variables[EX_GLOBAL].find(var_name)->second;
+#if GLOBALS_ARE_TRANSIENT
+      if (type == EX_GLOBAL) {
+        assert(m_variables[type].find(var_name) != m_variables[type].end());
+        var_index = m_variables[type].find(var_name)->second;
+      }
+      else {
+        assert(m_reductionVariables[type].find(var_name) != m_reductionVariables[type].end());
+        var_index = m_reductionVariables[type].find(var_name)->second;
+      }
 
-      assert(static_cast<int>(globalValues.size()) >= var_index);
-
+      assert(static_cast<int>(m_reductionValues[type][id].size()) >= var_index);
+#else
+      SMART_ASSERT(m_reductionVariables[type].find(var_name) != m_reductionVariables[type].end())
+      (type)(var_name);
+      var_index = m_reductionVariables[type].find(var_name)->second;
+      SMART_ASSERT(static_cast<int>(m_reductionValues[type][id].size()) >= var_index);
+#endif
       // Transfer to 'variables' array.
       if (ioss_type == Ioss::Field::REAL) {
-        rvar[i] = globalValues[var_index - 1];
+        rvar[i] = m_reductionValues[type][id][var_index - 1];
       }
       else if (ioss_type == Ioss::Field::INT64) {
-        i64var[i] = static_cast<int64_t>(globalValues[var_index - 1]);
+        i64var[i] = static_cast<int64_t>(m_reductionValues[type][id][var_index - 1]);
       }
       else if (ioss_type == Ioss::Field::INTEGER) {
-        ivar[i] = static_cast<int>(globalValues[var_index - 1]);
+        ivar[i] = static_cast<int>(m_reductionValues[type][id][var_index - 1]);
       }
     }
   }
@@ -963,13 +1152,20 @@ namespace Ioex {
   // common
   void DatabaseIO::write_reduction_fields() const
   {
-    int step     = get_current_state();
-    step         = get_database_step(step);
-    size_t count = globalValues.size();
-    if (count > 0) {
-      int ierr = ex_put_var(get_file_pointer(), step, EX_GLOBAL, 1, 0, count, globalValues.data());
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+    int step = get_current_state();
+    step     = get_database_step(step);
+    for (const auto &type : exodus_types) {
+      auto &id_values = m_reductionValues[type];
+      for (const auto &values : id_values) {
+        int64_t id    = values.first;
+        auto &  vals  = values.second;
+        size_t  count = vals.size();
+        if (count > 0) {
+          int ierr = ex_put_reduction_vars(get_file_pointer(), step, type, id, count, vals.data());
+          if (ierr < 0) {
+            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+          }
+        }
       }
     }
   }
@@ -977,12 +1173,21 @@ namespace Ioex {
   // common
   void DatabaseIO::read_reduction_fields() const
   {
-    int    step  = get_current_state();
-    size_t count = globalValues.size();
-    if (count > 0) {
-      int ierr = ex_get_var(get_file_pointer(), step, EX_GLOBAL, 1, 0, count, TOPTR(globalValues));
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+    int step = get_current_state();
+
+    for (const auto &type : exodus_types) {
+      auto &id_values = m_reductionValues[type];
+      for (const auto &values : id_values) {
+        int64_t id    = values.first;
+        auto &  vals  = values.second;
+        size_t  count = vals.size();
+        if (count > 0) {
+          int ierr = ex_get_reduction_vars(get_file_pointer(), step, type, id, count,
+                                           (double *)vals.data());
+          if (ierr < 0) {
+            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+          }
+        }
       }
     }
   }
@@ -1056,7 +1261,11 @@ namespace Ioex {
     fileExists = false;
 
     ex_var_params exo_params{};
-    exo_params.num_glob  = m_variables[EX_GLOBAL].size();
+#if GLOBALS_ARE_TRANSIENT
+    exo_params.num_glob = m_variables[EX_GLOBAL].size();
+#else
+    exo_params.num_glob = m_reductionVariables[EX_GLOBAL].size();
+#endif
     exo_params.num_node  = m_variables[EX_NODE_BLOCK].size();
     exo_params.num_edge  = m_variables[EX_EDGE_BLOCK].size();
     exo_params.num_face  = m_variables[EX_FACE_BLOCK].size();
@@ -1108,7 +1317,13 @@ namespace Ioex {
       }
 
       // Zero global variable array...
-      std::fill(globalValues.begin(), globalValues.end(), 0.0);
+      for (auto &type : exodus_types) {
+        auto &id_values = m_reductionValues[type];
+        for (auto &values : id_values) {
+          auto &vals = values.second;
+          std::fill(vals.begin(), vals.end(), 0.0);
+        }
+      }
     }
     else {
       // Store reduction variables
@@ -1136,8 +1351,64 @@ namespace Ioex {
   // common
   void DatabaseIO::add_region_fields()
   {
+#if GLOBALS_ARE_TRANSIENT
     int field_count = add_results_fields(EX_GLOBAL, get_region());
-    globalValues.resize(field_count);
+#else
+    int field_count = add_reduction_results_fields(EX_GLOBAL, get_region());
+#endif
+    m_reductionValues[EX_GLOBAL][0].resize(field_count);
+    add_mesh_reduction_fields(EX_GLOBAL, 0, get_region());
+  }
+
+  void DatabaseIO::add_mesh_reduction_fields(ex_entity_type type, int64_t id,
+                                             Ioss::GroupingEntity *entity)
+  {
+    // Get "global attributes"
+    // These are single key-value per grouping entity
+    // Stored as Ioss::Property with origin of ATTRIBUTE
+    Ioss::SerializeIO serializeIO__(this);
+    int               att_count = ex_get_attribute_count(get_file_pointer(), type, id);
+
+    if (att_count > 0) {
+      std::vector<ex_attribute> attr(att_count);
+      ex_get_attribute_param(get_file_pointer(), type, id, attr.data());
+      ex_get_attributes(get_file_pointer(), att_count, attr.data());
+
+      // Create a property on `entity` for each `attribute`
+      for (const auto att : attr) {
+        std::string storage = fmt::format("Real[{}]", att.value_count);
+        switch (att.type) {
+        case EX_INTEGER:
+          if (att.value_count == 1) {
+            entity->property_add(
+                Ioss::Property(att.name, *(int *)att.values, Ioss::Property::ATTRIBUTE));
+          }
+          else {
+            const int *      idata = static_cast<int *>(att.values);
+            std::vector<int> tmp(att.value_count);
+            std::copy(idata, idata + att.value_count, tmp.begin());
+            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
+          }
+          break;
+        case EX_DOUBLE:
+          if (att.value_count == 1) {
+            entity->property_add(
+                Ioss::Property(att.name, *(double *)att.values, Ioss::Property::ATTRIBUTE));
+          }
+          else {
+            const double *      idata = static_cast<double *>(att.values);
+            std::vector<double> tmp(att.value_count);
+            std::copy(idata, idata + att.value_count, tmp.begin());
+            entity->property_add(Ioss::Property(att.name, tmp, Ioss::Property::ATTRIBUTE));
+          }
+          break;
+        case EX_CHAR:
+          entity->property_add(
+              Ioss::Property(att.name, (char *)att.values, Ioss::Property::ATTRIBUTE));
+          break;
+        }
+      }
+    }
   }
 
   // common
@@ -1171,7 +1442,7 @@ namespace Ioex {
         // Read and store the truth table (Should be there since we only
         // get to this routine if there are variables...)
 
-        if (type == EX_NODE_BLOCK || type == EX_GLOBAL) {
+        if (type == EX_NODE_BLOCK || type == EX_GLOBAL || type == EX_BLOB || type == EX_ASSEMBLY) {
           // These types don't have a truth table in the exodus api...
           // They do in Ioss just for some consistency...
           std::fill(truth_table.begin(), truth_table.end(), 1);
@@ -1179,7 +1450,7 @@ namespace Ioex {
         else {
           Ioss::SerializeIO serializeIO__(this);
           int               ierr =
-              ex_get_truth_table(get_file_pointer(), type, block_count, nvar, TOPTR(truth_table));
+              ex_get_truth_table(get_file_pointer(), type, block_count, nvar, truth_table.data());
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
@@ -1247,11 +1518,79 @@ namespace Ioex {
   }
 
   // common
+  int64_t DatabaseIO::add_reduction_results_fields(ex_entity_type        type,
+                                                   Ioss::GroupingEntity *entity)
+  {
+    int nvar = 0;
+    {
+      Ioss::SerializeIO serializeIO__(this);
+
+      int ierr = ex_get_reduction_variable_param(get_file_pointer(), type, &nvar);
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+    }
+
+    if (nvar > 0) {
+      // Get the variable names and add as fields. Need to decode these
+      // into vector/tensor/... eventually, for now store all as
+      // scalars.
+      char **names = Ioss::Utils::get_name_array(nvar, maximumNameLength);
+
+      // Read the names...
+      // (Currently, names are read for every block.  We could save them...)
+      {
+        Ioss::SerializeIO serializeIO__(this);
+
+        int ierr = ex_get_reduction_variable_names(get_file_pointer(), type, nvar, names);
+        if (ierr < 0) {
+          Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+        }
+
+        // Add to VariableNameMap so can determine exodusII index given a
+        // Sierra field name.  exodusII index is just 'i+1'
+        auto &variables = m_reductionVariables[type];
+        for (int i = 0; i < nvar; i++) {
+          if (lowerCaseVariableNames) {
+            Ioss::Utils::fixup_name(names[i]);
+          }
+          variables.insert(VNMValuePair(std::string(names[i]), i + 1));
+        }
+
+        int *local_truth = nullptr;
+
+        std::vector<Ioss::Field> fields;
+        int64_t                  count = 1;
+        Ioss::Utils::get_fields(count, names, nvar, Ioss::Field::REDUCTION, get_field_recognition(),
+                                get_field_separator(), local_truth, fields);
+
+        for (const auto &field : fields) {
+          entity->field_add(field);
+        }
+
+        for (int i = 0; i < nvar; i++) {
+          // Verify that all names were used for a field...
+          assert(names[i][0] == '\0' || (local_truth && local_truth[i] == 0));
+          delete[] names[i];
+        }
+        delete[] names;
+      }
+    }
+    return nvar;
+  }
+
+  // common
   void DatabaseIO::write_results_metadata(bool gather_data)
   {
     if (gather_data) {
       int glob_index = 0;
+#if GLOBALS_ARE_TRANSIENT
       glob_index = gather_names(EX_GLOBAL, m_variables[EX_GLOBAL], get_region(), glob_index, true);
+#else
+      glob_index =
+          gather_names(EX_GLOBAL, m_reductionVariables[EX_GLOBAL], get_region(), glob_index, true);
+#endif
+      m_reductionValues[EX_GLOBAL][0].resize(glob_index);
 
       const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
       assert(node_blocks.size() == 1);
@@ -1278,15 +1617,21 @@ namespace Ioex {
       const Ioss::ElementSetContainer &elementsets = get_region()->get_elementsets();
       internal_write_results_metadata(EX_ELEM_SET, elementsets, glob_index);
 
+      const auto &blobs = get_region()->get_blobs();
+      internal_write_results_metadata(EX_BLOB, blobs, glob_index);
+
+      const auto &assemblies = get_region()->get_assemblies();
+      internal_write_results_metadata(EX_ASSEMBLY, assemblies, glob_index);
+
       {
         int                           index    = 0;
         const Ioss::SideSetContainer &sidesets = get_region()->get_sidesets();
         for (const auto &sideset : sidesets) {
           const Ioss::SideBlockContainer &side_blocks = sideset->get_side_blocks();
           for (const auto &block : side_blocks) {
-            glob_index =
-                gather_names(EX_SIDE_SET, m_variables[EX_SIDE_SET], block, glob_index, true);
-            index = gather_names(EX_SIDE_SET, m_variables[EX_SIDE_SET], block, index, false);
+            glob_index = gather_names(EX_SIDE_SET, m_reductionVariables[EX_SIDE_SET], block,
+                                      glob_index, true);
+            index      = gather_names(EX_SIDE_SET, m_variables[EX_SIDE_SET], block, index, false);
           }
         }
         generate_sideset_truth_table();
@@ -1294,7 +1639,11 @@ namespace Ioex {
     }
 
     ex_var_params exo_params{};
-    exo_params.num_glob  = m_variables[EX_GLOBAL].size();
+#if GLOBALS_ARE_TRANSIENT
+    exo_params.num_glob = m_variables[EX_GLOBAL].size();
+#else
+    exo_params.num_glob = m_reductionVariables[EX_GLOBAL].size();
+#endif
     exo_params.num_node  = m_variables[EX_NODE_BLOCK].size();
     exo_params.num_edge  = m_variables[EX_EDGE_BLOCK].size();
     exo_params.num_face  = m_variables[EX_FACE_BLOCK].size();
@@ -1305,14 +1654,14 @@ namespace Ioex {
     exo_params.num_sset  = m_variables[EX_SIDE_SET].size();
     exo_params.num_elset = m_variables[EX_ELEM_SET].size();
 
-    exo_params.edge_var_tab  = TOPTR(m_truthTable[EX_EDGE_BLOCK]);
-    exo_params.face_var_tab  = TOPTR(m_truthTable[EX_FACE_BLOCK]);
-    exo_params.elem_var_tab  = TOPTR(m_truthTable[EX_ELEM_BLOCK]);
-    exo_params.nset_var_tab  = TOPTR(m_truthTable[EX_NODE_SET]);
-    exo_params.eset_var_tab  = TOPTR(m_truthTable[EX_EDGE_SET]);
-    exo_params.fset_var_tab  = TOPTR(m_truthTable[EX_FACE_SET]);
-    exo_params.sset_var_tab  = TOPTR(m_truthTable[EX_SIDE_SET]);
-    exo_params.elset_var_tab = TOPTR(m_truthTable[EX_ELEM_SET]);
+    exo_params.edge_var_tab  = m_truthTable[EX_EDGE_BLOCK].data();
+    exo_params.face_var_tab  = m_truthTable[EX_FACE_BLOCK].data();
+    exo_params.elem_var_tab  = m_truthTable[EX_ELEM_BLOCK].data();
+    exo_params.nset_var_tab  = m_truthTable[EX_NODE_SET].data();
+    exo_params.eset_var_tab  = m_truthTable[EX_EDGE_SET].data();
+    exo_params.fset_var_tab  = m_truthTable[EX_FACE_SET].data();
+    exo_params.sset_var_tab  = m_truthTable[EX_SIDE_SET].data();
+    exo_params.elset_var_tab = m_truthTable[EX_ELEM_SET].data();
 
     if (isParallel) {
       // Check consistency among all processors.  They should all
@@ -1329,17 +1678,21 @@ namespace Ioex {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
 
-      globalValues.resize(m_variables[EX_GLOBAL].size());
-      output_results_names(EX_GLOBAL, m_variables[EX_GLOBAL]);
-      output_results_names(EX_NODE_BLOCK, m_variables[EX_NODE_BLOCK]);
-      output_results_names(EX_EDGE_BLOCK, m_variables[EX_EDGE_BLOCK]);
-      output_results_names(EX_FACE_BLOCK, m_variables[EX_FACE_BLOCK]);
-      output_results_names(EX_ELEM_BLOCK, m_variables[EX_ELEM_BLOCK]);
-      output_results_names(EX_NODE_SET, m_variables[EX_NODE_SET]);
-      output_results_names(EX_EDGE_SET, m_variables[EX_EDGE_SET]);
-      output_results_names(EX_FACE_SET, m_variables[EX_FACE_SET]);
-      output_results_names(EX_ELEM_SET, m_variables[EX_ELEM_SET]);
-      output_results_names(EX_SIDE_SET, m_variables[EX_SIDE_SET]);
+      // Blob and Assembly not supported in ex_put_all_var_param_ext...
+      ierr = ex_put_variable_param(get_file_pointer(), EX_BLOB, m_variables[EX_BLOB].size());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+      ierr =
+          ex_put_variable_param(get_file_pointer(), EX_ASSEMBLY, m_variables[EX_ASSEMBLY].size());
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
+
+      for (const auto &type : exodus_types) {
+        output_results_names(type, m_variables[type], false);
+        output_results_names(type, m_reductionVariables[type], true);
+      }
     }
   }
 
@@ -1348,11 +1701,24 @@ namespace Ioex {
   void DatabaseIO::internal_write_results_metadata(ex_entity_type type, std::vector<T *> entities,
                                                    int &glob_index)
   {
-    int index = 0;
+    int index     = 0;
+    int red_index = 0;
     for (const auto &entity : entities) {
-      glob_index = gather_names(type, m_variables[type], entity, glob_index, true);
-      index      = gather_names(type, m_variables[type], entity, index, false);
+      red_index = gather_names(type, m_reductionVariables[type], entity, red_index, true);
+      index     = gather_names(type, m_variables[type], entity, index, false);
     }
+
+#if GLOBALS_ARE_TRANSIENT
+    size_t value_size =
+        type == EX_GLOBAL ? m_variables[type].size() : m_reductionVariables[type].size();
+#else
+    size_t value_size = m_reductionVariables[type].size();
+#endif
+    for (const auto &entity : entities) {
+      int64_t id = type == EX_GLOBAL ? 0 : entity->get_property("id").get_int();
+      m_reductionValues[type][id].resize(value_size);
+    }
+
     generate_block_truth_table(m_variables[type], m_truthTable[type], entities,
                                get_field_separator());
   }
@@ -1411,17 +1777,6 @@ namespace Ioex {
         char field_suffix_separator = get_field_separator();
         for (int i = 1; i <= var_type->component_count(); i++) {
           std::string var_string = var_type->label_name(field_name, i, field_suffix_separator);
-
-          // Add to 'VariableNameMap variables' so can determine
-          // exodusII index given a Sierra field name.  exodusII index
-          // is just 'i+1'
-          if (reduction || type == EX_GLOBAL) {
-            // If this is not a global (region) variable, need to prepend the block name
-            // to avoid name collisions...
-            if (type != EX_GLOBAL) {
-              var_string = ge->name() + ":" + var_string;
-            }
-          }
 
           if (variables.find(var_string) == variables.end()) {
             variables.insert(VNMValuePair(var_string, ++new_index));
@@ -1503,7 +1858,8 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::output_results_names(ex_entity_type type, VariableNameMap &variables) const
+  void DatabaseIO::output_results_names(ex_entity_type type, VariableNameMap &variables,
+                                        bool reduction) const
   {
     bool lowercase_names =
         (properties.exists("VARIABLE_NAME_CASE") &&
@@ -1540,18 +1896,24 @@ namespace Ioex {
       // try changing DIM_STR_NAME value and see if works...)
       if (name_length > static_cast<size_t>(maximumNameLength)) {
         if (myProcessor == 0) {
-          fmt::print(
-              IOSS_WARNING,
-              "WARNING: There are variables names whose name length ({0}) exceeds the current "
-              "maximum name length ({1})\n         set for this database ({2}).\n"
-              "         You should either reduce the length of the variable name, or "
-              "set the 'MAXIMUM_NAME_LENGTH' property\n"
-              "         to at least {0}.\n         Contact gdsjaar@sandia.gov for more "
-              "information.\n\n",
-              name_length, maximumNameLength, get_filename());
+          fmt::print(Ioss::WARNING(),
+                     "There are variables names whose name length ({0}) exceeds the current "
+                     "maximum name length ({1})\n         set for this database ({2}).\n"
+                     "         You should either reduce the length of the variable name, or "
+                     "set the 'MAXIMUM_NAME_LENGTH' property\n"
+                     "         to at least {0}.\n         Contact gdsjaar@sandia.gov for more "
+                     "information.\n\n",
+                     name_length, maximumNameLength, get_filename());
         }
       }
-      int ierr = ex_put_variable_names(get_file_pointer(), type, var_count, TOPTR(var_names));
+      int ierr = 0;
+      if (reduction) {
+        ierr =
+            ex_put_reduction_variable_names(get_file_pointer(), type, var_count, var_names.data());
+      }
+      else {
+        ierr = ex_put_variable_names(get_file_pointer(), type, var_count, var_names.data());
+      }
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -1736,7 +2098,7 @@ namespace Ioex {
               std::memcpy(&cname[i * (maximumNameLength + 1)], names[i], maximumNameLength + 1);
             }
           }
-          util().attribute_reduction(attribute_count * (maximumNameLength + 1), TOPTR(cname));
+          util().attribute_reduction(attribute_count * (maximumNameLength + 1), cname.data());
           for (int i = 0; i < attribute_count; i++) {
             std::memcpy(names[i], &cname[i * (maximumNameLength + 1)], maximumNameLength + 1);
           }
@@ -1802,7 +2164,7 @@ namespace Ioex {
         else if (Ioss::Utils::str_equal(type, "sphere-mass")) {
           if (attribute_count != 10) {
             if (myProcessor == 0) {
-              fmt::print(IOSS_WARNING,
+              fmt::print(Ioss::WARNING(),
                          "For element block '{}' of type '{}' there were {} attributes instead of "
                          "the expected 10 attributes "
                          "known to the IO Subsystem. "
@@ -1928,6 +2290,26 @@ namespace Ioex {
                           field_suffix_separator);
     write_attribute_names(get_file_pointer(), EX_ELEM_BLOCK, get_region()->get_element_blocks(),
                           field_suffix_separator);
+    write_attribute_names(get_file_pointer(), EX_ASSEMBLY, get_region()->get_assemblies(),
+                          field_suffix_separator);
+    write_attribute_names(get_file_pointer(), EX_BLOB, get_region()->get_blobs(),
+                          field_suffix_separator);
+
+    // Write "reduction" attributes...
+    std::vector<Ioss::Region *> regions;
+    regions.push_back(get_region());
+    Ioex::write_reduction_attributes(get_file_pointer(), regions);
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_nodesets());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_nodesets());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_edgesets());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_facesets());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_elementsets());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_node_blocks());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_edge_blocks());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_face_blocks());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_element_blocks());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_assemblies());
+    Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_blobs());
 
     // Write coordinate names...
     char const *labels[3];
@@ -1987,7 +2369,7 @@ namespace {
           }
         }
         size_t ge_id = ge->get_property("id").get_int();
-        int    ierr  = ex_put_attr_names(exoid, type, ge_id, TOPTR(names));
+        int    ierr  = ex_put_attr_names(exoid, type, ge_id, names.data());
         if (ierr < 0) {
           Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
         }

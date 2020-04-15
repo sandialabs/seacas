@@ -16,7 +16,9 @@ var dir_f371e9dd6e225bf8e20e121e59bab5bd =
       [ "IOFactory", "classIocgns_1_1IOFactory.html", "classIocgns_1_1IOFactory" ]
     ] ],
     [ "Iocgns_ParallelDatabaseIO.C", "Iocgns__ParallelDatabaseIO_8C.html", "Iocgns__ParallelDatabaseIO_8C" ],
-    [ "Iocgns_ParallelDatabaseIO.h", "Iocgns__ParallelDatabaseIO_8h.html", "Iocgns__ParallelDatabaseIO_8h" ],
+    [ "Iocgns_ParallelDatabaseIO.h", "Iocgns__ParallelDatabaseIO_8h.html", [
+      [ "ParallelDatabaseIO", "classIocgns_1_1ParallelDatabaseIO.html", "classIocgns_1_1ParallelDatabaseIO" ]
+    ] ],
     [ "Iocgns_StructuredZoneData.C", "Iocgns__StructuredZoneData_8C.html", "Iocgns__StructuredZoneData_8C" ],
     [ "Iocgns_StructuredZoneData.h", "Iocgns__StructuredZoneData_8h.html", [
       [ "StructuredZoneData", "classIocgns_1_1StructuredZoneData.html", "classIocgns_1_1StructuredZoneData" ]
