@@ -89,6 +89,7 @@ static int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char 
     }
     return (EX_FATAL); /* exit define mode and return */
   }
+  ex__set_compact_storage(exoid, varid);
 #if NC_HAS_HDF5
   nc_def_var_fill(exoid, varid, 0, &fill);
 #endif
@@ -229,8 +230,8 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
       goto error_ret; /* exit define mode and return */
     }
     ex__compress_variable(exoid, varid, 2);
+    ex__set_compact_storage(exoid, varid);
   }
-
   else if (obj_type == EX_NODAL) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "nodal", DIM_NUM_NOD_VAR,
                                         VAR_NAME_NOD_VAR)) != EX_NOERR) {
