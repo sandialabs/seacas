@@ -115,8 +115,8 @@ void SystemInterface::enroll_options()
                   nullptr);
 
   options_.enroll("Partial_read_count", GetLongOption::MandatoryValue,
-                  "Split the coordinate and connetivity reads into a maximum of this many"
-                  " nodes or elements at a time to reduce memory.",
+                  "Split the coordinate and connetivity reads into a\n"
+                  "\t\tmaximum of this many nodes or elements at a time to reduce memory.",
                   "1000000000");
 
 #if 0
