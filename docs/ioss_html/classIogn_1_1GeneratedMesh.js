@@ -24,6 +24,7 @@ var classIogn_1_1GeneratedMesh =
     [ "connectivity", "classIogn_1_1GeneratedMesh.html#acab032df8c98616a0553930b344dbf6c", null ],
     [ "connectivity", "classIogn_1_1GeneratedMesh.html#a67f12e833eb2ae2a8b0a8ad53b8f2de8", null ],
     [ "coordinates", "classIogn_1_1GeneratedMesh.html#ae7415cdfce392fc2c993f20fc258eb9e", null ],
+    [ "coordinates", "classIogn_1_1GeneratedMesh.html#a46f82c645faf1576a0f5aad531cc3bb2", null ],
     [ "coordinates", "classIogn_1_1GeneratedMesh.html#a02e95e6ec75bd7ba0f06e6fcdd1e7227", null ],
     [ "coordinates", "classIogn_1_1GeneratedMesh.html#a45b80209c9e51e84ed41483101b8e845", null ],
     [ "coordinates", "classIogn_1_1GeneratedMesh.html#a1d7592877dd54663fd5a863737afca2a", null ],

@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['last_5ferr_5fnum_2334',['last_err_num',['../ex__err_8c.html#a6f0854983303eaa2c002253ecdfa9c96',1,'ex_err.c']]],
-  ['last_5ferrmsg_2335',['last_errmsg',['../ex__err_8c.html#a880c8369cce3e921b336dba3a3bdfac9',1,'ex_err.c']]],
-  ['last_5fpname_2336',['last_pname',['../ex__err_8c.html#a416eb50a7427c45f6dfc8a54b2855d0d',1,'ex_err.c']]]
+  ['has_5fedges_2520',['has_edges',['../structex____file__item.html#a49e57ba726ba2b4edb84aff45dc9e033',1,'ex__file_item']]],
+  ['has_5felems_2521',['has_elems',['../structex____file__item.html#abdeb2a778dc7a353ee8127cfead5f7ad',1,'ex__file_item']]],
+  ['has_5ffaces_2522',['has_faces',['../structex____file__item.html#a12fcca4ffe167e1675ef5ee1cd5867dc',1,'ex__file_item']]],
+  ['has_5fnodes_2523',['has_nodes',['../structex____file__item.html#ac680713430b0bc40c33f2ba0b5b4fa3e',1,'ex__file_item']]]
 ];

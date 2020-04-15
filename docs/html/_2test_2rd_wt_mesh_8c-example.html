@@ -134,6 +134,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"><span class="preprocessor">#include &lt;assert.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;float.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;limits.h&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;stdbool.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string.h&gt;</span></div>
@@ -155,7 +156,6 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"><span class="preprocessor">#define MBYTES (1024 * 1024)</span></div>
 <div class="line"><span class="preprocessor">#define MAX_STRING_LEN 128</span></div>
 <div class="line"><span class="preprocessor">#define NUM_NODES_PER_ELEM 8</span></div>
-<div class="line"><span class="preprocessor">#define QUIT EX_FALSE</span></div>
 <div class="line"><span class="preprocessor">#define WRITE_FILE_TYPE &quot;new&quot;</span></div>
 <div class="line"><span class="preprocessor">#define EBLK_ID 100000</span></div>
 <div class="line"> </div>
@@ -168,7 +168,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"><span class="keywordtype">void</span> get_file_name(<span class="keyword">const</span> <span class="keywordtype">char</span> *base, <span class="keyword">const</span> <span class="keywordtype">char</span> *ext, <span class="keywordtype">int</span> rank, <span class="keywordtype">int</span> nprocs, <span class="keyword">const</span> <span class="keywordtype">char</span> *other,</div>
 <div class="line">                   <span class="keywordtype">char</span> *output);</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> parse_input(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[], <span class="keywordtype">int</span> *exodus, <span class="keywordtype">int</span> *close_files, <span class="keywordtype">char</span> *file_name,</div>
+<div class="line"><span class="keywordtype">int</span> parse_input(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[], <span class="keywordtype">bool</span> *exodus, <span class="keywordtype">bool</span> *close_files, <span class="keywordtype">char</span> *file_name,</div>
 <div class="line">                <span class="keywordtype">int</span> *num_nodal_fields, <span class="keywordtype">int</span> *num_global_fields, <span class="keywordtype">int</span> *num_element_fields,</div>
 <div class="line">                <span class="keywordtype">int</span> *files_per_domain, <span class="keywordtype">int</span> *num_iterations, <span class="keywordtype">int</span> *sleep_time);</div>
 <div class="line"> </div>
@@ -204,7 +204,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv)</div>
 <div class="line">{</div>
 <div class="line">  <span class="keywordtype">int</span>  rank, num_domains;</div>
-<div class="line">  <span class="keywordtype">int</span>  quit = <a name="a0"></a><a class="code" href="exodusII_8h.html#a1c43ac839d9171680f8fbeccec482e08">EX_FALSE</a>;</div>
+<div class="line">  <span class="keywordtype">int</span>  quit = <span class="keyword">false</span>;</div>
 <div class="line">  <span class="keywordtype">int</span>  loc_num_nodes, loc_num_elems;</div>
 <div class="line">  <span class="keywordtype">int</span> *loc_connect = NULL;</div>
 <div class="line"> </div>
@@ -212,18 +212,16 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">  MPI_Info mpi_info_object = MPI_INFO_NULL; <span class="comment">/* Copy of MPI Info object.         */</span></div>
 <div class="line"><span class="preprocessor">#endif</span></div>
 <div class="line">  <span class="keywordtype">int</span> *elem_map                  = NULL;</div>
-<div class="line">  <span class="keywordtype">int</span>  exodus                    = <a name="a1"></a><a class="code" href="exodusII_8h.html#a71568c8efa7c2435227c5d2a13b7a6c4">EX_TRUE</a>; <span class="comment">/* EX_TRUE, perform EXODUS benchmark; EX_FALSE don&#39;t */</span></div>
-<div class="line">  <span class="keywordtype">int</span>  close_files               = <a class="code" href="exodusII_8h.html#a1c43ac839d9171680f8fbeccec482e08">EX_FALSE</a>;</div>
+<div class="line">  <span class="keywordtype">bool</span> exodus                    = <span class="keyword">true</span>; <span class="comment">/* true, perform EXODUS benchmark; false don&#39;t */</span></div>
+<div class="line">  <span class="keywordtype">bool</span> close_files               = <span class="keyword">false</span>;</div>
 <div class="line">  <span class="keywordtype">char</span> file_name[MAX_STRING_LEN] = DEFAULT_FILE_NAME; <span class="comment">/* Input file name. */</span></div>
-<div class="line">  <span class="comment">/* object, EX_FALSE otherwise. Should always be       */</span></div>
-<div class="line">  <span class="comment">/* EX_TRUE in the current implementation.             */</span></div>
-<div class="line">  <span class="keywordtype">int</span> num_nodal_fields   = DEFAULT_NUM_FIELDS;</div>
-<div class="line">  <span class="keywordtype">int</span> num_global_fields  = DEFAULT_NUM_FIELDS;</div>
-<div class="line">  <span class="keywordtype">int</span> num_element_fields = DEFAULT_NUM_FIELDS;</div>
-<div class="line">  <span class="keywordtype">int</span> num_timesteps      = 0;</div>
-<div class="line">  <span class="keywordtype">int</span> sleep_time         = 0;</div>
-<div class="line">  <span class="keywordtype">int</span> files_per_domain   = 1;</div>
-<div class="line">  <span class="keywordtype">int</span> num_iterations     = DEFAULT_NUM_ITERATIONS;</div>
+<div class="line">  <span class="keywordtype">int</span>  num_nodal_fields          = DEFAULT_NUM_FIELDS;</div>
+<div class="line">  <span class="keywordtype">int</span>  num_global_fields         = DEFAULT_NUM_FIELDS;</div>
+<div class="line">  <span class="keywordtype">int</span>  num_element_fields        = DEFAULT_NUM_FIELDS;</div>
+<div class="line">  <span class="keywordtype">int</span>  num_timesteps             = 0;</div>
+<div class="line">  <span class="keywordtype">int</span>  sleep_time                = 0;</div>
+<div class="line">  <span class="keywordtype">int</span>  files_per_domain          = 1;</div>
+<div class="line">  <span class="keywordtype">int</span>  num_iterations            = DEFAULT_NUM_ITERATIONS;</div>
 <div class="line"><span class="preprocessor">#ifdef PARALLEL_AWARE_EXODUS</span></div>
 <div class="line">  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *hints[] = {<span class="comment">/* List of MPI Info hints that if defined in      */</span></div>
 <div class="line">                                <span class="stringliteral">&quot;cb_buffer_size&quot;</span>, <span class="comment">/* the environment process 0, will be used to */</span></div>
@@ -234,7 +232,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">                                <span class="stringliteral">&quot;romio_no_indep_rw&quot;</span>};</div>
 <div class="line">  <span class="keywordtype">char</span>               key_name[MAX_STRING_LEN]; <span class="comment">/* MPI Info object key name.                      */</span></div>
 <div class="line">  <span class="keywordtype">int</span>                key;                      <span class="comment">/* MPI Info object key index.                     */</span></div>
-<div class="line">  <span class="keywordtype">int</span>                key_exists;               <span class="comment">/* EX_TRUE, if the key exists in the MPI Info     */</span></div>
+<div class="line">  <span class="keywordtype">int</span>                key_exists;               <span class="comment">/* true, if the key exists in the MPI Info     */</span></div>
 <div class="line">  <span class="keyword">const</span> <span class="keywordtype">int</span>          nhints = 10;              <span class="comment">/* Number of items in hints list.         */</span></div>
 <div class="line">  <span class="keywordtype">int</span>                nkeys;                    <span class="comment">/* Number of keys in a MPI Info object.           */</span></div>
 <div class="line">  <span class="keywordtype">char</span>               value[MAX_STRING_LEN];    <span class="comment">/* Value of a key/value pair in a MPI Info        */</span></div>
@@ -249,7 +247,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"><span class="comment">   *    Initialize Stuff</span></div>
 <div class="line"><span class="comment">   */</span></div>
 <div class="line"> </div>
-<div class="line">  <a name="a2"></a><a class="code" href="group__Utilities.html#ga8f47bbb035d32bbafc594c5ed3c00403">ex_opts</a>(<a name="a3"></a><a class="code" href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9">EX_VERBOSE</a> | <a name="a4"></a><a class="code" href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a">EX_ABORT</a>);</div>
+<div class="line">  <a name="a0"></a><a class="code" href="group__Utilities.html#ga8f47bbb035d32bbafc594c5ed3c00403">ex_opts</a>(<a name="a1"></a><a class="code" href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9">EX_VERBOSE</a> | <a name="a2"></a><a class="code" href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a">EX_ABORT</a>);</div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#if defined(__LIBCATAMOUNT__)</span></div>
 <div class="line">  setlinebuf(stderr);</div>
@@ -314,7 +312,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">      <span class="keywordflow">if</span> (rank == 0) {</div>
 <div class="line">        env = getenv(hints[hint]);</div>
 <div class="line">        <span class="keywordflow">if</span> (env != NULL)</div>
-<div class="line">          <a name="a5"></a><a class="code" href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(hint_value, env, MAX_STRING_LEN);</div>
+<div class="line">          <a name="a3"></a><a class="code" href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a>(hint_value, env, MAX_STRING_LEN);</div>
 <div class="line">        <span class="keywordflow">else</span></div>
 <div class="line">          hint_value[0] = 0;</div>
 <div class="line">      }</div>
@@ -385,7 +383,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> ***********************************************************************/</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> parse_input(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[], <span class="keywordtype">int</span> *exodus, <span class="keywordtype">int</span> *close_files, <span class="keywordtype">char</span> *file_name,</div>
+<div class="line"><span class="keywordtype">int</span> parse_input(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[], <span class="keywordtype">bool</span> *exodus, <span class="keywordtype">bool</span> *close_files, <span class="keywordtype">char</span> *file_name,</div>
 <div class="line">                <span class="keywordtype">int</span> *num_nodal_fields, <span class="keywordtype">int</span> *num_global_fields, <span class="keywordtype">int</span> *num_element_fields,</div>
 <div class="line">                <span class="keywordtype">int</span> *files_per_domain, <span class="keywordtype">int</span> *num_iterations, <span class="keywordtype">int</span> *sleep_time)</div>
 <div class="line">{</div>
@@ -433,10 +431,10 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">      }</div>
 <div class="line">    }</div>
 <div class="line">    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(<span class="stringliteral">&quot;-x&quot;</span>, argv[arg]) == 0) {</div>
-<div class="line">      *exodus = <a class="code" href="exodusII_8h.html#a71568c8efa7c2435227c5d2a13b7a6c4">EX_TRUE</a>;</div>
+<div class="line">      *exodus = <span class="keyword">true</span>;</div>
 <div class="line">    }</div>
 <div class="line">    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (strcmp(<span class="stringliteral">&quot;-C&quot;</span>, argv[arg]) == 0) {</div>
-<div class="line">      *close_files = <a class="code" href="exodusII_8h.html#a71568c8efa7c2435227c5d2a13b7a6c4">EX_TRUE</a>;</div>
+<div class="line">      *close_files = <span class="keyword">true</span>;</div>
 <div class="line">    }</div>
 <div class="line">    <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((strcmp(<span class="stringliteral">&quot;-h&quot;</span>, argv[arg]) == 0) || (strcmp(<span class="stringliteral">&quot;-u&quot;</span>, argv[arg]) == 0)) {</div>
 <div class="line">      fprintf(stderr, <span class="stringliteral">&quot;                                                                \n&quot;</span>);</div>
@@ -524,7 +522,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">  <span class="keywordflow">for</span> (iter = 0; iter &lt; num_iterations; iter++) {</div>
 <div class="line">    <span class="comment">/* open the EXODUS file */</span></div>
 <div class="line">    get_file_name(file_name, EXODUS_FILE_TYPE, rank, num_domains, NULL, tmp_name);</div>
-<div class="line">    exoid = <a name="a6"></a><a class="code" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open</a>(tmp_name, <a name="a7"></a><a class="code" href="group__FileVars.html#ga49938d96ef78ea1726e9970383bf61b1">EX_READ</a>, &amp;CPU_word_size, &amp;IO_word_size, &amp;version);</div>
+<div class="line">    exoid = <a name="a4"></a><a class="code" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open</a>(tmp_name, <a name="a5"></a><a class="code" href="group__FileVars.html#ga49938d96ef78ea1726e9970383bf61b1">EX_READ</a>, &amp;CPU_word_size, &amp;IO_word_size, &amp;version);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> (exoid &lt; 0) {</div>
 <div class="line">      printf(<span class="stringliteral">&quot;after ex_open\n&quot;</span>);</div>
@@ -536,12 +534,12 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"> </div>
 <div class="line">    tstart = my_timer();</div>
 <div class="line"> </div>
-<div class="line">    err = <a name="a8"></a><a class="code" href="group__ModelDescription.html#gad0c4105c9e911d6be53e97a168937bde">ex_get_init</a>(exoid, title, num_dim, num_nodes, num_elems, &amp;num_elem_blk, &amp;num_node_sets,</div>
+<div class="line">    err = <a name="a6"></a><a class="code" href="group__ModelDescription.html#gad0c4105c9e911d6be53e97a168937bde">ex_get_init</a>(exoid, title, num_dim, num_nodes, num_elems, &amp;num_elem_blk, &amp;num_node_sets,</div>
 <div class="line">                      &amp;num_side_sets);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> (err) {</div>
 <div class="line">      printf(<span class="stringliteral">&quot;after ex_get_init, error = %d\n&quot;</span>, err);</div>
-<div class="line">      <a name="a9"></a><a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
+<div class="line">      <a name="a7"></a><a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
 <div class="line">      <span class="keywordflow">return</span> (1);</div>
 <div class="line">    }</div>
 <div class="line"> </div>
@@ -566,7 +564,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"> </div>
 <div class="line">    t_tmp1 = my_timer();</div>
 <div class="line"> </div>
-<div class="line">    err = <a name="a10"></a><a class="code" href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a>(exoid, *x_coords, *y_coords, *z_coords);</div>
+<div class="line">    err = <a name="a8"></a><a class="code" href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a>(exoid, *x_coords, *y_coords, *z_coords);</div>
 <div class="line"> </div>
 <div class="line">    t_tmp2 = my_timer();</div>
 <div class="line"> </div>
@@ -579,7 +577,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">      <span class="keywordflow">return</span> (1);</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    err = <a name="a11"></a><a class="code" href="group__ModelDescription.html#gabc6e9887581be7b2966db32d998ca648">ex_get_block</a>(exoid, <a name="a12"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, EBLK_ID, type, num_elems, &amp;num_nodes_per_elem, 0, 0,</div>
+<div class="line">    err = <a name="a9"></a><a class="code" href="group__ModelDescription.html#gabc6e9887581be7b2966db32d998ca648">ex_get_block</a>(exoid, <a name="a10"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, EBLK_ID, type, num_elems, &amp;num_nodes_per_elem, 0, 0,</div>
 <div class="line">                       &amp;num_attrs);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> (err) {</div>
@@ -590,7 +588,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"> </div>
 <div class="line">    t_tmp1 = my_timer();</div>
 <div class="line"> </div>
-<div class="line">    err = <a name="a13"></a><a class="code" href="group__ModelDescription.html#gaeeccbb525d582741af06a06aa275c5fe">ex_get_conn</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, EBLK_ID, *connect, 0, 0);</div>
+<div class="line">    err = <a name="a11"></a><a class="code" href="group__ModelDescription.html#gaeeccbb525d582741af06a06aa275c5fe">ex_get_conn</a>(exoid, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, EBLK_ID, *connect, 0, 0);</div>
 <div class="line"> </div>
 <div class="line">    t_tmp2 = my_timer();</div>
 <div class="line"> </div>
@@ -606,19 +604,19 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">    <span class="comment">/* read element and node maps */</span></div>
 <div class="line">    t_tmp1 = my_timer();</div>
 <div class="line"> </div>
-<div class="line">    <a name="a14"></a><a class="code" href="group__ModelDescription.html#gaefc10e2a564e1ed1a926f2fadf5c6a6f">ex_get_id_map</a>(exoid, <a name="a15"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a>, *node_map);</div>
+<div class="line">    <a name="a12"></a><a class="code" href="group__ModelDescription.html#gaefc10e2a564e1ed1a926f2fadf5c6a6f">ex_get_id_map</a>(exoid, <a name="a13"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a>, *node_map);</div>
 <div class="line">    t_tmp2 = my_timer();</div>
 <div class="line">    raw_data_vol += <span class="keyword">sizeof</span>(int) * (*num_nodes);</div>
 <div class="line">    raw_read_time += t_tmp2 - t_tmp1;</div>
 <div class="line"> </div>
 <div class="line">    t_tmp1 = my_timer();</div>
-<div class="line">    <a class="code" href="group__ModelDescription.html#gaefc10e2a564e1ed1a926f2fadf5c6a6f">ex_get_id_map</a>(exoid, <a name="a16"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a>, *elem_map);</div>
+<div class="line">    <a class="code" href="group__ModelDescription.html#gaefc10e2a564e1ed1a926f2fadf5c6a6f">ex_get_id_map</a>(exoid, <a name="a14"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a>, *elem_map);</div>
 <div class="line">    t_tmp2 = my_timer();</div>
 <div class="line">    raw_data_vol += <span class="keyword">sizeof</span>(int) * (*num_elems);</div>
 <div class="line">    raw_read_time += t_tmp2 - t_tmp1;</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">/* read results variables */</span></div>
-<div class="line">    err = <a name="a17"></a><a class="code" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a>(exoid, <a name="a18"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, &amp;num_vars);</div>
+<div class="line">    err = <a name="a15"></a><a class="code" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a>(exoid, <a name="a16"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, &amp;num_vars);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> (err) {</div>
 <div class="line">      printf(<span class="stringliteral">&quot;after ex_get_variable_param, error = %d\n&quot;</span>, err);</div>
@@ -627,7 +625,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">    }</div>
 <div class="line">    *num_nodal_fields = num_vars;</div>
 <div class="line"> </div>
-<div class="line">    err = <a class="code" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a>(exoid, <a name="a19"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, &amp;num_vars);</div>
+<div class="line">    err = <a class="code" href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a>(exoid, <a name="a17"></a><a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, &amp;num_vars);</div>
 <div class="line">    <span class="keywordflow">if</span> (err) {</div>
 <div class="line">      printf(<span class="stringliteral">&quot;after ex_get_variable_param, error = %d\n&quot;</span>, err);</div>
 <div class="line">      <a class="code" href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a>(exoid);</div>
@@ -651,7 +649,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">    *num_element_fields = num_vars;</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">/* read number of timesteps */</span></div>
-<div class="line">    *num_timesteps = <a name="a20"></a><a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(exoid, <a name="a21"></a><a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631">EX_INQ_TIME</a>);</div>
+<div class="line">    *num_timesteps = <a name="a18"></a><a class="code" href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a>(exoid, <a name="a19"></a><a class="code" href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631">EX_INQ_TIME</a>);</div>
 <div class="line">    <span class="keywordflow">if</span> (rank == 0) {</div>
 <div class="line">      fprintf(stderr, <span class="stringliteral">&quot;   Number of Elements\t\t%8d (per domain)\n&quot;</span>, *num_elems);</div>
 <div class="line">      fprintf(stderr, <span class="stringliteral">&quot;   Number of Nodes\t\t%8d (per domain)\n&quot;</span>, *num_nodes);</div>
@@ -683,7 +681,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"> </div>
 <div class="line">        <span class="keywordflow">for</span> (i = 1; i &lt;= *num_nodal_fields; i++) {</div>
 <div class="line">          t_tmp1 = my_timer();</div>
-<div class="line">          err    = <a name="a22"></a><a class="code" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var</a>(exoid, t + 1, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, i, 0, *num_nodes, *x_coords);</div>
+<div class="line">          err    = <a name="a20"></a><a class="code" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var</a>(exoid, t + 1, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, i, 0, *num_nodes, *x_coords);</div>
 <div class="line">          t_tmp2 = my_timer();</div>
 <div class="line"> </div>
 <div class="line">          raw_read_time += t_tmp2 - t_tmp1;</div>
@@ -869,7 +867,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"> </div>
 <div class="line">        sprintf(base_name, <span class="stringliteral">&quot;%s_%d&quot;</span>, file_name, npd);</div>
 <div class="line">        get_file_name(base_name, EXODUS_FILE_TYPE, rank, num_domains, WRITE_FILE_TYPE, tmp_name);</div>
-<div class="line">        exoid[npd] = <a name="a23"></a><a class="code" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create</a>(tmp_name, <a name="a24"></a><a class="code" href="group__FileVars.html#gadeed66ded179e51a8858254052a76ba4">EX_CLOBBER</a>, &amp;CPU_word_size, &amp;IO_word_size);</div>
+<div class="line">        exoid[npd] = <a name="a21"></a><a class="code" href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create</a>(tmp_name, <a name="a22"></a><a class="code" href="group__FileVars.html#gadeed66ded179e51a8858254052a76ba4">EX_CLOBBER</a>, &amp;CPU_word_size, &amp;IO_word_size);</div>
 <div class="line"> </div>
 <div class="line">        <span class="keywordflow">if</span> (exoid[npd] &lt; 0) {</div>
 <div class="line">          printf(<span class="stringliteral">&quot;after ex_create\n&quot;</span>);</div>
@@ -903,7 +901,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">          <span class="keywordflow">return</span> (1);</div>
 <div class="line">        }</div>
 <div class="line">      }</div>
-<div class="line">      err = <a name="a25"></a><a class="code" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init</a>(exoid[npd], <span class="stringliteral">&quot;This is an EXODUSII performance test.&quot;</span>, num_dim, num_nodes,</div>
+<div class="line">      err = <a name="a23"></a><a class="code" href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init</a>(exoid[npd], <span class="stringliteral">&quot;This is an EXODUSII performance test.&quot;</span>, num_dim, num_nodes,</div>
 <div class="line">                        num_elems, num_elem_blk, num_node_sets, num_side_sets);</div>
 <div class="line"> </div>
 <div class="line">      <span class="keywordflow">if</span> (err) {</div>
@@ -921,15 +919,15 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">        <span class="keywordtype">char</span> *names[1] = {<span class="stringliteral">&quot;hex&quot;</span>};</div>
 <div class="line">        <span class="keywordtype">int</span> num_node_per_elem[1];</div>
 <div class="line">        <span class="keywordtype">int</span> num_attr_per_block[1];</div>
-<div class="line">        <span class="keywordtype">int</span> write_map = num_domains &gt; 1 ? <a class="code" href="exodusII_8h.html#a71568c8efa7c2435227c5d2a13b7a6c4">EX_TRUE</a> : <a class="code" href="exodusII_8h.html#a1c43ac839d9171680f8fbeccec482e08">EX_FALSE</a>;</div>
+<div class="line">        <span class="keywordtype">int</span> write_map = num_domains &gt; 1 ? true : <span class="keyword">false</span>;</div>
 <div class="line">        num_elem_per_block[0] = num_elems;</div>
 <div class="line">        num_node_per_elem[0]  = NUM_NODES_PER_ELEM;</div>
 <div class="line">        num_attr_per_block[0] = 0;</div>
-<div class="line">        err = <a name="a26"></a><a class="code" href="group__ModelDescription.html#ga03cff8e6e59a2c6b56cc1f232c2898c8">ex_put_concat_elem_block</a> (exoid[npd], ids, names, num_elem_per_block,</div>
+<div class="line">        err = <a name="a24"></a><a class="code" href="group__ModelDescription.html#ga03cff8e6e59a2c6b56cc1f232c2898c8">ex_put_concat_elem_block</a> (exoid[npd], ids, names, num_elem_per_block,</div>
 <div class="line">                                        num_node_per_elem, num_attr_per_block, write_map);</div>
 <div class="line">      }</div>
 <div class="line"><span class="preprocessor">#else</span></div>
-<div class="line">      err = <a name="a27"></a><a class="code" href="group__ModelDescription.html#gad98c043e0e089bcb7a4f6662f96f7822">ex_put_block</a>(exoid[npd], <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, EBLK_ID, <span class="stringliteral">&quot;hex&quot;</span>, num_elems, NUM_NODES_PER_ELEM,</div>
+<div class="line">      err = <a name="a25"></a><a class="code" href="group__ModelDescription.html#gad98c043e0e089bcb7a4f6662f96f7822">ex_put_block</a>(exoid[npd], <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, EBLK_ID, <span class="stringliteral">&quot;hex&quot;</span>, num_elems, NUM_NODES_PER_ELEM,</div>
 <div class="line">                         0, 0, 0);</div>
 <div class="line"><span class="preprocessor">#endif</span></div>
 <div class="line">      <span class="keywordflow">if</span> (err) {</div>
@@ -940,7 +938,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">      }</div>
 <div class="line"> </div>
 <div class="line">      t_tmp1 = my_timer();</div>
-<div class="line">      err    = <a name="a28"></a><a class="code" href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a>(exoid[npd], x_coords, y_coords, z_coords);</div>
+<div class="line">      err    = <a name="a26"></a><a class="code" href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a>(exoid[npd], x_coords, y_coords, z_coords);</div>
 <div class="line">      t_tmp2 = my_timer();</div>
 <div class="line"> </div>
 <div class="line">      raw_write_time += t_tmp2 - t_tmp1;</div>
@@ -955,7 +953,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">      }</div>
 <div class="line"> </div>
 <div class="line">      t_tmp1 = my_timer();</div>
-<div class="line">      err    = <a name="a29"></a><a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid[npd], <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, EBLK_ID, connect, NULL, NULL);</div>
+<div class="line">      err    = <a name="a27"></a><a class="code" href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a>(exoid[npd], <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a>, EBLK_ID, connect, NULL, NULL);</div>
 <div class="line">      t_tmp2 = my_timer();</div>
 <div class="line"> </div>
 <div class="line">      raw_write_time += t_tmp2 - t_tmp1;</div>
@@ -971,7 +969,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line"> </div>
 <div class="line">      <span class="comment">/* write out element and node maps */</span></div>
 <div class="line">      t_tmp1 = my_timer();</div>
-<div class="line">      err    = <a name="a30"></a><a class="code" href="group__ModelDescription.html#gaedc9233bcc6ffe7c634d67bd305ace2a">ex_put_id_map</a>(exoid[npd], <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a>, node_map);</div>
+<div class="line">      err    = <a name="a28"></a><a class="code" href="group__ModelDescription.html#gaedc9233bcc6ffe7c634d67bd305ace2a">ex_put_id_map</a>(exoid[npd], <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a>, node_map);</div>
 <div class="line">      t_tmp2 = my_timer();</div>
 <div class="line"> </div>
 <div class="line">      raw_write_time += t_tmp2 - t_tmp1;</div>
@@ -1016,7 +1014,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">      <span class="keywordflow">else</span> {</div>
 <div class="line">        elem_var_tab = 0;</div>
 <div class="line">      }</div>
-<div class="line">      err = <a name="a31"></a><a class="code" href="group__ResultsData.html#ga4e10ac1ef1f40d2941f7918d527e539d">ex_put_all_var_param</a>(exoid[npd], num_global_fields, num_nodal_fields,</div>
+<div class="line">      err = <a name="a29"></a><a class="code" href="group__ResultsData.html#ga4e10ac1ef1f40d2941f7918d527e539d">ex_put_all_var_param</a>(exoid[npd], num_global_fields, num_nodal_fields,</div>
 <div class="line">                                 num_element_fields, elem_var_tab, 0, 0, 0, 0);</div>
 <div class="line">      <span class="keywordflow">if</span> (err) {</div>
 <div class="line">        fprintf(stderr, <span class="stringliteral">&quot;after ex_put_all_var_param, error = %d\n&quot;</span>, err);</div>
@@ -1034,7 +1032,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">            sprintf(nvar_name[j], <span class="stringliteral">&quot;node_field_%d&quot;</span>, j + 1);</div>
 <div class="line">          }</div>
 <div class="line">        }</div>
-<div class="line">        err = <a name="a32"></a><a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid[npd], <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nodal_fields, nvar_name);</div>
+<div class="line">        err = <a name="a30"></a><a class="code" href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a>(exoid[npd], <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a>, num_nodal_fields, nvar_name);</div>
 <div class="line">        <span class="keywordflow">if</span> (npd == files_per_domain - 1) {</div>
 <div class="line">          <span class="keywordflow">for</span> (j = 0; j &lt; num_nodal_fields; j++) {</div>
 <div class="line">            free(nvar_name[j]);</div>
@@ -1105,7 +1103,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">            t_tmp1 = my_timer();</div>
 <div class="line">            get_file_name(base_name, EXODUS_FILE_TYPE, rank, num_domains, WRITE_FILE_TYPE,</div>
 <div class="line">                          tmp_name);</div>
-<div class="line">            exoid[npd] = <a class="code" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open</a>(tmp_name, <a name="a33"></a><a class="code" href="group__FileVars.html#ga0e27a838b6690e71b7ee9284b16575a1">EX_WRITE</a>, &amp;CPU_word_size, &amp;IO_word_size, &amp;version);</div>
+<div class="line">            exoid[npd] = <a class="code" href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open</a>(tmp_name, <a name="a31"></a><a class="code" href="group__FileVars.html#ga0e27a838b6690e71b7ee9284b16575a1">EX_WRITE</a>, &amp;CPU_word_size, &amp;IO_word_size, &amp;version);</div>
 <div class="line">            t_tmp2     = my_timer();</div>
 <div class="line">            raw_open_close_time += (t_tmp2 - t_tmp1);</div>
 <div class="line">          }</div>
@@ -1117,7 +1115,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">            raw_sleep_time += t_tmp2 - t_tmp1;</div>
 <div class="line">          }</div>
 <div class="line">          t_tmp1 = my_timer();</div>
-<div class="line">          <a name="a34"></a><a class="code" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time</a>(exoid[npd], t + 1, &amp;time);</div>
+<div class="line">          <a name="a32"></a><a class="code" href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time</a>(exoid[npd], t + 1, &amp;time);</div>
 <div class="line">          t_tmp2 = my_timer();</div>
 <div class="line">          put_time_time += t_tmp2 - t_tmp1;</div>
 <div class="line">          <span class="keywordflow">if</span> (rank == 0) {</div>
@@ -1130,7 +1128,7 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 <div class="line">          }</div>
 <div class="line">          <span class="keywordflow">if</span> (num_global_fields &gt; 0) {</div>
 <div class="line">            t_tmp1 = my_timer();</div>
-<div class="line">            err    = <a name="a35"></a><a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid[npd], t + 1, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, 1, 0, num_global_fields, globals);</div>
+<div class="line">            err    = <a name="a33"></a><a class="code" href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a>(exoid[npd], t + 1, <a class="code" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a>, 1, 0, num_global_fields, globals);</div>
 <div class="line">            t_tmp2 = my_timer();</div>
 <div class="line">            raw_write_time += t_tmp2 - t_tmp1;</div>
 <div class="line">            <span class="keywordflow">if</span> (err) {</div>
@@ -1359,41 +1357,39 @@ $(document).ready(function(){initNavTree('_2test_2rd_wt_mesh_8c-example.html',''
 </div><!-- doc-content -->
 <div class="ttc" id="agroup__ModelDescription_html_gabc6e9887581be7b2966db32d998ca648"><div class="ttname"><a href="group__ModelDescription.html#gabc6e9887581be7b2966db32d998ca648">ex_get_block</a></div><div class="ttdeci">int ex_get_block(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, char *elem_type, void_int *num_entries_this_blk, void_int *num_nodes_per_entry, void_int *num_edges_per_entry, void_int *num_faces_per_entry, void_int *num_attr_per_entry)</div><div class="ttdef"><b>Definition:</b> ex_get_block.c:63</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gad98c043e0e089bcb7a4f6662f96f7822"><div class="ttname"><a href="group__ModelDescription.html#gad98c043e0e089bcb7a4f6662f96f7822">ex_put_block</a></div><div class="ttdeci">int ex_put_block(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const char *entry_descrip, int64_t num_entries_this_blk, int64_t num_nodes_per_entry, int64_t num_edges_per_entry, int64_t num_faces_per_entry, int64_t num_attr_per_entry)</div><div class="ttdef"><b>Definition:</b> ex_put_block.c:74</div></div>
-<div class="ttc" id="agroup__Utilities_html_ga1b8122836266615fd2795736dc21e2ae"><div class="ttname"><a href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a></div><div class="ttdeci">int64_t ex_inquire_int(int exoid, ex_inquiry req_info)</div><div class="ttdef"><b>Definition:</b> ex_inquire.c:954</div></div>
+<div class="ttc" id="agroup__Utilities_html_ga1b8122836266615fd2795736dc21e2ae"><div class="ttname"><a href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a></div><div class="ttdeci">int64_t ex_inquire_int(int exoid, ex_inquiry req_info)</div><div class="ttdef"><b>Definition:</b> ex_inquire.c:976</div></div>
 <div class="ttc" id="agroup__Utilities_html_ga8f47bbb035d32bbafc594c5ed3c00403"><div class="ttname"><a href="group__Utilities.html#ga8f47bbb035d32bbafc594c5ed3c00403">ex_opts</a></div><div class="ttdeci">int ex_opts(int options)</div><div class="ttdef"><b>Definition:</b> ex_opts.c:83</div></div>
-<div class="ttc" id="aexodusII_8h_html_a1c43ac839d9171680f8fbeccec482e08"><div class="ttname"><a href="exodusII_8h.html#a1c43ac839d9171680f8fbeccec482e08">EX_FALSE</a></div><div class="ttdeci">#define EX_FALSE</div><div class="ttdef"><b>Definition:</b> exodusII.h:103</div></div>
 <div class="ttc" id="agroup__ResultsData_html_ga4e10ac1ef1f40d2941f7918d527e539d"><div class="ttname"><a href="group__ResultsData.html#ga4e10ac1ef1f40d2941f7918d527e539d">ex_put_all_var_param</a></div><div class="ttdeci">int ex_put_all_var_param(int exoid, int num_g, int num_n, int num_e, int *elem_var_tab, int num_m, int *nset_var_tab, int num_s, int *sset_var_tab)</div><div class="ttdef"><b>Definition:</b> ex_put_all_var_param.c:72</div></div>
 <div class="ttc" id="agroup__ResultsData_html_ga2052c8728dac97589b94d9947e645797"><div class="ttname"><a href="group__ResultsData.html#ga2052c8728dac97589b94d9947e645797">ex_put_time</a></div><div class="ttdeci">int ex_put_time(int exoid, int time_step, const void *time_value)</div><div class="ttdef"><b>Definition:</b> ex_put_time.c:78</div></div>
-<div class="ttc" id="agroup__Utilities_html_ga9a940cd55241b5c5e7960a123d79c94c"><div class="ttname"><a href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open</a></div><div class="ttdeci">#define ex_open(path, mode, comp_ws, io_ws, version)</div><div class="ttdef"><b>Definition:</b> exodusII.h:485</div></div>
+<div class="ttc" id="agroup__Utilities_html_ga9a940cd55241b5c5e7960a123d79c94c"><div class="ttname"><a href="group__Utilities.html#ga9a940cd55241b5c5e7960a123d79c94c">ex_open</a></div><div class="ttdeci">#define ex_open(path, mode, comp_ws, io_ws, version)</div><div class="ttdef"><b>Definition:</b> exodusII.h:526</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gaeeccbb525d582741af06a06aa275c5fe"><div class="ttname"><a href="group__ModelDescription.html#gaeeccbb525d582741af06a06aa275c5fe">ex_get_conn</a></div><div class="ttdeci">int ex_get_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, void_int *nodeconn, void_int *edgeconn, void_int *faceconn)</div><div class="ttdef"><b>Definition:</b> ex_get_conn.c:56</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga03cff8e6e59a2c6b56cc1f232c2898c8"><div class="ttname"><a href="group__ModelDescription.html#ga03cff8e6e59a2c6b56cc1f232c2898c8">ex_put_concat_elem_block</a></div><div class="ttdeci">int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_type[], const void_int *num_elem_this_blk, const void_int *num_nodes_per_elem, const void_int *num_attr_this_blk, int define_maps)</div><div class="ttdef"><b>Definition:</b> ex_put_concat_elem_block.c:63</div></div>
-<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a></div><div class="ttdeci">@ EX_NODE_MAP</div><div class="ttdef"><b>Definition:</b> exodusII.h:278</div></div>
-<div class="ttc" id="agroup__Utilities_html_ga37c928f7e30c333ee7c704d04f7e3a87"><div class="ttname"><a href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create</a></div><div class="ttdeci">#define ex_create(path, mode, comp_ws, io_ws)</div><div class="ttdef"><b>Definition:</b> exodusII.h:455</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a4a98c34aed1692f0d9c87f0e0912588a">EX_NODE_MAP</a></div><div class="ttdeci">@ EX_NODE_MAP</div><div class="ttdef"><b>Definition:</b> exodusII.h:281</div></div>
+<div class="ttc" id="agroup__Utilities_html_ga37c928f7e30c333ee7c704d04f7e3a87"><div class="ttname"><a href="group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87">ex_create</a></div><div class="ttdeci">#define ex_create(path, mode, comp_ws, io_ws)</div><div class="ttdef"><b>Definition:</b> exodusII.h:496</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gaedc9233bcc6ffe7c634d67bd305ace2a"><div class="ttname"><a href="group__ModelDescription.html#gaedc9233bcc6ffe7c634d67bd305ace2a">ex_put_id_map</a></div><div class="ttdeci">int ex_put_id_map(int exoid, ex_entity_type map_type, const void_int *map)</div><div class="ttdef"><b>Definition:</b> ex_put_id_map.c:64</div></div>
-<div class="ttc" id="aexodusII_8h_html_a71568c8efa7c2435227c5d2a13b7a6c4"><div class="ttname"><a href="exodusII_8h.html#a71568c8efa7c2435227c5d2a13b7a6c4">EX_TRUE</a></div><div class="ttdeci">#define EX_TRUE</div><div class="ttdef"><b>Definition:</b> exodusII.h:99</div></div>
 <div class="ttc" id="agroup__Utilities_html_gabccf733ba6ef7e8a51595eb34c4f94ff"><div class="ttname"><a href="group__Utilities.html#gabccf733ba6ef7e8a51595eb34c4f94ff">ex_close</a></div><div class="ttdeci">int ex_close(int exoid)</div><div class="ttdef"><b>Definition:</b> ex_close.c:74</div></div>
 <div class="ttc" id="agroup__ResultsData_html_gaf2a7063b5637ebee5cc50af7bed8de94"><div class="ttname"><a href="group__ResultsData.html#gaf2a7063b5637ebee5cc50af7bed8de94">ex_get_variable_param</a></div><div class="ttdeci">int ex_get_variable_param(int exoid, ex_entity_type obj_type, int *num_vars)</div><div class="ttdef"><b>Definition:</b> ex_get_variable_param.c:100</div></div>
-<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a></div><div class="ttdeci">@ EX_GLOBAL</div><div class="ttdef"><b>Definition:</b> exodusII.h:282</div></div>
-<div class="ttc" id="agroup__FileVars_html_ga0e27a838b6690e71b7ee9284b16575a1"><div class="ttname"><a href="group__FileVars.html#ga0e27a838b6690e71b7ee9284b16575a1">EX_WRITE</a></div><div class="ttdeci">#define EX_WRITE</div><div class="ttdef"><b>Definition:</b> exodusII.h:111</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a890b3a596358b8fe3bee8771f4ac84ac">EX_GLOBAL</a></div><div class="ttdeci">@ EX_GLOBAL</div><div class="ttdef"><b>Definition:</b> exodusII.h:285</div></div>
+<div class="ttc" id="agroup__FileVars_html_ga0e27a838b6690e71b7ee9284b16575a1"><div class="ttname"><a href="group__FileVars.html#ga0e27a838b6690e71b7ee9284b16575a1">EX_WRITE</a></div><div class="ttdeci">#define EX_WRITE</div><div class="ttdef"><b>Definition:</b> exodusII.h:112</div></div>
 <div class="ttc" id="agroup__ResultsData_html_ga200c0e240277523c735987a7bb69cf20"><div class="ttname"><a href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var</a></div><div class="ttdeci">int ex_get_var(int exoid, int time_step, ex_entity_type var_type, int var_index, ex_entity_id obj_id, int64_t num_entry_this_obj, void *var_vals)</div><div class="ttdef"><b>Definition:</b> ex_get_var.c:95</div></div>
-<div class="ttc" id="aexodusII_8h_html_a8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a"><div class="ttname"><a href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a">EX_ABORT</a></div><div class="ttdeci">@ EX_ABORT</div><div class="ttdef"><b>Definition:</b> exodusII.h:295</div></div>
-<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a></div><div class="ttdeci">@ EX_ELEM_MAP</div><div class="ttdef"><b>Definition:</b> exodusII.h:277</div></div>
+<div class="ttc" id="aexodusII_8h_html_a8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a"><div class="ttname"><a href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feac85b3327ce99395f3faf0d542b8b3a0a">EX_ABORT</a></div><div class="ttdeci">@ EX_ABORT</div><div class="ttdef"><b>Definition:</b> exodusII.h:300</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aade15ee9d30e8609779682eadccf1291">EX_ELEM_MAP</a></div><div class="ttdeci">@ EX_ELEM_MAP</div><div class="ttdef"><b>Definition:</b> exodusII.h:280</div></div>
 <div class="ttc" id="agroup__ResultsData_html_gae487ed3a7cd9dcef6eca2ca6dac0f48b"><div class="ttname"><a href="group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b">ex_put_variable_names</a></div><div class="ttdeci">int ex_put_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char *var_names[])</div><div class="ttdef"><b>Definition:</b> ex_put_variable_names.c:152</div></div>
-<div class="ttc" id="agroup__FileVars_html_gadeed66ded179e51a8858254052a76ba4"><div class="ttname"><a href="group__FileVars.html#gadeed66ded179e51a8858254052a76ba4">EX_CLOBBER</a></div><div class="ttdeci">#define EX_CLOBBER</div><div class="ttdef"><b>Definition:</b> exodusII.h:115</div></div>
-<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a></div><div class="ttdeci">@ EX_NODAL</div><div class="ttdef"><b>Definition:</b> exodusII.h:265</div></div>
+<div class="ttc" id="agroup__FileVars_html_gadeed66ded179e51a8858254052a76ba4"><div class="ttname"><a href="group__FileVars.html#gadeed66ded179e51a8858254052a76ba4">EX_CLOBBER</a></div><div class="ttdeci">#define EX_CLOBBER</div><div class="ttdef"><b>Definition:</b> exodusII.h:116</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490a7976e7fb59368794c38ff5da95b19873">EX_NODAL</a></div><div class="ttdeci">@ EX_NODAL</div><div class="ttdef"><b>Definition:</b> exodusII.h:268</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga33f70370ef0908a896957b676e7a919f"><div class="ttname"><a href="group__ModelDescription.html#ga33f70370ef0908a896957b676e7a919f">ex_get_coord</a></div><div class="ttdeci">int ex_get_coord(int exoid, void *x_coor, void *y_coor, void *z_coor)</div><div class="ttdef"><b>Definition:</b> ex_get_coord.c:98</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga359b6d011348ed04746217e67612f3c1"><div class="ttname"><a href="group__ModelDescription.html#ga359b6d011348ed04746217e67612f3c1">ex_put_conn</a></div><div class="ttdeci">int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const void_int *node_conn, const void_int *elem_edge_conn, const void_int *elem_face_conn)</div><div class="ttdef"><b>Definition:</b> ex_put_conn.c:71</div></div>
-<div class="ttc" id="agroup__FileVars_html_ga49938d96ef78ea1726e9970383bf61b1"><div class="ttname"><a href="group__FileVars.html#ga49938d96ef78ea1726e9970383bf61b1">EX_READ</a></div><div class="ttdeci">#define EX_READ</div><div class="ttdef"><b>Definition:</b> exodusII.h:112</div></div>
+<div class="ttc" id="agroup__FileVars_html_ga49938d96ef78ea1726e9970383bf61b1"><div class="ttname"><a href="group__FileVars.html#ga49938d96ef78ea1726e9970383bf61b1">EX_READ</a></div><div class="ttdeci">#define EX_READ</div><div class="ttdef"><b>Definition:</b> exodusII.h:113</div></div>
 <div class="ttc" id="aexodusII_8h_html"><div class="ttname"><a href="exodusII_8h.html">exodusII.h</a></div></div>
-<div class="ttc" id="aexodusII_8h_html_adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631"><div class="ttname"><a href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631">EX_INQ_TIME</a></div><div class="ttdeci">@ EX_INQ_TIME</div><div class="ttdef"><b>Definition:</b> exodusII.h:172</div></div>
+<div class="ttc" id="aexodusII_8h_html_adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631"><div class="ttname"><a href="exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dcadbf58af91846cf3492519d171cb27631">EX_INQ_TIME</a></div><div class="ttdeci">@ EX_INQ_TIME</div><div class="ttdef"><b>Definition:</b> exodusII.h:173</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gaad1d6ddd57d1fa8f94da25d505e8c7ba"><div class="ttname"><a href="group__ModelDescription.html#gaad1d6ddd57d1fa8f94da25d505e8c7ba">ex_put_init</a></div><div class="ttdeci">int ex_put_init(int exoid, const char *title, int64_t num_dim, int64_t num_nodes, int64_t num_elem, int64_t num_elem_blk, int64_t num_node_sets, int64_t num_side_sets)</div><div class="ttdef"><b>Definition:</b> ex_put_init.c:80</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_ga7b04e195e3fa979ba07470b860d70145"><div class="ttname"><a href="group__ModelDescription.html#ga7b04e195e3fa979ba07470b860d70145">ex_put_coord</a></div><div class="ttdeci">int ex_put_coord(int exoid, const void *x_coor, const void *y_coor, const void *z_coor)</div><div class="ttdef"><b>Definition:</b> ex_put_coord.c:114</div></div>
-<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a></div><div class="ttdeci">@ EX_ELEM_BLOCK</div><div class="ttdef"><b>Definition:</b> exodusII.h:272</div></div>
+<div class="ttc" id="aexodusII_8h_html_a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286"><div class="ttname"><a href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490aecdd2cbb9f2805c308dedb77c6ebe286">EX_ELEM_BLOCK</a></div><div class="ttdeci">@ EX_ELEM_BLOCK</div><div class="ttdef"><b>Definition:</b> exodusII.h:275</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gaefc10e2a564e1ed1a926f2fadf5c6a6f"><div class="ttname"><a href="group__ModelDescription.html#gaefc10e2a564e1ed1a926f2fadf5c6a6f">ex_get_id_map</a></div><div class="ttdeci">int ex_get_id_map(int exoid, ex_entity_type map_type, void_int *map)</div><div class="ttdef"><b>Definition:</b> ex_get_id_map.c:56</div></div>
 <div class="ttc" id="agroup__ModelDescription_html_gad0c4105c9e911d6be53e97a168937bde"><div class="ttname"><a href="group__ModelDescription.html#gad0c4105c9e911d6be53e97a168937bde">ex_get_init</a></div><div class="ttdeci">int ex_get_init(int exoid, char *title, void_int *num_dim, void_int *num_nodes, void_int *num_elem, void_int *num_elem_blk, void_int *num_node_sets, void_int *num_side_sets)</div><div class="ttdef"><b>Definition:</b> ex_get_init.c:102</div></div>
-<div class="ttc" id="aexodusII_8h_html_a8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9"><div class="ttname"><a href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9">EX_VERBOSE</a></div><div class="ttdeci">@ EX_VERBOSE</div><div class="ttdef"><b>Definition:</b> exodusII.h:293</div></div>
-<div class="ttc" id="agroup__ResultsData_html_gafa1d828867b436631e99a63fd5ddbf05"><div class="ttname"><a href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a></div><div class="ttdeci">int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index, ex_entity_id obj_id, int64_t num_entries_this_obj, const void *var_vals)</div><div class="ttdef"><b>Definition:</b> ex_put_var.c:238</div></div>
-<div class="ttc" id="aexodusII_8h_html_af1f4f3b83e65c1415d915910a48463ea"><div class="ttname"><a href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a></div><div class="ttdeci">char * ex_copy_string(char *dest, char const *source, size_t elements)</div><div class="ttdef"><b>Definition:</b> ex_utils.c:2203</div></div>
+<div class="ttc" id="aexodusII_8h_html_a8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9"><div class="ttname"><a href="exodusII_8h.html#a8e04765c48d2d3c6806dc89d6c3db1feae2153f7d84ce02bf6947dae81018d5d9">EX_VERBOSE</a></div><div class="ttdeci">@ EX_VERBOSE</div><div class="ttdef"><b>Definition:</b> exodusII.h:298</div></div>
+<div class="ttc" id="agroup__ResultsData_html_gafa1d828867b436631e99a63fd5ddbf05"><div class="ttname"><a href="group__ResultsData.html#gafa1d828867b436631e99a63fd5ddbf05">ex_put_var</a></div><div class="ttdeci">int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index, ex_entity_id obj_id, int64_t num_entries_this_obj, const void *var_vals)</div><div class="ttdef"><b>Definition:</b> ex_put_var.c:262</div></div>
+<div class="ttc" id="aexodusII_8h_html_af1f4f3b83e65c1415d915910a48463ea"><div class="ttname"><a href="exodusII_8h.html#af1f4f3b83e65c1415d915910a48463ea">ex_copy_string</a></div><div class="ttdeci">char * ex_copy_string(char *dest, char const *source, size_t elements)</div><div class="ttdef"><b>Definition:</b> ex_utils.c:2242</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

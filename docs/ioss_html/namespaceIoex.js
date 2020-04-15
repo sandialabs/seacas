@@ -1,5 +1,7 @@
 var namespaceIoex =
 [
+    [ "Assembly", "structIoex_1_1Assembly.html", "structIoex_1_1Assembly" ],
+    [ "Blob", "structIoex_1_1Blob.html", "structIoex_1_1Blob" ],
     [ "CommunicationMap", "structIoex_1_1CommunicationMap.html", "structIoex_1_1CommunicationMap" ],
     [ "CommunicationMetaData", "structIoex_1_1CommunicationMetaData.html", "structIoex_1_1CommunicationMetaData" ],
     [ "DatabaseIO", "classIoex_1_1DatabaseIO.html", "classIoex_1_1DatabaseIO" ],

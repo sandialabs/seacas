@@ -16,6 +16,8 @@ var Ioss__EntityType_8h =
       [ "REGION", "Ioss__EntityType_8h.html#afc1c64ae70b8e805a24de65bafc9c89fa53bfb3ea86a87b1395c57dd86f08c0f2", null ],
       [ "SUPERELEMENT", "Ioss__EntityType_8h.html#afc1c64ae70b8e805a24de65bafc9c89fa7e7608e3d8189473c938f84727320ad0", null ],
       [ "STRUCTUREDBLOCK", "Ioss__EntityType_8h.html#afc1c64ae70b8e805a24de65bafc9c89fa7db886d86650c36bc3b07d56b9e01246", null ],
+      [ "ASSEMBLY", "Ioss__EntityType_8h.html#afc1c64ae70b8e805a24de65bafc9c89fa9261da2c2ec5bf34e24ca541142c4fbb", null ],
+      [ "BLOB", "Ioss__EntityType_8h.html#afc1c64ae70b8e805a24de65bafc9c89fa36260df4c1a573df9977eae663aa271b", null ],
       [ "INVALID_TYPE", "Ioss__EntityType_8h.html#afc1c64ae70b8e805a24de65bafc9c89fa1c2adf489d13d10b19540a3ced3782a0", null ]
     ] ],
     [ "entityTypeCount", "Ioss__EntityType_8h.html#a60ba379fdd8679588ac7c40b32490dc5", null ]

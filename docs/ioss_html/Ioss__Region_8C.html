@@ -89,7 +89,9 @@ $(document).ready(function(){initNavTree('Ioss__Region_8C.html',''); initResizab
 <div class="title">Ioss_Region.C File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="el" href="Ioss__CommSet_8h_source.html">Ioss_CommSet.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="Ioss__Assembly_8h_source.html">Ioss_Assembly.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="Ioss__Blob_8h_source.html">Ioss_Blob.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="Ioss__CommSet_8h_source.html">Ioss_CommSet.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__CoordinateFrame_8h_source.html">Ioss_CoordinateFrame.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__DBUsage_8h_source.html">Ioss_DBUsage.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__DatabaseIO_8h_source.html">Ioss_DatabaseIO.h</a>&gt;</code><br />
@@ -129,7 +131,8 @@ $(document).ready(function(){initNavTree('Ioss__Region_8C.html',''); initResizab
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Ioss_Region.C:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Ioss__Region_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Ioss__Region_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -150,12 +153,22 @@ Functions</h2></td></tr>
 <tr class="separator:a294e2a63b62275998c3021cf3ef3f0a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3841b25aa02946c1da4bf2d0f2606cf5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a3841b25aa02946c1da4bf2d0f2606cf5">anonymous_namespace{Ioss_Region.C}::orig_block_order</a> ()</td></tr>
 <tr class="separator:a3841b25aa02946c1da4bf2d0f2606cf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0162e43b6b6db9a95cdc62f5cba814c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab0162e43b6b6db9a95cdc62f5cba814c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#ab0162e43b6b6db9a95cdc62f5cba814c">anonymous_namespace{Ioss_Region.C}::get_entity_internal</a> (int64_t id, const std::vector&lt; T &gt; &amp;entities)</td></tr>
+<tr class="separator:ab0162e43b6b6db9a95cdc62f5cba814c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80d363a92e4cd87d869c68f6f423ba7b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a80d363a92e4cd87d869c68f6f423ba7b"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a80d363a92e4cd87d869c68f6f423ba7b">anonymous_namespace{Ioss_Region.C}::get_variable_count</a> (const std::vector&lt; T &gt; &amp;entities)</td></tr>
 <tr class="separator:a80d363a92e4cd87d869c68f6f423ba7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a80d47101282ba532a7cbaf0dbf8bd8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a9a80d47101282ba532a7cbaf0dbf8bd8"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a9a80d47101282ba532a7cbaf0dbf8bd8">anonymous_namespace{Ioss_Region.C}::get_reduction_variable_count</a> (const std::vector&lt; T &gt; &amp;entities)</td></tr>
+<tr class="separator:a9a80d47101282ba532a7cbaf0dbf8bd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ee57762c7c97cee640a574133de0ad2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5ee57762c7c97cee640a574133de0ad2"><td class="memTemplItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a5ee57762c7c97cee640a574133de0ad2">anonymous_namespace{Ioss_Region.C}::get_entity_count</a> (const std::vector&lt; T &gt; &amp;entities)</td></tr>
 <tr class="separator:a5ee57762c7c97cee640a574133de0ad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7869ea069d410d6981424b0e3078b7fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a7869ea069d410d6981424b0e3078b7fa">anonymous_namespace{Ioss_Region.C}::update_database</a> (const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *entity)</td></tr>
+<tr class="separator:a7869ea069d410d6981424b0e3078b7fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfc3362c77d7c0156bae6bc47f462607"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#acfc3362c77d7c0156bae6bc47f462607">anonymous_namespace{Ioss_Region.C}::update_database</a> (const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, <a class="el" href="classIoss_1_1SideSet.html">Ioss::SideSet</a> *sset)</td></tr>
+<tr class="separator:acfc3362c77d7c0156bae6bc47f462607"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab86bae2d3a1a39742b09e2f68fa0772c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#ab86bae2d3a1a39742b09e2f68fa0772c">anonymous_namespace{Ioss_Region.C}::check_for_duplicate_names</a> (const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, const <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *entity)</td></tr>
 <tr class="separator:ab86bae2d3a1a39742b09e2f68fa0772c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa7df9904c197f8f00d2ff2658583d09"><td class="memItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#aaa7df9904c197f8f00d2ff2658583d09">anonymous_namespace{Ioss_Region.C}::numberOfBits</a> (unsigned x)</td></tr>

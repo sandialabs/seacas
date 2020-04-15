@@ -1,7 +1,9 @@
 var Ioex__DatabaseIO_8C =
 [
+    [ "GLOBALS_ARE_TRANSIENT", "Ioex__DatabaseIO_8C.html#aa8c4cb3632ca993ad7224d670fc764aa", null ],
     [ "check_attribute_index_order", "Ioex__DatabaseIO_8C.html#a9a39a5e9379a4a90041c1e408f4f95cd", null ],
     [ "check_variable_consistency", "Ioex__DatabaseIO_8C.html#a5f1d0ce0f60ab0c62e367d59dc8d9ab4", null ],
+    [ "exodus_types", "Ioex__DatabaseIO_8C.html#ac526a36540c82fbc694317090f16fc63", null ],
     [ "generate_block_truth_table", "Ioex__DatabaseIO_8C.html#a0feccf323106457fbeb37d155ee24dc7", null ],
     [ "generate_block_truth_table", "Ioex__DatabaseIO_8C.html#a4fb1d81d83857a5b936fedbdb6ad7f82", null ],
     [ "write_attribute_names", "Ioex__DatabaseIO_8C.html#a49a8fb19587d51f9b0b5d713d17f5ea8", null ],

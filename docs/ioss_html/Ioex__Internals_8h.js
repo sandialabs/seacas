@@ -1,6 +1,8 @@
 var Ioex__Internals_8h =
 [
     [ "NodeBlock", "structIoex_1_1NodeBlock.html", "structIoex_1_1NodeBlock" ],
+    [ "Assembly", "structIoex_1_1Assembly.html", "structIoex_1_1Assembly" ],
+    [ "Blob", "structIoex_1_1Blob.html", "structIoex_1_1Blob" ],
     [ "EdgeBlock", "structIoex_1_1EdgeBlock.html", "structIoex_1_1EdgeBlock" ],
     [ "FaceBlock", "structIoex_1_1FaceBlock.html", "structIoex_1_1FaceBlock" ],
     [ "ElemBlock", "structIoex_1_1ElemBlock.html", "structIoex_1_1ElemBlock" ],

@@ -18,6 +18,8 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "unit_tests", "dir_33cfd5db86fcb3abafc781b49053bebf.html", "dir_33cfd5db86fcb3abafc781b49053bebf" ],
     [ "utest", "dir_20af8c6db4866732b8ca049c99f4ebff.html", "dir_20af8c6db4866732b8ca049c99f4ebff" ],
     [ "visualization", "dir_b00de47ad7e2e13a637d9aa605dec95e.html", "dir_b00de47ad7e2e13a637d9aa605dec95e" ],
+    [ "Ioss_Assembly.C", "Ioss__Assembly_8C.html", "Ioss__Assembly_8C" ],
+    [ "Ioss_Assembly.h", "Ioss__Assembly_8h.html", "Ioss__Assembly_8h" ],
     [ "Ioss_Beam2.C", "Ioss__Beam2_8C.html", [
       [ "St_Beam2", "classIoss_1_1St__Beam2.html", "classIoss_1_1St__Beam2" ],
       [ "Constants", "structanonymous__namespace_02Ioss__Beam2_8C_03_1_1Constants.html", "structanonymous__namespace_02Ioss__Beam2_8C_03_1_1Constants" ]
@@ -38,6 +40,10 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     ] ],
     [ "Ioss_Beam4.h", "Ioss__Beam4_8h.html", [
       [ "Beam4", "classIoss_1_1Beam4.html", "classIoss_1_1Beam4" ]
+    ] ],
+    [ "Ioss_Blob.C", "Ioss__Blob_8C.html", null ],
+    [ "Ioss_Blob.h", "Ioss__Blob_8h.html", [
+      [ "Blob", "classIoss_1_1Blob.html", "classIoss_1_1Blob" ]
     ] ],
     [ "Ioss_BoundingBox.h", "Ioss__BoundingBox_8h.html", [
       [ "AxisAlignedBoundingBox", "structIoss_1_1AxisAlignedBoundingBox.html", "structIoss_1_1AxisAlignedBoundingBox" ]
@@ -157,6 +163,7 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "Ioss_FileInfo.h", "Ioss__FileInfo_8h.html", [
       [ "FileInfo", "classIoss_1_1FileInfo.html", "classIoss_1_1FileInfo" ]
     ] ],
+    [ "Ioss_Getline.h", "Ioss__Getline_8h.html", "Ioss__Getline_8h" ],
     [ "Ioss_GetLongOpt.C", "Ioss__GetLongOpt_8C.html", null ],
     [ "Ioss_GetLongOpt.h", "Ioss__GetLongOpt_8h.html", [
       [ "GetLongOption", "classIoss_1_1GetLongOption.html", "classIoss_1_1GetLongOption" ],

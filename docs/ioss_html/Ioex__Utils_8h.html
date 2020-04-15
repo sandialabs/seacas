@@ -103,12 +103,14 @@ $(document).ready(function(){initNavTree('Ioex__Utils_8h.html',''); initResizabl
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Ioex_Utils.h:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Ioex__Utils_8h__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Ioex__Utils_8h__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Ioex__Utils_8h__dep__incl.svg" width="100%" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Ioex__Utils_8h__dep__incl.svg" width="100%" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 </div>
 </div>
 <p><a href="Ioex__Utils_8h_source.html">Go to the source code of this file.</a></p>
@@ -144,6 +146,10 @@ Functions</h2></td></tr>
 <tr class="separator:acbd085af44e6af39844775c4a8c679cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf3f04de406da6dea14a72db3b2a0a73"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#abf3f04de406da6dea14a72db3b2a0a73">Ioex::check_processor_info</a> (int exodusFilePtr, int processor_count, int processor_id)</td></tr>
 <tr class="separator:abf3f04de406da6dea14a72db3b2a0a73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c21cec395f5fed9940be1e80d487e76"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f">Ioss::EntityType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a9c21cec395f5fed9940be1e80d487e76">Ioex::map_exodus_type</a> (ex_entity_type type)</td></tr>
+<tr class="separator:a9c21cec395f5fed9940be1e80d487e76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20d60b6949d4ca86dc5853d8f76514ae"><td class="memItemLeft" align="right" valign="top">ex_entity_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a20d60b6949d4ca86dc5853d8f76514ae">Ioex::map_exodus_type</a> (<a class="el" href="namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f">Ioss::EntityType</a> type)</td></tr>
+<tr class="separator:a20d60b6949d4ca86dc5853d8f76514ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca78e0f9adbd54d49ed084084f467795"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#aca78e0f9adbd54d49ed084084f467795">Ioex::update_last_time_attribute</a> (int exodusFilePtr, double value)</td></tr>
 <tr class="separator:aca78e0f9adbd54d49ed084084f467795"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa53a87252a9ed704f3ec3c8f7d12a8c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#afa53a87252a9ed704f3ec3c8f7d12a8c">Ioex::read_last_time_attribute</a> (int exodusFilePtr, double *value)</td></tr>
@@ -181,6 +187,11 @@ Functions</h2></td></tr>
 <tr class="separator:a976d472a06fe6dc9a4e8dceda7a4104d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e441062139555c370269f0550e06ee4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#a0e441062139555c370269f0550e06ee4">Ioex::separate_surface_element_sides</a> (<a class="el" href="namespaceIoss.html#a715acbaf3ca8e2e82d0d3a0f81ff5f1b">Ioss::Int64Vector</a> &amp;element, <a class="el" href="namespaceIoss.html#a715acbaf3ca8e2e82d0d3a0f81ff5f1b">Ioss::Int64Vector</a> &amp;sides, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, <a class="el" href="namespaceIoex.html#a0f8c852510f839929e8bd9e9a40b9f36">Ioex::TopologyMap</a> &amp;topo_map, <a class="el" href="namespaceIoex.html#a0f8c852510f839929e8bd9e9a40b9f36">Ioex::TopologyMap</a> &amp;side_map, <a class="el" href="namespaceIoss.html#aac97d071c77181adce98f1569c36d222">Ioss::SurfaceSplitType</a> split_type, const std::string &amp;surface_name)</td></tr>
 <tr class="separator:a0e441062139555c370269f0550e06ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af44f31440d8f92e9e6e59f96f5068a6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#af44f31440d8f92e9e6e59f96f5068a6e">Ioex::write_reduction_attributes</a> (int exoid, const <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *ge)</td></tr>
+<tr class="separator:af44f31440d8f92e9e6e59f96f5068a6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9c225adedc812ba8734a7d6c55cdee9"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ad9c225adedc812ba8734a7d6c55cdee9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceIoex.html#ad9c225adedc812ba8734a7d6c55cdee9">Ioex::write_reduction_attributes</a> (int exoid, const std::vector&lt; T * &gt; &amp;entities)</td></tr>
+<tr class="separator:ad9c225adedc812ba8734a7d6c55cdee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

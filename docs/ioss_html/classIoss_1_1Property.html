@@ -117,34 +117,47 @@ Public Types</h2></td></tr>
 <a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614a0696e4969fceed78792f2772c752af93">INTEGER</a>, 
 <a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614a581988cd39b733e8705595f1e456c11e">POINTER</a>, 
 <br />
-&#160;&#160;<a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614afb6b9085cc61f447732ef899da31d8db">STRING</a>
+&#160;&#160;<a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614afb6b9085cc61f447732ef899da31d8db">STRING</a>, 
+<a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614a436442243d75bd4a545f0a90633d8880">VEC_INTEGER</a>, 
+<a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614aad353928c95842c83f0ca32b018a25eb">VEC_DOUBLE</a>
 <br />
  }</td></tr>
 <tr class="separator:a7d449056671a2fa99f35d68c49be6614"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16338f2d9b5be973401bd8183c8fa0d3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> { <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a> = -1, 
+<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3a1d275e53d73baedd619edea7bb069520">IMPLICIT</a>, 
+<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3aa488b6708d692804334f88eb9aabeee1">EXTERNAL</a>, 
+<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ad44b0a925987809bea4623f0b5c5b892">ATTRIBUTE</a>
+ }</td></tr>
+<tr class="separator:a16338f2d9b5be973401bd8183c8fa0d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a246c54d2e52c912469d1c3230c2152ef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a246c54d2e52c912469d1c3230c2152ef">Property</a> ()</td></tr>
-<tr class="memdesc:a246c54d2e52c912469d1c3230c2152ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an explicit, empty property having no name, INVALID type.  <a href="classIoss_1_1Property.html#a246c54d2e52c912469d1c3230c2152ef">More...</a><br /></td></tr>
-<tr class="separator:a246c54d2e52c912469d1c3230c2152ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97d9da7277032023434983e17320b7a2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a97d9da7277032023434983e17320b7a2">Property</a> (std::string name, int64_t value)</td></tr>
-<tr class="memdesc:a97d9da7277032023434983e17320b7a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an INTEGER type property using an int64_t variable.  <a href="classIoss_1_1Property.html#a97d9da7277032023434983e17320b7a2">More...</a><br /></td></tr>
-<tr class="separator:a97d9da7277032023434983e17320b7a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a823aed18a6bffe26e7d54c4cb766db38"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a823aed18a6bffe26e7d54c4cb766db38">Property</a> (std::string name, int value)</td></tr>
-<tr class="memdesc:a823aed18a6bffe26e7d54c4cb766db38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an INTEGER type property.  <a href="classIoss_1_1Property.html#a823aed18a6bffe26e7d54c4cb766db38">More...</a><br /></td></tr>
-<tr class="separator:a823aed18a6bffe26e7d54c4cb766db38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a973db6981126bead84c31d74522e391c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a973db6981126bead84c31d74522e391c">Property</a> (std::string name, double value)</td></tr>
-<tr class="memdesc:a973db6981126bead84c31d74522e391c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a REAL type property.  <a href="classIoss_1_1Property.html#a973db6981126bead84c31d74522e391c">More...</a><br /></td></tr>
-<tr class="separator:a973db6981126bead84c31d74522e391c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a198cdf7d1b4b5ff234bd21a74099f88d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a198cdf7d1b4b5ff234bd21a74099f88d">Property</a> (std::string name, const std::string &amp;value)</td></tr>
-<tr class="memdesc:a198cdf7d1b4b5ff234bd21a74099f88d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a STRING type property.  <a href="classIoss_1_1Property.html#a198cdf7d1b4b5ff234bd21a74099f88d">More...</a><br /></td></tr>
-<tr class="separator:a198cdf7d1b4b5ff234bd21a74099f88d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a294abc7316913acdc66c999267be0760"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a294abc7316913acdc66c999267be0760">Property</a> (std::string name, const char *value)</td></tr>
-<tr class="memdesc:a294abc7316913acdc66c999267be0760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a STRING type property from const char* argument.  <a href="classIoss_1_1Property.html#a294abc7316913acdc66c999267be0760">More...</a><br /></td></tr>
-<tr class="separator:a294abc7316913acdc66c999267be0760"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a141ea28c832794b6803482328db104e0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a141ea28c832794b6803482328db104e0">Property</a> (std::string name, void *value)</td></tr>
-<tr class="memdesc:a141ea28c832794b6803482328db104e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a POINTER type property.  <a href="classIoss_1_1Property.html#a141ea28c832794b6803482328db104e0">More...</a><br /></td></tr>
-<tr class="separator:a141ea28c832794b6803482328db104e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dd0e89a1cfae6d5c0bbd6c717ed5082"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a2dd0e89a1cfae6d5c0bbd6c717ed5082">Property</a> ()=default</td></tr>
+<tr class="separator:a2dd0e89a1cfae6d5c0bbd6c717ed5082"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18dd613456397bdbf592ce5ced982015"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a18dd613456397bdbf592ce5ced982015">Property</a> (std::string name, int64_t value, <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> origin=<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a>)</td></tr>
+<tr class="memdesc:a18dd613456397bdbf592ce5ced982015"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an INTEGER type property using an int64_t variable.  <a href="classIoss_1_1Property.html#a18dd613456397bdbf592ce5ced982015">More...</a><br /></td></tr>
+<tr class="separator:a18dd613456397bdbf592ce5ced982015"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26b6869f8706634f4a1364b02e02ad3b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a26b6869f8706634f4a1364b02e02ad3b">Property</a> (std::string name, int value, <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> origin=<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a>)</td></tr>
+<tr class="memdesc:a26b6869f8706634f4a1364b02e02ad3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an INTEGER type property.  <a href="classIoss_1_1Property.html#a26b6869f8706634f4a1364b02e02ad3b">More...</a><br /></td></tr>
+<tr class="separator:a26b6869f8706634f4a1364b02e02ad3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae76c3578b0f335629be7cacd31feadd7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#ae76c3578b0f335629be7cacd31feadd7">Property</a> (std::string name, double value, <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> origin=<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a>)</td></tr>
+<tr class="memdesc:ae76c3578b0f335629be7cacd31feadd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a REAL type property.  <a href="classIoss_1_1Property.html#ae76c3578b0f335629be7cacd31feadd7">More...</a><br /></td></tr>
+<tr class="separator:ae76c3578b0f335629be7cacd31feadd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dae918026ac726c1e352868704bd9b5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a6dae918026ac726c1e352868704bd9b5">Property</a> (std::string name, const std::string &amp;value, <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> origin=<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a>)</td></tr>
+<tr class="memdesc:a6dae918026ac726c1e352868704bd9b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a STRING type property.  <a href="classIoss_1_1Property.html#a6dae918026ac726c1e352868704bd9b5">More...</a><br /></td></tr>
+<tr class="separator:a6dae918026ac726c1e352868704bd9b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5723e80730e8793c571d863cc97ad4a3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a5723e80730e8793c571d863cc97ad4a3">Property</a> (std::string name, const char *value, <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> origin=<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a>)</td></tr>
+<tr class="memdesc:a5723e80730e8793c571d863cc97ad4a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a STRING type property from const char* argument.  <a href="classIoss_1_1Property.html#a5723e80730e8793c571d863cc97ad4a3">More...</a><br /></td></tr>
+<tr class="separator:a5723e80730e8793c571d863cc97ad4a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1fdd7738b11b673c9067bb518bc3f1d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#aa1fdd7738b11b673c9067bb518bc3f1d">Property</a> (std::string name, void *value, <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> origin=<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a>)</td></tr>
+<tr class="memdesc:aa1fdd7738b11b673c9067bb518bc3f1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a POINTER type property.  <a href="classIoss_1_1Property.html#aa1fdd7738b11b673c9067bb518bc3f1d">More...</a><br /></td></tr>
+<tr class="separator:aa1fdd7738b11b673c9067bb518bc3f1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37e1f2e2bbc4aa23b74926f6c57a76a1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a37e1f2e2bbc4aa23b74926f6c57a76a1">Property</a> (std::string name, const std::vector&lt; int &gt; &amp;value, <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> origin=<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a>)</td></tr>
+<tr class="memdesc:a37e1f2e2bbc4aa23b74926f6c57a76a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a VEC_INTEGER type property.  <a href="classIoss_1_1Property.html#a37e1f2e2bbc4aa23b74926f6c57a76a1">More...</a><br /></td></tr>
+<tr class="separator:a37e1f2e2bbc4aa23b74926f6c57a76a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d40bcb16124afb46b928901495dedf3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a1d40bcb16124afb46b928901495dedf3">Property</a> (std::string name, const std::vector&lt; double &gt; &amp;value, <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> origin=<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a>)</td></tr>
+<tr class="memdesc:a1d40bcb16124afb46b928901495dedf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a VEC_DOUBLE type property.  <a href="classIoss_1_1Property.html#a1d40bcb16124afb46b928901495dedf3">More...</a><br /></td></tr>
+<tr class="separator:a1d40bcb16124afb46b928901495dedf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aede2b6e67e3d16e4ad8238a236a949e6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#aede2b6e67e3d16e4ad8238a236a949e6">Property</a> (const <a class="el" href="classIoss_1_1GroupingEntity.html">GroupingEntity</a> *ge, std::string name, <a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614">BasicType</a> type)</td></tr>
 <tr class="memdesc:aede2b6e67e3d16e4ad8238a236a949e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set implicit property with a specified type.  <a href="classIoss_1_1Property.html#aede2b6e67e3d16e4ad8238a236a949e6">More...</a><br /></td></tr>
 <tr class="separator:aede2b6e67e3d16e4ad8238a236a949e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,6 +180,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1a2d44d227a26a1abed0d794060779c6"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a1a2d44d227a26a1abed0d794060779c6">get_pointer</a> () const</td></tr>
 <tr class="memdesc:a1a2d44d227a26a1abed0d794060779c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the property value if it is of type POINTER.  <a href="classIoss_1_1Property.html#a1a2d44d227a26a1abed0d794060779c6">More...</a><br /></td></tr>
 <tr class="separator:a1a2d44d227a26a1abed0d794060779c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af83837cd5e269835fc046c651aac70c1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#af83837cd5e269835fc046c651aac70c1">get_vec_double</a> () const</td></tr>
+<tr class="memdesc:af83837cd5e269835fc046c651aac70c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the property value if it is of type VEC_DOUBLE.  <a href="classIoss_1_1Property.html#af83837cd5e269835fc046c651aac70c1">More...</a><br /></td></tr>
+<tr class="separator:af83837cd5e269835fc046c651aac70c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5417b00c083889ee4d00fbd3175c01ee"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a5417b00c083889ee4d00fbd3175c01ee">get_vec_int</a> () const</td></tr>
+<tr class="memdesc:a5417b00c083889ee4d00fbd3175c01ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the property value if it is of type VEC_INT.  <a href="classIoss_1_1Property.html#a5417b00c083889ee4d00fbd3175c01ee">More...</a><br /></td></tr>
+<tr class="separator:a5417b00c083889ee4d00fbd3175c01ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c513fe238508b847c0296edeed65850"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a3c513fe238508b847c0296edeed65850">set_origin</a> (<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> origin)</td></tr>
+<tr class="separator:a3c513fe238508b847c0296edeed65850"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bded0c6ebe3ed4cd72b8b637ae3dd1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a7bded0c6ebe3ed4cd72b8b637ae3dd1b">get_origin</a> () const</td></tr>
+<tr class="separator:a7bded0c6ebe3ed4cd72b8b637ae3dd1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4469028c7ef53b2303fdad06b35e65c0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a4469028c7ef53b2303fdad06b35e65c0">is_implicit</a> () const</td></tr>
 <tr class="memdesc:a4469028c7ef53b2303fdad06b35e65c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tells whether the property is calculated, rather than stored.  <a href="classIoss_1_1Property.html#a4469028c7ef53b2303fdad06b35e65c0">More...</a><br /></td></tr>
 <tr class="separator:a4469028c7ef53b2303fdad06b35e65c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -194,15 +217,19 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a5b5233d613e2d83cb5c63d54d49f27e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fb55f579ec6024df2e4447f599f6a01"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a9fb55f579ec6024df2e4447f599f6a01">get_value</a> (void *&amp;value) const</td></tr>
 <tr class="separator:a9fb55f579ec6024df2e4447f599f6a01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1fd016364133385d77e076aea79d324"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#ac1fd016364133385d77e076aea79d324">get_value</a> (std::vector&lt; double &gt; *value) const</td></tr>
+<tr class="separator:ac1fd016364133385d77e076aea79d324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98ac692cd8bb8e9385a8e2d64ffa6fa7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a98ac692cd8bb8e9385a8e2d64ffa6fa7">get_value</a> (std::vector&lt; int &gt; *value) const</td></tr>
+<tr class="separator:a98ac692cd8bb8e9385a8e2d64ffa6fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a156bcdae811a0ff32bfb6a44bc155213"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a156bcdae811a0ff32bfb6a44bc155213">name_</a></td></tr>
+<tr class="memitem:a156bcdae811a0ff32bfb6a44bc155213"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a156bcdae811a0ff32bfb6a44bc155213">name_</a> {}</td></tr>
 <tr class="separator:a156bcdae811a0ff32bfb6a44bc155213"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae87106143ff7aafb1e15a98160ed937"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614">BasicType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#aae87106143ff7aafb1e15a98160ed937">type_</a></td></tr>
+<tr class="memitem:aae87106143ff7aafb1e15a98160ed937"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614">BasicType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#aae87106143ff7aafb1e15a98160ed937">type_</a> {<a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614a7c77036968c09a64e82cf76763feb19f">INVALID</a>}</td></tr>
 <tr class="separator:aae87106143ff7aafb1e15a98160ed937"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43ed91c5626d576dc40d17743f1e139a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a43ed91c5626d576dc40d17743f1e139a">isImplicit_</a> {false}</td></tr>
-<tr class="separator:a43ed91c5626d576dc40d17743f1e139a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a014a03fab7d4bdf556374c7a22c00a83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a014a03fab7d4bdf556374c7a22c00a83">origin_</a> {<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a>}</td></tr>
+<tr class="separator:a014a03fab7d4bdf556374c7a22c00a83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c6aeea25b7afb44a6b8624f9529256d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="unionIoss_1_1Property_1_1Data.html">Data</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1Property.html#a2c6aeea25b7afb44a6b8624f9529256d">data_</a> {}</td></tr>
 <tr class="separator:a2c6aeea25b7afb44a6b8624f9529256d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -226,16 +253,41 @@ Private Attributes</h2></td></tr>
 <tr><td class="fieldname"><a id="a7d449056671a2fa99f35d68c49be6614a0696e4969fceed78792f2772c752af93"></a>INTEGER&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a7d449056671a2fa99f35d68c49be6614a581988cd39b733e8705595f1e456c11e"></a>POINTER&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a7d449056671a2fa99f35d68c49be6614afb6b9085cc61f447732ef899da31d8db"></a>STRING&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7d449056671a2fa99f35d68c49be6614a436442243d75bd4a545f0a90633d8880"></a>VEC_INTEGER&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7d449056671a2fa99f35d68c49be6614aad353928c95842c83f0ca32b018a25eb"></a>VEC_DOUBLE&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<a id="a16338f2d9b5be973401bd8183c8fa0d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16338f2d9b5be973401bd8183c8fa0d3">&#9670;&nbsp;</a></span>Origin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Ioss::Property::Origin</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc"></a>INTERNAL&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a16338f2d9b5be973401bd8183c8fa0d3a1d275e53d73baedd619edea7bb069520"></a>IMPLICIT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a16338f2d9b5be973401bd8183c8fa0d3aa488b6708d692804334f88eb9aabeee1"></a>EXTERNAL&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a16338f2d9b5be973401bd8183c8fa0d3ad44b0a925987809bea4623f0b5c5b892"></a>ATTRIBUTE&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a246c54d2e52c912469d1c3230c2152ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a246c54d2e52c912469d1c3230c2152ef">&#9670;&nbsp;</a></span>Property() <span class="overload">[1/9]</span></h2>
+<a id="a2dd0e89a1cfae6d5c0bbd6c717ed5082"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dd0e89a1cfae6d5c0bbd6c717ed5082">&#9670;&nbsp;</a></span>Property() <span class="overload">[1/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">Ioss::Property::Property </td>
@@ -244,14 +296,17 @@ Private Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Create an explicit, empty property having no name, INVALID type. </p>
-
 </div>
 </div>
-<a id="a97d9da7277032023434983e17320b7a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97d9da7277032023434983e17320b7a2">&#9670;&nbsp;</a></span>Property() <span class="overload">[2/9]</span></h2>
+<a id="a18dd613456397bdbf592ce5ced982015"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18dd613456397bdbf592ce5ced982015">&#9670;&nbsp;</a></span>Property() <span class="overload">[2/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -266,7 +321,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>value</em>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td>
+          <td class="paramname"><em>origin</em> = <code><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -287,8 +348,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a823aed18a6bffe26e7d54c4cb766db38"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a823aed18a6bffe26e7d54c4cb766db38">&#9670;&nbsp;</a></span>Property() <span class="overload">[3/9]</span></h2>
+<a id="a26b6869f8706634f4a1364b02e02ad3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26b6869f8706634f4a1364b02e02ad3b">&#9670;&nbsp;</a></span>Property() <span class="overload">[3/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -303,7 +364,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>value</em>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td>
+          <td class="paramname"><em>origin</em> = <code><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -324,8 +391,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a973db6981126bead84c31d74522e391c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a973db6981126bead84c31d74522e391c">&#9670;&nbsp;</a></span>Property() <span class="overload">[4/9]</span></h2>
+<a id="ae76c3578b0f335629be7cacd31feadd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae76c3578b0f335629be7cacd31feadd7">&#9670;&nbsp;</a></span>Property() <span class="overload">[4/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -340,7 +407,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>value</em>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td>
+          <td class="paramname"><em>origin</em> = <code><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -361,8 +434,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a198cdf7d1b4b5ff234bd21a74099f88d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a198cdf7d1b4b5ff234bd21a74099f88d">&#9670;&nbsp;</a></span>Property() <span class="overload">[5/9]</span></h2>
+<a id="a6dae918026ac726c1e352868704bd9b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dae918026ac726c1e352868704bd9b5">&#9670;&nbsp;</a></span>Property() <span class="overload">[5/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -377,7 +450,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>value</em>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td>
+          <td class="paramname"><em>origin</em> = <code><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -398,8 +477,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a294abc7316913acdc66c999267be0760"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a294abc7316913acdc66c999267be0760">&#9670;&nbsp;</a></span>Property() <span class="overload">[6/9]</span></h2>
+<a id="a5723e80730e8793c571d863cc97ad4a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5723e80730e8793c571d863cc97ad4a3">&#9670;&nbsp;</a></span>Property() <span class="overload">[6/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -414,7 +493,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>value</em>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td>
+          <td class="paramname"><em>origin</em> = <code><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -435,8 +520,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a141ea28c832794b6803482328db104e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a141ea28c832794b6803482328db104e0">&#9670;&nbsp;</a></span>Property() <span class="overload">[7/9]</span></h2>
+<a id="aa1fdd7738b11b673c9067bb518bc3f1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1fdd7738b11b673c9067bb518bc3f1d">&#9670;&nbsp;</a></span>Property() <span class="overload">[7/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -451,7 +536,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>value</em>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td>
+          <td class="paramname"><em>origin</em> = <code><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -472,8 +563,94 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a37e1f2e2bbc4aa23b74926f6c57a76a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37e1f2e2bbc4aa23b74926f6c57a76a1">&#9670;&nbsp;</a></span>Property() <span class="overload">[8/11]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Ioss::Property::Property </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td>
+          <td class="paramname"><em>origin</em> = <code><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a VEC_INTEGER type property. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>The property name. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>The property value. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1d40bcb16124afb46b928901495dedf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d40bcb16124afb46b928901495dedf3">&#9670;&nbsp;</a></span>Property() <span class="overload">[9/11]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Ioss::Property::Property </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td>
+          <td class="paramname"><em>origin</em> = <code><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a VEC_DOUBLE type property. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>The property name. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>The property value. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aede2b6e67e3d16e4ad8238a236a949e6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aede2b6e67e3d16e4ad8238a236a949e6">&#9670;&nbsp;</a></span>Property() <span class="overload">[8/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aede2b6e67e3d16e4ad8238a236a949e6">&#9670;&nbsp;</a></span>Property() <span class="overload">[10/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -517,7 +694,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a id="af028c8fad820f298b8ffb37615cf1cd1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af028c8fad820f298b8ffb37615cf1cd1">&#9670;&nbsp;</a></span>Property() <span class="overload">[9/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af028c8fad820f298b8ffb37615cf1cd1">&#9670;&nbsp;</a></span>Property() <span class="overload">[11/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -605,6 +782,31 @@ Private Attributes</h2></td></tr>
 
 <p>Get the property name. </p>
 <dl class="section return"><dt>Returns</dt><dd>The property name. </dd></dl>
+
+</div>
+</div>
+<a id="a7bded0c6ebe3ed4cd72b8b637ae3dd1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bded0c6ebe3ed4cd72b8b637ae3dd1b">&#9670;&nbsp;</a></span>get_origin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> Ioss::Property::get_origin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -697,7 +899,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a0caa055929e5e9a1fe3e7f931263800f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0caa055929e5e9a1fe3e7f931263800f">&#9670;&nbsp;</a></span>get_value() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0caa055929e5e9a1fe3e7f931263800f">&#9670;&nbsp;</a></span>get_value() <span class="overload">[1/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -723,7 +925,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a662c4d5812ddada6785d38eb8de1b224"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a662c4d5812ddada6785d38eb8de1b224">&#9670;&nbsp;</a></span>get_value() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a662c4d5812ddada6785d38eb8de1b224">&#9670;&nbsp;</a></span>get_value() <span class="overload">[2/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -749,7 +951,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a5b5233d613e2d83cb5c63d54d49f27e2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b5233d613e2d83cb5c63d54d49f27e2">&#9670;&nbsp;</a></span>get_value() <span class="overload">[3/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b5233d613e2d83cb5c63d54d49f27e2">&#9670;&nbsp;</a></span>get_value() <span class="overload">[3/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -774,8 +976,60 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ac1fd016364133385d77e076aea79d324"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1fd016364133385d77e076aea79d324">&#9670;&nbsp;</a></span>get_value() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ioss::Property::get_value </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; double &gt; *&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a98ac692cd8bb8e9385a8e2d64ffa6fa7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98ac692cd8bb8e9385a8e2d64ffa6fa7">&#9670;&nbsp;</a></span>get_value() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ioss::Property::get_value </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; int &gt; *&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a9fb55f579ec6024df2e4447f599f6a01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9fb55f579ec6024df2e4447f599f6a01">&#9670;&nbsp;</a></span>get_value() <span class="overload">[4/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fb55f579ec6024df2e4447f599f6a01">&#9670;&nbsp;</a></span>get_value() <span class="overload">[6/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -797,6 +1051,46 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="af83837cd5e269835fc046c651aac70c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af83837cd5e269835fc046c651aac70c1">&#9670;&nbsp;</a></span>get_vec_double()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; double &gt; Ioss::Property::get_vec_double </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the property value if it is of type VEC_DOUBLE. </p>
+<dl class="section return"><dt>Returns</dt><dd>The VEC_DOUBLE-type property value </dd></dl>
+
+</div>
+</div>
+<a id="a5417b00c083889ee4d00fbd3175c01ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5417b00c083889ee4d00fbd3175c01ee">&#9670;&nbsp;</a></span>get_vec_int()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int &gt; Ioss::Property::get_vec_int </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the property value if it is of type VEC_INT. </p>
+<dl class="section return"><dt>Returns</dt><dd>The VEC_INT-type property value </dd></dl>
 
 </div>
 </div>
@@ -928,6 +1222,32 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a3c513fe238508b847c0296edeed65850"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c513fe238508b847c0296edeed65850">&#9670;&nbsp;</a></span>set_origin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ioss::Property::set_origin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a>&#160;</td>
+          <td class="paramname"><em>origin</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a2c6aeea25b7afb44a6b8624f9529256d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2c6aeea25b7afb44a6b8624f9529256d">&#9670;&nbsp;</a></span>data_</h2>
@@ -951,29 +1271,6 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a43ed91c5626d576dc40d17743f1e139a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a43ed91c5626d576dc40d17743f1e139a">&#9670;&nbsp;</a></span>isImplicit_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Ioss::Property::isImplicit_ {false}</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>True if property is calculated rather than stored. False if property is stored in 'data_' </p>
-
-</div>
-</div>
 <a id="a156bcdae811a0ff32bfb6a44bc155213"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a156bcdae811a0ff32bfb6a44bc155213">&#9670;&nbsp;</a></span>name_</h2>
 
@@ -984,7 +1281,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string Ioss::Property::name_</td>
+          <td class="memname">std::string Ioss::Property::name_ {}</td>
         </tr>
       </table>
   </td>
@@ -993,6 +1290,29 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a014a03fab7d4bdf556374c7a22c00a83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a014a03fab7d4bdf556374c7a22c00a83">&#9670;&nbsp;</a></span>origin_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Origin</a> Ioss::Property::origin_ {<a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3ae63f32749939c41a3244a7236aff32fc">INTERNAL</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>True if property is calculated rather than stored. False if property is stored in 'data_' </p>
 
 </div>
 </div>
@@ -1006,7 +1326,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614">BasicType</a> Ioss::Property::type_</td>
+          <td class="memname"><a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614">BasicType</a> Ioss::Property::type_ {<a class="el" href="classIoss_1_1Property.html#a7d449056671a2fa99f35d68c49be6614a7c77036968c09a64e82cf76763feb19f">INVALID</a>}</td>
         </tr>
       </table>
   </td>

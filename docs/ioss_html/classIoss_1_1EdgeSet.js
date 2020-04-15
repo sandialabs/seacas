@@ -1,6 +1,7 @@
 var classIoss_1_1EdgeSet =
 [
     [ "EdgeSet", "classIoss_1_1EdgeSet.html#a7133820ac8be9cf6d905b7ae7c04bd10", null ],
+    [ "EdgeSet", "classIoss_1_1EdgeSet.html#aa90179734d4d56b63c250f40d2420ef4", null ],
     [ "EdgeSet", "classIoss_1_1EdgeSet.html#ad9ca3cc400bc8e80d6a37fedd75697a0", null ],
     [ "block_membership", "classIoss_1_1EdgeSet.html#a093f854f7cbad6dba864053ed7f93965", null ],
     [ "contains_string", "classIoss_1_1EdgeSet.html#a298cfeb990143535f6f1fa822002cce3", null ],

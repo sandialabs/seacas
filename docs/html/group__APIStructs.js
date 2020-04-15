@@ -1,6 +1,8 @@
 var group__APIStructs =
 [
     [ "ex_init_params", "structex__init__params.html", [
+      [ "num_assembly", "structex__init__params.html#aa815755a52e6774fbb9ebabbc82c987d", null ],
+      [ "num_blob", "structex__init__params.html#ae6e00ae43c90c986671b03a5cfaddd52", null ],
       [ "num_dim", "structex__init__params.html#aab62ab1d8e6bd13f2db73bad2bcf82a2", null ],
       [ "num_edge", "structex__init__params.html#a1625c8711864906ef8d58d05567c708d", null ],
       [ "num_edge_blk", "structex__init__params.html#af1519720ea373ba198ab0d1e00ed5466", null ],
@@ -19,6 +21,26 @@ var group__APIStructs =
       [ "num_nodes", "structex__init__params.html#a413ddc90c850aca237fada9d9779dee3", null ],
       [ "num_side_sets", "structex__init__params.html#ae68164ff5be4928efb25f0a4173022b9", null ],
       [ "title", "structex__init__params.html#af78401fc73d373f707c6845cf4b7b451", null ]
+    ] ],
+    [ "ex_attribute", "structex__attribute.html", [
+      [ "entity_id", "structex__attribute.html#ada3e0b21fae110003eae282c8a2ab0f6", null ],
+      [ "entity_type", "structex__attribute.html#a3365b726180435954c7c050d011b6dfb", null ],
+      [ "name", "structex__attribute.html#a6628525d58acf1e4879b35020b06e178", null ],
+      [ "type", "structex__attribute.html#a1d60444c5f0e9217a063705a30d5e779", null ],
+      [ "value_count", "structex__attribute.html#aa0b09aa2f9d6029d57d7055d5b5a132e", null ],
+      [ "values", "structex__attribute.html#a9223a7a71f6be7cebf2b045886728e6e", null ]
+    ] ],
+    [ "ex_blob", "structex__blob.html", [
+      [ "id", "structex__blob.html#a6a94fbbc6361537e83c68a38fdf3ebb3", null ],
+      [ "name", "structex__blob.html#ac0336d24c5a1dc0e9a09ba181f01c0b1", null ],
+      [ "num_entry", "structex__blob.html#a2f74692aaa2bba97381815102334d147", null ]
+    ] ],
+    [ "ex_assembly", "structex__assembly.html", [
+      [ "entity_count", "structex__assembly.html#af33b1f9edf1ff5a36cdfd13a787b4255", null ],
+      [ "entity_list", "structex__assembly.html#a406cbc6929fe760f0e30431c053a95c0", null ],
+      [ "id", "structex__assembly.html#afa9158631f77942b92daf3938ca451b7", null ],
+      [ "name", "structex__assembly.html#acdd12a84aa8352394d779fc0b0b55957", null ],
+      [ "type", "structex__assembly.html#aec4f1b580724866d2c4e0f12d2989ca1", null ]
     ] ],
     [ "ex_block", "structex__block.html", [
       [ "id", "structex__block.html#a5029b0343dfbef84bc2666488a2764db", null ],
@@ -89,10 +111,19 @@ var group__APIStructs =
       [ "num_sset", "structex__var__params.html#aefe319b017db1ae1a32f37b89edfd871", null ],
       [ "sset_var_tab", "structex__var__params.html#abbb143a69fefc08e10f2373f860697f9", null ]
     ] ],
+    [ "ex_assembly", "group__APIStructs.html#ga768e5744c52808e22ddbc1db6f950619", null ],
+    [ "ex_attribute", "group__APIStructs.html#ga60ef6769bc5ea03a4175eabe26301339", null ],
+    [ "ex_blob", "group__APIStructs.html#ga0a02fd237cc44de4d217f842a36dd08c", null ],
     [ "ex_block", "group__APIStructs.html#ga0cd967356021ff87f4649e050a511741", null ],
     [ "ex_block_params", "group__APIStructs.html#gae6da75f139e94d673c54bfbc8c810c23", null ],
     [ "ex_init_params", "group__APIStructs.html#ga22b281d59c8b35651b546081b0daaeb4", null ],
     [ "ex_set", "group__APIStructs.html#gaabf4117930e1c6c5201e38b900274cdd", null ],
     [ "ex_set_specs", "group__APIStructs.html#ga1d41c6b1174f2d155063110da9f2316d", null ],
-    [ "ex_var_params", "group__APIStructs.html#ga2ab4d9b3af86ef8ca0e90afc0bbddd46", null ]
+    [ "ex_type", "group__APIStructs.html#ga7420aaf40cfc42949ec4463db6652953", null ],
+    [ "ex_var_params", "group__APIStructs.html#ga2ab4d9b3af86ef8ca0e90afc0bbddd46", null ],
+    [ "ex_type", "group__APIStructs.html#ga406916cd134c79e2e9d571ad4c99d032", [
+      [ "EX_INTEGER", "group__APIStructs.html#gga406916cd134c79e2e9d571ad4c99d032a65893d013b5c9c1b22a5184bf3cf7e62", null ],
+      [ "EX_DOUBLE", "group__APIStructs.html#gga406916cd134c79e2e9d571ad4c99d032a2a30cb0094854d35f983b5548d6b86de", null ],
+      [ "EX_CHAR", "group__APIStructs.html#gga406916cd134c79e2e9d571ad4c99d032a08003d4b4898ec4feea6a6f65f6c3101", null ]
+    ] ]
 ];

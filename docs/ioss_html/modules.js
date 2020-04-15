@@ -1,4 +1,4 @@
 var modules =
 [
-    [ "Streams used for all IOSS output", "group__IossStreams.html", "group__IossStreams" ]
+    [ "Streams used for IOSS output", "group__IossStreams.html", "group__IossStreams" ]
 ];

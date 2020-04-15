@@ -18,11 +18,15 @@ var Ioex__Utils_8h =
     [ "fix_bad_name", "Ioex__Utils_8h.html#a708730b563f7f8b975a0237783c794c5", null ],
     [ "get_entity_name", "Ioex__Utils_8h.html#a3f40e01591efe5f45d40d7e6b078ea96", null ],
     [ "get_id", "Ioex__Utils_8h.html#ab037e4bc0c3b21b6e6de9ed75f7fd49b", null ],
+    [ "map_exodus_type", "Ioex__Utils_8h.html#a9c21cec395f5fed9940be1e80d487e76", null ],
+    [ "map_exodus_type", "Ioex__Utils_8h.html#a20d60b6949d4ca86dc5853d8f76514ae", null ],
     [ "read_last_time_attribute", "Ioex__Utils_8h.html#afa53a87252a9ed704f3ec3c8f7d12a8c", null ],
     [ "separate_surface_element_sides", "Ioex__Utils_8h.html#a0e441062139555c370269f0550e06ee4", null ],
     [ "set_id", "Ioex__Utils_8h.html#a01efffec3077375a3d6bb8cd776bd22a", null ],
     [ "type_match", "Ioex__Utils_8h.html#a4cd46519755e233002d31bb5b693655b", null ],
     [ "update_last_time_attribute", "Ioex__Utils_8h.html#aca78e0f9adbd54d49ed084084f467795", null ],
     [ "Version", "Ioex__Utils_8h.html#acbd085af44e6af39844775c4a8c679cc", null ],
-    [ "write_coordinate_frames", "Ioex__Utils_8h.html#a2e5e78a4d3d70c85f261208700b25fbc", null ]
+    [ "write_coordinate_frames", "Ioex__Utils_8h.html#a2e5e78a4d3d70c85f261208700b25fbc", null ],
+    [ "write_reduction_attributes", "Ioex__Utils_8h.html#af44f31440d8f92e9e6e59f96f5068a6e", null ],
+    [ "write_reduction_attributes", "Ioex__Utils_8h.html#ad9c225adedc812ba8734a7d6c55cdee9", null ]
 ];

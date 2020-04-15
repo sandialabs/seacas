@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['ioss_5fdebug_5foutput_6594',['IOSS_DEBUG_OUTPUT',['../Ioss__CodeTypes_8h.html#a8ff3a52b4dc0d793a406b707ce67f5c1',1,'Ioss_CodeTypes.h']]],
-  ['ioss_5ferror_6595',['IOSS_ERROR',['../Ioss__Utils_8h.html#a8cf977184a0da53f11721c605f2fbf51',1,'Ioss_Utils.h']]],
-  ['ioss_5ffunc_5fenter_6596',['IOSS_FUNC_ENTER',['../Ioss__CodeTypes_8h.html#a5ba470fc516a5c4d3e2c1cf1572491b4',1,'Ioss_CodeTypes.h']]]
+  ['gl_5fbuf_5fsize_6830',['GL_BUF_SIZE',['../Ioss__Getline_8h.html#aca7854d358102d3469a215b17ca00eea',1,'Ioss_Getline.h']]],
+  ['globals_5fare_5ftransient_6831',['GLOBALS_ARE_TRANSIENT',['../Ioex__DatabaseIO_8C.html#aa8c4cb3632ca993ad7224d670fc764aa',1,'Ioex_DatabaseIO.C']]]
 ];
