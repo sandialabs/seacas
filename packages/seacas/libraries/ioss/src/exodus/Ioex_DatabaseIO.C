@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2017 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -452,7 +452,7 @@ namespace Ioex {
     size_t num_qa_records = qaRecords.size() / 4;
 
     bool i_write = myProcessor == 0 || !usingParallelIO;
-    i_write = true;
+    i_write      = true;
     if (i_write) {
       auto qa = new qa_element[num_qa_records + 1];
       for (size_t i = 0; i < num_qa_records + 1; i++) {
@@ -511,7 +511,7 @@ namespace Ioex {
   void DatabaseIO::put_info()
   {
     bool i_write = myProcessor == 0 || !usingParallelIO;
-    i_write = true;
+    i_write      = true;
 
     // dump info records, include the product_registry
     // See if the input file was specified as a property on the database...
@@ -1039,9 +1039,7 @@ namespace Ioex {
       Ioss::SerializeIO serializeIO__(this);
 
       if (!is_input()) {
-	util().progress("Before ex_update()");
         ex_update(get_file_pointer());
-	util().progress("After ex_update()");
         if (minimizeOpenFiles) {
           free_file_pointer();
         }

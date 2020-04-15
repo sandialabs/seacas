@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -714,6 +714,7 @@ struct ex__obj_stats *ex__get_stat_ptr(int exoid, struct ex__obj_stats **obj_ptr
 
 void ex__rm_stat_ptr(int exoid, struct ex__obj_stats **obj_ptr);
 
+void ex__set_compact_storage(int exoid, int varid);
 void ex__compress_variable(int exoid, int varid, int type);
 int  ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num);
 void ex__check_valid_file_id(int         exoid,
