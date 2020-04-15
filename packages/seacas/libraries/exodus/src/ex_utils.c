@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2019 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -1678,6 +1678,20 @@ int ex__get_dimension(int exoid, const char *DIMENSION, const char *label, size_
   \deprecated
 */
 size_t ex_header_size(int exoid) { return 0; }
+
+void ex__set_compact_storage(int exoid, int varid)
+{
+  /* Capability was released in version 4.7.4
+     Only applicable to netcdf-4 files, but will
+     succeed on other files; just won't do anything
+  */
+#if defined(NC_COMPACT)
+  nc_def_var_chunking(exoid, varid, NC_COMPACT, NULL);
+#else
+  EX_UNUSED(exoid);
+  EX_UNUSED(varid);
+#endif
+}
 
 /* type = 1 for integer, 2 for real, 3 for character */
 /*!

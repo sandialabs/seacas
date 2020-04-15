@@ -957,7 +957,6 @@ int Internals::write_meta_data(Mesh &mesh)
     maximumNameLength = get_max_name_length(mesh.sidesets, maximumNameLength);
 
     Redefine the_database(exodusFilePtr);
-
     // Set the database to NOFILL mode.  Only writes values we want written...
     int old_fill = 0;
 
@@ -1417,6 +1416,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    ex__set_compact_storage(exodusFilePtr, varid);
   }
 
   size_t elem_count = 0;
@@ -1625,6 +1625,7 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
         return (EX_FATAL);
       }
     }
+    ex__set_compact_storage(exodusFilePtr, varid);
 
     // Output the file version
     int ierr = ex__put_nemesis_version(exodusFilePtr);
@@ -2189,6 +2190,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
   }
   return (EX_NOERR);
@@ -2321,6 +2323,7 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
 
     // face connectivity array
@@ -2479,6 +2482,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
 
     // edge connectivity array
@@ -3100,6 +3104,7 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
   }
   return (EX_NOERR);
@@ -3291,6 +3296,7 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
   }
   return (EX_NOERR);
@@ -3481,6 +3487,7 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
   }
   return (EX_NOERR);
@@ -3614,7 +3621,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
     }
     if (elemsets[i].attributeCount > 0) {
       int numattrdim;
-      status = nc_def_dim(exodusFilePtr, DIM_NUM_ATT_IN_NS(cur_num_elem_sets + 1),
+      status = nc_def_dim(exodusFilePtr, DIM_NUM_ATT_IN_ES(cur_num_elem_sets + 1),
                           elemsets[i].attributeCount, &numattrdim);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
@@ -3627,7 +3634,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
 
       dims[0] = dimid;
       dims[1] = numattrdim;
-      status  = nc_def_var(exodusFilePtr, VAR_NSATTRIB(cur_num_elem_sets + 1),
+      status  = nc_def_var(exodusFilePtr, VAR_ESATTRIB(cur_num_elem_sets + 1),
                           nc_flt_code(exodusFilePtr), 2, dims, &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
@@ -3642,7 +3649,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
       dims[0] = numattrdim;
       dims[1] = namestrdim;
 
-      status = nc_def_var(exodusFilePtr, VAR_NAME_NSATTRIB(cur_num_elem_sets + 1), NC_CHAR, 2, dims,
+      status = nc_def_var(exodusFilePtr, VAR_NAME_ESATTRIB(cur_num_elem_sets + 1), NC_CHAR, 2, dims,
                           &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
@@ -3652,6 +3659,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets, bool count_onl
         ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+      ex__set_compact_storage(exodusFilePtr, varid);
     }
   }
   return (EX_NOERR);
@@ -4064,6 +4072,7 @@ namespace {
           ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
           return (EX_FATAL);
         }
+        ex__set_compact_storage(exodusFilePtr, varid);
         ex__compress_variable(exodusFilePtr, varid, 1);
         i++;
       }
@@ -4214,6 +4223,7 @@ namespace {
       ex_err_fn(exodusFilePtr, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    ex__set_compact_storage(exodusFilePtr, varid);
     return (EX_NOERR);
   }
 
@@ -4254,6 +4264,7 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    ex__set_compact_storage(exoid, varid);
 
     // id array:
     int ids_type = get_type(exoid, EX_IDS_INT64_DB);
@@ -4264,6 +4275,7 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    ex__set_compact_storage(exoid, varid);
 
     // store property name as attribute of property array variable
     status = nc_put_att_text(exoid, varid, ATT_PROP_NAME, 3, "ID");
@@ -4274,6 +4286,7 @@ namespace {
       ex_err_fn(exoid, __func__, errmsg.c_str(), status);
       return (EX_FATAL);
     }
+    ex__set_compact_storage(exoid, varid);
 
     if (name_var != nullptr) {
       dim[0] = dimid;
@@ -4285,6 +4298,7 @@ namespace {
         ex_err_fn(exoid, __func__, errmsg.c_str(), status);
         return (EX_FATAL);
       }
+      ex__set_compact_storage(exoid, varid);
     }
     return (EX_NOERR);
   }
