@@ -1253,10 +1253,10 @@ class dynamic_arg_list {
 
  public:
   template <typename T, typename Arg> const T& push(const Arg& arg) {
-    auto node = std::unique_ptr<typed_node<T>>(new typed_node<T>(arg));
-    auto& value = node->value;
-    node->next = std::move(head_);
-    head_ = std::move(node);
+    auto pnode = std::unique_ptr<typed_node<T>>(new typed_node<T>(arg));
+    auto& value = pnode->value;
+    pnode->next = std::move(head_);
+    head_ = std::move(pnode);
     return value;
   }
 };
