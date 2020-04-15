@@ -68,6 +68,7 @@ namespace {
  *
  *  \param[in] name The property name.
  *  \param[in] value The property value.
+ *  \param[in] origin The origin of the property - IMPLICIT, or EXTERNAL, or ATTRIBUTE
  */
 Ioss::Property::Property(std::string name, int value, Origin origin)
     : name_(std::move(name)), type_(INTEGER), origin_(origin)
@@ -79,6 +80,7 @@ Ioss::Property::Property(std::string name, int value, Origin origin)
  *
  *  \param[in] name The property name.
  *  \param[in] value The property value.
+ *  \param[in] origin The origin of the property - IMPLICIT, or EXTERNAL, or ATTRIBUTE
  */
 Ioss::Property::Property(std::string name, int64_t value, Origin origin)
     : name_(std::move(name)), type_(INTEGER), origin_(origin)
@@ -90,6 +92,7 @@ Ioss::Property::Property(std::string name, int64_t value, Origin origin)
  *
  *  \param[in] name The property name.
  *  \param[in] value The property value.
+ *  \param[in] origin The origin of the property - IMPLICIT, or EXTERNAL, or ATTRIBUTE
  */
 Ioss::Property::Property(std::string name, double value, Origin origin)
     : name_(std::move(name)), type_(REAL), origin_(origin)
@@ -101,6 +104,7 @@ Ioss::Property::Property(std::string name, double value, Origin origin)
  *
  *  \param[in] name The property name.
  *  \param[in] value The property value.
+ *  \param[in] origin The origin of the property - IMPLICIT, or EXTERNAL, or ATTRIBUTE
  */
 Ioss::Property::Property(std::string name, const std::string &value, Origin origin)
     : name_(std::move(name)), type_(STRING), origin_(origin)
@@ -112,6 +116,7 @@ Ioss::Property::Property(std::string name, const std::string &value, Origin orig
  *
  *  \param[in] name The property name.
  *  \param[in] value The property value.
+ *  \param[in] origin The origin of the property - IMPLICIT, or EXTERNAL, or ATTRIBUTE
  */
 Ioss::Property::Property(std::string name, const std::vector<int> &value, Origin origin)
     : name_(std::move(name)), type_(VEC_INTEGER), origin_(origin)
@@ -123,6 +128,7 @@ Ioss::Property::Property(std::string name, const std::vector<int> &value, Origin
  *
  *  \param[in] name The property name.
  *  \param[in] value The property value.
+ *  \param[in] origin The origin of the property - IMPLICIT, or EXTERNAL, or ATTRIBUTE
  */
 Ioss::Property::Property(std::string name, const std::vector<double> &value, Origin origin)
     : name_(std::move(name)), type_(VEC_DOUBLE), origin_(origin)
@@ -134,6 +140,7 @@ Ioss::Property::Property(std::string name, const std::vector<double> &value, Ori
  *
  *  \param[in] name The property name.
  *  \param[in] value The property value.
+ *  \param[in] origin The origin of the property - IMPLICIT, or EXTERNAL, or ATTRIBUTE
  */
 Ioss::Property::Property(std::string name, const char *value, Origin origin)
     : name_(std::move(name)), type_(STRING), origin_(origin)
@@ -145,6 +152,7 @@ Ioss::Property::Property(std::string name, const char *value, Origin origin)
  *
  *  \param[in] name The property name.
  *  \param[in] value The property value.
+ *  \param[in] origin The origin of the property - IMPLICIT, or EXTERNAL, or ATTRIBUTE
  */
 Ioss::Property::Property(std::string name, void *value, Origin origin)
     : name_(std::move(name)), type_(POINTER), origin_(origin)

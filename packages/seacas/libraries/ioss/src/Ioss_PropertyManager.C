@@ -132,6 +132,7 @@ int Ioss::PropertyManager::describe(NameList *names) const
 
 /** \brief Get the names of all properties in the property manager that have the origin `origin`
  *
+ *  \param[in]  origin The origin of the property: IMPLICIT, EXTERNAL, ATTRIBUTE
  *  \param[out] names All the property names in the property manager.
  *  \returns The number of properties extracted from the property manager.
  */
