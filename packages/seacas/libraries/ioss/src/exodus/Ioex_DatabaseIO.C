@@ -451,68 +451,55 @@ namespace Ioex {
 
     size_t num_qa_records = qaRecords.size() / 4;
 
-    bool i_write = myProcessor == 0 || !usingParallelIO;
-    i_write      = true;
-    if (i_write) {
-      auto qa = new qa_element[num_qa_records + 1];
-      for (size_t i = 0; i < num_qa_records + 1; i++) {
-        for (int j = 0; j < 4; j++) {
-          qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
-        }
-      }
-
-      {
-        int j = 0;
-        for (size_t i = 0; i < num_qa_records; i++) {
-          Ioss::Utils::copy_string(qa[i].qa_record[0][0], qaRecords[j++], MAX_STR_LENGTH + 1);
-          Ioss::Utils::copy_string(qa[i].qa_record[0][1], qaRecords[j++], MAX_STR_LENGTH + 1);
-          Ioss::Utils::copy_string(qa[i].qa_record[0][2], qaRecords[j++], MAX_STR_LENGTH + 1);
-          Ioss::Utils::copy_string(qa[i].qa_record[0][3], qaRecords[j++], MAX_STR_LENGTH + 1);
-        }
-      }
-
-      Ioss::Utils::time_and_date(qa[num_qa_records].qa_record[0][3],
-                                 qa[num_qa_records].qa_record[0][2], MAX_STR_LENGTH);
-
-      std::string codename = "unknown";
-      std::string version  = "unknown";
-
-      if (get_region()->property_exists("code_name")) {
-        codename = get_region()->get_property("code_name").get_string();
-      }
-      if (get_region()->property_exists("code_version")) {
-        version = get_region()->get_property("code_version").get_string();
-      }
-
-      Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][0], codename, MAX_STR_LENGTH + 1);
-      Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][1], version, MAX_STR_LENGTH + 1);
-
-      int ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, qa[0].qa_record);
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-      }
-
-      for (size_t i = 0; i < num_qa_records + 1; i++) {
-        for (int j = 0; j < 4; j++) {
-          delete[] qa[i].qa_record[0][j];
-        }
-      }
-      delete[] qa;
-    }
-    else {
-      int ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, nullptr);
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+    auto qa = new qa_element[num_qa_records + 1];
+    for (size_t i = 0; i < num_qa_records + 1; i++) {
+      for (int j = 0; j < 4; j++) {
+        qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH + 1];
       }
     }
+
+    {
+      int j = 0;
+      for (size_t i = 0; i < num_qa_records; i++) {
+        Ioss::Utils::copy_string(qa[i].qa_record[0][0], qaRecords[j++], MAX_STR_LENGTH + 1);
+        Ioss::Utils::copy_string(qa[i].qa_record[0][1], qaRecords[j++], MAX_STR_LENGTH + 1);
+        Ioss::Utils::copy_string(qa[i].qa_record[0][2], qaRecords[j++], MAX_STR_LENGTH + 1);
+        Ioss::Utils::copy_string(qa[i].qa_record[0][3], qaRecords[j++], MAX_STR_LENGTH + 1);
+      }
+    }
+
+    Ioss::Utils::time_and_date(qa[num_qa_records].qa_record[0][3],
+                               qa[num_qa_records].qa_record[0][2], MAX_STR_LENGTH);
+
+    std::string codename = "unknown";
+    std::string version  = "unknown";
+
+    if (get_region()->property_exists("code_name")) {
+      codename = get_region()->get_property("code_name").get_string();
+    }
+    if (get_region()->property_exists("code_version")) {
+      version = get_region()->get_property("code_version").get_string();
+    }
+
+    Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][0], codename, MAX_STR_LENGTH + 1);
+    Ioss::Utils::copy_string(qa[num_qa_records].qa_record[0][1], version, MAX_STR_LENGTH + 1);
+
+    int ierr = ex_put_qa(get_file_pointer(), num_qa_records + 1, qa[0].qa_record);
+    if (ierr < 0) {
+      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+    }
+
+    for (size_t i = 0; i < num_qa_records + 1; i++) {
+      for (int j = 0; j < 4; j++) {
+        delete[] qa[i].qa_record[0][j];
+      }
+    }
+    delete[] qa;
   }
 
   // common
   void DatabaseIO::put_info()
   {
-    bool i_write = myProcessor == 0 || !usingParallelIO;
-    i_write      = true;
-
     // dump info records, include the product_registry
     // See if the input file was specified as a property on the database...
     std::string              filename;
@@ -530,38 +517,30 @@ namespace Ioex {
 
     size_t total_lines = in_lines + qa_lines + info_rec_size;
 
-    if (i_write) {
-      char **info = Ioss::Utils::get_name_array(
-          total_lines, max_line_length); // 'total_lines' pointers to char buffers
+    char **info = Ioss::Utils::get_name_array(
+        total_lines, max_line_length); // 'total_lines' pointers to char buffers
 
-      int i = 0;
-      Ioss::Utils::copy_string(info[i++], Ioss::Utils::platform_information(), max_line_length + 1);
+    int i = 0;
+    Ioss::Utils::copy_string(info[i++], Ioss::Utils::platform_information(), max_line_length + 1);
 
-      Ioss::Utils::copy_string(info[i++], Ioex::Version(), max_line_length + 1);
+    Ioss::Utils::copy_string(info[i++], Ioex::Version(), max_line_length + 1);
 
-      // Copy input file lines into 'info' array...
-      for (size_t j = 0; j < input_lines.size(); j++, i++) {
-        Ioss::Utils::copy_string(info[i], input_lines[j], max_line_length + 1);
-      }
-
-      // Copy "information_records" property data ...
-      for (size_t j = 0; j < informationRecords.size(); j++, i++) {
-        Ioss::Utils::copy_string(info[i], informationRecords[j], max_line_length + 1);
-      }
-
-      int ierr = ex_put_info(get_file_pointer(), total_lines, info);
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-      }
-
-      Ioss::Utils::delete_name_array(info, total_lines);
+    // Copy input file lines into 'info' array...
+    for (size_t j = 0; j < input_lines.size(); j++, i++) {
+      Ioss::Utils::copy_string(info[i], input_lines[j], max_line_length + 1);
     }
-    else {
-      int ierr = ex_put_info(get_file_pointer(), total_lines, nullptr);
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-      }
+
+    // Copy "information_records" property data ...
+    for (size_t j = 0; j < informationRecords.size(); j++, i++) {
+      Ioss::Utils::copy_string(info[i], informationRecords[j], max_line_length + 1);
     }
+
+    int ierr = ex_put_info(get_file_pointer(), total_lines, info);
+    if (ierr < 0) {
+      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+    }
+
+    Ioss::Utils::delete_name_array(info, total_lines);
   }
 
   // common
