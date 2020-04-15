@@ -1,4 +1,4 @@
-// Copyright(C) 2016-2017 National Technology & Engineering Solutions of
+// Copyright(C) 2016-2017, 2020 National Technology & Engineering Solutions of
 // Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -42,7 +42,7 @@
 #include <Ioss_Utils.h>
 #include <cassert>
 #include <exo_fpp/Iofx_DatabaseIO.h>
-#include <fmt/ostream.h>
+#include <fmt/format.h>
 #include <init/Ionit_Initializer.h>
 
 #include <exodusII.h>
@@ -120,7 +120,7 @@ namespace {
 
   template <typename INT>
   void slice(Ioss::Region &region, const std::string &nemfile, SystemInterface &interFace,
-             INT /*dummy*/);
+             INT dummy);
 
   int get_free_descriptor_count();
 
@@ -249,6 +249,8 @@ int main(int argc, char *argv[])
   // NOTE: 'region' owns 'db' pointer at this time...
   Ioss::Region region(dbi, "region_1");
 
+  region.output_summary(std::cout, true);
+
   if (dbi->int_byte_size_api() == 4) {
     progress("4-byte slice");
     slice(region, nem_file, interFace, 1);
@@ -261,7 +263,7 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
-  fmt::print(stderr, "Total execution time = {}\n", seacas_timer() - begin);
+  fmt::print(stderr, "Total execution time = {:.5}\n", seacas_timer() - begin);
   fmt::print(stderr, "\nSlice execution successful.\n");
   return EXIT_SUCCESS;
 }
@@ -310,8 +312,9 @@ namespace {
     assert(adjacency.size() == sum);
   }
 
+  template <typename INT>
   void decompose_elements(const Ioss::Region &region, SystemInterface &interFace,
-                          std::vector<int> &elem_to_proc)
+                          std::vector<int> &elem_to_proc, INT dummy)
   {
     progress(__func__);
     // Populate the 'elem_to_proc' vector with a mapping from element to processor.
@@ -355,9 +358,9 @@ namespace {
       std::vector<idx_t> adjacency;
 
       double start = seacas_timer();
-      create_adjacency_list(region, interFace, pointer, adjacency, dummy);
+      create_adjacency_list(region, pointer, adjacency, dummy);
       double end = seacas_timer();
-      fmt::print(stderr, "\tCreate Adjacency List = {}\n", end - start);
+      fmt::print(stderr, "\tCreate Adjacency List = {:.5}\n", end - start);
 
       // Call Metis to get the partition...
       {
@@ -397,7 +400,7 @@ namespace {
         std::copy(elem_partition.begin(), elem_partition.end(), std::back_inserter(elem_to_proc));
 
         end = seacas_timer();
-        fmt::print(stderr, "\tMETIS Partition = {}\n", end - start);
+        fmt::print(stderr, "\tMETIS Partition = {:.5}\n", end - start);
         fmt::print(stderr, "Objective value = {}\n", obj_val);
 
         // TODO Check Error...
@@ -1311,7 +1314,7 @@ namespace {
 
   template <typename INT>
   void slice(Ioss::Region &region, const std::string &nemfile, SystemInterface &interFace,
-             INT /*dummy*/)
+             INT dummy)
   {
     progress(__func__);
     std::vector<Ioss::Region *> proc_region(interFace.processor_count());
@@ -1331,9 +1334,9 @@ namespace {
 
     double           start = seacas_timer();
     std::vector<int> elem_to_proc;
-    decompose_elements(region, interFace, elem_to_proc);
+    decompose_elements(region, interFace, elem_to_proc, dummy);
     double end = seacas_timer();
-    fmt::print(stderr, "Decompose elements = {}\n", end - start);
+    fmt::print(stderr, "Decompose elements = {:.5}\n", end - start);
 
     start = seacas_timer();
     // Build the proc_elem_block_cnt[i][j] vector.
@@ -1346,7 +1349,7 @@ namespace {
     get_proc_elem_block_count(region, elem_to_proc, proc_elem_block_cnt);
     end = seacas_timer();
 
-    fmt::print(stderr, "Calculate elements per element block on each processor = {}\n",
+    fmt::print(stderr, "Calculate elements per element block on each processor = {:.5}\n",
                end - start);
 
     // Create element blocks for each processor...
@@ -1389,7 +1392,7 @@ namespace {
     get_connectivity(region, proc_region, elem_to_proc, connectivity);
     end = seacas_timer();
 
-    fmt::print(stderr, "Get connectivity lists for each element block on each processor = {}\n",
+    fmt::print(stderr, "Get connectivity lists for each element block on each processor = {:.5}\n",
                end - start);
 
     // Now that we have the elements on each processor and the element
@@ -1400,7 +1403,7 @@ namespace {
     std::vector<INT> node_to_proc_pointer;
     get_node_to_proc(region, proc_region, connectivity, node_to_proc, node_to_proc_pointer);
     end = seacas_timer();
-    fmt::print(stderr, "Node Categorization Time = {}\n", end - start);
+    fmt::print(stderr, "Node Categorization Time = {:.5}\n", end - start);
 
     // Communication map data -- interior/border nodes
     start = seacas_timer();
@@ -1408,18 +1411,18 @@ namespace {
     define_communication_data(region, proc_region, node_to_proc, node_to_proc_pointer,
                               border_node_proc_map);
     end = seacas_timer();
-    fmt::print(stderr, "Communication Data Definitions = {}\n", end - start);
+    fmt::print(stderr, "Communication Data Definitions = {:.5}\n", end - start);
 
     // Determine nodeset distribution to processor regions.
     start = seacas_timer();
     get_nodesets(region, proc_region, node_to_proc, node_to_proc_pointer);
     end = seacas_timer();
-    fmt::print(stderr, "Get nodeset data = {}\n", end - start);
+    fmt::print(stderr, "Get nodeset data = {:.5}\n", end - start);
 
     start = seacas_timer();
     get_sidesets(region, proc_region, elem_to_proc, (INT)0);
     end = seacas_timer();
-    fmt::print(stderr, "Get sideset data = {}\n", end - start);
+    fmt::print(stderr, "Get sideset data = {:.5}\n", end - start);
 
     start             = seacas_timer();
     double start_comb = start;
@@ -1435,35 +1438,35 @@ namespace {
       proc_progress(p, proc_count);
     }
     end = seacas_timer();
-    fmt::print(stderr, "\tDefine output databases = {}\n", end - start);
+    fmt::print(stderr, "\tDefine output databases = {:.5}\n", end - start);
 
 // Generate and output node map...
 #if 1
     start = seacas_timer();
     output_node_map(region, proc_region, node_to_proc, node_to_proc_pointer);
     end = seacas_timer();
-    fmt::print(stderr, "\tNode Map Output = {}\n", end - start);
+    fmt::print(stderr, "\tNode Map Output = {:.5}\n", end - start);
 #else
     start = seacas_timer();
     output_global_node_map(region, proc_region, node_to_proc, node_to_proc_pointer);
     end = seacas_timer();
-    fmt::print(stderr, "\tGlobal Node Map Output = {}\n", end - start);
+    fmt::print(stderr, "\tGlobal Node Map Output = {:.5}\n", end - start);
 #endif
 
     start = seacas_timer();
     output_element_map(region, proc_region, elem_to_proc, (INT)1);
     end = seacas_timer();
-    fmt::print(stderr, "\tElement Map Output = {}\n", end - start);
+    fmt::print(stderr, "\tElement Map Output = {:.5}\n", end - start);
 
     start = seacas_timer();
     output_communication_map(proc_region, border_node_proc_map);
     end = seacas_timer();
-    fmt::print(stderr, "\tCommunication map Output = {}\n", end - start);
+    fmt::print(stderr, "\tCommunication map Output = {:.5}\n", end - start);
 
     start = seacas_timer();
     output_connectivity(proc_region, connectivity);
     end = seacas_timer();
-    fmt::print(stderr, "\tConnectivity Output = {}\n", end - start);
+    fmt::print(stderr, "\tConnectivity Output = {:.5}\n", end - start);
 
     // Free up connectivity space...
     free_connectivity_storage(connectivity);
@@ -1471,17 +1474,17 @@ namespace {
     start = seacas_timer();
     output_coordinates(region, proc_region, node_to_proc, node_to_proc_pointer);
     end = seacas_timer();
-    fmt::print(stderr, "\tCoordinates Output = {}\n", end - start);
+    fmt::print(stderr, "\tCoordinates Output = {:.5}\n", end - start);
 
     start = seacas_timer();
     output_nodesets(region, proc_region, node_to_proc, node_to_proc_pointer);
     end = seacas_timer();
-    fmt::print(stderr, "\tNodeset Output = {}\n", end - start);
+    fmt::print(stderr, "\tNodeset Output = {:.5}\n", end - start);
 
     start = seacas_timer();
     output_sidesets(region, proc_region, elem_to_proc, (INT)0);
     end = seacas_timer();
-    fmt::print(stderr, "\tSideset Output = {}\n", end - start);
+    fmt::print(stderr, "\tSideset Output = {:.5}\n", end - start);
 
     // Close all files...
     start = seacas_timer();
@@ -1490,9 +1493,9 @@ namespace {
       delete proc_region[p];
     }
     end = seacas_timer();
-    fmt::print(stderr, "\tClose and finalize all output databases = {}\n", end - start);
-    fmt::print(stderr, "\nTotal time to write output files = {} ({} per file)\n", end - start_comb,
-               (end - start_comb) / interFace.processor_count());
+    fmt::print(stderr, "\tClose and finalize all output databases = {:.5}\n", end - start);
+    fmt::print(stderr, "\nTotal time to write output files = {:.5} ({:.5} per file)\n",
+               end - start_comb, (end - start_comb) / interFace.processor_count());
   }
 #if defined(__PUMAGON__)
 #include <stdio.h>
