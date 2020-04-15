@@ -47,10 +47,10 @@ then
 
   if [ "$COMPILER" == "gnu" ]
   then
-      CXX=g++-9
-      CC=gcc-9
-      FC=gfortran-9
-      CFLAGS="-Wall -Wunused -pedantic"
+      CXX=g++
+      CC=gcc
+      FC=gfortran
+      CFLAGS="-Wall -Wunused -pedantic -std=c11"
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
 
