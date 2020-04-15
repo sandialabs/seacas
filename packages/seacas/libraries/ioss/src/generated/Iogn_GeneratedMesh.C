@@ -1074,6 +1074,40 @@ namespace Iogn {
     }
   }
 
+  void GeneratedMesh::coordinates(int component, double *xyz) const
+  {
+    assert(!doRotation);
+    /* create global coordinates */
+    size_t idx = 0;
+    if (component == 1) {
+      for (size_t m = myStartZ; m < myStartZ + myNumZ + 1; m++) {
+        for (size_t i = 0; i < numY + 1; i++) {
+          for (size_t j = 0; j < numX + 1; j++) {
+            xyz[idx++] = sclX * static_cast<double>(j) + offX;
+          }
+        }
+      }
+    }
+    else if (component == 2) {
+      for (size_t m = myStartZ; m < myStartZ + myNumZ + 1; m++) {
+        for (size_t i = 0; i < numY + 1; i++) {
+          for (size_t j = 0; j < numX + 1; j++) {
+            xyz[idx++] = sclY * static_cast<double>(i) + offY;
+          }
+        }
+      }
+    }
+    else if (component == 3) {
+      for (size_t m = myStartZ; m < myStartZ + myNumZ + 1; m++) {
+        for (size_t i = 0; i < numY + 1; i++) {
+          for (size_t j = 0; j < numX + 1; j++) {
+            xyz[idx++] = sclZ * static_cast<double>(m) + offZ;
+          }
+        }
+      }
+    }
+  }
+
   void GeneratedMesh::connectivity(int64_t block_number, Ioss::Int64Vector &connect) const
   {
     if (block_number == 1) { // HEX Element Block
