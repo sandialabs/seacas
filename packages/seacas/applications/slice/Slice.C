@@ -1294,9 +1294,8 @@ namespace {
       }
     }
     if (proc_histo[0] > 0) {
-      fmt::print(stderr, "\tNodes on {:n} or more processors = {:n}\t({:.2f})%\n",
-                 proc_histo.size(), proc_histo[0],
-                 (proc_histo[0] * 100 + node_count / 2) / node_count);
+      fmt::print(stderr, "\tNodes on {:n} or more processors = {:n}\t({:2})%\n", proc_histo.size(),
+                 proc_histo[0], (proc_histo[0] * 100 + node_count / 2) / node_count);
     }
     fmt::print(stderr, "\n");
 
