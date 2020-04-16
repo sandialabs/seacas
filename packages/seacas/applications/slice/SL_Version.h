@@ -1,4 +1,4 @@
-// Copyright(C) 2016-2017 National Technology & Engineering Solutions of
+// Copyright(C) 2016-2017, 2020 National Technology & Engineering Solutions of
 // Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -35,7 +35,7 @@
 
 static char const *qainfo[] = {
     "slice",
-    "2018/07/11",
+    "2020/04/16",
     "0.9.9",
 };
 
