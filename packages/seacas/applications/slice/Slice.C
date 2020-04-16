@@ -242,7 +242,10 @@ int main(int argc, char *argv[])
     std::exit(EXIT_FAILURE);
   }
 
-  //  dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
+  if (interFace.ints64Bit_) {
+    dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
+  }
+
   dbi->set_surface_split_type(Ioss::SPLIT_BY_DONT_SPLIT);
   dbi->set_field_separator(0);
 
@@ -1320,10 +1323,29 @@ namespace {
     std::vector<Ioss::Region *> proc_region(interFace.processor_count());
     bool                        ints64 = (sizeof(INT) == 8);
 
+    Ioss::PropertyManager properties;
+    if (interFace.netcdf4_) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+    }
+
+    if (interFace.netcdf5_) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
+    }
+
+    if (interFace.compressionLevel_ > 0 || interFace.shuffle_) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+      properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compressionLevel_));
+      properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interFace.shuffle_)));
+    }
+    if (interFace.ints64Bit_) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
+      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
+    }
+
     for (size_t i = 0; i < interFace.processor_count(); i++) {
-      std::string outfile = Ioss::Utils::decode_filename(nemfile, i, interFace.processor_count());
-      Ioss::DatabaseIO *dbo =
-          Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD);
+      std::string outfile   = Ioss::Utils::decode_filename(nemfile, i, interFace.processor_count());
+      Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
+                                                      (MPI_Comm)MPI_COMM_WORLD, properties);
       if (ints64) {
         dbo->set_int_byte_size_api(Ioss::USE_INT64_API);
       }
