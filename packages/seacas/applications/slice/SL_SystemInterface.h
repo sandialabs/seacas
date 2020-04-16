@@ -62,6 +62,7 @@ public:
   int step_max() const { return stepMax_; }
   int step_interval() const { return stepInterval_; }
 
+  size_t max_files() const { return maxFiles_; }
   size_t partial() const { return partialReadCount_; }
   bool   contiguous_decomposition() const { return contig_; }
 
@@ -106,6 +107,7 @@ private:
   std::string outputPath_;
 
   size_t partialReadCount_{1000000000};
+  size_t maxFiles_{1020};
   int    processorCount_{1};
   int    debugLevel_{0};
   int    screenWidth_{0};
