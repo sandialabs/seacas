@@ -115,6 +115,13 @@ Ioss::DatabaseIO *Ioss::IOFactory::create(const std::string &type, const std::st
     auto                my_props(properties);
     Ioss::ParallelUtils pu(communicator);
     pu.add_environment_properties(my_props);
+    if (my_props.exists("SHOW_CONFIG")) {
+      static bool output = false;
+      if (!output && pu.parallel_rank() == 0) {
+	output = true;
+	show_configuration();
+      }
+    }
     Ioss::IOFactory *factory = (*iter).second;
     db                       = factory->make_IO(filename, db_usage, communicator, my_props);
   }
