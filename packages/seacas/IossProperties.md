@@ -92,6 +92,7 @@ ENABLE\_FILE\_GROUPS | on/\[off]   | experimental
 
   Property | Value    | Description
  ----------|----------|------------
+ SHOW_CONFIG | ignored | output the build configuration of IOSS and TPL. Show supported database types.
  LOGGING   | on/\[off] | enable/disable logging of field input/output
  DECOMP\_SHOW\_PROGRESS | on/\[off] | show memory and elapsed time during autodecomp.
  DECOMP\_SHOW\_HWM      | on/\[off] | show high-water memory during autodecomp
