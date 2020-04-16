@@ -124,6 +124,10 @@ void ex_print_config(void)
     H5get_libversion(&major, &minor, &release);
     fprintf(stderr, "\t\tHDF5 enabled (%u.%u.%u)\n", major, minor, release);
   }
+  fprintf(stderr, "\t\tZlib Compression (read/write) enabled\n");
+#if defined(NC_HAS_SZIP_WRITE)
+  fprintf(stderr, "\t\tSZip Compression (read/write) enabled\n");
+#endif
 #endif
 #endif
 #if NC_HAS_PARALLEL
@@ -131,6 +135,9 @@ void ex_print_config(void)
 #endif
 #if NC_HAS_PARALLEL4
   fprintf(stderr, "\t\tParallel IO enabled via HDF5\n");
+#if NC_HAS_PAR_FILTERS
+  fprintf(stderr, "\t\tParallel IO supports filters\n");
+#endif
 #endif
 #if NC_HAS_PNETCDF
   {
