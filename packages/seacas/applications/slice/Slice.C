@@ -94,7 +94,7 @@ namespace {
     if ((debug_level & 1) != 0) {
       auto                          now  = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> diff = now - start;
-      fmt::print(stderr, " [{:.2f} - {:n}]\t{}\n", diff.count(), Ioss::Utils::get_memory_info(),
+      fmt::print(stderr, " [{:.2f} - {:L}]\t{}\n", diff.count(), Ioss::Utils::get_memory_info(),
                  output);
     }
   }
@@ -285,7 +285,7 @@ namespace {
 
     pointer.reserve(count + 1);
     adjacency.reserve(sum);
-    fmt::print(stderr, "\tAdjacency Size = {:n} for {:n} elements.\n", sum, count);
+    fmt::print(stderr, "\tAdjacency Size = {:L} for {:L} elements.\n", sum, count);
 
     // Now, iterate the blocks again, get connectivity and build adjacency structure.
     std::vector<INT> connectivity;
@@ -321,7 +321,7 @@ namespace {
 
     elem_to_proc.reserve(element_count);
 
-    fmt::print(stderr, "Decomposing {:n} elements across {:n} processors using method '{}'.\n\n",
+    fmt::print(stderr, "Decomposing {:L} elements across {:L} processors using method '{}'.\n\n",
                element_count, interFace.processor_count(), interFace.decomposition_method());
 
     if (interFace.decomposition_method() == "linear") {
@@ -486,19 +486,19 @@ namespace {
         if (proc > interFace.processor_count()) {
           fmt::print(
               stderr,
-              "\nERROR: Invalid processor {:n} specified on line {:n} of decomposition file.\n"
-              "\tValid range is 0..{:n}\n",
+              "\nERROR: Invalid processor {:L} specified on line {:L} of decomposition file.\n"
+              "\tValid range is 0..{:L}\n",
               proc, line_num, interFace.processor_count() - 1);
           exit(EXIT_FAILURE);
         }
 
         if (elem_to_proc.size() + count > element_count) {
           fmt::print(stderr,
-                     "\nERROR: The processor specification on line {:n}"
+                     "\nERROR: The processor specification on line {:L}"
                      " of the decomposition file results in too many elements being specified.\n"
-                     "\tThe total number of elements in the model is {:n}\n"
-                     "\tPrior to this line, {:n} elements were specified.\n"
-                     "\tIncluding this line, {:n} elements will be specified.\n",
+                     "\tThe total number of elements in the model is {:L}\n"
+                     "\tPrior to this line, {:L} elements were specified.\n"
+                     "\tIncluding this line, {:L} elements will be specified.\n",
                      line_num, element_count, elem_to_proc.size(), elem_to_proc.size() + count);
           exit(EXIT_FAILURE);
         }
@@ -632,7 +632,11 @@ namespace {
       }
     }
     if (set_count > 0) {
-      fmt::print(stderr, "WARNING: Sideset distribution factors not yet handled correctly.\n");
+      static bool output = false;
+      if (!output) {
+        fmt::print(stderr, "WARNING: Sideset distribution factors not yet handled correctly.\n");
+        output = true;
+      }
     }
   }
 
@@ -1181,7 +1185,7 @@ namespace {
       }
       proc_elem_block_cnt[block_count][i] = sum;
       if (debug_level & 2) {
-        fmt::print(stderr, "\tProcessor {:n} has {:n} elements.\n", i, sum);
+        fmt::print(stderr, "\tProcessor {:L} has {:L} elements.\n", i, sum);
       }
     }
   }
@@ -1238,7 +1242,7 @@ namespace {
           new Ioss::NodeBlock(proc_region[p]->get_database(), "node_block1", on_proc_count, 3);
       proc_region[p]->add(nb);
       if (debug_level & 2) {
-        fmt::print(stderr, "\tProcessor {:n} has {:n} nodes.\n", p, on_proc_count);
+        fmt::print(stderr, "\tProcessor {:L} has {:L} nodes.\n", p, on_proc_count);
       }
       sum_on_proc_count += on_proc_count;
     }
@@ -1254,7 +1258,7 @@ namespace {
     for (size_t i = 0; i < node_count; i++) {
       size_t num_procs = proc_node[i].size();
       if (num_procs == 0) {
-        fmt::print(stderr, "WARNING: Node {:n} is not connected to any elements.\n", i + 1);
+        fmt::print(stderr, "WARNING: Node {:L} is not connected to any elements.\n", i + 1);
       }
       else if (num_procs < proc_histo.size()) {
         proc_histo[num_procs]++;
@@ -1275,7 +1279,7 @@ namespace {
       }
     }
     if (proc_histo[0] > 0) {
-      fmt::print(stderr, "\tNodes on {:n} or more processors = {:n}\t({:2})%\n", proc_histo.size(),
+      fmt::print(stderr, "\tNodes on {:L} or more processors = {:L}\t({:2})%\n", proc_histo.size(),
                  proc_histo[0], (proc_histo[0] * 100 + node_count / 2) / node_count);
     }
     fmt::print(stderr, "\n");
@@ -1446,7 +1450,8 @@ namespace {
       if (proc_begin + proc_size > proc_count) {
         proc_size = proc_count - proc_begin;
       }
-      fmt::print(stderr, "\nProcessor range {:n} to {:n}\n", proc_begin, proc_begin + proc_size);
+      fmt::print(stderr, "\nProcessor range {:L} to {:L}\n", proc_begin,
+                 proc_begin + proc_size - 1);
 
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
         proc_region[p]->synchronize_id_and_name(&region);
@@ -1514,7 +1519,8 @@ namespace {
         delete proc_region[p];
       }
       end = seacas_timer();
-      fmt::print(stderr, "\tClose and finalize all output databases = {:.5}\n", end - start);
+      fmt::print(stderr, "\tClose and finalize processor {} to {} output databases = {:.5}\n",
+                 proc_begin, proc_begin + proc_size - 1, end - start);
     }
     end = seacas_timer();
     fmt::print(stderr, "\nTotal time to write output files = {:.5} ({:.5} per file)\n",
