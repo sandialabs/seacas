@@ -119,6 +119,28 @@ void SystemInterface::enroll_options()
                   "\t\tmaximum of this many nodes or elements at a time to reduce memory.",
                   "1000000000");
 
+  options_.enroll("netcdf4", GetLongOption::NoValue,
+                  "Output database will be a netcdf4 "
+                  "hdf5-based file instead of the "
+                  "classical netcdf file format",
+                  nullptr);
+
+  options_.enroll("64-bit", GetLongOption::NoValue, "Use 64-bit integers on output database",
+                  nullptr);
+
+  options_.enroll("netcdf5", GetLongOption::NoValue,
+                  "Output database will be a netcdf5 (CDF5) "
+                  "file instead of the classical netcdf file format",
+                  nullptr);
+
+  options_.enroll("shuffle", GetLongOption::NoValue,
+                  "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
+                  nullptr);
+
+  options_.enroll("compress", GetLongOption::MandatoryValue,
+                  "Specify the hdf5 compression level [0..9] to be used on the output file.",
+                  nullptr);
+
 #if 0
   options_.enroll("omit_blocks", GetLongOption::MandatoryValue,
                   "Omit the specified part/block pairs. The specification is\n"
@@ -258,6 +280,27 @@ bool SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("output_path");
     if (temp != nullptr) {
       outputPath_ = temp;
+    }
+  }
+
+  ints64Bit_ = (options_.retrieve("64-bit") != nullptr);
+
+  if (options_.retrieve("netcdf4") != nullptr) {
+    netcdf4_ = true;
+    netcdf5_ = false;
+  }
+
+  if (options_.retrieve("netcdf5") != nullptr) {
+    netcdf5_ = true;
+    netcdf4_ = false;
+  }
+
+  shuffle_ = (options_.retrieve("shuffle") != nullptr);
+
+  {
+    const char *temp = options_.retrieve("compress");
+    if (temp != nullptr) {
+      compressionLevel_ = std::strtol(temp, nullptr, 10);
     }
   }
 

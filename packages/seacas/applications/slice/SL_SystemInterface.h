@@ -1,4 +1,4 @@
-// Copyright(C) 2016-2017 National Technology & Engineering Solutions of
+// Copyright(C) 2016-2017, 2020 National Technology & Engineering Solutions of
 // Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -112,10 +112,17 @@ private:
   int    stepMin_{1};
   int    stepMax_{1 << 30};
   int    stepInterval_{1};
-  bool   omitNodesets_{false};
-  bool   omitSidesets_{false};
-  bool   disableFieldRecognition_{false};
-  bool   contig_{false};
+
+public:
+  int  compressionLevel_{0};
+  bool shuffle_{false};
+  bool ints64Bit_{false};
+  bool netcdf4_{false};
+  bool netcdf5_{false};
+  bool disableFieldRecognition_{false};
+
+private:
+  bool contig_{false};
 
   Omissions blockOmissions_;
 
