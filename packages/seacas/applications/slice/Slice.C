@@ -81,8 +81,7 @@ using idx_t = int;
 // ========================================================================
 
 extern double seacas_timer();
-bool          minimize_open_files = false;
-int           debug_level         = 0;
+int           debug_level = 0;
 
 // size_t partial_count = 100000;
 size_t partial_count = 1000000000;
@@ -121,8 +120,6 @@ namespace {
   template <typename INT>
   void slice(Ioss::Region &region, const std::string &nemfile, SystemInterface &interFace,
              INT dummy);
-
-  int get_free_descriptor_count();
 
   template <typename INT> bool is_sequential(const std::vector<INT> &map)
   {
@@ -224,10 +221,6 @@ int main(int argc, char *argv[])
 
   fmt::print(stderr, "\nInput:    '{}'\n", interFace.inputFile_);
   fmt::print(stderr, "Output:   '{}'\n\n", nem_file);
-
-  // Check whether processor count is larger than maximum number of open files...
-  size_t max_files    = get_free_descriptor_count();
-  minimize_open_files = (interFace.processor_count() + 1 > max_files);
 
   debug_level   = interFace.debug();
   partial_count = interFace.partial();
@@ -519,18 +512,22 @@ namespace {
   }
 
   template <typename INT>
-  void free_connectivity_storage(std::vector<std::vector<std::vector<INT>>> &connectivity)
+  void free_connectivity_storage(std::vector<std::vector<std::vector<INT>>> &connectivity,
+                                 size_t proc_begin, size_t proc_size)
   {
     progress(__func__);
-    size_t processor_count = connectivity.size();
-    for (size_t p = 0; p < processor_count; p++) {
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       size_t block_count = connectivity[p].size();
       for (size_t b = 0; b < block_count; b++) {
         Ioss::Utils::clear(connectivity[p][b]);
       }
       Ioss::Utils::clear(connectivity[p]);
     }
-    Ioss::Utils::clear(connectivity);
+
+    size_t processor_count = connectivity.size();
+    if (proc_begin + proc_size == processor_count) {
+      Ioss::Utils::clear(connectivity);
+    }
   }
 
   template <typename INT>
@@ -582,7 +579,8 @@ namespace {
 
   template <typename INT>
   void output_sidesets(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
-                       const std::vector<int> &elem_to_proc, INT /*dummy*/)
+                       const std::vector<int> &elem_to_proc, size_t proc_begin, size_t proc_size,
+                       INT /*dummy*/)
   {
     progress(__func__);
     // This routine reads the sidesets in the global database;
@@ -600,7 +598,7 @@ namespace {
       auto &         ss_name = gss->name();
 
       std::vector<Ioss::SideSet *> proc_ss(proc_count);
-      for (size_t p = 0; p < proc_count; p++) {
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
         proc_ss[p] = proc_region[p]->get_sideset(ss_name);
       }
 
@@ -610,7 +608,7 @@ namespace {
 
         std::vector<Ioss::SideBlock *> proc_sb(proc_count);
         std::vector<std::vector<INT>>  psb_elems(proc_count);
-        for (size_t p = 0; p < proc_count; p++) {
+        for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
           proc_sb[p]        = proc_ss[p]->get_side_block(sb_name);
           size_t elem_count = proc_sb[p]->entity_count();
           psb_elems[p].reserve(elem_count * 2);
@@ -626,12 +624,9 @@ namespace {
           psb_elems[p].push_back(ss_elems[i + 1]);
         }
 
-        for (size_t p = 0; p < proc_count; p++) {
+        for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
           Ioss::SideBlock *psb = proc_sb[p];
           psb->put_field_data("element_side", psb_elems[p]);
-          if (minimize_open_files) {
-            proc_region[p]->get_database()->closeDatabase();
-          }
           proc_progress(p, proc_count);
         }
       }
@@ -643,20 +638,18 @@ namespace {
 
   template <typename INT>
   void output_communication_map(std::vector<Ioss::Region *> &  proc_region,
-                                std::vector<std::vector<INT>> &border_node_proc_map)
+                                std::vector<std::vector<INT>> &border_node_proc_map,
+                                size_t proc_begin, size_t proc_size)
   {
     progress(__func__);
     size_t proc_count = proc_region.size();
-    for (size_t p = 0; p < proc_count; p++) {
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       auto &commset = proc_region[p]->get_commsets()[0];
       commset->put_field_data("entity_processor", border_node_proc_map[p]);
       Ioss::Utils::clear(border_node_proc_map[p]);
-      if (minimize_open_files) {
-        proc_region[p]->get_database()->closeDatabase();
-      }
       proc_progress(p, proc_count);
     }
-    Ioss::Utils::clear(border_node_proc_map);
+    //    Ioss::Utils::clear(border_node_proc_map);
   }
 
   template <typename INT>
@@ -798,7 +791,8 @@ namespace {
   template <typename INT>
   void output_nodesets(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
                        const std::vector<int> &node_to_proc,
-                       const std::vector<INT> &node_to_proc_pointer)
+                       const std::vector<INT> &node_to_proc_pointer, size_t proc_begin,
+                       size_t proc_size)
   {
     progress(__func__);
     // This routine reads the nodesets in the global database;
@@ -822,7 +816,7 @@ namespace {
 
       std::vector<std::vector<INT>>    pns_nodes(proc_count);
       std::vector<std::vector<double>> pns_df(proc_count);
-      for (size_t p = 0; p < proc_count; p++) {
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
         size_t node_count = proc_region[p]->get_nodesets()[s]->entity_count();
         pns_nodes[p].reserve(node_count);
         pns_df[p].reserve(node_count);
@@ -839,13 +833,10 @@ namespace {
         }
       }
 
-      for (size_t p = 0; p < proc_count; p++) {
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
         Ioss::NodeSet *proc_ns = proc_region[p]->get_nodesets()[s];
         proc_ns->put_field_data("ids", pns_nodes[p]);
         proc_ns->put_field_data("distribution_factors", pns_df[p]);
-        if (minimize_open_files) {
-          proc_region[p]->get_database()->closeDatabase();
-        }
         proc_progress(p, proc_count);
       }
     }
@@ -854,7 +845,8 @@ namespace {
   template <typename INT>
   void output_node_map(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
                        const std::vector<int> &node_to_proc,
-                       const std::vector<INT> &node_to_proc_pointer)
+                       const std::vector<INT> &node_to_proc_pointer, size_t proc_begin,
+                       size_t proc_size)
   {
     progress(__func__);
     // This is the processor-local to global-implicit node map...
@@ -863,7 +855,7 @@ namespace {
     size_t proc_count = proc_region.size();
 
     std::vector<std::vector<INT>> proc_map(proc_count);
-    for (size_t p = 0; p < proc_count; p++) {
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       size_t pnode_count = proc_region[p]->get_property("node_count").get_int();
       proc_map[p].reserve(pnode_count);
     }
@@ -877,12 +869,9 @@ namespace {
       }
     }
 
-    for (size_t p = 0; p < proc_count; p++) {
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
       nb->put_field_data("ids", proc_map[p]);
-      if (minimize_open_files) {
-        proc_region[p]->get_database()->closeDatabase();
-      }
       proc_progress(p, proc_count);
     }
   }
@@ -890,7 +879,8 @@ namespace {
   template <typename INT>
   void output_global_node_map(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
                               const std::vector<int> &node_to_proc,
-                              const std::vector<INT> &node_to_proc_pointer)
+                              const std::vector<INT> &node_to_proc_pointer, size_t proc_begin,
+                              size_t proc_size)
   {
     progress(__func__);
     // This is the processor-local to global-implicit node map...
@@ -910,7 +900,7 @@ namespace {
     size_t proc_count = proc_region.size();
 
     std::vector<std::vector<INT>> proc_map(proc_count);
-    for (size_t p = 0; p < proc_count; p++) {
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       size_t pnode_count = proc_region[p]->get_property("node_count").get_int();
       proc_map[p].reserve(pnode_count);
     }
@@ -924,19 +914,17 @@ namespace {
       }
     }
 
-    for (size_t p = 0; p < proc_count; p++) {
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
       nb->put_field_data("ids", proc_map[p]);
-      if (minimize_open_files) {
-        proc_region[p]->get_database()->closeDatabase();
-      }
       proc_progress(p, proc_count);
     }
   }
 
   template <typename INT>
   void output_element_map(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
-                          const std::vector<int> &elem_to_proc, INT /* dummy */)
+                          const std::vector<int> &elem_to_proc, size_t proc_begin, size_t proc_size,
+                          INT /* dummy */)
   {
     progress(__func__);
     // map[p][b] = map for block b on processor p
@@ -956,7 +944,7 @@ namespace {
 #endif
 
       std::vector<std::vector<INT>> map(proc_count);
-      for (size_t p = 0; p < proc_count; p++) {
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
         auto & proc_ebs           = proc_region[p]->get_element_blocks();
         size_t proc_element_count = proc_ebs[b]->entity_count();
         map[p].reserve(proc_element_count);
@@ -974,12 +962,9 @@ namespace {
       }
       offset += element_count;
 
-      for (size_t p = 0; p < proc_count; p++) {
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
         auto &proc_ebs = proc_region[p]->get_element_blocks();
         proc_ebs[b]->put_field_data("ids", map[p]);
-        if (minimize_open_files) {
-          proc_region[p]->get_database()->closeDatabase();
-        }
         proc_progress(p, proc_count);
       }
     }
@@ -987,21 +972,19 @@ namespace {
 
   template <typename INT>
   void output_connectivity(std::vector<Ioss::Region *> &               proc_region,
-                           std::vector<std::vector<std::vector<INT>>> &connectivity)
+                           std::vector<std::vector<std::vector<INT>>> &connectivity,
+                           size_t proc_begin, size_t proc_size)
   {
     progress(__func__);
     // connectivity[p][b] = map for block b on processor p
     size_t proc_count = proc_region.size();
 
-    for (size_t p = 0; p < proc_count; p++) {
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       auto & proc_ebs    = proc_region[p]->get_element_blocks();
       size_t block_count = proc_ebs.size();
       for (size_t b = 0; b < block_count; b++) {
         Ioss::ElementBlock *eb = proc_ebs[b];
         eb->put_field_data("connectivity", connectivity[p][b]);
-        if (minimize_open_files) {
-          proc_region[p]->get_database()->closeDatabase();
-        }
       }
       proc_progress(p, proc_count);
     }
@@ -1010,7 +993,8 @@ namespace {
   template <typename INT>
   void output_coordinates(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
                           const std::vector<int> &node_to_proc,
-                          const std::vector<INT> &node_to_proc_pointer)
+                          const std::vector<INT> &node_to_proc_pointer, size_t proc_begin,
+                          size_t proc_size)
   {
     progress(__func__);
     std::vector<double> glob_coord_x;
@@ -1024,7 +1008,7 @@ namespace {
     std::vector<std::vector<double>> coordinates_x(processor_count);
     std::vector<std::vector<double>> coordinates_y(processor_count);
     std::vector<std::vector<double>> coordinates_z(processor_count);
-    for (size_t p = 0; p < processor_count; p++) {
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       size_t pnode_count = proc_region[p]->get_property("node_count").get_int();
       coordinates_x[p].reserve(pnode_count);
       coordinates_y[p].reserve(pnode_count);
@@ -1088,14 +1072,11 @@ namespace {
     Ioss::Utils::clear(glob_coord_y);
     Ioss::Utils::clear(glob_coord_z);
 
-    for (size_t p = 0; p < processor_count; p++) {
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
       nb->put_field_data("mesh_model_coordinates_x", coordinates_x[p]);
       nb->put_field_data("mesh_model_coordinates_y", coordinates_y[p]);
       nb->put_field_data("mesh_model_coordinates_z", coordinates_z[p]);
-      if (minimize_open_files) {
-        proc_region[p]->get_database()->closeDatabase();
-      }
       proc_progress(p, processor_count);
     }
     progress("\tOutput processor coordinate vectors");
@@ -1449,111 +1430,95 @@ namespace {
     double start_comb = start;
     fmt::print(stderr, "Begin writing  output files\n");
     size_t proc_count = interFace.processor_count();
-    for (size_t p = 0; p < proc_count; p++) {
-      proc_region[p]->synchronize_id_and_name(&region);
-      proc_region[p]->end_mode(Ioss::STATE_DEFINE_MODEL);
-      proc_region[p]->begin_mode(Ioss::STATE_MODEL);
-      if (minimize_open_files) {
-        proc_region[p]->get_database()->closeDatabase();
+
+    // Output in processor chunks of size <= max_files so can keep all files open....
+    size_t max_files      = interFace.max_files();
+    size_t chunks         = (proc_count + max_files - 1) / max_files;
+    size_t size_per_chunk = (proc_count + chunks - 1) / chunks;
+    fmt::print(stderr,
+               "\nMax open files = {}; processing files in {} chunks of size {} to maximize "
+               "performance.\n",
+               max_files, chunks, size_per_chunk);
+
+    for (size_t chunk = 0; chunk < chunks; chunk++) {
+      size_t proc_begin = chunk * size_per_chunk;
+      size_t proc_size  = size_per_chunk;
+      if (proc_begin + proc_size > proc_count) {
+        proc_size = proc_count - proc_begin;
       }
-      proc_progress(p, proc_count);
-    }
-    end = seacas_timer();
-    fmt::print(stderr, "\tDefine output databases = {:.5}\n", end - start);
+      fmt::print(stderr, "\nProcessor range {:n} to {:n}\n", proc_begin, proc_begin + proc_size);
+
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+        proc_region[p]->synchronize_id_and_name(&region);
+        proc_region[p]->end_mode(Ioss::STATE_DEFINE_MODEL);
+        proc_region[p]->begin_mode(Ioss::STATE_MODEL);
+        proc_progress(p, proc_count);
+      }
+      end = seacas_timer();
+      fmt::print(stderr, "\tDefine output databases = {:.5}\n", end - start);
 
 // Generate and output node map...
 #if 1
-    start = seacas_timer();
-    output_node_map(region, proc_region, node_to_proc, node_to_proc_pointer);
-    end = seacas_timer();
-    fmt::print(stderr, "\tNode Map Output = {:.5}\n", end - start);
+      start = seacas_timer();
+      output_node_map(region, proc_region, node_to_proc, node_to_proc_pointer, proc_begin,
+                      proc_size);
+      end = seacas_timer();
+      fmt::print(stderr, "\tNode Map Output = {:.5}\n", end - start);
 #else
-    start = seacas_timer();
-    output_global_node_map(region, proc_region, node_to_proc, node_to_proc_pointer);
-    end = seacas_timer();
-    fmt::print(stderr, "\tGlobal Node Map Output = {:.5}\n", end - start);
+      start = seacas_timer();
+      output_global_node_map(region, proc_region, node_to_proc, node_to_proc_pointer, proc_begin,
+                             proc_size);
+      end = seacas_timer();
+      fmt::print(stderr, "\tGlobal Node Map Output = {:.5}\n", end - start);
 #endif
 
-    start = seacas_timer();
-    output_element_map(region, proc_region, elem_to_proc, (INT)1);
-    end = seacas_timer();
-    fmt::print(stderr, "\tElement Map Output = {:.5}\n", end - start);
+      start = seacas_timer();
+      output_element_map(region, proc_region, elem_to_proc, proc_begin, proc_size, (INT)1);
+      end = seacas_timer();
+      fmt::print(stderr, "\tElement Map Output = {:.5}\n", end - start);
 
-    start = seacas_timer();
-    output_communication_map(proc_region, border_node_proc_map);
-    end = seacas_timer();
-    fmt::print(stderr, "\tCommunication map Output = {:.5}\n", end - start);
+      start = seacas_timer();
+      output_communication_map(proc_region, border_node_proc_map, proc_begin, proc_size);
+      end = seacas_timer();
+      fmt::print(stderr, "\tCommunication map Output = {:.5}\n", end - start);
 
-    start = seacas_timer();
-    output_connectivity(proc_region, connectivity);
-    end = seacas_timer();
-    fmt::print(stderr, "\tConnectivity Output = {:.5}\n", end - start);
+      start = seacas_timer();
+      output_connectivity(proc_region, connectivity, proc_begin, proc_size);
+      end = seacas_timer();
+      fmt::print(stderr, "\tConnectivity Output = {:.5}\n", end - start);
 
-    // Free up connectivity space...
-    free_connectivity_storage(connectivity);
+      // Free up connectivity space...
+      free_connectivity_storage(connectivity, proc_begin, proc_size);
 
-    start = seacas_timer();
-    output_coordinates(region, proc_region, node_to_proc, node_to_proc_pointer);
-    end = seacas_timer();
-    fmt::print(stderr, "\tCoordinates Output = {:.5}\n", end - start);
+      start = seacas_timer();
+      output_coordinates(region, proc_region, node_to_proc, node_to_proc_pointer, proc_begin,
+                         proc_size);
+      end = seacas_timer();
+      fmt::print(stderr, "\tCoordinates Output = {:.5}\n", end - start);
 
-    start = seacas_timer();
-    output_nodesets(region, proc_region, node_to_proc, node_to_proc_pointer);
-    end = seacas_timer();
-    fmt::print(stderr, "\tNodeset Output = {:.5}\n", end - start);
+      start = seacas_timer();
+      output_nodesets(region, proc_region, node_to_proc, node_to_proc_pointer, proc_begin,
+                      proc_size);
+      end = seacas_timer();
+      fmt::print(stderr, "\tNodeset Output = {:.5}\n", end - start);
 
-    start = seacas_timer();
-    output_sidesets(region, proc_region, elem_to_proc, (INT)0);
-    end = seacas_timer();
-    fmt::print(stderr, "\tSideset Output = {:.5}\n", end - start);
+      start = seacas_timer();
+      output_sidesets(region, proc_region, elem_to_proc, proc_begin, proc_size, (INT)0);
+      end = seacas_timer();
+      fmt::print(stderr, "\tSideset Output = {:.5}\n", end - start);
 
-    // Close all files...
-    start = seacas_timer();
-    for (size_t p = 0; p < interFace.processor_count(); p++) {
-      proc_region[p]->end_mode(Ioss::STATE_MODEL);
-      delete proc_region[p];
+      // Close all files...
+      start = seacas_timer();
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+        proc_region[p]->end_mode(Ioss::STATE_MODEL);
+        delete proc_region[p];
+      }
+      end = seacas_timer();
+      fmt::print(stderr, "\tClose and finalize all output databases = {:.5}\n", end - start);
     }
     end = seacas_timer();
-    fmt::print(stderr, "\tClose and finalize all output databases = {:.5}\n", end - start);
     fmt::print(stderr, "\nTotal time to write output files = {:.5} ({:.5} per file)\n",
                end - start_comb, (end - start_comb) / interFace.processor_count());
-  }
-#if defined(__PUMAGON__)
-#include <stdio.h>
-#else
-#include <climits>
-#include <unistd.h>
-#endif
-
-  int get_free_descriptor_count()
-  {
-// Returns maximum number of files that one process can have open
-// at one time. (POSIX)
-#ifndef _MSC_VER
-    int fdmax = sysconf(_SC_OPEN_MAX);
-    if (fdmax == -1) {
-      /* POSIX indication that there is no limit on open files... */
-      fdmax = INT_MAX;
-    }
-#else
-    int fdmax = _getmaxstdio();
-#endif
-    // File descriptors are assigned in order (0,1,2,3,...) on a per-process
-    // basis.
-
-    // Assume that we have stdin, stdout, stderr, and output exodus
-    // file (4 total).
-
-    return fdmax - 4;
-
-    // Could iterate from 0..fdmax and check for the first
-    // EBADF (bad file descriptor) error return from fcntl, but that takes
-    // too long and may cause other problems.  There is a isastream(filedes)
-    // call on Solaris that can be used for system-dependent code.
-    //
-    // Another possibility is to do an open and see which descriptor is
-    // returned -- take that as 1 more than the current count of open files.
-    //
   }
 
   void filename_substitution(std::string &filename, const SystemInterface &interFace)

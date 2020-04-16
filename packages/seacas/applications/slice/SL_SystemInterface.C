@@ -53,6 +53,7 @@
 #endif
 
 namespace {
+  int  get_free_descriptor_count();
   bool str_equal(const std::string &s1, const std::string &s2)
   {
     return (s1.size() == s2.size()) &&
@@ -118,6 +119,11 @@ void SystemInterface::enroll_options()
                   "Split the coordinate and connetivity reads into a\n"
                   "\t\tmaximum of this many nodes or elements at a time to reduce memory.",
                   "1000000000");
+
+  options_.enroll("max-files", GetLongOption::MandatoryValue,
+                  "Specify maximum number of processor files to write at one time.\n"
+                  "\t\tUsually use default value; this is typically used for debugging.",
+                  nullptr);
 
   options_.enroll("netcdf4", GetLongOption::NoValue,
                   "Output database will be a netcdf4 "
@@ -244,6 +250,16 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp  = options_.retrieve("Partial_read_count");
     partialReadCount_ = strtoul(temp, nullptr, 0);
+  }
+
+  {
+    const char *temp = options_.retrieve("max-files");
+    if (temp != nullptr) {
+      maxFiles_ = strtoul(temp, nullptr, 0);
+    }
+    else {
+      maxFiles_ = get_free_descriptor_count();
+    }
   }
 
   {
@@ -571,4 +587,38 @@ namespace {
     }
   }
 #endif
+#include <climits>
+#include <unistd.h>
+
+  int get_free_descriptor_count()
+  {
+// Returns maximum number of files that one process can have open
+// at one time. (POSIX)
+#ifndef _MSC_VER
+    int fdmax = sysconf(_SC_OPEN_MAX);
+    if (fdmax == -1) {
+      /* POSIX indication that there is no limit on open files... */
+      fdmax = INT_MAX;
+    }
+#else
+    int fdmax = _getmaxstdio();
+#endif
+    // File descriptors are assigned in order (0,1,2,3,...) on a per-process
+    // basis.
+
+    // Assume that we have stdin, stdout, stderr, and output exodus
+    // file (4 total).
+
+    return fdmax - 4;
+
+    // Could iterate from 0..fdmax and check for the first
+    // EBADF (bad file descriptor) error return from fcntl, but that takes
+    // too long and may cause other problems.  There is a isastream(filedes)
+    // call on Solaris that can be used for system-dependent code.
+    //
+    // Another possibility is to do an open and see which descriptor is
+    // returned -- take that as 1 more than the current count of open files.
+    //
+  }
+
 } // namespace
