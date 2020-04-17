@@ -259,6 +259,7 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
+  fmt::print(stderr, "High-Water Memory Use: {:L} bytes\n", Ioss::Utils::get_hwm_memory_info());
   fmt::print(stderr, "Total execution time = {:.5}\n", seacas_timer() - begin);
   fmt::print(stderr, "\nSlice execution successful.\n");
   return EXIT_SUCCESS;
