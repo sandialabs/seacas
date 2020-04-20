@@ -3,7 +3,7 @@
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
- * See packages/seacas/LICENSE file for details.
+ * See packages/seacas/LICENSE for details.
  */
 // concatenates EXODUS/GENESIS output from parallel processors to a single file
 
@@ -15,7 +15,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <ctime>
 #include <exception>
+#include <fmt/chrono.h>
 #include <fmt/ostream.h>
 #include <limits>
 #include <numeric>
@@ -316,7 +318,7 @@ int main(int argc, char *argv[])
   rank = my_mpi.rank;
 
   try {
-    time_t begin_time = time(nullptr);
+    time_t begin_time = std::time(nullptr);
     SystemInterface::show_version(rank);
     if (rank == 0) {
 #if ENABLE_PARALLEL_EPU
@@ -542,7 +544,7 @@ int main(int argc, char *argv[])
     }
 
 #ifndef _WIN32
-    time_t end_time = time(nullptr);
+    time_t end_time = std::time(nullptr);
     if (rank == 0) {
       add_to_log(argv[0], static_cast<int>(end_time - begin_time));
     }
@@ -1445,17 +1447,17 @@ namespace {
       }
     }
 
-    char buffer[MAX_STR_LENGTH + 1];
+    std::string buffer;
 
     copy_string(qaRecord[num_qa_records].qa_record[0][0], qainfo[0], MAX_STR_LENGTH + 1); // Code
     copy_string(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH + 1); // Version
 
-    time_t date_time = time(nullptr);
-    strftime(buffer, MAX_STR_LENGTH, "%Y/%m/%d", localtime(&date_time));
-
+    time_t date_time = std::time(nullptr);
+    auto * lt        = std::localtime(&date_time);
+    buffer           = fmt::format("{:%Y/%m/%d}", *lt);
     copy_string(qaRecord[num_qa_records].qa_record[0][2], buffer, MAX_STR_LENGTH + 1);
 
-    strftime(buffer, MAX_STR_LENGTH, "%H:%M:%S", localtime(&date_time));
+    buffer = fmt::format("{:%H:%M:%S}", *lt);
     copy_string(qaRecord[num_qa_records].qa_record[0][3], buffer, MAX_STR_LENGTH + 1);
 
     error = ex_put_qa(id_out, num_qa_records + 1, qaRecord[0].qa_record);
@@ -3182,19 +3184,10 @@ namespace {
       return std::string("");
     }
 
-    const int   length = 256;
-    static char time_string[length];
-
-    time_t     calendar_time = time(nullptr);
-    struct tm *local_time    = localtime(&calendar_time);
-
-    int error = strftime(time_string, length, format.c_str(), local_time);
-    if (error != 0) {
-      time_string[length - 1] = '\0';
-      return std::string(time_string);
-    }
-
-    return std::string("[ERROR]");
+    time_t      calendar_time = std::time(nullptr);
+    struct tm * local_time    = std::localtime(&calendar_time);
+    std::string time_string   = fmt::format(format, *local_time);
+    return time_string;
   }
 
   std::string format_time(double seconds)
