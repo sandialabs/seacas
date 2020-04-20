@@ -44,8 +44,8 @@
 #include <string>
 #include <vector>
 
-// Contains code that is common between the file-per-processor (Iofx)
-// and parallel exodus (Iopx) and base exodus (Ioex) classes.
+// Contains code that is common between the file-per-processor and
+// parallel exodus and base exodus classes.
 
 namespace Ioss {
   class GroupingEntity;

@@ -12,7 +12,7 @@
 #include <Ioss_PropertyManager.h> // for PropertyManager
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
-#include <exo_par/Ioex_DecompositionData.h>
+#include <exodus/Ioex_DecompositionData.h>
 #include <exodus/Ioex_Utils.h>
 
 #include <algorithm> // for lower_bound, copy, etc

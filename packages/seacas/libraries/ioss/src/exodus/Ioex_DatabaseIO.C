@@ -45,7 +45,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <exo_fpp/Ioex_DatabaseIO.h>
+#include <exodus/Ioex_DatabaseIO.h>
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
 #include <exodusII.h>

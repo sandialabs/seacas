@@ -32,9 +32,9 @@
 
 #include <exo_fac/Ioex_IOFactory.h> // for Ioex IOFactory
 
-#include <exo_fpp/Ioex_DatabaseIO.h> // for Ioex DatabaseIO
+#include <exodus/Ioex_DatabaseIO.h> // for Ioex DatabaseIO
 #if defined(SEACAS_HAVE_MPI)
-#include <exo_par/Ioex_ParallelDatabaseIO.h> // for Ioex ParallelDatabaseIO
+#include <exodus/Ioex_ParallelDatabaseIO.h> // for Ioex ParallelDatabaseIO
 #endif
 #include <tokenize.h>
 

@@ -59,8 +59,8 @@
 #include <utility>
 #include <vector>
 
-#include <exo_par/Ioex_ParallelDatabaseIO.h>
-#include <exo_par/Ioex_DecompositionData.h>
+#include <exodus/Ioex_ParallelDatabaseIO.h>
+#include <exodus/Ioex_DecompositionData.h>
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
@@ -783,7 +783,7 @@ namespace Ioex {
     default:
       std::ostringstream errmsg;
       fmt::print(errmsg, "INTERNAL ERROR: Invalid map type. "
-                         "Something is wrong in the Iopx::ParallelDatabaseIO::get_map() function. "
+                         "Something is wrong in the Ioex::ParallelDatabaseIO::get_map() function. "
                          "Please report.\n");
       IOSS_ERROR(errmsg);
     }
@@ -1450,7 +1450,7 @@ namespace Ioex {
                 std::ostringstream errmsg;
                 fmt::print(errmsg,
                            "INTERNAL ERROR: Could not find element block '{}'. Something is wrong "
-                           "in the Iopx::ParallelDatabaseIO class. Please report.\n",
+                           "in the Ioex::ParallelDatabaseIO class. Please report.\n",
                            topo_or_block_name);
                 IOSS_ERROR(errmsg);
               }
@@ -1536,7 +1536,7 @@ namespace Ioex {
       }
     }
   }
-} // namespace Iopx
+} // namespace Ioex
 
 template <typename T>
 void ParallelDatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string &base,
@@ -3180,7 +3180,7 @@ int64_t ParallelDatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, in
       std::ostringstream errmsg;
       fmt::print(errmsg,
                  "INTERNAL ERROR: Could not find element block containing element with id {}."
-                 " Something is wrong in the Iopx::ParallelDatabaseIO class. Please report.\n",
+                 " Something is wrong in the Ioex::ParallelDatabaseIO class. Please report.\n",
                  elem_id);
       IOSS_ERROR(errmsg);
     }
@@ -3190,7 +3190,7 @@ int64_t ParallelDatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, in
     if (topo == nullptr) {
       std::ostringstream errmsg;
       fmt::print(errmsg, "INTERNAL ERROR: Could not find topology of element block boundary. "
-                         "Something is wrong in the Iopx::ParallelDatabaseIO class. Please report.\n");
+                         "Something is wrong in the Ioex::ParallelDatabaseIO class. Please report.\n");
       IOSS_ERROR(errmsg);
     }
 
@@ -4872,4 +4872,4 @@ void ParallelDatabaseIO::check_valid_values() const
     }
   }
 }
-} // namespace Iopx
+} // namespace Ioex
