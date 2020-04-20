@@ -57,7 +57,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "5.0";
+  std::string version = "5.1";
 
   bool mem_stats = false;
 
@@ -69,9 +69,11 @@ namespace {
 int main(int argc, char *argv[])
 {
   int rank = 0;
+  int num_proc = 1;
 #ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
@@ -128,7 +130,13 @@ int main(int argc, char *argv[])
   double end = Ioss::Utils::timer();
 
   if (rank == 0 && !interFace.quiet) {
-    fmt::print(stderr, "\n\n\tTotal Execution time = {:.5} seconds\n", end - begin);
+    if (num_proc > 1) {
+      fmt::print(stderr, "\n\n\tTotal Execution time = {:.5} seconds on {} processors.\n",
+		 end - begin, numproc);
+    }
+    else {
+      fmt::print(stderr, "\n\n\tTotal Execution time = {:.5} seconds.\n", end - begin);
+    }
   }
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
