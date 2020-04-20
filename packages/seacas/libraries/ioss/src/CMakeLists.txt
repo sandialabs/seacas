@@ -87,7 +87,6 @@ endif()
 
 IF (${PACKAGE_NAME}_ENABLE_SEACASExodus)
   ADD_SUBDIRECTORY(exodus)
-  ADD_SUBDIRECTORY(exo_fac)
 ENDIF()
 
 IF (${PROJECT_NAME}_ENABLE_Pamgen)
