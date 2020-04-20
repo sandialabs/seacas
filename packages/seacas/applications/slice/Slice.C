@@ -41,7 +41,7 @@
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 #include <cassert>
-#include <exo_fpp/Iofx_DatabaseIO.h>
+#include <exo_fpp/Ioex_DatabaseIO.h>
 #include <fmt/format.h>
 #include <init/Ionit_Initializer.h>
 
@@ -1002,7 +1002,7 @@ namespace {
     progress("\tReserve processor coordinate vectors");
 
     Ioss::DatabaseIO *db    = region.get_database();
-    Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO *>(db);
+    Ioex::DatabaseIO *ex_db = dynamic_cast<Ioex::DatabaseIO *>(db);
 
     size_t node_count = region.get_property("node_count").get_int();
 
@@ -1090,7 +1090,7 @@ namespace {
     std::vector<std::vector<double>> coordinates(processor_count);
 
     Ioss::DatabaseIO *db    = region.get_database();
-    Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO *>(db);
+    Ioex::DatabaseIO *ex_db = dynamic_cast<Ioex::DatabaseIO *>(db);
 
     size_t node_count = region.get_property("node_count").get_int();
 
@@ -1183,7 +1183,7 @@ namespace {
     size_t processor_count = proc_region.size();
 
     Ioss::DatabaseIO *db    = region.get_database();
-    Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO *>(db);
+    Ioex::DatabaseIO *ex_db = dynamic_cast<Ioex::DatabaseIO *>(db);
 
     std::vector<INT> glob_conn;
     size_t           offset = 0;
@@ -1313,7 +1313,7 @@ namespace {
 
     size_t            sum_on_proc_count = 0;
     Ioss::DatabaseIO *db                = region.get_database();
-    Iofx::DatabaseIO *ex_db             = dynamic_cast<Iofx::DatabaseIO *>(db);
+    Ioex::DatabaseIO *ex_db             = dynamic_cast<Ioex::DatabaseIO *>(db);
 
     auto & ebs         = region.get_element_blocks();
     size_t block_count = ebs.size();

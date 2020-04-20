@@ -46,7 +46,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <exodus/Ioex_DatabaseIO.h>
+#include <exodus/Ioex_BaseDatabaseIO.h>
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
@@ -121,7 +121,7 @@ namespace {
 } // namespace
 
 namespace Ioex {
-  DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
+  BaseDatabaseIO::BaseDatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props)
@@ -236,7 +236,7 @@ namespace Ioex {
     // need to save...
   }
 
-  void DatabaseIO::set_int_byte_size_api(Ioss::DataSize size) const
+  void BaseDatabaseIO::set_int_byte_size_api(Ioss::DataSize size) const
   {
     if (exodusFilePtr > 0) {
       int old_status = ex_int64_status(get_file_pointer());
@@ -264,7 +264,7 @@ namespace Ioex {
   }
 
   // Returns byte size of integers stored on the database...
-  int DatabaseIO::int_byte_size_db() const
+  int BaseDatabaseIO::int_byte_size_db() const
   {
     int status = ex_int64_status(get_file_pointer());
     if (status & EX_MAPS_INT64_DB || status & EX_IDS_INT64_DB || status & EX_BULK_INT64_DB) {
@@ -276,7 +276,7 @@ namespace Ioex {
   }
 
   // common
-  DatabaseIO::~DatabaseIO()
+  BaseDatabaseIO::~BaseDatabaseIO()
   {
     try {
       free_file_pointer();
@@ -286,7 +286,7 @@ namespace Ioex {
   }
 
   // common
-  unsigned DatabaseIO::entity_field_support() const
+  unsigned BaseDatabaseIO::entity_field_support() const
   {
     return Ioss::NODEBLOCK | Ioss::EDGEBLOCK | Ioss::FACEBLOCK | Ioss::ELEMENTBLOCK |
            Ioss::NODESET | Ioss::EDGESET | Ioss::FACESET | Ioss::ELEMENTSET | Ioss::SIDESET |
@@ -294,7 +294,7 @@ namespace Ioex {
   }
 
   // common
-  int DatabaseIO::get_file_pointer() const
+  int BaseDatabaseIO::get_file_pointer() const
   {
     // Returns the file_pointer used to access the file on disk.
     // Checks that the file is open and if not, opens it first.
@@ -318,7 +318,7 @@ namespace Ioex {
     return exodusFilePtr;
   }
 
-  int DatabaseIO::free_file_pointer() const
+  int BaseDatabaseIO::free_file_pointer() const
   {
     if (exodusFilePtr != -1) {
       bool do_timer = false;
@@ -342,7 +342,7 @@ namespace Ioex {
     return exodusFilePtr;
   }
 
-  bool DatabaseIO::ok__(bool write_message, std::string *error_msg, int *bad_count) const
+  bool BaseDatabaseIO::ok__(bool write_message, std::string *error_msg, int *bad_count) const
   {
     // For input, we try to open the existing file.
 
@@ -379,7 +379,7 @@ namespace Ioex {
     return is_ok;
   }
 
-  void DatabaseIO::finalize_file_open() const
+  void BaseDatabaseIO::finalize_file_open() const
   {
     assert(exodusFilePtr >= 0);
     // Check byte-size of integers stored on the database...
@@ -402,7 +402,7 @@ namespace Ioex {
     ex_set_max_name_length(exodusFilePtr, maximumNameLength);
   }
 
-  bool DatabaseIO::open_group__(const std::string &group_name)
+  bool BaseDatabaseIO::open_group__(const std::string &group_name)
   {
     // Get existing file pointer...
     bool success = false;
@@ -424,7 +424,7 @@ namespace Ioex {
     return success;
   }
 
-  bool DatabaseIO::create_subgroup__(const std::string &group_name)
+  bool BaseDatabaseIO::create_subgroup__(const std::string &group_name)
   {
     bool success = false;
     if (!is_input()) {
@@ -457,7 +457,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::put_qa()
+  void BaseDatabaseIO::put_qa()
   {
     struct qa_element
     {
@@ -513,7 +513,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::put_info()
+  void BaseDatabaseIO::put_info()
   {
     // dump info records, include the product_registry
     // See if the input file was specified as a property on the database...
@@ -559,7 +559,7 @@ namespace Ioex {
   }
 
   // common
-  int DatabaseIO::get_current_state() const
+  int BaseDatabaseIO::get_current_state() const
   {
     int step = get_region()->get_current_state();
 
@@ -576,7 +576,7 @@ namespace Ioex {
     return step;
   }
 
-  void DatabaseIO::get_assemblies()
+  void BaseDatabaseIO::get_assemblies()
   {
     Ioss::SerializeIO serializeIO__(this);
     // Query number of coordinate frames...
@@ -644,7 +644,7 @@ namespace Ioex {
     }
   }
 
-  void DatabaseIO::get_blobs()
+  void BaseDatabaseIO::get_blobs()
   {
     Ioss::SerializeIO serializeIO__(this);
     // Query number of coordinate frames...
@@ -716,7 +716,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::get_nodeblocks()
+  void BaseDatabaseIO::get_nodeblocks()
   {
     // For exodusII, there is only a single node block which contains
     // all of the nodes.
@@ -756,7 +756,7 @@ namespace Ioex {
 
   // common
   // common
-  size_t DatabaseIO::handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
+  size_t BaseDatabaseIO::handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
                                       Ioss::Map &entity_map, void *ids, size_t num_to_get,
                                       size_t offset) const
   {
@@ -838,7 +838,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::compute_block_membership__(Ioss::SideBlock *         efblock,
+  void BaseDatabaseIO::compute_block_membership__(Ioss::SideBlock *         efblock,
                                               std::vector<std::string> &block_membership) const
   {
     const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
@@ -892,7 +892,7 @@ namespace Ioex {
   }
 
   // common
-  int64_t DatabaseIO::get_field_internal(const Ioss::Region * /* region */,
+  int64_t BaseDatabaseIO::get_field_internal(const Ioss::Region * /* region */,
                                          const Ioss::Field &field, void *data,
                                          size_t data_size) const
   {
@@ -920,7 +920,7 @@ namespace Ioex {
   }
 
   // common
-  int64_t DatabaseIO::put_field_internal(const Ioss::Region * /* region */,
+  int64_t BaseDatabaseIO::put_field_internal(const Ioss::Region * /* region */,
                                          const Ioss::Field &field, void *data,
                                          size_t data_size) const
   {
@@ -1015,7 +1015,7 @@ namespace Ioex {
     }
   } // namespace
   // common
-  void DatabaseIO::store_reduction_field(ex_entity_type type, const Ioss::Field &field,
+  void BaseDatabaseIO::store_reduction_field(ex_entity_type type, const Ioss::Field &field,
                                          const Ioss::GroupingEntity *ge, void *variables) const
   {
     const Ioss::VariableType *var_type = field.transformed_storage();
@@ -1094,7 +1094,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::get_reduction_field(ex_entity_type type, const Ioss::Field &field,
+  void BaseDatabaseIO::get_reduction_field(ex_entity_type type, const Ioss::Field &field,
                                        const Ioss::GroupingEntity *ge, void *variables) const
   {
     const Ioss::VariableType *var_type = field.raw_storage();
@@ -1150,7 +1150,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::write_reduction_fields() const
+  void BaseDatabaseIO::write_reduction_fields() const
   {
     int step = get_current_state();
     step     = get_database_step(step);
@@ -1171,7 +1171,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::read_reduction_fields() const
+  void BaseDatabaseIO::read_reduction_fields() const
   {
     int step = get_current_state();
 
@@ -1193,14 +1193,14 @@ namespace Ioex {
   }
 
   // common
-  bool DatabaseIO::begin__(Ioss::State state)
+  bool BaseDatabaseIO::begin__(Ioss::State state)
   {
     dbState = state;
     return true;
   }
 
   // common
-  bool DatabaseIO::end__(Ioss::State state)
+  bool BaseDatabaseIO::end__(Ioss::State state)
   {
     // Transitioning out of state 'state'
     assert(state == dbState);
@@ -1234,7 +1234,7 @@ namespace Ioex {
     return true;
   }
 
-  void DatabaseIO::open_state_file(int state)
+  void BaseDatabaseIO::open_state_file(int state)
   {
     // Close current file...
     free_file_pointer();
@@ -1299,7 +1299,7 @@ namespace Ioex {
     }
   }
 
-  bool DatabaseIO::begin_state__(int state, double time)
+  bool BaseDatabaseIO::begin_state__(int state, double time)
   {
     Ioss::SerializeIO serializeIO__(this);
 
@@ -1333,7 +1333,7 @@ namespace Ioex {
   }
 
   // common
-  bool DatabaseIO::end_state__(int state, double time)
+  bool BaseDatabaseIO::end_state__(int state, double time)
   {
     Ioss::SerializeIO serializeIO__(this);
 
@@ -1349,7 +1349,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::add_region_fields()
+  void BaseDatabaseIO::add_region_fields()
   {
 #if GLOBALS_ARE_TRANSIENT
     int field_count = add_results_fields(EX_GLOBAL, get_region());
@@ -1360,7 +1360,7 @@ namespace Ioex {
     add_mesh_reduction_fields(EX_GLOBAL, 0, get_region());
   }
 
-  void DatabaseIO::add_mesh_reduction_fields(ex_entity_type type, int64_t id,
+  void BaseDatabaseIO::add_mesh_reduction_fields(ex_entity_type type, int64_t id,
                                              Ioss::GroupingEntity *entity)
   {
     // Get "global attributes"
@@ -1412,7 +1412,7 @@ namespace Ioex {
   }
 
   // common
-  int64_t DatabaseIO::add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
+  int64_t BaseDatabaseIO::add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
                                          int64_t position)
   {
     return internal_add_results_fields(type, entity, position, m_groupCount[type],
@@ -1420,7 +1420,7 @@ namespace Ioex {
   }
 
   // common
-  int64_t DatabaseIO::internal_add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
+  int64_t BaseDatabaseIO::internal_add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
                                                   int64_t position, int64_t block_count,
                                                   Ioss::IntVector &      truth_table,
                                                   Ioex::VariableNameMap &variables)
@@ -1518,7 +1518,7 @@ namespace Ioex {
   }
 
   // common
-  int64_t DatabaseIO::add_reduction_results_fields(ex_entity_type        type,
+  int64_t BaseDatabaseIO::add_reduction_results_fields(ex_entity_type        type,
                                                    Ioss::GroupingEntity *entity)
   {
     int nvar = 0;
@@ -1580,7 +1580,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::write_results_metadata(bool gather_data)
+  void BaseDatabaseIO::write_results_metadata(bool gather_data)
   {
     if (gather_data) {
       int glob_index = 0;
@@ -1698,7 +1698,7 @@ namespace Ioex {
 
   // common
   template <typename T>
-  void DatabaseIO::internal_write_results_metadata(ex_entity_type type, std::vector<T *> entities,
+  void BaseDatabaseIO::internal_write_results_metadata(ex_entity_type type, std::vector<T *> entities,
                                                    int &glob_index)
   {
     int index     = 0;
@@ -1724,7 +1724,7 @@ namespace Ioex {
   }
 
   // common
-  int DatabaseIO::gather_names(ex_entity_type type, VariableNameMap &variables,
+  int BaseDatabaseIO::gather_names(ex_entity_type type, VariableNameMap &variables,
                                const Ioss::GroupingEntity *ge, int index, bool reduction)
   {
     int new_index = index;
@@ -1791,7 +1791,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::generate_sideset_truth_table()
+  void BaseDatabaseIO::generate_sideset_truth_table()
   {
     size_t var_count = m_variables[EX_SIDE_SET].size();
 
@@ -1858,7 +1858,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::output_results_names(ex_entity_type type, VariableNameMap &variables,
+  void BaseDatabaseIO::output_results_names(ex_entity_type type, VariableNameMap &variables,
                                         bool reduction) const
   {
     bool lowercase_names =
@@ -1923,7 +1923,7 @@ namespace Ioex {
   // common
   // Handle special output time requests -- primarily restart (cycle, overwrite)
   // Given the global region step, return the step on the database...
-  int DatabaseIO::get_database_step(int global_step) const
+  int BaseDatabaseIO::get_database_step(int global_step) const
   {
     if (get_file_per_state()) {
       return 1;
@@ -1943,7 +1943,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::flush_database__() const
+  void BaseDatabaseIO::flush_database__() const
   {
     if (!is_input()) {
       if (isParallel || myProcessor == 0) {
@@ -1952,7 +1952,7 @@ namespace Ioex {
     }
   }
 
-  void DatabaseIO::finalize_write(int state, double sim_time)
+  void BaseDatabaseIO::finalize_write(int state, double sim_time)
   {
     // Attempt to ensure that all data written up to this point has
     // actually made it out to disk.  We also write a special attribute
@@ -2022,7 +2022,7 @@ namespace Ioex {
   }
 
   // common
-  void Ioex::DatabaseIO::add_attribute_fields(ex_entity_type        entity_type,
+  void Ioex::BaseDatabaseIO::add_attribute_fields(ex_entity_type        entity_type,
                                               Ioss::GroupingEntity *block, int attribute_count,
                                               const std::string &type)
   {
@@ -2270,7 +2270,7 @@ namespace Ioex {
     }
   }
 
-  void DatabaseIO::output_other_meta_data()
+  void BaseDatabaseIO::output_other_meta_data()
   {
     // Write attribute names (if any)...
     char field_suffix_separator = get_field_separator();
@@ -2427,7 +2427,7 @@ namespace {
         fmt::print(
             errmsg,
             "INTERNAL ERROR: For block '{}', attribute '{}', the indexing is incorrect.\n"
-            "Something is wrong in the Ioex::DatabaseIO class, function {}. Please report.\n",
+            "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
             block->name(), field_name, __func__);
         IOSS_ERROR(errmsg);
       }
@@ -2439,7 +2439,7 @@ namespace {
               errmsg,
               "INTERNAL ERROR: For block '{}', attribute '{}', indexes into the same location as a "
               "previous attribute.\n"
-              "Something is wrong in the Ioex::DatabaseIO class, function {}. Please report.\n",
+              "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
               block->name(), field_name, __func__);
           IOSS_ERROR(errmsg);
         }
@@ -2454,7 +2454,7 @@ namespace {
       fmt::print(errmsg,
                  "INTERNAL ERROR: Block '{}' is supposed to have {} attributes, but {} attributes "
                  "were counted.\n"
-                 "Something is wrong in the Ioex::DatabaseIO class, function {}. Please report.\n",
+                 "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
                  block->name(), attribute_count, component_sum, __func__);
       IOSS_ERROR(errmsg);
     }
@@ -2469,7 +2469,7 @@ namespace {
           fmt::print(
               errmsg,
               "INTERNAL ERROR: Block '{}' has an incomplete set of attributes.\n"
-              "Something is wrong in the Ioex::DatabaseIO class, function {}. Please report.\n",
+              "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
               block->name(), __func__);
           IOSS_ERROR(errmsg);
         }

@@ -31,8 +31,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // -*- Mode: c++ -*-
-#ifndef IOSS_Ioex_DatabaseIO_h
-#define IOSS_Ioex_DatabaseIO_h
+#ifndef IOSS_Ioex_BaseDatabaseIO_h
+#define IOSS_Ioex_BaseDatabaseIO_h
 
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
@@ -95,15 +95,15 @@ namespace Ioex {
   // to ensure that there are no id collisions.
   using EntityIdSet = std::set<std::pair<int64_t, int64_t>>;
 
-  class DatabaseIO : public Ioss::DatabaseIO
+  class BaseDatabaseIO : public Ioss::DatabaseIO
   {
   public:
-    DatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
-               MPI_Comm communicator, const Ioss::PropertyManager &props);
-    DatabaseIO(const DatabaseIO &from) = delete;
-    DatabaseIO &operator=(const DatabaseIO &from) = delete;
+    BaseDatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
+                   MPI_Comm communicator, const Ioss::PropertyManager &props);
+    BaseDatabaseIO(const BaseDatabaseIO &from) = delete;
+    BaseDatabaseIO &operator=(const BaseDatabaseIO &from) = delete;
 
-    ~DatabaseIO() override;
+    ~BaseDatabaseIO() override;
 
     const std::string get_format() const override { return "Exodus"; }
 
