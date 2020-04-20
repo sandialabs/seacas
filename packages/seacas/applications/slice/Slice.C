@@ -870,13 +870,16 @@ namespace {
       size_t p_end = node_to_proc_pointer[i + 1];
       for (size_t j = p_beg; j < p_end; j++) {
         size_t p = node_to_proc[j];
-        proc_map[p].push_back(i + 1);
+        if (p >= proc_begin && p < proc_begin + proc_size) {
+          proc_map[p].push_back(i + 1);
+        }
       }
     }
 
     for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
       nb->put_field_data("ids", proc_map[p]);
+      proc_map[p].clear();
       proc_progress(p, proc_count);
     }
   }
@@ -915,13 +918,16 @@ namespace {
       size_t p_end = node_to_proc_pointer[i + 1];
       for (size_t j = p_beg; j < p_end; j++) {
         size_t p = node_to_proc[j];
-        proc_map[p].push_back(ids[i]);
+        if (p >= proc_begin && p < proc_begin + proc_size) {
+          proc_map[p].push_back(ids[i]);
+        }
       }
     }
 
     for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
       nb->put_field_data("ids", proc_map[p]);
+      proc_map[p].clear();
       proc_progress(p, proc_count);
     }
   }
@@ -959,39 +965,22 @@ namespace {
 
       for (size_t j = 0; j < element_count; j++) {
         size_t p = elem_to_proc[offset + j];
+        if (p >= proc_begin && p < proc_begin + proc_size) {
 #if 0
-        map[p].push_back(ids[j]);
+	  map[p].push_back(ids[j]);
 #else
-        map[p].push_back(offset + j + 1);
+          map[p].push_back(offset + j + 1);
 #endif
+        }
       }
       offset += element_count;
 
       for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
         auto &proc_ebs = proc_region[p]->get_element_blocks();
         proc_ebs[b]->put_field_data("ids", map[p]);
+        map[p].clear();
         proc_progress(p, proc_count);
       }
-    }
-  }
-
-  template <typename INT>
-  void output_connectivity(std::vector<Ioss::Region *> &               proc_region,
-                           std::vector<std::vector<std::vector<INT>>> &connectivity,
-                           size_t proc_begin, size_t proc_size)
-  {
-    progress(__func__);
-    // connectivity[p][b] = map for block b on processor p
-    size_t proc_count = proc_region.size();
-
-    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
-      auto & proc_ebs    = proc_region[p]->get_element_blocks();
-      size_t block_count = proc_ebs.size();
-      for (size_t b = 0; b < block_count; b++) {
-        Ioss::ElementBlock *eb = proc_ebs[b];
-        eb->put_field_data("connectivity", connectivity[p][b]);
-      }
-      proc_progress(p, proc_count);
     }
   }
 
@@ -1048,9 +1037,11 @@ namespace {
           size_t p_end = node_to_proc_pointer[ii + 1];
           for (size_t j = p_beg; j < p_end; j++) {
             size_t p = node_to_proc[j];
-            coordinates_x[p].push_back(glob_coord_x[i]);
-            coordinates_y[p].push_back(glob_coord_y[i]);
-            coordinates_z[p].push_back(glob_coord_z[i]);
+            if (p >= proc_begin && p < proc_begin + proc_size) {
+              coordinates_x[p].push_back(glob_coord_x[i]);
+              coordinates_y[p].push_back(glob_coord_y[i]);
+              coordinates_z[p].push_back(glob_coord_z[i]);
+            }
           }
         }
       }
@@ -1066,9 +1057,11 @@ namespace {
         size_t p_end = node_to_proc_pointer[i + 1];
         for (size_t j = p_beg; j < p_end; j++) {
           size_t p = node_to_proc[j];
-          coordinates_x[p].push_back(glob_coord_x[i]);
-          coordinates_y[p].push_back(glob_coord_y[i]);
-          coordinates_z[p].push_back(glob_coord_z[i]);
+          if (p >= proc_begin && p < proc_begin + proc_size) {
+            coordinates_x[p].push_back(glob_coord_x[i]);
+            coordinates_y[p].push_back(glob_coord_y[i]);
+            coordinates_z[p].push_back(glob_coord_z[i]);
+          }
         }
       }
     }
@@ -1087,28 +1080,116 @@ namespace {
     progress("\tOutput processor coordinate vectors");
   }
 
+  // Output a component at a time...
   template <typename INT>
-  void get_connectivity(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
-                        const std::vector<int> &                    elem_to_proc,
-                        std::vector<std::vector<std::vector<INT>>> &connectivity)
+  void output_coordinates_c(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
+                            const std::vector<int> &node_to_proc,
+                            const std::vector<INT> &node_to_proc_pointer, size_t proc_begin,
+                            size_t proc_size)
   {
+    progress(__func__);
+    std::vector<double> glob_coord;
+    Ioss::NodeBlock *   gnb = region.get_node_blocks()[0];
+
+    std::array<std::string, 3> field_name{"mesh_model_coordinates_x", "mesh_model_coordinates_y",
+                                          "mesh_model_coordinates_z"};
+    // Distribute nodal coordinates to each processor...
+    // coordinates[p][i] = x,y,z coordinates on processor p
+    size_t                           processor_count = proc_region.size();
+    std::vector<std::vector<double>> coordinates(processor_count);
+
+    Ioss::DatabaseIO *db    = region.get_database();
+    Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO *>(db);
+
+    size_t node_count = region.get_property("node_count").get_int();
+
+    for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+      size_t pnode_count = proc_region[p]->get_property("node_count").get_int();
+      coordinates[p].reserve(pnode_count);
+    }
+    progress("\tReserve processor coordinate vectors");
+
+    for (size_t comp = 0; comp < 3; comp++) {
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+        coordinates[p].resize(0);
+      }
+
+      if (ex_db != nullptr && node_count > partial_count) {
+        int exoid = ex_db->get_file_pointer();
+
+        glob_coord.resize(partial_count);
+        for (size_t beg = 1; beg <= node_count; beg += partial_count) {
+          size_t count = partial_count;
+          if (beg + count - 1 > node_count) {
+            count = node_count - beg + 1;
+          }
+
+          switch (comp) {
+          case 0:
+            ex_get_partial_coord(exoid, beg, count, glob_coord.data(), nullptr, nullptr);
+            break;
+          case 1:
+            ex_get_partial_coord(exoid, beg, count, nullptr, glob_coord.data(), nullptr);
+            break;
+          case 2:
+            ex_get_partial_coord(exoid, beg, count, nullptr, nullptr, glob_coord.data());
+            break;
+          }
+          progress("\tpartial_coord: " + std::to_string(beg) + " " + std::to_string(count));
+
+          for (size_t i = 0; i < count; i++) {
+            size_t ii    = beg + i - 1;
+            size_t p_beg = node_to_proc_pointer[ii];
+            size_t p_end = node_to_proc_pointer[ii + 1];
+            for (size_t j = p_beg; j < p_end; j++) {
+              size_t p = node_to_proc[j];
+              if (p >= proc_begin && p < proc_begin + proc_size) {
+                coordinates[p].push_back(glob_coord[i]);
+              }
+            }
+          }
+        }
+      }
+      else {
+        gnb->get_field_data(field_name[comp], glob_coord);
+        progress("\tRead global mesh_model_coordinates");
+
+        for (size_t i = 0; i < node_count; i++) {
+          size_t p_beg = node_to_proc_pointer[i];
+          size_t p_end = node_to_proc_pointer[i + 1];
+          for (size_t j = p_beg; j < p_end; j++) {
+            size_t p = node_to_proc[j];
+            if (p >= proc_begin && p < proc_begin + proc_size) {
+              coordinates[p].push_back(glob_coord[i]);
+            }
+          }
+        }
+      }
+      progress("\tPopulate processor coordinate vectors");
+      Ioss::Utils::clear(glob_coord);
+
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+        Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
+        nb->put_field_data(field_name[comp], coordinates[p]);
+        proc_progress(p, processor_count);
+      }
+    }
+    progress("\tOutput processor coordinate vectors");
+  }
+
+  template <typename INT>
+  void output_connectivity(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
+                           const std::vector<int> &elem_to_proc, size_t proc_begin,
+                           size_t proc_size, INT dummy)
+  {
+    // Read connectivity and partition to each processor/block.
+    // connectvity[p][b] = connectivity for block b on processor p
+
     progress(__func__);
     auto & ebs         = region.get_element_blocks();
     size_t block_count = ebs.size();
 
     size_t processor_count = proc_region.size();
-    connectivity.resize(processor_count);
-
-    for (size_t p = 0; p < processor_count; p++) {
-      connectivity[p].resize(block_count);
-      const auto &pebs = proc_region[p]->get_element_blocks();
-      for (size_t b = 0; b < block_count; b++) {
-        size_t element_count = pebs[b]->entity_count();
-        size_t element_nodes = pebs[b]->get_property("topology_node_count").get_int();
-        connectivity[p][b].reserve(element_count * element_nodes); // Use reserve, not resize
-      }
-    }
-    progress("\tAfter memory allocation");
 
     Ioss::DatabaseIO *db    = region.get_database();
     Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO *>(db);
@@ -1117,9 +1198,17 @@ namespace {
     size_t           offset = 0;
 
     for (size_t b = 0; b < block_count; b++) {
-      size_t element_count = ebs[b]->entity_count();
+      std::vector<std::vector<INT>> connectivity(processor_count);
+      size_t                        element_count = ebs[b]->entity_count();
       size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
       size_t block_id      = ebs[b]->get_property("id").get_int();
+
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+        const auto &pebs           = proc_region[p]->get_element_blocks();
+        size_t      pelement_count = pebs[b]->entity_count();
+        size_t      pelement_nodes = pebs[b]->get_property("topology_node_count").get_int();
+        connectivity[p].reserve(pelement_count * pelement_nodes); // Use reserve, not resize
+      }
 
       // Do a 'partial_count' elements at a time...
       if (ex_db != nullptr && element_count >= partial_count) {
@@ -1139,8 +1228,10 @@ namespace {
           size_t el = 0;
           for (size_t j = 0; j < count; j++) {
             size_t p = elem_to_proc[offset + j];
-            for (size_t k = 0; k < element_nodes; k++) {
-              connectivity[p][b].push_back(glob_conn[el++]);
+            if (p >= proc_begin && p < proc_begin + proc_size) {
+              for (size_t k = 0; k < element_nodes; k++) {
+                connectivity[p].push_back(glob_conn[el++]);
+              }
             }
           }
           offset += count;
@@ -1152,11 +1243,19 @@ namespace {
         size_t el = 0;
         for (size_t j = 0; j < element_count; j++) {
           size_t p = elem_to_proc[offset + j];
-          for (size_t k = 0; k < element_nodes; k++) {
-            connectivity[p][b].push_back(glob_conn[el++]);
+          if (p >= proc_begin && p < proc_begin + proc_size) {
+            for (size_t k = 0; k < element_nodes; k++) {
+              connectivity[p].push_back(glob_conn[el++]);
+            }
           }
         }
         offset += element_count;
+      }
+
+      for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
+        auto &              proc_ebs = proc_region[p]->get_element_blocks();
+        Ioss::ElementBlock *eb       = proc_ebs[b];
+        eb->put_field_data("connectivity", connectivity[p]);
       }
     }
   }
@@ -1193,8 +1292,8 @@ namespace {
 
   template <typename INT>
   void get_node_to_proc(Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
-                        std::vector<std::vector<std::vector<INT>>> &connectivity,
-                        std::vector<int> &node_to_proc, std::vector<INT> &node_to_proc_pointer)
+                        const std::vector<int> &elem_to_proc, std::vector<int> &node_to_proc,
+                        std::vector<INT> &node_to_proc_pointer)
   {
     progress(__func__);
     // Process each element block connectivity to get the node_to_proc mapping.
@@ -1207,7 +1306,7 @@ namespace {
     //  * proc_list = node_to_proc[begin] .. node_to_proc[end-1]
     //
 
-    size_t proc_count = connectivity.size();
+    size_t proc_count = proc_region.size();
 
     size_t                        node_count = region.get_property("node_count").get_int();
     std::vector<std::vector<int>> proc_node(node_count);
@@ -1221,31 +1320,77 @@ namespace {
     }
     progress("\tProc_node reserved");
 
-    size_t sum_on_proc_count = 0;
-    for (size_t p = 0; p < proc_count; p++) {
-      size_t on_proc_count = 0;
-      auto & ebs           = proc_region[p]->get_element_blocks();
-      size_t block_count   = ebs.size();
+    size_t            sum_on_proc_count = 0;
+    Ioss::DatabaseIO *db                = region.get_database();
+    Iofx::DatabaseIO *ex_db             = dynamic_cast<Iofx::DatabaseIO *>(db);
 
-      for (size_t b = 0; b < block_count; b++) {
-        size_t element_count = ebs[b]->entity_count();
-        size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
-        for (size_t i = 0; i < element_count * element_nodes; i++) {
-          INT node = connectivity[p][b][i] - 1;
-          if (proc_node[node].empty() ||
-              proc_node[node][proc_node[node].size() - 1] != static_cast<int>(p)) {
-            proc_node[node].push_back(p);
-            on_proc_count++;
+    auto & ebs         = region.get_element_blocks();
+    size_t block_count = ebs.size();
+    size_t offset      = 0;
+
+    std::vector<size_t> on_proc_count(proc_count);
+    for (size_t b = 0; b < block_count; b++) {
+      std::vector<INT> glob_conn;
+      size_t           element_count = ebs[b]->entity_count();
+      size_t           element_nodes = ebs[b]->get_property("topology_node_count").get_int();
+      size_t           block_id      = ebs[b]->get_property("id").get_int();
+
+      // Do a 'partial_count' elements at a time...
+      if (ex_db != nullptr && element_count >= partial_count) {
+        int exoid = ex_db->get_file_pointer();
+
+        glob_conn.resize(partial_count * element_nodes);
+        for (size_t beg = 1; beg <= element_count; beg += partial_count) {
+          size_t count = partial_count;
+          if (beg + count - 1 > element_count) {
+            count = element_count - beg + 1;
           }
+
+          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, glob_conn.data(), nullptr,
+                              nullptr);
+          progress("\tpartial_conn: " + std::to_string(beg) + " " + std::to_string(count));
+
+          size_t el = 0;
+          for (size_t j = 0; j < count; j++) {
+            size_t p = elem_to_proc[offset + j];
+            for (size_t k = 0; k < element_nodes; k++) {
+              INT node = glob_conn[el++] - 1;
+              if (proc_node[node].empty() ||
+                  proc_node[node][proc_node[node].size() - 1] != static_cast<int>(p)) {
+                proc_node[node].push_back(p);
+                on_proc_count[p]++;
+              }
+            }
+          }
+          offset += count;
         }
       }
+      else {
+        ebs[b]->get_field_data("connectivity_raw", glob_conn);
+
+        size_t el = 0;
+        for (size_t j = 0; j < element_count; j++) {
+          size_t p = elem_to_proc[offset + j];
+          for (size_t k = 0; k < element_nodes; k++) {
+            INT node = glob_conn[el++] - 1;
+            if (proc_node[node].empty() ||
+                proc_node[node][proc_node[node].size() - 1] != static_cast<int>(p)) {
+              proc_node[node].push_back(p);
+              on_proc_count[p]++;
+            }
+          }
+        }
+        offset += element_count;
+      }
+    }
+    for (size_t p = 0; p < proc_count; p++) {
       Ioss::NodeBlock *nb =
-          new Ioss::NodeBlock(proc_region[p]->get_database(), "node_block1", on_proc_count, 3);
+          new Ioss::NodeBlock(proc_region[p]->get_database(), "node_block1", on_proc_count[p], 3);
       proc_region[p]->add(nb);
       if (debug_level & 2) {
-        fmt::print(stderr, "\tProcessor {:L} has {:L} nodes.\n", p, on_proc_count);
+        fmt::print(stderr, "\tProcessor {:L} has {:L} nodes.\n", p, on_proc_count[p]);
       }
-      sum_on_proc_count += on_proc_count;
+      sum_on_proc_count += on_proc_count[p];
     }
     progress("\tProc_node populated");
 
@@ -1393,22 +1538,12 @@ namespace {
       assert(proc_to_elem[i].size() == (size_t)proc_elem_block_cnt[block_count][i]);
     }
 
-    // Read connectivity and partition to each processor/block.
-    // connectvity[p][b] = connectivity for block b on processor p
-    std::vector<std::vector<std::vector<INT>>> connectivity(interFace.processor_count());
-    get_connectivity(region, proc_region, elem_to_proc, connectivity);
-    end = seacas_timer();
-
-    fmt::print(stderr, "Get connectivity lists for each element block on each processor = {:.5}\n",
-               end - start);
-
     // Now that we have the elements on each processor and the element
     // blocks those elements are in, can generate the node to proc list...
-
     start = seacas_timer();
     std::vector<int> node_to_proc;
     std::vector<INT> node_to_proc_pointer;
-    get_node_to_proc(region, proc_region, connectivity, node_to_proc, node_to_proc_pointer);
+    get_node_to_proc(region, proc_region, elem_to_proc, node_to_proc, node_to_proc_pointer);
     end = seacas_timer();
     fmt::print(stderr, "Node Categorization Time = {:.5}\n", end - start);
 
@@ -1488,17 +1623,19 @@ namespace {
       end = seacas_timer();
       fmt::print(stderr, "\tCommunication map Output = {:.5}\n", end - start);
 
-      start = seacas_timer();
-      output_connectivity(proc_region, connectivity, proc_begin, proc_size);
+      output_connectivity(region, proc_region, elem_to_proc, proc_begin, proc_size, (INT)1);
       end = seacas_timer();
-      fmt::print(stderr, "\tConnectivity Output = {:.5}\n", end - start);
 
-      // Free up connectivity space...
-      free_connectivity_storage(connectivity, proc_begin, proc_size);
+      fmt::print(stderr, "Connectivity Output = {:.5}\n", end - start);
 
       start = seacas_timer();
+#if 0
       output_coordinates(region, proc_region, node_to_proc, node_to_proc_pointer, proc_begin,
                          proc_size);
+#else
+      output_coordinates_c(region, proc_region, node_to_proc, node_to_proc_pointer, proc_begin,
+                           proc_size);
+#endif
       end = seacas_timer();
       fmt::print(stderr, "\tCoordinates Output = {:.5}\n", end - start);
 
