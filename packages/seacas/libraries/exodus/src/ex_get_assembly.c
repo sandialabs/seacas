@@ -109,7 +109,8 @@ int ex_get_assembly(int exoid, ex_assembly *assembly)
   }
 
   /* Get the type of entities stored in the entity list... */
-  if ((status = nc_get_att_int(exoid, entlst_id, EX_ATTRIBUTE_TYPE, &assembly->type)) != NC_NOERR) {
+  int type = assembly->type;
+  if ((status = nc_get_att_int(exoid, entlst_id, EX_ATTRIBUTE_TYPE, &type)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get assembly %" PRId64 " type in file id %d",
              assembly->id, exoid);
     ex_err_fn(exoid, __func__, errmsg, status);

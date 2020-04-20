@@ -147,8 +147,9 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
         goto error_ret; /* exit define mode and return */
       }
 
-      if ((status = nc_put_att_int(exoid, entlst_id[i], EX_ATTRIBUTE_TYPE, NC_INT, 1,
-                                   &assemblies[i].type)) != NC_NOERR) {
+      int type = assemblies[i].type;
+      if ((status = nc_put_att_int(exoid, entlst_id[i], EX_ATTRIBUTE_TYPE, NC_INT, 1, &type)) !=
+          NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store assembly type %d in file id %d",
                  assemblies[i].type, exoid);
         ex_err_fn(exoid, __func__, errmsg, status);
