@@ -45,7 +45,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <exo_fpp/Iofx_DatabaseIO.h>
+#include <exo_fpp/Ioex_DatabaseIO.h>
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
@@ -175,11 +175,11 @@ namespace {
 
 } // namespace
 
-namespace Iofx {
+namespace Ioex {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-      : Ioex::DatabaseIO(region, filename, db_usage, communicator, props)
+      : Ioex::BaseDatabaseIO(region, filename, db_usage, communicator, props)
   {
     if (!is_input()) {
       // Check whether appending to existing file...
@@ -441,7 +441,7 @@ namespace Iofx {
       }
     }
 
-    return Ioex::DatabaseIO::get_file_pointer();
+    return Ioex::BaseDatabaseIO::get_file_pointer();
   }
 
   void DatabaseIO::read_meta_data__()
@@ -919,7 +919,7 @@ namespace Iofx {
     default:
       std::ostringstream errmsg;
       fmt::print(errmsg, "INTERNAL ERROR: Invalid map type. "
-                         "Something is wrong in the Iofx::DatabaseIO::get_map() function. "
+                         "Something is wrong in the Ioex::DatabaseIO::get_map() function. "
                          "Please report.\n");
       IOSS_ERROR(errmsg);
     }
@@ -1679,7 +1679,7 @@ namespace Iofx {
                 std::ostringstream errmsg;
                 fmt::print(errmsg,
                            "INTERNAL ERROR: Could not find element block '{}' Something is wrong "
-                           "in the Iofx::DatabaseIO class. Please report.\n",
+                           "in the Ioex::DatabaseIO class. Please report.\n",
                            topo_or_block_name);
                 IOSS_ERROR(errmsg);
               }
@@ -1695,7 +1695,7 @@ namespace Iofx {
               std::ostringstream errmsg;
               fmt::print(errmsg,
                          "INTERNAL ERROR: Invalid setting for `split_type` {}. Something is wrong "
-                         "in the Iofx::DatabaseIO class. Please report.\n",
+                         "in the Ioex::DatabaseIO class. Please report.\n",
                          split_type);
               IOSS_ERROR(errmsg);
             }
@@ -1774,7 +1774,7 @@ namespace Iofx {
       }
     }
   }
-} // namespace Iofx
+} // namespace Ioex
 
 template <typename T>
 void DatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string &base,
@@ -2008,7 +2008,7 @@ void DatabaseIO::get_commsets()
 int64_t DatabaseIO::get_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
                                        void *data, size_t data_size) const
 {
-  return Ioex::DatabaseIO::get_field_internal(reg, field, data, data_size);
+  return Ioex::BaseDatabaseIO::get_field_internal(reg, field, data, data_size);
 }
 
 int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
@@ -3918,7 +3918,7 @@ int64_t DatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, int64_t id
       std::ostringstream errmsg;
       fmt::print(errmsg,
                  "INTERNAL ERROR: Could not find element block containing element with id {}. "
-                 "Something is wrong in the Iofx::DatabaseIO class. Please report.\n",
+                 "Something is wrong in the Ioex::DatabaseIO class. Please report.\n",
                  elem_id);
       IOSS_ERROR(errmsg);
     }
@@ -3928,7 +3928,7 @@ int64_t DatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, int64_t id
     if (topo == nullptr) {
       std::ostringstream errmsg;
       fmt::print(errmsg, "INTERNAL ERROR: Could not find topology of element block boundary. "
-                         "Something is wrong in the Iofx::DatabaseIO class. Please report.\n");
+                         "Something is wrong in the Ioex::DatabaseIO class. Please report.\n");
       IOSS_ERROR(errmsg);
     }
 
@@ -3958,7 +3958,7 @@ int64_t DatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, int64_t id
 int64_t DatabaseIO::put_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
                                        void *data, size_t data_size) const
 {
-  return Ioex::DatabaseIO::put_field_internal(reg, field, data, data_size);
+  return Ioex::BaseDatabaseIO::put_field_internal(reg, field, data, data_size);
 }
 
 int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
@@ -5593,4 +5593,4 @@ void DatabaseIO::gather_communication_metadata(Ioex::CommunicationMetaData *meta
   commsetNodeCount = meta->nodeMap.size();
   commsetElemCount = meta->elementMap.size();
 }
-} // namespace Iofx
+} // namespace Ioex
