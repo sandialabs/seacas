@@ -30,9 +30,9 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <exo_fac/Ioex_IOFactory.h> // for Ioex IOFactory
-
+#include <exodus/Ioex_IOFactory.h> // for Ioex IOFactory
 #include <exodus/Ioex_DatabaseIO.h> // for Ioex DatabaseIO
+
 #if defined(SEACAS_HAVE_MPI)
 #include <exodus/Ioex_ParallelDatabaseIO.h> // for Ioex ParallelDatabaseIO
 #endif
