@@ -108,15 +108,6 @@ namespace {
 
   void filename_substitution(std::string &filename, const SystemInterface &interFace);
 
-  template <typename T> struct remove_pointer
-  {
-    using type = T;
-  };
-  template <typename T> struct remove_pointer<T *>
-  {
-    using type = T;
-  };
-
   template <typename INT>
   void slice(Ioss::Region &region, const std::string &nemfile, SystemInterface &interFace,
              INT dummy);
