@@ -72,7 +72,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "0.8 (2020-04-13)";
+  std::string version = "0.9 (2020-04-20)";
 
   std::vector<Ioss::GroupingEntity *> attributes_modified;
 
@@ -148,17 +148,45 @@ namespace {
       fmt::print("\n\t*** There are no {} in this model.\n", type);
       return;
     }
-    if (tokens.size() > 2) {
+    if (tokens.size() == 4 && Ioss::Utils::substr_equal(tokens[2], "matches")) {
+      //   0       1           2       3
+      // LIST {entity_type} MATCHES {regex}
+      auto entity_type = get_entity_type(tokens[1]);
+      if (entity_type == Ioss::INVALID_TYPE) {
+        fmt::print(stderr, fg(fmt::color::yellow), "WARNING: Unrecognized entity type '{}'.\n",
+                   tokens[1]);
+      }
+      std::regex     reg(tokens[3], std::regex::extended);
+      Ioss::NameList names = get_name_list(region, entity_type);
+
+      // Check for match against all names in list...
+      bool matched = false;
+      for (const auto &name : names) {
+        if (std::regex_match(name, reg)) {
+          const auto *entity = region.get_entity(name, entity_type);
+          const T *   ge     = dynamic_cast<const T *>(entity);
+          if (ge != nullptr) {
+            info_entity(ge, show_property);
+            matched = true;
+          }
+        }
+      }
+      if (!matched) {
+        fmt::print(stderr, fg(fmt::color::yellow),
+                   "WARNING: Regular Expression '{}' did not match any {}\n", tokens[3], type);
+      }
+    }
+    else if (tokens.size() == 3 && Ioss::Utils::substr_equal(tokens[2], "list")) {
+      for (const T *ge : entities) {
+        info_entity(ge, show_property);
+      }
+    }
+    else {
       for (size_t i = 2; i < tokens.size(); i++) {
         const T *ge = dynamic_cast<T *>(region.get_entity(tokens[i]));
         if (ge != nullptr) {
           info_entity(ge, show_property);
         }
-      }
-    }
-    else {
-      for (const T *ge : entities) {
-        info_entity(ge, show_property);
       }
     }
   }
@@ -458,7 +486,7 @@ namespace {
   {
     bool all = Ioss::Utils::substr_equal(topic, "help");
     if (all) {
-      fmt::print("\n\tHELP [list | assembly | graph | attribute]\n");
+      fmt::print("\n\tHELP [list | assembly | graph | attribute | regex]\n");
       fmt::print("\n\tEND | EXIT\n");
       fmt::print("\t\tEnd command input and output changed assembly definitions (if any).\n");
       fmt::print("\n\tQUIT\n");
@@ -471,9 +499,17 @@ namespace {
                  "\t\tThis will cause the database to be rewritten. Without this option, it is "
                  "updated in place.\n");
     }
+    if (all || Ioss::Utils::substr_equal(topic, "regex")) {
+      fmt::print("\n\tRegular Expression help (used in ASSEMBLY MATCHES and LIST MATCHES and "
+                 "ATTRIBUTE LIST MATCHES options)\n"
+                 "\tSupports \"POSIX Extended Regular Expressions\" syntax\n"
+                 "\tSee https://www.regular-expressions.info/posix.html\n"
+                 "\tQuickStart: https://www.regular-expressions.info/quickstart.html\n");
+    }
     if (all || Ioss::Utils::substr_equal(topic, "list")) {
-      fmt::print("\n\tLIST summary|elementblock|block|assembly|nodeset|sideset|blob\n\n");
-      fmt::print("\n\tLIST elementblock|block|assembly|nodeset|sideset|blob {names...}\n\n");
+      fmt::print("\n\tLIST summary|elementblock|block|assembly|nodeset|sideset|blob\n");
+      fmt::print("\n\tLIST elementblock|block|assembly|nodeset|sideset|blob {{names...}}\n\n");
+      fmt::print("\n\tLIST elementblock|block|assembly|nodeset|sideset|blob MATCHES {{regex}}\n\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "assembly")) {
       fmt::print("\n\tFor all commands, if an assembly named `name` does not exist, it will be "
@@ -532,6 +568,9 @@ namespace {
                  "\t\tList attributes for the selected entities\n");
       fmt::print("\tATTRIBUTE {{ent_type}} LIST\n"
                  "\t\tList attributes for all entities in the specified entity type\n");
+      fmt::print("\tATTRIBUTE {{ent_type}} MATCH {{regex}}\n"
+                 "\t\tList attributes for all entities in the specified entity type whose name "
+                 "matches the regex.\n");
     }
   }
 
@@ -792,6 +831,7 @@ namespace {
     // ATTRIBUTE {{ent_name}} ADD {{att_name}} INTEGER {{values...}}
     // ATTRIBUTE LIST {{ent_name}} ...
     // ATTRIBUTE {{ent_type}} LIST
+    // ATTRIBUTE {{ent_type}} MATCH {regex}
 
     // Get requested entity...
     if (Ioss::Utils::substr_equal(tokens[2], "add")) {
@@ -890,6 +930,11 @@ namespace {
     }
     else if (Ioss::Utils::substr_equal(tokens[2], "list")) {
       // ATTRIBUTE {{ent_type}} LIST
+      handle_list(tokens, region, true);
+      return false;
+    }
+    else if (Ioss::Utils::substr_equal(tokens[2], "matches")) {
+      // ATTRIBUTE {{ent_type}} MATCH {regex}
       handle_list(tokens, region, true);
       return false;
     }
