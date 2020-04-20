@@ -41,7 +41,7 @@
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 #include <cassert>
-#include <exo_fpp/Ioex_DatabaseIO.h>
+#include <exodus/Ioex_DatabaseIO.h>
 #include <fmt/format.h>
 #include <init/Ionit_Initializer.h>
 
