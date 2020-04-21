@@ -633,27 +633,55 @@ namespace {
   }
 
   template <typename INT>
-  void output_communication_map(std::vector<Ioss::Region *> &  proc_region,
-                                std::vector<std::vector<INT>> &border_node_proc_map,
+  void output_communication_map(const Ioss::Region &           global_region,
+				std::vector<Ioss::Region *> &  proc_region,
+				const std::vector<int> &       node_to_proc,
+				const std::vector<INT> &       node_to_proc_pointer,
                                 size_t proc_begin, size_t proc_size)
   {
     progress(__func__);
+
+    std::vector<std::vector<INT>> border_node_proc_map(proc_size);
+
+    INT global_node_count = global_region.get_property("node_count").get_int();
+    // Iterate all nodes and count the number of processors it is on:
+    for (INT i = 0; i < global_node_count; i++) {
+      size_t node_proc_count = node_to_proc_pointer[i + 1] - node_to_proc_pointer[i];
+      if (node_proc_count > 1) {
+        // Get the <node,proc> pairs for all border nodes on this processor...
+        // Not efficient at this time...
+        size_t beg = node_to_proc_pointer[i];
+        size_t end = node_to_proc_pointer[i + 1];
+        for (size_t j = beg; j < end; j++) {
+          size_t node = i + 1;
+          size_t proc = node_to_proc[j];
+          for (size_t k = beg; k < end; k++) {
+            if (j == k) {
+              continue;
+            }
+            size_t p = node_to_proc[k];
+	    if (p >= proc_begin && p < proc_begin + proc_size) {
+	      border_node_proc_map[p-proc_begin].push_back(node);
+	      border_node_proc_map[p-proc_begin].push_back(proc);
+	    }
+          }
+        }
+      }
+    }
+
     size_t proc_count = proc_region.size();
     for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       auto &commset = proc_region[p]->get_commsets()[0];
-      commset->put_field_data("entity_processor", border_node_proc_map[p]);
-      Ioss::Utils::clear(border_node_proc_map[p]);
+      commset->put_field_data("entity_processor", border_node_proc_map[p-proc_begin]);
       proc_progress(p, proc_count);
     }
-    //    Ioss::Utils::clear(border_node_proc_map);
   }
 
   template <typename INT>
   void define_communication_data(const Ioss::Region &           global_region,
                                  std::vector<Ioss::Region *> &  proc_region,
                                  const std::vector<int> &       node_to_proc,
-                                 const std::vector<INT> &       node_to_proc_pointer,
-                                 std::vector<std::vector<INT>> &border_node_proc_map)
+                                 const std::vector<INT> &       node_to_proc_pointer)
   {
     progress(__func__);
     // This routine categorizes the nodes on a processor as interior
@@ -672,6 +700,7 @@ namespace {
     INT              global_node_count = global_region.get_property("node_count").get_int();
     size_t           proc_count        = proc_region.size();
     std::vector<INT> interior_nodes(proc_count);
+    std::vector<INT> border_nodes(proc_count);
 
     // Iterate all nodes and count the number of processors it is on:
     for (INT i = 0; i < global_node_count; i++) {
@@ -686,15 +715,12 @@ namespace {
         size_t beg = node_to_proc_pointer[i];
         size_t end = node_to_proc_pointer[i + 1];
         for (size_t j = beg; j < end; j++) {
-          size_t node = i + 1;
-          size_t proc = node_to_proc[j];
           for (size_t k = beg; k < end; k++) {
             if (j == k) {
               continue;
             }
             size_t p = node_to_proc[k];
-            border_node_proc_map[p].push_back(node);
-            border_node_proc_map[p].push_back(proc);
+	    border_nodes[p]++;
           }
         }
       }
@@ -709,7 +735,7 @@ namespace {
 
       INT element_count = region->get_property("element_count").get_int();
       INT node_count    = region->get_property("node_count").get_int();
-      INT border_nodes  = node_count - interior_nodes[p];
+      INT border_node_cnt = node_count - interior_nodes[p];
 
       region->property_add(Ioss::Property("global_node_count", global_node_count));
       region->property_add(Ioss::Property("global_element_count", global_element_count));
@@ -717,7 +743,7 @@ namespace {
       region->property_add(Ioss::Property("my_processor", static_cast<int>(p)));
 
       region->property_add(Ioss::Property("internal_node_count", interior_nodes[p]));
-      region->property_add(Ioss::Property("border_node_count", border_nodes));
+      region->property_add(Ioss::Property("border_node_count", border_node_cnt));
       region->property_add(Ioss::Property("internal_element_count", element_count));
       region->property_add(Ioss::Property("border_element_count", 0));
 
@@ -727,12 +753,12 @@ namespace {
       // For each node on this processor that isn't an interior node,
       // create the <node,proc> pair...
       auto *commset = new Ioss::CommSet(region->get_database(), "commset_node", "node",
-                                        border_node_proc_map[p].size() / 2);
+                                        border_nodes[p]);
       commset->property_add(Ioss::Property("id", 1));
       region->add(commset);
       if (debug_level & 2) {
         fmt::print(stderr, "Commset for processor {} has {} entries.\n", p,
-                   border_node_proc_map[p].size() / 2);
+                   border_nodes[p]);
       }
     }
   }
@@ -1508,27 +1534,6 @@ namespace {
     }
 
     start = seacas_timer();
-    // Now, build the proc-to-element vector which lists the elements
-    // on each processor. Know the size of each vector, so can
-    // preallocate.  The 'get_proc_elem_block_count()' function also
-    // gives us the number of elements in each block on each
-    // processor, so it is useful for more just give a preallocation size...
-    std::vector<std::vector<INT>> proc_to_elem(interFace.processor_count());
-    for (size_t i = 0; i < interFace.processor_count(); i++) {
-      proc_to_elem[i].reserve(
-          proc_elem_block_cnt[block_count][i]); // Reserve, not resize so doesn't initialize
-    }
-
-    size_t element_count = region.get_property("element_count").get_int();
-    for (size_t i = 0; i < element_count; i++) {
-      size_t processor = elem_to_proc[i];
-      proc_to_elem[processor].push_back(i);
-    }
-
-    for (size_t i = 0; i < interFace.processor_count(); i++) {
-      assert(proc_to_elem[i].size() == (size_t)proc_elem_block_cnt[block_count][i]);
-    }
-
     // Now that we have the elements on each processor and the element
     // blocks those elements are in, can generate the node to proc list...
     start = seacas_timer();
@@ -1540,9 +1545,7 @@ namespace {
 
     // Communication map data -- interior/border nodes
     start = seacas_timer();
-    std::vector<std::vector<INT>> border_node_proc_map(interFace.processor_count());
-    define_communication_data(region, proc_region, node_to_proc, node_to_proc_pointer,
-                              border_node_proc_map);
+    define_communication_data(region, proc_region, node_to_proc, node_to_proc_pointer);
     end = seacas_timer();
     fmt::print(stderr, "Communication Data Definitions = {:.5}\n", end - start);
 
@@ -1566,11 +1569,12 @@ namespace {
     size_t max_files      = interFace.max_files();
     size_t chunks         = (proc_count + max_files - 1) / max_files;
     size_t size_per_chunk = (proc_count + chunks - 1) / chunks;
+    if (chunks > 1) {
     fmt::print(stderr,
                "\nMax open files = {}; processing files in {} chunks of size {} to maximize "
                "performance.\n",
                max_files, chunks, size_per_chunk);
-
+    }
     for (size_t chunk = 0; chunk < chunks; chunk++) {
       size_t proc_begin = chunk * size_per_chunk;
       size_t proc_size  = size_per_chunk;
@@ -1610,7 +1614,7 @@ namespace {
       fmt::print(stderr, "\tElement Map Output = {:.5}\n", end - start);
 
       start = seacas_timer();
-      output_communication_map(proc_region, border_node_proc_map, proc_begin, proc_size);
+      output_communication_map(region, proc_region, node_to_proc, node_to_proc_pointer, proc_begin, proc_size);
       end = seacas_timer();
       fmt::print(stderr, "\tCommunication map Output = {:.5}\n", end - start);
 
