@@ -2410,6 +2410,17 @@ namespace Iocgns {
         CGCHECKM(cgp_parent_data_write(get_file_pointer(), base, zone, sect, cg_start, cg_end, xx));
         m_bcOffset[zone] += size;
       }
+      else if (field.get_name() == "distribution_factors") {
+        static bool warning_output = false;
+        if (!warning_output) {
+          if (myProcessor == 0) {
+            fmt::print(Ioss::WARNING(),
+                       "For CGNS output, the sideset distribution factors are not output.\n");
+          }
+          warning_output = true;
+        }
+        return 0;
+      }
       else {
         num_to_get = Ioss::Utils::field_warning(sb, field, "output");
       }
