@@ -41,6 +41,7 @@
 #include <cstddef> // for nullptr
 #include <exodusII.h>
 #include <string> // for string
+#include <fmt/ostream.h>
 
 #include "Ioss_CodeTypes.h" // for MPI_Comm
 #include "Ioss_DBUsage.h"   // for DatabaseUsage
@@ -120,7 +121,20 @@ namespace Ioex {
       return new Ioex::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
   }
 
-  void IOFactory::show_config() const { ex_print_config(); }
+  void IOFactory::show_config() const 
+  { 
+    ex_print_config(); 
+#if !defined(NO_ZOLTAN_SUPPORT)
+  fmt::print(Ioss::OUTPUT(), "\tZoltan Library is Available for Parallel Decomposition.\n");
+#else
+  fmt::print(Ioss::OUTPUT(), "\tZoltan Library is NOT Available for Parallel Decomposition.\n");
+#endif
+#if !defined(NO_PARMETIS_SUPPORT)
+  fmt::print(Ioss::OUTPUT(), "\tParMetis Library is Available for Parallel Decomposition.\n\n");
+#else
+  fmt::print(Ioss::OUTPUT(), "\tParMetis Library is NOT Available for Parallel Decomposition.\n\n");
+#endif
+  }
 } // namespace Ioex
 
 #if defined(SEACAS_HAVE_MPI)
