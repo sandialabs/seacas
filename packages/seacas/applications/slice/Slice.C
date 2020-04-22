@@ -633,11 +633,11 @@ namespace {
   }
 
   template <typename INT>
-  void output_communication_map(const Ioss::Region &           global_region,
-				std::vector<Ioss::Region *> &  proc_region,
-				const std::vector<int> &       node_to_proc,
-				const std::vector<INT> &       node_to_proc_pointer,
-                                size_t proc_begin, size_t proc_size)
+  void output_communication_map(const Ioss::Region &         global_region,
+                                std::vector<Ioss::Region *> &proc_region,
+                                const std::vector<int> &     node_to_proc,
+                                const std::vector<INT> &node_to_proc_pointer, size_t proc_begin,
+                                size_t proc_size)
   {
     progress(__func__);
 
@@ -660,28 +660,30 @@ namespace {
               continue;
             }
             size_t p = node_to_proc[k];
-	    if (p >= proc_begin && p < proc_begin + proc_size) {
-	      border_node_proc_map[p-proc_begin].push_back(node);
-	      border_node_proc_map[p-proc_begin].push_back(proc);
-	    }
+            if (p >= proc_begin && p < proc_begin + proc_size) {
+              border_node_proc_map[p - proc_begin].push_back(node);
+              border_node_proc_map[p - proc_begin].push_back(proc);
+            }
           }
         }
       }
     }
 
+    progress("border_node_proc_map fully populated");
     size_t proc_count = proc_region.size();
     for (size_t p = proc_begin; p < proc_begin + proc_size; p++) {
       auto &commset = proc_region[p]->get_commsets()[0];
-      commset->put_field_data("entity_processor", border_node_proc_map[p-proc_begin]);
+      commset->put_field_data("entity_processor", border_node_proc_map[p - proc_begin]);
+      border_node_proc_map[p - proc_begin].clear();
       proc_progress(p, proc_count);
     }
   }
 
   template <typename INT>
-  void define_communication_data(const Ioss::Region &           global_region,
-                                 std::vector<Ioss::Region *> &  proc_region,
-                                 const std::vector<int> &       node_to_proc,
-                                 const std::vector<INT> &       node_to_proc_pointer)
+  void define_communication_data(const Ioss::Region &         global_region,
+                                 std::vector<Ioss::Region *> &proc_region,
+                                 const std::vector<int> &     node_to_proc,
+                                 const std::vector<INT> &     node_to_proc_pointer)
   {
     progress(__func__);
     // This routine categorizes the nodes on a processor as interior
@@ -720,7 +722,7 @@ namespace {
               continue;
             }
             size_t p = node_to_proc[k];
-	    border_nodes[p]++;
+            border_nodes[p]++;
           }
         }
       }
@@ -733,8 +735,8 @@ namespace {
     for (size_t p = 0; p < proc_count; p++) {
       Ioss::Region *region = proc_region[p];
 
-      INT element_count = region->get_property("element_count").get_int();
-      INT node_count    = region->get_property("node_count").get_int();
+      INT element_count   = region->get_property("element_count").get_int();
+      INT node_count      = region->get_property("node_count").get_int();
       INT border_node_cnt = node_count - interior_nodes[p];
 
       region->property_add(Ioss::Property("global_node_count", global_node_count));
@@ -752,13 +754,12 @@ namespace {
       //
       // For each node on this processor that isn't an interior node,
       // create the <node,proc> pair...
-      auto *commset = new Ioss::CommSet(region->get_database(), "commset_node", "node",
-                                        border_nodes[p]);
+      auto *commset =
+          new Ioss::CommSet(region->get_database(), "commset_node", "node", border_nodes[p]);
       commset->property_add(Ioss::Property("id", 1));
       region->add(commset);
       if (debug_level & 2) {
-        fmt::print(stderr, "Commset for processor {} has {} entries.\n", p,
-                   border_nodes[p]);
+        fmt::print(stderr, "Commset for processor {} has {} entries.\n", p, border_nodes[p]);
       }
     }
   }
@@ -1570,10 +1571,10 @@ namespace {
     size_t chunks         = (proc_count + max_files - 1) / max_files;
     size_t size_per_chunk = (proc_count + chunks - 1) / chunks;
     if (chunks > 1) {
-    fmt::print(stderr,
-               "\nMax open files = {}; processing files in {} chunks of size {} to maximize "
-               "performance.\n",
-               max_files, chunks, size_per_chunk);
+      fmt::print(stderr,
+                 "\nMax open files = {}; processing files in {} chunks of size {} to maximize "
+                 "performance.\n",
+                 max_files, chunks, size_per_chunk);
     }
     for (size_t chunk = 0; chunk < chunks; chunk++) {
       size_t proc_begin = chunk * size_per_chunk;
@@ -1614,7 +1615,8 @@ namespace {
       fmt::print(stderr, "\tElement Map Output = {:.5}\n", end - start);
 
       start = seacas_timer();
-      output_communication_map(region, proc_region, node_to_proc, node_to_proc_pointer, proc_begin, proc_size);
+      output_communication_map(region, proc_region, node_to_proc, node_to_proc_pointer, proc_begin,
+                               proc_size);
       end = seacas_timer();
       fmt::print(stderr, "\tCommunication map Output = {:.5}\n", end - start);
 
