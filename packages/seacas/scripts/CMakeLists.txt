@@ -74,7 +74,7 @@ ASSERT_DEFINED(${PROJECT_NAME}_ENABLE_SEACASEpu)
 IF (${PROJECT_NAME}_ENABLE_SEACASBlot OR
     ${PROJECT_NAME}_ENABLE_SEACASFastq OR
     ${PROJECT_NAME}_ENABLE_SEACASEpu)
-   ADD_EXECUTABLE(getopt.seacas ${SOURCES}	)
+   ADD_EXECUTABLE(getopt.seacas ${SOURCES} )
    install_executable(getopt.seacas)
 endif()
 ENDIF()
