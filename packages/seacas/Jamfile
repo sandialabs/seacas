@@ -259,9 +259,6 @@ install install-user-lib
     mapvarlib
     aprepro_lib
     ioex
-    ioex_fac
-    iopx
-    iofx
     io_info_lib
     iocgns
     iopg
@@ -306,74 +303,18 @@ lib ioex
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
     # builds only and will not be present for user builds.
-         [ glob $(seacas-root)/libraries/ioss/src/exodus/*.C ]
+         [ glob $(seacas-root)/libraries/ioss/src/exodus/*.[Cc] ]
     ]
     ioss
     exodus
     /tpl/netcdf//netcdf
+    /tpl/trilinos//zoltan
+    /tpl/parmetis//parmetis
   :
     [ ifuserbuild
     # Any parameters within this 'ifuserbuild' block apply to user
     # builds only and will not be present for developer builds.
         <file>$(seacas-root)/lib/libioex.a
-    ]
-  ;
-
-
-lib ioex_fac
-  :
-    [ ifdevbuild
-    # Any parameters within this 'ifdevbuild' block apply to development
-    # builds only and will not be present for user builds.
-         [ glob $(seacas-root)/libraries/ioss/src/exo_fac/*.C ]
-    ]
-    ioss
-    iopx
-    iofx
-  :
-    [ ifuserbuild
-    # Any parameters within this 'ifuserbuild' block apply to user
-    # builds only and will not be present for developer builds.
-        <file>$(seacas-root)/lib/libioex_fac.a
-    ]
-  ;
-
-
-lib iopx
-  :
-    [ ifdevbuild
-    # Any parameters within this 'ifdevbuild' block apply to development
-    # builds only and will not be present for user builds.
-        [ glob $(seacas-root)/libraries/ioss/src/exo_par/*.C ]
-    ]
-    ioex
-    /tpl/trilinos//zoltan
-    /tpl/parmetis//parmetis
-    exodus
-    /tpl/netcdf//netcdf
-  :
-    [ ifuserbuild
-    # Any parameters within this 'ifuserbuild' block apply to user
-    # builds only and will not be present for developer builds.
-        <file>$(seacas-root)/lib/libiopx.a
-    ]
-  ;
-
-lib iofx
-  :
-    [ ifdevbuild
-    # Any parameters within this 'ifdevbuild' block apply to development
-    # builds only and will not be present for user builds.
-        [ glob $(seacas-root)/libraries/ioss/src/exo_fpp/*.C ]
-    ]
-    ioex
-    exodus
-    /tpl/netcdf//netcdf
-  :
-    [ ifuserbuild
-    # Any parameters within this 'ifuserbuild' block apply to user
-    # builds only and will not be present for developer builds.
-        <file>$(seacas-root)/lib/libiofx.a
     ]
   ;
 
@@ -490,11 +431,8 @@ lib ioinit
     # builds only and will not be present for user builds.
         [ glob $(seacas-root)/libraries/ioss/src/init/*.C ]
     ]
-    ioex_fac
     iocgns
     ioex
-    iopx
-    iofx
     iopg
     iohb
     iogn
@@ -866,7 +804,9 @@ lib suplib_c
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
     # builds only and will not be present for user builds.
-        [ glob $(seacas-root)/libraries/suplib_c/*.c ]
+    [ set.difference
+         [ glob $(seacas-root)/libraries/suplib_c/*.c ] :
+	        $(seacas-root)/libraries/suplib_c/XGetopt.c ]
     ]
   :
     [ ifdevbuild
