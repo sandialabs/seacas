@@ -87,14 +87,6 @@ endif()
 
 IF (${PACKAGE_NAME}_ENABLE_SEACASExodus)
   ADD_SUBDIRECTORY(exodus)
-
-  ADD_SUBDIRECTORY(exo_fpp)
-
-  IF (TPL_Netcdf_PARALLEL)
-    ADD_SUBDIRECTORY(exo_par)
-  ENDIF()
-
-  ADD_SUBDIRECTORY(exo_fac)
 ENDIF()
 
 IF (${PROJECT_NAME}_ENABLE_Pamgen)
