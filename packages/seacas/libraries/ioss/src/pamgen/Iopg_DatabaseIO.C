@@ -887,7 +887,7 @@ namespace Iopg {
               if (block == nullptr) {
                 std::ostringstream errmsg;
                 errmsg << "INTERNAL ERROR: Could not find element block '" << topo_or_block_name
-                       << "' Something is wrong in the Ioex::DatabaseIO class. Please report.\n";
+                       << "' Something is wrong in the Iopg::DatabaseIO class. Please report.\n";
                 IOSS_ERROR(errmsg);
               }
               elem_topo = block->topology();
