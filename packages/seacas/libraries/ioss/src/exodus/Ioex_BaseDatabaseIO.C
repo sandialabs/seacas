@@ -1027,7 +1027,7 @@ namespace Ioex {
     int *    ivar   = static_cast<int *>(variables);
     int64_t *ivar64 = static_cast<int64_t *>(variables);
 
-    int64_t id = type == EX_GLOBAL ? 0 : ge->get_property("id").get_int();
+    auto id   = (ge->property_exists("id")) ? ge->get_property("id").get_int() : 0;
 
     // Note that if the field's basic type is COMPLEX, then each component of
     // the VariableType is a complex variable consisting of a real and
@@ -1099,7 +1099,7 @@ namespace Ioex {
   {
     const Ioss::VariableType *var_type = field.raw_storage();
 
-    int64_t id = type == EX_GLOBAL ? 0 : ge->get_property("id").get_int();
+    auto id   = (ge->property_exists("id")) ? ge->get_property("id").get_int() : 0;
 
     Ioss::Field::BasicType ioss_type = field.get_type();
     assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
@@ -1715,7 +1715,7 @@ namespace Ioex {
     size_t value_size = m_reductionVariables[type].size();
 #endif
     for (const auto &entity : entities) {
-      int64_t id = type == EX_GLOBAL ? 0 : entity->get_property("id").get_int();
+      auto id   = (entity->property_exists("id")) ? entity->get_property("id").get_int() : 0;
       m_reductionValues[type][id].resize(value_size);
     }
 
