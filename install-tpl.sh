@@ -75,6 +75,9 @@ check_valid_on_off MATIO
 METIS=${METIS:-OFF}
 check_valid_on_off METIS
 
+PARMETIS=${PARMETIS:-OFF}
+check_valid_on_off PARMETIS
+
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
 check_valid_on_off GNU_PARALLEL
 
@@ -481,6 +484,44 @@ then
 	fi
     else
 	echo "${txtylw}+++ Metis already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
+
+# =================== INSTALL PARMETIS  ===============
+if [ "$PARMETIS" == "ON" ] && [ "$MPI" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libparmetis.a ]
+    then
+	echo "${txtgrn}+++ ParMETIS${txtrst}"
+	cd $ACCESS
+	cd TPL/parmetis
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf parmetis
+	    git clone https://github.com/gsjaardema/parmetis
+	fi
+
+	if [ "$BUILD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd parmetis
+            CRAY=${CRAY} MPI=${MPI} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure ParMETIS. exiting.${txtrst}
+                exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build ParMETIS. exiting.${txtrst}
+                exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ ParMETIS already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
 

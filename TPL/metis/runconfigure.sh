@@ -6,6 +6,14 @@ if [ "X$ACCESS" == "X" ] ; then
   echo "ACCESS set to ${ACCESS}"
 fi
 
+SHARED="${SHARED:-ON}"
+if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
+then
+  USE_SHARED="1"
+else
+  USE_SHARED="0"
+fi
+
 MPI="${MPI:-OFF}"
 if [ "$MPI" == "ON" ]
 then
@@ -35,7 +43,7 @@ else
   fi
 fi
 
-make config cc=${CC} prefix=${ACCESS}
+make config cc=${CC} prefix=${ACCESS} shared=${USE_SHARED}
 
 echo ""
 echo "     MPI: ${MPI}"
