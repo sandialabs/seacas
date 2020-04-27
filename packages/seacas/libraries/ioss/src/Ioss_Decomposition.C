@@ -198,14 +198,6 @@ namespace Ioss {
     }
   }
 
-  template bool                Decomposition<int64_t>::needs_centroids() const;
-  template bool                Decomposition<int>::needs_centroids() const;
-  template <typename INT> bool Decomposition<INT>::needs_centroids() const
-  {
-    return (m_method == "RCB" || m_method == "RIB" || m_method == "HSFC" ||
-            m_method == "GEOM_KWAY" || m_method == "KWAY_GEOM" || m_method == "METIS_SFC");
-  }
-
   template void Decomposition<int>::generate_entity_distributions(size_t globalNodeCount,
                                                                   size_t globalElementCount);
   template void Decomposition<int64_t>::generate_entity_distributions(size_t globalNodeCount,
@@ -784,13 +776,19 @@ namespace Ioss {
         IOSS_ERROR(errmsg);
       }
 
-      static_assert(sizeof(double) == sizeof(real_t),
-                    "Parmetis real_t size must match double size");
-
-      rc = ParMETIS_V3_PartGeomKway(element_dist, dual_xadj, dual_adjacency, elm_wgt, elm_wgt,
-                                    &wgt_flag, &num_flag, &ndims, (real_t *)m_centroids.data(),
-                                    &ncon, &nparts, tp_wgts.data(), ub_vec.data(), options.data(),
-                                    &edge_cuts, elem_partition, &m_comm);
+      if (sizeof(double) == sizeof(real_t)) {
+	rc = ParMETIS_V3_PartGeomKway(element_dist, dual_xadj, dual_adjacency, elm_wgt, elm_wgt,
+				      &wgt_flag, &num_flag, &ndims, (real_t *)m_centroids.data(),
+				      &ncon, &nparts, tp_wgts.data(), ub_vec.data(), options.data(),
+				      &edge_cuts, elem_partition, &m_comm);
+      }
+      else {
+	std::vector<real_t> centroids(m_centroids.begin(), m_centroids.end());
+	rc = ParMETIS_V3_PartGeomKway(element_dist, dual_xadj, dual_adjacency, elm_wgt, elm_wgt,
+				      &wgt_flag, &num_flag, &ndims, centroids.data(),
+				      &ncon, &nparts, tp_wgts.data(), ub_vec.data(), options.data(),
+				      &edge_cuts, elem_partition, &m_comm);
+      }
 
 #if IOSS_DEBUG_OUTPUT
       fmt::print(Ioss::DEBUG(), "Edge Cuts = {}\n", edge_cuts);
@@ -806,11 +804,16 @@ namespace Ioss {
       }
     }
     else if (m_method == "METIS_SFC") {
-      static_assert(sizeof(double) == sizeof(real_t),
-                    "Parmetis real_t size must match double size");
-
-      int rc = ParMETIS_V3_PartGeom(element_dist, &ndims, (real_t *)m_centroids.data(),
-                                    elem_partition, &m_comm);
+      int rc = METIS_OK;
+      if (sizeof(double) == sizeof(real_t)) {
+	rc = ParMETIS_V3_PartGeom(element_dist, &ndims, (real_t *)m_centroids.data(),
+				  elem_partition, &m_comm);
+      }
+      else {
+	std::vector<real_t> centroids(m_centroids.begin(), m_centroids.end());
+	rc = ParMETIS_V3_PartGeom(element_dist, &ndims, centroids.data(),
+				  elem_partition, &m_comm);
+      }
 
       if (rc != METIS_OK) {
         std::ostringstream errmsg;
@@ -818,6 +821,7 @@ namespace Ioss {
         IOSS_ERROR(errmsg);
       }
     }
+    m_centroids.clear();
   }
 #endif
 
