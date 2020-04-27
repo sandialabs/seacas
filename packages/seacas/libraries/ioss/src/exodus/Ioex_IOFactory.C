@@ -47,6 +47,9 @@
 #include "Ioss_DBUsage.h"   // for DatabaseUsage
 #include "Ioss_IOFactory.h" // for IOFactory
 
+#if !defined(NO_PARMETIS_SUPPORT)
+#include <parmetis.h>
+#endif
 namespace Ioss {
   class DatabaseIO;
 } // namespace Ioss
@@ -124,15 +127,17 @@ namespace Ioex {
   void IOFactory::show_config() const 
   { 
     ex_print_config(); 
-#if !defined(NO_ZOLTAN_SUPPORT)
-  fmt::print(Ioss::OUTPUT(), "\tZoltan Library is Available for Parallel Decomposition.\n");
-#else
-  fmt::print(Ioss::OUTPUT(), "\tZoltan Library is NOT Available for Parallel Decomposition.\n");
-#endif
 #if !defined(NO_PARMETIS_SUPPORT)
-  fmt::print(Ioss::OUTPUT(), "\tParMetis Library is Available for Parallel Decomposition.\n\n");
+  fmt::print(Ioss::OUTPUT(), "\tParMetis Library Version: {}.{}.{} (Parallel Decomposition)\n"
+	     "\t\tInteger Size is {}, Real Size is {}\n\n", PARMETIS_MAJOR_VERSION, PARMETIS_MINOR_VERSION, PARMETIS_SUBMINOR_VERSION,
+	     IDXTYPEWIDTH, REALTYPEWIDTH);
 #else
   fmt::print(Ioss::OUTPUT(), "\tParMetis Library is NOT Available for Parallel Decomposition.\n\n");
+#endif
+#if !defined(NO_ZOLTAN_SUPPORT)
+  fmt::print(Ioss::OUTPUT(), "\tZoltan Library is Available for Parallel Decomposition.\n\n");
+#else
+  fmt::print(Ioss::OUTPUT(), "\tZoltan Library is NOT Available for Parallel Decomposition.\n\n");
 #endif
   }
 } // namespace Ioex

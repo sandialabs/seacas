@@ -54,6 +54,8 @@
 #endif
 
 namespace Ioss {
+  const std::vector<std::string> &valid_decomp_methods();
+
   class BlockDecompositionData
   {
   public:

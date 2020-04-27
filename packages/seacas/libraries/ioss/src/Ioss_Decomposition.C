@@ -85,6 +85,15 @@ namespace {
     return dist;
   }
 
+  bool check_valid_decomp_method(const std::string &method) 
+  {
+    const auto& valid_methods = Ioss::valid_decomp_methods();
+    if (std::find(valid_methods.begin(), valid_methods.end(), method) != valid_methods.end()) {
+      return true;
+    }
+    return false;
+  }
+
   std::string get_decomposition_method(const Ioss::PropertyManager &properties, int my_processor)
   {
     std::string method = "LINEAR";
@@ -102,31 +111,13 @@ namespace {
       method = Ioss::Utils::uppercase(method);
     }
 
-    if (method != "LINEAR"
-#if !defined(NO_ZOLTAN_SUPPORT)
-        && method != "BLOCK" && method != "CYCLIC" && method != "RANDOM" && method != "RCB" &&
-        method != "RIB" && method != "HSFC"
-#endif
-#if !defined(NO_PARMETIS_SUPPORT)
-        && method != "KWAY" && method != "GEOM_KWAY" && method != "KWAY_GEOM" &&
-        method != "METIS_SFC"
-#endif
-    ) {
+    if (!check_valid_decomp_method(method)) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
                  "ERROR: Invalid decomposition method specified: '{}'\n"
-                 "       Valid methods: LINEAR"
-#if !defined(NO_ZOLTAN_SUPPORT)
-                 ", BLOCK, CYCLIC, RANDOM, RCB, RIB, HSFC"
-#endif
-#if !defined(NO_PARMETIS_SUPPORT)
-                 ", KWAY, GEOM_KWAY, METIS_SFC"
-#endif
-                 "\n",
-                 method);
+                 "       Valid methods: {}\n", method, fmt::join(Ioss::valid_decomp_methods(), ", "));
       IOSS_ERROR(errmsg);
     }
-
     return method;
   }
 
@@ -178,6 +169,20 @@ namespace {
 } // namespace
 
 namespace Ioss {
+
+  const std::vector<std::string> &valid_decomp_methods()
+  {
+    static const std::vector<std::string> valid_methods{
+      "LINEAR"
+#if !defined(NO_ZOLTAN_SUPPORT)
+	,"BLOCK", "CYCLIC", "RANDOM", "RCB", "RIB", "HSFC"
+#endif
+#if !defined(NO_PARMETIS_SUPPORT)
+	,"KWAY", "GEOM_KWAY", "METIS_SFC"
+#endif
+	};
+    return valid_methods;
+  }
 
   template Decomposition<int>::Decomposition(const Ioss::PropertyManager &props, MPI_Comm comm);
   template Decomposition<int64_t>::Decomposition(const Ioss::PropertyManager &props, MPI_Comm comm);
