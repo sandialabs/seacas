@@ -483,6 +483,10 @@ namespace {
     if (!interFace.decomp_method.empty()) {
       properties.add(Ioss::Property("DECOMPOSITION_METHOD", interFace.decomp_method));
     }
+
+    if (interFace.retain_empty_blocks) {
+      properties.add(Ioss::Property("RETAIN_EMPTY_BLOCKS", "YES"));
+    }
     return properties;
   }
 } // namespace

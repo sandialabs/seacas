@@ -1030,6 +1030,9 @@ namespace Ioex {
       return;
     }
 
+    bool retain_empty_blocks = false;
+    Ioss::Utils::check_set_bool_property(properties, "RETAIN_EMPTY_BLOCKS", retain_empty_blocks);
+
     Ioss::Int64Vector X_block_ids(m_groupCount[entity_type]);
 
     int error;
@@ -1170,7 +1173,7 @@ namespace Ioex {
 
         // If there are no Xs on any processor for this block and
         // we have no idea what the topology type is, skip it...
-        if (global_X_count[iblk] == 0) {
+        if (!retain_empty_blocks && global_X_count[iblk] == 0) {
           continue;
         }
       }
