@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -32,7 +32,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-/*****************************************************************************
+
+/*
  *
  * expvtt - ex_put_elem_var_tab
  *
@@ -50,13 +51,13 @@
  * revision history -
  *
  *
- *****************************************************************************/
+ */
 
 #include "exodusII.h"
 
 /*!
- * \deprecated Use ex_put_truth_table()(exoid, EX_ELEM_BLOCK, num_elem_blk,
- * num_elem_var, elem_var_tab)
+  \deprecated Use ex_put_truth_table()(exoid, EX_ELEM_BLOCK, num_elem_blk,
+  num_elem_var, elem_var_tab)
 
 The function ex_put_elem_var_tab() writes the exodus element variable
 truth table to the database. The element variable truth table
