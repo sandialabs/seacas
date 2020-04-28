@@ -6,6 +6,7 @@ var classIogn_1_1ExodusMesh =
     [ "communication_node_count_proc", "classIogn_1_1ExodusMesh.html#aff18e3ce3a36ce1b2c4a7c48f34bb380", null ],
     [ "connectivity", "classIogn_1_1ExodusMesh.html#aebfe20a7233940c8f1bc4ec1244fec69", null ],
     [ "coordinates", "classIogn_1_1ExodusMesh.html#af51819218b717ae55f90e6dd0b8b4f75", null ],
+    [ "coordinates", "classIogn_1_1ExodusMesh.html#a8f8d8893b23396019bea02ac66cfdb2d", null ],
     [ "coordinates", "classIogn_1_1ExodusMesh.html#aa51baab6b21b7d6d1e0ce04c4337b127", null ],
     [ "coordinates", "classIogn_1_1ExodusMesh.html#a6cfaef3ab8a71d133c190aa63d168146", null ],
     [ "coordinates", "classIogn_1_1ExodusMesh.html#a57a246a3b031b623b514a577ec0c4c90", null ],

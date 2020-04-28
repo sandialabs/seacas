@@ -1,12 +1,9 @@
 var Ioex__DatabaseIO_8C =
 [
-    [ "GLOBALS_ARE_TRANSIENT", "Ioex__DatabaseIO_8C.html#aa8c4cb3632ca993ad7224d670fc764aa", null ],
-    [ "check_attribute_index_order", "Ioex__DatabaseIO_8C.html#a9a39a5e9379a4a90041c1e408f4f95cd", null ],
-    [ "check_variable_consistency", "Ioex__DatabaseIO_8C.html#a5f1d0ce0f60ab0c62e367d59dc8d9ab4", null ],
-    [ "exodus_types", "Ioex__DatabaseIO_8C.html#ac526a36540c82fbc694317090f16fc63", null ],
-    [ "generate_block_truth_table", "Ioex__DatabaseIO_8C.html#a0feccf323106457fbeb37d155ee24dc7", null ],
-    [ "generate_block_truth_table", "Ioex__DatabaseIO_8C.html#a4fb1d81d83857a5b936fedbdb6ad7f82", null ],
-    [ "write_attribute_names", "Ioex__DatabaseIO_8C.html#a49a8fb19587d51f9b0b5d713d17f5ea8", null ],
+    [ "compute_internal_border_maps", "Ioex__DatabaseIO_8C.html#aed219e91b6f906d7680ced105eec90b0", null ],
+    [ "extract_data", "Ioex__DatabaseIO_8C.html#afd5239e8d419dcf4231e6e9e9c9a6780", null ],
+    [ "get_connectivity_data", "Ioex__DatabaseIO_8C.html#ae2ab07b594de94db1dbbc2918122b573", null ],
+    [ "SEP", "Ioex__DatabaseIO_8C.html#a7f93f418a449caef3ccd1eee796bdf92", null ],
     [ "complex_suffix", "Ioex__DatabaseIO_8C.html#a756b4cdcd8565306fc1a6c20bd5ffef2", null ],
     [ "max_line_length", "Ioex__DatabaseIO_8C.html#aa46c0ef881bbcda9aa7b23ad9441e812", null ]
 ];
