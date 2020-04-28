@@ -147,7 +147,7 @@ C
          DARC = .10
          INC = IFIX (ABS (TANG) / DARC) + 1
          IF (INC .LE. 6)INC = 6
-         DEL = TANG * (1.0 / FLOAT (INC))
+         DEL = TANG * (1.0 / DBLE(INC))
          IEND = INC - 1
          XK =  (LOG (R2 / R1)) / (THETA2 - THETA1)
          XA = R2 / EXP (XK * THETA2)
@@ -200,7 +200,7 @@ C
          ENDIF
          DARC = .10
          INC = MAX0 (IFIX (ABS (TANG) / DARC) + 1, 15)
-         DEL = TANG * (1.0 / FLOAT (INC))
+         DEL = TANG * (1.0 / DBLE(INC))
          IEND = INC - 1
          ANG  =  THETA1
          DO 110 I  =  1, IEND
@@ -301,7 +301,7 @@ C
          DELX = 2.0 * HALFW / 200.0
          DO 120 I = 1, 100
             FM = SQRT (1.0 + (TCOEF * (XL + DELX)) **2)
-            XR =  - HALFW + FLOAT (I) * 2.0 * DELX
+            XR =  - HALFW + DBLE(I) * 2.0 * DELX
             FR = SQRT (1.0 + (TCOEF * XR) **2)
             ARCOLD = ARCNOW
             ARCNOW = ARCNOW + DELX * (FL + 4.0 * FM + FR) / 3.0
