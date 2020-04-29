@@ -30,6 +30,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 #include <exception>
+#include <fmt/chrono.h>
 #include <fmt/ostream.h>
 #include <iomanip>
 #include <iostream>
@@ -194,7 +195,7 @@ namespace {
   }
 } // namespace
 
-std::string tsFormat = "[%H:%M:%S] ";
+std::string tsFormat = "[{:%H:%M:%S}] ";
 
 // prototypes
 
@@ -2797,19 +2798,10 @@ namespace {
       return std::string("");
     }
 
-    const int   length = 256;
-    static char time_string[length];
-
-    time_t     calendar_time = time(nullptr);
-    struct tm *local_time    = localtime(&calendar_time);
-
-    int error = strftime(time_string, length, format.c_str(), local_time);
-    if (error != 0) {
-      time_string[length - 1] = '\0';
-      return std::string(time_string);
-    }
-
-    return std::string("[ERROR]");
+    time_t      calendar_time = std::time(nullptr);
+    struct tm * local_time    = std::localtime(&calendar_time);
+    std::string time_string   = fmt::format(format, *local_time);
+    return time_string;
   }
 
   std::string format_time(double seconds)
