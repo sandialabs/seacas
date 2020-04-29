@@ -23,7 +23,6 @@
 #include <exodusII.h>
 #endif
 
-#include <Ioex_Internals.h>
 #include <Ionit_Initializer.h>
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
@@ -55,6 +54,7 @@
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
 #include <exodus/Ioex_Utils.h>
+#include <exodus/Ioex_Internals.h>
 #include <tokenize.h>
 
 #include <fmt/color.h>

@@ -70,6 +70,7 @@ project votd
     $(tpl-warnings)
     <include>$(seacas-root-inc)
     <address-model>64:<define>Build64
+    <architecture>power:<cxxflags>-Wno-psabi
   : usage-requirements
     <include>$(seacas-root-inc)
     <address-model>64:<define>Build64
@@ -118,6 +119,7 @@ local installed-end-user-files =
   txtexo
   io_shell
   io_info
+  io_modify
   shell_to_hex
   cth_pressure_map
   struc_to_unstruc
@@ -453,7 +455,7 @@ lib ioss
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
     # builds only and will not be present for user builds.
-        [ glob $(seacas-root)/libraries/ioss/src/*.C ]
+        [ glob $(seacas-root)/libraries/ioss/src/*.[cC] ]
     ]
     /tpl/trilinos//zoltan
     /tpl/parmetis//parmetis
@@ -1644,6 +1646,17 @@ exe io_info
   :
     $(seacas-root)/libraries/ioss/src/main/io_info_main.C
     io_info_lib
+    /mpi//mpi
+  :
+    <tag>@sierra-exec-tag
+  ;
+
+exe io_modify
+  :
+    $(seacas-root)/libraries/ioss/src/main/io_modify.C
+    $(seacas-root)/libraries/ioss/src/main/modify_interface.C
+    ioinit
+    ioex
     /mpi//mpi
   :
     <tag>@sierra-exec-tag
