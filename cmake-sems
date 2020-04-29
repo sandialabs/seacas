@@ -48,6 +48,8 @@ then
   module load sems-netcdf/4.7.3/parallel
   module load sems-parmetis/4.0.3/64bit_parallel
   module load sems-cgns/4.1.1/parallel
+HAVE_METIS=ON
+HAVE_PARMETIS=ON
 else
   module load sems-hdf5/1.10.6/base
   module load sems-netcdf/4.7.3/base
@@ -70,6 +72,8 @@ HAVE_DATAWAREHOUSE=OFF
 NETCDF_PATH=${SEMS_NETCDF_ROOT}
 HDF5_PATH=${SEMS_HDF5_ROOT}
 CGNS_PATH=${SEMS_CGNS_ROOT}
+METIS_PATH=${SEMS_PARMETIS_ROOT}
+PARMETIS_PATH=${SEMS_PARMETIS_ROOT}
 
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
@@ -154,6 +158,7 @@ cmake  \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
+-D TPL_ENABLE_ParMETIS:BOOL=${HAVE_PARMETIS} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE_IO_LIBS} \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
@@ -169,6 +174,8 @@ ${DW_SYMBOLS} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
 -D HDF5_NO_SYSTEM_PATHS=ON \
 -D CGNS_ROOT:PATH=${CGNS_PATH} \
+-D ParMETIS_ROOT:PATH=${PARMETIS_PATH} \
+-D METIS_ROOT:PATH=${PARMETIS_PATH} \
 -D PNetCDF_LIBRARIES=${SEMS_NETCDF_ROOT}/lib/libpnetcdf.a \
 -D PNetCDF_INCLUDE_DIRS=${SEMS_NETCDF_ROOT}/include/ \
 \
@@ -192,3 +199,14 @@ echo " "
 echo "     NETCDF: ${HAVE_NETCDF}"
 echo "      MATIO: ${HAVE_MATIO}"
 echo "       CGNS: ${HAVE_CGNS}"
+echo "     KOKKOS: ${HAVE_KOKKOS}"
+echo "     ZOLTAN: ${ZOLTAN}"
+echo "     ADIOS2: ${HAVE_ADIOS2}"
+echo "      METIS: ${HAVE_METIS}"
+echo "   PARMETIS: ${HAVE_PARMETIS}"
+echo "      GTEST: ${HAVE_GTEST}"
+echo "    DOXYGEN: ${DOXYGEN}"
+echo " "
+echo "Load these modules:"
+module -t list
+echo " "
