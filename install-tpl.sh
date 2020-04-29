@@ -447,9 +447,9 @@ then
 fi
 
 # =================== INSTALL METIS  ===============
-if [ "$METIS" == "ON" ]
+if [ "$METIS" == "ON" ] || [ "$PARMETIS" == "ON" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmetis.a ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmetis.${LD_EXT} ]
     then
 	echo "${txtgrn}+++ Metis${txtrst}"
 	cd $ACCESS
@@ -491,7 +491,7 @@ fi
 # =================== INSTALL PARMETIS  ===============
 if [ "$PARMETIS" == "ON" ] && [ "$MPI" == "ON" ]
 then
-    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libparmetis.a ]
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libparmetis.${LD_EXT} ]
     then
 	echo "${txtgrn}+++ ParMETIS${txtrst}"
 	cd $ACCESS
