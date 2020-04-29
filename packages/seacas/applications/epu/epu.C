@@ -95,7 +95,7 @@ namespace {
   unsigned int debug_level = 0;
   const double FILL_VALUE  = FLT_MAX;
   int          rank        = 0;
-  std::string  tsFormat    = "[%H:%M:%S] ";
+  std::string  tsFormat    = "[{:%H:%M:%S}] ";
 
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
