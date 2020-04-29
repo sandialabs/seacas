@@ -1115,12 +1115,11 @@ int epu(SystemInterface &interFace, int start_part, int part_count, int cycle, T
           exodus_error(__LINE__);
         }
         if (proc_time_val != time_val) {
-          fmt::print(
-              stderr,
-              "ERROR: (EPU) At step {:{}}, the time on processor {} is {:e15.8} which does not\n"
-              "       match the time on processor {} which is {:e15.8}\n"
-              "       This usually indicates a corrupt database.\n",
-              time_step + 1, ts_max + 1, start_part, time_val, p + start_part, proc_time_val);
+          fmt::print(stderr,
+                     "ERROR: (EPU) At step {}, the time on processor {} is {:.8} which does not\n"
+                     "       match the time on processor {} which is {:.8}\n"
+                     "       This usually indicates a corrupt database.\n",
+                     time_step + 1, start_part, time_val, p + start_part, proc_time_val);
         }
       }
 
@@ -2032,8 +2031,11 @@ namespace {
         size_t element_count = blocks[p][b].entity_count();
         for (size_t e = 0; e < element_count; e++) {
           size_t id = local_element_to_global[p][e + offset];
-          min_id    = (id < min_id) ? id : min_id;
-          max_id    = (id > max_id) ? id : max_id;
+          if (id == 0) {
+            fmt::print(stderr, "WARNING: invalid id at part {}, element {}\n", p, e);
+          }
+          min_id = (id < min_id) ? id : min_id;
+          max_id = (id > max_id) ? id : max_id;
         }
       }
       if (glob_blocks[b].entity_count() == 0) {
