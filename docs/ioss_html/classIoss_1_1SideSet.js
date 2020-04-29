@@ -1,6 +1,7 @@
 var classIoss_1_1SideSet =
 [
     [ "SideSet", "classIoss_1_1SideSet.html#af3e64b60d82ca9799aaf45ef343a17bb", null ],
+    [ "SideSet", "classIoss_1_1SideSet.html#a23720b7f848745c75ec204acc8bd7274", null ],
     [ "~SideSet", "classIoss_1_1SideSet.html#aa2c407be09b017577f6a5c4821227012", null ],
     [ "add", "classIoss_1_1SideSet.html#abeaee6e47909229b7ee51f5567255ed8", null ],
     [ "block_count", "classIoss_1_1SideSet.html#ae427effe8fea274ffecad576c0539f0d", null ],

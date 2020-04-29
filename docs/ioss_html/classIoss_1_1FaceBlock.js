@@ -1,6 +1,7 @@
 var classIoss_1_1FaceBlock =
 [
     [ "FaceBlock", "classIoss_1_1FaceBlock.html#a92f9d4d7e42081e2bae784570c919a07", null ],
+    [ "FaceBlock", "classIoss_1_1FaceBlock.html#ad176041d08faebe77ff6f9dd10d17aa9", null ],
     [ "~FaceBlock", "classIoss_1_1FaceBlock.html#a55220c38c6f7db866cc80eecf56b3b73", null ],
     [ "contains_string", "classIoss_1_1FaceBlock.html#aa74a9c7a8650a3f61eff17a09c60a3a2", null ],
     [ "get_implicit_property", "classIoss_1_1FaceBlock.html#af867b579092c945085ede1eb3b7e37ea", null ],

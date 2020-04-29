@@ -8,5 +8,6 @@ var namespaceIocgns =
     [ "ParallelDatabaseIO", "classIocgns_1_1ParallelDatabaseIO.html", "classIocgns_1_1ParallelDatabaseIO" ],
     [ "StructuredZoneData", "classIocgns_1_1StructuredZoneData.html", "classIocgns_1_1StructuredZoneData" ],
     [ "Utils", "classIocgns_1_1Utils.html", "classIocgns_1_1Utils" ],
+    [ "ZoneBC", "structIocgns_1_1ZoneBC.html", "structIocgns_1_1ZoneBC" ],
     [ "ZoneData", "classIocgns_1_1ZoneData.html", "classIocgns_1_1ZoneData" ]
 ];

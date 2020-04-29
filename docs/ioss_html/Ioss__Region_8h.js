@@ -2,6 +2,8 @@ var Ioss__Region_8h =
 [
     [ "Region", "classIoss_1_1Region.html", "classIoss_1_1Region" ],
     [ "AliasMap", "Ioss__Region_8h.html#a72432e62d0395c37e39f70bab00de882", null ],
+    [ "AssemblyContainer", "Ioss__Region_8h.html#acc8d17be8da25929560490fda8d3bc05", null ],
+    [ "BlobContainer", "Ioss__Region_8h.html#a6d2d9c188b378c1f3af02f8de6b5ed79", null ],
     [ "CommSetContainer", "Ioss__Region_8h.html#a4d0db35a575b42ff040c17a73fd1c15b", null ],
     [ "EdgeBlockContainer", "Ioss__Region_8h.html#abdc86bbb9da4a905ff8459b98d8fbe62", null ],
     [ "EdgeSetContainer", "Ioss__Region_8h.html#a0a352b1aa0a237218a19dc345ad32107", null ],

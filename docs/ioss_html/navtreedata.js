@@ -1,24 +1,26 @@
 /*
-@licstart  The following is the entire license notice for the
-JavaScript code in this file.
+ @licstart  The following is the entire license notice for the JavaScript code in this file.
 
-Copyright (C) 1997-2019 by Dimitri van Heesch
+ The MIT License (MIT)
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of version 2 of the GNU General Public License as published by
-the Free Software Foundation
+ Copyright (C) 1997-2020 by Dimitri van Heesch
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ and associated documentation files (the "Software"), to deal in the Software without restriction,
+ including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ The above copyright notice and this permission notice shall be included in all copies or
+ substantial portions of the Software.
 
-@licend  The above is the entire license notice
-for the JavaScript code in this file
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ @licend  The above is the entire license notice for the JavaScript code in this file
 */
 var NAVTREE =
 [
@@ -41,6 +43,7 @@ var NAVTREE =
       [ "License", "index.html#license", null ]
     ] ],
     [ "Todo List", "todo.html", null ],
+    [ "Modules", "modules.html", "modules" ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -69,7 +72,7 @@ var NAVTREE =
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ],
       [ "File Members", "globals.html", [
-        [ "All", "globals.html", null ],
+        [ "All", "globals.html", "globals_dup" ],
         [ "Functions", "globals_func.html", null ],
         [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
@@ -83,42 +86,43 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "AdiosWrapper_8C.html",
-"Iogn__DashSurfaceMesh_8h.html#a05c78571e9bf222ffa337fa31ed95006",
-"Ioss__EntityBlock_8h.html",
-"Ioss__SideSet_8h_source.html",
-"Iotr__Factory_8C.html",
-"classInfo_1_1Interface.html#ae26835e74aaeb7248f5f7b3611ffa310",
-"classIocgns_1_1DecompositionDataBase.html#a1c88aa6d52c23a24f16c161727ce9e81",
-"classIodw_1_1DatabaseIO.html#ae38dda29a50e47303be2e861d9fefcee",
-"classIofx_1_1DatabaseIO.html#abf0c4436258c52668c52d3e7c0727bb1",
-"classIogs_1_1DatabaseIO.html#a0b0e4e1ac28f55912a1bc763202a5db3",
-"classIopg_1_1DatabaseIO.html#a5dac04356e0e73da27a67f785c127e7e",
-"classIoss_1_1Beam2.html#aae7020577354d3d8b71d77fd3f7d02d3",
-"classIoss_1_1DatabaseIO.html#aae00a220b8c3cbd720bcda80803513a1",
-"classIoss_1_1Edge4.html#a7560d907069f5b2eb4047ec0688f741b",
-"classIoss_1_1FileInfo.html#a3999c96b72ab41961a6e9043f729e840",
-"classIoss_1_1Hex64.html#a8a6434b0b9b8ae4cfe45ade5b21d4b50",
-"classIoss_1_1Pyramid13.html",
-"classIoss_1_1Quad9.html#a25b9c97e8787eb24fcd76459b036caf8",
-"classIoss_1_1Shell8.html#af105bdea9b24320160bbf6927d509079",
-"classIoss_1_1St__Pyramid5.html#adc2db91a8729256bf5b3c73e7d763fda",
-"classIoss_1_1Tet10.html",
-"classIoss_1_1Tri13.html#a562d34f152485c0e57f2795db265b300",
-"classIoss_1_1TriShell7.html#a8b550e6582b5d6ee5037513717eb2784",
-"classIoss_1_1Wedge21.html#a5c817040ffd5c0263b4f6631be0b662a",
-"classIovs_1_1DatabaseIO.html#ab2711ba51f0bf84c3df64ff2a773ea48",
-"classtsl_1_1bhopscotch__map.html#aadcb0f18ad7cebbdcce6196ffe73927c",
-"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a6341c62bad1987195b61a885b681ddcf",
-"classtsl_1_1detail__robin__hash_1_1robin__hash.html#aec6a75c9119fad87b38e6ed9bcef2f81",
-"classtsl_1_1hopscotch__set.html#ab0b6bc7db793fe5bda2d96ca7600631d",
-"classtsl_1_1robin__set.html#ad077b340c8530c7d0f44d079944ca412",
-"io__info__main_8C.html",
-"namespaceanonymous__namespace_02Ioss__Wedge21_8C_03.html",
-"structIodw_1_1meta_1_1Region.html#aa2cd414089f886183383e0bf80595a93",
-"structIoss_1_1ZoneConnectivity.html#a0a9eff4efab2e43c4007170f0d9ee539",
-"structanonymous__namespace_02Ioss__Pyramid5_8C_03_1_1Constants.html#a80d4fcacd26812267b6a7e51e27388cc",
-"structanonymous__namespace_02Ioss__Tri4_8C_03_1_1Constants.html#a75f52ab25971ba21c063b9334a59e763",
-"structtsl_1_1detail__robin__hash_1_1has__is__transparent_3_01T_00_01typename_01make__void_3_01ty718636ff8fc74d73885502911b06edfb.html"
+"Ioex__Utils_8h.html#a0e441062139555c370269f0550e06ee4",
+"Ioss__ElementBlock_8h_source.html",
+"Ioss__Region_8h.html#a687e505d90568dcd2981b77fd54b525d",
+"Ioss__Utils_8C.html#ac3614ca7568d57e645fb86b5faf8bc83",
+"classIOShell_1_1Interface.html#a6a10ad18ee801b25d10f49fa136e8c32",
+"classIocgns_1_1DatabaseIO.html#ab02dc5f0e666a18bf0e5827a044292fd",
+"classIocgns_1_1Utils.html#ab140e29cf0cbe506a4d67cc4d62671d1",
+"classIoex_1_1DatabaseIO.html#a865020534126a5a0e2e0977b2c2c8070",
+"classIoex_1_1ParallelDatabaseIO.html#aa800c8dfbb35fdbb11434fa63ac4d45d",
+"classIogn_1_1GeneratedMesh.html#ab2e482c703e0ee0ec2087ea749c64cf3",
+"classIohb_1_1Layout.html#a008a95e0563088aa81320b5bcd1c8222",
+"classIoss_1_1CommSet.html#aedef3cafa267cd7ccce97e5069225157",
+"classIoss_1_1Decomposition.html#a5f168d54338513febfafe92c7e2bbf1e",
+"classIoss_1_1ElementTopology.html#aad976d32c03dfcebc37d540954a0333f",
+"classIoss_1_1GroupingEntity.html#a1cd7715c7b5324175d030dceb4aa9315",
+"classIoss_1_1Map.html#a6d87aa40f3e8701e9976a07e2785d9bb",
+"classIoss_1_1Pyramid18.html#a76a22f84729ea71352a47e3c76770a7a",
+"classIoss_1_1Region.html#a4f0d17a0e1e1d7361b65194910a42a56",
+"classIoss_1_1ShellLine2D3.html",
+"classIoss_1_1St__Tet11.html",
+"classIoss_1_1Tet11.html#af9485ed96fb1c0ab42385fc8e5e8b486",
+"classIoss_1_1Tri4.html#a58650889ae52b5b76902bbbeb90ebd9b",
+"classIoss_1_1Utils.html#a553a066e32b8f268758e92a0fa27db69",
+"classIoss_1_1Wedge52.html#a43e0311a2717afa2e63c9965019c4519",
+"classObjScopeGuardImpl0.html#ae28a21680ca110a21c704d4cd796e29d",
+"classtsl_1_1bhopscotch__map.html#ad64b7927efcf0389b419a8072fb3bdfa",
+"classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html#a8fdcc5c73eeddeac57a7abe008963049",
+"classtsl_1_1detail__robin__hash_1_1robin__hash_1_1robin__iterator.html#a6c26801686f10dfa7ead4c8ed5442e3d",
+"classtsl_1_1hopscotch__set.html#af6e7ccb761262fa7295d9ded81488eb0",
+"classtsl_1_1robin__set_1_1KeySelect.html#a5e100e2fceb7ce0e5d610595de7daf65",
+"io__info_8C.html#aa1c8abea5efac9a37a1a550b6d61063e",
+"namespaceanonymous__namespace_02Ioss__Tet11_8C_03.html",
+"structAssert.html#aa23f61afd463b41cd3fc581a17e37ad3",
+"structIogn_1_1DashSurfaceData.html#a7f79ce0c3ad2a0baa4e8fbf5855650a0",
+"structanonymous__namespace_02Ioss__Hex64_8C_03_1_1Constants.html#a0ea248e9a2769674ce8a370f805d27dd",
+"structanonymous__namespace_02Ioss__Tet15_8C_03_1_1Constants.html#a78f0bb5435c4f7f805e2b6f6ceffbe0b",
+"structanonymous__namespace_02Ioss__Wedge21_8C_03_1_1Constants.html#ada043ad2e9dcbe3840cfd6761d697d66"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

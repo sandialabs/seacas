@@ -3,6 +3,8 @@ var classIoex_1_1Mesh =
     [ "Mesh", "classIoex_1_1Mesh.html#a58bd1e09794aec7a8bc7d96576b672ac", null ],
     [ "Mesh", "classIoex_1_1Mesh.html#ad65f9f4c935e4c4474ba8f5409d4f773", null ],
     [ "populate", "classIoex_1_1Mesh.html#a43685cc27b6ae46653b79e9c52cdd68c", null ],
+    [ "assemblies", "classIoex_1_1Mesh.html#a4e7dd5ec0cec4d5dd77645ceb5975a93", null ],
+    [ "blobs", "classIoex_1_1Mesh.html#abd94e015df61eb27a85b9fba01cdccea", null ],
     [ "comm", "classIoex_1_1Mesh.html#a1a8cbacf0506289303d0e2dcec31147a", null ],
     [ "dimensionality", "classIoex_1_1Mesh.html#a4be76e037a6ebc840df9997b544f817f", null ],
     [ "edgeblocks", "classIoex_1_1Mesh.html#a8bdec6b08b911d4517692bf9cc40c9d0", null ],

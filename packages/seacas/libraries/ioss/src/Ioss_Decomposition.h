@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 1999-2017 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -54,6 +54,8 @@
 #endif
 
 namespace Ioss {
+  const std::vector<std::string> &valid_decomp_methods();
+
   class BlockDecompositionData
   {
   public:
@@ -116,6 +118,7 @@ namespace Ioss {
     }
 
     const std::string &name() const { return name_; }
+    const std::string &ss_name() const { return ss_name_.empty() ? name_ : ss_name_; }
     int64_t            id() const { return id_; }
     int                zone() const { return zone_; }
     int                section() const { return section_; }
@@ -128,6 +131,7 @@ namespace Ioss {
     std::vector<bool>   hasEntities; // T/F if this set exists on processor p
 
     std::string name_{};
+    std::string ss_name_{};
     int64_t     id_{0};
     int         zone_{0}; // Zone of the element block that this set is on
     int         section_{0};
@@ -158,7 +162,11 @@ namespace Ioss {
     size_t file_node_offset() const { return m_nodeOffset; }
     size_t file_elem_offset() const { return m_elementOffset; }
 
-    bool needs_centroids() const;
+    bool needs_centroids() const
+    {
+      return (m_method == "RCB" || m_method == "RIB" || m_method == "HSFC" ||
+              m_method == "GEOM_KWAY" || m_method == "KWAY_GEOM" || m_method == "METIS_SFC");
+    }
 
     void generate_entity_distributions(size_t globalNodeCount, size_t globalElementCount);
 

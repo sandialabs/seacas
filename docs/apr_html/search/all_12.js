@@ -79,7 +79,7 @@ var searchData=
   ['succ_565',['succ',['../apr__test_8cc.html#ad15723334fab77cc43861210acda2d36',1,'succ(double i):&#160;apr_test.cc'],['../strings_8cc.html#ad15723334fab77cc43861210acda2d36',1,'succ(double i):&#160;strings.cc']]],
   ['super_5ftype_566',['super_type',['../structSEAMS_1_1Parser_1_1basic__symbol.html#a657520ee69ef97aa3bd92156a2a0e50c',1,'SEAMS::Parser::basic_symbol::super_type()'],['../structSEAMS_1_1Parser_1_1stack__symbol__type.html#ac7c6cc9d77fb80f5a6bc9b04b73de530',1,'SEAMS::Parser::stack_symbol_type::super_type()']]],
   ['suppress_5fnl_567',['suppress_nl',['../apr__scanner_8cc.html#a5fbf3c0bd2abf6e8f56b5ed3582094ac',1,'apr_scanner.cc']]],
-  ['svar_568',['svar',['../structSEAMS_1_1symrec_1_1value.html#a2de1dd474fa9009e037a2a45ec60823d',1,'SEAMS::symrec::value::svar()'],['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a12882cfc062eebfc89f1d0a257022cd9',1,'SEAMS::Parser::token::SVAR()']]],
+  ['svar_568',['SVAR',['../structSEAMS_1_1Parser_1_1token.html#ac1559cad2b792d9af450e7ddf114fb82a12882cfc062eebfc89f1d0a257022cd9',1,'SEAMS::Parser::token::SVAR()'],['../structSEAMS_1_1symrec_1_1value.html#a2de1dd474fa9009e037a2a45ec60823d',1,'SEAMS::symrec::value::svar()']]],
   ['svar_5finit_569',['svar_init',['../structsvar__init.html',1,'']]],
   ['svariables_570',['svariables',['../namespaceSEAMS.html#aa45b183297ae5fc015fc634d9beaf2d1',1,'SEAMS']]],
   ['swap_571',['swap',['../namespaceSEAMS_1_1anonymous__namespace_02apr__units_8cc_03.html#a2e17cb56b857779aaeb299f7af83db20',1,'SEAMS::anonymous_namespace{apr_units.cc}']]],

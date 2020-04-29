@@ -1,6 +1,7 @@
 var classIoss_1_1NodeSet =
 [
     [ "NodeSet", "classIoss_1_1NodeSet.html#a488bc37f8c5fd3d843f2df130bbfc134", null ],
+    [ "NodeSet", "classIoss_1_1NodeSet.html#af81a98c7c0445d3daa4eeaef04e46985", null ],
     [ "NodeSet", "classIoss_1_1NodeSet.html#a6759d5f4907d30a6389e9bfb4e73a312", null ],
     [ "contains_string", "classIoss_1_1NodeSet.html#ad0b4f23cda4a8e882fcf9c6f3ecb5467", null ],
     [ "get_implicit_property", "classIoss_1_1NodeSet.html#af9443d6550eba00396f1f24bbe50ce44", null ],

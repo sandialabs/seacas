@@ -99,7 +99,8 @@ namespace {
     unsigned int       min_hash   = util.global_minmax(hash_code, Ioss::ParallelUtils::DO_MIN);
     if (max_hash != min_hash) {
       const std::string &ge_name = ge->name();
-      fmt::print(IOSS_WARNING, "Parallel inconsistency detected for {} field '{}' on entity '{}'\n",
+      fmt::print(Ioss::WARNING(),
+                 "Parallel inconsistency detected for {} field '{}' on entity '{}'\n",
                  in_out == 0 ? "writing" : "reading", field_name, ge_name);
       return false;
     }
@@ -297,13 +298,13 @@ namespace Ioss {
           usingDataWarp = true;
           dwPath        = bb_path;
           if (myProcessor == 0) {
-            fmt::print(stderr, "\nDataWarp Burst Buffer Enabled.  Path = `{}`\n\n", dwPath);
+            fmt::print(Ioss::OUTPUT(), "\nDataWarp Burst Buffer Enabled.  Path = `{}`\n\n", dwPath);
           }
         }
         else {
           if (myProcessor == 0) {
-            fmt::print(IOSS_WARNING,
-                       "\nWARNING: DataWarp enabled via Ioss property `ENABLE_DATAWARP`, but\n"
+            fmt::print(Ioss::WARNING(),
+                       "DataWarp enabled via Ioss property `ENABLE_DATAWARP`, but\n"
                        "         burst buffer path was not specified via `DW_JOB_STRIPED` or "
                        "`DW_JOB_PRIVATE`\n"
                        "         environment variables (typically set by queuing system)\n"
@@ -327,7 +328,7 @@ namespace Ioss {
       Ioss::FileInfo path{filename};
       Ioss::FileInfo bb_file{get_dwPath() + path.tailname()};
       if (bb_file.exists() && !bb_file.is_writable()) {
-	// already existing file which has been closed If we can't
+        // already existing file which has been closed If we can't
         // write to the file on the BB, then it is a file which is
         // being staged by datawarp system over to the permanent
         // filesystem.  Wait until staging has finished...  stage wait
@@ -335,8 +336,8 @@ namespace Ioss {
 #if defined SEACAS_HAVE_DATAWARP
 #if IOSS_DEBUG_OUTPUT
         if (myProcessor == 0) {
-	  fmt::print(stderr, "DW: dw_wait_file_stage({});\n", bb_file.filename());
-	}
+          fmt::print(Ioss::DEBUG(), "DW: dw_wait_file_stage({});\n", bb_file.filename());
+        }
 #endif
         int dwret = dw_wait_file_stage(bb_file.filename().c_str());
         if (dwret < 0) {
@@ -347,7 +348,7 @@ namespace Ioss {
         }
 #else
         // Used to debug DataWarp logic on systems without DataWarp...
-        fmt::print(stderr, "DW: (FAKE) dw_wait_file_stage({});\n", bb_file.filename());
+        fmt::print(Ioss::DEBUG(), "DW: (FAKE) dw_wait_file_stage({});\n", bb_file.filename());
 #endif
       }
       set_dwname(bb_file.filename());
@@ -365,37 +366,37 @@ namespace Ioss {
     if (using_dw()) {
       if (!using_parallel_io() || (using_parallel_io() && myProcessor == 0)) {
 #if defined SEACAS_HAVE_DATAWARP
-	int complete=0, pending=0, deferred=0, failed=0;
-	dw_query_file_stage(get_dwname().c_str(), &complete, &pending, &deferred, &failed);
+        int complete = 0, pending = 0, deferred = 0, failed = 0;
+        dw_query_file_stage(get_dwname().c_str(), &complete, &pending, &deferred, &failed);
 #if IOSS_DEBUG_OUTPUT
         auto initial = std::chrono::high_resolution_clock::now();
-	fmt::print(stderr, "Query: {}, {}, {}, {}\n", complete, pending, deferred, failed);
+        fmt::print(Ioss::DEBUG(), "Query: {}, {}, {}, {}\n", complete, pending, deferred, failed);
 #endif
-	if (pending > 0) {
-	  int dwret = dw_wait_file_stage(get_dwname().c_str());
-	  if (dwret < 0) {
-	    std::ostringstream errmsg;
-	    fmt::print(errmsg, "ERROR: failed waiting for file stage `{}`: {}\n", get_dwname(),
-		       std::strerror(-dwret));
-	    IOSS_ERROR(errmsg);
-	  }
+        if (pending > 0) {
+          int dwret = dw_wait_file_stage(get_dwname().c_str());
+          if (dwret < 0) {
+            std::ostringstream errmsg;
+            fmt::print(errmsg, "ERROR: failed waiting for file stage `{}`: {}\n", get_dwname(),
+                       std::strerror(-dwret));
+            IOSS_ERROR(errmsg);
+          }
 #if IOSS_DEBUG_OUTPUT
-	  dw_query_file_stage(get_dwname().c_str(), &complete, &pending, &deferred, &failed);
-	  fmt::print(stderr, "Query: {}, {}, {}, {}\n", complete, pending, deferred, failed);
+          dw_query_file_stage(get_dwname().c_str(), &complete, &pending, &deferred, &failed);
+          fmt::print(Ioss::DEBUG(), "Query: {}, {}, {}, {}\n", complete, pending, deferred, failed);
 #endif
-	}
+        }
 
 #if IOSS_DEBUG_OUTPUT
-        fmt::print(stderr, "\nDW: BEGIN dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
+        fmt::print(Ioss::DEBUG(), "\nDW: BEGIN dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
                    get_dwname(), get_pfsname());
 #endif
         int ret =
             dw_stage_file_out(get_dwname().c_str(), get_pfsname().c_str(), DW_STAGE_IMMEDIATE);
 
 #if IOSS_DEBUG_OUTPUT
-        auto time_now = std::chrono::high_resolution_clock::now();
+        auto                          time_now = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> diff     = time_now - initial;
-        fmt::print(stderr, "\nDW: END dw_stage_file_out({})\n", diff.count());
+        fmt::print(Ioss::DEBUG(), "\nDW: END dw_stage_file_out({})\n", diff.count());
 #endif
         if (ret < 0) {
           std::ostringstream errmsg;
@@ -404,7 +405,7 @@ namespace Ioss {
           IOSS_ERROR(errmsg);
         }
 #else
-        fmt::print(stderr, "\nDW: (FAKE) dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
+        fmt::print(Ioss::DEBUG(), "\nDW: (FAKE) dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
                    get_dwname(), get_pfsname());
 #endif
       }
@@ -544,8 +545,8 @@ namespace Ioss {
   void DatabaseIO::create_group(EntityType /*type*/, const std::string &type_name,
                                 const std::vector<std::string> &group_spec, const T * /*set_type*/)
   {
-    fmt::print(IOSS_WARNING,
-               "WARNING: Grouping of {0} sets is not yet implemented.\n"
+    fmt::print(Ioss::WARNING(),
+               "Grouping of {0} sets is not yet implemented.\n"
                "         Skipping the creation of {0} set '{1}'\n\n",
                type_name, group_spec[0]);
   }
@@ -599,11 +600,10 @@ namespace Ioss {
         }
       }
       else {
-        fmt::print(
-            IOSS_WARNING,
-            "WARNING: While creating the grouped surface '{}', the surface '{}' does not exist. "
-            "This surface will skipped and not added to the group.\n\n",
-            group_spec[0], group_spec[i]);
+        fmt::print(Ioss::WARNING(),
+                   "While creating the grouped surface '{}', the surface '{}' does not exist. "
+                   "This surface will skipped and not added to the group.\n\n",
+                   group_spec[0], group_spec[i]);
       }
     }
   }
@@ -923,8 +923,10 @@ namespace Ioss {
       assert(result != MPI_SUCCESS || non_zero == req_cnt);
 
       if (result != MPI_SUCCESS) {
-        fmt::print(stderr, "ERROR: MPI_Irecv error on processor {} in {}", util().parallel_rank(),
+        std::ostringstream errmsg;
+        fmt::print(errmsg, "ERROR: MPI_Irecv error on processor {} in {}", util().parallel_rank(),
                    __func__);
+        IOSS_ERROR(errmsg);
       }
 
       int local_error  = (MPI_SUCCESS == result) ? 0 : 1;
@@ -951,8 +953,10 @@ namespace Ioss {
       assert(result != MPI_SUCCESS || non_zero == req_cnt);
 
       if (result != MPI_SUCCESS) {
-        fmt::print(stderr, "ERROR: MPI_Rsend error on processor {} in {}", util().parallel_rank(),
+        std::ostringstream errmsg;
+        fmt::print(errmsg, "ERROR: MPI_Rsend error on processor {} in {}", util().parallel_rank(),
                    __func__);
+        IOSS_ERROR(errmsg);
       }
 
       local_error  = (MPI_SUCCESS == result) ? 0 : 1;
@@ -964,11 +968,13 @@ namespace Ioss {
         IOSS_ERROR(errmsg);
       }
 
-      result = MPI_Waitall(req_cnt, TOPTR(request), TOPTR(status));
+      result = MPI_Waitall(req_cnt, request.data(), status.data());
 
       if (result != MPI_SUCCESS) {
-        fmt::print(stderr, "ERROR: MPI_Waitall error on processor {} in {}", util().parallel_rank(),
+        std::ostringstream errmsg;
+        fmt::print(errmsg, "ERROR: MPI_Waitall error on processor {} in {}", util().parallel_rank(),
                    __func__);
+        IOSS_ERROR(errmsg);
       }
 
       // Unpack the data and update the inv_con arrays for boundary
@@ -1026,7 +1032,7 @@ namespace Ioss {
       }
 
       std::vector<unsigned> out_data(element_blocks.size() * bits_size);
-      MPI_Allreduce((void *)TOPTR(data), TOPTR(out_data), static_cast<int>(data.size()),
+      MPI_Allreduce((void *)data.data(), out_data.data(), static_cast<int>(data.size()),
                     MPI_UNSIGNED, MPI_BOR, util().communicator());
 
       offset = 0;
@@ -1176,7 +1182,7 @@ namespace {
       if (util.parallel_size() > 1) {
         fmt::print(strm, "\tTot: {} (ms)\n", total);
       }
-      fmt::print(stderr, "{}", strm.str());
+      fmt::print(Ioss::DEBUG(), "{}", strm.str());
     }
   }
 
@@ -1218,7 +1224,7 @@ namespace {
           fmt::print(strm, " T:{:8d}", total);
         }
         fmt::print(strm, "\t{}/{}\n", name, field.get_name());
-        fmt::print(stderr, "{}", strm.str());
+        fmt::print(Ioss::DEBUG(), "{}", strm.str());
       }
     }
     else {

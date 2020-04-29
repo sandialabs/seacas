@@ -26,6 +26,7 @@ TRIBITS_ADD_EXECUTABLE(
   NOEXEPREFIX
   NOEXESUFFIX
   SOURCES struc_to_unstruc.C
+  INSTALLABLE
   )
 
 TRIBITS_ADD_EXECUTABLE(
@@ -33,6 +34,7 @@ TRIBITS_ADD_EXECUTABLE(
   NOEXEPREFIX
   NOEXESUFFIX
   SOURCES cgns_decomp.C
+  INSTALLABLE
   )
 ENDIF()
 
@@ -41,30 +43,42 @@ TRIBITS_ADD_EXECUTABLE(
   NOEXEPREFIX
   NOEXESUFFIX
   SOURCES cth_pressure_map.C vector3d.C
+  INSTALLABLE
   )
 TRIBITS_ADD_EXECUTABLE(
   io_shell
   NOEXEPREFIX
   NOEXESUFFIX
   SOURCES io_shell.C shell_interface.C
+  INSTALLABLE
   )
 TRIBITS_ADD_EXECUTABLE(
   shell_to_hex
   NOEXEPREFIX
   NOEXESUFFIX
   SOURCES shell_to_hex.C vector3d.C
+  INSTALLABLE
   )
 TRIBITS_ADD_EXECUTABLE(
   io_info
   NOEXEPREFIX
   NOEXESUFFIX
   SOURCES io_info_main.C
+  INSTALLABLE
+  )
+TRIBITS_ADD_EXECUTABLE(
+  io_modify
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES io_modify.C modify_interface.C
+  INSTALLABLE
   )
 TRIBITS_ADD_EXECUTABLE(
   sphgen
   NOEXEPREFIX
   NOEXESUFFIX
   SOURCES sphgen.C
+  INSTALLABLE
   )
 
 TRIBITS_ADD_EXECUTABLE(
@@ -72,6 +86,7 @@ TRIBITS_ADD_EXECUTABLE(
   NOEXEPREFIX
   NOEXESUFFIX
   SOURCES skinner.C skinner_interface.C
+  INSTALLABLE
   )
 
 if (TPL_ENABLE_MPI)
@@ -141,6 +156,7 @@ IF (SEACASIoss_ENABLE_THREADSAFE)
     NOEXEPREFIX
     NOEXESUFFIX
     SOURCES io_shell_ts.C shell_interface.C
+    INSTALLABLE
     )
 
   SET(IOSHELL_ARG --in_type generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4)
@@ -195,17 +211,6 @@ TRIBITS_ADD_ADVANCED_TEST(pamgen_exodus_io_info
   COMM mpi serial
   )
 ENDIF()
-
-install_executable(cth_pressure_map)
-IF (TPL_ENABLE_CGNS)
-install_executable(struc_to_unstruc)
-install_executable(cgns_decomp)
-ENDIF()
-install_executable(io_shell)
-install_executable(shell_to_hex)
-install_executable(io_info)
-install_executable(sphgen)
-install_executable(skinner)
 
 IF (TPL_ENABLE_CGNS)
 
@@ -327,22 +332,37 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_to_exodus_double_block
 
 IF (NOT SEACASIoss_ENABLE_THREADSAFE)
 TRIBITS_ADD_ADVANCED_TEST(cgns_bc_no_parents_to_exodus
-   TEST_0 EXEC io_shell ARGS ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/BC_without_parents.cgns exodus_bc_parents.e
+   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/BC_without_parents.cgns exodus_bc_parents.e
      NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS 1
+     NUM_MPI_PROCS ${NPROCS}
    TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_bc_parents.gold exodus_bc_parents.e
   COMM mpi serial
   XHOSTTYPE Windows
   )
 
 TRIBITS_ADD_ADVANCED_TEST(cgns_Q2_bc_no_parents_to_exodus
-   TEST_0 EXEC io_shell ARGS ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/BC_Q2_without_parents.cgns exodus_Q2_bc_parents.e
+   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/BC_Q2_without_parents.cgns exodus_Q2_bc_parents.e
      NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS 1
+     NUM_MPI_PROCS ${NPROCS}
    TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_Q2_bc_parents.gold exodus_Q2_bc_parents.e
   COMM mpi serial
   XHOSTTYPE Windows
   )
+
+if ( CGNS_CGNSDIFF_BINARY )
+TRIBITS_ADD_ADVANCED_TEST(cgns_Q2_parents_no_parent_compare_random_decomp
+   TEST_0 EXEC io_shell ARGS --random ${CMAKE_CURRENT_SOURCE_DIR}/test/BC_Q2_without_parents.cgns BC_Q2_p1.cgns
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS ${NPROCS}
+   TEST_1 EXEC io_shell ARGS --random ${CMAKE_CURRENT_SOURCE_DIR}/test/BC_Q2_parents.cgns BC_Q2_p2.cgns
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS ${NPROCS}
+   TEST_2 CMND ${CGNS_CGNSDIFF_BINARY} ARGS -d BC_Q2_p1.cgns BC_Q2_p2.cgns
+     NUM_MPI_PROCS 1
+  COMM mpi
+  XHOSTTYPE Windows
+  )
+ENDIF()
 ENDIF()
 
 TRIBITS_ADD_ADVANCED_TEST(unstructured_cgns_to_exodus
@@ -528,3 +548,25 @@ ENDIF()
 endif()
 
 ENDIF(TPL_ENABLE_CGNS)
+
+IF (TPL_ENABLE_MPI AND ${PROJECT_NAME}_ENABLE_Zoltan)
+TRIBITS_ADD_TEST(
+   io_info ARGS --config
+   NAME io_info_config_has_zoltan
+   NOEXEPREFIX NOEXESUFFIX
+   PASS_REGULAR_EXPRESSION "Zoltan Library is Available"
+   NUM_MPI_PROCS 1
+   COMM mpi serial
+  )
+ENDIF()
+
+IF (TPL_ENABLE_MPI AND TPL_ENABLE_ParMETIS)
+TRIBITS_ADD_TEST(
+   io_info ARGS --config
+   NAME io_info_config_has_parmetis
+   NOEXEPREFIX NOEXESUFFIX
+   PASS_REGULAR_EXPRESSION "ParMetis Library Version"
+   NUM_MPI_PROCS 1
+   COMM mpi serial
+  )
+ENDIF()

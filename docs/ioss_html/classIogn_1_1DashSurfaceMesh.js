@@ -6,6 +6,7 @@ var classIogn_1_1DashSurfaceMesh =
     [ "communication_node_count_proc", "classIogn_1_1DashSurfaceMesh.html#a7e66e1bfbdf2c1bae12ac0901e131688", null ],
     [ "connectivity", "classIogn_1_1DashSurfaceMesh.html#a86e334dcf7d17a81a66b9877f252feb7", null ],
     [ "coordinates", "classIogn_1_1DashSurfaceMesh.html#ace5c715f6fcaa28e6b3b1d6e8586d7ba", null ],
+    [ "coordinates", "classIogn_1_1DashSurfaceMesh.html#adf2ff5fed1b48e586d966a54d7145d8e", null ],
     [ "coordinates", "classIogn_1_1DashSurfaceMesh.html#af1c67fedc59b5742ec38be8701b0fe82", null ],
     [ "coordinates", "classIogn_1_1DashSurfaceMesh.html#a8e7ebdd4eff4becc5c278ecb89e98eda", null ],
     [ "coordinates", "classIogn_1_1DashSurfaceMesh.html#ab1a53de8d885b83906855c8b61b2a4dc", null ],

@@ -72,6 +72,12 @@ check_valid_on_off CGNS
 MATIO=${MATIO:-ON}
 check_valid_on_off MATIO
 
+METIS=${METIS:-OFF}
+check_valid_on_off METIS
+
+PARMETIS=${PARMETIS:-OFF}
+check_valid_on_off PARMETIS
+
 GNU_PARALLEL=${GNU_PARALLEL:-ON}
 check_valid_on_off GNU_PARALLEL
 
@@ -258,11 +264,15 @@ fi
 if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libhdf5.${LD_EXT} ]
 then
     echo "${txtgrn}+++ HDF5${txtrst}"
-    if [ "${H5VERSION}" == "V18" ]
-    then
+    if [ "${H5VERSION}" == "V18" ]; then
 	hdf_version="1.8.21"
-    else
+    elif [ "${H5VERSION}" == "V110" ]; then
 	hdf_version="1.10.6"
+    elif [ "${H5VERSION}" == "V112" ]; then
+	hdf_version="1.12.0"
+    else
+	echo 1>&2 ${txtred}Invalid HDF5 version specified: ${H5VERSION}.  Must be one of V18, V110, V112. exiting.${txtrst}
+	exit 1
     fi
 
     cd $ACCESS
@@ -369,7 +379,7 @@ then
     then
 	echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
         cd netcdf-c
-	git checkout v4.7.3
+	git checkout v4.7.4
         if [ -d build ]
         then
             rm -rf build
@@ -435,6 +445,86 @@ then
 	echo "${txtylw}+++ CGNS already installed.  Skipping download and installation.${txtrst}"
     fi
 fi
+
+# =================== INSTALL METIS  ===============
+if [ "$METIS" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libmetis.a ]
+    then
+	echo "${txtgrn}+++ Metis${txtrst}"
+	cd $ACCESS
+	cd TPL/metis
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf metis-5.1.0
+            rm -f metis-5.1.0.tar.gz
+            wget --no-check-certificate https://github.com/scivision/METIS/raw/master/metis-5.1.0.tar.gz
+	    tar zxvf metis-5.1.0.tar.gz
+	fi
+
+	if [ "$BUILD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd metis-5.1.0
+	    sed 's/TYPEWIDTH 32/TYPEWIDTH 64/' include/metis.h > tmp
+	    mv tmp include/metis.h
+            CRAY=${CRAY} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure Metis. exiting.${txtrst}
+                exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build Metis. exiting.${txtrst}
+                exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ Metis already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
+
+# =================== INSTALL PARMETIS  ===============
+if [ "$PARMETIS" == "ON" ] && [ "$MPI" == "ON" ]
+then
+    if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/lib/libparmetis.a ]
+    then
+	echo "${txtgrn}+++ ParMETIS${txtrst}"
+	cd $ACCESS
+	cd TPL/parmetis
+	if [ "$DOWNLOAD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Downloading...${txtrst}"
+            rm -rf parmetis
+	    git clone https://github.com/gsjaardema/parmetis
+	fi
+
+	if [ "$BUILD" == "YES" ]
+	then
+	    echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+            cd parmetis
+            CRAY=${CRAY} MPI=${MPI} SHARED=${SHARED} DEBUG=${DEBUG} bash ../runconfigure.sh
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t configure ParMETIS. exiting.${txtrst}
+                exit 1
+            fi
+            make -j${JOBS} && ${SUDO} make install
+            if [[ $? != 0 ]]
+            then
+                echo 1>&2 ${txtred}couldn\'t build ParMETIS. exiting.${txtrst}
+                exit 1
+            fi
+	fi
+    else
+	echo "${txtylw}+++ ParMETIS already installed.  Skipping download and installation.${txtrst}"
+    fi
+fi
+
 
 # =================== INSTALL MATIO  ===============
 if [ "$MATIO" == "ON" ]

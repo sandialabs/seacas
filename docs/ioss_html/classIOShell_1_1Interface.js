@@ -37,6 +37,7 @@ var classIOShell_1_1Interface =
     [ "outputFile", "classIOShell_1_1Interface.html#af3dac76466afe55418148ba97dced33b", null ],
     [ "quiet", "classIOShell_1_1Interface.html#a023c4c822e3a231cc204e9611f7da1fd", null ],
     [ "reals_32_bit", "classIOShell_1_1Interface.html#ad80846c7766d700187ed72bdbd3d3d0f", null ],
+    [ "retain_empty_blocks", "classIOShell_1_1Interface.html#aa08b5cb260f2f9ea0d1f1b3c89bacda8", null ],
     [ "reverse", "classIOShell_1_1Interface.html#a45ce2847295bf339759b3ddc4c84e377", null ],
     [ "serialize_io_size", "classIOShell_1_1Interface.html#af0560116a65c386339b750984552dde3", null ],
     [ "shuffle", "classIOShell_1_1Interface.html#ae4c5a5a945d9c380bb65d94bb133e10b", null ],
