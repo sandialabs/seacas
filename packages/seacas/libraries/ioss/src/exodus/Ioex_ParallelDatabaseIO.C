@@ -3662,7 +3662,10 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, con
     // Transfer each component of the variable into 'data' and then
     // output.  Need temporary storage area of size 'number of
     // elements in this block.
-    write_entity_transient_field(EX_ELEM_BLOCK, field, eb, my_element_count, data);
+    auto global_entity_count = eb->get_property("global_entity_count").get_int();
+    if (global_entity_count > 0) {
+      write_entity_transient_field(EX_ELEM_BLOCK, field, eb, my_element_count, data);
+    }
   }
   else if (role == Ioss::Field::REDUCTION) {
     store_reduction_field(EX_ELEM_BLOCK, field, eb, data);
@@ -4562,12 +4565,24 @@ void ParallelDatabaseIO::write_meta_data()
     }
 
     elementCount = 0;
+    Ioss::Int64Vector element_counts;
+    element_counts.reserve(element_blocks.size());
     for (auto &element_block : element_blocks) {
       elementCount += element_block->entity_count();
+      element_counts.push_back(element_block->entity_count());
       // Set ids of all entities that do not have "id" property...
       Ioex::get_id(element_block, EX_ELEM_BLOCK, &ids_);
     }
     m_groupCount[EX_ELEM_BLOCK] = element_blocks.size();
+
+    // Set "global_entity_count" property on all blocks.
+    // Used to skip output on "globally" empty blocks.
+    Ioss::Int64Vector global_counts(element_counts.size());
+    util().global_count(element_counts, global_counts);
+    size_t idx = 0;
+    for (auto &element_block : element_blocks) {
+      element_block->property_add(Ioss::Property("global_entity_count", global_counts[idx++]));
+    }
   }
 
   // NodeSets ...
