@@ -2031,13 +2031,11 @@ namespace {
         size_t element_count = blocks[p][b].entity_count();
         for (size_t e = 0; e < element_count; e++) {
           size_t id = local_element_to_global[p][e + offset];
-          if (id == 0) {
-            fmt::print(stderr, "WARNING: invalid id at part {}, element {}\n", p, e);
-          }
-          min_id = (id < min_id) ? id : min_id;
-          max_id = (id > max_id) ? id : max_id;
+          min_id    = (id < min_id) ? id : min_id;
+          max_id    = (id > max_id) ? id : max_id;
         }
       }
+
       if (glob_blocks[b].entity_count() == 0) {
         min_id = 0;
         max_id = 0;
