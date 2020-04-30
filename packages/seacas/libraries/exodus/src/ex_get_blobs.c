@@ -46,6 +46,12 @@ int ex_get_blobs(int exoid, ex_blob *blob)
 {
   /* Determine number of blobs on database */
   int num_blob = ex_inquire_int(exoid, EX_INQ_BLOB);
+  if (num_blob < 0) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to inquire BLOB count in file id %d", exoid);
+    ex_err_fn(exoid, __func__, errmsg, num_blob);
+    return (EX_FATAL);
+  }
 
   if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
     int64_t *ids = calloc(num_blob, sizeof(int64_t));
@@ -53,6 +59,7 @@ int ex_get_blobs(int exoid, ex_blob *blob)
     for (int i = 0; i < num_blob; i++) {
       blob[i].id = ids[i];
     }
+    free(ids);
   }
   else {
     int *ids = calloc(num_blob, sizeof(int));
@@ -60,6 +67,7 @@ int ex_get_blobs(int exoid, ex_blob *blob)
     for (int i = 0; i < num_blob; i++) {
       blob[i].id = ids[i];
     }
+    free(ids);
   }
 
   for (int i = 0; i < num_blob; i++) {
