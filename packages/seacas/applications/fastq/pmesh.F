@@ -406,7 +406,7 @@ C
                   IF (HOLD .LT. 1.E7) GOTO 280
   270          CONTINUE
   280          CONTINUE
-               LOOKUP = INT((HOLD - IFIX(HOLD))*DBLE(MAXKXN*NNXK))
+               LOOKUP = INT((HOLD - INT(HOLD))*DBLE(MAXKXN*NNXK))
                IF (LOOKUP .LE. 0) LOOKUP = 1
                IHOLD = LOOKUP
   290          CONTINUE
