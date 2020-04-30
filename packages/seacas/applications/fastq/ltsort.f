@@ -85,7 +85,7 @@ C
       if (id .lt. 0) stop 'LTSORT: Internal error'
 
       HOLD = DBLE(ID) * 3.1830989
-      LOOKUP =  INT((HOLD - IFIX (HOLD)) * DBLE(MDIM) + 1)
+      LOOKUP =  INT((HOLD - INT (HOLD)) * DBLE(MDIM) + 1)
 C
 C  SET UP THE LOOP TO ONLY SEARCH THROUGH THE TABLE ONCE
 C

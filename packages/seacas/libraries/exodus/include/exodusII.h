@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2019 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -68,12 +68,12 @@
 #endif
 
 /* EXODUS version number */
-#define EXODUS_VERSION "8.01"
+#define EXODUS_VERSION "8.02"
 #define EXODUS_VERSION_MAJOR 8
-#define EXODUS_VERSION_MINOR 01
-#define EXODUS_RELEASE_DATE "April 14, 2020"
+#define EXODUS_VERSION_MINOR 02
+#define EXODUS_RELEASE_DATE "April 30, 2020"
 
-#define EX_API_VERS 8.01f
+#define EX_API_VERS 8.02f
 
 #define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
 
@@ -385,9 +385,9 @@ typedef struct ex_attribute
 
 typedef struct ex_blob
 {
-  int64_t        id;
-  char *         name;
-  int64_t        num_entry;
+  int64_t id;
+  char *  name;
+  int64_t num_entry;
 } ex_blob;
 
 typedef struct ex_assembly
@@ -1798,12 +1798,14 @@ EXODUS_EXPORT int ex_get_idx(int         exoid,       /**< NetCDF/Exodus file ID
 #define EX_LOOKUPFAIL 1004    /**< id table lookup failed                   */
 #define EX_BADPARAM 1005      /**< bad parameter passed                     */
 #define EX_INTERNAL 1006      /**< internal logic error                     */
+#define EX_DUPLICATEID 1007   /**< duplicate id found                        */
 #define EX_MSG -1000          /**< message print code - no error implied    */
 #define EX_PRTLASTMSG -1001   /**< print last error message msg code        */
 #define EX_NOTROOTID -1002    /**< file id is not the root id; it is a subgroup id */
 #define EX_LASTERR -1003      /**< in ex_err, use existing err_num value */
 #define EX_NULLENTITY -1006   /**< null entity found                        */
-#define EX_DUPLICATEID -1007  /**< duplicate id found                        */
+#define EX_NOENTITY -1007     /**< no entities of that type on database    */
+#define EX_NOTFOUND -1008     /**< could not find requested variable on database */
 
 #define EX_FATAL -1 /**< fatal error flag def                     */
 #define EX_NOERR 0  /**< no error flag def                        */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -206,7 +206,7 @@ int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_word
                "Warning: invalid int64_status flag (%d) specified for "
                "existing file id: %d. Ignoring invalids",
                int64_status, exoid);
-      ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+      ex_err_fn(exoid, __func__, errmsg, -EX_BADPARAM);
     }
     int64_status &= valid_int64;
   }
@@ -293,7 +293,7 @@ void ex__conv_exit(int exoid)
 
   if (!file) {
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: failure to clear file id %d - not in list.", exoid);
-    ex_err(__func__, errmsg, EX_BADFILEID);
+    ex_err(__func__, errmsg, -EX_BADFILEID);
     EX_FUNC_VOID();
   }
 
