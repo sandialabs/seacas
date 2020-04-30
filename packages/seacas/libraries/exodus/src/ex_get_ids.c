@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -54,7 +54,7 @@ struct ncvar
 
 static int ex_get_nonstandard_ids(int exoid, ex_entity_type obj_type, void_int *ids)
 {
-  int status;
+  int  status;
   char errmsg[MAX_ERR_LENGTH];
 
   int64_t               count = 0;
@@ -69,47 +69,53 @@ static int ex_get_nonstandard_ids(int exoid, ex_entity_type obj_type, void_int *
   }
 
   if (count > 0) {
-      /* For assemblies, we need to get the `assembly_entity` variables and read the ids from them
-       * For blobs, we need to get the `blob_entity` variables and read the ids from them
-       */
-      int          num_found = 0;
-      struct ncvar var;
-      int          nvars;
-      nc_inq(exoid, NULL, &nvars, NULL, NULL);
-      char *type = NULL;
-      if (obj_type == EX_ASSEMBLY) {
-	type = "assembly_entity";
-      }
-      else if (obj_type == EX_BLOB) {
-	type = "blob_entity";
-      }
+    /* For assemblies, we need to get the `assembly_entity` variables and read the ids from them
+     * For blobs, we need to get the `blob_entity` variables and read the ids from them
+     */
+    int          num_found = 0;
+    struct ncvar var;
+    int          nvars;
+    nc_inq(exoid, NULL, &nvars, NULL, NULL);
+    char *type = NULL;
+    if (obj_type == EX_ASSEMBLY) {
+      type = "assembly_entity";
+    }
+    else if (obj_type == EX_BLOB) {
+      type = "blob_entity";
+    }
 
-      for (int varid = 0; varid < nvars; varid++) {
-        nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
-        if ((strncmp(var.name, type, strlen(type)) == 0)) {
-          /* Query the "_id" attribute on this object type. */
-          if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
-            long long id                    = 0;
-            status                        = nc_get_att_longlong(exoid, varid, EX_ATTRIBUTE_ID, &id);
-            ((int64_t *)ids)[num_found++] = id;
-          }
-          else {
-            int id                    = 0;
-            status                    = nc_get_att_int(exoid, varid, EX_ATTRIBUTE_ID, &id);
-            ((int *)ids)[num_found++] = id;
-          }
-          if (num_found == count) {
-            break;
-          }
-          if (status != NC_NOERR) {
-            snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s ids in file id %d",
-                     ex_name_of_object(obj_type), exoid);
-            ex_err_fn(exoid, __func__, errmsg, status);
-            return EX_FATAL;
-          }
+    for (int varid = 0; varid < nvars; varid++) {
+      if ((status = nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims,
+                               &var.natts)) != NC_NOERR) {
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable parameters in file id %d",
+                 exoid);
+        ex_err_fn(exoid, __func__, errmsg, status);
+        return EX_FATAL;
+      }
+      if ((strncmp(var.name, type, strlen(type)) == 0)) {
+        /* Query the "_id" attribute on this object type. */
+        if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
+          long long id                  = 0;
+          status                        = nc_get_att_longlong(exoid, varid, EX_ATTRIBUTE_ID, &id);
+          ((int64_t *)ids)[num_found++] = id;
+        }
+        else {
+          int id                    = 0;
+          status                    = nc_get_att_int(exoid, varid, EX_ATTRIBUTE_ID, &id);
+          ((int *)ids)[num_found++] = id;
+        }
+        if (num_found == count) {
+          break;
+        }
+        if (status != NC_NOERR) {
+          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s ids in file id %d",
+                   ex_name_of_object(obj_type), exoid);
+          ex_err_fn(exoid, __func__, errmsg, status);
+          return EX_FATAL;
         }
       }
     }
+  }
   return EX_NOERR;
 }
 

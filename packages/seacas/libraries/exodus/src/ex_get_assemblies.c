@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2017 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -48,12 +48,21 @@ int ex_get_assemblies(int exoid, ex_assembly *assembly)
   int num_assembly        = ex_inquire_int(exoid, EX_INQ_ASSEMBLY);
   int max_use_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
 
+  if (num_assembly < 0) {
+    char errmsg[MAX_ERR_LENGTH];
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to inquire ASSEMBLY count in file id %d",
+             exoid);
+    ex_err_fn(exoid, __func__, errmsg, num_assembly);
+    return (EX_FATAL);
+  }
+
   if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
     int64_t *ids = calloc(num_assembly, sizeof(int64_t));
     ex_get_ids(exoid, EX_ASSEMBLY, ids);
     for (int i = 0; i < num_assembly; i++) {
       assembly[i].id = ids[i];
     }
+    free(ids);
   }
   else {
     int *ids = calloc(num_assembly, sizeof(int));
@@ -61,6 +70,7 @@ int ex_get_assemblies(int exoid, ex_assembly *assembly)
     for (int i = 0; i < num_assembly; i++) {
       assembly[i].id = ids[i];
     }
+    free(ids);
   }
 
   for (int i = 0; i < num_assembly; i++) {

@@ -57,6 +57,7 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
   if ((status = nc_redef(exoid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
+    free(entlst_id);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
