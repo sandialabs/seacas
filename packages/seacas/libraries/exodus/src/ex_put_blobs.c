@@ -38,8 +38,9 @@
 #include <stdbool.h>
 /*!
  * writes the blob parameters for 1 or more blobs
- * \param   exoid                   exodus file id
- * \param  *blob                array of ex_blob structures
+ * \param   exoid                exodus file id
+ * \param   count                size of `blobs` array
+ * \param  *blobs                array of ex_blob structures
  */
 
 int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
