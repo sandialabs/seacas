@@ -164,7 +164,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
   if (num_vars == 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: zero %s variables specified for file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
+    ex_err_fn(exoid, __func__, errmsg, -EX_BADPARAM);
 
     EX_FUNC_LEAVE(EX_WARN);
   }
@@ -176,7 +176,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",
              obj_type, exoid);
     ex_err_fn(exoid, __func__, errmsg, EX_BADPARAM);
-    EX_FUNC_LEAVE(EX_WARN);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* inquire previously defined dimensions  */
