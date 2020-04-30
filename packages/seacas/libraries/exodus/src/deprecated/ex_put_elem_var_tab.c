@@ -33,29 +33,10 @@
  *
  */
 
-/*
- *
- * expvtt - ex_put_elem_var_tab
- *
- * environment - UNIX
- *
- * entry conditions -
- *   input parameters:
- *       int     exoid                   exodus file id
- *       int     num_elem_blk            number of element blocks
- *       int     num_elem_var            number of element variables
- *       int*    elem_var_tab            element variable truth table array
- *
- * exit conditions -
- *
- * revision history -
- *
- *
- */
-
 #include "exodusII.h"
 
 /*!
+
   \deprecated Use ex_put_truth_table()(exoid, EX_ELEM_BLOCK, num_elem_blk,
   num_elem_var, elem_var_tab)
 
