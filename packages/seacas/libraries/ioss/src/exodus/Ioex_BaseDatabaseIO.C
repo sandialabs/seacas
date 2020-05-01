@@ -90,7 +90,11 @@
 // Transitioning from treating global variables as Ioss::Field::TRANSIENT
 // to Ioss::Field::REDUCTION.  To get the old behavior, define the value
 // below to '1'.  Not sure if how new behavior will affect STK and Trilinos...
+#if defined(BUILT_IN_SIERRA)
+#define GLOBALS_ARE_TRANSIENT 1
+#else
 #define GLOBALS_ARE_TRANSIENT 0
+#endif
 
 // ========================================================================
 // Static internal helper functions
@@ -1360,6 +1364,16 @@ namespace Ioex {
     add_mesh_reduction_fields(EX_GLOBAL, 0, get_region());
   }
 
+  namespace {
+    // Memory allocated in `ex_get_attributes`, this makes deletion cleaner...
+    class EX_attribute : public ex_attribute
+    {
+    public:
+      EX_attribute() { values = nullptr; }
+      ~EX_attribute() { free(values); }
+    };
+  } // namespace
+
   void BaseDatabaseIO::add_mesh_reduction_fields(ex_entity_type type, int64_t id,
                                                  Ioss::GroupingEntity *entity)
   {
@@ -1370,7 +1384,7 @@ namespace Ioex {
     int               att_count = ex_get_attribute_count(get_file_pointer(), type, id);
 
     if (att_count > 0) {
-      std::vector<ex_attribute> attr(att_count);
+      std::vector<EX_attribute> attr(att_count);
       ex_get_attribute_param(get_file_pointer(), type, id, attr.data());
       ex_get_attributes(get_file_pointer(), att_count, attr.data());
 
@@ -1407,7 +1421,6 @@ namespace Ioex {
               Ioss::Property(att.name, (char *)att.values, Ioss::Property::ATTRIBUTE));
           break;
         }
-        free(att.values); // Allocated by `ex_get_attributes`
       }
     }
   }
