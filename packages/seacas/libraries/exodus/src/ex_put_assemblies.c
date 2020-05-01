@@ -39,7 +39,8 @@
 /*!
  * writes the assembly parameters and optionally assembly data for 1 or more assemblies
  * \param   exoid                   exodus file id
- * \param  *assembly                array of ex_assembly structures
+ * \param   count                   size of `assemblies` array
+ * \param  *assemblies              array of ex_assembly structures
  */
 
 int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assemblies)

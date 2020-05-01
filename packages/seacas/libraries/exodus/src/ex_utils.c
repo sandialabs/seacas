@@ -268,7 +268,14 @@ void ex__update_max_name_length(int exoid, int length)
   if (length > db_length) {
     /* Update with new value... */
     ex_set_max_name_length(exoid, length);
-    nc_put_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &length);
+    if ((status = nc_put_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &length)) !=
+        NC_NOERR) {
+      char errmsg[MAX_ERR_LENGTH];
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to update 'max_name_length' attribute with new value in file id %d",
+               exoid);
+      ex_err_fn(exoid, __func__, errmsg, status);
+    }
     nc_sync(rootid);
   }
   EX_FUNC_VOID();

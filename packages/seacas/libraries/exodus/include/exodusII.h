@@ -931,14 +931,14 @@ EXODUS_EXPORT int ex_get_attr_names(int exoid, ex_entity_type obj_type, ex_entit
 EXODUS_EXPORT int ex_put_assembly(int exoid, const struct ex_assembly assembly);
 EXODUS_EXPORT int ex_get_assembly(int exoid, struct ex_assembly *assembly);
 
-EXODUS_EXPORT int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembly);
-EXODUS_EXPORT int ex_get_assemblies(int exoid, struct ex_assembly *assembly);
+EXODUS_EXPORT int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assemblies);
+EXODUS_EXPORT int ex_get_assemblies(int exoid, struct ex_assembly *assemblies);
 
 EXODUS_EXPORT int ex_put_blob(int exoid, const struct ex_blob blob);
 EXODUS_EXPORT int ex_get_blob(int exoid, struct ex_blob *blob);
 
-EXODUS_EXPORT int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blob);
-EXODUS_EXPORT int ex_get_blobs(int exoid, struct ex_blob *blob);
+EXODUS_EXPORT int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs);
+EXODUS_EXPORT int ex_get_blobs(int exoid, struct ex_blob *blobs);
 
 /*  Write arbitrary integer, double, or text attributes on an entity */
 EXODUS_EXPORT int ex_put_attribute(int exoid, ex_attribute attributes);

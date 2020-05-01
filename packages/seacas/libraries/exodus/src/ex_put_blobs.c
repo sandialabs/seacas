@@ -38,8 +38,9 @@
 #include <stdbool.h>
 /*!
  * writes the blob parameters for 1 or more blobs
- * \param   exoid                   exodus file id
- * \param  *blob                array of ex_blob structures
+ * \param   exoid                exodus file id
+ * \param   count                size of `blobs` array
+ * \param  *blobs                array of ex_blob structures
  */
 
 int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
@@ -56,6 +57,7 @@ int ex_put_blobs(int exoid, size_t count, const struct ex_blob *blobs)
   if ((status = nc_redef(exoid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
     ex_err_fn(exoid, __func__, errmsg, status);
+    free(entlst_id);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
