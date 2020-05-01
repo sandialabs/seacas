@@ -122,8 +122,8 @@ namespace {
 
 namespace Ioex {
   BaseDatabaseIO::BaseDatabaseIO(Ioss::Region *region, const std::string &filename,
-                         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-                         const Ioss::PropertyManager &props)
+                                 Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+                                 const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props)
   {
     m_groupCount[EX_GLOBAL]     = 1; // To make some common code work more cleanly.
@@ -664,22 +664,22 @@ namespace Ioex {
 
       for (const auto &bl : blobs) {
 #ifdef SEACAS_HAVE_MPI
-          // Each blob is spread across all processors (should support a minimum size...)
-          // Determine size of blob on each rank and offset from beginning of blob.
-          size_t per_proc = bl.num_entry / parallel_size();
-          size_t extra    = bl.num_entry % parallel_size();
-          size_t count    = per_proc + (myProcessor < extra ? 1 : 0);
+        // Each blob is spread across all processors (should support a minimum size...)
+        // Determine size of blob on each rank and offset from beginning of blob.
+        size_t per_proc = bl.num_entry / parallel_size();
+        size_t extra    = bl.num_entry % parallel_size();
+        size_t count    = per_proc + (myProcessor < extra ? 1 : 0);
 
-          size_t offset = 0;
-          if (myProcessor < extra) {
-            offset = (per_proc + 1) * myProcessor;
-          }
-          else {
-            offset = (per_proc + 1) * extra + per_proc * (myProcessor - extra);
-          }
-          Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, count);
-          blob->property_add(Ioss::Property("processor_offset", (int64_t)offset));
-          blob->property_add(Ioss::Property("global_size", (int64_t)bl.num_entry));
+        size_t offset = 0;
+        if (myProcessor < extra) {
+          offset = (per_proc + 1) * myProcessor;
+        }
+        else {
+          offset = (per_proc + 1) * extra + per_proc * (myProcessor - extra);
+        }
+        Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, count);
+        blob->property_add(Ioss::Property("processor_offset", (int64_t)offset));
+        blob->property_add(Ioss::Property("global_size", (int64_t)bl.num_entry));
 #else
         Ioss::Blob *blob = new Ioss::Blob(get_region()->get_database(), bl.name, bl.num_entry);
 #endif
@@ -757,8 +757,8 @@ namespace Ioex {
   // common
   // common
   size_t BaseDatabaseIO::handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
-                                      Ioss::Map &entity_map, void *ids, size_t num_to_get,
-                                      size_t offset) const
+                                          Ioss::Map &entity_map, void *ids, size_t num_to_get,
+                                          size_t offset) const
   {
     /*!
      * NOTE: "element" is generic for "element", "face", or "edge"
@@ -839,7 +839,7 @@ namespace Ioex {
 
   // common
   void BaseDatabaseIO::compute_block_membership__(Ioss::SideBlock *         efblock,
-                                              std::vector<std::string> &block_membership) const
+                                                  std::vector<std::string> &block_membership) const
   {
     const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
@@ -893,8 +893,8 @@ namespace Ioex {
 
   // common
   int64_t BaseDatabaseIO::get_field_internal(const Ioss::Region * /* region */,
-                                         const Ioss::Field &field, void *data,
-                                         size_t data_size) const
+                                             const Ioss::Field &field, void *data,
+                                             size_t data_size) const
   {
     // For now, assume that all TRANSIENT fields on a region
     // are REDUCTION fields (1 value).  We need to gather these
@@ -921,8 +921,8 @@ namespace Ioex {
 
   // common
   int64_t BaseDatabaseIO::put_field_internal(const Ioss::Region * /* region */,
-                                         const Ioss::Field &field, void *data,
-                                         size_t data_size) const
+                                             const Ioss::Field &field, void *data,
+                                             size_t data_size) const
   {
     // For now, assume that all TRANSIENT fields on a region
     // are REDUCTION fields (1 value).  We need to gather these
@@ -1016,7 +1016,7 @@ namespace Ioex {
   } // namespace
   // common
   void BaseDatabaseIO::store_reduction_field(ex_entity_type type, const Ioss::Field &field,
-                                         const Ioss::GroupingEntity *ge, void *variables) const
+                                             const Ioss::GroupingEntity *ge, void *variables) const
   {
     const Ioss::VariableType *var_type = field.transformed_storage();
 
@@ -1027,7 +1027,7 @@ namespace Ioex {
     int *    ivar   = static_cast<int *>(variables);
     int64_t *ivar64 = static_cast<int64_t *>(variables);
 
-    auto id   = (ge->property_exists("id")) ? ge->get_property("id").get_int() : 0;
+    auto id = (ge->property_exists("id")) ? ge->get_property("id").get_int() : 0;
 
     // Note that if the field's basic type is COMPLEX, then each component of
     // the VariableType is a complex variable consisting of a real and
@@ -1095,11 +1095,11 @@ namespace Ioex {
 
   // common
   void BaseDatabaseIO::get_reduction_field(ex_entity_type type, const Ioss::Field &field,
-                                       const Ioss::GroupingEntity *ge, void *variables) const
+                                           const Ioss::GroupingEntity *ge, void *variables) const
   {
     const Ioss::VariableType *var_type = field.raw_storage();
 
-    auto id   = (ge->property_exists("id")) ? ge->get_property("id").get_int() : 0;
+    auto id = (ge->property_exists("id")) ? ge->get_property("id").get_int() : 0;
 
     Ioss::Field::BasicType ioss_type = field.get_type();
     assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
@@ -1361,7 +1361,7 @@ namespace Ioex {
   }
 
   void BaseDatabaseIO::add_mesh_reduction_fields(ex_entity_type type, int64_t id,
-                                             Ioss::GroupingEntity *entity)
+                                                 Ioss::GroupingEntity *entity)
   {
     // Get "global attributes"
     // These are single key-value per grouping entity
@@ -1375,7 +1375,7 @@ namespace Ioex {
       ex_get_attributes(get_file_pointer(), att_count, attr.data());
 
       // Create a property on `entity` for each `attribute`
-      for (const auto att : attr) {
+      for (const auto &att : attr) {
         std::string storage = fmt::format("Real[{}]", att.value_count);
         switch (att.type) {
         case EX_INTEGER:
@@ -1407,23 +1407,25 @@ namespace Ioex {
               Ioss::Property(att.name, (char *)att.values, Ioss::Property::ATTRIBUTE));
           break;
         }
+        free(att.values); // Allocated by `ex_get_attributes`
       }
     }
   }
 
   // common
   int64_t BaseDatabaseIO::add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
-                                         int64_t position)
+                                             int64_t position)
   {
     return internal_add_results_fields(type, entity, position, m_groupCount[type],
                                        m_truthTable[type], m_variables[type]);
   }
 
   // common
-  int64_t BaseDatabaseIO::internal_add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
-                                                  int64_t position, int64_t block_count,
-                                                  Ioss::IntVector &      truth_table,
-                                                  Ioex::VariableNameMap &variables)
+  int64_t BaseDatabaseIO::internal_add_results_fields(ex_entity_type        type,
+                                                      Ioss::GroupingEntity *entity,
+                                                      int64_t position, int64_t block_count,
+                                                      Ioss::IntVector &      truth_table,
+                                                      Ioex::VariableNameMap &variables)
   {
     int nvar = 0;
     {
@@ -1519,7 +1521,7 @@ namespace Ioex {
 
   // common
   int64_t BaseDatabaseIO::add_reduction_results_fields(ex_entity_type        type,
-                                                   Ioss::GroupingEntity *entity)
+                                                       Ioss::GroupingEntity *entity)
   {
     int nvar = 0;
     {
@@ -1698,8 +1700,8 @@ namespace Ioex {
 
   // common
   template <typename T>
-  void BaseDatabaseIO::internal_write_results_metadata(ex_entity_type type, std::vector<T *> entities,
-                                                   int &glob_index)
+  void BaseDatabaseIO::internal_write_results_metadata(ex_entity_type   type,
+                                                       std::vector<T *> entities, int &glob_index)
   {
     int index     = 0;
     int red_index = 0;
@@ -1715,7 +1717,7 @@ namespace Ioex {
     size_t value_size = m_reductionVariables[type].size();
 #endif
     for (const auto &entity : entities) {
-      auto id   = (entity->property_exists("id")) ? entity->get_property("id").get_int() : 0;
+      auto id = (entity->property_exists("id")) ? entity->get_property("id").get_int() : 0;
       m_reductionValues[type][id].resize(value_size);
     }
 
@@ -1725,7 +1727,7 @@ namespace Ioex {
 
   // common
   int BaseDatabaseIO::gather_names(ex_entity_type type, VariableNameMap &variables,
-                               const Ioss::GroupingEntity *ge, int index, bool reduction)
+                                   const Ioss::GroupingEntity *ge, int index, bool reduction)
   {
     int new_index = index;
 
@@ -1859,7 +1861,7 @@ namespace Ioex {
 
   // common
   void BaseDatabaseIO::output_results_names(ex_entity_type type, VariableNameMap &variables,
-                                        bool reduction) const
+                                            bool reduction) const
   {
     bool lowercase_names =
         (properties.exists("VARIABLE_NAME_CASE") &&
@@ -2023,8 +2025,8 @@ namespace Ioex {
 
   // common
   void Ioex::BaseDatabaseIO::add_attribute_fields(ex_entity_type        entity_type,
-                                              Ioss::GroupingEntity *block, int attribute_count,
-                                              const std::string &type)
+                                                  Ioss::GroupingEntity *block, int attribute_count,
+                                                  const std::string &type)
   {
     /// \todo REFACTOR Some of the attribute knowledge should be at
     /// the Ioss::ElementTopology level instead of here. That would
@@ -2451,11 +2453,12 @@ namespace {
 
     if (component_sum > attribute_count) {
       std::ostringstream errmsg;
-      fmt::print(errmsg,
-                 "INTERNAL ERROR: Block '{}' is supposed to have {} attributes, but {} attributes "
-                 "were counted.\n"
-                 "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
-                 block->name(), attribute_count, component_sum, __func__);
+      fmt::print(
+          errmsg,
+          "INTERNAL ERROR: Block '{}' is supposed to have {} attributes, but {} attributes "
+          "were counted.\n"
+          "Something is wrong in the Ioex::BaseDatabaseIO class, function {}. Please report.\n",
+          block->name(), attribute_count, component_sum, __func__);
       IOSS_ERROR(errmsg);
     }
 
