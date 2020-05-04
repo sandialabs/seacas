@@ -1198,7 +1198,7 @@ namespace {
   template <typename INT>
   void output_connectivity(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
                            const std::vector<int> &elem_to_proc, size_t proc_begin,
-                           size_t proc_size, INT dummy)
+                           size_t proc_size, INT /*dummy*/)
   {
     // Read connectivity and partition to each processor/block.
     // connectvity[p][b] = connectivity for block b on processor p
