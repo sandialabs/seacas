@@ -320,9 +320,9 @@ int ex__put_names(int exoid, int varid, size_t num_names, char **names, ex_entit
       if (length > name_length) {
         fprintf(stderr,
                 "Warning: The %s %s name '%s' is too long.\n\tIt will "
-                "be truncated from %d to %d characters\n",
+                "be truncated from %d to %d characters. [Called from %s]\n",
                 ex_name_of_object(obj_type), subtype, names[i], (int)length - 1,
-                (int)name_length - 1);
+                (int)name_length - 1, routine);
         length = name_length;
       }
 
@@ -379,8 +379,8 @@ int ex__put_name(int exoid, int varid, size_t index, const char *name, ex_entity
     if (count[1] > name_length) {
       fprintf(stderr,
               "Warning: The %s %s name '%s' is too long.\n\tIt will be "
-              "truncated from %d to %d characters\n",
-              ex_name_of_object(obj_type), subtype, name, (int)strlen(name), (int)name_length - 1);
+              "truncated from %d to %d characters. [Called from %s]\n",
+              ex_name_of_object(obj_type), subtype, name, (int)strlen(name), (int)name_length - 1, routine);
       count[1] = name_length;
       too_long = 1;
     }
@@ -452,8 +452,8 @@ int ex__get_name(int exoid, int varid, size_t index, char *name, int name_size,
 
   status = nc_get_vara_text(exoid, varid, start, count, name);
   if (status != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s name at index %d from file id %d",
-             ex_name_of_object(obj_type), (int)index, exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s name at index %d from file id %d [Called from %s]",
+             ex_name_of_object(obj_type), (int)index, exoid, routine);
     ex_err_fn(exoid, __func__, errmsg, status);
     return (EX_FATAL);
   }
@@ -1691,7 +1691,7 @@ int ex__get_dimension(int exoid, const char *DIMENSION, const char *label, size_
 /*!
   \deprecated
 */
-size_t ex_header_size(int exoid) { return 0; }
+size_t ex_header_size(int exoid) { EX_UNUSED(exoid); return 0; }
 
 void ex__set_compact_storage(int exoid, int varid)
 {
@@ -2006,6 +2006,8 @@ int ex__handle_mode(unsigned int my_mode, int is_parallel, int run_version)
     my_mode &= ~all_modes;
     my_mode |= tmp_mode;
   }
+#else
+  EX_UNUSED(is_parallel);
 #endif /* PARALLEL_AWARE_EXODUS */
 
   if (my_mode & EX_NETCDF4) {
