@@ -339,24 +339,32 @@ namespace Ioss {
           fmt::print(Ioss::DEBUG(), "DW: dw_wait_file_stage({});\n", bb_file.filename());
         }
 #endif
-        int dwret = dw_wait_file_stage(bb_file.filename().c_str());
-        if (dwret < 0) {
-          std::ostringstream errmsg;
-          fmt::print(errmsg, "ERROR: failed waiting for file stage `{}`: {}\n", bb_file.filename(),
-                     std::strerror(-dwret));
-          IOSS_ERROR(errmsg);
-        }
+        // Shyamali : To sort the ranks from communicator
+        std::vector<int> procs(util().parallel_size());
+        // Now sort by increasing processor number.
+        std::sort(procs.begin(), procs.end());
+        if (myProcessor == procs[0]) {
+
+          int dwret = dw_wait_file_stage(bb_file.filename().c_str());
+          if (dwret < 0) {
+            std::ostringstream errmsg;
+            fmt::print(errmsg, "ERROR: failed waiting for file stage `{}`: {}\n",
+                       bb_file.filename(), std::strerror(-dwret));
+            IOSS_ERROR(errmsg);
+          }
 #else
         // Used to debug DataWarp logic on systems without DataWarp...
         fmt::print(Ioss::DEBUG(), "DW: (FAKE) dw_wait_file_stage({});\n", bb_file.filename());
 #endif
+        }
+        set_dwname(bb_file.filename());
       }
-      set_dwname(bb_file.filename());
+      else {
+        set_dwname(filename);
+      }
     }
-    else {
-      set_dwname(filename);
-    }
-  }
+    util().barrier();
+  } // namespace Ioss
 
   /** \brief This function gets called inside closeDatabase__(), which checks if Cray Datawarp (DW)
    * is in use, if so, we want to call a stageout before actual close of this file.
@@ -364,7 +372,17 @@ namespace Ioss {
   void DatabaseIO::closeDW() const
   {
     if (using_dw()) {
-      if (!using_parallel_io() || (using_parallel_io() && myProcessor == 0)) {
+
+      if (using_parallel_io()) {
+        util().barrier();
+      }
+
+      // Shyamali : To sort the ranks from communicator
+      std::vector<int> procs(util().parallel_size());
+      // Now sort by increasing processor number.
+      std::sort(procs.begin(), procs.end());
+
+      if (!using_parallel_io() || (using_parallel_io() && myProcessor == procs[0])) {
 #if defined SEACAS_HAVE_DATAWARP
         int complete = 0, pending = 0, deferred = 0, failed = 0;
         dw_query_file_stage(get_dwname().c_str(), &complete, &pending, &deferred, &failed);
@@ -405,8 +423,8 @@ namespace Ioss {
           IOSS_ERROR(errmsg);
         }
 #else
-        fmt::print(Ioss::DEBUG(), "\nDW: (FAKE) dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
-                   get_dwname(), get_pfsname());
+      fmt::print(Ioss::DEBUG(), "\nDW: (FAKE) dw_stage_file_out({}, {}, DW_STAGE_IMMEDIATE);\n",
+                 get_dwname(), get_pfsname());
 #endif
       }
       if (using_parallel_io()) {
