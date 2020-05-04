@@ -352,19 +352,19 @@ namespace Ioss {
                        bb_file.filename(), std::strerror(-dwret));
             IOSS_ERROR(errmsg);
           }
+	}
+	util().barrier();
 #else
         // Used to debug DataWarp logic on systems without DataWarp...
         fmt::print(Ioss::DEBUG(), "DW: (FAKE) dw_wait_file_stage({});\n", bb_file.filename());
 #endif
-        }
-        set_dwname(bb_file.filename());
       }
-      else {
-        set_dwname(filename);
-      }
+      set_dwname(bb_file.filename());
     }
-    util().barrier();
-  } // namespace Ioss
+    else {
+      set_dwname(filename);
+    }
+  }
 
   /** \brief This function gets called inside closeDatabase__(), which checks if Cray Datawarp (DW)
    * is in use, if so, we want to call a stageout before actual close of this file.
