@@ -4,7 +4,7 @@
 //
 // See packages/seacas/LICENSE for details
 
-#include <Ionit_Initializer.h>
+#include "Ionit_Initializer.h"
 #include <Ioss_CodeTypes.h>
 
 #if defined(SEACAS_HAVE_EXODUS)
