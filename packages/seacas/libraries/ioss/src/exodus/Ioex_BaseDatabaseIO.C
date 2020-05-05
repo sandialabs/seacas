@@ -692,6 +692,7 @@ namespace Ioex {
       }
 
       // Now iterate again and populate member lists...
+      int iblk = 0;
       for (const auto &bl : blobs) {
         Ioss::Blob *blob = get_region()->get_blob(bl.name);
         assert(blob != nullptr);
@@ -701,7 +702,7 @@ namespace Ioex {
         int attribute_count = blob->get_property("attribute_count").get_int();
         add_attribute_fields(EX_BLOB, blob, attribute_count, "Blob");
         add_reduction_results_fields(EX_BLOB, blob);
-        add_results_fields(EX_BLOB, blob);
+        add_results_fields(EX_BLOB, blob, iblk++);
       }
 
       // If there are any reduction results fields ("REDUCTION"), then need to
@@ -1457,7 +1458,7 @@ namespace Ioex {
         // Read and store the truth table (Should be there since we only
         // get to this routine if there are variables...)
 
-        if (type == EX_NODE_BLOCK || type == EX_GLOBAL || type == EX_BLOB || type == EX_ASSEMBLY) {
+        if (type == EX_NODE_BLOCK || type == EX_GLOBAL || type == EX_ASSEMBLY) {
           // These types don't have a truth table in the exodus api...
           // They do in Ioss just for some consistency...
           std::fill(truth_table.begin(), truth_table.end(), 1);
