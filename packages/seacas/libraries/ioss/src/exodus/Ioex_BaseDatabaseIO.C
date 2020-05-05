@@ -1608,7 +1608,7 @@ namespace Ioex {
       m_reductionValues[EX_GLOBAL][0].resize(glob_index);
 
       const Ioss::NodeBlockContainer &node_blocks = get_region()->get_node_blocks();
-      assert(node_blocks.size() == 1);
+      assert(node_blocks.size() <= 1);
       internal_write_results_metadata(EX_NODE_BLOCK, node_blocks, glob_index);
 
       const Ioss::EdgeBlockContainer &edge_blocks = get_region()->get_edge_blocks();
@@ -2327,13 +2327,15 @@ namespace Ioex {
     Ioex::write_reduction_attributes(get_file_pointer(), get_region()->get_blobs());
 
     // Write coordinate names...
-    char const *labels[3];
-    labels[0] = "x";
-    labels[1] = "y";
-    labels[2] = "z";
-    int ierr  = ex_put_coord_names(get_file_pointer(), (char **)labels);
-    if (ierr < 0) {
-      Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+    if (!get_region()->get_node_blocks().empty()) {
+      char const *labels[3];
+      labels[0] = "x";
+      labels[1] = "y";
+      labels[2] = "z";
+      int ierr  = ex_put_coord_names(get_file_pointer(), (char **)labels);
+      if (ierr < 0) {
+        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      }
     }
 
     // Write coordinate frame data...

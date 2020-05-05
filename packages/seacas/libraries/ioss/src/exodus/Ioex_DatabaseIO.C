@@ -5266,9 +5266,15 @@ void DatabaseIO::write_meta_data()
   Ioss::Region *region = get_region();
 
   const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
-  assert(node_blocks.size() == 1);
-  nodeCount        = node_blocks[0]->entity_count();
-  spatialDimension = node_blocks[0]->get_property("component_degree").get_int();
+  assert(node_blocks.size() <= 1);
+  if (!node_blocks.empty()) {
+    Ioex::get_id(node_blocks[0], EX_NODE_BLOCK, &ids_);
+    nodeCount        = node_blocks[0]->entity_count();
+    spatialDimension = node_blocks[0]->get_property("component_degree").get_int();
+  }
+  else {
+    spatialDimension = 1;
+  }
 
   char the_title[max_line_length + 1];
 
@@ -5280,8 +5286,6 @@ void DatabaseIO::write_meta_data()
   else {
     Ioss::Utils::copy_string(the_title, "IOSS Default Output Title");
   }
-
-  Ioex::get_id(node_blocks[0], EX_NODE_BLOCK, &ids_);
 
   // Assemblies --
   {
