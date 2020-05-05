@@ -33,6 +33,7 @@
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
 #include <Ioss_CodeTypes.h>
+#include <Ioss_CommSet.h>
 #include <Ioss_MeshCopyOptions.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
