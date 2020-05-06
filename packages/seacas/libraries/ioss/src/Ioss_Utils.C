@@ -1426,6 +1426,94 @@ int Ioss::Utils::term_width()
   return cols != 0 ? cols : 100;
 }
 
+void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
+                              const std::string &header, const std::string &suffix)
+{
+  Ioss::NameList fields;
+  ige->field_describe(role, &fields);
+
+  if (fields.empty()) {
+    return;
+  }
+
+  if (!header.empty()) {
+    fmt::print("{}{}", header, suffix);
+  }
+  // Iterate through results fields and transfer to output
+  // database...
+  // Get max width of a name...
+  int max_width = 0;
+  for (const auto &field_name : fields) {
+    max_width = max_width > (int)field_name.length() ? max_width : field_name.length();
+  }
+
+  auto width = Ioss::Utils::term_width();
+  if (width == 0) {
+    width = 80;
+  }
+  int cur_out = 8; // Tab width...
+  if (!header.empty()) {
+    cur_out = header.size() + suffix.size() + 16; // Assume 2 tabs...
+  }
+  for (const auto &field_name : fields) {
+    const Ioss::VariableType *var_type   = ige->get_field(field_name).raw_storage();
+    int                       comp_count = var_type->component_count();
+    fmt::print("{1:>{0}s}:{2}  ", max_width, field_name, comp_count);
+    cur_out += max_width + 4;
+    if (cur_out + max_width >= width) {
+      fmt::print("\n\t");
+      cur_out = 8;
+    }
+  }
+  if (!header.empty()) {
+    fmt::print("\n");
+  }
+}
+
+void Ioss::Utils::info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
+                                const std::string &header, const std::string &suffix)
+{
+  Ioss::NameList properties;
+  ige->property_describe(origin, &properties);
+
+  if (properties.empty()) {
+    if (!header.empty()) {
+      fmt::print("{}{} *** No attributes ***\n", header, suffix);
+    }
+    return;
+  }
+
+  if (!header.empty()) {
+    fmt::print("{}{}", header, suffix);
+  }
+
+  int num_out = 0;
+  for (const auto &property_name : properties) {
+    fmt::print("{:>s}: ", property_name);
+    auto prop = ige->get_property(property_name);
+    switch (prop.get_type()) {
+    case Ioss::Property::BasicType::REAL: fmt::print("{}\t", prop.get_real()); break;
+    case Ioss::Property::BasicType::INTEGER: fmt::print("{}\t", prop.get_int()); break;
+    case Ioss::Property::BasicType::STRING: fmt::print("'{}'\t", prop.get_string()); break;
+    case Ioss::Property::BasicType::VEC_INTEGER:
+      fmt::print("{}\t", fmt::join(prop.get_vec_int(), "  "));
+      break;
+    case Ioss::Property::BasicType::VEC_DOUBLE:
+      fmt::print("{}\t", fmt::join(prop.get_vec_double(), "  "));
+      break;
+    default:; // Do nothing
+    }
+    num_out++;
+    if (num_out >= 3) {
+      fmt::print("\n\t");
+      num_out = 0;
+    }
+  }
+  if (!header.empty()) {
+    fmt::print("\n");
+  }
+}
+
 void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_region,
                                 Ioss::MeshCopyOptions &options)
 {
