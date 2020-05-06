@@ -22,6 +22,20 @@ TRIBITS_ADD_TEST(
 )
 
 TRIBITS_ADD_EXECUTABLE(
+ Utst_blob_write_read
+ SOURCES Utst_blob_write_read.C
+)
+
+TRIBITS_ADD_ADVANCED_TEST(blob_write_read_example
+   TEST_0 EXEC Utst_blob_write_read
+     OUTPUT_FILE blob_write_read_example.txt
+     NUM_MPI_PROCS ${NPROCS}
+   TEST_1 CMND diff ARGS blob_write_read_example.txt ${CMAKE_CURRENT_SOURCE_DIR}/blob_write_read_example.gold.txt
+  COMM mpi serial
+  XHOSTTYPE Windows
+  )
+
+TRIBITS_ADD_EXECUTABLE(
  Utst_sort
  SOURCES Utst_sort.C
 )
