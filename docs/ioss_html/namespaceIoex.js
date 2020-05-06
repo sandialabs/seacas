@@ -1,5 +1,6 @@
 var namespaceIoex =
 [
+    [ "anonymous_namespace{Ioex_BaseDatabaseIO.C}", "namespaceIoex_1_1anonymous__namespace_02Ioex__BaseDatabaseIO_8C_03.html", "namespaceIoex_1_1anonymous__namespace_02Ioex__BaseDatabaseIO_8C_03" ],
     [ "Assembly", "structIoex_1_1Assembly.html", "structIoex_1_1Assembly" ],
     [ "BaseDatabaseIO", "classIoex_1_1BaseDatabaseIO.html", "classIoex_1_1BaseDatabaseIO" ],
     [ "Blob", "structIoex_1_1Blob.html", "structIoex_1_1Blob" ],

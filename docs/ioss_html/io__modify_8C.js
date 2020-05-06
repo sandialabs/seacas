@@ -21,7 +21,6 @@ var io__modify_8C =
     [ "info_entity", "io__modify_8C.html#a685777defa8ce875f63321e5b29a38c3", null ],
     [ "info_entity", "io__modify_8C.html#aa7fe4d5a9f681bd1c7ee8c6ea24f9b0a", null ],
     [ "info_entity", "io__modify_8C.html#ab2e59e16edb25594f1c04e8e1c693aec", null ],
-    [ "info_property", "io__modify_8C.html#a09db04cf2162141ffdfaed41ad840d24", null ],
     [ "main", "io__modify_8C.html#a0ddf1224851353fc92bfbff6f499fa97", null ],
     [ "name", "io__modify_8C.html#af258e6326503d99ab2814754873abfc5", null ],
     [ "set_db_properties", "io__modify_8C.html#abbaa7f57eb4b40d886862690a9c758d8", null ],
