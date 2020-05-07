@@ -1385,6 +1385,9 @@ namespace Ioex {
 
       // Create a property on `entity` for each `attribute`
       for (const auto &att : attr) {
+        if (att.values == nullptr) {
+          continue;
+        }
         std::string storage = fmt::format("Real[{}]", att.value_count);
         switch (att.type) {
         case EX_INTEGER:
