@@ -236,7 +236,7 @@ void read_blob()
         blob->get_field_data(field, data);
         std::cout << "\t\tReduction Field " << field << ", Value = ";
 
-        auto comp_count = blob->get_field(field).raw_storage()->component_count();
+        size_t comp_count = blob->get_field(field).raw_storage()->component_count();
         for (size_t i = 0; i < comp_count; i++) {
           std::cout << data[i] << " ";
         }
