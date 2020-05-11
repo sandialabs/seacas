@@ -35,7 +35,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <tokenize.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 #include <utility>
 #include <vector>
 
