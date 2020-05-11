@@ -56,6 +56,7 @@
 #include <iostream>
 #include <iterator>
 #include <map>
+#include <list>
 #include <set>
 #include <string>
 #include <vector>
@@ -230,7 +231,16 @@ dirman.root_node_mpi 0
           auto ldo = pack_sideblock(*sideblock);
           pool.Publish(sideblock_key, ldo);
         }    
-      }    
+      }
+
+      auto structuredblocks = get_region()->get_structured_blocks();
+      for( auto structuredblock : structuredblocks ) {
+        auto structuredblock_key = make_structuredblock_key(parallel_rank(), *(get_region()), *structuredblock);
+
+        /* PUBLISH the attirbutes of StructuredBlock */
+        auto ldo = pack_structuredblock(*structuredblock);
+        pool.Publish(structuredblock_key, ldo);
+      }
 
       // write properties to LDOs and publish
       this->put_properties();
@@ -264,6 +274,7 @@ dirman.root_node_mpi 0
     this->get_elemblocks();
     this->get_faceblocks();
     this->get_nodeblocks();
+    this->get_structuredblocks();
 
     this->get_edgesets();
     this->get_elemsets();
@@ -292,7 +303,7 @@ dirman.root_node_mpi 0
       auto data = static_cast<Iofaodel::state_entry_t::basic_type*>(
           static_cast<void*>(entry->data + entry->value.offset));
 
-      for(auto state(1); state <= entry->count; state++)
+      for(size_t state(1); state <= entry->count; state++)
         get_region()->add_state(data[state-1]);
     }
     // TODO
@@ -351,7 +362,6 @@ dirman.root_node_mpi 0
         std::string value(prop->data + prop->value.offset, prop->value.size);
         entity.property_update(property_name, value);
       } else if(prop->basic_type == Ioss::Property::BasicType::INTEGER) {
-        double val = 0.0;
         entity.property_update(property_name, *(reinterpret_cast<int64_t*>(value_ptr)));
       } else if(prop->basic_type == Ioss::Property::BasicType::REAL) {
         entity.property_update(property_name, *(reinterpret_cast<double*>(value_ptr)));
@@ -377,7 +387,6 @@ dirman.root_node_mpi 0
       std::string value(prop->data + prop->value.offset, prop->value.size);
       property = new Ioss::Property(property_name, value);
     } else if(prop->basic_type == Ioss::Property::BasicType::INTEGER) {
-      double val = 0.0; 
       property = new Ioss::Property(property_name, *(reinterpret_cast<int64_t*>(value_ptr)));
     } else if(prop->basic_type == Ioss::Property::BasicType::REAL) {
       property = new Ioss::Property(property_name, *(reinterpret_cast<double*>(value_ptr)));
@@ -620,9 +629,8 @@ dirman.root_node_mpi 0
       bool have_component_degree(false);
       int64_t component_degree(0);
 
-      for(int i = 0; i < oc.keys.size(); i++)
+      for(size_t i = 0; i < oc.keys.size(); i++)
       {
-
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
 
           if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
@@ -670,6 +678,78 @@ dirman.root_node_mpi 0
     }
   }
 
+  void DatabaseIO::get_structuredblocks()
+  {
+    std::string type_string("StructuredBlock");
+    kelpie::ObjectCapacities oc;
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    pool.List(search_key, &oc);
+
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
+      std::unordered_map<std::string,int> ctor_properties;
+      std::list<std::string> property_names = {"component_degree", "ni", "nj", "nk", 
+                                               "ni_global", "nj_global", "nk_global", 
+                                               "offset_i", "offset_j", "offset_k"};
+
+      for(size_t i = 0; i < oc.keys.size(); i++)
+      {
+        for(auto property_name : property_names)
+        {
+          // NOTE: ordinary find won't work b/c the names of multiple properties share substrings, e.g., "ni" and
+          // "ni_global" (a string find on "ni" will match both)
+          if(oc.keys[i].K2().find(entity_name) != std::string::npos) 
+          {
+            size_t position = oc.keys[i].K2().rfind(property_name);
+            if(position != std::string::npos && (position+property_name.size()) == oc.keys[i].K2().size()) {
+              lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+              pool.Need(oc.keys[i], &ldo);
+              ctor_properties[property_name] = property_get_int(ldo);
+            }
+          }
+        }
+      }
+
+      if(ctor_properties.size() != property_names.size())
+      {
+        printf("[ERROR] Unable to reconstruct StructuredBlock (%s): FOUND %ld of %ld properties\n", 
+               entity_name.c_str(), ctor_properties.size(), property_names.size());
+        return;
+      }
+
+      auto block = new Ioss::StructuredBlock(this, entity_name, ctor_properties["component_degree"],
+                            ctor_properties["ni"], ctor_properties["nj"], ctor_properties["nk"],
+                            ctor_properties["offset_i"], ctor_properties["offset_j"], ctor_properties["offset_k"],
+                            ctor_properties["ni_global"], ctor_properties["nj_global"], ctor_properties["nk_global"]);
+      
+      // Add attributes that aren't created in the CTor
+      auto attribute_key = make_structuredblock_key(parallel_rank(), *(get_region()), *block);
+      lunasa::DataObject ldo;
+      pool.Need(attribute_key, &ldo);
+      unpack_structuredblock(ldo, *block);
+
+      // Add Properties that aren't created in the CTor
+      auto property_search = property_search_key(parallel_rank(), *(get_region()), *block);
+      kelpie::ObjectCapacities property_oc;
+      pool.List(property_search, &property_oc);
+      this->read_entity_properties(property_oc, *block);
+
+      // Add fields that aren't created in the CTor
+      auto field_search = field_search_key(parallel_rank(), *(get_region()), *block);
+      kelpie::ObjectCapacities field_oc;
+      pool.List(field_search, &field_oc);
+      this->read_entity_fields(field_oc, *block);
+
+      // Add TRANSIENT fields that aren't created in the CTor
+      auto field_search_debug = field_search_key(parallel_rank(), 1, *(get_region()), *block);
+      kelpie::ObjectCapacities field_oc_debug;
+      pool.List(field_search_debug, &field_oc_debug);
+      this->read_entity_fields(field_oc_debug, *block);
+
+      this->get_region()->add(block);
+    }
+  }
 
   void DatabaseIO::get_edgesets()
   {
@@ -684,7 +764,6 @@ dirman.root_node_mpi 0
       bool have_entity_count(false);
       int64_t entity_count(0);
       bool have_component_degree(false);
-      int64_t component_degree(0);
 
       for(size_t i = 0; i < oc.keys.size(); i++)
       {
@@ -735,7 +814,6 @@ dirman.root_node_mpi 0
       bool have_entity_count(false);
       int64_t entity_count(0);
       bool have_component_degree(false);
-      int64_t component_degree(0);
 
       for(size_t i = 0; i < oc.keys.size(); i++)
       {
@@ -786,7 +864,6 @@ dirman.root_node_mpi 0
       bool have_entity_count(false);
       int64_t entity_count(0);
       bool have_component_degree(false);
-      int64_t component_degree(0);
 
       for(size_t i = 0; i < oc.keys.size(); i++)
       {
@@ -898,7 +975,7 @@ dirman.root_node_mpi 0
       this->read_entity_fields(field_oc, *entity);
 
       // FIND the SideBlocks that this SideSet references
-      auto sideblocks_key = make_sideblocks_search_key(parallel_rank(), *(get_region()), *entity);
+      auto sideblocks_key = sideblocks_search_key(parallel_rank(), *(get_region()), *entity);
       kelpie::ObjectCapacities sideblocks_search_oc;
       pool.List(sideblocks_key, &sideblocks_search_oc);
 

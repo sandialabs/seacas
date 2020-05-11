@@ -55,7 +55,7 @@ namespace Iofaodel {
 
 
   struct meta_entry_t {
-    enum class IossType {IossProperty, IossField, IofaodelStates, IofaodelSideBlock};
+    enum class IossType {IossProperty, IossField, IofaodelStates, IofaodelSideBlock, IofaodelStructuredBlock};
     IossType ioss_type;
     value_entry_t value; // offset from LDO::GetDataPtr and size
     // NOTE an added char data[0] would point to the next meta_entry_T
@@ -72,16 +72,18 @@ namespace Iofaodel {
   };
 
   struct sideblock_entry_t {
-    int64_t entity_count;
+    size_t entity_count;
 
     explicit sideblock_entry_t(const Ioss::SideBlock & sb);
   };
 
-  
   lunasa::DataObject pack_states(const Ioss::Region & r);
 
   lunasa::DataObject pack_sideblock(const Ioss::SideBlock & sb);
   int64_t unpack_sideblocks(lunasa::DataObject ldo);
+
+  lunasa::DataObject pack_structuredblock(const Ioss::StructuredBlock & sb);
+  void unpack_structuredblock(lunasa::DataObject &ldo, Ioss::StructuredBlock &sb);
 
   kelpie::Key make_states_search_key(int parallel_rank,
       const Ioss::Region & region);
@@ -89,7 +91,7 @@ namespace Iofaodel {
   kelpie::Key make_states_key(int parallel_rank,
       const Ioss::Region & region);
 
-  kelpie::Key make_sideblocks_search_key(int rank,
+  kelpie::Key sideblocks_search_key(int rank,
       const Ioss::Region & region,
       const Ioss::SideSet & sideset);
 
@@ -97,6 +99,14 @@ namespace Iofaodel {
       const Ioss::Region & region,
       const Ioss::SideSet & sideset,
       const Ioss::SideBlock & sideblock);
+
+  kelpie::Key structuredblock_search_key(int parallel_rank,
+      const Ioss::Region & region,
+      const Ioss::StructuredBlock & structuredblock);
+
+  kelpie::Key make_structuredblock_key(int parallel_rank,
+      const Ioss::Region & region,
+      const Ioss::StructuredBlock & structuredblock);
 
   kelpie::Key make_key(int parallel_rank,
       const Ioss::Region & region,

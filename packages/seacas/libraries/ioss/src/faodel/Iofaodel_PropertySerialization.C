@@ -48,6 +48,9 @@ namespace Iofaodel {
     for(auto entity : region.get_node_blocks())
       map_properties(region, *entity, op);
 
+    for(auto entity : region.get_structured_blocks())
+      map_properties(region, *entity, op);
+
     for(auto entity : region.get_edgesets())
       map_properties(region, *entity, op);
 
@@ -63,8 +66,6 @@ namespace Iofaodel {
     for(auto sideset : region.get_sidesets()) {
       map_properties(region, *sideset, op);
       for(auto sideblock : sideset->get_side_blocks()) {
-        printf("[map_properties] SIDEBLOCK = %s\n", sideblock->name().c_str());
-        fflush(stdout);
         map_properties(region, *sideblock, op);
       }   
     }

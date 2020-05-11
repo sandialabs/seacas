@@ -153,6 +153,7 @@ namespace Iofaodel {
     void get_elemblocks();
     void get_faceblocks();
     void get_nodeblocks();
+    void get_structuredblocks();
 
     void get_edgesets();
     void get_elemsets();

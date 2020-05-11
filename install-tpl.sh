@@ -850,6 +850,39 @@ then
   fi
 fi
 
+# =================== INSTALL CEREAL ===============
+if [ "$FAODEL" == "ON" ]
+then
+  # Currently, the FAODEL backend requires cereal, so if Faodel is enabled, we'll install cereal, too.
+  if [ "$FORCE" == "YES" ] || ! [ -e $INSTALL_PATH/include/cereal/archives/portable_binary.hpp ]
+  then
+    cereal_base="cereal"
+    echo "${txtgrn}+++ Cereal${txtrst}"
+    cd $ACCESS
+    CEREAL_DIR="TPL/cereal"
+    if [ ! -d "${CEREAL_DIR}" ]; then 
+      mkdir ${CEREAL_DIR}
+    fi
+    cd ${CEREAL}
+    if [ "$DOWNLOAD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Downloading...${txtrst}"
+      rm -rf cereal*
+      wget --no-check-certificate https://github.com/USCiLab/cereal/archive/v1.3.0.tar.gz
+      tar xzf v1.3.0.tar.gz
+      rm -f v1.3.0.tar.gz
+      cp -R cereal-1.3.0/include/cereal $INSTALL_PATH/include/
+    fi
+
+    if [ "$BUILD" == "YES" ]
+    then
+      echo "${txtgrn}+++ Configuring, Building, and Installing...${txtrst}"
+    fi
+  else
+    echo "${txtylw}+++ Cereal already installed.  Skipping download and installation.${txtrst}"
+  fi
+fi
+
 # ==================================
 cd $ACCESS
 #ls -l include
