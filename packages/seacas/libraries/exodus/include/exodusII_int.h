@@ -716,6 +716,8 @@ struct ex__file_item
   unsigned int shuffle : 1;               /**< 1 true, 0 false */
   unsigned int
                         file_type : 2; /**< 0 - classic, 1 -- 64 bit classic, 2 --NetCDF4,  3 --NetCDF4 classic */
+  unsigned int          is_write : 1;    /**< for output or append */
+  unsigned int          is_read : 1;     /**< for input */
   unsigned int          is_parallel : 1; /**< 1 true, 0 false */
   unsigned int          is_hdf5 : 1;     /**< 1 true, 0 false */
   unsigned int          is_pnetcdf : 1;  /**< 1 true, 0 false */
@@ -777,8 +779,9 @@ char *ex__name_var_of_object(ex_entity_type /*obj_type*/, int /*i*/, int /*j*/);
 char *ex__name_red_var_of_object(ex_entity_type /*obj_type*/, int /*indx*/);
 char *ex__name_of_map(ex_entity_type /*map_type*/, int /*map_index*/);
 
-int  ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
-                   int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf);
+int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
+                  int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf, int is_write);
+
 void ex__conv_exit(int exoid);
 
 nc_type nc_flt_code(int exoid);
@@ -815,6 +818,7 @@ void ex__compress_variable(int exoid, int varid, int type);
 int  ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num);
 void ex__check_valid_file_id(int         exoid,
                              const char *func); /** Abort if exoid does not refer to valid file */
+int  ex__check_multiple_open(const char *path, int mode, const char *func);
 int  ex__check_file_type(const char *path, int *type);
 int  ex__get_dimension(int exoid, const char *DIMENSION, const char *label, size_t *count,
                        int *dimid, const char *routine);

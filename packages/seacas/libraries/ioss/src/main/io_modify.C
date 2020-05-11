@@ -53,8 +53,8 @@
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
-#include <exodus/Ioex_Utils.h>
 #include <exodus/Ioex_Internals.h>
+#include <exodus/Ioex_Utils.h>
 #include <tokenize.h>
 
 #include <fmt/color.h>
@@ -190,9 +190,6 @@ namespace {
       }
     }
   }
-
-  void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
-                     const std::string &header, const std::string &suffix = "\n\t");
 
   std::string name(const Ioss::GroupingEntity *entity)
   {
@@ -372,7 +369,7 @@ namespace {
     int64_t num_node = sb->get_property("node_count").get_int();
     fmt::print("{:14n} cells, {:14n} nodes\n", num_cell, num_node);
     if (show_property) {
-      info_property(sb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(sb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -380,7 +377,8 @@ namespace {
   {
     fmt::print("\nRegion (global)\n");
     if (show_property) {
-      info_property(&region, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(&region, Ioss::Property::ATTRIBUTE,
+                                 "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -401,7 +399,7 @@ namespace {
     }
     fmt::print("\n");
     if (show_property) {
-      info_property(as, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(as, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -410,7 +408,8 @@ namespace {
     fmt::print("\n{} id: {:6d}, contains: {} item(s).\n", name(blob), id(blob),
                blob->entity_count());
     if (show_property) {
-      info_property(blob, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(blob, Ioss::Property::ATTRIBUTE,
+                                 "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -423,7 +422,7 @@ namespace {
     fmt::print("\n{} id: {:6d}, topology: {:>10s}, {:14n} elements, {:3d} attributes.\n", name(eb),
                id(eb), type, num_elem, num_attrib);
     if (show_property) {
-      info_property(eb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(eb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -447,7 +446,7 @@ namespace {
                  count, num_attrib, num_dist);
     }
     if (show_property) {
-      info_property(ss, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(ss, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -459,7 +458,7 @@ namespace {
     fmt::print("\n{} id: {:6d}, {:8n} nodes, {:3d} attributes, {:8n} distribution factors.\n",
                name(ns), id(ns), count, num_attrib, num_dist);
     if (show_property) {
-      info_property(ns, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(ns, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -469,7 +468,7 @@ namespace {
     int64_t num_attrib = nb->get_property("attribute_count").get_int();
     fmt::print("\n{} {:14n} nodes, {:3d} attributes.\n", name(nb), num_nodes, num_attrib);
     if (show_property) {
-      info_property(nb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
+      Ioss::Utils::info_property(nb, Ioss::Property::ATTRIBUTE, "\tAttributes (Reduction): ", "\t");
     }
   }
 
@@ -923,7 +922,7 @@ namespace {
         if (ge != nullptr) {
           std::string prefix =
               fmt::format("\n{} id: {:6d}\n\tAttributes (Reduction): ", name(ge), id(ge));
-          info_property(ge, Ioss::Property::ATTRIBUTE, prefix, "\t");
+          Ioss::Utils::info_property(ge, Ioss::Property::ATTRIBUTE, prefix, "\t");
         }
       }
       return false;
@@ -1212,50 +1211,6 @@ namespace {
     else {
       Ioex::Internals::update_assembly_data(exoid, ex_assemblies);
       Ioex::write_reduction_attributes(exoid, attributes_modified);
-    }
-  }
-
-  void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
-                     const std::string &header, const std::string &suffix)
-  {
-    Ioss::NameList properties;
-    ige->property_describe(origin, &properties);
-
-    if (properties.empty()) {
-      if (!header.empty()) {
-        fmt::print("{}{} *** No attributes ***\n", header, suffix);
-      }
-      return;
-    }
-
-    if (!header.empty()) {
-      fmt::print("{}{}", header, suffix);
-    }
-
-    int num_out = 0;
-    for (const auto &property_name : properties) {
-      fmt::print("{:>s}: ", property_name);
-      auto prop = ige->get_property(property_name);
-      switch (prop.get_type()) {
-      case Ioss::Property::BasicType::REAL: fmt::print("{}\t", prop.get_real()); break;
-      case Ioss::Property::BasicType::INTEGER: fmt::print("{}\t", prop.get_int()); break;
-      case Ioss::Property::BasicType::STRING: fmt::print("'{}'\t", prop.get_string()); break;
-      case Ioss::Property::BasicType::VEC_INTEGER:
-        fmt::print("{}\t", fmt::join(prop.get_vec_int(), "  "));
-        break;
-      case Ioss::Property::BasicType::VEC_DOUBLE:
-        fmt::print("{}\t", fmt::join(prop.get_vec_double(), "  "));
-        break;
-      default:; // Do nothing
-      }
-      num_out++;
-      if (num_out >= 3) {
-        fmt::print("\n\t");
-        num_out = 0;
-      }
-    }
-    if (!header.empty()) {
-      fmt::print("\n");
     }
   }
 

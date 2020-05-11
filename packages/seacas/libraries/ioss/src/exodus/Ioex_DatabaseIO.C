@@ -542,7 +542,7 @@ namespace Ioex {
     m_groupCount[EX_ASSEMBLY] = info.num_assembly;
     m_groupCount[EX_BLOB]     = info.num_blob;
 
-    if (nodeCount == 0) {
+    if (nodeCount == 0 && info.num_blob == 0) {
       fmt::print(Ioss::WARNING(), "No nodes were found in the model, file '{}'\n",
                  decoded_filename());
     }
@@ -556,7 +556,7 @@ namespace Ioex {
       IOSS_ERROR(errmsg);
     }
 
-    if (elementCount == 0) {
+    if (elementCount == 0 && info.num_blob == 0) {
       fmt::print(Ioss::WARNING(), "No elements were found in the model, file '{}'\n",
                  decoded_filename());
     }
