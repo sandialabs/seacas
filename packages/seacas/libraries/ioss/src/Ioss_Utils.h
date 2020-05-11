@@ -35,6 +35,7 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Field.h>
+#include <Ioss_Property.h>
 #include <algorithm> // for sort, lower_bound, copy, etc
 #include <cassert>
 #include <cmath>
@@ -518,6 +519,12 @@ namespace Ioss {
     //! via options in `options`
     static void copy_database(Ioss::Region &region, Ioss::Region &output_region,
                               Ioss::MeshCopyOptions &options);
+
+    static void info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
+                            const std::string &header, const std::string &suffix = "\n\t");
+
+    static void info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
+                              const std::string &header, const std::string &suffix = "\n\t");
   };
 
   inline std::ostream &OUTPUT() { return *Utils::m_outputStream; }
