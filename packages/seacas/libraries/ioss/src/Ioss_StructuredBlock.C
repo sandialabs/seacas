@@ -186,6 +186,8 @@ namespace Ioss {
 
     block->m_zoneConnectivity   = m_zoneConnectivity;
     block->m_boundaryConditions = m_boundaryConditions;
+    block->m_blockLocalNodeIndex = m_blockLocalNodeIndex;
+    block->m_globalIdMap = m_globalIdMap;
 
     return block;
   }
@@ -275,7 +277,40 @@ namespace Ioss {
     return os;
   }
 
-  bool StructuredBlock::operator==(Ioss::StructuredBlock &rhs)
+#define IJK_list(v) v[0],v[1],v[2]
+#define IJK_format "%d:%d:%d"
+  bool BoundaryCondition::operator==(const Ioss::BoundaryCondition &rhs) const
+  {
+    if( this->m_bcName != rhs.m_bcName )
+    {
+        printf("BoundaryCondition: m_bcName MISMATCH (%s vs. %s)\n", this->m_bcName.c_str(), rhs.m_bcName.c_str());
+        return false;
+    }
+
+    if( this->m_famName != rhs.m_famName )
+    {
+        printf("BoundaryCondition: m_famName MISMATCH (%s vs. %s)\n", this->m_famName.c_str(), rhs.m_famName.c_str());
+        return false;
+    }
+
+    if( this->m_rangeBeg != rhs.m_rangeBeg )
+    {
+        printf("BoundaryCondition: m_rangeBeg MISMATCH (" IJK_format ") vs. (" IJK_format ")\n", 
+               IJK_list(this->m_rangeBeg), IJK_list(rhs.m_rangeBeg));
+        return false;
+    }
+
+    if( this->m_rangeEnd != rhs.m_rangeEnd )
+    {
+        printf("BoundaryCondition: m_rangeEnd MISMATCH (" IJK_format ") vs. (" IJK_format ")\n", 
+               IJK_list(this->m_rangeEnd), IJK_list(rhs.m_rangeEnd));
+        return false;
+    }
+
+    return true;
+  }
+
+  bool StructuredBlock::operator==(const Ioss::StructuredBlock &rhs) const
   {
     if( this->m_ni != rhs.m_ni || this->m_nj != rhs.m_nj || this->m_nk != rhs.m_nk ) { 
       printf("StructuredBlock: N mismatch (%d:%d:%d vs. %d:%d:%d)\n",
@@ -328,19 +363,32 @@ namespace Ioss {
     }
 
     if( this->m_blockLocalNodeIndex != rhs.m_blockLocalNodeIndex ) {
-      printf("StructuredBlock: Block Local Node Index mismatch\n");
+      printf("StructuredBlock: Block Local Node Index mismatch (%ld entries vs. %ld entries)\n",
+             this->m_blockLocalNodeIndex.size(), rhs.m_blockLocalNodeIndex.size());
+      return false;
     }
 
+    // NOTE: this comparison assumes that the elements of this vector will
+    // appear in the same order in two databases that are equivalent.
     if( this->m_globalIdMap != rhs.m_globalIdMap ) {
       printf("StructuredBlock: Global ID Map mismatch\n");
+      return false;
     }
 
-    // INCOMPLETE comparison
-    printf("**** ERROR ****: StructuredBlock comparison incomplete\n");
-#ifdef TODO_sllevy
-    std::vector<ZoneConnectivity>          m_zoneConnectivity;
-    std::vector<BoundaryCondition>         m_boundaryConditions;
-#endif
+    // NOTE: this comparison assumes that the elements of this vector will
+    // appear in the same order in two databases that are equivalent.
+    if( this->m_zoneConnectivity != rhs.m_zoneConnectivity ) {
+      printf("StructuredBlock: Zone Connectivity mismatch (size %ld vs %ld)\n",
+             this->m_zoneConnectivity.size(), rhs.m_zoneConnectivity.size());
+      return false;
+    }
+
+    // NOTE: this comparison assumes that the elements of this vector will
+    // appear in the same order in two databases that are equivalent.
+    if( this->m_boundaryConditions != rhs.m_boundaryConditions ) {
+      printf("StructuredBlock: Boundary Conditions mismatch\n");
+      return false;
+    }
 
     if( Ioss::EntityBlock::operator!=( rhs ) ) {
       printf("StructuredBlock: EntityBlock mismatch\n");
@@ -350,7 +398,7 @@ namespace Ioss {
     return true;
   }
 
-  bool StructuredBlock::operator!=(Ioss::StructuredBlock &rhs)
+  bool StructuredBlock::operator!=(const Ioss::StructuredBlock &rhs) const
   {
     return !(*this == rhs);
   }

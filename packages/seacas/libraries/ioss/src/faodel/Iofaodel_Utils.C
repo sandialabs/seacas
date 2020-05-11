@@ -32,6 +32,12 @@
 
 #include "Iofaodel_Utils.h"
 #include "Iofaodel_Serialize.h"
+#include <sstream>
+#include "cereal/archives/portable_binary.hpp"
+#include "cereal/types/vector.hpp"
+#include "cereal/types/array.hpp"
+#include "cereal/types/utility.hpp"
+#include "cereal/types/string.hpp"
 
 namespace Iofaodel {
 
@@ -46,9 +52,9 @@ namespace Iofaodel {
   {
   }
 
-  /* Each SideSet may reference one or more SideBlocks.  This function collects
-     and serializes the keys that identify the SideBlocks that are referenced by
-     a given SideSet. */
+  /* The constructor for SideBlocks requires attributes that are neither properties nor fields.  
+     This function collects and serializes these attributes so that the SideBlock can be reconstructed 
+     from the data stored in Faodel. */
   lunasa::DataObject pack_sideblock(const Ioss::SideBlock & sb)
   { 
     // meta, entry, data, data_size
@@ -85,6 +91,39 @@ namespace Iofaodel {
     );
 
     return entry->entity_count;
+  }
+
+  /* The constructor for StructuredBlocks requires attributes that are neither properties nor fields.  
+     This function collects and serializes these attributes so that the StructuredBlock can be reconstructed 
+     from the data stored in Faodel. */
+  lunasa::DataObject pack_structuredblock(const Ioss::StructuredBlock & sb)
+  { 
+    std::ostringstream outstream;
+    cereal::PortableBinaryOutputArchive oarchive(outstream);
+    oarchive(sb);
+    std::streamoff length = outstream.tellp();
+
+    // meta, entry, data, data_size
+    auto ldo = lunasa::DataObject(length);
+    std::string outstring = outstream.str();
+    outstring.copy(static_cast<char*>(ldo.GetDataPtr()), length);
+    char *p = (char *)ldo.GetDataPtr();
+
+    return ldo;
+  }
+
+  void unpack_structuredblock(lunasa::DataObject &ldo, Ioss::StructuredBlock &sb)
+  {
+    std::stringstream instream;
+    char *p = (char *)ldo.GetDataPtr();
+    for( int i = 0; i < ldo.GetDataSize(); i++ ) {
+      instream << p[i];
+    }
+    instream.seekg(0,instream.end);
+    std::streamoff length = instream.tellg();
+    instream.seekg(0,instream.beg);
+    cereal::PortableBinaryInputArchive iarchive(instream);
+    iarchive(sb);
   }
 
   lunasa::DataObject pack_states(const Ioss::Region & r)
@@ -154,7 +193,7 @@ namespace Iofaodel {
   }
 
 
-  kelpie::Key make_sideblocks_search_key(int rank,
+  kelpie::Key sideblocks_search_key(int rank,
       const Ioss::Region & region,
       const Ioss::SideSet & sideset)
   {
@@ -190,6 +229,37 @@ namespace Iofaodel {
         );  
   }
 
+  kelpie::Key structuredblock_search_key(int rank,
+      const Ioss::Region & region,
+      const Ioss::StructuredBlock & structuredblock)
+  {
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/StructuredBlock/" + structuredblock.name() +
+        "/Attributes*"
+        );
+  }
+
+  kelpie::Key make_structuredblock_key(int rank,
+      const Ioss::Region & region,
+      const Ioss::StructuredBlock & structuredblock)
+  {
+    auto region_name = region.name();
+    if(region_name.empty()) {
+      region_name="UNNAMED";
+    }
+    return kelpie::Key(
+        std::to_string(rank),
+        "/Region/" + region_name +
+        "/StructuredBlock/" + structuredblock.name() +
+        "/Attributes"
+        );
+  }
 
   kelpie::Key make_key(int rank,
       const Ioss::Region & region,

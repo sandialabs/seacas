@@ -81,6 +81,9 @@ namespace Ioss {
     int  get_consistent_side_number() const;
     void set_consistent_side_number(int side) { consistentSideNumber = side; }
 
+    // Quiet comparison
+    bool equal(const SideBlock &);
+
     bool operator==(const SideBlock &);
     bool operator!=(const SideBlock &);
 
