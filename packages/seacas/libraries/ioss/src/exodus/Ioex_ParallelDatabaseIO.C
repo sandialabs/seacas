@@ -30,7 +30,9 @@
 #include <set>
 #include <string>
 #include <tokenize.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 #include <utility>
 #include <vector>
 
