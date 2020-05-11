@@ -435,6 +435,13 @@ namespace {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
       properties.add(Ioss::Property("COMPRESSION_LEVEL", interFace.compression_level));
       properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interFace.shuffle)));
+
+      if (interFace.szip) {
+	properties.add(Ioss::Property("COMPRESSION_METHOD", "szip"));
+      }
+      else if (interFace.zlib) {
+	properties.add(Ioss::Property("COMPRESSION_METHOD", "zlib"));
+      }
     }
 
     if (interFace.compose_output == "default") {

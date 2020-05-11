@@ -138,6 +138,14 @@ void IOShell::Interface::enroll_options()
                   "Specify the hdf5 compression level [0..9] to be used on the output file.",
                   nullptr);
 
+  options_.enroll("zlib", Ioss::GetLongOption::NoValue,
+                  "Use the Zlib / libz compression method if compression is enabled (default) [exodus only].",
+                  nullptr);
+
+  options_.enroll("szip", Ioss::GetLongOption::NoValue,
+                  "Use the SZip library if compression is enabled. Not as portable as zlib [exodus only]",
+                  nullptr);
+
 #if defined(PARALLEL_AWARE_EXODUS)
   options_.enroll(
       "compose", Ioss::GetLongOption::OptionalValue,
@@ -358,6 +366,16 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   }
 
   shuffle = (options_.retrieve("shuffle") != nullptr);
+  if (options_.retrieve("szip") != nullptr) {
+    szip = true;
+    zlib = false;
+  }
+  zlib = (options_.retrieve("zlib") != nullptr);
+
+  if (szip && zlib) {
+    fmt::print(stderr, "ERROR: Only one of 'szip' or 'zlib' can be specified.\n");
+    return false;
+  }
 
   {
     const char *temp = options_.retrieve("compress");

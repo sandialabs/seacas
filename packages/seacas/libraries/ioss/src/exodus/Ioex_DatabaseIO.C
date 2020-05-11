@@ -416,6 +416,30 @@ namespace Ioex {
         int shuffle = properties.get("COMPRESSION_SHUFFLE").get_int();
         ex_set_option(exodusFilePtr, EX_OPT_COMPRESSION_SHUFFLE, shuffle);
       }
+      if (properties.exists("COMPRESSION_METHOD")) {
+	auto method = properties.get("COMPRESSION_METHOD").get_string();
+	method = Ioss::Utils::lowercase(method);
+	ex_compression_type exo_method = EX_COMPRESS_ZLIB;
+	if (method == "zlib" || method == "libz" || method == "gzip") {
+	  exo_method = EX_COMPRESS_ZLIB;
+	}
+	else if (method == "szip") {
+#if defined(NC_HAS_SZIP_WRITE)
+	  exo_method = EX_COMPRESS_SZIP;
+#else
+          fmt::print(Ioss::WARNING(),
+                     "The NetCDF library does not have SZip compression enabled."
+		     " 'zlib' will be used instead.\n\n");
+#endif
+	}
+	else {
+          fmt::print(Ioss::WARNING(),
+                     "Unrecognized compression method specified: '{}'."
+		     " 'zlib' will be used instead.\n\n",
+                     method);
+	}
+	ex_set_option(exodusFilePtr, EX_OPT_COMPRESSION_TYPE, exo_method);
+      }
     }
     ex_opts(app_opt_val); // Reset back to what it was.
     return is_ok;
