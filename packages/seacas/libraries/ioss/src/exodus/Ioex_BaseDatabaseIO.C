@@ -1418,8 +1418,14 @@ namespace Ioex {
           }
           break;
         case EX_CHAR:
-          entity->property_add(
-              Ioss::Property(att.name, (char *)att.values, Ioss::Property::ATTRIBUTE));
+	  if (att.value_count > 0) {
+	    entity->property_add(
+				 Ioss::Property(att.name, (char *)att.values, Ioss::Property::ATTRIBUTE));
+	  }
+	  else {
+	    // Just an attribute name.  Give it an empty value...
+	    entity->property_add(Ioss::Property(att.name, "", Ioss::Property::ATTRIBUTE));
+	  }
           break;
         }
       }
