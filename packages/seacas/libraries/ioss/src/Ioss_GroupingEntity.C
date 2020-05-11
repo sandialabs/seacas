@@ -328,7 +328,73 @@ void Ioss::GroupingEntity::property_update(const std::string &property,
   }
 }
 
-bool Ioss::GroupingEntity::operator==(const Ioss::GroupingEntity &rhs)
+bool Ioss::GroupingEntity::equal(const Ioss::GroupingEntity &rhs)
+{
+  if( this->entityName.compare(rhs.entityName) != 0 ) { 
+    return false;
+  }
+
+  if( this->entityCount != rhs.entityCount ) { 
+    return false;
+  }
+
+  if( this->attributeCount != rhs.attributeCount ) { 
+    return false;
+  }
+
+  if( this->entityState != rhs.entityState ) { 
+    return false;
+  }
+
+  if( this->hash_ != rhs.hash_ ) { 
+    return false;
+  }
+
+  /* COMPARE properties */
+  Ioss::NameList lhs_properties, rhs_properties;
+  this->properties.describe(&lhs_properties);
+  rhs.properties.describe(&rhs_properties);
+
+  if( lhs_properties.size() != rhs_properties.size() ) { 
+    printf("GroupingEntity: NUMBER of properties are different (%ld vs. %ld)\n",
+           lhs_properties.size(), rhs_properties.size());
+    return false;
+  }
+
+  for( auto &lhs_property : lhs_properties ) { 
+    auto it = std::find(rhs_properties.begin(), rhs_properties.end(), lhs_property);
+    if( it == rhs_properties.end() ) { 
+      continue;
+    }   
+
+    if( this->properties.get(lhs_property) != rhs.properties.get(lhs_property) ) { 
+      // EMPIRICALLY, different representations (e.g., CGNS vs. Exodus) of the same mesh 
+      // can have different values for the "original_block_order" property.
+      if( lhs_property.compare("original_block_order") != 0 ) { 
+        return false;
+      }   
+    }
+  }
+      
+  /* COMPARE fields */
+  Ioss::NameList lhs_fields, rhs_fields;
+  this->fields.describe(&lhs_fields);
+  rhs.fields.describe(&rhs_fields);
+
+  if( lhs_fields.size() != rhs_fields.size() ) {
+    return false;
+  }
+
+  for( auto &field: lhs_fields ) {
+    if( this->fields.get(field) != rhs.fields.get(field) ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool Ioss::GroupingEntity::operator==(const Ioss::GroupingEntity &rhs) const
 {
   if( this->entityName.compare(rhs.entityName) != 0 ) { 
     printf("GroupingEntity: entityName mismatch (%s vs. %s)\n", 
@@ -379,7 +445,7 @@ bool Ioss::GroupingEntity::operator==(const Ioss::GroupingEntity &rhs)
       // EMPIRICALLY, different representations (e.g., CGNS vs. Exodus) of the same mesh 
       // can have different values for the "original_block_order" property.
       if( lhs_property.compare("original_block_order") == 0 ) { 
-        printf("WARNING: values for \"original_block_order\" DIFFER (%d vs. %d)\n",
+        printf("WARNING: values for \"original_block_order\" DIFFER (%ld vs. %ld)\n",
         this->properties.get(lhs_property).get_int(), 
         rhs.properties.get(lhs_property).get_int());
       } else {
@@ -418,7 +484,7 @@ bool Ioss::GroupingEntity::operator==(const Ioss::GroupingEntity &rhs)
   return true;
 }
 
-bool Ioss::GroupingEntity::operator!=(const Ioss::GroupingEntity &rhs)
+bool Ioss::GroupingEntity::operator!=(const Ioss::GroupingEntity &rhs) const
 {
   return !(*this == rhs);
 }

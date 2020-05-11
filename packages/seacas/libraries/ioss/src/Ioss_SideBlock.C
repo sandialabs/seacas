@@ -152,6 +152,23 @@ int Ioss::SideBlock::get_consistent_side_number() const
   return consistentSideNumber;
 }
 
+bool Ioss::SideBlock::equal(const Ioss::SideBlock &rhs)
+{
+  if( this->parentTopology_ != rhs.parentTopology_ ) { 
+    return false;
+  }
+
+  if( this->blockMembership != rhs.blockMembership ) { 
+    return false;
+  }
+
+  if( this->consistentSideNumber != rhs.consistentSideNumber ) { 
+    return false;
+  }
+
+  return Ioss::EntityBlock::equal( rhs );
+}
+
 bool Ioss::SideBlock::operator==(const Ioss::SideBlock &rhs)
 {
   if( this->parentTopology_ != rhs.parentTopology_ ) { 
@@ -170,7 +187,7 @@ bool Ioss::SideBlock::operator==(const Ioss::SideBlock &rhs)
     return false;
   }
 
-  return Ioss::EntityBlock::operator==( rhs );
+  return Ioss::EntityBlock::equal( rhs );
 }
 
 bool Ioss::SideBlock::operator!=(const Ioss::SideBlock &rhs)

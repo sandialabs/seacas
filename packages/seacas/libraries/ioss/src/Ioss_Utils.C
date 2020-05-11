@@ -3625,7 +3625,7 @@ namespace {
       for (const auto &in_block : in_blocks) {
         std::vector<Ioss::StructuredBlock *>::iterator it;
         for( it = out_blocks.begin(); it != out_blocks.end(); it++ ) {
-          if( in_block == (*it) ) break;
+          if( *(*it) == *in_block ) break;
         }
 
         if( it == out_blocks.end() ) {
