@@ -92,11 +92,14 @@ $(document).ready(function(){initNavTree('ex__conv_8c.html',''); initResizable()
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="exodusII_8h_source.html">exodusII.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="exodusII__int_8h_source.html">exodusII_int.h</a>&quot;</code><br />
+<code>#include &quot;stdbool.h&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:ad496620435dc522e8908edff46c3a2c0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__conv_8c.html#ad496620435dc522e8908edff46c3a2c0">NC_FLOAT_WORDSIZE</a>&#160;&#160;&#160;4</td></tr>
 <tr class="separator:ad496620435dc522e8908edff46c3a2c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff080428c7e9da3fcbbf4cfa210884e8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__conv_8c.html#aff080428c7e9da3fcbbf4cfa210884e8">EX__MAX_PATHLEN</a>&#160;&#160;&#160;8192</td></tr>
+<tr class="separator:aff080428c7e9da3fcbbf4cfa210884e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd52a60abb88f101fab607ce555f4db5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ex__conv_8c.html#afd52a60abb88f101fab607ce555f4db5">CT_ASSERT</a>(e)&#160;&#160;&#160;extern char(*ct_assert(void))[sizeof(char[1 - 2 * !(e)])]</td></tr>
 <tr class="separator:afd52a60abb88f101fab607ce555f4db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -104,10 +107,12 @@ Macros</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:ga01b3768d8802bad4dde5f39d95a285d4"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structex____file__item.html">ex__file_item</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga01b3768d8802bad4dde5f39d95a285d4">ex__find_file_item</a> (int exoid)</td></tr>
 <tr class="separator:ga01b3768d8802bad4dde5f39d95a285d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaff6ac3322edae6dab77d7fb5acede842"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#gaff6ac3322edae6dab77d7fb5acede842">ex__check_multiple_open</a> (const char *path, int mode, const char *func)</td></tr>
+<tr class="separator:gaff6ac3322edae6dab77d7fb5acede842"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga330d19673d0a06e92914646ec0e57155"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga330d19673d0a06e92914646ec0e57155">ex__check_valid_file_id</a> (int exoid, const char *func)</td></tr>
 <tr class="separator:ga330d19673d0a06e92914646ec0e57155"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga94afaedcedbb27ddeb594e32414a511d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga94afaedcedbb27ddeb594e32414a511d">ex__conv_init</a> (int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize, int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf)</td></tr>
-<tr class="separator:ga94afaedcedbb27ddeb594e32414a511d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga005d2803bbd41ee72a0816872c443bb5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga005d2803bbd41ee72a0816872c443bb5">ex__conv_init</a> (int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize, int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf, int is_write)</td></tr>
+<tr class="separator:ga005d2803bbd41ee72a0816872c443bb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga56bb1fc426b3aec7290100a9be5c1f04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga56bb1fc426b3aec7290100a9be5c1f04">ex__conv_exit</a> (int exoid)</td></tr>
 <tr class="separator:ga56bb1fc426b3aec7290100a9be5c1f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0bcb99c4a23dde165c0a75e9acfb3d55"><td class="memItemLeft" align="right" valign="top">nc_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utilities.html#ga0bcb99c4a23dde165c0a75e9acfb3d55">nc_flt_code</a> (int exoid)</td></tr>
@@ -149,6 +154,20 @@ Variables</h2></td></tr>
           <td class="paramtype">&#160;</td>
           <td class="paramname">e</td><td>)</td>
           <td>&#160;&#160;&#160;extern char(*ct_assert(void))[sizeof(char[1 - 2 * !(e)])]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aff080428c7e9da3fcbbf4cfa210884e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff080428c7e9da3fcbbf4cfa210884e8">&#9670;&nbsp;</a></span>EX__MAX_PATHLEN</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EX__MAX_PATHLEN&#160;&#160;&#160;8192</td>
         </tr>
       </table>
 </div><div class="memdoc">

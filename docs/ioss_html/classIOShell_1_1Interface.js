@@ -45,5 +45,7 @@ var classIOShell_1_1Interface =
     [ "split_times", "classIOShell_1_1Interface.html#a07d33285a42685b05117805847929080", null ],
     [ "statistics", "classIOShell_1_1Interface.html#a5f03a823093a125f42ca376005039ea7", null ],
     [ "surface_split_type", "classIOShell_1_1Interface.html#a6f2736a290e6c99b4a17b5ec8940b1f0", null ],
-    [ "timestep_delay", "classIOShell_1_1Interface.html#aba99b9eafd33df10d19b68be0d8019f0", null ]
+    [ "szip", "classIOShell_1_1Interface.html#a80c745d842c5d711e7e49632d465efc8", null ],
+    [ "timestep_delay", "classIOShell_1_1Interface.html#aba99b9eafd33df10d19b68be0d8019f0", null ],
+    [ "zlib", "classIOShell_1_1Interface.html#a4c2b537e55d1d01f209ef24d0926a63f", null ]
 ];

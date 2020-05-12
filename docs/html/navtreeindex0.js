@@ -91,9 +91,10 @@ var NAVTREEINDEX0 =
 "ex__add__attr_8c.html":[9,0,2,2],
 "ex__close_8c.html":[9,0,2,3],
 "ex__conv_8c.html":[9,0,2,4],
-"ex__conv_8c.html#a4f313ab8a35bc73ef6d5fe30f4e04157":[9,0,2,4,13],
-"ex__conv_8c.html#ad496620435dc522e8908edff46c3a2c0":[9,0,2,4,1],
+"ex__conv_8c.html#a4f313ab8a35bc73ef6d5fe30f4e04157":[9,0,2,4,15],
+"ex__conv_8c.html#ad496620435dc522e8908edff46c3a2c0":[9,0,2,4,2],
 "ex__conv_8c.html#afd52a60abb88f101fab607ce555f4db5":[9,0,2,4,0],
+"ex__conv_8c.html#aff080428c7e9da3fcbbf4cfa210884e8":[9,0,2,4,1],
 "ex__copy_8c.html":[9,0,2,5],
 "ex__copy_8c.html#a02085d8fa0557805b71b34222eb29067":[9,0,2,5,1],
 "ex__copy_8c.html#a6df1d22fb5f09eccc23b9f399670cfd7":[9,0,2,5,3],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "ex__get__partial__coord__component_8c.html":[9,0,2,60],
 "ex__get__partial__elem__attr_8c.html":[9,0,2,0,40],
 "ex__get__partial__elem__attr_8c.html#a85e2001c034b283e85fd16b6d41f73c3":[9,0,2,0,40,0],
-"ex__get__partial__elem__conn_8c.html":[9,0,2,0,41],
-"ex__get__partial__elem__conn_8c.html#a56e25a263ec362ff67c99fee630e6680":[9,0,2,0,41,0]
+"ex__get__partial__elem__conn_8c.html":[9,0,2,0,41]
 };

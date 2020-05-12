@@ -14,6 +14,8 @@ var structex____file__item =
     [ "is_hdf5", "structex____file__item.html#ad5b9691d0a25f4b4644c7258ae036cb2", null ],
     [ "is_parallel", "structex____file__item.html#a4cb6450abb7d49c12404f86e31c71f4b", null ],
     [ "is_pnetcdf", "structex____file__item.html#ab8d47a12013592e24b537bd8d0afa3a6", null ],
+    [ "is_read", "structex____file__item.html#aa4a3a9bce4fa296b6e7f5d1ccdfedae8", null ],
+    [ "is_write", "structex____file__item.html#a86255a924f982e66e8f5a51ae8dc33a4", null ],
     [ "maximum_name_length", "structex____file__item.html#a160ba86045058bcb562f51da035a2b8b", null ],
     [ "netcdf_type_code", "structex____file__item.html#af7f37f32b4fa65c1698d4ad6516ad9a9", null ],
     [ "next", "structex____file__item.html#ab4bb9c191c807578b9a9f0e10fc1fc88", null ],
