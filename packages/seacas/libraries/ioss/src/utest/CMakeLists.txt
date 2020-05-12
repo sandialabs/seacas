@@ -26,6 +26,7 @@ TRIBITS_ADD_EXECUTABLE(
  SOURCES Utst_blob_write_read.C
 )
 
+if (disabled_for_now)
 TRIBITS_ADD_ADVANCED_TEST(blob_write_read_example
    TEST_0 EXEC Utst_blob_write_read
      OUTPUT_FILE blob_write_read_example.txt
@@ -34,6 +35,7 @@ TRIBITS_ADD_ADVANCED_TEST(blob_write_read_example
   COMM mpi serial
   XHOSTTYPE Windows
   )
+endif()
 
 TRIBITS_ADD_EXECUTABLE(
  Utst_sort
