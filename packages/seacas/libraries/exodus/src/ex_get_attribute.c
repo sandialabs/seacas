@@ -297,7 +297,7 @@ int ex_get_attribute(int exoid, ex_attribute *attr)
       attr->values = calloc(attr->value_count, sizeof(double));
     }
     else if (attr->type == EX_CHAR) {
-      attr->values = calloc(attr->value_count, sizeof(char));
+      attr->values = calloc(attr->value_count+1, sizeof(char));
     }
     if (attr->values == NULL) {
       snprintf(
