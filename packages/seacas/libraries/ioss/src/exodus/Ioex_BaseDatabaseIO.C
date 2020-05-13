@@ -1289,7 +1289,7 @@ namespace Ioex {
       Ioss::Utils::copy_string(the_title, title_str);
     }
     else {
-      Ioss::Utils::copy_string(the_title, "IOSS Default Title");
+      Ioss::Utils::copy_string(the_title, "IOSS Default Output Title");
     }
 
     Ioex::Mesh mesh(spatialDimension, the_title, !usingParallelIO);
@@ -2290,6 +2290,206 @@ namespace Ioex {
       // Release memory...
       Ioss::Utils::delete_name_array(names, attribute_count);
     }
+  }
+
+  void BaseDatabaseIO::common_write_meta_data()
+  {
+  Ioss::Region *region = get_region();
+
+  const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
+  assert(node_blocks.size() <= 1);
+  if (!node_blocks.empty()) {
+    Ioex::get_id(node_blocks[0], EX_NODE_BLOCK, &ids_);
+    nodeCount        = node_blocks[0]->entity_count();
+    spatialDimension = node_blocks[0]->get_property("component_degree").get_int();
+  }
+  else {
+    spatialDimension = 1;
+  }
+
+  // Assemblies --
+  {
+    const auto &assemblies = region->get_assemblies();
+    // Set ids of all entities that have "id" property...
+    for (auto &assem : assemblies) {
+      Ioex::set_id(assem, EX_ASSEMBLY, &ids_);
+    }
+
+    for (auto &assem : assemblies) {
+      Ioex::get_id(assem, EX_ASSEMBLY, &ids_);
+    }
+    m_groupCount[EX_ASSEMBLY] = assemblies.size();
+  }
+
+  // Blobs --
+  {
+    const auto &blobs = region->get_blobs();
+    // Set ids of all entities that have "id" property...
+    for (auto &blob : blobs) {
+      Ioex::set_id(blob, EX_BLOB, &ids_);
+    }
+
+    for (auto &blob : blobs) {
+      Ioex::get_id(blob, EX_BLOB, &ids_);
+    }
+    m_groupCount[EX_BLOB] = blobs.size();
+  }
+
+  // Edge Blocks --
+  {
+    const Ioss::EdgeBlockContainer &edge_blocks = region->get_edge_blocks();
+    assert(Ioss::Utils::check_block_order(edge_blocks));
+    // Set ids of all entities that have "id" property...
+    for (auto &edge_block : edge_blocks) {
+      Ioex::set_id(edge_block, EX_EDGE_BLOCK, &ids_);
+    }
+
+    edgeCount = 0;
+    for (auto &edge_block : edge_blocks) {
+      edgeCount += edge_block->entity_count();
+      // Set ids of all entities that do not have "id" property...
+      Ioex::get_id(edge_block, EX_EDGE_BLOCK, &ids_);
+    }
+    m_groupCount[EX_EDGE_BLOCK] = edge_blocks.size();
+  }
+
+  // Face Blocks --
+  {
+    const Ioss::FaceBlockContainer &face_blocks = region->get_face_blocks();
+    assert(Ioss::Utils::check_block_order(face_blocks));
+    // Set ids of all entities that have "id" property...
+    for (auto &face_block : face_blocks) {
+      Ioex::set_id(face_block, EX_FACE_BLOCK, &ids_);
+    }
+
+    faceCount = 0;
+    for (auto &face_block : face_blocks) {
+      faceCount += face_block->entity_count();
+      // Set ids of all entities that do not have "id" property...
+      Ioex::get_id(face_block, EX_FACE_BLOCK, &ids_);
+    }
+    m_groupCount[EX_FACE_BLOCK] = face_blocks.size();
+  }
+
+  // Element Blocks --
+  {
+    const Ioss::ElementBlockContainer &element_blocks = region->get_element_blocks();
+    assert(Ioss::Utils::check_block_order(element_blocks));
+    // Set ids of all entities that have "id" property...
+    for (auto &element_block : element_blocks) {
+      Ioex::set_id(element_block, EX_ELEM_BLOCK, &ids_);
+    }
+
+    elementCount = 0;
+    Ioss::Int64Vector element_counts;
+    element_counts.reserve(element_blocks.size());
+    for (auto &element_block : element_blocks) {
+      elementCount += element_block->entity_count();
+      element_counts.push_back(element_block->entity_count());
+      // Set ids of all entities that do not have "id" property...
+      Ioex::get_id(element_block, EX_ELEM_BLOCK, &ids_);
+    }
+    m_groupCount[EX_ELEM_BLOCK] = element_blocks.size();
+
+    // Set "global_entity_count" property on all blocks.
+    // Used to skip output on "globally" empty blocks.
+    Ioss::Int64Vector global_counts(element_counts.size());
+    util().global_count(element_counts, global_counts);
+    size_t idx = 0;
+    for (auto &element_block : element_blocks) {
+      element_block->property_add(Ioss::Property("global_entity_count", global_counts[idx++]));
+    }
+  }
+
+  // NodeSets ...
+  {
+    const Ioss::NodeSetContainer &nodesets = region->get_nodesets();
+    for (auto &set : nodesets) {
+      Ioex::set_id(set, EX_NODE_SET, &ids_);
+    }
+
+    for (auto &set : nodesets) {
+      Ioex::get_id(set, EX_NODE_SET, &ids_);
+    }
+    m_groupCount[EX_NODE_SET] = nodesets.size();
+  }
+
+  // EdgeSets ...
+  {
+    const Ioss::EdgeSetContainer &edgesets = region->get_edgesets();
+    for (auto &set : edgesets) {
+      Ioex::set_id(set, EX_EDGE_SET, &ids_);
+    }
+
+    for (auto &set : edgesets) {
+      Ioex::get_id(set, EX_EDGE_SET, &ids_);
+    }
+    m_groupCount[EX_EDGE_SET] = edgesets.size();
+  }
+
+  // FaceSets ...
+  {
+    const Ioss::FaceSetContainer &facesets = region->get_facesets();
+    for (auto &set : facesets) {
+      Ioex::set_id(set, EX_FACE_SET, &ids_);
+    }
+
+    for (auto &set : facesets) {
+      Ioex::get_id(set, EX_FACE_SET, &ids_);
+    }
+    m_groupCount[EX_FACE_SET] = facesets.size();
+  }
+
+  // ElementSets ...
+  {
+    const Ioss::ElementSetContainer &elementsets = region->get_elementsets();
+    for (auto &set : elementsets) {
+      Ioex::set_id(set, EX_ELEM_SET, &ids_);
+    }
+
+    for (auto &set : elementsets) {
+      Ioex::get_id(set, EX_ELEM_SET, &ids_);
+    }
+    m_groupCount[EX_ELEM_SET] = elementsets.size();
+  }
+
+  // SideSets ...
+  {
+    const Ioss::SideSetContainer &ssets = region->get_sidesets();
+    for (auto &set : ssets) {
+      Ioex::set_id(set, EX_SIDE_SET, &ids_);
+    }
+
+    // Get entity counts for all face sets... Create SideSets.
+    for (auto &set : ssets) {
+      Ioex::get_id(set, EX_SIDE_SET, &ids_);
+      int64_t id           = set->get_property("id").get_int();
+      int64_t entity_count = 0;
+      int64_t df_count     = 0;
+
+      const Ioss::SideBlockContainer &side_blocks = set->get_side_blocks();
+      for (auto &block : side_blocks) {
+        // Add  "*_offset" properties to specify at what offset
+        // the data for this block appears in the containing set.
+        Ioss::SideBlock *new_block = const_cast<Ioss::SideBlock *>(block);
+        new_block->property_add(Ioss::Property("set_offset", entity_count));
+        new_block->property_add(Ioss::Property("set_df_offset", df_count));
+
+        // If combining sideblocks into sidesets on output, then
+        // the id of the sideblock must be the same as the sideset
+        // id.
+        new_block->property_update("id", id);
+        new_block->property_update("guid", util().generate_guid(1));
+
+        entity_count += block->entity_count();
+        df_count += block->get_property("distribution_factor_count").get_int();
+      }
+      Ioss::SideSet *new_entity = const_cast<Ioss::SideSet *>(set);
+      new_entity->property_add(Ioss::Property("entity_count", entity_count));
+      new_entity->property_add(Ioss::Property("distribution_factor_count", df_count));
+    }
+    m_groupCount[EX_SIDE_SET] = ssets.size();
+  }
   }
 
   void BaseDatabaseIO::output_other_meta_data()
