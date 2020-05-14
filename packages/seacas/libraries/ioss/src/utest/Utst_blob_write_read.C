@@ -27,7 +27,8 @@
 void write_blob();
 bool read_blob();
 
-std::vector<double> generate_data(double time, size_t global_size, double offset, size_t local_size, size_t proc_offset)
+std::vector<double> generate_data(double time, size_t global_size, double offset, size_t local_size,
+                                  size_t proc_offset)
 {
   // Determine this ranks portion of the data
   std::vector<double> data;
@@ -40,7 +41,7 @@ std::vector<double> generate_data(double time, size_t global_size, double offset
 }
 
 namespace {
-  std::pair<size_t,size_t> get_blob_size(size_t global_size, size_t parallel_size, size_t my_rank)
+  std::pair<size_t, size_t> get_blob_size(size_t global_size, size_t parallel_size, size_t my_rank)
   {
     size_t per_proc = global_size / parallel_size;
     size_t extra    = global_size % parallel_size;
@@ -53,9 +54,9 @@ namespace {
     else {
       offset = (per_proc + 1) * extra + per_proc * (my_rank - extra);
     }
-    return std::make_pair(count,offset);
+    return std::make_pair(count, offset);
   }
-}
+} // namespace
 
 int main(int argc, char *argv[])
 {
@@ -83,7 +84,7 @@ void write_blob()
   std::cout << "***** Writing Blob Example File...\n";
   Ioss::PropertyManager properties;
   properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
-  Ioss::DatabaseIO *    dbo = Ioss::IOFactory::create(
+  Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
       "exodus", "ioss_blob_example.e", Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
   if (dbo == NULL || !dbo->ok(true)) {
     std::exit(EXIT_FAILURE);
@@ -102,22 +103,22 @@ void write_blob()
   size_t my_rank  = dbo->util().parallel_rank();
 
   // Define a blob -- give name and size
-  auto count_offset = get_blob_size(b1_size, par_size, my_rank);
-  Ioss::Blob *blob1 = new Ioss::Blob(dbo, "Tempus", count_offset.first);
+  auto        count_offset = get_blob_size(b1_size, par_size, my_rank);
+  Ioss::Blob *blob1        = new Ioss::Blob(dbo, "Tempus", count_offset.first);
   region.add(blob1);
 
   // NOTE: These properties are not neede for serial case, but don't cause problems
   blob1->property_add(Ioss::Property("processor_offset", (int64_t)count_offset.second));
   blob1->property_add(Ioss::Property("global_size", (int64_t)b1_size));
 
-  count_offset = get_blob_size(b2_size, par_size, my_rank);
+  count_offset      = get_blob_size(b2_size, par_size, my_rank);
   Ioss::Blob *blob2 = new Ioss::Blob(dbo, "Solver", count_offset.first);
   region.add(blob2);
 
   blob2->property_add(Ioss::Property("processor_offset", (int64_t)count_offset.second));
   blob2->property_add(Ioss::Property("global_size", (int64_t)b2_size));
 
-  count_offset = get_blob_size(b3_size, par_size, my_rank);
+  count_offset      = get_blob_size(b3_size, par_size, my_rank);
   Ioss::Blob *blob3 = new Ioss::Blob(dbo, "ABlob", count_offset.first);
   region.add(blob3);
 
@@ -183,7 +184,7 @@ void write_blob()
       const size_t size = blob->entity_count();
 
       // Get the global size and offset of this blob on this rank...
-      size_t gl_size = blob->get_property("global_size").get_int();
+      size_t gl_size  = blob->get_property("global_size").get_int();
       size_t p_offset = blob->get_property("processor_offset").get_int();
 
       // Get the fields that are defined on this blob...
@@ -214,7 +215,7 @@ bool read_blob()
   std::cout << "\n***** Reading Blob Example File...\n";
   Ioss::PropertyManager properties;
   properties.add(Ioss::Property("DECOMPOSITION_METHOD", "linear"));
-  Ioss::DatabaseIO *    dbi = Ioss::IOFactory::create(
+  Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
       "exodus", "ioss_blob_example.e", Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
   if (dbi == NULL || !dbi->ok(true)) {
     std::exit(EXIT_FAILURE);
@@ -256,6 +257,8 @@ bool read_blob()
     all_red_fields.push_back(red_fields);
   }
 
+  size_t par_size = dbi->util().parallel_size();
+
   bool diff = false;
   for (size_t step = 1; step <= ts_count; step++) {
     region.begin_state(step);
@@ -264,31 +267,35 @@ bool read_blob()
 
     int                 idx = 0;
     std::vector<double> data;
-    int offset = 0;
+    int                 offset = 0;
     for (const auto *blob : blobs) {
       // Get the global size and offset of this blob on this rank...
       // These are only needed for the comparison, not needed to just read data.
-      size_t size    = blob->entity_count();
-      size_t gl_size = blob->get_property("global_size").get_int();
-      size_t p_offset = blob->get_property("processor_offset").get_int();
+      size_t size     = blob->entity_count();
+      size_t gl_size  = size;
+      size_t p_offset = 0;
+      if (par_size > 1) {
+        gl_size  = blob->get_property("global_size").get_int();
+        p_offset = blob->get_property("processor_offset").get_int();
+      }
 
       const auto &fields = all_fields[idx];
       for (const auto &field : fields) {
         blob->get_field_data(field, data);
 
-	// Compare with what was written to make sure read/write is ok.
+        // Compare with what was written to make sure read/write is ok.
         std::vector<double> gold = generate_data(time, gl_size, offset++, size, p_offset);
-	if (data != gold) {
-	  std::cout << "Difference for field " << field << " on blob " << blob->name()
-		    << " at step " << step << "\n";
-	  diff = true;
-	}
+        if (data != gold) {
+          std::cout << "Difference for field " << field << " on blob " << blob->name()
+                    << " at step " << step << "\n";
+          diff = true;
+        }
       }
 
       const auto &red_fields = all_red_fields[idx++];
       for (const auto &field : red_fields) {
         blob->get_field_data(field, data);
-	offset++; // Just for the testing part.
+        offset++; // Just for the testing part.
         std::cout << "\t\tReduction Field " << field << ", Value = ";
 
         size_t comp_count = blob->get_field(field).raw_storage()->component_count();
