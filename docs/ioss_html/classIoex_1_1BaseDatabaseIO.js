@@ -11,6 +11,7 @@ var classIoex_1_1BaseDatabaseIO =
     [ "begin__", "classIoex_1_1BaseDatabaseIO.html#aaa70c2b236307f8cef63288841873c0c", null ],
     [ "begin_state__", "classIoex_1_1BaseDatabaseIO.html#a92a8612a0d7644674fe913cd133020d3", null ],
     [ "closeDatabase__", "classIoex_1_1BaseDatabaseIO.html#a8822ae9413076474316571570ce3b241", null ],
+    [ "common_write_meta_data", "classIoex_1_1BaseDatabaseIO.html#af49b0621b4977fce81a996671d29a5c5", null ],
     [ "compute_block_membership__", "classIoex_1_1BaseDatabaseIO.html#ad742a8e2f74fd9ae1d6e936c82e00f07", null ],
     [ "create_subgroup__", "classIoex_1_1BaseDatabaseIO.html#a0951184818aad2b19d0b29da0c4ea744", null ],
     [ "end__", "classIoex_1_1BaseDatabaseIO.html#a4ed103048cce460f59b354db2ee104f3", null ],

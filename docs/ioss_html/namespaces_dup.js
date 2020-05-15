@@ -119,6 +119,7 @@ var namespaces_dup =
     [ "anonymous_namespace{sphgen.C}", "namespaceanonymous__namespace_02sphgen_8C_03.html", null ],
     [ "anonymous_namespace{struc_to_unstruc.C}", "namespaceanonymous__namespace_02struc__to__unstruc_8C_03.html", null ],
     [ "anonymous_namespace{UnitTestIofxDatabaseIO.C}", "namespaceanonymous__namespace_02UnitTestIofxDatabaseIO_8C_03.html", null ],
+    [ "anonymous_namespace{Utst_blob_write_read.C}", "namespaceanonymous__namespace_02Utst__blob__write__read_8C_03.html", null ],
     [ "anonymous_namespace{Utst_sort.C}", "namespaceanonymous__namespace_02Utst__sort_8C_03.html", null ],
     [ "anonymous_namespace{Utst_structured_decomp.C}", "namespaceanonymous__namespace_02Utst__structured__decomp_8C_03.html", null ],
     [ "anonymous_namespace{volume.C}", "namespaceanonymous__namespace_02volume_8C_03.html", null ],

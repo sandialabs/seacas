@@ -1,5 +1,5 @@
 <map id="src/utest/Utst_blob_write_read.C" name="src/utest/Utst_blob_write_read.C">
-<area shape="rect" id="node1" title=" " alt="" coords="1906,5,2039,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="2550,5,2683,47"/>
 <area shape="rect" id="node2" href="$Ioss__Blob_8h.html" title=" " alt="" coords="1299,95,1390,121"/>
 <area shape="rect" id="node4" href="$Ioss__Property_8h.html" title=" " alt="" coords="2719,468,2831,495"/>
 <area shape="rect" id="node6" title=" " alt="" coords="849,617,904,644"/>
@@ -8,10 +8,11 @@
 <area shape="rect" id="node21" href="$Ioss__Utils_8h.html" title=" " alt="" coords="925,393,1017,420"/>
 <area shape="rect" id="node23" title=" " alt="" coords="1450,468,1524,495"/>
 <area shape="rect" id="node39" href="$Ioss__IOFactory_8h.html" title=" " alt="" coords="2362,319,2484,345"/>
-<area shape="rect" id="node40" href="$Ioss__Region_8h.html" title=" " alt="" coords="2487,95,2594,121"/>
-<area shape="rect" id="node44" href="$Ionit__Initializer_8h.html" title=" " alt="" coords="3320,95,3436,121"/>
+<area shape="rect" id="node40" href="$Ioss__Region_8h.html" title=" " alt="" coords="2563,95,2670,121"/>
+<area shape="rect" id="node44" href="$Ioss__ScopeGuard_8h.html" title=" " alt="" coords="3320,95,3457,121"/>
+<area shape="rect" id="node45" href="$Ionit__Initializer_8h.html" title=" " alt="" coords="3481,95,3597,121"/>
 <area shape="rect" id="node3" href="$Ioss__EntityType_8h.html" title=" " alt="" coords="266,319,393,345"/>
-<area shape="rect" id="node5" title=" " alt="" coords="2991,617,3052,644"/>
+<area shape="rect" id="node5" title=" " alt="" coords="2988,617,3050,644"/>
 <area shape="rect" id="node8" href="$Ioss__GroupingEntity_8h.html" title=" " alt="" coords="1270,169,1419,196"/>
 <area shape="rect" id="node11" title=" " alt="" coords="388,617,453,644"/>
 <area shape="rect" id="node9" href="$Ioss__CodeTypes_8h.html" title=" " alt="" coords="1599,543,1730,569"/>
@@ -40,7 +41,7 @@
 <area shape="rect" id="node30" title=" " alt="" coords="1954,468,2065,495"/>
 <area shape="rect" id="node36" title=" " alt="" coords="1397,393,1476,420"/>
 <area shape="rect" id="node38" title=" " alt="" coords="1551,393,1612,420"/>
-<area shape="rect" id="node41" href="$Ioss__CoordinateFrame_8h.html" title=" " alt="" coords="3059,543,3224,569"/>
-<area shape="rect" id="node42" href="$Ioss__MeshType_8h.html" title=" " alt="" coords="2815,169,2940,196"/>
-<area shape="rect" id="node43" title=" " alt="" coords="2680,169,2740,196"/>
+<area shape="rect" id="node41" href="$Ioss__CoordinateFrame_8h.html" title=" " alt="" coords="3056,543,3222,569"/>
+<area shape="rect" id="node42" href="$Ioss__MeshType_8h.html" title=" " alt="" coords="2840,169,2966,196"/>
+<area shape="rect" id="node43" title=" " alt="" coords="2705,169,2765,196"/>
 </map>
