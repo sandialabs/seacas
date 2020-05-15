@@ -113,42 +113,43 @@ TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32
 
 if (TPL_ENABLE_MPI)
   IF (TPL_Netcdf_PARALLEL)
-  TRIBITS_ADD_ADVANCED_TEST(exodus_fpp_serialize
-     TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${SERIALIZE_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block32-ser.g
-        NOEXEPREFIX NOEXESUFFIX
-        NUM_MPI_PROCS ${NPROCS}
-     TEST_1 EXEC io_shell ARGS ${JOIN_ARG} ${SERIALIZE_ARG} 8-block32-ser.g 8-block-32-serj.g
-        NOEXEPREFIX NOEXESUFFIX
-        NUM_MPI_PROCS ${NPROCS}
-     TEST_2 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block-32-serj.g
-  COMM mpi
-  XHOSTTYPE Windows
-  )
-endif()
+    TRIBITS_ADD_ADVANCED_TEST(exodus_fpp_serialize
+       TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${SERIALIZE_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block32-ser.g
+          NOEXEPREFIX NOEXESUFFIX
+          NUM_MPI_PROCS ${NPROCS}
+       TEST_1 EXEC io_shell ARGS ${JOIN_ARG} ${SERIALIZE_ARG} 8-block32-ser.g 8-block-32-serj.g
+          NOEXEPREFIX NOEXESUFFIX
+          NUM_MPI_PROCS ${NPROCS}
+       TEST_2 CMND ../../../../applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block-32-serj.g
+    COMM mpi
+    XHOSTTYPE Windows
+    )
+  endif()
 
-TRIBITS_ADD_ADVANCED_TEST(create_path_fpp
-   TEST_0 CMND rm ARGS -rf create_path_test_directory
-   TEST_1 EXEC io_shell ARGS --in_type generated 100x100x100 create_path_test_directory/1/2/3/4/5/tmp.g
-     NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS ${NPROCS}
-   TEST_2 CMND ls ARGS -1 create_path_test_directory/1/2/3/4/5/
-   )
+  TRIBITS_ADD_ADVANCED_TEST(create_path_fpp
+     TEST_0 CMND rm ARGS -rf create_path_test_directory
+     TEST_1 EXEC io_shell ARGS --in_type generated 100x100x100 create_path_test_directory/1/2/3/4/5/tmp.g
+       NOEXEPREFIX NOEXESUFFIX
+       NUM_MPI_PROCS ${NPROCS}
+     TEST_2 CMND ls ARGS -1 create_path_test_directory/1/2/3/4/5/
+     )
 
-TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus64
-   TEST_0 EXEC io_shell ARGS -64 ${DECOMP_ARG} ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
-     NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS ${NPROCS}
-   TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
-  COMM mpi serial
-  )
+  TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus64
+     TEST_0 EXEC io_shell ARGS -64 ${DECOMP_ARG} ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
+       NOEXEPREFIX NOEXESUFFIX
+       NUM_MPI_PROCS ${NPROCS}
+     TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
+    COMM mpi serial
+    )
 
-TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32_pnetcdf
-   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${PJOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64p.g
-     NOEXEPREFIX NOEXESUFFIX
-     NUM_MPI_PROCS ${NPROCS}
-   TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64p.g
-  COMM mpi serial
-  )
+  TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32_pnetcdf
+     TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${PJOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64p.g
+       NOEXEPREFIX NOEXESUFFIX
+       NUM_MPI_PROCS ${NPROCS}
+     TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64p.g
+    COMM mpi serial
+    )
+ENDIF()
 
 IF (SEACASIoss_ENABLE_THREADSAFE)
   TRIBITS_ADD_EXECUTABLE(
@@ -159,31 +160,21 @@ IF (SEACASIoss_ENABLE_THREADSAFE)
     INSTALLABLE
     )
 
-  SET(IOSHELL_ARG --in_type generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4)
-IF (TPL_ENABLE_MPI)
+  if (TPL_ENABLE_MPI)
+     SET(IOSHELL_ARG --compose --in_type generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4)
+  else()
+     SET(IOSHELL_ARG --in_type generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4)
+  endif()
   TRIBITS_ADD_ADVANCED_TEST(
     io_shell_ts
     TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell_ts ARGS ${IOSHELL_ARG} gen-shell-ts.g
     TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell    ARGS ${IOSHELL_ARG} gen-shell.g
-    TEST_2 CMND ../../../../applications/epu/epu ARGS -auto gen-shell-ts.g.4.0
-    TEST_3 CMND ../../../../applications/epu/epu ARGS -auto gen-shell.g.4.0
-    TEST_4 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic gen-shell-ts.g gen-shell.g
-    COMM mpi serial
-    FINAL_PASS_REGULAR_EXPRESSION
-  )
-ELSE()
-  TRIBITS_ADD_ADVANCED_TEST(
-    io_shell_ts
-    TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell_ts ARGS ${IOSHELL_ARG} gen-shell-ts.g
-    TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell    ARGS ${IOSHELL_ARG} gen-shell.g
-    TEST_4 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic gen-shell-ts.g gen-shell.g
+    TEST_2 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic gen-shell-ts.g gen-shell.g
     COMM mpi serial
     FINAL_PASS_REGULAR_EXPRESSION
   )
 ENDIF()
-ENDIF()
-ENDIF()
-ENDIF()
+ENDIF(${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodiff)
 
 IF (TPL_ENABLE_Pamgen OR Trilinos_ENABLE_Pamgen)
 # This test makes sure that the adjacency information (what element blocks are adjacent to what other
