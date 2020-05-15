@@ -54,6 +54,16 @@ then
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
 
+  if [ "$COMPILER" == "gnumacport" ]
+  then
+      VER=${VER:-5}
+      CXX=g++-mp-${VER}
+      CC=gcc-mp-${VER}
+      FC=gfortran-mp-${VER}
+      CFLAGS="-Wall -Wunused -pedantic -std=c11"
+      CXXFLAGS="-Wall -Wunused -pedantic"
+  fi
+
   if [ "$COMPILER" == "clang" ]
   then
       CXX=/opt/local/bin/clang++-mp-8.0
