@@ -44,7 +44,7 @@ matrix:
     - compiler: gcc
       env: FORTRAN=OFF
     - compiler: gcc
-      env: ADIOS2=ON
+      env: ADIOS2=ON THREADSAFE=ON
     - compiler: gcc
       env: MPI=ON ADIOS2=ON
     - compiler: clang
