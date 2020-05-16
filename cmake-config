@@ -28,14 +28,16 @@ ZOLTAN=${ZOLTAN:-ON}
 PYTHON_VER=${PYTHON_VER:-"3.0"}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
-if [ "${netcdf_parallel}" == "yes" ]
+if [ "${MPI}" = "" ]
 then
-    MPI=ON
-else
-    MPI=OFF
+  netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
+  if [ "${netcdf_parallel}" == "yes" ]
+  then
+      MPI=ON
+  else
+      MPI=OFF
+  fi
 fi
-
 echo "MPI set to ${MPI}"
 
 if [ "${MPI}" == "OFF" ]
