@@ -2,7 +2,7 @@
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
-// See top-level LICENSE file for details.
+// See packages/seacas/LICENSE file for details.
 
 #include <Ioss_Blob.h>
 #include <Ioss_DatabaseIO.h>
