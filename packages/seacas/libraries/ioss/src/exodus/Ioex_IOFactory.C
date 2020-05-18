@@ -33,7 +33,7 @@
 #include <exodus/Ioex_DatabaseIO.h> // for Ioex DatabaseIO
 #include <exodus/Ioex_IOFactory.h>  // for Ioex IOFactory
 
-#if defined(PARALLEL_AWARE_EXODUS)
+#if defined(PARALLEL_AWARE_EXODUS)          // Defined in exodusII.h
 #include <exodus/Ioex_ParallelDatabaseIO.h> // for Ioex ParallelDatabaseIO
 #endif
 #include <tokenize.h>

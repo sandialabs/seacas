@@ -30,14 +30,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_Utils.h>            // for IOSS_WARNING
-#include <cassert>                 // for assert
 #include <exodus/Ioex_Internals.h> // for Internals, ElemBlock, etc
 #include <exodus/Ioex_Utils.h>
+
+#include "exodusII.h" // for ex_err, ex_opts, etc
 
 extern "C" {
 #include <exodusII_int.h>
 }
+
+#include <cassert> // for assert
 #include <cstddef> // for size_t
 #include <cstdio>  // for nullptr
 #include <cstdlib> // for exit, EXIT_FAILURE
@@ -63,8 +65,8 @@ extern "C" {
 #include "Ioss_Region.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
+#include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
-#include "exodusII.h" // for ex_err, ex_opts, etc
 
 using namespace Ioex;
 
