@@ -42,9 +42,9 @@ matrix:
     - compiler: gcc
       env: CGNS=OFF MPI=ON H5VERSION=V18
     - compiler: gcc
-      env: FORTRAN=OFF
+      env: FORTRAN=OFF THREADSAFE=ON
     - compiler: gcc
-      env: ADIOS2=ON THREADSAFE=ON
+      env: ADIOS2=ON
     - compiler: gcc
       env: MPI=ON ADIOS2=ON
     - compiler: clang
