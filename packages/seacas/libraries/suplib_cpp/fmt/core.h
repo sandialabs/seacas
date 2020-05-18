@@ -734,9 +734,9 @@ class container_buffer : public buffer<typename Container::value_type> {
   Container& container_;
 
  protected:
-  void grow(std::size_t capacity) FMT_OVERRIDE {
-    container_.resize(capacity);
-    this->set(&container_[0], capacity);
+  void grow(std::size_t p_capacity) FMT_OVERRIDE {
+    container_.resize(p_capacity);
+    this->set(&container_[0], p_capacity);
   }
 
  public:
@@ -1290,10 +1290,10 @@ template <typename OutputIt, typename Char> class basic_format_context {
    Constructs a ``basic_format_context`` object. References to the arguments are
    stored in the object so make sure they have appropriate lifetimes.
    */
-  basic_format_context(OutputIt out,
+  basic_format_context(OutputIt p_out,
                        basic_format_args<basic_format_context> ctx_args,
                        internal::locale_ref loc = internal::locale_ref())
-      : out_(out), args_(ctx_args), loc_(loc) {}
+      : out_(p_out), args_(ctx_args), loc_(loc) {}
 
   format_arg arg(int id) const { return args_.get(id); }
 
