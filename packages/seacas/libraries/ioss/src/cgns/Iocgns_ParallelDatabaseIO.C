@@ -444,6 +444,8 @@ namespace Iocgns {
       fmt::print(Ioss::DEBUG(), "Added block {}, IOSS topology = '{}' with {} element.\n",
                  block.name(), element_topo, block.ioss_count());
 #endif
+      // See if this zone/block is a member of any assemblies...
+      Utils::add_to_assembly(get_file_pointer(), get_region(), eblock, base, zone);
     }
 
     // ========================================================================
@@ -587,6 +589,9 @@ namespace Iocgns {
         block->property_add(Ioss::Property("id", zone->m_adam->m_zone));
         int64_t guid = util().generate_guid(zone->m_adam->m_zone);
         block->property_add(Ioss::Property("guid", guid));
+
+        // See if this zone/block is a member of any assemblies...
+        Utils::add_to_assembly(get_file_pointer(), get_region(), block, base, zone->m_adam->m_zone);
 
 #if IOSS_DEBUG_OUTPUT
         fmt::print(Ioss::DEBUG(), "Added block {}, Structured with ID = {}, GUID = {}\n",
@@ -1994,6 +1999,12 @@ namespace Iocgns {
         eb->property_update("guid", util().generate_guid(zone));
         eb->property_update("section", 1);
         eb->property_update("base", base);
+
+        if (eb->property_exists("assembly")) {
+          std::string assembly = eb->get_property("assembly").get_string();
+          CGCHECKM(cg_goto(get_file_pointer(), base, "Zone_t", zone, "end"));
+          CGCHECKM(cg_famname_write(assembly.c_str()));
+        }
 
         if (size[1] > 0) {
           CG_ElementType_t type = Utils::map_topology_to_cgns(eb->topology()->name());
