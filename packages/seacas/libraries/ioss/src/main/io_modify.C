@@ -72,7 +72,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "0.9 (2020-04-20)";
+  std::string version = "0.91 (2020-05-18)";
 
   std::vector<Ioss::GroupingEntity *> attributes_modified;
 
@@ -176,7 +176,8 @@ namespace {
                    "WARNING: Regular Expression '{}' did not match any {}\n", tokens[3], type);
       }
     }
-    else if (tokens.size() == 3 && Ioss::Utils::substr_equal(tokens[2], "list")) {
+    else if (tokens.size() == 2 ||
+             (tokens.size() == 3 && Ioss::Utils::substr_equal(tokens[2], "list"))) {
       for (const T *ge : entities) {
         info_entity(ge, show_property);
       }
@@ -506,9 +507,12 @@ namespace {
                  "\tQuickStart: https://www.regular-expressions.info/quickstart.html\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "list")) {
-      fmt::print("\n\tLIST summary|elementblock|block|assembly|nodeset|sideset|blob\n");
-      fmt::print("\n\tLIST elementblock|block|assembly|nodeset|sideset|blob {{names...}}\n\n");
-      fmt::print("\n\tLIST elementblock|block|assembly|nodeset|sideset|blob MATCHES {{regex}}\n\n");
+      fmt::print(
+          "\n\tLIST summary|elementblock|block|structuredblock|assembly|nodeset|sideset|blob\n");
+      fmt::print("\n\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
+                 "{{names...}}\n\n");
+      fmt::print("\n\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
+                 "MATCHES {{regex}}\n\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "assembly")) {
       fmt::print("\n\tFor all commands, if an assembly named `name` does not exist, it will be "
@@ -602,7 +606,7 @@ namespace {
         const auto &entities = region.get_node_blocks();
         info_entities(entities, tokens, region, "Node Block", show_attribute);
       }
-      else if (Ioss::Utils::substr_equal(tokens[1], "structuredlock")) {
+      else if (Ioss::Utils::substr_equal(tokens[1], "structuredblock")) {
         const auto &entities = region.get_structured_blocks();
         info_entities(entities, tokens, region, "Structured Blocks", show_attribute);
       }
