@@ -37,6 +37,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <exodus/Ioex_ParallelDatabaseIO.h>
+#if defined PARALLEL_AWARE_EXODUS
 #include <algorithm>
 #include <cassert>
 #include <cctype>
@@ -59,7 +61,8 @@
 #include <utility>
 #include <vector>
 
-#include <exodus/Ioex_ParallelDatabaseIO.h>
+#include <Ioss_CodeTypes.h>
+
 #include <exodus/Ioex_DecompositionData.h>
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
@@ -67,7 +70,6 @@
 
 #include <Ioss_Assembly.h>
 #include <Ioss_Blob.h>
-#include <Ioss_CodeTypes.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_CoordinateFrame.h>
 #include <Ioss_DBUsage.h>
@@ -235,8 +237,8 @@ namespace {
 
 namespace Ioex {
   ParallelDatabaseIO::ParallelDatabaseIO(Ioss::Region *region, const std::string &filename,
-                         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-                         const Ioss::PropertyManager &props)
+                                         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+                                         const Ioss::PropertyManager &props)
       : Ioex::BaseDatabaseIO(region, filename, db_usage, communicator, props)
   {
     usingParallelIO = true;
@@ -290,8 +292,8 @@ namespace Ioex {
     }
   }
 
-  bool ParallelDatabaseIO::check_valid_file_ptr(bool write_message, std::string *error_msg, int *bad_count,
-                                        bool abort_if_error) const
+  bool ParallelDatabaseIO::check_valid_file_ptr(bool write_message, std::string *error_msg,
+                                                int *bad_count, bool abort_if_error) const
   {
     // Check for valid exodus_file_ptr (valid >= 0; invalid < 0)
     assert(isParallel);
@@ -337,8 +339,8 @@ namespace Ioex {
     return true;
   }
 
-  bool ParallelDatabaseIO::open_input_file(bool write_message, std::string *error_msg, int *bad_count,
-                                   bool abort_if_error) const
+  bool ParallelDatabaseIO::open_input_file(bool write_message, std::string *error_msg,
+                                           int *bad_count, bool abort_if_error) const
   {
     int   cpu_word_size = sizeof(double);
     int   io_word_size  = 0;
@@ -404,8 +406,9 @@ namespace Ioex {
     return is_ok;
   }
 
-  bool ParallelDatabaseIO::handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
-                                      bool overwrite, bool abort_if_error) const
+  bool ParallelDatabaseIO::handle_output_file(bool write_message, std::string *error_msg,
+                                              int *bad_count, bool overwrite,
+                                              bool abort_if_error) const
   {
     // If 'overwrite' is false, we do not want to overwrite or clobber
     // the output file if it already exists since the app might be
@@ -525,7 +528,10 @@ namespace Ioex {
     return is_ok;
   }
 
-  int ParallelDatabaseIO::get_file_pointer() const { return Ioex::BaseDatabaseIO::get_file_pointer(); }
+  int ParallelDatabaseIO::get_file_pointer() const
+  {
+    return Ioex::BaseDatabaseIO::get_file_pointer();
+  }
 
   int ParallelDatabaseIO::free_file_pointer() const
   {
@@ -790,8 +796,9 @@ namespace Ioex {
   }
 
   const Ioss::Map &ParallelDatabaseIO::get_map(Ioss::Map &entity_map, int64_t entity_count,
-                                       int64_t file_offset, int64_t file_count,
-                                       ex_entity_type entity_type, ex_inquiry inquiry_type) const
+                                               int64_t file_offset, int64_t file_count,
+                                               ex_entity_type entity_type,
+                                               ex_inquiry     inquiry_type) const
   {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
@@ -885,7 +892,7 @@ namespace Ioex {
   }
 
   void ParallelDatabaseIO::get_blocks(ex_entity_type entity_type, int rank_offset,
-                              const std::string &basename)
+                                      const std::string &basename)
   {
     // Attributes of an X block are:  (X = element, face, or edge)
     // -- id
@@ -1540,7 +1547,7 @@ namespace Ioex {
 
 template <typename T>
 void ParallelDatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string &base,
-                          const T * /* set_type */)
+                                  const T * /* set_type */)
 {
   // Attributes of a Xset are:
   // -- id
@@ -1642,13 +1649,13 @@ void ParallelDatabaseIO::get_commsets()
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   return Ioex::BaseDatabaseIO::get_field_internal(reg, field, data, data_size);
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
 
@@ -1765,8 +1772,8 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const 
   return num_to_get;
 }
 
-int64_t ParallelDatabaseIO::get_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
-                                       size_t data_size) const
+int64_t ParallelDatabaseIO::get_field_internal(const Ioss::Blob *blob, const Ioss::Field &field,
+                                               void *data, size_t data_size) const
 {
   {
     Ioss::SerializeIO serializeIO__(this);
@@ -1814,8 +1821,9 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::Blob *blob, const Ios
   }
 }
 
-int64_t ParallelDatabaseIO::get_field_internal(const Ioss::Assembly *assembly, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+int64_t ParallelDatabaseIO::get_field_internal(const Ioss::Assembly *assembly,
+                                               const Ioss::Field &field, void *data,
+                                               size_t data_size) const
 {
   {
     Ioss::SerializeIO serializeIO__(this);
@@ -1861,8 +1869,9 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::Assembly *assembly, c
   }
 }
 
-int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock *eb,
+                                               const Ioss::Field &field, void *data,
+                                               size_t data_size) const
 {
 
   size_t num_to_get = field.verify(data_size);
@@ -1986,7 +1995,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, con
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
 
@@ -2060,7 +2069,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const 
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
 
@@ -2124,8 +2133,8 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const 
 }
 
 int64_t ParallelDatabaseIO::get_Xset_field_internal(ex_entity_type type, const Ioss::EntitySet *ns,
-                                            const Ioss::Field &field, void *data,
-                                            size_t data_size) const
+                                                    const Ioss::Field &field, void *data,
+                                                    size_t data_size) const
 {
   int                   ierr;
   size_t                num_to_get = field.verify(data_size);
@@ -2192,31 +2201,31 @@ int64_t ParallelDatabaseIO::get_Xset_field_internal(ex_entity_type type, const I
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   return get_Xset_field_internal(EX_NODE_SET, ns, field, data, data_size);
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeSet *ns, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   return get_Xset_field_internal(EX_EDGE_SET, ns, field, data, data_size);
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceSet *ns, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   return get_Xset_field_internal(EX_FACE_SET, ns, field, data, data_size);
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementSet *ns, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   return get_Xset_field_internal(EX_ELEM_SET, ns, field, data, data_size);
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideSet *fs, const Ioss::Field &field,
-                                       void * /* data */, size_t                   data_size) const
+                                               void * /* data */, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
   if (field.get_name() == "ids") {
@@ -2229,7 +2238,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideSet *fs, const Io
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
 
@@ -2267,7 +2276,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Io
 }
 
 int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   ssize_t num_to_get = field.verify(data_size);
   int     ierr       = 0;
@@ -2566,7 +2575,7 @@ int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const 
 }
 
 int64_t ParallelDatabaseIO::write_attribute_field(ex_entity_type type, const Ioss::Field &field,
-                                          const Ioss::GroupingEntity *ge, void *data) const
+                                                  const Ioss::GroupingEntity *ge, void *data) const
 {
   std::string att_name   = ge->name() + SEP() + field.get_name();
   ssize_t     num_entity = ge->entity_count();
@@ -2664,7 +2673,7 @@ int64_t ParallelDatabaseIO::write_attribute_field(ex_entity_type type, const Ios
 }
 
 int64_t ParallelDatabaseIO::read_attribute_field(ex_entity_type type, const Ioss::Field &field,
-                                         const Ioss::GroupingEntity *ge, void *data) const
+                                                 const Ioss::GroupingEntity *ge, void *data) const
 {
   int64_t num_entity = ge->entity_count();
 
@@ -2727,9 +2736,9 @@ int64_t ParallelDatabaseIO::read_attribute_field(ex_entity_type type, const Ioss
 }
 
 int64_t ParallelDatabaseIO::read_transient_field(ex_entity_type               type,
-                                         const Ioex::VariableNameMap &variables,
-                                         const Ioss::Field &field, const Ioss::GroupingEntity *ge,
-                                         void *data) const
+                                                 const Ioex::VariableNameMap &variables,
+                                                 const Ioss::Field &          field,
+                                                 const Ioss::GroupingEntity *ge, void *data) const
 {
   const Ioss::VariableType *var_type = field.raw_storage();
 
@@ -2799,8 +2808,9 @@ int64_t ParallelDatabaseIO::read_transient_field(ex_entity_type               ty
   return num_entity;
 }
 
-int64_t ParallelDatabaseIO::read_ss_transient_field(const Ioss::Field &field, int64_t id, void *variables,
-                                            Ioss::IntVector &is_valid_side) const
+int64_t ParallelDatabaseIO::read_ss_transient_field(const Ioss::Field &field, int64_t id,
+                                                    void *           variables,
+                                                    Ioss::IntVector &is_valid_side) const
 {
   size_t                    num_valid_sides = 0;
   const Ioss::VariableType *var_type        = field.raw_storage();
@@ -2873,8 +2883,9 @@ int64_t ParallelDatabaseIO::read_ss_transient_field(const Ioss::Field &field, in
   return num_valid_sides;
 }
 
-int64_t ParallelDatabaseIO::get_side_connectivity(const Ioss::SideBlock *fb, int64_t id, int64_t /*unused*/,
-                                          void *fconnect, bool map_ids) const
+int64_t ParallelDatabaseIO::get_side_connectivity(const Ioss::SideBlock *fb, int64_t id,
+                                                  int64_t /*unused*/, void *         fconnect,
+                                                  bool map_ids) const
 {
   // Get size of data stored on the file...
   ex_set set_param[1];
@@ -3027,8 +3038,8 @@ int64_t ParallelDatabaseIO::get_side_connectivity(const Ioss::SideBlock *fb, int
 
 // Get distribution factors for the specified side block
 int64_t ParallelDatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, int64_t id,
-                                           int64_t my_side_count, double *dist_fact,
-                                           size_t /* data_size */) const
+                                                   int64_t my_side_count, double *dist_fact,
+                                                   size_t /* data_size */) const
 {
   // Allocate space for elements and local side numbers
   // Get size of data stored on the file...
@@ -3189,8 +3200,9 @@ int64_t ParallelDatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, in
 
     if (topo == nullptr) {
       std::ostringstream errmsg;
-      fmt::print(errmsg, "INTERNAL ERROR: Could not find topology of element block boundary. "
-                         "Something is wrong in the Ioex::ParallelDatabaseIO class. Please report.\n");
+      fmt::print(errmsg,
+                 "INTERNAL ERROR: Could not find topology of element block boundary. "
+                 "Something is wrong in the Ioex::ParallelDatabaseIO class. Please report.\n");
       IOSS_ERROR(errmsg);
     }
 
@@ -3218,13 +3230,13 @@ int64_t ParallelDatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, in
 }
 
 int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Region *reg, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   return Ioex::BaseDatabaseIO::put_field_internal(reg, field, data, data_size);
 }
 
 int64_t ParallelDatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
 
@@ -3375,8 +3387,8 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const 
   return num_to_get;
 }
 
-int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Blob *blob, const Ioss::Field &field, void *data,
-                                       size_t data_size) const
+int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Blob *blob, const Ioss::Field &field,
+                                               void *data, size_t data_size) const
 {
   {
     Ioss::SerializeIO serializeIO__(this);
@@ -3431,8 +3443,9 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Blob *blob, const Ios
   }
 }
 
-int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Assembly *assembly, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Assembly *assembly,
+                                               const Ioss::Field &field, void *data,
+                                               size_t data_size) const
 {
   {
     Ioss::SerializeIO serializeIO__(this);
@@ -3487,8 +3500,9 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Assembly *assembly, c
   }
 }
 
-int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
+                                               const Ioss::Field &field, void *data,
+                                               size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
 
@@ -3674,7 +3688,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, con
 }
 
 int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceBlock *eb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
 
@@ -3742,7 +3756,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceBlock *eb, const 
 }
 
 int64_t ParallelDatabaseIO::put_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
 
@@ -3797,7 +3811,7 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::EdgeBlock *eb, const 
 }
 
 int64_t ParallelDatabaseIO::handle_node_ids(void *ids, int64_t num_to_get, size_t /* offset */,
-                                    size_t /*count*/) const
+                                            size_t /*count*/) const
 {
   /*!
    * There are two modes we need to support in this routine:
@@ -3850,8 +3864,8 @@ int64_t ParallelDatabaseIO::handle_node_ids(void *ids, int64_t num_to_get, size_
   return num_to_get;
 }
 
-int64_t ParallelDatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids, size_t num_to_get,
-                                       size_t offset, size_t count) const
+int64_t ParallelDatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids,
+                                               size_t num_to_get, size_t offset, size_t count) const
 {
   if (dbState == Ioss::STATE_MODEL) {
     if (elemGlobalImplicitMap.empty()) {
@@ -3872,21 +3886,24 @@ int64_t ParallelDatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, voi
   return handle_block_ids(eb, EX_ELEM_MAP, elemMap, ids, num_to_get, offset);
 }
 
-int64_t ParallelDatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t num_to_get) const
+int64_t ParallelDatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids,
+                                            size_t num_to_get) const
 {
   faceMap.set_size(faceCount);
   return handle_block_ids(eb, EX_FACE_MAP, faceMap, ids, num_to_get, 0);
 }
 
-int64_t ParallelDatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids, size_t num_to_get) const
+int64_t ParallelDatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids,
+                                            size_t num_to_get) const
 {
   edgeMap.set_size(edgeCount);
   return handle_block_ids(eb, EX_EDGE_MAP, edgeMap, ids, num_to_get, 0);
 }
 
-void ParallelDatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Ioss::Field &field,
-                                             const Ioss::NodeBlock *nb, int64_t count,
-                                             void *variables) const
+void ParallelDatabaseIO::write_nodal_transient_field(ex_entity_type /* type */,
+                                                     const Ioss::Field &    field,
+                                                     const Ioss::NodeBlock *nb, int64_t count,
+                                                     void *variables) const
 {
   Ioss::Field::BasicType ioss_type = field.get_type();
   assert(ioss_type == Ioss::Field::REAL || ioss_type == Ioss::Field::INTEGER ||
@@ -3991,8 +4008,8 @@ void ParallelDatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, 
 }
 
 void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::Field &field,
-                                              const Ioss::GroupingEntity *ge, int64_t count,
-                                              void *variables) const
+                                                      const Ioss::GroupingEntity *ge, int64_t count,
+                                                      void *variables) const
 {
   static Ioss::Map non_element_map; // Used as an empty map for ge->type() != element block.
   const Ioss::VariableType *var_type = field.transformed_storage();
@@ -4110,8 +4127,8 @@ void ParallelDatabaseIO::write_entity_transient_field(ex_entity_type type, const
 }
 
 int64_t ParallelDatabaseIO::put_Xset_field_internal(ex_entity_type type, const Ioss::EntitySet *ns,
-                                            const Ioss::Field &field, void *data,
-                                            size_t data_size) const
+                                                    const Ioss::Field &field, void *data,
+                                                    size_t data_size) const
 {
   size_t entity_count = ns->entity_count();
   size_t num_to_get   = field.verify(data_size);
@@ -4218,31 +4235,31 @@ int64_t ParallelDatabaseIO::put_Xset_field_internal(ex_entity_type type, const I
 }
 
 int64_t ParallelDatabaseIO::put_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   return put_Xset_field_internal(EX_NODE_SET, ns, field, data, data_size);
 }
 
 int64_t ParallelDatabaseIO::put_field_internal(const Ioss::EdgeSet *ns, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   return put_Xset_field_internal(EX_EDGE_SET, ns, field, data, data_size);
 }
 
 int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceSet *ns, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   return put_Xset_field_internal(EX_FACE_SET, ns, field, data, data_size);
 }
 
 int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementSet *ns, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   return put_Xset_field_internal(EX_ELEM_SET, ns, field, data, data_size);
 }
 
 int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideSet *fs, const Ioss::Field &field,
-                                       void * /* data */, size_t                   data_size) const
+                                               void * /* data */, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
   if (field.get_name() == "ids") {
@@ -4254,15 +4271,16 @@ int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideSet *fs, const Io
   return num_to_get;
 }
 
-int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet * /*cs*/, const Ioss::Field &field,
-                                       void * /*data*/, size_t data_size) const
+int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet * /*cs*/,
+                                               const Ioss::Field &field, void * /*data*/,
+                                               size_t             data_size) const
 {
   size_t num_to_get = field.verify(data_size);
   return num_to_get;
 }
 
 int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const
+                                               void *data, size_t data_size) const
 {
   size_t  num_to_get = field.verify(data_size);
   int64_t id         = Ioex::get_id(fb, EX_SIDE_SET, &ids_);
@@ -4703,3 +4721,4 @@ void ParallelDatabaseIO::check_valid_values() const
   }
 }
 } // namespace Ioex
+#endif
