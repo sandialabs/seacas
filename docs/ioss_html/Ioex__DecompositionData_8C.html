@@ -82,64 +82,18 @@ $(document).ready(function(){initNavTree('Ioex__DecompositionData_8C.html',''); 
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Ioex_DecompositionData.C File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="el" href="Ioss__CodeTypes_8h_source.html">Ioss_CodeTypes.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioss__ElementTopology_8h_source.html">Ioss_ElementTopology.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioss__Field_8h_source.html">Ioss_Field.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioss__Map_8h_source.html">Ioss_Map.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioss__ParallelUtils_8h_source.html">Ioss_ParallelUtils.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioss__PropertyManager_8h_source.html">Ioss_PropertyManager.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioss__Sort_8h_source.html">Ioss_Sort.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioss__Utils_8h_source.html">Ioss_Utils.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioex__DecompositionData_8h_source.html">exodus/Ioex_DecompositionData.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioex__Utils_8h_source.html">exodus/Ioex_Utils.h</a>&gt;</code><br />
-<code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;cassert&gt;</code><br />
-<code>#include &lt;climits&gt;</code><br />
-<code>#include &lt;cmath&gt;</code><br />
-<code>#include &lt;cstdlib&gt;</code><br />
-<code>#include &lt;cstring&gt;</code><br />
-<code>#include &lt;fmt/ostream.h&gt;</code><br />
-<code>#include &lt;iostream&gt;</code><br />
-<code>#include &lt;iterator&gt;</code><br />
-<code>#include &lt;map&gt;</code><br />
-<code>#include &lt;numeric&gt;</code><br />
-<code>#include &lt;utility&gt;</code><br />
-<code>#include &lt;parmetis.h&gt;</code><br />
-<code>#include &lt;zoltan.h&gt;</code><br />
-<code>#include &lt;zoltan_cpp.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="Ioex__DecompositionData_8h_source.html">exodus/Ioex_DecompositionData.h</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Ioex_DecompositionData.C:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="Ioex__DecompositionData_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="Ioex__DecompositionData_8C__incl.svg" width="220" height="216"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
-</div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceanonymous__namespace_02Ioex__DecompositionData_8C_03"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioex__DecompositionData_8C_03.html">anonymous_namespace{Ioex_DecompositionData.C}</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespaceIoex"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceIoex.html">Ioex</a></td></tr>
-<tr class="memdesc:namespaceIoex"><td class="mdescLeft">&#160;</td><td class="mdescRight">A namespace for the exodus database format. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a09d570fcf39853baa8f1e078ddaa2e3e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioex__DecompositionData_8C_03.html#a09d570fcf39853baa8f1e078ddaa2e3e">anonymous_namespace{Ioex_DecompositionData.C}::zoltan_num_dim</a> (void *data, int *ierr)</td></tr>
-<tr class="separator:a09d570fcf39853baa8f1e078ddaa2e3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78df1f512e2946d085687cb4063b1c90"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioex__DecompositionData_8C_03.html#a78df1f512e2946d085687cb4063b1c90">anonymous_namespace{Ioex_DecompositionData.C}::zoltan_num_obj</a> (void *data, int *ierr)</td></tr>
-<tr class="separator:a78df1f512e2946d085687cb4063b1c90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65322918db3465b33a6c5d28345b1c4d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioex__DecompositionData_8C_03.html#a65322918db3465b33a6c5d28345b1c4d">anonymous_namespace{Ioex_DecompositionData.C}::zoltan_obj_list</a> (void *data, int ngid_ent, int, ZOLTAN_ID_PTR gids, ZOLTAN_ID_PTR lids, int wdim, float *wgts, int *ierr)</td></tr>
-<tr class="separator:a65322918db3465b33a6c5d28345b1c4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad243faa9b4edb91be1e243fa82b3a98e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioex__DecompositionData_8C_03.html#ad243faa9b4edb91be1e243fa82b3a98e">anonymous_namespace{Ioex_DecompositionData.C}::zoltan_geom</a> (void *data, int, int, int, ZOLTAN_ID_PTR, ZOLTAN_ID_PTR, int, double *geom, int *ierr)</td></tr>
-<tr class="separator:ad243faa9b4edb91be1e243fa82b3a98e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-</div><!-- contents -->
+</div>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

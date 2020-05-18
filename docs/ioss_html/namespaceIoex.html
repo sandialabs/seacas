@@ -114,10 +114,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DatabaseIO.html">DatabaseIO</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DecompositionData.html">DecompositionData</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1DecompositionDataBase.html">DecompositionDataBase</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoex_1_1EdgeBlock.html">EdgeBlock</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoex_1_1EdgeSet.html">EdgeSet</a></td></tr>
@@ -139,8 +135,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoex_1_1NodeBlock.html">NodeBlock</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structIoex_1_1NodeSet.html">NodeSet</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1ParallelDatabaseIO.html">ParallelDatabaseIO</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1Redefine.html">Redefine</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -223,7 +217,6 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A namespace for the exodus database format. </p>
-<p>A namespace for the decompose-on-the-fly version of the parallel exodus database format.</p>
 <p>A namespace for the file-per-process version of the parallel exodus database format.</p>
 <p>This set of classes provides a thin wrapper around the exodusII internals. It supplants several of the exodusII API calls in order to avoid ncredef calls which totally rewrite the existing database and can be very expensive. These routines provide all required variable, dimension, and attribute definitions to the underlying netcdf file with only a single ncredef call.</p>
 <p>To use the application must create an <a class="el" href="classIoex_1_1Internals.html">Internals</a> instance and call the <a class="el" href="classIoex_1_1Internals.html#a8878ed6cd2c8043a80d8e6395fba3392">Internals::write_meta_data()</a> function. This function requires several classes as arguments including: </p><ul>
