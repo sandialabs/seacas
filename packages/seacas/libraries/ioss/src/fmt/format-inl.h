@@ -522,9 +522,9 @@ class bigint {
   }
 
   void remove_leading_zeros() {
-    int num_bigits = static_cast<int>(bigits_.size()) - 1;
-    while (num_bigits > 0 && (*this)[num_bigits] == 0) --num_bigits;
-    bigits_.resize(to_unsigned(num_bigits + 1));
+    int l_num_bigits = static_cast<int>(bigits_.size()) - 1;
+    while (l_num_bigits > 0 && (*this)[l_num_bigits] == 0) --l_num_bigits;
+    bigits_.resize(to_unsigned(l_num_bigits + 1));
   }
 
   // Computes *this -= other assuming aligned bigints and *this >= other.
@@ -584,12 +584,12 @@ class bigint {
   }
 
   void assign(uint64_t n) {
-    size_t num_bigits = 0;
+    size_t l_num_bigits = 0;
     do {
-      bigits_[num_bigits++] = n & ~bigit(0);
+      bigits_[l_num_bigits++] = n & ~bigit(0);
       n >>= bigit_bits;
     } while (n != 0);
-    bigits_.resize(num_bigits);
+    bigits_.resize(l_num_bigits);
     exp_ = 0;
   }
 
@@ -678,12 +678,12 @@ class bigint {
 
   void square() {
     basic_memory_buffer<bigit, bigits_capacity> n(std::move(bigits_));
-    int num_bigits = static_cast<int>(bigits_.size());
-    int num_result_bigits = 2 * num_bigits;
+    int l_num_bigits = static_cast<int>(bigits_.size());
+    int num_result_bigits = 2 * l_num_bigits;
     bigits_.resize(to_unsigned(num_result_bigits));
     using accumulator_t = conditional_t<FMT_USE_INT128, uint128_t, accumulator>;
     auto sum = accumulator_t();
-    for (int bigit_index = 0; bigit_index < num_bigits; ++bigit_index) {
+    for (int bigit_index = 0; bigit_index < l_num_bigits; ++bigit_index) {
       // Compute bigit at position bigit_index of the result by adding
       // cross-product terms n[i] * n[j] such that i + j == bigit_index.
       for (int i = 0, j = bigit_index; j >= 0; ++i, --j) {
@@ -694,9 +694,9 @@ class bigint {
       sum >>= bits<bigit>::value;  // Compute the carry.
     }
     // Do the same for the top half.
-    for (int bigit_index = num_bigits; bigit_index < num_result_bigits;
+    for (int bigit_index = l_num_bigits; bigit_index < num_result_bigits;
          ++bigit_index) {
-      for (int j = num_bigits - 1, i = bigit_index - j; i < num_bigits;)
+      for (int j = l_num_bigits - 1, i = bigit_index - j; i < l_num_bigits;)
         sum += static_cast<double_bigit>(n[i++]) * n[j--];
       (*this)[bigit_index] = static_cast<bigit>(sum);
       sum >>= bits<bigit>::value;
@@ -711,13 +711,13 @@ class bigint {
   int divmod_assign(const bigint& divisor) {
     FMT_ASSERT(this != &divisor, "");
     if (compare(*this, divisor) < 0) return 0;
-    int num_bigits = static_cast<int>(bigits_.size());
+    int l_num_bigits = static_cast<int>(bigits_.size());
     FMT_ASSERT(divisor.bigits_[divisor.bigits_.size() - 1u] != 0, "");
     int exp_difference = exp_ - divisor.exp_;
     if (exp_difference > 0) {
       // Align bigints by adding trailing zeros to simplify subtraction.
-      bigits_.resize(to_unsigned(num_bigits + exp_difference));
-      for (int i = num_bigits - 1, j = i + exp_difference; i >= 0; --i, --j)
+      bigits_.resize(to_unsigned(l_num_bigits + exp_difference));
+      for (int i = l_num_bigits - 1, j = i + exp_difference; i >= 0; --i, --j)
         bigits_[j] = bigits_[i];
       std::uninitialized_fill_n(bigits_.data(), exp_difference, 0);
       exp_ -= exp_difference;
