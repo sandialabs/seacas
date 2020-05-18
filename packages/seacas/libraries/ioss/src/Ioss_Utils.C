@@ -1471,13 +1471,14 @@ void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::Role
 }
 
 void Ioss::Utils::info_property(const Ioss::GroupingEntity *ige, Ioss::Property::Origin origin,
-                                const std::string &header, const std::string &suffix)
+                                const std::string &header, const std::string &suffix,
+                                bool print_empty)
 {
   Ioss::NameList properties;
   ige->property_describe(origin, &properties);
 
   if (properties.empty()) {
-    if (!header.empty()) {
+    if (print_empty && !header.empty()) {
       fmt::print("{}{} *** No attributes ***\n", header, suffix);
     }
     return;
