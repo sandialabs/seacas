@@ -63,35 +63,9 @@
 #error "Could not include cgnslib.h"
 #endif
 
-#include "Ioss_CommSet.h"
-#include "Ioss_DBUsage.h"
-#include "Ioss_DatabaseIO.h"
-#include "Ioss_EdgeBlock.h"
-#include "Ioss_EdgeSet.h"
-#include "Ioss_ElementBlock.h"
-#include "Ioss_ElementSet.h"
-#include "Ioss_ElementTopology.h"
-#include "Ioss_EntityType.h"
-#include "Ioss_FaceBlock.h"
-#include "Ioss_FaceGenerator.h"
-#include "Ioss_FaceSet.h"
-#include "Ioss_Field.h"
 #include "Ioss_FileInfo.h"
-#include "Ioss_Hex8.h"
-#include "Ioss_IOFactory.h"
-#include "Ioss_NodeBlock.h"
-#include "Ioss_NodeSet.h"
-#include "Ioss_ParallelUtils.h"
-#include "Ioss_Property.h"
-#include "Ioss_Quad4.h"
-#include "Ioss_Region.h"
-#include "Ioss_SideBlock.h"
-#include "Ioss_SideSet.h"
 #include "Ioss_SmartAssert.h"
-#include "Ioss_State.h"
-#include "Ioss_StructuredBlock.h"
-#include "Ioss_Utils.h"
-#include "Ioss_VariableType.h"
+#include "Ioss_SubSystem.h"
 
 extern char hdf5_access[64];
 
@@ -1129,6 +1103,9 @@ namespace Iocgns {
 
     // Handle boundary conditions...
     Utils::add_structured_boundary_conditions(get_file_pointer(), block, false);
+
+    // See if this zone/block is a member of any assemblies...
+    Utils::add_to_assembly(get_file_pointer(), get_region(), block, base, zone);
   }
 
   size_t DatabaseIO::finalize_structured_blocks()
@@ -1329,6 +1306,9 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("node_count", (int64_t)total_block_nodes));
         eblock->property_add(Ioss::Property("original_block_order", zone));
 
+        // See if this zone/block is a member of any assemblies...
+        Utils::add_to_assembly(get_file_pointer(), get_region(), eblock, base, zone);
+
         SMART_ASSERT(is == 1); // For now, assume each zone has only a single element block.
         bool added = get_region()->add(eblock);
         if (!added) {
@@ -1405,9 +1385,14 @@ namespace Iocgns {
     get_step_times__();
 
     // ========================================================================
-    // Get the number of families in the mesh...
-    // Will treat these as sidesets if they are of the type "FamilyBC_t"
+    // Get the number of sidesets in the mesh...
+    // Will be the 'families' that are of the type "FamilyBC_t"
     Utils::add_sidesets(get_file_pointer(), this);
+
+    // ========================================================================
+    // Get the number of assemblies in the mesh...
+    // Will be the 'families' that contain nodes of 'FamVC_*'
+    Utils::add_assemblies(get_file_pointer(), this);
 
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
@@ -2540,6 +2525,12 @@ namespace Iocgns {
           eb->property_update("guid", zone);
           eb->property_update("section", 1);
           eb->property_update("base", base);
+
+          if (eb->property_exists("assembly")) {
+            std::string assembly = eb->get_property("assembly").get_string();
+            CGCHECKM(cg_goto(get_file_pointer(), base, "Zone_t", zone, "end"));
+            CGCHECKM(cg_famname_write(assembly.c_str()));
+          }
 
           // Now we have a valid zone so can update some data structures...
           m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];

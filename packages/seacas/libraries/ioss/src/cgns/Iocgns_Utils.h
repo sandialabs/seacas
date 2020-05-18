@@ -292,6 +292,10 @@ namespace Iocgns {
     static CG_ElementType_t map_topology_to_cgns(const std::string &name);
     static std::string      map_cgns_to_topology_type(CG_ElementType_t type);
     static void             add_sidesets(int cgns_file_ptr, Ioss::DatabaseIO *db);
+    static void             add_assemblies(int cgns_file_ptr, Ioss::DatabaseIO *db);
+    static void add_to_assembly(int cgns_file_ptr, Ioss::Region *region, Ioss::EntityBlock *block,
+                                int base, int zone);
+
     static void add_structured_boundary_conditions(int cgns_file_ptr, Ioss::StructuredBlock *block,
                                                    bool is_parallel_io);
     static void add_structured_boundary_conditions_fpp(int                    cgns_file_ptr,
