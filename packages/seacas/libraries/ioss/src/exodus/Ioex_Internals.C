@@ -366,7 +366,7 @@ SideSet::SideSet(const Ioss::SideSet &other)
   dfProcOffset = 0;
 }
 
-Internals::Internals(int exoid, int maximum_name_length, const Ioss::ParallelUtils &util)
+Internals::Internals(int exoid, size_t maximum_name_length, const Ioss::ParallelUtils &util)
     : exodusFilePtr(exoid), nodeMapVarID(), elementMapVarID(),
       maximumNameLength(maximum_name_length), parallelUtil(util)
 {

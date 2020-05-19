@@ -198,9 +198,9 @@ namespace Iogn {
     double currentTime{0.0};
     int    spatialDimension{3};
 
-    int elementBlockCount{0};
-    int nodesetCount{0};
-    int sidesetCount{0};
+    int64_t elementBlockCount{0};
+    int64_t nodesetCount{0};
+    int64_t sidesetCount{0};
 
     bool m_useVariableDf{true};
   };
