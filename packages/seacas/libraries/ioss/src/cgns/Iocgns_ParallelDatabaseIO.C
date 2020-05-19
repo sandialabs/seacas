@@ -445,7 +445,7 @@ namespace Iocgns {
                  block.name(), element_topo, block.ioss_count());
 #endif
       // See if this zone/block is a member of any assemblies...
-      Utils::add_to_assembly(get_file_pointer(), get_region(), eblock, base, zone);
+      Utils::add_to_assembly(get_file_pointer(), get_region(), eblock, base, block.zone());
     }
 
     // ========================================================================

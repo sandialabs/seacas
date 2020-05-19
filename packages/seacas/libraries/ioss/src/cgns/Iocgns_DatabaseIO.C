@@ -66,6 +66,8 @@
 #include "Ioss_FileInfo.h"
 #include "Ioss_SmartAssert.h"
 #include "Ioss_SubSystem.h"
+#include "Ioss_Quad4.h"
+#include "Ioss_Hex8.h"
 
 extern char hdf5_access[64];
 
@@ -940,6 +942,9 @@ namespace Iocgns {
         // Handle boundary conditions...
         Utils::add_structured_boundary_conditions(get_file_pointer(), block, false);
       }
+
+      // See if this zone/block is a member of any assemblies...
+      Utils::add_to_assembly(get_file_pointer(), get_region(), block, base, zone);
 
       // Need to get a count of number of unique BC's.
       // Note that possible to assign multiple BC to a single face, so can't do this based on faces
