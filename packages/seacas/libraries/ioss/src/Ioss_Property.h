@@ -46,7 +46,7 @@ namespace Ioss {
     Property(const GroupingEntity *ge, std::string name, BasicType type);
 
     Property(const Property &from);
-    Property &operator=(Property rhs);
+    Property &operator=(Property const& rhs);
 
     ~Property();
 
