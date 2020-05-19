@@ -998,7 +998,6 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       int db_zone = 0;
       CGERR(cg_zone_write(file_ptr, base, name.c_str(), size, CG_Structured, &db_zone));
       sb->property_update("db_zone", db_zone);
-
       // Add GridCoordinates Node...
       int grid_idx = 0;
       CGERR(cg_grid_write(file_ptr, base, db_zone, "GridCoordinates", &grid_idx));
@@ -1011,6 +1010,55 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     zone_offset[zone] = zone_offset[zone - 1] + sb->get_property("cell_count").get_int();
     sb->property_update("zone", zone);
     sb->property_update("base", base);
+  }
+
+  // TODO: Are there multi-level assemblies in CGNS?
+  // Output the assembly data.
+  // The assembly itself is Family data at top level.
+  // For each assembly, iterate members and add the 'FamilyName' node linking it to the Assembly
+  region.get_database()->progress("\tOutput Assemblies");
+  const auto &assemblies = region.get_assemblies();
+  for (const auto &assem : assemblies) {
+    int fam = 0;
+    CGERR(cg_family_write(file_ptr, base, assem->name().c_str(), &fam));
+
+    int64_t id = -1;
+    if (assem->property_exists("id")) {
+      id = assem->get_property("id").get_int();
+    }
+
+    CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
+    CGERR(cg_descriptor_write("FamVC_TypeId", "0"));
+    CGERR(cg_descriptor_write("FamVC_TypeName", "Unspecified"));
+    CGERR(cg_descriptor_write("FamVC_UserId", std::to_string(id).c_str()));
+    CGERR(cg_descriptor_write("FamVC_UserName", assem->name().c_str()));
+
+    const auto &members = assem->get_members();
+    // Now, iterate the members of the assembly and add the reference to the structured block
+    if (assem->get_member_type() == Ioss::STRUCTUREDBLOCK) {
+      for (const auto &mem : members) {
+        int base = mem->get_property("base").get_int();
+	const auto *sb = dynamic_cast<const Ioss::StructuredBlock*>(mem);
+	Ioss::Utils::check_dynamic_cast(sb);
+	if (is_parallel_io || sb->is_active()) {
+	  int db_zone = get_db_zone(sb);
+	  if (cg_goto(file_ptr, base, "Zone_t", db_zone, "end") == CG_OK) {
+	    CGERR(cg_famname_write(assem->name().c_str()));
+	  }
+	}
+      }
+    }
+    else if (assem->get_member_type() == Ioss::ELEMENTBLOCK) {
+      for (const auto &mem : members) {
+        // The element blocks have not yet been output.  To make it
+        // easier when they are written, add a property that specifies
+        // what assembly they are in.  Currently, the way CGNS
+        // represents assemblies limits membership to at most one
+        // assembly.
+        Ioss::GroupingEntity *new_mem = const_cast<Ioss::GroupingEntity *>(mem);
+        new_mem->property_add(Ioss::Property("assembly", assem->name()));
+      }
+    }
   }
 
   region.get_database()->progress("\tMapping sb_name to zone");
@@ -1205,49 +1253,6 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
                         "GridConnectivity1to1_t", zgc_idx, "end"));
           CGERR(cg_descriptor_write("OriginalName", original_name.c_str()));
         }
-      }
-    }
-  }
-
-  // TODO: Are there multi-level assemblies in CGNS?
-  // Output the assembly data.
-  // The assembly itself is Family data at top level.
-  // For each assembly, iterate members and add the 'FamilyName' node linking it to the Assembly
-  region.get_database()->progress("\tOutput Assemblies");
-  const auto &assemblies = region.get_assemblies();
-  for (const auto &assem : assemblies) {
-    int fam = 0;
-    CGERR(cg_family_write(file_ptr, base, assem->name().c_str(), &fam));
-
-    int64_t id = fam;
-    if (assem->property_exists("id")) {
-      id = assem->get_property("id").get_int();
-    }
-
-    CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
-    CGERR(cg_descriptor_write("FamVC_TypeId", "0"));
-    CGERR(cg_descriptor_write("FamVC_TypeName", "Unspecified"));
-    CGERR(cg_descriptor_write("FamVC_UserId", std::to_string(id).c_str()));
-    CGERR(cg_descriptor_write("FamVC_UserName", assem->name().c_str()));
-
-    // Now, iterate the members of the assembly and add the reference to the structured block
-    if (assem->get_member_type() == Ioss::STRUCTUREDBLOCK) {
-      const auto &members = assem->get_members();
-      for (const auto &mem : members) {
-        int base = mem->get_property("base").get_int();
-        int zone = mem->get_property("zone").get_int();
-        CGERR(cg_goto(file_ptr, base, "Zone_t", zone, "end"));
-        CGERR(cg_famname_write(assem->name().c_str()));
-      }
-    }
-    else if (assem->get_member_type() == Ioss::ELEMENTBLOCK) {
-      const auto &members = assem->get_members();
-      for (const auto &mem : members) {
-        // The element blocks have not yet been output.  To make it easier when
-        // they are written, add a property that specifies what assembly they
-        // are in.  Currently, CGNS limits membership to at most one assembly.
-        Ioss::GroupingEntity *new_mem = const_cast<Ioss::GroupingEntity *>(mem);
-        new_mem->property_add(Ioss::Property("assembly", assem->name()));
       }
     }
   }
@@ -1576,7 +1581,9 @@ void Iocgns::Utils::add_assemblies(int cgns_file_ptr, Ioss::DatabaseIO *db)
           // Create an assembly with this name...
           auto *assem = new Ioss::Assembly(db, assem_name);
           db->get_region()->add(assem);
-          assem->property_add(Ioss::Property("id", id));
+	  if (id >= 0) {
+	    assem->property_add(Ioss::Property("id", id));
+	  }
 
 #if IOSS_DEBUG_OUTPUT
           if (db->parallel_rank() == 0) {
@@ -1782,6 +1789,7 @@ void Iocgns::Utils::add_to_assembly(int cgns_file_ptr, Ioss::Region *region,
       auto *assem = region->get_assembly(name);
       if (assem != nullptr) {
         assem->add(block);
+        block->property_add(Ioss::Property("assembly", assem->name()));
       }
     }
   }
