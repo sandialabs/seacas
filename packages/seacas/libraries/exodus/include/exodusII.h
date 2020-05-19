@@ -72,12 +72,12 @@
 #endif
 
 /* EXODUS version number */
-#define EXODUS_VERSION "8.04"
+#define EXODUS_VERSION "8.05"
 #define EXODUS_VERSION_MAJOR 8
-#define EXODUS_VERSION_MINOR 04
-#define EXODUS_RELEASE_DATE "May 18, 2020"
+#define EXODUS_VERSION_MINOR 05
+#define EXODUS_RELEASE_DATE "May 19, 2020"
 
-#define EX_API_VERS 8.04f
+#define EX_API_VERS 8.05f
 
 #define EX_API_VERS_NODOT (100 * EXODUS_VERSION_MAJOR + EXODUS_VERSION_MINOR)
 
@@ -329,7 +329,7 @@ typedef enum ex_options ex_options;
 /** Maximum length of the database title or an information record */
 #define MAX_LINE_LENGTH 80L
 /** Maximum length of an error message passed to ex_err() function. Typically, internal use only */
-#define MAX_ERR_LENGTH 256
+#define MAX_ERR_LENGTH 512
 /** @} */
 
 /** Specifies that this argument is the id of an entity: element block, nodeset, sideset, ... */
