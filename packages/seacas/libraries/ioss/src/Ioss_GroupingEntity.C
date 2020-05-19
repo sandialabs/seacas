@@ -207,7 +207,7 @@ Ioss::Property Ioss::GroupingEntity::get_implicit_property(const std::string &my
  */
 void Ioss::GroupingEntity::field_add(Ioss::Field new_field)
 {
-  size_t field_size  = new_field.raw_count();
+  size_t field_size = new_field.raw_count();
 
   if (new_field.get_role() == Ioss::Field::REDUCTION) {
     if (field_size == 0) {
