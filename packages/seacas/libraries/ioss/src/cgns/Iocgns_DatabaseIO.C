@@ -1023,6 +1023,52 @@ namespace Iocgns {
                   return (b1.m_bcName < b2.m_bcName);
                 });
     }
+
+    // Need to iterate the blocks again and make the assembly information consistent
+    // across processors.
+    // If a block belongs to an assembly, it will have the property "assembly"
+    // defined on it.
+    // This assumes that a block can belong to at most one assembly.
+    const auto &assemblies = get_region()->get_assemblies();
+    if (!assemblies.empty()) {
+      std::map<unsigned int, std::string> assembly_hash_map;
+      for (const auto &assem : assemblies) {
+	auto hash = Ioss::Utils::hash(assem->name());
+	assembly_hash_map[hash] = assem->name();
+      }
+
+      const auto &blocks = get_region()->get_structured_blocks();
+      std::vector<unsigned int> assem_ids;
+      assem_ids.reserve(blocks.size());
+
+      for (const auto &sb : blocks) {
+	unsigned int hash = 0;
+	if (sb->property_exists("assembly")) {
+	  std::string assembly = sb->get_property("assembly").get_string();
+	  hash = Ioss::Utils::hash(assembly);
+	}
+	assem_ids.push_back(hash);
+      }
+
+      // Hash will be >= 0, so we will take the maximum over all
+      // ranks and that will give the assembly (if any) that each block belongs to.
+      util().global_array_minmax(assem_ids, Ioss::ParallelUtils::DO_MAX);
+
+      int idx = 0;
+      for (const auto &sb : blocks) {
+	unsigned assem_hash = assem_ids[idx++];
+	std::string name = assembly_hash_map[assem_hash];
+	auto *assembly = get_region()->get_assembly(name);
+	assert(assembly != nullptr);
+	if (!sb->property_exists("assembly")) {
+	  assembly->add(sb);
+	  Ioss::StructuredBlock *new_sb = const_cast<Ioss::StructuredBlock*>(sb);
+	  new_sb->property_add(Ioss::Property("assembly", assembly->name()));
+	}
+	SMART_ASSERT(sb->get_property("assembly").get_string() == assembly->name())(sb->get_property("assembly").get_string())(assembly->name());
+      }
+
+    }
 #endif
   }
 
