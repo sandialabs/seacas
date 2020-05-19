@@ -64,10 +64,10 @@
 #endif
 
 #include "Ioss_FileInfo.h"
+#include "Ioss_Hex8.h"
+#include "Ioss_Quad4.h"
 #include "Ioss_SmartAssert.h"
 #include "Ioss_SubSystem.h"
-#include "Ioss_Quad4.h"
-#include "Ioss_Hex8.h"
 
 extern char hdf5_access[64];
 
@@ -1033,21 +1033,21 @@ namespace Iocgns {
     if (!assemblies.empty()) {
       std::map<unsigned int, std::string> assembly_hash_map;
       for (const auto &assem : assemblies) {
-	auto hash = Ioss::Utils::hash(assem->name());
-	assembly_hash_map[hash] = assem->name();
+        auto hash               = Ioss::Utils::hash(assem->name());
+        assembly_hash_map[hash] = assem->name();
       }
 
-      const auto &blocks = get_region()->get_structured_blocks();
+      const auto &              blocks = get_region()->get_structured_blocks();
       std::vector<unsigned int> assem_ids;
       assem_ids.reserve(blocks.size());
 
       for (const auto &sb : blocks) {
-	unsigned int hash = 0;
-	if (sb->property_exists("assembly")) {
-	  std::string assembly = sb->get_property("assembly").get_string();
-	  hash = Ioss::Utils::hash(assembly);
-	}
-	assem_ids.push_back(hash);
+        unsigned int hash = 0;
+        if (sb->property_exists("assembly")) {
+          std::string assembly = sb->get_property("assembly").get_string();
+          hash                 = Ioss::Utils::hash(assembly);
+        }
+        assem_ids.push_back(hash);
       }
 
       // Hash will be >= 0, so we will take the maximum over all
@@ -1056,18 +1056,18 @@ namespace Iocgns {
 
       int idx = 0;
       for (const auto &sb : blocks) {
-	unsigned assem_hash = assem_ids[idx++];
-	std::string name = assembly_hash_map[assem_hash];
-	auto *assembly = get_region()->get_assembly(name);
-	assert(assembly != nullptr);
-	if (!sb->property_exists("assembly")) {
-	  assembly->add(sb);
-	  Ioss::StructuredBlock *new_sb = const_cast<Ioss::StructuredBlock*>(sb);
-	  new_sb->property_add(Ioss::Property("assembly", assembly->name()));
-	}
-	SMART_ASSERT(sb->get_property("assembly").get_string() == assembly->name())(sb->get_property("assembly").get_string())(assembly->name());
+        unsigned    assem_hash = assem_ids[idx++];
+        std::string name       = assembly_hash_map[assem_hash];
+        auto *      assembly   = get_region()->get_assembly(name);
+        assert(assembly != nullptr);
+        if (!sb->property_exists("assembly")) {
+          assembly->add(sb);
+          Ioss::StructuredBlock *new_sb = const_cast<Ioss::StructuredBlock *>(sb);
+          new_sb->property_add(Ioss::Property("assembly", assembly->name()));
+        }
+        SMART_ASSERT(sb->get_property("assembly").get_string() == assembly->name())
+        (sb->get_property("assembly").get_string())(assembly->name());
       }
-
     }
 #endif
   }
