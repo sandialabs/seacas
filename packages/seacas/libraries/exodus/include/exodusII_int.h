@@ -259,6 +259,10 @@ EXODUS_EXPORT int indent;
 #define ATT_FLT_WORDSIZE_BLANK "floating point word size"
 #define ATT_MAX_NAME_LENGTH "maximum_name_length"
 #define ATT_INT64_STATUS "int64_status"
+#define ATT_NEM_API_VERSION "nemesis_api_version"
+#define ATT_NEM_FILE_VERSION "nemesis_file_version"
+#define ATT_PROCESSOR_INFO "processor_info"
+#define ATT_LAST_WRITTEN_TIME "last_written_time"
 
 #define DIM_NUM_ASSEMBLY "num_assembly" /**< number of assemblies       */
 #define DIM_NUM_BLOB "num_blob"         /**< number of blobs       */
