@@ -42,7 +42,7 @@ namespace {
   {
     for (size_t i = 0; i < count; i += stride) {
       int64_t local = map.global_to_local(data[i], true);
-      data[i]       = local;
+      data[i]       = static_cast<INT>(local);
     }
   }
 
@@ -315,7 +315,7 @@ namespace Iogn {
 
     else if (role == Ioss::Field::ATTRIBUTE) {
       if (element_count > 0) {
-        int attribute_count = eb->get_property("attribute_count").get_int();
+        int64_t attribute_count = eb->get_property("attribute_count").get_int();
         if (attribute_count > 0) {
           auto *attr = static_cast<double *>(data);
           for (size_t i = 0; i < num_to_get; i++) {
@@ -365,7 +365,7 @@ namespace Iogn {
         if (field.is_type(Ioss::Field::INTEGER)) {
           int *ids = static_cast<int *>(data);
           for (size_t i = 0; i < num_to_get; i++) {
-            ids[i] = 10 * elem_side[2 * i + 0] + elem_side[2 * i + 1] + 1;
+            ids[i] = static_cast<int>(10 * elem_side[2 * i + 0] + elem_side[2 * i + 1] + 1);
           }
         }
         else {
@@ -391,8 +391,8 @@ namespace Iogn {
         if (field.is_type(Ioss::Field::INTEGER)) {
           int *element_side = static_cast<int *>(data);
           for (size_t i = 0; i < num_to_get; i++) {
-            element_side[2 * i + 0] = elem_side[2 * i + 0];
-            element_side[2 * i + 1] = elem_side[2 * i + 1] + 1;
+            element_side[2 * i + 0] = static_cast<int>(elem_side[2 * i + 0]);
+            element_side[2 * i + 1] = static_cast<int>(elem_side[2 * i + 1] + 1);
           }
         }
         else {
@@ -548,7 +548,7 @@ namespace Iogn {
           size_t j = 0;
           for (size_t i = 0; i < entity_count; i++) {
             assert(entities[i] > 0);
-            entity_proc[j++] = entities[i];
+            entity_proc[j++] = static_cast<int>(entities[i]);
             entity_proc[j++] = procs[i];
           }
 
@@ -698,8 +698,8 @@ namespace Iogn {
 
   void DatabaseIO::get_step_times__()
   {
-    int time_step_count = m_generatedMesh->timestep_count();
-    for (int i = 0; i < time_step_count; i++) {
+    int64_t time_step_count = m_generatedMesh->timestep_count();
+    for (int64_t i = 0; i < time_step_count; i++) {
       get_region()->add_state(i);
     }
   }
@@ -716,8 +716,8 @@ namespace Iogn {
     // -- number of faces per element (derivable from type)
     // -- number of edges per element (derivable from type)
 
-    int block_count = m_generatedMesh->block_count();
-    for (int i = 0; i < block_count; i++) {
+    int64_t block_count = m_generatedMesh->block_count();
+    for (int64_t i = 0; i < block_count; i++) {
       std::string name          = Ioss::Utils::encode_entity_name("block", i + 1);
       std::string type          = m_generatedMesh->topology_type(i + 1).first;
       size_t      element_count = m_generatedMesh->element_count_proc(i + 1);
