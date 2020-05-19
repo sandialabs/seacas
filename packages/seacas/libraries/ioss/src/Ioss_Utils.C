@@ -1571,8 +1571,10 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     transfer_commsets(region, output_region, options, rank);
 
     transfer_coordinate_frames(region, output_region);
-    transfer_assemblies(region, output_region, options, rank);
     transfer_blobs(region, output_region, options, rank);
+
+    // This must be last...
+    transfer_assemblies(region, output_region, options, rank);
 
     if (options.debug && rank == 0) {
       fmt::print(Ioss::DEBUG(), "END STATE_DEFINE_MODEL...\n");
@@ -2200,7 +2202,20 @@ namespace {
         if (options.debug && rank == 0) {
           fmt::print(stderr, "{}, ", name);
         }
-        auto o_assem = new Ioss::Assembly(*assm);
+
+	// NOTE: Can't use the copy constructor as it will
+	// create a members list containing entities from
+	// input database.  We need corresponding entities
+	// from output database...
+	auto o_assem = new Ioss::Assembly(output_region.get_database(), assm->name());
+
+	const auto &members = assm->get_members();
+	for (const auto &member : members) {
+	  const auto *entity = output_region.get_entity(member->name(), member->type());
+	  if (entity != nullptr) {
+	    o_assem->add(entity);
+	  }
+	}
         output_region.add(o_assem);
       }
 
