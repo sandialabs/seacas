@@ -65,12 +65,13 @@ static bool ex__is_internal_attribute(const char *name, ex_entity_type obj_type)
     return true;
   }
   else if (obj_type == EX_GLOBAL &&
-           ((strcmp(name, "api_version") == 0) || (strcmp(name, "version") == 0) ||
-            (strcmp(name, "floating_point_word_size") == 0) || (strcmp(name, "file_size") == 0) ||
-            (strcmp(name, "maximum_name_length") == 0) || (strcmp(name, "int64_status") == 0) ||
-            (strcmp(name, "title") == 0) || (strcmp(name, "nemesis_file_version") == 0) ||
-            (strcmp(name, "nemesis_api_version") == 0) || (strcmp(name, "processor_info") == 0) ||
-            (strcmp(name, "last_written_time") == 0))) {
+           ((strcmp(name, ATT_API_VERSION) == 0) || (strcmp(name, ATT_API_VERSION_BLANK) == 0) ||
+            (strcmp(name, ATT_VERSION) == 0) || (strcmp(name, ATT_FLT_WORDSIZE) == 0) ||
+            (strcmp(name, ATT_FLT_WORDSIZE_BLANK) == 0) || (strcmp(name, ATT_FILESIZE) == 0) ||
+            (strcmp(name, ATT_MAX_NAME_LENGTH) == 0) || (strcmp(name, ATT_INT64_STATUS) == 0) ||
+            (strcmp(name, ATT_TITLE) == 0) || (strcmp(name, ATT_NEM_FILE_VERSION) == 0) ||
+            (strcmp(name, ATT_NEM_API_VERSION) == 0) || (strcmp(name, ATT_PROCESSOR_INFO) == 0) ||
+            (strcmp(name, ATT_LAST_WRITTEN_TIME) == 0))) {
     return true;
   }
   return false;
@@ -297,7 +298,7 @@ int ex_get_attribute(int exoid, ex_attribute *attr)
       attr->values = calloc(attr->value_count, sizeof(double));
     }
     else if (attr->type == EX_CHAR) {
-      attr->values = calloc(attr->value_count+1, sizeof(char));
+      attr->values = calloc(attr->value_count + 1, sizeof(char));
     }
     if (attr->values == NULL) {
       snprintf(
