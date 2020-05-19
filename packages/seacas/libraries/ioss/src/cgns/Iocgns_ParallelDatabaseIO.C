@@ -389,6 +389,11 @@ namespace Iocgns {
     assert(decomp != nullptr);
     decomp->decompose_model(get_file_pointer(), m_meshType);
 
+    // ========================================================================
+    // Get the number of assemblies in the mesh...
+    // Will be the 'families' that contain nodes of 'FamVC_*'
+    Utils::add_assemblies(get_file_pointer(), this);
+
     if (m_meshType == Ioss::MeshType::STRUCTURED) {
       handle_structured_blocks();
     }
