@@ -19,9 +19,6 @@
 #include <unistd.h>
 #include <utility>
 #include <vector>
-#if defined(SEACAS_HAVE_EXODUS)
-#include <exodusII.h>
-#endif
 
 #include <Ionit_Initializer.h>
 #include <Ioss_Assembly.h>
@@ -53,15 +50,20 @@
 #include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
-#include <exodus/Ioex_Internals.h>
-#include <exodus/Ioex_Utils.h>
 #include <tokenize.h>
 
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+
+#if defined(SEACAS_HAVE_EXODUS)
+#include <exodusII.h>
+#include <exodus/Ioex_Internals.h>
+#include <exodus/Ioex_Utils.h>
+#endif
+
 #if defined(SEACAS_HAVE_CGNS)
-#include <cgnslib.h>
+#include <Iocgns_Utils.h>
 #endif
 
 #if defined(_MSC_VER)
@@ -72,7 +74,7 @@
 
 namespace {
   std::string codename;
-  std::string version = "0.91 (2020-05-18)";
+  std::string version = "0.92 (2020-05-20)";
 
   std::vector<Ioss::GroupingEntity *> attributes_modified;
 
@@ -1155,7 +1157,28 @@ namespace {
     return names;
   }
 
-  void update_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
+  void           update_cgns_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
+  {
+    region.end_mode(Ioss::STATE_DEFINE_MODEL);
+    int file_ptr = region.get_database()->get_file_pointer();
+
+    fmt::print(fg(fmt::color::cyan), "\n\t*** Database changed. Updating assembly definitions.\n");
+    const auto &assemblies = region.get_assemblies();
+    for (const auto *assembly : assemblies) {
+      if (assembly->property_exists("modified")) {
+        if (assembly->property_exists("created")) {
+          fmt::print(fg(fmt::color::cyan), "\t*** Creating assembly '{}'\n", assembly->name());
+	  Iocgns::Utils::output_assembly(file_ptr, assembly, false, true);
+        }
+        else {
+	  fmt::print(stderr, fg(fmt::color::yellow), "WARNING: Can not modify existing assembly '{}'  yet.\n",
+		     assembly->name());
+        }
+      }
+    }
+  }
+
+  void           update_exodus_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
   {
     std::vector<Ioex::Assembly> ex_assemblies;
     bool                        modify_existing = false;
@@ -1215,6 +1238,22 @@ namespace {
     else {
       Ioex::Internals::update_assembly_data(exoid, ex_assemblies);
       Ioex::write_reduction_attributes(exoid, attributes_modified);
+    }
+  }
+
+  void update_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
+  {
+    // Determine type of underlying database...
+    const auto type = region.get_database()->get_format();
+    if (type == "Exodus") {
+      update_exodus_assembly_info(region, interFace);
+    }
+    else if (type == "CGNS") {
+      update_cgns_assembly_info(region, interFace);
+    }
+    else {
+      fmt::print(stderr, fg(fmt::color::red), "ERROR: Can not modify the database '{}' of type '{}'.\n",
+		 interFace.filename(), type);
     }
   }
 
