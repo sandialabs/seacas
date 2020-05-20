@@ -340,6 +340,7 @@ const char *ex_strerror(int err_num)
   case EX_LOOKUPFAIL:
     return "Id lookup failed for specified entity type. Could not find entity with specified id.";
   case EX_BADPARAM: return "Bad parameter.";
+  case -EX_BADPARAM: return "Bad parameter.";
   case EX_INTERNAL: return "Internal logic error in exodus library.";
   case EX_NOTROOTID: return "File id is not the root id; it is a subgroup id.";
   case EX_NULLENTITY: return "Null entity found.";
