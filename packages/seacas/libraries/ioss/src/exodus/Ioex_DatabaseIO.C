@@ -33,8 +33,8 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_ParallelUtils.h>
-#include <Ioss_SmartAssert.h>
 #include <Ioss_SerializeIO.h>
+#include <Ioss_SmartAssert.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
@@ -418,28 +418,27 @@ namespace Ioex {
         ex_set_option(exodusFilePtr, EX_OPT_COMPRESSION_SHUFFLE, shuffle);
       }
       if (properties.exists("COMPRESSION_METHOD")) {
-	auto method = properties.get("COMPRESSION_METHOD").get_string();
-	method = Ioss::Utils::lowercase(method);
-	ex_compression_type exo_method = EX_COMPRESS_ZLIB;
-	if (method == "zlib" || method == "libz" || method == "gzip") {
-	  exo_method = EX_COMPRESS_ZLIB;
-	}
-	else if (method == "szip") {
+        auto method                    = properties.get("COMPRESSION_METHOD").get_string();
+        method                         = Ioss::Utils::lowercase(method);
+        ex_compression_type exo_method = EX_COMPRESS_ZLIB;
+        if (method == "zlib" || method == "libz" || method == "gzip") {
+          exo_method = EX_COMPRESS_ZLIB;
+        }
+        else if (method == "szip") {
 #if defined(NC_HAS_SZIP_WRITE)
-	  exo_method = EX_COMPRESS_SZIP;
+          exo_method = EX_COMPRESS_SZIP;
 #else
-          fmt::print(Ioss::WARNING(),
-                     "The NetCDF library does not have SZip compression enabled."
-		     " 'zlib' will be used instead.\n\n");
+          fmt::print(Ioss::WARNING(), "The NetCDF library does not have SZip compression enabled."
+                                      " 'zlib' will be used instead.\n\n");
 #endif
-	}
-	else {
+        }
+        else {
           fmt::print(Ioss::WARNING(),
                      "Unrecognized compression method specified: '{}'."
-		     " 'zlib' will be used instead.\n\n",
+                     " 'zlib' will be used instead.\n\n",
                      method);
-	}
-	ex_set_option(exodusFilePtr, EX_OPT_COMPRESSION_TYPE, exo_method);
+        }
+        ex_set_option(exodusFilePtr, EX_OPT_COMPRESSION_TYPE, exo_method);
       }
     }
     ex_opts(app_opt_val); // Reset back to what it was.
@@ -922,8 +921,10 @@ namespace Ioex {
     region->field_add(Ioss::Field("border_elements", region->field_int_type(), IOSS_SCALAR(),
                                   Ioss::Field::COMMUNICATION, num_border_elems));
 
-    SMART_ASSERT(nodeCount == num_internal_nodes + num_border_nodes)(nodeCount)(num_internal_nodes)(num_border_nodes);
-    SMART_ASSERT(elementCount == num_internal_elems + num_border_elems)(elementCount)(num_internal_elems)(num_border_elems);
+    SMART_ASSERT(nodeCount == num_internal_nodes + num_border_nodes)
+    (nodeCount)(num_internal_nodes)(num_border_nodes);
+    SMART_ASSERT(elementCount == num_internal_elems + num_border_elems)
+    (elementCount)(num_internal_elems)(num_border_elems);
   }
 
   const Ioss::Map &DatabaseIO::get_map(ex_entity_type type) const
@@ -1766,7 +1767,8 @@ namespace Ioex {
               if (side == 999) {
                 side = 0;
               }
-              SMART_ASSERT(side <= elem_topo->number_boundaries())(side)(elem_topo->number_boundaries());
+              SMART_ASSERT(side <= elem_topo->number_boundaries())
+              (side)(elem_topo->number_boundaries());
               side_block->set_consistent_side_number(side);
             }
 

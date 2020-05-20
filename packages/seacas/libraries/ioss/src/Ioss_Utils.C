@@ -2208,9 +2208,9 @@ namespace {
         // database.  We need corresponding entities from output
         // database...
         auto o_assem = new Ioss::Assembly(*assm);
-	o_assem->remove_members();
+        o_assem->remove_members();
 
-	// Now, repopulate member list with corresponding entities from output database...
+        // Now, repopulate member list with corresponding entities from output database...
         const auto &members = assm->get_members();
         for (const auto &member : members) {
           const auto *entity = output_region.get_entity(member->name(), member->type());
