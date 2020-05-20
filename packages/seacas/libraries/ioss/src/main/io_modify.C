@@ -1157,6 +1157,7 @@ namespace {
     return names;
   }
 
+#if defined(SEACAS_HAVE_CGNS)
   void           update_cgns_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
   {
     region.end_mode(Ioss::STATE_DEFINE_MODEL);
@@ -1177,6 +1178,7 @@ namespace {
       }
     }
   }
+#endif
 
   void           update_exodus_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
   {
@@ -1248,9 +1250,11 @@ namespace {
     if (type == "Exodus") {
       update_exodus_assembly_info(region, interFace);
     }
+#if defined(SEACAS_HAVE_CGNS)
     else if (type == "CGNS") {
       update_cgns_assembly_info(region, interFace);
     }
+#endif    
     else {
       fmt::print(stderr, fg(fmt::color::red), "ERROR: Can not modify the database '{}' of type '{}'.\n",
 		 interFace.filename(), type);
