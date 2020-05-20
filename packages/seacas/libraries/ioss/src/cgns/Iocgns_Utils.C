@@ -1022,7 +1022,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
     int fam = 0;
     CGERR(cg_family_write(file_ptr, base, assem->name().c_str(), &fam));
 
-    int64_t id = -1;
+    int64_t id = 0;
     if (assem->property_exists("id")) {
       id = assem->get_property("id").get_int();
     }
