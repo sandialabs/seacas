@@ -33,6 +33,7 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_ParallelUtils.h>
+#include <Ioss_SmartAssert.h>
 #include <Ioss_SerializeIO.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
@@ -921,8 +922,8 @@ namespace Ioex {
     region->field_add(Ioss::Field("border_elements", region->field_int_type(), IOSS_SCALAR(),
                                   Ioss::Field::COMMUNICATION, num_border_elems));
 
-    assert(nodeCount == num_internal_nodes + num_border_nodes);
-    assert(elementCount == num_internal_elems + num_border_elems);
+    SMART_ASSERT(nodeCount == num_internal_nodes + num_border_nodes)(nodeCount)(num_internal_nodes)(num_border_nodes);
+    SMART_ASSERT(elementCount == num_internal_elems + num_border_elems)(elementCount)(num_internal_elems)(num_border_elems);
   }
 
   const Ioss::Map &DatabaseIO::get_map(ex_entity_type type) const
@@ -1541,7 +1542,7 @@ namespace Ioex {
           if (!blockOmissions.empty() || !blockInclusions.empty()) {
             Ioex::filter_element_list(get_region(), element, sides, true);
             number_sides = element.size();
-            assert(element.size() == sides.size());
+            SMART_ASSERT(element.size() == sides.size())(element.size())(sides.size());
           }
 
           if (split_type == Ioss::SPLIT_BY_TOPOLOGIES && sideTopology.size() == 1) {
@@ -1555,7 +1556,7 @@ namespace Ioex {
           }
           else if (in_fs_map) {
             std::vector<std::string> tokens = Ioss::tokenize(side_set_name, "_");
-            assert(tokens.size() >= 4);
+            SMART_ASSERT(tokens.size() >= 4)(tokens.size());
             // The sideset should have only a single topology which is
             // given by the sideset name...
             const Ioss::ElementTopology *side_topo =
@@ -1765,7 +1766,7 @@ namespace Ioex {
               if (side == 999) {
                 side = 0;
               }
-              assert(side <= elem_topo->number_boundaries());
+              SMART_ASSERT(side <= elem_topo->number_boundaries())(side)(elem_topo->number_boundaries());
               side_block->set_consistent_side_number(side);
             }
 
@@ -2049,7 +2050,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
 
 #ifndef NDEBUG
       int64_t my_node_count = field.raw_count();
-      assert(my_node_count == nodeCount);
+      SMART_ASSERT(my_node_count == nodeCount)(my_node_count)(nodeCount);
 #endif
 
       Ioss::Field::RoleType role = field.get_role();
@@ -4552,7 +4553,7 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
    * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
    *       should be in the original order...
    */
-  assert(num_to_get == nodeCount);
+  SMART_ASSERT(num_to_get == nodeCount)(num_to_get)(nodeCount);
 
   nodeMap.set_size(nodeCount);
 
