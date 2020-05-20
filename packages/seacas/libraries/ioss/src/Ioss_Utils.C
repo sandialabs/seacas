@@ -2203,12 +2203,14 @@ namespace {
           fmt::print(stderr, "{}, ", name);
         }
 
-        // NOTE: Can't use the copy constructor as it will
-        // create a members list containing entities from
-        // input database.  We need corresponding entities
-        // from output database...
-        auto o_assem = new Ioss::Assembly(output_region.get_database(), assm->name());
+        // NOTE: Can't totally use the copy constructor as it will
+        // create a members list containing entities from input
+        // database.  We need corresponding entities from output
+        // database...
+        auto o_assem = new Ioss::Assembly(*assm);
+	o_assem->remove_members();
 
+	// Now, repopulate member list with corresponding entities from output database...
         const auto &members = assm->get_members();
         for (const auto &member : members) {
           const auto *entity = output_region.get_entity(member->name(), member->type());
