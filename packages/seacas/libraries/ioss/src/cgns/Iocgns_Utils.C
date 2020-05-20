@@ -871,6 +871,69 @@ namespace {
   }
 } // namespace
 
+void Iocgns::Utils::output_assembly(int file_ptr, const Ioss::Assembly *assembly, bool is_parallel_io, bool appending)
+{
+  int base = 1;
+  int fam = 0;
+    CGERR(cg_family_write(file_ptr, base, assembly->name().c_str(), &fam));
+
+    int64_t id = 0;
+    if (assembly->property_exists("id")) {
+      id = assembly->get_property("id").get_int();
+    }
+
+    CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
+    CGERR(cg_descriptor_write("FamVC_TypeId", "0"));
+    CGERR(cg_descriptor_write("FamVC_TypeName", "Unspecified"));
+    CGERR(cg_descriptor_write("FamVC_UserId", std::to_string(id).c_str()));
+    CGERR(cg_descriptor_write("FamVC_UserName", assembly->name().c_str()));
+
+    const auto &members = assembly->get_members();
+    // Now, iterate the members of the assembly and add the reference to the structured block
+    if (assembly->get_member_type() == Ioss::STRUCTUREDBLOCK) {
+      for (const auto &mem : members) {
+        int         base = mem->get_property("base").get_int();
+        const auto *sb   = dynamic_cast<const Ioss::StructuredBlock *>(mem);
+        Ioss::Utils::check_dynamic_cast(sb);
+        if (is_parallel_io || sb->is_active()) {
+          int db_zone = get_db_zone(sb);
+          if (cg_goto(file_ptr, base, "Zone_t", db_zone, "end") == CG_OK) {
+            CGERR(cg_famname_write(assembly->name().c_str()));
+          }
+        }
+      }
+    }
+    else if (assembly->get_member_type() == Ioss::ELEMENTBLOCK) {
+      for (const auto &mem : members) {
+	if (appending) {
+	  // Modifying an existing database so the element blocks
+	  // should exist on the output database...
+          int db_zone = get_db_zone(mem);
+          if (cg_goto(file_ptr, base, "Zone_t", db_zone, "end") == CG_OK) {
+            CGERR(cg_famname_write(assembly->name().c_str()));
+          }
+	}
+	else {
+	  // The element blocks have not yet been output.  To make
+	  // it easier when they are written, add a property that
+	  // specifies what assembly they are in.  Currently, the way
+	  // CGNS represents assemblies limits membership to at most one
+	  // assembly.
+	  Ioss::GroupingEntity *new_mem = const_cast<Ioss::GroupingEntity *>(mem);
+	  new_mem->property_add(Ioss::Property("assembly", assembly->name()));
+	}
+      }
+    }
+}
+
+void Iocgns::Utils::output_assemblies(int file_ptr, const Ioss::Region &region, bool is_parallel_io)
+{
+  region.get_database()->progress("\tOutput Assemblies");
+  const auto &assemblies = region.get_assemblies();
+  for (const auto &assem : assemblies) {
+    output_assembly(file_ptr, assem, is_parallel_io);
+  }
+}
 size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
                                              std::vector<size_t> &zone_offset, bool is_parallel_io)
 {
@@ -1016,50 +1079,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   // Output the assembly data.
   // The assembly itself is Family data at top level.
   // For each assembly, iterate members and add the 'FamilyName' node linking it to the Assembly
-  region.get_database()->progress("\tOutput Assemblies");
-  const auto &assemblies = region.get_assemblies();
-  for (const auto &assem : assemblies) {
-    int fam = 0;
-    CGERR(cg_family_write(file_ptr, base, assem->name().c_str(), &fam));
-
-    int64_t id = 0;
-    if (assem->property_exists("id")) {
-      id = assem->get_property("id").get_int();
-    }
-
-    CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
-    CGERR(cg_descriptor_write("FamVC_TypeId", "0"));
-    CGERR(cg_descriptor_write("FamVC_TypeName", "Unspecified"));
-    CGERR(cg_descriptor_write("FamVC_UserId", std::to_string(id).c_str()));
-    CGERR(cg_descriptor_write("FamVC_UserName", assem->name().c_str()));
-
-    const auto &members = assem->get_members();
-    // Now, iterate the members of the assembly and add the reference to the structured block
-    if (assem->get_member_type() == Ioss::STRUCTUREDBLOCK) {
-      for (const auto &mem : members) {
-        int         base = mem->get_property("base").get_int();
-        const auto *sb   = dynamic_cast<const Ioss::StructuredBlock *>(mem);
-        Ioss::Utils::check_dynamic_cast(sb);
-        if (is_parallel_io || sb->is_active()) {
-          int db_zone = get_db_zone(sb);
-          if (cg_goto(file_ptr, base, "Zone_t", db_zone, "end") == CG_OK) {
-            CGERR(cg_famname_write(assem->name().c_str()));
-          }
-        }
-      }
-    }
-    else if (assem->get_member_type() == Ioss::ELEMENTBLOCK) {
-      for (const auto &mem : members) {
-        // The element blocks have not yet been output.  To make it
-        // easier when they are written, add a property that specifies
-        // what assembly they are in.  Currently, the way CGNS
-        // represents assemblies limits membership to at most one
-        // assembly.
-        Ioss::GroupingEntity *new_mem = const_cast<Ioss::GroupingEntity *>(mem);
-        new_mem->property_add(Ioss::Property("assembly", assem->name()));
-      }
-    }
-  }
+  output_assemblies(file_ptr, region, is_parallel_io);
 
   region.get_database()->progress("\tMapping sb_name to zone");
   if (is_parallel_io || !is_parallel) { // Only for single file output or serial...
