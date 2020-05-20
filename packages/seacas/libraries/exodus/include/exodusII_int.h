@@ -138,7 +138,7 @@ typedef struct EX_mutex_struct
 
 extern EX_mutex_t   EX_g;
 extern int          ex__mutex_lock(EX_mutex_t *mutex);
-extern int          ex__mutex_unlock(EX_mutex_t *mutex);
+extern int          ex__mutex_unlock(EX_mutex_t *mutex, const char *func, int line);
 extern void         ex__pthread_first_thread_init(void);
 extern EX_errval_t *exerrval_get();
 
@@ -166,19 +166,19 @@ extern EX_errval_t *exerrval_get();
 
 #define EX_FUNC_LEAVE(error)                                                                       \
   do {                                                                                             \
-    ex__mutex_unlock(&EX_g);                                                                       \
+    ex__mutex_unlock(&EX_g, __func__, __LINE__);                                                   \
     return error;                                                                                  \
   } while (0)
 
 #define EX_FUNC_VOID()                                                                             \
   do {                                                                                             \
-    ex__mutex_unlock(&EX_g);                                                                       \
+    ex__mutex_unlock(&EX_g, __func__, __LINE__);                                                   \
     return;                                                                                        \
   } while (0)
 
 #define EX_FUNC_UNLOCK()                                                                           \
   do {                                                                                             \
-    ex__mutex_unlock(&EX_g);                                                                       \
+    ex__mutex_unlock(&EX_g, __func__, __LINE__);                                                   \
   } while (0)
 
 #else
