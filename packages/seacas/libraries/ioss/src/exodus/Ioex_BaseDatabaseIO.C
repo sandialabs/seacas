@@ -743,7 +743,8 @@ namespace Ioex {
     }
 
     add_attribute_fields(EX_NODE_BLOCK, block, num_attr, "");
-    add_reduction_results_fields(EX_NODE_BLOCK, block);
+    // Not supported on nodeblocks at this time
+    // add_reduction_results_fields(EX_NODE_BLOCK, block);
     add_results_fields(EX_NODE_BLOCK, block);
 
     // If there are any reduction results fields ("REDUCTION"), then need to
@@ -1701,14 +1702,18 @@ namespace Ioex {
       }
 
       // Blob and Assembly not supported in ex_put_all_var_param_ext...
-      ierr = ex_put_variable_param(get_file_pointer(), EX_BLOB, m_variables[EX_BLOB].size());
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+      if (!m_variables[EX_BLOB].empty()) {
+	ierr = ex_put_variable_param(get_file_pointer(), EX_BLOB, m_variables[EX_BLOB].size());
+	if (ierr < 0) {
+	  Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+	}
       }
-      ierr =
+      if (!m_variables[EX_ASSEMBLY].empty()) {
+	ierr =
           ex_put_variable_param(get_file_pointer(), EX_ASSEMBLY, m_variables[EX_ASSEMBLY].size());
-      if (ierr < 0) {
-        Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+	if (ierr < 0) {
+	  Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
+	}
       }
 
       for (const auto &type : exodus_types) {
