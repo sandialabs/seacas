@@ -123,9 +123,9 @@ namespace Iofaodel {
     const std::string get_format() const override;
 
   private:
-    bool put_properties();
+    bool put_properties() const;
 
-    void finalize_database() override;
+    void finalize_database() const override;
 
     void read_meta_data__() override;
 

@@ -194,7 +194,7 @@ dirman.root_node_mpi 0
   }
 
 
-  bool DatabaseIO::put_properties() {
+  bool DatabaseIO::put_properties() const {
     // TODO add check to see what's been published before publishing again
     map_properties(*(get_region()),
         [this](const Ioss::Region & r,
@@ -209,7 +209,7 @@ dirman.root_node_mpi 0
   }
 
 
-  void DatabaseIO::finalize_database()
+  void DatabaseIO::finalize_database() const
   {
     if(this->usage() == Ioss::DatabaseUsage::WRITE_RESTART ||
         this->usage() == Ioss::DatabaseUsage::WRITE_RESULTS ||
