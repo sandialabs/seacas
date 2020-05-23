@@ -241,7 +241,7 @@ bool Ioss::Field::transform(void *data)
 
 bool Ioss::Field::operator==(Ioss::Field rhs)
 {
-  if( Ioss::Utils::case_strcmp(this->name_, rhs.name_) != 0 ) {
+  if( Ioss::Utils::str_equal(this->name_, rhs.name_) == false ) {
     printf("FIELD name mismatch (%s v. %s)\n", this->name_.c_str(), rhs.name_.c_str());
     return false;
   }

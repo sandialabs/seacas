@@ -62,8 +62,8 @@ namespace Ioss {
 
     bool operator==(const Ioss::BoundaryCondition &rhs) const;
 
-    std::string m_bcName;
-    std::string m_famName;
+    std::string m_bcName{};
+    std::string m_famName{};
 
     // These are potentially subsetted due to parallel decompositions...
     Ioss::IJK_t m_rangeBeg{};
