@@ -178,7 +178,7 @@ IF (SEACASIoss_ENABLE_THREADSAFE)
     FINAL_PASS_REGULAR_EXPRESSION
   )
 ENDIF()
-ENDIF(${CMAKE_PROJECT_NAME}_ENABLE_SEACASExodiff)
+ENDIF(SEACAS_EXODIFF_BINARY)
 
 IF (TPL_ENABLE_Pamgen OR Trilinos_ENABLE_Pamgen)
 # This test makes sure that the adjacency information (what element blocks are adjacent to what other
