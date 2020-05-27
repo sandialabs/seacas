@@ -23,7 +23,7 @@ matrix:
     - os: osx
   include:
     - compiler: clang
-      env: SANITIZER="undefined" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
+      env: SANITIZER="undefined" BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
     - compiler: gcc
       arch: amd64
       env: MPI=ON H5VERSION=V18 USE_64BIT_INT=OFF
