@@ -33,6 +33,7 @@
 #ifndef Iofaodel_Serialize_h
 #define Iofaodel_Serialize_h
 
+#include <Ioss_CommSet.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_DatabaseIO.h> // for DatabaseIO
 #include <Ioss_EdgeBlock.h>

@@ -160,6 +160,7 @@ namespace Iofaodel {
     void get_facesets();
     void get_nodesets();
     void get_sidesets();
+    void get_commsets();
 
     int get_side_connectivity(const Ioss::SideBlock *fb, int id, int side_count, int *fconnect,
                               size_t data_size) const;

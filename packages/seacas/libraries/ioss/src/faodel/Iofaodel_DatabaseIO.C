@@ -43,6 +43,7 @@
 #include <Ioss_NodeSet.h>
 #include <Ioss_SideSet.h>
 #include <Ioss_SideBlock.h>
+#include <Ioss_CommSet.h>
 
 #include <algorithm>
 #include <cctype>
@@ -281,6 +282,7 @@ dirman.root_node_mpi 0
     this->get_facesets();
     this->get_nodesets();
     this->get_sidesets();
+    this->get_commsets();
   }
 
   void DatabaseIO::get_step_times__()
@@ -1019,6 +1021,83 @@ dirman.root_node_mpi 0
     }
   }
 
+  void DatabaseIO::get_commsets()
+  {
+    std::string type_string("CommSet");
+    kelpie::ObjectCapacities oc;
+    auto search_key = entity_search_key(parallel_rank(), *(get_region()), type_string);
+    pool.List(search_key, &oc);
+
+    auto entity_names = get_entity_names(oc.keys, type_string);
+    for(auto entity_name : entity_names)
+    {
+      bool have_entity_count(false);
+      int64_t entity_count(0);
+      bool have_entity_type(false);
+      std::string entity_type("");
+
+      for(size_t i = 0; i < oc.keys.size(); i++)
+      {
+        if(oc.keys[i].K2().find(entity_name) != std::string::npos) 
+        {
+          /* Check if we have all of the necessary attributes */
+          if( have_entity_type && have_entity_count ) break;
+
+          if( !have_entity_count ) {
+            size_t position = oc.keys[i].K2().rfind("entity_count");
+            if( position != std::string::npos ) {
+              lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+              pool.Need(oc.keys[i], &ldo);
+              entity_count = property_get_int(ldo);
+              have_entity_count = true;
+            }
+          } 
+
+          if( !have_entity_type ) {
+            size_t position = oc.keys[i].K2().rfind("entity_type");
+            if( position != std::string::npos ) {
+              lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+              pool.Need(oc.keys[i], &ldo);
+              entity_type = property_get_string(ldo);
+              have_entity_type = true;
+            }
+          }
+        }
+      }
+
+      if( !have_entity_type ) {
+        printf("[ERROR] Unable to reconstruct CommSet (entity_type NOT found)\n");
+        return;
+      }
+
+      if( !have_entity_count ) {
+        printf("[ERROR] Unable to reconstruct CommSet (entity_count NOT found)\n");
+        return;
+      }
+
+      auto commset = new Ioss::CommSet(this, entity_name, entity_type, entity_count);
+      
+      // Add Properties that aren't created in the CTor
+      auto property_search = property_search_key(parallel_rank(), *(get_region()), *commset);
+      kelpie::ObjectCapacities property_oc;
+      pool.List(property_search, &property_oc);
+      this->read_entity_properties(property_oc, *commset);
+
+      // Add fields that aren't created in the CTor
+      auto field_search = field_search_key(parallel_rank(), *(get_region()), *commset);
+      kelpie::ObjectCapacities field_oc;
+      pool.List(field_search, &field_oc);
+      this->read_entity_fields(field_oc, *commset);
+
+      // Add TRANSIENT fields that aren't created in the CTor
+      auto field_search_transient = field_search_key(parallel_rank(), 1, *(get_region()), *commset);
+      kelpie::ObjectCapacities field_oc_transient;
+      pool.List(field_search_transient, &field_oc_transient);
+      this->read_entity_fields(field_oc_transient, *commset);
+
+      this->get_region()->add(commset);
+    }
+  }
 
   void DatabaseIO::read_communication_metadata() {}
 

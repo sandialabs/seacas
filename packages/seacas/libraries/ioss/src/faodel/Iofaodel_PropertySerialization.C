@@ -63,6 +63,9 @@ namespace Iofaodel {
     for(auto entity : region.get_nodesets())
       map_properties(region, *entity, op);
 
+    for(auto entity : region.get_commsets())
+      map_properties(region, *entity, op);
+
     for(auto sideset : region.get_sidesets()) {
       map_properties(region, *sideset, op);
       for(auto sideblock : sideset->get_side_blocks()) {
