@@ -58,6 +58,8 @@ DEBUG="${DEBUG:-NO}"
 if [ "$DEBUG" == "YES" ]
 then
 BUILD_MODE="--enable-build-mode=debug"
+CPPFLAGS='-g'; export CPPFLAGS
+CFLAGS='-g'; export CFLAGS
 else
 BUILD_MODE="--enable-build-mode=production"
 CPPFLAGS='-DNDEBUG'; export CPPFLAGS
