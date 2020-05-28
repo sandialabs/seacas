@@ -186,6 +186,8 @@ C     an offset to the users base vector is maintained to give the
 C     user the correct pointer to the users base vector.  They are
 C     equivalenced to allow printing as real or integer (see mdprnt).
 C
+      save myv
+
       double precision dmyv(1)
       REAL RMYV(1)
       equivalence (dmyv,rmyv)
