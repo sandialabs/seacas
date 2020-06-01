@@ -14,6 +14,7 @@ var classIoss_1_1Assembly =
     [ "internal_put_field_data", "classIoss_1_1Assembly.html#a34d3280eae7ddabc4472cb9f52470340", null ],
     [ "member_count", "classIoss_1_1Assembly.html#a5c88a89b16b0dbc4bf96c265249d1251", null ],
     [ "remove", "classIoss_1_1Assembly.html#afc16ca72df6fe70af3eff609c2be02ef", null ],
+    [ "remove_members", "classIoss_1_1Assembly.html#ab8888fe8b2ebad3156ca8d3a6e8a800d", null ],
     [ "short_type_string", "classIoss_1_1Assembly.html#aad322a7e398596ac5b4b0456f4b4ce66", null ],
     [ "type", "classIoss_1_1Assembly.html#a94daeed1bcd6dbb79bcd39f46726e3c4", null ],
     [ "type_string", "classIoss_1_1Assembly.html#aea52e95fa37102cf1859fc1cda826389", null ],

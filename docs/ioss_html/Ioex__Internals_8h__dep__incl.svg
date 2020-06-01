@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 643;
+var viewWidth = 517;
 var viewHeight = 84;
 var sectionId = 'dynsection-1';
 </script>
@@ -54,13 +54,13 @@ var sectionId = 'dynsection-1';
 <svg id="graph" class="graph">
 <g id="viewport">
 <title>src/exodus/Ioex_Internals.h</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-80 638.5,-80 638.5,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-80 512.5,-80 512.5,4 -4,4"/>
 <!-- Node1 -->
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title=" ">
-<polygon fill="#bfbfbf" stroke="black" points="287,-56.5 287,-75.5 424,-75.5 424,-56.5 287,-56.5"/>
-<text text-anchor="middle" x="355.5" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/exodus/Ioex_Internals.h</text>
+<polygon fill="#bfbfbf" stroke="black" points="204,-56.5 204,-75.5 341,-75.5 341,-56.5 204,-56.5"/>
+<text text-anchor="middle" x="272.5" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/exodus/Ioex_Internals.h</text>
 </a>
 </g>
 </g>
@@ -76,8 +76,8 @@ var sectionId = 'dynsection-1';
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="midnightblue" d="M303.14,-54.41C252.68,-44.2 177.3,-28.96 130.61,-19.52"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="302.7,-57.89 313.19,-56.44 304.09,-51.03 302.7,-57.89"/>
+<path fill="none" stroke="midnightblue" d="M233.55,-53.57C198.84,-43.38 148.82,-28.7 117.52,-19.52"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="232.76,-56.99 243.34,-56.44 234.73,-50.27 232.76,-56.99"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
@@ -91,8 +91,8 @@ var sectionId = 'dynsection-1';
 <!-- Node1&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node1&#45;&gt;Node3</title>
-<path fill="none" stroke="midnightblue" d="M333.4,-50.62C318.24,-40.76 298.62,-27.99 285.8,-19.65"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="331.87,-53.8 342.16,-56.32 335.69,-47.94 331.87,-53.8"/>
+<path fill="none" stroke="midnightblue" d="M272.5,-45.8C272.5,-36.91 272.5,-26.78 272.5,-19.75"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="269,-46.08 272.5,-56.08 276,-46.08 269,-46.08"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
@@ -106,23 +106,8 @@ var sectionId = 'dynsection-1';
 <!-- Node1&#45;&gt;Node4 -->
 <g id="edge3" class="edge">
 <title>Node1&#45;&gt;Node4</title>
-<path fill="none" stroke="midnightblue" d="M377.6,-50.62C392.76,-40.76 412.38,-27.99 425.2,-19.65"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="375.31,-47.94 368.84,-56.32 379.13,-53.8 375.31,-47.94"/>
-</g>
-<!-- Node5 -->
-<g id="node5" class="node">
-<title>Node5</title>
-<g id="a_node5"><a xlink:href="io__modify_8C.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="526.5,-0.5 526.5,-19.5 634.5,-19.5 634.5,-0.5 526.5,-0.5"/>
-<text text-anchor="middle" x="580.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/main/io_modify.C</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
-<title>Node1&#45;&gt;Node5</title>
-<path fill="none" stroke="midnightblue" d="M400.97,-54.09C443.47,-43.89 506.08,-28.86 545.01,-19.52"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="400.06,-50.71 391.15,-56.44 401.69,-57.51 400.06,-50.71"/>
+<path fill="none" stroke="midnightblue" d="M308.45,-53.3C339.73,-43.13 384.32,-28.62 412.32,-19.52"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="307.23,-50.02 298.8,-56.44 309.4,-56.68 307.23,-50.02"/>
 </g>
 </g>
 </svg>
