@@ -1633,7 +1633,6 @@ namespace Iocgns {
     }
 
     new_filename += fmt::format("{}-SolutionAtStep{:05}.{}", db.basename(), state, db.extension());
-    fmt::print(stderr, "STATE FILE: {}\n", new_filename);
 
     DBFilename = new_filename;
 
@@ -2631,6 +2630,7 @@ namespace Iocgns {
           eb->property_update("section", 1);
           eb->property_update("base", base);
           eb->property_update("zone_node_count", size[0]);
+          eb->property_update("zone_element_count", size[1]);
 
           if (eb->property_exists("assembly")) {
             std::string assembly = eb->get_property("assembly").get_string();

@@ -951,16 +951,20 @@ void Iocgns::Utils::write_state_meta_data(int file_ptr, const Ioss::Region &regi
     const std::string &name    = eb->name();
     int                db_zone = 0;
     cgsize_t           size[3] = {0, 0, 0};
-    size[1]                    = eb->entity_count();
+    size[1]                    = eb->get_property("zone_element_count").get_int();
     size[0]                    = eb->get_property("zone_node_count").get_int();
 
+    if (is_parallel_io) {
+    }
+
     CGERR(cg_zone_write(file_ptr, base, name.c_str(), size, CG_Unstructured, &db_zone));
-    if (db_zone != eb->get_property("db_zone").get_int()) {
+    int prev_db_zone = get_db_zone(eb);
+    if (db_zone != prev_db_zone) {
       std::ostringstream errmsg;
       fmt::print(
           errmsg,
           "ERROR: CGNS: The 'db_zone' does not match in the state file {} and the base file {}.",
-          db_zone, eb->get_property("db_zone").get_int());
+          db_zone, prev_db_zone);
       IOSS_ERROR(errmsg);
     }
   }
