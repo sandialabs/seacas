@@ -119,9 +119,12 @@ TPL/hdf5/hdf5-*/
 TPL/kokkos/kokkos
 TPL/kokkos/kokkos-*
 TPL/matio/matio/
+TPL/metis/metis-5.1.0/
+TPL/metis/metis-5.1.0.tar.gz
 TPL/netcdf/netcdf-c/
 TPL/parallel/parallel-*/
 TPL/parallel/parallel-*.tar.bz2
+TPL/parmetis/parmetis/
 TPL/hdf5/hdf5-*.tar.bz2
 TPL/pnetcdf/parallel-netcdf-*.tar.gz
 TPL/pnetcdf/parallel-netcdf-*/
