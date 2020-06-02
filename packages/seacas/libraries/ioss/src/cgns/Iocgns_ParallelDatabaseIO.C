@@ -2057,7 +2057,7 @@ namespace Iocgns {
         eb->property_update("guid", util().generate_guid(zone));
         eb->property_update("section", 1);
         eb->property_update("base", base);
-        eb->property_update("zone_node_count", size[0]); 
+        eb->property_update("zone_node_count", size[0]);
         eb->property_update("zone_element_count", size[1]);
 
         if (eb->property_exists("assembly")) {
