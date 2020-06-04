@@ -4,9 +4,6 @@
 #
 # See packages/seacas/LICENSE for details
 
-PROJECT(catalyst_parser)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-
 FIND_PACKAGE(BISON REQUIRED)
 SET(BisonOutput ${CMAKE_CURRENT_BINARY_DIR}/catalystParser.tab.cpp
                 ${CMAKE_CURRENT_BINARY_DIR}/catalystParser.tab.hpp)
@@ -43,28 +40,29 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 FIND_PACKAGE(ParaView QUIET)
 
 ADD_LIBRARY(lexer SHARED ${FlexOutput} ${BisonOutput})
+TARGET_LINK_LIBRARIES(lexer
+    PRIVATE
+      VTK::jsoncpp)
 
-IF(ParaView_FOUND)
-  INCLUDE(${PARAVIEW_USE_FILE})
-  ADD_DEFINITIONS("-DUSE_VTK_JSON")
-  ADD_LIBRARY(catalystparser SHARED ${BisonOutput}
+ADD_LIBRARY(catalystparser SHARED ${BisonOutput}
               ${CMAKE_CURRENT_SOURCE_DIR}/CatalystParserInterface.cpp)
-  TARGET_LINK_LIBRARIES(lexer vtkjsoncpp)
-  TARGET_LINK_LIBRARIES(catalystparser vtkjsoncpp)
-ELSE()
-  INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp-master/dist/)
-  ADD_LIBRARY(catalystparser SHARED ${BisonOutput}
-              ${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp-master/dist/jsoncpp.cpp
-              ${CMAKE_CURRENT_SOURCE_DIR}/CatalystParserInterface.cpp)
-ENDIF()
 
-TARGET_LINK_LIBRARIES(catalystparser lexer)
+TARGET_LINK_LIBRARIES(catalystparser
+    PRIVATE
+      lexer
+      VTK::jsoncpp)
 
 ADD_EXECUTABLE(catalyst_parser_driver ${CMAKE_CURRENT_SOURCE_DIR}/driver.cpp)
-TARGET_LINK_LIBRARIES(catalyst_parser_driver catalystparser)
+TARGET_LINK_LIBRARIES(catalyst_parser_driver 
+    PRIVATE
+      catalystparser
+      VTK::jsoncpp)
 
 ADD_EXECUTABLE(catalyst_parser_tester ${CMAKE_CURRENT_SOURCE_DIR}/driver_test.cpp)
-TARGET_LINK_LIBRARIES(catalyst_parser_tester catalystparser)
+TARGET_LINK_LIBRARIES(catalyst_parser_tester
+    PRIVATE
+      catalystparser
+      VTK::jsoncpp)
 
 INSTALL(TARGETS lexer LIBRARY DESTINATION lib)
 INSTALL(TARGETS catalystparser LIBRARY DESTINATION lib)

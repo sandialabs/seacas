@@ -9,7 +9,7 @@
 #include "vtkCPInputDataDescription.h"
 #include "vtkCPProcessor.h"
 #include "vtkCPPythonScriptPipeline.h"
-#include "vtkExodusIIMultiBlockDataSet.h"
+#include "include/vtkExodusIIMultiBlockDataSet.h"
 
 #include "vtkDoubleArray.h"
 #include "vtkFieldData.h"

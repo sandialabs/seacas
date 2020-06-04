@@ -12,16 +12,11 @@
 #include <iostream>
 #include <algorithm>
 
-#ifdef USE_VTK_JSON
-#include "vtk_jsoncpp.h"
-#else
-#include <json/json.h>
-#endif
-
 #include <sstream>
 #include <vector>
 #include <cmath>
 #include "CatalystParserInterface.h"
+#include "vtk_jsoncpp.h"
 
 namespace
 {
@@ -134,7 +129,7 @@ bool follow_chain(parse_data& pd,
 }
 
 bool has_cycle(parse_data& pd,
-               const Json::ValueIterator& itr,
+               Json::ValueIterator itr,
                const std::string& key)
 {
   if((*itr).isMember(key))
@@ -1635,9 +1630,9 @@ int parseFile(parse_data& pd,
   catalystset_in(fh, myscanner);
   int ret = yyparse(myscanner, &pd);
   catalystlex_destroy(myscanner);
-
-  Json::FastWriter fastWriter;
-  json_result = fastWriter.write(pd.root);
+  Json::StreamWriterBuilder builder;
+  builder["indentation"] = "";
+  json_result = Json::writeString(builder, pd.root);
   return ret;
 }
 
@@ -1664,8 +1659,9 @@ int parseString(parse_data& pd,
   int ret = yyparse(myscanner, &pd);
   catalyst_delete_buffer(buffer, myscanner);
   catalystlex_destroy(myscanner);
-  Json::FastWriter fastWriter;
-  json_result = fastWriter.write(pd.root);
+  Json::StreamWriterBuilder builder;
+  builder["indentation"] = "";
+  json_result = Json::writeString(builder, pd.root);
   return ret;
 }
 
