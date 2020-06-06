@@ -8,3 +8,5 @@ TARGET_LINK_LIBRARIES(ioss2catalyst
         Ionit
         Ioss
         VTK::mpi)
+
+INSTALL(TARGETS ioss2catalyst LIBRARY DESTINATION lib)

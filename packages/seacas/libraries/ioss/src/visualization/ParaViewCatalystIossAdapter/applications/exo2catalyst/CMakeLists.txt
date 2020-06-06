@@ -7,3 +7,4 @@ TARGET_LINK_LIBRARIES(exo2catalyst
     PRIVATE
         ioss2catalyst
         VTK::mpi)
+INSTALL(TARGETS exo2catalyst RUNTIME DESTINATION bin)

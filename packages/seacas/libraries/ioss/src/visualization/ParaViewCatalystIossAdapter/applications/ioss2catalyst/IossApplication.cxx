@@ -12,7 +12,8 @@
 
 IossApplication::IossApplication(int argc, char **argv,
     const std::string& appName, const std::string& fileTypeName,
-        const std::string& iossDatabaseType) {
+        const std::string& iossDatabaseType,
+            const std::string& fileTypeSuffix) {
     this->myRank = 0;
     this->numRanks = 1;
     this->printIOSSReport = false;
@@ -20,6 +21,7 @@ IossApplication::IossApplication(int argc, char **argv,
     this->fileName = "";
     this->applicationName = appName;
     this->fileTypeName = fileTypeName;
+    this->fileTypeSuffix = fileTypeSuffix;
     this->iossDatabaseType = iossDatabaseType;
     this->inputIOSSRegion = nullptr;
     this->initializeMPI(argc, argv);
@@ -117,6 +119,7 @@ bool IossApplication::outputCopyOfInputDatabase() {
 }
 
 void IossApplication::printUsageMessage() {
+    std::string fn = this->copyOutputDatabaseName + "." + this->fileTypeSuffix;
     std::string um = "\nUsage:  " + this->applicationName +\
         " [OPTIONS] [FILE]\n\n";
     um += "DESCRIPTION\n\n";
@@ -124,7 +127,7 @@ void IossApplication::printUsageMessage() {
         " file(s) and send to ParaView Catalyst";
     um += "\n\nOPTIONS\n\n";
     um += "-c copy input file(s) to one file per processor ";
-    um += "with output filename(s) copyIOSSDatabase\n";
+    um += "with output filename(s) " + fn + "\n";
     um += "-r print IOSS region report for input file(s) to one ";
     um += "file per processor\n"; 
     um += "-h print this usage message and exit program";
@@ -231,7 +234,7 @@ void IossApplication::openInputIOSSDatabase() {
 }
 
 void IossApplication::copyInputIOSSDatabaseOnRank() {
-    std::string fn = "copyIOSSDatabase";
+    std::string fn = this->copyOutputDatabaseName + "." + this->fileTypeSuffix;
     Ioss::PropertyManager outputProperties;
     outputProperties.add(Ioss::Property("COMPOSE_RESULTS", "NO"));
     Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(this->iossDatabaseType,

@@ -7,3 +7,4 @@ TARGET_LINK_LIBRARIES(cgns2catalyst
     PRIVATE
         ioss2catalyst
         VTK::mpi)
+INSTALL(TARGETS cgns2catalyst RUNTIME DESTINATION bin)

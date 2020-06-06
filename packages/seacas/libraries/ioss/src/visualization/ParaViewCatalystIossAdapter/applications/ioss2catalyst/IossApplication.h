@@ -10,7 +10,8 @@ public:
     IossApplication(int argc, char **argv,
         const std::string& appName,
             const std::string& fileTypeName,
-                const std::string& iossDatabaseType);
+                const std::string& iossDatabaseType,
+                    const std::string& fileTypeSuffix);
     ~IossApplication();
     int getMyRank();
     int getNumRanks();
@@ -44,7 +45,9 @@ private:
     std::string fileName;
     std::string applicationName;
     std::string fileTypeName;
+    std::string fileTypeSuffix;
     std::string iossDatabaseType;
+    std::string copyOutputDatabaseName = "iossDatabaseCopy";
     Ioss::Region * inputIOSSRegion;
 };
 
