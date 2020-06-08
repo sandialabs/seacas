@@ -1474,9 +1474,14 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, int base_ptr, Ios
   const auto &nblocks                 = region->get_node_blocks();
   const auto &nblock                  = nblocks[0];
   bool        global_has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
+  bool        is_file_per_state = (base_ptr >= 0);
 
+  // IF the `base_ptr` is positive, then we are in file-per-state option.
+  // `file_ptr` points to the linked-to file where the state data is being
+  // written and `base_ptr` points to the "base" file which has the mesh
+  // metadata and links to the solution data "state" files.
   std::string linked_file_name;
-  if (base_ptr >= 0) {
+  if (is_file_per_state) {
     linked_file_name = region->get_database()->get_filename();
   }
 
@@ -1486,7 +1491,7 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, int base_ptr, Ios
     int base = block->get_property("base").get_int();
     int zone = get_db_zone(block);
     if (has_nodal_fields) {
-      if (base_ptr >= 0) {
+      if (is_file_per_state) {
         // We are using file-per-state and we need to add a link from the base file (base_ptr)
         // to the state file (file_ptr).
         CGERR(cg_goto(base_ptr, base, "Zone_t", zone, "end"));
@@ -1501,7 +1506,7 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, int base_ptr, Ios
       CGERR(cg_descriptor_write("Step", step.c_str()));
     }
     if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
-      if (base_ptr >= 0) {
+      if (is_file_per_state) {
         // We are using file-per-state and we need to add a link from the base file (base_ptr)
         // to the state file (file_ptr).
         CGERR(cg_goto(base_ptr, base, "Zone_t", zone, "end"));
