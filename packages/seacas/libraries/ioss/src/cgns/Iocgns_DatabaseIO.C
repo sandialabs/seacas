@@ -527,6 +527,10 @@ namespace Iocgns {
       delete gtb.second;
     }
     try {
+      if (m_cgnsBasePtr > 0) {
+	CGCHECKM(cg_close(m_cgnsBasePtr));
+	m_cgnsBasePtr = -1;
+      }
       closeDatabase__();
     }
     catch (...) {

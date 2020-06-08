@@ -119,6 +119,7 @@ namespace Iocgns {
 
     void openDatabase__() const override;
     void closeDatabase__() const override;
+    void closeBaseDatabase__() const;
 
     bool begin__(Ioss::State state) override;
     bool end__(Ioss::State state) override;
