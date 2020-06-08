@@ -90,24 +90,24 @@ namespace {
     return nullptr;
   }
 
-  template <typename T> size_t get_variable_count(const std::vector<T> &entities)
+  template <typename T> size_t internal_get_variable_count(const std::vector<T> &entities, Ioss::Field::RoleType role)
   {
     Ioss::NameList names;
     for (auto ent : entities) {
-      ent->field_describe(Ioss::Field::TRANSIENT, &names);
+      ent->field_describe(role, &names);
     }
     Ioss::Utils::uniquify(names);
     return names.size();
   }
 
+  template <typename T> size_t get_variable_count(const std::vector<T> &entities)
+  {
+    return internal_get_variable_count(entities, Ioss::Field::TRANSIENT);
+  }
+
   template <typename T> size_t get_reduction_variable_count(const std::vector<T> &entities)
   {
-    Ioss::NameList names;
-    for (auto ent : entities) {
-      ent->field_describe(Ioss::Field::REDUCTION, &names);
-    }
-    Ioss::Utils::uniquify(names);
-    return names.size();
+    return internal_get_variable_count(entities, Ioss::Field::REDUCTION);
   }
 
   template <typename T> int64_t get_entity_count(const std::vector<T> &entities)
