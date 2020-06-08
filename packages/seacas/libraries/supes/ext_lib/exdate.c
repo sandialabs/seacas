@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2008-2017 National Technology & Engineering Solutions
+ * Copyright(C) 2008-2017, 2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -86,5 +86,5 @@ void exdate(char *string, long int len)
   t->tm_year += 1900;
 
   sprintf(Temp, "%04d%02d%02d", t->tm_year, t->tm_mon + 1, t->tm_mday);
-  copy_string(string, Temp, STRLEN);
+  copy_string(string, Temp, STRLEN + 1);
 }
