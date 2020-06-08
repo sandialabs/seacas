@@ -202,10 +202,7 @@ namespace Iocgns {
       delete gtb.second;
     }
     try {
-      if (m_cgnsBasePtr > 0) {
-	CGCHECKM(cg_close(m_cgnsBasePtr));
-	m_cgnsBasePtr = -1;
-      }
+      closeBaseDatabase__();
       closeDatabase__();
     }
     catch (...) {
@@ -303,6 +300,27 @@ namespace Iocgns {
 #endif
     }
     assert(m_cgnsFilePtr >= 0);
+  }
+
+  void ParallelDatabaseIO::closeBaseDatabase__() const
+  {
+    if (m_cgnsBasePtr > 0) {
+      bool do_timer = false;
+      Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+      double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+
+      CGCHECKM(cg_close(m_cgnsBasePtr));
+      m_cgnsBasePtr = -1;
+
+      if (do_timer) {
+        double t_end    = Ioss::Utils::timer();
+        double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
+        if (myProcessor == 0) {
+          fmt::print(Ioss::DEBUG(), "{} Base File Close Time = {}\n", is_input() ? "Input" : "Output",
+                     duration);
+        }
+      }
+    }
   }
 
   void ParallelDatabaseIO::closeDatabase__() const
@@ -950,7 +968,7 @@ namespace Iocgns {
   {
     // If this is the first state file created, then we need to save a reference
     // to the base CGNS file so we can update the metadata and create links to
-    // the state files.
+    // the state files (if we are using the file-per-state option)
     if (m_cgnsBasePtr < 0) {
       m_cgnsBasePtr = m_cgnsFilePtr;
       m_cgnsFilePtr = -1;
