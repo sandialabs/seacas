@@ -40,7 +40,8 @@ var classIocgns_1_1Utils =
     [ "show_config", "classIocgns_1_1Utils.html#a86f09b01938ea51b0685461593b529ba", null ],
     [ "unmap_cgns_connectivity", "classIocgns_1_1Utils.html#a1b9d639bd4b3346f42a9563d98b7ae36", null ],
     [ "update_db_zone_property", "classIocgns_1_1Utils.html#a939c57c37f74ae2290e906a723c4290e", null ],
-    [ "write_flow_solution_metadata", "classIocgns_1_1Utils.html#a88dbbf0ca2139ce9fc69747f61d76d8e", null ],
+    [ "write_flow_solution_metadata", "classIocgns_1_1Utils.html#ab6af3908a6a3311cf5e81424222c2ed7", null ],
+    [ "write_state_meta_data", "classIocgns_1_1Utils.html#a7df4d0ef8d7dba2456405b888ae79a3c", null ],
     [ "CG_CELL_CENTER_FIELD_ID", "classIocgns_1_1Utils.html#a9402e65b938d9acd7db253d843c3cfd4", null ],
     [ "CG_VERTEX_FIELD_ID", "classIocgns_1_1Utils.html#a14f045649fb992aefcd9b5fbfe0988c1", null ]
 ];
