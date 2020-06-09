@@ -32,7 +32,7 @@ PYTHON_VER=${PYTHON_VER:-"3.0"}
 
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-netcdf_parallel=$($TPL_INSTALL/bin/nc-config --has-parallel)
+netcdf_parallel=$($NETCDF_ROOT/bin/nc-config --has-parallel)
 if [ "${netcdf_parallel}" == "yes" ]
 then
     MPI=ON
@@ -201,15 +201,15 @@ fi
 ### Make sure these point to the locations to find the libraries and includes in lib and include
 ### subdirectories of the specified paths.
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
-NETCDF_PATH=${TPL_INSTALL}
-PNETCDF_PATH=${TPL_INSTALL}
-MATIO_PATH=${TPL_INSTALL}
-HDF5_PATH=${TPL_INSTALL}
-CGNS_PATH=${TPL_INSTALL}
-FAODEL_PATH=${FAODEL_INSTALL}
-ADIOS2_PATH=${TPL_INSTALL}
-GTEST_PATH=${TPL_INSTALL}
-KOKKOS_PATH=${TPL_INSTALL}
+NETCDF_PATH=${NETCDF_ROOT:-${TPL_INSTALL}}
+PNETCDF_PATH=${PNETCDF_ROOT:-${TPL_INSTALL}}
+MATIO_PATH=${MATIO_ROOT:-${TPL_INSTALL}}
+HDF5_PATH=${HDF5_ROOT:-${TPL_INSTALL}}
+CGNS_PATH=${CGNS_ROOT:-${TPL_INSTALL}}
+FAODEL_PATH=${FAODEL_ROOT:-${FAODEL_INSTALL}}
+ADIOS2_PATH=${ADIOS2_ROOT:-${TPL_INSTALL}}
+GTEST_PATH=${GTEST_ROOT:-${TPL_INSTALL}}
+KOKKOS_PATH=${KOKKOS_ROOT:-${TPL_INSTALL}}
 
 function check_enable()
 {
