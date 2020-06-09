@@ -116,8 +116,8 @@ int main(int argc, char *argv[])
       if (aprepro.ap_options.errors_fatal && aprepro.get_error_count() > 0) {
         writeResults = false;
       }
-      if ((aprepro.ap_options.errors_and_warnings_fatal)
-    	  && (aprepro.get_error_count() + aprepro.get_warning_count() > 0)) {
+      if ((aprepro.ap_options.errors_and_warnings_fatal) &&
+          (aprepro.get_error_count() + aprepro.get_warning_count() > 0)) {
         writeResults = false;
       }
 
@@ -143,22 +143,23 @@ int main(int argc, char *argv[])
         }
       }
       else {
-         std::cerr << "There were " << aprepro.get_error_count() << " errors and "
-        		   << aprepro.get_warning_count() << " warnings." << "\n";
-         if (aprepro.ap_options.errors_and_warnings_fatal) {
-           std::cerr << "Errors and warnings are fatal. No output has been written"
-        		     << "\n";
-         }
-         else if (aprepro.ap_options.errors_fatal) {
-           std::cerr << "Errors are fatal. No output has been written."
-        		     << "\n";
-         }
-         else {
-           std::cerr << "Neither errors nor warnings are fatal. "
-        		     << "If you see this message, then there is a bug in Aprepro. "
-					 << "No output has been written." << "\n";
-
-         }
+        std::cerr << "There were " << aprepro.get_error_count() << " errors and "
+                  << aprepro.get_warning_count() << " warnings."
+                  << "\n";
+        if (aprepro.ap_options.errors_and_warnings_fatal) {
+          std::cerr << "Errors and warnings are fatal. No output has been written"
+                    << "\n";
+        }
+        else if (aprepro.ap_options.errors_fatal) {
+          std::cerr << "Errors are fatal. No output has been written."
+                    << "\n";
+        }
+        else {
+          std::cerr << "Neither errors nor warnings are fatal. "
+                    << "If you see this message, then there is a bug in Aprepro. "
+                    << "No output has been written."
+                    << "\n";
+        }
       }
     }
     catch (std::exception &e) {
