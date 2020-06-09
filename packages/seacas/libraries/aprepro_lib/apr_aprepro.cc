@@ -51,7 +51,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "5.15 (2020/02/28)";
+  const char *       version_string = "5.16 (2020/06/09)";
 
   void output_copyright();
 
@@ -450,7 +450,7 @@ namespace SEAMS {
     }
     else if (option == "--errors_and_warnings_fatal" || option == "-F") {
       ap_options.errors_and_warnings_fatal = true;
-      ap_options.errors_fatal = true;
+      ap_options.errors_fatal              = true;
     }
     else if (option == "--trace" || option == "-t") {
       ap_options.trace_parsing = true;
@@ -518,10 +518,10 @@ namespace SEAMS {
           << "        --version or -v: Print version number to stderr          \n"
           << "      --immutable or -X: All variables are immutable--cannot be modified\n"
           << "   --errors_fatal or -f: Exit program with nonzero status if errors are "
-		     "encountered\n"
+             "encountered\n"
           << " --errors_and_warnings_fatal or -F: Exit program with nonzero status if "
-		     "warnings are encountered\n"
-		  << "--one_based_index or -1: Array indexing is one-based (default = zero-based)\n"
+             "warnings are encountered\n"
+          << "--one_based_index or -1: Array indexing is one-based (default = zero-based)\n"
           << "    --interactive or -i: Interactive use, no buffering           \n"
           << "    --include=P or -I=P: Include file or include path            \n"
           << "                       : If P is path, then optionally prepended to all include "
