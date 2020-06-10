@@ -8,8 +8,8 @@
 
 static char const *qainfo[] = {
     "slice",
-    "2020/04/21",
-    "0.9.93",
+    "2020/06/10",
+    "0.9.94",
 };
 
 #endif // SEACAS_Version_h
