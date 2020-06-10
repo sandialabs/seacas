@@ -93,8 +93,6 @@ C      --SHOTBL - the special save option table
 
 C   --Determine the show option
 
-      write (*,*) 'intyp', '"',intyp,'"'
-      write (*,*) 'styp', styp
       IF ((INTYP .EQ. ' ') .OR. (STYP .EQ. INTYP)) THEN
          SHOTYP = STYP
       ELSE
