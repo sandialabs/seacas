@@ -1,8 +1,9 @@
 #include "IossApplication.h"
-#include "IossDatabaseCopier.h"
 #include "IossRegionReport.h"
 #include <Ioss_IOFactory.h>
 #include <Ionit_Initializer.h>
+#include <Ioss_Utils.h>
+#include <Ioss_MeshCopyOptions.h>
 #include <mpi.h>
 #include <cstdlib>
 #include <iostream>
@@ -10,30 +11,66 @@
 #include <fstream>
 #include <iomanip>
 
+IossApplication::IossApplication(const std::string& appName,
+    const std::string& fileTypeName, const std::string& iossDatabaseType,
+        const std::string& fileTypeSuffix) {
+    this->initialize(appName, fileTypeName, iossDatabaseType, fileTypeSuffix);
+    this->initializeMPI();
+}
+
 IossApplication::IossApplication(int argc, char **argv,
     const std::string& appName, const std::string& fileTypeName,
         const std::string& iossDatabaseType,
             const std::string& fileTypeSuffix) {
+    this->initialize(appName, fileTypeName, iossDatabaseType, fileTypeSuffix);
+    this->initializeMPI(argc, argv);
+    this->processCommandLine(argc, argv);
+}
+
+void IossApplication::initialize(const std::string& appName,
+        const std::string& fileTypeName,
+            const std::string& iossDatabaseType,
+                const std::string& fileTypeSuffix) {
     this->myRank = 0;
     this->numRanks = 1;
     this->printIOSSReport = false;
     this->copyDatabase = false;
+    this->writeCatalystMesh = false;
+    this->writeParsedPhactoriJSON = false;
     this->fileName = "";
     this->applicationName = appName;
     this->fileTypeName = fileTypeName;
     this->fileTypeSuffix = fileTypeSuffix;
     this->iossDatabaseType = iossDatabaseType;
     this->inputIOSSRegion = nullptr;
-    this->initializeMPI(argc, argv);
-    this->processCommandLine(argc, argv);
-    Ioss::Init::Initializer io;
-    this->openInputIOSSDatabase();
+    this->usePhactoriInputScript = false;
+    this->usePhactoriInputJSON = false;
+    this->useParaViewExportedScript = false;
+    this->phactoriInputScriptFilePath = "";
+    this->phactoriInputJSONFilePath = "";
+    this->paraViewExportedScriptFilePath = "";
 }
 
 IossApplication::~IossApplication() {
     if (this->inputIOSSRegion) {
         delete this->inputIOSSRegion;
     }
+}
+
+void IossApplication::runApplication() {
+    this->checkForOnlyOneCatalystOutputPath();
+    Ioss::Init::Initializer io;
+    this->openInputIOSSDatabase();
+
+    if (this->printIOSSRegionReportON()) {
+        this->printIOSSRegionReportForRank();
+    }
+
+    if (this->outputCopyOfInputDatabaseON()) {
+        this->copyInputIOSSDatabaseOnRank();
+    }
+
+    this->exitApplicationSuccess();
 }
 
 int IossApplication::getMyRank() {
@@ -52,8 +89,17 @@ bool IossApplication::isSerial() {
     return this->numRanks == 1;
 }
 
+void IossApplication::initializeMPI() {
+    MPI_Init(nullptr, nullptr);
+    this->initMPIRankAndSize();
+}
+
 void IossApplication::initializeMPI(int argc, char **argv) {
     MPI_Init(&argc, &argv);
+    this->initMPIRankAndSize();
+}
+
+void IossApplication::initMPIRankAndSize() {
     MPI_Comm_rank(MPI_COMM_WORLD, &this->myRank);
     MPI_Comm_size(MPI_COMM_WORLD, &this->numRanks);
 }
@@ -64,25 +110,48 @@ void IossApplication::finalizeMPI() {
 
 void IossApplication::processCommandLine(int argc, char **argv) {
     int c;
-    while ((c = getopt (argc, argv, "rch")) != -1) {
+    char *cvalue = NULL;
+    while ((c = getopt (argc, argv, "chi:jmp:rs:")) != -1) {
+        char *cvalue = nullptr;
         switch(c) {
-            case 'r':
-                this->printIOSSReport = true;
-                break;
             case 'c':
                 this->copyDatabase = true;
                 break;
             case 'h':
                 this->printUsageMessage();
                 this->exitApplicationSuccess();
+                break;
+            case 'i':
+                this->usePhactoriInputJSON = true;
+                this->phactoriInputJSONFilePath = cvalue;
+                break;
+            case 'j':
+                this->writeParsedPhactoriJSON = true;
+                break;
+            case 'm':
+                this->writeCatalystMesh = true;
+                break;
+            case 'p':
+                this->usePhactoriInputScript = true;
+                this->phactoriInputScriptFilePath = cvalue;
+                break;
+            case 'r':
+                this->printIOSSReport = true;
+                break;
+            case 's':
+                this->useParaViewExportedScript = true;
+                this->paraViewExportedScriptFilePath = cvalue;
+                break;
             case '?':
                 this->printErrorMessage("Unknown command line option -"\
                     + std::string(1, c) + "\n");
                 this->printUsageMessage();
                 this->exitApplicationFailure();
+                break;
             default:
                 this->printUsageMessage();
                 this->exitApplicationFailure();
+                break;
         }
     }
 
@@ -102,6 +171,28 @@ void IossApplication::processCommandLine(int argc, char **argv) {
     }
 }
 
+void IossApplication::checkForOnlyOneCatalystOutputPath() {
+    bool bothJSONAndInputSyntax = this->usePhactoriInputScriptON() &&\
+         this->usePhactoriInputJSONON();
+
+    bool bothParaViewAndPhactori = this->useParaViewExportedScriptON() &&\
+         (this->usePhactoriInputJSONON() ||\
+             this->usePhactoriInputScriptON());
+
+    if(bothJSONAndInputSyntax) {
+        this->printErrorMessage("Both Phactori JSON and Input Syntax given.");
+    }
+
+    if(bothParaViewAndPhactori) {
+        this->printErrorMessage("Both ParaView and Phactori input given.");
+    }
+
+    if(bothJSONAndInputSyntax || bothParaViewAndPhactori) {
+        this->printUsageMessage();
+        this->exitApplicationFailure();
+    }
+}
+
 std::string& IossApplication::getApplicationName() {
     return this->applicationName;
 }
@@ -110,31 +201,151 @@ std::string& IossApplication::getFileName() {
     return this->fileName;
 }
 
-bool IossApplication::printIOSSRegionReport() {
+bool IossApplication::printIOSSRegionReportON() {
     return this->printIOSSReport;
 }
 
-bool IossApplication::outputCopyOfInputDatabase() {
+void IossApplication::setPrintIOSSRegionReport(bool status) {
+    this->printIOSSReport = status;
+}
+
+bool IossApplication::outputCopyOfInputDatabaseON() {
     return this->copyDatabase;
+}
+
+void IossApplication::setOutputCopyOfInputDatabase(bool status) {
+    this->copyDatabase = status;
+}
+
+bool IossApplication::outputCatalystMeshON() {
+    return this->writeCatalystMesh;
+}
+
+bool IossApplication::setOutputCatalystMesh(bool status) {
+    this->writeCatalystMesh = status;
+}
+
+bool IossApplication::outputParsedPhactoriJSONON() {
+    return this->writeParsedPhactoriJSON;
+}
+
+bool IossApplication::setOutputParsedPhactoriJSON(bool status) {
+    this->writeParsedPhactoriJSON = status;
+}
+
+bool IossApplication::usePhactoriInputScriptON() {
+    return this->usePhactoriInputScript;
+}
+
+std::string IossApplication::getPhactoriInputScript() {
+    return this->phactoriInputScriptFilePath;
+}
+
+void IossApplication::setPhactoriInputScript(
+    const std::string& scriptFilePath) {
+    this->phactoriInputScriptFilePath = scriptFilePath;
+    this->usePhactoriInputScript = true;
+}
+
+bool IossApplication::usePhactoriInputJSONON() {
+    return this->usePhactoriInputJSON;
+}
+
+std::string IossApplication::getPhactoriInputJSON() {
+    return this->phactoriInputJSONFilePath;
+}
+
+void IossApplication::setPhactoriInputJSON(
+    const std::string& jsonFilePath) {
+    this->phactoriInputJSONFilePath = jsonFilePath;
+    this->usePhactoriInputJSON = true;
+}
+
+bool IossApplication::useParaViewExportedScriptON() {
+    return this->useParaViewExportedScript;
+}
+
+std::string IossApplication::getParaViewExportedScript() {
+    return this->paraViewExportedScriptFilePath;
+}
+
+void IossApplication::setParaViewExportedScript(
+    const std::string& exportedScriptFilePath) {
+    this->paraViewExportedScriptFilePath = exportedScriptFilePath;
+    this->useParaViewExportedScript = true;
 }
 
 void IossApplication::printUsageMessage() {
     std::string fn = this->copyOutputDatabaseName + "." + this->fileTypeSuffix;
-    std::string um = "\nUsage:  " + this->applicationName +\
-        " [OPTIONS] [FILE]\n\n";
+
+    std::string um = "\nUsage: " + this->applicationName;
+    um += " [-chjmr] [-i file | -p file | -s file] FILE\n\n";
+
     um += "DESCRIPTION\n\n";
-    um += "Read input " + this->fileTypeName +\
-        " file(s) and send to ParaView Catalyst";
+    um += "Read input " + this->fileTypeName;
+    um += " file(s) and send mesh to ParaView Catalyst";
+
+    um += "\n\nEXAMPLES\n\n";
+
+    um += "mpiexec -np 4 " + this->applicationName + " file.";
+    um += this->fileTypeSuffix + "\n";
+    um += "    Run Catalyst with default Phactori JSON script to produce\n";
+    um += "    eight axis aligned external camera images of the input mesh.";
+    um += "\n\n";
+
+    um += "mpiexec -np 4 " + this->applicationName + " -m file.";
+    um += this->fileTypeSuffix + "\n";
+    um += "    Output mesh sent to Catalyst and run Catalyst with default\n";
+    um += "    Phactori JSON.\n\n";
+
+    um += "mpiexec -np 4 " + this->applicationName + " -i file.json file.";
+    um += this->fileTypeSuffix + "\n";
+    um += "    Run Catalyst with Phactori JSON input from file.json.\n\n";
+
+    um += "mpiexec -np 4 " + this->applicationName + " -p file.txt file.";
+    um += this->fileTypeSuffix + "\n";
+    um += "    Run Catalyst with Phactori command syntax input from file.txt.";
+    um += "\n\n";
+
+    um += "mpiexec -np 4 " + this->applicationName + " -s file.py file.";
+    um += this->fileTypeSuffix + "\n";
+    um += "    Run Catalyst with ParaView exported Python script in file.py.";
+ 
     um += "\n\nOPTIONS\n\n";
-    um += "-c copy input file(s) to one file per processor ";
-    um += "with output filename(s) " + fn + "\n";
-    um += "-r print IOSS region report for input file(s) to one ";
-    um += "file per processor\n"; 
-    um += "-h print this usage message and exit program";
+
+    um += "-c copy input file(s) to one file per processor with output \n";
+    um += "   filename(s) prefix " + this->copyOutputDatabaseName + "\n\n";
+
+    um += "-h print this usage message and exit program\n\n";
+
+    um += "-i <file> run Catalyst with Phactori input JSON given in <file>.";
+    um += "\n\n";
+
+    um += "-j output JSON being sent to Phactori to file named ";
+    um += this->parsedPhactoriJSONFileName + "\n\n";
+
+    um += "-m output Catalyst mesh representation of input file(s)\n";
+    um += "   with output filename " + this->outputCatalystMeshFileName;
+    um += "\n\n";
+
+    um += "-p <file> run Catalyst with Phactori input command syntax given\n";
+    um += "   in <file>\n\n";
+
+    um += "-r print IOSS region report for input file(s) to one file\n";
+    um += "   per processor with output filename(s) prefix ";
+    um += this->iossReportFileName + "\n\n";
+
+    um += "-s <file> run Catalyst with a ParaView exported Python script\n";
+    um += "   given in <file>";
+
     um += "\n\nFILE\n\n";
-    um += this->fileTypeName + " input file name for a single file, ";
-    um += "or the file name prefix for multiple files\n";
-    um += "\n";
+    um += this->fileTypeName + " input file name for a single file ";
+    um += "(file_name." + this->fileTypeSuffix + ").\n\n";
+
+    std::string sfn = "file_name." + this->fileTypeSuffix;
+    um += this->fileTypeName + " file name prefix for multiple files ";
+    um += "(file_name for\n    split files: " + sfn + ".2.0, " + sfn;
+    um += ".2.1).\n\n";
     this->printMessage(um);
 }
 
@@ -156,12 +367,12 @@ void IossApplication::printMessage(const std::string& message) {
 
 void IossApplication::printErrorMessage(const std::string& message) {
     if (this->isRankZero()) {
-        std::cerr << message;
+        std::cerr << "\nERROR: " << message << "\n";
     }
 }
 
 void IossApplication::printIOSSRegionReportForRank() {
-    std::string fn = "IossRegionReport." +\
+    std::string fn = this->iossReportFileName + "." +\
         std::to_string(this->getNumRanks()) + "." +\
             std::to_string(this->getMyRank()) + ".txt";
     std::ofstream ofs (fn, std::ofstream::out);
@@ -248,7 +459,15 @@ void IossApplication::copyInputIOSSDatabaseOnRank() {
 
     Ioss::Region * inputRegion = this->getInputIOSSRegion();
     Ioss::Region * outputRegion = new Ioss::Region(dbo, inputRegion->name());
-    IossDatabaseCopier idc(inputRegion, outputRegion);
-    idc.copyInputIOSSDatabaseToOutputIOSSDatabase();
+
+    auto state_count = inputRegion->get_property("state_count").get_int();
+    double min_time = inputRegion->get_state_time(1);
+    double max_time = inputRegion->get_state_time(state_count);
+    Ioss::MeshCopyOptions copyOptions;
+    copyOptions.data_storage_type = 1;
+    copyOptions.minimum_time = min_time;
+    copyOptions.maximum_time = max_time;
+    Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
+
     delete outputRegion;
 }

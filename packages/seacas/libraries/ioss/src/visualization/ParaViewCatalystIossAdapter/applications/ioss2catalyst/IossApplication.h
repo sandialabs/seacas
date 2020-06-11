@@ -7,18 +7,50 @@
 
 class IossApplication {
 public:
+
     IossApplication(int argc, char **argv,
         const std::string& appName,
             const std::string& fileTypeName,
                 const std::string& iossDatabaseType,
                     const std::string& fileTypeSuffix);
+
+    IossApplication(const std::string& appName,
+        const std::string& fileTypeName,
+            const std::string& iossDatabaseType,
+                const std::string& fileTypeSuffix);
+
     ~IossApplication();
+
+    void runApplication();
+ 
+    bool printIOSSRegionReportON();
+    void setPrintIOSSRegionReport(bool status);
+
+    bool outputCopyOfInputDatabaseON();
+    void setOutputCopyOfInputDatabase(bool status);
+
+    bool outputCatalystMeshON();
+    bool setOutputCatalystMesh(bool status);
+
+    bool outputParsedPhactoriJSONON();
+    bool setOutputParsedPhactoriJSON(bool status);
+
+    bool usePhactoriInputScriptON();
+    std::string getPhactoriInputScript();
+    void setPhactoriInputScript(const std::string& scriptFilePath);
+
+    bool usePhactoriInputJSONON();
+    std::string getPhactoriInputJSON();
+    void setPhactoriInputJSON(const std::string& jsonFilePath);
+
+    bool useParaViewExportedScriptON();
+    std::string getParaViewExportedScript();
+    void setParaViewExportedScript(const std::string& exportedScriptFilePath);
+
     int getMyRank();
     int getNumRanks();
     bool isRankZero();
     bool isSerial();
-    bool printIOSSRegionReport();
-    bool outputCopyOfInputDatabase();
     bool decomposedMeshExists();
     std::string& getApplicationName();
     std::string& getFileName();
@@ -32,22 +64,40 @@ public:
 
 private:
     IossApplication();
+    void initialize(const std::string& appName,
+        const std::string& fileTypeName,
+            const std::string& iossDatabaseType,
+                const std::string& fileTypeSuffix);
     void openInputIOSSDatabase();
     void processCommandLine(int argc, char **argv);
+    void initializeMPI();
     void initializeMPI(int argc, char **argv);
+    void initMPIRankAndSize();
     void finalizeMPI();
     void printUsageMessage();
+    void checkForOnlyOneCatalystOutputPath();
     std::string getParallelFileName();
     int myRank;
     int numRanks;
     bool printIOSSReport;
     bool copyDatabase;
+    bool writeCatalystMesh;
+    bool writeParsedPhactoriJSON;
+    bool usePhactoriInputScript;
+    bool usePhactoriInputJSON;
+    bool useParaViewExportedScript;
+    std::string phactoriInputScriptFilePath;
+    std::string phactoriInputJSONFilePath;
+    std::string paraViewExportedScriptFilePath;
     std::string fileName;
     std::string applicationName;
     std::string fileTypeName;
     std::string fileTypeSuffix;
     std::string iossDatabaseType;
     std::string copyOutputDatabaseName = "iossDatabaseCopy";
+    std::string outputCatalystMeshFileName = "iossDatabaseCatalystMesh.vtm";
+    std::string iossReportFileName = "IossRegionReport";
+    std::string parsedPhactoriJSONFileName = "parsedPhactoriJSON.json";
     Ioss::Region * inputIOSSRegion;
 };
 
