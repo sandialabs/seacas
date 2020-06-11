@@ -388,7 +388,7 @@ else
             unset OMPI_MCA_btl_openib_ib_timeout
             export OMPI_MCA_mtl=^psm
             export OMPI_MCA_pml=^cm
-            export OMPI_MCA_btl=tcp,sm,self
+            export OMPI_MCA_btl=tcp,vader,self
             if [ -n "${SIERRA_LIBRARY_PATH}" ]
             then
                 export DYLD_LIBRARY_PATH=$SIERRA_LIBRARY_PATH
