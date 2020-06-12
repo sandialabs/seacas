@@ -4,13 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: mppopm.f,v $
-C Revision 1.2  1993/07/16 18:07:50  gdsjaar
-C Added external pltblk statements so that linkers would pull in block
-C data subprogram to initialize constants.
-C
-c Revision 1.1  1993/07/16  16:47:24  gdsjaar
-c Changed plt to library rather than single source file.
 c
 C=======================================================================
       SUBROUTINE MPPOPM()

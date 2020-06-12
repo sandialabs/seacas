@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: gmdis2.f,v $
-C Revision 1.1  1991/02/21 15:43:27  gdsjaar
-C Initial revision
 C
       SUBROUTINE GMDIS2 (COORD, DIRCOS, MASSLV, NIQSLV, TDIS,
      *    NIQM, NIQS, DMAX, NUMNP)

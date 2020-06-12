@@ -4,30 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: close6.f,v $
-C Revision 1.2  1998/07/14 18:18:31  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:04:54  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:04:53  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]CLOSE6.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO CLOSE6 TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
       SUBROUTINE CLOSE6 (MXND, MXCORN, MLN, NUID, XN, YN, LXK, KXL, NXL,
      &   LXN, ANGLE, BNSIZE, LNODES, NODE, NLOOP, KKKOLD, LLLOLD,
@@ -98,11 +77,6 @@ C
      &            XN (LCORN (3)) ) * .5
                YNEW = ( ( (YN (LCORN (1)) + YN (LCORN (2)) ) * .5) +
      &            YN (LCORN (3)) ) * .5
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO ADD1CN TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
                CALL ADD1CN (MXND, MLN, XN, YN, NUID, LXK, KXL, NXL, LXN,
      &            ANGLE, BNSIZE, LNODES, NNN, KKK, LLL, NNNOLD, LLLOLD,
@@ -207,11 +181,6 @@ C  HANDLE A 3-1-1-1 RECTANGLE
 C
          IF (MAX0 (I1, I2, I3, I4) .EQ. 3) THEN
             IF (I1 .EQ. 3) THEN
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO ADD2CN TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
                CALL ADD2CN (MXND, MLN, XN, YN, NUID, LXK, KXL, NXL, LXN,
      &            ANGLE, BNSIZE, LNODES, NNN, KKK, LLL, NNNOLD, LLLOLD,

@@ -4,30 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: ltsort.f,v $
-C Revision 1.3  2000/11/13 15:39:05  gdsjaar
-C Cleaned up unused variables and labels.
-C
-C Removed some real to int conversion warnings.
-C
-C Revision 1.2  1999/06/17 19:02:22  gdsjaar
-C Fixed several problems related to holes.  In several places, a
-C nonpositive integer was being used to index into an array.  This seems
-C to fix all of those cases.  I'm not sure if I fixed the true cause of
-C these errors or just the symptom though...
-C
-C Revision 1.1.1.1  1990/11/30 11:11:44  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:11:42  gdsjaar
-c Initial revision
 c
 C
 
-CC* FILE: [.MAIN]LTSORT.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE LTSORT (MDIM, LINK, ID, IPNTR, ADDLNK)
 C***********************************************************************

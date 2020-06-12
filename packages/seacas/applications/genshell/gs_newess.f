@@ -9,18 +9,6 @@ C=======================================================================
      &   ISSFRO, ISSBCK, NSSFRO, NSSBCK)
 C=======================================================================
 
-C   $Log: newess.f,v $
-C   Revision 1.3  1993/11/23 21:19:23  gdsjaar
-C   Added capability to handle 8-node quads to 8-node shells
-C
-c Revision 1.2  1991/03/21  19:37:58  gdsjaar
-c Initial change of sidesets from gen3d to genshell
-c
-c Revision 1.1.1.1  1990/08/20  12:22:16  gdsjaar
-c Gen3D Mesh Generation Program
-c
-c Revision 1.1  90/08/20  12:22:14  gdsjaar
-c Initial revision
 c
 
 C   --*** NEWESS *** (GEN3D) Calculate 3D side sets

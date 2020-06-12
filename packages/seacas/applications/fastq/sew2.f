@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: sew2.f,v $
-C Revision 1.1  1990/11/30 11:15:32  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.PAVING]SEW2.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE SEW2 (MXND, MLN, NUID, LXK, KXL, NXL, LXN, LNODES,
      &   IAVAIL, NAVAIL, LLL, KKK, NNN, I1, I2, J1, J2, NOROOM, ERR)

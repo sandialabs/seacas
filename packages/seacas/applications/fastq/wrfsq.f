@@ -4,36 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: wrfsq.f,v $
-C Revision 1.3  1999/06/21 22:43:41  gdsjaar
-C Fixed more uninitialized variables; one was causing core dump on g77
-C compiled executable.
-C
-C VERSN was not consistently defined -- now 10 characters everywhere
-C
-C Updated so full version string output
-C
-C Added capability to debug memory using unit specified in EXT99
-C variable. Similar to STRTUP in SUPLIB
-C
-C Cleaned up some other code
-C
-C Upped version
-C
-C Revision 1.2  1993/11/11 23:28:07  gdsjaar
-C Fixed problem with writing out point bc cards following keying option
-C
-c Revision 1.1.1.1  1990/11/30  11:17:48  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:17:46  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]WRFSQ.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE WRFSQ (IUNIT, MP, ML, MS, MR, MSNAP, MSC, MCOM, ICOM,
      &   JCOM, CIN, RIN, IIN, KIN, N, IPOINT, COOR, IPBOUN, ILINE,

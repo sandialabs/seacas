@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: cull3.f,v $
-C Revision 1.1  1991/02/21 15:42:47  gdsjaar
-C Initial revision
 C
       SUBROUTINE CULL3 (DIRCOS, MASSLV, NIQM)
       DIMENSION DIRCOS(5,*), MASSLV(2,*)

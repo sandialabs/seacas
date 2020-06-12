@@ -4,27 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: perim.f,v $
-C Revision 1.2  2001/11/05 13:26:51  gdsjaar
-C  Fixed array boundary problem in region check code.
-C
-C Revision 1.1.1.1  1990/11/30 11:13:18  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:13:16  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]PERIM.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO PERIM TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
       SUBROUTINE PERIM (MP, ML, MS, NS, MAXNL, MAXNP, MAXNBC, MAXSBC,
      &   KNBC, KSBC, KNUM, IPOINT, COOR, IPBOUN, ILINE, LTYPE, NINT,
@@ -177,11 +159,6 @@ C
                      IP3 = 0
                   ENDIF
                   TEST = .TRUE.
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO PLINE TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
                   CALL PLINE (MP, ML, MAXNP, MAXNBC, MAXSBC, IPOINT,
      &               COOR, LINKP, ILINE (ILI), LTYPE (ILI), NINT (ILI),
@@ -275,11 +252,6 @@ C
          ENDIF
          IMAXNP = MAXNP-N
          TEST = .FALSE.
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO PLINE TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
          if (imaxnp .lt. nint(ili)) then
            stop 'ERROR: Intervals larger than space'

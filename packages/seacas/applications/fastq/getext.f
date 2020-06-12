@@ -4,24 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: getext.f,v $
-C Revision 1.2  1999/06/17 19:02:22  gdsjaar
-C Fixed several problems related to holes.  In several places, a
-C nonpositive integer was being used to index into an array.  This seems
-C to fix all of those cases.  I'm not sure if I fixed the true cause of
-C these errors or just the symptom though...
-C
-C Revision 1.1.1.1  1990/11/30 11:08:04  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:08:02  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]GETEXT.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE GETEXT (MP, ML, MS, MR, N, IPOINT, COOR, ILINE, LTYPE,
      &   LCON, NLPS, IFLINE, ILLIST, NSPR, IFSIDE, ISLIST, LINKP,

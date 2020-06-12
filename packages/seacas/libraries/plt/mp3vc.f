@@ -4,9 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: mp3vc.f,v $
-C Revision 1.1  1993/07/16 16:47:06  gdsjaar
-C Changed plt to library rather than single source file.
 C
 C=======================================================================
       SUBROUTINE MP3VC(N,X0,Y0,Z0,X1,Y1,Z1,PX,PY,PZ,QX,QY,QZ,MASK)

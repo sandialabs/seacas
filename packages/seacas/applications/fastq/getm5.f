@@ -4,24 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: getm5.f,v $
-C Revision 1.2  1998/07/14 18:19:03  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:08:29  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:08:27  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]GETM5.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE GETM5 (IA, ML, MS, MNNPS, NS, ISLIST, NINT, IFLINE,
      &   NLPS, ILLIST, LINKL, LINKS, X, Y, NID, NNPS, ANGLE, NPER,

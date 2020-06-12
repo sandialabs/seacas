@@ -4,23 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: nxkbdy.f,v $
-C Revision 1.2  2000/11/13 15:39:05  gdsjaar
-C Cleaned up unused variables and labels.
-C
-C Removed some real to int conversion warnings.
-C
-C Revision 1.1.1.1  1990/11/30 11:12:58  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:12:57  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.RENUM]NXKBDY.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE NXKBDY (MDIM, NNXK, NPELEM, NXK, KKK, LIST, THREE,
      &   EIGHT, NINE)

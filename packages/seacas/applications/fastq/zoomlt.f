@@ -4,29 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: zoomlt.f,v $
-C Revision 1.3  2007/07/24 13:10:18  gdsjaar
-C Fix problem with boundary condition memory overwrite.
-C
-C Remove old ls5 and r25 terminal tests
-C
-C Revision 1.2  1998/07/14 18:20:20  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:18:05  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:18:04  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]ZOOMLT.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE ZOOMLT (MCOM, ICOM, JCOM, CIN, RIN, IIN, KIN, IDUMP,
      &   DRAWN, ALPHA, DEV1, X1, X2, Y1, Y2, XX1, XX2, YY1, YY2, XMIN1,

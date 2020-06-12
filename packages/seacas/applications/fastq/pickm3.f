@@ -4,24 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: pickm3.f,v $
-C Revision 1.3  1991/03/22 19:57:40  gdsjaar
-C Guess: substitute MM1 for MM
-C
-c Revision 1.2  1991/03/21  15:45:01  gdsjaar
-c Changed all 3.14159... to atan2(0.0, -1.0)
-c
-c Revision 1.1.1.1  1990/11/30  11:13:27  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:13:25  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]PICKM3.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE PICKM3 (N, X, Y, ANGLE, M1, M2, IFIRST)
 C***********************************************************************

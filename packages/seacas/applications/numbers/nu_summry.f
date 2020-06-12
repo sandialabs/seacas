@@ -4,15 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: summry.f,v $
-C Revision 1.2  2000/07/06 16:49:57  gdsjaar
-C Changed real*4 to real
-C
-C Revision 1.1.1.1  1991/02/21 15:45:55  gdsjaar
-C NUMBERS: Greg Sjaardema, initial Unix release
-C
-c Revision 1.1  1991/02/21  15:45:54  gdsjaar
-c Initial revision
 c
       SUBROUTINE SUMMRY (TYPE, NUM, SELECT, VALUE, SUMR, ISUMR, IOFF)
       CHARACTER*(*) TYPE

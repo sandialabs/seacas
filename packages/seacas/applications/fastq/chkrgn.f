@@ -4,33 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: chkrgn.f,v $
-C Revision 1.4  2004/01/21 05:18:39  gdsjaar
-C Initialized several variables identified by valgrind.
-C
-C Revision 1.3  2001/11/05 13:26:51  gdsjaar
-C  Fixed array boundary problem in region check code.
-C
-C Revision 1.2  1990/11/30 11:25:08  gdsjaar
-C Added initialization and MDSTAT calls
-C
-c Revision 1.1.1.1  90/11/30  11:04:38  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:04:37  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]CHKRGN
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO CHKHOL TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
       SUBROUTINE CHKRGN (IA, L, MP, ML, MS, MR, MSC, N24, IPOINT, COOR,
      &   IPBOUN, ILINE, LTYPE, NINT, FACTOR, LCON, ILBOUN, ISBOUN,
@@ -107,11 +83,6 @@ C
       ELSE
          KNBC = 0
          KSBC = 0
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO PERIM TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
          CALL PERIM (MP, ML, MS, NSPR(L), MAXNL, MAXNP, 1, 1, KNBC,
      &      KSBC, IREGN(L), IPOINT, COOR, IPBOUN, ILINE, LTYPE, NINT,
@@ -290,11 +261,6 @@ C
 C
 C  CHECK ALL THE HOLES IN THE REGION
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO CHKHOL TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
          CALL CHKHOL (IA, L, MP, ML, MS, MR, MSC, IPOINT, COOR,
      &      IPBOUN, ILINE, LTYPE, NINT, FACTOR, LCON, ILBOUN, ISBOUN,

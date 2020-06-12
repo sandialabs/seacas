@@ -4,58 +4,13 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: pschem.f,v $
-C Revision 1.4  1999/06/21 22:43:40  gdsjaar
-C Fixed more uninitialized variables; one was causing core dump on g77
-C compiled executable.
-C
-C VERSN was not consistently defined -- now 10 characters everywhere
-C
-C Updated so full version string output
-C
-C Added capability to debug memory using unit specified in EXT99
-C variable. Similar to STRTUP in SUPLIB
-C
-C Cleaned up some other code
-C
-C Upped version
-C
-C Revision 1.3  1999/06/17 19:02:22  gdsjaar
-C Fixed several problems related to holes.  In several places, a
-C nonpositive integer was being used to index into an array.  This seems
-C to fix all of those cases.  I'm not sure if I fixed the true cause of
-C these errors or just the symptom though...
-C
-C Revision 1.2  1998/07/14 18:19:45  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:13:54  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:13:52  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]PSCHEM.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/13/90
-CC* MODIFICATION: CORRECTED BUG - MULTIPLE HOLES, EACH WITH AN ELEMENT
 C**               SIDE BOUNDARY FLAG WOULD REDIMENSION FOREVER.
 C**               THE KKSBC VARIABLE WAS CHANGED TO BE SET AT THE
 C**               BEGINNING OF THE ROUTINE INSTEAD OF RIGHT BEFORE THE
 C**               ZHOLE PROCESSING WAS STARTED.
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO PSCHEM TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
       SUBROUTINE PSCHEM (MP, ML, MS, MR, N, IPOINT, COOR, IPBOUN, ILINE,
      &   LTYPE, NINT, FACTOR, LCON, ILBOUN, ISBOUN, ISIDE, NLPS, IFLINE,
@@ -558,11 +513,6 @@ C
   120    CONTINUE
 C
          NPRM = NPRM + 1
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO ZHOLE TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
          CALL ZHOLE (MP, ML, MS, MR, NSPR(JHOLE), MXNL, MXNPER, MAXPRM,
      &      NPRM, MAXNBC, MAXSBC, KNBC, KSBC, IREGN(JHOLE), IPOINT,

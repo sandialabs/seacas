@@ -4,44 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: chkhol.f,v $
-C Revision 1.3  1999/06/21 22:43:40  gdsjaar
-C Fixed more uninitialized variables; one was causing core dump on g77
-C compiled executable.
-C
-C VERSN was not consistently defined -- now 10 characters everywhere
-C
-C Updated so full version string output
-C
-C Added capability to debug memory using unit specified in EXT99
-C variable. Similar to STRTUP in SUPLIB
-C
-C Cleaned up some other code
-C
-C Upped version
-C
-C Revision 1.2  1998/07/14 18:18:27  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:04:31  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:04:30  gdsjaar
-c Initial revision
 c
-CC* FILE: [.QMESH]CHKHOL.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO CHKHOL TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
       SUBROUTINE CHKHOL (IA, L, MP, ML, MS, MR, MSC, IPOINT, COOR,
      &   IPBOUN, ILINE, LTYPE, NINT, FACTOR, LCON, ILBOUN, ISBOUN,
@@ -116,11 +80,6 @@ C
                ELSE
                   KNBC = 0
                   KSBC = 0
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO PERIM TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
                   CALL PERIM (MP, ML, MS, NSPR(LL), MAXNL, MAXNP, 1, 1,
      &               KNBC, KSBC, IREGN(LL), IPOINT, COOR, IPBOUN, ILINE,
@@ -138,9 +97,6 @@ C
                      WRITE (*, 10010) IREGN(LL)
                      ADDLNK = .TRUE.
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/23/90
-CC* MODIFICATION: PUT THE CORRECT POINTER INTO THE HOLE REGION LINK SLOT
 C
                      IMINUS = -LL
                      CALL LTSORT (MR, LINKR, IREGN(LL), IMINUS, ADDLNK)

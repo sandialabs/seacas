@@ -4,25 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: nickc.f,v $
-C Revision 1.3  1992/08/24 17:08:06  gdsjaar
-C Removed undefined messages -- code works fine, no need for message
-C
-c Revision 1.2  1991/03/22  16:05:54  gdsjaar
-c Added default option, print warning message
-c Blacker needs to fix
-c
-c Revision 1.1.1.1  1990/11/30  11:12:39  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:12:37  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]NICKC.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       REAL FUNCTION NICKC (ANGLE, LXN)
 C***********************************************************************

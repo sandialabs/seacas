@@ -4,19 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: mklstv.f,v $
-C Revision 1.2  2007/10/17 18:40:35  gdsjaar
-C Added copyright notice to all files.
-C
-C Mapvar is licensed under the BSD license
-C
-C Revision 1.1  1998/03/13 18:12:24  gdsjaar
-C New code -- mapvar. Interpolates results form an exodusII results file
-C to a differently mesh geometry.  Written by Gerry Wellman,
-C 9117. Loosely based on MERLIN. Provides a superset of merlin
-C functionality.
-C
-C
       SUBROUTINE MKLSTV( NUMPTS,IND,IRNK2,IUP,ILO,INDX,
      *                   IE,LIST,NLIST,NBLKSZ,NSPC)
 C

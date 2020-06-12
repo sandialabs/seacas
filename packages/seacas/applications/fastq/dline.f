@@ -4,26 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: dline.f,v $
-C Revision 1.3  2000/11/13 15:39:04  gdsjaar
-C Cleaned up unused variables and labels.
-C
-C Removed some real to int conversion warnings.
-C
-C Revision 1.2  1991/03/21 15:44:35  gdsjaar
-C Changed all 3.14159... to atan2(0.0, -1.0)
-C
-c Revision 1.1.1.1  1990/11/30  11:06:11  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:06:10  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]DLINE.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE DLINE (MP, ML, COOR, LINKP, KNUM, KT, IP1, IP2, IP3,
      &   NUMPLT, X1, Y1, TEST, GETMAX, XMIN, XMAX, YMIN, YMAX)

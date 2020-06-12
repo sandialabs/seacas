@@ -4,34 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: qual2n.f,v $
-C Revision 1.3  1998/11/24 20:45:08  gdsjaar
-C Added code to avoid array bound read errors and uninitialized
-C variables. In some cases, the correct fix was difficult to determine,
-C so added something that looked like it made sense...
-C
-C This fixes problems with very slow run times on g77-compiled code. It
-C was taking an uninitialized variable to be INT_MAX instead of zero
-C which resulted in lots of iterations through a loop. This variable was
-C initialized to zero since that is what it was being set to on the sun
-C and when compiled with fort77 (f2c-based).  Gives the exact same mesh
-C on linux and sun for several test cases.
-C
-C Revision 1.2  1995/06/28 19:21:20  gdsjaar
-C Applied fixes found in memo dated May 13, 1991. The bug shows itself
-C for rare cases of semicircular regions being paved.
-C
-c Revision 1.1.1.1  1990/11/30  11:14:15  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:14:14  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]QUAL2N.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE QUAL2N (MXND, MXCORN, MLN, NCORN, LCORN, LNODES, ICOMB,
      &   BNSIZE, ANGLE, LXN, ITEST, LTEST, QUAL, POSBL2, POSBL3, ROWCHN,

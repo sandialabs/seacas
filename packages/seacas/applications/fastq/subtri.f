@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: subtri.f,v $
-C Revision 1.1  1990/11/30 11:16:55  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.QMESH]SUBTRI.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE SUBTRI (NPER, NEWPER, X, Y, NID, XSUB, YSUB, NIDSUB,
      &   M1, M2, IADD, ITRI, XCEN, YCEN)

@@ -4,21 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: cclock.f,v $
-C Revision 1.2  1991/03/21 15:44:23  gdsjaar
-C Changed all 3.14159... to atan2(0.0, -1.0)
-C
-c Revision 1.1.1.1  1990/11/30  11:04:21  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:04:19  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]CCLOCK.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE CCLOCK (X, Y, N, CCW, ERR, INDETR)
 C***********************************************************************

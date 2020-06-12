@@ -4,12 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: pltrot.f,v $
-C Revision 1.2  1993/07/16 22:27:49  gdsjaar
-C Unrolled do loops to speed up execution.
-C
-c Revision 1.1  1993/07/16  16:49:18  gdsjaar
-c Changed plt to library rather than single source file.
 c
 C=======================================================================
       SUBROUTINE PLTROT(R,A,B)

@@ -7,18 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE CKEXOD (EXODUS, *)
 C=======================================================================
-C$Log: ckexod.f,v $
-CRevision 1.2  2009/03/25 12:46:01  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:12:06  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:12:05  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:04  gdsjaar
-c Initial revision
 c
 
 C   --*** CKEXOD *** (ETCLIB) Check for EXODUS format

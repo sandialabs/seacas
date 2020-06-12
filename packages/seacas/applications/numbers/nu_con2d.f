@@ -4,24 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: con2d.f,v $
-C Revision 1.5  2004/06/29 18:05:32  gdsjaar
-C General cleanup. Remove unused labels and variables.
-C
-C Revision 1.4  2000/07/06 18:07:42  gdsjaar
-C Fix assumption that variables are saved between subroutine calls
-C
-C Revision 1.3  2000/07/06 16:49:57  gdsjaar
-C Changed real*4 to real
-C
-C Revision 1.2  1991/04/10 19:28:18  gdsjaar
-C Removed vax debug lines
-C
-c Revision 1.1.1.1  1991/02/21  15:42:40  gdsjaar
-c NUMBERS: Greg Sjaardema, initial Unix release
-c
-c Revision 1.1  1991/02/21  15:42:39  gdsjaar
-c Initial revision
 c
 C=======================================================================
       SUBROUTINE CON2D (CRD, NDIM, NUMNP, IX, NNODES, NUMEL, MAT,

@@ -4,9 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: cpuqa.f,v $
-C Revision 1.1  1993/07/16 16:46:31  gdsjaar
-C Changed plt to library rather than single source file.
 C
 C=======================================================================
       SUBROUTINE CPUQA(DATE1,TIME,USER,JOBID,DIV,ENUM,CASENO,CLASS)

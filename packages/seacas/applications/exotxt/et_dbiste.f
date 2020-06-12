@@ -10,19 +10,6 @@ C=======================================================================
      &                   IDELB, NUMELB, ISEVOK,
      &                   VARGL, VARNP, VAREL, IOERR)
 C=======================================================================
-C$Log: dbiste.f,v $
-CRevision 1.4  2007/10/17 18:46:09  gdsjaar
-CAdded copyright notice to all files.
-C
-Cexotxt2 is licensed under the BSD license
-C
-CRevision 1.3  1996/05/21 16:52:20  caforsy
-CAdded read/write for property data.  Cleaned up exodusII error checks
-C
-CRevision 1.2  1995/11/07 15:01:39  gdsjaar
-CInitial checkin of ACCESS/translate/exotxt2
-C
-
 C   --*** DBISTE *** (EXOLIB) Read database variables for one time step
 C   --   Written by Amy Gilkey - revised 10/14/87
 C   --   Modified for ExodusIIv2 database format 10/16/95

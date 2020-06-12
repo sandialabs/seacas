@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: add2el.f,v $
-C Revision 1.1  1990/11/30 11:02:44  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.PAVING]ADD2EL.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE ADD2EL (MXND, MLN, XN, YN, NUID, LXK, KXL, NXL, LXN,
      &   ANGLE, LNODES, NNN, KKK, LLL, NNNOLD, LLLOLD, NLOOP, I1, I4,

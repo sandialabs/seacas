@@ -7,18 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFADDI (IVAL, LINE)
 C=======================================================================
-C$Log: ffaddi.f,v $
-CRevision 1.2  2009/03/25 12:46:01  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:14:09  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:14:08  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:22  gdsjaar
-c Initial revision
 c
 
 C   --*** FFADDI *** (FFLIB) Add integer to line

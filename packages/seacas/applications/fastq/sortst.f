@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: sortst.f,v $
-C Revision 1.1  1990/11/30 11:16:14  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.QMESH]SORTST.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE SORTST(N, ARRIN, ITOPP, IBOTP, IRANGE, INDX)
 C***********************************************************************

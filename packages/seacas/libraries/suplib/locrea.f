@@ -7,18 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       INTEGER FUNCTION LOCREA (VALU, NVALUS, VALUS)
 C=======================================================================
-C$Log: locrea.f,v $
-CRevision 1.2  2009/03/25 12:46:02  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:15:21  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:15:20  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:34  gdsjaar
-c Initial revision
 c
 
 C   --*** LOCREA *** (ETCLIB) Find closest real value

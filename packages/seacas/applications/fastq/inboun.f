@@ -4,27 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: inboun.f,v $
-C Revision 1.3  2004/01/21 05:18:40  gdsjaar
-C Initialized several variables identified by valgrind.
-C
-C Revision 1.2  1998/07/14 18:19:11  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:09:21  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:09:19  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]INBOUN.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE INBOUN (MDIM, JJ, IFOUND, IIN, N1, N2, N3, N2OLD,
      &   MERGE, NOROOM, NEWNUM, NHOLD, IHOLD, IFLAG, INUM, IFIRST,

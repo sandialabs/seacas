@@ -4,21 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: intsct.f,v $
-C Revision 1.2  1992/02/04 15:50:25  gdsjaar
-C Added bounding box check in intsct, reduce time 5 percent
-C
-c Revision 1.1.1.1  1990/11/30  11:10:21  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:10:20  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]INTSCT.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE INTSCT (X1, Y1, X2, Y2, X3, Y3, X4, Y4, U, W, LCROSS)
 C***********************************************************************

@@ -4,27 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C     $Log: estime.f,v $
-C     Revision 1.5  2001/02/20 23:27:03  gdsjaar
-C     Special modification for Frank Dempsey.
-C     The command 'list nodalvol' calculates an approximate nodal volume at
-C     each node.  A nodes nodal volume is 1/8th of the volume of each
-C     element connected to it.
-C
-C     Revision 1.4  1991/12/02 17:37:16  gdsjaar
-C     Updated title format
-C
-c Revision 1.3  1991/09/24  17:42:52  gdsjaar
-c Added actual pronto3d time step estimation
-c
-c     Revision 1.2  1991/02/21  16:37:57  gdsjaar
-c     Moved ENGNOT function out of write statements
-c
-c     Revision 1.1.1.1  1991/02/21  15:43:09  gdsjaar
-c     NUMBERS: Greg Sjaardema, initial Unix release
-c
-c     Revision 1.1  1991/02/21  15:43:08  gdsjaar
-c     Initial revision
 c
       SUBROUTINE ESTIME (CRD, WAVE, IX, MAT, LABEL, NDIM, NNODE,
      *     NELBLK, SSQ, CCC, CDAMP, NUMNP)

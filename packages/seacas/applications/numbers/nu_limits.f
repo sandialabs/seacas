@@ -4,22 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: limits.f,v $
-C Revision 1.4  1999/02/16 21:38:00  gdsjaar
-C Converted to read exodusII database format.  Somewhat tested, not
-C ready for production yet.
-C
-C Revision 1.3  1993/07/21 22:34:56  gdsjaar
-C Removed unused variable--error
-C
-c Revision 1.2  1991/02/21  16:37:58  gdsjaar
-c Moved ENGNOT function out of write statements
-c
-c Revision 1.1.1.1  1991/02/21  15:43:50  gdsjaar
-c NUMBERS: Greg Sjaardema, initial Unix release
-c
-c Revision 1.1  1991/02/21  15:43:48  gdsjaar
-c Initial revision
 c
       SUBROUTINE LIMITS (XYZMIN, XYZMAX, CRD, IX, MAT, NDIM, NEBLK,
      *   NNODES, EXODUS, TIME, ITMSEL, CORDSP, NUMNP)

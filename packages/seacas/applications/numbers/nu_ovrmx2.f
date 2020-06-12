@@ -4,18 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C     $Log: ovrmx2.f,v $
-C     Revision 1.3  1991/08/05 13:44:20  gdsjaar
-C     Reordered penetration distance loops, fixed format statement
-C
-c     Revision 1.2  1991/02/21  16:38:01  gdsjaar
-c     Moved ENGNOT function out of write statements
-c
-c     Revision 1.1.1.1  1991/02/21  15:44:42  gdsjaar
-c     NUMBERS: Greg Sjaardema, initial Unix release
-c
-c     Revision 1.1  1991/02/21  15:44:41  gdsjaar
-c     Initial revision
 c
       SUBROUTINE OVRMX2 (LSTEL, CORD, IX, NSEG, MINMAX, NIQSLV,
      *     NIQS, TEMP, LTNESS, NUMIN, NUMFAC, NUMON,

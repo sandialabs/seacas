@@ -4,26 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: cgcal3.f,v $
-C Revision 1.5  2000/07/06 18:07:42  gdsjaar
-C Fix assumption that variables are saved between subroutine calls
-C
-C Revision 1.4  1999/02/16 21:37:58  gdsjaar
-C Converted to read exodusII database format.  Somewhat tested, not
-C ready for production yet.
-C
-C Revision 1.3  1992/05/20 16:41:29  gdsjaar
-C Changed min/max element size calculation so 1 element and equal-size
-C element blocks would set both min and max values.
-C
-c Revision 1.2  1991/11/06  18:17:11  gdsjaar
-c Added warning for negative volume elements
-c
-c Revision 1.1.1.1  1991/02/21  15:42:27  gdsjaar
-c NUMBERS: Greg Sjaardema, initial Unix release
-c
-c Revision 1.1  1991/02/21  15:42:26  gdsjaar
-c Initial revision
 c
       SUBROUTINE CGCAL3(CRD,IX,MAT,MASS,VOL,DENS,VOLM,CG,ZITOT,XXX,
      *    XG,XI,XINI,AJ,NNODES,NDIM,NQUAD,VOLMN,IELM,NELBLK,NUMNP)

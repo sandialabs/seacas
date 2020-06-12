@@ -4,27 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: colaps.f,v $
-C Revision 1.3  1998/07/14 18:18:33  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.2  1991/03/21 15:44:27  gdsjaar
-C Changed all 3.14159... to atan2(0.0, -1.0)
-C
-c Revision 1.1.1.1  1990/11/30  11:05:10  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:05:08  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]COLAPS.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE COLAPS (MXND, MXCORN, MLN, MXLOOP, NUID, XN, YN, ZN,
      &   LXK, KXL, NXL, LXN, ANGLE, LNODES, BNSIZE, NODE, KKKOLD,

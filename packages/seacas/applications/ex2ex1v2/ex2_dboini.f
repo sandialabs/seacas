@@ -8,18 +8,7 @@ C=======================================================================
       SUBROUTINE DBOINI (NDB, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &   NUMNPS, LNPSNL, NUMESS, LESSEL, LESSNL)
 C=======================================================================
-C$Log: dboini.f,v $
-CRevision 1.2  2009/03/25 12:46:01  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:13:24  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:13:23  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:15  gdsjaar
-c Initial revision
 c
 
 C   --*** DBOINI *** (EXOLIB) Write database title and initial variables

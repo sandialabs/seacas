@@ -8,9 +8,6 @@ C=======================================================================
       SUBROUTINE ROTXYZ (XYZ, ANG, ROTMAT)
 C=======================================================================
 
-C   $Log: rotxyz.f,v $
-C   Revision 1.1  1990/08/20 12:22:48  gdsjaar
-C   Initial revision
 C
 
 C   --*** ROTXYZ *** (GEN3D) Multiply rotation matrix by XYZ rotation

@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: bfnode.f,v $
-C Revision 1.1  1990/11/30 11:03:57  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.RENUM]BFNODE.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE BFNODE (NLIST, NNXK, NPNODE, NPELEM, MAXKXN, NNUID,
      &   NODE, NEWNOD, LIST, KXN, NXK, NUID, JLOC, LINE1, ERR)

@@ -4,30 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: tridel.f,v $
-C Revision 1.4  2004/01/21 05:18:40  gdsjaar
-C Initialized several variables identified by valgrind.
-C
-C Revision 1.3  1998/07/14 18:20:09  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.2  1991/03/21 15:45:21  gdsjaar
-C Changed all 3.14159... to atan2(0.0, -1.0)
-C
-c Revision 1.1.1.1  1990/11/30  11:17:15  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:17:13  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]TRIDEL.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE TRIDEL (MXND, MLN, XN, YN, ZN, NUID, LXK, KXL, NXL,
      &   LXN, NNN, LLL, KKK, NAVAIL, IAVAIL, ANGLE, LNODES, BNSIZE,

@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: dvol2d.f,v $
-C Revision 1.1  1991/02/21 15:42:59  gdsjaar
-C Initial revision
 C
       SUBROUTINE DVOL2D( COORD, DISP, LSTSN, NSEG, DELVOL,
      *   NDIM, AXI, NUMNP)

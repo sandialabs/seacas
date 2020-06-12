@@ -4,21 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: arcpar.f,v $
-C Revision 1.2  1991/03/21 15:44:18  gdsjaar
-C Changed all 3.14159... to atan2(0.0, -1.0)
-C
-c Revision 1.1.1.1  1990/11/30  11:03:41  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:03:40  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]ARCPAR.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE ARCPAR (MP, KT, KNUM, COOR, LINKP, IPNTR1, IPNTR2,
      &   IPNTR3, IP3, XCEN, YCEN, THETA1, THETA2, TANG, R1, R2, ERR,

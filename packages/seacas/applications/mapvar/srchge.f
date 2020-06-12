@@ -4,22 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: srchge.f,v $
-C Revision 1.3  2007/10/17 18:40:36  gdsjaar
-C Added copyright notice to all files.
-C
-C Mapvar is licensed under the BSD license
-C
-C Revision 1.2  2000/11/14 17:30:40  gdsjaar
-C Removed old cray compiler directives
-C
-C Revision 1.1  1998/03/13 18:12:28  gdsjaar
-C New code -- mapvar. Interpolates results form an exodusII results file
-C to a differently mesh geometry.  Written by Gerry Wellman,
-C 9117. Loosely based on MERLIN. Provides a superset of merlin
-C functionality.
-C
-C
       SUBROUTINE SRCHGE( LBLK,NE,X,IND,XV,IMIN,IMAX,NDIM,I,
      *                  IL,IU,IT,INDX1,INDX2,XTST )
 C

@@ -4,21 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: pickm5.f,v $
-C Revision 1.2  1991/03/21 15:45:03  gdsjaar
-C Changed all 3.14159... to atan2(0.0, -1.0)
-C
-c Revision 1.1.1.1  1990/11/30  11:13:30  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:13:28  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]PICKM5.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE PICKM5 (N, X, Y, ANGLE, IST2, IST3, IST4, IST5, INDST,
      &   M1, N1, N2, N3, N4)

@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C     $Log: elvol.f,v $
-C     Revision 1.1  1991/11/06 20:02:49  gdsjaar
-C     Initial revision
 C
 
       SUBROUTINE ELVOL (NDIM, CRD, DISP, IX, NUMNP, NUMEL, NNODE,

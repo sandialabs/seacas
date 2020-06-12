@@ -4,27 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: exdsct.f,v $
-C Revision 1.3  1998/07/14 18:18:46  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.2  1991/03/21 15:44:46  gdsjaar
-C Changed all 3.14159... to atan2(0.0, -1.0)
-C
-c Revision 1.1.1.1  1990/11/30  11:07:01  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:07:00  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]EXDSCT.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE EXDSCT (MXND, XN, YN, LNODES, ANGLE, N1, XNEW, YNEW)
 C***********************************************************************

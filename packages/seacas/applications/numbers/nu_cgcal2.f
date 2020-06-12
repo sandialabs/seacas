@@ -4,19 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: cgcal2.f,v $
-C Revision 1.3  2000/07/06 18:07:42  gdsjaar
-C Fix assumption that variables are saved between subroutine calls
-C
-C Revision 1.2  1999/02/16 21:37:58  gdsjaar
-C Converted to read exodusII database format.  Somewhat tested, not
-C ready for production yet.
-C
-C Revision 1.1.1.1  1991/02/21 15:42:24  gdsjaar
-C NUMBERS: Greg Sjaardema, initial Unix release
-C
-c Revision 1.1  1991/02/21  15:42:23  gdsjaar
-c Initial revision
 c
       SUBROUTINE CGCAL2(CRD,IX,MAT,MASS,VOL,DENS,VOLM,CG,ZITOT,XXX,
      *    XG,XI,XINI,AJ,NNODES,NDIM,NQUAD,VOLMN,IELM,NELBLK,

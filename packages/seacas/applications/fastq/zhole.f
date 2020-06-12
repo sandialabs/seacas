@@ -4,35 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: zhole.f,v $
-C Revision 1.3  2000/11/13 15:39:06  gdsjaar
-C Cleaned up unused variables and labels.
-C
-C Removed some real to int conversion warnings.
-C
-C Revision 1.2  1998/07/14 18:20:19  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:18:02  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:18:00  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]ZHOLE.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO ZHOLE TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
       SUBROUTINE ZHOLE (MP, ML, MS, MR, NS, MAXNL, MAXNP, MAXPRM, NPRM,
      &   MAXNBC, MAXSBC, KNBC, KSBC, KNUM, IPOINT, COOR, IPBOUN, ILINE,
@@ -121,11 +95,6 @@ C  NON-CIRCULAR HOLE
             COUNT = .FALSE.
             EVEN = .FALSE.
             LREAL = .FALSE.
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO PERIM TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
             CALL PERIM (MP, ML, MS, NS, MAXNL, MAXNP, MAXNBC, MAXSBC,
      &         KNBC, KSBC, KNUM, IPOINT, COOR, IPBOUN, ILINE, LTYPE,

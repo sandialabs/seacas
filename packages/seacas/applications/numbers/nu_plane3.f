@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: plane3.f,v $
-C Revision 1.1  1991/02/21 15:44:49  gdsjaar
-C Initial revision
 C
       SUBROUTINE PLANE3 (COORD, NUMNP, DIST, DISTR, NDIM, P1, P2, TOLER,
      *   NODEL, SORTYP, MAP, SORUP, INUM, OPT, SELECT)

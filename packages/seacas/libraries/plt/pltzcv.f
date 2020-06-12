@@ -4,16 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: pltzcv.f,v $
-C Revision 1.3  1993/07/19 17:06:48  gdsjaar
-C Changed hex constants back to preceding X, --needed on cray. Works
-C either way on other systems.
-C
-c Revision 1.2  1993/07/16  17:33:26  gdsjaar
-c Integer constant too big on sun, replaced it with hexadecimal notation
-c
-c Revision 1.1  1993/07/16  16:50:04  gdsjaar
-c Changed plt to library rather than single source file.
 c
 C=======================================================================
       SUBROUTINE PLTZCV(ZNEAR,ZFAR,N,MASK,PX,PY,PZ,QX,QY,QZ)

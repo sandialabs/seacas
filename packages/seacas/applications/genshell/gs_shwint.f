@@ -8,15 +8,6 @@ C=======================================================================
       SUBROUTINE SHWINT (ITRANT, DIM3)
 C=======================================================================
 
-C   $Log: shwint.f,v $
-C   Revision 1.2  1991/01/09 12:59:38  gdsjaar
-C   Initial conversion from GEN3D to GENSHELL, no BC yet
-C
-c Revision 1.1.1.1  90/08/20  12:22:56  gdsjaar
-c Gen3D Mesh Generation Program
-c
-c Revision 1.1  90/08/20  12:22:55  gdsjaar
-c Initial revision
 c
 
       CHARACTER*20 RSTR(9)

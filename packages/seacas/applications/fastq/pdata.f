@@ -4,47 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: pdata.f,v $
-C Revision 1.5  2007/07/24 13:10:18  gdsjaar
-C Fix problem with boundary condition memory overwrite.
-C
-C Remove old ls5 and r25 terminal tests
-C
-C Revision 1.4  1999/06/21 22:43:40  gdsjaar
-C Fixed more uninitialized variables; one was causing core dump on g77
-C compiled executable.
-C
-C VERSN was not consistently defined -- now 10 characters everywhere
-C
-C Updated so full version string output
-C
-C Added capability to debug memory using unit specified in EXT99
-C variable. Similar to STRTUP in SUPLIB
-C
-C Cleaned up some other code
-C
-C Upped version
-C
-C Revision 1.3  1998/07/14 18:19:31  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.2  1992/12/08 22:13:54  gdsjaar
-C Changed color of point label output from yellow to red
-C
-c Revision 1.1.1.1  1990/11/30  11:13:14  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:13:13  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]PDATA.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE PDATA (MP, ML, MR, MSC, IPOINT, COOR, IPBOUN, ILINE,
      &   LTYPE, NINT, LCON, FACTOR, ILBOUN, ISBOUN, IREGN, IMAT, LINKP,

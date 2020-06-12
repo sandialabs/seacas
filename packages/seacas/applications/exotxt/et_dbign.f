@@ -8,19 +8,6 @@ C=======================================================================
       SUBROUTINE DBIGN (NDB, NUMESS, IDESS, NNESS, IXNESS,
      &                  LTNESS, LTNNN, IOERR)
 C=======================================================================
-C$Log: dbign.f,v $
-CRevision 1.4  2007/10/17 18:46:09  gdsjaar
-CAdded copyright notice to all files.
-C
-Cexotxt2 is licensed under the BSD license
-C
-CRevision 1.3  1996/05/21 16:52:17  caforsy
-CAdded read/write for property data.  Cleaned up exodusII error checks
-C
-CRevision 1.2  1995/11/07 15:01:25  gdsjaar
-CInitial checkin of ACCESS/translate/exotxt2
-C
-
 C   --*** DBIGN *** Get node from the side sets
 C   --   Written 9/10/95 for ExodusIIv2
 C   --

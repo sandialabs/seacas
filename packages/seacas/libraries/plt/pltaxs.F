@@ -4,18 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: pltaxs.F,v $
-C Revision 1.2  1998/03/24 17:53:08  gdsjaar
-C Missed a couple places where double escapes are needed
-C
-C Revision 1.1  1997/09/10 15:38:04  gdsjaar
-C Some of the axis labelling code needed the 'NeedsDoubleEscape' ifdefs
-C for the Sun (and presumably other) systems. This removes the
-C extraneous trailing '-' on the plot labels.  Needed to change to .f
-C file to .F files and add the necessary code to the Imakefile.
-C
-C Revision 1.1  1993/07/16 16:47:42  gdsjaar
-C Changed plt to library rather than single source file.
 C
 C=======================================================================
       SUBROUTINE PLTAXS(X,Y,XLENG,YLENG,TYPE,XMIN,XMAX,XSTART,NDEC,

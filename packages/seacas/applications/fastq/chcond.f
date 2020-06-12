@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: chcond.f,v $
-C Revision 1.1  1990/11/30 11:04:25  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.QMESH]CHCOND.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE CHCOND (NPER, NSA, SMANG, INDEX, IFIRST, N1, N2, N3,
      &   N4, CHECK)

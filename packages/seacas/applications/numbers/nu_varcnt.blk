@@ -4,16 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: varcnt.blk,v $
-C Revision 1.2  1999/02/16 21:38:02  gdsjaar
-C Converted to read exodusII database format.  Somewhat tested, not
-C ready for production yet.
-C
-C Revision 1.1.1.1  1991/02/21 15:46:15  gdsjaar
-C NUMBERS: Greg Sjaardema, initial Unix release
-C
-CRevision 1.1  1991/02/21  15:46:14  gdsjaar
-CInitial revision
 C
       COMMON /VARCNT/ NVARGL, NVARNP, NVAREL
 C       NVARGL  INTEGER         Number of GLOBAL variables

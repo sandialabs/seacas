@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: strng.blk,v $
-C Revision 1.1  1991/02/21 15:45:49  gdsjaar
-C Initial revision
 C
       COMMON /STRNG/ STR1(32), STR2(32), STR3(32), STR4(32), STR5(32),
      *   STR6(32), STR7(32), STR8(32), STRR(256)

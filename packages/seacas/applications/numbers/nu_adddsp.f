@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: adddsp.f,v $
-C Revision 1.1  1991/02/21 15:42:08  gdsjaar
-C Initial revision
 C
       SUBROUTINE ADDDSP (COORDS, DSP)
       DIMENSION COORDS (NUMNP,*), DSP(NUMNP,*)

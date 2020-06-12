@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: inhole.f,v $
-C Revision 1.1  1990/11/30 11:09:43  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.MAIN]INHOLE.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE INHOLE (MR, N7, N29, JPNTR, IIN, IFOUND, IFHOLE, NHPR,
      &   IHLIST, MERGE, NOROOM)

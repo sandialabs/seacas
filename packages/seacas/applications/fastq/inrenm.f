@@ -4,21 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: inrenm.f,v $
-C Revision 1.2  1992/01/10 23:14:40  gdsjaar
-C Fixed problem with renumbering input
-C
-c Revision 1.1.1.1  1990/11/30  11:10:10  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:10:09  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]INRENM.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE INRENM (MSC, N23, CFLAG, RIN, IIN, IFOUND, NUMBER,
      &   NOROOM)

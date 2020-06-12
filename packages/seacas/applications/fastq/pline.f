@@ -4,36 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: pline.f,v $
-C Revision 1.4  2001/11/05 13:26:52  gdsjaar
-C  Fixed array boundary problem in region check code.
-C
-C Revision 1.3  1998/07/14 18:19:37  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.2  1991/03/21 15:45:09  gdsjaar
-C Changed all 3.14159... to atan2(0.0, -1.0)
-C
-c Revision 1.1.1.1  1990/11/30  11:13:41  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:13:39  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]PLINE.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO PLINE TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
       SUBROUTINE PLINE (MP, ML, MAXNP, MAXNBC, MAXSBC, IPOINT,
      &   COOR, LINKP, KNUM, KT, NINT, FAC, IP1, IP2, IP3, X, Y, NID,
@@ -128,11 +101,6 @@ C
                GOTO 340
             ENDIF
             IF (REMESH) THEN
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO STRSIZ TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
                CALL STRSIZ (MAXNP, X, Y, NINT, N, COOR(1,IP2),
      &            COOR(2,IP2), XDIFF, YDIFF, D, ERR, TEST, XNOLD, YNOLD,
@@ -306,11 +274,6 @@ C
             AA =  (LOG (R2/R1))/ (THETA2 - THETA1)
             BB = R2/EXP (AA * THETA2)
             IF (REMESH) THEN
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO CRCSIZ TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
                CALL CRCSIZ (MAXNP, X, Y, NINT, N, COOR(1,IP2),
      &            COOR(2,IP2), XCEN, YCEN, THETA1, THETA2, TANG, AA, BB,

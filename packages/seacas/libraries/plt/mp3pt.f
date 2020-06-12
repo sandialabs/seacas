@@ -4,9 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: mp3pt.f,v $
-C Revision 1.1  1993/07/16 16:47:05  gdsjaar
-C Changed plt to library rather than single source file.
 C
 C=======================================================================
       SUBROUTINE MP3PT(N,X0,Y0,Z0,PX,PY,PZ,MASK)

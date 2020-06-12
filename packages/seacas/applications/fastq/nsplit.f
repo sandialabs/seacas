@@ -4,21 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: nsplit.f,v $
-C Revision 1.2  1991/05/10 17:42:09  gdsjaar
-C Changed VMS JNINT intrinsic to ANSI NINT
-C
-c Revision 1.1.1.1  1990/11/30  11:12:56  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:12:54  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]NSPLIT.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE NSPLIT (MXND, MLN, LNODES, ANGLE, NSTART, KANG,
      &   INODE, NNODE, NWANT, MAXSIZ)
