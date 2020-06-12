@@ -8,8 +8,8 @@ C    See packages/seacas/LICENSE for details
       QAINFO(2) = '        '
       QAINFO(3) = '        '
 
-      QAINFO(2)(:8) = '20160510'
-      QAINFO(3)(:8) = '    1.27'
+      QAINFO(2)(:8) = '20200612'
+      QAINFO(3)(:8) = '    1.28'
 
 C ... Added esum and eaverage commands
 c ... Fixed cavity volume output
@@ -32,3 +32,4 @@ c ... check whether there are valid displacements for all commands calling getds
 c ... Fix handling of empty sidesets
 c ... increase output precision
 c ... Add centroid option for 3d cavity
+c ... Fix/kluge command-line arg parsing on intel (qainfo not in common block)

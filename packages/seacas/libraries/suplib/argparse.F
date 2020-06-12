@@ -16,7 +16,7 @@ C    See packages/seacas/LICENSE for details
       integer which
       character*(*) optvalue
       integer length
-#if defined(__XLF__)
+#if defined(__XLF__) || defined(__INTEL_COMPILER)
       integer*4 which4
       which4 = which
       call getarg(which4, optvalue)
