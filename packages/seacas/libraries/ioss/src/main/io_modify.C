@@ -63,7 +63,7 @@
 #endif
 
 #if defined(SEACAS_HAVE_CGNS)
-#include <Iocgns_Utils.h>
+#include <cgns/Iocgns_Utils.h>
 #endif
 
 #if defined(_MSC_VER)
