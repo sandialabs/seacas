@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: lxrnl.f,v 1.3 1993/07/16 18:28:52 gdsjaar Exp $
 C $Log: lxrnl.f,v $
 C Revision 1.3  1993/07/16 18:28:52  gdsjaar
 C Changed real*8 to double precision

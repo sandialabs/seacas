@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C     $Id: sumelm.f,v 1.8 2005/06/17 16:57:29 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE SUMELM (CRD, DISP, SVAR, MAT, NDIM, NUMNP, INDX,
      *     ELMSEL, NAME, TIME, ITMSEL, AVER, AXI, DOABS, DODENS,

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: gdata.f,v 1.3 1999/07/01 13:48:26 gdsjaar Exp $
 C $Log: gdata.f,v $
 C Revision 1.3  1999/07/01 13:48:26  gdsjaar
 C Fixed another negative array index.

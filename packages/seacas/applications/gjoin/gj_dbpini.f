@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C$Id: dbpini.f,v 1.2 2001/06/26 17:38:54 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE DBPINI (OPTION, NDB, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &                   NUMNPS, LNPSNL, LNPSDF, NUMESS, LESSEL,

@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBIXYZ (NDB, OPTION, NDIM, NUMNP, XN, YN, ZN, *)
 C=======================================================================
-C$Id: dbixyz.f,v 1.2 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbixyz.f,v $
 CRevision 1.2  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

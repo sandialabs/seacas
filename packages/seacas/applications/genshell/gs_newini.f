@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE NEWINI (IDNSUR, IDESUR, NSSUR, NUMATR)
 C=======================================================================
 
-C   $Id: newini.f,v 1.6 1999/02/17 15:26:56 gdsjaar Exp $
 C   $Log: newini.f,v $
 C   Revision 1.6  1999/02/17 15:26:56  gdsjaar
 C   Converted to read/write exodusII database.

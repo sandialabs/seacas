@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: bannr2.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C $Log: bannr2.f,v $
 C Revision 1.3  2009/03/25 12:46:01  gdsjaar
 C Add copyright and license notice to all files.

@@ -76,7 +76,6 @@ C   --Save the input parameters
 C=======================================================================
       ENTRY DBIV1 (NELBLK, NVARHI, NVARGL, NVARNP, NVAREL, ISEVOK)
 C=======================================================================
-C$Id: dbiv0.f,v 1.2 1994/02/11 22:52:28 vryarbe Exp $
 C$Log: dbiv0.f,v $
 CRevision 1.2  1994/02/11 22:52:28  vryarbe
 Cfixed bug causing compiler error w/optimize flag
@@ -162,7 +161,6 @@ C   --Set NREC0 = the number of records before the time steps
 C=======================================================================
       ENTRY DBIVIN (REWDB)
 C=======================================================================
-C$Id: dbiv0.f,v 1.2 1994/02/11 22:52:28 vryarbe Exp $
 C$Log: dbiv0.f,v $
 CRevision 1.2  1994/02/11 22:52:28  vryarbe
 Cfixed bug causing compiler error w/optimize flag
@@ -211,7 +209,6 @@ C=======================================================================
       ENTRY DBIVAR (NDB, NUMVAR, IVAR, ISTEP, LENVAR, IELBLK,
      &   NELBLK, NUMELB, ISEVOK, VAR, *)
 C=======================================================================
-C$Id: dbiv0.f,v 1.2 1994/02/11 22:52:28 vryarbe Exp $
 C$Log: dbiv0.f,v $
 CRevision 1.2  1994/02/11 22:52:28  vryarbe
 Cfixed bug causing compiler error w/optimize flag

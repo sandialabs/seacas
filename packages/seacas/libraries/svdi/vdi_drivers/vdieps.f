@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: vdieps.f,v 1.22 2005/09/13 13:50:48 gdsjaar Exp $
       SUBROUTINE PSTA2C(ASCI,CHARAC)
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 C

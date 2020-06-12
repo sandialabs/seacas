@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: erasec.f,v 1.1 1990/11/30 11:06:45 gdsjaar Exp $
 C $Log: erasec.f,v $
 C Revision 1.1  1990/11/30 11:06:45  gdsjaar
 C Initial revision

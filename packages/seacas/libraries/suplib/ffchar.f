@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFCHAR (IFLD, INTYP, CFIELD, DEFVAL, CVAL)
 C=======================================================================
-C$Id: ffchar.f,v 1.2 2009/03/25 12:46:02 gdsjaar Exp $
 C$Log: ffchar.f,v $
 CRevision 1.2  2009/03/25 12:46:02  gdsjaar
 CAdd copyright and license notice to all files.

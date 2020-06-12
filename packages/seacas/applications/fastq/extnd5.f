@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: extnd5.f,v 1.2 1998/07/14 18:18:53 gdsjaar Exp $
 C $Log: extnd5.f,v $
 C Revision 1.2  1998/07/14 18:18:53  gdsjaar
 C Removed unused variables, cleaned up a little.

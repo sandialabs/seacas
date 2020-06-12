@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE DBOINI (NDB, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &   NUMNPS, LNPSNL, NUMESS, LESSEL, LESSNL)
 C=======================================================================
-C$Id: dboini.f,v 1.2 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dboini.f,v $
 CRevision 1.2  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

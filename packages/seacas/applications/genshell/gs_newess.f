@@ -9,7 +9,6 @@ C=======================================================================
      &   ISSFRO, ISSBCK, NSSFRO, NSSBCK)
 C=======================================================================
 
-C   $Id: newess.f,v 1.3 1993/11/23 21:19:23 gdsjaar Exp $
 C   $Log: newess.f,v $
 C   Revision 1.3  1993/11/23 21:19:23  gdsjaar
 C   Added capability to handle 8-node quads to 8-node shells

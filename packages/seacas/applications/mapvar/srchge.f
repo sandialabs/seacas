@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: srchge.f,v 1.3 2007/10/17 18:40:36 gdsjaar Exp $
 C $Log: srchge.f,v $
 C Revision 1.3  2007/10/17 18:40:36  gdsjaar
 C Added copyright notice to all files.

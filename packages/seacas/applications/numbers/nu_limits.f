@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: limits.f,v 1.4 1999/02/16 21:38:00 gdsjaar Exp $
 C $Log: limits.f,v $
 C Revision 1.4  1999/02/16 21:38:00  gdsjaar
 C Converted to read exodusII database format.  Somewhat tested, not

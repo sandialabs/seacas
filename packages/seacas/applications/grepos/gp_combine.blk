@@ -5,7 +5,6 @@ C
 C See packages/seacas/LICENSE for details
 
 C     -*- Mode: fortran -*-
-C $Id: combine.blk,v 1.1 1999/01/18 19:18:22 gdsjaar Exp $
       common /combine/ equiv, eqtoler
       logical equiv
       real    eqtoler

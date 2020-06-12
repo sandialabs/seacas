@@ -10,7 +10,6 @@ C=======================================================================
      &   NVARNP, NELBLK, NVAREL, ISEVOK,
      &   NSTEPS, NSTEPW, A, KTIMES, KWHOLE, *)
 C=======================================================================
-C$Id: dbitim.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbitim.f,v $
 CRevision 1.3  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

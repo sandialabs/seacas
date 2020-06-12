@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: wrfsq.f,v 1.3 1999/06/21 22:43:41 gdsjaar Exp $
 C $Log: wrfsq.f,v $
 C Revision 1.3  1999/06/21 22:43:41  gdsjaar
 C Fixed more uninitialized variables; one was causing core dump on g77

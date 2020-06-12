@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: mxiden.f,v 1.3 1993/07/19 18:08:45 gdsjaar Exp $
 C $Log: mxiden.f,v $
 C Revision 1.3  1993/07/19 18:08:45  gdsjaar
 C Added special case for n=4 since that is how plt calls it primarily

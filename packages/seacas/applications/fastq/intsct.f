@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: intsct.f,v 1.2 1992/02/04 15:50:25 gdsjaar Exp $
 C $Log: intsct.f,v $
 C Revision 1.2  1992/02/04 15:50:25  gdsjaar
 C Added bounding box check in intsct, reduce time 5 percent

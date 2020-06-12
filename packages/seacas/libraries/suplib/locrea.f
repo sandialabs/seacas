@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       INTEGER FUNCTION LOCREA (VALU, NVALUS, VALUS)
 C=======================================================================
-C$Id: locrea.f,v 1.2 2009/03/25 12:46:02 gdsjaar Exp $
 C$Log: locrea.f,v $
 CRevision 1.2  2009/03/25 12:46:02  gdsjaar
 CAdd copyright and license notice to all files.

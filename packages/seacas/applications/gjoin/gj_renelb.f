@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE RENELB (NELBLK, IOFFNP, IXNP, NUMELB, NUMLNK, LINK)
 C=======================================================================
-C $Id: renelb.f,v 1.1 1999/01/18 19:21:26 gdsjaar Exp $
 C $Log: renelb.f,v $
 C Revision 1.1  1999/01/18 19:21:26  gdsjaar
 C ExodusII version of gjoin, needs testing and syncing with exodus 1 version, but is being committed to permit easier testing and modifications.  This was created by Dave Fry at Goodyear

@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltsvv.f,v 1.3 1993/07/16 22:30:21 gdsjaar Exp $
 C $Log: pltsvv.f,v $
 C Revision 1.3  1993/07/16 22:30:21  gdsjaar
 C Unrolled do loops to speed up execution.

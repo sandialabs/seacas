@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: getden.f,v 1.1 1991/02/21 15:43:20 gdsjaar Exp $
 C $Log: getden.f,v $
 C Revision 1.1  1991/02/21 15:43:20  gdsjaar
 C Initial revision

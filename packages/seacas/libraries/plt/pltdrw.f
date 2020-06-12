@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltdrw.f,v 1.4 2001/01/05 18:17:07 gdsjaar Exp $
 C $Log: pltdrw.f,v $
 C Revision 1.4  2001/01/05 18:17:07  gdsjaar
 C Variable was assumed to be saved, but wasn't.  Added a SAVE statement

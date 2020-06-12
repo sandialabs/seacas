@@ -515,7 +515,6 @@ exit $load_rc
 
 USAGE:
 cat << 'EOF'
-Version: $Id: loadbal.c,v 1.57 2008/05/19 12:29:22 gdsjaar Exp $
 
 Usage:  loadbal [-h] -p <processor layout> [-n <nemslice options>]
                 [-r <number of disks>] [-o <disk offset>] [-slit]

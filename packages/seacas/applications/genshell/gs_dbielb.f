@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: dbielb.f,v 1.1 1999/02/17 15:26:51 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE DBIELB (NDB, OPTION, NELBS, NELBE, IDELB, NUMELB,
      &           NUMLNK, NUMATR, A, IA, KLINK, KATRIB, NAMELB, *)

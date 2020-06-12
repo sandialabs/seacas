@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: mnorm.f,v 1.1 1990/11/30 11:12:25 gdsjaar Exp $
 C $Log: mnorm.f,v $
 C Revision 1.1  1990/11/30 11:12:25  gdsjaar
 C Initial revision

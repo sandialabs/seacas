@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltsvg.f,v 1.2 1993/07/16 18:08:06 gdsjaar Exp $
 C $Log: pltsvg.f,v $
 C Revision 1.2  1993/07/16 18:08:06  gdsjaar
 C Added external pltblk statements so that linkers would pull in block

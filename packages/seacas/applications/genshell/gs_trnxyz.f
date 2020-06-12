@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE TRNXYZ (XN, YN, XN3, YN3, ZN3, ATRIB)
 C=======================================================================
 
-C   $Id: trnxyz.f,v 1.2 1991/01/09 12:59:44 gdsjaar Exp $
 C   $Log: trnxyz.f,v $
 C   Revision 1.2  1991/01/09 12:59:44  gdsjaar
 C   Initial conversion from GEN3D to GENSHELL, no BC yet

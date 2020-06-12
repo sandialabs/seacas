@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: qual2.f,v 1.2 2000/11/13 15:39:05 gdsjaar Exp $
 C $Log: qual2.f,v $
 C Revision 1.2  2000/11/13 15:39:05  gdsjaar
 C Cleaned up unused variables and labels.

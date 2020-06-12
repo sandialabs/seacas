@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: gnxka.f,v 1.2 2000/11/13 15:41:35 gdsjaar Exp $
       SUBROUTINE GNXKA (MXND, XN, YN, K, NODES, AREA, LXK, NXL, CCW)
 C***********************************************************************
 C  SUBROUTINE GNXKA = GENERATES A LIST OF THE FOUR NODES ASSOCIATED WITH

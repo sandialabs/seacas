@@ -10,7 +10,6 @@ C=======================================================================
      &   LINK, ATRIB, LINKX, ATRIBX, IXEL, IXELB, NELBX,
      $   ISCR, NAMELB, SCRSTR, LLINK, LATRIB)
 C=======================================================================
-C $Id: munelb.f,v 1.3 1999/03/22 15:53:00 gdsjaar Exp $
 C $Log: munelb.f,v $
 C Revision 1.3  1999/03/22 15:53:00  gdsjaar
 C Fix problem with too many element blocks. GJoin has fixed size of 256

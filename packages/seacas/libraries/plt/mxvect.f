@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: mxvect.f,v 1.3 1993/07/16 22:56:19 gdsjaar Exp $
 C $Log: mxvect.f,v $
 C Revision 1.3  1993/07/16 22:56:19  gdsjaar
 C Unrolled loops for faster execution

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: addwt.f,v 1.2 2007/04/04 22:00:37 gdsjaar Exp $
 C $Log: addwt.f,v $
 C Revision 1.2  2007/04/04 22:00:37  gdsjaar
 C Fix some bugs.

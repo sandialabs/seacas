@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltcur.f,v 1.5 2000/10/25 18:55:02 gdsjaar Exp $
 C $Log: pltcur.f,v $
 C Revision 1.5  2000/10/25 18:55:02  gdsjaar
 C In the pltli? functions, check for N==0 before doing any array

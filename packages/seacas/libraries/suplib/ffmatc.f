@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       LOGICAL FUNCTION FFMATC (IFLD, INTYP, CFIELD, MATCH, NLET)
 C=======================================================================
-C$Id: ffmatc.f,v 1.2 2009/03/25 12:46:02 gdsjaar Exp $
 C$Log: ffmatc.f,v $
 CRevision 1.2  2009/03/25 12:46:02  gdsjaar
 CAdd copyright and license notice to all files.

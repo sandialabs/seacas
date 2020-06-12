@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltpgz.f,v 1.2 1997/11/18 20:03:15 gdsjaar Exp $
 C $Log: pltpgz.f,v $
 C Revision 1.2  1997/11/18 20:03:15  gdsjaar
 C Fixed problem accessing array outside of valid bounds.

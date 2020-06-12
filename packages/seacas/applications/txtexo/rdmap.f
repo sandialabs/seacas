@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: rdmap.f,v 1.3 2007/10/17 18:47:22 gdsjaar Exp $
 C $Log: rdmap.f,v $
 C Revision 1.3  2007/10/17 18:47:22  gdsjaar
 C Added copyright notice to all files.

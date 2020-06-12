@@ -9,7 +9,6 @@ C=======================================================================
      &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS,
      &   LTNX, FACX, IXNPS, NNX, ISCR, NODSCR, NUMNP)
 C=======================================================================
-C $Id: munnps.f,v 1.2 2008/07/31 20:15:56 gdsjaar Exp $
 C $Log: munnps.f,v $
 C Revision 1.2  2008/07/31 20:15:56  gdsjaar
 C Change the way the nodal point node membership is calculated. For some

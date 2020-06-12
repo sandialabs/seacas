@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: rowsmo.f,v 1.5 2004/01/22 14:25:22 gdsjaar Exp $
 C $Log: rowsmo.f,v $
 C Revision 1.5  2004/01/22 14:25:22  gdsjaar
 C Attempt to fix strange problem on x86_64 AMD Opteron system using

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: nicks.f,v 1.4 1992/08/24 17:08:07 gdsjaar Exp $
 C $Log: nicks.f,v $
 C Revision 1.4  1992/08/24 17:08:07  gdsjaar
 C Removed undefined messages -- code works fine, no need for message

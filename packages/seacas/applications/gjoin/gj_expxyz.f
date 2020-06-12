@@ -6,7 +6,6 @@ C See packages/seacas/LICENSE for details
 
 C     -*- Mode: fortran -*-
 C=======================================================================
-C     $Id: expxyz.f,v 1.3 2002/06/24 16:09:28 gdsjaar Exp $
 c
       SUBROUTINE EXPXYZ (NDIM,
      $     MATNS1, MATNS2, NNNPS, IXNNPS, LTNNPS,

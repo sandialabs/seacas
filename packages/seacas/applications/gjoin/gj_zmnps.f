@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE ZMNPS (NUMNPS, LNPSNL,
      &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS)
 C=======================================================================
-C $Id: zmnps.f,v 1.1 1999/01/18 19:21:27 gdsjaar Exp $
 C $Log: zmnps.f,v $
 C Revision 1.1  1999/01/18 19:21:27  gdsjaar
 C ExodusII version of gjoin, needs testing and syncing with exodus 1 version, but is being committed to permit easier testing and modifications.  This was created by Dave Fry at Goodyear

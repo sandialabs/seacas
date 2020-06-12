@@ -6,7 +6,6 @@ C See packages/seacas/LICENSE for details
 
 C -*- Mode: fortran -*-
 C=======================================================================
-C $Id: setitl.f,v 1.1 1999/01/18 19:21:26 gdsjaar Exp $
 C $Log: setitl.f,v $
 C Revision 1.1  1999/01/18 19:21:26  gdsjaar
 C ExodusII version of gjoin, needs testing and syncing with exodus 1 version, but is being committed to permit easier testing and modifications.  This was created by Dave Fry at Goodyear

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: spring.f,v 1.2 1991/04/10 19:56:54 gdsjaar Exp $
 C $Log: spring.f,v $
 C Revision 1.2  1991/04/10 19:56:54  gdsjaar
 C Fixed some logical variables

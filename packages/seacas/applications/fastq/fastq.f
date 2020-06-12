@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: fastq.f,v 1.38 2007/07/24 13:10:18 gdsjaar Exp $
       PROGRAM FASTQ
 C***********************************************************************
 C

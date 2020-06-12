@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE RWNMAP (NDBIN, NDBOUT, NUMNP, NUMNPO, IXNODE,
      &                   MAPND, NEWIX)
 C=======================================================================
-C $Id: rwnmap.f,v 1.1 2009/04/24 22:28:49 gdsjaar Exp $
 C   --*** RWNMAP *** (ALGEBRA) Read and write database node number map
 C   --
 C   --

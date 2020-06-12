@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE CPYREA (LEN, RFROM, RTO)
 C=======================================================================
-C$Id: cpyrea.f,v 1.2 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: cpyrea.f,v $
 CRevision 1.2  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

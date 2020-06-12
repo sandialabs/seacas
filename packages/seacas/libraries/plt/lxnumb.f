@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: lxnumb.f,v 1.2 1993/07/16 18:28:50 gdsjaar Exp $
 C $Log: lxnumb.f,v $
 C Revision 1.2  1993/07/16 18:28:50  gdsjaar
 C Changed real*8 to double precision

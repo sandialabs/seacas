@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE DBINPS (NDB, OPTION, NUMNPS, LNPSNL,
      &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS, *)
 C=======================================================================
-C$Id: dbinps.f,v 1.2 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbinps.f,v $
 CRevision 1.2  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

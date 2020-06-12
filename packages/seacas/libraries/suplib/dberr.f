@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBERR (IOSTAT, ERRMSG)
 C=======================================================================
-C$Id: dberr.f,v 1.4 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dberr.f,v $
 CRevision 1.4  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

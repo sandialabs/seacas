@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltvwp.f,v 1.3 1993/07/19 17:06:45 gdsjaar Exp $
 C $Log: pltvwp.f,v $
 C Revision 1.3  1993/07/19 17:06:45  gdsjaar
 C Changed hex constants back to preceding X, --needed on cray. Works

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: cgcal2.f,v 1.3 2000/07/06 18:07:42 gdsjaar Exp $
 C $Log: cgcal2.f,v $
 C Revision 1.3  2000/07/06 18:07:42  gdsjaar
 C Fix assumption that variables are saved between subroutine calls

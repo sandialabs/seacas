@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: inrenm.f,v 1.2 1992/01/10 23:14:40 gdsjaar Exp $
 C $Log: inrenm.f,v $
 C Revision 1.2  1992/01/10 23:14:40  gdsjaar
 C Fixed problem with renumbering input

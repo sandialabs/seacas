@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: disctp.f,v 1.3 1991/03/22 16:07:18 gdsjaar Exp $
 C $Log: disctp.f,v $
 C Revision 1.3  1991/03/22 16:07:18  gdsjaar
 C Fixed DATA statement screwed up in PI change

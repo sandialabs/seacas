@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE DBIEB1 (NDB, OPTION, IELB, NUMELB, NUMLNK, NUMATR,
      &   LINK, ATRIB, NATRDM, NLNKDM, *)
 C=======================================================================
-C$Id: dbieb1.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbieb1.f,v $
 CRevision 1.3  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

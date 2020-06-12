@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE RENIX (LLIST, IOFFIX, IX, LIST)
 C=======================================================================
-C $Id: renix.f,v 1.1 1999/01/18 19:21:26 gdsjaar Exp $
 C $Log: renix.f,v $
 C Revision 1.1  1999/01/18 19:21:26  gdsjaar
 C ExodusII version of gjoin, needs testing and syncing with exodus 1 version, but is being committed to permit easier testing and modifications.  This was created by Dave Fry at Goodyear

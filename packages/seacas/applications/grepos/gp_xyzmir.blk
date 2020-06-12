@@ -5,7 +5,6 @@ C
 C See packages/seacas/LICENSE for details
 
 C     -*- Mode: fortran -*-
-C $Id: xyzmir.blk,v 1.1 1999/01/18 19:18:39 gdsjaar Exp $
 
       COMMON /XYZMIR/ XMIRR, YMIRR, ZMIRR
 C      --XMIRR, YMIRR, ZMIRR - 1.0 if not mirrored, -1.0 if mirrored

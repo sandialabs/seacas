@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE PRTELB (ISTAT, NELBL1, NELBL2,
      &   IDELB, NUMELB, NUMLNK, NUMATR, ISCR)
 C=======================================================================
-C $Id: prtelb.F,v 1.2 1999/03/23 15:56:43 gdsjaar Exp $
 C $Log: prtelb.F,v $
 C Revision 1.2  1999/03/23 15:56:43  gdsjaar
 C Upped format fields to accommodate larger element block ids

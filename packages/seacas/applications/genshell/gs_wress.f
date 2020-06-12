@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C   $Id: wress.f,v 1.3 1999/03/01 14:15:08 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE WRESS (A, IA, IDFRO, IDBCK,
      &   ISSFRO, ISSBCK, NSSUR, NSSFRO, NSSBCK,

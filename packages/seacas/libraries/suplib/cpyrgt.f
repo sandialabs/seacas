@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE CPYRGT (NOUT, YEAR)
 C=======================================================================
-C $Id: cpyrgt.f,v 1.4 2009/03/25 14:31:47 gdsjaar Exp $
 C $Log: cpyrgt.f,v $
 C Revision 1.4  2009/03/25 14:31:47  gdsjaar
 C Update copyright info

@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: subv.f,v 1.2 2009/03/25 12:46:02 gdsjaar Exp $
 C $Log: subv.f,v $
 C Revision 1.2  2009/03/25 12:46:02  gdsjaar
 C Add copyright and license notice to all files.

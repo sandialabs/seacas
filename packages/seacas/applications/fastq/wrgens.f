@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: wrgens.f,v 1.9 1998/03/23 05:17:54 gdsjaar Exp $
 C $Log: wrgens.f,v $
 C Revision 1.9  1998/03/23 05:17:54  gdsjaar
 C Fixed data statement ordering

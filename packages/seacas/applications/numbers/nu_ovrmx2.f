@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C     $Id: ovrmx2.f,v 1.3 1991/08/05 13:44:20 gdsjaar Exp $
 C     $Log: ovrmx2.f,v $
 C     Revision 1.3  1991/08/05 13:44:20  gdsjaar
 C     Reordered penetration distance loops, fixed format statement

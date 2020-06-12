@@ -9,7 +9,6 @@ C=======================================================================
      &   IDELB, NUMELB, NUMLNK, NUMATR,
      &   A, KLINK, KATRIB, *)
 C=======================================================================
-C$Id: dbielb.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbielb.f,v $
 CRevision 1.3  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltspc.f,v 1.2 1993/07/16 17:55:28 gdsjaar Exp $
 C $Log: pltspc.f,v $
 C Revision 1.2  1993/07/16 17:55:28  gdsjaar
 C Fixed do loop bounds to get rid of truncation message.

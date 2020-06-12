@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: ovrmx3.f,v 1.5 1992/01/28 19:01:27 gdsjaar Exp $
 C $Log: ovrmx3.f,v $
 C Revision 1.5  1992/01/28 19:01:27  gdsjaar
 C Added overlap checking of deformed mesh

@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFNEED (IFLD, INTYP, FTYPE, NFLD, EXPECT, *)
 C=======================================================================
-C$Id: ffneed.f,v 1.3 2009/03/25 12:46:02 gdsjaar Exp $
 C$Log: ffneed.f,v $
 CRevision 1.3  2009/03/25 12:46:02  gdsjaar
 CAdd copyright and license notice to all files.

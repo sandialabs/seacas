@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: ltnew.f,v 1.1 1990/11/30 11:11:40 gdsjaar Exp $
 C $Log: ltnew.f,v $
 C Revision 1.1  1990/11/30 11:11:40  gdsjaar
 C Initial revision
