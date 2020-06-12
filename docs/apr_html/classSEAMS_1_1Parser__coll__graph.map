@@ -1,10 +1,10 @@
 <map id="SEAMS::Parser" name="SEAMS::Parser">
-<area shape="rect" id="node1" title="A Bison parser." alt="" coords="71,205,186,231"/>
-<area shape="rect" id="node2" href="$classSEAMS_1_1Parser_1_1stack.html" title=" " alt="" coords="5,92,163,131"/>
-<area shape="rect" id="node3" href="$classSEAMS_1_1Aprepro.html" title=" " alt="" coords="189,99,312,124"/>
-<area shape="rect" id="node5" href="$classSEAMS_1_1Scanner.html" title=" " alt="" coords="268,205,393,231"/>
-<area shape="rect" id="node4" href="$structSEAMS_1_1aprepro__options.html" title=" " alt="" coords="165,5,337,31"/>
-<area shape="rect" id="node6" href="$classSEAMSFlexLexer.html" title=" " alt="" coords="370,99,497,124"/>
-<area shape="rect" id="node7" href="$classFlexLexer.html" title=" " alt="" coords="506,5,585,31"/>
-<area shape="rect" id="node8" href="$structyy__buffer__state.html" title=" " alt="" coords="369,5,482,31"/>
+<area shape="rect" id="node1" title="A Bison parser." alt="" coords="71,213,186,240"/>
+<area shape="rect" id="node2" href="$classSEAMS_1_1Parser_1_1stack.html" title=" " alt="" coords="5,95,164,136"/>
+<area shape="rect" id="node3" href="$classSEAMS_1_1Aprepro.html" title=" " alt="" coords="190,102,313,129"/>
+<area shape="rect" id="node5" href="$classSEAMS_1_1Scanner.html" title=" " alt="" coords="267,213,393,240"/>
+<area shape="rect" id="node4" href="$structSEAMS_1_1aprepro__options.html" title=" " alt="" coords="167,5,336,32"/>
+<area shape="rect" id="node6" href="$classSEAMSFlexLexer.html" title=" " alt="" coords="368,102,495,129"/>
+<area shape="rect" id="node7" href="$classFlexLexer.html" title=" " alt="" coords="505,5,584,32"/>
+<area shape="rect" id="node8" href="$structyy__buffer__state.html" title=" " alt="" coords="369,5,481,32"/>
 </map>

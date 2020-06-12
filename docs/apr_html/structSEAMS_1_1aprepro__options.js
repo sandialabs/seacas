@@ -4,6 +4,8 @@ var structSEAMS_1_1aprepro__options =
     [ "debugging", "structSEAMS_1_1aprepro__options.html#a7f2d4ef53319fc5683d07dddfdf1339a", null ],
     [ "dumpvars", "structSEAMS_1_1aprepro__options.html#a21a037ae8f97df9f1e7cd4d55cc7f8fb", null ],
     [ "end_on_exit", "structSEAMS_1_1aprepro__options.html#a7829d01ddb7ce49cf31d424de28ba3ab", null ],
+    [ "errors_and_warnings_fatal", "structSEAMS_1_1aprepro__options.html#a7abcaaae0d924cf875c934c6b45fabd2", null ],
+    [ "errors_fatal", "structSEAMS_1_1aprepro__options.html#a7a2a0ef9e91feb13c6780d58c19d6894", null ],
     [ "immutable", "structSEAMS_1_1aprepro__options.html#a7b558e335d16073ca388de7456a8c2b4", null ],
     [ "include_file", "structSEAMS_1_1aprepro__options.html#aecc0d60eb5a06827c62d0708f053f896", null ],
     [ "include_path", "structSEAMS_1_1aprepro__options.html#a5e15512992edda61cd1466cb60735dab", null ],
