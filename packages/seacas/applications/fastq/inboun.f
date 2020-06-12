@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: inboun.f,v 1.3 2004/01/21 05:18:40 gdsjaar Exp $
 C $Log: inboun.f,v $
 C Revision 1.3  2004/01/21 05:18:40  gdsjaar
 C Initialized several variables identified by valgrind.

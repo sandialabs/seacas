@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE DBIGN (NDB, NUMESS, IDESS, NNESS, IXNESS,
      &                  LTNESS, LTNNN, IOERR)
 C=======================================================================
-C$Id: dbign.f,v 1.4 2007/10/17 18:46:09 gdsjaar Exp $
 C$Log: dbign.f,v $
 CRevision 1.4  2007/10/17 18:46:09  gdsjaar
 CAdded copyright notice to all files.

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C     $Id: estime.f,v 1.5 2001/02/20 23:27:03 gdsjaar Exp $
 C     $Log: estime.f,v $
 C     Revision 1.5  2001/02/20 23:27:03  gdsjaar
 C     Special modification for Frank Dempsey.

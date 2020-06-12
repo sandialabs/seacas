@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: boxit.f,v 1.4 2004/01/26 17:28:18 gdsjaar Exp $
 C $Log: boxit.f,v $
 C Revision 1.4  2004/01/26 17:28:18  gdsjaar
 C Removed several unused variables from getang subroutine.

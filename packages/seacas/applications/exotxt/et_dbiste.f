@@ -10,7 +10,6 @@ C=======================================================================
      &                   IDELB, NUMELB, ISEVOK,
      &                   VARGL, VARNP, VAREL, IOERR)
 C=======================================================================
-C$Id: dbiste.f,v 1.4 2007/10/17 18:46:09 gdsjaar Exp $
 C$Log: dbiste.f,v $
 CRevision 1.4  2007/10/17 18:46:09  gdsjaar
 CAdded copyright notice to all files.

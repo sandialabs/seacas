@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: cvty.blk,v 1.1 1991/02/21 15:42:52 gdsjaar Exp $
 C $Log: cvty.blk,v $
 C Revision 1.1  1991/02/21 15:42:52  gdsjaar
 C Initial revision

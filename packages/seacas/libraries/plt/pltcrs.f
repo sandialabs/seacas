@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltcrs.f,v 1.2 1993/10/14 15:02:37 gdsjaar Exp $
 C $Log: pltcrs.f,v $
 C Revision 1.2  1993/10/14 15:02:37  gdsjaar
 C Removed warp pointer call in location setting

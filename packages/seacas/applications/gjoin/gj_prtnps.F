@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE PRTNPS (ISTAT, NNPS1, NNPS2, IDNPS, NNNPS, ISCR)
 C=======================================================================
-C $Id: prtnps.F,v 1.1 1999/01/18 19:21:25 gdsjaar Exp $
 C $Log: prtnps.F,v $
 C Revision 1.1  1999/01/18 19:21:25  gdsjaar
 C ExodusII version of gjoin, needs testing and syncing with exodus 1 version, but is being committed to permit easier testing and modifications.  This was created by Dave Fry at Goodyear

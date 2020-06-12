@@ -8,7 +8,6 @@ C     -*- Mode: fortran -*-
       SUBROUTINE GETSPL(A)
       DIMENSION A(*)
 
-C $Id: getspl.f,v 1.6 1997/11/26 16:28:38 gdsjaar Exp $
 C $Log: getspl.f,v $
 C Revision 1.6  1997/11/26 16:28:38  gdsjaar
 C Added NOSCALE option to the spline sweeping. If specified, then the

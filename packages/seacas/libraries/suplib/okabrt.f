@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       LOGICAL FUNCTION OKABRT (ISOK)
 C=======================================================================
-C$Id: okabrt.f,v 1.3 2009/03/25 12:46:02 gdsjaar Exp $
 C$Log: okabrt.f,v $
 CRevision 1.3  2009/03/25 12:46:02  gdsjaar
 CAdd copyright and license notice to all files.
@@ -58,7 +57,6 @@ C      --Initialize cancel flag
 C=======================================================================
       ENTRY ISABRT ()
 C=======================================================================
-C$Id: okabrt.f,v 1.3 2009/03/25 12:46:02 gdsjaar Exp $
 C$Log: okabrt.f,v $
 CRevision 1.3  2009/03/25 12:46:02  gdsjaar
 CAdd copyright and license notice to all files.

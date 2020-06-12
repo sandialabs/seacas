@@ -67,4 +67,3 @@ C to object file on some compilers...
       data kidsiz /0/
       end
 
-C $Id: cdrabc.F,v 1.3 2004/12/09 14:19:03 gdsjaar Exp $

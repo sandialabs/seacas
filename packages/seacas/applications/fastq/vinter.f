@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: vinter.f,v 1.1 1990/11/30 11:17:36 gdsjaar Exp $
 C $Log: vinter.f,v $
 C Revision 1.1  1990/11/30 11:17:36  gdsjaar
 C Initial revision

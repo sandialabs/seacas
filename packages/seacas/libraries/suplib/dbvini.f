@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBVINI (NVARHI, NVARGL, NVARNP, NVAREL)
 C=======================================================================
-C$Id: dbvini.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbvini.f,v $
 CRevision 1.3  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.
@@ -66,7 +65,6 @@ C   --Definition for the ENTRY routine parameters
 C=======================================================================
       ENTRY DBVTYP (IIX, TYP, ID)
 C=======================================================================
-C$Id: dbvini.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbvini.f,v $
 CRevision 1.3  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.
@@ -125,7 +123,6 @@ C   --   ID - OUT - the variable number within the type
 C=======================================================================
       ENTRY DBVIX (ITYP, IID, IX)
 C=======================================================================
-C$Id: dbvini.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbvini.f,v $
 CRevision 1.3  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

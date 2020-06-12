@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE RWMAP (NDBIN, NDBOUT, NUMEL, NUMELO, IXELEM,
      &                  MAPEL, NEWIX)
 C=======================================================================
-C $Id: rwmap.f,v 1.6 2009/04/24 22:26:53 gdsjaar Exp $
 C   --*** RWMAP *** (ALGEBRA) Read and write database element order map
 C   --   Written by Amy Gilkey - revised 04/28/88
 C   --   Modified for EXODUSIIV2 format 8/29/95

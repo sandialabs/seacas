@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltg2d.f,v 1.2 2000/10/25 13:32:35 gdsjaar Exp $
 C $Log: pltg2d.f,v $
 C Revision 1.2  2000/10/25 13:32:35  gdsjaar
 C Modified intrinsic functions to use generic versions to avoid warnings on SGI 64-bit compiles

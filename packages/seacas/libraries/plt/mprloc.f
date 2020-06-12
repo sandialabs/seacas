@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: mprloc.f,v 1.2 1993/07/16 22:31:59 gdsjaar Exp $
 C $Log: mprloc.f,v $
 C Revision 1.2  1993/07/16 22:31:59  gdsjaar
 C Unrolled do loops to speed up execution.

@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       INTEGER FUNCTION NUMEQL (TORF, LENLST, LOGLST)
 C=======================================================================
-C$Id: numeql.f,v 1.2 2009/03/25 12:46:02 gdsjaar Exp $
 C$Log: numeql.f,v $
 CRevision 1.2  2009/03/25 12:46:02  gdsjaar
 CAdd copyright and license notice to all files.

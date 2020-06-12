@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: erasel.F,v 1.1 1998/04/10 04:30:15 gdsjaar Exp $
 C $Log: erasel.F,v $
 C Revision 1.1  1998/04/10 04:30:15  gdsjaar
 C Added the ifdef needsdoubleescape to the graphics symbol

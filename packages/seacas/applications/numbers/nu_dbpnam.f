@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE DBPNAM (OPTION, NVARGL, NVARNP, NVAREL,
      &                   NAMEGV, NAMENV, NAMEEV)
 C=======================================================================
-C$Id: dbpnam.f,v 1.1 1999/02/16 21:37:59 gdsjaar Exp $
 
 C   --*** DBPNAM *** (EXOLIB) Print database variable names
 C   --   Written by Amy Gilkey - revised 01/21/88

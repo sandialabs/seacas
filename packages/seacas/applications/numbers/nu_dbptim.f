@@ -7,7 +7,6 @@ C    See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBPTIM (OPTION, NSTEPS, TIMES)
 C=======================================================================
-C$Id: dbptim.f,v 1.2 2004/06/29 18:05:32 gdsjaar Exp $
 C$Log: dbptim.f,v $
 CRevision 1.2  2004/06/29 18:05:32  gdsjaar
 CGeneral cleanup. Remove unused labels and variables.

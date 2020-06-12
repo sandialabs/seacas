@@ -9,7 +9,6 @@ C=======================================================================
       SUBROUTINE MIRSS (IDESS, NEESS, IXEESS, LTEESS, LTSSS,
      $     IBLOCK, BLKTYP, ALLONE, COMTOP)
 C=======================================================================
-C $Id: mirss.f,v 1.4 2006/02/14 16:00:58 gdsjaar Exp $
 
 C   --*** MIRSS *** (GJOIN) Mirror element side sets
 C   --   Written by Greg Sjaardema

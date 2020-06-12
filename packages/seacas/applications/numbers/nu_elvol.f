@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C     $Id: elvol.f,v 1.1 1991/11/06 20:02:49 gdsjaar Exp $
 C     $Log: elvol.f,v $
 C     Revision 1.1  1991/11/06 20:02:49  gdsjaar
 C     Initial revision

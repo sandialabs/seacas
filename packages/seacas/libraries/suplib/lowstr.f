@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE LOWSTR (LCSTR, UCSTR)
 C=======================================================================
-C$Id: lowstr.f,v 1.2 2009/03/25 12:46:02 gdsjaar Exp $
 C$Log: lowstr.f,v $
 CRevision 1.2  2009/03/25 12:46:02  gdsjaar
 CAdd copyright and license notice to all files.

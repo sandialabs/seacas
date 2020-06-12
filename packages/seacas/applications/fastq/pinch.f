@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: pinch.f,v 1.3 1998/07/14 18:19:35 gdsjaar Exp $
 C $Log: pinch.f,v $
 C Revision 1.3  1998/07/14 18:19:35  gdsjaar
 C Removed unused variables, cleaned up a little.

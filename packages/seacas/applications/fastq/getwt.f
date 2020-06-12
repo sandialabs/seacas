@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: getwt.f,v 1.2 1991/03/21 15:44:49 gdsjaar Exp $
 C $Log: getwt.f,v $
 C Revision 1.2  1991/03/21 15:44:49  gdsjaar
 C Changed all 3.14159... to atan2(0.0, -1.0)

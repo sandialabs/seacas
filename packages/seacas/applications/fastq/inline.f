@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: inline.f,v 1.2 1998/12/08 14:26:04 gdsjaar Exp $
 C $Log: inline.f,v $
 C Revision 1.2  1998/12/08 14:26:04  gdsjaar
 C Detect whether negative line intervals entered. Output warning message

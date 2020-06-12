@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: selssn.f,v 1.2 1998/03/22 05:34:45 gdsjaar Exp $
 C $Log: selssn.f,v $
 C Revision 1.2  1998/03/22 05:34:45  gdsjaar
 C General cleanp of unused variables. Reordered DATA statements in

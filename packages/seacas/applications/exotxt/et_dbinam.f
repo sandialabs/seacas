@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C     $Id: dbinam.f,v 1.7 2007/10/17 18:46:09 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE DBINAM (NDB, C, KNAMES, NVARGL, NVARNP, NVAREL,
      &                   IXGV, IXNV, IXEV, IOERR, NAMLEN)

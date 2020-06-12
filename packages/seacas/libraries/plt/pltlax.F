@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltlax.F,v 1.4 2000/10/25 13:36:38 gdsjaar Exp $
 C $Log: pltlax.F,v $
 C Revision 1.4  2000/10/25 13:36:38  gdsjaar
 C Modified intrinsic functions to use generic versions to avoid warnings on SGI 64-bit compiles

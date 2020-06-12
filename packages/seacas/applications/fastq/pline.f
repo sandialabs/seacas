@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: pline.f,v 1.4 2001/11/05 13:26:52 gdsjaar Exp $
 C $Log: pline.f,v $
 C Revision 1.4  2001/11/05 13:26:52  gdsjaar
 C  Fixed array boundary problem in region check code.

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: invert.f,v 1.3 2004/01/26 17:28:18 gdsjaar Exp $
 C $Log: invert.f,v $
 C Revision 1.3  2004/01/26 17:28:18  gdsjaar
 C Removed several unused variables from getang subroutine.

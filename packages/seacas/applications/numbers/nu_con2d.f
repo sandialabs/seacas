@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: con2d.f,v 1.5 2004/06/29 18:05:32 gdsjaar Exp $
 C $Log: con2d.f,v $
 C Revision 1.5  2004/06/29 18:05:32  gdsjaar
 C General cleanup. Remove unused labels and variables.

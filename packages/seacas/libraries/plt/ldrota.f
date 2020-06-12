@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: ldrota.f,v 1.1 1993/07/16 16:46:34 gdsjaar Exp $
 C $Log: ldrota.f,v $
 C Revision 1.1  1993/07/16 16:46:34  gdsjaar
 C Changed plt to library rather than single source file.

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: mesh.f,v 1.15 2005/06/23 20:18:44 gdsjaar Exp $
       SUBROUTINE MESH (A, IA, MP, ML, MS, MR, MSC, MA, MCOM, ICOM, JCOM,
      &   CIN, RIN, IIN, KIN, IDUMP, N, IPOINT, COOR, IPBOUN, ILINE,
      &   LTYPE, NINT, FACTOR, LCON, ILBOUN, ISBOUN, ISIDE, NLPS, IFLINE,

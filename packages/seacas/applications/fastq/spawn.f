@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: spawn.f,v 1.2 1990/11/30 11:46:57 gdsjaar Exp $
 C $Log: spawn.f,v $
 C Revision 1.2  1990/11/30 11:46:57  gdsjaar
 C Removed LIB$SPAWN call

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: qual2n.f,v 1.3 1998/11/24 20:45:08 gdsjaar Exp $
 C $Log: qual2n.f,v $
 C Revision 1.3  1998/11/24 20:45:08  gdsjaar
 C Added code to avoid array bound read errors and uninitialized

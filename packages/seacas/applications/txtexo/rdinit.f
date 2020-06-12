@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: rdinit.f,v 1.3 2007/10/17 18:47:22 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE RDINIT (NTXT, VERS, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &   NUMNPS, LNPSNL, LNPSDF, NUMESS, LESSEL, LESSNL, LESSDF, NAMLEN,

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: perim.f,v 1.2 2001/11/05 13:26:51 gdsjaar Exp $
 C $Log: perim.f,v $
 C Revision 1.2  2001/11/05 13:26:51  gdsjaar
 C  Fixed array boundary problem in region check code.

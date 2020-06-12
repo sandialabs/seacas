@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: mp2vc.f,v 1.1 1993/07/16 16:47:03 gdsjaar Exp $
 C $Log: mp2vc.f,v $
 C Revision 1.1  1993/07/16 16:47:03  gdsjaar
 C Changed plt to library rather than single source file.

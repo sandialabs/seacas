@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: mklstv.f,v 1.2 2007/10/17 18:40:35 gdsjaar Exp $
 C $Log: mklstv.f,v $
 C Revision 1.2  2007/10/17 18:40:35  gdsjaar
 C Added copyright notice to all files.

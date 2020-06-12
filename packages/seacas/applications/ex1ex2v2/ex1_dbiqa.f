@@ -9,7 +9,6 @@ C=======================================================================
      &   MAXQA, MAXINF, NQAREC, QAREC, NINFO, INFO,
      &   EXODUS, *)
 C=======================================================================
-C$Id: dbiqa.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbiqa.f,v $
 CRevision 1.3  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

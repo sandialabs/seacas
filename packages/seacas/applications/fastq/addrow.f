@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: addrow.f,v 1.2 2004/01/21 05:18:39 gdsjaar Exp $
 C $Log: addrow.f,v $
 C Revision 1.2  2004/01/21 05:18:39  gdsjaar
 C Initialized several variables identified by valgrind.

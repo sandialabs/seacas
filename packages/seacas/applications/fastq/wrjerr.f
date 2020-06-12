@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: wrjerr.f,v 1.3 1998/07/14 18:20:17 gdsjaar Exp $
 C $Log: wrjerr.f,v $
 C Revision 1.3  1998/07/14 18:20:17  gdsjaar
 C Removed unused variables, cleaned up a little.

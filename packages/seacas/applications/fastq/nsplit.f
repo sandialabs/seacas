@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: nsplit.f,v 1.2 1991/05/10 17:42:09 gdsjaar Exp $
 C $Log: nsplit.f,v $
 C Revision 1.2  1991/05/10 17:42:09  gdsjaar
 C Changed VMS JNINT intrinsic to ANSI NINT

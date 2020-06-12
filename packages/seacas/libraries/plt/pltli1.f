@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltli1.f,v 1.1 1993/07/16 16:48:37 gdsjaar Exp $
 C $Log: pltli1.f,v $
 C Revision 1.1  1993/07/16 16:48:37  gdsjaar
 C Changed plt to library rather than single source file.

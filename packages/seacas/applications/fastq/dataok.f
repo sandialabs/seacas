@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: dataok.f,v 1.2 1991/05/10 17:40:36 gdsjaar Exp $
 C $Log: dataok.f,v $
 C Revision 1.2  1991/05/10 17:40:36  gdsjaar
 C Changed VMS JNINT to ANSI NINT, but then had

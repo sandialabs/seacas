@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: zhole.f,v 1.3 2000/11/13 15:39:06 gdsjaar Exp $
 C $Log: zhole.f,v $
 C Revision 1.3  2000/11/13 15:39:06  gdsjaar
 C Cleaned up unused variables and labels.

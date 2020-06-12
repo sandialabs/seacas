@@ -8,7 +8,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE ENGSTR (NNUM, NSIG, RNUM, RSTR, LSTR)
 C=======================================================================
-C$Id: engstr.f,v 1.2 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: engstr.f,v $
 CRevision 1.2  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

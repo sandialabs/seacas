@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: jacobn.f,v 1.3 2007/10/17 18:43:49 gdsjaar Exp $
 C=======================================================================
 *DECK,JACOBN
       SUBROUTINE JACOBN (ITYPE,XX,YY,ZZ,SP,TP,RP,A11,A12,A13,A21,A22,

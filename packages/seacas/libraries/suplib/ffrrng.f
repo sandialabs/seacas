@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE FFRRNG (IFLD, INTYP, CFIELD, RFIELD, EXPECT, RMAX,
      &   RANGE, *)
 C=======================================================================
-C$Id: ffrrng.f,v 1.2 2009/03/25 12:46:02 gdsjaar Exp $
 C$Log: ffrrng.f,v $
 CRevision 1.2  2009/03/25 12:46:02  gdsjaar
 CAdd copyright and license notice to all files.

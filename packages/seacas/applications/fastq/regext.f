@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: regext.f,v 1.2 1999/06/17 19:02:22 gdsjaar Exp $
 C $Log: regext.f,v $
 C Revision 1.2  1999/06/17 19:02:22  gdsjaar
 C Fixed several problems related to holes.  In several places, a

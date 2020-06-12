@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: trblk.f,v 1.2 1996/07/01 14:09:12 gdsjaar Exp $
 C $Log: trblk.f,v $
 C Revision 1.2  1996/07/01 14:09:12  gdsjaar
 C Trap exodus files with non-hex (3d) and non-quad (2d) element

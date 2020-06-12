@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE WRPXYZ (XN, YN, XN3, YN3, ZN3, ATRIB)
 C=======================================================================
 
-C   $Id: wrpxyz.f,v 1.5 1993/05/27 22:17:06 gdsjaar Exp $
 C   $Log: wrpxyz.f,v $
 C   Revision 1.5  1993/05/27 22:17:06  gdsjaar
 C   Added new ellipse transformation code

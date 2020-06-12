@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: mpmul4.f,v 1.4 1993/07/19 17:06:30 gdsjaar Exp $
 C $Log: mpmul4.f,v $
 C Revision 1.4  1993/07/19 17:06:30  gdsjaar
 C Changed hex constants back to preceding X, --needed on cray. Works

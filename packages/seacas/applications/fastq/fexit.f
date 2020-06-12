@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: fexit.f,v 1.3 1999/01/27 15:17:47 gdsjaar Exp $
 C $Log: fexit.f,v $
 C Revision 1.3  1999/01/27 15:17:47  gdsjaar
 C Added typical summary of mesh data on output.

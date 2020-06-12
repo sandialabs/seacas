@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE DBOELB (NDB, NELBS, NELBE,
      &   IDELB, NUMELB, NUMLNK, NUMATR, LINK, ATRIB)
 C=======================================================================
-C$Id: dboelb.f,v 1.2 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dboelb.f,v $
 CRevision 1.2  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

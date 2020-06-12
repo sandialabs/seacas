@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: ovrlap.f,v 1.5 2007/03/21 20:12:37 gdsjaar Exp $
 C $Log: ovrlap.f,v $
 C Revision 1.5  2007/03/21 20:12:37  gdsjaar
 C Several commands which can work on the deformed geometry were only

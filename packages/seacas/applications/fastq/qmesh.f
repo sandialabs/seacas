@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: qmesh.f,v 1.8 2007/07/24 13:10:18 gdsjaar Exp $
 C $Log: qmesh.f,v $
 C Revision 1.8  2007/07/24 13:10:18  gdsjaar
 C Fix problem with boundary condition memory overwrite.

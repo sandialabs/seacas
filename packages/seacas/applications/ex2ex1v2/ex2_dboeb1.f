@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE DBOEB1 (NDB, IELB, NUMELB, NUMLNK, NUMATR, LINK, ATRIB,
      $     NLNKDM, NATRDM)
 C=======================================================================
-C$Id: dboeb1.f,v 1.2 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dboeb1.f,v $
 CRevision 1.2  2009/03/25 12:46:01  gdsjaar
 CAdd copyright and license notice to all files.

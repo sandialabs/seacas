@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE INIGRD (FROM, TO, GRAD, NINT, NPTS, ARRAY)
 C=======================================================================
 
-C   $Id: inigrd.f,v 1.4 2009/03/25 12:46:02 gdsjaar Exp $
 C   $Log: inigrd.f,v $
 C   Revision 1.4  2009/03/25 12:46:02  gdsjaar
 C   Add copyright and license notice to all files.

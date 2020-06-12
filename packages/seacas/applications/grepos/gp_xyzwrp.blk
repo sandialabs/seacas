@@ -5,7 +5,6 @@ C
 C See packages/seacas/LICENSE for details
 
 C     -*- Mode: fortran -*-
-C $Id: xyzwrp.blk,v 1.1 1999/01/18 19:18:40 gdsjaar Exp $
 
       COMMON /XYZWRP/ IWARP, WRPDIS, NRMWRP
 C      --IWARP  = type of warping selected:

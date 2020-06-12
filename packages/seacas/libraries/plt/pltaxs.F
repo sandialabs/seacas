@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: pltaxs.F,v 1.2 1998/03/24 17:53:08 gdsjaar Exp $
 C $Log: pltaxs.F,v $
 C Revision 1.2  1998/03/24 17:53:08  gdsjaar
 C Missed a couple places where double escapes are needed

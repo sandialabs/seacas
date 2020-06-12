@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE SHWINT (ITRANT, DIM3)
 C=======================================================================
 
-C   $Id: shwint.f,v 1.2 1991/01/09 12:59:38 gdsjaar Exp $
 C   $Log: shwint.f,v $
 C   Revision 1.2  1991/01/09 12:59:38  gdsjaar
 C   Initial conversion from GEN3D to GENSHELL, no BC yet

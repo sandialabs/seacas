@@ -6,7 +6,6 @@ C See packages/seacas/LICENSE for details
 
 C -*- Mode: fortran -*-
 C=======================================================================
-C $Id: comand.f,v 1.3 2001/06/26 17:38:54 gdsjaar Exp $
 
       SUBROUTINE COMAND (A, IELBST, IDELB, NUMELB, NUMLNK, NUMATR,
      &  NAMELB, INPSST, IDNPS, NNNPS, IESSST, IDESS, NEESS, DONE, *)
