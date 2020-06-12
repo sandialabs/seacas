@@ -4,27 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: gdata.f,v $
-C Revision 1.3  1999/07/01 13:48:26  gdsjaar
-C Fixed another negative array index.
-C
-C Revision 1.2  1998/07/14 18:18:59  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:07:51  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:07:49  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]GDATA.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE GDATA (MP, ML, MS, MR, MSC, MCOM, ICOM, JCOM, CIN,
      &   RIN, IIN, KIN, IDUMP, N, IPOINT, COOR, IPBOUN, ILINE, LTYPE,

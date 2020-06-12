@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: addwdg.f,v $
-C Revision 1.1  1990/11/30 11:03:13  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.PAVING]ADDWDG.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE ADDWDG (MXND, MLN, NUID, XN, YN, ZN, LXK, KXL, NXL,
      &   LXN, LNODES, ANGLE, BNSIZE, NLOOP, IAVAIL, NAVAIL, LLL, KKK,

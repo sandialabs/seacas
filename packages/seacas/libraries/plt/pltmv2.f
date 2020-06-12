@@ -4,9 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: pltmv2.f,v $
-C Revision 1.1  1993/07/16 16:48:57  gdsjaar
-C Changed plt to library rather than single source file.
 C
 C=======================================================================
       SUBROUTINE PLTMV2(UMAP,N,MASK,PX,PY,QX,QY,PPX,PPY,QQX,QQY)

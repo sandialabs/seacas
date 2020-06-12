@@ -9,9 +9,6 @@ C=======================================================================
      &   LOLD1, IDOLD1, LOLD2, IDOLD2, LENNEW, IDNEW, *)
 C=======================================================================
 
-C   $Log: usids.f,v $
-C   Revision 1.1  1990/08/20 12:23:20  gdsjaar
-C   Initial revision
 C
 
 C   --*** USIDS *** (GEN3D) Read list of IDs

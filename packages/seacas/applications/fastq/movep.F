@@ -4,23 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: movep.F,v $
-C Revision 1.1  1998/04/10 04:30:18  gdsjaar
-C Added the ifdef needsdoubleescape to the graphics symbol
-C plotting. Required moving some .f to .F files and specifying in Imakefile
-C
-C Revision 1.1.1.1  1990/11/30 11:12:29  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:12:28  gdsjaar
-c Initial revision
 c
 C
 
-CC* FILE: [.MAIN]MOVEP.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE MOVEP (MP, ML, MS, MR, N, COOR, LTYPE, LCON, NLPS,
      &   IFLINE, ILLIST, NSPR, IFSIDE, ISLIST, LINKP, LINKL, LINKS,

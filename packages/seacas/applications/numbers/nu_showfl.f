@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: showfl.f,v $
-C Revision 1.1  1991/02/21 15:45:37  gdsjaar
-C Initial revision
 C
       SUBROUTINE SHOWFL (TYPE, NUMESS, IDESS, NEESS, IPEESS)
       DIMENSION IDESS(*), NEESS(*), IPEESS(*)

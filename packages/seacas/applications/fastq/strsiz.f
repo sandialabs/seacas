@@ -4,48 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: strsiz.f,v $
-C Revision 1.4  1999/06/21 22:43:41  gdsjaar
-C Fixed more uninitialized variables; one was causing core dump on g77
-C compiled executable.
-C
-C VERSN was not consistently defined -- now 10 characters everywhere
-C
-C Updated so full version string output
-C
-C Added capability to debug memory using unit specified in EXT99
-C variable. Similar to STRTUP in SUPLIB
-C
-C Cleaned up some other code
-C
-C Upped version
-C
-C Revision 1.3  1998/07/14 18:20:05  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.2  1991/04/10 19:56:59  gdsjaar
-C Fixed some logical variables
-C
-c Revision 1.1.1.1  1990/11/30  11:16:50  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:16:49  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]STRSIZ.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO STRSIZ TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
       SUBROUTINE STRSIZ (MAXNP, X, Y, NINT, N, XEND, YEND, XDIFF, YDIFF,
      &   D, ERR, TEST, XNOLD, YNOLD, NXKOLD, LINKEG, LISTEG, BMESUR,
@@ -134,22 +95,12 @@ C
 C
 C  NOT TO THE END YET
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO GETSIZ TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
          CALL GETSIZ (XNOLD, YNOLD, NXKOLD, LINKEG, LISTEG, BMESUR,
      &      MLINK, NPNOLD, NPEOLD, NNXK, REMESH, REXMIN, REXMAX,
      &      REYMIN, REYMAX, IDIVIS, SIZMIN, EMAX, EMIN,
      &      X(INTNOW), Y(INTNOW), S1)
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 8/2/90
-CC* MODIFICATION: ADDED A SIZE ADJUSTMENT BASED ON THE REQUIRED VALUE
-CC*               AT THE END OF THE SEGMENT AND AT THE AVERAGE OF THE
-CC*               SEGMENTS - THE 2ND AND 3RD CALL TO GETSIZ.
          XNEW1 = X(1) + (((DSTNOW + S1) / D) * XDIFF)
          YNEW1 = Y(1) + (((DSTNOW + S1) / D) * YDIFF)
          CALL GETSIZ (XNOLD, YNOLD, NXKOLD, LINKEG, LISTEG, BMESUR,

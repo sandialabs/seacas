@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: getcrn.f,v $
-C Revision 1.1  1990/11/30 11:07:56  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.PAVING]GETCRN.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE GETCRN (MXND, MXCORN, MLN, LNODES, NCORN, LCORN,
      &   ANGLE, XN, YN, LXN, NLOOP, N1, ONLYC, PPOSBL, GRAPH, ERR)

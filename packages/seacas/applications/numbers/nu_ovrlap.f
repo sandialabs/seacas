@@ -4,28 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: ovrlap.f,v $
-C Revision 1.5  2007/03/21 20:12:37  gdsjaar
-C Several commands which can work on the deformed geometry were only
-C checking whether the file was an exodus file (had timesteps) when
-C requesting deformed coordinates.  Changed to also check whether the
-C file had valid displacements also.
-C
-C Revision 1.4  1999/02/16 21:38:01  gdsjaar
-C Converted to read exodusII database format.  Somewhat tested, not
-C ready for production yet.
-C
-C Revision 1.3  1997/06/20 19:11:28  caforsy
-C Port to ibm
-C
-C Revision 1.2  1992/01/28 19:01:28  gdsjaar
-C Added overlap checking of deformed mesh
-C
-c Revision 1.1.1.1  1991/02/21  15:44:40  gdsjaar
-c NUMBERS: Greg Sjaardema, initial Unix release
-c
-c Revision 1.1  1991/02/21  15:44:39  gdsjaar
-c Initial revision
 c
       SUBROUTINE OVRLAP (A, COORD, IDESS, NEESS, NNESS, IPEESS, IPNESS,
      *   LTEESS, LTNESS, FACESS, DISP, NUMNP, NDIM, NUMESS,

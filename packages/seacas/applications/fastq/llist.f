@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: llist.f,v $
-C Revision 1.1  1990/11/30 11:11:21  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.QMESH]LLIST.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE LLIST (MS, ML, MAXNL, NS, NL, KNUM, LISTL, ILINE,
      &   ISIDE, NLPS, IFLINE, ILLIST, LCON, ISLIST, LINKS, LINKL, ERR)

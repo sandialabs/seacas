@@ -4,22 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: erasel.F,v $
-C Revision 1.1  1998/04/10 04:30:15  gdsjaar
-C Added the ifdef needsdoubleescape to the graphics symbol
-C plotting. Required moving some .f to .F files and specifying in Imakefile
-C
-C Revision 1.1.1.1  1990/11/30 11:06:49  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:06:48  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]ERASEL.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE ERASEL (MP, ML, MS, MR, N, COOR, ILINE, LTYPE, LCON,
      &   NLPS, IFLINE, ILLIST, NSPR, IFSIDE, ISLIST, LINKP, LINKL,

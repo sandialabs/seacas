@@ -4,45 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: wrgens.f,v $
-C Revision 1.9  1998/03/23 05:17:54  gdsjaar
-C Fixed data statement ordering
-C
-C Revision 1.8  1997/09/02 18:51:45  caforsy
-C Increase initial value of NIN in rdfsq.f and IGUESS in wrgens.f
-C
-C Revision 1.7  1992/11/17 15:06:39  gdsjaar
-C Fixed problem with version number output.
-C
-c Revision 1.6  1992/11/16  23:32:47  gdsjaar
-c Fixed problem with outputting too many attributes for some elements,
-c upped version number to 2.2X
-c
-c Revision 1.5  1992/06/09  22:31:18  gdsjaar
-c Fixed problem with sideset node and element numbering for 8 and 9 node elements
-c
-c Revision 1.4  1992/04/15  22:56:38  gdsjaar
-c Fixed EXODUS output of 3-node beams--connectivity
-c conforms to EXODUS document
-c Upped version number to 2.1X to reflect change
-c
-c Revision 1.3  1991/12/18  21:12:03  gdsjaar
-c Removed the info field
-c
-c Revision 1.2  1990/11/30  11:30:08  gdsjaar
-c Rewrote indexing for reads and writes
-c
-c Revision 1.1.1.1  90/11/30  11:17:52  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:17:51  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]WRGENS.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE WRGENS (MS, MR, NPNODE, NPELEM, MXNFLG, MXSFLG, NPREGN,
      &   NPNBC, NPSBC, IUNIT, NNN, KKK, NNXK, NODES, NELEMS, NNFLG,

@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: nps.f,v $
-C Revision 1.1  1990/11/30 11:12:52  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.QMESH]NPS.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE NPS (ML, MS, MNNPS, NS, ISLIST, NINT, IFLINE, NLPS,
      &   ILLIST, LINKL, LINKS, NNPS, ERR)

@@ -4,31 +4,7 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: list.f,v $
-C Revision 1.4  2000/11/13 15:39:04  gdsjaar
-C Cleaned up unused variables and labels.
-C
-C Removed some real to int conversion warnings.
-C
-C Revision 1.3  1998/07/14 18:19:18  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.2  1998/07/13 16:49:34  gdsjaar
-C Added missing commas to format statements
-C
-C Revision 1.1.1.1  1990/11/30 11:11:16  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:11:14  gdsjaar
-c Initial revision
 c
-CC* FILE: [.MAIN]LIST.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE LIST (MP, ML, MS, MR, MSC, MCOM, ICOM, JCOM, CIN, RIN,
      &   IIN, KIN, N, IPOINT, COOR, IPBOUN, ILINE, LTYPE, NINT, FACTOR,

@@ -4,15 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: bannr2.f,v $
-C Revision 1.3  2009/03/25 12:46:01  gdsjaar
-C Add copyright and license notice to all files.
-C
-C Revision 1.2  1993/07/30 20:26:42  gdsjaar
-C Fixed to write to unit * if iout equals 0
-C
-c Revision 1.1  1991/07/11  19:58:14  gdsjaar
-c Initial revision
 c
 C=======================================================================
       SUBROUTINE BANNR2 (NCOLS, LINEIN, IOUT)

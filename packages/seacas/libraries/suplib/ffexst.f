@@ -7,18 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       LOGICAL FUNCTION FFEXST (IFLD, INTYP)
 C=======================================================================
-C$Log: ffexst.f,v $
-CRevision 1.2  2009/03/25 12:46:02  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:14:23  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:14:22  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:24  gdsjaar
-c Initial revision
 c
 
 C   --*** FFEXST *** (FFLIB) Return end of fields status

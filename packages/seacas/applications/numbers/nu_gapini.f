@@ -4,19 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: gapini.f,v $
-C Revision 1.3  1999/02/16 21:38:00  gdsjaar
-C Converted to read exodusII database format.  Somewhat tested, not
-C ready for production yet.
-C
-C Revision 1.2  1997/06/20 19:11:26  caforsy
-C Port to ibm
-C
-C Revision 1.1.1.1  1991/02/21 15:43:14  gdsjaar
-C NUMBERS: Greg Sjaardema, initial Unix release
-C
-c Revision 1.1  1991/02/21  15:43:13  gdsjaar
-c Initial revision
 c
       SUBROUTINE GAPINI (A, COORD, IDESS, NEESS, NNESS, IPEESS, IPNESS,
      *   LTEESS, LTNESS, FACESS, DISP, NUMNP, NDIM, NUMESS,

@@ -4,14 +4,7 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: ciapal.f,v $
-C Revision 1.1  1990/11/30 11:04:43  gdsjaar
-C Initial revision
 C
-CC* FILE: [.QMESH]CIAPAL.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE CIAPAL (MXND, XN, YN, LXK, KXL, NXL, LXN, NNN, NNNOLD,
      &   NIT, EPS, RO, ALPHA)

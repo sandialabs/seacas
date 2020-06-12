@@ -4,22 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: dataok.f,v $
-C Revision 1.2  1991/05/10 17:40:36  gdsjaar
-C Changed VMS JNINT to ANSI NINT, but then had
-C to change variable NINT to KNINT
-C
-c Revision 1.1.1.1  1990/11/30  11:05:44  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:05:42  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]DATAOK.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE DATAOK (MP, ML, MS, MR, L, KNUM, COOR, ILINE, LTYPE,
      &   KNINT, LCON, NLPS, IFLINE, ILLIST, NSPR, IFSIDE, ISLIST, LINKP,

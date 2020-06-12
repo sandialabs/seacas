@@ -7,18 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFONOF (IFLD, INTYP, CFIELD, ISON, *)
 C=======================================================================
-C$Log: ffonof.f,v $
-CRevision 1.2  2009/03/25 12:46:02  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:14:36  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:14:35  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:26  gdsjaar
-c Initial revision
 c
 
 C   --*** FFONOF *** (FFLIB) Parse free-field ON/OFF

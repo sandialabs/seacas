@@ -4,37 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: mass.f,v $
-C Revision 1.7  2007/03/21 20:12:37  gdsjaar
-C Several commands which can work on the deformed geometry were only
-C checking whether the file was an exodus file (had timesteps) when
-C requesting deformed coordinates.  Changed to also check whether the
-C file had valid displacements also.
-C
-C Revision 1.6  2000/07/06 18:07:42  gdsjaar
-C Fix assumption that variables are saved between subroutine calls
-C
-C Revision 1.5  1999/04/20 22:33:59  gdsjaar
-C Two arrays in different areas of the code used the same name for an
-C array (JACOB). If the code was run in the wrong order, there would be
-C a supes error when the array was reserved for the second time.
-C
-C Revision 1.4  1999/02/16 21:38:00  gdsjaar
-C Converted to read exodusII database format.  Somewhat tested, not
-C ready for production yet.
-C
-C Revision 1.3  1998/03/22 05:34:37  gdsjaar
-C General cleanp of unused variables. Reordered DATA statements in
-C command.f so would compile with f2c.
-C
-C Revision 1.2  1993/07/21 22:36:54  gdsjaar
-C Removed unused variable--error
-C
-c Revision 1.1.1.1  1991/02/21  15:44:20  gdsjaar
-c NUMBERS: Greg Sjaardema, initial Unix release
-c
-c Revision 1.1  1991/02/21  15:44:19  gdsjaar
-c Initial revision
 c
       SUBROUTINE MASSPR (A, TIME, ITMSEL, DENS, MAT, DISP,
      *   NQUAD, LABEL)

@@ -4,15 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C     $Log: csmang.f,v $
-C     Revision 1.2  1991/03/21 15:44:31  gdsjaar
-C     Changed all 3.14159... to atan2(0.0, -1.0)
-C     
-c     Revision 1.1.1.1  1990/11/30  11:05:35  gdsjaar
-c     FASTQ Version 2.0X
-c     
-c     Revision 1.1  90/11/30  11:05:34  gdsjaar
-c     Initial revision
 c     
 C     
 C     C* FILE: [.QMESH]CSMANG.FOR

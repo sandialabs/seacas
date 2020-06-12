@@ -6,23 +6,6 @@ C See packages/seacas/LICENSE for details
 
 C -*- Mode: fortran -*-
 C=======================================================================
-C $Log: setitl.f,v $
-C Revision 1.1  1999/01/18 19:21:26  gdsjaar
-C ExodusII version of gjoin, needs testing and syncing with exodus 1 version, but is being committed to permit easier testing and modifications.  This was created by Dave Fry at Goodyear
-C
-c Revision 1.1.1.1  1998/11/05  16:23:28  a294617
-c Initial import == gjoin 1.36
-c
-C Revision 1.2  1997/04/04 20:06:43  gdsjaar
-C Better command input in setitl (TITLE submenu). It was using getinp
-C instead of FREFLD, but that caused problems if the command contained
-C leading spaces. Replaced to use FREFLD.
-C
-C Revision 1.1.1.1  1990/11/12 14:36:05  gdsjaar
-C GJOIN - X1.00.40 - 7/17/90
-C
-c Revision 1.1  90/11/12  14:36:03  gdsjaar
-c Initial revision
 c
       SUBROUTINE SETITL (TWODB)
 C=======================================================================

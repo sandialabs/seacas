@@ -4,35 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: lupang.f,v $
-C Revision 1.3  2004/01/26 17:28:18  gdsjaar
-C Removed several unused variables from getang subroutine.
-C
-C Initialized a variable
-C
-C Revision 1.2  2004/01/22 14:25:22  gdsjaar
-C Attempt to fix strange problem on x86_64 AMD Opteron system using
-C Portland Group 5.1-3 compilers. The getang function would work
-C correctly if compiled with no optimization and in debug mode, but
-C would crash if compiled optimized. The location of the crash was not
-C in a place that made any sense that something was wrong.
-C
-C After much trial and error, it was found that adding a 'SAVE'
-C statement at the beginning of the file fixed the problem.
-C
-C Also cleaned out some unused parameters being passed to the function.
-C
-C Revision 1.1.1.1  1990/11/30 11:11:47  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:11:45  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]LUPANG.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE LUPANG (MXND, MLN, XN, YN, ZN, LXK, KXL, NXL, LXN,
      &   NLOOP, ANGLE, LNODES, NSTART, LLL, XMIN, XMAX, YMIN, YMAX,

@@ -7,24 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBERR (IOSTAT, ERRMSG)
 C=======================================================================
-C$Log: dberr.f,v $
-CRevision 1.4  2009/03/25 12:46:01  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.3  1991/09/30 20:08:33  gdsjaar
-CIncreased error number format for Cray
-C
-c Revision 1.2  1991/02/04  08:34:36  gdsjaar
-c Changed IOSTAT format to I3
 c
-c Revision 1.1.1.1  90/08/14  16:12:31  gdsjaar
-c Testing
-c
-c Revision 1.1  90/08/14  16:12:30  gdsjaar
-c Initial revision
-c
-c Revision 1.1  90/08/09  13:39:08  gdsjaar
-c Initial revision
 c
 
 C   --*** DBERR *** (EXOLIB) Display a database error message

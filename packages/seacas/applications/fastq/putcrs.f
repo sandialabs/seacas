@@ -4,23 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: putcrs.f,v $
-C Revision 1.2  2000/11/13 15:39:05  gdsjaar
-C Cleaned up unused variables and labels.
-C
-C Removed some real to int conversion warnings.
-C
-C Revision 1.1.1.1  1990/11/30 11:13:57  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:13:56  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]PUTCRS.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE PUTCRS (X, Y, OLDCUR)
 C***********************************************************************

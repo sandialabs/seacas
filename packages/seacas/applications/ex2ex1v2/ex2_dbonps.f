@@ -8,18 +8,7 @@ C=======================================================================
       SUBROUTINE DBONPS (NDB, NUMNPS, LNPSNL,
      &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS)
 C=======================================================================
-C$Log: dbonps.f,v $
-CRevision 1.2  2009/03/25 12:46:01  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:13:34  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:13:33  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:17  gdsjaar
-c Initial revision
 c
 
 C   --*** DBONPS *** (EXOLIB) Write database node sets

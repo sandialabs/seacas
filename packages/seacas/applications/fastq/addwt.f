@@ -4,21 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: addwt.f,v $
-C Revision 1.2  2007/04/04 22:00:37  gdsjaar
-C Fix some bugs.
-C
-C Revision 1.1.1.1  1990/11/30 11:03:19  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:03:17  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.RENUM]ADDWT.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE ADDWT (NNUID, NNXK, MAXKXN, NPNODE, NPELEM, MXLPS, MP,
      &   ML, MS, NPNBC, NPSBC, MXNFLG, MXSFLG, NPWTS, COOR, ILINE,

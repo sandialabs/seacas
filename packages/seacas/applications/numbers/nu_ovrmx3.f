@@ -4,24 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: ovrmx3.f,v $
-C Revision 1.5  1992/01/28 19:01:27  gdsjaar
-C Added overlap checking of deformed mesh
-C
-c Revision 1.4  1991/09/23  15:33:10  gdsjaar
-c Changed overlap output from face list to slave coord
-c
-c Revision 1.3  1991/08/05  13:44:25  gdsjaar
-c Reordered penetration distance loops, fixed format statement
-c
-c Revision 1.2  1991/02/21  16:38:03  gdsjaar
-c Moved ENGNOT function out of write statements
-c
-c Revision 1.1.1.1  1991/02/21  15:44:45  gdsjaar
-c NUMBERS: Greg Sjaardema, initial Unix release
-c
-c Revision 1.1  1991/02/21  15:44:44  gdsjaar
-c Initial revision
 c
       SUBROUTINE OVRMX3 (LSTEL, CORD, IX, NSEG, MINMAX, NIQSLV,
      *   NIQS, TEMP, LTNESS, NUMIN, NUMFAC, NUMON,

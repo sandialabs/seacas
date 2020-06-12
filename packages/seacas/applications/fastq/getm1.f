@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: getm1.f,v $
-C Revision 1.1  1990/11/30 11:08:22  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.QMESH]GETM1.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE GETM1(ML, MS, MNNPS, NS, ISLIST, NINT, IFLINE, NLPS,
      &   ILLIST, LINKL, LINKS, X, Y, NID, NNPS, ANGLE, NPER, SCHSTR,

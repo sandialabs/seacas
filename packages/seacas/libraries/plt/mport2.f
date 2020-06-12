@@ -4,9 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: mport2.f,v $
-C Revision 1.1  1993/07/16 16:47:20  gdsjaar
-C Changed plt to library rather than single source file.
 C
 C=======================================================================
       LOGICAL FUNCTION MPORT2(LEFT,RIGHT,BOTTOM,TOP)

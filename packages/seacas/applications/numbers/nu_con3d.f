@@ -4,25 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: con3d.f,v $
-C Revision 1.5  2004/06/29 18:05:32  gdsjaar
-C General cleanup. Remove unused labels and variables.
-C
-C Revision 1.4  2000/07/06 16:49:57  gdsjaar
-C Changed real*4 to real
-C
-C Revision 1.3  1998/02/12 00:03:01  gdsjaar
-C Added calculation of minimum jacobian to the condition command output.
-C Routine borrowed from cubit (which borrowed it originally from numbers...)
-C
-C Revision 1.2  1996/06/25 21:48:57  gdsjaar
-C Modified output to support large (millions of elements) models
-C
-c Revision 1.1.1.1  1991/02/21  15:42:42  gdsjaar
-c NUMBERS: Greg Sjaardema, initial Unix release
-c
-c Revision 1.1  1991/02/21  15:42:41  gdsjaar
-c Initial revision
 c
 C=======================================================================
       SUBROUTINE CON3D (CRD, NDIM, NUMNP, IX, NNODES, NUMEL, MAT,

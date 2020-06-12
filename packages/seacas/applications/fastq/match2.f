@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: match2.f,v $
-C Revision 1.1  1990/11/30 11:11:53  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.PAVING]MATCH2.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE MATCH2 (MXND, MLN, XN, YN, NXL, LXN, LNODES, ANGLE,
      &   N0, N1, N2, N3, N0TEST, N1TEST, N2TEST, N3TEST, I1, I2,

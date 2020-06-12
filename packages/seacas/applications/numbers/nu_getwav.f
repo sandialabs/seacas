@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: getwav.f,v $
-C Revision 1.1  1991/02/21 15:43:25  gdsjaar
-C Initial revision
 C
       SUBROUTINE GETWAV (MAT, WAVE, NELBLK, LABEL)
       DIMENSION MAT(6,*), WAVE(*)

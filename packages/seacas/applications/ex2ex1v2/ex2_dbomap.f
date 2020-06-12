@@ -7,18 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBOMAP (NDB, NUMEL, MAPEL)
 C=======================================================================
-C$Log: dbomap.f,v $
-CRevision 1.2  2009/03/25 12:46:01  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:13:27  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:13:25  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:15  gdsjaar
-c Initial revision
 c
 
 C   --*** DBOMAP *** (EXOLIB) Write database element order map

@@ -4,34 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: filhnd.f,v $
-C Revision 1.4  2009/03/25 12:36:44  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.3  2002/11/27 16:19:09  gdsjaar
-C Fix filhnd calls to not pass partially uninitialized character strings to upcase.
-C
-C Revision 1.2  1997/11/11 14:55:55  gdsjaar
-C Added 'external blkdat' to main program to ensure that the block data
-C gets linked into the executable. Wasn't happening on dec alpha
-C systems.
-C
-C Removed unreachable lines in several routines
-C
-C Fixed variable name spelling in contor.f
-C
-C Unsplit strings that were split across lines
-C
-C Removed old error variables left over from exodusIIv1
-C
-C Upped version number
-C
-C Revision 1.1  1994/04/07 20:00:47  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.2  1990/12/14  08:50:32  gdsjaar
-c Added RCS Id and Log to all files
 c
 c ======================================================================
 c ======================================================================

@@ -7,18 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE INTSTR (NNUM, LNGSTR, INUM, ISTR, LSTR)
 C=======================================================================
-C$Log: intstr.f,v $
-CRevision 1.2  2009/03/25 12:46:02  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:15:14  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:15:12  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:32  gdsjaar
-c Initial revision
 c
 
 C   --*** INTSTR *** (STRLIB) Convert integer numbers to strings

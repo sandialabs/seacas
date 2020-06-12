@@ -4,15 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: mxvect.f,v $
-C Revision 1.3  1993/07/16 22:56:19  gdsjaar
-C Unrolled loops for faster execution
-C
-c Revision 1.2  1993/07/16  19:30:48  gdsjaar
-c Restructured to optimize faster
-c
-c Revision 1.1  1993/07/16  16:47:36  gdsjaar
-c Changed plt to library rather than single source file.
 c
 C=======================================================================
       SUBROUTINE MXVECT(N,VEC,MAT,RES)

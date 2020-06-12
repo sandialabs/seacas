@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: inpoin.f,v $
-C Revision 1.1  1990/11/30 11:09:57  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.MAIN]INPOIN.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE INPOIN (MP, N1, N18, JJ, X, Y, NHOLDP, IHOLDP, IPOINT,
      &   COOR, IPBOUN, LINKP, MERGE, NOROOM)

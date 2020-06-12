@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: ingrpn.f,v $
-C Revision 1.1  1990/11/30 11:09:41  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.MAIN]INGRPN.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE INGRPN (MS, MR, N7, N8, N22, JJ, IIN, IFOUND, IREGN,
      &   NSPR, IFSIDE, ISLIST, LINKR, NHOLDR, IHOLDR, IRGFLG, MERGE,

@@ -7,18 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBIMAP (NDB, OPTION, NUMEL, MAPEL, *)
 C=======================================================================
-C$Log: dbimap.f,v $
-CRevision 1.2  2009/03/25 12:46:01  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:12:46  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:12:44  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:10  gdsjaar
-c Initial revision
 c
 
 C   --*** DBIMAP *** (EXOLIB) Read database element order map

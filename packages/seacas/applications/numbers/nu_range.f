@@ -4,16 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: range.f,v $
-C Revision 1.2  1999/02/16 21:38:01  gdsjaar
-C Converted to read exodusII database format.  Somewhat tested, not
-C ready for production yet.
-C
-C Revision 1.1.1.1  1991/02/21 15:45:22  gdsjaar
-C NUMBERS: Greg Sjaardema, initial Unix release
-C
-c Revision 1.1  1991/02/21  15:45:21  gdsjaar
-c Initial revision
 c
       SUBROUTINE RANGE (LEN, LIST, IOMIN, IOMAX)
       LOGICAL LIST(*), INRNG

@@ -4,51 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: rowsmo.f,v $
-C Revision 1.5  2004/01/22 14:25:22  gdsjaar
-C Attempt to fix strange problem on x86_64 AMD Opteron system using
-C Portland Group 5.1-3 compilers. The getang function would work
-C correctly if compiled with no optimization and in debug mode, but
-C would crash if compiled optimized. The location of the crash was not
-C in a place that made any sense that something was wrong.
-C
-C After much trial and error, it was found that adding a 'SAVE'
-C statement at the beginning of the file fixed the problem.
-C
-C Also cleaned out some unused parameters being passed to the function.
-C
-C Revision 1.4  1998/11/24 20:45:09  gdsjaar
-C Added code to avoid array bound read errors and uninitialized
-C variables. In some cases, the correct fix was difficult to determine,
-C so added something that looked like it made sense...
-C
-C This fixes problems with very slow run times on g77-compiled code. It
-C was taking an uninitialized variable to be INT_MAX instead of zero
-C which resulted in lots of iterations through a loop. This variable was
-C initialized to zero since that is what it was being set to on the sun
-C and when compiled with fort77 (f2c-based).  Gives the exact same mesh
-C on linux and sun for several test cases.
-C
-C Revision 1.3  1998/07/14 18:19:59  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.2  1991/03/21 15:45:16  gdsjaar
-C Changed all 3.14159... to atan2(0.0, -1.0)
-C
-c Revision 1.1.1.1  1990/11/30  11:15:12  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:15:10  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]ROWSMO.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE ROWSMO (MXND, MLN, XN, YN, ZN, LXK, KXL, NXL, LXN, NNN,
      &   WFAC, WFAC2, NIT, EPS, RO, NNN2, LNODES, BNSIZE, LLL, GRAPH,

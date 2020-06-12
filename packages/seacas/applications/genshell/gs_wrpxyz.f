@@ -8,25 +8,6 @@ C=======================================================================
       SUBROUTINE WRPXYZ (XN, YN, XN3, YN3, ZN3, ATRIB)
 C=======================================================================
 
-C   $Log: wrpxyz.f,v $
-C   Revision 1.5  1993/05/27 22:17:06  gdsjaar
-C   Added new ellipse transformation code
-C
-c Revision 1.4  1991/07/31  17:30:53  gdsjaar
-c Added WARP AXIS VERTICAL command to map to surface
-c without changing input X and Y coordinates.  Updated Version to X0.01.00
-c
-c Revision 1.3  1991/01/11  08:39:58  gdsjaar
-c Removed DEBUG comment lines
-c
-c Revision 1.2  91/01/09  12:59:47  gdsjaar
-c Initial conversion from GEN3D to GENSHELL, no BC yet
-c
-c Revision 1.1.1.1  90/08/20  12:23:33  gdsjaar
-c Gen3D Mesh Generation Program
-c
-c Revision 1.1  90/08/20  12:23:31  gdsjaar
-c Initial revision
 c
 
 C   --*** WRPXYZ *** (GEN3D) Calculate 3D coordinates

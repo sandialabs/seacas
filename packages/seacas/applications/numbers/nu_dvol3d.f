@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: dvol3d.f,v $
-C Revision 1.1  1991/02/21 15:43:01  gdsjaar
-C Initial revision
 C
       SUBROUTINE DVOL3D( COORD, DISP, LSTSN, NSEG, DELVOL, NDIM, NUMNP)
 C

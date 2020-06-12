@@ -4,28 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: getrow.f,v $
-C Revision 1.3  1998/07/14 18:19:05  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.2  1995/06/28 19:21:18  gdsjaar
-C Applied fixes found in memo dated May 13, 1991. The bug shows itself
-C for rare cases of semicircular regions being paved.
-C
-c Revision 1.1.1.1  1990/11/30  11:08:41  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:08:39  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]GETROW.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE GETROW (MXND, MXCORN, MXPICK, MLN, NUID, LXK, KXL,
      &   NXL, LXN, LNODES, NCORN, LCORN, BNSIZE, ANGLE, XN, YN, ZN,

@@ -4,47 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: paving.f,v $
-C Revision 1.4  2000/11/13 15:39:05  gdsjaar
-C Cleaned up unused variables and labels.
-C
-C Removed some real to int conversion warnings.
-C
-C Revision 1.3  1998/11/24 20:45:08  gdsjaar
-C Added code to avoid array bound read errors and uninitialized
-C variables. In some cases, the correct fix was difficult to determine,
-C so added something that looked like it made sense...
-C
-C This fixes problems with very slow run times on g77-compiled code. It
-C was taking an uninitialized variable to be INT_MAX instead of zero
-C which resulted in lots of iterations through a loop. This variable was
-C initialized to zero since that is what it was being set to on the sun
-C and when compiled with fort77 (f2c-based).  Gives the exact same mesh
-C on linux and sun for several test cases.
-C
-C Revision 1.2  1998/07/14 18:19:28  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:13:07  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:13:05  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]PAVING.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO PAVING TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
       SUBROUTINE PAVING (NBNODE, NPRM, MLN, IPTPER, NUMPER, LPERIM,
      &   XN, YN, ZN, IEXK, INXE, NNN, LLL, KKK, MXND, ANGLE,
@@ -397,11 +359,6 @@ C
 C  CHECK TO SEE IF WE ARE DONE WITH ONLY 6 NODES LEFT
 C
       ELSEIF ((NLOOP (1) .EQ. 6) .AND. (LINKPR (2, KPERIM) .EQ. 0)) THEN
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO CLOSE6 TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
          CALL CLOSE6 (MXND, MXCORN, MLN, NUID, XN, YN, LXK, KXL, NXL,
      &      LXN, ANGLE, BNSIZE, LNODES, N1, NLOOP (1), KKKOLD,
@@ -425,11 +382,6 @@ C
 C
 C  GENERATE A NEW ROW OF ELEMENTS
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/31/90
-CC* MODIFICATION: ADDED ARGUMENTS TO CALL TO ADDROW TO PASS MINIMUM
-CC**              ELEMENT SIZE (SIZMIN) AND GETSIZ PARAMETERS OF
-CC**              EMIN AND EMAX
 C
       CALL ADDROW (MXND, MXCORN * MXPICK, MXLOOP, MLN, NPRM, NUID, XN,
      &   YN, ZN, LXK, KXL, NXL, LXN, ANGLE, BNSIZE, LNODES, N1, NEND,

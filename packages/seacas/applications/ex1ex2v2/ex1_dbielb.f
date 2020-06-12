@@ -9,22 +9,7 @@ C=======================================================================
      &   IDELB, NUMELB, NUMLNK, NUMATR,
      &   A, KLINK, KATRIB, *)
 C=======================================================================
-C$Log: dbielb.f,v $
-CRevision 1.3  2009/03/25 12:46:01  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.2  1997/03/20 19:40:12  caforsy
-CUpdated Imakefile for Imake 6.1.  Changed printing routines to handle
-Clarger problems.
-C
-CRevision 1.1.1.1  1990/08/14 16:12:37  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:12:35  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:08  gdsjaar
-c Initial revision
 c
 
 C   --*** DBIELB *** (EXOLIB) Read database element blocks

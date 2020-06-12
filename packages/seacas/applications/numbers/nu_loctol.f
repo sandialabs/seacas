@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: loctol.f,v $
-C Revision 1.1  1991/02/21 15:44:03  gdsjaar
-C Initial revision
 C
       SUBROUTINE LOCTOL (TYPE, NDIM, RV, KV)
 C

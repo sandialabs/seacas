@@ -8,18 +8,7 @@ C=======================================================================
       SUBROUTINE DBIESS (NDB, OPTION, NUMESS, LESSEL, LESSNL,
      &   IDESS, NEESS, NNESS, IXEESS, IXNESS, LTEESS, LTNESS, FACESS, *)
 C=======================================================================
-C$Log: dbiess.f,v $
-CRevision 1.2  2009/03/25 12:46:01  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.1.1.1  1990/08/14 16:12:40  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:12:38  gdsjaar
-c Initial revision
 c
-c Revision 1.1  90/08/09  13:39:09  gdsjaar
-c Initial revision
 c
 
 C   --*** DBIESS *** (EXOLIB) Read database node sets

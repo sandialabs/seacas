@@ -4,12 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: pltspc.f,v $
-C Revision 1.2  1993/07/16 17:55:28  gdsjaar
-C Fixed do loop bounds to get rid of truncation message.
-C
-c Revision 1.1  1993/07/16  16:49:29  gdsjaar
-c Changed plt to library rather than single source file.
 c
 C=======================================================================
       SUBROUTINE PLTSPC(S1,RED1,GREEN1,BLUE1,S2,RED2,GREEN2,BLUE2)

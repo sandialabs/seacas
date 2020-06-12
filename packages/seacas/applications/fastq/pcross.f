@@ -4,35 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: pcross.f,v $
-C Revision 1.4  2000/11/13 15:39:05  gdsjaar
-C Cleaned up unused variables and labels.
-C
-C Removed some real to int conversion warnings.
-C
-C Revision 1.3  1999/06/17 19:02:22  gdsjaar
-C Fixed several problems related to holes.  In several places, a
-C nonpositive integer was being used to index into an array.  This seems
-C to fix all of those cases.  I'm not sure if I fixed the true cause of
-C these errors or just the symptom though...
-C
-C Revision 1.2  1998/07/14 18:19:30  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:13:11  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:13:10  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]PCROSS.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE PCROSS (MXND, MXCORN, MLN, MXLOOP, MAXPRM, NUID,
      &   XN, YN, ZN, LXK, KXL, NXL, LXN, ANGLE, LNODES, BNSIZE, LINKPR,

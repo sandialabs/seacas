@@ -4,9 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: pltvwg.f,v $
-C Revision 1.1  1993/07/16 16:49:49  gdsjaar
-C Changed plt to library rather than single source file.
 C
 C=======================================================================
       SUBROUTINE PLTVWG(PLL,PUR,N,XV,YV,ZV,NO,XVO,YVO,ZVO)

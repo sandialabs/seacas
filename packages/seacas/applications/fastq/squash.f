@@ -4,21 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: squash.f,v $
-C Revision 1.2  1991/03/21 15:45:19  gdsjaar
-C Changed all 3.14159... to atan2(0.0, -1.0)
-C
-c Revision 1.1.1.1  1990/11/30  11:16:31  gdsjaar
-c FASTQ Version 2.0X
-c
-c Revision 1.1  90/11/30  11:16:30  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]SQUASH.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE SQUASH (MXND, XN, YN, NUID, LXK, KXL, NXL, LXN, KKK,
      &   KKKOLD, NNN, NAVAIL, IAVAIL, ASMALL, DONE, NOROOM, ERR)

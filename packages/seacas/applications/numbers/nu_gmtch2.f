@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: gmtch2.f,v $
-C Revision 1.1  1991/02/21 15:43:31  gdsjaar
-C Initial revision
 C
       SUBROUTINE GMTCH2 (COORD, DIRCOS, MASSLV, NIQSLV, TDIS,
      *    NIQM, NIQS, DMAX, NUMNP)

@@ -4,15 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: linepr.f,v $
-C Revision 1.1  1990/11/30 11:11:02  gdsjaar
-C Initial revision
 C
 C
-CC* FILE: [.MAIN]LINEPR.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE LINEPR (ML, MP, LINKP, LCON, II, I1, I2, I3, J1, J2,
      &   J3)

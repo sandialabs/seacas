@@ -4,24 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: condno.f,v $
-C Revision 1.2  1998/07/14 18:18:34  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:05:16  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:05:14  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.QMESH]CONDNO.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE CONDNO (MXND, NODES, QRAT, SRAT, COND, SIDES, XN, YN,
      &   LSIDE)

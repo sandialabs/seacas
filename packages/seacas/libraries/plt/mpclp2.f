@@ -4,9 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Log: mpclp2.f,v $
-C Revision 1.1  1993/07/16 16:47:07  gdsjaar
-C Changed plt to library rather than single source file.
 C
 C=======================================================================
       LOGICAL FUNCTION MPCLP2(N,C1X,C1Y,C2X,C2Y)

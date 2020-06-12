@@ -4,23 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: qual2.f,v $
-C Revision 1.2  2000/11/13 15:39:05  gdsjaar
-C Cleaned up unused variables and labels.
-C
-C Removed some real to int conversion warnings.
-C
-C Revision 1.1.1.1  1990/11/30 11:14:12  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:14:11  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]QUAL2.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE QUAL2 (MXND, MXCORN, MLN, NCORN, LCORN, LNODES, ICOMB,
      &   BNSIZE, ANGLE, LXN, ITEST, LTEST, QUAL, POSBL2, POSBL3, ROWCHN,

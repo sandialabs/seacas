@@ -4,16 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: selbox.f,v $
-C Revision 1.2  1998/03/22 05:34:43  gdsjaar
-C General cleanp of unused variables. Reordered DATA statements in
-C command.f so would compile with f2c.
-C
-C Revision 1.1.1.1  1991/02/21 15:45:24  gdsjaar
-C NUMBERS: Greg Sjaardema, initial Unix release
-C
-c Revision 1.1  1991/02/21  15:45:23  gdsjaar
-c Initial revision
 c
       SUBROUTINE SELBOX (COORD, NUMNP, NDIM, P1, SELECT, NODEL)
       DIMENSION COORD (NUMNP,*), P1(*)

@@ -4,9 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: quad.f,v $
-C Revision 1.1  1991/02/21 15:45:19  gdsjaar
-C Initial revision
 C
       SUBROUTINE QUAD(XXX, XI, XG, NDIM, NNODES, NQUAD, WT)
       DIMENSION XXX(NDIM+1,NNODES,NQUAD), XI(NDIM,*), XG(NDIM,*)

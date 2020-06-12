@@ -4,24 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: inline.f,v $
-C Revision 1.2  1998/12/08 14:26:04  gdsjaar
-C Detect whether negative line intervals entered. Output warning message
-C and fix (make positive).
-C
-C Upped version to 2.10
-C
-C Revision 1.1.1.1  1990/11/30 11:09:53  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:09:51  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.MAIN]INLINE.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE INLINE (ML, N2, N19, JJ, LTYP, IP1, IP2, IP3, NN,
      &   FACT, NHOLDL, IHOLDL, ILINE, LTYPE, NINT, FACTOR, LCON,

@@ -4,24 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Log: adjtri.f,v $
-C Revision 1.2  1998/07/14 18:18:18  gdsjaar
-C Removed unused variables, cleaned up a little.
-C
-C Changed BLUE labels to GREEN to help visibility on black background
-C (indirectly requested by a couple users)
-C
-C Revision 1.1.1.1  1990/11/30 11:03:27  gdsjaar
-C FASTQ Version 2.0X
-C
-c Revision 1.1  90/11/30  11:03:26  gdsjaar
-c Initial revision
 c
 C
-CC* FILE: [.PAVING]ADJTRI.FOR
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/6/90
-CC* MODIFICATION: COMPLETED HEADER INFORMATION
 C
       SUBROUTINE ADJTRI (MXND, MLN, LNODES, XN, YN, ZN, NUID, LXK, KXL,
      &   NXL, LXN, NNN, NAVAIL, IAVAIL, NODE, KELEM, ANG, TOLER1,

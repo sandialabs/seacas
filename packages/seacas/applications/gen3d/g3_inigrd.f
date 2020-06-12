@@ -8,15 +8,6 @@ C=======================================================================
       SUBROUTINE INIGRD (FROM, TO, GRAD, NINT, NPTS, ARRAY)
 C=======================================================================
 
-C   $Log: inigrd.f,v $
-C   Revision 1.2  1991/02/07 10:35:19  gdsjaar
-C   Removed Debug Comment lines from files
-C
-c Revision 1.1.1.1  90/08/20  12:21:56  gdsjaar
-c Gen3D Mesh Generation Program
-c
-c Revision 1.1  90/08/20  12:21:55  gdsjaar
-c Initial revision
 c
 C     INIGRD: Initialize array ARRAY with NPTS values.
 C             values are calculated to have a gradient of GRAD
