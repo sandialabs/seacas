@@ -36,6 +36,7 @@
 #include <transform/Iotr_Initializer.h>
 #ifndef _MSC_VER
 #include <visualization/Iovs_IOFactory.h>
+#include <visualization/Iovs_IOFactoryCGNS.h>
 #endif
 
 namespace {
@@ -77,6 +78,7 @@ namespace Ioss {
 
 #ifndef _MSC_VER
       Iovs::IOFactory::factory(); // Visualization
+      Iovs::IOFactoryCGNS::factory(); // Visualization
 #endif
       Iohb::IOFactory::factory(); // HeartBeat
       Iogn::IOFactory::factory(); // Generated

@@ -1,5 +1,6 @@
 #include "IossApplication.h"
 #include "IossRegionReport.h"
+#include "CatalystPluginPaths.h"
 #include <Ioss_IOFactory.h>
 #include <Ionit_Initializer.h>
 #include <Ioss_Utils.h>
@@ -10,12 +11,17 @@
 #include <unistd.h>
 #include <fstream>
 #include <iomanip>
+#include <cstdlib>
 
 IossApplication::IossApplication(const std::string& appName,
     const std::string& fileTypeName, const std::string& iossDatabaseType,
         const std::string& fileTypeSuffix) {
     this->initialize(appName, fileTypeName, iossDatabaseType, fileTypeSuffix);
     this->initializeMPI();
+    setenv("CATALYST_ADAPTER_INSTALL_DIR", CATALYST_PLUGIN_BUILD_DIR, false);
+    std::string pluginLibPath = std::string(CATALYST_PLUGIN_BUILD_DIR) +\
+        std::string("/") + CATALYST_PLUGIN_DYNAMIC_LIBRARY;
+    setenv("CATALYST_PLUGIN", pluginLibPath.c_str(), false);
 }
 
 IossApplication::IossApplication(int argc, char **argv,
@@ -25,6 +31,7 @@ IossApplication::IossApplication(int argc, char **argv,
     this->initialize(appName, fileTypeName, iossDatabaseType, fileTypeSuffix);
     this->initializeMPI(argc, argv);
     this->processCommandLine(argc, argv);
+    setenv("CATALYST_ADAPTER_INSTALL_DIR", CATALYST_PLUGIN_INSTALL_DIR, false);
 }
 
 void IossApplication::initialize(const std::string& appName,
@@ -69,6 +76,8 @@ void IossApplication::runApplication() {
     if (this->outputCopyOfInputDatabaseON()) {
         this->copyInputIOSSDatabaseOnRank();
     }
+
+    this->callCatalystIOSSDatabaseOnRank();
 
     this->exitApplicationSuccess();
 }
@@ -322,7 +331,7 @@ void IossApplication::printUsageMessage() {
     um += "\n\n";
 
     um += "-j output JSON being sent to Phactori to file named ";
-    um += this->parsedPhactoriJSONFileName + "\n\n";
+    um += this->phactoriJSONFileName + "\n\n";
 
     um += "-m output Catalyst mesh representation of input file(s)\n";
     um += "   with output filename " + this->outputCatalystMeshFileName;
@@ -444,6 +453,19 @@ void IossApplication::openInputIOSSDatabase() {
     this->inputIOSSRegion = new Ioss::Region(dbi);
 }
 
+std::string IossApplication::getPhactoriDefaultJSON() {
+    char const *phactoriDefaultJSON = R"pd({
+        "camera blocks":{},
+        "representation blocks": {},
+        "operation blocks": {},
+        "imageset blocks": {},
+        "scatter plot blocks": {},
+        "plot over time blocks": {},
+        "marker blocks": {}
+    })pd";
+    return phactoriDefaultJSON;
+}
+
 void IossApplication::copyInputIOSSDatabaseOnRank() {
     std::string fn = this->copyOutputDatabaseName + "." + this->fileTypeSuffix;
     Ioss::PropertyManager outputProperties;
@@ -454,6 +476,43 @@ void IossApplication::copyInputIOSSDatabaseOnRank() {
     if (dbo == nullptr || !dbo->ok(true)) {
         this->printErrorMessage("Unable to open output " +\
             this->fileTypeName + " file(s) " + fn);
+        this->exitApplicationFailure();
+    }
+
+    Ioss::Region * inputRegion = this->getInputIOSSRegion();
+    Ioss::Region * outputRegion = new Ioss::Region(dbo, inputRegion->name());
+
+    auto state_count = inputRegion->get_property("state_count").get_int();
+    double min_time = inputRegion->get_state_time(1);
+    double max_time = inputRegion->get_state_time(state_count);
+    Ioss::MeshCopyOptions copyOptions;
+    copyOptions.data_storage_type = 1;
+    copyOptions.minimum_time = min_time;
+    copyOptions.maximum_time = max_time;
+    Ioss::Utils::copy_database(*inputRegion, *outputRegion, copyOptions);
+
+    delete outputRegion;
+}
+
+void IossApplication::callCatalystIOSSDatabaseOnRank() {
+    Ioss::PropertyManager outputProperties;
+
+    outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_JSON_STRING",
+        this->getPhactoriDefaultJSON()));
+
+    outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME",
+        this->applicationName));
+
+    std::string catalystDatabaseType = "catalyst";
+    if (this->iossDatabaseType == "cgns") {
+        catalystDatabaseType = "catalyst_cgns";
+    }
+
+    Ioss::DatabaseIO * dbo = Ioss::IOFactory::create(catalystDatabaseType,
+        "catalyst", Ioss::WRITE_RESULTS, (MPI_Comm)MPI_COMM_WORLD,
+               outputProperties);
+    if (dbo == nullptr || !dbo->ok(true)) {
+        this->printErrorMessage("Unable to open catalyst database");
         this->exitApplicationFailure();
     }
 

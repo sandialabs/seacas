@@ -44,6 +44,8 @@ include_directories("include")
 
 add_subdirectory(parser)
 add_library(${PVCSA_LIBRARY_NAME} SHARED ParaViewCatalystIossAdapter.cxx
+                                         ParaViewCatalystCGNSAdapter.cxx
+                                         vtkCGNSMultiBlockDataSet.cxx
                                          vtkExodusIIMultiBlockDataSet.cxx)
 target_link_libraries(${PVCSA_LIBRARY_NAME}
     INTERFACE
@@ -58,11 +60,12 @@ target_link_libraries(${PVCSA_LIBRARY_NAME}
       VTK::IOParallelXML
       VTK::IOXML)
 
-INSTALL(TARGETS ${PVCSA_LIBRARY_NAME} LIBRARY DESTINATION lib)
-INSTALL(DIRECTORY python DESTINATION .)
-
 OPTION(BUILD_CATALYST_ADAPTER_APPLICATIONS
     "Build exo2catalyst and cgns2catalyst applications" OFF)
 IF(BUILD_CATALYST_ADAPTER_APPLICATIONS)
+    FILE(COPY python DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     ADD_SUBDIRECTORY(applications)
 ENDIF()
+
+INSTALL(TARGETS ${PVCSA_LIBRARY_NAME} LIBRARY DESTINATION lib)
+INSTALL(DIRECTORY python DESTINATION .)

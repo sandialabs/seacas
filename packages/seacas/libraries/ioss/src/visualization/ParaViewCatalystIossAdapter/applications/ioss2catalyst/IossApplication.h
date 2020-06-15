@@ -68,6 +68,7 @@ private:
         const std::string& fileTypeName,
             const std::string& iossDatabaseType,
                 const std::string& fileTypeSuffix);
+    void callCatalystIOSSDatabaseOnRank();
     void openInputIOSSDatabase();
     void processCommandLine(int argc, char **argv);
     void initializeMPI();
@@ -77,6 +78,7 @@ private:
     void printUsageMessage();
     void checkForOnlyOneCatalystOutputPath();
     std::string getParallelFileName();
+    std::string getPhactoriDefaultJSON();
     int myRank;
     int numRanks;
     bool printIOSSReport;
@@ -97,8 +99,17 @@ private:
     std::string copyOutputDatabaseName = "iossDatabaseCopy";
     std::string outputCatalystMeshFileName = "iossDatabaseCatalystMesh.vtm";
     std::string iossReportFileName = "IossRegionReport";
-    std::string parsedPhactoriJSONFileName = "parsedPhactoriJSON.json";
+    std::string phactoriJSONFileName = "phactoriJSON.json";
     Ioss::Region * inputIOSSRegion;
+
+#if defined(__APPLE__)
+    const char *CATALYST_PLUGIN_DYNAMIC_LIBRARY =\
+        "libParaViewCatalystIossAdapter.dylib";
+#else
+    const char *CATALYST_PLUGIN_DYNAMIC_LIBRARY =\
+        "libParaViewCatalystIossAdapter.so";
+#endif
+
 };
 
 #endif
