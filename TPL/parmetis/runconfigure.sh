@@ -5,6 +5,7 @@ if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 SHARED="${SHARED:-ON}"
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
@@ -29,10 +30,11 @@ else
 fi
 
 METIS_PATH=${ACCESS}/TPL/metis/metis-5.1.0
-make config cc=${CC} prefix=${ACCESS} shared=${USE_SHARED} metis_path=${METIS_PATH} gklib_path=${METIS_PATH}/GKlib
+make config cc=${CC} prefix=${INSTALL_PATH} shared=${USE_SHARED} metis_path=${METIS_PATH} gklib_path=${METIS_PATH}/GKlib
 
 echo ""
-echo "     MPI: ${MPI}"
-echo "COMPILER: ${CC}"
-echo "  ACCESS: ${ACCESS}"
+echo "         MPI: ${MPI}"
+echo "    COMPILER: ${CC}"
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo ""
