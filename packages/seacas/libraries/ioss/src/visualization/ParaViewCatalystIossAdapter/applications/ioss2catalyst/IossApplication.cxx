@@ -43,7 +43,6 @@ void IossApplication::initialize(const std::string& appName,
     this->printIOSSReport = false;
     this->copyDatabase = false;
     this->writeCatalystMesh = false;
-    this->writeParsedPhactoriJSON = false;
     this->fileName = "";
     this->applicationName = appName;
     this->fileTypeName = fileTypeName;
@@ -120,7 +119,7 @@ void IossApplication::finalizeMPI() {
 void IossApplication::processCommandLine(int argc, char **argv) {
     int c;
     char *cvalue = NULL;
-    while ((c = getopt (argc, argv, "chi:jmp:rs:")) != -1) {
+    while ((c = getopt (argc, argv, "chi:mp:rs:")) != -1) {
         char *cvalue = nullptr;
         switch(c) {
             case 'c':
@@ -133,9 +132,6 @@ void IossApplication::processCommandLine(int argc, char **argv) {
             case 'i':
                 this->usePhactoriInputJSON = true;
                 this->phactoriInputJSONFilePath = cvalue;
-                break;
-            case 'j':
-                this->writeParsedPhactoriJSON = true;
                 break;
             case 'm':
                 this->writeCatalystMesh = true;
@@ -181,22 +177,31 @@ void IossApplication::processCommandLine(int argc, char **argv) {
 }
 
 void IossApplication::checkForOnlyOneCatalystOutputPath() {
-    bool bothJSONAndInputSyntax = this->usePhactoriInputScriptON() &&\
-         this->usePhactoriInputJSONON();
 
-    bool bothParaViewAndPhactori = this->useParaViewExportedScriptON() &&\
-         (this->usePhactoriInputJSONON() ||\
-             this->usePhactoriInputScriptON());
-
-    if(bothJSONAndInputSyntax) {
-        this->printErrorMessage("Both Phactori JSON and Input Syntax given.");
+    int numTimesCatalystCalled = 0;
+    if(this->usePhactoriInputScriptON()) {
+        numTimesCatalystCalled++;
+    }
+    if(this->usePhactoriInputJSONON()) {
+        numTimesCatalystCalled++;
+    }
+    if(this->outputCatalystMeshON()) {
+        numTimesCatalystCalled++;
+    }
+    if(this->useParaViewExportedScriptON()) {
+        numTimesCatalystCalled++;
     }
 
-    if(bothParaViewAndPhactori) {
-        this->printErrorMessage("Both ParaView and Phactori input given.");
+    if(numTimesCatalystCalled > 1) {
+        this->printErrorMessage("Catalyst called with more than one option.");
+        this->printUsageMessage();
+        this->exitApplicationFailure();
     }
 
-    if(bothJSONAndInputSyntax || bothParaViewAndPhactori) {
+    if(numTimesCatalystCalled == 1 &&
+        (this->printIOSSRegionReportON() ||
+            this->outputCopyOfInputDatabaseON())) {
+        this->printErrorMessage("Catalyst called with report output.");
         this->printUsageMessage();
         this->exitApplicationFailure();
     }
@@ -232,14 +237,6 @@ bool IossApplication::outputCatalystMeshON() {
 
 bool IossApplication::setOutputCatalystMesh(bool status) {
     this->writeCatalystMesh = status;
-}
-
-bool IossApplication::outputParsedPhactoriJSONON() {
-    return this->writeParsedPhactoriJSON;
-}
-
-bool IossApplication::setOutputParsedPhactoriJSON(bool status) {
-    this->writeParsedPhactoriJSON = status;
 }
 
 bool IossApplication::usePhactoriInputScriptON() {
@@ -288,13 +285,22 @@ void IossApplication::printUsageMessage() {
     std::string fn = this->copyOutputDatabaseName + "." + this->fileTypeSuffix;
 
     std::string um = "\nUsage: " + this->applicationName;
-    um += " [-chjmr] [-i file | -p file | -s file] FILE\n\n";
+    um += " [-h] [-cr | -m | -i file | -p file | -s file] FILE\n\n";
 
     um += "DESCRIPTION\n\n";
     um += "Read input " + this->fileTypeName;
     um += " file(s) and send mesh to ParaView Catalyst";
 
     um += "\n\nEXAMPLES\n\n";
+
+    um += "mpiexec -np 1 " + this->applicationName + " -h\n";
+    um += "    Print usage message and exit program.";
+    um += "\n\n";
+
+    um += "mpiexec -np 4 " + this->applicationName + " -c -r file.";
+    um += this->fileTypeSuffix + "\n";
+    um += "    Output copy of input mesh and IOSS region report.";
+    um += "\n\n";
 
     um += "mpiexec -np 4 " + this->applicationName + " file.";
     um += this->fileTypeSuffix + "\n";
@@ -304,8 +310,7 @@ void IossApplication::printUsageMessage() {
 
     um += "mpiexec -np 4 " + this->applicationName + " -m file.";
     um += this->fileTypeSuffix + "\n";
-    um += "    Output mesh sent to Catalyst and run Catalyst with default\n";
-    um += "    Phactori JSON.\n\n";
+    um += "    Output mesh representation for Catalyst.\n\n";
 
     um += "mpiexec -np 4 " + this->applicationName + " -i file.json file.";
     um += this->fileTypeSuffix + "\n";
@@ -330,11 +335,9 @@ void IossApplication::printUsageMessage() {
     um += "-i <file> run Catalyst with Phactori input JSON given in <file>.";
     um += "\n\n";
 
-    um += "-j output JSON being sent to Phactori to file named ";
-    um += this->phactoriJSONFileName + "\n\n";
-
     um += "-m output Catalyst mesh representation of input file(s)\n";
     um += "   with output filename " + this->outputCatalystMeshFileName;
+    um += ".pvd";
     um += "\n\n";
 
     um += "-p <file> run Catalyst with Phactori input command syntax given\n";
@@ -431,6 +434,11 @@ bool IossApplication::decomposedMeshExists() {
 
 Ioss::Region * IossApplication::getInputIOSSRegion() {
     return this->inputIOSSRegion;
+}
+
+int IossApplication::parsePhactoriScriptFile(const std::string &filepath,
+        std::string &json_result) {
+
 }
 
 void IossApplication::openInputIOSSDatabase() {

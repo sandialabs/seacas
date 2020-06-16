@@ -4,7 +4,6 @@
 #
 # See packages/seacas/LICENSE for details
 
-
 #these settings allow us to specify a particular json format (or bccolli.py)
 #text file to use as the phactori visualization setup file.
 #if gUseHardwiredJsonScriptFile is None, operation is normal, but if it
@@ -13,9 +12,11 @@
 global gUseHardwiredJsonScriptFile
 gUseHardwiredJsonScriptFile = None
 #gUseHardwiredJsonScriptFile = "myscript1.json"
+#gUseHardwiredJsonScriptFile = "sparc_phactori_catalyst_insitu.json"
 
-global WriteEachDeadCellElementToFiles
-WriteEachDeadCellElementToFiles = False
+global gRenderingEnabled
+gRenderingEnabled = True
+
 global WriteDeadCellSummaryFile
 WriteDeadCellSummaryFile = True
 
@@ -32,6 +33,7 @@ except: from paraview.simple import *
 from paraview import coprocessing
 
 import vtk
+import json
 
 global gParaViewCatalystVersionFlag
 #gParaViewCatalystVersionFlag = 40300
@@ -65,6 +67,419 @@ global TestUserDataForBypassScriptCompletedFlag
 TestUserDataForBypassScriptCompletedFlag = False
 
 global bccolli_controls
+
+def HandleJsonScriptLoadProcessZero(catalyst_script_extra_file):
+  if PhactoriDbg():
+    myDebugPrint3("HandleJsonScriptLoadProcessZero entered\n")
+  try:
+    with open(catalyst_script_extra_file) as data_file:
+      if PhactoriDbg(100):
+        myDebugPrint3("open successful: \n")
+      visDescpJson = json.load(data_file)
+      visDescpJson = convertJsonUnicodeToStrings(visDescpJson)
+    if PhactoriDbg(100):
+      myDebugPrint3("load successful:\n" + str(visDescpJson) + "\n")
+  except:
+    #couldn't open file, use default string and also try writing out default
+    #script
+    if PhactoriDbg(100):
+      myDebugPrint3("error trying to load catalyst_script_extra_file: " + \
+        str(catalyst_script_extra_file) + "\n"
+        "using default string script\n")
+    global catalyst_script_default_string_json
+
+    import os
+    if os.path.exists(catalyst_script_extra_file):
+      if PhactoriDbg(100):
+        myDebugPrint3("script file is present in directory but could not be\n"
+          "loaded. It will not be overwritten.\n")
+    else:
+      if PhactoriDbg(100):
+        myDebugPrint3("script file is not present in directory so a default\n"
+          "version will be created.\n")
+      try:
+        ff = open(catalyst_script_extra_file, "w")
+        ff.write(catalyst_script_default_string_json)
+        ff.close()
+      except:
+        if PhactoriDbg(100):
+          myDebugPrint3("could not write out default file\n")
+
+    visDescpJson = json.loads(catalyst_script_default_string_json)
+    visDescpJson = convertJsonUnicodeToStrings(visDescpJson)
+
+  #now broadcast
+  #import pdb
+  #pdb.set_trace()
+
+  #broadcast for full multiprocess functionality
+  #color range needs no broadcast, as that will be managed when color range
+  #calculated for the next frame (process 1 will share the maxes and mins
+  #it has)
+
+  try:
+    pm = paraview.servermanager.vtkProcessModule.GetProcessModule()
+    globalController = pm.GetGlobalController()
+
+    outStr = json.dumps(visDescpJson)
+
+    numberOfValues = len(outStr)
+
+    #send size of data buffer first
+    vtkInfoBufferSizeArray = vtk.vtkIntArray()
+    vtkInfoBufferSizeArray.SetNumberOfTuples(1)
+    vtkInfoBufferSizeArray.SetValue(0, int(numberOfValues))
+    if PhactoriDbg():
+      myDebugPrint3("trying to broadcast size of array: " + str(int(numberOfValues)) + "\n")
+    globalController.Broadcast(vtkInfoBufferSizeArray, 0)
+    if PhactoriDbg():
+      myDebugPrint3("returned from broadcasting size of array\n")
+
+    if numberOfValues == 0:
+      if PhactoriDbg():
+        myDebugPrint3("broadcast was 0 data, so we are done\n")
+      if PhactoriDbg():
+        myDebugPrint3("HandleJsonScriptLoadProcessZero returning 2\n")
+      return None;
+
+    if PhactoriDbg():
+      myDebugPrint3("now sending data\n")
+    #now fill out data and send it
+    vtkOutArray = vtk.vtkCharArray()
+    vtkOutArray.SetNumberOfTuples(numberOfValues)
+    for jj in range(0, numberOfValues):
+      vtkOutArray.SetValue(jj, outStr[jj])
+
+    globalController.Broadcast(vtkOutArray, 0)
+
+    if PhactoriDbg():
+      myDebugPrint3("done sending data\n")
+  except:
+    #broadcast error; not really recoverable;
+    if PhactoriDbg():
+      myDebugPrint3("exception trying to broadcast\n")
+    myDebugPrint3AndException("HandleJsonScriptLoadProcessZero exception returning 4\n")
+    return
+
+  if PhactoriDbg():
+    myDebugPrint3("HandleJsonScriptLoadProcessZero returning\n")
+
+  return visDescpJson
+
+global catalyst_script_default_string_json
+catalyst_script_default_string_json = '' \
+'{\n' \
+'"camera blocks":{\n' \
+'  "camx1":{"camera type":"camera","look direction":[-1,0,0]},\n' \
+'  "camy1":{"camera type":"camera","look direction":[0,-1,0]},\n' \
+'  "camz1":{"camera type":"camera","look direction":[0,0,-1]},\n' \
+'  "camz2":{"camera type":"camera","look direction":[0,0,1]},\n' \
+'  "camxyz1":{"camera type":"camera","look direction":[-1,-1,-1],"look at relative distance":0.8},\n' \
+'  "camxyz2":{"camera type":"camera","look direction":[1,1,1],"look at relative distance":0.8},\n' \
+'  "camxyz3":{"camera type":"camera","look direction":[0.7,-0.3,-1],"look at relative distance":0.8},\n' \
+'  "camz3_nosezoom3":{\n' \
+'    "camera type":"camera",\n' \
+'    "look direction":[0,0,1],\n' \
+'    "look at absolute point":[0.0195, 0.0, 0.0],\n' \
+'    "look at absolute distance":0.1\n' \
+'  }\n' \
+'},\n' \
+'"representation blocks":{\n' \
+'  "rep_velocity_y":{ "color by scalar":"velocity_2", "variable type":"element"},\n' \
+'  "rep_pressure_0_15000":{ "color by scalar":"pressure", "variable type":"element", "color legend maximum range":[0.0, 15000.0]}\n' \
+'},\n' \
+'"imageset blocks":{\n' \
+'  "is_velocity_y_camxyz1":{\n' \
+'    "camera":"camxyz1",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"velocity_y_camxyz1."\n' \
+'  },\n' \
+'  "is_velocity_y_camxyz2":{\n' \
+'    "camera":"camxyz2",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"velocity_y_camxyz2."\n' \
+'  },\n' \
+'  "is_xyslice_minz_1_velocity_y":{\n' \
+'    "camera":"camz1",\n' \
+'    "operation":"xyslice_minz_1",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"xyslice_minz_1_velocity_y."\n' \
+'  },\n' \
+'  "is_xyslice_midz_1_velocity_y":{\n' \
+'    "camera":"camz1",\n' \
+'    "operation":"xyslice_midz_1",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"xyslice_midz_1_velocity_y."\n' \
+'  },\n' \
+'  "is_xyslice_maxz_1_velocity_y":{\n' \
+'    "camera":"camz1",\n' \
+'    "operation":"xyslice_maxz_1",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"xyslice_maxz_1_velocity_y."\n' \
+'  },\n' \
+'  "is_yzslice_minx_1_velocity_y":{\n' \
+'    "camera":"camx1",\n' \
+'    "operation":"yzslice_minx_1",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"yzslice_minx_1_velocity_y."\n' \
+'  },\n' \
+'  "is_yzslice_midx_1_velocity_y":{\n' \
+'    "camera":"camx1",\n' \
+'    "operation":"yzslice_midx_1",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"yzslice_midx_1_velocity_y."\n' \
+'  },\n' \
+'  "is_yzslice_maxx_1_velocity_y":{\n' \
+'    "camera":"camx1",\n' \
+'    "operation":"yzslice_maxx_1",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"yzslice_maxx_1_velocity_y."\n' \
+'  },\n' \
+'  "is_xzslice_miny_1_velocity_y":{\n' \
+'    "camera":"camy1",\n' \
+'    "operation":"xzslice_miny_1",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"xzslice_miny_1_velocity_y."\n' \
+'  },\n' \
+'  "is_xzslice_midy_1_velocity_y":{\n' \
+'    "camera":"camy1",\n' \
+'    "operation":"xzslice_midy_1",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"xzslice_midy_1_velocity_y."\n' \
+'  },\n' \
+'  "is_xzslice_maxy_1_velocity_y":{\n' \
+'    "camera":"camy1",\n' \
+'    "operation":"xzslice_maxy_1",\n' \
+'    "representation":"rep_velocity_y",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"xzslice_maxy_1_velocity_y."\n' \
+'  },\n' \
+'  "is_three_slices_pressure_1":{\n' \
+'    "camera":"camxyz3",\n' \
+'    "operation":"group_xyslice_minz_1_yzslice_midx_1_xzslice_midy_1",\n' \
+'    "representation":"rep_pressure_0_15000",\n' \
+'    "image basedirectory":"CatalystOutput",\n' \
+'    "image basename":"three_slices_pressure_1."\n' \
+'  }\n' \
+'},\n' \
+'"operation blocks":{\n' \
+'  "xyslice_minz_1":{\n' \
+'    "type":"slice",\n' \
+'    "cut type":"crinkle",\n' \
+'    "plane normal":[0.0, 0.0, 1.0],\n' \
+'    "relative point on plane":[0.0, 0.0, -0.499999]\n' \
+'  },\n' \
+'  "xyslice_midz_1":{\n' \
+'    "type":"slice",\n' \
+'    "cut type":"crinkle",\n' \
+'    "plane normal":[0.0, 0.0, 1.0],\n' \
+'    "relative point on plane":[0.0, 0.0, 0.0]\n' \
+'  },\n' \
+'  "xyslice_maxz_1":{\n' \
+'    "type":"slice",\n' \
+'    "cut type":"crinkle",\n' \
+'    "plane normal":[0.0, 0.0, 1.0],\n' \
+'    "relative point on plane":[0.0, 0.0, 0.499999]\n' \
+'  },\n' \
+'  "vtm_out_xyslice_minz_1":{\n' \
+'    "type":"vtkdataexport",\n' \
+'    "input":"xyslice_minz_1",\n' \
+'    "basename":"xyslice_minz_1"\n' \
+'  },\n' \
+'  "vtm_out_xyslice_midz_1":{\n' \
+'    "type":"vtkdataexport",\n' \
+'    "input":"xyslice_midz_1",\n' \
+'    "basename":"xyslice_midz_1"\n' \
+'  },\n' \
+'  "vtm_out_xyslice_maxz_1":{\n' \
+'    "type":"vtkdataexport",\n' \
+'    "input":"xyslice_maxz_1",\n' \
+'    "basename":"xyslice_maxz_1"\n' \
+'  },\n' \
+'  "yzslice_minx_1":{\n' \
+'    "type":"slice",\n' \
+'    "cut type":"crinkle",\n' \
+'    "plane normal":[1.0, 0.0, 0.0],\n' \
+'    "relative point on plane":[-0.499999, 0.0, 0.0]\n' \
+'  },\n' \
+'  "yzslice_midx_1":{\n' \
+'    "type":"slice",\n' \
+'    "cut type":"crinkle",\n' \
+'    "plane normal":[1.0, 0.0, 0.0],\n' \
+'    "relative point on plane":[0.0, 0.0, 0.0]\n' \
+'  },\n' \
+'  "yzslice_maxx_1":{\n' \
+'    "type":"slice",\n' \
+'    "cut type":"crinkle",\n' \
+'    "plane normal":[1.0, 0.0, 0.0],\n' \
+'    "relative point on plane":[0.499999, 0.0, 0.0]\n' \
+'  },\n' \
+'  "vtm_out_yzslice_minx_1":{\n' \
+'    "type":"vtkdataexport",\n' \
+'    "input":"yzslice_minx_1",\n' \
+'    "basename":"yzslice_minx_1"\n' \
+'  },\n' \
+'  "vtm_out_yzslice_midx_1":{\n' \
+'    "type":"vtkdataexport",\n' \
+'    "input":"yzslice_midx_1",\n' \
+'    "basename":"yzslice_midx_1"\n' \
+'  },\n' \
+'  "vtm_out_yzslice_maxx_1":{\n' \
+'    "type":"vtkdataexport",\n' \
+'    "input":"yzslice_maxx_1",\n' \
+'    "basename":"yzslice_maxx_1"\n' \
+'  },\n' \
+'  "xzslice_miny_1":{\n' \
+'    "type":"slice",\n' \
+'    "cut type":"crinkle",\n' \
+'    "plane normal":[0.0, 1.0, 0.0],\n' \
+'    "relative point on plane":[0.0, -0.499999, 0.0]\n' \
+'  },\n' \
+'  "xzslice_midy_1":{\n' \
+'    "type":"slice",\n' \
+'    "cut type":"crinkle",\n' \
+'    "plane normal":[0.0, 1.0, 0.0],\n' \
+'    "relative point on plane":[0.0, 0.0, 0.0]\n' \
+'  },\n' \
+'  "xzslice_maxy_1":{\n' \
+'    "type":"slice",\n' \
+'    "cut type":"crinkle",\n' \
+'    "plane normal":[0.0, 1.0, 0.0],\n' \
+'    "relative point on plane":[0.0, 0.499999, 0.0]\n' \
+'  },\n' \
+'  "vtm_out_xzslice_miny_1":{\n' \
+'    "type":"vtkdataexport",\n' \
+'    "input":"xzslice_miny_1",\n' \
+'    "basename":"xzslice_miny_1"\n' \
+'  },\n' \
+'  "vtm_out_xzslice_midy_1":{\n' \
+'    "type":"vtkdataexport",\n' \
+'    "input":"xzslice_midy_1",\n' \
+'    "basename":"xzslice_midy_1"\n' \
+'  },\n' \
+'  "vtm_out_xzslice_maxy_1":{\n' \
+'    "type":"vtkdataexport",\n' \
+'    "input":"xzslice_maxy_1",\n' \
+'    "basename":"xzslice_maxy_1"\n' \
+'  },\n' \
+'  "group_xyslice_minz_1_yzslice_midx_1_xzslice_midy_1":{\n' \
+'    "type":"group",\n' \
+'    "operation group list":["xyslice_minz_1", "yzslice_midx_1", "xzslice_midy_1"]\n' \
+'  }\n' \
+'},\n' \
+'"text annotation blocks":{},\n' \
+'"scatter plot blocks":{},\n' \
+'"plot over time blocks":{},\n' \
+'"experimental blocks":{},\n' \
+'"onoff criteria blocks":{},\n' \
+'"visual marker blocks":{}\n' \
+'}\n\n'
+
+def HandleJsonScriptLoadProcessNotZero():
+  if PhactoriDbg():
+    myDebugPrint3("HandleJsonScriptLoadProcessNotZero entered\n")
+
+  try:
+    #do broadcast (receive from process 0) to receive update data
+    pm = paraview.servermanager.vtkProcessModule.GetProcessModule()
+    globalController = pm.GetGlobalController()
+
+    if PhactoriDbg():
+      myDebugPrint3("trying to receive data buffer length\n")
+
+    #first, get size of data.  If it is zero, we are done and there won't be
+    #another broadcast
+    vtkInfoBufferSizeArray = vtk.vtkIntArray()
+    vtkInfoBufferSizeArray.SetNumberOfTuples(1)
+    #vtkInfoBufferSizeArray.SetValue(0, 0)
+    globalController.Broadcast(vtkInfoBufferSizeArray, 0)
+    bufferLen = int(vtkInfoBufferSizeArray.GetTuple1(0))
+    if bufferLen == 0:
+      if PhactoriDbg():
+        myDebugPrint3("broadcast indicated 0 data, so we are done\n")
+      if PhactoriDbg():
+        myDebugPrint3("HandleJsonScriptLoadProcessNotZero returning 2\n")
+      return None;
+
+    if PhactoriDbg():
+      myDebugPrint3("buffer length: " + str(bufferLen) + \
+        ", now trying to receive data\n")
+    #first go round, fixed buffer length, next expandable if necessary
+    vtkOutArray = vtk.vtkCharArray()
+    vtkOutArray.SetNumberOfTuples(int(bufferLen))
+    #for jj in range(0, bufferLen):
+    #  vtkOutArray.SetValue(jj, 0)
+
+    #receive broadcast of info from process 0
+    globalController.Broadcast(vtkOutArray, 0)
+    if PhactoriDbg():
+      myDebugPrint3("data received successfully\n")
+  except:
+    #broadcast error; not really recoverable;
+    if PhactoriDbg():
+      myDebugPrint3("exception trying to receive broadcast\n")
+    myDebugPrint3AndException("HandleJsonScriptLoadProcessNotZero returning 2\n")
+    return
+
+  try:
+    if PhactoriDbg():
+      myDebugPrint3("converting data to json format string\n")
+    #convert to json-format string
+    jsonCharList = []
+    for ii in range(0, bufferLen):
+      oneChar = chr(int(vtkOutArray.GetTuple1(ii)))
+      jsonCharList.append(oneChar)
+
+    #if PhactoriDbg():
+    #  myDebugPrint3("done making jsonCharList:\n" + str(jsonCharList) + "\n")
+
+    jsonInString = "".join(jsonCharList)
+
+    #if PhactoriDbg():
+    #  myDebugPrint3("json received from broadcast (converted to string):\n" +
+    #    jsonInString + "\n")
+    if PhactoriDbg():
+      myDebugPrint3("conversion to string complete:\n")
+
+    #jsonInString2 = str(jsonInString)
+
+    #if PhactoriDbg():
+    #  myDebugPrint3("(converted to string 2):\n" +
+    #    jsonInString2 + "\n")
+
+    #convert json format string to python dict
+    if PhactoriDbg():
+      myDebugPrint3("about to convert back to json\n")
+    jsonIn = json.loads(jsonInString)
+    jsonIn = convertJsonUnicodeToStrings(jsonIn)
+    if PhactoriDbg():
+      myDebugPrint3("done converting back to json\n")
+
+    if PhactoriDbg():
+      myDebugPrint3("json received from broadcast (converted to dict):\n" +
+        str(jsonIn) + "\n")
+
+  except:
+    #broadcast error; not really recoverable;
+    if PhactoriDbg():
+      myDebugPrint3("exception trying to use broadcast info as json set info\n")
+    myDebugPrint3AndException("HandleJsonScriptLoadProcessNotZero returning 3\n")
+    return
+
+  if PhactoriDbg():
+    myDebugPrint3("HandleJsonScriptLoadProcessNotZero returning\n")
+
+  return jsonIn
 
 def TestUserDataForBypassScript(datadescription):
 
@@ -151,37 +566,38 @@ def TestUserDataForBypassScript(datadescription):
               "\nto specify vis instead of catalyst block\n")
     gBypassUserData = True
 
-    import json
+    useEmbeddedJsonCatalystScript = False
+    if useEmbeddedJsonCatalystScript:
+      gBypassUserDataJson = GetEmbeddedJsonCatalystScript()
+      if PhactoriDbg(100):
+        myDebugPrint3("using embedded json catalyst script:\n" + str(visDescpJson) + "\n")
+    else:
+      if PhactoriDbg(100):
+          myDebugPrint3("using json script file with broadcast:\n" \
+              "name of script file: " + catalyst_script_extra_file + "\n" \
+              "about to do broadcast\n")
+      if SmartGetLocalProcessId() == 0:
+        #process zero loads json script and broadcasts
+        gBypassUserDataJson = HandleJsonScriptLoadProcessZero(catalyst_script_extra_file)
+      else:
+        #other processes receive json script
+        ###gBypassUserDataJson = HandleJsonScriptLoadProcessZero(catalyst_script_extra_file)
+        gBypassUserDataJson = HandleJsonScriptLoadProcessNotZero()
 
-    try:
-      with open(catalyst_script_extra_file) as data_file:
-        if PhactoriDbg(100):
-          myDebugPrint3("open successful: \n")
-        visDescpJson = json.load(data_file)
-        visDescpJson = convertJsonUnicodeToStrings(visDescpJson)
-      if PhactoriDbg(100):
-        myDebugPrint3("load successful:\n" + str(visDescpJson) + "\n")
-      gUserDataBypassStrings = [
-        str(visDescpJson),
-        "_",
-        "simple",
-        "",
-        "",
-        "0",
-        "simple.e",
-        "",
-        catalyst_script_extra_file
-      ]
-      gBypassUserDataJson =  visDescpJson
-    except:
-      import traceback
-      excpt_str = "exception while loading json from file: " + \
-              catalyst_script_extra_file + ":\n" +  \
-              traceback.format_exc() + "\n"
-      if PhactoriDbg(100):
-        myDebugPrint3("exception while loading json from file: " + \
-          catalyst_script_extra_file + ":\n" + excpt_str)
-      myDebugPrint3AndException(excpt_str)
+    gUserDataBypassStrings = [
+      str(gBypassUserDataJson),
+      "_",
+      "simple",
+      "",
+      "",
+      "0",
+      "simple.e",
+      "",
+      catalyst_script_extra_file
+    ]
+
+  if PhactoriDbg(100):
+    myDebugPrint3("TestUserDataForBypassScript returning\n")
 
 
 def GetBypassUserDataFlag():
@@ -199,7 +615,7 @@ if gBypassUserData:
   myBypassJsonString = bccolli_controls.catalystSierraInputInJsonFormatStr
   gBypassUserDataJson = bccolli_controls.catalystSierraInputInJsonFormat
 else:
-  myBypassJsonString = """{"camera blocks":{},"representation blocks":{},"imageset blocks":{"is1":{"color by scalar": "mixture_fraction","operation":"fooOperation"},"is2":{"color by scalar": "density_ra","operation":"contour1"}},"operation blocks":{"fooOperation":{"type":"clip","plane normal":[0.0,0.0,1.0],"relative point on plane":[0.0,0.0,0.0]},"contour1":{"type":"contour","variable scalar":"mixture_fraction","contour value":[0.7]}},"scatter plot blocks":{},"plot over time blocks":{}}"""
+  myBypassJsonString = "{'camera blocks':{},'representation blocks':{},'imageset blocks':{'is1':{'color by scalar': 'mixture_fraction','operation':'fooOperation'},'is2':{'color by scalar': 'density_ra','operation':'contour1'}},'operation blocks':{'fooOperation':{'type':'clip','plane normal':[0.0,0.0,1.0],'relative point on plane':[0.0,0.0,0.0]},'contour1':{'type':'contour','variable scalar':'mixture_fraction','contour value':[0.7]}},'scatter plot blocks':{},'plot over time blocks':{}}"
 
 gUserDataBypassStrings = [
   myBypassJsonString,
@@ -240,19 +656,10 @@ gMultiOpViewTestRep2Name = "repB"
 gMultiOpViewTestImagesetName = "multioptestimageset"
 
 class PhactoriPhysicalEyeAndScreenSetup:
-  """contains physical dimensions of screen (in whatever screen units)
-     and location of between-the-eyes position relative to the screen
-     in screen units--(0.0, 0.0) is right at middle of screen and distance
-     from the betwee-the-eyes position and the screen"""
+  "contains physical dimensions of screen (in whatever screen units)\n     and location of between-the-eyes position relative to the screen\n     in screen units--(0.0, 0.0) is right at middle of screen and distance\n     from the betwee-the-eyes position and the screen"
 
   def __init__(self):
-    """inScreenWidth, inScreenHeight obvious, in whatever units (feet, meters,
-       inches); inIpdInScreenUnits interpupilary distance in same units as
-       screen width and height, inEyeToScreenDistance distance from the
-       between-the-eye position to the screen, in the same units;
-       inBetweenEyeX, inBetweenEyeY where the eye is looking straight ahead
-       at the screen, with (0.0, 0.0) being the center and 0.5 * width and
-       height being at the corners"""
+    "inScreenWidth, inScreenHeight obvious, in whatever units (feet, meters,\n       inches); inIpdInScreenUnits interpupilary distance in same units as\n       screen width and height, inEyeToScreenDistance distance from the\n       between-the-eye position to the screen, in the same units;\n       inBetweenEyeX, inBetweenEyeY where the eye is looking straight ahead\n       at the screen, with (0.0, 0.0) being the center and 0.5 * width and\n       height being at the corners"
 
     #we operates by setting eye at (0,0,0) and setting the screen corners
     #appropriately
@@ -938,9 +1345,7 @@ class PhactoriColorSettings:
 
   def SetParaviewRvRepColors(self, inParaviewRenderView,
           inParaviewRep):
-    """given a paraview Representation instance, set the colors in the
-       paraview representation instance from this color settings
-       instance"""
+    "given a paraview Representation instance, set the colors in the\n       paraview representation instance from this color settings\n       instance"
     inParaviewRep.EdgeColor            = self.mEdgeColor
     inParaviewRep.DiffuseColor         = self.mDiffuseColor
     inParaviewRep.BackfaceDiffuseColor = self.mBackfaceDiffuseColor
@@ -961,8 +1366,7 @@ class PhactoriColorSettings:
 
 
   def ParsePlotColorSettingsFromJson(self, inJsn):
-    """given a json structure, try to grab the color settings from it
-       using plot keys rather than 3d image keys"""
+    "given a json structure, try to grab the color settings from it\n       using plot keys rather than 3d image keys"
     textColor = self.mXAxisSettings.TitleColor
     axesColor = self.mAxesGridColor
     dataColor = self.mEdgeColor
@@ -997,7 +1401,7 @@ class PhactoriColorSettings:
     self.mTimeAnnotationColor = textColor
 
   def ParseColorSettingsFromJson(self, inJsn):
-    """given a json structure, try to grab the color settings from it"""
+    "given a json structure, try to grab the color settings from it"
     self.mDiffuseColor = getParameterFromBlock(inJsn,
                              'surface color', self.mDiffuseColor)
     #if 'back surface color' is not set, use surface color
@@ -1083,11 +1487,11 @@ gMdp3RestrictToProcessListFlag = True
 global gMdp3ProcessIdList
 gMdp3ProcessIdList = [0]
 global gMdp3UseStandardOutFlag
-gMdp3UseStandardOutFlag = True
-#gMdp3UseStandardOutFlag = False
+#gMdp3UseStandardOutFlag = True
+gMdp3UseStandardOutFlag = False
 global gMdp3UseFileOutFlag
-gMdp3UseFileOutFlag = False
-#gMdp3UseFileOutFlag = True
+#gMdp3UseFileOutFlag = False
+gMdp3UseFileOutFlag = True
 global gMdp3PriorityRestriction
 #gMdp3PriorityRestriction = 150
 #gMdp3PriorityRestriction = 50
@@ -1105,10 +1509,7 @@ def PhactoriDbg2(inPriority = 450, inOneProcessFlag = False, inOneProcessId = 0)
   return True
 
 def PhactoriDbg(inPriority = 450, inOneProcessFlag = False, inOneProcessId = 0):
-  """this is a test as to whether or not debug output should be written.
-     The idea is that you do this test before printing debug output so that
-     complicated strings do not need to be unnecessarily created and destroyed
-     when not doing debug output"""
+  "this is a test as to whether or not debug output should be written.\n     The idea is that you do this test before printing debug output so that\n     complicated strings do not need to be unnecessarily created and destroyed\n     when not doing debug output"
   global gMdp3PriorityRestriction
   if inPriority < gMdp3PriorityRestriction:
     return False
@@ -1135,7 +1536,7 @@ def PhactoriDbg(inPriority = 450, inOneProcessFlag = False, inOneProcessId = 0):
   return True
 
 def PrintOnProcessZero(strToPrint):
-  """prints out string if we are on process zero; typically for warnings"""
+  "prints out string if we are on process zero; typically for warnings"
   if SmartGetLocalProcessId() == 0:
       print(strToPrint)
 
@@ -1183,6 +1584,24 @@ def myDebugPrint3AndException(inMsg, inOneProcessFlag = False,
   if PhactoriDbg(10000, inOneProcessFlag, inOneProcessId):
     myDebugPrint3(inMsg, 10000, inOneProcessFlag, inOneProcessId)
 
+def DebugPrintVtkDataArraysInfo(label, theData, priority):
+  myDebugPrint3(label, priority)
+  if theData == None:
+    myDebugPrint3("None")
+  else:
+    numArrays = theData.GetNumberOfArrays()
+    myDebugPrint3("number of data arrays: " + str(numArrays) + "\n", priority)
+    for arrayIndex in range(0, numArrays):
+      oneArray = theData.GetArray(arrayIndex)
+      myDebugPrint3(str(arrayIndex) + ": " + str(oneArray.GetName()) + "   " + str(oneArray.GetNumberOfComponents()) + "\n", priority)
+
+def DebugPrintCellAndPointArrayInfo(label, pvFilter, priority):
+  myDebugPrint3(label, priority)
+  theData = pvFilter.PointData
+  DebugPrintVtkDataArraysInfo("PointData:\n", theData, priority)
+  theData = pvFilter.CellData
+  DebugPrintVtkDataArraysInfo("CellData:\n", theData, priority)
+ 
 #def SetCpViewsAndCpWriters(inCpViews, inCpWriters):
 #  global localCpViews
 #  global localCpWriters
@@ -1214,6 +1633,219 @@ def SetUpCoProcessor(inCoprocessor):
   global localCoProcessorReference
   localCoProcessorReference = inCoprocessor
 
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriVectorLibrary import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+def vecDotProduct(inVecA, inVecB):
+  " returns dotproct inVecZ dot inVecB "
+  return inVecA[0] * inVecB[0] + inVecA[1] * inVecB[1] + inVecA[2] * inVecB[2]
+
+def vecCrossProduct(inVecA, inVecB):
+  " returns inVecZ X inVecB "
+  return [inVecA[1] * inVecB[2] - inVecA[2] * inVecB[1],
+          inVecA[2] * inVecB[0] - inVecA[0] * inVecB[2],
+          inVecA[0] * inVecB[1] - inVecA[1] * inVecB[0]]
+
+def vecCrossProduct2(outVec, inVecA, inVecB):
+  " calculates inVecA X inVecB and puts the result in outVec"
+  outVec[0] = inVecA[1] * inVecB[2] - inVecA[2] * inVecB[1]
+  outVec[1] = inVecA[2] * inVecB[0] - inVecA[0] * inVecB[2]
+  outVec[2] = inVecA[0] * inVecB[1] - inVecA[1] * inVecB[0]
+
+def vecCopy(destinationVec, sourceVec):
+  destinationVec[0] = sourceVec[0]
+  destinationVec[1] = sourceVec[1]
+  destinationVec[2] = sourceVec[2]
+
+def vecMagnitude(inVec):
+  xx = inVec[0]
+  yy = inVec[1]
+  zz = inVec[2]
+  return math.sqrt(xx*xx + yy*yy + zz*zz)
+
+def vecMagnitudeSquared(inVec):
+  xx = inVec[0]
+  yy = inVec[1]
+  zz = inVec[2]
+  return xx*xx + yy*yy + zz*zz
+
+def vecNormalizeWithSmallCheck(inVec, smallValue, smallNormal):
+  xx = inVec[0]
+  yy = inVec[1]
+  zz = inVec[2]
+  mag = math.sqrt(xx*xx + yy*yy + zz*zz)
+  if mag <= smallValue:
+    return smallNormal
+  else:
+    return [xx/mag, yy/mag, zz/mag]
+
+def vecNormalize(inVec):
+  xx = inVec[0]
+  yy = inVec[1]
+  zz = inVec[2]
+  mag = math.sqrt(xx*xx + yy*yy + zz*zz)
+  return [xx/mag, yy/mag, zz/mag]
+
+def vecNormalize2(outVec, inVec):
+  xx = inVec[0]
+  yy = inVec[1]
+  zz = inVec[2]
+  mag = math.sqrt(xx*xx + yy*yy + zz*zz)
+  outVec[0] = xx/mag
+  outVec[1] = yy/mag
+  outVec[2] = zz/mag
+
+def vecFromAToB(inVecA, inVecB):
+  return [inVecB[0] - inVecA[0], inVecB[1] - inVecA[1], inVecB[2] - inVecA[2]]
+
+def vecDistanceSquared(inPtA, inPtB):
+  "calculate the square of the distance between two points"
+  ddx = inPtA[0] - inPtB[0]
+  ddy = inPtA[1] - inPtB[1]
+  ddz = inPtA[2] - inPtB[2]
+  return ddx*ddx + ddy*ddy + ddz*ddz
+
+def vecDistance(inPtA, inPtB):
+  "calculate the distance between two points"
+  return math.sqrt(vecDistanceSquared(inPtA, inPtB))
+
+def vecAdd(inVecA, inVecB):
+  return [inVecA[0]+inVecB[0],inVecA[1]+inVecB[1],inVecA[2]+inVecB[2]]
+
+def vecScale(inScale, inVec):
+  return [inScale*inVec[0], inScale*inVec[1], inScale*inVec[2]]
+
+def vecMultiplyAdd(inVecA, inVecB, inMM):
+  "returns inVecA + (inMM * inVecB)"
+  return [inVecA[0] + inMM * inVecB[0],
+          inVecA[1] + inMM * inVecB[1],
+          inVecA[2] + inMM * inVecB[2]]
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriParaviewMultiBlockRecursion import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriParaviewMultiBlockRecursionControl:
+  "see PhactoriDoParaviewMultiblockRecursion();\n     mOperationPerBlock should be set to a method\n     which takes 1 parameter, mParameters should be set to the parameter\n     instance which will be passed to the mOperationPerBlock call"
+  def __init__(self):
+    self.mOperationToDoPerBlock = None
+    self.mParameters = None
+
+def PhactroiParaviewDoMethodPerBlockRecurse1(inInputCsData, inRecursionControlItem):
+  "PhactroiParaviewDoMethodPerBlockRecurse1 is a generic method for doing recursion through\n     the multiblock dataset and doing something (a callback) on a per leaf block\n     basis.  Called by PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter which got clientside data and calls\n     itself on internal nodes and calls\n     inRecursionControlItem.mOperationToDoPerBlock on leaf block nodes"
+  if PhactoriDbg(100):
+    myDebugPrint3('PhactroiParaviewDoMethodPerBlockRecurse1 entered\n', 100)
+
+  icsdClassname = inInputCsData.GetClassName()
+  if icsdClassname == "vtkMultiBlockDataSet" or \
+     icsdClassname == "vtkExodusIIMultiBlockDataSet":
+    myDebugPrint3('recursing: ' + icsdClassname + '\n')
+    numBlocks = inInputCsData.GetNumberOfBlocks()
+    for ii in range(0, numBlocks):
+      oneBlock = inInputCsData.GetBlock(ii)
+      if PhactoriDbg(100):
+        DebugPrintBlockName(inInputCsData, ii)
+      if(oneBlock != None):
+        PhactroiParaviewDoMethodPerBlockRecurse1(oneBlock, inRecursionControlItem)
+  else:
+    inRecursionControlItem.mOperationToDoPerBlock(inRecursionControlItem, inInputCsData,
+            inRecursionControlItem.mParameters)
+
+  if PhactoriDbg(100):
+    myDebugPrint3('PhactroiParaviewDoMethodPerBlockRecurse1 returning\n', 100)
+
+def DebugPrintBlockName(csData, blockIndex):
+  if PhactoriDbg(100):
+    oneBlock = csData.GetBlock(blockIndex)
+    if oneBlock != None:
+      oneBlockMetaData = csData.GetMetaData(blockIndex)
+      if oneBlockMetaData != None:
+        #myDebugPrint3("oneBlockMetaData: " + str(oneBlockMetaData) + "\n")
+        theBlockName = oneBlockMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+        myDebugPrint3("block index, name: " + str(blockIndex) + ", " + str(theBlockName) + "\n")
+
+def PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(inRecursionControlItem,  inPvFilter):
+  "grab client side data object, and use that to do recursion"  
+  pvClientSideData = inPvFilter.GetClientSideObject().GetOutputDataObject(0)
+  if pvClientSideData == None:
+    if PhactoriDbg(100):
+      myDebugPrint3(
+        'DoMethodPerBlock: pvClientSideData is None, returning',100)
+    return
+
+  PhactroiParaviewDoMethodPerBlockRecurse1(pvClientSideData, inRecursionControlItem)
+
+class PrintPointAndCellArrayInformationRecursionParams:
+  def __init__(self):
+    self.leafVisitCount = 0
+
+def PrintPointAndCellArrayInformationInBlock(recursionObject, inInputCsData, inParameters):
+  inParameters.leafVisitCount += 1
+  myDebugPrint3("inParameters.leafVisitCount " + str(inParameters.leafVisitCount) + "\n")
+
+  celldata = inInputCsData.GetCellData()
+  numcellarrays = celldata.GetNumberOfArrays()
+  myDebugPrint3("number of cell data arrays: " + str(numcellarrays) + "\n")
+  numcelltuples = celldata.GetNumberOfTuples()
+  myDebugPrint3("number of cell data tuples: " + str(numcelltuples) + "\n")
+  for ii in range(0, numcellarrays):
+    myDebugPrint3(str(ii) + ": " + str(celldata.GetArray(ii).GetNumberOfComponents()) + ": " + str(celldata.GetArrayName(ii)) + "\n")
+
+  pointdata = inInputCsData.GetPointData()
+  numpointarrays = pointdata.GetNumberOfArrays()
+  myDebugPrint3("number of point data arrays: " + str(numpointarrays) + "\n")
+  numpointtuples = pointdata.GetNumberOfTuples()
+  myDebugPrint3("number of point data tuples: " + str(numpointtuples) + "\n")
+  for ii in range(0, numpointarrays):
+    myDebugPrint3(str(ii) + ": " + str(pointdata.GetArray(ii).GetNumberOfComponents()) + ": " + str(pointdata.GetArrayName(ii)) + "\n")
+
+def RecursivelyPrintPointAndCellArrayInformation(pvFilter):
+  if PhactoriDbg(100):
+    myDebugPrint3("RecursivelyPrintPointAndCellArrayInformation entered\n")
+
+  recursionParams = PrintPointAndCellArrayInformationRecursionParams()
+  recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+  recursionObj.mParameters = recursionParams
+  recursionObj.mOperationToDoPerBlock = PrintPointAndCellArrayInformationInBlock
+
+  PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, pvFilter)
+  if PhactoriDbg(100):
+    myDebugPrint3("RecursivelyPrintPointAndCellArrayInformation returning\n")
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriOutputFileNameAndDirectoryManager import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriOutputFileNameAndDirectoryManager():
+  def __init__(self, defaultBasename, defaultBasedirectory, defaultNumCounterDigits, defaultExtension):
+    self.Basename = defaultBasename
+    self.Basedirectory = defaultBasedirectory
+    self.NumCounterDigits = defaultNumCounterDigits
+    self.Extension = defaultExtension
+
+  def ParseOutputFileNameControl(self, inJson, keyPrefix):
+    key1 = keyPrefix + "basename"
+    if key1 in inJson:
+      self.Basename = inJson[key1]
+    key1 = keyPrefix + "basedirectory"
+    if key1 in inJson:
+      self.Basedirectory = inJson[key1]
+    key1 = keyPrefix + "counterdigits"
+    if key1 in inJson:
+      self.NumCounterDigits = inJson[key1]
+    key1 = keyPrefix + "extension"
+    if key1 in inJson:
+      self.Extension = inJson[key1]
+
+  def GetOutputFilePath(self, counterValue, extraBasename):
+    if counterValue < 0:
+      counterValue = 0
+    retName = self.Basedirectory + "/" + self.Basename + extraBasename + \
+      str(counterValue).zfill(self.NumCounterDigits) + self.Extension
+    return retName
+#phactori_combine_to_single_python_file_subpiece_end_1
+
 class PhactoriRenderViewInfo:
   def __init__(self):
     self.RenderView1 = None
@@ -1244,6 +1876,128 @@ def AddFilterToFilterMap(inFilterName, inFilter):
     count += 1
   if PhactoriDbg(100):
     myDebugPrint3('AddFilterToFilterMap returning\n', 100)
+
+def SafeColorBy(inDataRepresentation, ptOrNodeAndVarname):
+  if True:
+    ColorBy(inDataRepresentation, ptOrNodeAndVarname)
+    return
+  if PhactoriDbg(100):
+    myDebugPrint3("SafeColorBy entered: " + str(ptOrNodeAndVarname) + "\n")
+  if ptOrNodeAndVarname[1] == "":
+    ColorBy(inDataRepresentation, ptOrNodeAndVarname)
+    if PhactoriDbg(100):
+      myDebugPrint3("SafeColorBy returning (no variable)\n")
+    return
+
+  ptOrNode = ptOrNodeAndVarname[0]
+  if ptOrNode == gPointsString:
+    pointData = inDataRepresentation.PointData
+    if pointData == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (pointData was None)\n")
+      return
+    if pointData.Proxy == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (pointData.Proxy was None)\n")
+      return
+    theFieldData = pointData.GetFieldData()
+    if theFieldData == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (theFieldData was None)\n")
+      return
+    if theFieldData.Proxy == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (theFieldData.Proxy was None)\n")
+      return
+    if pointData.GetNumberOfArrays() <= 0:
+      ColorBy(inDataRepresentation, (gPointsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (no point data arrays)\n")
+      return
+    onePointArray = pointData.GetArray(ptOrNodeAndVarname[1])
+    if onePointArray == None:
+      ColorBy(inDataRepresentation, (gPointsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (no point array with given name)\n")
+      return
+    if onePointArray.GetNumberOfTuples() <= 0:
+      ColorBy(inDataRepresentation, (gPointsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (zero tuples in point data array)\n")
+      return
+    ColorBy(inDataRepresentation, ptOrNodeAndVarname)
+    if PhactoriDbg(100):
+      myDebugPrint3("SafeColorBy returning (valid point data)\n")
+    return
+  else:
+    cellData = inDataRepresentation.CellData
+    if cellData == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (cellData was None)\n")
+      return
+    if cellData.Proxy == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (cellData.Proxy was None)\n")
+      return
+    if PhactoriDbg(100):
+      myDebugPrint3("cellData.Proxy: " + str(cellData.Proxy) + "\n")
+      myDebugPrint3("cellData.OutputPort: " + str(cellData.OutputPort) + "\n")
+      myDebugPrint3("cellData.FieldData: " + str(cellData.FieldData) + "\n")
+    if cellData.OutputPort == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (cellData.OutputPort was None)\n")
+      return
+    if cellData.FieldData == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (cellData.FieldData was None)\n")
+      return
+    dataInformation = cellData.Proxy.GetDataInformation(cellData.OutputPort)
+    myDebugPrint3("dataInformation: " + str(dataInformation) + "\n")
+    if dataInformation == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (dataInformation was None)\n")
+      return
+    theFieldData = cellData.GetFieldData()
+    if theFieldData == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (theFieldData was None)\n")
+      return
+    if theFieldData.Proxy == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (theFieldData.Proxy was None)\n")
+      return
+    if cellData.GetNumberOfArrays() <= 0:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (no cell data arrays)\n")
+      return
+    oneCellArray = cellData.GetArray(ptOrNodeAndVarname[1])
+    if oneCellArray == None:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (no cell array with given name)\n")
+      return
+    if oneCellArray.GetNumberOfTuples() <= 0:
+      ColorBy(inDataRepresentation, (gCellsString, ''))
+      if PhactoriDbg(100):
+        myDebugPrint3("SafeColorBy returning (zero tuples in cell data array)\n")
+      return
+    ColorBy(inDataRepresentation, ptOrNodeAndVarname)
+    if PhactoriDbg(100):
+      myDebugPrint3("SafeColorBy returning (valid cell data)\n")
+    return
+  
 
 def SetDataRepresentationToDefault(inDataRepresentation):
 
@@ -1291,7 +2045,9 @@ def SetDataRepresentationToDefault(inDataRepresentation):
   if gParaViewCatalystVersionFlag <= 40100:
     inDataRepresentation.ColorAttributeType = gPointsString
   else:
-    ColorBy(inDataRepresentation, (gPointsString,''))
+    inDataRepresentation.RescaleTransferFunctionToDataRange(False)
+    SafeColorBy(inDataRepresentation, (gPointsString,''))
+    inDataRepresentation.RescaleTransferFunctionToDataRange(False)
 
   #inDataRepresentation.AxesOrigin = [0.0, 0.0, 0.0]
   inDataRepresentation.UserTransform = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
@@ -1738,27 +2494,7 @@ def SetCameraLookAtPointAndLookDirection(inParaViewRenderView, \
         inCameraViewAngle = 30.0, \
         inViewBounds = None,
         inPhactoriCamera = None):
-  """Set up camera with position, look at point, and positioning factor
-
-  Sets the current camera view by looking at a focal point (inFocalPoint)
-  along a specified vector (inLookDirection). The distance from the focal
-  point is set using twice the largest of the data bounding box dimensions
-  multiplied by inEyePositionFactor.  To see the whole of the data,
-  inEyePositionFactor can be about 1.0, although trying different values
-  will give you different filling of the screen and 'zooming' into the focal
-  point, while values greater than 1.0 can be used to zoom out, possibly to
-  bring the entire dataset into the image.  If inEyeToFocalPointDistance is
-  something other than None, this distance will be used instead of the
-  bounding box of the data.  If inFocalPoint is None, then
-  the center of the data bounds will be used as a focal point. inViewBounds
-  allows calling routine to pass along data bounds or other viewing bounds
-  which are used to calculate the viewing distance from the focal point
-  and the focal point if they are not supplied.  If inEyeToFocalPointDistance
-  is not None and inFocalPoint is not None, than inViewBounds will not
-  be used and the global data bounds will not be obtained.
-  example:  SetCameraLookAtPointAndLookDirection([5.0, 4.0, 3.0],
-  [1.0, 1.0, 1.0], 1.5, [0.0, 1.0, 0.0])
-  """
+  "Set up camera with position, look at point, and positioning factor\n\n  Sets the current camera view by looking at a focal point (inFocalPoint)\n  along a specified vector (inLookDirection). The distance from the focal\n  point is set using twice the largest of the data bounding box dimensions\n  multiplied by inEyePositionFactor.  To see the whole of the data,\n  inEyePositionFactor can be about 1.0, although trying different values\n  will give you different filling of the screen and 'zooming' into the focal\n  point, while values greater than 1.0 can be used to zoom out, possibly to\n  bring the entire dataset into the image.  If inEyeToFocalPointDistance is\n  something other than None, this distance will be used instead of the\n  bounding box of the data.  If inFocalPoint is None, then\n  the center of the data bounds will be used as a focal point. inViewBounds\n  allows calling routine to pass along data bounds or other viewing bounds\n  which are used to calculate the viewing distance from the focal point\n  and the focal point if they are not supplied.  If inEyeToFocalPointDistance\n  is not None and inFocalPoint is not None, than inViewBounds will not\n  be used and the global data bounds will not be obtained.\n  example:  SetCameraLookAtPointAndLookDirection([5.0, 4.0, 3.0],\n  [1.0, 1.0, 1.0], 1.5, [0.0, 1.0, 0.0])\n  "
 
   if PhactoriDbg(100):
     myDebugPrint3("SetCameraLookAtPointAndLookDirection entered\n", 100);
@@ -1819,7 +2555,13 @@ def SetCameraLookAtPointAndLookDirection(inParaViewRenderView, \
   if PhactoriDbg():
     myDebugPrint3("  eyePosition: " + str(eyePosition) + "\n")
 
-  clippingRange = [0.01 * lookDirectionMagnitude, 100.0 * lookDirectionMagnitude]
+
+  useNewClippingCalc = True
+  if useNewClippingCalc:
+    eyeToFocalPointDist = vecDistance(eyePosition, inFocalPoint)
+    clippingRange = [0.01 * eyeToFocalPointDist, 100.0 * eyeToFocalPointDist]
+  else:
+    clippingRange = [0.01 * lookDirectionMagnitude, 100.0 * lookDirectionMagnitude]
 
   localUseParallelProjection = False
   localParallelScale = 1.0
@@ -1852,6 +2594,9 @@ def SetCameraLookAtPointAndLookDirection(inParaViewRenderView, \
   SetCameraViewExplicitly(inParaViewRenderView, eyePosition, inFocalPoint,
       clippingRange, inViewUp, inCameraViewAngle, inViewBounds,
       inPhactoriCamera, localUseParallelProjection, localParallelScale)
+
+  if inPhactoriCamera != None:
+    inPhactoriCamera.HandleLockingOption(eyePosition, inFocalPoint)
 
   if PhactoriDbg(100):
     myDebugPrint3("SetCameraLookAtPointAndLookDirection returning\n", 100)
@@ -1890,12 +2635,7 @@ def SmartGetNumberOfProcesses():
 
 def UseMPIToFillInSharedListNPerProcess(
         inThisProcVtkArray, inCountPerProc, outVtkArray, vtkArrayTypeIndex):
-  """given a list of N values on each process fill in on each process a list
-     which contains all the entries from each process
-     (i.e. it is N * number_of_processes long)
-     will work on either vtkDoubleArray types or vtkIntArray types, with
-     vtkArrayTypeIndex = 0 for vtkIntArray types and 1 for vtkDoubleArray
-     types"""
+  "given a list of N values on each process fill in on each process a list\n     which contains all the entries from each process\n     (i.e. it is N * number_of_processes long)\n     will work on either vtkDoubleArray types or vtkIntArray types, with\n     vtkArrayTypeIndex = 0 for vtkIntArray types and 1 for vtkDoubleArray\n     types"
 
   mypid = SmartGetLocalProcessId()
 
@@ -1930,22 +2670,7 @@ def UseMPIToFillInSharedListNPerProcess(
 
 
 def UseMPIToCreateSharedPointList(inGlobalNodeIds, inPointXyzs):
-  """used during finding nearest point (and distance) between one set of points
-     and others.  The idea is that we have a fairly small set of points from one
-     data source (e.g. one block of a multiblock or a decimated set of points)
-     which we share to all processors (using mpi broadcast), and then each
-     processor finds the nearest point and distance from all of it's points
-     to the shared set, and then we use mpi reduce to find which is the
-     closest and where it is.  This function takes the portion of the shared
-     points which are local to this processor (obtained via
-     PhactoriOperationBlock.MakeListOfAllPoints1()) and does mpi broadcasting
-     to share with all the other processors and also to construct the whole
-     list of shared points locally
-     returns a vtkIntArray and vtkDoubleArray, where the int array is the list
-     of all the global node ids and the double array is all the geometric
-     pointx (stored x1y1z1x2y2z2...)
-     inGlobalNodeIds is vtkIntArray
-     inPointXyzs is vtkDoubleArray"""
+  "used during finding nearest point (and distance) between one set of points\n     and others.  The idea is that we have a fairly small set of points from one\n     data source (e.g. one block of a multiblock or a decimated set of points)\n     which we share to all processors (using mpi broadcast), and then each\n     processor finds the nearest point and distance from all of it's points\n     to the shared set, and then we use mpi reduce to find which is the\n     closest and where it is.  This function takes the portion of the shared\n     points which are local to this processor (obtained via\n     PhactoriOperationBlock.MakeListOfAllPoints1()) and does mpi broadcasting\n     to share with all the other processors and also to construct the whole\n     list of shared points locally\n     returns a vtkIntArray and vtkDoubleArray, where the int array is the list\n     of all the global node ids and the double array is all the geometric\n     pointx (stored x1y1z1x2y2z2...)\n     inGlobalNodeIds is vtkIntArray\n     inPointXyzs is vtkDoubleArray"
   mypid = SmartGetLocalProcessId()
 
   pm = paraview.servermanager.vtkProcessModule.GetProcessModule()
@@ -2081,14 +2806,7 @@ gDefaultLookatDistanceDatasizeRelativeMultiplier = 4.0
 
 def GetXyzForNodeOrElementParallelOneBlock(inInputCsData, inIdIsNode,
         inGlobalId, outXyz):
-  """check for inGlobalId and set outXyz if present
-
-  utility function called by GetXyzForNodeOrElementParallelRecurse1, this
-  takes one unstructured grid as input, and sees if it has the node or element
-  with id inGlobalId.  If it does, the method sets outXyz to the geometric
-  location of the node (xyz) or center of the element bounding box (xyz) and
-  returns true, otherwise it returns false without changing outXyz
-  """
+  "check for inGlobalId and set outXyz if present\n\n  utility function called by GetXyzForNodeOrElementParallelRecurse1, this\n  takes one unstructured grid as input, and sees if it has the node or element\n  with id inGlobalId.  If it does, the method sets outXyz to the geometric\n  location of the node (xyz) or center of the element bounding box (xyz) and\n  returns true, otherwise it returns false without changing outXyz\n  "
 
   if PhactoriDbg(100):
     myDebugPrint3('GetXyzForNodeOrElementParallelOneBlock entered\n', 100)
@@ -2162,17 +2880,13 @@ def GetXyzForNodeOrElementParallelOneBlock(inInputCsData, inIdIsNode,
 
 def GetXyzForNodeOrElementParallelRecurse1(inInputCsData,
         inIdIsNode, inGlobalId, outXyz):
-  """utility function used by GetXyzForNodeOrElementParallel
-
-  looking for inGlobalId to potentially set outXyz, recurses through
-  structure and calls GetXyzForNodeOrElementParallelOneBlock() on
-  unstructured grids to do the real work of checking for the id and setting
-  outXyz
-  """
+  "utility function used by GetXyzForNodeOrElementParallel\n\n  looking for inGlobalId to potentially set outXyz, recurses through\n  structure and calls GetXyzForNodeOrElementParallelOneBlock() on\n  unstructured grids to do the real work of checking for the id and setting\n  outXyz\n  "
   
   #myDebugPrint3('GetXyzForNodeOrElementParallelRecurse1 entered\n', 100)
 
   icsdClassname = inInputCsData.GetClassName()
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("icsdClassname 1: " + str(icsdClassname) + "\n")
   if icsdClassname == "vtkMultiBlockDataSet" or \
      icsdClassname == "vtkExodusIIMultiBlockDataSet":
     #myDebugPrint3('recursing: ' + icsdClassname + '\n')
@@ -2194,9 +2908,7 @@ def GetXyzForNodeOrElementParallelRecurse1(inInputCsData,
 
 def GetXyzForMinOrMaxVariable(inParaViewSource, inMinFlag,
         inVariableInfo, outXyz):
-  """find the xyz location of the maximum or minimum value of the variable
-     in the argument (at node or in element), recurses as necessary, does
-     MPI, calls GetXyzForNodeOrElementParallel once id is found"""
+  "find the xyz location of the maximum or minimum value of the variable\n     in the argument (at node or in element), recurses as necessary, does\n     MPI, calls GetXyzForNodeOrElementParallel once id is found"
 
   if PhactoriDbg(100):
     myDebugPrint3("GetXyzForMinOrMaxVariable entered\n"
@@ -2259,16 +2971,7 @@ def GetXyzForMinOrMaxVariable(inParaViewSource, inMinFlag,
 
 def GetXyzForNodeOrElementParallel(inParaViewSource,
         inIdIsNode, inGlobalId, outXyz, inLocalProcessCouldDetect = True):
-  """given a node or element id, get item xyz location in parallel
-
-  Recurses through all structures on all processes to find a node or element,
-  then does allreduce to spread that information to all processes (for use in
-  pointing cameras at a node or element with a given id; if this process has
-  the element with the
-  id inGlobalId, it will set outXyz and send the info around, if this
-  process does not have inGlobalId, it will expect to receive the proper
-  outXyz from the node that does.
-  """
+  "given a node or element id, get item xyz location in parallel\n\n  Recurses through all structures on all processes to find a node or element,\n  then does allreduce to spread that information to all processes (for use in\n  pointing cameras at a node or element with a given id; if this process has\n  the element with the\n  id inGlobalId, it will set outXyz and send the info around, if this\n  process does not have inGlobalId, it will expect to receive the proper\n  outXyz from the node that does.\n  "
 
   if PhactoriDbg(100):
     myDebugPrint3("GetXyzForNodeOrElementParallel entered, IdIsNode: " + str(inIdIsNode) + "  id: " + str(inGlobalId) + "\n", 100)
@@ -2298,94 +3001,9 @@ def GetXyzForNodeOrElementParallel(inParaViewSource,
   if PhactoriDbg(100):
     myDebugPrint3("GetXyzForNodeOrElementParallel returning\n", 100)
 
-
-def vecDotProduct(inVecA, inVecB):
-  """ returns dotproct inVecZ dot inVecB """
-  return inVecA[0] * inVecB[0] + inVecA[1] * inVecB[1] + inVecA[2] * inVecB[2]
-
-def vecCrossProduct(inVecA, inVecB):
-  """ returns inVecZ X inVecB """
-  return [inVecA[1] * inVecB[2] - inVecA[2] * inVecB[1],
-          inVecA[2] * inVecB[0] - inVecA[0] * inVecB[2],
-          inVecA[0] * inVecB[1] - inVecA[1] * inVecB[0]]
-
-def vecCrossProduct2(outVec, inVecA, inVecB):
-  """ calculates inVecA X inVecB and puts the result in outVec"""
-  outVec[0] = inVecA[1] * inVecB[2] - inVecA[2] * inVecB[1]
-  outVec[1] = inVecA[2] * inVecB[0] - inVecA[0] * inVecB[2]
-  outVec[2] = inVecA[0] * inVecB[1] - inVecA[1] * inVecB[0]
-
-def vecCopy(destinationVec, sourceVec):
-  destinationVec[0] = sourceVec[0]
-  destinationVec[1] = sourceVec[1]
-  destinationVec[2] = sourceVec[2]
-
-def vecMagnitude(inVec):
-  xx = inVec[0]
-  yy = inVec[1]
-  zz = inVec[2]
-  return math.sqrt(xx*xx + yy*yy + zz*zz)
-
-def vecMagnitudeSquared(inVec):
-  xx = inVec[0]
-  yy = inVec[1]
-  zz = inVec[2]
-  return xx*xx + yy*yy + zz*zz
-
-def vecNormalize(inVec):
-  xx = inVec[0]
-  yy = inVec[1]
-  zz = inVec[2]
-  mag = math.sqrt(xx*xx + yy*yy + zz*zz)
-  return [xx/mag, yy/mag, zz/mag]
-
-def vecNormalize2(outVec, inVec):
-  xx = inVec[0]
-  yy = inVec[1]
-  zz = inVec[2]
-  mag = math.sqrt(xx*xx + yy*yy + zz*zz)
-  outVec[0] = xx/mag
-  outVec[1] = yy/mag
-  outVec[2] = zz/mag
-
-def vecFromAToB(inVecA, inVecB):
-  return [inVecB[0] - inVecA[0], inVecB[1] - inVecA[1], inVecB[2] - inVecA[2]]
-
-def vecDistanceSquared(inPtA, inPtB):
-  """calculate the square of the distance between two points"""
-  ddx = inPtA[0] - inPtB[0]
-  ddy = inPtA[1] - inPtB[1]
-  ddz = inPtA[2] - inPtB[2]
-  return ddx*ddx + ddy*ddy + ddz*ddz
-
-def vecDistance(inPtA, inPtB):
-  """calculate the distance between two points"""
-  return math.sqrt(vecDistanceSquared(inPtA, inPtB))
-
-def vecAdd(inVecA, inVecB):
-  return [inVecA[0]+inVecB[0],inVecA[1]+inVecB[1],inVecA[2]+inVecB[2]]
-
-def vecScale(inScale, inVec):
-  return [inScale*inVec[0], inScale*inVec[1], inScale*inVec[2]]
-
-def vecMultiplyAdd(inVecA, inVecB, inMM):
-  """returns inVecA + (inMM * inVecB)"""
-  return [inVecA[0] + inMM * inVecB[0],
-          inVecA[1] + inMM * inVecB[1],
-          inVecA[2] + inMM * inVecB[2]]
-
 def CalcRelativeCameraDistance2_AA(inFocalPoint, inNormCameraDir,
         inTestPoint, inFov = 30.0):
-  """finds point X which is along the inNormCameraDir vector starting from
-     point inFocalPoint, such that inTestPoint is visible.  This is
-     accomplished by taking a parametric value ss to move the camera position
-     out from the focal point (along the inNormCameraDir vector) and finding
-     the parametric value such that the angle between the vector from the
-     camera position to the focal point and the camera position to inTestPoint
-     is equal to (or greater than) the camera field of view.  The parametric
-     value is returned.  We use the law of sines.  assumes inNormCameraDir
-     is normalized and pointing in the direction from inFocalPoint towards
-     where we want to place the camera (the opposite of the look direction)"""
+  "finds point X which is along the inNormCameraDir vector starting from\n     point inFocalPoint, such that inTestPoint is visible.  This is\n     accomplished by taking a parametric value ss to move the camera position\n     out from the focal point (along the inNormCameraDir vector) and finding\n     the parametric value such that the angle between the vector from the\n     camera position to the focal point and the camera position to inTestPoint\n     is equal to (or greater than) the camera field of view.  The parametric\n     value is returned.  We use the law of sines.  assumes inNormCameraDir\n     is normalized and pointing in the direction from inFocalPoint towards\n     where we want to place the camera (the opposite of the look direction)"
 
   #angle between camera-to-focal point vector and camera-to-testpoint vector
   #is equal to half the camera fOV.  Call this angle AA.  
@@ -2400,56 +3018,54 @@ def CalcRelativeCameraDistance2_AA(inFocalPoint, inNormCameraDir,
   #
 
   #need to set to 1/2 fov
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("CalcRelativeCameraDistance2_AA entered\n");
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("inTestPoint: " + str(inTestPoint) + "\n");
   angleAA = math.radians(inFov * 0.5)
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("angleAA: " + str(math.degrees(angleAA)) + "\n");
 
   focalToTestVec = [inTestPoint[0] - inFocalPoint[0],
                     inTestPoint[1] - inFocalPoint[1],
                     inTestPoint[2] - inFocalPoint[2]]
   aa = vecMagnitude(focalToTestVec)
-  if PhactoriDbg():
-    myDebugPrint3("aa: " + str(aa) + "\n");
   if aa == 0.0:
     return 0.0
   focalToTestVec[0] /= aa
   focalToTestVec[1] /= aa
   focalToTestVec[2] /= aa
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("inNormCameraDir: " + str(inNormCameraDir) + "\n");
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("focalToTestVec: " + str(focalToTestVec) + "\n");
   cosAngleBB = vecDotProduct(inNormCameraDir, focalToTestVec)
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("cosAngleBB: " + str(cosAngleBB) + "\n");
   if cosAngleBB >= 1.0:
     #camera-to-test-point in line with camera-to-focal-point
     #and already in camera view
-    if PhactoriDbg():
+    if PhactoriDbg(100):
       myDebugPrint3("cosAngleBB >= 1.0 cc is 0.0\n");
     cc = 0.0
     return cc
   elif cosAngleBB <= -1.0:
     #camera-to-test-point in line with camera-to-focal-point
     #with camera needing movement back to test point
-    if PhactoriDbg():
+    if PhactoriDbg(100):
       myDebugPrint3("cosAngleBB <= -1.0, cc is camera to test point dist\n");
     cc = aa
     return cc
   angleBB = math.acos(cosAngleBB)
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("angleBB: " + str(math.degrees(angleBB)) + "\n");
   angleCC = math.pi - (angleAA + angleBB)
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("angleCC: " + str(math.degrees(angleCC)) + "\n");
   cc = aa * math.sin(angleCC) / math.sin(angleAA)
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("cc: " + str(cc) + "\n");
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("CalcRelativeCameraDistance2_AA returning\n");
   return cc
 
@@ -2465,37 +3081,32 @@ def projectPointOntoPlane(inPoint, inPlanePoint, inPlaneNormal):
 
 def CalcRelativeCameraDistance2_BB(inFocalPoint, inNormCameraDir,
         inNormUpVector, inNormSideVector, inFovV, inFovH, inTestPoint):
-  """takes test point and makes two test points, one projected onto the
-     plane defined by the up vector and one onto the plane defined by the
-     up vector/look direction cross product; uses these two points to
-     test vs. vertical FOV and horizontal FOV, and returns the biggest
-     result.  Assumes inNormUpVector is normalized as is inNormCameraDir
-     and also inNormSideVector"""
-  if PhactoriDbg():
+  "takes test point and makes two test points, one projected onto the\n     plane defined by the up vector and one onto the plane defined by the\n     up vector/look direction cross product; uses these two points to\n     test vs. vertical FOV and horizontal FOV, and returns the biggest\n     result.  Assumes inNormUpVector is normalized as is inNormCameraDir\n     and also inNormSideVector"
+  if PhactoriDbg(100):
     myDebugPrint3("CalcRelativeCameraDistance2_BB entered\n");
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("inTestPoint: " + str(inTestPoint) + "\n");
 
   pointV = projectPointOntoPlane(inTestPoint, inFocalPoint, inNormSideVector)
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("pointV: " + str(pointV) + "\n");
   #find point projected onto plane defined by inFocalPoint and localUpVector,
   #which will be the test point to test horizontal FOV against
   pointH = projectPointOntoPlane(inTestPoint, inFocalPoint, inNormUpVector)
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("pointH: " + str(pointH) + "\n");
 
   dd1 = CalcRelativeCameraDistance2_AA(inFocalPoint, inNormCameraDir,
             pointH, inFovH) 
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("dd1: " + str(dd1) + "\n");
   dd2 = CalcRelativeCameraDistance2_AA(inFocalPoint, inNormCameraDir,
             pointV, inFovV)
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("dd2: " + str(dd2) + "\n");
   if dd2 > dd1:
     dd1 = dd2
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("return dd: " + str(dd1) + "\n");
   return dd1
 
@@ -2506,26 +3117,27 @@ def CalcRelativeCameraDistance2(inFocalPoint, inLookDirection, inUpVector,
   #camera position needs to be to see the focal point.  Use the largest.
   inXyPixelSize = inImageSettings.mImageSize
   inPixelBorderRatioXY = inImageSettings.mPixelBorderRatioXY
-  myDebugPrint("CalcRelativeCameraDistance2 entered\n");
-  myDebugPrint("inFocalPoint: " + str(inFocalPoint) + "\n");
-  myDebugPrint("inLookDirection: " + str(inLookDirection) + "\n");
-  myDebugPrint("inUpVector: " + str(inUpVector) + "\n");
-  myDebugPrint("inFov: " + str(inFov) + "\n");
-  myDebugPrint("inXyPixelSize: " + str(inXyPixelSize) + "\n");
-  myDebugPrint("inPixelBorderRatioXY: " + str(inPixelBorderRatioXY) + "\n");
+  if PhactoriDbg(100):
+    myDebugPrint3("CalcRelativeCameraDistance2 entered\n");
+    myDebugPrint3("inFocalPoint: " + str(inFocalPoint) + "\n");
+    myDebugPrint3("inLookDirection: " + str(inLookDirection) + "\n");
+    myDebugPrint3("inUpVector: " + str(inUpVector) + "\n");
+    myDebugPrint3("inFov: " + str(inFov) + "\n");
+    myDebugPrint3("inXyPixelSize: " + str(inXyPixelSize) + "\n");
+    myDebugPrint3("inPixelBorderRatioXY: " + str(inPixelBorderRatioXY) + "\n");
   normCameraDir = vecNormalize(inLookDirection)
   normCameraDir[0] = -normCameraDir[0]
   normCameraDir[1] = -normCameraDir[1]
   normCameraDir[2] = -normCameraDir[2]
-  myDebugPrint("normCameraDir: " + str(normCameraDir) + "\n");
+  if PhactoriDbg(100):
+    myDebugPrint3("normCameraDir: " + str(normCameraDir) + "\n");
 
   #find orthoganol up and side vectors,
   normUpVector = vecNormalize(inUpVector)
   sideVector = vecCrossProduct(normUpVector, normCameraDir)
   normUpVector = vecCrossProduct(normCameraDir, sideVector)
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("sideVector: " + str(sideVector) + "\n");
-  if PhactoriDbg():
     myDebugPrint3("normUpVector: " + str(normUpVector) + "\n");
 
   #find vertical fov, based on pixel border percentage
@@ -2537,10 +3149,10 @@ def CalcRelativeCameraDistance2(inFocalPoint, inLookDirection, inUpVector,
   vertPixBrdrX = math.ceil(vertPixBrdrX)
   vertPixBrdrY = math.ceil(vertPixBrdrY)
 
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("pixel border: " + str(vertPixBrdrX) + ", " + str(vertPixBrdrY) + "\n")
   tanInFov = math.tan(math.radians(inFov*0.5))
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("tanInFov: " + str(tanInFov) + "\n")
 
   #vertPixY / ss = tan(inFov*0.5)
@@ -2549,10 +3161,10 @@ def CalcRelativeCameraDistance2(inFocalPoint, inLookDirection, inUpVector,
   #(vertPixY - vertPixBrdrY) * tan(inFov*0.5)/vertPixY = tan(adjFov*0.5)
 
   tanAdjustedFovV = (vertPixY - vertPixBrdrY) * tanInFov / vertPixY
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("tanAdjustedFovV: " + str(tanAdjustedFovV) + "\n")
   fovV = 2.0 * math.degrees(math.atan(tanAdjustedFovV))
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("fovV: " + str(fovV) + "\n");
 
   pixelSizeWithBorder = [inXyPixelSize[0] - 2 * int(vertPixBrdrX),
@@ -2572,11 +3184,11 @@ def CalcRelativeCameraDistance2(inFocalPoint, inLookDirection, inUpVector,
     aspectRatio = float(pixelSizeWithBorder[0]) / float(pixelSizeWithBorder[1])
   
 
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("bordered aspectRatio: " + str(aspectRatio) + "\n");
   tanFovH = aspectRatio * tanAdjustedFovV
   fovH = 2.0 * math.degrees(math.atan(tanFovH))
-  if PhactoriDbg():
+  if PhactoriDbg(100):
     myDebugPrint3("fovH: " + str(fovH) + "\n");
 
   #find point projected onto plane defined by inFocalPoint and sideVector,
@@ -2591,7 +3203,8 @@ def CalcRelativeCameraDistance2(inFocalPoint, inLookDirection, inUpVector,
                      testpoint)
         if testdist > dist1:
           dist1 = testdist
-  myDebugPrint("CalcRelativeCameraDistance2 returning dist: " + str(dist1) + "\n");
+  if PhactoriDbg(100):
+    myDebugPrint("CalcRelativeCameraDistance2 returning dist: " + str(dist1) + "\n");
   return dist1
 
 def SetParaViewRepresentationCameraParams(inXParaViewRenderView, inCameraC,
@@ -2737,9 +3350,7 @@ def SetParaViewRepresentationCameraParams(inXParaViewRenderView, inCameraC,
 def SetForCorrectColorByVariable(inImagesetInfo, inPhactoriOperation,
         inPvDataRepresentation, inPhactoriRepresentation,
         inInitializeColorLegendFlag):
-  """sets the color by variable to a scalar, vector component/magnitude, or
-     tensor component.  Assumes we've already established we are doing this
-     instead of solid color or color by block"""
+  "sets the color by variable to a scalar, vector component/magnitude, or\n     tensor component.  Assumes we've already established we are doing this\n     instead of solid color or color by block"
 
   if PhactoriDbg():
     myDebugPrint3("SetForCorrectColorByVariable entered\n")
@@ -2852,7 +3463,9 @@ def SetForCorrectColorByVariable(inImagesetInfo, inPhactoriOperation,
     else:
       #if PhactoriDbg():
       #  myDebugPrint3("using ColorBy() to set no color var 1\n")
-      ColorBy(inPvDataRepresentation, (gPointsString,''))
+      inPvDataRepresentation.RescaleTransferFunctionToDataRange(False)
+      SafeColorBy(inPvDataRepresentation, (gPointsString,''))
+      inPvDataRepresentation.RescaleTransferFunctionToDataRange(False)
 
   if PhactoriDbg():
     myDebugPrint3("SetForCorrectColorByVariable returning\n")
@@ -2889,7 +3502,9 @@ def SetForCorrectColorBy(inImagesetInfo, inPhactoriOperation,
     else:
       #if PhactoriDbg():
       #  myDebugPrint3("using ColorBy() to set no color var 2\n")
-      ColorBy(inPvDataRepresentation, (gPointsString,''))
+      inPvDataRepresentation.RescaleTransferFunctionToDataRange(False)
+      SafeColorBy(inPvDataRepresentation, (gPointsString,''))
+      inPvDataRepresentation.RescaleTransferFunctionToDataRange(False)
 
   #color by block id or solid color
   if inPhactoriRepresentation != None:
@@ -2905,7 +3520,9 @@ def SetForCorrectColorBy(inImagesetInfo, inPhactoriOperation,
       else:
         #if PhactoriDbg():
         #  myDebugPrint3("using ColorBy() to set no color var 3\n")
-        ColorBy(inPvDataRepresentation, (gPointsString,''))
+        inPvDataRepresentation.RescaleTransferFunctionToDataRange(False)
+        SafeColorBy(inPvDataRepresentation, (gPointsString,''))
+        inPvDataRepresentation.RescaleTransferFunctionToDataRange(False)
 
       ColorByBlock(GetActiveSource(),
           inPvDataRepresentation,
@@ -2918,7 +3535,9 @@ def SetForCorrectColorBy(inImagesetInfo, inPhactoriOperation,
       else:
         #if PhactoriDbg():
         #  myDebugPrint3("using ColorBy() to set no color var 4\n")
-        ColorBy(inPvDataRepresentation, (gPointsString,''))
+        inPvDataRepresentation.RescaleTransferFunctionToDataRange(False)
+        SafeColorBy(inPvDataRepresentation, (gPointsString,''))
+        inPvDataRepresentation.RescaleTransferFunctionToDataRange(False)
 
       inPvDataRepresentation.DiffuseColor = \
           inPhactoriRepresentation.mSolidColor
@@ -2940,6 +3559,12 @@ def SetUpOneParaViewRepresentationAndViewC(inCameraC, inLookDirection,
   inRepresentationFilenameAddon = "",
   inLookDirectionFilenameAddon = "",
   inPhactoriRepresentation = None):
+
+  global gRenderingEnabled
+  if gRenderingEnabled == False:
+    if PhactoriDbg():
+      myDebugPrint3("SetUpOneParaViewRepresentationAndViewC returning with noop because rendering is disabled\n")
+    return
 
   inImageSettings = inImagesetInfo.mImageSettings
   lclImageSize = inImageSettings.mImageSize
@@ -3086,7 +3711,7 @@ def ConstructPipelineOperationFromParsedOperationBlockC(ioPipeAndViewsState, ioO
       if PhactoriDbg():
         myDebugPrint3("mInputOperationName was " + ioOperationBlock.mInputOperationName + " so using" + str(inputSource) + '\n')
 
-    newParaViewFilter = particularOperation.CreateParaViewFilter(inputSource)
+    newParaViewFilter = particularOperation.CreateParaViewFilter2(inputSource, ioPipeAndViewsState)
 
   ioOperationBlock.mParaViewFilter = newParaViewFilter
 
@@ -3159,6 +3784,11 @@ def MakeFiltersFromViewMapOperationsC(ioPipeAndViewsState, inOperationBlocksJson
               'subdivide',
               PhactoriSubdivideOperation,
               operationParams)
+    elif operationParams['type'] == 'aggregatedataset':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'aggregatedataset',
+              PhactoriAggregateDatasetOperation,
+              operationParams)
     elif operationParams['type'] == 'triangulate':
       ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
               'triangulate',
@@ -3224,6 +3854,26 @@ def MakeFiltersFromViewMapOperationsC(ioPipeAndViewsState, inOperationBlocksJson
               'element data to node data',
               PhactoriCellDataToPointDataOperation,
               operationParams)
+    elif operationParams['type'] == 'extractcomponent':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'extractcomponent',
+              PhactoriExtractComponentOperation,
+              operationParams)
+    elif operationParams['type'] == 'cellsize':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'cellsize',
+              PhactoriCellSizeOperation,
+              operationParams)
+    elif operationParams['type'] == 'appendlocationattributes':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'appendlocationattributes',
+              PhactoriAppendLocationAttributesOperation,
+              operationParams)
+    elif operationParams['type'] == 'integratevariables':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'integratevariables',
+              PhactoriIntegrateVariablesOperation,
+              operationParams)
     elif operationParams['type' ] == 'nearestpoints':
       ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
               'nearestpoints',
@@ -3234,15 +3884,85 @@ def MakeFiltersFromViewMapOperationsC(ioPipeAndViewsState, inOperationBlocksJson
               'castnormalrays',
               PhactoriIntersectNodeNormalsWithSurface,
               operationParams)
+    elif operationParams['type'] == 'partitionedtomultiblock':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'partitionedtomultiblock',
+              PhactoriPartitionedToMultiBlockOperation,
+              operationParams)
     elif operationParams['type'] == 'vtkdataexport':
       ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
               'vtkdataexport',
               PhactoriVtkDataExportOperation,
               operationParams)
+    elif operationParams['type'] == 'exodusiiexport':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'exodusiiexport',
+              PhactoriExodusIIExportOperation,
+              operationParams)
+    elif operationParams['type'] == 'csvexport':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'csvexport',
+              PhactoriCSVExportOperation,
+              operationParams)
     elif operationParams['type'] == 'contour':
       ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
               'contour',
               PhactoriContourOperation,
+              operationParams)
+    elif operationParams['type'] == 'streamtracer':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'streamtracer',
+              PhactoriStreamTracerOperation,
+              operationParams)
+    elif operationParams['type'] == 'streamtracerseedsource':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'streamtracerseedsource',
+              PhactoriStreamTracerSeedSourceOperation,
+              operationParams)
+    elif operationParams['type'] == 'resamplewithdataset':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'resamplewithdataset',
+              PhactoriResampleWithDatasetOperation,
+              operationParams)
+    elif operationParams['type'] == 'pointsourcefromjsonlist':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'pointsourcefromjsonlist',
+              PhactoriPointSourceFromJsonList,
+              operationParams)
+    elif operationParams['type'] == 'pointsourcenearbycorrelator':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'pointsourcenearbycorrelator',
+              PhactoriPointSourceNearbyCorrelator,
+              operationParams)
+    elif operationParams['type'] == 'pointsourcegeometrysampler1':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'pointsourcegeometrysampler1',
+              PhactoriPointSourceGeometrySampler1,
+              operationParams)
+    elif operationParams['type'] == 'segmentcellsampler3':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'segmentcellsampler3',
+              PhactoriSegmentCellSampler3,
+              operationParams)
+    elif operationParams['type'] == 'geometriccellsampler1':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'geometriccellsampler1',
+              PhactoriGeometricCellSampler1,
+              operationParams)
+    elif operationParams['type'] == 'extractsubsetwithseed':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'extractsubsetwithseed',
+              PhactoriExtractSubsetWithSeed,
+              operationParams)
+    elif operationParams['type'] == 'extractstructuredmultiblock':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'extractstructuredmultiblock',
+              PhactoriExtractStructuredMultiBlock,
+              operationParams)
+    elif operationParams['type'] == 'pointsource':
+      ParseOneFilterTypeFromViewMapOperation(newOperationBlock,
+              'pointsource',
+              PhactoriPointSource,
               operationParams)
     else:
       errStr = 'error!  in MakeFiltersFromViewMapOperationsC inOperationBlocksJson operation type is unrecognized ' + str(operationParams['type']) + '\n'
@@ -3262,6 +3982,8 @@ def MakeFiltersFromViewMapOperationsC(ioPipeAndViewsState, inOperationBlocksJson
           myDebugPrint3(errStr)
         raise Exception(errStr)
 
+  if PhactoriDbg(100):
+    myDebugPrint3("begin constructing all operation blocks\n",100)
   #now construct each filter in pipeline, being careful to construct them in a valid order, which causes multiple passes through the set
   #first, mark all as uncreated
   for operationName, operationBlock in ioPipeAndViewsState.mOperationBlocks.items():
@@ -3279,28 +4001,24 @@ def MakeFiltersFromViewMapOperationsC(ioPipeAndViewsState, inOperationBlocksJson
 
         #determine whether or not we can construct this operation yet, or if 
         #we need to wait for something else to be constructed
-        canBeConstructedNow = False
-        if operationBlock.mType != "group":
-          if operationBlock.mInputOperationName == None:
-            canBeConstructedNow = True
-          else:
-            inputBlock = ioPipeAndViewsState.mOperationBlocks[operationBlock.mInputOperationName]
-            if inputBlock.mHasBeenConstructed == True:
-              canBeConstructedNow = True
-        else:
-          #special case--for group operation to be constructed, we need all
-          #input operations to be instructed
-          canBeConstructedNow = True
-          for opName in operationBlock.mOperationSpecifics.mOperationNameList:
-            inputBlock = ioPipeAndViewsState.mOperationBlocks[opName]
-            if inputBlock.mHasBeenConstructed == False:
-              canBeConstructedNow = False
-              break
-
+        canBeConstructedNow = True
+        inputOperationNames = operationBlock.GetListOfInputOperationNames()
+        for opName in inputOperationNames:
+          inputBlock = ioPipeAndViewsState.GetOperationBlockByName(opName)
+          if inputBlock.mHasBeenConstructed == False:
+            canBeConstructedNow = False
+            break
+         
+        if PhactoriDbg(100):
+          myDebugPrint3("trying: " + str(operationName) + "\n" + \
+            "depends on: " + str(inputOperationNames) + "\n" + \
+            "canBeConstructedNow: " + str(canBeConstructedNow) + "\n",100)
         if canBeConstructedNow == True:
           #this operation's input has been constructed (or is None), so we can construct it
           ConstructPipelineOperationFromParsedOperationBlockC(ioPipeAndViewsState, operationBlock)
           operationBlock.mHasBeenConstructed = True
+  if PhactoriDbg(100):
+    myDebugPrint3("done constructing all operation blocks\n",100)
   
 
 
@@ -3488,9 +4206,7 @@ def CreateParaViewRepresentationAndViewFromInfoC(inImageset, inLookDirection, in
 
 
 def CreateParaviewItemsForImagesetC(inImageset):
-  """given a json block structure as discussed in the catalyst sierra
-     insitu wiki, create the corresponding one imageset (view) based on
-     a particular imageset block and the availa"""
+  "given a json block structure as discussed in the catalyst sierra\n     insitu wiki, create the corresponding one imageset (view) based on\n     a particular imageset block and the availa"
 
   theCamera = inImageset.mCamera
 
@@ -3632,6 +4348,10 @@ def ParseOneCameraBlockC(ioCameraBlock, ioCameraBlockJson, inPipeAndViewsState):
         myDebugPrint3("default relative parallel scale: " + \
                 str(ioCameraBlock.mParallelScale) + "\n", 100)
 
+  #parse locking setup
+  ioCameraBlock.LockAfterNCalls = getParameterFromBlock(ioCameraBlockJson,
+    'lock camera call count', -1)
+  
 
 def localGet1or0(inJsn, inKey, inDefault):
   value = getParameterFromBlock(inJsn, inKey, inDefault)
@@ -3642,8 +4362,7 @@ def localGet1or0(inJsn, inKey, inDefault):
 
 
 def ParseOneRepresentationBlockC(ioRepresentationBlock, inRepresentationBlockJson, inPipeAndViewsState):
-  """given a python dict (presumably from json) description of a representation block, parse all the
-     representation parameters out of the block"""
+  "given a python dict (presumably from json) description of a representation block, parse all the\n     representation parameters out of the block"
 
   if PhactoriDbg(100):
     myDebugPrint3('ParseOneRepresentationBlockC entered\n', 100)
@@ -3886,8 +4605,10 @@ def SetDefaultImageBasename(inNewImageBasename):
 def breakSpecialVarNameIntoBaseAndComponent(inSpecialVarName,
       inAddSeparatorFlag):
 
+    twoDigitComponentFlag = False
+
     varNameLen = len(inSpecialVarName)
-    if varNameLen < 3:
+    if varNameLen < 2:
       errStr = '  in breakSpecialVarNameIntoBaseAndComponent representation bad color by vector component name (too short)\n'
       if PhactoriDbg():
         myDebugPrint3(errStr)
@@ -3901,14 +4622,31 @@ def breakSpecialVarNameIntoBaseAndComponent(inSpecialVarName,
       component = 1
     elif lastVarChar == 'Z' or lastVarChar == 'z':
       component = 2
+    elif str(lastVarChar).isdigit():
+      end2car = inSpecialVarName[varNameLen-2:varNameLen]
+      if PhactoriDbg():
+        myDebugPrint3('  end2car: ' + end2car + '  isdigit: ' + str(end2car.isdigit()) + '\n')
+      if end2car.isdigit():
+        twoDigitComponentFlag = True
+        component = int(end2car)
+      else:
+        component = int(str(lastVarChar))
     else:
-      errStr = '  in breakSpecialVarNameIntoBaseAndComponent representation bad color by vector component name (does not end in X Y or Z)\n'
+      errStr = '  in breakSpecialVarNameIntoBaseAndComponent representation bad color by vector component name (does not end in X Y or Z or 1 or two character integer)\n'
       if PhactoriDbg():
         myDebugPrint3(errStr)
       raise Exception(errStr)
     #baseVarName = inSpecialVarName[0:(varNameLen-2)] + GetSeparatorString()
-    lenToGrab = varNameLen - 1 - len(GetSeparatorString())
+
+    if inAddSeparatorFlag:
+      lenToGrab = varNameLen - 1 - len(GetSeparatorString())
+    else:
+      lenToGrab = varNameLen - 1
+    if twoDigitComponentFlag:
+      lenToGrab -= 1
+
     varNameWithoutSeparator = inSpecialVarName[0:lenToGrab]
+
     if inAddSeparatorFlag:
       baseVarName = varNameWithoutSeparator + GetSeparatorString()
     else:
@@ -4474,11 +5212,7 @@ class PhactoriUserPointInfo:
 
   def GetCurrentGeometricPoint(self, inParaViewSource, ioViewBounds,
       inUpdateInputPipelineFlag):
-    """returns the current absolute xyz of this point, calculating relative
-       position or element or node position if necessary; if it obtains
-       its view bounds during operation it returns them, otherwise it
-       returns None
-    """
+    "returns the current absolute xyz of this point, calculating relative\n       position or element or node position if necessary; if it obtains\n       its view bounds during operation it returns them, otherwise it\n       returns None\n    "
     if inUpdateInputPipelineFlag:
       UpdatePipelineWithCurrentTimeArgument(inParaViewSource)
     if PhactoriDbg(100):
@@ -4814,6 +5548,9 @@ class PhactoriCameraBlock:
 
     self.mOffAxisProjectionInfo = PhactoriOffAxisProjectionInfo()
 
+    self.LockCount = 0
+    self.LockAfterNCalls = -1
+
   def PrintSelf(self):
     if PhactoriDbg():
       myDebugPrint3("PhactoriCameraBlock: name " + self.mName + \
@@ -4829,6 +5566,27 @@ class PhactoriCameraBlock:
     if self.mLookAtPointInfo.mMayChangeWithData == True:
       return True
     return False
+
+  def HandleLockingOption(self, eyePosition, absoluteLookAtPoint):
+    if self.LockAfterNCalls <= 0:
+      #not locking
+      return
+
+    self.LockCount += 1
+    if self.LockCount >= self.LockAfterNCalls:
+      #look at absolute point
+      self.mLookAtPointInfo.mParsingDetectedAtLeastOneSetting = True
+      self.mLookAtPointInfo.mPointType = "absolute"
+      self.mLookAtPointInfo.mXyz = absoluteLookAtPoint
+      self.mLookAtPointInfo.mMayChangeWithData = False
+
+      #look at absolute distance
+      self.mLookAtDistanceType = 'absolute'
+      lookAtAbsoluteDistance = vecDistance(eyePosition, absoluteLookAtPoint)
+      self.mLookAtDistance = lookAtAbsoluteDistance
+
+      self.LockAfterNCalls = -1
+
 
 class PhactoriVariableMinMaxAvgSumCntSave:
   def __init__(self):
@@ -4874,13 +5632,7 @@ class PhactoriVariableInfo:
     return retStr
 
   def ParseVariableNameAndVectorOrTensorComponent(self, inJson, inBaseString):
-    """take a base string such as 'y axis variable ' or 'variable ', use it
-    to construct keys to define a scalar variable, vector component, vector
-    magnitude, or tensor component, and see if the json has those keys.
-    If the json has a key, use it to grab the variable name and setup.
-    Also look to see if the type of the variable is specifically defined
-    (node or element) or needs to be detected
-    """
+    "take a base string such as 'y axis variable ' or 'variable ', use it\n    to construct keys to define a scalar variable, vector component, vector\n    magnitude, or tensor component, and see if the json has those keys.\n    If the json has a key, use it to grab the variable name and setup.\n    Also look to see if the type of the variable is specifically defined\n    (node or element) or needs to be detected\n    "
     variableFoundFlag = False
     self.mVariableIsVectorComponent = False
     self.mVariableIsVectorMagnitude = False
@@ -5051,8 +5803,7 @@ class PhactoriVariableInfo:
     return False
 
   def GetXYPlotAxisTitle(self):
-    """for this variable info, construct the name to put on the axis of an XY
-    plot, e.g. with magnitude or component information"""
+    "for this variable info, construct the name to put on the axis of an XY\n    plot, e.g. with magnitude or component information"
 
     if self.mVariableName[-1] == '_':
       axisTitle = str(self.mVariableName[0:-1])
@@ -5168,9 +5919,7 @@ class PhactoriRepresentationBlock:
     self.mPointSize = 2.0
 
   def SetFromRestartInfo(self, inJson):
-    """given a map (json format), use the info in the map to set the
-       representation state--this reads the info created in 
-       GetRestartInfo"""
+    "given a map (json format), use the info in the map to set the\n       representation state--this reads the info created in \n       GetRestartInfo"
 
     if 'mColorRangeMinMaxTracker' not in inJson:
       if PhactoriDbg():
@@ -5191,20 +5940,14 @@ class PhactoriRepresentationBlock:
           self.mColorRangeMinMaxTracker.SelfToStr())
 
   def GetRestartInfo(self):
-    """construct, in python map/json format, the information from this
-       representation instance which contains the information
-       which would be needed to restore the representation to the proper
-       state after a simulation restart, particularly color range tracking
-       information.  Return the restart info map/json"""
+    "construct, in python map/json format, the information from this\n       representation instance which contains the information\n       which would be needed to restore the representation to the proper\n       state after a simulation restart, particularly color range tracking\n       information.  Return the restart info map/json"
     newRestartInfoJson = {}
     newRestartInfoJson['mColorRangeMinMaxTracker'] = \
       self.mColorRangeMinMaxTracker.GetRestartInfo()
     return newRestartInfoJson
 
   def CalculateDefaultScalarOpacityUnitDistance(self, inPhactoriOperation):
-    """given a phactori operation assumed to have an updated pipeline,
-       calculate a default scalar opacity unit distance the same as paraview,
-       with 0.05 * diagonal length of data bounding box"""
+    "given a phactori operation assumed to have an updated pipeline,\n       calculate a default scalar opacity unit distance the same as paraview,\n       with 0.05 * diagonal length of data bounding box"
     bnds = GetGlobalDataBoundsParallel(inPhactoriOperation.mParaViewFilter)
     xxlen = bnds[1] - bnds[0]
     yylen = bnds[3] - bnds[2]
@@ -5213,15 +5956,7 @@ class PhactoriRepresentationBlock:
             0.05 * math.sqrt(xxlen*xxlen + yylen*yylen + zzlen*zzlen)
 
 def GetThresholdContourHackVariableNameString(inVariableInfo):
-  """gives altered variable name for magnitude or component
-     in paraview, coloring by a vector component or magnitude is handled
-     differently than thresholding or contouring by a vector component or
-     magnitude.  For the Contour and Threshold case, we add _X, _Y, or _Z to
-     the variable name for component and _Magnitude for magnitude.  In
-     the coloring case, we specify component arguments and another argument
-     as to whether to use magnitude or component.  This routine takes the
-     given variable info (name, whether or not vector component or magnitude)
-     and creates a properly munged name to do the right thing"""
+  "gives altered variable name for magnitude or component\n     in paraview, coloring by a vector component or magnitude is handled\n     differently than thresholding or contouring by a vector component or\n     magnitude.  For the Contour and Threshold case, we add _X, _Y, or _Z to\n     the variable name for component and _Magnitude for magnitude.  In\n     the coloring case, we specify component arguments and another argument\n     as to whether to use magnitude or component.  This routine takes the\n     given variable info (name, whether or not vector component or magnitude)\n     and creates a properly munged name to do the right thing"
 
   if inVariableInfo.mVariableIsVectorComponent:
     if inVariableInfo.mVariableComponent == 0:
@@ -5254,18 +5989,28 @@ class PhactoriOperationSpecifics:
     #operation.  Set during ParseOneFilterTypeFromViewMapOperation()
     self.mPhactoriOperationBlockOwner = None
 
+  def GetListOfInputOperationNamesForThisOperationType(self):
+    "operations which depend on additional inputs besides the default single\n       input need to override this method and return their dependencies as a\n       list of names"
+    retList = []
+    return retList
+
+  def CreateParaViewFilter(self):
+    myDebugPrint3AndException("PhactoriOperationSpecifics:CreateParaViewFilter"
+      " or CreateParaViewFilter2 should be overwritten by child\n")
+
+  def CreateParaViewFilter2(self, inInputOperation, ioPipeAndViewsState):
+    return self.CreateParaViewFilter(inInputOperation)
+
   def DoUpdateDueToChangeInData(self, inIncomingPvFilter,
       outOutgoingPvFilter):
     #default behavior is to do nothing on new data
     if PhactoriDbg():
       myDebugPrint3("PhactoriOperationSpecifics::"
           "DoUpdateDueToChangeInData executed\n")
-      return False
+    return False
 
   def ExportOperationData(self, datadescription):
-    """this will be called once per callback (before WriteImages) to allow the
-       operation to export any desired data which is not an image. The child
-       class should override this method if it wants so do something"""
+    "this will be called once per callback (before WriteImages) to allow the\n       operation to export any desired data which is not an image. The child\n       class should override this method if it wants so do something"
     return
 
 #phactori_combine_to_single_python_file_parent_1
@@ -5286,11 +6031,12 @@ class PhactoriThresholdOperation(PhactoriOperationSpecifics):
 
   def DoUpdateDueToChangeInData(self, inIncomingPvFilter,
       outOutgoingPvFilter):
-    """the PhactoriThresholdOperation may need to update if the variable type
-       was not detectable in a previous callback, but is now detectable"""
+    "the PhactoriThresholdOperation may need to update if the variable type\n       was not detectable in a previous callback, but is now detectable"
     if PhactoriDbg():
       myDebugPrint3("PhactoriThresholdOperation::"
           "DoUpdateDueToChangeInData override executing\n")
+
+    #BarrierLock("PhactoriThresholdOperation sync 700")
 
     if self.mVariableInfo.mVariableTypeNeedsDetection == True:
       UpdatePipelineWithCurrentTimeArgument(inIncomingPvFilter)
@@ -5312,8 +6058,7 @@ class PhactoriThresholdOperation(PhactoriOperationSpecifics):
         ParseVariableNameAndVectorOrTensorComponent(inJson, 'variable ')
 
     if foundVariableFlag == False:
-      errStr = """error!  inJson has no variable info in
-                  PhactoriThresholdOperation.ParseParametersFromJson\n"""
+      errStr = "error!  inJson has no variable info in\n                  PhactoriThresholdOperation.ParseParametersFromJson\n"
       if PhactoriDbg():
         myDebugPrint3(errStr)
       raise Exception(errStr)
@@ -5323,13 +6068,11 @@ class PhactoriThresholdOperation(PhactoriOperationSpecifics):
     #if 'variable type' in inJson:
     #  self.mElementOrNode = inJson['variable type']
     #  if self.mElementOrNode != 'element' and self.mElementOrNode != 'node':
-    #    errStr = """error!  inJson 'variable type' is neither node nor element
-    #                PhactoriThresholdOperation.ParseParametersFromJson\n"""
+    #    errStr = "error!  inJson 'variable type' is neither node nor\nelement PhactoriThresholdOperation.ParseParametersFromJson\n"
     #    myDebugPrint3(errStr)
     #    raise Exception(errStr)
     #else:
-    #  errStr = """error!  inJson has no 'variable type' key in
-    #              PhactoriThresholdOperation.ParseParametersFromJson\n"""
+    #  errStr = "error!  inJson has no 'variable type' key in\nPhactoriThresholdOperation.ParseParametersFromJson\n"
     #  myDebugPrint3(errStr)
     #  raise Exception(errStr)
 
@@ -5361,9 +6104,9 @@ class PhactoriThresholdOperation(PhactoriOperationSpecifics):
     elif self.mVariableInfo.mVariableType == 'node':
       scalarType = 'POINTS'
     else:
-      errStr = """error!  in PhactoriThresholdOperation.CreateParaViewFilter
-                  variable type is not element or node or detect but:
-                  """ + str(self.mVariableInfo.mVariableType) + """\n"""
+      errStr = "error!  in PhactoriThresholdOperation.CreateParaViewFilter\n                  variable type is not element or node or detect but:\n                  " + \
+                  str(self.mVariableInfo.mVariableType) + \
+                  "\n"
       if PhactoriDbg():
         myDebugPrint3(errStr)
       raise Exception(errStr)
@@ -5378,7 +6121,7 @@ class PhactoriThresholdOperation(PhactoriOperationSpecifics):
     outOutgoingPvFilter.Scalars = [scalarType, localVariableName]
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the threshold filter for ParaView"""
+    "create the threshold filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3('PhactoriThresholdOperation.CreateParaViewFilter entered\n', 100)
     #info in block class should already be parsed and checked
@@ -5393,10 +6136,14 @@ class PhactoriThresholdOperation(PhactoriOperationSpecifics):
 
     savedActiveSource = GetActiveSource()
 
-    #CellDataList = []
-    #for ii in range(inputSource.CellData.GetNumberOfArrays()):
-    #    CellDataList.append(inputSource.CellData.GetArray(ii).Name)
-    #myDebugPrint3('before threshold cell data items: ' + str(CellDataList) + '\n');
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    #BarrierLock("PhactoriThresholdOperation sync 100")
+    if PhactoriDbg():
+      numCellArrays = inInputFilter.CellData.GetNumberOfArrays()
+      myDebugPrint3("before threshold cell numCellArrays: " + str(numCellArrays) + "\n")
+      for ii in range(0, numCellArrays):
+        myDebugPrint3(inInputFilter.CellData.GetArray(ii).Name + "\n")
 
     newParaViewFilter = Threshold(inInputFilter)
     newParaViewFilter.ThresholdRange = self.mRange
@@ -5407,11 +6154,16 @@ class PhactoriThresholdOperation(PhactoriOperationSpecifics):
     SetActiveSource(savedActiveSource)
     #AddFilterToFilterMap(ioOperationBlock.mName, newParaViewFilter)
 
+    if PhactoriDbg(100):
+      RecursivelyPrintPointAndCellArrayInformation(inInputFilter)
+
     #inputSource = GetActiveSource()
-    #CellDataList = []
-    #for ii in range(inputSource.CellData.GetNumberOfArrays()):
-    #    CellDataList.append(inputSource.CellData.GetArray(ii).Name)
-    #myDebugPrint3('after threshold cell data items: ' + str(CellDataList) + '\n');
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+    if PhactoriDbg():
+      numCellArrays = newParaViewFilter.CellData.GetNumberOfArrays()
+      myDebugPrint3("after threshold cell numCellArrays: " + str(numCellArrays) + "\n")
+      for ii in range(0, numCellArrays):
+        myDebugPrint3(newParaViewFilter.CellData.GetArray(ii).Name + "\n")
 
     if PhactoriDbg(100):
       myDebugPrint3('PhactoriThresholdOperation.CreateParaViewFilter returning\n', 100)
@@ -5424,9 +6176,7 @@ class PhactoriThresholdOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriAddUnstructuredGridOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriAddUnstructuredGridOperation(PhactoriOperationSpecifics):
-  """filter/operation which reads in a .vtu file which is an unstructured
-     grid and creates a new source from that and groups it with the
-     input source"""
+  "filter/operation which reads in a .vtu file which is an unstructured\n     grid and creates a new source from that and groups it with the\n     input source"
   def __init__(self):
     self.mFilename = None
     self.mInternalPvUnstructuredGridReader = None
@@ -5440,7 +6190,7 @@ class PhactoriAddUnstructuredGridOperation(PhactoriOperationSpecifics):
           "Error:  must have 'filename' key\n")
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the read unstructured grid (and group) filter for ParaView"""
+    "create the read unstructured grid (and group) filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriAddUnstructuredGridOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -5475,8 +6225,7 @@ class PhactoriAddUnstructuredGridOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriAddPointSetOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriAddPointSetOperation(PhactoriOperationSpecifics):
-  """filter/operation which reads in a .csv file which is a set of points and
-     creates a new source from that and groups it with the input source"""
+  "filter/operation which reads in a .csv file which is a set of points and\n     creates a new source from that and groups it with the input source"
   def __init__(self):
     self.mXColumn = 'x column'
     self.mYColumn = 'y column'
@@ -5506,7 +6255,7 @@ class PhactoriAddPointSetOperation(PhactoriOperationSpecifics):
       self.mFieldDelimeterCharacters = inJson['field delimeter']
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the read pointset (and group) filter for ParaView"""
+    "create the read pointset (and group) filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriAddPointSetOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -5560,7 +6309,7 @@ class PhactoriAddPointSetOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriReflectOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriReflectOperation(PhactoriOperationSpecifics):
-  """manages reflect filter, also inserts group filter"""
+  "manages reflect filter, also inserts group filter"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     self.mPlane = "X Min"
@@ -5581,7 +6330,7 @@ class PhactoriReflectOperation(PhactoriOperationSpecifics):
       self.mCenter = inJson['center']
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the reflect (and group) filter for ParaView"""
+    "create the reflect (and group) filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriReflectOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -5617,7 +6366,7 @@ class PhactoriReflectOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriWarpByVectorOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriWarpByVectorOperation(PhactoriOperationSpecifics):
-  """manages warpbyvector filter"""
+  "manages warpbyvector filter"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     self.mVectorName = ""
@@ -5639,7 +6388,7 @@ class PhactoriWarpByVectorOperation(PhactoriOperationSpecifics):
       self.mScaleFactor = inJson['scale']
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the warp by vector filter for ParaView"""
+    "create the warp by vector filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriWarpByVectorOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -5674,7 +6423,7 @@ class PhactoriWarpByVectorOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriCalculatorOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriCalculatorOperation(PhactoriOperationSpecifics):
-  """manages calculator filter"""
+  "manages calculator filter"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     self.mFunction = ""
@@ -5732,7 +6481,7 @@ class PhactoriCalculatorOperation(PhactoriOperationSpecifics):
           "node or element data must be 'node' or 'point' or 'element' or 'cell'\n")
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the calculator filter for ParaView"""
+    "create the calculator filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriCalculatorOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -5741,10 +6490,47 @@ class PhactoriCalculatorOperation(PhactoriOperationSpecifics):
 
     UpdatePipelineWithCurrentTimeArgument(inInputFilter)
 
+    if PhactoriDbg():
+      myDebugPrint3("  calculator inInputFilter point data arrays:\n")
+      numArrays = inInputFilter.PointData.GetNumberOfArrays()
+      for ii in range (0, numArrays):
+        myDebugPrint3("  " + str(ii) + ":  " + inInputFilter.PointData.GetArray(ii).GetName() + "\n")
+  
+    if PhactoriDbg():
+      myDebugPrint3("  calculator inInputFilter cell data arrays:\n")
+      numArrays = inInputFilter.CellData.GetNumberOfArrays()
+      for ii in range (0, numArrays):
+        myDebugPrint3("  " + str(ii) + ":  " + inInputFilter.CellData.GetArray(ii).GetName() + "\n")
+
+
     newParaViewFilter = Calculator(inInputFilter)
-    newParaViewFilter.Function = self.mFunction
-    #newParaViewFilter.AttributeMode = 'Cell Data'
-    #newParaViewFilter.AttributeMode = 'Point Data'
+    mypid = SmartGetLocalProcessId()
+    if self.mFunction.find("Hat") < 0:
+      constfunc = "11.5"
+    else:
+      constfunc = "1.0*iHat+2.0*jHat+3.0*kHat"
+
+    #self.mPointOrCell = 'Cell Data'
+
+    if self.mPointOrCell == "Cell Data":
+      if inInputFilter.CellData.GetNumberOfArrays() == 0:
+        myDebugPrint3("process " + str(mypid) + " has no cell arrays, using function " + constfunc + "\n")
+        newParaViewFilter.Function = constfunc
+      #elif str(inInputFilter.CellData.GetArray(0).GetName()) != "V":
+      #  myDebugPrint3("process " + str(mypid) + " 0th cell array not V, using function " + constfunc + "\n")
+      #  newParaViewFilter.Function = constfunc
+      else:
+        myDebugPrint3("process " + str(mypid) + " has cell arrays, using function " + self.mFunction + "\n")
+        newParaViewFilter.Function = self.mFunction
+    else:
+      if inInputFilter.PointData.GetNumberOfArrays() == 0:
+        myDebugPrint3("process " + str(mypid) + " has no point arrays, using function " + constfunc + "\n")
+        newParaViewFilter.Function = constfunc
+      else:
+        myDebugPrint3("process " + str(mypid) + " has cell arrays, using function " + self.mFunction + "\n")
+        newParaViewFilter.Function = self.mFunction
+      #newParaViewFilter.AttributeMode = 'Cell Data'
+      #newParaViewFilter.AttributeMode = 'Point Data'
 
     if gParaViewCatalystVersionFlag < 50502:
       newParaViewFilter.AttributeMode = self.mPointOrCell
@@ -5770,7 +6556,7 @@ class PhactoriCalculatorOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriTransformOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriTransformOperation(PhactoriOperationSpecifics):
-  """manages transform filter--scale, rotate, translate"""
+  "manages transform filter--scale, rotate, translate"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     self.mTranslate = [0.0, 0.0, 0.0]
@@ -5786,7 +6572,7 @@ class PhactoriTransformOperation(PhactoriOperationSpecifics):
       self.mRotate = inJson['rotate']
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the transform filter for ParaView"""
+    "create the transform filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriTransformOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -5819,11 +6605,7 @@ class PhactoriTransformOperation(PhactoriOperationSpecifics):
 #phactori_combine_to_single_python_file_subpiece_end_1
 
 class SharedTriangleSet():
-  """idea is that this encapsulates a set of triangles which are the triangles
-     from the overall surface of interest which reside on a single processor.
-     You can store your local processor triangles in this class and broadcast
-     from them and you can receive a broadcast of this setup from other
-     processes"""
+  "idea is that this encapsulates a set of triangles which are the triangles\n     from the overall surface of interest which reside on a single processor.\n     You can store your local processor triangles in this class and broadcast\n     from them and you can receive a broadcast of this setup from other\n     processes"
 
   def __init__(self):
     self.numPoints = -1
@@ -5845,9 +6627,7 @@ class SharedTriangleSet():
     self.UseBSPTreeForRayIntersection = True
 
   def CreateFromLocalProcess(self, inPhactoriOperation):
-    """figure out the set of triangles from the target surface which are on
-       this process (if any): we assume we have a triangle mesh or this code
-       won't work"""
+    "figure out the set of triangles from the target surface which are on\n       this process (if any): we assume we have a triangle mesh or this code\n       won't work"
 
     #obtain pointer to the local geometry data
     csdata = inPhactoriOperation.mParaViewFilter.GetClientSideObject().\
@@ -5907,8 +6687,7 @@ class SharedTriangleSet():
     self.numTriangles = self.Triangles.GetNumberOfValues() // 3
 
   def SendBroadcast(self, inLocalPid, globalController):
-    """broadcast the triangle set from the local process to all the other
-       processes"""
+    "broadcast the triangle set from the local process to all the other\n       processes"
     if (self.numPoints < 0) or (self.numTriangles < 0):
       myDebugPrint3AndException(
         "PhactoriIntersectNodeNormalsWithSurface::SendBroadcast\n"
@@ -5943,8 +6722,7 @@ class SharedTriangleSet():
         + str(inLocalPid) + "\n")
 
   def ReceiveBroadcast(self, inFromPid, globalController):
-    """receive a triangle set broadcast from the another process to the local
-       process"""
+    "receive a triangle set broadcast from the another process to the local\n       process"
     if PhactoriDbg():
       myDebugPrint3(
         "SharedTriangleSet::ReceiveBroadcast entered, inFromPid " + \
@@ -6069,8 +6847,7 @@ class SharedTriangleSet():
 
   def IntersectWithOneRay(self, inIndex, inRayStart, inRayDirection,
         ioRaycastOperation, inPointOrCellData):
-    """this is not used, but we are leaving it in as a reference for how to
-       do a ray/triangle intersection directly"""
+    "this is not used, but we are leaving it in as a reference for how to\n       do a ray/triangle intersection directly"
     if PhactoriDbg():
       myDebugPrint3(
         "ray: " + str(inIndex) + " " + str(inRayStart) + "  " + \
@@ -6410,7 +7187,7 @@ class SharedTriangleSet():
 
 
 class PhactoriSegmentGroup1Item:
-  """one segment in PhactoriSegmentGroup1"""
+  "one segment in PhactoriSegmentGroup1"
   def __init__(self):
     self.ParaViewLineSource = None
     self.Point1 = [0.0, 0.0, 0.0]
@@ -6432,7 +7209,7 @@ class PhactoriSegmentGroup1Item:
       vecCopy(self.Point2, inPt2)
     
 class PhactoriSegmentGroup1:
-  """manage a set of segments for purposes of showing raycast results"""
+  "manage a set of segments for purposes of showing raycast results"
   def __init__(self):
     self.Segments = []
     self.mVtkPoints = vtk.vtkPoints()
@@ -6478,8 +7255,7 @@ class PhactoriSegmentGroup1:
 #phactori_combine_to_single_python_file_subpiece_begin_1
 
 class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
-  """passes through it's input to it's output, but also does an
-     ExportOperation which is a parallel vtk writer, .vtm or .vtp"""
+  "passes through it's input to it's output, but also does an\n     ExportOperation which is a parallel vtk writer, .vtm or .vtp"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     self.mOutputFileBasename = "myvtk1"
@@ -6487,7 +7263,7 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
     self.mFilterToWriteDataFrom = None
     self.mWriter = None
     self.mNumCounterDigits = 4
-    #should be "vtkmultiblockdataset" or "vtkpolydata"
+    #should be "vtkmultiblockdataset" or "vtkpolydata" or "vtkunstructureddata"
     self.mVtkDataType = "vtkmultiblockdataset"
     self.mVtkDataTypeExtention = ".vtm"
 
@@ -6516,6 +7292,10 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
       if PhactoriDbg(100):
         myDebugPrint3("self.mVtkDataType set to vtkpolydata\n")
       self.mVtkDataTypeExtention = ".vtp"
+    elif self.mVtkDataType == "vtkunstructureddata":
+      if PhactoriDbg(100):
+        myDebugPrint3("self.mVtkDataType set to vtkunstructureddata\n")
+      self.mVtkDataTypeExtention = ".vtu"
     else:
       myDebugPrint3AndException(
           "PhactoriVtkDataExportOperation::ParseParametersFromJson\n"
@@ -6532,10 +7312,14 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
 
     if PhactoriDbg(100):
       myDebugPrint3("numproc " + str(numproc) + " mypid " + str(mypid) + "\n")
+
     self.mWriter = vtk.vtkXMLPMultiBlockDataWriter()
     self.mWriter.SetInputData(self.mFilterToWriteDataFrom.GetClientSideObject().GetOutputDataObject(0))
     self.mWriter.SetNumberOfPieces(numproc)
     self.mWriter.SetStartPiece(mypid)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("self.mWriter: " + str(self.mWriter) + "\n")
 
   def CreateVtkPolyDataWriter(self):
     mypid = SmartGetLocalProcessId()
@@ -6554,6 +7338,19 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
     self.mWriter.SetEndPiece(mypid)
     self.mWriter.SetUseSubdirectory(True)
 
+  def CreateVtkUnstructuredDataWriter(self):
+    mypid = SmartGetLocalProcessId()
+
+    #pm = paraview.servermanager.vtkProcessModule.GetProcessModule()
+    #globalController = pm.GetGlobalController()
+    #gLocalProcessId = globalController.GetLocalProcessId()
+    #numproc = globalController.GetNumberOfProcesses()
+
+    #if PhactoriDbg(100):
+    #  myDebugPrint3("numproc " + str(numproc) + " mypid " + str(mypid) + "\n")
+    self.mWriter = vtk.vtkXMLUnstructuredGridWriter()
+    self.mWriter.SetInputData(self.mFilterToWriteDataFrom.GetClientSideObject().GetOutputDataObject(0))
+
   def CreateCurrentCallbackOutputFilename(self):
     ftc = GetFrameTagCounter()
     outName = self.mOutputFileBasedirectory + "/" + \
@@ -6563,8 +7360,7 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
     return outName
 
   def ExportOperationData(self, datadescription):
-    """overrides parent class method in order to output .vtm or .vtp
-       (vtkMultiBlockData or vtkPolyData) files"""
+    "overrides parent class method in order to output .vtm or .vtp\n       (vtkMultiBlockData or vtkPolyData) files"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriVtkDataExportOperation." \
           "ExportOperationData entered\n", 100)
@@ -6576,9 +7372,19 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
         self.CreateVtkMultiBlockDataWriter()
       elif(self.mVtkDataType == "vtkpolydata"):
         self.CreateVtkPolyDataWriter()
+      elif(self.mVtkDataType == "vtkunstructureddata"):
+        self.CreateVtkUnstructuredDataWriter()
 
     outfilename = self.CreateCurrentCallbackOutputFilename()
+    if PhactoriDbg(100):
+      myDebugPrint3("outfilename: " + str(outfilename) + "\n")
     self.mWriter.SetFileName(outfilename)
+
+    #if PhactoriDbg(100):
+    #  myDebugPrint3("multiblock info right before self.mWriter.Write (start):\n")
+    #  RecursivelyPrintMultiBlockStats(self.mFilterToWriteDataFrom)
+    #  myDebugPrint3("multiblock info right before self.mWriter.Write (end):\n")
+    #  BarrierLock("barrier lock before self.mWriter.Write")
     self.mWriter.Write()
 
     if PhactoriDbg(100):
@@ -6587,14 +7393,404 @@ class PhactoriVtkDataExportOperation(PhactoriOperationSpecifics):
 
 #phactori_combine_to_single_python_file_subpiece_end_1
 
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriPartitionedToMultiBlockOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriPartitionedToMultiBlockOperation(PhactoriOperationSpecifics):
+  "manages PartitionedToMultiBlock filter"
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.InputFilter = None
+    self.OutVtkMultiBlockDataSet = None
+    self.OutputPVTrivialProducer = None
+
+  def ParseParametersFromJson(self, inJson):
+    dummy = 0
+
+  def GetNodeType(self, inNode):
+    if inNode == None:
+      myDebugPrint3AndException("PhactoriVtkDataExportOperation::GetNodeType\n"
+          "fix to handle None inNode\n")
+    icsdClassname = inNode.GetClassName()
+    if icsdClassname == "vtkMultiBlockDataSet":
+      nodeType = 0
+    elif icsdClassname == "vtkExodusIIMultiBlockDataSet":
+      nodeType = 1
+    elif icsdClassname == "vtkMultiPieceDataSet":
+      nodeType = 2
+    elif icsdClassname == "vtkPartitionedDataSet":
+      nodeType = 3
+    elif icsdClassname == "vtkStructuredGrid":
+      nodeType = 4
+    elif icsdClassname == "vtkUntructuredGrid":
+      nodeType = 5
+    else:
+      nodeType = 6
+    return nodeType
+
+  def AddItemToMultiblockOrMultiPiece(self, nonLeafType, inCurrentAlteredNode, oneChild, childName):
+    if nonLeafType == 2:
+      newChildIndex = inCurrentAlteredNode.GetNumberOfPieces()
+      inCurrentAlteredNode.SetPiece(newChildIndex, oneChild)
+    elif nonLeafType == 3:
+      #newChildIndex = inCurrentAlteredNode.GetNumberOfPartitions()
+      #inCurrentAlteredNode.SetPartition(newChildIndex, oneChild)
+      myDebugPrint3AndException(
+        "PhactoriVtkDataExportOperation::ParseParametersFromJson\n"
+        "unexpected nonLeafType (vtkPartitionedDataSet) at this place\n")
+    else:
+      newChildIndex = inCurrentAlteredNode.GetNumberOfBlocks()
+      inCurrentAlteredNode.SetBlock(newChildIndex, oneChild)
+    if childName != None:
+      newAlteredNodeMetaData = inCurrentAlteredNode.GetMetaData(newChildIndex)
+      newAlteredNodeMetaData.Set(vtk.vtkCompositeDataSet.NAME(), childName)
+
+  def UpdateAlteredVtkMultiBlockDataSetRecurse1(self, inCurrentAlteredNode, inCurrentSourceNode):
+    #at this point, both inputs are not leafs, and inCurrentSource is not
+    #VtkPartitionedDataSet
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriVtkDataExportOperation." \
+          "UpdateAlteredVtkMultiBlockDataSetRecurse1 entered\n"
+          "inCurrentAlteredNode type: " + str(inCurrentAlteredNode.GetClassName()) + "\n"
+          "inCurrentSourceNode type:  " + str(inCurrentSourceNode.GetClassName()) + "\n", 100)
+
+    nonLeafType = self.GetNodeType(inCurrentSourceNode)
+    if PhactoriDbg(100):
+      myDebugPrint3("inCurrentAlteredNode nonLeafType " + str(nonLeafType) + "\n")
+
+    if nonLeafType > 3:
+      myDebugPrint3AndException(
+        "PhactoriVtkDataExportOperation::UpdateAlteredVtkMultiBlockDataSetRecurse1\n"
+        "this is a leaf node or unexpected class here.\n"
+        "GetClassName(): " + str(inCurrentSourceNode.GetClassName()) + "\n")
+
+    if nonLeafType == 2:
+      numChildren = inCurrentSourceNode.GetNumberOfPieces()
+    elif nonLeafType == 3:
+      numChildren = inCurrentSourceNode.GetNumberOfPartitions()
+    else:
+      numChildren = inCurrentSourceNode.GetNumberOfBlocks()
+
+    if PhactoriDbg(100):
+      myDebugPrint3("nonLeafType: " + str(nonLeafType) + " numChildren: " + str(numChildren) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("begin quick children check\n")
+      for childIndex in range(0, numChildren):
+        if nonLeafType == 2:
+          oneChild = inCurrentSourceNode.GetPiece(childIndex)
+        elif nonLeafType == 3:
+          oneChild = inCurrentSourceNode.GetPartition(childIndex)
+        else:
+          oneChild = inCurrentSourceNode.GetBlock(childIndex)
+        if oneChild != None:
+          myDebugPrint3("childIndex " + str(childIndex) + " is " + str(oneChild.GetClassName()) + "\n")
+        else:
+          myDebugPrint3("childIndex " + str(childIndex) + " is None\n")
+      myDebugPrint3("end quick children check\n")
+
+    for childIndex in range(0, numChildren):
+      if PhactoriDbg(100):
+        myDebugPrint3("doing childIndex: " + str(childIndex) + "\n")
+
+      if nonLeafType == 2:
+        oneChild = inCurrentSourceNode.GetPiece(childIndex)
+      elif nonLeafType == 3:
+        oneChild = inCurrentSourceNode.GetPartition(childIndex)
+      else:
+        oneChild = inCurrentSourceNode.GetBlock(childIndex)
+
+      childMetaData = inCurrentSourceNode.GetMetaData(childIndex)
+      if childMetaData != None:
+        childName = childMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+      else:
+        childName = None
+
+      if oneChild == None:
+        #for now, just add a None block to match
+        self.AddItemToMultiblockOrMultiPiece(nonLeafType, inCurrentAlteredNode, oneChild, childName)
+        if PhactoriDbg(100):
+          myDebugPrint3("done childIndex: " + str(childIndex) + " (oneChild was None)\n")
+        continue
+
+      childNodeType = self.GetNodeType(oneChild)
+
+      if PhactoriDbg(100):
+        myDebugPrint3("childIndex " + str(childIndex) + " childNodeType " + str(childNodeType) + " childName " + str(childName) + "\n")
+      if (childNodeType == 4) or (childNodeType == 5):
+        self.AddItemToMultiblockOrMultiPiece(nonLeafType, inCurrentAlteredNode, oneChild, childName)
+      elif (childNodeType == 0) or (childNodeType == 1):
+        #newAlteredNode = vtk.VtkMultiBlockDataSet()
+        #newAlteredNode = oneChild.NewInstance()
+        #we are just using self.OutVtkMultiBlockDataSet here to get
+        #access to the desired type of NewInstance regardless if
+        #childNodeType is 0 or 1
+        newAlteredNode = self.OutVtkMultiBlockDataSet.NewInstance()
+        newChildIndex = inCurrentAlteredNode.GetNumberOfBlocks()
+        self.AddItemToMultiblockOrMultiPiece(nonLeafType, inCurrentAlteredNode, newAlteredNode, childName)
+        self.UpdateAlteredVtkMultiBlockDataSetRecurse1(newAlteredNode, oneChild)
+      elif childNodeType == 2:
+        #newAlteredNode = vtk.VtkMultiPieceDataSet()
+        newAlteredNode = oneChild.NewInstance()
+        newChildIndex = inCurrentAlteredNode.GetNumberOfPieces()
+        self.AddItemToMultiblockOrMultiPiece(nonLeafType, inCurrentAlteredNode, newAlteredNode, childName)
+        self.UpdateAlteredVtkMultiBlockDataSetRecurse1(newAlteredNode, oneChild)
+      elif childNodeType == 3:
+        #for now we're making assumption all the partitions under here are leaf grids
+        numSubChildren = oneChild.GetNumberOfPartitions()
+        if PhactoriDbg(100):
+          myDebugPrint3("numSubChildren: " + str(numSubChildren) + "\n")
+        for subChildIndex in range(0, numSubChildren):
+          if PhactoriDbg(100):
+            myDebugPrint3("doing subChildIndex: " + str(subChildIndex) + "\n")
+          oneSubChild = oneChild.GetPartition(subChildIndex)
+
+          if oneSubChild == None:
+            self.AddItemToMultiblockOrMultiPiece(nonLeafType, inCurrentAlteredNode, oneSubChild, childName)
+            if PhactoriDbg(100):
+              myDebugPrint3("done subChildIndex: " + str(subChildIndex) + " (which was a None subchild)\n")
+            continue
+
+          subChildNodeType = self.GetNodeType(oneSubChild)
+          if PhactoriDbg(100):
+            myDebugPrint3("subChildIndex " + str(subChildIndex) + " subChildNodeType " + str(subChildNodeType) + "\n")
+          if (subChildNodeType == 4) or (subChildNodeType == 5):
+            if (nonLeafType == 0) or (nonLeafType == 1) or (nonLeafType == 2):
+              self.AddItemToMultiblockOrMultiPiece(nonLeafType, inCurrentAlteredNode, oneSubChild, childName)
+            else:
+              myDebugPrint3AndException(
+                "PhactoriVtkDataExportOperation::ParseParametersFromJson\n"
+                "unexpected nonLeafType at this place: " + str(nonLeafType) + "\n")
+          else:
+            myDebugPrint3AndException(
+              "PhactoriVtkDataExportOperation::ParseParametersFromJson\n"
+              "unexpected subChildNodeType at this place: " + str(subChildNodeType) + "\n")
+          if PhactoriDbg(100):
+            myDebugPrint3("done subChildIndex: " + str(subChildIndex) + "\n")
+      else:
+        myDebugPrint3AndException(
+          "PhactoriVtkDataExportOperation::ParseParametersFromJson\n"
+          "unexpected childNodeType\n")
+      if PhactoriDbg(100):
+        myDebugPrint3("done childIndex: " + str(childIndex) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriVtkDataExportOperation.ExportOperationData returning\n")
+
+
+  def MakeOrUpdateVtkMultiBlockDataSetWithtoutVtkPartitionedDataSets(self, inVtkMultiBlockDataSet):
+    if self.OutVtkMultiBlockDataSet == None:
+      self.OutVtkMultiBlockDataSet = inVtkMultiBlockDataSet.NewInstance()
+    else:
+      self.OutVtkMultiBlockDataSet.SetNumberOfBlocks(0)
+    self.UpdateAlteredVtkMultiBlockDataSetRecurse1(self.OutVtkMultiBlockDataSet, inVtkMultiBlockDataSet)
+
+  def DoUpdateDueToChangeInData(self, inIncomingPvFilter,
+      outOutgoingPvFilter):
+    #default behavior is to do nothing on new data
+    if PhactoriDbg():
+      myDebugPrint3("PhactoriPartitionedToMultiBlockOperation.DoUpdateDueToChangeInData entered\n")
+    if self.InputFilter != None:
+      if PhactoriDbg():
+        myDebugPrint3("self.InputFilter != None; updating\n")
+      UpdatePipelineWithCurrentTimeArgument(self.InputFilter)
+      theVtkMultiBlockDataSetObject = self.InputFilter.GetClientSideObject().GetOutputDataObject(0)
+      self.MakeOrUpdateVtkMultiBlockDataSetWithtoutVtkPartitionedDataSets(theVtkMultiBlockDataSetObject)
+      UpdatePipelineWithCurrentTimeArgument(self.OutputPVTrivialProducer)
+    if PhactoriDbg():
+      myDebugPrint3("PhactoriPartitionedToMultiBlockOperation.DoUpdateDueToChangeInData returning\n")
+    return True
+
+  def CreateParaViewFilter(self, inInputFilter):
+    "create the PartitionedToMultiBlock filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPartitionedToMultiBlockOperation.CreateParaViewFilter "
+          "entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    self.InputFilter = inInputFilter
+    theVtkMultiBlockDataSetObject = self.InputFilter.GetClientSideObject().GetOutputDataObject(0)
+
+    self.MakeOrUpdateVtkMultiBlockDataSetWithtoutVtkPartitionedDataSets(theVtkMultiBlockDataSetObject)
+
+    #make trivial producer with this block
+    newParaViewFilter = PVTrivialProducer()
+    newParaViewFilter.GetClientSideObject().SetOutput(self.OutVtkMultiBlockDataSet)
+
+    self.OutputPVTrivialProducer = newParaViewFilter
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPartitionedToMultiBlockOperation.CreateParaViewFilter "
+          "returning\n", 100)
+
+    return newParaViewFilter
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriExodusIIExportOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class PhactoriExodusIIExportOperation(PhactoriOperationSpecifics):
+  "passes through it's input to it's output, but also does an\n     ExportOperation which is an exodusII writer, .exo "
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.mOutputFileBasename = "myexo1"
+    self.mOutputFileBasedirectory = "CatalystExodusIIOutput"
+    self.mFilterToWriteDataFrom = None
+    self.mWriter = None
+    self.mNumCounterDigits = 4
+    #should be "vtkmultiblockdataset" or "vtkpolydata"
+    self.mExodusIIType = "vtkmultiblockdataset"
+    self.mExodusIITypeExtention = ".exo"
+    #self.mExodusIITypeExtention = ".e-s"
+
+  def ParseOutputFilenameParametersFromJson(self, inJson):
+    self.mOutputFileBasename = getParameterFromBlock(inJson,
+      "basename", self.mPhactoriOperationBlockOwner.mName)
+
+    self.mOutputFileBasedirectory = getParameterFromBlock(inJson,
+      "basedirectory", self.mOutputFileBasedirectory)
+    CreateDirectoryFromProcessZero(self.mOutputFileBasedirectory)
+
+    self.mNumCounterDigits = getParameterFromBlock(inJson,
+      'name digit count', self.mNumCounterDigits)
+
+  def ParseParametersFromJson(self, inJson):
+    self.ParseOutputFilenameParametersFromJson(inJson)
+
+  def CreateParaViewFilter(self, inInputFilter):
+    self.mFilterToWriteDataFrom = inInputFilter
+    return self.mFilterToWriteDataFrom
+
+  def CreateCurrentCallbackOutputFilename(self):
+    ftc = GetFrameTagCounter()
+    outName = self.mOutputFileBasedirectory + "/" + \
+      self.mOutputFileBasename + "_" + \
+      str(ftc).zfill(self.mNumCounterDigits) + \
+      self.mExodusIITypeExtention
+    return outName
+
+  def ExportOperationData(self, datadescription):
+    "overrides parent class method in order to output .vtm or .vtp\n       (vtkMultiBlockData or vtkPolyData) files"
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriExodusIIExportOperation." \
+          "ExportOperationData entered\n", 100)
+
+    self.mFilterToWriteDataFrom.UpdatePipeline()
+
+    #outfilename = "MySlice5." + str(GetFrameTagCounter()) + ".e-s"
+    outfilename = self.CreateCurrentCallbackOutputFilename()
+    if PhactoriDbg(100):
+      myDebugPrint3("outfilename: " + str(outfilename) + "\n")
+    if self.mWriter == None:
+      self.mWriter = ExodusIIWriter(Input=self.mFilterToWriteDataFrom, IgnoreMetaDataWarning=True, FileName=outfilename)
+      #exodusIIWriter1 = servermanager.writers.ExodusIIWriter(Input=slice1)
+      #coprocessor.RegisterWriter(exodusIIWriter1, filename='Slice1.e-s', freq=1, paddingamount=0, DataMode='None', HeaderType='None', EncodeAppendedData=None, CompressorType='None', CompressionLevel='None')
+    else:
+      self.mWriter.FileName = outfilename
+
+
+    ##self.mWriter.UpdatePipeline()
+    UpdatePipelineWithCurrentTimeArgument(self.mWriter)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriExodusIIExportOperation." \
+          "ExportOperationData returning\n", 100)
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriCSVExportOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class PhactoriCSVExportOperation(PhactoriOperationSpecifics):
+  "passes through it's input to it's output, but also does an\n     ExportOperation which is an csv writer, .exo "
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.mOutputFileBasename = "myexo1"
+    self.mOutputFileBasedirectory = "CatalystCSVOutput"
+    self.mFilterToWriteDataFrom = None
+    self.mCsvCellWriter = None
+    self.mCsvPointWriter = None
+    self.mNumCounterDigits = 4
+    self.mCSVTypeExtention = ".csv"
+    self.Precision = 9
+
+  def ParseOutputFilenameParametersFromJson(self, inJson):
+    self.mOutputFileBasename = getParameterFromBlock(inJson,
+      "basename", self.mPhactoriOperationBlockOwner.mName)
+
+    self.mOutputFileBasedirectory = getParameterFromBlock(inJson,
+      "basedirectory", self.mOutputFileBasedirectory)
+    CreateDirectoryFromProcessZero(self.mOutputFileBasedirectory)
+
+    self.mNumCounterDigits = getParameterFromBlock(inJson,
+      "name digit count", self.mNumCounterDigits)
+
+    self.Precision = getParameterFromBlock(inJson,
+      "precision", self.Precision)
+    if (self.Precision < 1) or (self.Precision > 100):
+      myDebugPrint3AndException("PhactoriCSVExportOperation:\n"
+        "precision must be 1-100, not " + str(self.Precision) + "\n")
+    
+
+  def ParseParametersFromJson(self, inJson):
+    self.ParseOutputFilenameParametersFromJson(inJson)
+
+  def CreateParaViewFilter(self, inInputFilter):
+    self.mFilterToWriteDataFrom = inInputFilter
+    return self.mFilterToWriteDataFrom
+
+  def CreateCurrentCallbackOutputFilename(self):
+    ftc = GetFrameTagCounter()
+    outName_cell = self.mOutputFileBasedirectory + "/" + \
+      self.mOutputFileBasename + "_cell_" + \
+      str(ftc).zfill(self.mNumCounterDigits) + \
+      self.mCSVTypeExtention
+    outName_point = self.mOutputFileBasedirectory + "/" + \
+      self.mOutputFileBasename + "_point_" + \
+      str(ftc).zfill(self.mNumCounterDigits) + \
+      self.mCSVTypeExtention
+    return (outName_cell, outName_point)
+
+  def ExportOperationData(self, datadescription):
+    "overrides parent class method in order to output .vtm or .vtp\n       (vtkMultiBlockData or vtkPolyData) files"
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriCSVExportOperation." \
+          "ExportOperationData entered\n", 100)
+
+    self.mFilterToWriteDataFrom.UpdatePipeline()
+
+    outfilenames = self.CreateCurrentCallbackOutputFilename()
+    if PhactoriDbg(100):
+      myDebugPrint3("outfilenames: " + str(outfilenames) + "\n")
+
+    if self.mCsvCellWriter == None:
+      self.mCsvCellWriter = CSVWriter(Input=self.mFilterToWriteDataFrom,
+        Precision=self.Precision, FieldAssociation="Cell Data")
+    if self.mCsvPointWriter == None:
+      self.mCsvPointWriter = CSVWriter(Input=self.mFilterToWriteDataFrom,
+        Precision=self.Precision, FieldAssociation="Point Data")
+
+    if self.mCsvCellWriter != None:
+      self.mCsvCellWriter.FileName = outfilenames[0]
+      UpdatePipelineWithCurrentTimeArgument(self.mCsvCellWriter)
+    if self.mCsvPointWriter != None:
+      self.mCsvPointWriter.FileName = outfilenames[1]
+      UpdatePipelineWithCurrentTimeArgument(self.mCsvPointWriter)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriCSVExportOperation." \
+          "ExportOperationData returning\n", 100)
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
 class PhactoriIntersectNodeNormalsWithSurface(PhactoriOperationSpecifics):
-  """takes each node ND from surface SS and its corresponding normal vector
-     NN, and casts a ray RR towards the second surface TT which must be a set
-     of triangles and finds if and where RR intersects TT at point XX.  For
-     now it creates a new nodal variable NormalRayDistance which is the
-     length of RR between ND and XX.  We may add capability in the future
-     to store the XX as well, although this can be presumably be recovered
-     from the normal and the distance"""
+  "takes each node ND from surface SS and its corresponding normal vector\n     NN, and casts a ray RR towards the second surface TT which must be a set\n     of triangles and finds if and where RR intersects TT at point XX.  For\n     now it creates a new nodal variable NormalRayDistance which is the\n     length of RR between ND and XX.  We may add capability in the future\n     to store the XX as well, although this can be presumably be recovered\n     from the normal and the distance"
 
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
@@ -6655,7 +7851,7 @@ class PhactoriIntersectNodeNormalsWithSurface(PhactoriOperationSpecifics):
       self.mIntersectionSegmentGroupMinLength = inJson[isgmlkey2]
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the filter for ParaView"""
+    "create the filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriIntersectNodeNormalsWithSurface." \
           "CreateParaViewFilter entered\n", 100)
@@ -6732,19 +7928,7 @@ class PhactoriIntersectNodeNormalsWithSurface(PhactoriOperationSpecifics):
     return newParaViewFilter
 
   def RunCalculationToCastRays(self, ioPipeAndViewsState):
-    """our technique is as follows:  we loop through the pids of all the
-       processes and each broadcasts the set triangles TTPID that pid holds
-       from the target source to all the other processes.  Then each process
-       casts rays from the nodes on the source surface that it holds (along
-       the node normals) towards TTPID and finds the intersection if any.
-       If a closer intersection is found than the existing one, the closer is
-       used.  At the end of this loop the distance is known for each node on
-       its own process (and if there was no intersection, which can be NAN or
-       some arbitrary value).
-       Initial implementation doesn't worry about self-intersection, but we
-       can add additional features to expect certain number of 0 distance
-       hits and ignore those or to remove self node and surrounding tris from
-       the list of those to intersect"""
+    "our technique is as follows:  we loop through the pids of all the\n       processes and each broadcasts the set triangles TTPID that pid holds\n       from the target source to all the other processes.  Then each process\n       casts rays from the nodes on the source surface that it holds (along\n       the node normals) towards TTPID and finds the intersection if any.\n       If a closer intersection is found than the existing one, the closer is\n       used.  At the end of this loop the distance is known for each node on\n       its own process (and if there was no intersection, which can be NAN or\n       some arbitrary value).\n       Initial implementation doesn't worry about self-intersection, but we\n       can add additional features to expect certain number of 0 distance\n       hits and ignore those or to remove self node and surrounding tris from\n       the list of those to intersect"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriIntersectNodeNormalsWithSurface." \
           "RunCalculationToCastRays entered\n", 100)
@@ -6850,11 +8034,7 @@ class PhactoriIntersectNodeNormalsWithSurface(PhactoriOperationSpecifics):
           "RunCalculationToCastRays returning\n", 100)
 
   def ExportOperationData(self, datadescription):
-    """this will be called once per callback (before WriteImages) to allow the
-       operation to export any desired data which is not an image. The child
-       class should override this method if it wants so do something.
-       For PhactoriIntersectNodeNormalsWithSurface we will output information
-       about the nearest and furthest intersections"""
+    "this will be called once per callback (before WriteImages) to allow the\n       operation to export any desired data which is not an image. The child\n       class should override this method if it wants so do something.\n       For PhactoriIntersectNodeNormalsWithSurface we will output information\n       about the nearest and furthest intersections"
        
     if PhactoriDbg(100):
       myDebugPrint3(
@@ -6912,17 +8092,7 @@ class PhactoriIntersectNodeNormalsWithSurface(PhactoriOperationSpecifics):
 
 
 class PhactoriNearestPointsOperation(PhactoriOperationSpecifics):
-  """finds the set of N nearest nodes between a source operation/input and
-     a target operation input.  Also outputs a table of the set of nodes
-     and distances at render time.  This operation as currently constructed
-     pulls all the target nodes into each processor and thus may cause memory
-     issues.  It may be advisible to use, e.g. quadrature decimation to
-     reduce the number of points in the target and/or source first.  We may
-     eventually make this a multi-stage operation to first operate on
-     a reduced set of points to find a subset of the original sets of points
-     to then do an exact comparison on.  We may also eventually change to
-     operated based on a space partitioning tree to avoid checking every
-     point against every point"""
+  "finds the set of N nearest nodes between a source operation/input and\n     a target operation input.  Also outputs a table of the set of nodes\n     and distances at render time.  This operation as currently constructed\n     pulls all the target nodes into each processor and thus may cause memory\n     issues.  It may be advisible to use, e.g. quadrature decimation to\n     reduce the number of points in the target and/or source first.  We may\n     eventually make this a multi-stage operation to first operate on\n     a reduced set of points to find a subset of the original sets of points\n     to then do an exact comparison on.  We may also eventually change to\n     operated based on a space partitioning tree to avoid checking every\n     point against every point"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     #filled in from parsing
@@ -7029,7 +8199,7 @@ class PhactoriNearestPointsOperation(PhactoriOperationSpecifics):
         self.mNumPointsPerProcess = self.mNumPointsToFind
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the group filter for ParaView"""
+    "create the group filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriNearestPointsOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -7326,8 +8496,7 @@ class PhactoriNearestPointsOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriGroupOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriGroupOperation(PhactoriOperationSpecifics):
-  """manages group filter: group the results of two or more operations into
-     a single multiblock source"""
+  "manages group filter: group the results of two or more operations into\n     a single multiblock source"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     #filled in from parsing
@@ -7344,8 +8513,13 @@ class PhactoriGroupOperation(PhactoriOperationSpecifics):
           "PhactoriGroupOperation::ParseParametersFromJson\n"
           "Error:  must have 'operation group list' token\n")
 
+  def GetListOfInputOperationNamesForThisOperationType(self):
+    "the group operation depends on all the operations in\n       self.mOperationNameList"
+    retList = list(self.mOperationNameList)
+    return retList
+
   def CreateParaViewFilter2(self, ioPipeAndViewsState):
-    """create the group filter for ParaView"""
+    "create the group filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriGroupOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -7372,6 +8546,7 @@ class PhactoriGroupOperation(PhactoriOperationSpecifics):
     newParaViewFilter = GroupDatasets(Input = self.mOperationList)
 
     SetActiveSource(newParaViewFilter)
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
     SetActiveSource(savedActiveSource)
 
     if PhactoriDbg(100):
@@ -7385,7 +8560,7 @@ class PhactoriGroupOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriGenerateSurfaceNormalsOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriGenerateSurfaceNormalsOperation(PhactoriOperationSpecifics):
-  """manages ExtractSurface filter"""
+  "manages ExtractSurface filter"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     self.ComputeCellNormals = True
@@ -7397,7 +8572,7 @@ class PhactoriGenerateSurfaceNormalsOperation(PhactoriOperationSpecifics):
       self.ComputeCellNormals = inJson["compute_cell_normals"]
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the GenerateSurfaceNormals filter for ParaView"""
+    "create the GenerateSurfaceNormals filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriGenerateSurfaceNormalsOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -7434,7 +8609,7 @@ class PhactoriGenerateSurfaceNormalsOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriExtractSurfaceOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriExtractSurfaceOperation(PhactoriOperationSpecifics):
-  """manages ExtractSurface filter"""
+  "manages ExtractSurface filter"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
 
@@ -7442,7 +8617,7 @@ class PhactoriExtractSurfaceOperation(PhactoriOperationSpecifics):
     dummy = 0
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the ExtractSurface filter for ParaView"""
+    "create the ExtractSurface filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriExtractSurfaceOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -7468,7 +8643,7 @@ class PhactoriExtractSurfaceOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriGhostCellsGeneratorOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriGhostCellsGeneratorOperation(PhactoriOperationSpecifics):
-  """manages GhostCellsGenerator filter"""
+  "manages GhostCellsGenerator filter"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
 
@@ -7476,7 +8651,7 @@ class PhactoriGhostCellsGeneratorOperation(PhactoriOperationSpecifics):
     dummy = 0
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the GhostCellsGenerator filter for ParaView"""
+    "create the GhostCellsGenerator filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3(
           "PhactoriGhostCellsGeneratorOperation.CreateParaViewFilter "
@@ -7505,7 +8680,7 @@ class PhactoriGhostCellsGeneratorOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriMergeBlocksOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriMergeBlocksOperation(PhactoriOperationSpecifics):
-  """manages MergeBlocks filter"""
+  "manages MergeBlocks filter"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
 
@@ -7513,7 +8688,7 @@ class PhactoriMergeBlocksOperation(PhactoriOperationSpecifics):
     dummy = 0
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the MergeBlocks filter for ParaView"""
+    "create the MergeBlocks filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriMergeBlocksOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -7524,6 +8699,7 @@ class PhactoriMergeBlocksOperation(PhactoriOperationSpecifics):
     newParaViewFilter = MergeBlocks(inInputFilter)
 
     SetActiveSource(newParaViewFilter)
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
     SetActiveSource(savedActiveSource)
 
     if PhactoriDbg(100):
@@ -7539,7 +8715,7 @@ class PhactoriMergeBlocksOperation(PhactoriOperationSpecifics):
 #from Operation.PhactoriSubdivideOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriSubdivideOperation(PhactoriOperationSpecifics):
-  """manages Subdivide filter"""
+  "manages Subdivide filter"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     self.NumberOfSubdivisions = 1
@@ -7551,7 +8727,7 @@ class PhactoriSubdivideOperation(PhactoriOperationSpecifics):
       self.NumberOfSubdivisions = inJson["number_of_subdivisions"]
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the Triangulate filter for ParaView"""
+    "create the Subdivide filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriSubdivideOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -7576,10 +8752,47 @@ class PhactoriSubdivideOperation(PhactoriOperationSpecifics):
 
 
 #phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriAggregateDatasetOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriAggregateDatasetOperation(PhactoriOperationSpecifics):
+  "manages AggregateDataset filter"
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.NumberOfTargetProcesses = 1
+
+  def ParseParametersFromJson(self, inJson):
+    if "number of target processes" in inJson:
+      self.NumberOfTargetProcesses = inJson["number of target processes"]
+
+  def CreateParaViewFilter(self, inInputFilter):
+    "create the AggregateDataset filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriAggregateDatasetOperation.CreateParaViewFilter "
+          "entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+    newParaViewFilter = AggregateDataset(inInputFilter)
+    newParaViewFilter.NumberOfTargetProcesses = self.NumberOfTargetProcesses
+
+    SetActiveSource(newParaViewFilter)
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriAggregateDatasetOperation.CreateParaViewFilter "
+          "returning\n", 100)
+
+    return newParaViewFilter
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+
+#phactori_combine_to_single_python_file_parent_1
 #from Operation.PhactoriTriangulateOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriTriangulateOperation(PhactoriOperationSpecifics):
-  """manages Triangulate filter"""
+  "manages Triangulate filter"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
 
@@ -7587,7 +8800,7 @@ class PhactoriTriangulateOperation(PhactoriOperationSpecifics):
     dummy = 0
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the Triangulate filter for ParaView"""
+    "create the Triangulate filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriTriangulateOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -7612,14 +8825,17 @@ class PhactoriTriangulateOperation(PhactoriOperationSpecifics):
 #phactori_combine_to_single_python_file_parent_1
 #from Operation.PhactoriExtractBlockOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
+global gDuplicateNameCounter
+gDuplicateNameCounter = {}
+
 class PhactoriExtractBlockOperation(PhactoriOperationSpecifics):
-  """manages extract block filter, including creating flat block
-     indices list from list of block names"""
+  "manages extract block filter, including creating flat block\n     indices list from list of block names"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     #mIncludeblockList OR mExcludeBlockList will be filled in from parsing
     self.mIncludeBlockList = None
     self.mExcludeBlockList = None
+    self.mFlatBlockIndicesSpecifiedDirectly = False
 
     #this will be list of included block indicies, and is calculated from
     #mIncludeBlockList / mExcludeBlockList and passed directly to
@@ -7634,15 +8850,18 @@ class PhactoriExtractBlockOperation(PhactoriOperationSpecifics):
     if 'exclude blocks' in inJson:
       self.mExcludeBlockList = inJson['exclude blocks']
 
-    if self.mIncludeBlockList == None and self.mExcludeBlockList == None:
+    if 'include blocks by flat index list' in inJson:
+      self.mFlatBlockIndicesSpecifiedDirectly = True
+      self.mBlockIndices = inJson['include blocks by flat index list']
+
+    if self.mIncludeBlockList == None and self.mExcludeBlockList == None and self.mFlatBlockIndicesSpecifiedDirectly == False:
       myDebugPrint3AndException(
           "PhactoriExtractBlockOperation::ParseParametersFromJson\n"
-          "Error:  must have include block list or exclude block list\n")
+          "Error:  must have 'include block list' or 'exclude block list' or 'include blocks by flat index list'\n")
 
   def FigureBlockIndicesFromBlockListOneBlock(self, inMetaData,
           ioFlatIndexCounter):
-    """determine if this one block should have it's flat index tripped on for
-       the extract block filter (leaf item of recursion)"""
+    "determine if this one block should have it's flat index tripped on for\n       the extract block filter (leaf item of recursion)"
 
     if inMetaData == None:
       thisBlockName = None
@@ -7657,6 +8876,12 @@ class PhactoriExtractBlockOperation(PhactoriOperationSpecifics):
               str(ioFlatIndexCounter[0] - 1) + ")\n")
       elif thisBlockName in self.mIncludeBlockList:
         self.mBlockIndices.append(int(ioFlatIndexCounter[0]) - 1)
+        global gDuplicateNameCounter
+        if thisBlockName in gDuplicateNameCounter:
+          oldCount = gDuplicateNameCounter[thisBlockName]
+          gDuplicateNameCounter[thisBlockName] = oldCount+1
+        else:
+          gDuplicateNameCounter[thisBlockName] = 1
         if PhactoriDbg(100):
           myDebugPrint3("block " + str(thisBlockName) + \
               " in include list, + to mBlockIndices (flat index " + \
@@ -7691,24 +8916,109 @@ class PhactoriExtractBlockOperation(PhactoriOperationSpecifics):
           "Error:  must have include block list or exclude block list\n")
 
   def FigureBlockIndicesFromBlockListRecurse1(self, inCsdata, inMetaData,
-          ioFlatIndexCounter):
-    """recursively go through multiblock dataset to determine flat indices
-       of blocks to be included; we are assuming only leaf blocks are
-       actually named"""
+          ioFlatIndexCounter, inForceSetting):
+    "recursively go through multiblock dataset to determine flat indices\n       of blocks to be included; we are assuming only leaf blocks are\n       actually named"
+
+    icsdClassname = inCsdata.GetClassName()
+
+    if PhactoriDbg(100):
+      if inMetaData == None:
+        thisBlockName = None
+      else:
+        thisBlockName = inMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+      myDebugPrint3("FigureBlockIndicesFromBlockListRecurse1 " + \
+        str(thisBlockName) + " index: " + str(int(ioFlatIndexCounter[0])) + \
+        " inForceSetting: " + str(inForceSetting) + " classname: " + \
+        str(icsdClassname) + "\n")
 
     ioFlatIndexCounter[0] += 1
 
-    icsdClassname = inCsdata.GetClassName()
-    if icsdClassname == "vtkMultiBlockDataSet" or \
-       icsdClassname == "vtkExodusIIMultiBlockDataSet":
-      numBlocks = inCsdata.GetNumberOfBlocks()
+    if icsdClassname == "vtkMultiBlockDataSet":
+      thisIsLeaf = False
+      nonLeafType = 0
+    elif icsdClassname == "vtkExodusIIMultiBlockDataSet":
+      thisIsLeaf = False
+      nonLeafType = 1
+    elif icsdClassname == "vtkMultiPieceDataSet":
+      thisIsLeaf = False
+      nonLeafType = 2
+    elif icsdClassname == "vtkPartitionedDataSet":
+      thisIsLeaf = False
+      nonLeafType = 3
+    else:
+      thisIsLeaf = True
+      nonLeafType = -1
+
+    if not thisIsLeaf:
+      if inForceSetting == 1:
+        self.mBlockIndices.append(int(ioFlatIndexCounter[0]) - 1)
+        includeOrExcludeAllSubBlocks = 1
+        if PhactoriDbg(100):
+          myDebugPrint3("this non-leaf block added inForceSetting == 1\n")
+      elif inForceSetting == -1:
+        includeOrExcludeAllSubBlocks = -1
+        if PhactoriDbg(100):
+          myDebugPrint3("this non-leaf block not added inForceSetting == -1\n")
+      else:
+        includeOrExcludeAllSubBlocks = 0
+        #this is a non-leaf node, but we want to add it (or not) depending on
+        #the filter settings
+        if inMetaData == None:
+          thisBlockName = None
+        else:
+          thisBlockName = inMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+        if self.mIncludeBlockList != None:
+          if (thisBlockName != None) and (thisBlockName in self.mIncludeBlockList):
+            if PhactoriDbg(100):
+              myDebugPrint3("include list, append nonleaf " + str(thisBlockName) + \
+                " ndx " + str(int(ioFlatIndexCounter[0]) - 1) + "\n")
+            self.mBlockIndices.append(int(ioFlatIndexCounter[0]) - 1)
+            includeOrExcludeAllSubBlocks = 1
+            if PhactoriDbg(100):
+              myDebugPrint3("includeOrExcludeAllSubBlocks set to 1\n")
+          else:
+            if PhactoriDbg(100):
+              myDebugPrint3("include list, exclude nonleaf " + str(thisBlockName) + \
+                " ndx " + str(int(ioFlatIndexCounter[0]) - 1) + "\n")
+        elif self.mExcludeBlockList != None:
+          if (thisBlockName == None) or (thisBlockName not in self.mExcludeBlockList):
+            if PhactoriDbg(100):
+              myDebugPrint3("exclude list, append nonleaf " + str(thisBlockName) + \
+                " ndx " +str(int(ioFlatIndexCounter[0]) - 1) + "\n")
+            self.mBlockIndices.append(int(ioFlatIndexCounter[0]) - 1)
+          else:
+            if PhactoriDbg(100):
+              myDebugPrint3("exclude list, exclude nonleaf " + str(thisBlockName) + \
+                " ndx " + str(int(ioFlatIndexCounter[0]) - 1) + "\n")
+          if (thisBlockName != None) and (thisBlockName in self.mExcludeBlockList):
+            includeOrExcludeAllSubBlocks = -1
+            if PhactoriDbg(100):
+              myDebugPrint3("includeOrExcludeAllSubBlocks set to -1\n")
+        else:
+          myDebugPrint3AndException(
+            "PhactoriExtractBlockOperation::"
+            "FigureBlockIndicesFromBlockListRecurse1\n"
+            "Error:  must have include block list or exclude block list\n")
+
+      if nonLeafType == 2:
+        numBlocks = inCsdata.GetNumberOfPieces()
+      elif nonLeafType == 3:
+        numBlocks = inCsdata.GetNumberOfPartitions()
+      else:
+        numBlocks = inCsdata.GetNumberOfBlocks()
+
       if PhactoriDbg(100):
         myDebugPrint3("recursing, flat index: " + \
             str(ioFlatIndexCounter[0]) + \
             "    num blocks: " + \
             str(numBlocks) + "\n")
       for ii in range(0, numBlocks):
-        oneBlock = inCsdata.GetBlock(ii)
+        if nonLeafType == 2:
+          oneBlock = inCsdata.GetPiece(ii)
+        elif nonLeafType == 3:
+          oneBlock = inCsdata.GetPartition(ii)
+        else:
+          oneBlock = inCsdata.GetBlock(ii)
         oneBlockMetaData = inCsdata.GetMetaData(ii)
         if PhactoriDbg(100):
           myDebugPrint3("oneBlockMetaData: " + str(oneBlockMetaData) + "\n")
@@ -7718,45 +9028,90 @@ class PhactoriExtractBlockOperation(PhactoriOperationSpecifics):
           if oneBlockMetaData != None:
             theBlockName = oneBlockMetaData.Get(vtk.vtkCompositeDataSet.NAME())
             if PhactoriDbg(100):
-              myDebugPrint3("name for block " + str(ii) + ":  " + \
+              myDebugPrint3("name for block " + str(ii) + ": " + \
                 str(theBlockName) + "\n")
           else:
             if PhactoriDbg(100):
               myDebugPrint3("block " + str(ii) + " meta data was None\n")
           self.FigureBlockIndicesFromBlockListRecurse1(oneBlock,
-              oneBlockMetaData, ioFlatIndexCounter)
+              oneBlockMetaData, ioFlatIndexCounter, includeOrExcludeAllSubBlocks)
         else:
+          if PhactoriDbg(100):
+            myDebugPrint3("this sub block is None, now handle it\n")
           #I think we need to count here to be okay with pruned stuff; maybe
           #we need to set extract block to no pruning (?)
           ioFlatIndexCounter[0] += 1
+          if includeOrExcludeAllSubBlocks == 1:
+            if PhactoriDbg(100):
+              myDebugPrint3("leaf block None index " + \
+              str(int(ioFlatIndexCounter[0]) - 1) + \
+              " appended due to includeOrExcludeAllSubBlocks == 1\n")
+            self.mBlockIndices.append(int(ioFlatIndexCounter[0]) - 1)
+          else:
+            if PhactoriDbg(100):
+              myDebugPrint3("force include is not on, so check include list\n")
+            includeThisBlock = False
+            if (self.mIncludeBlockList != None) and (oneBlockMetaData != None):
+              thisBlockName = oneBlockMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+              if PhactoriDbg(100):
+                myDebugPrint3("include list not None, thisBlockName " + str(thisBlockName) + "\n"
+                  "self.mIncludeBlockList " + str(self.mIncludeBlockList) + "\n")
+                myDebugPrint3("thisBlockName != None: " + str(thisBlockName != None) + "\n")
+                myDebugPrint3("in list: " + str(thisBlockName in self.mIncludeBlockList) + "\n")
+              if (thisBlockName != None) and (thisBlockName in self.mIncludeBlockList):
+                includeThisBlock = True
+                if PhactoriDbg(100):
+                  myDebugPrint3("leaf block None index " + \
+                  str(int(ioFlatIndexCounter[0]) - 1) + \
+                  " included due to name being in self.mIncludeBlockList\n")
+                self.mBlockIndices.append(int(ioFlatIndexCounter[0]) - 1)
+            if includeThisBlock == False:
+              if PhactoriDbg(100):
+                myDebugPrint3("leaf block None index " + \
+                str(int(ioFlatIndexCounter[0]) - 1) + \
+                " excluded due to includeOrExcludeAllSubBlocks != 1\n")
     else:
-      self.FigureBlockIndicesFromBlockListOneBlock(inMetaData,
+      if inForceSetting == 1:
+        self.mBlockIndices.append(int(ioFlatIndexCounter[0]) - 1)
+        if PhactoriDbg(100):
+          myDebugPrint3("this leaf block added inForceSetting == 1\n")
+      elif inForceSetting != -1:
+        self.FigureBlockIndicesFromBlockListOneBlock(inMetaData,
           ioFlatIndexCounter)
-    if icsdClassname == "vtkMultiPieceDataSet":
-      numpieces = inCsdata.GetNumberOfPieces()
-      # ioFlatIndexCounter[0] += numpieces - 1
-      ioFlatIndexCounter[0] += numpieces
-
+      else:
+        if PhactoriDbg(100):
+          myDebugPrint3("this leaf block not added inForceSetting == -1\n")
+    #if icsdClassname == "vtkMultiPieceDataSet":
+    #  numpieces = inCsdata.GetNumberOfPieces()
+    #  # ioFlatIndexCounter[0] += numpieces - 1
+    #  ioFlatIndexCounter[0] += numpieces
 
 
   def FigureBlockIndicesFromBlockList(self, inInputFilter):
-    """from the list of include/exclude blocks create a indices list
-       of blocks to put in filter"""
+    "from the list of include/exclude blocks create a indices list\n       of blocks to put in filter"
     if PhactoriDbg(100):
-      myDebugPrint3("FigureBlockIndicesFromBlockList entered\n"
-          "self.mIncludeBlockList: " + str(self.mIncludeBlockList) + "\n")
+      myDebugPrint3("FigureBlockIndicesFromBlockList entered"
+          "\nself.mIncludeBlockList: " + str(self.mIncludeBlockList) + \
+          "\nself.mExcludeBlockList: " + str(self.mExcludeBlockList) + "\n")
 
+    global gDuplicateNameCounter
+    gDuplicateNameCounter = {}
     csdata = inInputFilter.GetClientSideObject().GetOutputDataObject(0)
     flatIndexCounter = [0]
     self.FigureBlockIndicesFromBlockListRecurse1(csdata, None,
-        flatIndexCounter)
+        flatIndexCounter, 0)
+    
+    if PhactoriDbg(100):
+      myDebugPrint3("number of times existing block names found:\n")
+      for blknm, count in gDuplicateNameCounter.items():
+        myDebugPrint3(blknm + ": " + str(count) + "\n");
     if PhactoriDbg(100):
       myDebugPrint3("FigureBlockIndicesFromBlockList final indices list:\n" \
           + str(self.mBlockIndices) + \
           "\nFigureBlockIndicesFromBlockList returning\n")
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the extract block filter for ParaView"""
+    "create the extract block filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriExtractBlockOperation.CreateParaViewFilter "
           "entered\n", 100)
@@ -7765,8 +9120,23 @@ class PhactoriExtractBlockOperation(PhactoriOperationSpecifics):
     savedActiveSource = GetActiveSource()
 
     UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    if PhactoriDbg():
+      myDebugPrint3("  extractblock inInputFilter point data arrays:\n")
+      numArrays = inInputFilter.PointData.GetNumberOfArrays()
+      for ii in range (0, numArrays):
+        myDebugPrint3("  " + str(ii) + ":  " + inInputFilter.PointData.GetArray(ii).GetName() + "\n")
+  
+    if PhactoriDbg():
+      myDebugPrint3("  extractblock inInputFilter cell data arrays:\n")
+      numArrays = inInputFilter.CellData.GetNumberOfArrays()
+      for ii in range (0, numArrays):
+        myDebugPrint3("  " + str(ii) + ":  " + inInputFilter.CellData.GetArray(ii).GetName() + "\n")
+
     newParaViewFilter = ExtractBlock(inInputFilter)
-    self.FigureBlockIndicesFromBlockList(inInputFilter)
+
+    if self.mFlatBlockIndicesSpecifiedDirectly == False:
+      self.FigureBlockIndicesFromBlockList(inInputFilter)
 
     #newParaViewFilter.PruneOutput = 1
     #newParaViewFilter.MaintainStructure = 0
@@ -7775,6 +9145,20 @@ class PhactoriExtractBlockOperation(PhactoriOperationSpecifics):
     newParaViewFilter.BlockIndices = self.mBlockIndices
 
     SetActiveSource(newParaViewFilter)
+
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+    if PhactoriDbg():
+      myDebugPrint3("  extractblock newParaViewFilter point data arrays:\n")
+      numArrays = newParaViewFilter.PointData.GetNumberOfArrays()
+      for ii in range (0, numArrays):
+        myDebugPrint3("  " + str(ii) + ":  " + newParaViewFilter.PointData.GetArray(ii).GetName() + "\n")
+  
+    if PhactoriDbg():
+      myDebugPrint3("  extractblock newParaViewFilter cell data arrays:\n")
+      numArrays = newParaViewFilter.CellData.GetNumberOfArrays()
+      for ii in range (0, numArrays):
+        myDebugPrint3("  " + str(ii) + ":  " + newParaViewFilter.CellData.GetArray(ii).GetName() + "\n")
+
     SetActiveSource(savedActiveSource)
 
     if PhactoriDbg(100):
@@ -7796,21 +9180,293 @@ class PhactoriCellDataToPointDataOperation(PhactoriOperationSpecifics):
     return
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the clip plane filter for ParaView"""
     if PhactoriDbg(100):
       myDebugPrint3('PhactoriCellDataToPointDataOperation:CreateParaViewFilter entered\n', 100)
     #info in block class should already be parsed and checked
 
+    
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call UpdatePipelineWithCurrentTimeArgument\n', 100)
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
     savedActiveSource = GetActiveSource()
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call CellDatatoPointData\n', 100)
     newParaViewFilter = CellDatatoPointData(Input = inInputFilter)
 
     SetActiveSource(newParaViewFilter)
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call UpdatePipelineWithCurrentTimeArgument\n', 100)
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
     SetActiveSource(savedActiveSource)
 
     if PhactoriDbg(100):
       myDebugPrint3('PhactoriCellDataToPointDataOperation.CreateParaViewFilter returning\n', 100)
 
     return newParaViewFilter
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriExtractComponentOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriExtractComponentOperation(PhactoriOperationSpecifics):
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.Component = 0
+    self.InputArrayName = "None"
+    self.InputArrayCellsOrPoints = "POINTS"
+    self.OutputArrayName = "Result"
+    return
+
+  def ParseParametersFromJson(self, inJson):
+    keyval1 = "component"
+    if keyval1 in inJson:
+      self.Component = inJson[keyval1]
+
+    keyval2 = "output array name"
+    if keyval2 in inJson:
+      self.OutputArrayName = inJson[keyval2]
+
+    keyval3 = "input array name"
+    if keyval3 in inJson:
+      self.InputArrayName = inJson[keyval3]
+    else:
+      myDebugPrint3AndException(
+        "PhactoriExtractComponentOperation:ParseParametersFromJson\n"
+        "must have keys 'input array name' and 'input array type'\n")
+
+    keyval4 = "input array type"
+    if keyval4 in inJson:
+      typeval = inJson[keyval4]
+      if typeval == "points":
+        self.InputArrayCellsOrPoints = "POINTS"
+      elif typeval == "cells":
+        self.InputArrayCellsOrPoints = "CELLS"
+      elif typeval == "nodes":
+        self.InputArrayCellsOrPoints = "POINTS"
+      elif typeval == "elements":
+        self.InputArrayCellsOrPoints = "CELLS"
+      else:
+        myDebugPrint3AndException(
+          "PhactoriExtractComponentOperation:ParseParametersFromJson\n"
+          "'input array type' must be 'points' 'cells' 'nodes' or 'elements'\n")
+    else:
+      myDebugPrint3AndException(
+        "PhactoriExtractComponentOperation:ParseParametersFromJson\n"
+        "must have keys 'input array name' and 'input array type'\n")
+
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriExtractComponentOperation:CreateParaViewFilter entered\n", 100)
+    #info in block class should already be parsed and checked
+    
+    if PhactoriDbg(100):
+      myDebugPrint3("about to call UpdatePipelineWithCurrentTimeArgument\n", 100)
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    savedActiveSource = GetActiveSource()
+    newParaViewFilter = ExtractComponent(Input = inInputFilter)
+    newParaViewFilter.Component = self.Component
+    newParaViewFilter.OutputArrayName = self.OutputArrayName
+    newParaViewFilter.InputArray = [self.InputArrayCellsOrPoints, self.InputArrayName]
+    if PhactoriDbg(100):
+      myDebugPrint3(
+        "newParaViewFilter.Component" + str(newParaViewFilter.Component) + "\n"
+        "newParaViewFilter.OutputArrayName" + str(newParaViewFilter.OutputArrayName) + "\n"
+        "newParaViewFilter.InputArray" + str(newParaViewFilter.InputArray) + "\n", 100)
+
+    SetActiveSource(newParaViewFilter)
+    if PhactoriDbg(100):
+      myDebugPrint3("about to call UpdatePipelineWithCurrentTimeArgument\n", 100)
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriExtractComponentOperation.CreateParaViewFilter returning\n", 100)
+
+    return newParaViewFilter
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriCellSizeOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriCellSizeOperation(PhactoriOperationSpecifics):
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    return
+
+  def ParseParametersFromJson(self, inJson):
+    return
+
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriCellSizeOperation:CreateParaViewFilter entered\n', 100)
+    #info in block class should already be parsed and checked
+
+    
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call UpdatePipelineWithCurrentTimeArgument\n', 100)
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    savedActiveSource = GetActiveSource()
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call CellSize\n', 100)
+    newParaViewFilter = CellSize(Input = inInputFilter)
+
+    SetActiveSource(newParaViewFilter)
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call UpdatePipelineWithCurrentTimeArgument\n', 100)
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriCellSizeOperation.CreateParaViewFilter returning\n', 100)
+
+    return newParaViewFilter
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriAppendLocationAttributesOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriAppendLocationAttributesOperation(PhactoriOperationSpecifics):
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.AppendPointLocations = 1
+    self.AppendCellCenters = 1
+    return
+
+  def ParseParametersFromJson(self, inJson):
+    key1 = "append point locations"
+    if key1 in inJson:
+      testval = inJson[key1]
+      if testval:
+        self.AppendPointLocations = 1
+      else:
+        self.AppendPointLocations = 0
+    else:
+      key1 = "append_point_locations"
+      if key1 in inJson:
+        testval = inJson[key1]
+        if testval:
+          self.AppendPointLocations = 1
+        else:
+          self.AppendPointLocations = 0
+    
+    key2 = "append cell centers"
+    if key2 in inJson:
+      testval = inJson[key2]
+      if testval:
+        self.AppendCellCenters = 1
+      else:
+        self.AppendCellCenters = 0
+    else:
+      key2 = "append_cell_centers"
+      if key2 in inJson:
+        testval = inJson[key2]
+        if testval:
+          self.AppendCellCenters = 1
+        else:
+          self.AppendCellCenters = 0
+
+    return
+
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriAppendLocationAttributesOperation:CreateParaViewFilter entered\n', 100)
+    #info in block class should already be parsed and checked
+    
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call UpdatePipelineWithCurrentTimeArgument\n', 100)
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    savedActiveSource = GetActiveSource()
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call AppendLocationAttributes\n', 100)
+    newParaViewFilter = AppendLocationAttributes(Input = inInputFilter)
+
+    newParaViewFilter.AppendPointLocations = self.AppendPointLocations
+    newParaViewFilter.AppendCellCenters = self.AppendCellCenters
+
+    SetActiveSource(newParaViewFilter)
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call UpdatePipelineWithCurrentTimeArgument\n', 100)
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriAppendLocationAttributesOperation.CreateParaViewFilter returning\n', 100)
+
+    return newParaViewFilter
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriIntegrateVariablesOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriIntegrateVariablesOperation(PhactoriOperationSpecifics):
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.myCopyOfInputFilter = None
+    self.myCopyOfIntegrationFilter = None
+    self.outfileNameManager = PhactoriOutputFileNameAndDirectoryManager(
+      "PhactoriIntegrateVariablesOperation_", ".", 5, ".csv")
+    return
+
+  def ParseParametersFromJson(self, inJson):
+    self.outfileNameManager.ParseOutputFileNameControl(inJson, "output file ")
+    return
+
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriIntegrateVariablesOperation:CreateParaViewFilter entered\n', 100)
+    #info in block class should already be parsed and checked
+
+    
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call UpdatePipelineWithCurrentTimeArgument\n', 100)
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    savedActiveSource = GetActiveSource()
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call IntegrateVariables\n', 100)
+    newParaViewFilter = IntegrateVariables(Input = inInputFilter)
+
+    SetActiveSource(newParaViewFilter)
+    if PhactoriDbg(100):
+      myDebugPrint3('about to call UpdatePipelineWithCurrentTimeArgument\n', 100)
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+    SetActiveSource(savedActiveSource)
+
+    self.myCopyOfInputFilter = inInputFilter
+    self.myCopyOfIntegrationFilter = newParaViewFilter
+
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriIntegrateVariablesOperation.CreateParaViewFilter returning\n', 100)
+
+    return newParaViewFilter
+
+  def ExportOperationData(self, datadescription):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriIntegrateVariablesOperation.ExportOperationData entered\n", 100)
+
+    myPid = SmartGetLocalProcessId()
+    ftc = GetFrameTagCounter()
+    UpdatePipelineWithCurrentTimeArgument(self.myCopyOfInputFilter)
+    UpdatePipelineWithCurrentTimeArgument(self.myCopyOfIntegrationFilter)
+
+    #self.myCopyOfIntegrationFilter = IntegrateVariables(Input = self.myCopyOfInputFilter)
+    #UpdatePipelineWithCurrentTimeArgument(self.myCopyOfIntegrationFilter)
+
+    pointDataFileName = self.outfileNameManager.GetOutputFilePath(ftc, "_points_")
+    cellDataFileName = self.outfileNameManager.GetOutputFilePath(ftc, "_cells_")
+    SaveData(pointDataFileName, proxy=self.myCopyOfIntegrationFilter, FieldAssociation='Points')
+    SaveData(cellDataFileName, proxy=self.myCopyOfIntegrationFilter, FieldAssociation='Cells')
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriIntegrateVariablesOperation.ExportOperationData returning\n", 100)
 
 #phactori_combine_to_single_python_file_subpiece_end_1
 
@@ -7840,8 +9496,7 @@ class PhactoriContourOperation(PhactoriOperationSpecifics):
         ParseVariableNameAndVectorOrTensorComponent(inJson, 'variable ')
 
     if foundVariableFlag == False:
-      errStr = """error!  inJson has no variable info in
-                  PhactoriContourOperation.ParseParametersFromJson\n"""
+      errStr = "error!  inJson has no variable info in\n                  PhactoriContourOperation.ParseParametersFromJson\n"
       if PhactoriDbg():
         myDebugPrint3(errStr)
       raise Exception(errStr)
@@ -7857,8 +9512,7 @@ class PhactoriContourOperation(PhactoriOperationSpecifics):
       rVal = rStart
       if rEnd > rStart:
         if rStep <= 0.0:
-          errStr = """error!  bad contour value sequence in
-                      PhactoriContourOperation.ParseParametersFromJson\n"""
+          errStr = "error!  bad contour value sequence in\n                      PhactoriContourOperation.ParseParametersFromJson\n"
           if PhactoriDbg():
             myDebugPrint3(errStr)
           raise Exception(errStr)
@@ -7867,8 +9521,7 @@ class PhactoriContourOperation(PhactoriOperationSpecifics):
           rVal += rStep
       else:
         if rStep >= 0.0:
-          errStr = """error!  bad contour value sequence in
-                      PhactoriContourOperation.ParseParametersFromJson\n"""
+          errStr = "error!  bad contour value sequence in\n                      PhactoriContourOperation.ParseParametersFromJson\n"
           if PhactoriDbg():
             myDebugPrint3(errStr)
           raise Exception(errStr)
@@ -7876,15 +9529,14 @@ class PhactoriContourOperation(PhactoriOperationSpecifics):
           self.mContourValue.append(rVal)
           rVal += rStep
     else:
-      errStr = """error!  inJson has no 'contour value' or 'contour value sequence' key in
-                  PhactoriContourOperation.ParseParametersFromJson\n"""
+      errStr = "error!  inJson has no 'contour value' or 'contour value sequence' key in\n                  PhactoriContourOperation.ParseParametersFromJson\n"
       if PhactoriDbg():
         myDebugPrint3(errStr)
       raise Exception(errStr)
 
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the clip plane filter for ParaView"""
+    "create the clip plane filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3('PhactoriContourOperation.CreateParaViewFilter entered\n', 100)
     #info in block class should already be parsed and checked
@@ -7952,8 +9604,7 @@ class PhactoriContourOperation(PhactoriOperationSpecifics):
 
 
 class PhactoriPlaneOpBase(PhactoriOperationSpecifics):
-  """base operation type for slice operation and clip operation.  They share
-     parsing and settings, and just differ by which filter is created"""
+  "base operation type for slice operation and clip operation.  They share\n     parsing and settings, and just differ by which filter is created"
   def __init__(self):
     PhactoriOperationSpecifics.__init__(self)
     self.mPtOnPlaneInfo = PhactoriUserPointInfo()
@@ -8053,18 +9704,14 @@ class PhactoriPlaneOpBase(PhactoriOperationSpecifics):
       self.mCrinkleSetting = 0  #debatable default
 
   def CreateParaViewFilter(self, inInputFilter):
-    errStr = """error!  this is a base class which should have
-                CreateParaViewFilter method overridden and not
-                used"""
+    errStr = "error!  this is a base class which should have\n                CreateParaViewFilter method overridden and not\n                used"
     if PhactoriDbg():
       myDebugPrint3(errStr)
     raise Exception(errStr)
 
   def CalculateUpdatedOriginAndNormal(
           self, inIncomingPvFilter, outCalculatedOrigin, outCalculatedNormal):
-    """find a point on the plane and a normal to the plane, allowing for
-       need to update location of points due to the point or points on the
-       plane being relative points or data points"""
+    "find a point on the plane and a normal to the plane, allowing for\n       need to update location of points due to the point or points on the\n       plane being relative points or data points"
 
     if PhactoriDbg():
       myDebugPrint3(
@@ -8127,7 +9774,7 @@ class PhactoriPlaneOpBase(PhactoriOperationSpecifics):
 #from Operation.PhactoriSliceOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriSliceOperation(PhactoriPlaneOpBase):
-  """slice operation, settings and handling of slice filter"""
+  "slice operation, settings and handling of slice filter"
 
   def CreateParaViewFilter(self, inInputFilter):
 
@@ -8136,7 +9783,7 @@ class PhactoriSliceOperation(PhactoriPlaneOpBase):
     #def __init__(self):
     #    MySuperClass.__init__(self)
 
-    """create the slice plane filter for ParaView"""
+    "create the slice plane filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3('PhactoriSliceOperation.CreateParaViewFilter entered\n', 100)
     #info in block class should already be parsed and checked
@@ -8157,9 +9804,7 @@ class PhactoriSliceOperation(PhactoriPlaneOpBase):
 
   def DoUpdateDueToChangeInData(self, inIncomingPvFilter,
       outOutgoingPvFilter):
-    """the PhactoriSliceOperation may need to update if the point on
-       the slice plane was tied to a node, element, or variable min/max
-       location"""
+    "the PhactoriSliceOperation may need to update if the point on\n       the slice plane was tied to a node, element, or variable min/max\n       location"
     if PhactoriDbg():
       myDebugPrint3("PhactoriSliceOperation::"
           "DoUpdateDueToChangeInData override executing\n")
@@ -8177,8 +9822,7 @@ class PhactoriSliceOperation(PhactoriPlaneOpBase):
           "DoUpdateDueToChangeInData override returning\n")
 
   def UpdateSlice(self, inIncomingPvFilter, ioOutgoingPvFilter):
-    """using the current info on the slice, get all the paraview stuff
-       set up correctly"""
+    "using the current info on the slice, get all the paraview stuff\n       set up correctly"
 
     if PhactoriDbg():
       myDebugPrint3("PhactoriSlicePlaneOperation::UpdateSlice entered\n")
@@ -8209,7 +9853,7 @@ class PhactoriSliceOperation(PhactoriPlaneOpBase):
 #from Operation.PhactoriClipPlaneOperation import *
 #phactori_combine_to_single_python_file_subpiece_begin_1
 class PhactoriClipPlaneOperation(PhactoriPlaneOpBase):
-  """clip plane operation, settings and handling of slice filter"""
+  "clip plane operation, settings and handling of slice filter"
 
   def CreateParaViewFilter(self, inInputFilter):
 
@@ -8218,7 +9862,7 @@ class PhactoriClipPlaneOperation(PhactoriPlaneOpBase):
     #def __init__(self):
     #    MySuperClass.__init__(self)
 
-    """create the clip plane filter for ParaView"""
+    "create the clip plane filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3('PhactoriClipPlaneOperation.CreateParaViewFilter entered\n', 100)
     #info in block class should already be parsed and checked
@@ -8237,9 +9881,7 @@ class PhactoriClipPlaneOperation(PhactoriPlaneOpBase):
 
   def DoUpdateDueToChangeInData(self, inIncomingPvFilter,
       outOutgoingPvFilter):
-    """the PhactoriClipPlaneOperation may need to update if the point on
-       the clip plane was tied to a node, element, or variable min/max
-       location"""
+    "the PhactoriClipPlaneOperation may need to update if the point on\n       the clip plane was tied to a node, element, or variable min/max\n       location"
     if PhactoriDbg():
       myDebugPrint3("PhactoriClipPlaneOperation::"
           "DoUpdateDueToChangeInData override executing\n")
@@ -8257,8 +9899,7 @@ class PhactoriClipPlaneOperation(PhactoriPlaneOpBase):
           "DoUpdateDueToChangeInData override returning\n")
 
   def UpdateClip(self, inIncomingPvFilter, ioOutgoingPvFilter):
-    """using the current info on the clip, get all the paraview stuff
-       set up correctly"""
+    "using the current info on the clip, get all the paraview stuff\n       set up correctly"
 
     if PhactoriDbg():
       myDebugPrint3("PhactoriClipPlaneOperation::UpdateClip entered\n")
@@ -8367,7 +10008,7 @@ class PhactoriCylinderClipOperation(PhactoriOperationSpecifics):
       myDebugPrint3('mCrinkleSetting: ' + str(self.mCrinkleSetting) + '\n')
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the cylinder clip filter for ParaView"""
+    "create the cylinder clip filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3('PhactoriCylinderClipOperation.CreateParaViewFilter ' +\
         'entered\n', 100)
@@ -8427,7 +10068,6 @@ class PhactoriCylinderClipOperation(PhactoriOperationSpecifics):
       return True
     return False
 #phactori_combine_to_single_python_file_subpiece_end_1
-
 
 #phactori_combine_to_single_python_file_parent_1
 #from Operation.PhactoriBoxClipOperation import *
@@ -8505,12 +10145,17 @@ class PhactoriBoxClipOperation(PhactoriOperationSpecifics):
       myDebugPrint3('mCrinkleSetting: ' + str(self.mCrinkleSetting) + '\n')
 
   def CreateParaViewFilter(self, inInputFilter):
-    """create the box clip box for ParaView"""
+    "create the box clip box for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3('PhactoriBoxClipOperation.CreateParaViewFilter entered\n', 100)
     #info in block class should already be parsed and checked
 
     savedActiveSource = GetActiveSource()
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    if PhactoriDbg(100):
+      DebugPrintCellAndPointArrayInfo("data arrays coming into PhactoriBoxClipOperation.CreateParaViewFilter\n", inInputFilter, 100)
 
     newParaViewFilter = Clip(Input = inInputFilter, ClipType = "Box")
 
@@ -8529,6 +10174,8 @@ class PhactoriBoxClipOperation(PhactoriOperationSpecifics):
       if myViewBounds == None:
         myViewBounds = GetGlobalDataBoundsParallel(inInputFilter)
       halfXExt = self.mExtents[0] * (myViewBounds[1] - myViewBounds[0]) * 0.5
+      if halfXExt <= 1e-20:
+        halfXExt = 0.001
     else:
       halfXExt = self.mExtents[0] * 0.5
 
@@ -8536,6 +10183,8 @@ class PhactoriBoxClipOperation(PhactoriOperationSpecifics):
       if myViewBounds == None:
         myViewBounds = GetGlobalDataBoundsParallel(inInputFilter)
       halfYExt = self.mExtents[1] * (myViewBounds[3] - myViewBounds[2]) * 0.5
+      if halfYExt <= 1e-20:
+        halfYExt = 0.001
     else:
       halfYExt = self.mExtents[1] * 0.5
 
@@ -8543,6 +10192,8 @@ class PhactoriBoxClipOperation(PhactoriOperationSpecifics):
       if myViewBounds == None:
         myViewBounds = GetGlobalDataBoundsParallel(inInputFilter)
       halfZExt = self.mExtents[2] * (myViewBounds[5] - myViewBounds[4]) * 0.5
+      if halfZExt <= 1e-20:
+        halfZExt = 0.001
     else:
       halfZExt = self.mExtents[2] * 0.5
 
@@ -8570,6 +10221,11 @@ class PhactoriBoxClipOperation(PhactoriOperationSpecifics):
     SetActiveSource(newParaViewFilter)
     SetActiveSource(savedActiveSource)
 
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+
+    if PhactoriDbg(100):
+      DebugPrintCellAndPointArrayInfo("data arrays coming out of PhactoriBoxClipOperation.CreateParaViewFilter\n", newParaViewFilter, 100)
+
     if PhactoriDbg(100):
       myDebugPrint3('PhactoriBoxClipOperation.CreateParaViewFilter returning\n', 100)
 
@@ -8587,15 +10243,4177 @@ class PhactoriBoxClipOperation(PhactoriOperationSpecifics):
     return False
 #phactori_combine_to_single_python_file_subpiece_end_1
 
-global FlagToTestOutgoingPvGeometryFilter
-FlagToTestOutgoingPvGeometryFilter = False
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriStreamTracerOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriStreamTracerOperation(PhactoriOperationSpecifics):
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.LineSourcePoint1 = [-0.5, -0.5, -0.5]
+    self.LineSourcePoint2 = [0.5, 0.5, 0.5]
+    self.Resolution = 500
+    return
+
+  def ParseParametersFromJson(self, inJson):
+    key1 = "line source point 1"
+    self.LineSourcePoint1 = getParameterFromBlock(inJson, key1, self.LineSourcePoint1)
+    if len(self.LineSourcePoint1) != 3:
+      myDebugPrint3AndException(
+        "'" + key1 + "' must be list with three floats for x, y, z\n")
+
+    key2 = "line source point 2"
+    self.LineSourcePoint2 = getParameterFromBlock(inJson, key2, self.LineSourcePoint2)
+    if len(self.LineSourcePoint2) != 3:
+      myDebugPrint3AndException(
+        "'" + key2 + "' must be list with three floats for x, y, z\n")
+
+    key3 = "resolution"
+    self.Resolution = getParameterFromBlock(inJson, key3, self.Resolution)
+    if isinstance(self.Resolution, int) == False:
+      myDebugPrint3AndException(
+        "'" + key3 + "' must be an integer\n")
+
+
+  def CreateParaViewFilter(self, inInputFilter):
+    "create the clip plane filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriStreamTracerOperation:CreateParaViewFilter entered\n', 100)
+    #info in block class should already be parsed and checked
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    savedActiveSource = GetActiveSource()
+
+    newParaViewFilter = StreamTracer(Input = inInputFilter, SeedType="High Resolution Line Source")
+    newParaViewFilter.Vectors = ["CELLS", "velocity_xyz"]
+    newParaViewFilter.MaximumStreamlineLength = 100.0
+    newParaViewFilter.SeedType.Point1 = self.LineSourcePoint1
+    newParaViewFilter.SeedType.Point2 = self.LineSourcePoint2
+    newParaViewFilter.SeedType.Resolution = self.Resolution
+    newParaViewFilter.IntegrationDirection = 'FORWARD'
+    newParaViewFilter.MaximumSteps = 5000
+    #newParaViewFilter.InitialStepLength = 0.01
+
+    if PhactoriDbg(100):
+      stcso = newParaViewFilter.GetClientSideObject()
+      stodo = stcso.GetOutputDataObject(0)
+      myDebugPrint3("stodo st: " + str(stodo.GetClassName()) + " numcells " + str(stodo.GetNumberOfCells()) + " numpoints " + str(stodo.GetNumberOfPoints()) + "\n")
+      stido0 = stcso.GetInputDataObject(0,0)
+      myDebugPrint3("stido0 st: " + str(stido0.GetClassName()) + "\n")
+      stido1 = stcso.GetInputDataObject(1,0)
+      myDebugPrint3("stido1 st: " + str(stido1.GetClassName()) + " numcells " + str(stido1.GetNumberOfCells()) + " numpoints " + str(stido1.GetNumberOfPoints()) + "\n")
+ 
+    SetActiveSource(newParaViewFilter)
+    SetActiveSource(savedActiveSource)
+
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+     
+    if PhactoriDbg(100):
+      stcso = newParaViewFilter.GetClientSideObject()
+      stodo = stcso.GetOutputDataObject(0)
+      myDebugPrint3("B stodo st: " + str(stodo.GetClassName()) + " numcells " + str(stodo.GetNumberOfCells()) + " numpoints " + str(stodo.GetNumberOfPoints()) + "\n")
+      stido0 = stcso.GetInputDataObject(0,0)
+      myDebugPrint3("B stido0 st: " + str(stido0.GetClassName()) + "\n")
+      stido1 = stcso.GetInputDataObject(1,0)
+      myDebugPrint3("B stido1 st: " + str(stido1.GetClassName()) + " numcells " + str(stido1.GetNumberOfCells()) + " numpoints " + str(stido1.GetNumberOfPoints()) + "\n")
+ 
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriStreamTracerOperation.CreateParaViewFilter returning\n', 100)
+
+    return newParaViewFilter
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriStreamTracerSeedSourceOperation import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriStreamTracerSeedSourceOperation(PhactoriOperationSpecifics):
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.SeedSourceName = None
+    self.InternalParaViewFilterPtr = None
+    return
+
+  def ParseParametersFromJson(self, inJson):
+    key1 = "seed source"
+    if key1 not in inJson:
+      myDebugPrint3AndException("PhactoriStreamTracerSeedSourceOperation:ParseParametersFromJson\n"
+        "'" + key1 + "' must be in block to specify source for seed points\n")
+    self.SeedSourceName = inJson[key1]
+
+  def GetListOfInputOperationNamesForThisOperationType(self):
+    "PhactoriStreamTracerSeedSourceOperation depends on the seed sources as\n       well as the input source"
+    retList = []
+    retList.append(self.SeedSourceName)
+    return retList
+
+  def DebugPrintInputPortAndOutputPortInfo(self, infoTag):
+    if PhactoriDbg(100):
+      myDebugPrint3(infoTag)
+      stcso = self.InternalParaViewFilterPtr.GetClientSideObject()
+      stodo = stcso.GetOutputDataObject(0)
+      myDebugPrint3("stodo: " + str(stodo.GetClassName()) + " numcells " + str(stodo.GetNumberOfCells()) + " numpoints " + str(stodo.GetNumberOfPoints()) + "\n")
+      stido0 = stcso.GetInputDataObject(0,0)
+      myDebugPrint3("stido0: " + str(stido0.GetClassName()) + "\n")
+      stido1 = stcso.GetInputDataObject(1,0)
+      myDebugPrint3("stido1: " + str(stido1.GetClassName()) + " numcells " + str(stido1.GetNumberOfCells()) + " numpoints " + str(stido1.GetNumberOfPoints()) + "\n")
+
+  def CreateParaViewFilter2(self, inInputFilter, inPipeAndViewsState):
+    "create the clip plane filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriStreamTracerSeedSourceOperation:CreateParaViewFilter entered\n', 100)
+    #info in block class should already be parsed and checked
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    #get seed source operation
+    paraviewSeedSource = inPipeAndViewsState.GetParaViewSourceByOperationName(self.SeedSourceName)
+    if PhactoriDbg(100):
+      myDebugPrint3("self.SeedSourceName: " + str(self.SeedSourceName) + \
+        "\nparaviewSeedSource: " + str(paraviewSeedSource) + "\n", 100)
+
+    UpdatePipelineWithCurrentTimeArgument(paraviewSeedSource)
+
+    if PhactoriDbg(100):
+      psscso = paraviewSeedSource.GetClientSideObject()
+      pssodo = psscso.GetOutputDataObject(0)
+      myDebugPrint3("pssodo: " + str(pssodo.GetClassName()) + " numcells " + str(pssodo.GetNumberOfCells()) + " numpoints " + str(pssodo.GetNumberOfPoints()) + "\n")
+
+    savedActiveSource = GetActiveSource()
+
+    self.InternalParaViewFilterPtr = StreamTracerWithCustomSource(Input = inInputFilter, SeedSource=paraviewSeedSource)
+
+    #psscso = paraviewSeedSource.GetClientSideObject()
+    #pssodo = psscso.GetOutputDataObject(0)
+    #stcso = self.InternalParaViewFilterPtr.GetClientSideObject()
+    #stcso.SetInputDataObject(1,pssodo)
+
+    self.InternalParaViewFilterPtr.Vectors = ["CELLS", "velocity_xyz"]
+    #self.InternalParaViewFilterPtr.Vectors = ["POINTS", "velocity_xyz"]
+    self.InternalParaViewFilterPtr.MaximumStreamlineLength = 100.0
+    self.InternalParaViewFilterPtr.IntegrationDirection = 'FORWARD'
+    self.InternalParaViewFilterPtr.MaximumSteps = 5000
+    #self.InternalParaViewFilterPtr.InitialStepLength = 0.01
+
+    self.DebugPrintInputPortAndOutputPortInfo("pre filter update 1\n")
+ 
+    SetActiveSource(self.InternalParaViewFilterPtr)
+    SetActiveSource(savedActiveSource)
+
+    UpdatePipelineWithCurrentTimeArgument(self.InternalParaViewFilterPtr)
+
+    self.DebugPrintInputPortAndOutputPortInfo("post filter update 1\n")
+ 
+    if PhactoriDbg(100):
+      myDebugPrint3("self.InternalParaViewFilterPtr: " + str(self.InternalParaViewFilterPtr) + "\n", 100)
+
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriStreamTracerSeedSourceOperation.CreateParaViewFilter returning\n', 100)
+
+    return self.InternalParaViewFilterPtr
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriResampleWithDataset import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriResampleWithDatasetOperation(PhactoriOperationSpecifics):
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.ResampleDatasetName = None
+    self.InternalParaViewFilterPtr = None
+    return
+
+  def ParseParametersFromJson(self, inJson):
+    key1 = "sample dataset"
+    if key1 not in inJson:
+      myDebugPrint3AndException("PhactoriResampleWithDatasetOperation:ParseParametersFromJson\n"
+        "'" + key1 + "' must be in block to specify dataset as source for the resampling\n")
+    self.ResampleDatasetName = inJson[key1]
+
+  def GetListOfInputOperationNamesForThisOperationType(self):
+    "PhactoriResampleWithDatasetOperation depends on the sampling source as\n       well as the input source"
+    retList = []
+    retList.append(self.ResampleDatasetName)
+    return retList
+
+  def DebugPrintInputPortAndOutputPortInfo(self, infoTag):
+    if PhactoriDbg(100):
+      myDebugPrint3(infoTag)
+      stcso = self.InternalParaViewFilterPtr.GetClientSideObject()
+      myDebugPrint3(str(stcso) + "\n")
+      myDebugPrint3(str(stcso.GetClassName()) + "\n")
+      stodo = stcso.GetOutputDataObject(0)
+      myDebugPrint3(str(stodo) + "\n")
+      myDebugPrint3(str(stodo.GetClassName()) + "\n")
+      stido0 = stcso.GetInputDataObject(0,0)
+      myDebugPrint3(str(stido0) + "\n")
+      myDebugPrint3(str(stido0.GetClassName()) + "\n")
+      stido1 = stcso.GetInputDataObject(1,0)
+      myDebugPrint3(str(stido1) + "\n")
+      myDebugPrint3(str(stido1.GetClassName()) + "\n")
+    #  myDebugPrint3("stodo: " + str(stodo.GetClassName()) + " numcells " + str(stodo.GetNumberOfCells()) + " numpoints " + str(stodo.GetNumberOfPoints()) + "\n")
+    #  myDebugPrint3("stido0: " + str(stido0.GetClassName()) + "\n")
+    #  myDebugPrint3("stido1: " + str(stido1.GetClassName()) + " numcells " + str(stido1.GetNumberOfCells()) + " numpoints " + str(stido1.GetNumberOfPoints()) + "\n")
+
+  def CreateParaViewFilter2(self, inInputFilter, inPipeAndViewsState):
+    "create the clip plane filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriResampleWithDatasetOperation:CreateParaViewFilter entered\n', 100)
+    #info in block class should already be parsed and checked
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    #get seed source operation
+    paraviewResampleDataset = inPipeAndViewsState.GetParaViewSourceByOperationName(self.ResampleDatasetName)
+    if PhactoriDbg(100):
+      myDebugPrint3("self.ResampleDatasetName: " + str(self.ResampleDatasetName) + \
+        "\nparaviewResampleDataset: " + str(paraviewResampleDataset) + "\n", 100)
+
+    UpdatePipelineWithCurrentTimeArgument(paraviewResampleDataset)
+
+    if PhactoriDbg(100):
+      psscso = paraviewResampleDataset.GetClientSideObject()
+      pssodo = psscso.GetOutputDataObject(0)
+      myDebugPrint3("pssodo: " + str(pssodo.GetClassName()) + " numcells " + str(pssodo.GetNumberOfCells()) + " numpoints " + str(pssodo.GetNumberOfPoints()) + "\n")
+
+    savedActiveSource = GetActiveSource()
+
+    self.InternalParaViewFilterPtr = ResampleWithDataset(Input = inInputFilter, Source=paraviewResampleDataset)
+    self.InternalParaViewFilterPtr.CellLocator = 'Static Cell Locator'
+
+    self.DebugPrintInputPortAndOutputPortInfo("pre filter update 1\n")
+ 
+    SetActiveSource(self.InternalParaViewFilterPtr)
+    SetActiveSource(savedActiveSource)
+
+    self.DebugPrintInputPortAndOutputPortInfo("pre filter update 2\n")
+
+    #UpdatePipelineWithCurrentTimeArgument(self.InternalParaViewFilterPtr)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("about to call self.InternalParaViewFilterPtr.UpdatePipeline()\n")
+
+    self.InternalParaViewFilterPtr.UpdatePipeline()
+
+    self.DebugPrintInputPortAndOutputPortInfo("post filter update 1\n")
+ 
+    if PhactoriDbg(100):
+      myDebugPrint3("self.InternalParaViewFilterPtr: " + str(self.InternalParaViewFilterPtr) + "\n", 100)
+
+    if PhactoriDbg(100):
+      myDebugPrint3('PhactoriResampleWithDatasetOperation.CreateParaViewFilter returning\n', 100)
+
+    return self.InternalParaViewFilterPtr
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriPointSourceFromJsonList import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class PhactoriPointSourceFromJsonList(PhactoriOperationSpecifics):
+  "Filter/operation which reads in a .json file which is a list of 3d\n     coordinates and creates a new point source from that list. Resulting\n     point source will have 1 element an N points. This source is intented\n     to work correctly in parallel for Catalyst or pvbatch symmetric mode.\n     The json file which is read in will only be read on one process and\n     mpi broadcast is used to distribute the list, rather than having each\n     process read the json file."
+  def __init__(self):
+    self.JsonListFileName = "PhactoriPointSourceFromJsonList.json"
+    self.JsonList = None
+    self.ParaviewPointSource = None
+    self.SourceVtkPolyData = None
+    self.myVtkPoints = vtk.vtkPoints()
+    self.myVtkPolyVertex = vtk.vtkPolyVertex()
+    self.myVtkCellArray = vtk.vtkCellArray()
+    self.myVtkPolyData = vtk.vtkPolyData()
+
+  def ValidateJsonPointList(self):
+    numPoints = len(self.JsonList)
+    if numPoints < 1:
+      myDebugPrint3AndException(
+          "PhactoriPointSourceFromJsonList::ValidateJsonPointList\n"
+          "list must have at least one element\n")
+
+    for ptNdx in range(0,numPoints):
+      jsonPt = self.JsonList[ptNdx]
+      if len(jsonPt) != 3:
+        errStr = "PhactoriPointSourceFromJsonList::ValidateJsonPointList\n" \
+          "point with index " + str(ptNdx) + "does not have three elements\n"
+        myDebugPrint3AndException(errStr)
+
+    return True
+      
+  def ParseParametersFromJson(self, inJson):
+    if 'filename' in inJson:
+      self.JsonListFileName = inJson['filename']
+    else:
+      myDebugPrint3AndException(
+          "PhactoriPointSourceFromJsonList::ParseParametersFromJson\n"
+          "Error:  must have 'filename' key\n")
+
+  def CreateVtkPolyDataFromJsonList(self):
+    numPoints = len(self.JsonList)
+    self.myVtkPoints.SetNumberOfPoints(numPoints)
+    self.myVtkPolyVertex.GetPointIds().SetNumberOfIds(numPoints)
+
+    vtkPolyVertPtIds = self.myVtkPolyVertex.GetPointIds()
+    usePoint = [0.0, 0.0, 0.0]
+    for ptNdx in range(0,numPoints):
+      #self.myVtkPoints.SetPoint(ptNdx, self.JsonList[ptNdx])
+      jsonPt = self.JsonList[ptNdx]
+      usePoint[0] = jsonPt[0]
+      usePoint[1] = jsonPt[1]
+      usePoint[2] = jsonPt[2]
+      self.myVtkPoints.SetPoint(ptNdx, usePoint)
+      vtkPolyVertPtIds.SetId(ptNdx, ptNdx)
+
+    self.myVtkPolyData.SetPoints(self.myVtkPoints)
+    self.myVtkCellArray.InsertNextCell(self.myVtkPolyVertex)
+    self.myVtkPolyData.SetVerts(self.myVtkCellArray)
+
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSourceFromJsonList.CreateParaViewFilter entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    self.JsonList = ReadAndMpiBroadcastJsonFile(self.JsonListFileName)
+
+    self.ValidateJsonPointList()
+
+    self.CreateVtkPolyDataFromJsonList()
+
+    self.ParaviewPointSource = PVTrivialProducer()
+    self.ParaviewPointSource.GetClientSideObject().SetOutput(self.myVtkPolyData)
+
+    SetActiveSource(self.ParaviewPointSource)
+    SetActiveSource(savedActiveSource)
+
+    UpdatePipelineWithCurrentTimeArgument(self.ParaviewPointSource)
+
+    if PhactoriDbg(100):
+      pssfjlcso = self.ParaviewPointSource.GetClientSideObject()
+      pssfjlodo = pssfjlcso.GetOutputDataObject(0)
+      myDebugPrint3("pssfjlodo: " + str(pssfjlodo.GetClassName()) + " numcells " + str(pssfjlodo.GetNumberOfCells()) + " numpoints " + str(pssfjlodo.GetNumberOfPoints()) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSourceFromJsonList.CreateParaViewFilter returning\n", 100)
+    return self.ParaviewPointSource
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriPointSource import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class PhactoriPointSource(PhactoriOperationSpecifics):
+  "Filter/operation which reads in a .json file which is a list of 3d\n     coordinates and creates a new point source from that list. Resulting\n     point source will have 1 element an N points. This source is intented\n     to work correctly in parallel for Catalyst or pvbatch symmetric mode.\n     The json file which is read in will only be read on one process and\n     mpi broadcast is used to distribute the list, rather than having each\n     process read the json file."
+  def __init__(self):
+    self.UseDefaultRadius = True
+    self.Radius = 0.0
+    self.UseDefaultNumPoints = True
+    self.NumPoints = 1
+    self.UseDefaultCenter = True
+    self.Center = [0.0,0.0,0.0]
+
+  def ParseParametersFromJson(self, inJson):
+    key1 = "radius"
+    if key1 in inJson:
+      self.UseDefaultRadius = False
+      self.Radius = float(inJson[key1])
+    key1 = "number of points"
+    if key1 in inJson:
+      self.UseDefaultNumPoints = False
+      self.NumPoints = int(inJson[key1])
+    key1 = "center"
+    if key1 in inJson:
+      self.UseDefaultCenter = False
+      self.Center = inJson[key1]
+      if len(self.Center) != 3:
+        myDebugPrint3AndException("PhactoriPointSource:ParseParametersFromJson:\n"
+          "bad center, need like [0.1,2.3,4.5]\n")
+
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSource.CreateParaViewFilter entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    newParaViewFilter = PointSource()
+    if self.UseDefaultRadius == False:
+      newParaViewFilter.Radius = self.Radius
+    if self.UseDefaultNumPoints == False:
+      newParaViewFilter.NumberOfPoints = self.NumPoints
+    if self.UseDefaultCenter == False:
+      newParaViewFilter.Center = self.Center
+
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+
+    SetActiveSource(newParaViewFilter)
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("Radius: " + str(newParaViewFilter.Radius) + "\n" + \
+        "NumberOfPoints: " + str(newParaViewFilter.NumberOfPoints) + "\n" + \
+        "Center: " + str(newParaViewFilter.Center) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSource.CreateParaViewFilter returning\n", 100)
+
+    return newParaViewFilter
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriPointSourceNearbyCorrelator import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class PhactoriPointSourceNearbyCorrelator(PhactoriOperationSpecifics):
+  "Filter/operation which reads in a .json file which is a list of 3d\n     coordinates and creates a new point source from that list. Resulting\n     point source will have 1 element an N points. This source is intented\n     to work correctly in parallel for Catalyst or pvbatch symmetric mode.\n     The json file which is read in will only be read on one process and\n     mpi broadcast is used to distribute the list, rather than having each\n     process read the json file."
+  def __init__(self):
+    self.JsonListFileName = "PhactoriPointSourceFromJsonList.json"
+    self.JsonList = None
+    self.NearestDatapointList = None
+    self.DisplacedPointList = None
+    self.DisplacementDistance = 0.0
+    self.ParaviewPointSource = None
+    self.SourceVtkPolyData = None
+    self.myVtkPoints = vtk.vtkPoints()
+    self.myVtkPolyVertex = vtk.vtkPolyVertex()
+    self.myVtkCellArray = vtk.vtkCellArray()
+    self.myVtkPolyData = vtk.vtkPolyData()
+
+  def ValidateJsonPointList(self):
+    numPoints = len(self.JsonList)
+    if numPoints < 1:
+      myDebugPrint3AndException(
+          "PhactoriPointSourceFromJsonList::ValidateJsonPointList\n"
+          "list must have at least one element\n")
+
+    for ptNdx in range(0,numPoints):
+      jsonPt = self.JsonList[ptNdx]
+      if len(jsonPt) != 3:
+        errStr = "PhactoriPointSourceFromJsonList::ValidateJsonPointList\n" \
+          "point with index " + str(ptNdx) + "does not have three elements\n"
+        myDebugPrint3AndException(errStr)
+      
+
+  def ParseParametersFromJson(self, inJson):
+    if 'filename' in inJson:
+      self.JsonListFileName = inJson['filename']
+    else:
+      myDebugPrint3AndException(
+          "PhactoriPointSourceFromJsonList::ParseParametersFromJson\n"
+          "Error:  must have 'filename' key\n")
+
+    self.DisplacementDistance = getParameterFromBlock(inJson, "absolute displacement", self.DisplacementDistance)
+
+  def CalculateNearestPointDistanceSquaredList(self, inSourcePointList, inTargetPointList):
+    if PhactoriDbg(100):
+      myDebugPrint3("CalculateNearestPointDistanceSquaredList entered\n")
+    resultDistancedSquaredList = []
+    resultClosestTargetIndexList = []
+    localmaxfloat = sys.float_info.max
+    if len(inTargetPointList) == 0:
+      if PhactoriDbg(100):
+        myDebugPrint3("no points on this process, returning noresult list\n")
+      for idx in range(0, len(inSourcePointList)):
+        resultDistancedSquaredList.append(localmaxfloat)
+      return resultDistancedSquaredList
+
+    for srcPnt in inSourcePointList:
+      if PhactoriDbg(100):
+        myDebugPrint3("doing point: " + str(srcPnt) + "\n")
+      tgtPnt = inTargetPointList[0]
+      closetsDistSqrd = vecDistanceSquared(srcPnt, tgtPnt)
+      closestIndex = 0
+      for idx, tgtPnt in enumerate(inTargetPointList):
+        testDist = vecDistanceSquared(srcPnt, tgtPnt)
+        if testDist < closetsDistSqrd:
+          closetsDistSqrd = testDist
+          closestIndex = idx
+      if PhactoriDbg(100):
+        myDebugPrint3("result: " + str(closetsDistSqrd) + "  " + str(closestIndex) + "\n")
+      resultDistancedSquaredList.append(closetsDistSqrd)
+      resultClosestTargetIndexList.append(closestIndex)
+    if PhactoriDbg(100):
+      myDebugPrint3("CalculateNearestPointDistanceSquaredList returning\n")
+    return resultDistancedSquaredList, resultClosestTargetIndexList
+
+  def UseMpiToFindGlobalNearestPointList(self, inTargetPointList, inDistanceSquaredList, inTargetPointIndexList):
+    if PhactoriDbg(100):
+      myDebugPrint3("UseMpiToFindGlobalNearestPointList entered\n")
+    globalMinDistanceSquaredList = UseReduceOnFloatList(inDistanceSquaredList, 1)
+    myPid = SmartGetLocalProcessId()
+    numSrcPnts = len(inDistanceSquaredList)
+    localPidWithClosestPoint = []
+    for idx in range(0,numSrcPnts):
+      if inDistanceSquaredList[idx] == globalMinDistanceSquaredList[idx]:
+        if PhactoriDbg(100):
+          myDebugPrint3("I match closest " + str(idx) + "  " + \
+            str(inDistanceSquaredList[idx]) + "  " + str(myPid) + "\n")
+        localPidWithClosestPoint.append(myPid)
+      else:
+        localPidWithClosestPoint.append(-1)
+
+    globalPidWithClosestList = UseReduceOnIntegerList(localPidWithClosestPoint, 0)
+
+    localXyzList = []
+    localNodeIdList = []
+    for idx in range(0,numSrcPnts):
+      if globalPidWithClosestList[idx] == myPid:
+        nearestPt = inTargetPointList[inTargetPointIndexList[idx]]
+        if PhactoriDbg(100):
+          myDebugPrint3("I am closest with highest pid " + str(idx) + "  " + \
+            str(inTargetPointIndexList[idx]) + "  " + str(myPid) + "\n" + str(nearestPt) + "\n")
+        localXyzList.append(nearestPt[0])
+        localXyzList.append(nearestPt[1])
+        localXyzList.append(nearestPt[2])
+        localNodeIdList.append(int(nearestPt[3]))
+      else:
+        localXyzList.append(0.0)
+        localXyzList.append(0.0)
+        localXyzList.append(0.0)
+        localNodeIdList.append(0)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("localXyzList:\n" + str(localXyzList) + "\nlocalNodIdList:\n" + str(localNodeIdList) + "\n")
+    globalXyz = UseReduceOnFloatList(localXyzList, 2)
+    globalNodeId = UseReduceOnIntegerList(localNodeIdList, 2)
+    if PhactoriDbg(100):
+      myDebugPrint3("globalXyz:\n" + str(globalXyz) + "\nglobalNodeId:\n" + str(globalNodeId) + "\n")
+
+    resultPoints = []
+    for idx in range(0, numSrcPnts):
+      xyzIdx = idx*3
+      resultPoints.append([globalXyz[xyzIdx], globalXyz[xyzIdx+1], globalXyz[xyzIdx+2], globalNodeId[idx]])
+  
+    if PhactoriDbg(100):
+      myDebugPrint3("resultPoints:\n" + str(resultPoints) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("UseMpiToFindGlobalNearestPointList returning\n")
+    return resultPoints  
+
+  def CalculateOneDisplacedPoint(self, srcPt, tgtPt, dispDist):
+      deltaVec = vecFromAToB(srcPt, tgtPt)
+      moveVec = vecNormalizeWithSmallCheck(deltaVec, 1e-10, [0.0, 1.0, 0.0])
+      displacedPoint = vecMultiplyAdd(tgtPt, moveVec, dispDist)
+      return displacedPoint
+
+  def CalculateDisplacedPointList(self):
+    "take the nearest data point list, move each a displacment amount along\n       the vector from the source point to that point to get a set of\n       displaced points"
+    if PhactoriDbg(100):
+      myDebugPrint3("CalculateDisplacedPointList: " + str(self.DisplacementDistance) + "\n")
+
+    if self.DisplacementDistance == 0.0:
+      self.DisplacedPointList = self.NearestDatapointList
+      return
+
+    self.DisplacedPointList = []
+    numPts = len(self.JsonList)
+    for ptNdx in range(0,numPts):
+      srcPt = self.JsonList[ptNdx]
+      tgtPt = self.NearestDatapointList[ptNdx]
+      displacedPt = self.CalculateOneDisplacedPoint(srcPt, tgtPt, self.DisplacementDistance)
+      self.DisplacedPointList.append(displacedPt)
+
+  def FindCorrelatedInputOperationPoints(self, inInputFilter):
+    "in parallel, using mpi to help, find the nodes from the input filter\n       which are closest to the points in self.mJsonPointList, and record the\n       3d location of those points"
+    
+    #grab local process points
+    thisProcessPointList = self.mPhactoriOperationBlockOwner.MakeListOfAllPointsAndNodeIdsOnThisProcessFromParaViewFilter(inInputFilter)
+
+    #calc local nearest points
+    nearestPointDistanceSquaredList, targetPointIndexList = self.CalculateNearestPointDistanceSquaredList(self.JsonList, thisProcessPointList)
+
+    #use mpi to figure out global closest points
+    self.NearestDatapointList = self.UseMpiToFindGlobalNearestPointList(thisProcessPointList, nearestPointDistanceSquaredList,
+      targetPointIndexList)
+
+    #get set of points (presumably slightly) displaced from self.NearestDatapointList
+    self.CalculateDisplacedPointList()
+
+    if PhactoriDbg(100):
+      myDebugPrint3("FindCorrelatedInputOperationPoints result:\nNearest points:\n")
+      for ndx, sourcePt in enumerate(self.JsonList):
+        nearestTargetPoint = self.NearestDatapointList[ndx]
+        distSqrd = vecDistanceSquared(sourcePt, nearestTargetPoint)
+        distx = math.sqrt(distSqrd)
+        myDebugPrint3(str(ndx) + ": " + str(sourcePt) + "  " + str(distSqrd) + "  " + str(distx) + "  " + str(self.NearestDatapointList[ndx]) + "\n")
+      myDebugPrint3("Displaced points:\n")
+      for ndx, sourcePt in enumerate(self.JsonList):
+        matchingDisplacedPoint = self.DisplacedPointList[ndx]
+        distSqrd = vecDistanceSquared(sourcePt, matchingDisplacedPoint)
+        distx = math.sqrt(distSqrd)
+        myDebugPrint3(str(ndx) + ": " + str(sourcePt) + "  " + str(distSqrd) + "  " + str(distx) + "  " + str(self.DisplacedPointList[ndx]) + "\n")
+
+ 
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSourceFromJsonList.CreateParaViewFilter entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    self.JsonList = ReadAndMpiBroadcastJsonFile(self.JsonListFileName)
+
+    self.ValidateJsonPointList()
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+    self.FindCorrelatedInputOperationPoints(inInputFilter)
+
+    numPoints = len(self.DisplacedPointList)
+    self.myVtkPoints.SetNumberOfPoints(numPoints)
+    self.myVtkPolyVertex.GetPointIds().SetNumberOfIds(numPoints)
+
+    vtkPolyVertPtIds = self.myVtkPolyVertex.GetPointIds()
+    usePoint = [0.0, 0.0, 0.0]
+    for ptNdx in range(0,numPoints):
+      #self.myVtkPoints.SetPoint(ptNdx, self.DisplacedPointList[ptNdx])
+      jsonPt = self.DisplacedPointList[ptNdx]
+      usePoint[0] = jsonPt[0]
+      usePoint[1] = jsonPt[1]
+      usePoint[2] = jsonPt[2]
+      self.myVtkPoints.SetPoint(ptNdx, usePoint)
+      vtkPolyVertPtIds.SetId(ptNdx, ptNdx)
+
+    self.myVtkPolyData.SetPoints(self.myVtkPoints)
+    self.myVtkCellArray.InsertNextCell(self.myVtkPolyVertex)
+    self.myVtkPolyData.SetVerts(self.myVtkCellArray)
+
+    self.ParaviewPointSource = PVTrivialProducer()
+    self.ParaviewPointSource.GetClientSideObject().SetOutput(self.myVtkPolyData)
+
+    SetActiveSource(self.ParaviewPointSource)
+    SetActiveSource(savedActiveSource)
+
+    UpdatePipelineWithCurrentTimeArgument(self.ParaviewPointSource)
+
+    if PhactoriDbg(100):
+      pssfjlcso = self.ParaviewPointSource.GetClientSideObject()
+      pssfjlodo = pssfjlcso.GetOutputDataObject(0)
+      myDebugPrint3("pssfjlodo: " + str(pssfjlodo.GetClassName()) + " numcells " + str(pssfjlodo.GetNumberOfCells()) + " numpoints " + str(pssfjlodo.GetNumberOfPoints()) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSourceFromJsonList.CreateParaViewFilter returning\n", 100)
+    return self.ParaviewPointSource
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriSampledCellInfo import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+def GetCellTestPoint(theCell):
+  theCellBounds = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  theCell.GetBounds(theCellBounds)
+  retXyz = [0.5 * (theCellBounds[0] + theCellBounds[1]),
+            0.5 * (theCellBounds[2] + theCellBounds[3]),
+            0.5 * (theCellBounds[4] + theCellBounds[5])]
+  return retXyz
+
+def localGetCellijk(ii, jj, kk, inInputCsData, myExtent):
+  #returnCell = inInputCsData.GetCell(ii, jj, kk)
+  computedIndex = vtk.vtkStructuredData.ComputeCellIdForExtent(myExtent, [ii,jj,kk])
+  returnCell = inInputCsData.GetCell(computedIndex)
+  return returnCell
+
+class PhactoriSampledCellInfo:
+  def __init__(self):
+    self.cellTestPoint = [0.0,0.0,0.0]
+    self.pid = -1
+    self.leafVisitCount = -1
+    self.ijk = [-1,-1,-1]
+    self.dataTuple = []
+    self.index = -1
+    self.segmentIndex = -1
+    self.collectionAxis = 2
+
+  def ToStr(self):
+    outStr = "PhactoriSampledCellInfo:\n" +\
+             "cellTestPoint: " + str(self.cellTestPoint) + "\n" +\
+             "pid: " + str(self.pid) + "\n" +\
+             "leafVisitCount: " + str(self.leafVisitCount) + "\n" +\
+             "ijk: " + str(self.ijk) + "\n" +\
+             "index: " + str(self.index) + "\n" +\
+             "segmentIndex: " + str(self.segmentIndex) + "\n" +\
+             "collectionAxis: " + str(self.collectionAxis) + "\n" +\
+             "dataTuple: " + str(self.dataTuple) + "\n"
+    return outStr
+
+  def SetFromList(self, newValues):
+    tripletVal = newValues[0]
+    self.cellTestPoint[0] = tripletVal[0]
+    self.cellTestPoint[1] = tripletVal[1]
+    self.cellTestPoint[2] = tripletVal[2]
+    tripletVal = newValues[1]
+    self.ijk[0] = tripletVal[0]
+    self.ijk[1] = tripletVal[1]
+    self.ijk[2] = tripletVal[2]
+    if newValues[2] == None:
+      self.dataTuple = None
+    else:
+      self.dataTuple = list(newValues[2])
+    self.pid = newValues[3]
+    self.leafVisitCount = newValues[4]
+    self.index = newValues[5]
+    self.segmentIndex = newValues[6]
+    self.collectionAxis = newValues[7]
+
+  def GetAsList(self):
+    return [self.cellTestPoint, self.ijk, self.dataTuple, self.pid, self.leafVisitCount, self.index, self.segmentIndex, self.collectionAxis]
+
+  def ToStrTerseOneLineList(self):
+    return str(self.GetAsList())
+    #outStr = "[" + \
+    #         str(self.cellTestPoint) + "," + \
+    #         str(self.ijk) + "," + \
+    #         str(self.dataTuple) + "," + \
+    #         str(self.pid) + "," + \
+    #         str(self.index) + "," + \
+    #         str(self.segmentIndex) + "," + \
+    #         str(self.collectionAxis) + \
+    #         "]"
+    #return outStr
+
+  @staticmethod
+  def TerseOneLineJsonFormatComment():
+    outStr = '{"PhactoriSampledCellInfo output format 1 info":[\n' + \
+             '" [cellTestPoint, ijk, dataTuple, pid, index, segmentIndex, collectionAxis]",\n' + \
+             '" cellTestPoint is [X, Y, Z], ijk is [i, j, k], dataTuple is [c1, c2, ... cN]"]}'
+    return outStr
+
+  def SetIndex(self, newIndex):
+    self.index = newIndex
+
+  def SetCollectionAxis(self, newCollectionAxis):
+    self.collectionAxis = newCollectionAxis
+
+  def AxisCrossesExtent(self, myExtent, whichAxis):
+    # i -> 0
+    # j -> 1
+    # k -> 2
+    # ij -> 3
+    # ik -> 4
+    # jk -> 5
+    if whichAxis < 3:
+      if whichAxis != 0:
+        if self.ijk[0] < myExtent[0]:
+          return False
+        if self.ijk[0] >= myExtent[1]:
+          return False
+      if whichAxis != 1:
+        if self.ijk[1] < myExtent[2]:
+          return False
+        if self.ijk[1] >= myExtent[3]:
+          return False
+      if whichAxis != 2:
+        if self.ijk[2] < myExtent[4]:
+          return False
+        if self.ijk[2] >= myExtent[5]:
+          return False
+    else:
+      if whichAxis == 3:
+        if self.ijk[2] < myExtent[4]:
+          return False
+        if self.ijk[2] >= myExtent[5]:
+          return False
+      if whichAxis == 4:
+        if self.ijk[1] < myExtent[2]:
+          return False
+        if self.ijk[1] >= myExtent[3]:
+          return False
+      if whichAxis == 5:
+        if self.ijk[0] < myExtent[0]:
+          return False
+        if self.ijk[0] >= myExtent[1]:
+          return False
+    return True
+
+  def GetIntersectingCollectionExtent(self, whichExtent, whichAxis):
+    # i -> 0
+    # j -> 1
+    # k -> 2
+    # ij -> 3
+    # ik -> 4
+    # jk -> 5
+    retext = list(whichExtent)
+    if self.AxisCrossesExtent(whichExtent, whichAxis) == False:
+      retExt[1] = retExt[0]
+      retExt[3] = retExt[2]
+      retExt[5] = retExt[4]
+      return retExt
+    if (whichAxis != 0) and (whichAxis != 3) and (whichAxis != 4):
+      retext[0] = self.ijk[0]
+      retext[1] = self.ijk[0] + 1
+    if (whichAxis != 1) and (whichAxis != 3) and (whichAxis != 5):
+      retext[2] = self.ijk[1]
+      retext[3] = self.ijk[1] + 1
+    if (whichAxis != 2) and (whichAxis != 4) and (whichAxis != 5):
+      retext[4] = self.ijk[2]
+      retext[5] = self.ijk[2] + 1
+    return retext
+
+  def SetCellTestPoint(self, inPt):
+    self.cellTestPoint[0] = inPt[0]
+    self.cellTestPoint[1] = inPt[1]
+    self.cellTestPoint[2] = inPt[2]
+
+  def SetIjk(self, ii, jj, kk):
+    self.ijk[0] = ii
+    self.ijk[1] = jj
+    self.ijk[2] = kk
+
+  def SetDataTuple(self, inDataTuple):
+    self.dataTuple = list(inDataTuple)
+
+  def SerializeAppendToFloatAndIntArray(self, outSerialFloatArray, outSerialIntArray, inTupleSize = 0):
+    outSerialFloatArray.append(self.cellTestPoint[0])
+    outSerialFloatArray.append(self.cellTestPoint[1])
+    outSerialFloatArray.append(self.cellTestPoint[2])
+    if self.dataTuple != None:
+      localTupleLen = len(self.dataTuple)
+      for ii in range(0,inTupleSize):
+        if ii >= localTupleLen:
+          outSerialFloatArray.append(0.0)
+        else:
+          outSerialFloatArray.append(self.dataTuple[ii])
+    else:
+      for ii in range(0,inTupleSize):
+          outSerialFloatArray.append(0.0)
+    outSerialIntArray.append(self.pid)
+    outSerialIntArray.append(self.leafVisitCount)
+    outSerialIntArray.append(self.ijk[0])
+    outSerialIntArray.append(self.ijk[1])
+    outSerialIntArray.append(self.ijk[2])
+    outSerialIntArray.append(self.segmentIndex)
+
+  def SerializeAppendToFloatAndIntArrayZeroVersion(self, outSerialFloatArray, outSerialIntArray, inTupleSize = -1):
+    outSerialFloatArray.append(0.0)
+    outSerialFloatArray.append(0.0)
+    outSerialFloatArray.append(0.0)
+    if inTupleSize < 0:
+      for ffval in self.dataTuple:
+        outSerialFloatArray.append(0.0)
+    else:
+      for ffval in range(0, inTupleSize):
+        outSerialFloatArray.append(0.0)
+    outSerialIntArray.append(0)
+    outSerialIntArray.append(0)
+    outSerialIntArray.append(0)
+    outSerialIntArray.append(0)
+    outSerialIntArray.append(0)
+    outSerialIntArray.append(0)
+
+  @staticmethod
+  def GetSerializeFloatAndIntSize(tupleSize = 0):
+    floatsize = 3 + tupleSize
+    intsize = 6
+    return floatsize, intsize
+
+  def SerializeSetFromFloatAndIntArray(self, inSerialFloatArray, inSerialIntArray, inIndex, inTupleSize = 0):
+    #floatsize, intsize = GetSerializeFloatAndIntSize()
+    floatsize = 3 + inTupleSize
+    intsize = 6
+    floatIndex = floatsize * inIndex
+    intIndex = intsize * inIndex
+    self.cellTestPoint[0] = inSerialFloatArray[floatIndex+0]
+    self.cellTestPoint[1] = inSerialFloatArray[floatIndex+1]
+    self.cellTestPoint[2] = inSerialFloatArray[floatIndex+2]
+    self.dataTuple = []
+    if inTupleSize > 0:
+      for ii in range(0, inTupleSize):
+        self.dataTuple.append(inSerialFloatArray[floatIndex+3+ii])
+    self.pid = inSerialIntArray[intIndex + 0]
+    self.leafVisitCount = inSerialIntArray[intIndex + 1]
+    self.ijk[0] = inSerialIntArray[intIndex + 2]
+    self.ijk[1] = inSerialIntArray[intIndex + 3]
+    self.ijk[2] = inSerialIntArray[intIndex + 4]
+    self.segmentIndex = inSerialIntArray[intIndex + 5]
+
+  def Populate1(self, ii, jj, kk, myPid, leafVisitCount, seedCellIndex,
+        inInputCsData, myExtent, numCells, outputCellArray, dataArrayNumCmpnts, defaultTuple):
+    #used during recursion to set up the cell based on the ii, jj, kk indices
+    self.SetIjk(ii,jj,kk)
+    self.pid = myPid
+    self.leafVisitCount = leafVisitCount
+    self.segmentIndex = seedCellIndex
+    #dataCell = inInputCsData.GetCell(ii, jj, kk)
+    dataCell = localGetCellijk(ii, jj, kk, inInputCsData, myExtent)
+    cellTestPoint = GetCellTestPoint(dataCell)
+    self.SetCellTestPoint(cellTestPoint)
+    cellId = vtk.vtkStructuredData.ComputeCellIdForExtent(myExtent, [ii,jj,kk])
+    self.SetIndex(cellId)
+    if dataArrayNumCmpnts > 0:
+      if (cellId < numCells) and (cellId >= 0):
+        dataTuple = outputCellArray.GetTuple(cellId)
+        self.SetDataTuple(dataTuple)
+      else:
+        self.SetDataTuple(defaultTuple)
+
+class PhactoriFindCellWithMinMaxDataOnThisProcessRecursionParams:
+  def __init__(self):
+    self.leafVisitCount = 0
+    self.dataArrayName = "noname"
+    self.minCell = sys.float_info.max
+    self.maxCell = None
+    self.dataTotal = 0.0
+    self.dataCount = 0
+    self.currentMinVal = sys.float_info.max
+    self.currentMaxVal = -sys.float_info.max
+
+  def SetUpForRecursion(self, cellDataArrayName):
+    self.dataTotal = 0.0
+    self.dataCount = 0
+    self.currentMinVal = sys.float_info.max
+    self.currentMaxVal = -sys.float_info.max
+    self.dataArrayName = cellDataArrayName
+    self.minCell = PhactoriSampledCellInfo()
+    self.minCell.SetFromList([[0.0,0.0,0.0], [-1,-1,-1], [self.currentMinVal], -1, -1, -1, -1, -1])
+    self.maxCell = PhactoriSampledCellInfo()
+    self.maxCell.SetFromList([[0.0,0.0,0.0], [-1,-1,-1], [self.currentMaxVal], -1, -1, -1, -1, -1])
+
+def PhactoriFindCellWithMinMaxDataOnThisProcessInBlock(recursionObject, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellWithMinMaxDataOnThisProcessInBlock entered\n")
+
+    inParameters.leafVisitCount += 1
+
+    numCells = inInputCsData.GetNumberOfCells()
+    numPoints = inInputCsData.GetNumberOfPoints()
+    if (numCells == 0) or (numPoints == 0):
+      if PhactoriDbg(100):
+        myDebugPrint3("PhactoriFindCellWithMinMaxDataOnThisProcessInBlock returning 1\n")
+      #no cells here
+      return
+
+    cellData = inInputCsData.GetCellData()
+    if cellData == None:
+      if PhactoriDbg(100):
+        myDebugPrint3("PhactoriFindCellWithMinMaxDataOnThisProcessInBlock returning 2\n")
+
+    outputCellArray = None
+    outputCellArray = cellData.GetArray(inParameters.dataArrayName)
+
+    if outputCellArray == None:
+      if PhactoriDbg(100):
+        myDebugPrint3("PhactoriFindCellWithMinMaxDataOnThisProcessInBlock returning 3\n")
+
+    myPid = SmartGetLocalProcessId()
+    for cellIndex in range(0,numCells):
+      thisCellDataTuple = outputCellArray.GetTuple(cellIndex)
+      cellDataVal = thisCellDataTuple[0]
+      inParameters.dataTotal += cellDataVal
+      inParameters.dataCount += 1
+      if cellDataVal < inParameters.currentMinVal:
+        inParameters.currentMinVal = cellDataVal
+        oneCell = inInputCsData.GetCell(cellIndex)
+        cellTestPoint = GetCellTestPoint(oneCell)
+        inParameters.minCell.index = cellIndex
+        inParameters.minCell.dataTuple[0] = cellDataVal
+        inParameters.minCell.cellTestPoint[0] = cellTestPoint[0]
+        inParameters.minCell.cellTestPoint[1] = cellTestPoint[1]
+        inParameters.minCell.cellTestPoint[2] = cellTestPoint[2]
+        inParameters.minCell.pid = myPid
+        inParameters.leafVisitCount = inParameters.leafVisitCount
+      if cellDataVal > inParameters.currentMaxVal:
+        inParameters.currentMaxVal = cellDataVal
+        oneCell = inInputCsData.GetCell(cellIndex)
+        cellTestPoint = GetCellTestPoint(oneCell)
+        inParameters.currentMinVal = cellDataVal
+        cellTestPoint = GetCellTestPoint(oneCell)
+        inParameters.maxCell.index = cellIndex
+        inParameters.maxCell.dataTuple[0] = cellDataVal
+        inParameters.maxCell.cellTestPoint[0] = cellTestPoint[0]
+        inParameters.maxCell.cellTestPoint[1] = cellTestPoint[1]
+        inParameters.maxCell.cellTestPoint[2] = cellTestPoint[2]
+        inParameters.maxCell.pid = myPid
+        inParameters.leafVisitCount = inParameters.leafVisitCount
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellWithMinMaxDataOnThisProcessInBlock returning\n")
+
+def PhactoriFindCellWithMinMaxDataOnThisProcess(paraviewFilter, cellDataArrayName):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellWithMinMaxDataOnThisProcess entered\n" + \
+        "paraviewFilter: " + str(paraviewFilter) + "\n")
+
+    recursionParams = PhactoriFindCellWithMinMaxDataOnThisProcessRecursionParams()
+    recursionParams.SetUpForRecursion(cellDataArrayName)
+    recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+    recursionObj.mParameters = recursionParams
+    recursionObj.mOperationToDoPerBlock = PhactoriFindCellWithMinMaxDataOnThisProcessInBlock
+
+    PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, paraviewFilter)
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellWithMinMaxDataOnThisProcess returning\n")
+
+    return [recursionParams.minCell, recursionParams.maxCell]
+
+def PhactoriFindCellWtihMinMaxDataUsingMPI(paraviewFilter, cellDataArrayName):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellWtihMinMaxDataUsingMPI entered\n" + \
+        "paraviewFilter: " + str(paraviewFilter) + "\n")
+
+    thisPidMinMaxCells = PhactoriFindCellWithMinMaxDataOnThisProcess(paraviewFilter, cellDataArrayName)
+    globalMinMaxCells = PhactoriLocalToGlobalCellsWithMinMaxDataUsingMPI(thisPidMinMaxCells, 1)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriFindCellWtihMinMaxDataUsingMPI returning\n")
+    return globalMinMaxCells
+
+def PhactoriLocalToGlobalCellsWithMinMaxDataUsingMPI(localPidMinMaxCellPair, tupleSize):
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriLocalToGlobalCellsWithMinMaxDataUsingMPI entered\n")
+    #find overall min/max
+    minVal = localPidMinMaxCellPair[0].dataTuple[0]
+    maxVal = localPidMinMaxCellPair[1].dataTuple[0]
+    if PhactoriDbg(100):
+      myDebugPrint3("local min/max, tupleSize: " + str([minVal, maxVal, tupleSize]) + "\n")
+    localMinMax = [-minVal, maxVal]
+    globalMinMax = UseReduceOnFloatList(localMinMax, 0)
+    globalMinVal = -globalMinMax[0]
+    globalMaxVal = globalMinMax[1]
+    if PhactoriDbg(100):
+      myDebugPrint3("global min/max, tupleSize: " + str([globalMinVal, globalMaxVal, tupleSize]) + "\n")
+
+    localPidMinMax = [-1,-1]
+    myPid = SmartGetLocalProcessId()
+    if globalMinVal == minVal:
+      localPidMinMax[0] = myPid
+    if globalMaxVal == maxVal:
+      localPidMinMax[1] = myPid
+
+    if PhactoriDbg(100):
+      myDebugPrint3("localPidMinMax: " + str(localPidMinMax) + "\n")
+    globalPidMinMax = UseReduceOnIntegerList(localPidMinMax, 0)
+    if PhactoriDbg(100):
+      myDebugPrint3("globalPidMinMax: " + str(globalPidMinMax) + "\n")
+
+    localSerializedFloatArray = []
+    localSerializedIntArray = []
+    if globalPidMinMax[0] == myPid:
+      localPidMinMaxCellPair[0].SerializeAppendToFloatAndIntArray(localSerializedFloatArray, localSerializedIntArray, tupleSize)
+    else:
+      localPidMinMaxCellPair[0].SerializeAppendToFloatAndIntArrayZeroVersion(localSerializedFloatArray, localSerializedIntArray, tupleSize)
+    if globalPidMinMax[1] == myPid:
+      localPidMinMaxCellPair[1].SerializeAppendToFloatAndIntArray(localSerializedFloatArray, localSerializedIntArray, tupleSize)
+    else:
+      localPidMinMaxCellPair[1].SerializeAppendToFloatAndIntArrayZeroVersion(localSerializedFloatArray, localSerializedIntArray, tupleSize)
+
+    globalSerializedFloatArray = UseReduceOnFloatList(localSerializedFloatArray, 2)
+    globalSerializedIntArray = UseReduceOnIntegerList(localSerializedIntArray, 2)
+
+    globalMinCell = PhactoriSampledCellInfo()
+    globalMaxCell = PhactoriSampledCellInfo()
+    globalMinCell.SerializeSetFromFloatAndIntArray(globalSerializedFloatArray, globalSerializedIntArray, 0, tupleSize)
+    globalMaxCell.SerializeSetFromFloatAndIntArray(globalSerializedFloatArray, globalSerializedIntArray, 1, tupleSize)
+ 
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriLocalToGlobalCellsWithMinMaxDataUsingMPI returning\n")
+    return [globalMinCell, globalMaxCell] 
+ 
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriPointSourceGeometrySampler1 import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class PhactoriPointSourceGeometrySampler1(PhactoriOperationSpecifics):
+  "Filter/operation which reads in a .json file which is a list of 3d\n     coordinates and creates a new point source from that list. Resulting\n     point source will have 1 element an N points. This source is intented\n     to work correctly in parallel for Catalyst or pvbatch symmetric mode.\n     The json file which is read in will only be read on one process and\n     mpi broadcast is used to distribute the list, rather than having each\n     process read the json file."
+  def __init__(self):
+    self.JsonListFileName = "PhactoriPointSourceGeometrySampler1.json"
+    self.JsonList = None
+    self.ParaviewPointSource = None
+    self.SourceVtkPolyData = None
+    self.myVtkPoints = vtk.vtkPoints()
+    self.myVtkPolyVertex = vtk.vtkPolyVertex()
+    self.myVtkCellArray = vtk.vtkCellArray()
+    self.myVtkPolyData = vtk.vtkPolyData()
+    self.NearestQuadList = None
+    self.DistanceList = None
+
+  def ValidateJsonPointList(self):
+    numPoints = len(self.JsonList)
+    if numPoints < 1:
+      myDebugPrint3AndException(
+          "PhactoriPointSourceGeometrySampler1::ValidateJsonPointList\n"
+          "list must have at least one element\n")
+
+    for ptNdx in range(0,numPoints):
+      jsonPt = self.JsonList[ptNdx]
+      if len(jsonPt) != 3:
+        errStr = "PhactoriPointSourceGeometrySampler1::ValidateJsonPointList\n" \
+          "point with index " + str(ptNdx) + "does not have three elements\n"
+        myDebugPrint3AndException(errStr)
+      
+
+  def ParseParametersFromJson(self, inJson):
+    if 'filename' in inJson:
+      self.JsonListFileName = inJson['filename']
+    else:
+      myDebugPrint3AndException(
+          "PhactoriPointSourceGeometrySampler1::ParseParametersFromJson\n"
+          "Error:  must have 'filename' key\n")
+
+  def GetPidWithLeastValueList(self, inLocalDistSqrdList):
+    myPid = int(SmartGetLocalProcessId())
+    globalDistSqrdList = UseReduceOnFloatList(inLocalDistSqrdList, 1)
+    localPidList = []
+    numItems = len(inLocalDistSqrdList)
+    for ndx in range(0,numItems):
+      if globalDistSqrdList[ndx] == inLocalDistSqrdList[ndx]:
+        localPidList.append(myPid)
+      else:
+        localPidList.append(-1)
+
+    pidWithDataList = UseReduceOnIntegerList(localPidList, 0)
+    return pidWithDataList, globalDistSqrdList
+    
+  def UseMpiToGetGlobalQuadsClosest(self, inLocalQuadList, inLocalDistSqrdList):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSourceGeometrySampler1.UseMpiToGetGlobalQuadsClosest entered\n", 100)
+
+    pidWithDataList, globalDistSqrdList = self.GetPidWithLeastValueList(inLocalDistSqrdList)
+    if PhactoriDbg(100):
+      myDebugPrint3("pidWithDataList:\n" + str(pidWithDataList) + "\nglobalDistSqrdList:\n" + str(globalDistSqrdList) + "\n")
+
+    #convert quad list to array of doubles and ints, use mpi reduce to share
+    #the values, then convert back to quad list
+
+    #convert quad list to array of doubles and ints
+    quadInfoDoubleArray = []
+    quadInfoIntArray = []
+    myPid = SmartGetLocalProcessId()
+    for ii, oneQuad in enumerate(inLocalQuadList):
+      if pidWithDataList[ii] == myPid:
+        oneQuad.AddToInfoArrays(quadInfoDoubleArray, quadInfoIntArray)
+      else:
+        oneQuad.AddZeroQuadToInfoArrays(quadInfoDoubleArray, quadInfoIntArray)
+
+    #use mpi reduce to spread array correctly
+    globalQuadInfoDoubleArray = UseReduceOnFloatList(quadInfoDoubleArray, 2)
+    globalQuadInfoIntArray = UseReduceOnIntegerList(quadInfoIntArray, 2)
+
+    #now create return global quad list from arrays
+    numQuads = len(inLocalQuadList)
+    returnGlobalQuadList = []
+    for ii in range(0,numQuads):
+      newQuad = QuadInfoGQC()
+      newQuad.PopulateFromInfoArrays(ii, globalQuadInfoDoubleArray, globalQuadInfoIntArray)
+      returnGlobalQuadList.append(newQuad)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSourceGeometrySampler1.UseMpiToGetGlobalQuadsClosest returning\n", 100)
+    return returnGlobalQuadList, globalDistSqrdList
+
+  def CreateSamplePoints(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSourceGeometrySampler1.CreateSamplePoints entered\n", 100)
+
+    thisProcessNearestQuadList, thisProcDistSqrdList = self.mPhactoriOperationBlockOwner.\
+      GetQuadsClosestToPointsOnThisProcessFromParaViewFilter(inInputFilter, self.JsonList)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("quads before mpi\n", 100)
+      for ii, oneQuad in enumerate(thisProcessNearestQuadList):
+        myDebugPrint3(str(ii) + ":  " + str(thisProcDistSqrdList[ii]) + "\n" + oneQuad.ToString(), 100)
+
+    self.NearestQuadList, self.DistanceList = self.UseMpiToGetGlobalQuadsClosest(
+      thisProcessNearestQuadList, thisProcDistSqrdList)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("quads after mpi\n", 100)
+      for ii, oneQuad in enumerate(self.NearestQuadList):
+        myDebugPrint3(str(ii) + ":  " + str(self.NearestQuadList[ii]) + "\n" + oneQuad.ToString(), 100)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSourceGeometrySampler1.CreateSamplePoints returning\n", 100)
+
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSourceGeometrySampler1.CreateParaViewFilter entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    self.JsonList = ReadAndMpiBroadcastJsonFile(self.JsonListFileName)
+
+    self.ValidateJsonPointList()
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+    self.CreateSamplePoints(inInputFilter)
+
+    allSamplePoints = []
+    for ii, oneQuad in enumerate(self.NearestQuadList):
+      #oneQuadSamplePoints = oneQuad.MakePerpendicularSamplePoints()
+      oneQuadSamplePoints = oneQuad.MakeLogSamplePointsAlongRayFromNearbyPoint(self.JsonList[ii], 0.0000001, 1.414, 0.05)
+      allSamplePoints.extend(oneQuadSamplePoints)
+
+    numPoints = len(allSamplePoints)
+    self.myVtkPoints.SetNumberOfPoints(numPoints)
+    self.myVtkPolyVertex.GetPointIds().SetNumberOfIds(numPoints)
+
+    vtkPolyVertPtIds = self.myVtkPolyVertex.GetPointIds()
+    usePoint = [0.0, 0.0, 0.0]
+    for ptNdx in range(0,numPoints):
+      #self.myVtkPoints.SetPoint(ptNdx, self.JsonList[ptNdx])
+      quadPtAvg = allSamplePoints[ptNdx]
+      usePoint[0] = quadPtAvg[0]
+      usePoint[1] = quadPtAvg[1]
+      usePoint[2] = quadPtAvg[2]
+      self.myVtkPoints.SetPoint(ptNdx, usePoint)
+      vtkPolyVertPtIds.SetId(ptNdx, ptNdx)
+
+    self.myVtkPolyData.SetPoints(self.myVtkPoints)
+    self.myVtkCellArray.InsertNextCell(self.myVtkPolyVertex)
+    self.myVtkPolyData.SetVerts(self.myVtkCellArray)
+
+    self.ParaviewPointSource = PVTrivialProducer()
+    self.ParaviewPointSource.GetClientSideObject().SetOutput(self.myVtkPolyData)
+
+    SetActiveSource(self.ParaviewPointSource)
+    SetActiveSource(savedActiveSource)
+
+    UpdatePipelineWithCurrentTimeArgument(self.ParaviewPointSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriPointSourceGeometrySampler1.CreateParaViewFilter returning\n", 100)
+    return self.ParaviewPointSource
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriSegmentCellSampler3 import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class GetCellsClosestToPointsInBlockRecursionParams:
+  def __init__(self):
+    self.testPointList = []
+    self.distSqrdList = []
+    self.closestList = []
+
+  def InitializeWithPointList(self, inTestPointList):
+    self.testPointList = inTestPointList
+    numTestPoints = len(inTestPointList)
+    for ii in range(0, numTestPoints):
+      self.distSqrdList.append(sys.float_info.max)
+      self.closestList.append(None)
+
+class SetMaskValueForCellsNearSegmentsRecursionParams:
+  def __init__(self):
+    self.segmentList = None
+    self.maskCellVariableName = None
+    self.globalCellIdName = None
+    self.CellDataArrayName = "V"
+    self.markedCellSet = None
+    self.maskTestDistanceSquared = None
+    self.projectionAxis = -1
+    self.leafVisitCount = 0
+
+  def Initialize(self, segmentList, cellDataArrayName, maskCellVariableName, globalCellIdName, maskTestDistanceSquared, projectionAxis):
+    self.CellDataArrayName = cellDataArrayName
+    self.maskCellVariableName = maskCellVariableName
+    self.globalCellIdName = globalCellIdName
+    self.segmentList = segmentList
+    self.maskTestDistanceSquared = maskTestDistanceSquared
+    self.markedCellSet = []
+    self.projectionAxis = projectionAxis
+    self.leafVisitCount = 0
+    if PhactoriDbg(100):
+      myDebugPrint3("SetMaskValueForCellsNearSegmentsRecursionParams::Initialize\n" +\
+        "self.segmentList:\n" + str(self.segmentList) + "\n")
+
+    for oneSegment in self.segmentList:
+      cellInfoListForThisSegment = []
+      self.markedCellSet.append(cellInfoListForThisSegment)
+
+class CellsListClosestToPointsListInBlockStructuredRecursionParams:
+  def __init__(self):
+    self.testPointList = []
+    self.distSqrdList = []
+    self.closestCellList = []
+    self.leafVisitCount = 0
+
+  def InitializeWithPointList(self, inTestPointList):
+    self.testPointList = inTestPointList
+    numTestPoints = len(inTestPointList)
+    self.leafVisitCount = 0
+    for ii in range(0, numTestPoints):
+      self.distSqrdList.append(sys.float_info.max)
+      newCellInfo = PhactoriSampledCellInfo()
+      self.closestCellList.append(newCellInfo)
+
+class GatherStructuredCellsFromSeedCellsRecursionParams:
+  def __init__(self):
+    self.leafVisitCount = 0
+    self.dataArrayName = "noname"
+    self.SeedCells = None
+    self.CellsPerSeedCell = None
+
+  def SetUpForRecursion(self, creatingSamplerInstance):
+    self.SeedCells = creatingSamplerInstance.StructuredNearbyCellPointList
+    self.dataArrayName = creatingSamplerInstance.CellDataArrayName
+    self.CellsPerSeedCell = []
+    for ii in range(0, len(self.SeedCells)):
+      self.CellsPerSeedCell.append([])
+
+class PhactoriSegmentCellSampler3(PhactoriOperationSpecifics):
+  "Filter/operation which reads in a .json file which is a list of 3d\n     coordinates pairs (representating segments, and then finds all cells\n     in the input data that cross that segment and sets a masking value\n     into a cell data array for those cells"
+  def __init__(self):
+    self.myCopyOfInputFilter = None
+
+    #[[[x1,y1],[x2.y2]],[[x3,y3],[x4.y4]],...]
+    self.JsonSegmentListFileName = "PhactoriSegmentCellSampler3.json"
+
+    self.SegmentList = None
+    #self.MaskTestDistanceSquared = 0.00001
+    self.MaskTestDistanceSquared = 1.6e-07
+
+    self.SegmentDefinitionFormat = "two geometric points"
+
+    self.PerSegmentMarkedCellInfoList = []
+
+    #indicates whether we should conduct our segment-picking cell calculations
+    #by projecting onto an ordinal plane.  -1 is no projection, 0, 1, or 2 are
+    #the x, y, or z axes. This is of particular use if you are doing a slice
+    #before selecting elements.  The slice does not need to be axis aligned,
+    #just choose the axis plane closest to parallel to the slice plane.
+    self.ProjectionAxis = -1
+
+    #as of 2019Aug13, we are having the programmable filter core dump with
+    #structured data: this allows us to turn off the programmable filter to
+    #do the other operations
+    self.DoProgrammableFilterToAddMaskVariable = False
+    self.mProgFilterMaskSetter = None
+    self.mProgFilterString = None
+    self.ProgrammableFilterOutputCellVariableName = "mask1"
+
+    self.StructuredNearbyCellPointList = None
+    self.NearbyGeometryPointList = None
+
+    #"structured" or "unstructured"
+    self.collectionMethod = "segments identify cells"
+
+    self.SampledCellsOutputFilename = "PhactoriSegmentCellSampler3_sampled_cells_"
+    self.SampledCellsOutputDirectory = "PhactoriSegmentCellSampler3_Output"
+    self.NumCounterDigits = 5
+    self.SampledCellsOutputFilenameExtension = ".json"
+
+    self.CellDataArrayName = "V"
+    self.CellDataArrayTupleSize = 8
+
+    #controls whether or not we output a single json file with a list of all
+    #the selected cells (using MPI to combine to one process)
+    self.WriteCellListToJsonFile = True
+
+  def ValidateJsonStructuredSeedCellList(self, inJson):
+    numPoints = len(inJson)
+    if numPoints < 1:
+      myDebugPrint3AndException(
+          "PhactoriSegmentCellSampler3::ValidateJsonStructuredSeedCellList\n"
+          "list must have at least one seed cell\n")
+
+    for ptNdx, onePtJson in enumerate(inJson):
+      key1 = "geometric seed point"
+      if key1 not in onePtJson:
+        myDebugPrint3AndException("point " + str(ptNdx) + " missing '" + key1 + "'\n" + str(inJson) + "\n")
+      geompt = onePtJson[key1]
+      if(len(geompt) != 3):
+        myDebugPrint3AndException("point " + str(ptNdx) + " bad json format for xyz point:\n" + str(inJson) + "\n")
+      key2 = "collection axis"
+      if key2 in onePtJson:
+        axisVal = onePtJson[key2]
+        if (axisVal != "i") and (axisVal != "j") and (axisVal != "k") and \
+           (axisVal != "ij") and (axisVal != "ik") and (axisVal != "jk"):
+          myDebugPrint3AndException(
+            "point " + str(ptNdx) + " bad json format (2):\n"\
+            "needs 'i', 'j', 'k', 'ij', 'ik', or 'jk':\n" + str(inJson) + "\n")
+
+    return True
+
+
+  def ValidateJsonSegmentList2(self, testlist):
+    numSegments = len(testlist)
+    if numSegments < 1:
+      myDebugPrint3AndException(
+          "PhactoriSegmentCellSampler3::ValidateJsonSegmentList2\n"
+          "list must have at least one segment\n")
+
+    for segNdx in range(0,numSegments):
+      oneSegment = testlist[segNdx]
+      if len(oneSegment) != 2:
+        errStr = "PhactoriSegmentCellSampler3:ValidateJsonSegmentList2\n" \
+          "segment with index " + str(segNdx) + " does not have a point and a length\n"
+        myDebugPrint3AndException(errStr)
+      pt1 = oneSegment[0]
+      if len(pt1) != 3:
+        errStr = "PhactoriSegmentCellSampler3:ValidateJsonSegmentList2\n" \
+          "segment with index " + str(segNdx) + " point does not have 3 components\n"
+        myDebugPrint3AndException(errStr)
+
+    return True
+
+  def ValidateJsonSegmentList3(self, testlist):
+    numSegments = len(testlist)
+    if numSegments < 1:
+      myDebugPrint3AndException(
+          "PhactoriSegmentCellSampler3::ValidateJsonSegmentList3\n"
+          "list must have at least one segment\n")
+
+    for segNdx in range(0,numSegments):
+      oneSegment = testlist[segNdx]
+      if len(oneSegment) != 3:
+        errStr = "PhactoriSegmentCellSampler3:ValidateJsonSegmentList3\n" \
+          "segment with index " + str(segNdx) + " does not have a point, direction, and length\n"
+        myDebugPrint3AndException(errStr)
+      pt1 = oneSegment[0]
+      dir1 = oneSegment[1]
+      length1 = oneSegment[2]
+      if len(pt1) != 3:
+        errStr = "PhactoriSegmentCellSampler3:ValidateJsonSegmentList3\n" \
+          "segment with index " + str(segNdx) + " point does not have 3 components\n"
+        myDebugPrint3AndException(errStr)
+      if len(dir1) != 3:
+        errStr = "PhactoriSegmentCellSampler3:ValidateJsonSegmentList3\n" \
+          "segment with index " + str(segNdx) + " direction does not have 3 components\n"
+        myDebugPrint3AndException(errStr)
+
+    return True
+
+  def ValidateJsonSegmentList(self, testlist):
+    numSegments = len(testlist)
+    if numSegments < 1:
+      myDebugPrint3AndException(
+          "PhactoriSegmentCellSampler3::ValidateJsonSegmentList\n"
+          "list must have at least one segment\n")
+
+    for segNdx in range(0,numSegments):
+      oneSegment = testlist[segNdx]
+      if len(oneSegment) != 2:
+        errStr = "PhactoriSegmentCellSampler3:ValidateJsonSegmentList\n" \
+          "segment with index " + str(segNdx) + " does not have two points\n"
+        myDebugPrint3AndException(errStr)
+      pt1 = oneSegment[0]
+      if len(pt1) != 3:
+        errStr = "PhactoriSegmentCellSampler3:ValidateJsonSegmentList\n" \
+          "segment with index " + str(segNdx) + " point 1 does not have 3 components\n"
+        myDebugPrint3AndException(errStr)
+      pt2 = oneSegment[1]
+      if len(pt1) != 3:
+        errStr = "PhactoriSegmentCellSampler3:ValidateJsonSegmentList\n" \
+          "segment with index " + str(segNdx) + " point 2 does not have 3 components\n"
+        myDebugPrint3AndException(errStr)
+      
+    return True
+
+  def ParseParametersFromJson(self, inJson):
+    keyval6 = "collection method"
+    if keyval6 in inJson:
+      self.collectionMethod = inJson[keyval6]
+      if (self.collectionMethod != "segments identify cells") and \
+         (self.collectionMethod != "seed cell with structured grid"):
+        myDebugPrint3AndException("'collection method' must be one of:\n" \
+          "'segments identify cells' (default)\n" \
+          "'seed cell with structured grid'\n")
+
+    if "filename" in inJson:
+      self.JsonListFileName = inJson['filename']
+    else:
+      myDebugPrint3AndException(
+          "PhactoriSegmentCellSampler3:ParseParametersFromJson\n"
+          "Error:  must have 'filename' key\n")
+
+    keyval2 = "cell center to segment test distance"
+    if keyval2 not in inJson:
+      myDebugPrint3AndException(
+          "PhactoriSegmentCellSampler3:ParseParametersFromJson\n"
+          "Error:  must have '" + keyval2 + "' key\n")
+    testDist = inJson[keyval2]
+    self.MaskTestDistanceSquared = testDist * testDist
+
+    if self.collectionMethod == "seed cell with structured grid":
+      keyval3 = "segment definition format"
+      if keyval3 in inJson:
+        myDebugPrint3AndException("with collection method '" + str(self.collectionMethod) + "'\n" \
+          "you cannot have 'segment definition format' key\n")
+    else:
+      keyval3 = "segment definition format"
+      if keyval3 in inJson:
+        self.SegmentDefinitionFormat = inJson[keyval3]
+        if (self.SegmentDefinitionFormat != "two geometric points") and \
+           (self.SegmentDefinitionFormat != "geometric point and nearest cell") and \
+           (self.SegmentDefinitionFormat != "structured cell geometric point and length") and \
+           (self.SegmentDefinitionFormat != "geometric point and nearest cell and direction"):
+            myDebugPrint3AndException("PhactoriSegmentCellSampler3::ParseParametersFromJson\n"
+              "bad " + keyval3 + "\n")
+
+    keyval4 = "projection axis"
+    if keyval4 in inJson:
+      val4 = inJson[keyval4]
+      if val4 == "none":
+        self.ProjectionAxis = -1
+      elif val4 == "x":
+        self.ProjectionAxis = 0
+      elif val4 == "y":
+        self.ProjectionAxis = 1
+      elif val4 == "z":
+        self.ProjectionAxis = 2
+      elif int(val4) == 1:
+        self.ProjectionAxis = 0
+      elif int(val4) == 2:
+        self.ProjectionAxis = 1
+      elif int(val4) == 3:
+        self.ProjectionAxis = 2
+
+    keyval5 = "do programmable filter"
+    if keyval5 in inJson:
+      self.DoProgrammableFilterToAddMaskVariable = inJson[keyval5]
+
+    keyval7 = "sampled cells output filename"
+    if keyval7 in inJson:
+      self.SampledCellsOutputFilename = inJson[keyval7]
+
+    keyval7b = "sampled cells output directory"
+    if keyval7b in inJson:
+      self.SampledCellsOutputDirectory = inJson[keyval7b]
+    if self.SampledCellsOutputDirectory != ".":
+      CreateDirectoryFromProcessZero(self.SampledCellsOutputDirectory)
+
+    keyval7c = "sampled cells output filename digit count"
+    if keyval7c in inJson:
+      self.NumCounterDigits = inJson[keyval7c]
+
+    keyval7d = "sampled cells output filename extension"
+    if keyval7d in inJson:
+      self.SampledCellsOutputFilenameExtension = inJson[keyval7d]
+
+    keyval8 = "cell data array name"
+    if keyval8 in inJson:
+      self.CellDataArrayName = inJson[keyval8]
+
+    keyval9 = "cell data array tuple size"
+    if keyval9 in inJson:
+      self.CellDataArrayTupleSize = inJson[keyval9]
+
+    keyval10 = "programmable filter output cell variable name"
+    if keyval10 in inJson:
+      self.ProgrammableFilterOutputCellVariableName = inJson[keyval10]
+
+    keyval11 = "write cell list to json file"
+    if keyval11 in inJson:
+      self.WriteCellListToJsonFile = inJson[keyval11]
+
+  def SetStructuredNearbyCellPointList(self, nearbyGeometryPoints, structuredNearbyCellPointList):
+        self.NearbyGeometryPointList = nearbyGeometryPoints
+        self.StructuredNearbyCellPointList = structuredNearbyCellPointList
+        #self.SegmentList = []
+        if PhactoriDbg(100):
+          myDebugPrint3("(structured) format: " + str(self.SegmentDefinitionFormat) + "\n")
+        for ii in range(0,len(self.StructuredNearbyCellPointList)):
+          seedPoint = nearbyGeometryPoints[ii]
+          segmentPointA = self.StructuredNearbyCellPointList[ii].cellTestPoint
+          SeedToCell = vecFromAToB(seedPoint, segmentPointA)
+          #SeedToCellNorm = vecNormalize(SeedToCell)
+          SeedToCellNorm = vecNormalizeWithSmallCheck(SeedToCell, 0.0, [0.0, 1.0, 0.0])
+          #segmentPointB = vecMultiplyAdd(segmentPointA, SeedToCellNorm, segmentLengths[ii])
+          segmentPointB = vecMultiplyAdd(segmentPointA, SeedToCellNorm, 1.0)
+          if PhactoriDbg(100):
+            myDebugPrint3("segment " + str(ii) + "\n", 100)
+            myDebugPrint3("seedPoint: " + str(seedPoint) + "\n")
+            myDebugPrint3("closest cell point: " + str(segmentPointA) + "\n")
+            myDebugPrint3("SeedToCellNorm: " + str(SeedToCellNorm) + "\n")
+            myDebugPrint3("segmentPointB: " + str(segmentPointB) + "\n")
+          newSegment = PhactoriSegment()
+          newSegment.SetPoints(segmentPointA, segmentPointB)
+          #self.SegmentList.append(newSegment)
+
+  def CreateInternalStructuredSeedCellListFromJson(self, inJson):
+      self.ValidateJsonStructuredSeedCellList(inJson)
+      nearbyGeometryPoints = []
+      collectionAxes = []
+      for oneSeedCellJson in inJson:
+        geometryPoint = oneSeedCellJson["geometric seed point"]
+        nearbyGeometryPoints.append(list(geometryPoint))
+        if "collection axis" in oneSeedCellJson:
+          oneAxis = oneSeedCellJson["collection axis"]
+          if oneAxis == "i":
+            axisInt = 0
+          elif oneAxis == "j":
+            axisInt = 1
+          elif oneAxis == "k":
+            axisInt = 2
+          elif oneAxis == "ij":
+            axisInt = 3
+          elif oneAxis == "ik":
+            axisInt = 4
+          elif oneAxis == "jk":
+            axisInt = 5
+        else:
+          axisInt = 2
+        collectionAxes.append(axisInt)
+      structuredNearbyCellPointList = self.GetListOfCellTestPointsNearestListOfPointsStructured(nearbyGeometryPoints)
+      for ii, oneCell in enumerate(structuredNearbyCellPointList):
+        oneCell.SetCollectionAxis(collectionAxes[ii])
+      self.SetStructuredNearbyCellPointList(nearbyGeometryPoints, structuredNearbyCellPointList)
+
+  def CreateInternalSegmentListFromJson(self, segmentListJson):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.ExportOperationData entered\n", 100)
+
+    if self.SegmentDefinitionFormat == "two geometric points": 
+      self.ValidateJsonSegmentList(segmentListJson)
+      self.SegmentList = []
+      self.NearbyGeometryPointList = []
+      if PhactoriDbg(100):
+        myDebugPrint3("format: " + str(self.SegmentDefinitionFormat) + "\n")
+      for item in segmentListJson:
+        newSegment = PhactoriSegment()
+        newSegment.SetPoints(item[0], item[1])
+        self.SegmentList.append(newSegment)
+        self.NearbyGeometryPointList.append(item[0])
+    elif self.SegmentDefinitionFormat == "geometric point and nearest cell":
+      self.ValidateJsonSegmentList2(segmentListJson)
+      nearbyGeometryPoints = []
+      segmentLengths = []
+      for item in segmentListJson:
+        nearbyGeometryPoints.append(item[0])
+        segmentLengths.append(item[1])
+      self.NearbyGeometryPointList = nearbyGeometryPoints
+
+      nearbyCellPoints = self.GetListOfCellTestPointsNearestListOfPoints(nearbyGeometryPoints)
+      #use some vector math to construct the segments from the seed points
+      #and the nearest cell to each seed point
+      self.SegmentList = []
+      if PhactoriDbg(100):
+        myDebugPrint3("(unstructured) format: " + str(self.SegmentDefinitionFormat) + "\n")
+      for ii in range(0,len(nearbyGeometryPoints)):
+        seedPoint = nearbyGeometryPoints[ii]
+        segmentPointA = nearbyCellPoints[ii]
+        SeedToCell = vecFromAToB(seedPoint, segmentPointA)
+        SeedToCellNorm = vecNormalize(SeedToCell)
+        segmentPointB = vecMultiplyAdd(segmentPointA, SeedToCellNorm, segmentLengths[ii])
+        if PhactoriDbg(100):
+          myDebugPrint3("segment " + str(ii) + "\n", 100)
+          myDebugPrint3("seedPoint: " + str(seedPoint) + "\n")
+          myDebugPrint3("closest cell point: " + str(segmentPointA) + "\n")
+          myDebugPrint3("SeedToCellNorm: " + str(SeedToCellNorm) + "\n")
+          myDebugPrint3("segmentPointB: " + str(segmentPointB) + "\n")
+        newSegment = PhactoriSegment()
+        newSegment.SetPoints(segmentPointA, segmentPointB)
+        self.SegmentList.append(newSegment)
+    elif self.SegmentDefinitionFormat == "geometric point and nearest cell and direction":
+      self.ValidateJsonSegmentList3(segmentListJson)
+      nearbyGeometryPoints = []
+      segmentLengths = []
+      directionVecs = []
+      for item in segmentListJson:
+        nearbyGeometryPoints.append(item[0])
+        directionVecs.append(item[1])
+        segmentLengths.append(item[2])
+      self.NearbyGeometryPointList = nearbyGeometryPoints
+
+      nearbyCellPoints = self.GetListOfCellTestPointsNearestListOfPoints(nearbyGeometryPoints)
+      self.SegmentList = []
+      if PhactoriDbg(100):
+        myDebugPrint3("format: " + str(self.SegmentDefinitionFormat) + "\n")
+      for ii in range(0,len(nearbyGeometryPoints)):
+        segmentPointA = nearbyCellPoints[ii]
+        directionVecNorm = vecNormalize(directionVecs[ii])
+        segmentPointB = vecMultiplyAdd(segmentPointA, directionVecNorm, segmentLengths[ii])
+        if PhactoriDbg(100):
+          myDebugPrint3("seedPoint: " + str(nearbyGeometryPoints[ii]) + "\n")
+          myDebugPrint3("segmentPointA (nearest cell point): " + str(seedPoint) + "\n")
+          myDebugPrint3("directionVecNorm: " + str(directionVecNorm) + "\n")
+          myDebugPrint3("segmentPointB: " + str(segmentPointB) + "\n")
+        newSegment = PhactoriSegment()
+        newSegment.SetPoints(segmentPointA, segmentPointB)
+        self.SegmentList.append(newSegment)
+    else:
+      myDebugPrint3AndException("bad self.SegmentDefinitionFormat\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.ExportOperationData returning\n", 100)
+
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.CreateParaViewFilter entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    segmentListJson = ReadAndMpiBroadcastJsonFile(self.JsonListFileName)
+   
+    self.myCopyOfInputFilter = inInputFilter
+
+    UpdatePipelineWithCurrentTimeArgument(self.myCopyOfInputFilter)
+
+    if self.collectionMethod == "seed cell with structured grid":
+      self.CreateInternalStructuredSeedCellListFromJson(segmentListJson)
+      if PhactoriDbg(100):
+        myDebugPrint3("self.StructuredNearbyCellPointList:\n", 100)
+        for ii, oneCell in enumerate(self.StructuredNearbyCellPointList):
+          outStr = oneCell.ToStr()
+          myDebugPrint3("cell " + str(ii) + ":\n" + outStr + \
+          "from geometry point: " + \
+          str(self.NearbyGeometryPointList[ii]) + "\n")
+    else:
+      self.CreateInternalSegmentListFromJson(segmentListJson)
+      if PhactoriDbg(100):
+        myDebugPrint3("self.SegmentList:\n", 100)
+        for oneSeg in self.SegmentList:
+          myDebugPrint3(str(oneSeg.ptA) + ", " + str(oneSeg.ptB) + "\n")
+
+    if self.collectionMethod == "seed cell with structured grid":
+      perSegmentStructuredCellList = self.GatherStructuredCellsFromSeedCells()
+      self.PerSegmentMarkedCellInfoList = perSegmentStructuredCellList
+    else:
+      perSegmentCellList = self.SetMaskValueForCellsNearSegments(
+        self.myCopyOfInputFilter, self.SegmentList, "blargmask1", "Ids",
+        self.MaskTestDistanceSquared, self.ProjectionAxis)
+      self.PerSegmentMarkedCellInfoList = perSegmentCellList
+    #UpdatePipelineWithCurrentTimeArgument(self.myCopyOfInputFilter)
+    #end new work
+
+    if self.DoProgrammableFilterToAddMaskVariable:
+      if PhactoriDbg(100):
+        myDebugPrint3("cell and point data arrays before filter:\n")
+        RecursivelyPrintPointAndCellArrayInformation(inInputFilter)
+      self.mProgFilterMaskSetter = ProgrammableFilter(
+              Input = self.myCopyOfInputFilter)
+      self.mProgFilterMaskSetter.CopyArrays = 1
+      self.CreateProgrammableFilterString()
+      self.mProgFilterMaskSetter.Script = self.mProgFilterString
+      self.mProgFilterMaskSetter.UpdatePipeline()
+      if PhactoriDbg(100):
+        myDebugPrint3("cell and point data arrays after filter:\n")
+        RecursivelyPrintPointAndCellArrayInformation(self.mProgFilterMaskSetter)
+    else:
+      self.mProgFilterMaskSetter = self.myCopyOfInputFilter
+
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.CreateParaViewFilter returning\n", 100)
+    return self.mProgFilterMaskSetter
+
+  def GetPidWithLeastValueList(self, inLocalDistSqrdList):
+    myPid = int(SmartGetLocalProcessId())
+    globalDistSqrdList = UseReduceOnFloatList(inLocalDistSqrdList, 1)
+    localPidList = []
+    numItems = len(inLocalDistSqrdList)
+    for ndx in range(0,numItems):
+      if globalDistSqrdList[ndx] == inLocalDistSqrdList[ndx]:
+        localPidList.append(myPid)
+      else:
+        localPidList.append(-1)
+
+    pidWithDataList = UseReduceOnIntegerList(localPidList, 0)
+    return pidWithDataList, globalDistSqrdList
+    
+  def UseMpiToGetGlobalCellPointsClosestStructured(self, ioCellList, inLocalDistSqrdList):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.UseMpiToGetGlobalCellPointsClosestStructured entered\n", 100)
+
+    pidWithDataList, globalDistSqrdList = self.GetPidWithLeastValueList(inLocalDistSqrdList)
+    if PhactoriDbg(100):
+      myDebugPrint3("pidWithDataList:\n" + str(pidWithDataList) + "\nglobalDistSqrdList:\n" + str(globalDistSqrdList) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("local nearest cell list (ioCellList) before mpi:\n")
+      for ii, oneCellInfo in enumerate(ioCellList):
+        myDebugPrint3(str(ii) + ": " + \
+          str(inLocalDistSqrdList[ii]) + "\n" + \
+          str(oneCellInfo.cellTestPoint) + "\n"  + \
+          str(oneCellInfo.pid) + "\n"  + \
+          str(oneCellInfo.leafVisitCount) + "\n"  + \
+          str(oneCellInfo.ijk) + "\n")
+
+    #convert cell point list to array of doubles and ints, use mpi reduce to share
+    #the values, then convert back to cell point list
+    serializeFloatArray = []
+    serializeIntArray = []
+    myPid = int(SmartGetLocalProcessId())
+    for ii, oneCell in enumerate(ioCellList):
+      if pidWithDataList[ii] == myPid:
+        oneCell.SerializeAppendToFloatAndIntArray(serializeFloatArray, serializeIntArray)
+      else:
+        oneCell.SerializeAppendToFloatAndIntArrayZeroVersion(serializeFloatArray, serializeIntArray)
+
+    #use mpi reduce to spread array correctly
+    globalSerializeFloatArray = UseReduceOnFloatList(serializeFloatArray, 2)
+    globalSerializeIntArray = UseReduceOnIntegerList(serializeIntArray, 2)
+
+    #now create return global cell point list from arrays
+    for ii, oneCell in enumerate(ioCellList):
+      oneCell.SerializeSetFromFloatAndIntArray(globalSerializeFloatArray, globalSerializeIntArray, ii)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("global nearest cell list (ioCellList) after mpi:\n")
+      for ii, oneCellInfo in enumerate(ioCellList):
+        myDebugPrint3(str(ii) + ": " + \
+          str(globalDistSqrdList[ii]) + "\n" + \
+          str(oneCellInfo.cellTestPoint) + "\n"  + \
+          str(oneCellInfo.pid) + "\n"  + \
+          str(oneCellInfo.leafVisitCount) + "\n"  + \
+          str(oneCellInfo.ijk) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.UseMpiToGetGlobalCellPointsClosestStructured returning\n", 100)
+
+    return ioCellList, globalDistSqrdList
+
+  def UseMpiToGetGlobalCellPointsClosest(self, inLocalCellPointList, inLocalDistSqrdList):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.UseMpiToGetGlobalCellPointsClosest entered\n", 100)
+
+    pidWithDataList, globalDistSqrdList = self.GetPidWithLeastValueList(inLocalDistSqrdList)
+    if PhactoriDbg(100):
+      myDebugPrint3("pidWithDataList:\n" + str(pidWithDataList) + "\nglobalDistSqrdList:\n" + str(globalDistSqrdList) + "\n")
+
+    #convert cell point list to array of doubles and ints, use mpi reduce to share
+    #the values, then convert back to cell point list
+    serializeFloatArray = []
+    serializeIntArray = []
+
+    #convert cell point list to array of doubles
+    cellPointFloatArray = []
+    myPid = SmartGetLocalProcessId()
+    for ii, oneCellPoint in enumerate(inLocalCellPointList):
+      if pidWithDataList[ii] == myPid:
+        cellPointFloatArray.append(oneCellPoint[0])
+        cellPointFloatArray.append(oneCellPoint[1])
+        cellPointFloatArray.append(oneCellPoint[2])
+      else:
+        cellPointFloatArray.append(0.0)
+        cellPointFloatArray.append(0.0)
+        cellPointFloatArray.append(0.0)
+
+    #use mpi reduce to spread array correctly
+    globalCellPointFloatArray = UseReduceOnFloatList(cellPointFloatArray, 2)
+
+    #now create return global cell point list from arrays
+    numCells = len(inLocalCellPointList)
+    returnGlobalCellPointList = []
+    for ii in range(0,numCells):
+      myndx = ii*3
+      oneCellPoint = [globalCellPointFloatArray[myndx],
+                      globalCellPointFloatArray[myndx+1],
+                      globalCellPointFloatArray[myndx+2]]
+      returnGlobalCellPointList.append(oneCellPoint)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.UseMpiToGetGlobalCellPointsClosest returning\n", 100)
+    return returnGlobalCellPointList, globalDistSqrdList
+
+  @staticmethod
+  def DebugPrintCellPointsFaces(oneCell, cellIndex, inInputCsData):
+    if not PhactoriDbg(100):
+      return
+    myDebugPrint3("cellIndex: " + str(cellIndex) + "\n");
+    cellPointIds = oneCell.GetPointIds()
+    numPoints = cellPointIds.GetNumberOfIds()
+    numFaces = oneCell.GetNumberOfFaces()
+    myDebugPrint3("numFaces: " + str(numFaces) + " numPoints: " + str(numPoints) + " pointIds: " + str(cellPointIds) + "\n")
+    for ii in range(0, numFaces):
+      oneFace = oneCell.GetFace(ii)
+      facePoints = oneFace.GetPointIds()
+      myDebugPrint3("face " + str(ii) + ": " + str(facePoints) + "\n")
+      onePointXyz = [0.0, 0.0, 0.0]
+      for jj in range(0, facePoints.GetNumberOfIds()):
+        onePtId = facePoints.GetId(jj)
+        inInputCsData.GetPoint(onePtId, onePointXyz)
+        myDebugPrint3("    point " + str(jj) + ": id: " + str(onePtId) + " xyz: " + str(onePointXyz) + "\n")
+
+  @staticmethod
+  def SetMaskValueForCellsNearSegmentsInBlock(recursionObject, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("SetMaskValueForCellsNearSegmentsInBlock entered\n")
+    inParameters.leafVisitCount += 1
+    numCells = inInputCsData.GetNumberOfCells()
+    numPoints = inInputCsData.GetNumberOfPoints()
+    if (numCells != 0) and (numPoints == 0):
+      if PhactoriDbg(100):
+        myDebugPrint3("case where numCells is " + str(numCells) + " and numPoints is 0")
+        myDebugPrint3("number of cell arrays: " + str(inInputCsData.GetCellData().GetNumberOfArrays()) + "\n")
+        myDebugPrint3("number of point arrays: " + str(inInputCsData.GetPointData().GetNumberOfArrays()) + "\n")
+
+    if (numCells == 0) or (numPoints == 0):
+      if PhactoriDbg(100):
+        cellData = inInputCsData.GetCellData()
+        if cellData != None:
+          myDebugPrint3("cellData is None, numCells is 0\n")
+        else:
+          myDebugPrint3("cellData has " + str(cellData.GetNumberOfArrays()) + " arrays, numCells is 0\n")
+      if PhactoriDbg(100):
+        myDebugPrint3("SetMaskValueForCellsNearSegmentsInBlock returning (no cells or no points)\n")
+      return
+
+    cellData = inInputCsData.GetCellData()
+    maskCellData = cellData.GetArray(inParameters.maskCellVariableName)
+    #if maskCellData == None:
+    #  maskCellData = cellData.GetArray(inParameters.maskCellVariableName)
+
+    globalCellIdData = cellData.GetArray(inParameters.globalCellIdName)
+    outputCellArray = cellData.GetArray(inParameters.CellDataArrayName)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("numCells \n" + str(numCells) + "\n")
+      myDebugPrint3("inParameters.segmentList:\n" + str(inParameters.segmentList) + "\n")
+      myDebugPrint3("cellData: " + str(cellData) + "\n")
+      myDebugPrint3("maskCellData: " + str(maskCellData) + "\n")
+      myDebugPrint3("globalCellIdData: " + str(globalCellIdData) + "\n")
+      #myDebugPrint3("inInputCsData \n" + str(inInputCsData) + "\n")
+      myDebugPrint3("inInputCsData.GetClassName() \n" + str(inInputCsData.GetClassName()) + "\n")
+    projectionAxis = inParameters.projectionAxis
+    leafVisitCount = inParameters.leafVisitCount
+    myPid = int(SmartGetLocalProcessId())
+    cellBounds = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    for cellIndex in range(0,numCells):
+      oneCell = inInputCsData.GetCell(cellIndex)
+      cellTestPoint = GetCellTestPoint(oneCell)
+      if maskCellData != None:
+        maskCellData.SetValue(cellIndex, 0.0)
+      for segIndex, oneSegment in enumerate(inParameters.segmentList):
+        cellTestPointToSegmentDistanceSquared = oneSegment.FindDistanceSquaredToPointProjected(cellTestPoint, projectionAxis)
+        #if PhactoriDbg(100):
+        #  if cellIndex%5000 == 0:
+        #    myDebugPrint3(str(cellIndex) + " " + str(cellTestPointToSegmentDistanceSquared) + "  " + str(cellTestPoint) + "\n")
+        floatSegIndex = float(segIndex) * 5.0
+        if cellTestPointToSegmentDistanceSquared < inParameters.maskTestDistanceSquared:
+          #nearestPointOnSegment = oneSegment.FindNearestPointOnSegmentToPointProjected(cellTestPoint, projectionAxis)
+          #if IsPointInsideCellBoundingBoxProjected(oneCell, nearestPointOnSegment, projectionAxis):
+          oneCell.GetBounds(cellBounds)
+          if oneSegment.IntersectsBoundingBoxProjected(cellBounds, projectionAxis):
+            PhactoriSegmentCellSampler3.DebugPrintCellPointsFaces(oneCell, cellIndex, inInputCsData)
+            if maskCellData != None:
+              #warning--if element is near two segments, both will be marked,
+              #last will win
+              maskCellData.SetValue(cellIndex, floatSegIndex)
+            if globalCellIdData != None:
+              thisCellId = globalCellIdData.GetValue(cellIndex)
+            else:
+              thisCellId = None
+            if outputCellArray  == None:
+              thisCellDataTuple = None
+            else:
+              thisCellDataTuple = outputCellArray.GetTuple(cellIndex)
+            newCellInfo = PhactoriSampledCellInfo()
+            newCellInfo.SetFromList([cellTestPoint, [-1,-1,-1], thisCellDataTuple, myPid, leafVisitCount, cellIndex, segIndex, -1])
+           
+            inParameters.markedCellSet[segIndex].append(newCellInfo)
+            if PhactoriDbg(100):
+              myDebugPrint3("new cell close to segment:\n")
+              myDebugPrint3(newCellInfo.ToStr())
+          
+
+    if PhactoriDbg(100):
+      for idx, cellsForThisSegment in enumerate(inParameters.markedCellSet):
+        myDebugPrint3("after this block cells for segment (index, count): " + str(idx) + ", " + str(len(cellsForThisSegment)) + "\n")
+        #myDebugPrint3(str(inParameters.markedCellSet[idx]) + "\n")
+      myDebugPrint3("\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("SetMaskValueForCellsNearSegmentsInBlock returning\n")
+
+  def SetMaskValueForCellsNearSegments(self,
+        inputFilter, segmentList, maskCellVariableName, globalCellIdName, maskTestDistanceSquared, projectionAxis):
+    if PhactoriDbg(100):
+      myDebugPrint3("SetMaskValueForCellsNearSegments entered\n")
+      numCellArrays = inputFilter.CellData.GetNumberOfArrays()
+      myDebugPrint3("numCellArrays: " + str(numCellArrays) + "\n")
+      for ii in range(0,numCellArrays):
+        myDebugPrint3(str(inputFilter.CellData.GetArray(ii)) + "\n")
+    recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+    recursionObj.mParameters = SetMaskValueForCellsNearSegmentsRecursionParams()
+    recursionObj.mParameters.Initialize(segmentList, self.CellDataArrayName, maskCellVariableName, globalCellIdName, maskTestDistanceSquared, projectionAxis)
+    recursionObj.mOperationToDoPerBlock = self.SetMaskValueForCellsNearSegmentsInBlock
+    PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, inputFilter)
+
+    #if PhactoriDbg(100):
+    #  myDebugPrint3("SetMaskValueForCellsNearSegments returning\n")
+    #  numCellArrays = inputFilter.CellData.GetNumberOfArrays()
+    #  myDebugPrint3("numCellArrays: " + str(numCellArrays) + "\n")
+    #  for ii in range(0,numCellArrays):
+    #    myDebugPrint3(str(inputFilter.CellData.GetArray(ii)) + "\n")
+    #  UpdatePipelineWithCurrentTimeArgument(inputFilter)
+    #  numCellArrays = inputFilter.CellData.GetNumberOfArrays()
+    #  myDebugPrint3("numCellArrays: " + str(numCellArrays) + "\n")
+    #  for ii in range(0,numCellArrays):
+    #    myDebugPrint3(str(inputFilter.CellData.GetArray(ii)) + "\n")
+
+    return recursionObj.mParameters.markedCellSet
+
+  @staticmethod
+  def GetCellsClosestToPointsInBlock(recursionObject, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("GetCellsClosestToPointsInBlock entered\n")
+    numCells = inInputCsData.GetNumberOfCells()
+    numPoints = inInputCsData.GetNumberOfPoints()
+    if (numCells == 0) or (numPoints == 0):
+      #no cells here
+      if PhactoriDbg(100):
+        myDebugPrint3("GetCellsClosestToPointsInBlock returning (no cells or no points)\n")
+      return
+
+    if PhactoriDbg(100):
+      myDebugPrint3(str(inParameters.testPointList) + "\n")
+      myDebugPrint3(str(inParameters.distSqrdList) + "\n")
+
+    for cellIndex in range(0,numCells):
+      oneCell = inInputCsData.GetCell(cellIndex)
+      cellTestPoint = GetCellTestPoint(oneCell)
+      for ptndx, oneTestPt in enumerate(inParameters.testPointList):
+        testDist = vecDistanceSquared(oneTestPt, cellTestPoint)
+        if testDist < inParameters.distSqrdList[ptndx]:
+          inParameters.closestList[ptndx] = cellTestPoint
+          inParameters.distSqrdList[ptndx] = testDist
+
+    if PhactoriDbg(100):
+      myDebugPrint3(str(inParameters.testPointList) + "\n")
+      myDebugPrint3(str(inParameters.distSqrdList) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("after this block:\n")
+      for ii, oneCellPoint in enumerate(inParameters.closestList):
+        myDebugPrint3(str(ii) + ": " + \
+          str(inParameters.distSqrdList[ii]) + "\n" + \
+          str(inParameters.testPointList[ii]) + "\n" + str(oneCellPoint))
+      myDebugPrint3("\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("GetCellsClosestToPointsInBlock returning\n")
+
+  def GetCellsClosestToPointsOnThisProcessFromParaViewFilter(self, inTestPointList):
+    if PhactoriDbg(100):
+      myDebugPrint3("GetCellsClosestToPointsOnThisProcessFromParaViewFilter entered\n")
+    recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+    recursionObj.mParameters = GetCellsClosestToPointsInBlockRecursionParams()
+    recursionObj.mParameters.InitializeWithPointList(inTestPointList)
+    recursionObj.mOperationToDoPerBlock = self.GetCellsClosestToPointsInBlock
+    PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, self.myCopyOfInputFilter)
+    if PhactoriDbg(100):
+      myDebugPrint3("GetCellsClosestToPointsOnThisProcessFromParaViewFilter returning\n")
+    return recursionObj.mParameters.closestList, recursionObj.mParameters.distSqrdList
+
+  @staticmethod
+  def GetCellsListClosestToPointsListInBlockStructured(recursionObject, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("GetCellsListClosestToPointsListInBlockStructured entered\n")
+    numCells = inInputCsData.GetNumberOfCells()
+    numPoints = inInputCsData.GetNumberOfPoints()
+    inParameters.leafVisitCount += 1
+    if (numCells == 0) or (numPoints == 0):
+      #no cells here
+      if PhactoriDbg(100):
+        myDebugPrint3("GetCellsListClosestToPointsListInBlockStructured returning (no cells or no points)\n")
+      return
+
+    mypid = SmartGetLocalProcessId()
+    #myExtent = [0,0,0,0,0,0]
+    myExtent = inInputCsData.GetExtent()
+    if PhactoriDbg(100):
+      myDebugPrint3("myExtent: " + str(myExtent) + "\n")
+    for ii in range(myExtent[0], myExtent[1]):
+      for jj in range(myExtent[2], myExtent[3]):
+        for kk in range(myExtent[4], myExtent[5]):
+          #oneCell = inInputCsData.GetCell(cellIndex)
+          #oneCell = inInputCsData.GetCell(ii, jj, kk)
+          oneCell = localGetCellijk(ii, jj, kk, inInputCsData, myExtent)
+          cellTestPoint = GetCellTestPoint(oneCell)
+          if PhactoriDbg(100):
+            if ((ii==myExtent[0]) and (jj == myExtent[2]) and (kk == myExtent[4])):
+              myDebugPrint3("cellTestPoint " + str([ii,jj,kk]) + " " + str(cellTestPoint) + "\n")
+              oneCellBounds = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+              oneCell.GetBounds(oneCellBounds)
+              myDebugPrint3("oneCellBounds " + str([ii,jj,kk]) + " " + str(oneCellBounds) + "\n")
+          for ptndx, oneTestPt in enumerate(inParameters.testPointList):
+            testDist = vecDistanceSquared(oneTestPt, cellTestPoint)
+            if testDist < inParameters.distSqrdList[ptndx]:
+              inParameters.distSqrdList[ptndx] = testDist
+              cellInfo = inParameters.closestCellList[ptndx]
+              cellInfo.pid = mypid
+              cellInfo.SetCellTestPoint(cellTestPoint)
+              cellInfo.leafVisitCount = inParameters.leafVisitCount
+              cellInfo.SetIjk(ii, jj, kk)
+
+    if PhactoriDbg(100):
+      myDebugPrint3(str(inParameters.testPointList) + "\n")
+      myDebugPrint3(str(inParameters.distSqrdList) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("after this block:\n")
+      for ii, oneCellInfo in enumerate(inParameters.closestCellList):
+        myDebugPrint3(str(ii) + ": " + \
+          str(inParameters.distSqrdList[ii]) + "\n" + \
+          str(inParameters.testPointList[ii]) + "\n" + \
+          str(oneCellInfo.cellTestPoint) + "\n"  + \
+          str(oneCellInfo.pid) + "\n"  + \
+          str(oneCellInfo.leafVisitCount) + "\n"  + \
+          str(oneCellInfo.ijk) + "\n")
+      myDebugPrint3("\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("GetCellsListClosestToPointsListInBlockStructured returning\n")
+
+  def GetListOfCellTestPointsNearestListOfPointsStructured(self, inTestPointList):
+    if PhactoriDbg(100):
+      myDebugPrint3("GetListOfCellTestPointsNearestListOfPointsStructured entered\n")
+    #find the closest structured cells for this process, recursing into
+    #multiblock dataset
+    recursionParams = CellsListClosestToPointsListInBlockStructuredRecursionParams()
+    recursionParams.InitializeWithPointList(inTestPointList)
+    recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+    recursionObj.mParameters = recursionParams
+    recursionObj.mOperationToDoPerBlock = self.GetCellsListClosestToPointsListInBlockStructured
+    PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, self.myCopyOfInputFilter)
+
+    #use mpi to find closest structured cells across all processes
+    nearestCellList, distanceList = self.UseMpiToGetGlobalCellPointsClosestStructured(
+      recursionObj.mParameters.closestCellList, recursionObj.mParameters.distSqrdList)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("GetListOfCellTestPointsNearestListOfPointsStructured returning\n")
+    return nearestCellList
+
+  @staticmethod
+  def GatherStructuredCellsInBlockFromSeedCells(recursionObject, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("GatherStructuredCellsInBlockFromSeedCells entered\n")
+
+    numCells = inInputCsData.GetNumberOfCells()
+    numPoints = inInputCsData.GetNumberOfPoints()
+    inParameters.leafVisitCount += 1
+    if (numCells == 0) or (numPoints == 0):
+      #no cells here
+      return
+
+    cellData = inInputCsData.GetCellData()
+    outputCellArray = None
+    if cellData != None:
+      outputCellArray = cellData.GetArray(inParameters.dataArrayName)
+
+    if outputCellArray != None:
+      dataArrayNumCmpnts = outputCellArray.GetNumberOfComponents()
+      defaultTuple = []
+      for ii in range(0, dataArrayNumCmpnts):
+        defaultTuple.append(-1.0)
+    else:
+      dataArrayNumCmpnts = -1
+      defaultTuple = []
+
+    myPid = SmartGetLocalProcessId()
+    myExtent = inInputCsData.GetExtent()
+    myDims = inInputCsData.GetDimensions()
+    if PhactoriDbg(100):
+      myDebugPrint3("myExtent: " + str(myExtent) + \
+                    "\nmyDims: " + str(myDims) + \
+                    "\nnumCells: " + str(numCells) + "\n")
+    seedCellList = inParameters.SeedCells
+    for seedCellIndex, oneSeedCell in enumerate(seedCellList):
+      if PhactoriDbg(100):
+        myDebugPrint3("oneSeedCell: " + str(seedCellIndex) + " " + str(oneSeedCell.ijk) + " " + str([oneSeedCell.leafVisitCount, inParameters.leafVisitCount]) + " " + str(myExtent) + "\n")
+      #is this seed cell in this block?
+      if oneSeedCell.leafVisitCount != inParameters.leafVisitCount:
+        if PhactoriDbg(100):
+          myDebugPrint3("this block is not for this seed cell: " + \
+            str(oneSeedCell.leafVisitCount) + " " + \
+            str(inParameters.leafVisitCount) + "\n")
+        continue
+      if PhactoriDbg(100):
+        myDebugPrint3("this block is for this seed cell: " + \
+           str(oneSeedCell.leafVisitCount) + " " + \
+           str(inParameters.leafVisitCount) + "\n")
+      #does this process have any data for this seed cell?
+      if oneSeedCell.AxisCrossesExtent(myExtent, oneSeedCell.collectionAxis) == False:
+        if PhactoriDbg(100):
+          myDebugPrint3("this seed cell not in myExtent: " + str(oneSeedCell.ijk) + "\n")
+        continue
+      ijkrange = oneSeedCell.GetIntersectingCollectionExtent(myExtent, oneSeedCell.collectionAxis)
+      if PhactoriDbg(100):
+        myDebugPrint3("this block has cells to collect: " + str(ijkrange) + "\n")
+      #collect all the cells for this seed cell
+      for ii in range(ijkrange[0], ijkrange[1]):
+        for jj in range(ijkrange[2], ijkrange[3]):
+          for kk in range(ijkrange[4], ijkrange[5]):
+            newStructuredCell = PhactoriSampledCellInfo()
+            newStructuredCell.Populate1(ii, jj, kk, myPid,
+              inParameters.leafVisitCount, seedCellIndex, inInputCsData,
+              myExtent, numCells,
+              outputCellArray, dataArrayNumCmpnts, defaultTuple)
+            inParameters.CellsPerSeedCell[seedCellIndex].append(newStructuredCell)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("GatherStructuredCellsInBlockFromSeedCells returning\n")
+
+  def GatherStructuredCellsFromSeedCells(self):
+    "for each structured seed cell in self.StructuredNearbyCellPointList,\n       gather cells along one u/v/w direction in the structured data (on this\n       process), including the current data for the cells"
+    if PhactoriDbg(100):
+      myDebugPrint3("GatherStructuredCellsFromSeedCells entered\n")
+
+    #find the closest structured cells for this process, recursing into
+    #multiblock dataset
+    recursionParams = GatherStructuredCellsFromSeedCellsRecursionParams()
+    recursionParams.SetUpForRecursion(self)
+    recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+    recursionObj.mParameters = recursionParams
+    recursionObj.mOperationToDoPerBlock = self.GatherStructuredCellsInBlockFromSeedCells
+    PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, self.myCopyOfInputFilter)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("GatherStructuredCellsFromSeedCells returning\n")
+    return recursionParams.CellsPerSeedCell
+
+
+  def GetListOfCellTestPointsNearestListOfPoints(self, pointList):
+    "for each point in the list, find the cell test point (e.g. center of\n       cell bounding box) which is nearest the test point.  Use MPI to work\n       in parallel"
+
+    thisProcessNearestCellPointList, thisProcDistSqrdList = \
+      self.GetCellsClosestToPointsOnThisProcessFromParaViewFilter(pointList)
+
+    nearestCellList, distanceList = self.UseMpiToGetGlobalCellPointsClosest(
+      thisProcessNearestCellPointList, thisProcDistSqrdList)
+
+    return nearestCellList
+
+  def WritePerSegmentCellListToFile(self, filename, perSegmentCellList):
+    ff = open(filename, "w")
+    if self.collectionMethod == "seed cell with structured grid":
+      ff.write("{\n")
+      ff.write('"format for cells in lists": ' + PhactoriSampledCellInfo.TerseOneLineJsonFormatComment() + ",\n")
+      ff.write('"list of collected cells for each seed cell": [\n')
+      lastIdx = len(perSegmentCellList) - 1
+      for idx, cellsForThisSegment in enumerate(perSegmentCellList):
+        ff.write("{\n")
+        ff.write('"cells for seed cell index": ' + str(idx) + ',\n')
+        thisStructuredSeedCell = self.StructuredNearbyCellPointList[idx]
+        nearbyGeometryPoint = self.NearbyGeometryPointList[idx]
+        ff.write('"structured seed cell xyz": ' + str(thisStructuredSeedCell.cellTestPoint) + ',\n')
+        ff.write('"structured seed cell ijk": ' + str(thisStructuredSeedCell.ijk) + ',\n')
+        ff.write('"structured seed cell complete": ' + thisStructuredSeedCell.ToStrTerseOneLineList() + ',\n')
+        ff.write('"geometry point used to find seed cell": ' + str(nearbyGeometryPoint) + ',\n')
+        ff.write('"number of cells collected for this seed cell": ' + str(len(cellsForThisSegment)) + ',\n')
+        ff.write('"cell list for this seed cell": [\n')
+        for cellCntr, oneCellInfo in enumerate(cellsForThisSegment):
+          if cellCntr != 0:
+            ff.write(",\n")
+          cellStr = oneCellInfo.ToStrTerseOneLineList()
+          ff.write(cellStr)
+        ff.write("\n]\n")
+        if idx != lastIdx:
+          ff.write("},\n")
+        else:
+          ff.write("}\n")
+      ff.write("]\n")
+      ff.write("}\n")
+    else:
+      ff.write("{\n")
+      ff.write('"format for cells in lists": ' + PhactoriSampledCellInfo.TerseOneLineJsonFormatComment() + ",\n")
+      ff.write('"list of collected cells for each segment": [\n')
+      lastIdx = len(perSegmentCellList) - 1
+      for idx, cellsForThisSegment in enumerate(perSegmentCellList):
+        ff.write("{\n")
+        ff.write('"cells for segment index": ' + str(idx) + ',\n')
+        thisSegment = self.SegmentList[idx]
+        nearbyGeometryPoint = self.NearbyGeometryPointList[idx]
+        ff.write('"segment point A": ' + str(thisSegment.ptA) + ',\n')
+        ff.write('"segment point B": ' + str(thisSegment.ptB) + ',\n')
+        ff.write('"geometry point used to find point A": ' + str(nearbyGeometryPoint) + ',\n')
+        ff.write('"number of cells collected for this segment": ' + str(len(cellsForThisSegment)) + ',\n')
+        ff.write('"cell list for this segment": [\n')
+        for cellCntr, oneCellInfo in enumerate(cellsForThisSegment):
+          if cellCntr != 0:
+            ff.write(",\n")
+          cellStr = oneCellInfo.ToStrTerseOneLineList()
+          ff.write(cellStr)
+        ff.write("\n]\n")
+        if idx != lastIdx:
+          ff.write("},\n")
+        else:
+          ff.write("}\n")
+      ff.write("]\n")
+      ff.write("}\n")
+    ff.close()
+
+  def WriteAllDataFromOneProcessUsingMPI(self, perSegmentCellList, basename = "PhactoriSegmentCellSampler3_", outputFilenameCounter = -1):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.WriteAllDataFromOneProcessUsingMPI entered\n", 100)
+    myPid = SmartGetLocalProcessId()
+
+    ##to start with, just have each process output it's data
+    if PhactoriDbg(100):
+      thisProcessHasData = False
+      for idx, cellsForThisSegment in enumerate(perSegmentCellList):
+        if len(cellsForThisSegment) != 0:
+          thisProcessHasData = True
+          break
+      if self.collectionMethod == "seed cell with structured grid":
+        structuredFlag = True
+      else:
+        structuredFlag = False
+      if structuredFlag:
+        basename = "PhactoriSegmentCellSampler3_structured_"
+      else:
+        basename = "PhactoriSegmentCellSampler3_"
+      fname = basename + str(myPid) + self.SampledCellsOutputFilenameExtension
+      if thisProcessHasData:
+        self.WritePerSegmentCellListToFile(fname, perSegmentCellList)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("about to serialize cell infos\n", 100)
+
+    tupleSize = self.CellDataArrayTupleSize
+    cellListSerializedFloatArray = []
+    cellListSerializedIntArray = []
+    for idx, cellsForThisSegment in enumerate(perSegmentCellList):
+      for cellCntr, oneCellInfo in enumerate(cellsForThisSegment):
+        oneCellInfo.SerializeAppendToFloatAndIntArray(cellListSerializedFloatArray, cellListSerializedIntArray, tupleSize)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("done serializing " + str(len(cellListSerializedFloatArray)) + "  " + str(len(cellListSerializedIntArray)) + "\n", 100)
+
+    pidToDoOutput = SmartGetNumberOfProcesses() - 1
+    globalSerializedFloatArray = UseMpiToSendAllProcessesFloatArrayToOneProcess(cellListSerializedFloatArray, pidToDoOutput)
+    globalSerializedIntArray = UseMpiToSendAllProcessesIntArrayToOneProcess(cellListSerializedIntArray, pidToDoOutput)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("returned from getting globalSerializedFloatArray and globalSerializedIntArray\n")
+
+    if myPid == pidToDoOutput:
+      if PhactoriDbg(100):
+       myDebugPrint3("I'm the output pid, about to serialize in\n")
+
+      serialFloatSize, serialIntSize = PhactoriSampledCellInfo.GetSerializeFloatAndIntSize(tupleSize)
+      globalNumCells = int(len(globalSerializedFloatArray) / serialFloatSize)
+
+      globalPerSegmentCellList = []
+      if self.collectionMethod == "seed cell with structured grid":
+        structuredFlag = True
+      else:
+        structuredFlag = False
+      for ii in perSegmentCellList:
+        globalPerSegmentCellList.append([])
+      for ii in range(0, globalNumCells):
+        newCell = PhactoriSampledCellInfo()
+        newCell.SerializeSetFromFloatAndIntArray(globalSerializedFloatArray, globalSerializedIntArray, ii, tupleSize)
+        whichSegList = globalPerSegmentCellList[newCell.segmentIndex]
+        whichSegList.append(newCell)
+
+      if PhactoriDbg(100):
+        myDebugPrint3("finished serialize, about to write to file\n")
+        if PhactoriDbg(100):
+         for ii, oneSegmentGlobalCellList in enumerate(globalPerSegmentCellList):
+           myDebugPrint3(str(ii) + "  " + str(len(oneSegmentGlobalCellList)) + "\n")
+
+      fname = self.CreateCurrentCallbackCellCollectionOutputFilePath(outputFilenameCounter)
+      if PhactoriDbg(100):
+        myDebugPrint3("output filename will be: " + str(fname) + "\n")
+      self.WritePerSegmentCellListToFile(fname, globalPerSegmentCellList)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.WriteAllDataFromOneProcessUsingMPI returning\n", 100)
+
+  def CreateCurrentCallbackCellCollectionOutputFilePath(self, outputFilenameCounter):
+    if outputFilenameCounter < 0:
+      ftc = GetFrameTagCounter()
+    else:
+      ftc = outputFilenameCounter
+
+    outName = self.SampledCellsOutputDirectory + "/" + \
+      self.SampledCellsOutputFilename + \
+      str(ftc).zfill(self.NumCounterDigits) + \
+      self.SampledCellsOutputFilenameExtension
+
+    return outName
+
+  def WriteAllDataFromOneProcessUsingMPIStructured(self, perSegmentCellList, outputFilenameCounter = -1):
+    self.WriteAllDataFromOneProcessUsingMPI(perSegmentCellList, "PhactoriSegmentCellSampler3_structured_", outputFilenameCounter)
+
+  def ExportOperationData(self, datadescription):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.ExportOperationData entered\n", 100)
+
+    UpdatePipelineWithCurrentTimeArgument(self.myCopyOfInputFilter)
+
+    if self.collectionMethod == "seed cell with structured grid":
+      perSegmentStructuredCellList = self.GatherStructuredCellsFromSeedCells()
+      if self.WriteCellListToJsonFile:
+        self.WriteAllDataFromOneProcessUsingMPIStructured(perSegmentStructuredCellList)
+    else:
+      perSegmentCellList = self.SetMaskValueForCellsNearSegments(
+        self.myCopyOfInputFilter, self.SegmentList, "blargmask1", "Ids",
+        self.MaskTestDistanceSquared, self.ProjectionAxis)
+
+      if PhactoriDbg(100):
+        for idx, cellsForThisSegment in enumerate(perSegmentCellList):
+          myDebugPrint3("after recursion cells for segment (index, count): " + str(idx) + ", " + str(len(cellsForThisSegment)) + "\n")
+          #myDebugPrint3(str(cellsForThisSegment) + "\n")
+        myDebugPrint3("\n")
+
+      if self.WriteCellListToJsonFile:
+        self.WriteAllDataFromOneProcessUsingMPI(perSegmentCellList)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriSegmentCellSampler3.ExportOperationData returning\n", 100)
+
+  def CreateProgrammableFilterString(self):
+
+    scriptLines = []
+
+    scriptLines.append("#print('test2')\n")
+
+    scriptLines.append("#cellIndexesToSet = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]\n")
+    scriptLines.append("#maskValuesToSet = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0]\n")
+    scriptLines.append("#leafVisitCount = [0,0,0,0,0,0,0,0,0,0,0]\n")
+
+    scriptLines.append("localLeafVisitCount = 0\n")
+
+    scriptLines.append("def flatten(input, output):\n")
+    scriptLines.append("    # Copy the cells etc.\n")
+    scriptLines.append("    output.ShallowCopy(input)\n")
+    scriptLines.append("    celldata = output.GetCellData()\n")
+    scriptLines.append("    #for now if there are no cell arrays here we don't want to add one\n")
+    scriptLines.append("    #really we don't want to add one of there are actually no cells\n")
+    scriptLines.append("    numCellArrays = celldata.GetNumberOfArrays()\n")
+    scriptLines.append("    if numCellArrays == 0:\n")
+    scriptLines.append("      return\n")
+    scriptLines.append("    numCells = input.GetNumberOfCells()\n")
+    scriptLines.append("    numPoints = input.GetNumberOfPoints()\n")
+    scriptLines.append("    #print(str(numCells))\n")
+    scriptLines.append("    ncda = vtk.vtkDoubleArray()\n")
+    scriptLines.append("    ncda.SetNumberOfTuples(numCells)\n")
+    scriptLines.append("    numTuples = ncda.GetNumberOfTuples()\n")
+    scriptLines.append("    for ii in range(0, numTuples):\n")
+    scriptLines.append("        ncda.SetValue(ii, 0.0)\n")
+    scriptLines.append("    for ii, cellNdx in enumerate(cellIndexesToSet):\n")
+    scriptLines.append("        if localLeafVisitCount == leafVisitCount[ii]:\n")
+    scriptLines.append("          if cellNdx < numCells:\n")
+    scriptLines.append("            ncda.SetValue(cellNdx, float(maskValuesToSet[ii]))\n")
+    scriptLines.append("    ncda.SetName('" + self.ProgrammableFilterOutputCellVariableName + "')\n")
+    scriptLines.append("    #print(ncda.GetName())\n")
+    scriptLines.append("    celldata.AddArray(ncda)\n")
+
+    scriptLines.append("input = self.GetInputDataObject(0, 0)\n")
+    scriptLines.append("output = self.GetOutputDataObject(0)\n")
+
+    scriptLines.append("if input.IsA('vtkMultiBlockDataSet'):\n")
+    scriptLines.append("    output.CopyStructure(input)\n")
+    scriptLines.append("    iter = input.NewIterator()\n")
+    scriptLines.append("    iter.UnRegister(None)\n")
+    scriptLines.append("    iter.InitTraversal()\n")
+    scriptLines.append("    while not iter.IsDoneWithTraversal():\n")
+    scriptLines.append("        localLeafVisitCount += 1\n")
+    scriptLines.append("        curInput = iter.GetCurrentDataObject()\n")
+    scriptLines.append("        curOutput = curInput.NewInstance()\n")
+    scriptLines.append("        curOutput.UnRegister(None)\n")
+    scriptLines.append("        output.SetDataSet(iter, curOutput)\n")
+    scriptLines.append("        flatten(curInput, curOutput)\n")
+    scriptLines.append("        iter.GoToNextItem();\n")
+    scriptLines.append("else:\n")
+    scriptLines.append("  flatten(input, output)\n")
+  
+    mainScriptString = "".join(scriptLines)
+
+    myCellIndexesToSet = []
+    myMaskValuesToSet = []
+    myLeafVisitCount = []
+    if self.PerSegmentMarkedCellInfoList != None:
+      for idx, cellsForThisSegment in enumerate(self.PerSegmentMarkedCellInfoList):
+        if cellsForThisSegment != None:
+         maskValue = idx+1
+         for cellIdx, oneCellInfo in enumerate(cellsForThisSegment):
+           myCellIndexesToSet.append(oneCellInfo.index)
+           myMaskValuesToSet.append(maskValue)
+           myLeafVisitCount.append(oneCellInfo.leafVisitCount)
+   
+    newstr1 = "cellIndexesToSet = " + str(myCellIndexesToSet) + "\n" 
+    newstr2 = "maskValuesToSet = " + str(myMaskValuesToSet) + "\n" 
+    newstr3 = "leafVisitCount = " + str(myLeafVisitCount) + "\n" 
+    self.mProgFilterString = newstr1 + newstr2 + newstr3 + mainScriptString
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriMarkCellSetsOperation constructed script:\n" + \
+        self.mProgFilterString)
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriGeometricCellSampler1 import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+
+class GatherGeometricallySampledCellsRecursionParams:
+  def __init__(self):
+    self.leafVisitCount = 0
+    self.dataArrayNames = ["noname"]
+    self.boundingBox = [-1.0, 1.0, -1.0, 1.0, -1.0, 1.0]
+    self.CellsMeetingGeometricCriteria = []
+
+  def CellTestPointMeetsGeometricCriteria(self, cellTestPoint):
+    if cellTestPoint[0] < self.boundingBox[0]:
+      return False
+    if cellTestPoint[0] > self.boundingBox[1]:
+      return False
+    if cellTestPoint[1] < self.boundingBox[2]:
+      return False
+    if cellTestPoint[1] > self.boundingBox[3]:
+      return False
+    if cellTestPoint[2] < self.boundingBox[4]:
+      return False
+    if cellTestPoint[2] > self.boundingBox[5]:
+      return False
+    return True
+
+  def SetUpForRecursion(self, creatingSamplerInstance):
+    self.dataArrayNames = creatingSamplerInstance.CellDataArrayNames
+    self.boundingBox = creatingSamplerInstance.SamplingGeometryBoundingBox
+
+class CollectDataOnSampledCellsRecursionParams:
+  def __init__(self):
+    self.leafVisitCount = 0
+    self.dataArrayNames = ["noname"]
+    self.GeometricallySampledCellsByRecursionLeaf = None
+
+  def SetUpForRecursion(self, creatingSamplerInstance):
+    self.dataArrayNames = creatingSamplerInstance.CellDataArrayNames
+    self.GeometricallySampledCellsByRecursionLeaf = creatingSamplerInstance.GeometricallySampledCellsByRecursionLeaf
+
+
+def localGetCellijk(ii, jj, kk, inInputCsData, myExtent):
+  #returnCell = inInputCsData.GetCell(ii, jj, kk)
+  computedIndex = vtk.vtkStructuredData.ComputeCellIdForExtent(myExtent, [ii,jj,kk])
+  returnCell = inInputCsData.GetCell(computedIndex)
+  return returnCell
+
+class PhactoriGeometricCellSampler1(PhactoriOperationSpecifics):
+  "Filter/operation which reads in a .json file which is a list of 3d\n     coordinates pairs (representating segments, and then finds all cells\n     in the input data that cross that segment and sets a masking value\n     into a cell data array for those cells"
+  def __init__(self):
+    self.myCopyOfInputFilter = None
+
+    #indicates whether we should conduct our segment-picking cell calculations
+    #by projecting onto an ordinal plane.  -1 is no projection, 0, 1, or 2 are
+    #the x, y, or z axes. This is of particular use if you are doing a slice
+    #before selecting elements.  The slice does not need to be axis aligned,
+    #just choose the axis plane closest to parallel to the slice plane.
+    self.ProjectionAxis = -1
+
+    #as of 2019Aug13, we are having the programmable filter core dump with
+    #structured data: this allows us to turn off the programmable filter to
+    #do the other operations
+    self.DoProgrammableFilterToAddMaskVariable = False
+    self.mProgFilterMaskSetter = None
+    self.mProgFilterString = None
+    self.ProgrammableFilterOutputCellVariableName = "mask1"
+    self.mainScriptString = None
+
+    self.WriteOutGeometricallySampledCellData = True
+    self.GeometricSampledCellOutputFilePathManager = PhactoriOutputFileNameAndDirectoryManager(
+      "PhactoriGeometricCellSampler1_geometric_",
+      "PhactoriGeometricCellSampler1_Output", 5, ".csv")
+
+    self.WriteOutDataControlledSampledCellData = True
+    self.DataControlledSampledCellOutputFilePathManager = PhactoriOutputFileNameAndDirectoryManager(
+      "PhactoriGeometricCellSampler1_data_controlled_",
+      "PhactoriGeometricCellSampler1_Output", 5, ".csv")
+
+    self.CellDataArrayNames = ["V"]
+    self.CellDataArrayTupleSize = 8
+
+    self.SamplingGeometryBoundingBox = [-0.5, 0.5, -0.5, 0.5, -0.5, 0.5]
+    self.GeometricallySampledCellsForThisProcess = None
+    self.GeometricallySampledCellsByRecursionLeaf = None
+
+    self.DoPerCallbackDataControlledSampling = True
+    self.DataControlledSampledCellsForThisProcess = None
+    self.DataControlledSamplingMethod = "cells with ratio of min/max data value"
+    #self.DataControlledSamplingMethod = "cells within distance of min/max highest data value cell"
+    #self.DataControlledSamplingMethod = "cells within bounding box around min/max highest data value cell"
+    self.DataControlledRatioBasis = "ratio is from zero to data maximum"
+    #self.DataControlledRatioBasis = "ratio is from data minimum to data maximum"
+    self.DataControlledRatio = 0.75
+    self.DataControlledRatioGreaterOrLess = "cells greater/equal"
+    #self.DataControlledRatioGreaterOrLess = "cells less/equal"
+    #self.RatioBasis = "data range based"
+    self.DataControlledDistance = 0.1
+    self.DataControlledUseMinOrMax = "max"
+    self.DataControlledBoundingBox = [-1.0, 1.0, -1.0, 1.0, -1.0, 1.0]
+
+  def CheckBoundingBox(self, boundingBox, parsekey, infoString):
+    goodFlag = True
+    if len(boundingBox) != 6:
+      myDebugPrint3AndException(infoString + "\n"
+        "bounding box is invalid for key: " + parseKey + "\n"
+        "must be six float list, like:\n"
+        "[-1.0, 1.0, -1.0, 1.0, -1.0, 1.0]\n")
+    if (boundingBox[0] > boundingBox[1]) or \
+       (boundingBox[2] > boundingBox[3]) or \
+       (boundingBox[4] > boundingBox[5]):
+      myDebugPrint3AndException(infoString + "\n"
+        "bounding box is invalid for key: " + parseKey + "\n"
+        "we need max >= min for each axis, like:\n"
+        "[-1.0, 1.0, -1.0, 1.0, -1.0, 1.0]\n")
+
+  def ParseParametersFromJson(self, inJson):
+    #if "filename" in inJson:
+    #  self.JsonListFileName = inJson['filename']
+    #else:
+    #  myDebugPrint3AndException(
+    #      "PhactoriGeometricCellSampler1:ParseParametersFromJson\n"
+    #      "Error:  must have 'filename' key\n")
+
+    keyval1 = "sampling geometry bounding box"
+    if keyval1 in inJson:
+      newBB = inJson[keyval1]
+      self.CheckBoundingBox(newBB, keyval1,
+        "PhactoriGeometricCellSampler1:ParseParametersFromJson")
+      self.SamplingGeometryBoundingBox = newBB
+
+    keyval4 = "projection axis"
+    if keyval4 in inJson:
+      val4 = inJson[keyval4]
+      if val4 == "none":
+        self.ProjectionAxis = -1
+      elif val4 == "x":
+        self.ProjectionAxis = 0
+      elif val4 == "y":
+        self.ProjectionAxis = 1
+      elif val4 == "z":
+        self.ProjectionAxis = 2
+      elif int(val4) == 1:
+        self.ProjectionAxis = 0
+      elif int(val4) == 2:
+        self.ProjectionAxis = 1
+      elif int(val4) == 3:
+        self.ProjectionAxis = 2
+
+    keyval5 = "do programmable filter"
+    if keyval5 in inJson:
+      self.DoProgrammableFilterToAddMaskVariable = inJson[keyval5]
+
+    self.GeometricSampledCellOutputFilePathManager.ParseOutputFileNameControl(
+      inJson, "geometric sampled cell output file ")
+
+    self.DataControlledSampledCellOutputFilePathManager.ParseOutputFileNameControl(
+      inJson, "data controlled sampled cell output file ")
+
+    keyval7e = "export geometric sampled cell data as json file"
+    if keyval7e in inJson:
+      self.WriteOutGeometricallySampledCellData = inJson[keyval7e]
+
+    keyval7f = "export data controlled sampled cell data as json file"
+    if keyval7f in inJson:
+      self.WriteOutDataControlledSampledCellData = inJson[keyval7f]
+
+    keyval8 = "cell data array names"
+    if keyval8 in inJson:
+      self.CellDataArrayNames = inJson[keyval8]
+
+    keyval9 = "cell data array tuple size"
+    if keyval9 in inJson:
+      self.CellDataArrayTupleSize = inJson[keyval9]
+
+    keyval10 = "programmable filter output cell variable name"
+    if keyval10 in inJson:
+      self.ProgrammableFilterOutputCellVariableName = inJson[keyval10]
+
+    keyval11 = "data controlled sampling method"
+    if keyval11 in inJson:
+      self.DataControlledSamplingMethod = inJson[keyval11]
+      if self.DataControlledSamplingMethod == "cells within distance of min/max highest data value cell":
+        keyval11b = "data controlled distance"
+        if keyval11b not in inJson:
+          myDebugPrint3AndException("must have 'data controlled distance'\n")
+        self.DataControlledDistance = inJson[keyval11b]
+      elif self.DataControlledSamplingMethod == "cells with ratio of min/max data value":
+        keyval11b = "data controlled ratio of min/max"
+        if keyval11b in inJson:
+          self.DataControlledRatio = inJson[keyval11b]
+          if (self.DataControlledRatio < 0.0) or (self.DataControlledRatio > 1.0):
+            myDebugPrint3AndException("'data controlled ratio of min/max must be in range [0.0, 1.0]\n")
+          if PhactoriDbg(100):
+            myDebugPrint3("self.DataControlledRatio set to " + str(self.DataControlledRatio) + "\n", 100)
+        keyval11c = "data controlled ratio basis"
+        if keyval11c in inJson:
+          self.DataControlledRatioBasis = inJson[keyval11c]
+          if (self.DataControlledRatioBasis != "ratio is from zero to data maximum") and \
+             (self.DataControlledRatioBasis != "ratio is from data minimum to data maximum"):
+            myDebugPrint3("bad 'data controlled ratio basis'\n"
+              "must be one of:\n"
+              "'ratio is from zero to data maximum'\n"
+              "'ratio is from data minimum to data maximum'\n")
+        keyval11d = "collect cells relative to ratio"
+        if keyval11d in inJson:
+          self.DataControlledRatioGreaterOrLess = inJson[keyval11d]
+          if (self.DataControlledRatioGreaterOrLess != "cells greater/equal") and \
+             (self.DataControlledRatioGreaterOrLess != "cells less/equal"):
+            myDebugPrint3("bad 'collect cells relative to ratio'\n"
+              "must be one of:\n"
+              "'cells greater/equal'\n"
+              "'cells less/equal'\n")
+      elif self.DataControlledSamplingMethod == "cells within bounding box around min/max highest data value cell":
+        keyval11b = "data controlled bounding box"
+        if keyval11b in inJson:
+          self.DataControlledBoundingBox = inJson[keyval11b]
+          self.CheckBoundingBox(self.DataControlledBoundingBox, keyval11b,
+            "PhactoriGeometricCellSampler1:ParseParametersFromJson")
+      else:
+        myDebugPrint3AndException("bad 'data controlled sampling method'\n")
+      if PhactoriDbg(100):
+        myDebugPrint3("self.DataControlledSamplingMethod set to " + \
+          str(self.DataControlledSamplingMethod) + "\n", 100)
+
+    keyval11c = "data controlled sampling use min or max"
+    if keyval11c in inJson:
+      if inJson[keyval11c] == "max":
+        self.DataControlledUseMinOrMax = "max"
+      else:
+        self.DataControlledUseMinOrMax = "min"
+
+  def CreateParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriGeometricCellSampler1.CreateParaViewFilter entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    self.myCopyOfInputFilter = inInputFilter
+
+    UpdatePipelineWithCurrentTimeArgument(self.myCopyOfInputFilter)
+
+    self.CreateInternalListOfGeometricallySampledCellsOnThisProcess()
+    self.CreateInternalListOfDataControlledSampledCellsOnThisProcess()
+
+    if self.DoProgrammableFilterToAddMaskVariable:
+      self.mProgFilterMaskSetter = ProgrammableFilter(
+              Input = self.myCopyOfInputFilter)
+      self.mProgFilterMaskSetter.CopyArrays = 1
+      self.CreateProgrammableFilterString()
+      self.mProgFilterMaskSetter.Script = self.mProgFilterString
+      self.mProgFilterMaskSetter.UpdatePipeline()
+    else:
+      self.mProgFilterMaskSetter = self.myCopyOfInputFilter
+
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriGeometricCellSampler1.CreateParaViewFilter returning\n", 100)
+    return self.mProgFilterMaskSetter
+
+  @staticmethod
+  def GatherGeometricallySampledCellsInBlock(recursionObject, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("GatherGeometricallySampledCellsInBlock entered\n")
+
+    numCells = inInputCsData.GetNumberOfCells()
+    numPoints = inInputCsData.GetNumberOfPoints()
+    inParameters.leafVisitCount += 1
+    if (numCells == 0) or (numPoints == 0):
+      #no cells here
+      return
+
+    cellData = inInputCsData.GetCellData()
+    outputCellArrays = []
+    dataArrayNumCmpnts = 0
+    if cellData != None:
+      for oneDataArrayName in inParameters.dataArrayNames:
+        oneCellDataArray = cellData.GetArray(oneDataArrayName)
+        outputCellArrays.append(oneCellDataArray)
+        if oneCellDataArray != None:
+          dataArrayNumCmpnts += oneCellDataArray.GetNumberOfComponents()
+    if PhactoriDbg(100):
+      myDebugPrint3("inParameters.dataArrayNames: " + str(inParameters.dataArrayNames) + "\n")
+      for oneCellDataArray in outputCellArrays:
+        if oneCellDataArray == None:
+          myDebugPrint3("None\n")
+        else:
+          myDebugPrint3(str(oneCellDataArray.GetNumberOfTuples()) + "\n")
+     
+    if dataArrayNumCmpnts != 0:
+      defaultTuple = []
+      for ii in range(0, dataArrayNumCmpnts):
+        defaultTuple.append(-1.0)
+    else:
+      dataArrayNumCmpnts = -1
+      defaultTuple = []
+
+    myPid = SmartGetLocalProcessId()
+    for cellIndex in range(0,numCells):
+      oneCell = inInputCsData.GetCell(cellIndex)
+      cellTestPoint = GetCellTestPoint(oneCell)
+      if inParameters.CellTestPointMeetsGeometricCriteria(cellTestPoint):
+            if dataArrayNumCmpnts == 0:
+              thisCellDataTuple = defaultTuple
+            else:
+              thisCellDataTuple = []
+              for oneCellDataArray in outputCellArrays:
+                if oneCellDataArray != None:
+                  dataTupleSub1 = oneCellDataArray.GetTuple(cellIndex)
+                  thisCellDataTuple.extend(dataTupleSub1)
+            newCellInfo = PhactoriSampledCellInfo()
+            newCellInfo.SetFromList([cellTestPoint, [-1,-1,-1], thisCellDataTuple, myPid, inParameters.leafVisitCount, cellIndex, -1, -1])
+            inParameters.CellsMeetingGeometricCriteria.append(newCellInfo)
+
+
+    if PhactoriDbg(100):
+      myDebugPrint3("GatherGeometricallySampledCellsInBlock returning\n")
+
+  def CreateInternalListOfGeometricallySampledCellsOnThisProcess(self):
+    if PhactoriDbg(100):
+      myDebugPrint3("CreateInternalListOfGeometricallySampledCellsOnThisProcess entered\n")
+
+    recursionParams = GatherGeometricallySampledCellsRecursionParams()
+    recursionParams.SetUpForRecursion(self)
+    recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+    recursionObj.mParameters = recursionParams
+    recursionObj.mOperationToDoPerBlock = self.GatherGeometricallySampledCellsInBlock
+
+    PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, self.myCopyOfInputFilter)
+    if PhactoriDbg(100):
+      myDebugPrint3("CreateInternalListOfGeometricallySampledCellsOnThisProcess returning\n")
+
+    self.GeometricallySampledCellsForThisProcess = recursionParams.CellsMeetingGeometricCriteria
+    self.CreateLeafRecursionTrackingStructure()
+
+  def PointIsInsideBoundingBox(self, testPoint, testBoundingBox):
+    if testPoint[0] < testBoundingBox[0]:
+      return False
+    if testPoint[0] > testBoundingBox[1]:
+      return False
+    if testPoint[1] < testBoundingBox[2]:
+      return False
+    if testPoint[1] > testBoundingBox[3]:
+      return False
+    if testPoint[2] < testBoundingBox[4]:
+      return False
+    if testPoint[2] > testBoundingBox[5]:
+      return False
+    return True
+
+  def CreateInternalListOfDataControlledSampledCellsOnThisProcess(self):
+    if PhactoriDbg(100):
+      myDebugPrint3("CreateInternalListOfDataControlledSampledCellsOnThisProcess entered\n")
+
+    if self.DoPerCallbackDataControlledSampling == False:
+      self.DataControlledSampledCellsForThisProcess = self.GeometricallySampledCellsForThisProcess
+      if PhactoriDbg(100):
+        myDebugPrint3("CreateInternalListOfDataControlledSampledCellsOnThisProcess returning (no processing)\n")
+      return
+
+    self.DataControlledSampledCellsForThisProcess = []
+
+    #find min/max cell this process
+    currentMax = -sys.float_info.max
+    currentMin = sys.float_info.max
+    if len(self.GeometricallySampledCellsForThisProcess) >= 1:
+      for ii, oneCell in enumerate(self.GeometricallySampledCellsForThisProcess):
+        testVal = oneCell.dataTuple[0]
+        if testVal > currentMax:
+          localMaxCell = oneCell
+          currentMax = testVal
+        if testVal < currentMin:
+          localMinCell = oneCell
+          currentMin = testVal
+    else:
+      myPid = SmartGetLocalProcessId()
+      defaultDataTuple = []
+      for ii in range(0, self.CellDataArrayTupleSize):
+        defaultDataTuple.append(0.0)
+      localMinCell = PhactoriSampledCellInfo()
+      defaultDataTuple[0] = currentMax
+      localMinCell.SetFromList([[0.0,0.0,0.0], [-1,-1,-1], defaultDataTuple, myPid, -1, -1, -1, -1])
+      localMaxCell = PhactoriSampledCellInfo()
+      defaultDataTuple[0] = currentMin
+      localMaxCell.SetFromList([[0.0,0.0,0.0], [-1,-1,-1], defaultDataTuple, myPid, -1, -1, -1, -1])
+
+    if PhactoriDbg(100):
+      myDebugPrint3("localMinCell:\n" + localMinCell.ToStrTerseOneLineList() + "\n")
+      myDebugPrint3("localMaxCell:\n" + localMaxCell.ToStrTerseOneLineList() + "\n")
+    #find min/max cell all processes
+    globalMinMaxCellPair = PhactoriLocalToGlobalCellsWithMinMaxDataUsingMPI([localMinCell, localMaxCell], self.CellDataArrayTupleSize)
+    if PhactoriDbg(100):
+      myDebugPrint3("globalMinCell:\n" + globalMinMaxCellPair[0].ToStrTerseOneLineList() + "\n")
+      myDebugPrint3("globalMaxCell:\n" + globalMinMaxCellPair[1].ToStrTerseOneLineList() + "\n")
+      myDebugPrint3("self.DataControlledSamplingMethod: " + self.DataControlledSamplingMethod + "\n")
+
+    if self.DataControlledSamplingMethod == "cells with ratio of min/max data value":
+      if self.DataControlledRatioBasis == "ratio is from zero to data maximum":
+        maxCell = globalMinMaxCellPair[1]
+        thresholdValue = self.DataControlledRatio * maxCell.dataTuple[0]
+        if PhactoriDbg(100):
+          myDebugPrint3("ratio is from zero to data maximum: " + str(maxCell.dataTuple[0]) + \
+          ", " + str(self.DataControlledRatio) + "\n")
+      else:
+        minCell = globalMinMaxCellPair[0]
+        maxCell = globalMinMaxCellPair[1]
+        minValue = minCell.dataTuple[0]
+        maxValue = maxCell.dataTuple[0]
+        minMaxRange = maxValue - minValue
+        thresholdValue = minValue + self.DataControlledRatio * minMaxRange
+        if PhactoriDbg(100):
+          myDebugPrint3("ratio is from data minimum to data maximum: " + str(minValue) + ", " + \
+            str(maxValue) + ", " + str(minMaxRange) + ", " + \
+            str(self.DataControlledRatio) + "\n")
+      if PhactoriDbg(100):
+        myDebugPrint3("thresholdValue: " + str(thresholdValue) + "\n")
+      if self.DataControlledRatioGreaterOrLess == "cells greater/equal":
+        for ii, oneCell in enumerate(self.GeometricallySampledCellsForThisProcess):
+          if oneCell.dataTuple[0] >= thresholdValue:
+            self.DataControlledSampledCellsForThisProcess.append(oneCell)
+      else:
+        for ii, oneCell in enumerate(self.GeometricallySampledCellsForThisProcess):
+          if oneCell.dataTuple[0] <= thresholdValue:
+            self.DataControlledSampledCellsForThisProcess.append(oneCell)
+      if PhactoriDbg(100):
+        myDebugPrint3("number of cells out of how many got sampled: " + \
+          str(len(self.DataControlledSampledCellsForThisProcess)) + ", " + \
+          str(len(self.GeometricallySampledCellsForThisProcess)) + "\n")
+    elif self.DataControlledSamplingMethod == "cells within distance of min/max highest data value cell":
+      if PhactoriDbg(100):
+        myDebugPrint3("doing distance test: " + \
+          str(self.DataControlledUseMinOrMax) + ", " + \
+          str(self.DataControlledDistance) + "\n")
+      if self.DataControlledUseMinOrMax == "max":
+        centerCellPoint = globalMinMaxCellPair[1].cellTestPoint
+      else:
+        centerCellPoint = globalMinMaxCellPair[0].cellTestPoint
+      if PhactoriDbg(100):
+        myDebugPrint3("centerCellPoint: " + str(centerCellPoint) + "\n")
+      for ii, oneCell in enumerate(self.GeometricallySampledCellsForThisProcess):
+        cellDistance = vecDistance(centerCellPoint, oneCell.cellTestPoint)
+        if cellDistance <= self.DataControlledDistance:
+          self.DataControlledSampledCellsForThisProcess.append(oneCell)
+    elif self.DataControlledSamplingMethod == "cells within bounding box around min/max highest data value cell":
+      if PhactoriDbg(100):
+        myDebugPrint3("doing bounding box test: " + \
+          str(self.DataControlledUseMinOrMax) + ", " + \
+          str(self.DataControlledBoundingBox) + "\n")
+      if self.DataControlledUseMinOrMax == "max":
+        centerCellPoint = globalMinMaxCellPair[1].cellTestPoint
+      else:
+        centerCellPoint = globalMinMaxCellPair[0].cellTestPoint
+      if PhactoriDbg(100):
+        myDebugPrint3("centerCellPoint: " + str(centerCellPoint) + "\n")
+      testBoundingBox = [
+        centerCellPoint[0] + self.DataControlledBoundingBox[0],
+        centerCellPoint[0] + self.DataControlledBoundingBox[1],
+        centerCellPoint[1] + self.DataControlledBoundingBox[2],
+        centerCellPoint[1] + self.DataControlledBoundingBox[3],
+        centerCellPoint[2] + self.DataControlledBoundingBox[4],
+        centerCellPoint[2] + self.DataControlledBoundingBox[5]
+        ]
+      for ii, oneCell in enumerate(self.GeometricallySampledCellsForThisProcess):
+        if self.PointIsInsideBoundingBox(oneCell.cellTestPoint, testBoundingBox):
+          self.DataControlledSampledCellsForThisProcess.append(oneCell)
+    else:
+      myDebugPrint3AndException("CreateInternalListOfDataControlledSampledCellsOnThisProcess:\n" +\
+        "bad self.DataControlledSamplingMethod\n")
+ 
+
+    if PhactoriDbg(100):
+      myDebugPrint3("CreateInternalListOfDataControlledSampledCellsOnThisProcess returning\n")
+
+    #self.CreateLeafRecursionTrackingStructure()
+
+  @staticmethod
+  def CollectDataOnSampledCellsInBlock(recursionObject, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("CollectDataOnSampledCellsInBlock entered 1\n")
+
+    inParameters.leafVisitCount += 1
+
+    if inParameters.GeometricallySampledCellsByRecursionLeaf == None:
+      #no cells collected for sampling on this process
+      if PhactoriDbg(100):
+        myDebugPrint3("CollectDataOnSampledCellsInBlock returning 1\n")
+      return
+
+    if inParameters.leafVisitCount not in inParameters.GeometricallySampledCellsByRecursionLeaf:
+      #no cells collected for sampling on this block on this process
+      if PhactoriDbg(100):
+        myDebugPrint3("CollectDataOnSampledCellsInBlock returning 2\n")
+      return
+
+    numCells = inInputCsData.GetNumberOfCells()
+    numPoints = inInputCsData.GetNumberOfPoints()
+    if (numCells == 0) or (numPoints == 0):
+      #no cells here
+      if PhactoriDbg(100):
+        myDebugPrint3("CollectDataOnSampledCellsInBlock returning 3\n")
+      return
+
+    cellData = inInputCsData.GetCellData()
+    if cellData == None:
+      if PhactoriDbg(100):
+        myDebugPrint3("CollectDataOnSampledCellsInBlock returning 4\n")
+      return
+
+    testDataCellArray = None
+    testDataCellArray = cellData.GetArray(inParameters.dataArrayNames[0])
+
+    if testDataCellArray == None:
+      if PhactoriDbg(100):
+        myDebugPrint3("CollectDataOnSampledCellsInBlock returning 5\n")
+      return
+
+    outputCellArrays = []
+    dataArrayNumCmpnts = 0
+    if cellData != None:
+      for oneDataArrayName in inParameters.dataArrayNames:
+        oneCellDataArray = cellData.GetArray(oneDataArrayName)
+        outputCellArrays.append(oneCellDataArray)
+        if oneCellDataArray != None:
+          dataArrayNumCmpnts += oneCellDataArray.GetNumberOfComponents()
+    if PhactoriDbg(100):
+      myDebugPrint3("inParameters.dataArrayNames: " + str(inParameters.dataArrayNames) + "\n")
+      for oneCellDataArray in outputCellArrays:
+        if oneCellDataArray == None:
+          myDebugPrint3("None\n")
+        else:
+          myDebugPrint3(str(oneCellDataArray.GetNumberOfTuples()) + "\n")
+     
+    if dataArrayNumCmpnts != 0:
+      defaultTuple = []
+      for ii in range(0, dataArrayNumCmpnts):
+        defaultTuple.append(-1.0)
+    else:
+      dataArrayNumCmpnts = -1
+      defaultTuple = []
+
+    myPid = SmartGetLocalProcessId()
+
+    sampleCellList = inParameters.GeometricallySampledCellsByRecursionLeaf[inParameters.leafVisitCount]
+    if PhactoriDbg(100):
+      myDebugPrint3("num cells, leaf: " + str(len(sampleCellList)) + ", " + str(inParameters.leafVisitCount) + "\n")
+    for oneSampleCell in sampleCellList:
+      #thisCellDataTuple = outputCellArray.GetTuple(oneSampleCell.index)
+      if dataArrayNumCmpnts == 0:
+        thisCellDataTuple = defaultTuple
+      else:
+        thisCellDataTuple = []
+        for oneCellDataArray in outputCellArrays:
+          if oneCellDataArray != None:
+            dataTupleSub1 = oneCellDataArray.GetTuple(oneSampleCell.index)
+            thisCellDataTuple.extend(dataTupleSub1)
+      tupleCount = min(len(thisCellDataTuple), len(oneSampleCell.dataTuple))
+      if PhactoriDbg(100):
+        myDebugPrint3(str(oneSampleCell.index) + ", " + str(thisCellDataTuple) + ", " + str(tupleCount) + "\n")
+      for ii in range(0, tupleCount):
+        oneSampleCell.dataTuple[ii] = thisCellDataTuple[ii]
+
+    if PhactoriDbg(100):
+      myDebugPrint3("CollectDataOnSampledCellsInBlock returning 6\n")
+
+  def CollectDataOnSampledCellsOnThisProcess(self):
+    "go through existing list of cells for this process, and get the data\n       value for the current time into each cell sample instance"
+    if PhactoriDbg(100):
+      myDebugPrint3("CollectDataOnSampledCellsOnThisProcess entered\n")
+
+    recursionParams = CollectDataOnSampledCellsRecursionParams()
+    recursionParams.SetUpForRecursion(self)
+    recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+    recursionObj.mParameters = recursionParams
+    recursionObj.mOperationToDoPerBlock = self.CollectDataOnSampledCellsInBlock
+
+    PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, self.myCopyOfInputFilter)
+    if PhactoriDbg(100):
+      myDebugPrint3("CollectDataOnSampledCellsOnThisProcess returning\n")
+
+  def CreateLeafRecursionTrackingStructure(self):
+    if PhactoriDbg(100):
+      myDebugPrint3("CreateLeafRecursionTrackingStructure entered\n")
+
+    if len(self.GeometricallySampledCellsForThisProcess) <= 0:
+      self.GeometricallySampledCellsByRecursionLeaf = None
+      if PhactoriDbg(100):
+       myDebugPrint3("CreateLeafRecursionTrackingStructure returning (no cells)\n")
+      return
+
+    self.GeometricallySampledCellsByRecursionLeaf = {}
+    for oneCell in self.GeometricallySampledCellsForThisProcess:
+      leafVal = oneCell.leafVisitCount
+      if leafVal not in self.GeometricallySampledCellsByRecursionLeaf:
+        self.GeometricallySampledCellsByRecursionLeaf[leafVal] = []
+      listForLeaf = self.GeometricallySampledCellsByRecursionLeaf[leafVal]
+      listForLeaf.append(oneCell)
+
+    if PhactoriDbg(100):
+      for leafKey in self.GeometricallySampledCellsByRecursionLeaf:
+        cellListForLeaf = self.GeometricallySampledCellsByRecursionLeaf[leafKey]
+        myDebugPrint3(str(len(cellListForLeaf)) + " cells for leaf " + str(leafKey) + "\n")
+      
+    if PhactoriDbg(100):
+      myDebugPrint3("CreateLeafRecursionTrackingStructure returning\n")
+
+  def WriteCellListToFile(self, filename, cellList):
+
+    sumTuple = []
+    for ii in range(0, self.CellDataArrayTupleSize):
+      sumTuple.append(0.0)
+    for oneCellInfo in cellList:
+      dataTuple = oneCellInfo.dataTuple
+      for ii in range(0, self.CellDataArrayTupleSize):
+        sumTuple[ii] += dataTuple[ii]
+    floatCellCount = float(len(cellList))
+    averageTuple = []
+    for oneItem in sumTuple:
+      averageTuple.append(oneItem / floatCellCount)
+
+    ff = open(filename, "w")
+    ff.write("{\n")
+    ff.write('"format for cells in lists": ' + PhactoriSampledCellInfo.TerseOneLineJsonFormatComment() + ",\n")
+    ff.write('"sampling geometry bounding box": ' + str(self.SamplingGeometryBoundingBox) + ",\n")
+    ff.write('"number of cells": ' + str(len(cellList)) + ",\n")
+    ff.write('"cell variable names": ')
+    ff.write('[')
+    lastIndex = len(self.CellDataArrayNames) - 1
+    for ii, oneArrayName in enumerate(self.CellDataArrayNames):
+      if ii != lastIndex:
+        ff.write('"' + str(oneArrayName) + '", ')
+      else:
+        ff.write('"' + str(oneArrayName) + '"')
+    ff.write('],\n')
+    ff.write('"data tuple size": ' + str(self.CellDataArrayTupleSize) + ",\n")
+    ff.write('"sum variable values": ' + str(sumTuple) + ",\n")
+    ff.write('"average variable values": ' + str(averageTuple) + ",\n")
+    ff.write('"list of sampled cells": [\n')
+    for cellCntr, oneCellInfo in enumerate(cellList):
+      if cellCntr != 0:
+        ff.write(",\n")
+      cellStr = oneCellInfo.ToStrTerseOneLineList()
+      ff.write(cellStr)
+    ff.write("]\n")
+    ff.write("}\n")
+
+    ff.close()
+
+  def GatherSampledCellDataFromAllProcessesUsingMPI(self, thisProcessCellList):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriGeometricCellSampler1.GatherSampledCellDataFromAllProcessesUsingMPI entered\n", 100)
+
+    myPid = SmartGetLocalProcessId()
+
+    ##to start with, just have each process output it's data
+    if PhactoriDbg(100):
+      thisProcessHasData = False
+      if thisProcessCellList != None:
+        if len(thisProcessCellList) != 0:
+          basename = "PhactoriGeometricCellSampler1_oneprocess_" + str(myPid) + ".json"
+          self.WriteCellListToFile(pidfname, thisProcessCellList)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("about to serialize cell infos\n", 100)
+
+    tupleSize = self.CellDataArrayTupleSize
+    cellListSerializedFloatArray = []
+    cellListSerializedIntArray = []
+    for idx, oneCellInfo in enumerate(thisProcessCellList):
+      oneCellInfo.SerializeAppendToFloatAndIntArray(cellListSerializedFloatArray, cellListSerializedIntArray, tupleSize)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("done serializing " + str(len(cellListSerializedFloatArray)) + "  " + str(len(cellListSerializedIntArray)) + "\n", 100)
+
+    pidToDoOutput = SmartGetNumberOfProcesses() - 1
+    globalSerializedFloatArray = UseMpiToSendAllProcessesFloatArrayToOneProcess(cellListSerializedFloatArray, pidToDoOutput)
+    globalSerializedIntArray = UseMpiToSendAllProcessesIntArrayToOneProcess(cellListSerializedIntArray, pidToDoOutput)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("returned from getting globalSerializedFloatArray and globalSerializedIntArray\n")
+
+    globalCellList = []
+    if myPid == pidToDoOutput:
+      if PhactoriDbg(100):
+       myDebugPrint3("I'm the output pid, about to serialize in\n")
+
+      serialFloatSize, serialIntSize = PhactoriSampledCellInfo.GetSerializeFloatAndIntSize(tupleSize)
+      globalNumCells = len(globalSerializedFloatArray) / serialFloatSize
+
+      for ii in range(0, globalNumCells):
+        newCell = PhactoriSampledCellInfo()
+        newCell.SerializeSetFromFloatAndIntArray(globalSerializedFloatArray, globalSerializedIntArray, ii, tupleSize)
+        globalCellList.append(newCell)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriGeometricCellSampler1.GatherSampledCellDataFromAllProcessesUsingMPI returning\n", 100)
+
+    return globalCellList
+
+
+  def GatherSampledCellDataFromAllProcessesAndWriteFromOneProcessUsingMPI(self, outputFilenameCounter = -1):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriGeometricCellSampler1.GatherSampledCellDataFromAllProcessesAndWriteFromOneProcessUsingMPI entered\n", 100)
+    myPid = SmartGetLocalProcessId()
+
+    if outputFilenameCounter < 0:
+      ftc = GetFrameTagCounter()
+    else:
+      ftc = outputFilenameCounter
+
+
+    pidToDoOutput = SmartGetNumberOfProcesses() - 1
+    if self.WriteOutGeometricallySampledCellData == True:
+      globalCellList = self.GatherSampledCellDataFromAllProcessesUsingMPI(self.GeometricallySampledCellsForThisProcess)
+      if myPid == pidToDoOutput:
+        if PhactoriDbg(100):
+          myDebugPrint3("finished serialize, about to write to geometric sample cell file\n" +\
+            "number of cells from all processes: " + str(len(globalCellList)) + "\n")
+
+        fname = self.GeometricSampledCellOutputFilePathManager.GetOutputFilePath(ftc, "")
+        if PhactoriDbg(100):
+          myDebugPrint3("output filename will be: " + str(fname) + "\n")
+        self.WriteCellListToFile(fname, globalCellList)
+
+    if self.WriteOutDataControlledSampledCellData == True:
+      globalCellList = self.GatherSampledCellDataFromAllProcessesUsingMPI(self.DataControlledSampledCellsForThisProcess)
+      if myPid == pidToDoOutput:
+        if PhactoriDbg(100):
+          myDebugPrint3("finished serialize, about to write to data controlled sample cell file\n" +\
+            "number of cells from all processes: " + str(len(globalCellList)) + "\n")
+
+        fname = self.DataControlledSampledCellOutputFilePathManager.GetOutputFilePath(ftc, "")
+        if PhactoriDbg(100):
+          myDebugPrint3("output filename will be: " + str(fname) + "\n")
+        self.WriteCellListToFile(fname, globalCellList)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriGeometricCellSampler1.GatherSampledCellDataFromAllProcessesAndWriteFromOneProcessUsingMPI returning\n", 100)
+
+  def ExportOperationData(self, datadescription):
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriGeometricCellSampler1.ExportOperationData entered\n", 100)
+
+    UpdatePipelineWithCurrentTimeArgument(self.myCopyOfInputFilter)
+
+    #if we are supposed to resample data after first timestep, we call Create again
+    #self.CreateInternalListOfGeometricallySampledCellsOnThisProcess
+    #the idea here is that we already have our cell collection and we want to pull the data
+    self.CollectDataOnSampledCellsOnThisProcess()
+
+    self.CreateInternalListOfDataControlledSampledCellsOnThisProcess()
+
+    self.GatherSampledCellDataFromAllProcessesAndWriteFromOneProcessUsingMPI()
+
+    if self.DoProgrammableFilterToAddMaskVariable:
+      self.CreateProgrammableFilterString()
+      self.mProgFilterMaskSetter.Script = self.mProgFilterString
+      self.mProgFilterMaskSetter.UpdatePipeline()
+
+    #if PhactoriDbg(100):
+    #  minCellmaxCellPair = PhactoriFindCellWithMinMaxDataOnThisProcess(self.myCopyOfInputFilter, "eqps")
+    #  myDebugPrint3("min cell this process:\n" + minCellmaxCellPair[0].ToStr())
+    #  myDebugPrint3("max cell this process:\n" + minCellmaxCellPair[1].ToStr())
+    #  globalMinCellmaxCellPair = PhactoriFindCellWtihMinMaxDataUsingMPI(self.myCopyOfInputFilter, "eqps")
+    #  myDebugPrint3("min cell global:\n" + globalMinCellmaxCellPair[0].ToStr())
+    #  myDebugPrint3("max cell global:\n" + globalMinCellmaxCellPair[1].ToStr())
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriGeometricCellSampler1.ExportOperationData returning\n", 100)
+
+  def CreateProgrammableFilterString(self):
+
+    if self.mainScriptString == None:
+      scriptLines = []
+
+      scriptLines.append("#print('test2')\n")
+
+      scriptLines.append("#cellIndexesToSet = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]\n")
+      scriptLines.append("#maskValuesToSet = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0]\n")
+      scriptLines.append("#leafVisitCount = [0,0,0,0,0,0,0,0,0,0,0]\n")
+
+      scriptLines.append("localLeafVisitCount = 0\n")
+
+      scriptLines.append("def flatten(input, output):\n")
+      scriptLines.append("    # Copy the cells etc.\n")
+      scriptLines.append("    output.ShallowCopy(input)\n")
+      scriptLines.append("    numPoints = input.GetNumberOfPoints()\n")
+      scriptLines.append("    celldata = output.GetCellData()\n")
+      scriptLines.append("    numCells = input.GetNumberOfCells()\n")
+      scriptLines.append("    #print(str(numCells))\n")
+      scriptLines.append("    ncda = vtk.vtkDoubleArray()\n")
+      scriptLines.append("    ncda.SetNumberOfTuples(numCells)\n")
+      scriptLines.append("    numTuples = ncda.GetNumberOfTuples()\n")
+      scriptLines.append("    for ii in range(0, numTuples):\n")
+      scriptLines.append("        ncda.SetValue(ii, 0.0)\n")
+      scriptLines.append("    for ii, cellNdx in enumerate(cellIndexesToSet):\n")
+      scriptLines.append("        if localLeafVisitCount == leafVisitCount[ii]:\n")
+      scriptLines.append("          if cellNdx < numCells:\n")
+      scriptLines.append("            ncda.SetValue(cellNdx, float(maskValuesToSet[ii]))\n")
+      scriptLines.append("    ncda.SetName('" + self.ProgrammableFilterOutputCellVariableName + "')\n")
+      scriptLines.append("    #print(ncda.GetName())\n")
+      scriptLines.append("    celldata.AddArray(ncda)\n")
+
+      scriptLines.append("input = self.GetInputDataObject(0, 0)\n")
+      scriptLines.append("output = self.GetOutputDataObject(0)\n")
+
+      scriptLines.append("if input.IsA('vtkMultiBlockDataSet'):\n")
+      scriptLines.append("    output.CopyStructure(input)\n")
+      scriptLines.append("    iter = input.NewIterator()\n")
+      scriptLines.append("    iter.UnRegister(None)\n")
+      scriptLines.append("    iter.InitTraversal()\n")
+      scriptLines.append("    while not iter.IsDoneWithTraversal():\n")
+      scriptLines.append("        localLeafVisitCount += 1\n")
+      scriptLines.append("        curInput = iter.GetCurrentDataObject()\n")
+      scriptLines.append("        curOutput = curInput.NewInstance()\n")
+      scriptLines.append("        curOutput.UnRegister(None)\n")
+      scriptLines.append("        output.SetDataSet(iter, curOutput)\n")
+      scriptLines.append("        flatten(curInput, curOutput)\n")
+      scriptLines.append("        iter.GoToNextItem();\n")
+      scriptLines.append("else:\n")
+      scriptLines.append("  flatten(input, output)\n")
+  
+      self.mainScriptString = "".join(scriptLines)
+
+    myCellIndexesToSet = []
+    myMaskValuesToSet = []
+    myLeafVisitCount = []
+    if self.GeometricallySampledCellsForThisProcess != None:
+      for cellIdx, oneCellInfo in enumerate(self.GeometricallySampledCellsForThisProcess):
+         maskValue = 1.0
+         myCellIndexesToSet.append(oneCellInfo.index)
+         myMaskValuesToSet.append(maskValue)
+         myLeafVisitCount.append(oneCellInfo.leafVisitCount)
+    if self.DataControlledSampledCellsForThisProcess != None:
+      for cellIdx, oneCellInfo in enumerate(self.DataControlledSampledCellsForThisProcess):
+         maskValue = 2.0
+         myCellIndexesToSet.append(oneCellInfo.index)
+         myMaskValuesToSet.append(maskValue)
+         myLeafVisitCount.append(oneCellInfo.leafVisitCount)
+   
+    newstr1 = "cellIndexesToSet = " + str(myCellIndexesToSet) + "\n" 
+    newstr2 = "maskValuesToSet = " + str(myMaskValuesToSet) + "\n" 
+    newstr3 = "leafVisitCount = " + str(myLeafVisitCount) + "\n" 
+    self.mProgFilterString = newstr1 + newstr2 + newstr3 + self.mainScriptString
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriMarkCellSetsOperation constructed script:\n" + \
+        self.mProgFilterString)
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriParallelGeometryUtilities import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+def GetGridPointsClosestToPointsInBlockV5(recursionObject, inInputCsData, inParameters):
+  if PhactoriDbg(100):
+    myDebugPrint3("GetGridPointsClosestToPointsInBlockV5 entered\n")
+  numCells = inInputCsData.GetNumberOfCells()
+  numPoints = inInputCsData.GetNumberOfPoints()
+  if (numCells == 0) or (numPoints == 0):
+    #no cells here
+    if PhactoriDbg(100):
+      myDebugPrint3("GetGridPointsClosestToPointsInBlockV5 returning (no cells or no points)\n")
+    return
+
+  if PhactoriDbg(100):
+    myDebugPrint3(str(inParameters.testPointList) + "\n")
+    myDebugPrint3(str(inParameters.distSqrdList) + "\n")
+
+  pointsArray = inInputCsData.GetPoints()
+  gridPtXyz = [0.0, 0.0, 0.0]
+  for gridPtNdx in range(0,numPoints):
+    pointsArray.GetPoint(gridPtNdx, gridPtXyz)
+    for ptndx, oneTestPt in enumerate(inParameters.testPointList):
+      testDist = vecDistanceSquared(oneTestPt, gridPtXyz)
+      if testDist < inParameters.distSqrdList[ptndx]:
+        inParameters.closestList[ptndx] = list(gridPtXyz)
+        inParameters.distSqrdList[ptndx] = testDist
+
+  if PhactoriDbg(100):
+    myDebugPrint3(str(inParameters.testPointList) + "\n")
+    myDebugPrint3(str(inParameters.distSqrdList) + "\n")
+
+  if PhactoriDbg(100):
+    myDebugPrint3("after this block:\n")
+    for ii, oneGridPoint in enumerate(inParameters.closestList):
+      myDebugPrint3(str(ii) + ": " + \
+        str(inParameters.distSqrdList[ii]) + "\n" + \
+        str(inParameters.testPointList[ii]) + "\n" + str(oneGridPoint))
+    myDebugPrint3("\n")
+
+  if PhactoriDbg(100):
+    myDebugPrint3("GetGridPointsClosestToPointsInBlockV5 returning\n")
+
+def GetCellsClosestToPointsInBlockV5(recursionObject, inInputCsData, inParameters):
+  if PhactoriDbg(100):
+    myDebugPrint3("GetCellsClosestToPointsInBlock entered\n")
+  numCells = inInputCsData.GetNumberOfCells()
+  numPoints = inInputCsData.GetNumberOfPoints()
+  if (numCells == 0) or (numPoints == 0):
+    #no cells here
+    if PhactoriDbg(100):
+      myDebugPrint3("GetCellsClosestToPointsInBlock returning (no cells or no points)\n")
+    return
+
+  if PhactoriDbg(100):
+    myDebugPrint3(str(inParameters.testPointList) + "\n")
+    myDebugPrint3(str(inParameters.distSqrdList) + "\n")
+
+  for cellIndex in range(0,numCells):
+    oneCell = inInputCsData.GetCell(cellIndex)
+    cellTestPoint = GetCellTestPoint(oneCell)
+    for ptndx, oneTestPt in enumerate(inParameters.testPointList):
+      testDist = vecDistanceSquared(oneTestPt, cellTestPoint)
+      if testDist < inParameters.distSqrdList[ptndx]:
+        inParameters.closestList[ptndx] = cellTestPoint
+        inParameters.distSqrdList[ptndx] = testDist
+
+  if PhactoriDbg(100):
+    myDebugPrint3(str(inParameters.testPointList) + "\n")
+    myDebugPrint3(str(inParameters.distSqrdList) + "\n")
+
+  if PhactoriDbg(100):
+    myDebugPrint3("after this block:\n")
+    for ii, oneCellPoint in enumerate(inParameters.closestList):
+      myDebugPrint3(str(ii) + ": " + \
+        str(inParameters.distSqrdList[ii]) + "\n" + \
+        str(inParameters.testPointList[ii]) + "\n" + str(oneCellPoint))
+    myDebugPrint3("\n")
+
+  if PhactoriDbg(100):
+    myDebugPrint3("GetCellsClosestToPointsInBlock returning\n")
+
+class GetCellsClosestToPointsInBlockRecursionParamsV5:
+  def __init__(self):
+    self.testPointList = []
+    self.distSqrdList = []
+    self.closestList = []
+
+  def InitializeWithPointList(self, inTestPointList):
+    self.testPointList = inTestPointList
+    numTestPoints = len(inTestPointList)
+    for ii in range(0, numTestPoints):
+      self.distSqrdList.append(sys.float_info.max)
+      self.closestList.append(None)
+
+def GetCellsClosestToPointsOnThisProcessFromParaViewFilterV5(inInputFilter, inTestPointList):
+  if PhactoriDbg(100):
+    myDebugPrint3("GetCellsClosestToPointsOnThisProcessFromParaViewFilter entered\n")
+  recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+  recursionObj.mParameters = GetCellsClosestToPointsInBlockRecursionParamsV5()
+  recursionObj.mParameters.InitializeWithPointList(inTestPointList)
+  recursionObj.mOperationToDoPerBlock = GetCellsClosestToPointsInBlockV5
+  PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, inInputFilter)
+  if PhactoriDbg(100):
+    myDebugPrint3("GetCellsClosestToPointsOnThisProcessFromParaViewFilter returning\n")
+  return recursionObj.mParameters.closestList, recursionObj.mParameters.distSqrdList
+
+def GetGridPointsClosestToPointsOnThisProcessFromParaViewFilterV5(inInputFilter, inTestPointList):
+  if PhactoriDbg(100):
+    myDebugPrint3("GetGridPointsClosestToPointsOnThisProcessFromParaViewFilterV5 entered\n")
+  recursionObj = PhactoriParaviewMultiBlockRecursionControl()
+  recursionObj.mParameters = GetCellsClosestToPointsInBlockRecursionParamsV5()
+  recursionObj.mParameters.InitializeWithPointList(inTestPointList)
+  recursionObj.mOperationToDoPerBlock = GetGridPointsClosestToPointsInBlockV5
+  PhactoriRecusivelyDoMethodPerBlockFromParaViewFilter(recursionObj, inInputFilter)
+  if PhactoriDbg(100):
+    myDebugPrint3("GetGridPointsClosestToPointsOnThisProcessFromParaViewFilterV5 returning\n")
+  return recursionObj.mParameters.closestList, recursionObj.mParameters.distSqrdList
+
+def GetPidWithLeastValueListV5(inLocalDistSqrdList):
+  myPid = int(SmartGetLocalProcessId())
+  globalDistSqrdList = UseReduceOnFloatList(inLocalDistSqrdList, 1)
+  localPidList = []
+  numItems = len(inLocalDistSqrdList)
+  for ndx in range(0,numItems):
+    if globalDistSqrdList[ndx] == inLocalDistSqrdList[ndx]:
+      localPidList.append(myPid)
+    else:
+      localPidList.append(-1)
+
+  pidWithDataList = UseReduceOnIntegerList(localPidList, 0)
+  return pidWithDataList, globalDistSqrdList
+    
+
+def UseMpiToGetGlobalCellPointsClosestV5(inInputFilter, inLocalCellPointList, inLocalDistSqrdList):
+  if PhactoriDbg(100):
+    myDebugPrint3("PhactoriSegmentCellSampler3.UseMpiToGetGlobalCellPointsClosest entered\n", 100)
+
+  if PhactoriDbg(100):
+    myDebugPrint3("inLocalCellPointList:\n" + str(inLocalCellPointList) + "\ninLocalDistSqrdList:\n" + str(inLocalDistSqrdList) + "\n")
+  pidWithDataList, globalDistSqrdList = GetPidWithLeastValueListV5(inLocalDistSqrdList)
+  if PhactoriDbg(100):
+    myDebugPrint3("pidWithDataList:\n" + str(pidWithDataList) + "\nglobalDistSqrdList:\n" + str(globalDistSqrdList) + "\n")
+
+  #convert cell point list to array of doubles and ints, use mpi reduce to share
+  #the values, then convert back to cell point list
+  serializeFloatArray = []
+  serializeIntArray = []
+
+  #convert cell point list to array of doubles
+  cellPointFloatArray = []
+  myPid = SmartGetLocalProcessId()
+  for ii, oneCellPoint in enumerate(inLocalCellPointList):
+    if pidWithDataList[ii] == myPid:
+      cellPointFloatArray.append(oneCellPoint[0])
+      cellPointFloatArray.append(oneCellPoint[1])
+      cellPointFloatArray.append(oneCellPoint[2])
+    else:
+      cellPointFloatArray.append(0.0)
+      cellPointFloatArray.append(0.0)
+      cellPointFloatArray.append(0.0)
+
+  #use mpi reduce to spread array correctly
+  globalCellPointFloatArray = UseReduceOnFloatList(cellPointFloatArray, 2)
+
+  #now create return global cell point list from arrays
+  numCells = len(inLocalCellPointList)
+  returnGlobalCellPointList = []
+  for ii in range(0,numCells):
+    myndx = ii*3
+    oneCellPoint = [globalCellPointFloatArray[myndx],
+                    globalCellPointFloatArray[myndx+1],
+                    globalCellPointFloatArray[myndx+2]]
+    returnGlobalCellPointList.append(oneCellPoint)
+
+  if PhactoriDbg(100):
+    myDebugPrint3("returnGlobalCellPointList:\n" + str(returnGlobalCellPointList) + "\n")
+  if PhactoriDbg(100):
+    myDebugPrint3("PhactoriSegmentCellSampler3.UseMpiToGetGlobalCellPointsClosest returning\n", 100)
+  return returnGlobalCellPointList, globalDistSqrdList
+
+def GetListOfCellTestPointsNearestListOfPointsV5(inInputFilter, pointList):
+  "for each point in the list, find the cell test point (e.g. center of\n     cell bounding box) which is nearest the test point.  Use MPI to work\n     in parallel"
+
+  thisProcessNearestCellPointList, thisProcDistSqrdList = \
+    GetCellsClosestToPointsOnThisProcessFromParaViewFilterV5(inInputFilter, pointList)
+
+  nearestCellList, distanceList = UseMpiToGetGlobalCellPointsClosestV5(
+    inInputFilter, thisProcessNearestCellPointList, thisProcDistSqrdList)
+
+  return nearestCellList
+
+def GetListOfGridPointsNearestListOfPointsV5(inInputFilter, pointList):
+  "for each point in the list, find the point in the data grid\n     which is nearest the test point.  Use MPI to work\n     in parallel"
+
+  thisProcessNearestGridPointList, thisProcDistSqrdList = \
+    GetGridPointsClosestToPointsOnThisProcessFromParaViewFilterV5(inInputFilter, pointList)
+
+  nearestCellList, distanceList = UseMpiToGetGlobalCellPointsClosestV5(
+    inInputFilter, thisProcessNearestGridPointList, thisProcDistSqrdList)
+
+  return nearestCellList
+
+
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriExtractSubsetWithSeed import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+class PhactoriExtractSubsetWithSeed(PhactoriOperationSpecifics):
+  "manages extract block filter, including creating flat block\n     indices list from list of block names"
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.Seed = [0.0, 0.0, 0.0]
+    self.Direction = "I"
+    self.FindSeedNearestTestPoint = False
+    self.TestPointToFindSeed = [0.0, 0.0, 0.0]
+    self.SeedOffset = [0.0, 0.0, 0.0]
+    self.SeedWithOffset = [0.0, 0.0, 0.0]
+
+  def ParseParametersFromJson(self, inJson):
+    key1 = "seed"
+    key2 = "seed from cell nearest point"
+    if "seed" in inJson:
+      if key2 in inJson:
+        myDebugPrint3AndException(
+          "PhactoriExtractSubsetWithSeed.ParseParametersFromJson exception:\n"
+          "block may have one of the following two tokens, but not both:\n"
+          "'" + key1 + "'\n"
+          "'" + key2 + "'\n")
+      self.Seed = inJson["seed"]
+      if len(self.Seed) != 3:
+        myDebugPrint3AndException(
+          "PhactoriExtractSubsetWithSeed.ParseParametersFromJson exception:\n"
+          "'" + key1 + "' token must be [x,y,z] (list of 3 floats)\n")
+
+    if key2 in inJson:
+      self.FindSeedNearestTestPoint = True
+      self.TestPointToFindSeed = inJson[key2]
+      if len(self.TestPointToFindSeed) != 3:
+        myDebugPrint3AndException(
+          "PhactoriExtractSubsetWithSeed.ParseParametersFromJson exception:\n"
+          "'" + key2 + "' token must be [x,y,z] (list of 3 floats)\n")
+
+    key3 = "seed offset"
+    if key3 in inJson:
+      self.SeedOffset = inJson[key3]
+      if len(self.SeedOffset) != 3:
+        myDebugPrint3AndException(
+          "PhactoriExtractSubsetWithSeed.ParseParametersFromJson exception:\n"
+          "'" + key3 + "' token must be [x,y,z] (list of 3 floats)\n")
+
+    if "direction" in inJson:
+      self.Direction = inJson["direction"]
+      validDirectionStrings = ["I", "J", "K", "IJ", "JK", "KI"]
+      if self.Direction not in validDirectionStrings:
+        myDebugPrint3AndException(
+          "PhactoriExtractSubsetWithSeed.ParseParametersFromJson exception:\n"
+          "illegal 'direction' token: " + str(self.Direction) + "\n"
+          "the direction must one of: " + str(validDirectionStrings) + "\n")
+
+  def CreateParaViewFilter(self, inInputFilter):
+    "create the ExtractSubsetWithSeed filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriExtractSubsetWithSeed.CreateParaViewFilter "
+          "entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    newParaViewFilter = ExtractSubsetWithSeed(inInputFilter)
+
+    if self.FindSeedNearestTestPoint:
+      ##nearestCellTestPointList = GetListOfCellTestPointsNearestListOfPointsV5(inInputFilter, [self.TestPointToFindSeed])
+      nearestCellTestPointList = GetListOfGridPointsNearestListOfPointsV5(inInputFilter, [self.TestPointToFindSeed])
+      self.Seed = nearestCellTestPointList[0]
+      if PhactoriDbg(100):
+        myDebugPrint3("find grid point for seed nearest this point:\n" + str(self.TestPointToFindSeed) + "\n"
+          "seed point found:\n" + str(self.Seed) + "\n")
+
+    self.SeedWithOffset[0] = self.Seed[0] + self.SeedOffset[0]
+    self.SeedWithOffset[1] = self.Seed[1] + self.SeedOffset[1]
+    self.SeedWithOffset[2] = self.Seed[2] + self.SeedOffset[2]
+    if PhactoriDbg(100):
+      myDebugPrint3("self.Seed:           " + str(self.Seed) + "\n"
+                    "self.SeedWithOffset: " + str(self.SeedWithOffset) + "\n")
+    newParaViewFilter.Seed = self.SeedWithOffset
+    newParaViewFilter.Direction = self.Direction
+
+    SetActiveSource(newParaViewFilter)
+
+    UpdatePipelineWithCurrentTimeArgument(newParaViewFilter)
+
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriExtractSubsetWithSeed.CreateParaViewFilter "
+          "returning\n", 100)
+
+    return newParaViewFilter
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriExtractStructuredMultiBlock import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+global gStructuredGridFound
+gStructuredGridFound = None
+global gStructuredGridFoundExtent
+gStructuredGridFoundExtent = None
+
+def FigureBlockIndicesFromBlockListOneBlock(includeIndexList, includeBlockList,
+  inMetaData, ioFlatIndexCounter, inCsdata, inForceSetting):
+  "determine if this one block should have it's flat index tripped on for\n     the extract block filter (leaf item of recursion)"
+  if PhactoriDbg(100):
+    myDebugPrint3("FigureBlockIndicesFromBlockListOneBlock entered\n"
+      "ioFlatIndexCounter " + str(ioFlatIndexCounter,) + " inForceSetting " + str(inForceSetting) + "\n"
+      "2 inMetaData: " + str(inMetaData) + "\n")
+
+  if inMetaData == None:
+    thisBlockName = None
+  else:
+    thisBlockName = inMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+
+  if (thisBlockName == None) and (inForceSetting != 1):
+    if PhactoriDbg(100):
+      myDebugPrint3("block with no name " + \
+          " not in include list, not + to mBlockIndices (flat index " + \
+          str(ioFlatIndexCounter[0] - 1) + ")\n")
+  elif (inForceSetting == 1) or (thisBlockName in includeBlockList):
+    includeIndexList.append(int(ioFlatIndexCounter[0]) - 1)
+    blockClassName = inCsdata.GetClassName()
+    if blockClassName == "vtkStructuredGrid":
+      global gStructuredGridFound
+      gStructuredGridFound = inCsdata
+      global gStructuredGridFoundExtent
+      gStructuredGridFoundExtent = inMetaData.Get(vtk.vtkStreamingDemandDrivenPipeline.WHOLE_EXTENT())
+      if PhactoriDbg(100):
+        myDebugPrint3("this leaf is structured grid: " + str(thisBlockName) + "\n"
+          "vtk.vtkStreamingDemandDrivenPipeline.WHOLE_EXTENT(): " + str(gStructuredGridFoundExtent) + "\n"
+          "A inCsdata.GetExtent(): " + str(inCsdata.GetExtent()) + "\n")
+    #global gDuplicateNameCounter
+    #if thisBlockName in gDuplicateNameCounter:
+    #  oldCount = gDuplicateNameCounter[thisBlockName]
+    #  gDuplicateNameCounter[thisBlockName] = oldCount+1
+    #else:
+    #  gDuplicateNameCounter[thisBlockName] = 1
+    if PhactoriDbg(100):
+      myDebugPrint3("block " + str(thisBlockName) + \
+          " in include list, + to mBlockIndices (flat index " + \
+          str(ioFlatIndexCounter[0] - 1) + ")\n")
+  else:
+    if PhactoriDbg(100):
+      myDebugPrint3("block " + str(thisBlockName) + \
+          " not in include list, not + to mBlockIndices (flat index " + \
+          str(ioFlatIndexCounter[0] - 1) + ")\n")
+
+  if PhactoriDbg(100):
+    myDebugPrint3("FigureBlockIndicesFromBlockListOneBlock returning\n")
+
+def FigureBlockIndicesFromBlockListRecurse1(includeIndexList, includeBlockList,
+  inCsdata, inMetaData, ioFlatIndexCounter, inForceSetting):
+  "recursively go through multiblock dataset to determine flat indices\n     of blocks to be included; we are assuming only leaf blocks are\n     actually named"
+
+  icsdClassname = inCsdata.GetClassName()
+
+  if PhactoriDbg(100):
+    if inMetaData == None:
+      thisBlockName = None
+    else:
+      thisBlockName = inMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+    myDebugPrint3("FigureBlockIndicesFromBlockListRecurse1 " + \
+      str(thisBlockName) + " index: " + str(int(ioFlatIndexCounter[0])) + \
+      " inForceSetting: " + str(inForceSetting) + " classname: " + \
+      str(icsdClassname) + "\n")
+
+  ioFlatIndexCounter[0] += 1
+
+  if icsdClassname == "vtkMultiBlockDataSet":
+    thisIsLeaf = False
+    nonLeafType = 0
+  elif icsdClassname == "vtkExodusIIMultiBlockDataSet":
+    thisIsLeaf = False
+    nonLeafType = 1
+  elif icsdClassname == "vtkMultiPieceDataSet":
+    thisIsLeaf = False
+    nonLeafType = 2
+  elif icsdClassname == "vtkPartitionedDataSet":
+    thisIsLeaf = False
+    nonLeafType = 3
+  else:
+    thisIsLeaf = True
+    nonLeafType = -1
+
+  if not thisIsLeaf:
+    if inForceSetting == 1:
+      includeIndexList.append(int(ioFlatIndexCounter[0]) - 1)
+      includeOrExcludeAllSubBlocks = 1
+      if PhactoriDbg(100):
+        myDebugPrint3("this non-leaf block added inForceSetting == 1\n")
+    elif inForceSetting == -1:
+      includeOrExcludeAllSubBlocks = -1
+      if PhactoriDbg(100):
+        myDebugPrint3("this non-leaf block not added inForceSetting == -1\n")
+    else:
+      includeOrExcludeAllSubBlocks = 0
+      #this is a non-leaf node, but we want to add it (or not) depending on
+      #the filter settings
+      if inMetaData == None:
+        thisBlockName = None
+      else:
+        thisBlockName = inMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+
+      if (thisBlockName != None) and (thisBlockName in includeBlockList):
+        if PhactoriDbg(100):
+          myDebugPrint3("include list, append nonleaf " + str(thisBlockName) + \
+            " ndx " + str(int(ioFlatIndexCounter[0]) - 1) + "\n")
+        includeIndexList.append(int(ioFlatIndexCounter[0]) - 1)
+        includeOrExcludeAllSubBlocks = 1
+        if PhactoriDbg(100):
+          myDebugPrint3("includeOrExcludeAllSubBlocks set to 1\n")
+      else:
+        if PhactoriDbg(100):
+          myDebugPrint3("include list, exclude nonleaf " + str(thisBlockName) + \
+            " ndx " + str(int(ioFlatIndexCounter[0]) - 1) + "\n")
+
+    if nonLeafType == 2:
+      numBlocks = inCsdata.GetNumberOfPieces()
+    elif nonLeafType == 3:
+      numBlocks = inCsdata.GetNumberOfPartitions()
+    else:
+      numBlocks = inCsdata.GetNumberOfBlocks()
+
+    if PhactoriDbg(100):
+      myDebugPrint3("recursing, flat index: " + \
+          str(ioFlatIndexCounter[0]) + \
+          "    num blocks: " + \
+          str(numBlocks) + "\n")
+    for ii in range(0, numBlocks):
+      if nonLeafType == 2:
+        oneBlock = inCsdata.GetPiece(ii)
+      elif nonLeafType == 3:
+        oneBlock = inCsdata.GetPartition(ii)
+      else:
+        oneBlock = inCsdata.GetBlock(ii)
+      oneBlockMetaData = inCsdata.GetMetaData(ii)
+      if PhactoriDbg(100):
+        myDebugPrint3("oneBlockMetaData: " + str(oneBlockMetaData) + "\n")
+        #myDebugPrint3("name: " + \
+        #    oneBlockMetaData.Get(vtk.vtkCompositeDataSet.NAME()) + "\n")
+      if oneBlock != None:
+        if oneBlockMetaData != None:
+          theBlockName = oneBlockMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+          if PhactoriDbg(100):
+            myDebugPrint3("name for block " + str(ii) + ": " + \
+              str(theBlockName) + "\n")
+        else:
+          if PhactoriDbg(100):
+            myDebugPrint3("block " + str(ii) + " meta data was None\n")
+        FigureBlockIndicesFromBlockListRecurse1(includeIndexList, includeBlockList,
+          oneBlock, oneBlockMetaData, ioFlatIndexCounter,
+          includeOrExcludeAllSubBlocks)
+      else:
+        #I think we need to count here to be okay with pruned stuff; maybe
+        #we need to set extract block to no pruning (?)
+        ioFlatIndexCounter[0] += 1
+        if includeOrExcludeAllSubBlocks == 1:
+          if PhactoriDbg(100):
+            myDebugPrint3("leaf block None index " + \
+            str(int(ioFlatIndexCounter[0]) - 1) + \
+            " appended due to includeOrExcludeAllSubBlocks == 1\n\n")
+          includeIndexList.append(int(ioFlatIndexCounter[0]) - 1)
+        else:
+          if PhactoriDbg(100):
+            myDebugPrint3("force include is not on, so check include list\n")
+          includeThisBlock = False
+          if (includeBlockList != None) and (oneBlockMetaData != None):
+            thisBlockName = oneBlockMetaData.Get(vtk.vtkCompositeDataSet.NAME())
+            if PhactoriDbg(100):
+              myDebugPrint3("include list not None, thisBlockName " + str(thisBlockName) + "\n"
+                "includeBlockList " + str(includeBlockList) + "\n")
+            if (thisBlockName != None) and (thisBlockName in includeBlockList):
+              includeThisBlock = True
+              if PhactoriDbg(100):
+                myDebugPrint3("leaf block None index " + \
+                str(int(ioFlatIndexCounter[0]) - 1) + \
+                " included due to name being in includeBlockList\n")
+              includeIndexList.append(int(ioFlatIndexCounter[0]) - 1)
+          if includeThisBlock == False:
+            if PhactoriDbg(100):
+              myDebugPrint3("leaf block None index " + \
+              str(int(ioFlatIndexCounter[0]) - 1) + \
+              " excluded due to includeOrExcludeAllSubBlocks != 1\n")
+  else:
+    if inForceSetting != -1:
+      if inForceSetting == 1:
+        if PhactoriDbg(100):
+          myDebugPrint3("this leaf block will be added inForceSetting == 1\n")
+      FigureBlockIndicesFromBlockListOneBlock(includeIndexList,
+        includeBlockList, inMetaData, ioFlatIndexCounter, inCsdata, inForceSetting)
+    else:
+      if PhactoriDbg(100):
+        myDebugPrint3("this leaf block not added inForceSetting == -1\n")
+  #if icsdClassname == "vtkMultiPieceDataSet":
+  #  numpieces = inCsdata.GetNumberOfPieces()
+  #  # ioFlatIndexCounter[0] += numpieces - 1
+  #  ioFlatIndexCounter[0] += numpieces
+
+
+def FigureBlockIndicesFromBlockList(includeBlockList, inInputFilter):
+  "from the includeBlockList create a indices list\n     of blocks to put in filter"
+  if PhactoriDbg(100):
+    myDebugPrint3("FigureBlockIndicesFromBlockList entered"
+        "\nincludeBlockList: " + str(includeBlockList) + "\n")
+
+  #global gDuplicateNameCounter
+  #gDuplicateNameCounter = {}
+  csdata = inInputFilter.GetClientSideObject().GetOutputDataObject(0)
+  flatIndexCounter = [0]
+  listOfBlockIndicesToInclude = []
+  FigureBlockIndicesFromBlockListRecurse1(listOfBlockIndicesToInclude,
+         includeBlockList, csdata, None, flatIndexCounter, 0)
+  
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("number of times existing block names found:\n")
+  #  for blknm, count in gDuplicateNameCounter.items():
+  #    myDebugPrint3(blknm + ": " + str(count) + "\n");
+  if PhactoriDbg(100):
+    myDebugPrint3("FigureBlockIndicesFromBlockList final indices list:\n" \
+        + str(listOfBlockIndicesToInclude) + \
+        "\nFigureBlockIndicesFromBlockList returning\n")
+
+  return listOfBlockIndicesToInclude
+
+def PrintMultiBlockStatsOneBlock(inCsdata, inMetaData, ioFlatIndexCounter):
+  icsdClassname = inCsdata.GetClassName()
+  myDebugPrint3("leaf block " + str(icsdClassname) + " index " + str(ioFlatIndexCounter[0]) + "\n")
+  if icsdClassname == "vtkStructuredGrid":
+    wholeExtent = inMetaData.Get(vtk.vtkStreamingDemandDrivenPipeline.WHOLE_EXTENT())
+    myDebugPrint3("this leaf is structured grid: " + str(ioFlatIndexCounter[0]) + "\n"
+      "vtk.vtkStreamingDemandDrivenPipeline.WHOLE_EXTENT(): " + str(wholeExtent) + "\n"
+      "B inCsdata.GetExtent(): " + str(inCsdata.GetExtent()) + "\n")
+
+def PrintMultiBlockStatsRecurse1(inCsdata, inMetaData, recursionLevel, ioFlatIndexCounter):
+  myDebugPrint3("PrintMultiBlockStatsRecurse1 entered recursionLevel " + str(recursionLevel) + "\n")
+
+  icsdClassname = inCsdata.GetClassName()
+  myDebugPrint3("inCsdata.GetClassName() " + str(icsdClassname) + " ioFlatIndexCounter[0] " + str(ioFlatIndexCounter[0]) + "\n")
+
+  ioFlatIndexCounter[0] += 1
+
+  if icsdClassname == "vtkMultiBlockDataSet":
+    thisIsLeaf = False
+    nonLeafType = 0
+  elif icsdClassname == "vtkExodusIIMultiBlockDataSet":
+    thisIsLeaf = False
+    nonLeafType = 1
+  elif icsdClassname == "vtkMultiPieceDataSet":
+    thisIsLeaf = False
+    nonLeafType = 2
+  elif icsdClassname == "vtkPartitionedDataSet":
+    thisIsLeaf = False
+    nonLeafType = 3
+  else:
+    thisIsLeaf = True
+    nonLeafType = -1
+
+  myDebugPrint3("thisIsLeaf " + str(thisIsLeaf) + " nonLeafType " + str(nonLeafType) + "\n")
+  if not thisIsLeaf:
+    if nonLeafType == 2:
+      numBlocks = inCsdata.GetNumberOfPieces()
+    elif nonLeafType == 3:
+      numBlocks = inCsdata.GetNumberOfPartitions()
+    else:
+      numBlocks = inCsdata.GetNumberOfBlocks()
+
+    myDebugPrint3("recursing, flat index: " + \
+        str(ioFlatIndexCounter[0]) + \
+        "    num blocks: " + \
+        str(numBlocks) + "\n")
+    for ii in range(0, numBlocks):
+      myDebugPrint3("doing sub block " + str(ii) + " of " + str(numBlocks) + "\n")
+      if nonLeafType == 2:
+        oneBlock = inCsdata.GetPiece(ii)
+      elif nonLeafType == 3:
+        oneBlock = inCsdata.GetPartition(ii)
+      else:
+        oneBlock = inCsdata.GetBlock(ii)
+      oneBlockMetaData = inCsdata.GetMetaData(ii)
+      myDebugPrint3("oneBlockMetaData: " + str(oneBlockMetaData) + "\n")
+      #myDebugPrint3("name: " + \
+      #    oneBlockMetaData.Get(vtk.vtkCompositeDataSet.NAME()) + "\n")
+      if oneBlock != None:
+        PrintMultiBlockStatsRecurse1(oneBlock, oneBlockMetaData, recursionLevel + 1, ioFlatIndexCounter)
+      else:
+        myDebugPrint3("this sub block is None, index " + str(ioFlatIndexCounter[0]) + "\n")
+        ioFlatIndexCounter[0] += 1
+  else:
+    PrintMultiBlockStatsOneBlock(inCsdata, inMetaData, ioFlatIndexCounter)
+
+  myDebugPrint3("PrintMultiBlockStatsRecurse1 returning recursionLevel " + str(recursionLevel) + "\n")
+
+def RecursivelyPrintMultiBlockStats(inFilter):
+  if PhactoriDbg(100) == False:
+    return
+
+  myDebugPrint3("RecursivelyPrintMultiBlockStats entered\n")
+  csdata = inFilter.GetClientSideObject().GetOutputDataObject(0)
+  flatIndexCounter = [0]
+  recursionLevel = 0
+  PrintMultiBlockStatsRecurse1(csdata, None, recursionLevel, flatIndexCounter)
+
+  myDebugPrint3("RecursivelyPrintMultiBlockStats returning\n")
+
+class PhactoriExtractStructuredMultiBlock(PhactoriOperationSpecifics):
+  "manages PhactoriExtractStructuredMultiBlock filter"
+  def __init__(self):
+    PhactoriOperationSpecifics.__init__(self)
+    self.ControlJson = None
+    self.SavedIncludeBlockIndexList = None
+    self.ExtractBlockFilters = []
+    self.ExtractSubsetFilters = []
+    self.FinalGroupFilter = None
+    self.mStructuredGridsIncluded = []
+    self.mStructuredGridsIncludedExtent  = []
+
+  def ParseParametersFromJson(self, inJson):
+    #["blk-4":{"ijkrange":[imin,imax,jmin,jmax,kmin,kmax]]
+    #["blk-5":{"ijkrange":[imin,imax,jmin,jmax,kmin,kmax],"ijkrangefunction":[-1,0,0,1,0,1]}]
+    #["blk-6":{"ijkrange":[imin,imax,jmin,jmax,kmin,kmax],"ijkrangefunction":[-1,0,-1,0,0,1]}]
+    if "ExtractSubsetSettingsByBlock" not in inJson:
+      myDebugPrint3AndException("PhactoriExtractStructuredMultiBlock.ParseParametersFromJson\n"
+        "missing key 'ExtractSubsetSettingsByBlock'\n")
+
+    self.ControlJson = inJson["ExtractSubsetSettingsByBlock"]
+    dummy = 0
+
+  def MakeExtractBlockFilter(self, inInputFilter, blockName):
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeExtractBlockFilter entered: " + str(blockName) + "\n")
+    newPvExtractBlockFilter = ExtractBlock(inInputFilter) 
+    #newParaViewFilter.PruneOutput = 1
+    #newParaViewFilter.MaintainStructure = 0
+    #newParaViewFilter.MaintainStructure = 1
+    global gStructuredGridFound
+    gStructuredGridFound = None
+    self.SavedIncludeBlockIndexList = FigureBlockIndicesFromBlockList([blockName], inInputFilter)
+    self.mStructuredGridsIncluded.append(gStructuredGridFound)
+    self.mStructuredGridsIncludedExtent.append(gStructuredGridFoundExtent)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("self.SavedIncludeBlockIndexList:\n" + str(self.SavedIncludeBlockIndexList) + "\n")
+    newPvExtractBlockFilter.BlockIndices = self.SavedIncludeBlockIndexList
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeExtractBlockFilter returning: " + str(blockName) + "\n")
+    return newPvExtractBlockFilter
+
+  def CreateIjkRangeFromSettingsForThisBlock(self, ijkJson, blockExtent):
+
+    #return ijkJson["ijkrange"]
+    if blockExtent == None:
+      return [0,-1,0,-1,0,-1]
+
+    if "ijkrange" in ijkJson:
+      ijkRangeFromJson = ijkJson["ijkrange"] 
+    else:
+      ijkRangeFromJson = [0,0,0,0,0,0]
+
+    if "ijkrangefunction" in ijkJson:
+      rngFunc = ijkJson["ijkrangefunction"]
+    else:
+      rngFunc = [0,0,0,0,0,0]
+
+    if PhactoriDbg(100):
+      myDebugPrint3("ijkrange: " + str(ijkRangeFromJson) + "\n" + \
+        "ijkrangefunction: " + str(rngFunc) + "\n" + \
+        "blockExtent: " + str(blockExtent) + "\n")
+
+    retIjkRange = [0,0,0,0,0,0]
+    minIndex = [0,0,2,2,4,4]
+    maxIndex = [1,1,3,3,5,5]
+    for ii in range(0,6):
+      if rngFunc[ii] == 0:
+        retIjkRange[ii] = ijkRangeFromJson[ii]
+      elif rngFunc[ii] < 0:
+        retIjkRange[ii] = blockExtent[minIndex[ii]] + ijkRangeFromJson[ii]
+      else:
+        retIjkRange[ii] = blockExtent[maxIndex[ii]] - ijkRangeFromJson[ii]
+
+    #validate/fix (with warning) extraction extents
+    hadToCorrect = False
+    uncorrectedIjkRange = list(retIjkRange)
+    for ii in range(0,6):
+      extentMin = blockExtent[minIndex[ii]]
+      extentMax = blockExtent[maxIndex[ii]]
+      if retIjkRange[ii] < extentMin:
+        hadToCorrect = True
+        retIjkRange[ii] = extentMin
+      if retIjkRange[ii] > extentMax:
+        hadToCorrect = True
+        retIjkRange[ii] = extentMax
+    for ii in range(0,3):
+      ndx1 = ii * 2
+      ndx2 = ndx1 + 1
+      if retIjkRange[ndx1] > retIjkRange[ndx2]:
+        hadToCorrect = True
+        retIjkRange[ndx1] = retIjkRange[ndx2]
+    if hadToCorrect:
+      if PhactoriDbg(100):
+        myDebugPrint3("return ijkrange had to be corrected because it was outside block extent"
+          "\nblockExtent: " + str(blockExtent) + 
+          "\nijkRangeFromJson: " + str(retIjkRange) + 
+          "\nrngFunc (from json): " + str(blockExtent) + 
+          "\nuncorrectedIjkRange: " + str(uncorrectedIjkRange) +
+          "\nretIjkRange: " + str(retIjkRange) + "\n")
+    else:
+      if PhactoriDbg(100):
+        myDebugPrint3("return ijkrange did not need correction"
+          "\nblockExtent: " + str(blockExtent) + 
+          "\nijkRangeFromJson: " + str(retIjkRange) +
+          "\nrngFunc (from json): " + str(blockExtent) + 
+          "\nretIjkRange: " + str(retIjkRange) + "\n")
+
+    return retIjkRange
+    
+  
+  def MakeExtractSubsetFilter(self, extractBlockFilter, oneBlockExtractSubsetJson, oneBlockExtents):
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeOneExtractBlockExtractSubsetFilterPair entered\n")
+
+    #ijkrange = oneBlockExtractSubsetJson["ijkrange"]
+    ijkrange = self.CreateIjkRangeFromSettingsForThisBlock(oneBlockExtractSubsetJson, oneBlockExtents)
+    UpdatePipelineWithCurrentTimeArgument(extractBlockFilter)
+    extractSubset1 = ExtractSubset(Input=extractBlockFilter)
+    extractSubset1.VOI = ijkrange
+    UpdatePipelineWithCurrentTimeArgument(extractSubset1)
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeOneExtractBlockExtractSubsetFilterPair returning\n")
+    return extractSubset1
+
+  def MakeOneExtractBlockExtractSubsetFilterPair(self, inInputFilter, blockName, oneBlockExtractSubsetJson):
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeOneExtractBlockExtractSubsetFilterPair entered: " + str(blockName) + "\n")
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+    newExtractBlockPvFilter = self.MakeExtractBlockFilter(inInputFilter, blockName)
+    UpdatePipelineWithCurrentTimeArgument(newExtractBlockPvFilter)
+    self.ExtractBlockFilters.append(newExtractBlockPvFilter)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("pesmb one extract block structure begin: " + blockName + "\n")
+      RecursivelyPrintMultiBlockStats(newExtractBlockPvFilter)
+      myDebugPrint3("pesmb one extract block structure end: " + blockName + "\n")
+
+    oneBlockExtent = self.mStructuredGridsIncludedExtent[-1]
+    newExtractSubsetPvFilter = self.MakeExtractSubsetFilter(newExtractBlockPvFilter, oneBlockExtractSubsetJson, oneBlockExtent)
+    UpdatePipelineWithCurrentTimeArgument(newExtractSubsetPvFilter)
+    self.ExtractSubsetFilters.append(newExtractSubsetPvFilter)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("pesmb one extract subset structure begin: " + blockName + "\n")
+      RecursivelyPrintMultiBlockStats(newExtractSubsetPvFilter)
+      myDebugPrint3("pesmb one extract subset structure end: " + blockName + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeOneExtractBlockExtractSubsetFilterPair returning: " + str(blockName) + "\n")
+
+  def MakeGroupAllExtractSubsetsFilter(self):
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeGroupAllExtractSubsetsFilter entered\n")
+    self.FinalGroupFilter = GroupDatasets(Input = self.ExtractSubsetFilters)
+
+    UpdatePipelineWithCurrentTimeArgument(self.FinalGroupFilter)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeGroupAllExtractSubsetsFilter returning\n")
+    
+  def CreateParaViewFilter(self, inInputFilter):
+    "create the PhactoriExtractStructuredMultiBlock filter for ParaView"
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriExtractStructuredMultiBlock.CreateParaViewFilter "
+          "entered\n", 100)
+
+    savedActiveSource = GetActiveSource()
+
+    UpdatePipelineWithCurrentTimeArgument(inInputFilter)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("pesmb incoming multiblock structure begin\n")
+      RecursivelyPrintMultiBlockStats(inInputFilter)
+      myDebugPrint3("pesmb incoming multiblock structure end\n")
+
+    for blockName, oneBlockExtractSubsetJson in self.ControlJson.items():
+      self.MakeOneExtractBlockExtractSubsetFilterPair(inInputFilter, blockName, oneBlockExtractSubsetJson)
+
+    self.MakeGroupAllExtractSubsetsFilter()
+    #newParaViewFilter = PhactoriExtractStructuredMultiBlock(inInputFilter)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("pesmb outgoing group multiblock structure begin\n")
+      RecursivelyPrintMultiBlockStats(self.FinalGroupFilter)
+      myDebugPrint3("pesmb outgoing group multiblock structure end\n")
+
+
+    SetActiveSource(self.FinalGroupFilter)
+    UpdatePipelineWithCurrentTimeArgument(self.FinalGroupFilter)
+    SetActiveSource(savedActiveSource)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriExtractStructuredMultiBlock.CreateParaViewFilter "
+          "returning\n", 100)
+
+    return self.FinalGroupFilter
+
+  def DoUpdateDueToChangeInData(self, inIncomingPvFilter, outOutgoingPvFilter):
+    UpdatePipelineWithCurrentTimeArgument(self.FinalGroupFilter)
+
+    if PhactoriDbg(100):
+      myDebugPrint3("PhactoriExtractStructuredMultiBlock printing out multiblock this callback:\n")
+      myDebugPrint3("pesmb outgoing group multiblock structure begin (per frame callback)\n")
+      RecursivelyPrintMultiBlockStats(self.FinalGroupFilter)
+      myDebugPrint3("pesmb outgoing group multiblock structure end (per frame callback)\n")
+
+#phactori_combine_to_single_python_file_subpiece_end_1
 
 class ClosestNPointsFromEachProcess:
-  """class to manage parallel operations where we obtain a set of N points on
-     each process and then share those points from each process to all
-     process.  used for doing things like finding closest N points from one
-     operation to another on each process and then sharing and sorting and
-     finding closest overall"""
+  "class to manage parallel operations where we obtain a set of N points on\n     each process and then share those points from each process to all\n     process.  used for doing things like finding closest N points from one\n     operation to another on each process and then sharing and sorting and\n     finding closest overall"
 
   def __init__(self):
     self.mPointsPerProcess = None
@@ -8706,32 +14524,423 @@ class ClosestNPointsFromEachProcess:
       retStr += adst
     return retStr
 
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.QuadInfoGQC import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class QuadInfoGQC:
+  def __init__(self):
+    self.ptA = [0.0, 0.0, 0.0]
+    self.ptB = [0.0, 0.0, 0.0]
+    self.ptC = [0.0, 0.0, 0.0]
+    self.ptD = [0.0, 0.0, 0.0]
+    #using average of points instead of center
+    self.ptAverage = [0.0, 0.0, 0.0]
+    self.normal = None
+    self.cellId = -1
+    self.index = -1
+
+  def PopulateFromVtkData(self, inInputCsData, globalCellIdArray, quadIndex):
+    self.index = quadIndex
+    cellPointIds = vtk.vtkIdList()
+    inInputCsData.GetCellPoints(quadIndex, cellPointIds)
+    numids = cellPointIds.GetNumberOfIds()
+    if numids != 4:
+      myDebugPrint3AndException("GetQuadClosestToPointsInBlock2Params: not a quad")
+    inInputCsData.GetPoint(cellPointIds.GetId(0), self.ptA)
+    inInputCsData.GetPoint(cellPointIds.GetId(1), self.ptB)
+    inInputCsData.GetPoint(cellPointIds.GetId(2), self.ptC)
+    inInputCsData.GetPoint(cellPointIds.GetId(3), self.ptD)
+    self.ptAverage[0] = (self.ptA[0] + self.ptB[0] + self.ptC[0] + self.ptD[0]) * 0.25
+    self.ptAverage[1] = (self.ptA[1] + self.ptB[1] + self.ptC[1] + self.ptD[1]) * 0.25
+    self.ptAverage[2] = (self.ptA[2] + self.ptB[2] + self.ptC[2] + self.ptD[2]) * 0.25
+    if globalCellIdArray != None:
+      self.cellId = globalCellIdArray.GetValue(quadIndex)
+
+  def PopulateFromInfoArrays(self, index, doubleArray, integerArray):
+    "given arrays which were populated with the help of AddToInfoArrays(),\n       set up this quad to match the one represented in the arrays at the\n       given index"
+    ptIndx = index*15
+    idIndx = index
+    self.ptA[0] = doubleArray[ptIndx]
+    self.ptA[1] = doubleArray[ptIndx+1]
+    self.ptA[2] = doubleArray[ptIndx+2]
+    self.ptB[0] = doubleArray[ptIndx+3]
+    self.ptB[1] = doubleArray[ptIndx+4]
+    self.ptB[2] = doubleArray[ptIndx+5]
+    self.ptC[0] = doubleArray[ptIndx+6]
+    self.ptC[1] = doubleArray[ptIndx+7]
+    self.ptC[2] = doubleArray[ptIndx+8]
+    self.ptD[0] = doubleArray[ptIndx+9]
+    self.ptD[1] = doubleArray[ptIndx+10]
+    self.ptD[2] = doubleArray[ptIndx+11]
+    self.ptAverage[0] = doubleArray[ptIndx+12]
+    self.ptAverage[1] = doubleArray[ptIndx+13]
+    self.ptAverage[2] = doubleArray[ptIndx+14]
+    self.cellId = integerArray.append(self.cellId)
+
+  def AddToInfoArrays(self, outDoubleArray, outIntegerArray):
+    "add the quad points, point average, and cellId to the argument arrays\n       for purspose of doing mpi broadcast/reduce work"
+    outDoubleArray.append(self.ptA[0])
+    outDoubleArray.append(self.ptA[1])
+    outDoubleArray.append(self.ptA[2])
+    outDoubleArray.append(self.ptB[0])
+    outDoubleArray.append(self.ptB[1])
+    outDoubleArray.append(self.ptB[2])
+    outDoubleArray.append(self.ptC[0])
+    outDoubleArray.append(self.ptC[1])
+    outDoubleArray.append(self.ptC[2])
+    outDoubleArray.append(self.ptD[0])
+    outDoubleArray.append(self.ptD[1])
+    outDoubleArray.append(self.ptD[2])
+    outDoubleArray.append(self.ptAverage[0])
+    outDoubleArray.append(self.ptAverage[1])
+    outDoubleArray.append(self.ptAverage[2])
+    outIntegerArray.append(self.cellId)
+
+  def AddZeroQuadToInfoArrays(self, outDoubleArray, outIntegerArray):
+    "add zeros to the argument arrays representing a blank quad\n       for purspose of doing mpi broadcast/reduce work"
+    for ii in range(0, 15):
+        outDoubleArray.append(0.0)
+    outIntegerArray.append(int(0))
+
+  def CalculateDistanceSquaredTo(self, onePt):
+    return vecDistanceSquared(onePt, self.ptAverage)
+
+  def ToString(self):
+    retStr = str(self.index) + " " + str(self.cellId) + "\n" + \
+      str(self.ptA) + "\n" + \
+      str(self.ptB) + "\n" + \
+      str(self.ptC) + "\n" + \
+      str(self.ptD) + "\n" + \
+      str(self.ptAverage) + "\n"
+    return retStr
+
+  def CalculateNormal(self):
+    vec1 = vecFromAToB(self.ptA, self.ptC)
+    vec2 = vecFromAToB(self.ptB, self.ptD)
+    vecCrs = vecCrossProduct(vec1, vec2)
+    self.normal = vecNormalize(vecCrs)
+
+  def MakeLogSamplePointsAlongRayStartingAtAveragePoint(self, rayDirection, startStep, multiplier, maxDistance):
+    smplList = []
+    newPt = vecMultiplyAdd(self.ptAverage, rayDirection, 0.0)
+    smplList.append(newPt)
+    thisDistance = startStep
+    count = 1
+    while thisDistance < maxDistance:
+      newPt = vecMultiplyAdd(self.ptAverage, rayDirection, thisDistance)
+      smplList.append(newPt)
+      thisDistance *= multiplier
+      count += 1
+      if count > 200:
+        break
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeLogSamplePointsAlongRayStartingAtAveragePoint:\n" + \
+        str(len(smplList)) + "  " + \
+        str(thisDistance) + "  " + \
+        str(count) + \
+        "\n" + str(smplList[0]) + \
+        "\n" + str(smplList[-1]) + \
+        "\n", 100)
+    return smplList
+
+  def MakeSamplePointsAlongRayStartingAtAveragePoint(self, rayDirection, numSamples, maxDistance):
+    smplList = []
+    #for ii in range(-50,51):
+    sampleStep = maxDistance / (float(numSamples - 1))
+    for ii in range(0, numSamples):
+      rr = float(ii) * sampleStep
+      newPt = vecMultiplyAdd(self.ptAverage, rayDirection, rr)
+      smplList.append(newPt)
+    return smplList
+
+  def MakeSamplePointsAlongRayFromNearbyPoint(self, rayDefiningPoint):
+    "create a vector from rayDefiningPoint to the average point of this ray,\n       VV.  Create sample points along a ray starting at the average point of\n       the quad (self.ptAverage) along the vector VV"
+    vecVUN = vecFromAToB(rayDefiningPoint, self.ptAverage)
+    vecVV= vecNormalize(vecVUN)
+    return self.MakeSamplePointsAlongRayStartingAtAveragePoint(vecVV, 50, 0.05)
+
+  def MakeLogSamplePointsAlongRayFromNearbyPoint(self, rayDefiningPoint, startStep, multiplier, maxDistance):
+    "create a vector from rayDefiningPoint to the average point of this ray,\n       VV.  Create sample points along a ray starting at the average point of\n       the quad (self.ptAverage) along the vector VV.  Space the sample points\n       in a logarithmic manner controlled by startStep, multiplier, and\n       maxDistance"
+    vecVUN = vecFromAToB(rayDefiningPoint, self.ptAverage)
+    vecVV= vecNormalize(vecVUN)
+    return self.MakeLogSamplePointsAlongRayStartingAtAveragePoint(vecVV, startStep, multiplier, maxDistance)
+
+  def MakePerpendicularSamplePoints(self):
+    "create a list of sample points based on the average quad point (later\n       the center) and thr normal to the quad"
+    self.CalculateNormal()
+    return self.MakeSamplePointsAlongRayStartingAtAveragePoint(self.normal, 50, 0.05)
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriSegment import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+class PhactoriSegment:
+  def __init__(self):
+    self.ptA = None
+    self.ptB = None
+    self.AtoB = None
+    self.lengthSquared = None
+    self.oneOverLenSqrd = None
+    self.boundingBox = None
+
+  def SetPoints(self, ptA, ptB):
+    self.ptA = list(ptA)
+    self.ptB = list(ptB)
+    self.AtoB = vecFromAToB(self.ptA, self.ptB)
+    self.lengthSquared = vecMagnitudeSquared(self.AtoB)
+    if self.lengthSquared == 0.0:
+      myDebugPrint3AndException("PhactoriSegment:SetPoints self.lengthSquared is 0.0\n")
+    self.oneOverLenSqrd = 1.0 / self.lengthSquared
+
+    self.boundingBox = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    if self.ptA[0] <= self.ptB[0]:
+      self.boundingBox[0] = ptA[0]
+      self.boundingBox[1] = ptB[0]
+    else:
+      self.boundingBox[0] = ptB[0]
+      self.boundingBox[1] = ptA[0]
+    if self.ptA[1] <= self.ptB[1]:
+      self.boundingBox[2] = ptA[1]
+      self.boundingBox[3] = ptB[1]
+    else:
+      self.boundingBox[2] = ptB[1]
+      self.boundingBox[3] = ptA[1]
+    if self.ptA[2] <= self.ptB[2]:
+      self.boundingBox[4] = ptA[2]
+      self.boundingBox[5] = ptB[2]
+    else:
+      self.boundingBox[4] = ptB[2]
+      self.boundingBox[5] = ptA[2]
+
+    #if PhactoriDbg(100):
+    #  myDebugPrint3("PhactoriSegment:SetPoints\n" +\
+    #    str(self.ptA) + "\n" + \
+    #    str(self.ptB) + "\n" + \
+    #    str(self.AtoB) + "\n" + \
+    #    str(self.lengthSquared) + "\n" + \
+    #    str(self.oneOverLenSqrd) + "\n")
+
+  def FindDistanceToPoint(self, testPoint):
+    return math.sqrt(self.FindDistanceSquaredToPoint(testPoint))
+
+  def FindDistanceToPointProjected(self, testPoint, projectionAxis):
+    return math.sqrt(self.FindDistanceSquaredToPoint(testPoint), projectionAxis)
+
+  def FindNearestPointOnSegmentToPoint(self, testPoint):
+    if self.lengthSquared == 0.0:
+      return list(self.ptA)
+    AtoTest = vecFromAToB(self.ptA, testPoint)
+    tt = vecDotProduct(AtoTest, self.AtoB) * self.oneOverLenSqrd
+    if tt <= 0.0:
+      return list(self.ptA)
+    elif tt >= 1.0:
+      return list(self.ptB)
+    else:
+      testProjectedToSegment = vecMultiplyAdd(self.ptA, self.AtoB, tt)
+      return testProjectedToSegment
+
+  def ProjectPointOntoPlane(self, pointToChange, projectionAxis):
+    if projectionAxis == 0:
+      pointToChange[0] = 0.0
+    elif projectionAxis == 1:
+      pointToChange[1] = 0.0
+    elif projectionAxis == 2:
+      pointToChange[2] = 0.0
+
+  def FindNearestPointOnSegmentToPointProjected(self, testPoint, projectionAxis):
+    retPoint = self.FindNearestPointOnSegmentToPoint(testPoint)
+    self.ProjectPointOntoPlane(retPoint, projectionAxis)
+    return retPoint
+
+  def FindDistanceSquaredToPoint(self, testPoint):
+    testPointProjectedOntoSegment = self.FindNearestPointOnSegmentToPoint(testPoint)
+    return vecDistanceSquared(testPoint, testPointProjectedOntoSegment)
+
+  def FindDistanceSquaredToPointProjected(self, testPoint, projectionAxis):
+    testPointProjectedOntoSegment = self.FindNearestPointOnSegmentToPointProjected(testPoint, projectionAxis)
+    localTestPoint = list(testPoint)
+    self.ProjectPointOntoPlane(localTestPoint, projectionAxis)
+    return vecDistanceSquared(localTestPoint, testPointProjectedOntoSegment)
+
+  def MyBoundingBoxIntersectsTargetBoundingBox(self, testBoundingBox):
+    if self.boundingBox[0] > testBoundingBox[1]:
+      return False
+    if self.boundingBox[1] < testBoundingBox[0]:
+      return False
+    if self.boundingBox[2] > testBoundingBox[3]:
+      return False
+    if self.boundingBox[3] < testBoundingBox[2]:
+      return False
+    if self.boundingBox[4] > testBoundingBox[5]:
+      return False
+    if self.boundingBox[5] < testBoundingBox[4]:
+      return False
+    return True
+
+  def EitherEndpointIsInBoundingBox(self, testBoundingBox):
+    ptIsIn = True
+    if (self.ptA[0] < testBoundingBox[0]):
+      ptIsIn = False
+    if (self.ptA[0] > testBoundingBox[1]):
+      ptIsIn = False
+    if (self.ptA[1] < testBoundingBox[2]):
+      ptIsIn = False
+    if (self.ptA[1] > testBoundingBox[3]):
+      ptIsIn = False
+    if (self.ptA[2] < testBoundingBox[4]):
+      ptIsIn = False
+    if (self.ptA[2] > testBoundingBox[5]):
+      ptIsIn = False
+    if ptIsIn == True:
+      return True
+    ptIsIn = True
+    if (self.ptB[0] < testBoundingBox[0]):
+      ptIsIn = False
+    if (self.ptB[0] > testBoundingBox[1]):
+      ptIsIn = False
+    if (self.ptB[1] < testBoundingBox[2]):
+      ptIsIn = False
+    if (self.ptB[1] > testBoundingBox[3]):
+      ptIsIn = False
+    if (self.ptB[2] < testBoundingBox[4]):
+      ptIsIn = False
+    if (self.ptB[2] > testBoundingBox[5]):
+      ptIsIn = False
+    if ptIsIn == True:
+      return True
+    return False
+
+  def IntersectsXYRectangle(self, minU, maxU, minV, maxV, posW):
+    #myDebugPrint3("IntersectsXYRectangle entered\n")
+    #myDebugPrint3(str([minU, maxU, minV, maxV, posW]) + "\n")
+    #myDebugPrint3(str(self.boundingBox) + "\n")
+    if self.boundingBox[4] > posW:
+      return False
+    if self.boundingBox[5] < posW:
+      return False
+    tt = (posW - self.ptA[2])/(self.ptB[2] - self.ptA[2])
+    #myDebugPrint3(str(tt) + "\n")
+    uIntersect = self.ptA[0] + tt * (self.ptB[0] - self.ptA[0])
+    #myDebugPrint3(str(uIntersect) + "\n")
+    if uIntersect < minU:
+      return False
+    if uIntersect > maxU:
+      return False
+    vIntersect = self.ptA[1] + tt * (self.ptB[1] - self.ptA[1])
+    #myDebugPrint3(str(vIntersect) + "\n")
+    if vIntersect < minV:
+      return False
+    if vIntersect > maxV:
+      return False
+    return True
+
+  def IntersectsXZRectangle(self, minU, maxU, minV, maxV, posW):
+    if self.boundingBox[2] > posW:
+      return False
+    if self.boundingBox[3] < posW:
+      return False
+    tt = (posW - self.ptA[1])/(self.ptB[1] - self.ptA[1])
+    uIntersect = self.ptA[0] + tt * (self.ptB[0] - self.ptA[0])
+    if uIntersect < minU:
+      return False
+    if uIntersect > maxU:
+      return False
+    vIntersect = self.ptA[2] + tt * (self.ptB[2] - self.ptA[2])
+    if vIntersect < minV:
+      return False
+    if vIntersect > maxV:
+      return False
+    return True
+
+  def IntersectsYZRectangle(self, minU, maxU, minV, maxV, posW):
+    if self.boundingBox[0] > posW:
+      return False
+    if self.boundingBox[1] < posW:
+      return False
+    tt = (posW - self.ptA[0])/(self.ptB[0] - self.ptA[0])
+    uIntersect = self.ptA[1] + tt * (self.ptB[1] - self.ptA[1])
+    if uIntersect < minU:
+      return False
+    if uIntersect > maxU:
+      return False
+    vIntersect = self.ptA[2] + tt * (self.ptB[2] - self.ptA[2])
+    if vIntersect < minV:
+      return False
+    if vIntersect > maxV:
+      return False
+    return True
+
+  def IntersectsBoundingBox(self, testBoundingBox):
+    #myDebugPrint3("PhactoriSegment.IntersectsBoundingBox entered\n")
+    #myDebugPrint3("ptA: " + str(self.ptA) + "\n")
+    #myDebugPrint3("ptB: " + str(self.ptB) + "\n")
+    #myDebugPrint3("box: " + str(testBoundingBox) + "\n")
+
+    if self.MyBoundingBoxIntersectsTargetBoundingBox(testBoundingBox) == False:
+      #myDebugPrint3("PhactoriSegment.IntersectsBoundingBox returning false due to bounding box test\n")
+      return False
+
+    if self.EitherEndpointIsInBoundingBox(testBoundingBox) == True:
+      #myDebugPrint3("PhactoriSegment.IntersectsBoundingBox returning false due to endpoint in box test\n")
+      return True
+
+    #myDebugPrint3("PhactoriSegment.IntersectsBoundingBox testing against all six sides\n")
+    if self.IntersectsXYRectangle(testBoundingBox[0], testBoundingBox[1], testBoundingBox[2], testBoundingBox[3], testBoundingBox[4]):
+      return True
+    if self.IntersectsXYRectangle(testBoundingBox[0], testBoundingBox[1], testBoundingBox[2], testBoundingBox[3], testBoundingBox[5]):
+      return True
+    if self.IntersectsXZRectangle(testBoundingBox[0], testBoundingBox[1], testBoundingBox[4], testBoundingBox[5], testBoundingBox[2]):
+      return True
+    if self.IntersectsXZRectangle(testBoundingBox[0], testBoundingBox[1], testBoundingBox[4], testBoundingBox[5], testBoundingBox[3]):
+      return True
+    if self.IntersectsYZRectangle(testBoundingBox[2], testBoundingBox[3], testBoundingBox[4], testBoundingBox[5], testBoundingBox[4]):
+      return True
+    if self.IntersectsYZRectangle(testBoundingBox[2], testBoundingBox[3], testBoundingBox[4], testBoundingBox[5], testBoundingBox[5]):
+      return True
+
+    #myDebugPrint3("PhactoriSegment.IntersectsBoundingBox returning false, no side intersection\n")
+    return False
+
+  def IntersectsBoundingBoxProjected(self, boundingBox, projectionAxis):
+    #myDebugPrint3("PhactoriSegment.IntersectsBoundingBoxProjected entered\n")
+    if (projectionAxis < 0) or (projectionAxis > 2):
+      return self.IntersectsBoundingBox(boundingBox)
+
+    #inefficient but simple method of handling projection:  make projected
+    #bounding box (rectangle) and projected segment and do 3d version
+    localProjectedPointA = list(self.ptA)
+    localProjectedPointB = list(self.ptB)
+    localProjectedBoundingBox = list(boundingBox)
+    localProjectedPointA[projectionAxis] = 0.0
+    localProjectedPointB[projectionAxis] = 0.0
+    localProjectedBoundingBox[2*projectionAxis] = 0.0
+    localProjectedBoundingBox[2*projectionAxis+1] = 0.0
+    localProjectedSegment = PhactoriSegment()
+    localProjectedSegment.SetPoints(localProjectedPointA, localProjectedPointB)
+    intersectionFlag = localProjectedSegment.IntersectsBoundingBox(localProjectedBoundingBox)
+    return intersectionFlag
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriOperationBlock import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+global FlagToTestOutgoingPvGeometryFilter
+FlagToTestOutgoingPvGeometryFilter = False
+
+global WriteEachDeadCellElementToFiles
+WriteEachDeadCellElementToFiles = False
 
 class BlockRecursionControlItem:
-  """see DoMethodPerBlock(); mOperationPerBlock should be set to a method
-     which takes 1 parameter, mParameters should be set to the parameter
-     instance which will be passes to the mOperationPerBlock call"""
+  "see DoMethodPerBlock(); mOperationPerBlock should be set to a method\n     which takes 1 parameter, mParameters should be set to the parameter\n     instance which will be passes to the mOperationPerBlock call"
   def __init__(self):
     self.mOperationPerBlock = None
     self.mParameters = None
 
 class PhactoriOperationBlock:
-  """manages one stage of the data pipeline, analagous to ParaView Filter
-
-  An instance of this class represents and manages one stage of the data
-  pipeline which has been set up for management by phatori.  It creates and
-  holds a reference to a ParaView/Catalyst/vtk Filter which is doing the
-  real work--this class might be thought of as an adapter or interface from
-  phactori to ParaView.  As currently implemented, an operation is assumed to
-  have only one input and one output.  Multiple operations can have the same
-  input, so a tree structure is allowed rather than just a linear pipe.
-  Operations with multiple inputs and outputs are conceiveable, and may be
-  added pending user requirements.
-  The instance is presumed to contain a name unique amound the operation
-  blocks and keeps a reference to the input operation (by name), the 
-  ParaView/Catalyst filter which is built, and some flags determining where
-  we are in the construction process.
-  """
+  "manages one stage of the data pipeline, analagous to ParaView Filter\n\n  An instance of this class represents and manages one stage of the data\n  pipeline which has been set up for management by phatori.  It creates and\n  holds a reference to a ParaView/Catalyst/vtk Filter which is doing the\n  real work--this class might be thought of as an adapter or interface from\n  phactori to ParaView.  As currently implemented, an operation is assumed to\n  have only one input and one output.  Multiple operations can have the same\n  input, so a tree structure is allowed rather than just a linear pipe.\n  Operations with multiple inputs and outputs are conceiveable, and may be\n  added pending user requirements.\n  The instance is presumed to contain a name unique amound the operation\n  blocks and keeps a reference to the input operation (by name), the \n  ParaView/Catalyst filter which is built, and some flags determining where\n  we are in the construction process.\n  "
   def __init__(self):
     self.mName = ""
     self.mInputOperationName = None
@@ -8774,11 +14983,17 @@ class PhactoriOperationBlock:
     if FlagToTestOutgoingPvGeometryFilter == False:
       if PhactoriDbg():
         myDebugPrint3("PhactoriOperationBlock::GetOutgoingPvGeometryFilter\n"
-            "not creating or using external geometry filter: ")
+            "not creating or using external geometry filter:\n")
       return self.GetPvFilter()
     if self.mOutgoingGeometryFilter == None:
       self.CreateOutgoingPvGeometryFilter()
     return self.mOutgoingGeometryFilter
+
+  def GetListOfInputOperationNames(self):
+    retList = self.mOperationSpecifics.GetListOfInputOperationNamesForThisOperationType()
+    if self.mInputOperationName != None:
+      retList.append(self.mInputOperationName)
+    return retList
 
   def DoUpdateDueToChangeInData(self, ioPipeAndViewsState):
     outputPvFilter = self.mParaViewFilter
@@ -8796,14 +15011,8 @@ class PhactoriOperationBlock:
     self.mOperationSpecifics.DoUpdateDueToChangeInData(
         inputOperation.mParaViewFilter, outputPvFilter)
 
-  def DoMethodPerBlock(self, inRecursionControlItem):
-    """DoMethodPerBlock is a generic method for doing recursion through the
-       multiblock dataset and doing something (a callback) on a per leaf block
-       basis.  Gets the clientside data and calls DoMethodPerBlockRecurse1
-       which calls itself on internal nodes and calls
-       inRecursionControlItem.mOperationToDoPerBlock on leaf block nodes"""
-    pvClientSideData = self.GetPvFilter().GetClientSideObject().\
-            GetOutputDataObject(0)
+  def DoMethodPerBlockFromParaViewFilter(self, inRecursionControlItem, inPvFilter):
+    pvClientSideData = inPvFilter.GetClientSideObject().GetOutputDataObject(0)
     if pvClientSideData == None:
       if PhactoriDbg(100):
         myDebugPrint3(
@@ -8811,14 +15020,15 @@ class PhactoriOperationBlock:
 
     self.DoMethodPerBlockRecurse1(pvClientSideData, inRecursionControlItem)
 
+  def DoMethodPerBlock(self, inRecursionControlItem):
+    "DoMethodPerBlock is a generic method for doing recursion through the\n       multiblock dataset and doing something (a callback) on a per leaf block\n       basis.  Gets the clientside data and calls DoMethodPerBlockRecurse1\n       which calls itself on internal nodes and calls\n       inRecursionControlItem.mOperationToDoPerBlock on leaf block nodes"
+    pvFilter = self.GetPvFilter()
+    self.DoMethodPerBlockFromParaViewFilter(inRecursionControlItem, pvFilter)
+
   def DoMethodPerBlockRecurse1(self, inInputCsData, inRecursionControlItem):
-    """DoMethodPerBlockRecurse1 is a generic method for doing recursion through
-       the multiblock dataset and doing something (a callback) on a per leaf block
-       basis.  Called by DoMethodPerBlock which got clientside data and calls
-       itself on internal nodes and calls
-       inRecursionControlItem.mOperationToDoPerBlock on leaf block nodes"""
-    if PhactoriDbg(100):
-      myDebugPrint3('DoMethodPerBlockRecurse1 entered\n', 100)
+    "DoMethodPerBlockRecurse1 is a generic method for doing recursion through\n       the multiblock dataset and doing something (a callback) on a per leaf block\n       basis.  Called by DoMethodPerBlock which got clientside data and calls\n       itself on internal nodes and calls\n       inRecursionControlItem.mOperationToDoPerBlock on leaf block nodes"
+    #if PhactoriDbg(100):
+    #  myDebugPrint3('DoMethodPerBlockRecurse1 entered\n', 100)
 
     icsdClassname = inInputCsData.GetClassName()
     if icsdClassname == "vtkMultiBlockDataSet" or \
@@ -8833,8 +15043,8 @@ class PhactoriOperationBlock:
       inRecursionControlItem.mOperationToDoPerBlock(inInputCsData,
               inRecursionControlItem.mParameters)
 
-    if PhactoriDbg(100):
-      myDebugPrint3('DoMethodPerBlockRecurse1 returning\n', 100)
+    #if PhactoriDbg(100):
+    #  myDebugPrint3('DoMethodPerBlockRecurse1 returning\n', 100)
 
   def OutputElementListFromOneBlockToFile(self, inInputCsData, inParameters):
     if PhactoriDbg(100):
@@ -8844,8 +15054,6 @@ class PhactoriOperationBlock:
     numArrays = cellData.GetNumberOfArrays()
 
     global WriteEachDeadCellElementToFiles
-    global WriteDeadCellSummaryFile
-
     #if inParameters.mBlockCount == 0:
     if (inParameters.mFlag1 == 0) and (numTuplesX > 0):
       inParameters.mFlag1 = 1
@@ -8881,8 +15089,7 @@ class PhactoriOperationBlock:
       myDebugPrint3("OutputElementListFromOneBlockToFile returning\n")
 
   class FindClosestNPointsToListParams:
-    """recursion structure for FindClosestNPointsToList().  Also servers to 
-       store/track data for passing back answer"""
+    "recursion structure for FindClosestNPointsToList().  Also servers to \n       store/track data for passing back answer"
     def __init__(self, inParentOperation, inNumToFind,
                  inTargetGlobalNodeIdList, inTargetPointXyzList):
       self.mParentOperation = inParentOperation
@@ -8919,9 +15126,7 @@ class PhactoriOperationBlock:
       self.mcfndx = 0
 
     def SetUpKdtree(self):
-      """take the points in this instance (presumably the target object) and
-         put them in a kdtree (using scipy) so we can find the closest point
-         in log(n) time"""
+      "take the points in this instance (presumably the target object) and\n         put them in a kdtree (using scipy) so we can find the closest point\n         in log(n) time"
       from scipy import spatial
       kdtreepts = []
       numpts = self.mTargetIds.GetNumberOfValues()
@@ -8945,10 +15150,7 @@ class PhactoriOperationBlock:
       self.TestPointSub2(inSrcId, inSrcXyz, tgtId, tgtXyz, nrstdist)
 
     def TestPoint(self, inId, inXyz):
-      """given an xyz point in the local processor (and its global node id)
-         see if it is closer to any of the target points than the current
-         set of nearest points and, if so, put it in the set, dropping
-         others out if necessary"""
+      "given an xyz point in the local processor (and its global node id)\n         see if it is closer to any of the target points than the current\n         set of nearest points and, if so, put it in the set, dropping\n         others out if necessary"
       if PhactoriDbg():
         myDebugPrint3("TestPoint id " + str(inId))
       tgtxyzs = self.mTargetXyzs
@@ -9026,10 +15228,7 @@ class PhactoriOperationBlock:
       #      str(self.mDistSqrds.GetValue(self.mcfndx)) + "\n")
 
     def TestPointSub1(self, inId, inX, inY, inZ, tId, tX, tY, tZ):
-      """given an xyz point in the local processor (and its global node id)
-         see if it is closer to one of the target points than the current
-         set of nearest points and, if so, put it in the set, dropping
-         others out if necessary"""
+      "given an xyz point in the local processor (and its global node id)\n         see if it is closer to one of the target points than the current\n         set of nearest points and, if so, put it in the set, dropping\n         others out if necessary"
       ddx = inX - tX
       ddy = inY - tY
       ddz = inZ - tZ
@@ -9117,17 +15316,7 @@ class PhactoriOperationBlock:
 
   def FindClosestNPointsToList(self, inGlobalNodeIdList, inPointXyzList,
             inNumToFind):
-    """given a list of node ids and xyz points, recursively find the nearest
-       (geometrically) inNumToFind points in the local processor to the xyz
-       points in inPointXyzList.  Returns a list of inNumToFind global node
-       ids and inNumToFind xyz points
-       inGlobalNodeIds is vtkIntArray
-       inPointXyzs is vtkDoubleArray
-       returns a FindClosestNPointsToListParams instance which has list of
-       length inNumToFind which contain the node id of the closest local
-       process point, the node id of the corresponding point from the
-       inGlobalNodeIdList, the xyzs of each of those, and this distance
-       between (squared to save computation)"""
+    "given a list of node ids and xyz points, recursively find the nearest\n       (geometrically) inNumToFind points in the local processor to the xyz\n       points in inPointXyzList.  Returns a list of inNumToFind global node\n       ids and inNumToFind xyz points\n       inGlobalNodeIds is vtkIntArray\n       inPointXyzs is vtkDoubleArray\n       returns a FindClosestNPointsToListParams instance which has list of\n       length inNumToFind which contain the node id of the closest local\n       process point, the node id of the corresponding point from the\n       inGlobalNodeIdList, the xyzs of each of those, and this distance\n       between (squared to save computation)"
     recursionItem = BlockRecursionControlItem()
     recursionItem.mParameters = \
         PhactoriOperationBlock.FindClosestNPointsToListParams(
@@ -9174,9 +15363,7 @@ class PhactoriOperationBlock:
       self.mPointXYZList = vtk.vtkDoubleArray()
 
   def MakeListOfAllPoints1(self):
-    """recursively going through multiblock setup, make a list of all the
-       points in this operation output in this process.  We get a list
-       of global node ids and a list of xyz geometry points"""
+    "recursively going through multiblock setup, make a list of all the\n       points in this operation output in this process.  We get a list\n       of global node ids and a list of xyz geometry points"
     recursionItem = BlockRecursionControlItem()
     recursionItem.mParameters = \
         PhactoriOperationBlock.MakeListOfAllPoints1Params()
@@ -9210,6 +15397,121 @@ class PhactoriOperationBlock:
     #if PhactoriDbg(100):
     #  myDebugPrint3("MakeListOfAllPointsInBlock1 returning\n")
 
+  class MakeListOfAllPointsAndNodeIdsInBlock2Params:
+    def __init__(self):
+      self.mPointXYZAndNodeIdList = []
+
+  def MakeListOfAllPointsAndNodeIdsInBlock2(self, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeListOfAllPointsAndNodeIdsInBlock2 entered\n")
+    pointsArray = inInputCsData.GetPoints()
+    if pointsArray == None:
+      #no points here
+      return
+    pointsData = inInputCsData.GetPointData()
+    globalNodeIdArray = pointsData.GetArray('GlobalNodeId')
+    numPoints = pointsArray.GetNumberOfPoints()
+    ptXyz = [0.0, 0.0, 0.0]
+    for ndx in range(0,pointsArray.GetNumberOfPoints()):
+      #thePoint = pointsArray.GetPoint(ndx, ptXyz)
+      pointsArray.GetPoint(ndx, ptXyz)
+      if globalNodeIdArray == None:
+        thisNodeId = -1
+      else:
+        thisNodeId = int(globalNodeIdArray.GetValue(ndx))
+      inParameters.mPointXYZAndNodeIdList.append([ptXyz[0], ptXyz[1], ptXyz[2], thisNodeId])
+    if PhactoriDbg(100):
+      numPtsThisBlock = len(inParameters.mPointXYZAndNodeIdList)
+      myDebugPrint3("num points after this block: " + str(numPtsThisBlock) + "\n")
+      if numPtsThisBlock > 0:
+        myDebugPrint3("last point: " + str(inParameters.mPointXYZAndNodeIdList[-1]) + "\n")
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeListOfAllPointsAndNodeIdsInBlock2 returning\n")
+
+  def MakeListOfAllPointsAndNodeIdsOnThisProcessFromParaViewFilter(self, inInputFilter):
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeListOfAllPointsAndNodeIdsOnThisProcessFromParaViewFilter entered\n")
+    recursionItem = BlockRecursionControlItem()
+    recursionItem.mParameters = PhactoriOperationBlock.MakeListOfAllPointsAndNodeIdsInBlock2Params()
+    recursionItem.mOperationToDoPerBlock = self.MakeListOfAllPointsAndNodeIdsInBlock2
+    self.DoMethodPerBlockFromParaViewFilter(recursionItem, inInputFilter)
+    if PhactoriDbg(100):
+      numPtsThisProcess = len(recursionItem.mParameters.mPointXYZAndNodeIdList)
+      myDebugPrint3("num points in this process: " + str(numPtsThisProcess) + "\n")
+      if numPtsThisProcess > 0:
+        myDebugPrint3("last point: " + str(recursionItem.mParameters.mPointXYZAndNodeIdList[-1]) + "\n")
+    if PhactoriDbg(100):
+      myDebugPrint3("MakeListOfAllPointsAndNodeIdsOnThisProcessFromParaViewFilter returning\n")
+    return recursionItem.mParameters.mPointXYZAndNodeIdList
+
+  class GetQuadClosestToPointsInBlock2Params:
+    def __init__(self):
+      self.testPointList = []
+      self.distSqrdList = []
+      self.closestList = []
+
+    def InitializeWithPointList(self, inTestPointList):
+      self.testPointList = inTestPointList
+      numTestPoints = len(inTestPointList)
+      for ii in range(0, numTestPoints):
+        self.distSqrdList.append(sys.float_info.max)
+        self.closestList.append(None)
+      if PhactoriDbg(100):
+        myDebugPrint3("InitializeWithPointList: " + str(numTestPoints) + " " +\
+          str(len(self.distSqrdList)) + " " + str(len(self.closestList)) +\
+          "\n" + str(self.testPointList) + "\n" +\
+          "\n" + str(self.distSqrdList) + "\n" +\
+          "\n" + str(self.closestList) + "\n")
+
+  def GetQuadsClosestToPointsInBlock2(self, inInputCsData, inParameters):
+    if PhactoriDbg(100):
+      myDebugPrint3("GetCloseQuadsInBlock2 entered\n")
+    numQuads = inInputCsData.GetNumberOfCells()
+    if numQuads == 0:
+      #no quads here
+      return
+
+    if PhactoriDbg(100):
+      myDebugPrint3(str(inParameters.testPointList) + "\n")
+      myDebugPrint3(str(inParameters.distSqrdList) + "\n")
+
+    cellsData = inInputCsData.GetCellData()
+    globalCellIdArray = cellsData.GetArray('GlobalCellId')
+    for quadIndex in range(0,numQuads):
+      thisQuad = QuadInfoGQC()
+      thisQuad.PopulateFromVtkData(inInputCsData, globalCellIdArray, quadIndex)
+      for ptndx, oneTestPt in enumerate(inParameters.testPointList):
+        testDist = thisQuad.CalculateDistanceSquaredTo(oneTestPt)
+        if testDist < inParameters.distSqrdList[ptndx]:
+          inParameters.closestList[ptndx] = thisQuad
+          inParameters.distSqrdList[ptndx] = testDist
+
+    if PhactoriDbg(100):
+      myDebugPrint3(str(inParameters.testPointList) + "\n")
+      myDebugPrint3(str(inParameters.distSqrdList) + "\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("after this block:\n")
+      for ii, oneQuad in enumerate(inParameters.closestList):
+        myDebugPrint3(str(ii) + ": " + \
+          str(inParameters.distSqrdList[ii]) + "\n" + \
+          str(inParameters.testPointList[ii]) + "\n" + oneQuad.ToString())
+      myDebugPrint3("\n")
+
+    if PhactoriDbg(100):
+      myDebugPrint3("GetCloseQuadsInBlock2 returning\n")
+
+  def GetQuadsClosestToPointsOnThisProcessFromParaViewFilter(self, inInputFilter, inTestPointList):
+    if PhactoriDbg(100):
+      myDebugPrint3("GetQuadsClosestToPointsOnThisProcessFromParaViewFilter entered\n")
+    recursionItem = BlockRecursionControlItem()
+    recursionItem.mParameters = PhactoriOperationBlock.GetQuadClosestToPointsInBlock2Params()
+    recursionItem.mParameters.InitializeWithPointList(inTestPointList)
+    recursionItem.mOperationToDoPerBlock = self.GetQuadsClosestToPointsInBlock2
+    self.DoMethodPerBlockFromParaViewFilter(recursionItem, inInputFilter)
+    if PhactoriDbg(100):
+      myDebugPrint3("GetQuadsClosestToPointsOnThisProcessFromParaViewFilter returning\n")
+    return recursionItem.mParameters.closestList, recursionItem.mParameters.distSqrdList
 
   class OutputElementListToFileParams:
     def __init__(self):
@@ -9389,20 +15691,13 @@ class PhactoriOperationBlock:
     #recursionItem.mParameters.mOutFileff.close()
 
   def ExportOperationData(self, datadescription):
-    """this will be called once per callback (before WriteImages) to allow the
-       operation to export any desired data which is not an image.  We call
-       the operation specifics version of this method."""
+    "this will be called once per callback (before WriteImages) to allow the\n       operation to export any desired data which is not an image.  We call\n       the operation specifics version of this method."
     self.mOperationSpecifics.ExportOperationData(datadescription)
 
+#phactori_combine_to_single_python_file_subpiece_end_1
+
 class PhactoriTextAnnotationBlock(PhactoriOperationSpecifics):
-  """represents manages one text annotation item (paraview Text source).
-     The idea is that we print a 2d text item on the window front to give
-     information to the user.  Notionally the text can change depending on
-     data (e.g. min/max/average values from an operation), but this is not
-     yet implemented.  Imagesets can selectively turn on any desired subset
-     of existing text annotations.  The position of the text annotation
-     on the window, the color can be set, the font size and family can be
-     chosen, and the bold/italic/shadow flags can be set"""
+  "represents manages one text annotation item (paraview Text source).\n     The idea is that we print a 2d text item on the window front to give\n     information to the user.  Notionally the text can change depending on\n     data (e.g. min/max/average values from an operation), but this is not\n     yet implemented.  Imagesets can selectively turn on any desired subset\n     of existing text annotations.  The position of the text annotation\n     on the window, the color can be set, the font size and family can be\n     chosen, and the bold/italic/shadow flags can be set"
   def __init__(self):
     self.mName = ""
     self.mTextString = ""
@@ -9453,8 +15748,7 @@ class PhactoriTextAnnotationBlock(PhactoriOperationSpecifics):
       myDebugPrint3("(paraview items not yet created)\n")
 
   def CreateParaViewItems(self):
-    """creates the paraview text source and representation for this
-       PhactoriTextAnnotationBlock instance"""
+    "creates the paraview text source and representation for this\n       PhactoriTextAnnotationBlock instance"
     if PhactoriDbg(100):
       myDebugPrint3(
           "PhactoriTextAnnotationBlock::CreateParaViewItems entered:\n" + \
@@ -9570,18 +15864,7 @@ class PhactoriTextAnnotationBlock(PhactoriOperationSpecifics):
 
 
 class PhactoriMarkerBlock:
-  """represents and manages one 'marker' item.  The idea of a phactori marker
-     is that we can place a sphere (or maybe cube or other geometric object)
-     at a specific point in the scene to provide some kind of information to
-     the user.  Markers can be placed at absolute or relative geometric
-     points, at an element or node, or (perhaps most valuably) at a min or
-     max of a particular variable (with the min or max determined at the
-     pipeline point of any selected operation, e.g. filter out block X
-     and place a marker at the max of Temperature on block X).  Imagesets
-     can selectively turn on any desired subset of existing markers. In
-     Paraview the markers are simply sphere (or maybe cube) sources.
-     Additionally, the color of the marker can be set as well as the size
-     (relative or absolute)"""
+  "represents and manages one 'marker' item.  The idea of a phactori marker\n     is that we can place a sphere (or maybe cube or other geometric object)\n     at a specific point in the scene to provide some kind of information to\n     the user.  Markers can be placed at absolute or relative geometric\n     points, at an element or node, or (perhaps most valuably) at a min or\n     max of a particular variable (with the min or max determined at the\n     pipeline point of any selected operation, e.g. filter out block X\n     and place a marker at the max of Temperature on block X).  Imagesets\n     can selectively turn on any desired subset of existing markers. In\n     Paraview the markers are simply sphere (or maybe cube) sources.\n     Additionally, the color of the marker can be set as well as the size\n     (relative or absolute)"
 
   def __init__(self):
     self.mName = ""
@@ -9664,8 +15947,7 @@ class PhactoriMarkerBlock:
         myDebugPrint3("(paraview items not yet created\n")
 
   def CreateParaViewItems(self):
-    """creates the paraview source (e.g box, sphere, cone, arrow) and representation
-       for the marker"""
+    "creates the paraview source (e.g box, sphere, cone, arrow) and representation\n       for the marker"
     if PhactoriDbg(100):
         myDebugPrint3("PhactoriMarkerBlock::CreateParaViewItems entered\n", 100)
     savedActiveSource = GetActiveSource()
@@ -9956,19 +16238,13 @@ class PhactoriAnnotationViewSettings:
             "position\n")
 
 class PhactoriPolyDataForPlotLine:
-  """contains time over plot data values and vtk geometry, as well as the
-  routines to construct and maintain the vtk geometry
-  """
+  "contains time over plot data values and vtk geometry, as well as the\n  routines to construct and maintain the vtk geometry\n  "
   def __init__(self, inName):
     self.m_TableColumn = vtk.vtkDoubleArray()
     self.m_TableColumn.SetName(inName)
 
   def GetRestartInfo(self):
-    """construct, in python map/json format, the information from this
-       PhactoriPolyDataForPlotLine instance which contains the information
-       which would be needed to restore the instance to the proper
-       state after a simulation restart, particularly prior data values.
-       Return the restart info map/json"""
+    "construct, in python map/json format, the information from this\n       PhactoriPolyDataForPlotLine instance which contains the information\n       which would be needed to restore the instance to the proper\n       state after a simulation restart, particularly prior data values.\n       Return the restart info map/json"
     newJsonItem = {}
     numValues = self.m_TableColumn.GetNumberOfValues()
     if numValues > 0:
@@ -9985,11 +16261,7 @@ class PhactoriPolyDataForPlotLine:
     return newJsonItem
 
   def SetFromRestartInfo(self, inJson):
-    """given a map (json format), use the info in the map to set this
-       PhactoriPolyDataForPlotLine instance state--this reads the info
-       created by out in GetRestartInfo.  It should only occur on a restart,
-       and it fills in the data that had been generated during the
-       earlier run of the system"""
+    "given a map (json format), use the info in the map to set this\n       PhactoriPolyDataForPlotLine instance state--this reads the info\n       created by out in GetRestartInfo.  It should only occur on a restart,\n       and it fills in the data that had been generated during the\n       earlier run of the system"
     if "m_HasAtLeastOnePoint"not in inJson:
       if PhactoriDbg():
         myDebugPrint3("PhactoriPolyDataForPlotLine::SetFromRestartInfo " + \
@@ -10018,7 +16290,7 @@ class PhactoriPolyDataForPlotLine:
 
 
 class PhactoriPlotOverTimeIdLine:
-  """useful info for tracking a single element over time in a plot line"""
+  "useful info for tracking a single element over time in a plot line"
   def __init__(self, inIdToPlot):
     self.m_Id = inIdToPlot
     linename = "Id " + str(inIdToPlot)
@@ -10028,12 +16300,7 @@ class PhactoriPlotOverTimeIdLine:
     self.m_FoundIndex = None
 
 class ImageFileNameCountSettings:
-  """used to control par of how the image filenames are generated. The default
-     is to increment a counter each time the results output block is triggered
-     to call the catalyst stuff and make the count value part of the filename.
-     We can optionally have a filename section that is based on the date/time,
-     we can optionally include microseconds, and we can optionally convert the
-     date/time to an integer which will be monotonically increasing"""
+  "used to control par of how the image filenames are generated. The default\n     is to increment a counter each time the results output block is triggered\n     to call the catalyst stuff and make the count value part of the filename.\n     We can optionally have a filename section that is based on the date/time,\n     we can optionally include microseconds, and we can optionally convert the\n     date/time to an integer which will be monotonically increasing"
   def __init__(self):
     self.mUseDateTime = False
     self.mUseMicrosecondsWithDateTime = False
@@ -10063,14 +16330,7 @@ class ImageFileNameCountSettings:
   def GetImageFilename(self, datadescription, inImageSettings,
     inOneLookDirectionFilenameAddon, inRepresentationFilenameAddon,
     inCameraFilenameAddon):
-    """given the imageset and the look direction filename addon, figure out the
-       filename for the image.  Due to prior implementation, we return two
-       values, a temporary name based only on the callback count, and the
-       entire name we intend to have so that all processes can agree on the
-       file name when it is generated and then process zero can move the image
-       filename to it's final correct value.  If we return a None as the
-       second value, this indicates the callback count temporary name is also
-       the final name so no operating system move needs to happen"""
+    "given the imageset and the look direction filename addon, figure out the\n       filename for the image.  Due to prior implementation, we return two\n       values, a temporary name based only on the callback count, and the\n       entire name we intend to have so that all processes can agree on the\n       file name when it is generated and then process zero can move the image\n       filename to it's final correct value.  If we return a None as the\n       second value, this indicates the callback count temporary name is also\n       the final name so no operating system move needs to happen"
 
     inImageBasename = inImageSettings.mImageBasename
     inImageBasedirectory = inImageSettings.mImageBasedirectory
@@ -10214,9 +16474,7 @@ class PhactoriPlot1Base:
     return self.mInputOperation
 
   def WriteImages(self, datadescription):
-    """write out the .png/.jpg/whatever images associated with this plot
-       block for the current timestep/state.  Must loop through camera angles
-       and do a write for each one if necessary"""
+    "write out the .png/.jpg/whatever images associated with this plot\n       block for the current timestep/state.  Must loop through camera angles\n       and do a write for each one if necessary"
     if PhactoriDbg():
       myDebugPrint3("PhactoriPlotBase1::WriteImages entered\n")
 
@@ -10318,11 +16576,7 @@ class PhactoriPlot1Base:
     self.ClearPvViewAndPvRepAfterWriteImage()
 
   def SetUpViewAndRepresentationBeforeWriteImage(self):
-    """Since it turns out to be much more memory efficient to reuse a single
-       render view rather than having one per image, this routine is called
-       from PhactoriDriver immediately before WriteImage in order to set the
-       camera, background color, image size, etc. up appropriately for the
-       WriteImage call"""
+    "Since it turns out to be much more memory efficient to reuse a single\n       render view rather than having one per image, this routine is called\n       from PhactoriDriver immediately before WriteImage in order to set the\n       camera, background color, image size, etc. up appropriately for the\n       WriteImage call"
     if PhactoriDbg(150):
       myDebugPrint3("PhactoriPlot1Base:" \
         "SetUpViewAndRepresentationBeforeWriteImage entered " + \
@@ -10340,10 +16594,7 @@ class PhactoriPlot1Base:
     UpdatePlotViewLook(self)
 
   def ClearPvViewAndPvRepAfterWriteImage(self):
-    """Since it turns out to be much more memory efficient to reuse a single
-       render view rather than having one per image, this routine is called
-       immediately after WriteImage in order to make stuff invisible again
-       before the next item gets a chance to do WriteImage"""
+    "Since it turns out to be much more memory efficient to reuse a single\n       render view rather than having one per image, this routine is called\n       immediately after WriteImage in order to make stuff invisible again\n       before the next item gets a chance to do WriteImage"
     #if PhactoriDbg(150):
     #  myDebugPrint3("ClearPvViewAndPvRepAfterWriteImage entered\n", 150)
 
@@ -10352,8 +16603,7 @@ class PhactoriPlot1Base:
 
 
 class PhactoriPlotOverTimeBlock(PhactoriPlot1Base):
-  """container for one time plot of variable
-  """
+  "container for one time plot of variable\n  "
   def __init__(self):
     PhactoriPlot1Base.__init__(self)
     self.m_PlotType = "PhactoriPlotOverTimeBlock"
@@ -10378,11 +16628,7 @@ class PhactoriPlotOverTimeBlock(PhactoriPlot1Base):
     self.mPlotMeanFlag = None
 
   def SetFromRestartInfo(self, inJson):
-    """given a map (json format), use the info in the map to set the
-       plot state--this reads the info created by out in 
-       GetRestartInfo.  It should only occur on a restart, and
-       it fills in the data that had been generated during the
-       earlier run of the system"""
+    "given a map (json format), use the info in the map to set the\n       plot state--this reads the info created by out in \n       GetRestartInfo.  It should only occur on a restart, and\n       it fills in the data that had been generated during the\n       earlier run of the system"
     if 'm_xyzMinMaxTrkC' not in inJson:
       if PhactoriDbg():
         myDebugPrint3("PhactoriPlotOverTimeBlock::SetFromRestartInfo " + \
@@ -10397,11 +16643,7 @@ class PhactoriPlotOverTimeBlock(PhactoriPlot1Base):
 
 
   def GetRestartInfo(self):
-    """construct, in python map/json format, the information from this
-       plot over time instance which contains the information
-       which would be needed to restore the plot over time to the proper
-       state after a simulation restart, particularly prior plot points.
-       Return the restart info map/json"""
+    "construct, in python map/json format, the information from this\n       plot over time instance which contains the information\n       which would be needed to restore the plot over time to the proper\n       state after a simulation restart, particularly prior plot points.\n       Return the restart info map/json"
     newJsonItem = {}
     newJsonItem["m_xyzMinMaxTrkC"] = self.m_xyzMinMaxTrkC.GetRestartInfo()
     newJsonItem["m_TimeColumn"] = self.m_TimeColumn.GetRestartInfo()
@@ -10416,8 +16658,7 @@ class PhactoriPlotOverTimeBlock(PhactoriPlot1Base):
     #self.m_MeanPlotLine = PhactoriPolyDataForPlotLine()
 
 class PhactoriScatterPlotBlock(PhactoriPlot1Base):
-  """container for one parallel scatterplot of one variable
-  """
+  "container for one parallel scatterplot of one variable\n  "
   def __init__(self):
     PhactoriPlot1Base.__init__(self)
     self.m_PlotType = "PhactoriScatterPlotBlock"
@@ -10554,8 +16795,8 @@ class PhactoriScatterPlotBlock(PhactoriPlot1Base):
           "PhactoriScatterPlotBlock.ParseParametersFromJson returning\n")
 
 global HandleShowAxesWithEmptyDataParaViewIssueFlag
-HandleShowAxesWithEmptyDataParaViewIssueFlag = True
-#HandleShowAxesWithEmptyDataParaViewIssueFlag = False
+#HandleShowAxesWithEmptyDataParaViewIssueFlag = True
+HandleShowAxesWithEmptyDataParaViewIssueFlag = False
 
 #for now, we are trying to have one paraview RenderView which is shared and
 #reused for all images everywhere; we may need to change that for plots and
@@ -10569,14 +16810,15 @@ gSharedLineChartView = None
 
 
 class PhactoriImagesetBlock:
-  """contains information corresponding to an imageset block
-  """
+  "contains information corresponding to an imageset block\n  "
   def __init__(self):
     self.mName = ""
 
     #weirdness on first image for an imageset; partial fix is to render twice
     #the first time
-    self.mWriteFirstImageTwiceFlag = 0
+    #self.mWriteFirstImageTwiceFlag = 0
+    #1 is don't render twice first time
+    self.mWriteFirstImageTwiceFlag = 1
 
     #(for now) mOperation and mRepresentation are the 'primary' data sources
     #for this imageset, which includes directing camera positioning if
@@ -10634,11 +16876,7 @@ class PhactoriImagesetBlock:
     return self.mOperation
 
   def HandleShowAxesWithEmptyDataParaViewIssue(self):
-    """we are having a paraview related issue wherein if an empty dataset
-       (due to threshold or clip) has a show axes setting of true, VTK
-       complains.  For now, we are turning off the cube axes if the data is
-       empty and back on if data is nonempty (assuming user has cube axes
-       set to on"""
+    "we are having a paraview related issue wherein if an empty dataset\n       (due to threshold or clip) has a show axes setting of true, VTK\n       complains.  For now, we are turning off the cube axes if the data is\n       empty and back on if data is nonempty (assuming user has cube axes\n       set to on"
 
     if self.mRepresentation.mDataCubeAxesFlag == False:
       #nothing to be done--it's off so we just return
@@ -10690,9 +16928,7 @@ class PhactoriImagesetBlock:
       ShowCubeAxesXX(self.mSharedPvRenderView2, 'on')
 
   def WriteImages(self, datadescription):
-    """write out the .png/.jpg/whatever images associated with this imageset
-       block for the current timestep/state.  Must loop through camera angles
-       and do a write for each one if necessary"""
+    "write out the .png/.jpg/whatever images associated with this imageset\n       block for the current timestep/state.  Must loop through camera angles\n       and do a write for each one if necessary"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriImagesetBlock::WriteImages entered: " + \
           self.mName + "\n")
@@ -10711,9 +16947,7 @@ class PhactoriImagesetBlock:
           self.mName + "\n")
 
   def WriteImagesPassedOnOffFilter(self, datadescription):
-    """write out the .png/.jpg/whatever images associated with this imageset
-       block for the current timestep/state.  Must loop through camera angles
-       and do a write for each one if necessary"""
+    "write out the .png/.jpg/whatever images associated with this imageset\n       block for the current timestep/state.  Must loop through camera angles\n       and do a write for each one if necessary"
 
     global gPipeAndViewsState
 
@@ -10771,6 +17005,11 @@ class PhactoriImagesetBlock:
             onevisop.mParaViewFilter.ThresholdRange = svrng
             UpdatePipelineWithCurrentTimeArgument(onevisop.mParaViewFilter)
             
+        if PhactoriDbg():
+          firstop = self.mVisibleOps[0]
+          firstPvFilter = firstop.GetPvFilter()
+          label1 = "before WriteImage() " + fname + "\n"
+          DebugPrintCellAndPointArrayInfo(label1, firstPvFilter, 100)
 
         if PhactoriDbg():
           myDebugPrint3("calling WriteImage() " + fname + "\n")
@@ -10816,7 +17055,6 @@ class PhactoriImagesetBlock:
           myDebugPrint3("is_dead_cells: done writing:\n" + dcfname + "\n")
 
       #write out dead cell count
-      global WriteEachDeadCellElementToFiles
       global WriteDeadCellSummaryFile
 
       if WriteDeadCellSummaryFile:
@@ -10863,11 +17101,7 @@ class PhactoriImagesetBlock:
 
   def SetUpViewAndRepresentationBeforeWriteImage(self, inLookDirection,
     inLookDirectionIndex):
-    """Since it turns out to be much more memory efficient to reuse a single
-       render view rather than having one per image, this routine is called
-       immediately before WriteImage in order to set the
-       camera, background color, image size, etc. up appropriately for the
-       WriteImage call"""
+    "Since it turns out to be much more memory efficient to reuse a single\n       render view rather than having one per image, this routine is called\n       immediately before WriteImage in order to set the\n       camera, background color, image size, etc. up appropriately for the\n       WriteImage call"
     if PhactoriDbg(100):
       myDebugPrint3("PhactoriImagesetBlock:" \
         "SetUpViewAndRepresentationBeforeWriteImage entered " + \
@@ -11011,10 +17245,7 @@ class PhactoriImagesetBlock:
         100)
 
   def ClearPvViewAndPvRepAfterWriteImage(self):
-    """Since it turns out to be much more memory efficient to reuse a single
-       render view rather than having one per image, this routine is called
-       immediately after WriteImage in order to make stuff invisible again
-       before the next item gets a chance to do WriteImage"""
+    "Since it turns out to be much more memory efficient to reuse a single\n       render view rather than having one per image, this routine is called\n       immediately after WriteImage in order to make stuff invisible again\n       before the next item gets a chance to do WriteImage"
     #if PhactoriDbg(150):
     #  myDebugPrint3("ClearPvViewAndPvRepAfterWriteImage entered\n", 150)
 
@@ -11065,10 +17296,7 @@ class PhactoriImagesetBlock:
     inOperationKey, inSkipIfOperationKeyNotPresent,
     inRepresentationKey, inRepresentationKeyRequired,
     inAllowPairFromAnotherSource):
-    """parse out the operation and associated representation from the
-       given json; also optionally throw exception if representation
-       is not given.  Used to get multiple visible operation/representation
-       pairs"""
+    "parse out the operation and associated representation from the\n       given json; also optionally throw exception if representation\n       is not given.  Used to get multiple visible operation/representation\n       pairs"
     if PhactoriDbg():
       myDebugPrint3("PhactoriImagesetBlock::"
           "ParseOperationAndRepresentationPair entered\n")
@@ -11141,43 +17369,7 @@ class PhactoriImagesetBlock:
 
 
 class PhactoriPipeAndViewsState:
-  """Top State Container--Pipeline, Cameras, Representations, Imagesets, Plots
-
-  This is essentially the top-level class for wrapping up everything about the
-  phactori-controlled viewing situation.  It keeps a reference to the original
-  json (assuming that was how the state was described originally), and stores
-  and organizes all the other information.  Presently that means that there
-  six sets, each of which stores the class instances corresponding to one
-  block type from the json input format.  The block types stored are the
-  camera blocks, the representation blocks, the operation blocks, the
-  imageset blocks, the scatter plot blocks, and the plot over time blocks.
-  A set for each type of block is kept, with the block name (assigned by the
-  json author) as a key for that block.  The Operation blocks are basically
-  analagous to the ParaView/Catalyst Filters, the imagesets are roughly
-  analagous to the ParaView Views (but with image endpoints rather than
-  interactive rendering endpoints), the Representation blocks plus the
-  camera blocks are analagous to the ParaView Representations.  The
-  scatter plot and plot over time blocks are simply specialized descriptions
-  of requested plots, which are converted into ParaView filters and views
-  to create plots which can be calculated and/or rendered in parallel at
-  runtime, as opposed to bringing data to the client.  An imageset block will
-  reference a camera block, a representation block, and an operation block and
-  contains some additional parameters (e.g. image size and file basename)
-  which will describe a view to be rendered--repeatedly at different times
-  when using insitu.  The camera blocks describe 3-D viewpoints, sometimes in
-  absoulte 3D terms, sometimes dependent on the data.  The representation
-  blocks control how the view looks, e.g. if element surface and edges are
-  rendered or just surfaces and if we show axes and color legends.  The
-  operation blocks can describe a potentially complex data pipeline which can
-  allow rendering at various points along the pipeline.  The pipeline is
-  currently assumed to have operations that only have one input and one
-  output.  Multiple operations can have the same input, so a 'tree' is
-  possible, not just a single linear pipe.  Operations with multiple inputs
-  and outputs are conceivable but not currently implemented.  One obvious
-  possible upgrade would be to allow 'geometryoutput' blocks which would
-  output geometry rather than images, presumably geometry which is at the
-  back end of a pipeline (e.g. to extract isosurface and the decimate).
-  """
+  "Top State Container--Pipeline, Cameras, Representations, Imagesets, Plots\n\n  This is essentially the top-level class for wrapping up everything about the\n  phactori-controlled viewing situation.  It keeps a reference to the original\n  json (assuming that was how the state was described originally), and stores\n  and organizes all the other information.  Presently that means that there\n  six sets, each of which stores the class instances corresponding to one\n  block type from the json input format.  The block types stored are the\n  camera blocks, the representation blocks, the operation blocks, the\n  imageset blocks, the scatter plot blocks, and the plot over time blocks.\n  A set for each type of block is kept, with the block name (assigned by the\n  json author) as a key for that block.  The Operation blocks are basically\n  analagous to the ParaView/Catalyst Filters, the imagesets are roughly\n  analagous to the ParaView Views (but with image endpoints rather than\n  interactive rendering endpoints), the Representation blocks plus the\n  camera blocks are analagous to the ParaView Representations.  The\n  scatter plot and plot over time blocks are simply specialized descriptions\n  of requested plots, which are converted into ParaView filters and views\n  to create plots which can be calculated and/or rendered in parallel at\n  runtime, as opposed to bringing data to the client.  An imageset block will\n  reference a camera block, a representation block, and an operation block and\n  contains some additional parameters (e.g. image size and file basename)\n  which will describe a view to be rendered--repeatedly at different times\n  when using insitu.  The camera blocks describe 3-D viewpoints, sometimes in\n  absoulte 3D terms, sometimes dependent on the data.  The representation\n  blocks control how the view looks, e.g. if element surface and edges are\n  rendered or just surfaces and if we show axes and color legends.  The\n  operation blocks can describe a potentially complex data pipeline which can\n  allow rendering at various points along the pipeline.  The pipeline is\n  currently assumed to have operations that only have one input and one\n  output.  Multiple operations can have the same input, so a 'tree' is\n  possible, not just a single linear pipe.  Operations with multiple inputs\n  and outputs are conceivable but not currently implemented.  One obvious\n  possible upgrade would be to allow 'geometryoutput' blocks which would\n  output geometry rather than images, presumably geometry which is at the\n  back end of a pipeline (e.g. to extract isosurface and the decimate).\n  "
   def __init__(self):
     self.mJsonDescription = {}
     self.mCameraBlocks = {}
@@ -11239,15 +17431,18 @@ class PhactoriPipeAndViewsState:
     self.mTimeAnnotationPv = None
 
   def ExportOperationsData(self, datadescription):
-    """go through all the operation blocks and call the ExportOperationData()
-       method on each to allow each operation to export non-image data if
-       they need to do so"""
+    "go through all the operation blocks and call the ExportOperationData()\n       method on each to allow each operation to export non-image data if\n       they need to do so"
     for operationName, operationInstance in self.mOperationBlocks.items():
       operationInstance.ExportOperationData(datadescription)
 
   def WriteImages(self, datadescription):
-    """go through all imageset blocks and plot blocks and have each of them
-       write out their images"""
+    "go through all imageset blocks and plot blocks and have each of them\n       write out their images"
+
+    global gRenderingEnabled
+    if gRenderingEnabled == False:
+      if PhactoriDbg():
+        myDebugPrint3("PhactoriPipeAndViewsState:WriteImages returning with noop because rendering is disabled\n")
+      return
 
     #since we are sharing a paraview RenderView instance, we need to go
     #through all the plots and imagesets and turn them all to invisible
@@ -11266,12 +17461,7 @@ class PhactoriPipeAndViewsState:
 
 
   def SetUpForWriteImageLoop(self):
-    """Since it turns out to be much more memory efficient to reuse a single
-    render view rather than having one per image, this routine is called
-    from WriteImages immediately before we start looping through the
-    imagesets and plots to render images in order to basically set all
-    paraview Representations to Visibility=0 so that we can turn them
-    visible approriately as we do a WriteImage for each one."""
+    "Since it turns out to be much more memory efficient to reuse a single\n    render view rather than having one per image, this routine is called\n    from WriteImages immediately before we start looping through the\n    imagesets and plots to render images in order to basically set all\n    paraview Representations to Visibility=0 so that we can turn them\n    visible approriately as we do a WriteImage for each one."
 
     for imagesetName, imagesetInstance in self.mImagesetBlocks.items():
       imagesetInstance.ClearPvViewAndPvRepAfterWriteImage()
@@ -11281,12 +17471,7 @@ class PhactoriPipeAndViewsState:
       tplotInstance.ClearPvViewAndPvRepAfterWriteImage()
 
   def GetOperationReferredByJson(self, inOperationNameKey, inJsonDict):
-    """utility function to get a reference to an operation instance given a
-       dict (inJsonDict) which may (or may not) contain the key
-       (inOperationNameKey) which tags the name of the operation to be
-       found.  If the key isn't there, we return mIncomingDefaultOperation,
-       if the key grabs a name which isn't in mOperationBlocks, that is an
-       exception"""
+    "utility function to get a reference to an operation instance given a\n       dict (inJsonDict) which may (or may not) contain the key\n       (inOperationNameKey) which tags the name of the operation to be\n       found.  If the key isn't there, we return mIncomingDefaultOperation,\n       if the key grabs a name which isn't in mOperationBlocks, that is an\n       exception"
     if inOperationNameKey in inJsonDict:
       nameOfOperationToUse = inJsonDict[inOperationNameKey]
       if nameOfOperationToUse not in self.mOperationBlocks:
@@ -11302,10 +17487,7 @@ class PhactoriPipeAndViewsState:
     return returnOperation
 
   def GetOperationReferredByJsonCrossPipe(self, inOperationNameKey, inJsonDict):
-    """same as GetOperationReferredByJson(); however, if the operation is not
-       in our self.mOperationBlocks, then we will also search all the other
-       pipe and views state instances for the operation.  If we find it, we
-       will return it along with the pipe we found it in"""
+    "same as GetOperationReferredByJson(); however, if the operation is not\n       in our self.mOperationBlocks, then we will also search all the other\n       pipe and views state instances for the operation.  If we find it, we\n       will return it along with the pipe we found it in"
     if inOperationNameKey in inJsonDict:
       nameOfOperationToUse = inJsonDict[inOperationNameKey]
       if nameOfOperationToUse in self.mOperationBlocks:
@@ -11341,16 +17523,23 @@ class PhactoriPipeAndViewsState:
 
     return returnOperation, returnPipe
 
+  def GetOperationBlockByName(self, inName):
+    if inName not in self.mOperationBlocks:
+      myDebugPrint3AndException("PhactoriPipeAndViewsState:GetOperationBlockByName\n"
+        "requesting paraview operation from nonexistent operation block: " + inName)
+    return self.mOperationBlocks[inName]
+
+  def GetParaViewSourceByOperationName(self, inName):
+    opBlock = self.GetOperationBlockByName(inName)
+    pvSource = opBlock.GetPvFilter()
+    if pvSource == None:
+      myDebugPrint3AndException("PhactoriPipeAndViewsState:GetParaViewSourceByOperationName\n"
+        "ParaView source is None for operation block: " + inName)
+    return pvSource
+
 
 def PerRendersetInitialization(datadescription):
-  """do setup necessary on a once-per insitu callback basis
-
-  There are some things that should be done once each time everything is
-  rendered, particularly incrementing a callback counter so that we can keep
-  track and do some things, such as getting data bounds, as few times as
-  possible (i.e. don't get data bounds for an operation stage multiple times
-  when once is sufficient)
-  """
+  "do setup necessary on a once-per insitu callback basis\n\n  There are some things that should be done once each time everything is\n  rendered, particularly incrementing a callback counter so that we can keep\n  track and do some things, such as getting data bounds, as few times as\n  possible (i.e. don't get data bounds for an operation stage multiple times\n  when once is sufficient)\n  "
   global gPipeAndViewsState
   gPipeAndViewsState.mFrameTagCounter = gPipeAndViewsState.mFrameTagCounter + 1
   if PhactoriDbg(100):
@@ -11371,14 +17560,16 @@ def PerRendersetInitialization(datadescription):
     oneOperation.mDataBoundsIsCurrent = False
 
   #update the time tag in all views
-  global gSharedRenderView
-  gSharedRenderView.ViewTime = datadescription.GetTime()
+  global gRenderingEnabled
+  if gRenderingEnabled:
+    global gSharedRenderView
+    gSharedRenderView.ViewTime = datadescription.GetTime()
+  else:
+    if PhactoriDbg():
+      myDebugPrint3("gSharedRenderView.ViewTime not set due to no rendering\n")
 
 def UpdateRepresentationColorBy(ioPhactoriImagesetBlock):
-  """given a para view representation and source and a phactori representation,
-     set the color by variable in the paraview representation based on the
-     phactori representation.  Used to interactively change what the
-     'color by' variable is between insitu callbacks"""
+  "given a para view representation and source and a phactori representation,\n     set the color by variable in the paraview representation based on the\n     phactori representation.  Used to interactively change what the\n     'color by' variable is between insitu callbacks"
   if PhactoriDbg():
     myDebugPrint3("UpdateRepresentationColorBy entered\n")
 
@@ -11457,10 +17648,7 @@ def UpdateRepresentationColorBySub1(inPvView, inPvRep,
   return retVal
 
 def DuringRestartUseJsonToSetUp(jsonIn, ioPipeAndViewsState):
-  """used by process zero (broadcast send process) as well as other processes
-     (broadcast recieve processes) to actually take the info in json format
-     and set the system up for proper behavior after restart, particularly
-     data ranges and plots over time"""
+  "used by process zero (broadcast send process) as well as other processes\n     (broadcast recieve processes) to actually take the info in json format\n     and set the system up for proper behavior after restart, particularly\n     data ranges and plots over time"
   #go through representations and have each add it's state info to jsonOut
   if "RepresentationsRestartInfo" not in jsonIn:
     if PhactoriDbg():
@@ -11511,7 +17699,6 @@ def HandleRestartUpdateProcessZero(ioPipeAndViewsState):
   validDataIsAvailableToBroadcast = True
   try:
     #read map/json from file
-    import json
     import os
 
     restartInfoFilename = ioPipeAndViewsState.mDefaultBasedirectory + \
@@ -11647,7 +17834,6 @@ def HandleRestartUpdateProcessNotZero(ioPipeAndViewsState):
       jsonCharList.append(oneChar)
 
     jsonInString = "".join(jsonCharList)
-    import json
 
     if PhactoriDbg():
       myDebugPrint3("json received from broadcast (converted to string):\n" +
@@ -11676,14 +17862,7 @@ def HandleRestartUpdateProcessNotZero(ioPipeAndViewsState):
 
 
 def HandleRestartUpdateForOutputResultsBlock(ioPipeAndViewsState):
-  """this method is a companion to SaveRestartInfoCallback.  It is called
-     after the pipeline is first initialized for the given output block, and
-     it will read the data stored by SaveRestartInfoCallback in a file.
-     The presumption is that the pipeline will be initialized for the 
-     given output block only once when the system starts or only once
-     when the system restarts.
-     The intent is to deal with restart by allowing persistent
-     information across restarts.  See SaveRestartInfoCallback."""
+  "this method is a companion to SaveRestartInfoCallback.  It is called\n     after the pipeline is first initialized for the given output block, and\n     it will read the data stored by SaveRestartInfoCallback in a file.\n     The presumption is that the pipeline will be initialized for the \n     given output block only once when the system starts or only once\n     when the system restarts.\n     The intent is to deal with restart by allowing persistent\n     information across restarts.  See SaveRestartInfoCallback."
   if PhactoriDbg():
     myDebugPrint3("HandleRestartUpdateForOutputResultsBlock entered\n")
 
@@ -11702,14 +17881,7 @@ def HandleRestartUpdateForOutputResultsBlock(ioPipeAndViewsState):
 
 
 def SaveRestartInfoCallback():
-  """this method is called back at the tail end of the visualization
-     from the simulation.  The purpose of this function is to collect and
-     save out information which is necessary for a restart to have the
-     restart begin in the same state as if the simulation had run to this
-     point.  Items include things such as
-     recording color range mins and maxes and data values in plots over time
-     so that they can be correctly restarted in the case of a simulation
-     restart"""
+  "this method is called back at the tail end of the visualization\n     from the simulation.  The purpose of this function is to collect and\n     save out information which is necessary for a restart to have the\n     restart begin in the same state as if the simulation had run to this\n     point.  Items include things such as\n     recording color range mins and maxes and data values in plots over time\n     so that they can be correctly restarted in the case of a simulation\n     restart"
 
   if PhactoriDbg():
     myDebugPrint3("SaveRestartInfoCallback entered\n")
@@ -11751,7 +17923,6 @@ def SaveRestartInfoCallback():
   jsonOut['PlotsOverTimeRestartInfo'] = plotsOverTimeJsonOut
 
   #write info to file
-  import json
 
   import os
   restartInfoFilename = gPipeAndViewsState.mDefaultBasedirectory + \
@@ -11769,12 +17940,20 @@ def SaveRestartInfoCallback():
 def UpdateOneImagesetViewsWhichMayChangeWithData(ioImageset):
   if PhactoriDbg(100):
     myDebugPrint3("UpdateOneImagesetViewsWhichMayChangeWithData entered\n", 100)
+
+  global gRenderingEnabled
+  if gRenderingEnabled == False:
+    if PhactoriDbg():
+      myDebugPrint3("UpdateOneImagesetViewsWhichMayChangeWithData returning with noop because rendering is disabled\n")
+    return
+
   theCamera = ioImageset.mCamera
 
   #this is a bit hacky--we should probably update the para view sources when
   #we update operations, which we aren't doing separately yet
   #theParaViewSource = ioImageset.mOperation.GetPvFilter()
   theParaViewSource = ioImageset.mOperation.GetOutgoingPvGeometryFilter()
+
   UpdatePipelineWithCurrentTimeArgument(theParaViewSource)
 
   UpdateRepresentationColorBy(ioImageset)
@@ -11812,10 +17991,22 @@ def UpdateAllOperationsWhichMayChangeWithData():
     myDebugPrint3("UpdateAllOperationsWhichMayChangeWithData returning\n", 100)
 
 def UpdateAllImagesetViewsWhichMayChangeWithData():
+  if PhactoriDbg(100):
+    myDebugPrint3("UpdateAllImagesetViewsWhichMayChangeWithData entered\n", 100)
   global gPipeAndViewsState
   for oneImagesetName, oneImageset in gPipeAndViewsState.mImagesetBlocks.items():
+    if PhactoriDbg(100):
+      myDebugPrint3("doing UpdateOneImagesetViewsWhichMayChangeWithData for imageset named:" + oneImagesetName + "\n", 100)
+    if PhactoriDbg(100):
+      myDebugPrint3("  doing oneImageset.HandleShowAxesWithEmptyDataParaViewIssue\n", 100)
     oneImageset.HandleShowAxesWithEmptyDataParaViewIssue()
+    if PhactoriDbg(100):
+      myDebugPrint3("  returned from oneImageset.HandleShowAxesWithEmptyDataParaViewIssue\n", 100)
     UpdateOneImagesetViewsWhichMayChangeWithData(oneImageset)
+    if PhactoriDbg(100):
+      myDebugPrint3("did UpdateOneImagesetViewsWhichMayChangeWithData for imageset named:" + oneImagesetName + "\n", 100)
+  if PhactoriDbg(100):
+    myDebugPrint3("UpdateAllImagesetViewsWhichMayChangeWithData returning\n", 100)
 
 def HandleOperationShortcuts2(inBlockName, inJson, ioOperationBlocks, inCount):
   if PhactoriDbg(100):
@@ -11927,8 +18118,7 @@ def HandleOperationShortcuts2(inBlockName, inJson, ioOperationBlocks, inCount):
     elif (valueListOrSequence.lower()=="value sequence"):
       newOperationJson["contour value sequence"]=contourValues
     else:
-      errStr = """error! contour shortcut did not contain 'value list' or 'value sequence' in
-                      HandleOperationShortcuts2\n"""
+      errStr = "error! contour shortcut did not contain 'value list' or 'value sequence' in\n                      HandleOperationShortcuts2\n"
       if PhactoriDbg():
         myDebugPrint3(errStr)
       raise Exception(errStr)
@@ -11975,8 +18165,7 @@ def HandleOperationShortcuts(ioImagesetBlocks, ioOperationBlocks):
 
 def ConstructAndAddPlotsOverTimeJson(outPlotOverTimeJsonBlocks, inJsonToCopy,
         inYAxisVariableName, inNumComponents):
-  """helper function for TestForAndConstructAllPlotsOverTime, creates a
-     PlotOverTime json block, not for external use"""
+  "helper function for TestForAndConstructAllPlotsOverTime, creates a\n     PlotOverTime json block, not for external use"
 
   global gPipeAndViewsState
   blockCountIdStr = GetCurrentOutputResultsBlockCountId()
@@ -12039,8 +18228,7 @@ def ConstructAndAddPlotsOverTimeJson(outPlotOverTimeJsonBlocks, inJsonToCopy,
 
 def ConstructAndAddScatterPlotsJson(outScatterPlotJsonBlocks, inJsonToCopy,
         inYAxisVariableName, inNumComponents, inXAxisVariableName):
-  """helper function for TestForAndConstructAllScatterPlots, creates a
-     scatterplot json block, not for external use"""
+  "helper function for TestForAndConstructAllScatterPlots, creates a\n     scatterplot json block, not for external use"
 
   global gPipeAndViewsState
   blockCountIdStr = GetCurrentOutputResultsBlockCountId()
@@ -12106,8 +18294,7 @@ def ConstructAndAddScatterPlotsJson(outScatterPlotJsonBlocks, inJsonToCopy,
           str(newScatterPlotJson) + '\n')
 
 def TestForAndConstructAllPlotsOverTime(ioPlotOverTimeBlocksJson):
-  """tests to see if a scatterplot block contains "all variables": true and,
-     if so, construct a scatterplot block for each variable"""
+  "tests to see if a scatterplot block contains 'all variables': true and,\n     if so, construct a scatterplot block for each variable"
   if PhactoriDbg(100):
     myDebugPrint3('TestForAndConstructAllPlotsOverTime entered\n', 100)
   potBlocks = ioPlotOverTimeBlocksJson
@@ -12168,8 +18355,7 @@ def TestForAndConstructAllPlotsOverTime(ioPlotOverTimeBlocksJson):
 
 
 def TestForAndConstructAllScatterPlots(ioScatterPlotBlocksJson):
-  """tests to see if a scatterplot block contains "all variables": true and,
-     if so, construct a scatterplot block for each variable"""
+  "tests to see if a scatterplot block contains 'all variables': true and,\n     if so, construct a scatterplot block for each variable"
   if PhactoriDbg(100):
     myDebugPrint3('TestForAndConstructAllScatterPlots entered\n', 100)
   spBlocks = ioScatterPlotBlocksJson
@@ -12224,13 +18410,7 @@ def TestForAndConstructAllScatterPlots(ioScatterPlotBlocksJson):
     myDebugPrint3('TestForAndConstructAllScatterPlots returning\n', 100)
 
 def UpdatePipeAndViewsStateFromUserA(inPipeAndViewsState, inFileName):
-  """given a PhactoriPipeAndViewsState instance which has been previously
-     parsed, paraview items created, etc. (and presumably used to create
-     rendered images at least once), read in the json state from the
-     specified file, and update the inPipeAndViewsState accordingly.
-     Only do the update if the PhactoriUpdateTrigger.txt file has a new
-     value since the last check.  Only read the file on processor zero,
-     and use mpi to share the update with all other processors."""
+  "given a PhactoriPipeAndViewsState instance which has been previously\n     parsed, paraview items created, etc. (and presumably used to create\n     rendered images at least once), read in the json state from the\n     specified file, and update the inPipeAndViewsState accordingly.\n     Only do the update if the PhactoriUpdateTrigger.txt file has a new\n     value since the last check.  Only read the file on processor zero,\n     and use mpi to share the update with all other processors."
   if PhactoriDbg():
     myDebugPrint3("UpdatePipeAndViewsStateFromUserA entered\n")
   if SmartGetLocalProcessId() != 0:
@@ -12238,7 +18418,6 @@ def UpdatePipeAndViewsStateFromUserA(inPipeAndViewsState, inFileName):
       myDebugPrint3("UpdatePipeAndViewsStateFromUserA returning, not process 0\n")
     return
   try:
-    import json
     inFile = open(inFileName, 'rb')
     userUpdateJson = json.load(inFile)
     inFile.close()
@@ -12282,9 +18461,7 @@ def UpdatePipeAndViewsStateFromUserA(inPipeAndViewsState, inFileName):
     myDebugPrint3("UpdatePipeAndViewsStateFromUserA returning\n")
 
 def SaveJsonSettingsToFile(inPipeAndViewsState, inFileName):
-  """given a PhactoriPipeAndViewsState instance, dump the json that was
-     used to construct it (usually called after default items have been
-     added)"""
+  "given a PhactoriPipeAndViewsState instance, dump the json that was\n     used to construct it (usually called after default items have been\n     added)"
   if PhactoriDbg():
     myDebugPrint3("SaveJsonSettingsToFile entered\n")
   if SmartGetLocalProcessId() != 0:
@@ -12292,7 +18469,6 @@ def SaveJsonSettingsToFile(inPipeAndViewsState, inFileName):
       myDebugPrint3("SaveJsonSettingsToFile returning, not process 0\n")
     return
   try:
-    import json
     outStr = json.dumps(inPipeAndViewsState.mJsonDescription, sort_keys=True,
         indent = 2, separators=(',', ': '))
     outFile = open(inFileName, 'w+b')
@@ -12427,8 +18603,7 @@ def PreprocessExperimentalAddOpacityToRepBlock(
 
 
 def PreprocessOneExperimentalBlock(inViewMapC, inExpBlkname, inExpBlk):
-  """gives us entry point to take one experimental blocks and manipulate it
-     to produce other kinds of blocks to enter into inViewMapC"""
+  "gives us entry point to take one experimental blocks and manipulate it\n     to produce other kinds of blocks to enter into inViewMapC"
   expBlkType = inExpBlk["type"]
 
   if expBlkType == "textannotation":
@@ -12440,8 +18615,7 @@ def PreprocessOneExperimentalBlock(inViewMapC, inExpBlkname, inExpBlk):
 
 
 def PreprocessExperimentalBlocks(inViewMapC):
-  """gives us entry point to take experimental blocks and manipulate them
-     to produce other kinds of blocks to enter into inViewMapC"""
+  "gives us entry point to take experimental blocks and manipulate them\n     to produce other kinds of blocks to enter into inViewMapC"
 
   if 'experimental blocks' not in inViewMapC:
     #no experimental blocks
@@ -12460,18 +18634,7 @@ def PreprocessExperimentalBlocks(inViewMapC):
 #construct a set of views from the json-structure view/pipeline description
 #specified in the sierra catalyst wiki/documentation
 def CreateViewSetFromPhactoriViewMapC(inViewMapC):
-  """Create data pipeline, cameras, representations, and views from data struct
-
-  Given a dict which is a json format structure with syntax as discussed in
-  the sierra catalyst paraview insitu wiki, create the corresponding data
-  pipeline, representations, views, etc.  The basic idea is that from the
-  incoming datastructure, we will parse out 6 (currently) sets of blocks:
-  operations, cameras, representations, imagesets, scatter plots, and plots
-  over time.  From these, we will construct ParaView/Catalyst data structures
-  to do the data management and rendering.  See the class
-  PhactoriPipeAndViewsState and the lower level related classes for more
-  explaination.
-  """
+  "Create data pipeline, cameras, representations, and views from data struct\n\n  Given a dict which is a json format structure with syntax as discussed in\n  the sierra catalyst paraview insitu wiki, create the corresponding data\n  pipeline, representations, views, etc.  The basic idea is that from the\n  incoming datastructure, we will parse out 6 (currently) sets of blocks:\n  operations, cameras, representations, imagesets, scatter plots, and plots\n  over time.  From these, we will construct ParaView/Catalyst data structures\n  to do the data management and rendering.  See the class\n  PhactoriPipeAndViewsState and the lower level related classes for more\n  explaination.\n  "
 
   if PhactoriDbg(100):
     myDebugPrint3('CreateViewSetFromPhactoriViewMapC entered\n', 100)
@@ -12838,8 +19001,10 @@ def ColorByVariableComponentOrMagnitudeXX(inParaViewDataRepresentation,
     if PhactoriDbg():
       myDebugPrint3("using ColorBy() to set color var " + \
         inVariableName + "  " + inVariableArrayType + " 1\n")
-    ColorBy(inParaViewDataRepresentation,
+    inParaViewDataRepresentation.RescaleTransferFunctionToDataRange(False)
+    SafeColorBy(inParaViewDataRepresentation,
         (inVariableArrayType, inVariableName))
+    inParaViewDataRepresentation.RescaleTransferFunctionToDataRange(False)
     #deal with vector mode, component index
     pv_4_3_LUT = GetColorTransferFunction(inVariableName)
     if inComponentOrMagnitude == 'Magnitude':
@@ -12885,8 +19050,7 @@ def ColorByVariableComponentOrMagnitudeXX(inParaViewDataRepresentation,
 
 
 def ColorByVariableScalarXX(inParaViewDataRepresentation, inPhactoriRepresentation, inVariableName, inVariableArrayType, inColorMapSettings):
-  """Set the scalar variable (by name) which will be used to color the data
-     presentation."""
+  "Set the scalar variable (by name) which will be used to color the data\n     presentation."
   if gParaViewCatalystVersionFlag >= 40300:
     #for paraview 4.3
     if inVariableArrayType == None:
@@ -12896,8 +19060,10 @@ def ColorByVariableScalarXX(inParaViewDataRepresentation, inPhactoriRepresentati
     if PhactoriDbg():
       myDebugPrint3("using ColorBy() to set color var " + \
         inVariableName + "  " + inVariableArrayType + " 3\n")
-    ColorBy(inParaViewDataRepresentation,
+    inParaViewDataRepresentation.RescaleTransferFunctionToDataRange(False)
+    SafeColorBy(inParaViewDataRepresentation,
         (inVariableArrayType, inVariableName))
+    inParaViewDataRepresentation.RescaleTransferFunctionToDataRange(False)
     #need to deal with color table
     myRGBPoints, myColorSpace, myNanColor = \
         GetColorMapInfoFromColorLegendCollection(inColorMapSettings,
@@ -12997,6 +19163,8 @@ def ColorByBlockRecurse1(inInputCsData,
       return
 
   icsdClassname = inInputCsData.GetClassName()
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("icsdClassname 2: " + str(icsdClassname) + "\n")
   if icsdClassname == "vtkMultiBlockDataSet" or \
      icsdClassname == "vtkExodusIIMultiBlockDataSet":
     #myDebugPrint3('recursing: ' + icsdClassname + '\n')
@@ -13219,23 +19387,38 @@ def UseDataRangeForColorValues(inPvDataRepresentation, inRepresentation,
   if PhactoriDbg():
     myDebugPrint3("minmaxTrk min: " + str(minToUse) + "   max: " + str(maxToUse) + "\n")
 
-  if maxToUse - minToUse > 0.000000000000000000001:
-
-    #if required, restrict color range to subset of otherwise calculated range
-    if inRepresentation.mUseColorSubrange:
-        clrDelta = maxToUse - minToUse
-        maxToUse = minToUse + inRepresentation.mColorSubrange[1] * clrDelta
-        minToUse = minToUse + inRepresentation.mColorSubrange[0] * clrDelta
-
-    SetMinimumMaximumColorValues(inPvDataRepresentation,
-        minToUse, maxToUse,
-        inOperation, inRepresentation,
-        localColorArrayName, pointsOrCellsType)
+  hadToAlterMinMaxDueToSmallRange = False
+  if (maxToUse - minToUse) < 1.0e-20:
+    hadToAlterMinMaxDueToSmallRange = True
+    middle1 = 0.5 * (minToUse + maxToUse)
+    minToUse = middle1 - 5.0e-21
+    maxToUse = middle1 + 5.0e-21
+    if PhactoriDbg(100):
+      myDebugPrint3("had to change minToUse and maxToUse due to (maxToUse - minToUse) < 1.0e-20\n"
+        "new minToUse: " + str(minToUse) + "   new maxToUse: " + str(maxToUse) + "\n")
   else:
-    SetMinimumMaximumColorValues(inPvDataRepresentation,
-        minToUse - 0.1, maxToUse + 0.1,
-        inOperation, inRepresentation, localColorArrayName,
-        pointsOrCellsType)
+    testMag1 = max(abs(maxToUse), abs(minToUse))
+    if (maxToUse - minToUse) < testMag1*1.0e-6:
+      hadToAlterMinMaxDueToSmallRange = True
+      middle1 = 0.5 * (minToUse + maxToUse)
+      delta2 = testMag1*5.0e-7
+      minToUse = middle1 - delta2
+      maxToUse = middle1 + delta2
+      myDebugPrint3("had to change minToUse and maxToUse due to (maxToUse - minToUse) < testMag1\n"
+        "new minToUse: " + str(minToUse) + "   new maxToUse: " + str(maxToUse) + "\n")
+
+  #if required, restrict color range to subset of otherwise calculated range
+  if inRepresentation.mUseColorSubrange and (hadToAlterMinMaxDueToSmallRange == False):
+      clrDelta = maxToUse - minToUse
+      maxToUse = minToUse + inRepresentation.mColorSubrange[1] * clrDelta
+      minToUse = minToUse + inRepresentation.mColorSubrange[0] * clrDelta
+      myDebugPrint3("changed minToUse and maxToUse due to inRepresentation.mUseColorSubrange == True\n"
+        "new minToUse: " + str(minToUse) + "   new maxToUse: " + str(maxToUse) + "\n")
+
+  SetMinimumMaximumColorValues(inPvDataRepresentation,
+      minToUse, maxToUse,
+      inOperation, inRepresentation,
+      localColorArrayName, pointsOrCellsType)
 
   if PhactoriDbg(100):
     myDebugPrint3("UseDataRangeForColorValues returning\n", 100)
@@ -13301,7 +19484,7 @@ def helpFindNewRgbPoint(inBaseRgbPts, inRatio):
 
 def CalculateColorMapRGBPointsWithSubranges(inBaseRgbPoints,
         inMinimum, inMaximum, inSubrangeMin, inSubrangeMax, inSubrangeColor):
-  """creates the rgb values for color map with highlighed subranges"""
+  "creates the rgb values for color map with highlighed subranges"
 
   if PhactoriDbg(100):
     myDebugPrint3("CalculateColorMapRGBPointsWithSubranges entered \n"
@@ -13449,7 +19632,9 @@ def SetMinimumMaximumColorValues(inPvDataRepresentation,
     if PhactoriDbg():
       myDebugPrint3("using ColorBy() to set color var " + \
         inVariableName + "  " + inPointsOrCells + " 4\n")
-    ColorBy(inPvDataRepresentation, (inPointsOrCells, inVariableName))
+    inPvDataRepresentation.RescaleTransferFunctionToDataRange(False)
+    SafeColorBy(inPvDataRepresentation, (inPointsOrCells, inVariableName))
+    inPvDataRepresentation.RescaleTransferFunctionToDataRange(False)
 
     if inPhactoriRepresentation.mNameOfPresetToUse != None:
       if PhactoriDbg():
@@ -13617,12 +19802,7 @@ def ShowCubeAxesXX(inPvRenderView, inOnOrOff, inShowDataCubeAxesInfo = None):
 def ShowDataColorLegendXX(inPvView,
         inOnOffSetting, inColorLegendPositionAndSize, inColorSettings,
         inColorLegendRepRef, inPvDataRep):
-  """Turns on or off the display of the color bar legend showing the mapping
-     between the color and the data value (and the name of the data value.
-     (note this is primarily to do the paraview-side work to turn bar on or
-      off, on to set up for rendering in the shared view, off to turn off
-      rendering in shared view.  On or off state for rendering is stored
-      as a flag in the ioPhactoriImagesetBlock instance"""
+  "Turns on or off the display of the color bar legend showing the mapping\n     between the color and the data value (and the name of the data value.\n     (note this is primarily to do the paraview-side work to turn bar on or\n      off, on to set up for rendering in the shared view, off to turn off\n      rendering in shared view.  On or off state for rendering is stored\n      as a flag in the ioPhactoriImagesetBlock instance"
 
   if PhactoriDbg(100):
     myDebugPrint3('phactori.ShowDataColorLegendXX entered, setting:' + \
@@ -13876,9 +20056,6 @@ def ShowDataColorLegendXX(inPvView,
         "  Title: " + str(nbwr.Title) + "\n" +\
         "  ComponentTitle: " + str(nbwr.ComponentTitle) + "\n" +\
         "  WindowLocation: " + str(nbwr.WindowLocation) + "\n" +\
-        #"  LockPosition: " + str(nbwr.LockPosition) + "\n" +\
-        #"  Repositionable: " + str(nbwr.Repositionable) + "\n" +\
-        #"  AutoOrient: " + str(nbwr.AutoOrient) + "\n" +\
         "  Position: " + str(nbwr.Position) + "\n" +\
         "  ScalarBarLength: " + str(nbwr.ScalarBarLength) + "\n" +\
         "  ScalarBarThickness: " + str(nbwr.ScalarBarThickness) + "\n" +\
@@ -13887,6 +20064,9 @@ def ShowDataColorLegendXX(inPvView,
         "  TitleFontSize: " + str(nbwr.TitleFontSize) + "\n" +\
         "  LabelFontFamily: " + str(nbwr.LabelFontFamily) + "\n" +\
         "  TitleFontFamily: " + str(nbwr.TitleFontSize) + "\n")
+        #"  LockPosition: " + str(nbwr.LockPosition) + "\n" +\
+        #"  Repositionable: " + str(nbwr.Repositionable) + "\n" +\
+        #"  AutoOrient: " + str(nbwr.AutoOrient) + "\n" +\
 
   inPvView.OrientationAxesLabelColor = inColorSettings.mTextColor
   inPvView.Representations.append(newScalarBarWidgetRepresentation)
@@ -13995,7 +20175,7 @@ def ThresholdFilter(inVariableName, inType, inRange, inThresholdFilterName = Non
 #  print 'WarpMeshByDisplacement returning'
 
 def TempAddTestFiltersAfterDispl():
-    """create the clip plane filter for ParaView"""
+    "create the clip plane filter for ParaView"
     if PhactoriDbg(100):
       myDebugPrint3('TempAddTestFiltersAfterDispl entered\n', 100)
     #info in block class should already be parsed and checked
@@ -14285,8 +20465,7 @@ class PlotValMinMaxTrkC:
     self.mUseCumulativeRange = False
 
   def SetFromRestartInfo(self, inJson):
-    """given a map (json format), use the info in the map to set the
-       tracker state--this reads the info created out in GetRestartInfo"""
+    "given a map (json format), use the info in the map to set the\n       tracker state--this reads the info created out in GetRestartInfo"
 
     inJsonIsGood = True
     if 'mAll' not in inJson:
@@ -14363,10 +20542,7 @@ class PlotValMinMaxTrkC:
         + self.SelfToStr())
 
   def GetRestartInfo(self):
-    """construct, in python map/json info from this PlotValMinMaxTrkC instance
-       which contains the information which would be needed to restore the
-       instance to the proper state after a simulation restart.
-       Return the restart info map/json"""
+    "construct, in python map/json info from this PlotValMinMaxTrkC instance\n       which contains the information which would be needed to restore the\n       instance to the proper state after a simulation restart.\n       Return the restart info map/json"
     newJsonItem = {}
     #newJsonItem["mThisCb"] = [self.mThisCbInitialized,
     #    self.mThisCbMin, self.mThisCbMax]
@@ -14476,8 +20652,7 @@ class PlotValMinMaxTrkC:
     return self.mMaxToUse
 
   def ResetThisCb(self):
-    """indicate we are starting a new callback search for min and max, so we
-       can use the first test value as the initial min and max"""
+    "indicate we are starting a new callback search for min and max, so we\n       can use the first test value as the initial min and max"
     self.mThisCbInitialized = False
     self.mThisCbMin = 0.0
     self.mThisCbMax = 0.0
@@ -14505,9 +20680,7 @@ class PlotValMinMaxTrkC:
       self.mThisCbInitialized = True
 
   def UpdateMinMaxToUse(self):
-    """assumes we have obtained this callback (ThisCb) mins and maxes; uses
-       Initial settings and locks to determine what mins and maxes are
-       now in force"""
+    "assumes we have obtained this callback (ThisCb) mins and maxes; uses\n       Initial settings and locks to determine what mins and maxes are\n       now in force"
     if self.mUseCumulativeRange:
       localMin = self.mAllMin
     else:
@@ -14573,31 +20746,25 @@ class PlotXYZMinMaxTrkC:
     return retVal
 
   def ResetThisCb(self):
-    """indicate we are starting a new callback search for min and max, so we
-       can use the first test value as the initial min and max"""
+    "indicate we are starting a new callback search for min and max, so we\n       can use the first test value as the initial min and max"
     self.mXyzTrk[0].ResetThisCb()
     self.mXyzTrk[1].ResetThisCb()
     self.mXyzTrk[2].ResetThisCb()
 
   def MinMaxTestAndSet(self, inTestXyz):
-    """test a data value and adjust recorded mins and maxes.  Adjust overall
-       min/max if necessary, adjust ThisCb min max if necessary, also see
-       if this is first call since last ResetThisCb"""
+    "test a data value and adjust recorded mins and maxes.  Adjust overall\n       min/max if necessary, adjust ThisCb min max if necessary, also see\n       if this is first call since last ResetThisCb"
     self.mXyzTrk[0].MinMaxTestAndSet(inTestXyz[0])
     self.mXyzTrk[1].MinMaxTestAndSet(inTestXyz[1])
     self.mXyzTrk[2].MinMaxTestAndSet(inTestXyz[2])
 
   def UpdateMinMaxToUse(self):
-    """assumes we have obtained this callback (ThisCb) mins and maxes; uses
-       Initial settings and locks to determine what mins and maxes are
-       now in force"""
+    "assumes we have obtained this callback (ThisCb) mins and maxes; uses\n       Initial settings and locks to determine what mins and maxes are\n       now in force"
     self.mXyzTrk[0].UpdateMinMaxToUse()
     self.mXyzTrk[1].UpdateMinMaxToUse()
     self.mXyzTrk[2].UpdateMinMaxToUse()
 
   def SetFromRestartInfo(self, inJson):
-    """given a map (json format), use the info in the map to set the
-       state--this reads the info created out in GetRestartInfo"""
+    "given a map (json format), use the info in the map to set the\n       state--this reads the info created out in GetRestartInfo"
     if len(inJson) != 3:
       if PhactoriDbg():
         myDebugPrint3("PlotXYZMinMaxTrkC::SetFromRestartInfo bad inJson\n")
@@ -14607,11 +20774,7 @@ class PlotXYZMinMaxTrkC:
     self.mXyzTrk[2].SetFromRestartInfo(inJson[2])
 
   def GetRestartInfo(self):
-    """construct, in python map/json info from this PlotXYZMinMaxTrkC instance
-       which contains the information which would be needed to restore the
-       instance to the proper state after a simulation restart.
-       Basically just calls the GetRestartInfo() for each underlying axis
-       Return the restart info map/json"""
+    "construct, in python map/json info from this PlotXYZMinMaxTrkC instance\n       which contains the information which would be needed to restore the\n       instance to the proper state after a simulation restart.\n       Basically just calls the GetRestartInfo() for each underlying axis\n       Return the restart info map/json"
     #this is a list of three items, which is an acceptable json type
     newJsonInfo = []
     newJsonInfo.append(self.mXyzTrk[0].GetRestartInfo())
@@ -14989,6 +21152,8 @@ def FindNodeOrElementIdForMinMaxRecurse1(inInputCsData, ioVariableInfo):
   #myDebugPrint3('FindNodeOrElementIdForMinMaxRecurse1 entered\n', 100)
 
   icsdClassname = inInputCsData.GetClassName()
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("icsdClassname 3: " + str(icsdClassname) + "\n")
   if icsdClassname == "vtkMultiBlockDataSet" or \
      icsdClassname == "vtkExodusIIMultiBlockDataSet":
     #myDebugPrint3('recursing: ' + icsdClassname + '\n')
@@ -15004,11 +21169,7 @@ def FindNodeOrElementIdForMinMaxRecurse1(inInputCsData, ioVariableInfo):
   #myDebugPrint3('FindNodeOrElementIdForMinMaxRecurse1 returning\n', 100)
 
 def FindNodeOrElementIdForMinMax(inputcsData, inVariableInfo):
-  """fairly complex high level mpi-operation routine.  Takes a variable,
-     finds the min/max (global) and finds a node id or element id corresponding
-     to the node or element for both the min and the max value.  Has some
-     intelligence to avoid recaculating and doing mpi communication if the
-     information had already been found for this catalyst callback"""
+  "fairly complex high level mpi-operation routine.  Takes a variable,\n     finds the min/max (global) and finds a node id or element id corresponding\n     to the node or element for both the min and the max value.  Has some\n     intelligence to avoid recaculating and doing mpi communication if the\n     information had already been found for this catalyst callback"
 
   if PhactoriDbg(100):
     myDebugPrint3("FindNodeOrElementIdForMinMax entered: " + \
@@ -15370,6 +21531,8 @@ def FindMinMaxSumCntFromDataRecurse1(inInputCsData, ioVariableInfo,
   #myDebugPrint3('FindMinMaxSumCntFromDataRecurse1 entered\n', 100)
 
   icsdClassname = inInputCsData.GetClassName()
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("icsdClassname 4: " + str(icsdClassname) + "\n")
   if icsdClassname == "vtkMultiBlockDataSet" or \
      icsdClassname == "vtkExodusIIMultiBlockDataSet":
     #myDebugPrint3('recursing: ' + icsdClassname + '\n')
@@ -15395,6 +21558,8 @@ def FindThisProcessorMinMaxForVarRecurse1(inInputCsData, inVariableInfo, ioMinMa
   #myDebugPrint3('FindThisProcessorMinMaxForVarRecurse1 entered\n', 100)
 
   icsdClassname = inInputCsData.GetClassName()
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("icsdClassname 5: " + str(icsdClassname) + "\n")
   if icsdClassname == "vtkMultiBlockDataSet" or \
      icsdClassname == "vtkExodusIIMultiBlockDataSet":
     #myDebugPrint3('recursing: ' + icsdClassname + '\n')
@@ -15403,6 +21568,12 @@ def FindThisProcessorMinMaxForVarRecurse1(inInputCsData, inVariableInfo, ioMinMa
       oneBlock = inInputCsData.GetBlock(ii)
       if(oneBlock != None):
         FindThisProcessorMinMaxForVarRecurse1(oneBlock, inVariableInfo, ioMinMaxInfo)
+  elif icsdClassname == "vtkPartitionedDataSet":
+    numPartitions = inInputCsData.GetNumberOfPartitions()
+    for ii in range(0, numPartitions):
+      onePartition = inInputCsData.GetPartition(ii)
+      if(onePartition != None):
+        FindThisProcessorMinMaxForVarRecurse1(onePartition, inVariableInfo, ioMinMaxInfo)
   else:
     FindThisProcessorMinMaxForVarForOneBlock(inInputCsData, inVariableInfo, ioMinMaxInfo)
   #myDebugPrint3('FindThisProcessorMinMaxForVarRecurse1 returning\n', 100)
@@ -15411,6 +21582,8 @@ def SetPlotPointsFromDataRecurse1(inInputCsData, ioPlotInfo, ioIndex):
   #myDebugPrint3('SetPlotPointsFromDataRecurse1 entered\n', 100)
 
   icsdClassname = inInputCsData.GetClassName()
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("icsdClassname 6: " + str(icsdClassname) + "\n")
   if icsdClassname == "vtkMultiBlockDataSet" or \
      icsdClassname == "vtkExodusIIMultiBlockDataSet":
     #myDebugPrint3('recursing: ' + icsdClassname + '\n')
@@ -15556,15 +21729,7 @@ def FindThisProcessorMinMaxForVar(inOperation, inVariableInfo):
 def FindMinMaxSumCntFromData(inputcsData, inVariableInfo, 
         inSecondaryVariableInfo, DataMinMax, DataSumCnt,
         DataForIds, inPlotIdLineList):
-  """fairly complex high level mpi-operation routine.  This takes a paraview
-   filter client side object, gets the client side data
-   (which is presumably a multiblock
-   dataset) and finds the min, max, sum, and count of items for a variable.
-   It uses MPI (if the item is not global) to share values and get them
-   across all processors.  Used for plotting min/max/mean and for evaluating
-   boolean criteria (such as whether or not to produce images) for min/max
-   /mean/count.  Data return is a bit messy and should be updated--it fills
-   in DataMinMax, DataSumCnt, and DataForIds if it is not None"""
+  "fairly complex high level mpi-operation routine.  This takes a paraview\n   filter client side object, gets the client side data\n   (which is presumably a multiblock\n   dataset) and finds the min, max, sum, and count of items for a variable.\n   It uses MPI (if the item is not global) to share values and get them\n   across all processors.  Used for plotting min/max/mean and for evaluating\n   boolean criteria (such as whether or not to produce images) for min/max\n   /mean/count.  Data return is a bit messy and should be updated--it fills\n   in DataMinMax, DataSumCnt, and DataForIds if it is not None"
 
   if PhactoriDbg():
     myDebugPrint3("FindMinMaxSumCntFromData entered\n")
@@ -16035,6 +22200,200 @@ def CreateOneScatterPlotViewC(ioScatterPlot):
   if PhactoriDbg(100):
     myDebugPrint3('CreateOneScatterPlotViewC returning\n', 100)
 
+#phactori_combine_to_single_python_file_parent_1
+#from Operation.PhactoriMpiUtilities import *
+#phactori_combine_to_single_python_file_subpiece_begin_1
+
+global BarrierLockCount
+BarrierLockCount = 0
+def BarrierLock(tagString = ""):
+  "called to sync up all processes"
+  global BarrierLockCount
+  BarrierLockCount += 1
+  numProcs = SmartGetNumberOfProcesses()
+  myPid = SmartGetLocalProcessId()
+  localIntList = [myPid]
+  if PhactoriDbg(100):
+    myDebugPrint3("BarrierLock A " + str(BarrierLockCount) + " " + tagString + "\n")
+  globalPidSumList = UseReduceOnIntegerList(localIntList, 2)
+  if PhactoriDbg(100):
+    myDebugPrint3("BarrierLock B " + str(BarrierLockCount) + " " + tagString + "\n")
+
+def UseReduceOnFloatList(inFloatList, inAllReduceType):
+  "inAllReduceType 0-max 1-min 2-sum"
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("UseReduceOnFloatList entered " + str(inAllReduceType) + "\n", 100)
+
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("num values: " + str(len(inFloatList)) + "\n")
+  #  if len(inFloatList) > 0:
+  #    myDebugPrint3("local first: " + str(inFloatList[0]) + "   last: " + str(inFloatList[-1]) + "\n")
+
+  pm = paraview.servermanager.vtkProcessModule.GetProcessModule()
+  globalController = pm.GetGlobalController()
+
+  numVals = len(inFloatList)
+  localarray = vtk.vtkDoubleArray()
+  localarray.SetNumberOfTuples(numVals)
+  globalarray = vtk.vtkDoubleArray()
+  globalarray.SetNumberOfTuples(numVals)
+
+  for idx, oneVal in enumerate(inFloatList):
+    localarray.SetValue(idx, oneVal)
+
+  globalController.AllReduce(localarray, globalarray, inAllReduceType)
+
+  returnArray = []
+  for idx in range(0, numVals):
+    returnArray.append(globalarray.GetTuple1(idx))
+
+  #if PhactoriDbg(100):
+  #  if len(returnArray) > 0:
+  #    myDebugPrint3("global first: " + str(returnArray[0]) + "   last: " + str(returnArray[-1]) + "\n")
+
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("UseReduceOnFloatList returning\n", 100)
+  return returnArray
+
+def UseReduceOnIntegerList(inIntegerList, inAllReduceType):
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("UseReduceOnIntegerList entered\n", 100)
+
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("num values: " + str(len(inIntegerList)) + "\n")
+  #  if len(inIntegerList) > 0:
+  #    myDebugPrint3("local first: " + str(inIntegerList[0]) + "   last: " + str(inIntegerList[-1]) + "\n")
+
+  pm = paraview.servermanager.vtkProcessModule.GetProcessModule()
+  globalController = pm.GetGlobalController()
+
+  numVals = len(inIntegerList)
+  localarray = vtk.vtkIntArray()
+  localarray.SetNumberOfTuples(numVals)
+  globalarray = vtk.vtkIntArray()
+  globalarray.SetNumberOfTuples(numVals)
+
+  for idx, oneVal in enumerate(inIntegerList):
+    localarray.SetValue(idx, oneVal)
+
+  globalController.AllReduce(localarray, globalarray, inAllReduceType)
+
+  returnArray = []
+  for idx in range(0, numVals):
+    returnArray.append(int(globalarray.GetTuple1(idx)))
+
+  #if PhactoriDbg(100):
+  #  if len(returnArray) > 0:
+  #    myDebugPrint3("global first: " + str(returnArray[0]) + "   last: " + str(returnArray[-1]) + "\n")
+
+  #if PhactoriDbg(100):
+  #  myDebugPrint3("UseReduceOnIntegerList returning\n", 100)
+  return returnArray
+
+def UseMpiToShareAllProcessArraySizes(inArray):
+  if PhactoriDbg(100):
+    myDebugPrint3("UseMpiToShareAllProcessArraySizes entered\n", 100)
+  numProcs = SmartGetNumberOfProcesses()
+  myPid = SmartGetLocalProcessId()
+
+  localArraySize = []
+  for ii in range(0, numProcs):
+    localArraySize.append(int(0))
+
+  localArraySize[myPid] = int(len(inArray))
+  globalArraySize = UseReduceOnIntegerList(localArraySize, 0)
+  if PhactoriDbg(100):
+    myDebugPrint3(str(localArraySize) + "\n")
+    myDebugPrint3(str(globalArraySize) + "\n")
+    myDebugPrint3("UseMpiToShareAllProcessArraySizes returning\n", 100)
+  return globalArraySize
+
+def UseMpiToSendAllProcessesFloatArrayToOneProcess(thisProcessFloatArray, pidToCollectArray):
+  "given a float array on this process, send the float arrays from all\n     processes to the process pidToCollectArray.  Gets sizes from all\n     processes first and then uses reduce to send it all"
+
+  if PhactoriDbg(100):
+    myDebugPrint3("UseMpiToSendAllProcessesFloatArrayToOneProcess entered\n", 100)
+
+  numProcs = SmartGetNumberOfProcesses()
+  myPid = SmartGetLocalProcessId()
+
+  globalArraySize = UseMpiToShareAllProcessArraySizes(thisProcessFloatArray)
+
+  localFloatArray = []
+  for pidIndex, oneSize in enumerate(globalArraySize):
+    if pidIndex == myPid:
+      for vv in thisProcessFloatArray:
+        localFloatArray.append(vv)
+    else:
+      for cnt1 in range(0, oneSize):
+        localFloatArray.append(0.0)
+
+  #we really don't need to use AllReduce here, just Reduce to one process
+  #fix later
+  globalFloatArray = UseReduceOnFloatList(localFloatArray, 2)
+
+  #we really should only have value for pidToCollectArray
+  if myPid == pidToCollectArray:
+    retVal = globalFloatArray
+  else:
+    retVal = []
+
+  if PhactoriDbg(100):
+    if len(globalFloatArray) == 0: 
+      myDebugPrint3(str(len(globalFloatArray)) + "\n")
+    else:
+      myDebugPrint3(str(len(globalFloatArray)) + "  " + str(globalFloatArray[0]) + "  " + str(globalFloatArray[-1]) + "\n")
+    myDebugPrint3("UseMpiToSendAllProcessesFloatArrayToOneProcess returning\n", 100)
+  return retVal
+
+def UseMpiToSendAllProcessesIntArrayToOneProcess(thisProcessIntArray, pidToCollectArray):
+  "given a int array on this process, send the int arrays from all\n     processes to the process pidToCollectArray.  Gets sizes from all\n     processes first and then uses reduce to send it all"
+  if PhactoriDbg(100):
+    myDebugPrint3("UseMpiToSendAllProcessesintArrayToOneProcess entered\n", 100)
+  numProcs = SmartGetNumberOfProcesses()
+  myPid = SmartGetLocalProcessId()
+
+  globalArraySize = UseMpiToShareAllProcessArraySizes(thisProcessIntArray)
+
+  localIntArray = []
+  for pidIndex, oneSize in enumerate(globalArraySize):
+    if pidIndex == myPid:
+      for vv in thisProcessIntArray:
+        localIntArray.append(vv)
+    else:
+      for cnt1 in range(0, oneSize):
+        localIntArray.append(int(0))
+
+  #we really don't need to use AllReduce here, just Reduce to one process
+  #fix later
+  globalIntArray = UseReduceOnIntegerList(localIntArray, 2)
+
+  #we really should only have value for pidToCollectArray
+  if myPid == pidToCollectArray:
+    retVal = globalIntArray
+  else:
+    retVal = []
+
+  if PhactoriDbg(100):
+    if len(globalIntArray) == 0:
+      myDebugPrint3(str(len(globalIntArray)) + "\n")
+    else:
+      myDebugPrint3(str(len(globalIntArray)) + "  " + str(globalIntArray[0]) + "  " + str(globalIntArray[-1]) + "\n")
+    myDebugPrint3("UseMpiToSendAllProcessesintArrayToOneProcess returning\n", 100)
+  return retVal
+
+def ReadAndMpiBroadcastJsonFile(inJsonFileName):
+  "given a json format file, read in the contents using the python json\n     library on process zero, use MPI to broadcast the contents to all\n     processes (via converting to a long char string)"
+  if SmartGetLocalProcessId() == 0:
+    #process zero loads json script and broadcasts
+    returnJson = HandleJsonScriptLoadProcessZero(inJsonFileName)
+  else:
+    #other processes receive json script
+    returnJson = HandleJsonScriptLoadProcessNotZero()
+  return returnJson
+
+#phactori_combine_to_single_python_file_subpiece_end_1
+
 def UseReduceToSumDoubleAndIntPair(ioDoubleAndIntPair):
   if PhactoriDbg(100):
     myDebugPrint3("UseReduceToSumDoubleAndIntPair entered\n", 100)
@@ -16209,8 +22568,7 @@ global gPhactoriPipeRootMap
 gPhactoriPipeRootMap = {}
 
 def convertJsonUnicodeToStrings(inJson):
-    """go through a dict/list/item which was loaded via json.load, and convert
-       unicode strings to python strings"""
+    "go through a dict/list/item which was loaded via json.load, and convert\n       unicode strings to python strings"
     #for python 2.6 or earlier, replace
     #  return {convertJsonUnicodeToStrings(key): convertJsonUnicodeToStrings(value) for key, value in inJson.iteritems()}
     #with
@@ -16221,7 +22579,8 @@ def convertJsonUnicodeToStrings(inJson):
     elif isinstance(inJson, list):
         return [convertJsonUnicodeToStrings(element) for element in inJson]
     elif isinstance(inJson, str):
-        return inJson.encode('utf-8')
+        #return inJson.encode('utf-8')
+        return str(inJson)
     else:
         return inJson
 
@@ -16332,11 +22691,7 @@ def GetUserDataStringArrayAccountingForBypass(datadescription):
 
 
 def GetViewMapCFromUserData(datadescription):
-  """given a datadescription, get the json string view map from the user data
-     and convert it into a python dict using the json library, and return
-     that item.  Also determine the separator character and input deck
-     filename"""
-  import json
+  "given a datadescription, get the json string view map from the user data\n     and convert it into a python dict using the json library, and return\n     that item.  Also determine the separator character and input deck\n     filename"
 
   #the following code forces a UserData item for internal testing
   #myDebugPrint3("GetViewMapCFromUserData entered\n")
@@ -16413,10 +22768,7 @@ def CreatePipelineFromDataDescription(datadescription):
   #  inBackfaceDiffuseColor = [0.2, 0.2, 0.2])
 
 def parseDbDummyFname(dbDummyFname):
-  """given user data item which is dummy database name used for remesh and
-     restart purposes, pull out the base name (minus -s0002, -sXXXX, etc.)
-     and return the base name and extension (extension in an empty string
-     if appropriate)"""
+  "given user data item which is dummy database name used for remesh and\n     restart purposes, pull out the base name (minus -s0002, -sXXXX, etc.)\n     and return the base name and extension (extension in an empty string\n     if appropriate)"
   remeshRestartTagIndex = dbDummyFname.rfind("-s")
   if remeshRestartTagIndex == -1:
     baseId = dbDummyFname
@@ -16447,14 +22799,7 @@ def DoUserInteractionWithSimulationPausedIfEnabled():
   return returnVal
 
 def HandleUserInteractionIfEnabled(ioPipeAndViewsState):
-  """if the pipe (or imageset maybe) is in interactive mode, check for the
-     trigger which will cause a read-and-update of the state.  Provides
-     control to skip interaction when it is not enabled, the default case.
-     Allows for a wait for an interaction trigger of N tries at M seconds
-     per try, mainly to deal with situations where images are being 
-     rendered quickly.  Eventually may be altered to help deal with cases
-     where we want to keep re-rendering with changed pipeline states
-     until we are happy and then let the simulation return to operation"""
+  "if the pipe (or imageset maybe) is in interactive mode, check for the\n     trigger which will cause a read-and-update of the state.  Provides\n     control to skip interaction when it is not enabled, the default case.\n     Allows for a wait for an interaction trigger of N tries at M seconds\n     per try, mainly to deal with situations where images are being \n     rendered quickly.  Eventually may be altered to help deal with cases\n     where we want to keep re-rendering with changed pipeline states\n     until we are happy and then let the simulation return to operation"
   if PhactoriDbg():
     myDebugPrint3("HandleUserInteractionIfEnabled entered\n")
   if ioPipeAndViewsState.mInteractionEnabled == False:
@@ -16477,7 +22822,6 @@ def HandleUserInteractionIfEnabled(ioPipeAndViewsState):
           " of " + str(ioPipeAndViewsState.mInteractionTriggerTries) + "\n")
     triggerTestCount += 1
     try:
-      import json
       inFile = open('PhactoriInteractionTrigger.txt', 'rb')
       userTrigger = json.load(inFile)
       inFile.close()
@@ -16520,13 +22864,7 @@ def HandleUserInteractionIfEnabled(ioPipeAndViewsState):
 
 
 class PhactoriCriteriaThreshold:
-  """
-  maintains a threshold value TT, and tracks when a min/max/mean/sum/count
-  of a variable crosses the threshold; also keeps track of how many frames
-  it has been since the crossing and if this is within a frame count setting
-  and also tracks how many times it has been triggered and no longer triggers
-  after a max has been reached
-  """
+  "\n  maintains a threshold value TT, and tracks when a min/max/mean/sum/count\n  of a variable crosses the threshold; also keeps track of how many frames\n  it has been since the crossing and if this is within a frame count setting\n  and also tracks how many times it has been triggered and no longer triggers\n  after a max has been reached\n  "
 
   def __init__(self, inThresholdValue, inFramesAfterTrigger, inMaxTriggers):
     self.mThresholdValue = inThresholdValue
@@ -16599,13 +22937,7 @@ class PhactoriCriteriaThreshold:
     return self.mCurrentlyTriggered
 
 class PhactoriImagesetOnOffFilterCriteria:
-  """
-  this class represents one test used to determine if images are or are
-  not shown.  The general idea is that the test is whether a variable
-  minimum/maximum/mean is above/below/between a certain value or values.
-  The variable can be scalar, vector magnitude, vector component, or
-  tensor component, or global, and can be cell/element or point/node
-  """
+  "\n  this class represents one test used to determine if images are or are\n  not shown.  The general idea is that the test is whether a variable\n  minimum/maximum/mean is above/below/between a certain value or values.\n  The variable can be scalar, vector magnitude, vector component, or\n  tensor component, or global, and can be cell/element or point/node\n  "
 
   def __init__(self):
     self.mName = ""
@@ -16625,8 +22957,7 @@ class PhactoriImagesetOnOffFilterCriteria:
     self.mReturnValAtCurrentFrameTagCounter = False
 
   def TestForTruth(self, ioPipeAndViewsState):
-    """returns true if this criteria indicates we should render a frame, false
-       otherwise"""
+    "returns true if this criteria indicates we should render a frame, false\n       otherwise"
 
     if PhactoriDbg(100):
       myDebugPrint3(
@@ -16831,8 +23162,7 @@ class PhactoriImagesetOnOffFilterCriteria:
             inJson, 'variable ')
 
     if foundVariableFlag == False:
-      errStr = """error!  inJson has no variable info in
-          PhactoriImagesetOnOffFilterCriteria.ParseParametersFromJson\n"""
+      errStr = "error!  inJson has no variable info in\n          PhactoriImagesetOnOffFilterCriteria.ParseParametersFromJson\n"
       if PhactoriDbg():
         myDebugPrint3(errStr)
       raise Exception(errStr)
@@ -16922,12 +23252,7 @@ class PhactoriImagesetOnOffFilterCriteria:
 
 
 class PhactoriImagesetOnOffFilter:
-  """
-  this class manages the system whereby users can selectively
-  choose to render or not render images based on simulation data.  The first
-  simple capability allows users to begin rendering after some simulation
-  data criteria is met (e.g. maximum of element variable X is above Y), and
-  stop rendering after some criteria is met"""
+  "\n  this class manages the system whereby users can selectively\n  choose to render or not render images based on simulation data.  The first\n  simple capability allows users to begin rendering after some simulation\n  data criteria is met (e.g. maximum of element variable X is above Y), and\n  stop rendering after some criteria is met"
 
   def __init__(self):
     self.mEnabled = False
@@ -16944,7 +23269,7 @@ class PhactoriImagesetOnOffFilter:
   #  self.mStopCriteriaList.append(inNewCriteria)
 
   def TestDrawImagesThisCallback(self, ioPipeAndViewsState):
-    """returns True if images should be rendered, False if they should not"""
+    "returns True if images should be rendered, False if they should not"
 
     if PhactoriDbg(
           100):

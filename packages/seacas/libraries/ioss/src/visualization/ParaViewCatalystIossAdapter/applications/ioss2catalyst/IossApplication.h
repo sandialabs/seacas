@@ -32,9 +32,6 @@ public:
     bool outputCatalystMeshON();
     bool setOutputCatalystMesh(bool status);
 
-    bool outputParsedPhactoriJSONON();
-    bool setOutputParsedPhactoriJSON(bool status);
-
     bool usePhactoriInputScriptON();
     std::string getPhactoriInputScript();
     void setPhactoriInputScript(const std::string& scriptFilePath);
@@ -46,6 +43,9 @@ public:
     bool useParaViewExportedScriptON();
     std::string getParaViewExportedScript();
     void setParaViewExportedScript(const std::string& exportedScriptFilePath);
+
+    static int parsePhactoriScriptFile(const std::string &filepath,
+        std::string &json_result);
 
     int getMyRank();
     int getNumRanks();
@@ -84,7 +84,6 @@ private:
     bool printIOSSReport;
     bool copyDatabase;
     bool writeCatalystMesh;
-    bool writeParsedPhactoriJSON;
     bool usePhactoriInputScript;
     bool usePhactoriInputJSON;
     bool useParaViewExportedScript;
@@ -97,9 +96,8 @@ private:
     std::string fileTypeSuffix;
     std::string iossDatabaseType;
     std::string copyOutputDatabaseName = "iossDatabaseCopy";
-    std::string outputCatalystMeshFileName = "iossDatabaseCatalystMesh.vtm";
+    std::string outputCatalystMeshFileName = "iossDatabaseCatalystMesh";
     std::string iossReportFileName = "IossRegionReport";
-    std::string phactoriJSONFileName = "phactoriJSON.json";
     Ioss::Region * inputIOSSRegion;
 
 #if defined(__APPLE__)
