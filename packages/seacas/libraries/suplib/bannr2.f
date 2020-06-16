@@ -644,7 +644,6 @@ C        STRING IS TRUNCATED.
           WRITE (IOUT, 5010) LINEIN(ILEFT:IRIGHT)
         end if
 
-
       ELSE
 
 C        STRING IS NOT TRUNCATED OR IS NULL.

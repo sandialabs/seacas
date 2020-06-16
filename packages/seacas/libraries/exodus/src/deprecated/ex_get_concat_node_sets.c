@@ -34,7 +34,6 @@ causes of errors include:
   -  data file not properly opened with call to ex_create() or ex_open()
   -  a warning value is returned if no node sets are stored in the file.
 
-
 \param[in]  exoid                 exodus file ID returned from a previous call
 to ex_create()
                                   or ex_open().
@@ -68,7 +67,6 @@ LocalNodeIds).
 
 \param[out]  node_sets_dist_fact  Returned array containing the distribution
 factors for all sets.
-
 
 As an example, the following code segment will read concatenated node
 sets:

@@ -854,7 +854,6 @@ This routine uses the array KUNTFD, in the FORTRAN common and
 the C external structure, cdrunx, to translate from FORTRAN
 unit number to UNIX/C file descriptors.
 
-
 Parameters:
 ifilcd - IN - the FORTRAN unit number of the file to open
 

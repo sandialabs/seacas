@@ -62,7 +62,6 @@ c     09/07/93  V.R. Yarberry - Revised for 2.00 API
 
       data iin /5/, iout /6/, nexofiles /5/
 
-
 c  create EXODUS II files
 
       cpu_word_size = 0
@@ -87,9 +86,7 @@ c  create EXODUS II files
      1          i, ierr
 1000  continue
 
-
 c  initialize file with parameters
-
 
       title = "This is test m"
       num_dim = 2
@@ -122,10 +119,7 @@ c  initialize file with parameters
      1          i, ierr
 1001  continue
 
-
-
 c  write nodal coordinates values and names to database
-
 
       x(1) = 0.0
       x(2) = 1.0
@@ -185,10 +179,7 @@ c  write nodal coordinates values and names to database
      1          i, ierr
 1003  continue
 
-
-
 c write element order map
-
 
       do 10 i = 1, num_elem
          elem_map(i) = i
@@ -207,9 +198,7 @@ c write element order map
      1          i, ierr
 1004  continue
 
-
 c write element block parameters
-
 
       num_elem_in_block(1) = 1
       num_elem_in_block(2) = 1
@@ -272,9 +261,7 @@ c  write element block properties
      1          i, ierr
 1006  continue
 
-
 c write element connectivity
-
 
       connect(1) = 1
       connect(2) = 2
@@ -314,9 +301,7 @@ c write element connectivity
      1          i, ierr
 1008  continue
 
-
 c write element block attributes
-
 
       attrib(1) = 3.14159
       call expeat (exoid, ebids(1), attrib, ierr)
@@ -340,9 +325,7 @@ c write element block attributes
      1          i, ierr
 1010  continue
 
-
 c write individual node sets
-
 
       call expnp (exoid, 20, 5, 5, ierr)
       write (iout, '("after expnp, error = ", i4)' ) ierr
@@ -442,10 +425,8 @@ C**** file 2
      1          i, ierr
 1012  continue
 
-
 c write concatenated node sets; this produces the same information as
 c the above code which writes individual node sets
-
 
       ids(1) = 20
       ids(2) = 21
@@ -478,7 +459,6 @@ c     call expcns (exoid, ids, num_nodes_per_set, node_ind, node_list,
 c    1        dist_fact, ierr)
 c     write (iout, '("after expcns, error = ", i4)' ) ierr
 
-
       do 1013 i=1,nexofiles
         prop_names(1) = "FACE"
         call expp(exoidm(i), EXNSET, 20, prop_names(1), 4, ierr)
@@ -499,7 +479,6 @@ c     write (iout, '("after expcns, error = ", i4)' ) ierr
 1013  continue
 
 c write individual side sets
-
 
       elem_list(1) = 11
       elem_list(2) = 12
@@ -542,7 +521,6 @@ c write individual side sets
 
       call expssd (exoid, 31, dist_fact, ierr)
       write (iout, '("after expssd, error = ", i3)' ) ierr
-
 
       elem_list2(1) = 11
       elem_list2(2) = 12
@@ -596,10 +574,8 @@ c write individual side sets
      1          i, ierr
 1015  continue
 
-
 c write concatenated side sets; this produces the same information as
 c the above code which writes individual side sets
-
 
       ids(1) = 30
       ids(2) = 31
@@ -652,7 +628,6 @@ c     write (iout, '("after expcss (",i1,"), error = ", i4)' ) ierr
       call expp(exoid, EXSSET, 31, prop_names(1), 101, ierr)
       write (iout, '("after expp, error = ", i4)' ) ierr
 
-
       do 1016 i=1,nexofiles
         prop_names(1) = "COLOR"
         call expp(exoidm(i), EXSSET, 30, prop_names(1), 100, ierr)
@@ -664,10 +639,7 @@ c     write (iout, '("after expcss (",i1,"), error = ", i4)' ) ierr
      1          i, ierr
 1016  continue
 
-
-
 c write QA records
-
 
       num_qa_rec = 2
 
@@ -700,10 +672,7 @@ c write QA records
      1          i, ierr
 1017  continue
 
-
-
 c write information records
-
 
       num_info = 3
 
@@ -802,7 +771,6 @@ c write results variables parameters and names
 
 c write element variable truth table
 
-
       k = 0
 
       do 30 i = 1,num_elem_blk
@@ -830,7 +798,6 @@ c the code below fills the arrays glob_var_vals,
 c nodal_var_vals, and elem_var_vals with values for debugging purposes;
 c obviously the analysis code will populate these arrays
 
-
       whole_time_step = 1
       num_time_steps = 10
 
@@ -839,7 +806,6 @@ c obviously the analysis code will populate these arrays
         time_value2 = real(iii)/100
 
 c write time value to regular file
-
 
         call exptim (exoid, whole_time_step, time_value, ierr)
         write (iout, '("after exptim, error = ", i4)' ) ierr
@@ -850,9 +816,7 @@ c write time value to regular file
      1          i, ierr
 1023    continue
 
-
 c write global variables
-
 
         do 50 j = 1, num_glo_vars
           glob_var_vals(j) = real(j+1) * time_value
@@ -869,9 +833,7 @@ c write global variables
      1          i, ierr
 1024    continue
 
-
 c write nodal variables
-
 
         do 70 k = 1, num_nod_vars
           do 60 j = 1, num_nodes
@@ -893,9 +855,7 @@ c write nodal variables
 
 70      continue
 
-
 c write element variables
-
 
         do 100 k = 1, num_ele_vars
           do 90 j = 1, num_elem_blk
@@ -921,7 +881,6 @@ c write element variables
 
         whole_time_step = whole_time_step + 1
 
-
 c update the data file; this should be done at the end of every time
 c step to ensure that no data is lost if the analysis dies
 
@@ -934,7 +893,6 @@ c step to ensure that no data is lost if the analysis dies
 1027    continue
 
 110   continue
-
 
 c close the EXODUS files
 

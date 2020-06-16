@@ -85,7 +85,6 @@ LocalNodeIds).
 \param[out]  side_sets_side_list  Returned array containing the sides for all
 side sets.
 
-
 The following code segment will convert side sets described
 by nodes to side sets described by local side numbers:
 

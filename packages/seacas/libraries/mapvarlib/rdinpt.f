@@ -627,7 +627,6 @@ C implemented (required to have all such maps located sequentially)
 C a simple sort on the 2nd entry accomplishes this and is easier
 C than rewriting the offending algorithm
 
-
       IBOTOM = IMP - 1
  110  ISWICH = 1
       DO 120 I = 1, IBOTOM

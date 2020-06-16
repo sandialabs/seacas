@@ -424,7 +424,6 @@ C    See packages/seacas/LICENSE for details
      $   'Norm of iterate > max for well conditioned system' /
 *     ------------------------------------------------------------------
 
-
 *     Compute eps, the machine precision.  The call to chdaxpy is
 *     intended to fool compilers that use extra-length registers.
 
@@ -658,7 +657,6 @@ c     write(nout, 1300) itn, x1cg, cgnorm, bstep/beta1, anorm, acond
 c     if (mod(itn,10) .eq. 0) write(nout, 1500)
 *     ==================================================================
 
-
 *     Obtain the current Lanczos vector  v = (1 / beta)*y
 *     and set up  y  for the next iteration.
 
@@ -782,5 +780,4 @@ c 3000 format(      a, 6x, a )
 *     ------------------------------------------------------------------
 *     end of SYMMLQ
       end
-
 

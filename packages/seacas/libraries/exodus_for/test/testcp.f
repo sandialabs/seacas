@@ -6,7 +6,6 @@ C    See packages/seacas/LICENSE for details
 
       program testcpd
 
-
 c This is a test program for the Fortran binding of the EXODUS II
 c database copy function (excopy).
 
@@ -20,9 +19,7 @@ c database copy function (excopy).
 
       data iin /5/, iout /6/
 
-
 c open EXODUS II input file
-
 
 c the setting of cpu_ws isn't used for copying but will test the
 c conversion routines
@@ -37,7 +34,6 @@ c conversion routines
       write (iout, '("test.exo is an EXODUSII file; version ",
      1                f4.2)') vers
       write (iout, '(" I/O word size: ",i4)') io_ws
-
 
 c  create EXODUS II output file with default size reals
 

@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C=======================================================================
       SUBROUTINE PLTINI(MIN,MAX,START,REND,INTER,EXP,NMIN)
       REAL MIN,MAX,INTER

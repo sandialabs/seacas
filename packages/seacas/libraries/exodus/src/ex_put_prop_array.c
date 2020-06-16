@@ -64,7 +64,6 @@ stored. Maximum
 |  #EX_EDGE_MAP   |  Edge Map entity type     |
 |  #EX_FACE_MAP   |  Face Map entity type     |
 
-
 For an example of code to write an array of object properties, refer
 to the description for ex_put_prop_names().
  */

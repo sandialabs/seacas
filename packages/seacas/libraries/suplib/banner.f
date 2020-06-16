@@ -127,7 +127,6 @@ C   --   LENSTR - (STRLIB) Find string length
          WRITE (NOUT, *)
       END IF
 
-
       RETURN
 10000  FORMAT (8A)
 10010  FORMAT ('Run on ', A4, '-', A2, '-', A2, ' at ', A8)

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-
       integer function argument_count()
       integer*4 arg_count4
       arg_count4 = iargc()

@@ -76,7 +76,6 @@ beg_time_step +
                              1) values of the elem_number-th element for the
                              elem_var_index-th element variable.
 
-
 For example, the following coding will read the values of the
 var_index-th element variable for element number 2 from the first
 time step to the last time step:

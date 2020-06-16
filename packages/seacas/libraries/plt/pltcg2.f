@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C=======================================================================
       SUBROUTINE PLTCG2(N,XV,YV,NO,XVO,YVO,C1,C2)
       INTEGER N

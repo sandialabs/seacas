@@ -69,7 +69,6 @@ requiring
 returned
                compute word size (4 or 8).
 
-
 \param[in,out] io_ws The word size in bytes (0, 4 or 8) of the floating
                     point data as they are stored in the exodus file. If the
 word

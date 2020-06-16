@@ -47,7 +47,6 @@ MAX_STR_LENGTH ) for
 |  #EX_EDGE_MAP   |  Edge Map entity type     |
 |  #EX_FACE_MAP   |  Face Map entity type     |
 
-
 For an example of code to read an object property, refer to the
 description for ex_get_prop_names().
 

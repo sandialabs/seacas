@@ -15,8 +15,6 @@ c call postprocessor loop routine
       STOP
       END
 
-
-
       SUBROUTINE PPLOOP
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 
@@ -126,7 +124,6 @@ C                  new file id.
 C DRAWN          - True if something has been drawn since inititalization or
 C                  the background color has changed from default.
 C FIRST          - True until after the first newpage since initialization
-
 
 C          NON COLOR DATA STATEMENTS
 
@@ -272,7 +269,6 @@ C         EE    EF    F0    F1    F2    F3    F4    F5    F6    F7
 
      +     8,    8,    8,    8,    8,    8,    8,    8), OPCODE-127
 C         F8    F9    FA    FB    FC    FD    FE    FF
-
 
 C          82 -- ESCAPE CODES
 
@@ -714,8 +710,6 @@ C          SCAN FOR NEW FRAME
       GOTO 1
 
       END
-
-
 
       SUBROUTINE PPBTR(IWIDTH,RESULT,EOFOK)
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C

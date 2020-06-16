@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C=======================================================================
       SUBROUTINE CPUQA(DATE1,TIME,USER,JOBID,DIV,ENUM,CASENO,CLASS)
       CHARACTER*(*) DATE1

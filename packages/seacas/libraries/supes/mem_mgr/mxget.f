@@ -13,7 +13,6 @@ C     This subroutine returns the location (row number) of a void with
 C     sufficient space for the memory request.  If necessary, memory is
 C     acquired from the system.  The memory is contiguous.
 
-
 C***********************************************************************
 
 C     MYLOC    Address of internal reference array

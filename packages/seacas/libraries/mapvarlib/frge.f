@@ -34,7 +34,6 @@ C**********************************************************************
       DOUBLE PRECISION S(N,N),G(N),SMAX,RMAX,XMULT,R
       INTEGER L(N)
 
-
       DO 3 I = 1,N
         L(I) = I
         SMAX = 0.D+00

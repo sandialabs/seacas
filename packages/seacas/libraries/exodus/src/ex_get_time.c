@@ -25,7 +25,6 @@ include:
   -  data file not properly opened with call to ex_create() or ex_open()
   -  no time steps have been stored in the file.
 
-
 \param[in]  exoid       exodus file ID returned from a previous call to
 ex_create() or ex_open().
 \param[in]  time_step   The time step number. This is essentially an index (in

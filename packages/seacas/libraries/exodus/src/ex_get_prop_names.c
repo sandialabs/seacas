@@ -22,7 +22,6 @@ include:
   -  data file not properly opened with call to ex_create() or ex_open()
   -  invalid object type specified.
 
-
 \param[in]   exoid        exodus file ID returned from a previous call to
 ex_create() or ex_open().
 \param[in]   obj_type     Type of object; use one of the options in the table

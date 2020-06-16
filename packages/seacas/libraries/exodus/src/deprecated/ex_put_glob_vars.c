@@ -46,7 +46,6 @@ errors include:
   -  ex_put_variable_param() not called previously specifying
      the number of global variables.
 
-
 \param[in] exoid           exodus file ID returned from a previous call to
 ex_create() or ex_open().
 \param[in] time_step       The time step number, as described under
@@ -58,7 +57,6 @@ when results
 database.
 \param[in]  glob_var_vals  Array of num_glob_vars global variable values for
                            the time_step-th time step.
-
 
 As an example, the following coding will write the values of all the
 global variables at one time step to an open exodus II file:

@@ -71,7 +71,6 @@ C     *********************************************************************
      &        0,' ',' ',1)
       END IF
 
-
       DO I = 1, NODESA
          DO J = 1, NVAREL
             SOLENA(I,J) = 0.
@@ -222,7 +221,6 @@ c     Do for 8-node hex in 3D, similar to 4-node quad in 2D above
                   IGLND = NDLSTA(INOD)
 
 c     First find elements connected to node - inverse connectivity
-
 
 C     Similar to 2D, process special cases
 
@@ -519,7 +517,6 @@ C     [NOTE: THIS DOES NOT SEEM TO BE USED...NOWLND?]
 
 C     Less than 12 elements sharing IGLND, find the node of the
 C     12 elements that connects with the maximum number of elements
-
 
 C...Still not sure if this is correct for tets...
                   NDMAX = IGLND

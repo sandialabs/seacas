@@ -9,7 +9,6 @@ C    See packages/seacas/LICENSE for details
 c This is a test program for the Fortran binding of the EXODUS II
 c database write routines using double precision reals.
 
-
 c       history -
 c       Original L.A. Schoof
 c       02/25/93 V.R. Yarberry - Added error checks for file creation.
@@ -64,7 +63,6 @@ c  create EXODUS II files
 
 c  initialize file with parameters
 
-
       num_dim = 2
       num_nodes = 8
       num_elem = 2
@@ -78,9 +76,7 @@ c  initialize file with parameters
 
       write (iout, '("after expini, error = ", i4)' ) ierr
 
-
 c  write nodal coordinates values and names to database
-
 
       x(1) = 0.0
       x(2) = 1.0
@@ -108,10 +104,7 @@ c  write nodal coordinates values and names to database
       call expcon (exoid, coord_names, ierr)
       write (iout, '("after expcon, error = ", i4)' ) ierr
 
-
-
 c write element order map
-
 
       do 10 i = 1, num_elem
          elem_map(i) = i
@@ -120,9 +113,7 @@ c write element order map
       call expmap (exoid, elem_map, ierr)
       write (iout, '("after expmap, error = ", i4)' ) ierr
 
-
 c write element block parameters
-
 
       num_elem_in_block(1) = 1
       num_elem_in_block(2) = 1
@@ -150,9 +141,7 @@ c  write element block properties
       call expp(exoid, EXEBLK, ebids(2), "MATL", 20, ierr)
       write (iout, '("after expp, error = ", i4)' ) ierr
 
-
 c write element connectivity
-
 
       connect(1) = 1
       connect(2) = 2
@@ -170,9 +159,7 @@ c write element connectivity
       call expelc (exoid, ebids(2), connect, ierr)
       write (iout, '("after expelc, error = ", i4)' ) ierr
 
-
 c write element block attributes
-
 
       attrib(1) = 3.14159
       call expeat (exoid, ebids(1), attrib, ierr)
@@ -182,9 +169,7 @@ c write element block attributes
       call expeat (exoid, ebids(2), attrib, ierr)
       write (iout, '("after expeat, error = ", i4)' ) ierr
 
-
 c write individual node sets
-
 
       node_list(1) = 100
       node_list(2) = 101
@@ -220,10 +205,8 @@ c     write (iout, '("after expns, error = ", i4)' ) ierr
 c     call expnsd (exoid, 21, dist_fact, ierr)
 c     write (iout, '("after expnsd, error = ", i4)' ) ierr
 
-
 c write concatenated node sets; this produces the same information as
 c the above code which writes individual node sets
-
 
       ids(1) = 20
       ids(2) = 21
@@ -278,9 +261,7 @@ c     write node set properties
       call exppa(exoid, EXNSET, prop_names(1), prop_array, ierr)
       write (iout, '("after exppa, error = ", i4)' ) ierr
 
-
 c write individual side sets
-
 
       elem_list(1) = 11
       elem_list(2) = 12
@@ -324,7 +305,6 @@ c     write (iout, '("after expssd, error = ", i4)' ) ierr
 
 c write concatenated side sets; this produces the same information as
 c the above code which writes individual side sets
-
 
       ids(1) = 30
       ids(2) = 31
@@ -372,9 +352,7 @@ c the above code which writes individual side sets
       call expp(exoid, EXSSET, 31, prop_names(1), 101, ierr)
       write (iout, '("after expp, error = ", i4)' ) ierr
 
-
 c write QA records
-
 
       num_qa_rec = 2
 
@@ -390,10 +368,7 @@ c write QA records
       call expqa (exoid, num_qa_rec, qa_record, ierr)
       write (iout, '("after expqa, error = ", i4)' ) ierr
 
-
-
 c write information records
-
 
       num_info = 3
 
@@ -403,7 +378,6 @@ c write information records
 
       call expinf (exoid, num_info, inform, ierr)
       write (iout, '("after expinf, error = ", i4)' ) ierr
-
 
 c write results variables parameters and names
 
@@ -416,7 +390,6 @@ c write results variables parameters and names
       call expvan (exoid, "g", num_glo_vars, var_names, ierr)
       write (iout, '("after expvan, error = ", i4)' ) ierr
 
-
       num_nod_vars = 2
 
       var_names(1) = "nod_var0"
@@ -426,7 +399,6 @@ c write results variables parameters and names
       write (iout, '("after expvp, error = ", i4)' ) ierr
       call expvan (exoid, "n", num_nod_vars, var_names, ierr)
       write (iout, '("after expvan, error = ", i4)' ) ierr
-
 
       num_ele_vars = 3
 
@@ -439,9 +411,7 @@ c write results variables parameters and names
       call expvan (exoid, "e", num_ele_vars, var_names, ierr)
       write (iout, '("after expvan, error = ", i4)' ) ierr
 
-
 c write element variable truth table
-
 
       k = 0
 
@@ -453,12 +423,10 @@ c write element variable truth table
       call expvtt (exoid, num_elem_blk, num_ele_vars, truth_tab, ierr)
       write (iout, '("after expvtt, error = ", i4)' ) ierr
 
-
 c for each time step, write the analysis results;
 c the code below fills the arrays hist_var_vals, glob_var_vals,
 c nodal_var_vals, and elem_var_vals with values for debugging purposes;
 c obviously the analysis code will populate these arrays
-
 
       whole = .true.
       hist_time_step = 1
@@ -470,13 +438,10 @@ c obviously the analysis code will populate these arrays
 
 c write time value
 
-
         call exptim (exoid, whole_time_step, time_value, ierr)
         write (iout, '("after exptim, error = ", i4)' ) ierr
 
-
 c write global variables
-
 
         do 50 j = 1, num_glo_vars
           glob_var_vals(j) = real(j+1) * time_value
@@ -486,9 +451,7 @@ c write global variables
      1              glob_var_vals, ierr)
         write (iout, '("after expgv, error = ", i4)' ) ierr
 
-
 c write nodal variables
-
 
         do 70 k = 1, num_nod_vars
           do 60 j = 1, num_nodes
@@ -503,9 +466,7 @@ c write nodal variables
 
 70      continue
 
-
 c write element variables
-
 
         do 100 k = 1, num_ele_vars
           do 90 j = 1, num_elem_blk
@@ -526,7 +487,6 @@ c             write(iout,*)'elem_var_val(',m,'): ',elem_var_vals(m)
 
         whole_time_step = whole_time_step + 1
 
-
 c update the data file; this should be done at the end of every time
 c step to ensure that no data is lost if the analysis dies
 
@@ -534,7 +494,6 @@ c step to ensure that no data is lost if the analysis dies
         write (iout, '("after exupda, error = ", i4)' ) ierr
 
 110   continue
-
 
 c close the EXODUS files
 

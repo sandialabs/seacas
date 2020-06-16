@@ -36,7 +36,6 @@ C     CVALUE  CHARACTER  Character values of the data fields.
 C     RVALUE  REAL       Floating-point values of the data fields.
 C     IVALUE  INTEGER    Integer values of the data fields.
 
-
 C     ROUTINES CALLED:
 C     GETINP            Get input line.
 C     FFISTR            Parse input line.

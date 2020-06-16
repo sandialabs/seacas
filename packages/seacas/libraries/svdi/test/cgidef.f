@@ -14,7 +14,6 @@ c  SRCP escapes
       parameter (XEMFNM= -28372, XEMXCL= -19281, XEPCTL= -190,
      *           XEAGMD= -23671, XEPCCL= -12048, XESVDI= -1001)
 
-
 c  SRCP definitions
 c  maximum error class
       integer XMXERR
@@ -124,7 +123,6 @@ c  and closed figure capability
       parameter (CCNONE=0, CGLOBL=1, CLOCAL=2)
 
 c  pattern transformation support
-
 
 c  color selection mode availability
       integer CCLRI, CCLRID

@@ -14,7 +14,6 @@
   film.graph random+KL.  before size = 24, should stay 24.
   However, I'm not finding this much flow.
 
-
 Start w/ a simple greedy weighted matching.
 For each node on left side w/ some remaining unmatched weight:
   Look for augmenting path via recursive call.
@@ -36,7 +35,6 @@ This is similar to matching except:
   I need to modify the flow associated w/ an edge and see it
     immediately from either vertex.  Use a single representation
     of flow on an edge, and have each edge representation point to it.
-
 
 */
 

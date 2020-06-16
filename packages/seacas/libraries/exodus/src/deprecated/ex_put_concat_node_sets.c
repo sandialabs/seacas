@@ -71,7 +71,6 @@ Internal node IDs are used in
 \param[in] node_sets_dist_fact  Array containing the distribution factors for
 all sets.
 
-
 For example, the following code will write out two node sets
 in a concatenated format:
 

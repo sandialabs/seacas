@@ -6,7 +6,6 @@ C See packages/seacas/LICENSE for details
 
 c sdcgif - FORTRAN shell for handling strings
 
-
 C  CESC - Escape
       SUBROUTINE CESC (FUNCID, LDR, DATA)
       INTEGER FUNCID
@@ -17,7 +16,6 @@ C  CESC - Escape
       RETURN
       END
 
-
 C  CTX - Text
       SUBROUTINE CTX(X, Y, FLAG, TEXT )
       REAL X,Y
@@ -27,7 +25,6 @@ C  CTX - Text
       CALL CTX1( X, Y, FLAG, TEXT, LEN(TEXT) )
       RETURN
       END
-
 
 C  CGTXX - Get Text Extent
       SUBROUTINE CGTXX( X, Y, STRING, VSTAT, VCONC, XCONC, YCONC,
@@ -42,7 +39,6 @@ C  CGTXX - Get Text Extent
      1             X1, Y1, X2, Y2, X3, Y3, X4, Y4, LEN(STRING) )
       RETURN
       END
-
 
 C  CQCHH - Inquire List of Available Character Heights
       SUBROUTINE CQCHH( FONT, TXP, NREQ, FIRST, VSTAT, NTOTAL,

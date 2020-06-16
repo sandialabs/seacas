@@ -34,7 +34,6 @@ C     LASTER   Error return
 
 C***********************************************************************
 
-
 C     Check worklength
 
       IF (WRDSIZ .LT. 1 .OR. WRDSIZ+2+11 .GT. NCOLP) THEN

@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C=======================================================================
       LOGICAL FUNCTION CHRCR(LINE,REAL)
       CHARACTER LINE* (*),FORM*10,CL*2

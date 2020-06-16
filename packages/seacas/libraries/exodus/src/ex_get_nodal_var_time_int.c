@@ -57,7 +57,6 @@ beg_time_step +1) values
 nodal_var_index-th nodal
                              variable.
 
-
 For example, the following code segment will read the values of the
 first nodal variable for node number one for all time steps stored in
 the data file:

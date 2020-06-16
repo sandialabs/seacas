@@ -39,13 +39,11 @@ C   iblk      element block being processed (not ID)
 C   IRED      reduction in dimensionality of data
 C             IRED=0 full, IRED=1 colinear, IRED=2 coplanar
 
-
 C  *********************************************************************
 
       include 'aexds1.blk'
       include 'amesh.blk'
       include 'ebbyeb.blk'
-
 
       DIMENSION CNTRA(NUMEBA,*), SHLNRM(3), SOLEA(NUMEBA,*)
       DIMENSION SOLGRA(NDIMA,NUMEBA,*), IELLST(100), ITT(NVAREL,*)

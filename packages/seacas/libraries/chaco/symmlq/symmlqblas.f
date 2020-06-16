@@ -45,7 +45,6 @@ c          not equal to 1
 
 c        code for both increments equal to 1
 
-
 c        clean-up loop
 
    20 m = mod(n,4)
@@ -93,7 +92,6 @@ c          not equal to 1
       return
 
 c        code for both increments equal to 1
-
 
 c        clean-up loop
 
@@ -148,7 +146,6 @@ c          not equal to 1
       return
 
 c        code for both increments equal to 1
-
 
 c        clean-up loop
 
@@ -260,11 +257,9 @@ c                     in phase 4 sum is large.  scale to avoid overflow.
   115 sum = sum + (dx(i)/xmax)**2
       go to 200
 
-
 c                  prepare for phase 3.
 
    75 sum = (sum * xmax) * xmax
-
 
 c     for real or d.p. set hitest = cuthi/n
 c     for complex      set hitest = cuthi/(2*n)

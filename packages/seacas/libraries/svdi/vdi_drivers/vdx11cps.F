@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C   cps driver is the file device
 C   x11 driver is the terminal device
       SUBROUTINE VDESCP(ESCPCD,N,ARGS)

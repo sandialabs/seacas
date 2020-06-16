@@ -132,7 +132,6 @@ C             NNODES=NNELM(ITYPE)
 C****************************************************************
 C apply constraints to variables here as applicable
 
-
 C Plastic strain (EQPS) must greater than or equal to 0.
 
            IF (NAMVAR(nvargp+IVAR)(1:4) .EQ. 'EQPS')THEN
@@ -243,7 +242,6 @@ c some simple error checking
      &                   IERR)
               IROTF = 1
              END IF
-
 
             ELSE IF (IROT .EQ. 9 .AND. IROTF .EQ. 0 .AND. IR11 .NE. 0
      &        .AND. IR21 .NE. 0 .AND. IR31 .NE. 0 .AND. IR12 .NE. 0

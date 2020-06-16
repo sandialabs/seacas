@@ -36,7 +36,6 @@ ex_create() or ex_open().
 set. This should be
                               either 0 (zero) for no factors, or should equal num_nodes_in_set.
 
-
 The following code segment will write out a node set to an open exodus
 file :
 

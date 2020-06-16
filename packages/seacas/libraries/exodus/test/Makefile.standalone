@@ -117,7 +117,6 @@ ReadEdgeFace:    ReadEdgeFace.o    $(LOCALEXO)
 test_nemesis:    test_nemesis.o    $(LOCALEXO)
 	$(CC) -o $@ $(CFLAGS)    test_nemesis.o   $(LIBS) $(LDFLAGS) 
 
-
 test:  check
 check: $(PROGS)
 	csh ./testall.standalone ${NCDUMP}

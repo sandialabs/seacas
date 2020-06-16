@@ -17,7 +17,6 @@ C being solved. This is the preferred method to handle nodal variable
 C assignment for recipient mesh nodes that lie outside the boundary
 C of the donor mesh.
 
-
 C Called by INTRPN, SINTPN
 
 C *********************************************************************
@@ -65,7 +64,6 @@ C INOD = NDLSTB(I)
 
 C Set value of node-NDLSTB(I); variable-IVAR to 0. by default.
 C User to replace this with whatever code he wishes.
-
 
 C ... Note: The exgnv step assumes that variable 'ivar' on the mesh
 C           database is the same variable as 'ivar' on the results

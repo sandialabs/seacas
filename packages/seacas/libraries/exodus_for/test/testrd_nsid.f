@@ -6,7 +6,6 @@ C    See packages/seacas/LICENSE for details
 
       program testrd
 
-
 c This is a test program for the Fortran binding of the EXODUS II
 c database read routines
 
@@ -34,10 +33,7 @@ c       09/07/93 V.R. Yarberry - Modified for API 2.00
 
       data iin /5/, iout /6/
 
-
-
 c open EXODUS II files
-
 
       cpu_ws = 0
       io_ws = 0
@@ -54,9 +50,7 @@ c open EXODUS II files
       mod_sz = exlgmd(exoid)
       write (iout, '("  Model Size",i2)') mod_sz
 
-
 c read database parameters
-
 
       call exgini (exoid, titl, num_dim, num_nodes, num_elem,
      1             num_elem_blk, num_node_sets, num_side_sets, ierr)
@@ -73,10 +67,7 @@ c read database parameters
      8               titl,num_dim, num_nodes, num_elem,
      9               num_elem_blk,num_node_sets, num_side_sets
 
-
-
 c read nodal coordinates values and names from database
-
 
       call exgcor (exoid, x, y, z, ierr)
       write (iout, '(/"after exgcor, error = ", i3)' ) ierr
@@ -104,9 +95,7 @@ c read nodal coordinates values and names from database
       write (iout, '("x coord name = ", a9)') coord_names(1)
       write (iout, '("y coord name = ", a9)') coord_names(2)
 
-
 c read element order map
-
 
       call exgmap (exoid, elem_map, ierr)
       write (iout, '(/"after exgmap, error = ", i3)' ) ierr
@@ -115,9 +104,7 @@ c read element order map
          write (iout, '("elem_map(",i1,") = ", i1)') i, elem_map(i)
 30    continue
 
-
 c read element block parameters
-
 
       call exgebi (exoid, ids, ierr)
       write (iout, '(/"after exgebi, error = ", i3)' ) ierr
@@ -138,9 +125,7 @@ c read element block parameters
 
 40    continue
 
-
 c read element connectivity
-
 
       do 60 i = 1, num_elem_blk
 
