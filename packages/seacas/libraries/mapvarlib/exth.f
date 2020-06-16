@@ -17,7 +17,6 @@ C hex and 4-node and 8-node (treated same as 4-node) tet elements.
 C In the special case of data from only 4 elements, the result is not
 C a true least squares fit in that the least squares error is zero.
 
-
 C Calls subroutines FRGE & BS
 
 C Called by ELTON3

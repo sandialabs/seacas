@@ -80,7 +80,6 @@ C displacements as zero.
           IF (IDEF .EQ. 2 .AND. (IVAR .EQ. IXDIS .OR. IVAR .EQ. IYDIS
      &        .OR. IVAR .EQ. IZDIS))GO TO 10
 
-
 C If first time into INTRPN for this element block, initialize
 C else you are mapping many to one and retrieve partially mapped
 C results from temporary storage in EXODUS

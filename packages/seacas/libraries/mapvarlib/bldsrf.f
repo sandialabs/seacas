@@ -19,7 +19,6 @@ C***********************************************************************
       DIMENSION XA(*),YA(*),ZA(*)
       DIMENSION XYZSRF(NODESA,3)
 
-
       DO 10 I = 1, NODESA
         XYZSRF(I,1) = XA(I)
         XYZSRF(I,2) = YA(I)

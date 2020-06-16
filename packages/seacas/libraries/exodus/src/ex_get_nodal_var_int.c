@@ -54,7 +54,6 @@ nodal_var_index-th
 nodal variable for the time_step-th time
 step.
 
-
 For example, the following demonstrates how this function would be
 used:
 

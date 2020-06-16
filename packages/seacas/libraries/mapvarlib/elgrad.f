@@ -42,7 +42,6 @@ C   SHLNRM    vector normal to current shell element (1:3)
 C   ITT       truth table
 C   iblk      element block being processed (not ID)
 
-
 C  *********************************************************************
 
       include 'aexds1.blk'

@@ -30,7 +30,6 @@ ex_create() or ex_open().
                        defining and outputting, pass NULL for
                        info argument.
 
-
 The following code will write out three information records
 to an open exodus file -
 
@@ -60,7 +59,6 @@ later.}
 num_info = 3;
 
 error = ex_put_info(exoid, num_info, NULL);
-
 
 \comment{Now, actually write the information records}
 info[0] = "This is the first information record.";

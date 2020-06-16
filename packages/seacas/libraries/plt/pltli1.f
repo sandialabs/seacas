@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C=======================================================================
       SUBROUTINE PLTLI1(PLL,PUR,N,XV,YV,NO,XVO,YVO)
       CHARACTER*6 SUBNAM

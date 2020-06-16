@@ -138,7 +138,6 @@ include:
   -  ex_put_variable_param() not called previously specifying the number of
 variables.
 
-
 \param[in] exoid
 exodus file ID returned from a previous call to
 ex_create() or ex_open().

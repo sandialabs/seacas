@@ -63,7 +63,6 @@ c  initialize file with parameters
          call exit (0)
       endif
 
-
 c  write nodal coordinates values and names to database
 
 c  Quad #1
@@ -212,10 +211,7 @@ C 3d Tri
          call exit (0)
       endif
 
-
-
 c write element order map
-
 
       do 10 i = 1, num_elem
          elem_map(i) = i
@@ -228,9 +224,7 @@ c write element order map
          call exit (0)
       endif
 
-
 c write element block parameters
-
 
       num_elem_in_block(1) = 7
 
@@ -249,7 +243,6 @@ c write element block parameters
          call exclos(exoid,ierr)
          call exit (0)
       endif
-
 
 c write element connectivity
 
@@ -318,9 +311,7 @@ c write element connectivity
          call exit (0)
       endif
 
-
 c write QA records
-
 
       num_qa_rec = 2
 
@@ -340,10 +331,7 @@ c write QA records
          call exit (0)
       endif
 
-
-
 c write information records
-
 
       num_info = 3
 
@@ -360,7 +348,6 @@ c write information records
 
 c ... Define and write some coordinate frames
       call putfrm(exoid)
-
 
 c close the EXODUS files
 

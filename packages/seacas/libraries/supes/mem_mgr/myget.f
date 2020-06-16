@@ -14,7 +14,6 @@ C     sufficient space for the memory request.  If necessary, memory is
 C     requested from the system.  The memory is contiguous.
 C     This routine is to be used only if CHRCOL = 2.
 
-
 C***********************************************************************
 
 C     MYLOC    Address of internal reference array

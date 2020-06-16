@@ -16,7 +16,6 @@ C being solved. This is the preferred method to handle element variable
 C assignment for recipient mesh nodes that lie outside the boundary
 C of the donor mesh.
 
-
 C Called by INTRPE, SINTPE, TRANAB, STRAN
 
 C *********************************************************************

@@ -46,7 +46,6 @@ C     ******************************************************************
 
 C element type per element block
 
-
 C fix this routine when i have time
 C create array 1-nnodes
 C loop over all elements - add 1 to value in array whenever
@@ -79,7 +78,6 @@ C maxln = max value of array
      1    'TYPE',typ,1)
         END IF
 
-
       CALL EXGELC(NTP2EX,IDBLKA,ICONA(1,1),IERR)
 
       DO 5 I = 1, NODESA
@@ -104,7 +102,6 @@ C maxln = max value of array
           NDLSTA(NUMNDA) = I
         END IF
  30   CONTINUE
-
 
 C get STATUS array for use in SEARCH so that dead elements can be
 C eliminated from the search

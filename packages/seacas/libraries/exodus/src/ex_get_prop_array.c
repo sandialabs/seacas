@@ -39,7 +39,6 @@ this function is invoked, memory must be allocated for the returned
 array of(num_elem_blk, num_node_sets, or {num_side_sets})
 integer values.
 
-
 This function can be used in place of
  - ex_get_elem_blk_ids(),
  - ex_get_node_set_ids(), and

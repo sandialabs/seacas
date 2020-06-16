@@ -117,7 +117,6 @@ C     MXFIND            MYDEL              SRCHC
 C     MXGET             MYFIND             SRCHI
 C     MXGIVE            MYGET              VTABLE
 
-
       IMPLICIT INTEGER (A-Z)
 
 C     Dictionary and tables lengths.
@@ -158,7 +157,6 @@ C     All pointers in the tables are relative to these base vectors, and
 C     an offset to the users base vector is maintained to give the
 C     user the correct pointer to the users base vector.  They are
 C     equivalenced to allow printing as real or integer (see mdprnt).
-
 
 #if __GFORTRAN__ && __GNUC__ == 10
 C ... For some reason, gfortran-10 needs this SAVE in addition to later save...      
@@ -273,7 +271,6 @@ C        Split mode - character and numeric data separate.
             LASTER = SUCESS
          END IF
       END IF
-
 
       ERRVEC(LASTER) = ERRVEC(LASTER) + 1
       IF (LASTER .NE. SUCESS) THEN
@@ -568,7 +565,6 @@ C***********************************************************************
 
 C***********************************************************************
 
-
 C     Was MDINIT previously called?
 
       IF (.NOT. INIT) THEN
@@ -589,7 +585,6 @@ C***********************************************************************
       ENTRY MCFILL (TNAME1)
 
 C***********************************************************************
-
 
 C     Was MCINIT previously called?
 
@@ -740,7 +735,6 @@ C***********************************************************************
 
 C***********************************************************************
 
-
 C     Was MDINIT previously called?
 
       IF (.NOT. INIT) THEN
@@ -760,7 +754,6 @@ C***********************************************************************
       ENTRY MCFOFF ()
 
 C***********************************************************************
-
 
 C     Was MCINIT previously called?
 
@@ -1683,7 +1676,6 @@ C     Was MCINIT previously called?
       ENTRY MDWAIT ()
 
 C***********************************************************************
-
 
 C     Was MDINIT previously called?
 

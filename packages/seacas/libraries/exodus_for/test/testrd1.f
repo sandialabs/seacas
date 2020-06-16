@@ -6,7 +6,6 @@ C    See packages/seacas/LICENSE for details
 
       program testrd1
 
-
 c This is a test program for the Fortran binding of the EXODUS II
 c database read routines
 
@@ -53,9 +52,7 @@ c       09/07/93 V.R. Yarberry - Modified for API 2.00
 c      call exopts (EXVRBS, ierr)
 c      write (iout, '(/"after exopts, error = ", i3)' ) ierr
 
-
 c open EXODUS II files
-
 
       cpu_ws = 0
       io_ws = 0
@@ -68,9 +65,7 @@ c open EXODUS II files
      1                f4.2)') vers
       write (iout, '("  I/O word size",i2)') io_ws
 
-
 c read database parameters
-
 
       call exgini (exoid, titl, num_dim, num_nodes, num_elem,
      1             num_elem_blk, num_node_sets, num_side_sets, ierr)
@@ -87,10 +82,7 @@ c read database parameters
      8               titl,num_dim, num_nodes, num_elem,
      9               num_elem_blk,num_node_sets, num_side_sets
 
-
-
 c read nodal coordinates values and names from database
-
 
       call exgcor (exoid, x, y, z, ierr)
       write (iout, '(/"after exgcor, error = ", i3)' ) ierr
@@ -118,16 +110,12 @@ c read nodal coordinates values and names from database
       write (iout, '("x coord name = ", a9)') coord_names(1)
       write (iout, '("y coord name = ", a9)') coord_names(2)
 
-
 c read map parameters
-
 
       call exgmp (exoid, n_node_map, n_elem_map, ierr)
       write (iout, '(/"after exgmp, error = ", i3)' ) ierr
 
-
 c read element maps
-
 
       call exgpa (exoid, EXEMAP, "ID", ids, ierr)
       write (iout, '(/"after exgpa, error = ", i3)' ) ierr
@@ -151,15 +139,12 @@ C .. test reading partial element maps...
 
 26    continue
 
-
 c     read element map properties
-
 
       num_props = exinqi (exoid, EXNEMP)
       write (iout,
      1  '(/"There are ",i2," properties for each element map")')
      2  num_props
-
 
       call exgpn(exoid, EXEMAP, prop_names, ierr)
       write (iout, '("after exgpn, error = ", i3)' ) ierr
@@ -177,9 +162,7 @@ c     read element map properties
 28      continue
 30    continue
 
-
 c read node maps
-
 
       call exgpa (exoid, EXNMAP, "ID", ids, ierr)
       write (iout, '(/"after exgpa, error = ", i3)' ) ierr
@@ -197,15 +180,12 @@ c read node maps
 
 34    continue
 
-
 c     read node map properties
-
 
       num_props = exinqi (exoid, EXNNMP)
       write (iout,
      1  '(/"There are ",i2," properties for each node map")')
      2  num_props
-
 
       call exgpn(exoid, EXNMAP, prop_names, ierr)
       write (iout, '("after exgpn, error = ", i3)' ) ierr
@@ -223,9 +203,7 @@ c     read node map properties
 36      continue
 38    continue
 
-
 c read element block parameters
-
 
       call exgebi (exoid, ids, ierr)
       write (iout, '(/"after exgebi, error = ", i3)' ) ierr
@@ -253,7 +231,6 @@ c     read element block properties
      1  '(/"There are ",i2," properties for each element block")')
      2  num_props
 
-
       call exgpn(exoid, EXEBLK, prop_names, ierr)
       write (iout, '("after exgpn, error = ", i3)' ) ierr
 
@@ -270,9 +247,7 @@ c     read element block properties
 45      continue
 47    continue
 
-
 c read element connectivity
-
 
       do 60 i = 1, num_elem_blk
 
@@ -287,9 +262,7 @@ c read element connectivity
 
 60    continue
 
-
 c read element block attributes
-
 
       do 70 i = 1, num_elem_blk
 
@@ -310,7 +283,6 @@ c read element block attributes
          end do
  69      format(A32," = ", 10(f6.4,2x))
 70    continue
-
 
 c read individual node sets
 
@@ -360,7 +332,6 @@ c     read node set properties
      1  '(/"There are ",i2," properties for each node set")')
      2  num_props
 
-
       call exgpn(exoid, EXNSET, prop_names, ierr)
       write (iout, '("after exgpn, error = ", i3)' ) ierr
 
@@ -376,7 +347,6 @@ c     read node set properties
           endif
 105      continue
 107    continue
-
 
 c read concatenated node sets; this produces the same information as
 c the above code which reads individual node sets
@@ -427,7 +397,6 @@ c the above code which reads individual node sets
             write (iout, '(f5.3)') dist_fact(i)
 150      continue
       endif
-
 
 c read individual side sets
 
@@ -497,7 +466,6 @@ c     read side set properties
       write (iout,
      1  '(/"There are ",i2," properties for each side set")')
      2  num_props
-
 
       call exgpn(exoid, EXSSET, prop_names, ierr)
       write (iout, '("after exgpn, error = ", i3)' ) ierr
@@ -591,7 +559,6 @@ c the above code which reads individual side sets
 270      continue
       endif
 
-
 c read QA records
 
       num_qa_rec = exinqi (exoid, EXQA)
@@ -606,7 +573,6 @@ c read QA records
 280      continue
 290   continue
 
-
 c read information records
 
       num_info = exinqi (exoid, EXINFO)
@@ -618,7 +584,6 @@ c read information records
       do 300 i = 1, num_info
          write (iout, '(a81)') inform(i)
 300   continue
-
 
 c read global variables parameters and names
 
@@ -635,7 +600,6 @@ c read global variables parameters and names
          write (iout, '(a9)') var_names(i)
 320   continue
 
-
 c read nodal variables parameters and names
 
       call exgvp (exoid, "n", num_nod_vars, ierr)
@@ -650,7 +614,6 @@ c read nodal variables parameters and names
       do 330 i = 1, num_nod_vars
          write (iout, '(a9)') var_names(i)
 330   continue
-
 
 c read element variables parameters and names
 
@@ -667,7 +630,6 @@ c read element variables parameters and names
          write (iout, '(a9)') var_names(i)
 340   continue
 
-
 c read element variable truth table
 
       call exgvtt (exoid, num_elem_blk, num_ele_vars, truth_tab, ierr)
@@ -680,7 +642,6 @@ c read element variable truth table
             write (iout, '(i2)') truth_tab(j,i)
 350      continue
 360   continue
-
 
 c determine how many time steps are stored
 
@@ -724,7 +685,6 @@ c read all global variables at one time step
          write (iout, '(f5.3)') var_values(i)
 400   continue
 
-
 c read a single global variable through time
 
       call exggvt (exoid, var_index, beg_time, end_time, var_values,
@@ -738,7 +698,6 @@ c read a single global variable through time
          write (iout, '(f5.3)') var_values(i)
 410   continue
 
-
 c read a nodal variable at one time step
 
       call exgnv (exoid, time_step, var_index, num_nodes, var_values,
@@ -751,7 +710,6 @@ c read a nodal variable at one time step
       do 420 i = 1, num_nodes
          write (iout, '(f5.3)') var_values(i)
 420   continue
-
 
 c read a nodal variable through time
 
@@ -767,7 +725,6 @@ c read a nodal variable through time
       do 430 i = 1, num_time_steps
          write (iout, '(f5.3)') var_values(i)
 430   continue
-
 
 c read an element variable at one time step
 
@@ -791,7 +748,6 @@ c read an element variable at one time step
 440      continue
 
 450   continue
-
 
 c read an element variable through time
 

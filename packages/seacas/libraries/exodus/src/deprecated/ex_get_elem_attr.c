@@ -36,7 +36,6 @@ attributes for
                           the element block, with the num_attr index cycling
 faster.
 
-
 Refer to the code example in ex_get_elem_block() for an example
 of reading the element attributes for an element block.
  */

@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C=======================================================================
       SUBROUTINE PLTLI4(PLL,PUR,N,XV,YV,NO,XVO,YVO)
       DIMENSION PLL(2),PUR(2),XV(*),YV(*),XVO(*),YVO(*)

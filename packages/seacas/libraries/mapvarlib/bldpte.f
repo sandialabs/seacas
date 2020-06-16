@@ -23,7 +23,6 @@ C***********************************************************************
       DIMENSION X(*),Y(*),Z(*),CENTER(NUMEBB,*),ICON(NELNDB,*)
       DIMENSION XX(27), YY(27), ZZ(27)
 
-
 C      NNODES = NNELM(ITYPE)
       NNODES = NELNDB
       IF (ITYPE .EQ. 6) NNODES = 4

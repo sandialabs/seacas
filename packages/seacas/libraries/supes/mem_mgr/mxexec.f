@@ -57,7 +57,6 @@ C***********************************************************************
       IF (MEM .EQ. 0) RETURN
       MEM = - MEM
 
-
       CALL MXGET (MYLOC, MEM, VOID, LVOID, NVOIDS,
      *   CHRCOL, LASTER, VROW)
       IF (LASTER .NE. SUCESS) RETURN

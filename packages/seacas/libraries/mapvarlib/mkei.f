@@ -22,7 +22,6 @@ C     ****************************************************************
 C Set up arrays for computing momenta and kinetic energy
 C Write results to text file
 
-
 C Called by MAPVAR
 
 C Calls MKE
@@ -64,7 +63,6 @@ C TPSQA  REAL  REC mesh sum over elt block pressure squared each ts
 C TKEA   REAL  REC mesh sum over elt block J2 each time step
 C ICOMPL INT   Flag to indicate completion of rec mesh element block
 C SIG**B REAL  Rec mesh stress components
-
 
 C     ****************************************************************
 

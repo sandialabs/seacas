@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C=======================================================================
       LOGICAL FUNCTION PLTD2G(XD,YD,XG,YG)
       DIMENSION UMAP(14), TYPE(1)

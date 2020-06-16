@@ -6,7 +6,6 @@ C See packages/seacas/LICENSE for details
 
 c vdicgi_char - FORTRAN shell for handling strings
 
-
 C  CESC - Escape
       SUBROUTINE CESC2 (FUNCID, N, ARGS)
       INTEGER FUNCID
@@ -21,7 +20,6 @@ c  SRCP escapes
       integer XEMFNM, XEMXCL, XEPCTL, XEAGMD, XEPCCL, XESVDI
       parameter (XEMFNM= -28372, XEMXCL= -19281, XEPCTL= -190,
      *           XEAGMD= -23671, XEPCCL= -12048, XESVDI= -1001)
-
 
 c  SRCP definitions
 c  maximum error class
@@ -133,7 +131,6 @@ c  and closed figure capability
 
 c  pattern transformation support
 
-
 c  color selection mode availability
       integer CCLRI, CCLRID
       parameter (CCLRI=0, CCLRID=1)
@@ -180,7 +177,6 @@ c*** I know this won't work for real, real numbers
       CALL CESC( FUNCID, LDR, DATA )
       RETURN
       END
-
 
 C  CTX - Text
       SUBROUTINE CTX2(X, Y, TEXT1, LENGTH )
@@ -239,7 +235,6 @@ c  SRCP escapes
       parameter (XEMFNM= -28372, XEMXCL= -19281, XEPCTL= -190,
      *           XEAGMD= -23671, XEPCCL= -12048, XESVDI= -1001)
 
-
 c  SRCP definitions
 c  maximum error class
       integer XMXERR
@@ -350,7 +345,6 @@ c  and closed figure capability
 
 c  pattern transformation support
 
-
 c  color selection mode availability
       integer CCLRI, CCLRID
       parameter (CCLRI=0, CCLRID=1)
@@ -382,7 +376,4 @@ c  pixel validity flag
       call cesc(XEMFNM,1,name)
       return
       end
-
-
-
 

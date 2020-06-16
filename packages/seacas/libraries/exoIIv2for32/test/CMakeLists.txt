@@ -24,7 +24,6 @@ endif()
 
 # ===============================================
 
-
 IF ( NETCDF_NCDUMP_BINARY )
   SET(NETCDF_NCDUMP ${NETCDF_NCDUMP_BINARY})
   SET( forbind_OLDTESTS

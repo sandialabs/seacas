@@ -23,7 +23,6 @@ C See packages/seacas/LICENSE for details
       DIMENSION XB(*),YB(*),ZB(*),XX(27),YY(27),ZZ(27),ICONB(NELNDB,*)
       DIMENSION DUME(*)
 
-
       IF (ISTEP .EQ. -1)THEN
         NTM = NTIMES
       ELSE

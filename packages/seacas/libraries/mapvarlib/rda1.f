@@ -198,7 +198,6 @@ C ********************************************************************
 C accuracy checK
 C ********************************************************************
 
-
 C find needed variables
 C 1st velocities
 C coordinate names - velocity will start with "v"

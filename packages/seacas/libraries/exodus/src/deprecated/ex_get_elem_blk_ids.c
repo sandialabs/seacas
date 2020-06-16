@@ -22,7 +22,6 @@ number; a warning will return a positive number.  Possible causes of
 errors include:
   -  data file not properly opened with call to ex_create() or ex_open()
 
-
 \param[in]   exoid         exodus file ID returned from a previous call to
 ex_create() or ex_open().
 \param[out]  ids           Returned array of the element blocks IDs. The order
@@ -43,7 +42,6 @@ error = ex_get_elem_blk_ids (exoid, idelbs);
 error = ex_get_ids (exoid, EX_ELEM_BLOCK, idelbs);
 
 ~~~
-
 
  */
 

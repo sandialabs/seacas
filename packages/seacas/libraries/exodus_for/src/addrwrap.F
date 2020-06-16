@@ -209,7 +209,6 @@ C       READ COORDINATE FRAMES
         SUBROUTINE EXPFRM (IDEXO, NFRAME, IDSCF, COORD, ITAGS, IERR)
 C> \sa ex_put_coordinate_frames()
 
-
 C       DEFINE/WRITE COORDINATE FRAMES
 
         implicit none
@@ -244,7 +243,6 @@ C       DEFINE/WRITE COORDINATE FRAMES
 
         SUBROUTINE EXGCON (IDEXO, NAMECO, IERR)
 C> \sa ex_get_coord_names()
-
 
 C       READ COORDINATE NAMES
 
@@ -1614,7 +1612,6 @@ C>       SET ERROR REPORTING LEVEL
         IERR = IERR4
         END
 
-
         SUBROUTINE EXMXNM (IDEXO, LENGTH, IERR)
 C> \sa ex_set_max_name_length()
 
@@ -1635,7 +1632,6 @@ C>       SET MAXIMUM NAME LENGTH
         CALL EXMXNM4 (IDEXO4, LENGTH4, IERR4)
         IERR = IERR4
         END
-
 
         SUBROUTINE EXSETOPT (IDEXO, OPTION, VALUE, IERR)
 C> \sa ex_set_opt()
@@ -1660,7 +1656,6 @@ C>       SET SPECIFIED OPTION
         CALL EXSETOPT4 (IDEXO4, OPTION4, VALUE4, IERR4)
         IERR = IERR4
         END
-
 
         SUBROUTINE EXPCNS (IDEXO, IDNPSS, NNNPS, NDNPS, IXNNPS,
      &          IXDNPS, LTNNPS, FACNPS, IERR)
@@ -2736,7 +2731,6 @@ C>       COPY EXODUS II FILE
         CALL EXCOPY4 (IDEXO14, IDEXO24, IERR4)
         IERR = IERR4
         END
-
 
 C-----------------------------------------------------------------------
 

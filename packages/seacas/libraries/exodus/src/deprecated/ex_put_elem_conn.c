@@ -22,7 +22,6 @@ errors include:
   -  data file not initialized properly with call to ex_put_init().
   -  ex_put_elem_block() was not called previously.
 
-
 \param[in] exoid        exodus file ID returned from a previous call to
 ex_create() or ex_open().
 \param[in] elem_blk_id  The element block ID.

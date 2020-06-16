@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C=======================================================================
       SUBROUTINE PLTMV2(UMAP,N,MASK,PX,PY,QX,QY,PPX,PPY,QQX,QQY)
       DIMENSION UMAP(*),MASK(*),PX(*),PY(*),QX(*),QY(*),PPX(*),PPY(*),

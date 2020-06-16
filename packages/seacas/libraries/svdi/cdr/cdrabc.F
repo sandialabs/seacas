@@ -25,7 +25,6 @@ C See packages/seacas/LICENSE for details
       logical*4 onode
       common /vconod/ onode
 
-
 #if defined(CRAY)
       data kwrdsz /64/
       data kcpw /8/

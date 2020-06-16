@@ -44,7 +44,6 @@ C           I've changed it to:
 
 C           IF (VADDR .LE. DPOINT(IDICT,1,1)
 
-
       DO 120 IVOID = 1, NVOIDS(1)
          VADDR = VOID(IVOID,1,1) + VOID(IVOID,1,2)
          DO 100 IDICT = 1, NNAMES(1)

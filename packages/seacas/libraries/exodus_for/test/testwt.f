@@ -61,7 +61,6 @@ c  create EXODUS II files
 
 c  initialize file with parameters
 
-
       num_dim = 3
       num_nodes = 26
       num_elem = 5
@@ -78,7 +77,6 @@ c  initialize file with parameters
          call exclos(exoid,ierr)
          call exit (0)
       endif
-
 
 c  write nodal coordinates values and names to database
 
@@ -186,7 +184,6 @@ c  Wedge #1
          call exit (0)
       endif
 
-
       coord_names(1) = "xcoor"
       coord_names(2) = "ycoor"
       coord_names(3) = "zcoor"
@@ -199,10 +196,7 @@ c  Wedge #1
          call exit (0)
       endif
 
-
-
 c write element order map
-
 
       do 10 i = 1, num_elem
          elem_map(i) = i
@@ -215,9 +209,7 @@ c write element order map
          call exit (0)
       endif
 
-
 c write element block parameters
-
 
       num_elem_in_block(1) = 1
       num_elem_in_block(2) = 1
@@ -342,9 +334,7 @@ c  write element block properties
          call exit (0)
       endif
 
-
 c write element connectivity
-
 
       connect(1) = 1
       connect(2) = 2
@@ -412,7 +402,6 @@ c write element connectivity
          call exit (0)
       endif
 
-
 c write element block attributes
 
       attrib(1) = 3.14159
@@ -463,7 +452,6 @@ c write element block attributes
       end do
 
 c write individual node sets
-
 
       node_list(1) = 100
       node_list(2) = 101
@@ -523,10 +511,8 @@ c write individual node sets
          call exit (0)
       endif
 
-
 c write concatenated node sets; this produces the same information as
 c the above code which writes individual node sets
-
 
       ids(1) = 20
       ids(2) = 21
@@ -575,7 +561,6 @@ c     write (iout, '("after expcns, error = ", i4)' ) ierr
          call exit (0)
       endif
 
-
 c     write node set properties
 
       prop_names(1) = "FACE"
@@ -604,9 +589,7 @@ c     write node set properties
          call exit (0)
       endif
 
-
 c write individual side sets
-
 
 c     side set #1 - quad
 
@@ -762,10 +745,8 @@ c     side set #5 - wedges
          call exit (0)
       endif
 
-
 c write concatenated side sets; this produces the same information as
 c the above code which writes individual side sets
-
 
       ids(1) = 30
       ids(2) = 31
@@ -916,7 +897,6 @@ c     call excn2s(exoid, num_elem_per_set, num_nodes_per_set, elem_ind,
 c    1          node_ind, elem_list, node_list, side_list, ierr)
 c     write (iout, '("after excn2s, error = ", i4)' ) ierr
 
-
       num_df_per_set(1) = 4
       num_df_per_set(2) = 4
       num_df_per_set(3) = 0
@@ -968,9 +948,7 @@ c     write (iout, '("after expcss, error = ", i4)' ) ierr
          call exit (0)
       endif
 
-
 c write QA records
-
 
       num_qa_rec = 2
 
@@ -990,10 +968,7 @@ c write QA records
          call exit (0)
       endif
 
-
-
 c write information records
-
 
       num_info = 3
 
@@ -1027,7 +1002,6 @@ c write results variables parameters and names
          call exit (0)
       endif
 
-
       num_nod_vars = 2
 
       var_names(1) = "nod_var0"
@@ -1045,7 +1019,6 @@ c write results variables parameters and names
          call exclos(exoid,ierr)
          call exit (0)
       endif
-
 
       num_ele_vars = 3
 
@@ -1066,9 +1039,7 @@ c write results variables parameters and names
          call exit (0)
       endif
 
-
 c write element variable truth table
-
 
       k = 0
 
@@ -1085,12 +1056,10 @@ c write element variable truth table
          call exit (0)
       endif
 
-
 c for each time step, write the analysis results;
 c the code below fills the arrays glob_var_vals,
 c nodal_var_vals, and elem_var_vals with values for debugging purposes;
 c obviously the analysis code will populate these arrays
-
 
       whole_time_step = 1
       num_time_steps = 10
@@ -1100,7 +1069,6 @@ c obviously the analysis code will populate these arrays
 
 c write time value
 
-
         call exptim (exoid, whole_time_step, time_value, ierr)
         write (iout, '("after exptim, error = ", i4)' ) ierr
         if (ierr .ne. 0) then
@@ -1108,9 +1076,7 @@ c write time value
            call exit (0)
         endif
 
-
 c write global variables
-
 
         do 50 j = 1, num_glo_vars
           glob_var_vals(j) = real(j+1) * time_value
@@ -1124,9 +1090,7 @@ c write global variables
            call exit (0)
         endif
 
-
 c write nodal variables
-
 
         do 70 k = 1, num_nod_vars
           do 60 j = 1, num_nodes
@@ -1145,9 +1109,7 @@ c write nodal variables
 
 70      continue
 
-
 c write element variables
-
 
         do 100 k = 1, num_ele_vars
           do 90 j = 1, num_elem_blk
@@ -1172,7 +1134,6 @@ c             write(iout,*)'elem_var_val(',m,'): ',elem_var_vals(m)
 
         whole_time_step = whole_time_step + 1
 
-
 c update the data file; this should be done at the end of every time
 c step to ensure that no data is lost if the analysis dies
 
@@ -1184,7 +1145,6 @@ c step to ensure that no data is lost if the analysis dies
         endif
 
 110   continue
-
 
 c close the EXODUS files
 

@@ -136,7 +136,6 @@ C ... Find the largest name size...
 
       namlen = max(namlen2, namlen3)
 
-
 C     EXODUS DATA FILE - MESH-C (MESH & INTERPOLATED SOLUTION)
 
       IFILES(5)=1

@@ -507,7 +507,6 @@ C check for diverging Newton iteration
         GO TO 130
       END IF
 
-
  300  CONTINUE
 
 C Newton converged, load up search results arrays if appropriate

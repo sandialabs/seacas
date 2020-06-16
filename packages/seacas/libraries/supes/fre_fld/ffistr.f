@@ -39,7 +39,6 @@ C     CVALUE  CHARACTER  Character values of the data fields.
 C     RVALUE  REAL       Floating-point values of the data fields.
 C     IVALUE  INTEGER    Integer values of the data fields.
 
-
 C     ROUTINES CALLED:
 C     STRIPB            Strip leading/trailing blanks from a string.
 C     EXUPCS            Convert a string to ANSI FORTRAN character set.
@@ -60,7 +59,6 @@ C     counter, unless IDCONT indicates that this is a continuation record.
          NFIELD = 0
       END IF
       IDCONT = 0
-
 
 ************************************************************************
 

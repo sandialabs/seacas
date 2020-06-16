@@ -181,7 +181,6 @@ C        kempty=0,  frame is void - do not draw
 C              >0,  frame has data - draw it
       COMMON /VCPSTD/ KEMPTY
 
-
       DEV(1) = 0.0
       dev(2) = 1.0
       dev(3) = 1.0
@@ -1055,7 +1054,6 @@ C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 
       INTEGER ERRNUM,ERRSEV
 
-
 C COMPUTER DEPENDENT COMMON VARIABLES AND CONSTANTS.
       include 'vcpstc.blk'
 
@@ -1075,7 +1073,6 @@ csam  CALL PSTTBK
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 
 C VDMONI           -Logs Usage Information..
-
 
 C ENVIRONMENT      -COMPUTER-INDEPENDENT, SYSTEM-INDEPENDENT, FORTRAN 77
 C                   Device-independent.
@@ -1469,7 +1466,6 @@ C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 
       INTEGER BTNNUM
 
-
 C COMPUTER DEPENDENT COMMON VARIABLES AND CONSTANTS.
       include 'vcpstc.blk'
 
@@ -1507,7 +1503,6 @@ C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 
       REAL X,Y
       INTEGER BTNNUM
-
 
 C COMPUTER DEPENDENT COMMON VARIABLES AND CONSTANTS.
       include 'vcpstc.blk'
@@ -1587,7 +1582,6 @@ C                   doing input.
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 
       REAL X,Y
-
 
 C COMPUTER DEPENDENT COMMON VARIABLES AND CONSTANTS.
       include 'vcpstc.blk'
@@ -2091,7 +2085,6 @@ C           (5)=LINE WIDTH
 C           (6)=CHARACTER BOX Y
 C           (7)=CHARACTER BOX X
 
-
 C CHECK FOR VALID COLOR.
       IF(COLOR.LT.0.OR.COLOR.GT.255) THEN
          CALL VBERRH(724,5)
@@ -2207,7 +2200,6 @@ C NARRATIVE        -Terminate graphics device.  Close output file.
 
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 
-
 C COMPUTER DEPENDENT COMMON VARIABLES AND CONSTANTS.
       include 'vcpstc.blk'
       COMMON /VCPAGE/ TOTPAG
@@ -2263,7 +2255,6 @@ C NARRATIVE        -Set current position to absolute NDC position X,Y.
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 
       REAL X,Y
-
 
 C move
       CALL VBVECT(0,X,Y)
@@ -2580,7 +2571,6 @@ C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
       INTEGER ESCPCD,N
       REAL ARGS(*)
 
-
 C COMPUTER DEPENDENT COMMON VARIABLES AND CONSTANTS.
       include 'vcpstc.blk'
 C SCALE FACTORS FOR NDC TO DC MAPPING. (LXY,HC1)
@@ -2651,12 +2641,10 @@ C CALLS            -
 
 C EXIT CONDITIONS  -CURRENT POSITION IS SET
 
-
 C NARRATIVE
 C                   LINE-DRAW A LINE FROM CP TO ABSOLUTE NDC POSITION X,Y
 C                        AND UPDATE CP . ATTRIBUTES COLOR,INTEN,LINSTY AND
 C                        LINWTH APPLY.
-
 
 C        OTHER VARIABLES:
 C                    XCP,YCP-NDC COORDINATES
@@ -2669,7 +2657,6 @@ C     command is received to dump data to output
 C        kempty=0,  frame is void - do not draw
 C              >0,  frame has data - draw it
       COMMON /VCPSTD/ KEMPTY
-
 
 C draw
       ENTRY VBLINA(X,Y)
@@ -2945,7 +2932,6 @@ C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 
 C VDSTLS           -Set Line Style.
 
-
 C ENVIRONMENT      -COMPUTER-INDEPENDENT, SYSTEM-INDEPENDENT, FORTRAN 77
 
 C ENTRY CONDITIONS -LINSTY = integer linestyle of line drawing output
@@ -3002,7 +2988,6 @@ C           (4)=LINE STYLE
 C           (5)=LINE WIDTH
 C           (6)=CHARACTER BOX Y
 C           (7)=CHARACTER BOX X
-
 
       ENTRY VBSTLS(LINSTY)
 
@@ -3328,7 +3313,6 @@ C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
       CHARACTER OUT*(*)
       character*132 lstout
       integer lstchr
-
 
 C COMPUTER DEPENDENT COMMON VARIABLES AND CONSTANTS.
       include 'vcpstc.blk'
