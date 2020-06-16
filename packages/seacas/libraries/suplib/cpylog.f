@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE CPYLOG (LEN, LFROM, LTO)
 C=======================================================================
-c
-c
 
 C   --*** CPYLOG *** (ETCLIB) Copy all logicals in list
 C   --   Written by Amy Gilkey - revised 11/03/87

@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE PAINTF (CNTR0, CNTR1, VARNP, NLNKF, LINKF1,
      &   XN, YN, ZN, XF, YF, ZF)

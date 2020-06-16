@@ -6,7 +6,6 @@ C    See packages/seacas/LICENSE for details
 C=======================================================================
       REAL FUNCTION MYAMOD (PARM1, PARM2)
 C=======================================================================
-c
 
 C   --*** MYAMOD *** (ALGEBRA) amod function
 C   --

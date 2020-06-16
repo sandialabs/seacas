@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBERR (IOSTAT, ERRMSG)
 C=======================================================================
-c
-c
 
 C   --*** DBERR *** (EXOLIB) Display a database error message
 C   --   Written by Amy Gilkey - revised 02/27/86

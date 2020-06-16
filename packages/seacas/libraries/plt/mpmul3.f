@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE MPMUL3(N,X0,Y0,Z0,MAT,RES1,RES2,RES3,RES4)
       DIMENSION X0(*),Y0(*),Z0(*),MAT(4,4),RES1(*),RES2(*),RES3(*),

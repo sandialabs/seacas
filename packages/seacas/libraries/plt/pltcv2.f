@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE PLTCV2(N,MASK,PX,PY,QX,QY,PPX,PPY,QQX,QQY,C1,C2)
       DIMENSION MASK(*),PX(*),PY(*),QX(*),QY(*),PPX(*),PPY(*),QQX(*),

@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
       SUBROUTINE CGCAL3(CRD,IX,MAT,MASS,VOL,DENS,VOLM,CG,ZITOT,XXX,
      *    XG,XI,XINI,AJ,NNODES,NDIM,NQUAD,VOLMN,IELM,NELBLK,NUMNP)
 C

@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE SHOCMD (HEADER, LIST)
 C=======================================================================
-c
-c
 
 C   --*** SHOCMD *** (ETCLIB) Display list of strings
 C   --   Written by Amy Gilkey - revised 10/27/86

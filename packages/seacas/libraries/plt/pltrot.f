@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE PLTROT(R,A,B)
       REAL R(3,3),A(3,3),B(3,3)

@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE INILOG (LEN, LFROM, LTO)
 C=======================================================================
-c
-c
 
 C   --*** INILOG *** (ETCLIB) Initialize all logicals in list
 C   --   Written by Amy Gilkey - revised 03/15/88

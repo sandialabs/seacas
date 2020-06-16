@@ -8,8 +8,6 @@ C=======================================================================
       SUBROUTINE DBINPS (NDB, OPTION, NUMNPS, LNPSNL,
      &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS, *)
 C=======================================================================
-c
-c
 
 C   --*** DBINPS *** (EXOLIB) Read database node sets
 C   --   Written by Amy Gilkey - revised 10/14/87

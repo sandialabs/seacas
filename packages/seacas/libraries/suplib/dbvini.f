@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBVINI (NVARHI, NVARGL, NVARNP, NVAREL)
 C=======================================================================
-c
-c
 
 C   --*** DBVINI *** (EXOLIB) Initialize for DBVTYP and DBVIX
 C   --   Written by Amy Gilkey - revised 10/14/87
@@ -51,8 +49,6 @@ C   --Definition for the ENTRY routine parameters
 C=======================================================================
       ENTRY DBVTYP (IIX, TYP, ID)
 C=======================================================================
-c
-c
 
 C   --*** DBVTYP *** (EXOLIB) Return the variable type and number
 C   --   Written by Amy Gilkey - revised 03/18/88
@@ -95,8 +91,6 @@ C   --   ID - OUT - the variable number within the type
 C=======================================================================
       ENTRY DBVIX (ITYP, IID, IX)
 C=======================================================================
-c
-c
 
 C   --*** DBVIX *** (EXOLIB) Return the variable index
 C   --   Written by Amy Gilkey - revised 10/14/87

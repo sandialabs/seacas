@@ -9,7 +9,6 @@ C=======================================================================
      &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS,
      &   LTNX, FACX, IXNPS, NNX, ISCR, NODSCR, NUMNP)
 C=======================================================================
-c
 
 C   --*** MUNNPS *** (GJOIN) Compress and rearrange nodal point sets
 C   --   Written by Amy Gilkey - revised 02/25/88

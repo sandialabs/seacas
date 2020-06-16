@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       INTEGER FUNCTION INTCNT (INT, LIST, LLIST)
 C=======================================================================
-c
 
 C   --*** INTCNT *** (GJOIN) Returns the number of occurrences in list
 C   --   Written by Amy Gilkey - revised 09/29/87

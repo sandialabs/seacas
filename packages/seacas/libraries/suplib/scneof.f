@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE SCNEOF
 C=======================================================================
-c
-c
 
 C   --*** SCNEOF *** (ETCLIB) Scan input until end of file
 C   --   Written by Amy Gilkey - revised 02/23/88

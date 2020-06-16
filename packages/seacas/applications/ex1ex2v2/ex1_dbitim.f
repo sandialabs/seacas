@@ -10,8 +10,6 @@ C=======================================================================
      &   NVARNP, NELBLK, NVAREL, ISEVOK,
      &   NSTEPS, NSTEPW, A, KTIMES, KWHOLE, *)
 C=======================================================================
-c
-c
 
 C   --*** DBITIM *** (EXOLIB) Read database time step times
 C   --   Written by Amy Gilkey - revised 11/11/87

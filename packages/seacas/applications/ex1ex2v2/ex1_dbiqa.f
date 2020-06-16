@@ -9,8 +9,6 @@ C=======================================================================
      &   MAXQA, MAXINF, NQAREC, QAREC, NINFO, INFO,
      &   EXODUS, *)
 C=======================================================================
-c
-c
 
 C   --*** DBIQA *** (EXOLIB) Read QA and information records
 C   --   Written by Amy Gilkey - revised 02/08/88

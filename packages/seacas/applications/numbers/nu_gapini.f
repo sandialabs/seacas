@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
       SUBROUTINE GAPINI (A, COORD, IDESS, NEESS, NNESS, IPEESS, IPNESS,
      *   LTEESS, LTNESS, FACESS, DISP, NUMNP, NDIM, NUMESS,
      *   TIME, ITMSEL, TITLE, IMAS, ISLV, DMAX, GMTHD)

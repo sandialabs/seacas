@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFREAL (IFLD, INTYP, RFIELD, EXPECT, DEFVAL, RVAL, *)
 C=======================================================================
-c
-c
 
 C   --*** FFREAL *** (FFLIB) Parse free-field real
 C   --   Written by Amy Gilkey - revised 02/24/86

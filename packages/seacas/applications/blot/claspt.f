@@ -13,10 +13,8 @@ C See packages/seacas/LICENSE for details
       real vec(3)
       real tol
       parameter(REFTOL=1e-4)
-c
 c check dot product of normal vector and (pt-cutpt) vector to find
 c if point is in front or behind plane
-c
       vec(1) = xpt - cutpt(1)
       vec(2) = ypt - cutpt(2)
       vec(3) = zpt - cutpt(3)
@@ -31,6 +29,5 @@ c      tol = amax1( vec(1), vec(2), vec(3) ) * REFTOL
       else
           status = ISIN
       end if
-c
       return
       end

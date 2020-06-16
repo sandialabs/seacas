@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE SPTRND (A, MXSTEP, TYP, NWRDS, NVAR, DATA)
 C=======================================================================

@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFADDI (IVAL, LINE)
 C=======================================================================
-c
-c
 
 C   --*** FFADDI *** (FFLIB) Add integer to line
 C   --   Written by Amy Gilkey - revised 11/16/87

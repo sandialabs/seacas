@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBOMAP (NDB, NUMEL, MAPEL)
 C=======================================================================
-c
-c
 
 C   --*** DBOMAP *** (EXOLIB) Write database element order map
 C   --   Written by Amy Gilkey - revised 02/27/86

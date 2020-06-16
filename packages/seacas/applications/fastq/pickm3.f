@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
 C
 C
       SUBROUTINE PICKM3 (N, X, Y, ANGLE, M1, M2, IFIRST)

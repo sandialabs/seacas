@@ -9,8 +9,6 @@ C=======================================================================
      &   NDIM, NUMNP, NUMEL, NELBLK,
      &   NUMNPS, LNPSNL, NUMESS, LESSEL, LESSNL, *)
 C=======================================================================
-c
-c
 
 C   --*** DBIINI *** (EXOLIB) Read database title and initial variables
 C   --   Written by Amy Gilkey - revised 05/24/88

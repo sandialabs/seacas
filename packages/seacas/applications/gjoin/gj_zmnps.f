@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE ZMNPS (NUMNPS, LNPSNL,
      &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS)
 C=======================================================================
-c
 
 C   --*** ZMNPS *** (GJOIN) Compress nodal point sets
 C   --   Written by Amy Gilkey - revised 01/20/88

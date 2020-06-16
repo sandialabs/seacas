@@ -8,8 +8,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE ENGSTR (NNUM, NSIG, RNUM, RSTR, LSTR)
 C=======================================================================
-c
-c
 
 C   --*** ENGSTR *** (STRLIB) Convert real numbers to strings
 C   --   Written by Amy Gilkey - revised 02/14/86

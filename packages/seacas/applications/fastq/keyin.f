@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
 C
 C
       SUBROUTINE KEYIN (MP, ML, MS, MR, MSC, MA, MCOM, ICOM, JCOM, CIN,

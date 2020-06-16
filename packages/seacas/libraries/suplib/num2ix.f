@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE NUM2IX (NSETS, NINSET, IXSET)
 C=======================================================================
-c
-c
 
 C   --*** NUM2IX *** (ETCLIB) Change number-in-set to set indices
 C   --   Written by Amy Gilkey - revised 10/23/87

@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFADDC (CVAL, LINE)
 C=======================================================================
-c
-c
 
 C   --*** FFADDC *** (FFLIB) Add character string to line
 C   --   Written by Amy Gilkey - revised 11/16/87

@@ -8,8 +8,6 @@ C=======================================================================
       SUBROUTINE DBOELB (NDB, NELBS, NELBE,
      &   IDELB, NUMELB, NUMLNK, NUMATR, LINK, ATRIB)
 C=======================================================================
-c
-c
 
 C   --*** DBOELB *** (EXOLIB) Write database element blocks
 C   --   Written by Amy Gilkey - revised 10/12/87

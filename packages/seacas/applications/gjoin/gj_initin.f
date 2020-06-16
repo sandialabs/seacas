@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE INITIN (LIST, LLIST, IVAL)
 C=======================================================================
-c
 
 C   --*** INITIN *** (GJOIN) Initializes a list
 C   --   Written by Amy Gilkey - revised 09/29/87

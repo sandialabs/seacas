@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE CON2D (CRD, NDIM, NUMNP, IX, NNODES, NUMEL, MAT,
      *   NELBLK, SELECT, ASPECT, SKEW, TAPER, AREA,

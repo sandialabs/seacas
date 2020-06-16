@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE MINMXL (NPTS, PTOK, PTS, VMIN, VMAX)
 C=======================================================================
-c
-c
 
 C   --*** MINMXL *** (ETCLIB) Calculate min/max value in selected list
 C   --   Written by Amy Gilkey - revised 11/10/87

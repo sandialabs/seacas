@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
 C
 C
       SUBROUTINE INLINE (ML, N2, N19, JJ, LTYP, IP1, IP2, IP3, NN,

@@ -9,7 +9,6 @@ C=======================================================================
      &   ISSFRO, ISSBCK, NSSFRO, NSSBCK)
 C=======================================================================
 
-c
 
 C   --*** NEWESS *** (GEN3D) Calculate 3D side sets
 C   --   Written by Amy Gilkey - revised 01/12/88

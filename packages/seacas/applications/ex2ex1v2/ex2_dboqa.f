@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBOQA (NDB, NQAREC, QAREC, NINFO, INFO)
 C=======================================================================
-c
-c
 
 C   --*** DBOQA *** (EXOLIB) Write QA and information records
 C   --   Written by Amy Gilkey - revised 02/08/88

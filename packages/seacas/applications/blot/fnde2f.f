@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE FNDE2F (IEL, LENF, IF2EL, NQARY, IFACES, IELB)
 C=======================================================================

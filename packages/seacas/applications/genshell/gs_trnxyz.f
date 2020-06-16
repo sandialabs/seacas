@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE TRNXYZ (XN, YN, XN3, YN3, ZN3, ATRIB)
 C=======================================================================
 
-c
 
 C   --*** TRNXYZ *** (GENSHELL) Calculate 3D coordinates for translation
 C   --

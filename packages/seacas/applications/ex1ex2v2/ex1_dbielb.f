@@ -9,8 +9,6 @@ C=======================================================================
      &   IDELB, NUMELB, NUMLNK, NUMATR,
      &   A, KLINK, KATRIB, *)
 C=======================================================================
-c
-c
 
 C   --*** DBIELB *** (EXOLIB) Read database element blocks
 C   --   Written by Amy Gilkey - revised 10/14/87

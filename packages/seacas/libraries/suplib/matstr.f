@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       LOGICAL FUNCTION MATSTR (INSTR, MATCH, NLET)
 C=======================================================================
-c
-c
 
 C   --*** MATSTR *** (STRLIB) Check if string matches
 C   --   Written by Amy Gilkey - revised 07/01/87

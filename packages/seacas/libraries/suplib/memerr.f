@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE MEMERR
 C=======================================================================
-c
-c
 
 C   --*** MEMERR *** (ETCLIB) Flag dynamic memory error
 C   --   Written by Amy Gilkey - revised 02/23/88

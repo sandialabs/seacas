@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
 C
 C
       SUBROUTINE DSTORT (X1, X2, X3, X4, Y1, Y2, Y3, Y4, VALUE)

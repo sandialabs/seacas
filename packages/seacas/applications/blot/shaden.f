@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE SHADEN (NLNKF, LINKF1, XN, YN, ZN, NCOL, LITE, NLIT,
      *  MINCOL, KDIFF, KSPEC, SPEXP, WXMIN, WYMIN, WXMAX, WYMAX)

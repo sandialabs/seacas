@@ -76,8 +76,6 @@ C   --Save the input parameters
 C=======================================================================
       ENTRY DBIV1 (NELBLK, NVARHI, NVARGL, NVARNP, NVAREL, ISEVOK)
 C=======================================================================
-c
-c
 
 C   --*** DBIV1 *** (EXOLIB) Initialize for DBIVAR
 C   --   Written by Amy Gilkey - revised 11/04/87
@@ -141,8 +139,6 @@ C   --Set NREC0 = the number of records before the time steps
 C=======================================================================
       ENTRY DBIVIN (REWDB)
 C=======================================================================
-c
-c
 
 C   --*** DBIVIN *** (EXOLIB) Initialize for DBIVAR
 C   --   Written by Amy Gilkey - revised 11/04/87
@@ -169,8 +165,6 @@ C=======================================================================
       ENTRY DBIVAR (NDB, NUMVAR, IVAR, ISTEP, LENVAR, IELBLK,
      &   NELBLK, NUMELB, ISEVOK, VAR, *)
 C=======================================================================
-c
-c
 
 C   --*** DBIVAR *** (EXOLIB) Read variable
 C   --   Written by Amy Gilkey - revised 08/16/88

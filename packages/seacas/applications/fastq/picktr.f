@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
 C
 C
       SUBROUTINE PICKTR (NPER, X, Y, NID, ANGLE, HALFC, I1, I2, I3, I4,

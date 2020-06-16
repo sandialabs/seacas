@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
 C
 C
       SUBROUTINE LINLEN (MP, COOR, LINKP, KNUM, LNUM, KT, I3, J1, J2,

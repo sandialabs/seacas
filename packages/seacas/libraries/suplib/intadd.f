@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       INTEGER FUNCTION INTADD (LENLST, INTLST)
 C=======================================================================
-c
-c
 
 C   --*** INTADD *** (ETCLIB) Add all integers in list
 C   --   Written by Amy Gilkey - revised 11/10/87

@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE MOVREA (NMOV, RFROM, RTO)
 C=======================================================================
-c
 
 C   --*** MOVREA *** (GJOIN) Moves real data
 C   --   Written by Amy Gilkey - revised 02/22/88

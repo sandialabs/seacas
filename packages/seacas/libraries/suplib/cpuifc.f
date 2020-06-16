@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       LOGICAL FUNCTION CPUIFC (LDUM)
 C=======================================================================
-c
-c
 
 C   --*** CPUIFC *** Dummy cancel function
 C   --   Written by Amy Gilkey - revised 02/11/88

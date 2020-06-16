@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
       SUBROUTINE ESTIME (CRD, WAVE, IX, MAT, LABEL, NDIM, NNODE,
      *     NELBLK, SSQ, CCC, CDAMP, NUMNP)
 C

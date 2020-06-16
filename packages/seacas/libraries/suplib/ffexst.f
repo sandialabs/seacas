@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       LOGICAL FUNCTION FFEXST (IFLD, INTYP)
 C=======================================================================
-c
-c
 
 C   --*** FFEXST *** (FFLIB) Return end of fields status
 C   --   Written by Amy Gilkey - revised 08/26/86

@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE MPMUL4(N,MASK,ARR1,ARR2,ARR3,ARR4,MAT,RES1,RES2,RES3,
      *                  RES4)

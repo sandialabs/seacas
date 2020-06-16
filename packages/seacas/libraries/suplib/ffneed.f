@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFNEED (IFLD, INTYP, FTYPE, NFLD, EXPECT, *)
 C=======================================================================
-c
-c
 
 C   --*** FFNEED *** (FFLIB) Check free-field fields for type
 C   --   Written by Amy Gilkey - revised 10/21/86

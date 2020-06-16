@@ -8,8 +8,6 @@ C=======================================================================
       SUBROUTINE DBIEB1 (NDB, OPTION, IELB, NUMELB, NUMLNK, NUMATR,
      &   LINK, ATRIB, NATRDM, NLNKDM, *)
 C=======================================================================
-c
-c
 
 C   --*** DBIEB1 *** (EXOLIB) Read database element block misc.
 C   --   Written by Amy Gilkey - revised 10/14/87

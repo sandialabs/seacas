@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE MUNXYZ (NDIM, NUMNP2, NUMNP1, IXNP2, XN2, YN2, ZN2)
 C=======================================================================
-c
 
 C   --*** MUNXYZ *** (GJOIN) Compress coordinates from the second database
 C   --   Written by Amy Gilkey - revised 09/29/87

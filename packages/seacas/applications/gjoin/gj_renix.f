@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE RENIX (LLIST, IOFFIX, IX, LIST)
 C=======================================================================
-c
 
 C   --*** RENIX *** (GJOIN) Renumbers items according to an index list
 C   --   Written by Amy Gilkey - revised 09/29/87

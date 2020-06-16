@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE INIGRD (FROM, TO, GRAD, NINT, NPTS, ARRAY)
 C=======================================================================
 
-c
 C     INIGRD: Initialize array ARRAY with NPTS values.
 C             values are calculated to have a gradient of GRAD
 C             ranging from FROM to TO with NINT segments.

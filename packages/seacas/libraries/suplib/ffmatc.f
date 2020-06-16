@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       LOGICAL FUNCTION FFMATC (IFLD, INTYP, CFIELD, MATCH, NLET)
 C=======================================================================
-c
-c
 
 C   --*** FFMATC *** (FFLIB) Parse free-field character string if match
 C   --   Written by Amy Gilkey - revised 07/01/87

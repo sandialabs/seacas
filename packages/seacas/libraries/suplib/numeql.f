@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       INTEGER FUNCTION NUMEQL (TORF, LENLST, LOGLST)
 C=======================================================================
-c
-c
 
 C   --*** NUMEQL *** (ETCLIB) Count number of occurrences of logical in list
 C   --   Written by Amy Gilkey - revised 12/21/87

@@ -7,8 +7,6 @@ C    See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBPTIM (OPTION, NSTEPS, TIMES)
 C=======================================================================
-c
-c
 
 C   --*** DBPTIM *** (EXOLIB) Print database steps and min/max times
 C   --   Written by Amy Gilkey - revised 12/18/87
