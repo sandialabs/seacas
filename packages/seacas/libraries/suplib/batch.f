@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       LOGICAL FUNCTION BATCH ()
 C=======================================================================
-c
-c
 
 C   --*** BATCH *** (ETCLIB) Return batch versus interactive flag
 C   --   Written by Amy Gilkey - revised 01/20/87

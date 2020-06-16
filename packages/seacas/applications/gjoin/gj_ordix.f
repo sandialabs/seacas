@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE ORDIX (NORD, IXORD, LOLD, IOLD, ISCR, INEW)
 C=======================================================================
-c
 
 C   --*** ORDIX *** (GJOIN) Order a list according to indices
 C   --   Written by Amy Gilkey - revised 09/29/87

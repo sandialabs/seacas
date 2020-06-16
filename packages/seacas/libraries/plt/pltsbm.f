@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE PLTSBM(N,MASK,X,Y,SYMB)
       DIMENSION X(*),Y(*),MASK(*)

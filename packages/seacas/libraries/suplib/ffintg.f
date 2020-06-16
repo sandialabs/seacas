@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFINTG (IFLD, INTYP, IFIELD, EXPECT, IDEFVL, IVAL, *)
 C=======================================================================
-c
-c
 
 C   --*** FFINTG *** (FFLIB) Parse free-field integer
 C   --   Written by Amy Gilkey - revised 02/24/86

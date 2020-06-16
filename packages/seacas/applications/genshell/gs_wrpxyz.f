@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE WRPXYZ (XN, YN, XN3, YN3, ZN3, ATRIB)
 C=======================================================================
 
-c
 
 C   --*** WRPXYZ *** (GEN3D) Calculate 3D coordinates
 C   --   Written by Amy Gilkey - revised 05/09/88

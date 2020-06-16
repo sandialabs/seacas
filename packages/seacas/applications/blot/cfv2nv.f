@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE CFV2NV (LENF, NLNKF, LINKF, IELBST, ISEVOK, VARFAC,
      &   DOVN2B, IVN2B, IFVCNT, VARNP)

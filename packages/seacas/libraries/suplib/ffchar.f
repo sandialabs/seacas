@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFCHAR (IFLD, INTYP, CFIELD, DEFVAL, CVAL)
 C=======================================================================
-c
-c
 
 C   --*** FFCHAR *** (FFLIB) Parse free-field character string
 C   --   Written by Amy Gilkey - revised 02/24/86

@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE CKWHOL (WHOTIM, *)
 C=======================================================================
-c
-c
 
 C   --*** CKWHOL *** (ETCLIB) Check for whole time step
 C   --   Written by Amy Gilkey - revised 12/23/87

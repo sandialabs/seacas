@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE INTSTR (NNUM, LNGSTR, INUM, ISTR, LSTR)
 C=======================================================================
-c
-c
 
 C   --*** INTSTR *** (STRLIB) Convert integer numbers to strings
 C   --   Written by Amy Gilkey - revised 03/14/88

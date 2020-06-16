@@ -8,8 +8,6 @@ C=======================================================================
       SUBROUTINE DBOINI (NDB, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &   NUMNPS, LNPSNL, NUMESS, LESSEL, LESSNL)
 C=======================================================================
-c
-c
 
 C   --*** DBOINI *** (EXOLIB) Write database title and initial variables
 C   --   Written by Amy Gilkey - revised 12/04/87

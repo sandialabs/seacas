@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE CHGINT (IOLD, INEW, LIST, LLIST)
 C=======================================================================
-c
 
 C   --*** CHGINT *** (GJOIN) Changes all occurrences in list
 C   --   Written by Amy Gilkey - revised 09/29/87

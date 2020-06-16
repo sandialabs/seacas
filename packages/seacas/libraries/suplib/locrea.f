@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       INTEGER FUNCTION LOCREA (VALU, NVALUS, VALUS)
 C=======================================================================
-c
-c
 
 C   --*** LOCREA *** (ETCLIB) Find closest real value
 C   --   Written by Amy Gilkey - revised 11/03/87

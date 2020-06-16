@@ -8,8 +8,6 @@ C=======================================================================
       SUBROUTINE FFRRNG (IFLD, INTYP, CFIELD, RFIELD, EXPECT, RMAX,
      &   RANGE, *)
 C=======================================================================
-c
-c
 
 C   --*** FFVRNG *** (FFLIB) Parse free-field real range
 C   --   Written by Amy Gilkey - revised 02/24/86

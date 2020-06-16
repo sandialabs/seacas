@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE PLTAV3(UMAP,N,X1,Y1,Z1,X2,Y2,Z2,TH,XL)
       REAL UMAP(*)

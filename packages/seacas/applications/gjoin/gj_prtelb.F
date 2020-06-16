@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE PRTELB (ISTAT, NELBL1, NELBL2,
      &   IDELB, NUMELB, NUMLNK, NUMATR, ISCR)
 C=======================================================================
-c
 
 C   --*** PRTELB *** (GJOIN) Print summary for element blocks
 C   --   Written by Amy Gilkey - revised 02/04/88

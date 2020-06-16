@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       INTEGER FUNCTION NUMEQI (INT, LENLST, INTLST)
 C=======================================================================
-c
-c
 
 C   --*** NUMEQI *** (ETCLIB) Count number of occurrences of integer in list
 C   --   Written by Amy Gilkey - revised 11/10/87

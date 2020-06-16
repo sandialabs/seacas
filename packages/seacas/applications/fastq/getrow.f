@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
 C
 C
       SUBROUTINE GETROW (MXND, MXCORN, MXPICK, MLN, NUID, LXK, KXL,

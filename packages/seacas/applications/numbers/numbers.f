@@ -11,7 +11,6 @@ C     mass moment of inertia for a axisymmetric and plane 2-D mesh
 C     and a 3-D mesh defined in the genesis format.
 C
 C     LINK WITH SUPES LIBRARY
-c
       include 'exodusII.inc'
 
       include 'nu_progqa.blk'

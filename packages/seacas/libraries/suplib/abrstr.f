@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE ABRSTR (RETWRD, ABBR, STRTBL)
 C=======================================================================
-c
-c
 
 C   --*** ABRSTR *** (STRLIB) Find abbreviation for string
 C   --   Written by Amy Gilkey - revised 02/14/86

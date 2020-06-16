@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       LOGICAL FUNCTION FFNUMB (IFLD, INTYP)
 C=======================================================================
-c
-c
 
 C   --*** FFNUMB *** (FFLIB) Return number field status
 C   --   Written by Amy Gilkey - revised 08/26/86

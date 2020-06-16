@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE CPYREA (LEN, RFROM, RTO)
 C=======================================================================
-c
-c
 
 C   --*** CPYREA *** (ETCLIB) Copy all real numbers in list
 C   --   Written by Amy Gilkey - revised 03/15/88

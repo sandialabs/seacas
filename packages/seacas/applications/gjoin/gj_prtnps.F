@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE PRTNPS (ISTAT, NNPS1, NNPS2, IDNPS, NNNPS, ISCR)
 C=======================================================================
-c
 
 C   --*** PRTNPS *** (GJOIN) Print summary for nodal point sets
 C   --   Written by Amy Gilkey - revised 02/04/88

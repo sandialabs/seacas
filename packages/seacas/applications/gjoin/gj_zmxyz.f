@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE ZMXYZ (NDIM, NUMNP, IXNP, XN, YN, ZN)
 C=======================================================================
-c
 
 C   --*** ZMXYZ *** (GJOIN) Compress coordinates
 C   --   Written by Amy Gilkey - revised 01/20/88

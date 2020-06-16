@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFADDV (IRANGE, LINE)
 C=======================================================================
-c
-c
 
 C   --*** FFADDV *** (FFLIB) Add integer range to line
 C   --   Written by Amy Gilkey - revised 11/16/87

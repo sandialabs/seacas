@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE ORDSTR (NORD, IXORD, LOLD, IOLD, ISCR, INEW)
 C=======================================================================
-c
 
 C   --*** ORDSTR *** (GJOIN) Order a list of strings according to indices
 C   --   Written by Greg Sjaardema - revised 07/11/90

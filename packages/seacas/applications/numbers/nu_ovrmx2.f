@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
       SUBROUTINE OVRMX2 (LSTEL, CORD, IX, NSEG, MINMAX, NIQSLV,
      *     NIQS, TEMP, LTNESS, NUMIN, NUMFAC, NUMON,
      *     NUMEL, LFACE, NUMNP)

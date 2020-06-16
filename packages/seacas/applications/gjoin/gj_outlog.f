@@ -6,7 +6,6 @@ C See packages/seacas/LICENSE for details
 
 C -*- Mode: fortran -*-
 C=======================================================================
-c
       SUBROUTINE OUTLOG (KLOG, NUMFLD, INTYP, CFIELD, IFIELD, RFIELD)
 C=======================================================================
 

@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBIMAP (NDB, OPTION, NUMEL, MAPEL, *)
 C=======================================================================
-c
-c
 
 C   --*** DBIMAP *** (EXOLIB) Read database element order map
 C   --   Written by Amy Gilkey - revised 10/14/87

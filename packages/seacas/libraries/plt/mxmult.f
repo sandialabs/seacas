@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE MXMULT(N,MAT1,MAT2,MATR)
       REAL MAT1(N,*),MAT2(N,*),MATR(N,*)

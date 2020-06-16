@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBIXYZ (NDB, OPTION, NDIM, NUMNP, XN, YN, ZN, *)
 C=======================================================================
-c
-c
 
 C   --*** DBIXYZ *** (EXOLIB) Read database coordinates
 C   --   Written by Amy Gilkey - revised 10/14/87

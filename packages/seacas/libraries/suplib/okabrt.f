@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       LOGICAL FUNCTION OKABRT (ISOK)
 C=======================================================================
-c
-c
 
 C   --*** OKABRT *** (ETCLIB) Initialize cancel function
 C   --   Written by Amy Gilkey - revised 12/21/87
@@ -43,8 +41,6 @@ C      --Initialize cancel flag
 C=======================================================================
       ENTRY ISABRT ()
 C=======================================================================
-c
-c
 
 C   --*** ISABRT *** (ETCLIB) Check cancel function
 C   --   Written by Amy Gilkey - revised 12/17/87

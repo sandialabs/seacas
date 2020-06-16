@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE MINMXS (NPTSEL, IXSEL, PTS, VMIN, VMAX)
 C=======================================================================
-c
-c
 
 C   --*** MINMXS *** (ETCLIB) Calculate min/max value of selected points
 C   --   Written by Amy Gilkey - revised 11/10/87

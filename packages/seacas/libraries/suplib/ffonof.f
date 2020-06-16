@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFONOF (IFLD, INTYP, CFIELD, ISON, *)
 C=======================================================================
-c
-c
 
 C   --*** FFONOF *** (FFLIB) Parse free-field ON/OFF
 C   --   Written by Amy Gilkey - revised 02/24/86

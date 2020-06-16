@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE CKEXOD (EXODUS, *)
 C=======================================================================
-c
-c
 
 C   --*** CKEXOD *** (ETCLIB) Check for EXODUS format
 C   --   Written by Amy Gilkey - revised 12/23/87

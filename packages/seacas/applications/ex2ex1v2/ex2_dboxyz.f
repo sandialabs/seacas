@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBOXYZ (NDB, NDIM, NUMNP, XN, YN, ZN)
 C=======================================================================
-c
-c
 
 C   --*** DBOXYZ *** (EXOLIB) Write database coordinates
 C   --   Written by Amy Gilkey - revised 02/27/86

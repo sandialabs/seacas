@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE VECTOR (ISYTYP, VAR, NUM, LENF, NLNKF, HIDENE,
      &   XNE, YNE, ZNE, IN2ELB, ISVOK, VECMAX, BLKCOL, IDELB, *)

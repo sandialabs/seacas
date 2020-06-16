@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE INIREA (LEN, RFROM, RTO)
 C=======================================================================
-c
-c
 
 C   --*** INIREA *** (ETCLIB) Initialize all real numbers in list
 C   --   Written by Amy Gilkey - revised 03/15/88

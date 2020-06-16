@@ -8,8 +8,6 @@ C=======================================================================
       SUBROUTINE DBIESS (NDB, OPTION, NUMESS, LESSEL, LESSNL,
      &   IDESS, NEESS, NNESS, IXEESS, IXNESS, LTEESS, LTNESS, FACESS, *)
 C=======================================================================
-c
-c
 
 C   --*** DBIESS *** (EXOLIB) Read database node sets
 C   --   Written by Amy Gilkey - revised 10/14/87

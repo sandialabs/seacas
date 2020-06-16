@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       INTEGER FUNCTION IENGRX (IMAXE, IMINE)
 C=======================================================================
-c
-c
 
 C   --*** IENGX *** (STRLIB) Internal to NUMSTR
 C   --   Written by Amy Gilkey - revised 02/14/86

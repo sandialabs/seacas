@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE SORLNX (NSETS, NEWELB, IE2ELB,
      &   NLNKF, LENSC, LINKSC, IF2ESC, IF22SC,

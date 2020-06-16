@@ -8,8 +8,6 @@ C=======================================================================
       SUBROUTINE DBONPS (NDB, NUMNPS, LNPSNL,
      &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS)
 C=======================================================================
-c
-c
 
 C   --*** DBONPS *** (EXOLIB) Write database node sets
 C   --   Written by Amy Gilkey - revised 02/27/86

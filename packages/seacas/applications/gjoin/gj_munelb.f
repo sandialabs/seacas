@@ -10,7 +10,6 @@ C=======================================================================
      &   LINK, ATRIB, LINKX, ATRIBX, IXEL, IXELB, NELBX,
      $   ISCR, NAMELB, SCRSTR, LLINK, LATRIB)
 C=======================================================================
-c
 
 C   --*** MUNELB *** (GJOIN) Compress and rearrange element blocks
 C   --   Written by Amy Gilkey - revised 09/29/87

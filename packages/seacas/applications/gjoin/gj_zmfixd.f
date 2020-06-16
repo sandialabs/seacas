@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE ZMFIXD (NELBLK, NUMELB, NUMLNK, LINK, NUMNP, IXNP)
 C=======================================================================
-c
 
 C   --*** ZMFIXD *** (GJOIN) Find nodes in element blocks
 C   --   Written by Amy Gilkey - revised 01/20/88

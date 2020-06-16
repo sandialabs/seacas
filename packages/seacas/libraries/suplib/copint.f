@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE COPINT (LEN, IFROM, ITO)
 C=======================================================================
-c
-c
 
 C   --*** COPINT *** (ETCLIB) Copy all integers in list
 C   --   Written by Amy Gilkey - revised 11/03/87

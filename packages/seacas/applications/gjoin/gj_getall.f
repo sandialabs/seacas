@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE GETALL (MATCH, LLIST, LIST, NINSET, INSET)
 C=======================================================================
-c
 
 C   --*** GETALL *** (GJOIN) Get all items that match
 C   --   Written by Amy Gilkey - revised 09/29/87

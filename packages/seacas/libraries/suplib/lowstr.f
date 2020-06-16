@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE LOWSTR (LCSTR, UCSTR)
 C=======================================================================
-c
-c
 
 C   --*** LOWSTR *** (STRLIB) Convert string to lower-case
 C   --   Written by Amy Gilkey - revised 08/06/87

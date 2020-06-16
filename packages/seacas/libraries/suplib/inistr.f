@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE INISTR (LEN, IFROM, ITO)
 C=======================================================================
-c
-c
 
 C   --*** INISTR *** (STRLIB) Initialize all strings in list
 C   --   Written by Amy Gilkey - revised 03/15/88

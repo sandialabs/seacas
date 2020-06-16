@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE MOVINT (NMOV, IFROM, ITO)
 C=======================================================================
-c
 
 C   --*** MOVINT *** (GJOIN) Moves integer data
 C   --   Written by Amy Gilkey - revised 09/29/87

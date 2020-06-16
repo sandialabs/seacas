@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE INIINT (LEN, IFROM, ITO)
 C=======================================================================
-c
-c
 
 C   --*** INIINT *** (ETCLIB) Initialize all integers in list
 C   --   Written by Amy Gilkey - revised 03/15/88

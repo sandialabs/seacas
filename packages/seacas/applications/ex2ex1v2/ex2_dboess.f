@@ -8,8 +8,6 @@ C=======================================================================
       SUBROUTINE DBOESS (NDB, NUMESS, LESSEL, LESSNL,
      &   IDESS, NEESS, NNESS, IXEESS, IXNESS, LTEESS, LTNESS, FACESS)
 C=======================================================================
-c
-c
 
 C   --*** DBOESS *** (EXOLIB) Write database node sets
 C   --   Written by Amy Gilkey - revised 02/27/86

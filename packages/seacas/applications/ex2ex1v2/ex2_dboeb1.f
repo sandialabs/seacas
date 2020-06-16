@@ -8,8 +8,6 @@ C=======================================================================
       SUBROUTINE DBOEB1 (NDB, IELB, NUMELB, NUMLNK, NUMATR, LINK, ATRIB,
      $     NLNKDM, NATRDM)
 C=======================================================================
-c
-c
 
 C   --*** DBOEB1 *** (EXOLIB) Write database element block misc.
 C   --   Written by Amy Gilkey - revised 10/12/87

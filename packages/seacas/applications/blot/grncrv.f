@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE GRNCRV (LABSID, ICURVE, NPTS, XPTS, YPTS, DRAWLN)
 C=======================================================================

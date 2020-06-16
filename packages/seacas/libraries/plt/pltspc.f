@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 C=======================================================================
       SUBROUTINE PLTSPC(S1,RED1,GREEN1,BLUE1,S2,RED2,GREEN2,BLUE2)
       REAL DEVCAP(23)

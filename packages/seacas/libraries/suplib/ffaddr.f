@@ -7,8 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE FFADDR (RVAL, LINE)
 C=======================================================================
-c
-c
 
 C   --*** FFADDR *** (FFLIB) Add real to line
 C   --   Written by Amy Gilkey - revised 11/16/87

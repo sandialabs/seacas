@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-c
       SUBROUTINE SELBOX (COORD, NUMNP, NDIM, P1, SELECT, NODEL)
       DIMENSION COORD (NUMNP,*), P1(*)
       LOGICAL SELECT(*)
