@@ -4,38 +4,34 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
-C
       SUBROUTINE RGNSCH (MCOM, ICOM, JCOM, CIN, IIN, RIN, KIN, STEP,
      &   IREGN, IPNTR, N24, MSC, SCHEME, DEFSCH, SCHSTR, LENSCH, NPER,
      &   PENTAG, TRIANG, TRNSIT, HALFC, FILL, ICODE, REMESH)
 C***********************************************************************
-C
+
 C     RGNSCH - GET A REGION'S SCHEME
-C
+
 C***********************************************************************
-C
+
       DIMENSION CIN(MCOM), IIN(MCOM), RIN(MCOM), KIN(MCOM)
       DIMENSION SCHEME(MSC)
-C
+
       CHARACTER*72 SCHEME, DEFSCH, SCHSTR, CIN
-C
+
       LOGICAL STEP, PENTAG, TRIANG, TRNSIT, HALFC, FILL, IANS, REMESH
-C
+
       DATA IEXIT, IOVER, IQUIT /1, 2, 3/
-C
+
       ICODE = 0
-C
+
 C  CHECK FOR REMESHING
-C
+
       IF (REMESH) THEN
          SCHSTR = 'X'
       ELSE
-C
+
 C  GET THE INITIAL SCHEME
-C
+
          IF ((ABS(IREGN) .LE. N24) .AND. (IPNTR .GT. 0)) THEN
             SCHSTR = SCHEME(IPNTR)
          ELSE
@@ -44,16 +40,16 @@ C
       END IF
       CALL STRCUT (SCHSTR)
       CALL STRLNG (SCHSTR, LENSCH)
-C
+
 C  STEP PROCESSING
-C
+
       IF (STEP) THEN
          WRITE (*, 10000) SCHSTR(1:LENSCH)
          CALL INTRUP ('USE CURRENT SCHEME TO BEGIN PROCESSING', IANS,
      &      MCOM, ICOM, JCOM, CIN, IIN, RIN, KIN)
-C
+
 C  CHANGE THE SCHEME
-C
+
          IF (.NOT.IANS) THEN
   100       CONTINUE
             IF (ICOM .LE. JCOM) THEN
@@ -65,9 +61,9 @@ C
             END IF
             CALL STRCUT (SCHSTR)
             CALL STRLNG (SCHSTR, LENSCH)
-C
+
 C  HELP FOR SCHEME
-C
+
             IF ((SCHSTR(1:1) .EQ. 'H') .OR.
      &         (SCHSTR(1:1) .EQ. 'h')) THEN
                CALL MESAGE (' ')
@@ -76,9 +72,9 @@ C
                GO TO 100
             END IF
          END IF
-C
+
 C  BLANK SCHEME
-C
+
          IF ((LENSCH .LE. 0) .OR. (SCHSTR(1:1) .EQ. ' ')) THEN
             CALL MESAGE ('NO INITIAL SCHEME INPUT')
             CALL MESAGE ('FORCED RECTANGLE PROCESSING USED')
@@ -87,17 +83,17 @@ C
             GO TO 120
          END IF
       END IF
-C
+
 C  DETERMINE MESHING SCHEME
-C
+
       PENTAG = .FALSE.
       TRIANG = .FALSE.
       TRNSIT = .FALSE.
       FILL = .FALSE.
       DO 110 J = 1, LENSCH
-C
+
 C  SEE IF A PENTAGON REGION HAS BEEN FLAGGED
-C
+
          IF ((SCHSTR(J:J) .EQ. 'U') .OR. (SCHSTR(J:J) .EQ. 'u')) THEN
             IF (NPER .GE. 10) THEN
                PENTAG = .TRUE.
@@ -109,9 +105,9 @@ C
                CALL MESAGE ('REGULAR PROCESSING WILL BE ATTEMPTED')
             END IF
             GO TO 120
-C
+
 C  SEE IF A TRANSITION REGION HAS BEEN FLAGGED
-C
+
          ELSE IF ((SCHSTR(J:J) .EQ. 'B') .OR.
      &      (SCHSTR(J:J) .EQ. 'b')) THEN
             IF (NPER .GE. 8) THEN
@@ -125,9 +121,9 @@ C
                CALL MESAGE ('REGULAR PROCESSING WILL BE ATTEMPTED')
             END IF
             GO TO 120
-C
+
 C  SEE IF A SEMI-CIRCLE REGION HAS BEEN FLAGGED
-C
+
          ELSE IF ((SCHSTR(J:J) .EQ. 'C') .OR.
      &      (SCHSTR(J:J) .EQ. 'c')) THEN
             IF (NPER .GE. 8) THEN
@@ -142,9 +138,9 @@ C
                CALL MESAGE ('REGULAR PROCESSING WILL BE ATTEMPTED')
             END IF
             GO TO 120
-C
+
 C  SEE IF A TRIANGULAR REGION HAS BEEN FLAGGED
-C
+
          ELSE IF ((SCHSTR(J:J) .EQ. 'T') .OR.
      &      (SCHSTR(J:J) .EQ. 't')) THEN
             IF (NPER .GE. 6) THEN
@@ -157,23 +153,23 @@ C
                CALL MESAGE ('REGULAR PROCESSING WILL BE ATTEMPTED')
             END IF
             GO TO 120
-C
+
 C  SEE IF A FILL REGION HAS BEEN FLAGGED
-C
+
          ELSE IF ((SCHSTR(J:J) .EQ. 'X') .OR.
      &      (SCHSTR(J:J) .EQ. 'x')) THEN
             FILL = .TRUE.
             CALL MESAGE ('PAVING TECHNIQUE INITIALLY USED')
             GO TO 120
-C
+
 C  SEE IF A REGULAR RECTANGULAR REGION HAS BEEN FLAGGED
-C
+
          ELSE IF ((SCHSTR(J:J) .EQ. 'M') .OR.
      &      (SCHSTR(J:J) .EQ. 'm')) THEN
             GO TO 120
-C
+
 C  OTHER POSSIBILITIES
-C
+
          ELSE IF ((SCHSTR(J:J) .EQ. 'E') .OR.
      &      (SCHSTR(J:J) .EQ. 'e')) THEN
             ICODE = IEXIT
@@ -189,8 +185,8 @@ C
          END IF
   110 CONTINUE
   120 CONTINUE
-C
+
       RETURN
-C
+
 10000 FORMAT ('0INITIAL MESH DEFINED USING THIS SCHEME:', /, 5X, A)
       END

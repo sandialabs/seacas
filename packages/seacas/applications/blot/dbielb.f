@@ -94,7 +94,6 @@ C   --   *      - OUT - return statement if end of file or read error
        IF (NERR .GT. 0) GOTO 110
       END IF
 
-
       IELNK = IESAV
       IEATR = IASAV
       DO 100 NELB = NELBS, NELBE

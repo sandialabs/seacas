@@ -235,5 +235,3 @@ C ... Node/Element inverse connectivity
       return
       end
 
-
-

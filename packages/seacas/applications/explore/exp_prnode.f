@@ -58,7 +58,6 @@ C   --   VARNP - IN - the nodal variables for the time step
         END IF
  90   continue
 
-
       DO 100 IX = 1, LISNP(0)
          INP = LISNP(IX)
          if (domap) then

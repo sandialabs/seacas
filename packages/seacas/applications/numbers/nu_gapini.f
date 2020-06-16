@@ -7,7 +7,7 @@ C    See packages/seacas/LICENSE for details
       SUBROUTINE GAPINI (A, COORD, IDESS, NEESS, NNESS, IPEESS, IPNESS,
      *   LTEESS, LTNESS, FACESS, DISP, NUMNP, NDIM, NUMESS,
      *   TIME, ITMSEL, TITLE, IMAS, ISLV, DMAX, GMTHD)
-C
+
       DIMENSION A(*), COORD(NUMNP,*), IDESS(*), NEESS(*),
      *   NNESS(*), IPEESS(*), IPNESS(*), LTEESS(*), LTNESS(*),
      *   FACESS(*), TIME(*), DISP(NUMNP,*)
@@ -18,7 +18,7 @@ C
 
       IFLGM = LOCINT (IMAS, NUMESS, IDESS)
       IFLGS = LOCINT (ISLV, NUMESS, IDESS)
-C
+
       ERROR = .FALSE.
       IF (IFLGM .EQ. 0) THEN
          WRITE (STRA, 10) 'Master', IMAS
@@ -34,13 +34,13 @@ C
          ERROR = .TRUE.
       END IF
       IF (ERROR) RETURN
-C
+
       NSEGM = NEESS(IFLGM)
       IPTRM = IPNESS(IFLGM)
-C
+
       NSEGS = NEESS(IFLGS)
       IPTRS = IPNESS(IFLGS)
-C
+
       MULT = 2 * NDIM - 2
       CALL MDRSRV ('MAPMAS', IMPMS, MULT*NSEGM)
       CALL MDRSRV ('MAPSLV', IMPSL, MULT*NSEGS)
@@ -50,7 +50,7 @@ C
          CALL MEMERR
          STOP
       END IF
-C
+
       CALL UNIQUE (LTNESS(IPTRM), MULT*NSEGM, A(IMPMS), A(ITMP),
      *   NIQM, NUMNP)
       CALL MDRSRV ('MASSLV', IMSLV, 2*NIQM)
@@ -61,7 +61,7 @@ C
          STOP
       END IF
       CALL TRANIQ (LTNESS(IPTRM), A(IMPMS), A(IMSLV), MULT*NSEGM, 2)
-C
+
       CALL UNIQUE (LTNESS(IPTRS), MULT*NSEGS, A(IMPSL), A(ITMP),
      *   NIQS, NUMNP)
       CALL MDRSRV ('NIQSLV', INQS, NIQS)
@@ -71,7 +71,7 @@ C
          STOP
       END IF
       CALL TRANIQ (LTNESS(IPTRS), A(IMPSL), A(INQS), MULT*NSEGS, 1)
-C
+
       DMAX = DMAX**2
       IF (DMAX .EQ. 0.0) DMAX = 1.0E38
 

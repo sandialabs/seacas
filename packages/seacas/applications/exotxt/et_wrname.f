@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C=======================================================================
       SUBROUTINE WRNAME (NTXT, NDIM, NELBLK, NVARGL, NVARNP,
      &                   NVAREL, NAMEGV, NAMENV, NAMEEV, ISEVOK, NAMLEN)

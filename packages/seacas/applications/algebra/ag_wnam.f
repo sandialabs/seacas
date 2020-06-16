@@ -80,7 +80,6 @@ C   --Write the variable names
         end if
       END IF
 
-
       IF ((NVAREO .GT. 0) .AND. (NELBLK .GT. 0)) THEN
          NO = 0
 C        Loop from 1 to number of element blocks

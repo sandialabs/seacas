@@ -320,7 +320,6 @@ C *** Display options ***
             GO TO 130
          ENDIF
 
-
       END IF
 
       RETURN

@@ -7,7 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE NEWNAM (TYPE, IDLST, NAMLST, NUMID, ID, NEWSTR)
 C=======================================================================
-C
+
       CHARACTER*(*) TYPE
       DIMENSION IDLST(*)
       CHARACTER*(*) NAMLST(NUMID), NEWSTR

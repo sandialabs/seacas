@@ -152,7 +152,6 @@ C        If write all elements or write this element block
             EBID = IDELB(IELB)
             NAEB = BLKTYP(IELB)
 
-
             IF (ALLELE) THEN
                IXELB(IELB)  = IXELB(IELB-1)  + NELB
                IXELBO(IELB) = IXELBO(IELB-1) + NELB

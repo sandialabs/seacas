@@ -4,42 +4,40 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE STRAIT (MP, ML, MCOM, ICOM, JCOM, CIN, RIN, IIN, KIN,
      &   IDUMP, N, COOR, LCON, LINKP, LINKL)
 C***********************************************************************
-C
+
 C  SUBROUTINE STRAIT = STRAIGHTENS LINES IN THE X OR Y DIRECTION
-C
+
 C***********************************************************************
-C
+
 C  SUBROUTINE CALLED BY:
 C     FASTQ = A PROGRAM TO QUICKLY PREPARE QMESH INPUT
-C
+
 C***********************************************************************
-C
+
 C  SUBROUTINES CALLED:
 C     CHECK  = CHECKS 2 VALUES FOR BEING OUT OF PRESCRIBED BOUNDS
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     IANS   = LOGICAL RESPONSE FROM YES-NO QUESTION
 C     ANS    = CHARACTER RESPONSE FOR MENU CHOICE
-C
+
 C***********************************************************************
-C
+
       DIMENSION COOR (2, MP), LCON (3, ML), LINKP (2, MP)
       DIMENSION LINKL (2, ML), N (29)
       DIMENSION KIN (MCOM), IIN (MCOM), RIN (MCOM)
-C
+
       CHARACTER*72 CIN (MCOM)
       LOGICAL ADDLNK
-C
+
       IZ=0
       ADDLNK=.FALSE.
-C
+
   100 CONTINUE
       IF (N (2).GT.0)THEN
          CALL MESAGE (' ')
@@ -56,9 +54,9 @@ C
          ELSE
             RETURN
          ENDIF
-C
+
 C  STRAIGHTEN THE LINE IN THE Y DIRECTION
-C
+
          IF ( (CIN (ICOM) (1:1) .EQ. 'Y') .OR.
      &      (CIN (ICOM) (1:1) .EQ. 'y'))THEN
             ICOM=ICOM+1
@@ -90,9 +88,9 @@ C
                   ENDIF
                ENDIF
   120       CONTINUE
-C
+
 C  STRAIGHTEN THE LINE IN THE X DIRECTION
-C
+
          ELSEIF ( (CIN (ICOM) (1:1).EQ.'X') .OR.
      &      (CIN (ICOM) (1:1).EQ.'x')) THEN
             ICOM=ICOM+1
@@ -136,11 +134,11 @@ C
          RETURN
       ENDIF
       GOTO 100
-C
+
 10000 FORMAT (' LINE', I5, ' HAS THE FOLLOWING END POINTS:', /,
      &   ' POINT:', I5, '   X COORDINATE', G14.7,  '   Y COORDINATE ',
      &   G14.7, /,
      &   ' POINT:', I5, '   X COORDINATE', G14.7,  '   Y COORDINATE ',
      &   G14.7)
-C
+
       END

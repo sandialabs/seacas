@@ -4,16 +4,14 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE LINLEN (MP, COOR, LINKP, KNUM, LNUM, KT, I3, J1, J2,
      &   J3, DIST, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE LINLEN = CALCULATES THE LENGTH OF A GIVEN LINE
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     NID   = AN ARRAY OF UNIQUE NODE IDENTIFIERS.
 C     REAL  = .TRUE. FOR AN ACTUAL GENERATION
@@ -32,20 +30,20 @@ C           = 3 FOR ARC WITH CENTER GIVEN
 C           = 4 FOR ARC WITH THIRD POINT ON THE ARC
 C           = 5 FOR PARABOLA
 C           = 6 FOR ARC WITH RADIUS GIVEN
-C
+
 C***********************************************************************
-C
+
       DIMENSION COOR (2, MP), LINKP (2, MP)
-C
+
       LOGICAL ERR
-C
+
       PI = ATAN2(0.0, -1.0)
-C
+
       DIST = 0.
       ERR = .TRUE.
-C
+
 C  STRAIGHT LINE GENERATION
-C
+
       IF (KT.EQ.1) THEN
          YDIFF = COOR (2, J2) -COOR (2, J1)
          XDIFF = COOR (1, J2) -COOR (1, J1)
@@ -54,9 +52,9 @@ C
             WRITE (*, 10000) KNUM
             RETURN
          ENDIF
-C
+
 C  CORNER GENERATION
-C
+
       ELSEIF (KT.EQ.2) THEN
          XDA = COOR (1, J3) -COOR (1, J1)
          YDA = COOR (2, J3) -COOR (2, J1)
@@ -69,18 +67,18 @@ C
             RETURN
          ENDIF
          DIST = DA+DB
-C
+
 C  CIRCULAR ARC
-C
+
       ELSEIF ((KT.EQ.3) .OR. (KT.EQ.4) .OR. (KT.EQ.6) )THEN
          XSTART = COOR (1, J1)
          YSTART = COOR (2, J1)
          CALL ARCPAR (MP, KT, KNUM, COOR, LINKP, J1, J2, J3, I3,
      &      XCEN, YCEN, THETA1, THETA2, TANG, R1, R2, ERR, ICCW, ICW,
      &      XK, XA)
-C
+
 C  GENERATE THE CIRCLE
-C
+
          ANG = THETA1
          DEL = TANG/30
          DO 100 I = 2, 29
@@ -95,18 +93,18 @@ C
          XEND = COOR (1, J2)
          YEND = COOR (2, J2)
          DIST = DIST+SQRT ((XEND-XSTART) ** 2 + (YEND-YSTART) ** 2)
-C
+
 C  ELIPSE
-C
+
       ELSEIF (KT .EQ. 7) THEN
          XSTART = COOR (1, J1)
          YSTART = COOR (2, J1)
          CALL ELPSPR (MP, KT, KNUM, COOR, LINKP, J1, J2, J3,
      &      I3, XCEN, YCEN, THETA1, THETA2, TANG, IDUM1, IDUM2,
      &      AVALUE, BVALUE, ERR)
-C
+
 C  GENERATE THE ELIPSE
-C
+
          ANG = THETA1
          DEL = TANG/30
          DO 110 I = 2, 29
@@ -123,13 +121,13 @@ C
          XEND = COOR (1, J2)
          YEND = COOR (2, J2)
          DIST = DIST+SQRT ((XEND-XSTART) ** 2 + (YEND-YSTART) ** 2)
-C
+
 C     PARABOLA
-C
+
       ELSEIF (KT.EQ.5) THEN
-C
+
 C  CHECK LEGITIMACY OF DATA
-C
+
          XMID =  (COOR (1, J1) +COOR (1, J2) ) * 0.5
          YMID =  (COOR (2, J1) +COOR (2, J2) ) * 0.5
          DOT =  (COOR (1, J2) -COOR (1, J1) ) * (COOR (1, J3) -XMID)
@@ -142,9 +140,9 @@ C
             WRITE (*, 10030) KNUM
             RETURN
          ENDIF
-C
+
 C  GETARC LENGTH
-C
+
          HALFW = SQRT ((COOR (1, J2) -COOR (1, J1) ) ** 2 +
      &      (COOR (2, J2) - COOR (2, J1) ) ** 2 )  * 0.5
          IF (HALFW.EQ.0.) THEN
@@ -155,9 +153,9 @@ C
      &      + (YMID-COOR (2, J3) ) ** 2)
          COEF = HEIGHT/HALFW ** 2
          TCOEF = 2.0 * COEF
-C
+
 C  PARC IS A STATEMENT FUNCTION
-C
+
          PLEFT = PARC (-TCOEF * HALFW, TCOEF)
          ARCTOT = 2.0 * PARC (TCOEF * HALFW, TCOEF)
          ARCDEL = ARCTOT/30
@@ -165,17 +163,17 @@ C
          ARCNOW = 0.0
          THETA = ATAN2 (COOR (2, J2) -COOR (2, J1) , COOR (1, J2)
      &      - COOR (1, J1) )
-C
+
 C  CORRECT FOR ORIENTATION
-C
+
          CROSS =  (COOR (1, J3) -XMID) *  (COOR (2, J2) -COOR (2, J1) )-
      &      (COOR (2, J3) -YMID) *  (COOR (1, J2) -COOR (1, J1) )
          IF (CROSS.LT.0.0) THETA = THETA+PI
          SINT = SIN (THETA)
          COST = COS (THETA)
-C
+
 C  FIND POINTS APPROXIMATELY BY INTEGRATION
-C
+
          XL = -HALFW
          FL = SQRT (1.0+ (TCOEF * XL) ** 2)
          KOUNT = 1
@@ -189,47 +187,47 @@ C
             ARCOLD = ARCNOW
             ARCNOW = ARCNOW+DELX * (FL+4.0 * FM+FR) / 3.0
             IF (ARCNOW.GE.ARCNXT) THEN
-C
+
 C  COMPUTE POSITION IN LOCAL COORDINATE SYSTEM
-C
+
                FRAC =  (ARCNXT-ARCOLD) / (ARCNOW-ARCOLD)
                XK = XL+FRAC * 2.0 * DELX
                YK = COEF * XK ** 2
-C
+
 C  CORRECT FOR ORIENTATION PROBLEM
-C
+
                IF (CROSS.LT.0.0) XK = -XK
-C
+
 C  ROTATE IN LINE WITH GLOBAL COORDINATE SYSTEM
-C
+
                ROTX = XK * COST - YK * SINT
                ROTY = YK * COST + XK * SINT
-C
+
 C  RESTORE XK
-C
+
                IF (CROSS.LT.0.0) XK = -XK
-C
+
 C  TRANSLATE
-C
+
                XEND = ROTX+COOR (1, J3)
                YEND = ROTY+COOR (2, J3)
                DIST = DIST+SQRT ((XEND-XSTART) ** 2 + (YEND-YSTART) **2)
                KOUNT = KOUNT+1
                XSTART = XEND
                YSTART = YEND
-C
+
 C  PREPARE FOR NEXT POINT
-C
+
                IF (KOUNT.GE.29) GOTO 130
                ARCNXT = ARCNXT+ARCDEL
-C
+
 C  RESTART INTEGRATION
-C
+
                XR = XK
                FR = SQRT (1.0+ (TCOEF * XR) ** 2)
-C
+
 C  CORRECT FOR INTEGRATION ERROR
-C
+
                ARCNOW = PARC (TCOEF * XR, TCOEF) -PLEFT
             ENDIF
             XL = XR
@@ -240,13 +238,13 @@ C
          YEND = COOR (2, J2)
          DIST = DIST+SQRT ((XEND-XSTART) ** 2+ (YEND-YSTART) ** 2)
       ENDIF
-C
+
 C     NORMAL EXIT
-C
+
       ERR = .FALSE.
       RETURN
-C
+
 10000 FORMAT (' ZERO LINE LENGTH ENCOUNTERED FOR LINE', I5)
 10030 FORMAT (' POINTS GIVEN FOR LINE', I5, ' DO NOT DEFINE A PARABOLA')
-C
+
       END

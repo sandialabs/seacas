@@ -4,17 +4,15 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE INQSTR (PROMPT, IANS)
 C***********************************************************************
-C
+
 C  SUBROUTINE INQSTR = INPUTS CHARACTER STRINGS
-C
+
 C***********************************************************************
-C
+
       CHARACTER* (*) PROMPT, IANS, HOLD*80
-C
+
       IZ = 0
   100 CONTINUE
       CALL GETINP (IZ, IZ, PROMPT, HOLD, IOSTAT)
@@ -29,6 +27,6 @@ C
          WRITE (*, 10010)
          GOTO 100
       ENDIF
-C
+
 10010 FORMAT (' BAD CHARACTER STRING  -  TRY AGAIN')
       END

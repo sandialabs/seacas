@@ -111,7 +111,6 @@ C      --CMDTBL - the valid commands table
       DATA LASTX /-1/
       DATA LASTY /-1/
 
-
 C   --Command table follows.  Remember to change the dimensioned size when
 C   --changing the table.
       DATA CMDTBL /

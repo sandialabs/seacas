@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       CHARACTER*8 CMDTBL(22)
       SAVE CMDTBL
 C      --CMDTBL - the valid commands table

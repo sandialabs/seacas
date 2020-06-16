@@ -4,19 +4,16 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       LOGICAL FUNCTION SHRUNK (RATIO, NROW)
 C***********************************************************************
-C
+
 C  FUNCTION SHRUNK = LOGICAL FUNCTION THAT RETURNS TRUE IF THE ELEMENT
 C                    SIZE IS DIMINISHING WITH ROW DEPTH
-C
+
 C***********************************************************************
-C
+
       DATA TOLER1 /.85/, TOLER2 /.75/, TOLER3 /.6/
-C
+
       IF ((NROW .GE. 3) .AND. (RATIO .LT. TOLER1)) THEN
          SHRUNK = .TRUE.
       ELSEIF ((NROW .GE. 2) .AND. (RATIO .LT. TOLER2)) THEN
@@ -26,6 +23,6 @@ C
       ELSE
          SHRUNK = .FALSE.
       ENDIF
-C
+
       RETURN
       END

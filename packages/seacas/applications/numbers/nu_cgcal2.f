@@ -7,22 +7,22 @@ C    See packages/seacas/LICENSE for details
       SUBROUTINE CGCAL2(CRD,IX,MAT,MASS,VOL,DENS,VOLM,CG,ZITOT,XXX,
      *    XG,XI,XINI,AJ,NNODES,NDIM,NQUAD,VOLMN,IELM,NELBLK,
      *    AXI,NUMNP)
-C
+
       DIMENSION CRD(NUMNP,*), IX(NNODES,*), MAT(6,*), MASS(*),
      *    DENS(*), VOLM(*), CG(*), ZITOT(*),VOLMN(4,*),IELM(4,*),
      *    XXX(NDIM+1,NQUAD,*),XG(NDIM,*), XI(NDIM,*), XINI(*),
      *    AJ(2,*)
       DIMENSION ZI(6), ZMOM(3)
       DIMENSION CCC(2,4)
-C
+
       LOGICAL AXI
       REAL MASS, MASSE
       PI = ATAN2(0.0, -1.0)
-C
+
 C ... VOLMN(1,*) = MINIMUM VOLUME (AREAS FOR 2-D)
 C     VOLMN(2,*) = MAXIMUM VOLUME
 C     VOLMN(3,*) = TOTAL VOLUME
-C
+
       DO 10 I=1, NELBLK
           VOLMN(1,I) = 1.0E30
           VOLMN(2,I) = 0.0
@@ -38,27 +38,27 @@ C
    20 CONTINUE
       ZMAS = 0.0
       VOL  = 0.0
-C
+
 C ... GET QUADRATURE POINT LOCATIONS, EVALUATE SHAPE FUNCTIONS
-C
+
       CALL QUAD(XXX, XI, XG, NDIM, NNODES, NQUAD, WT)
-C
+
       DO 110 IBLK = 1, NELBLK
           IF (MAT(5,IBLK) .NE. 1) GOTO 110
           IELBEG = MAT(3,IBLK)
           IELEND = MAT(4,IBLK)
           MIEL   = IBLK
           DO 100 IEL = IELBEG, IELEND
-C
+
 C ... CALCULATE AREA, VOLUME, AND MOMENTS OF INERTIA OF ELEMENT
-C
+
               DO 30 I=1,3
                   ZI(I)   = 0.0
                   ZI(I+3) = 0.0
                   CG(I)   = 0.0
    30         CONTINUE
               VOLUME = 0.0
-C
+
               DO 40 I=1,4
                   CCC(1,I) = CRD(IX(I,IEL),1)
                   CCC(2,I) = CRD(IX(I,IEL),2)
@@ -71,7 +71,7 @@ C
                           AJ(K,J) = 0.0
    50                 CONTINUE
    60             CONTINUE
-C
+
                   DO 70 I=1,4
                       XINI(1) = XINI(1)+XXX(1,I,NG) * CCC(1,I)
                       AJ(1,1) = AJ(1,1)+XXX(2,I,NG) * CCC(1,I)
@@ -81,14 +81,14 @@ C
                       AJ(1,2) = AJ(1,2)+XXX(2,I,NG) * CCC(2,I)
                       AJ(2,2) = AJ(2,2)+XXX(3,I,NG) * CCC(2,I)
    70             CONTINUE
-C
+
                   DET = ( AJ(1,1)*AJ(2,2) - AJ(2,1)*AJ(1,2) ) * WT
                   DETW = DET * DENS(MIEL)
-C
+
                   IF (AXI) THEN
-C
+
 C ... CG(1) IS THE VOLUME FOR AXI 2-D, VOLUME IS ACTUALLY C/S AREA
-C
+
                       CG(1) = CG(1) + DET * XINI(1)
                       CG(2) = CG(2) + DETW * XINI(1) * XINI(2)
                       ZI(2) = ZI(2) + DETW * XINI(1)**3
@@ -102,12 +102,12 @@ C
                       ZI(3) = ZI(3) + DETW * XINI(1)*XINI(2)
                       VOLUME = VOLUME + DET
                   END IF
-C
+
    80         CONTINUE
-C
+
 C ... DETERMINE MIN/MAX ELEMENT VOLUMES FOR EACH MATERIAL AND
 C        COUNT NUMBER OF ELEMENTS FOR EACH MATERIAL
-C
+
               IELM(3,MIEL)      = IELM(3,MIEL) + 1
               VOLMN(3,MIEL)     = VOLMN(3,MIEL) + VOLUME
               IF (VOLUME .LT. VOLMN(1,MIEL)) THEN
@@ -117,7 +117,7 @@ C
                   VOLMN(2,MIEL) = VOLUME
                   IELM(2,MIEL)  = IEL
               ENDIF
-C
+
               IF (AXI) THEN
                   VOLUME = 2. * PI * CG(1)
                   ZI(2)  = ZI(2) * 2. * PI
@@ -154,6 +154,6 @@ C
           ZITOT(4) = ZITOT(3) - ZMAS * CG(1) * CG(2)
           ZITOT(3) = ZITOT(1) + ZITOT(2)
       END IF
-C
+
       RETURN
       END

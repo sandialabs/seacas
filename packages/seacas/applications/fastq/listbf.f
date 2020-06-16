@@ -4,31 +4,30 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       SUBROUTINE LISTBF (MDIM, N, CHOICE, LINK, IFLAG, INUM, IFIRST,
      &   LIST, IWT)
 C***********************************************************************
-C
+
 C  SUBROUTINE LISTBF = LISTS BOUNDARY CONDITIONS BY FLAG NUMBERS
-C
+
 C***********************************************************************
-C
+
 C  SUBROUTINE CALLED BY:
 C     LIST = LISTS POINTS,  LINES,  REGIONS,  SCHEMES,  AND BOUNDARY
 C            DEFINITIONS
-C
+
 C***********************************************************************
-C
+
       DIMENSION LINK (2, MDIM), IFLAG (MDIM), INUM (MDIM), IFIRST (MDIM)
       DIMENSION LIST (2, MDIM), IWT (3, MDIM)
-C
+
       CHARACTER CHOICE*7
-C
+
       LOGICAL ADDLNK, EXTRA, FOUND
-C
+
       ADDLNK = .FALSE.
       FOUND = .FALSE.
-C
+
       IF (CHOICE (1:5) .EQ. 'POINT') THEN
          WRITE (*, 10000)
       ENDIF
@@ -95,7 +94,7 @@ C
          WRITE (*, 10050) CHOICE
       ENDIF
       RETURN
-C
+
 10000 FORMAT ('  FLAG    BOUN.  WEIGHT FIRST  FIRST', /,
      &   ' NUMBER   TYPE    SIDE  WT PNT WT LIN     POINT OR LINE '//
      &   'LISTING', /, ' ------ -------- ------ ------ ------ ',

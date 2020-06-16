@@ -10,7 +10,7 @@ C    See packages/seacas/LICENSE for details
       CHARACTER*8 NODEL
       CHARACTER*80 STRTMP
       INTEGER LENSTR
-C
+
       CALL INILOG (NUMNP, .FALSE., SELECT)
       INUM = 0
       IF (NDIM .EQ. 2) THEN

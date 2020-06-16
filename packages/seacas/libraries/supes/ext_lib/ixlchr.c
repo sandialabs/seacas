@@ -19,14 +19,14 @@ FTNINT ixlchr(long *chrvar)
 }
 
 /*
-C
+
 ************************************************************************
 C     DESCRIPTION:
 C     This function returns the absolute location of a character variable.
 C     This location must be measured in character storage units.
-C
+
 C     FORMAL PARAMETERS:
 C     CHRVAR    CHARACTER       Character Variable
 ************************************************************************
-C
+
 */

@@ -7,13 +7,12 @@ C=======================================================================
       subroutine chkerr (routine, caller, ierr)
 C=======================================================================
 C     Modified 9/13/95 for EXODUSIIV2 API calls
-C
+
 C     This subroutine should be called after an EXODUSIIV2 subroutine has
 C     been invoked.  The arguments of this subroutine are as follows:
 C     routine - IN - The exodusIIv2 subroutine
 C     caller  - IN - The subroutine invoking the exodusII call
 C     ierr    - IN - The error code returned from the exodusII call
-C
 
       include 'exodusII.inc'
 

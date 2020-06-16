@@ -4,12 +4,12 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 C=================================================================
-C
+
 C This is just a simple test program to test the fortran interface
 C for the NEMESIS I library.
-C
+
 C This file was created by translating ne_test.c into fortran.
-C
+
 C=================================================================
 
 C=================================================================

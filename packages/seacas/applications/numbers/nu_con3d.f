@@ -10,18 +10,18 @@ C=======================================================================
      *   SUMRY, ISUMRY, SKEWX, SKEWY, SKEWZ, TAPERX, TAPERY, TAPERZ,
      *   JAC, DEBUG)
 C=======================================================================
-C
+
 C *** CON3D *** Calculate state of mesh -- Aspect ratio, Skewness,
 C               and Taper  (Three-dimensional mesh)
-C
+
 C    (Greg Sjaardema, 16 April, 1989)
-C
+
 C Based on article by John Robinson, "CRE Method of element testing
 C    and the Jacobian shape parameters," Eng. Comput., 1987, Vol. 4,
 C    June, pp 113 - 118
-C
+
 C     NOTE:  This is an experimental routine.
-C
+
 C -- ARRAYS:
 C     CRD(NUMNP, NDIM)  - IN -
 C     IX(NNODES, NUMEL) - IN -
@@ -31,24 +31,24 @@ C     ASPECT(NUMEL)     - OUT- Aspect ratio (1.0 <= AR <= infinity)
 C     SKEW(NUMEL)       - OUT- Skewness of mesh, degrees (0 <= skew <= ?)
 C     TAPER(NUMEL)      - OUT- Taper of mesh, combination of X and Y taper
 C     AREA(NUMEL)       - OUT- Area of element
-C
+
 C -- SCALARS:
 C     NDIM   - Number of spatial dimensions
 C     NUMNP  - Number of nodal points
 C     NNODES - Number of nodes per element
 C     NUMEL  - Number of elements
 C     NELBLK - Number of material/element blocks
-C
+
 C         E2                                               E4
 C     +----------+          +-----------+       +---------+ |
 C     |          | F3      /           /       /           \
 C     |          |        / A         /       /             \
 C     +----------+       +-----------+       +---------------+
-C
+
 C      AR = E2/F3        SKEW = SIN(A)            TAPER Y
-C
+
 C=======================================================================
-C
+
 C      REAL   CRD(NUMNP, NDIM), ASPECT(*), SKEW(*), TAPER(*), AREA(*)
       REAL   CRD(NUMNP, NDIM)
       REAL   ASPECT1(*), ASPECT2(*), ASPECT3(*), AREA(*)
@@ -66,12 +66,12 @@ C      REAL   SUMRY(4,4,1)
 C      LOGICAL  SELECT(1)
 C      REAL   SKEWX(1), SKEWY(1)
 C      REAL   TAPERX(1), TAPERY(1), TAPERZ(1)
-C
+
 C      DATA IX/1,2,3,4,5,6,7,8/
 C      DATA MAT /1,1,1,1,1/
 C      DATA SELECT /.TRUE./
 C      DATA NELBLK /1/
-C
+
       include 'nu_io.blk'
 
 C      IOMIN = 6

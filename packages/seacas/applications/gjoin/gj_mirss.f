@@ -44,7 +44,7 @@ C   --   NONQUAD - IN - true if model contains non-hex/non-quad elements
 C ... This routine was originally written to only handle quads, tris, and hexes.
 C     There was no checking of this, it blindly went through the list
 C     swapping nodes 1 and 2 (line) or nodes 4 and 2 (quad face).
-C
+
 C     The routine now provides more checking and will return with a warning
 C     if applied to elements on other faces...
 

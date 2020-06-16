@@ -246,4 +246,3 @@ C            ICOLOR = MOD (INDX-1, NCOL)
       RETURN
       END
 
-

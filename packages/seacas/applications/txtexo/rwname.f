@@ -80,7 +80,6 @@ C ... Allocate array for names
         return 1
       end if
 
-
 C   --Read the element block variable truth table
       CALL MDRSRV ('ISEVOK', KIEVOK, NELBLK * NVAREL)
 C ... Temporary logical array
@@ -131,4 +130,3 @@ C ... Temporary logical array
       CALL PRTERR ('FATAL', 'Writing VARIABLE NAMES')
       return 1
       end
-

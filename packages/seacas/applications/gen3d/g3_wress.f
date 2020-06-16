@@ -132,7 +132,6 @@ C     See newess for the code that sets the element number negative
            endif
          end do
 
-
 C ... Back sidesets are surface 5
          call iniint(nesur, 5, ia(kiside))
 C ... If the element number is negative, then we use surface 4

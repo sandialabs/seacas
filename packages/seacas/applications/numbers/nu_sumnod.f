@@ -97,7 +97,7 @@ C     ... READ THE STEP AND STORE X-DISPLACEMENTS (2D AXISYMMETRIC)
    90          CONTINUE
             END IF
          END IF
-C
+
          SUM = SUM / RSEL
          IF (SUM .GT. RMAX) THEN
             RMAX = SUM
@@ -115,7 +115,7 @@ C
 
       END IF
       GO TO 50
-C
+
   120 CONTINUE
       eng1 = engnot(rmin,2)
       eng2 = engnot(time(itmn), 2)

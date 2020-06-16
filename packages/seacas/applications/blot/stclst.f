@@ -9,16 +9,16 @@ C============================================================================
 C============================================================================
 
 C   --*** STCLST ***  (BLOT) set color list mapping
-C
+
 C --Parameters:
-C
+
 C --  MODULE - character name of the subroutine module setting the colors
-C
+
 C  PURPOSE:  SETS THE DESIRED MAPPING OF THE DEFAULT COLORS.  THE ROUTINE
 C            WAS WRITTEN TO ALLOW THE USER TO CHANGE THE MAPPING FOR
 C            DIFFERENT PROGRAMS, SPECIFICALLY MAPPING ONE WAY FOR CONTOURS
 C            AND PAINTING AND ANOTHER FOR PLOTTING.
-C
+
       CHARACTER*(*) MODULE
       include 'params.blk'
       include 'cmap-lst.blk'
@@ -36,9 +36,8 @@ C
      &   'MAGENTA ', 'CYAN    ', 'GREEN   ',
      &   'YELLOW  ', 'RED     ', '        ' /
 
-C
 C SET COLLST TO EITHER LIST DEPENDING ON THE VALUE OF MODULE
-C
+
       IF(LSTMOD .NE. MODULE(1:1)) THEN
          LSTMOD = MODULE(1:1)
 
@@ -60,7 +59,6 @@ C
             ENDIF
 30       CONTINUE
       END IF
-
 
       RETURN
       END

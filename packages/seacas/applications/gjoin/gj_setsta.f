@@ -129,7 +129,6 @@ C   --changing the table.
           END IF
         end if
 
-
 C ... Check for same ID in second set of IDs
         if (match .eq. 2 .or. match .eq. 3) then
           IF (NITEM2 .GT. 0) THEN

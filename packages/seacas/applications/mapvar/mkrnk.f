@@ -5,32 +5,32 @@ C
 C See packages/seacas/LICENSE for details
 
       SUBROUTINE MKRNK(N,NTOTAL,NDIM,X,IND,IRNK,IRNK2)
-C
+
 C***********************************************************************
-C
+
 C     DESCRIPTION: THIS ROUTINE CONVERTS THE IRNK VECTORS IN THE SWEGLE
 C                  SEARCH FROM AN INDIRECT GATHER TO A DIRECT GATHER
-C
+
 C       N        INTEGER   NUMBER OF ENTITIES THAT WAS SORTED
 C       NDIM     INTEGER   NUMBER OF DIMENSIONS
 C       X        REAL      ENTITIES TO BE SORTED
-C
+
 C       IND      INTEGER   INDEX VECTOR
 C       IRNK     INTEGER   RANK VECTOR (INDIRECT)
 C       IRNK2    INTEGER   RANK VECTOR (DIRECT)
-C
+
 C***********************************************************************
-C
+
       include 'tapes.blk'
-C
+
       DIMENSION X(NTOTAL,NDIM),IND(N,NDIM)
       DIMENSION IRNK(N,NDIM),IRNK2(N,NDIM,*)
-C
+
        DO 11 IDM = 1, NDIM
          CALL INDEXX(X(1,IDM),IND(1,IDM),N,.true.)
          CALL RANK(N,IND(1,IDM),IRNK(1,IDM),N)
  11    CONTINUE
-C
+
 C CONSTRUCT DIRECT LISTS INTO ORDERED LIST OF POINTS
         IF(NDIM .EQ. 1)THEN
           DO 113 I = 1, N
@@ -54,6 +54,6 @@ C CONSTRUCT DIRECT LISTS INTO ORDERED LIST OF POINTS
          PRINT*,'WRONG NUMBER OF DIMENSIONS IN MKRNK'
          STOP
        ENDIF
-C
+
       RETURN
       END

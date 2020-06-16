@@ -6,10 +6,10 @@ C    See packages/seacas/LICENSE for details
 
       program testcpnl
 
-c
+
 c This is a test program for the Fortran binding of the EXODUS II
 c database copy function (excopy).
-c
+
       implicit none
 
       include 'exodusII.inc'
@@ -20,9 +20,9 @@ c
 
       data iin /5/, iout /6/
 
-c
+
 c open EXODUS II input file
-c
+
 
 c the setting of cpu_ws isn't used for copying but will test the
 c conversion routines
@@ -40,9 +40,9 @@ c conversion routines
       mod_sz = exlgmd(exoid)
       write (iout, '(" Model Size",i2)') mod_sz
 
-c
+
 c  create EXODUS II output file with default size reals
-c
+
 c the setting of cpu_ws isn't used for copying but will test the
 c conversion routines
 

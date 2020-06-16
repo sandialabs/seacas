@@ -30,14 +30,14 @@ C   --   XLN, YLN, ZLN - IN - the light unit vector components
       DATA LSTCOL /0/
 
 C... Coordinate System:
-C
+
 C    ^ Y
 C    |
 C    |
 C    |
 C    |         X
 C    Z--------->
-C
+
       XMAX = -1.0e30
       YMAX = -1.0e30
       XMIN =  1.0e30

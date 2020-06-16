@@ -63,7 +63,6 @@ C     database type, num_of qa and info records
          END IF
          CALL FFADDC (NAME, INLINE)
 
-
   110    CONTINUE
          GOTO 100
       END IF

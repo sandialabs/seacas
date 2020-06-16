@@ -7,7 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DELID (TYPE, IDLST, ISTAT, NUMID, ID, DODEL)
 C=======================================================================
-C
+
 C   --   ISTAT - IN/OUT - the status of each item
 C   --      0 = same
 C   --      - = delete

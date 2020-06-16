@@ -158,7 +158,7 @@ C   --Write the coordinates
       endif
 
 C   --Write out the nodal point sets
-C
+
       if (numnps .gt. 0) then
          call expcns (idexo, ia(kidns), ia(knnns), ia(kansdf),
      &                ia(kixnns), ia(kixnns), ia(kltnns),
@@ -190,7 +190,6 @@ C        Write concatenated element block parameters
         call exerr('gjoin2', 'Error from expclb', exlmsg)
         goto 150
       endif
-
 
       ioff = katrib
       iptr = klink

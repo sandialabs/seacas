@@ -7,7 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE INCID (TYPE, IDLST, NUMID, IDINC)
 C=======================================================================
-C
+
       CHARACTER*(*) TYPE
       INTEGER       IDLST(*)
       CHARACTER*80  STRING

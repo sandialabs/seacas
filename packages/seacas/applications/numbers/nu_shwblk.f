@@ -4,13 +4,12 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       SUBROUTINE SHWBLK (NELBLK, MAT, NSELND, NSELEL)
       DIMENSION MAT(6, NELBLK)
       CHARACTER*16 TYPE
       CHARACTER*80 STRTMP
       include 'nu_io.blk'
-C
+
       DO 10 IO=IOMIN, IOMAX
          WRITE (IO, 50)
    10 CONTINUE

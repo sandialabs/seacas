@@ -4,20 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE NODORD (NPNODE, XN, YN, LISTN, NUID, NNN)
 C***********************************************************************
-C
+
 C  SUBROUTINE NODORD = ORDER THE NODE TABLE INTO INCREASING VALUES OF
 C                      THE VARIABLE LISTN
-C
+
 C***********************************************************************
-C
+
       DIMENSION LISTN (NPNODE)
       DIMENSION XN (NPNODE), YN (NPNODE), NUID (NPNODE)
-C
+
       NN = NNN
       M = NN
   100 CONTINUE
@@ -47,5 +44,5 @@ C
          ENDIF
   120 CONTINUE
       GOTO 100
-C
+
       END

@@ -4,21 +4,19 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE LINKEN (MDIM, JJ, IFLAG1, IFLAG, IFLIST, NEPS, LIST,
      &   LINKF, LINKE, IBOUN, ADDLNK)
 C***********************************************************************
-C
+
 C  SUBROUTINE LINKEN = LINKS ENTITIES IN BOUNDARY FLAG LISTS
-C
+
 C***********************************************************************
-C
+
 C  SUBROUTINE CALLED BY:
 C     LINKBC = LINKS UP ALL BOUNDARY FLAG LISTS
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     IFLAG  = THE ARRAY OF FLAGS
 C     IFLIST = THE FIRST ENTITY IN LIST TO BE ASSOCIATED WITH A FLAG
@@ -27,14 +25,14 @@ C     LIST   = THE LIST OF ENTITIES
 C     LINK   = THE LINK TO THE FLAG LIST
 C     IBOUN  = THE LINK FROM THE ENTITY TO THE FLAGS
 C     MDIM   = THE DIMENSIONING PARAMETER FOR THE LIST
-C
+
 C***********************************************************************
-C
+
       DIMENSION IFLAG (MDIM), IFLIST (MDIM), NEPS (MDIM), LIST (2, MDIM)
       DIMENSION LINKF (2, MDIM), IBOUN (MDIM), LINKE (2, MDIM)
-C
+
       LOGICAL ADDLNK
-C
+
       CALL LTSORT (MDIM, LINKE, JJ, L, ADDLNK)
       IF (L .LE. 0) THEN
          CALL MESAGE ('BOUNDARY CONDITION LINK ATTEMPTED')
@@ -67,7 +65,7 @@ C
       ENDIF
   120 CONTINUE
       RETURN
-C
+
 10000 FORMAT (' FLAG: ', I5, '  ENTITY ATTEMPTED:', I5)
-C
+
       END

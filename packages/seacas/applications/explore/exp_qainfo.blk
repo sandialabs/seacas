@@ -10,7 +10,7 @@ C    See packages/seacas/LICENSE for details
 
       QAINFO(2)(:8) = '20200113'
       QAINFO(3)(:8) = '    3.06'
-C
+
 c..Dynamic dimensioning of block names+other changes
 c..compress output of distribution factors
 c..Fix nodal variable read

@@ -29,20 +29,20 @@ c$$$        write (*,*) i, indx(i), a(indx(i))
 c$$$      end do
 c$$$
 c$$$      end
-C
+
 C------------------------------------------------------------------------
 C     SUBROUTINE INDEXI: Indexes an integer array ARRAY, that is
 C           it outputs an array INDX such that ARRAY(INDX(J)) is in
 C           ascending order for J=1,2,...,N.  The input quantities N and
 C           ARRAY are not changed.
-C
+
 C     ARRAY (*)        -  Array to be sorted
 C     INDX  (modified) -  Sorted order of ARRAY
 C     N                -  Number of elements in ARRAY
 C     INIT             -  .FALSE. if INDX already setup
 C                         .TRUE.  if INDX must be initialized
 C------------------------------------------------------------------------
-C
+
       subroutine indexi(a, indx, n, init)
 
       integer a(*)

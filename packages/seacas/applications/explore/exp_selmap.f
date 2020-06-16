@@ -47,4 +47,3 @@ C ... TYPE = Node or Element
 10030  format (1x, 3x, 'Global ',A,I12,' is local ',A,I12)
       END
 
-

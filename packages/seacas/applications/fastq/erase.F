@@ -4,18 +4,16 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE ERASE (MP, ML, MS, MR, N, COOR, ILINE, LTYPE, LCON,
      &   NLPS, IFLINE, ILLIST, NSPR, IFSIDE, ISLIST, LINKP, LINKL,
      &   LINKS, LINKR, IBAD, ALPHA)
 C***********************************************************************
-C
+
 C  SUBROUTINE ERASE = ERASES A POINT,  AND ALL DATA DEPENDENT ON THAT
 C                     POINT  (I.E. LINES,  SIDES,  OR REGIONS)
-C
+
 C***********************************************************************
-C
+
       DIMENSION COOR (2, MP), ILINE (ML), LTYPE (ML), LCON (3, ML)
       DIMENSION NLPS (MS)
       DIMENSION IFLINE (MS), ILLIST (MS * 3), NSPR (MR), IFSIDE (MR)
@@ -23,17 +21,17 @@ C
       DIMENSION LINKP (2, MP), LINKL (2, ML), LINKS (2, MS)
       DIMENSION LINKR (2, MR)
       DIMENSION N (29)
-C
+
       LOGICAL NUMPLT, ALPHA, ADDLNK, TEST, GETMAX
-C
+
       IZ = 0
       KNUM = 0
       ADDLNK = .FALSE.
       TEST = .FALSE.
       GETMAX = .FALSE.
-C
+
 C  ERASE ANY REGIONS USING THAT POINT
-C
+
       DO 140 I = 1, N (22)
          CALL LTSORT (MR, LINKR, I, II, ADDLNK)
          IF (II .GT. 0) THEN
@@ -94,9 +92,9 @@ C
             ENDIF
          ENDIF
   140 CONTINUE
-C
+
 C  ERASE ANY SIDES USING THAT POINT
-C
+
       DO 180 I = 1, N (20)
          CALL LTSORT (MS, LINKS, I, II, ADDLNK)
          IF (II .GT. 0) THEN
@@ -114,9 +112,9 @@ C
   170       CONTINUE
          ENDIF
   180 CONTINUE
-C
+
 C  ERASE ANY LINES USING THAT POINT
-C
+
       DO 210 I = 1, N (19)
          CALL LTSORT (ML, LINKL, I, II, ADDLNK)
          IF (II .GT. 0) THEN
@@ -151,9 +149,9 @@ C
   200       CONTINUE
          ENDIF
   210 CONTINUE
-C
+
 C  DELETE THE POINT
-C
+
       ADDLNK = .FALSE.
       CALL LTSORT (MP, LINKP, IBAD, II, ADDLNK)
       ADDLNK = .TRUE.
@@ -166,7 +164,7 @@ C
 #endif
          CALL PLTFLU
       ENDIF
-C
+
       RETURN
-C
+
       END

@@ -4,11 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       CHARACTER*8 TODAY, NOW, PROG, QADES
       COMMON /QADATA/ PROG, QADES, TODAY, NOW
 C       PROG    CHARACTER       Name of program
 C       QADES   CHARACTER       QA Version of program
 C       TODAY   CHARACTER       Today's date MM/DD/YY
 C       NOW     CHARACTER       Current time HH:MM:SS
-C

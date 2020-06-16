@@ -4,21 +4,18 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE LOWFND (MXND, NUID, N, INDX, I, IOLD)
 C***********************************************************************
-C
+
 C  SUBROUTINE LOWFND  =  LINEAR INDEXED SEARCH FOR MATCHING NUID VALUES
-C
+
 C***********************************************************************
-C
+
       DIMENSION NUID(MXND), INDX(N)
-C
+
       IBOT = 1
       ITOP = N
-C
+
   100 CONTINUE
       II = (IBOT + ITOP)/2
       IF (NUID(INDX(II)) .EQ. NUID(I)) THEN
@@ -30,8 +27,8 @@ C
          IBOT = II + 1
       ENDIF
       IF (IBOT .LE. ITOP) GO TO 100
-C
+
       IOLD = 0
       RETURN
-C
+
       END

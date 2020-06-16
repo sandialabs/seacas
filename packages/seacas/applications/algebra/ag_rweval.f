@@ -833,7 +833,6 @@ C      --Write the variables for the time step
      *      A(KIDELB), A(KIEVOK), A(KGVSCR), A(KVARSC), MERR)
           IF (MERR .EQ. 1) RETURN
 
-
 C      --Move the values for the current time step into locations for the
 C      --last time step
 

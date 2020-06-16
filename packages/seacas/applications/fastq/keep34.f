@@ -4,21 +4,18 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE KEEP34 (ITEST, LTEST, NBEGIN, NEND, ICHNG)
 C***********************************************************************
-C
+
 C  SUBROTINE KEEP34 = GETS AN ACCEPTABLE SIDE FOR FILLING TO KEEP A
 C                     TRIANGLE VALID OR CHANGING TO A RECTANGLE
-C
+
 C***********************************************************************
-C
+
       DIMENSION ITEST (3), LTEST (3)
-C
+
 C  MAKE SURE THAT THE NBEGIN STARTS AT ONE OF THE CORNERS
-C
+
       IF (NBEGIN .EQ. ITEST(1)) THEN
          NEND = ITEST(2)
       ELSEIF (NBEGIN .EQ. ITEST(2)) THEN
@@ -29,10 +26,10 @@ C
          NBEGIN = ITEST(1)
          NEND = ITEST(3)
       ENDIF
-C
+
 C  FIND THE CORRECT ROW (THIS ALREADY ASSUMES THAT THE
 C  SUM OF THE SMALLER TWO IS EQUAL TO THE LARGEST ONE)
-C
+
       MMAX = MAX0 (LTEST(1), LTEST(2), LTEST(3))
       IF (LTEST(1) .EQ. MMAX) THEN
          IF (NBEGIN .EQ. ITEST(1)) THEN
@@ -47,7 +44,7 @@ C
             NEND = ICHNG
          ENDIF
       ENDIF
-C
+
       RETURN
-C
+
       END

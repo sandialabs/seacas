@@ -7,7 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE RENELB (NELBLK, IOFFNP, IXNP, NUMELB, NUMLNK, LINK)
 C=======================================================================
-C
+
 C   --*** RENELB *** (GJOIN) Renumber connectivity in element blocks
 C   --   Written by Amy Gilkey - revised 09/29/87
 C   --

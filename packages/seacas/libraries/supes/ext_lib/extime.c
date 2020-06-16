@@ -10,22 +10,22 @@
 
 /*
 ************************************************************************
-C
+
 C     DESCRIPTION:
 C     This routine returns the current time in a CHARACTER string. The
 C     format is as follows:
-C
+
 C       HH:MM:SS
-C
+
 C     HH is a two digit hour
 C     MM is a two digit minute
 C     SS is a two digit second
-C
+
 C     FORMAL PARAMETERS:
 C     STRING    CHARACTER       String to receive the time
-C
+
 ************************************************************************
-C
+
 */
 
 #define STRLEN 8

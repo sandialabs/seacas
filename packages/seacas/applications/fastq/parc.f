@@ -4,17 +4,14 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       FUNCTION PARC (AL, TCOEF)
 C***********************************************************************
-C
+
 C    SUBROUTINE PARC = CALCULATES PARABOLIC ARC LOCATIONS
-C
+
 C***********************************************************************
-C
+
       PARC = 0.5 * (SQRT (1.0 + AL **2) * AL +
      &   ALOG (SQRT (1.0 + AL **2) + AL)) / TCOEF
-C
+
       END

@@ -4,13 +4,12 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       SUBROUTINE GETDEN (MAT, DEN, NELBLK, LABEL)
       DIMENSION MAT(6,*), DEN(*)
       DIMENSION IDUM(4), RV(4), KV(4)
       CHARACTER*16 LABEL(*), CV(4)
       CHARACTER*32 PRMPT
-C
+
       WRITE (*, 20)
    20 FORMAT (/,'   Input DENSITY, and NAME: ')
       DO 40 IBLK=1,NELBLK

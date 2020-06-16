@@ -8,7 +8,6 @@ C See packages/seacas/LICENSE for details
      *  ixdess, lteess, ltsess, ltssnc, kfacss, a, allone, lessdf,
      *  *)
 
-
       integer idess(*), neess(*), ndess(*), ixeess(*), ixdess(*)
       integer lteess(*), ltsess(*)
       integer ltssnc(*)

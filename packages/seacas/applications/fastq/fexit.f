@@ -4,22 +4,20 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE FEXIT (WROTE, MCOM, ICOM, JCOM, CIN, IIN, RIN, KIN,
      &   TIME1, BATCH, VERSN)
 C***********************************************************************
-C
+
 C  SUBROUTINE FEXIT = GRACEFUL FASTQ EXIT
-C
+
 C***********************************************************************
-C
+
       CHARACTER*72 CIN (MCOM), VERSN*10, DATE*8, TIME*8
-C
+
       LOGICAL IANS, WROTE, BATCH
-C
+
       DIMENSION KIN (MCOM), IIN (MCOM), RIN (MCOM)
-C
+
       IF (.NOT.WROTE)THEN
          CALL MESAGE (' ')
          CALL MESAGE ('***********************************************')

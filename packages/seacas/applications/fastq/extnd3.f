@@ -4,19 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE EXTND3 (MXND, XN, YN, ANGLE, N1, N2, N3, X, Y, DIST)
 C***********************************************************************
-C
+
 C  SUBROUTINE EXTND3 = CALCULATES TWO POSITIONS AN AVERAGE LENGTH AWAY
 C                      FROM A CORNER NODE AND ONE AT 1/3 ANGLE INTERVALS
-C
+
 C***********************************************************************
-C
+
       DIMENSION XN (MXND), YN (MXND)
       DIMENSION X(3), Y(3)
-C
+
       ANG = ATAN2 (YN (N1) - YN (N2), XN (N1) - XN (N2))
       CANG = ANGLE / 3.
       ANG1 = ANG - CANG
@@ -30,14 +28,14 @@ C
       ELSE
          ADIST = DIST / SIN (CANG)
       ENDIF
-C
+
       X(1) = ADIST * COS (ANG1) + XN (N2)
       Y(1) = ADIST * SIN (ANG1) + YN (N2)
       X(2) = 1.4142 * ADIST * COS (ANG2) + XN (N2)
       Y(2) = 1.4142 * ADIST * SIN (ANG2) + YN (N2)
       X(3) = ADIST * COS (ANG3) + XN (N2)
       Y(3) = ADIST * SIN (ANG3) + YN (N2)
-C
+
       RETURN
-C
+
       END

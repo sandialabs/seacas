@@ -5,7 +5,7 @@ C
 C See packages/seacas/LICENSE for details
 
 C     -*- Mode: fortran -*-
-C
+
       integer pnorm, prad, pvect, pedge, mxsnap
 
       PARAMETER (PNORM = 1)

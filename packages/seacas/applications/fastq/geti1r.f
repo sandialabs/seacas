@@ -4,20 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE GETI1R (MCOM, ICOM, JCOM, CIN, IIN, RIN, KIN, I1, R1,
      &   IFOUND)
 C***********************************************************************
-C
+
 C  SUBROUTINE GETI1R = GETS AN INTEGER AND A REAL INPUT NUMBER
-C
+
 C***********************************************************************
-C
+
       DIMENSION IIN(MCOM), RIN(MCOM), KIN(MCOM)
       CHARACTER*72 CIN(MCOM)
-C
+
       IF( (ICOM .GT. JCOM) .OR. (CIN(ICOM) (1:1) .EQ. ' ') ) THEN
          ICOM = ICOM+1
          IFOUND = 0
@@ -34,5 +31,5 @@ C
          ENDIF
       ENDIF
       RETURN
-C
+
       END

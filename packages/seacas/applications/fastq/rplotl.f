@@ -4,47 +4,45 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE RPLOTL (MXND, XN, YN, ZN, NXL, XMIN, XMAX, YMIN, YMAX,
      &   ZMIN, ZMAX, LLL, DEV1, KREG)
 C***********************************************************************
-C
+
 C  SUBROUTINE RPLOTL = REPLOTS THE CURRENT MESH FROM THE NXL ARRAY
-C
+
 C***********************************************************************
-C
+
       DIMENSION NXL (2, 3 * MXND), XN (MXND), YN (MXND), ZN (MXND)
       DIMENSION X (2), Y (2)
-C
+
       CHARACTER*72 DUMMY, HOLD, DEV1*3
-C
+
       LOGICAL HARD, FIGURE
-C
+
       HARD = .FALSE.
       FIGURE = .FALSE.
-C
+
 C  INITIALIZE THE PLOTTING SURFACE
-C
+
       XDIMD = 1.
       YDIMD = .75
-C
+
 C  TURN ON THE HARDCOPY IF NEEDED
-C
+
       IF (HARD) THEN
          CALL VDIQES (10002, KAVAL2)
          IF (KAVAL2 .NE. 1) GOTO 110
          CALL VDESCP (10002, 0, 0)
       ENDIF
-C
+
 C  OPEN A FIGURE FILE IF NEEDED
-C
+
       IF (FIGURE) THEN
          IUNIT = 98
          OPEN (UNIT = IUNIT, FILE = 'DATA.FIG',
      &      STATUS = 'NEW', ERR = 110)
       ENDIF
-C
+
       CALL PLTBGN
       XDIMR = XMAX - XMIN
       YDIMR = YMAX - YMIN
@@ -78,9 +76,9 @@ C
       DUMMY (1:7) = 'REGION '
       LEN = LEN + 7
       CALL PLTXTH (XDIMD * .05, YDIMD * .95, DUMMY (1:LEN))
-C
+
 C  PLOT THE LINES IN NXL ARRAY,  SKIPPING DELETIONS
-C
+
       IF (FIGURE) THEN
          IDUM = 0
          XDUM = 0.
@@ -109,17 +107,17 @@ C
             ENDIF
          ENDIF
   100 CONTINUE
-C
+
       CALL PLTFLU
       IF (HARD) THEN
          CALL PLTFLU
          CALL VDESCP (10001, 0, 0)
       ENDIF
-C
+
   110 CONTINUE
       IF (FIGURE) CLOSE (IUNIT)
       RETURN
-C
+
 10000 FORMAT (' POINT ', I6, 2X, 2 (1PE14.7, 2X))
 10010 FORMAT (' LINE  ', I6, 2X, 'STR ', I6, 2X, I6)
       END

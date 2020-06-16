@@ -4,16 +4,13 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE GETIME (TIME)
 C***********************************************************************
-C
+
 C  SUBROUTINE GETIME = GETS THE CPU TIME USED BY THE CURRENT PROCESS
-C
+
 C***********************************************************************
-C
+
       CALL EXCPUS (TIME)
       RETURN
       END

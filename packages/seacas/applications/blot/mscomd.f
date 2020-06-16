@@ -953,7 +953,6 @@ C      --PLOT and HARDCOPY are to be passed as lower-case commands
          ENDIF
          INVERB = ' '
 
-
 C *** Information ***
 
       ELSE IF (VERB .EQ. 'show') THEN

@@ -10,9 +10,9 @@ C See packages/seacas/LICENSE for details
 #ifdef Build64
         SUBROUTINE EXCLOS (IDEXO, IERR)
 C> \sa ex_close()
-C
+
 C       CLOSE EXODUS II FILE
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -29,9 +29,9 @@ C
         SUBROUTINE EXCN2S (IDEXO, NSESS, NDESS, IXEESS, IXNESS,
      &          LTEESS, LTNESS, LTSESS, IERR)
 C> \sa ex_cvt_nodes_to_sides()
-C
+
 C       CONVERT SIDE SET NODES TO SIDES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -55,9 +55,9 @@ C
 
         INTEGER FUNCTION EXCRE (PATH, ICMODE, ICOMPWS, IOWS, IERR)
 C> \sa ex_create()
-C
+
 C       CREATE EXODUS II FILE
-C
+
         IMPLICIT NONE
         CHARACTER* (*) PATH     ! (R)
         INTEGER ICMODE          ! (R)
@@ -108,9 +108,9 @@ C     are passing REAL*8 and the exo_jack.c routines all take double*
 
         SUBROUTINE EXERR (MODNAM, MSG, ERRNUM)
 C> \sa ex_error()
-C
+
 C       ERROR REPORTING
-C
+
         CHARACTER* (*) MODNAM   ! (R)
         CHARACTER* (*) MSG      ! (R)
         INTEGER ERRNUM          ! (R)
@@ -123,9 +123,9 @@ C
 
         SUBROUTINE EXGATM (IDEXO, TIME, IERR)
 C> \sa ex_get_all_times()
-C
+
 C       READ ALL TIME VALUES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -143,9 +143,9 @@ C
         SUBROUTINE EXGCNS (IDEXO, IDNPSS, NNNPS, NDNPS, IXNNPS,
      &          IXDNPS, LTNNPS, FACNPS, IERR)
 C> \sa ex_get_concat_node_sets()
-C
+
 C       READ CONCATENATED NODE SETS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -171,9 +171,9 @@ C
 
         SUBROUTINE EXGFRM (IDEXO, NFRAME, IDSCF, COORD, ITAGS, IERR)
 C> \sa ex_get_coordinate_frames()
-C
+
 C       READ COORDINATE FRAMES
-C
+
         implicit none
         include 'exodusII.inc'
 
@@ -209,9 +209,9 @@ C
         SUBROUTINE EXPFRM (IDEXO, NFRAME, IDSCF, COORD, ITAGS, IERR)
 C> \sa ex_put_coordinate_frames()
 
-C
+
 C       DEFINE/WRITE COORDINATE FRAMES
-C
+
         implicit none
         include 'exodusII.inc'
 
@@ -245,9 +245,9 @@ C
         SUBROUTINE EXGCON (IDEXO, NAMECO, IERR)
 C> \sa ex_get_coord_names()
 
-C
+
 C       READ COORDINATE NAMES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -264,9 +264,9 @@ C
 
         SUBROUTINE EXGCOR (IDEXO, XN, YN, ZN, IERR)
 C> \sa ex_get_coord()
-C
+
 C       READ NODAL COORDINATES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -287,9 +287,9 @@ C
         SUBROUTINE EXGCSS (IDEXO, IDESSS, NSESS, NDESS, IXEESS,
      &          IXDESS, LTEESS, LTSESS, FACESS, IERR)
 C> \sa ex_get_concat_side_sets()
-C
+
 C       READ CONCATENATED SIDE SETS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -317,9 +317,9 @@ C
         SUBROUTINE EXGCSSF (IDEXO, IDESSS, NSESS, NDESS, IXEESS,
      &          IXDESS, LTEESS, LTSESS, IERR)
 C> \sa ex_get_concat_side_sets()
-C
+
 C>       READ CONCATENATED SIDE SETS, no distribution factors
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -345,9 +345,9 @@ C
 
         SUBROUTINE EXGEAT (IDEXO, IDELB, ATRIB, IERR)
 C> \sa ex_get_elem_attr()
-C
+
 C>       READ ELEMENT BLOCK ATTRIBUTES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -365,9 +365,9 @@ C
 
         SUBROUTINE EXGEAN (IDEXO, IDELB, NATTR, NAMES, IERR)
 C> \sa ex_get_elem_attr_names()
-C
+
 C>       READ ELEMENT BLOCK ATTRIBUTES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -388,9 +388,9 @@ C
 
         SUBROUTINE EXGEBI (IDEXO, IDELBS, IERR)
 C> \sa ex_get_elem_blk_ids
-C
+
 C>       READ ELEMENT BLOCK IDS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -408,9 +408,9 @@ C
         SUBROUTINE EXGELB (IDEXO, IDELB, NAMELB, NUMELB, NUMLNK,
      &          NUMATR, IERR)
 C> \sa ex_get_elem_block()
-C
+
 C>       READ ELEMENT BLOCK PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -432,9 +432,9 @@ C
 
         SUBROUTINE EXGELC (IDEXO, IDELB, LINK, IERR)
 C> \sa ex_get_elem_conn()
-C
+
 C>       READ ELEMENT BLOCK CONNECTIVITY
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -452,9 +452,9 @@ C
 
         SUBROUTINE EXGECPP (IDEXO, ITYPE, IDELB, COUNTS, IERR)
 C> \sa ex_get_entity_count_per_polyhedra()
-C
+
 C>       READ ENTITY_COUNT-PER-POLYHEDRA
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -488,9 +488,9 @@ C
 
         SUBROUTINE EXGENM (IDEXO, MAPEL, IERR)
 C> \sa ex_get_id_map()
-C
+
 C>       READ ELEMENT NUMBER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -507,9 +507,9 @@ C
 
         SUBROUTINE EXGEM (IDEXO, MAPID, MAPEL, IERR)
 C> \sa ex_get_num_map()
-C
+
 C>       READ ELEMENT ORDER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -527,9 +527,9 @@ C
 
         SUBROUTINE EXGPEM (IDEXO, MAPID, ISTART, ICOUNT, MAPEL, IERR)
 C> \sa ex_get_partial_num_map()
-C
+
 C>       READ ELEMENT ORDER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -550,9 +550,9 @@ C
         SUBROUTINE EXGEV (IDEXO, ISTEP, IXELEV, IDELB, NUMELB,
      &          VALEV, IERR)
 C> \sa ex_get_elem_var()
-C
+
 C>       READ ELEMENT VARIABLE VALUES AT A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -579,9 +579,9 @@ C
         SUBROUTINE EXGEVT (IDEXO, IXELEV, IELNUM, ISTPB, ISTPE,
      &          VALEV, IERR)
 C> \sa ex_get_elem_var_time()
-C
+
 C>       READ ELEMENT VARIABLE VALUES THROUGH TIME
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -610,9 +610,9 @@ C
 
         SUBROUTINE EXGNSV (IDEXO, ISTEP, IXV, ID, NUM, VAL, IERR)
 C> \sa ex_get_nset_var()
-C
+
 C>       READ NODESET VARIABLE VALUES AT A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -637,9 +637,9 @@ C
 
         SUBROUTINE EXGSSV (IDEXO, ISTEP, IXV, ID, NUM, VAL, IERR)
 C> \sa ex_get_sset_var()
-C
+
 C>       READ SIDESET VARIABLE VALUES AT A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -664,9 +664,9 @@ C
 
         SUBROUTINE EXGGV (IDEXO, ISTEP, NVARGL, VALGV, IERR)
 C> \sa ex_get_glob_vars()
-C
+
 C>       READ GLOBAL VARIABLE VALUES AT A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -689,9 +689,9 @@ C
 
         SUBROUTINE EXGGVT (IDEXO, IXGLOV, ISTPB, ISTPE, VALGV, IERR)
 C> \sa ex_get_glob_var_time()
-C
+
 C>       READ GLOBAL VARIABLE VALUES THROUGH TIME
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -717,9 +717,9 @@ C
 
         SUBROUTINE EXGINF (IDEXO, INFO, IERR)
 C> \sa ex_get_info()
-C
+
 C>       READ INFORMATION RECORDS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -737,9 +737,9 @@ C
         SUBROUTINE EXGINI (IDEXO, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &          NUMNPS, NUMESS, IERR)
 C> \sa ex_get_init()
-C
+
 C>       READ INITIALIZATION PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -763,9 +763,9 @@ C
 
         SUBROUTINE EXGMP (IDEXO, NNMAP, NEMAP, IERR)
 C> \sa ex_get_map_param()
-C
+
 C>       GET MAP PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -787,9 +787,9 @@ C
 
         SUBROUTINE EXPMP (IDEXO, NNMAP, NEMAP, IERR)
 C> \sa ex_put_map_param()
-C
+
 C       PUT MAP PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -811,9 +811,9 @@ C
 
         SUBROUTINE EXGMAP (IDEXO, MAPEL, IERR)
 C> \sa ex_get_map()
-C
+
 C>       READ ELEMENT ORDER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -830,9 +830,9 @@ C
 
         SUBROUTINE EXGNNM (IDEXO, MAPNOD, IERR)
 C> \sa ex_get_id_map()
-C
+
 C>       READ NODE NUMBER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -849,9 +849,9 @@ C
 
         SUBROUTINE EXGNM (IDEXO, MAPID, MAPNOD, IERR)
 C> \sa ex_get_num_map()
-C
+
 C>       READ NODE ORDER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -869,9 +869,9 @@ C
 
         SUBROUTINE EXGNP (IDEXO, IDNPS, NNNPS, NDNPS, IERR)
 C> \sa ex_get_node_set_param()
-C
+
 C>       READ NODE SET PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -890,9 +890,9 @@ C
 
         SUBROUTINE EXGNS (IDEXO, IDNPS, LTNNPS, IERR)
 C> \sa ex_get_node_set()
-C
+
 C>       READ NODE SET
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -910,9 +910,9 @@ C
 
         SUBROUTINE EXGNSD (IDEXO, IDNPS, FACNPS, IERR)
 C> \sa ex_get_node_set_dist_fact()
-C
+
 C>       READ NODE SET DISTRIBUTION FACTORS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -931,9 +931,9 @@ C
 
         SUBROUTINE EXGNSI (IDEXO, IDNPSS, IERR)
 C> \sa ex_get_node_set_ids()
-C
+
 C>       READ NODE SET IDS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -950,9 +950,9 @@ C
 
         SUBROUTINE EXGNV (IDEXO, ISTEP, IXNODV, NUMNP, VALNV, IERR)
 C> \sa ex_get_nodal_var()
-C
+
 C>       READ NODAL VARIABLE VALUES AT A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -977,9 +977,9 @@ C
         SUBROUTINE EXGNVT (IDEXO, IXNODV, NODNUM, ISTPB, ISTPE,
      &          VALNV, IERR)
 C> \sa ex_get_nodal_var_time()
-C
+
 C>       READ NODAL VARIABLE VALUES THROUGH TIME
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1007,9 +1007,9 @@ C
 
         SUBROUTINE EXGP (IDEXO, ITYPE, ID, NAMEPR, IVAL, IERR)
 C> \sa ex_get_prop()
-C
+
 C>       READ OBJECT PROPERTY
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1031,9 +1031,9 @@ C
 
         SUBROUTINE EXGPA (IDEXO, ITYPE, NAMEPR, IVAL, IERR)
 C> \sa ex_get_prop_array()
-C
+
 C>       READ OBJECT PROPERTY ARRAY
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1054,9 +1054,9 @@ C
 
         SUBROUTINE EXGPN (IDEXO, ITYPE, NAMEPR, IERR)
 C> \sa ex_get_prop_names()
-C
+
 C>       READ PROPERTY ARRAY NAMES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1076,9 +1076,9 @@ C
 
         SUBROUTINE EXGQA (IDEXO, QAREC, IERR)
 C> \sa ex_get_qa()
-C
+
 C>       READ QA RECORDS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1095,9 +1095,9 @@ C
 
         SUBROUTINE EXGSP (IDEXO, IDESS, NSESS, NDESS, IERR)
 C> \sa ex_get_side_set_param()
-C
+
 C>       READ SIDE SET PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1116,9 +1116,9 @@ C
 
         SUBROUTINE EXGSNL (IDEXO, IDESS, NNESS, IERR)
 C> \sa ex_get_side_set_node_list_len()
-C
+
 C>       GET SIDE SET NODELIST LENGTH
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1136,9 +1136,9 @@ C
 
         SUBROUTINE EXGSS (IDEXO, IDESS, LTEESS, LTSESS, IERR)
 C> \sa ex_get_side_set()
-C
+
 C>       READ SIDE SET
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1157,9 +1157,9 @@ C
 
         SUBROUTINE EXGSSD (IDEXO, IDESS, FACESS, IERR)
 C> \sa ex_get_side_set_dist_fact()
-C
+
 C>       READ SIDE SET DISTRIBUTION FACTORS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1177,9 +1177,9 @@ C
 
         SUBROUTINE EXGSSI (IDEXO, IDESSS, IERR)
 C> \sa ex_get_side_set_ids()
-C
+
 C>       READ SIDE SET IDS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1196,9 +1196,9 @@ C
 
         SUBROUTINE EXGSSN (IDEXO, IDESS, INCNT, LTNESS, IERR)
 C> \sa ex_get_side_set_node_list()
-C
+
 C>       READ SIDE SET NODE LIST
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1217,9 +1217,9 @@ C
 
         SUBROUTINE EXGSSC (IDEXO, IDESS, INCNT, IERR)
 C> \sa ex_get_side_set_node_count()
-C
+
 C>       READ SIDE SET NODE LIST COUNT
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1247,10 +1247,10 @@ C
 
         SUBROUTINE EXGCSSC (IDEXO, INCNT, IERR)
 C> \sa ex_get_concat_side_set_node_count()
-C
+
 C>       READ CONCATENATED SIDE SET NODE COUNT LIST
 C>       (nodes/face for all faces)
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1277,9 +1277,9 @@ C
 
         SUBROUTINE EXGTIM (IDEXO, NSTEP, TIME, IERR)
 C> \sa ex_get_time()
-C
+
 C>       READ TIME VALUE FOR A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1299,9 +1299,9 @@ C
 
         SUBROUTINE EXGVAN (IDEXO, VARTYP, NVAR, NAMES, IERR)
 C> \sa ex_get_var_names()
-C
+
 C>       READ RESULTS VARIABLE NAMES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1322,9 +1322,9 @@ C
 
         SUBROUTINE EXGVNM (IDEXO, VARTYP, NVAR, NAME, IERR)
 C> \sa ex_get_var_name()
-C
+
 C>       READ RESULTS VARIABLE NAME
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1345,9 +1345,9 @@ C
 
         SUBROUTINE EXPVNM (IDEXO, VARTYP, NVAR, NAME, IERR)
 C> \sa ex_put_var_name()
-C
+
 C>       WRITE RESULTS VARIABLE NAME
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1368,9 +1368,9 @@ C
 
         SUBROUTINE EXGVP (IDEXO, VARTYP, NVAR, IERR)
 C> \sa ex_get_var_param()
-C
+
 C>       READ RESULTS VARIABLE PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1390,9 +1390,9 @@ C
 
         SUBROUTINE EXGVTT (IDEXO, NELBLK, NVAREL, ISEVOK, IERR)
 C> \sa ex_get_elem_var_tab()
-C
+
 C>       READ ELEMENT VARIABLE TRUTH TABLE
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1419,9 +1419,9 @@ C
 
         SUBROUTINE EXGNSTT (IDEXO, NBLK, NVAR, ISVOK, IERR)
 C> \sa ex_get_nset_var_tab()
-C
+
 C>       READ NODESET VARIABLE TRUTH TABLE
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1448,9 +1448,9 @@ C
 
         SUBROUTINE EXGSSTT (IDEXO, NBLK, NVAR, ISVOK, IERR)
 C> \sa ex_get_nset_var_tab()
-C
+
 C>       READ SIDESET VARIABLE TRUTH TABLE
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1477,9 +1477,9 @@ C
 
         SUBROUTINE EXINQ (IDEXO, INFREQ, INTRET, RELRET, CHRRET, IERR)
 C> \sa ex_inquire()
-C
+
 C>       INQUIRE EXODUS PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1503,9 +1503,9 @@ C
 
         INTEGER FUNCTION EXINQI (IDEXO, INFREQ)
 C> \sa ex_inquire_int()
-C
+
 C>       INQUIRE EXODUS PARAMETERS -- Integer only
-C
+
         IMPLICIT NONE
         INTEGER IDEXO           ! (R)
         INTEGER INFREQ          ! (R)
@@ -1523,9 +1523,9 @@ C
 
         INTEGER FUNCTION EXOPEN (PATH, IMODE, ICOMPWS, IOWS, VERS, IERR)
 C> \sa ex_open()
-C
+
 C>       OPEN EXODUS II FILE
-C
+
         IMPLICIT NONE
         CHARACTER* (*) PATH     ! (R)
         INTEGER IMODE           ! (R)
@@ -1598,9 +1598,9 @@ C> \sa ex_large_model()
 
         SUBROUTINE EXOPTS (OPTVAL, IERR)
 C> \sa ex_opts()
-C
+
 C>       SET ERROR REPORTING LEVEL
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER OPTVAL          ! (R)
@@ -1617,9 +1617,9 @@ C
 
         SUBROUTINE EXMXNM (IDEXO, LENGTH, IERR)
 C> \sa ex_set_max_name_length()
-C
+
 C>       SET MAXIMUM NAME LENGTH
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1639,9 +1639,9 @@ C
 
         SUBROUTINE EXSETOPT (IDEXO, OPTION, VALUE, IERR)
 C> \sa ex_set_opt()
-C
+
 C>       SET SPECIFIED OPTION
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1665,9 +1665,9 @@ C
         SUBROUTINE EXPCNS (IDEXO, IDNPSS, NNNPS, NDNPS, IXNNPS,
      &          IXDNPS, LTNNPS, FACNPS, IERR)
 C> \sa ex_put_concat_node_sets()
-C
+
 C>       WRITE CONCATENATED NODE SETS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1693,9 +1693,9 @@ C
 
         SUBROUTINE EXPCON (IDEXO, NAMECO, IERR)
 C> \sa ex_put_coord_names()
-C
+
 C>       WRITE COORDINATE NAMES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1714,9 +1714,9 @@ C
 
         SUBROUTINE EXPCOR (IDEXO, XN, YN, ZN, IERR)
 C> \sa ex_put_coord()
-C
+
 C>       WRITE NODAL COORDINATES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1738,9 +1738,9 @@ C
         SUBROUTINE EXPCSS (IDEXO, IDESSS, NSESS, NDESS, IXEESS,
      &          IXDESS, LTEESS, LTSESS, FACESS, IERR)
 C> \sa ex_put_concat_side_sets()
-C
+
 C>       WRITE CONCATENATED SIDE SETS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1767,9 +1767,9 @@ C
 
         SUBROUTINE EXPEAT (IDEXO, IDELB, ATRIB, IERR)
 C> \sa ex_put_elem_attr()
-C
+
 C>       WRITE ELEMENT BLOCK ATTRIBUTES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1789,9 +1789,9 @@ C
 
         SUBROUTINE EXPEAN (IDEXO, IDELB, NATTR, NAMES, IERR)
 C> \sa ex_put_elem_attr_names()
-C
+
 C>       WRITE ELEMENT BLOCK ATTRIBUTE NAMES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1815,9 +1815,9 @@ C
         SUBROUTINE EXPCLB (IDEXO, IDELB, NAMELB, NUMELB, NUMLNK,
      &          NUMATR, MKMAP, IERR)
 C> \sa ex_put_concat_elem_block()
-C
+
 C>       WRITE CONCATENATED ELEMENT BLOCK PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1844,9 +1844,9 @@ C
         SUBROUTINE EXPELB (IDEXO, IDELB, NAMELB, NUMELB, NUMLNK,
      &          NUMATR, IERR)
 C> \sa ex_put_elem_block()
-C
+
 C>       WRITE ELEMENT BLOCK PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1870,9 +1870,9 @@ C
 
         SUBROUTINE EXPELC (IDEXO, IDELB, LINK, IERR)
 C> \sa ex_put_elem_conn()
-C
+
 C>       WRITE ELEMENT BLOCK CONNECTIVITY
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1892,9 +1892,9 @@ C
 
         SUBROUTINE EXPECPP (IDEXO, ITYPE, IDELB, COUNTS, IERR)
 C> ex_put_entity_count_per_polyhedra()
-C
+
 C>       WRITE ELEMENT BLOCK ELEMENT COUNT PER POLYHEDRA
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1929,9 +1929,9 @@ C
 
         SUBROUTINE EXPENM (IDEXO, MAPEL, IERR)
 C> ex_put_id_map()
-C
+
 C>       WRITE ELEMENT NUMBER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1948,9 +1948,9 @@ C
 
         SUBROUTINE EXPEM (IDEXO, MAPID, MAPEL, IERR)
 C> ex_put_processor_elem_maps()
-C
+
 C>       WRITE ELEMENT NUMBER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1968,9 +1968,9 @@ C
 
         SUBROUTINE EXPPEM (IDEXO, MAPID, ISTART, ICOUNT, MAPEL, IERR)
 C> ex_put_partial_num_map()
-C
+
 C>       WRITE ELEMENT NUMBER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -1993,9 +1993,9 @@ C
         SUBROUTINE EXPEV (IDEXO, ISTEP, IXELEV, IDELB, NUMELB,
      &          VALEV, IERR)
 C> ex_put_elem_var()
-C
+
 C>       WRITE ELEMENT VARIABLE VALUES AT A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2021,9 +2021,9 @@ C
 
         SUBROUTINE EXPNSV (IDEXO, ISTEP, IXV, ID, NUM, VAL, IERR)
 C> ex_put_nset_var()
-C
+
 C>       WRITE NODESET VARIABLE VALUES AT A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2048,9 +2048,9 @@ C
 
         SUBROUTINE EXPSSV (IDEXO, ISTEP, IXV, ID, NUM, VAL, IERR)
 C> ex_put_sset_var()
-C
+
 C>       WRITE SIDESET VARIABLE VALUES AT A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2075,9 +2075,9 @@ C
 
         SUBROUTINE EXPGV (IDEXO, ISTEP, NVARGL, VALGV, IERR)
 C> ex_put_glob_vars()
-C
+
 C>       WRITE GLOBAL VARIABLE VALUES AT A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2100,9 +2100,9 @@ C
 
         SUBROUTINE EXPINF (IDEXO, NINFO, INFO, IERR)
 C> ex_put_info()
-C
+
 C>       WRITE INFORMATION RECORDS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2123,9 +2123,9 @@ C
         SUBROUTINE EXPINI (IDEXO, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &          NUMNPS, NUMESS, IERR)
 C> ex_put_init()
-C
+
 C>       WRITE INITIALIZATION PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2149,9 +2149,9 @@ C
 
         SUBROUTINE EXPMAP (IDEXO, MAPEL, IERR)
 C> ex_put_map()
-C
+
 C>       WRITE ELEMENT ORDER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2168,9 +2168,9 @@ C
 
         SUBROUTINE EXPNNM (IDEXO, MAPNOD, IERR)
 C> ex_put_id_map()
-C
+
 C>       WRITE NODE NUMBER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2187,9 +2187,9 @@ C
 
         SUBROUTINE EXPNM (IDEXO, MAPID, MAPNOD, IERR)
 C> ex_put_num_map()
-C
+
 C>       WRITE NODE NUMBER MAP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2207,9 +2207,9 @@ C
 
         SUBROUTINE EXPNP (IDEXO, IDNPS, NNNPS, NDNPS, IERR)
 C> ex_put_node_set_param()
-C
+
 C>       WRITE NODE SET PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2228,9 +2228,9 @@ C
 
         SUBROUTINE EXPNS (IDEXO, IDNPS, LTNNPS, IERR)
 C> ex_put_node_set()
-C
+
 C>       WRITE NODE SET
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2248,9 +2248,9 @@ C
 
         SUBROUTINE EXPNSD (IDEXO, IDNPS, FACNPS, IERR)
 C> ex_put_node_set_dist_fact()
-C
+
 C>       WRITE NODE SET DISTRIBUTION FACTORS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2268,9 +2268,9 @@ C
 
         SUBROUTINE EXPNV (IDEXO, ISTEP, IXNODV, NUMNP, VALNV, IERR)
 C> ex_put_nodal_var()
-C
+
 C>       WRITE NODAL VARIABLE VALUES AT A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2294,9 +2294,9 @@ C
 
         SUBROUTINE EXPP (IDEXO, ITYPE, ID, NAMEPR, IVAL, IERR)
 C> ex_put_prop()
-C
+
 C>       WRITE OBJECT PROPERTY
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2318,9 +2318,9 @@ C
 
         SUBROUTINE EXPPA (IDEXO, ITYPE, NAMEPR, IVAL, IERR)
 C> ex_put_prop_array()
-C
+
 C>       WRITE OBJECT PROPERTY ARRAY
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2341,9 +2341,9 @@ C
 
         SUBROUTINE EXPPN (IDEXO, ITYPE, NPROPS, NAMEPR, IERR)
 C> ex_put_prop_names()
-C
+
 C>       WRITE PROPERTY ARRAY NAMES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2366,9 +2366,9 @@ C
 
         SUBROUTINE EXPQA (IDEXO, NQAREC, QAREC, IERR)
 C> ex_put_qa()
-C
+
 C>       WRITE QA RECORDS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2388,9 +2388,9 @@ C
 
         SUBROUTINE EXPSP (IDEXO, IDESS, NSESS, NDESS, IERR)
 C> ex_put_side_set_param()
-C
+
 C>       WRITE SIDE SET PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2409,9 +2409,9 @@ C
 
         SUBROUTINE EXPSS (IDEXO, IDESS, LTEESS, LTSESS, IERR)
 C> ex_put_side_set()
-C
+
 C>       WRITE SIDE SET
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2430,9 +2430,9 @@ C
 
         SUBROUTINE EXPSSD (IDEXO, IDESS, FACESS, IERR)
 C> ex_put_side_set_dist_fact()
-C
+
 C>       WRITE SIDE SET DISTRIBUTION FACTORS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2450,9 +2450,9 @@ C
 
         SUBROUTINE EXPTIM (IDEXO, NSTEP, TIME, IERR)
 C> ex_put_time()
-C
+
 C>       WRITE TIME VALUE FOR A TIME STEP
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2472,9 +2472,9 @@ C
 
         SUBROUTINE EXPVAN (IDEXO, VARTYP, NVAR, NAMES, IERR)
 C> ex_put_var_names()
-C
+
 C>       WRITE RESULTS VARIABLE NAMES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2495,9 +2495,9 @@ C
 
         SUBROUTINE EXPVP (IDEXO, VARTYP, NVAR, IERR)
 C> ex_put_var_param()
-C
+
 C>       WRITE RESULTS VARIABLE PARAMETERS
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2517,9 +2517,9 @@ C
 
         SUBROUTINE EXPVTT (IDEXO, NELBLK, NVAREL, ISEVOK, IERR)
 C> ex_put_elem_var_tab()
-C
+
 C>       WRITE ELEMENT VARIABLE TRUTH TABLE
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2546,9 +2546,9 @@ C
 
         SUBROUTINE EXPNSTT (IDEXO, NBLK, NVAR, ISVOK, IERR)
 C> ex_put_nset_var_tab()
-C
+
 C>       WRITE NODESET VARIABLE TRUTH TABLE
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2575,9 +2575,9 @@ C
 
         SUBROUTINE EXPSSTT (IDEXO, NBLK, NVAR, ISVOK, IERR)
 C> ex_put_sset_var_tab()
-C
+
 C>       WRITE SIDESET VARIABLE TRUTH TABLE
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2604,9 +2604,9 @@ C
 
         SUBROUTINE EXGNAMS (IDEXO, ITYPE, NVAR, NAMES, IERR)
 C> ex_get_names()
-C
+
 C>       READ OBJECT NAMES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2629,9 +2629,9 @@ C
 
         SUBROUTINE EXGNAM (IDEXO, ITYPE, ID, NAME, IERR)
 C> ex_get_name()
-C
+
 C>       READ OBJECT NAME
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2652,9 +2652,9 @@ C
 
         SUBROUTINE EXPNAMS (IDEXO, ITYPE, NVAR, NAMES, IERR)
 C> ex_put_names()
-C
+
 C>       WRITE OBJECT NAMES
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2677,9 +2677,9 @@ C
 
         SUBROUTINE EXPNAM (IDEXO, ITYPE, ID, NAME, IERR)
 C> ex_put_name()
-C
+
 C>       WRITE OBJECT NAME
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2700,9 +2700,9 @@ C
 
         SUBROUTINE EXUPDA (IDEXO, IERR)
 C> ex_update()
-C
+
 C>       UPDATE EXODUS II FILE
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO           ! (R)
@@ -2718,9 +2718,9 @@ C
 
         SUBROUTINE EXCOPY (IDEXO1, IDEXO2, IERR)
 C> ex_copy()
-C
+
 C>       COPY EXODUS II FILE
-C
+
         IMPLICIT NONE
         INCLUDE 'exodusII.inc'
         INTEGER IDEXO1          ! (R)
@@ -2739,9 +2739,9 @@ C
 
 
 C-----------------------------------------------------------------------
-C
+
 C   Get initial information from nemesis file
-C
+
       subroutine exgii (idexo, nproc, nproc_in_f, ftype, ierr)
 C> ex_get_init_info()
       implicit none
@@ -2750,24 +2750,24 @@ C> ex_get_init_info()
       integer nproc_in_f
       character*(*) ftype
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 nproc4
       integer*4 nproc_in_f4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgii4 (idexo4, nproc4, nproc_in_f4, ftype, ierr4)
       nproc = nproc4
       nproc_in_f = nproc_in_f4
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C   Write initial information from nemesis file
-C
+
       subroutine expii (idexo, nproc, nproc_in_f, ftype, ierr)
 C> ex_put_init_info()
       implicit none
@@ -2776,24 +2776,24 @@ C> ex_put_init_info()
       integer nproc_in_f
       character*(*) ftype
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 nproc4
       integer*4 nproc_in_f4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       nproc4 = nproc
       nproc_in_f4 = nproc_in_f
       call expii4 (idexo4, nproc4, nproc_in_f4, ftype, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read initial global information
-C
+
       subroutine exgig (idexo, nnodes_g, nelems_g, nelem_blks_g,
      $  nnode_sets_g, nside_sets_g, ierr)
 C> ex_get_init_global()
@@ -2805,21 +2805,21 @@ C> ex_get_init_global()
       integer nnode_sets_g
       integer nside_sets_g
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgig4 (idexo4, nnodes_g, nelems_g, nelem_blks_g,
      $  nnode_sets_g, nside_sets_g, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write initial global information
-C
+
       subroutine expig (idexo, nnodes_g, nelems_g, nelem_blks_g,
      $  nnode_sets_g, nside_sets_g, ierr)
 C> ex_put_init_global()
@@ -2831,21 +2831,21 @@ C> ex_put_init_global()
       integer nnode_sets_g
       integer nside_sets_g
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expig4 (idexo4, nnodes_g, nelems_g, nelem_blks_g,
      $  nnode_sets_g, nside_sets_g, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read load balance parameters
-C
+
       subroutine exglbp (idexo, nint_nodes, nbor_nodes, next_nodes,
      $  nint_elems, nbor_elems, nnode_cmaps, nelem_cmaps,
      $  processor, ierr)
@@ -2861,24 +2861,24 @@ C> ex_get_loadbal_param()
       integer nelem_cmaps
       integer processor
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call exglbp4 (idexo4, nint_nodes, nbor_nodes, next_nodes,
      $  nint_elems, nbor_elems, nnode_cmaps, nelem_cmaps,
      $  processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write load balance parameters
-C
+
       subroutine explbp (idexo, nint_nodes, nbor_nodes, next_nodes,
      $  nint_elems, nbor_elems, nnode_cmaps, nelem_cmaps,
      $  processor, ierr)
@@ -2894,24 +2894,24 @@ C> ex_put_loadbal_param()
       integer nelem_cmaps
       integer processor
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call explbp4 (idexo4, nint_nodes, nbor_nodes, next_nodes,
      $  nint_elems, nbor_elems, nnode_cmaps, nelem_cmaps,
      $  processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write concatenated load balance parameters
-C
+
       subroutine explbpc (idexo, nint_nodes, nbor_nodes, next_nodes,
      $  nint_elems, nbor_elems, nnode_cmaps, nelem_cmaps, ierr)
 C> ex_put_loadbal_param_cc()
@@ -2925,22 +2925,22 @@ C> ex_put_loadbal_param_cc()
       integer nnode_cmaps(*)
       integer nelem_cmaps(*)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call explbpc4 (idexo4, nint_nodes, nbor_nodes, next_nodes,
      $  nint_elems, nbor_elems, nnode_cmaps, nelem_cmaps,
      $  ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read global node set parameters
-C
+
       subroutine exgnspg (idexo, ns_ids_glob, ns_n_cnt_glob,
      $  ns_df_cnt_glob, ierr)
 C> ex_get_ns_param_global()
@@ -2950,21 +2950,21 @@ C> ex_get_ns_param_global()
       integer ns_n_cnt_glob(*)
       integer ns_df_cnt_glob(*)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgnspg4 (idexo4, ns_ids_glob, ns_n_cnt_glob,
      $  ns_df_cnt_glob, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write global node set parameters
-C
+
       subroutine expnspg (idexo, global_ids, global_n_cnts,
      $  global_df_cnts, ierr)
 C> ex_put_ns_param_global()
@@ -2973,21 +2973,21 @@ C> ex_put_ns_param_global()
       integer global_n_cnts(*)
       integer global_df_cnts(*)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expnspg4 (idexo4, global_ids, global_n_cnts,
      $  global_df_cnts, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read global side set parameters
-C
+
       subroutine exgsspg (idexo, ss_ids_glob, ss_n_cnt_glob,
      $  ss_df_cnt_glob, ierr)
 C> ex_get_ss_param_global()
@@ -2997,21 +2997,21 @@ C> ex_get_ss_param_global()
       integer ss_n_cnt_glob(*)
       integer ss_df_cnt_glob(*)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgsspg4 (idexo4, ss_ids_glob, ss_n_cnt_glob,
      $  ss_df_cnt_glob, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write global side set parameters
-C
+
       subroutine expsspg (idexo, global_ids, global_el_cnts,
      $  global_df_cnts, ierr)
 C> ex_put_ss_param_global()
@@ -3021,21 +3021,21 @@ C> ex_put_ss_param_global()
       integer global_el_cnts(*)
       integer global_df_cnts(*)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expsspg4 (idexo4, global_ids, global_el_cnts,
      $  global_df_cnts, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read global element block information
-C
+
       subroutine exgebig (idexo, el_blk_ids, el_blk_cnts, ierr)
 C> ex_get_eb_info_global()
       implicit none
@@ -3043,20 +3043,20 @@ C> ex_get_eb_info_global()
       integer el_blk_ids(*)
       integer el_blk_cnts(*)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgebig4 (idexo4, el_blk_ids, el_blk_cnts, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write global element block information
-C
+
       subroutine expebig (idexo, el_blk_ids, el_blk_cnts, ierr)
 C> ex_put_eb_info_global()
       implicit none
@@ -3064,20 +3064,20 @@ C> ex_put_eb_info_global()
       integer el_blk_ids(*)
       integer el_blk_cnts(*)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expebig4 (idexo4, el_blk_ids, el_blk_cnts, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read side set element list and side set side list
-C
+
       subroutine exgnss (idexo, ss_id, start_side_num, num_sides,
      $  ss_elem_list, ss_side_list, ierr)
 C> ex_get_n_side_set()
@@ -3089,21 +3089,21 @@ C> ex_get_n_side_set()
       integer ss_elem_list(num_sides)
       integer ss_side_list(num_sides)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgnss4 (idexo4, ss_id, start_side_num, num_sides,
      $  ss_elem_list, ss_side_list, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write side set element list and side set side list
-C
+
       subroutine expnss (idexo, ss_id, start_side_num, num_sides,
      $  ss_elem_list, ss_side_list, ierr)
 C> ex_put_n_side_set()
@@ -3115,21 +3115,21 @@ C> ex_put_n_side_set()
       integer ss_elem_list(num_sides)
       integer ss_side_list(num_sides)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expnss4 (idexo4, ss_id, start_side_num, num_sides,
      $  ss_elem_list, ss_side_list, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read side set distribution factor
-C
+
       subroutine exgnssd (idexo, ss_id, start_num, num_df_to_get,
      $  ss_df, ierr)
 C> ex_get_n_side_set_df()
@@ -3140,21 +3140,21 @@ C> ex_get_n_side_set_df()
       integer num_df_to_get
       real ss_df(num_df_to_get)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgnssd4 (idexo4, ss_id, start_num, num_df_to_get,
      $  ss_df, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write side set distribution factor
-C
+
       subroutine expnssd (idexo, ss_id, start_num, num_df_to_get,
      $  ss_df, ierr)
 C> ex_put_n_side_set_df()
@@ -3165,21 +3165,21 @@ C> ex_put_n_side_set_df()
       integer num_df_to_get
       real ss_df(num_df_to_get)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expnssd4 (idexo4, ss_id, start_num, num_df_to_get,
      $  ss_df, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read node set list for a single node set
-C
+
       subroutine exgnns (idexo, ns_id, start_node_num, num_node,
      $  ns_node_list, ierr)
 C> ex_get_n_node_set()
@@ -3190,21 +3190,21 @@ C> ex_get_n_node_set()
       integer num_node
       integer ns_node_list(num_node)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgnns4 (idexo4, ns_id, start_node_num, num_node,
      $  ns_node_list, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write node set list for a single node set
-C
+
       subroutine expnns (idexo, ns_id, start_node_num, num_node,
      $  ns_node_list, ierr)
 C> ex_put_n_node_set()
@@ -3215,21 +3215,21 @@ C> ex_put_n_node_set()
       integer num_node
       integer ns_node_list(num_node)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expnns4 (idexo4, ns_id, start_node_num, num_node,
      $  ns_node_list, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read node set distribution factor
-C
+
       subroutine exgnnsd (idexo, ns_id, start_num, num_df_to_get,
      $  ns_df, ierr)
 C> ex_get_n_node_set_df()
@@ -3240,21 +3240,21 @@ C> ex_get_n_node_set_df()
       integer num_df_to_get
       real ns_df(num_df_to_get)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgnnsd4 (idexo4, ns_id, start_num, num_df_to_get,
      $  ns_df, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write node set distribution factor
-C
+
       subroutine expnnsd (idexo, ns_id, start_num, num_df_to_get,
      $  ns_df, ierr)
 C> ex_put_n_node_set_df()
@@ -3265,21 +3265,21 @@ C> ex_put_n_node_set_df()
       integer num_df_to_get
       real ns_df(num_df_to_get)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expnnsd4 (idexo4, ns_id, start_num, num_df_to_get,
      $  ns_df, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read coordinates of the nodes
-C
+
       subroutine exgncor (idexo, start_node_num, num_nodes, x_coor,
      $  y_coor, z_coor, ierr)
 C> ex_get_n_coord()
@@ -3291,21 +3291,21 @@ C> ex_get_n_coord()
       real y_coor(num_nodes)
       real z_coor(num_nodes)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgncor4 (idexo4, start_node_num, num_nodes, x_coor,
      $  y_coor, z_coor, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write coordinates of the nodes
-C
+
       subroutine expncor (idexo, start_node_num, num_nodes, x_coor,
      $  y_coor, z_coor, ierr)
 C> ex_put_n_coord()
@@ -3317,21 +3317,21 @@ C> ex_put_n_coord()
       real y_coor(num_nodes)
       real z_coor(num_nodes)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expncor4 (idexo4, start_node_num, num_nodes, x_coor,
      $  y_coor, z_coor, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read an element blocks connectivity list
-C
+
       subroutine exgnec (idexo, elem_blk_id, start_elem_num,
      $  num_elems, connect, ierr)
 C> ex_get_n_elem_conn()
@@ -3342,21 +3342,21 @@ C> ex_get_n_elem_conn()
       integer num_elems
       integer connect(num_elems)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgnec4 (idexo4, elem_blk_id, start_elem_num,
      $  num_elems, connect, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write an element blocks connectivity list
-C
+
       subroutine expnec (idexo, elem_blk_id, start_elem_num,
      $  num_elems, connect, ierr)
 C> ex_put_n_elem_conn()
@@ -3367,21 +3367,21 @@ C> ex_put_n_elem_conn()
       integer num_elems
       integer connect(num_elems)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expnec4 (idexo4, elem_blk_id, start_elem_num,
      $  num_elems, connect, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read an element blocks attributes
-C
+
       subroutine exgneat (idexo, elem_blk_id, start_elem_num,
      $  num_elems, attrib, ierr)
 C> ex_get_n_elem_attr()
@@ -3392,21 +3392,21 @@ C> ex_get_n_elem_attr()
       integer num_elems
       real attrib(num_elems)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgneat4 (idexo4, elem_blk_id, start_elem_num,
      $  num_elems, attrib, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write an element blocks attributes
-C
+
       subroutine expneat (idexo, elem_blk_id, start_elem_num,
      $  num_elems, attrib, ierr)
 C> ex_put_n_elem_attr()
@@ -3417,20 +3417,20 @@ C> ex_put_n_elem_attr()
       integer num_elems
       real attrib(num_elems)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expneat4 (idexo4, elem_blk_id, start_elem_num,
      $  num_elems, attrib, ierr4)
       ierr = ierr4
-C
+
       end
-C
+
 C-----------------------------------------------------------------------
 C  Read the element type for a specific element block
-C
+
       subroutine exgelt (idexo, elem_blk_id, elem_type, ierr)
 C> ex_get_elem_type()
       implicit none
@@ -3438,20 +3438,20 @@ C> ex_get_elem_type()
       integer elem_blk_id
       character*(*) elem_type
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgelt4 (idexo4, elem_blk_id, elem_type, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read a variable for an element block
-C
+
       subroutine exgnev (idexo, time_step, elem_var_index,
      $  elem_blk_id, num_elem_this_blk, start_elem_num,
      $  num_elem, elem_var_vals, ierr)
@@ -3466,12 +3466,12 @@ C> ex_get_n_var()
       integer num_elem
       real elem_var_vals(num_elem)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 time_step4
       integer*4 elem_var_index4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       time_step4 = time_step
       elem_var_index4 = elem_var_index
@@ -3479,13 +3479,13 @@ C
      $  elem_blk_id, num_elem_this_blk, start_elem_num,
      $  num_elem, elem_var_vals, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write a variable slab for an element block
-C
+
       subroutine expevs (idexo, time_step, elem_var_index,
      $  elem_blk_id, start_pos, num_vals, elem_var_vals,
      $  ierr)
@@ -3499,12 +3499,12 @@ C> ex_put_elem_var_slab()
       integer num_vals
       real elem_var_vals(num_vals)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 time_step4
       integer*4 elem_var_index4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       time_step4 = time_step
       elem_var_index4 = elem_var_index
@@ -3512,13 +3512,13 @@ C
      $  elem_blk_id, start_pos, num_vals, elem_var_vals,
      $  ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read the values of a single nodal variable for a single time step
-C
+
       subroutine exgnnv (idexo, time_step, nodal_var_index,
      $  start_node_num, num_nodes, nodal_vars, ierr)
 C> ex_get_n_var()
@@ -3530,25 +3530,25 @@ C> ex_get_n_var()
       integer num_nodes
       real nodal_vars(num_nodes)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 time_step4
       integer*4 nodal_var_index4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       time_step4 = time_step
       nodal_var_index4 = nodal_var_index
       call exgnnv4 (idexo4, time_step4, nodal_var_index4,
      $  start_node_num, num_nodes, nodal_vars, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write nodal variable slab
-C
+
       subroutine expnvs (idexo, time_step, nodal_var_index,
      $  start_pos, num_vals, nodal_var_vals, ierr)
 C> ex_put_nodal_var_slab()
@@ -3560,25 +3560,25 @@ C> ex_put_nodal_var_slab()
       integer num_vals
       real nodal_var_vals(num_vals)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 time_step4
       integer*4 nodal_var_index4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       time_step4 = time_step
       nodal_var_index4 = nodal_var_index
       call expnvs4 (idexo4, time_step4, nodal_var_index4,
      $  start_pos, num_vals, nodal_var_vals, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read the element numbering map
-C
+
       subroutine exgnenm (idexo, starte, num_ent, elem_map, ierr)
 C> ex_get_n_elem_num_map()
       implicit none
@@ -3587,20 +3587,20 @@ C> ex_get_n_elem_num_map()
       integer num_ent
       integer elem_map(num_ent)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgnenm4 (idexo4, starte, num_ent, elem_map, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write the element numbering map
-C
+
       subroutine expnenm (idexo, starte, num_ent, elem_map, ierr)
 C> ex_put_partial_id_map()
       implicit none
@@ -3609,20 +3609,20 @@ C> ex_put_partial_id_map()
       integer num_ent
       integer elem_map(num_ent)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expnenm4 (idexo4, starte, num_ent, elem_map, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read the node numbering map
-C
+
       subroutine exgnnnm (idexo, startn, num_ent, node_map, ierr)
 C> ex_get_n_node_num_map()
       implicit none
@@ -3631,20 +3631,20 @@ C> ex_get_n_node_num_map()
       integer num_ent
       integer node_map(num_ent)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call exgnnnm4 (idexo4, startn, num_ent, node_map, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write the node numbering map
-C
+
       subroutine expnnnm (idexo, startn, num_ent, node_map, ierr)
 C> ex_put_partial_id_map()
       implicit none
@@ -3653,20 +3653,20 @@ C> ex_put_partial_id_map()
       integer num_ent
       integer node_map(num_ent)
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expnnnm4 (idexo4, startn, num_ent, node_map, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read the node map for a processor
-C
+
       subroutine exgnmp (idexo, node_mapi, node_mapb, node_mape,
      $  processor, ierr)
 C> ex_get_processor_node_maps()
@@ -3677,23 +3677,23 @@ C> ex_get_processor_node_maps()
       integer node_mape(*)
       integer processor
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call exgnmp4 (idexo4, node_mapi, node_mapb, node_mape,
      $  processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write a node map for a processor
-C
+
       subroutine expnmp (idexo, node_mapi, node_mapb, node_mape,
      $  processor, ierr)
 C> ex_put_processor_node_maps()
@@ -3704,23 +3704,23 @@ C> ex_put_processor_node_maps()
       integer node_mape(*)
       integer processor
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call expnmp4 (idexo4, node_mapi, node_mapb, node_mape,
      $  processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read the element map for a processor
-C
+
       subroutine exgemp (idexo, elem_mapi, elem_mapb, processor, ierr)
 C> ex_get_processor_elem_maps()
       implicit none
@@ -3729,22 +3729,22 @@ C> ex_get_processor_elem_maps()
       integer elem_mapb(*)
       integer processor
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call exgemp4 (idexo4, elem_mapi, elem_mapb, processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write the element map for a processor
-C
+
       subroutine expemp (idexo, elem_mapi, elem_mapb, processor, ierr)
 C> ex_put_processor_elem_maps()
       implicit none
@@ -3753,22 +3753,22 @@ C> ex_put_processor_elem_maps()
       integer elem_mapb(*)
       integer processor
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call expemp4 (idexo4, elem_mapi, elem_mapb, processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read the communications map parameters for a single processor
-C
+
       subroutine exgcmp (idexo, ncmap_ids, ncmap_node_cnts,
      $  ecmap_ids, ecmap_elem_cnts, processor, ierr)
 C> ex_get_cmap_params()
@@ -3780,23 +3780,23 @@ C> ex_get_cmap_params()
       integer ecmap_elem_cnts(*)
       integer processor
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call exgcmp4 (idexo4, ncmap_ids, ncmap_node_cnts,
      $  ecmap_ids, ecmap_elem_cnts, processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write the communications map parameters for a single processor
-C
+
       subroutine expcmp (idexo, nmap_ids, nmap_node_cnts, emap_ids,
      $  emap_elem_cnts, processor, ierr)
 C> ex_put_cmap_params()
@@ -3812,19 +3812,19 @@ C> ex_put_cmap_params()
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call expcmp4 (idexo4, nmap_ids, nmap_node_cnts, emap_ids,
      $  emap_elem_cnts, processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write the communications map parameters for all processors
-C
+
       subroutine expcmpc (idexo, nmap_ids, nmap_node_cnts,
      $  nproc_ptrs, emap_ids, emap_elem_cnts, eproc_ptrs, ierr)
 C> ex_put_cmap_params()
@@ -3840,7 +3840,7 @@ C> ex_put_cmap_params()
 
       integer*4 idexo4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       call expcmpc4 (idexo4, nmap_ids, nmap_node_cnts,
      $  nproc_ptrs, emap_ids, emap_elem_cnts, eproc_ptrs, ierr4)
@@ -3849,9 +3849,9 @@ C
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read the nodal communications map for a single processor
-C
+
       subroutine exgncm (idexo, map_id, node_ids, proc_ids,
      $  processor, ierr)
 C> ex_get_node_cmap()
@@ -3862,23 +3862,23 @@ C> ex_get_node_cmap()
       integer proc_ids(*)
       integer processor
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call exgncm4 (idexo4, map_id, node_ids, proc_ids,
      $  processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write the nodal communications map for a single processor
-C
+
       subroutine expncm (idexo, map_id, node_ids, proc_ids,
      $  processor, ierr)
 C> ex_put_node_cmap()
@@ -3889,23 +3889,23 @@ C> ex_put_node_cmap()
       integer proc_ids(*)
       integer processor
       integer ierr
-C
+
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call expncm4 (idexo4, map_id, node_ids, proc_ids,
      $  processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Read the elemental communications map for a single processor
-C
+
       subroutine exgecm (idexo, map_id, elem_ids, side_ids,
      $  proc_ids, processor, ierr)
 C> ex_get_elem_cmap()
@@ -3921,19 +3921,19 @@ C> ex_get_elem_cmap()
       integer*4 idexo4
       integer*4 processor4
       integer*4 ierr4
-C
+
       idexo4 = idexo
       processor4 = processor
       call exgecm4 (idexo4, map_id, elem_ids, side_ids,
      $  proc_ids, processor4, ierr4)
       ierr = ierr4
-C
+
       end
 
 C-----------------------------------------------------------------------
-C
+
 C  Write the elemental communications map for a single processor
-C
+
       subroutine expecm (idexo, map_id, elem_ids, side_ids,
      $  proc_ids, processor, ierr)
 C> ex_put_elem_cmap()
@@ -3960,9 +3960,9 @@ C> ex_put_elem_cmap()
 C-----------------------------------------------------------------------
 
         SUBROUTINE I8I4 (N, I8, PI4)
-C
+
 C       CREATE I4 ARRAY AND COPY I8 ARRAY CONTENTS TO I4
-C
+
         IMPLICIT NONE
         INTEGER N
         INTEGER I8 (*)
@@ -3977,9 +3977,9 @@ C
         END
 
         SUBROUTINE I4I8 (N, PI4, I8)
-C
+
 C       COPY I4 ARRAY CONTENTS TO I8 AND FREE I4 ARRAY
-C
+
         IMPLICIT NONE
         INTEGER   N
         INTEGER*4 I4 (1)
@@ -3994,9 +3994,9 @@ C
         END
 
         SUBROUTINE I4ALLOC (N, PI4)
-C
+
 C       ALLOCATE DYNAMIC I4 ARRAY N ELEMENTS IN SIZE
-C
+
         IMPLICIT NONE
         INTEGER N
         INTEGER*4 I4 (1)
@@ -4020,9 +4020,9 @@ C
         END
 
         SUBROUTINE I4FREE (PI4)
-C
+
 C       FREE DYNAMIC MEMORY ASSOCIATED WITH I4 ARRAY REFERENCED BY PI4
-C
+
         IMPLICIT NONE
         INTEGER*4 I4 (1)
         POINTER (PI4, I4)

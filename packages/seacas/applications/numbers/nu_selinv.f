@@ -9,12 +9,12 @@ C    See packages/seacas/LICENSE for details
       LOGICAL ITMSEL(*)
       CHARACTER*16 ENGNOT, STRA, STRB
       CHARACTER*80 STRTMP
-C
+
       include 'nu_ptim.blk'
-C
+
       NLAST  = 0
       NUMSEL = 0
-C
+
 C      IFIRST = LOCRL (STMIN, NSTEP, ITMSEL, TIMES)
 C      ILAST  = LOCRL (STMAX, NSTEP, ITMSEL, TIMES)
       IFIRST = LOCREA (STMIN, NSTEP, TIMES)

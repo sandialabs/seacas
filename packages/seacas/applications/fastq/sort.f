@@ -4,16 +4,13 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE SORT (N, IX, IY)
 C***********************************************************************
-C
+
 C  SUBROUTINE SORT = SORT THE ARRAY IX,  CARRYING ALONG IY
-C
+
 C***********************************************************************
-C
+
       DIMENSION IX (N), IY (N)
       NN = N
       M = NN
@@ -37,7 +34,7 @@ C
             IF (I .GE. 1)GOTO 110
          ENDIF
   120 CONTINUE
-C
+
       GOTO 100
-C
+
       END

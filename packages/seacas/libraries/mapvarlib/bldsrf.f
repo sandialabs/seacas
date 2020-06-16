@@ -5,21 +5,21 @@ C
 C See packages/seacas/LICENSE for details
 
       SUBROUTINE BLDSRF(XA,YA,ZA,XYZSRF)
-C
+
 C***********************************************************************
-C
+
 C BLDSRF CREATES ARRAYS XYZSRF
-C
+
 C Called by MAPVAR
-C
+
 C***********************************************************************
-C
+
       include 'amesh.blk'
-C
+
       DIMENSION XA(*),YA(*),ZA(*)
       DIMENSION XYZSRF(NODESA,3)
-C
-C
+
+
       DO 10 I = 1, NODESA
         XYZSRF(I,1) = XA(I)
         XYZSRF(I,2) = YA(I)
@@ -29,6 +29,6 @@ C
           XYZSRF(I,3) = ZA(I)
         END IF
    10 CONTINUE
-C
+
       RETURN
       END

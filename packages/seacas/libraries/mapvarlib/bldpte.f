@@ -5,25 +5,25 @@ C
 C See packages/seacas/LICENSE for details
 
       SUBROUTINE BLDPTE(X,Y,Z,ICON,CENTER)
-C
+
 C***********************************************************************
-C
+
 C BLDPTE LOADS THE ELEMENT CENTROIDS INTO THE XYZSRF ARRAY
-C
+
 C Calls subroutine CNTR
-C
+
 C Called by MAPVAR
-C
+
 C***********************************************************************
-C
+
       include 'bmesh.blk'
       include 'ebbyeb.blk'
       include 'tapes.blk'
-C
+
       DIMENSION X(*),Y(*),Z(*),CENTER(NUMEBB,*),ICON(NELNDB,*)
       DIMENSION XX(27), YY(27), ZZ(27)
-C
-C
+
+
 C      NNODES = NNELM(ITYPE)
       NNODES = NELNDB
       IF (ITYPE .EQ. 6) NNODES = 4

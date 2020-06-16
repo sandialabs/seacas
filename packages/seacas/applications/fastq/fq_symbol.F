@@ -4,16 +4,15 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       SUBROUTINE SYMBOL (IDIM, X, Y, SYM)
 C***********************************************************************
-C
+
 C  SUBROUTINE SYMBOL = DRAWS SYMBOLS AT X,Y ARRAY LOCATIONS
-C
+
 C***********************************************************************
-C
+
       CHARACTER*6 SYM
-C
+
       DIMENSION X(IDIM), Y(IDIM)
 #if NeedsDoubleEscape
       IF (SYM .EQ. 'DIAMND') THEN
@@ -40,7 +39,7 @@ C
          CALL MPD2SY (IDIM, X, Y, '\CSQ')
       ENDIF
 #endif
-C
+
       RETURN
-C
+
       END

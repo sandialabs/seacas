@@ -46,7 +46,6 @@ C   --   VAREL - IN - the selected element variables for the time step
       CHARACTER*40 FMT20,FMT30, FMT40
       INTEGER PRTLEN
 
-
       PRTLEN = GETPRC() + 7
       WRITE(FMT20,20) PRTLEN, PRTLEN-7
       WRITE(FMT30,30) PRTLEN

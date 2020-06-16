@@ -4,41 +4,39 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE BCROSS (MXND, MLN, XN, YN, ZN, LXK, KXL, NXL, LXN,
      &   LNODES, I1, I2, J1, J2, NLOOP, BOK, LLL, XMIN, XMAX, YMIN,
      &   YMAX, ZMIN, ZMAX, DEV1, KREG, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE BCROSS = CHECKS TO MAKE SURE THAT A BOUNDARY IS NOT
 C                      BECOMING A PERMANENT CROSS
-C
+
 C***********************************************************************
-C
+
       DIMENSION XN(MXND), YN(MXND), ZN(MXND)
       DIMENSION NXL(2, 3*MXND), LXN(4, MXND)
       DIMENSION LXK(4, MXND), KXL(2, 3*MXND)
       DIMENSION LNODES(MLN, MXND)
-C
+
       LOGICAL BOK, LCROSS, ERR
-C
+
       CHARACTER*3 DEV1
-C
+
       BOK = .TRUE.
       ERR = .FALSE.
-C
+
       J0 = LNODES(2, J1)
       J3 = LNODES(3, J2)
-C
+
 C  IF J0 TO I2, OR J3 TO I1 IS TO BECOME A BOUNDARY LINE,
 C  THEN TEST THE CONNECTION TO SEE IF IT INTERSECTS ANY OTHER
 C  BOUNDARY LINES
-C
+
       KOUNT = 0
-C
+
 C  FIRST TEST THE J0 TO I2 LINE
-C
+
       IF ((LXN(2, J0) .LT. 0) .AND. (LXN(2, I2) .LT. 0)) THEN
          NODE1 = I1
          NODE2 = I2
@@ -55,7 +53,7 @@ C
                ELSE
                   GOTO 110
                ENDIF
-C
+
             ELSE
                CALL INTSCT (XN(NODE1), YN(NODE1), XN(NODE2), YN(NODE2),
      &            XN(J0), YN(J0), XN(I2), YN(I2), U, W, LCROSS)
@@ -73,11 +71,11 @@ C
             GOTO 130
          ENDIF
       ENDIF
-C
+
   110 CONTINUE
-C
+
 C  NEXT TEST THE J3 TO I1 LINE
-C
+
       KOUNT = 0
       IF ((LXN(2, J3) .LT. 0) .AND. (LXN(2, I1) .LT. 0)) THEN
          NODE1 = J3
@@ -95,7 +93,7 @@ C
                ELSE
                   GOTO 130
                ENDIF
-C
+
             ELSE
                CALL INTSCT (XN(NODE1), YN(NODE1), XN(NODE2), YN(NODE2),
      &            XN(J3), YN(J3), XN(I1), YN(I1), U, W, LCROSS)
@@ -113,9 +111,9 @@ C
             GOTO 130
          ENDIF
       ENDIF
-C
+
   130 CONTINUE
-C
+
       RETURN
-C
+
       END

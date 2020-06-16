@@ -6,4 +6,4 @@ C See packages/seacas/LICENSE for details
 
       COMMON /XYZSCL/ XSCAL, YSCAL, ZSCAL
 C      --XSCAL, YSCAL, ZSCAL - Scale factors for X, Y, and Z
-C
+

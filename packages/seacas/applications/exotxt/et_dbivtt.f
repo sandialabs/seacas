@@ -7,7 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE DBIVTT (NDB, ISEVOK, ITMP, NELBLK, NVAREL)
 C=======================================================================
-C
+
 C   --*** DBIVTT *** Read element variable truth table
 C   --   Modified for ExodusII format 8/26/95
 C   --

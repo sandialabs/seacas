@@ -4,36 +4,33 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE STRSIZ (MAXNP, X, Y, NINT, N, XEND, YEND, XDIFF, YDIFF,
      &   D, ERR, TEST, XNOLD, YNOLD, NXKOLD, LINKEG, LISTEG, BMESUR,
      &   MLINK, NPNOLD, NPEOLD, NNXK, REMESH, REXMIN, REXMAX, REYMIN,
      &   REYMAX, IDIVIS, SIZMIN, EMAX, EMIN, GRAPH, DXMAX)
 C***********************************************************************
-C
+
 C  SUBROUTINE STRSIZ = GETS INTERVALS ON A SRAIGHT LINE BASED ON ERROR
 C                      SIZE
-C
+
 C***********************************************************************
-C
+
       DIMENSION X (MAXNP), Y (MAXNP)
-C
+
       DIMENSION XNOLD(NPNOLD), YNOLD(NPNOLD), NXKOLD(NNXK, NPEOLD)
       DIMENSION LINKEG(2, MLINK), LISTEG(4 * NPEOLD), BMESUR(NPNOLD)
-C
+
       LOGICAL GRAPH, REMESH, TEST, ERR, SGRAPH, MOVED
-C
+
       IF (GRAPH) THEN
          SGRAPH = .TRUE.
       ELSE
          SGRAPH = .FALSE.
       ENDIF
-C
+
       ITERAT = 100
       EPS = .01
-C
+
       DSTNOW = 0.
       INTNOW = 0
       SIZNOW = 0.0
@@ -44,12 +41,12 @@ C
   100 CONTINUE
       INTNOW = INTNOW + 1
       IF (DSTNOW + (SIZNOW * 1.3) .GT. D)THEN
-C
+
 C  THE END OF THE LINE (OR CLOSE ENOUGH) HAS BEEN REACHED
-C
+
 C  IF WE ARE TESTING OR THE INTERVALS MATCH, THEN SIMPLY FINISH THE
 C  LINE.
-C
+
          IF ((TEST) .OR. (INTNOW .EQ. NINT)) THEN
             NINT = INTNOW
             N = NINT + 1
@@ -63,9 +60,9 @@ C
                CALL PLTFLU
             ENDIF
          ELSE
-C
+
 C  OTHERWISE, MAKE SURE THE INTERVALS ARE ALRIGHT AND ADD THE EXTRA ONE
-C
+
             EPS = .001
             IF (INTNOW + 1 .NE. NINT) THEN
                CALL MESAGE ('** PROBLEMS WITH INTNOW '//
@@ -91,15 +88,14 @@ C
             ENDIF
          ENDIF
       ELSE
-C
+
 C  NOT TO THE END YET
-C
-C
+
          CALL GETSIZ (XNOLD, YNOLD, NXKOLD, LINKEG, LISTEG, BMESUR,
      &      MLINK, NPNOLD, NPEOLD, NNXK, REMESH, REXMIN, REXMAX,
      &      REYMIN, REYMAX, IDIVIS, SIZMIN, EMAX, EMIN,
      &      X(INTNOW), Y(INTNOW), S1)
-C
+
          XNEW1 = X(1) + (((DSTNOW + S1) / D) * XDIFF)
          YNEW1 = Y(1) + (((DSTNOW + S1) / D) * YDIFF)
          CALL GETSIZ (XNOLD, YNOLD, NXKOLD, LINKEG, LISTEG, BMESUR,
@@ -112,9 +108,9 @@ C
      &      MLINK, NPNOLD, NPEOLD, NNXK, REMESH, REXMIN, REXMAX,
      &      REYMIN, REYMAX, IDIVIS, SIZMIN, EMAX, EMIN,
      &      XNEW2, YNEW2, S3)
-C
+
          SIZNOW = (((S1 + S2) * .5) + S3) * .5
-C
+
          DSTNOW = DSTNOW + SIZNOW
          X(INTNOW + 1) = X(1) + ((DSTNOW / D) * XDIFF)
          Y(INTNOW + 1) = Y(1) + ((DSTNOW / D) * YDIFF)
@@ -127,9 +123,9 @@ C
          ENDIF
          GOTO 100
       ENDIF
-C
+
 C  ERASE THE NODES FOR REPLOTTING IF NEEDED
-C
+
       IF ((.NOT. SGRAPH) .AND. (GRAPH)) THEN
          DO 110 J = 2, NINT
             CALL LCOLOR ('BLACK')
@@ -140,9 +136,9 @@ C
             CALL PLTFLU
   110    CONTINUE
       ENDIF
-C
+
 C  NOW SMOOTH THE NODES ALONG THE LINE
-C
+
       DO 130 I = 1, ITERAT
          MOVED = .FALSE.
          DO 120 J = 2, NINT
@@ -205,9 +201,9 @@ C
             CALL PLTFLU
   150    CONTINUE
       ENDIF
-C
+
   160 CONTINUE
-C
+
       RETURN
-C
+
       END

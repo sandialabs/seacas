@@ -4,13 +4,12 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       SUBROUTINE TRANIQ (LSTSN, MAP, MASSLV, NSEG, IDIM)
       DIMENSION LSTSN(*), MAP(*), MASSLV(IDIM,*)
-C
+
       DO 10 I=1,NSEG
           MASSLV(1,MAP(I)) = LSTSN(I)
    10 CONTINUE
-C
+
       RETURN
       END

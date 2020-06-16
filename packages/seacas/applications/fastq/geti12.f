@@ -4,20 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE GETI12 (MCOM, ICOM, JCOM, CIN, IIN, KIN, I1, I2,
      &   IFOUND)
 C***********************************************************************
-C
+
 C  SUBROUTINE GETI12 = GETS TWO INTEGERS
-C
+
 C***********************************************************************
-C
+
       DIMENSION IIN (MCOM), KIN (MCOM)
       CHARACTER*72 CIN (MCOM)
-C
+
       IF ((ICOM .GT. JCOM) .OR. (CIN (ICOM) (1:1) .EQ. ' ')) THEN
          IFOUND = 0
          ICOM = ICOM + 1
@@ -36,5 +33,5 @@ C
          ENDIF
       ENDIF
       RETURN
-C
+
       END

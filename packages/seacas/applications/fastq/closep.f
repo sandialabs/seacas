@@ -4,21 +4,18 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE CLOSEP (MP, N15, X, Y, IPOINT, COOR, LINKP, JJ)
 C***********************************************************************
-C
+
 C  SUBROUTINE CLOSE = FINDS THE CLOSEST EXISTING POINT TO THE MOUSE
-C
+
 C***********************************************************************
-C
+
 C  SUBROUTINE CALLED BY:
 C     INPUT  = INPUTS MESH DEFINITIONS FROM THE LIGHT TABLE
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     X      = THE X LOCATION IN USER COORDINATES
 C     Y      = THE Y LOCATION IN USER COORDINATES
@@ -29,16 +26,16 @@ C               (I, 3) = THE Y COORDINATE OF THE POINT
 C               (I, 4) = THE BOUNDARY FLAG OF THE POINT
 C     I      = THE NUMBER OF THE CLOSEST POINT FOUND
 C     K      = THE NUMBER OF POINTS IN THE DATABASE
-C
+
 C***********************************************************************
-C
+
       DIMENSION IPOINT (MP), COOR (2, MP), LINKP (2, MP)
-C
+
       LOGICAL ADDLNK
-C
+
       ADDLNK = .FALSE.
       DMIN = 100000.
-C
+
       DO 100 I = 1, N15
          CALL LTSORT (MP, LINKP, I, IPNTR, ADDLNK)
          IF (IPNTR .GT. 0) THEN

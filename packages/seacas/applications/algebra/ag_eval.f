@@ -76,7 +76,6 @@ C   --   Uses NUMELO, NUMNPO of /DBOUT/
       CHARACTER*5 STRA
       INTEGER MERR
 
-
       EXTERNAL MYSUM, MYMAX, MYMIN, MYSIGN, MYAMOD
       EXTERNAL myint, mynint, myabs, mydim, myexp, mylog,
      *  mylog10, mysin, mycos, mytan, myasin, myacos,

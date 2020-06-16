@@ -4,23 +4,20 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE CHKKXL (MXND, LXK, KXL, LLL, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE CHKKXL = CHECKS TO SEE IF THE KXL COMPARES CORRECTLY TO
 C                      THE LXK ARRAY
-C
+
 C***********************************************************************
-C
+
       DIMENSION LXK (4, MXND), KXL (2, 3 * MXND)
-C
+
       LOGICAL ERR
-C
+
       ERR = .TRUE.
-C
+
       DO 130 L = 1, LLL
          DO 120 IK = 1, 2
             K = KXL (IK, L)
@@ -35,10 +32,10 @@ C
   120    CONTINUE
   130 CONTINUE
       ERR = .FALSE.
-C
+
       RETURN
-C
+
 10000 FORMAT ('KXL(', I4, ',', I4,') = ', I4,
      &   ' IS NOT IN LXK ARRAY  -  CHKKXL')
-C
+
       END

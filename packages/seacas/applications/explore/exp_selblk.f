@@ -44,7 +44,7 @@ C=======================================================================
         end if
         ISLNK = ISLNK + numnod
  100  CONTINUE
-C
+
       numsel = 0
       do 120 i=1, numnp
         if (iscr(i) .gt. 0) then

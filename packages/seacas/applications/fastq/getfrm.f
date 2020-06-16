@@ -4,20 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE GETFRM (MXND, LINES, NL, NXL, NODE, N0, N2, NFROM)
 C***********************************************************************
-C
+
 C  SUBROUTINE GETFRM = GETS THE NODES THAT THE CURRENT NODE CAME FROM
-C
+
 C***********************************************************************
-C
+
       DIMENSION NXL(2, 3*MXND), LINES(NL)
-C
+
       NFROM = 0
-C
+
       IF (NL .EQ. 3) THEN
          DO 100 IL = 1, NL
             ILL = LINES (IL)
@@ -36,7 +33,7 @@ C
   100    CONTINUE
       ENDIF
   110 CONTINUE
-C
+
       RETURN
-C
+
       END

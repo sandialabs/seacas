@@ -4,17 +4,15 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE REGEXT (MP, ML, MS, MR, N, II, COOR, ILINE, LTYPE,
      &   LCON, NLPS, IFLINE, ILLIST, NSPR, IFSIDE, ISLIST, LINKP,
      &   LINKL, LINKS, LINKR, XMIN, XMAX, YMIN, YMAX)
 C***********************************************************************
-C
+
 C  SUBROUTINE REGEXT = GETS THE REGION EXTREMES
-C
+
 C***********************************************************************
-C
+
       DIMENSION COOR (2, MP)
       DIMENSION ILINE (ML), LTYPE (ML), LCON (3, ML)
       DIMENSION NLPS (MS), IFLINE (MS), ILLIST (MS * 3)
@@ -22,18 +20,18 @@ C
       DIMENSION LINKP (2, MP), LINKL (2, ML), LINKS (2, MS)
       DIMENSION LINKR (2, MR)
       DIMENSION N (29)
-C
+
       LOGICAL FOUND, GETMAX, ADDLNK
       LOGICAL NUMPLT, TEST
-C
+
       ADDLNK = .FALSE.
       GETMAX = .TRUE.
       FOUND = .FALSE.
-C
+
       DO 110 J = IFSIDE (II), IFSIDE (II) + NSPR (II) - 1
-C
+
 C  GET SIDE EXTREMES
-C
+
          IF ( ISLIST(J) .GT. 0) THEN
             CALL LTSORT (MS, LINKS, ISLIST (J), IPNTR, ADDLNK)
             IF (IPNTR .GT. 0) THEN
@@ -61,9 +59,9 @@ C
                  ENDIF
  100           CONTINUE
             END IF
-C
+
 C  GET LINE EXTREMES
-C
+
          ELSEIF (ISLIST (J) .LT. 0) THEN
             JJ = IABS (ISLIST (J))
             CALL LTSORT (ML, LINKL, JJ, KK, ADDLNK)
@@ -88,7 +86,7 @@ C
             ENDIF
          ENDIF
   110 CONTINUE
-C
+
       RETURN
-C
+
       END

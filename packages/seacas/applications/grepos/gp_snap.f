@@ -55,7 +55,6 @@ C ... Find slave index
  120  continue
  130  continue
 
-
 C------------------------------------------------------------------------
 C ... Get the number of nodes on the slave surface
       call exgsp(ndbin, idess(indsl), nssess, nsdess, ierr)

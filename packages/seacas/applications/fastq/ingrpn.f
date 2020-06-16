@@ -4,34 +4,31 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE INGRPN (MS, MR, N7, N8, N22, JJ, IIN, IFOUND, IREGN,
      &   NSPR, IFSIDE, ISLIST, LINKR, NHOLDR, IHOLDR, IRGFLG, MERGE,
      &   NOROOM)
 C***********************************************************************
-C
+
 C  SUBROUTINE INGRPN = INPUTS A REGION INTO THE DATABASE
-C
+
 C***********************************************************************
-C
+
       DIMENSION IREGN(MR), NSPR(MR), IFSIDE(MR), ISLIST(MR*4)
       DIMENSION LINKR(2, MR), IHOLDR(2, MR), IRGFLG(MR), IIN(IFOUND)
-C
+
       LOGICAL NOROOM, MERGE, ADDLNK
-C
+
       IZ = 0
       NOROOM = .TRUE.
       ADDLNK = .FALSE.
-C
+
 C  ZERO THE LINK ARRAY IF NEEDED
-C
+
       IF (JJ .GT. N22) THEN
          N22 = JJ
-C
+
 C  SET UP POINTERS FOR MERGING DATA
-C
+
       ELSE IF (MERGE) THEN
          JHOLD = JJ
          CALL LTSORT (MR, LINKR, JJ, IPNTR, ADDLNK)
@@ -49,9 +46,9 @@ C
             END IF
          END IF
       END IF
-C
+
 C  ADD THE REGION INTO THE DATABASE
-C
+
       N7 = N7 + 1
       J = N7
       IF (J .GT. MR) RETURN
@@ -73,10 +70,10 @@ C
          WRITE(*, 10010) J
          CALL LTSORT (MR, LINKR, IREGN(J), IZ, ADDLNK)
       END IF
-C
+
       NOROOM = .FALSE.
       RETURN
-C
+
 10000 FORMAT (' OLD GROUP NO:', I5, ' TO NEW GROUP NO:', I5)
 10010 FORMAT (' GROUP:', I5, ' HAS LESS THAN ONE REGION', /,
      &   ' THIS GROUP WILL NOT BE INPUT INTO DATABASE')

@@ -73,7 +73,6 @@ C                    lref is last        linset edge referencing that node
         LREF(LINSET(2,IL)) = IX
       END DO
 
-
       DO 130 IEDG = 1, NEDGES
          IF (IEDSET(0,IEDG) .EQ. 0) GOTO 130
 

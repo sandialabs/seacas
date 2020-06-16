@@ -36,7 +36,6 @@ C   --
       REAL ATRIB(*)
       CHARACTER*(mxstln) BLKTYP(*)
 
-
       IELNK = 0
       IEATR = 0
 

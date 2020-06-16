@@ -9,15 +9,15 @@ C=======================================================================
 C=======================================================================
 
 C***********************************************************************
-C
+
 C     *** GSLIBV *** Returns current version number of the suplib library
 C                    Get SupLIB Version number
 C     Parameters:
 C     STRING - OUT - string containing version number of suplib
-C
+
 C     Version Number Format:
 C           n1.n2.n3
-C
+
 C     where n1 is the major version number
 C           n2 is the minor version or change capability number
 C           n3 is the bug-fix number

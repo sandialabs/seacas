@@ -11,7 +11,7 @@ C=======================================================================
      &  LTEX, LTSX, TDX, IXESS, IXDSS, NEX, NDX, ISCR,
      *  NAMSCR, NAME)
 C=======================================================================
-C
+
 C   --*** MUNESS *** (GJOIN) Compress and rearrange element side sets
 C   --   Written by Amy Gilkey - revised 02/25/88
 C   --

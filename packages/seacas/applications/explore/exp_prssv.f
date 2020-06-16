@@ -49,7 +49,6 @@ C     --   LTSESS - IN - the element sides for all sets
 
       CHARACTER*20 STRA, STRB
 
-
 C ... See if need to read the data
       if (nstep .ne. nstepss) then
          nstepss = nstep
@@ -92,7 +91,6 @@ C ... See if need to read the data
            WRITE (*, 10010) irow, icol, NAMEV(LISVAR(I))
         END IF
  90   continue
-
 
       WRITE (STRA, 10001, IOSTAT=IDUM) NUMESS
 10001 FORMAT ('(#', I4, ')')

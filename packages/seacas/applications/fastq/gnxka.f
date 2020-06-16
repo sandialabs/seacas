@@ -8,14 +8,14 @@ C    See packages/seacas/LICENSE for details
 C***********************************************************************
 C  SUBROUTINE GNXKA = GENERATES A LIST OF THE FOUR NODES ASSOCIATED WITH
 C                     ELEMENT K
-C
+
 C***********************************************************************
 C  VARIABLES USED:
 C     CCW    = .TRUE. IF LIST IS TO BE IN CCW ORDER AND AREA DEFINED
 C    (Changed to always put in order and calculate area)
-C
+
 C***********************************************************************
-C
+
       REAL XN (MXND), YN (MXND)
       INTEGER NODES(4)
       INTEGER LXK(4, MXND), NXL(2, 3 * MXND)

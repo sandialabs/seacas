@@ -4,11 +4,11 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
       SUBROUTINE MXEROR (UNIT, LASTER, ERRVEC)
-C
+
       IMPLICIT INTEGER (A-Z)
       INCLUDE 'params.inc'
       DIMENSION ERRVEC(NERVEC)
-C
+
       WRITE (UNIT, 10010)LASTER
       WRITE (UNIT, 10000) (ERRVEC(I), I, I=1,NERVEC)
       RETURN

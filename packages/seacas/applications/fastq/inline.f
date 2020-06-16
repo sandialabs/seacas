@@ -4,33 +4,31 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE INLINE (ML, N2, N19, JJ, LTYP, IP1, IP2, IP3, NN,
      &   FACT, NHOLDL, IHOLDL, ILINE, LTYPE, NINT, FACTOR, LCON,
      &   ILBOUN, ISBOUN, LINKL, MERGE, NOROOM)
 C***********************************************************************
-C
+
 C  SUBROUTINE INLINE = INPUTS A LINE INTO THE DATABASE
-C
+
 C***********************************************************************
-C
+
       DIMENSION ILINE (ML), LTYPE (ML), NINT (ML), FACTOR (ML)
       DIMENSION LCON (3, ML)
       DIMENSION ILBOUN (ML), ISBOUN (ML), LINKL (2, ML), IHOLDL (2, ML)
-C
+
       LOGICAL MERGE, NOROOM, ADDLNK
-C
+
       NOROOM = .TRUE.
       JHOLD = JJ
-C
+
 C  ADJUST THE COUNTER IF NEEDED
-C
+
       IF (JJ .GT. N19) THEN
          N19 = JJ
-C
+
 C  GET THE CORRECT LINE NUMBER IF MERGING
-C
+
       ELSEIF (MERGE) THEN
          ADDLNK = .FALSE.
          CALL LTSORT (ML, LINKL, JJ, IPNTR, ADDLNK)
@@ -48,9 +46,9 @@ C
             ENDIF
          ENDIF
       ENDIF
-C
+
 C  INPUT THE LINE DATA
-C
+
       N2 = N2 + 1
       J = N2
       IF (J .GT. ML)RETURN
@@ -73,7 +71,7 @@ C
       ISBOUN (J) = 0
       NOROOM = .FALSE.
       RETURN
-C
+
 10000 FORMAT ('   OLD LINE NO:', I5, '   TO NEW LINE NO:', I5)
 10010 FORMAT ('WARNING: Intervals on line ', I5, ' are negative.',
      &  ' Changed to positive.')

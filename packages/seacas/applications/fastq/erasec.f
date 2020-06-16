@@ -4,22 +4,19 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE ERASEC (OLDCUR)
 C***********************************************************************
-C
+
 C  SUBROUTINE ERASEC = DEACTIVATES THE CROSSHAIRS
-C
+
 C***********************************************************************
-C
+
       LOGICAL OLDCUR
-C
+
       IF (OLDCUR) THEN
          WRITE (*,*) CHAR(27)//'G0'
          OLDCUR = .FALSE.
       ENDIF
       RETURN
-C
+
       END

@@ -4,23 +4,21 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE PLOTL (MXND, XN, YN, NXL, KREG, XMIN, XMAX, YMIN,
      &   YMAX, LLL, DEV1)
 C***********************************************************************
-C
+
 C  SUBROUTINE PLTNXL = PLOTS THE CURRENT MESH FROM THE NXL ARRAY
-C
+
 C***********************************************************************
-C
+
       DIMENSION NXL (2, 3 * MXND), XN (MXND), YN (MXND)
       DIMENSION X (2), Y (2)
-C
+
       CHARACTER * 72 DUMMY, HOLD, DEV1 * 3
-C
+
 C  INITIALIZE THE PLOTTING SURFACE
-C
+
       CALL PLTBGN
       XDIMR = XMAX - XMIN
       YDIMR = YMAX - YMIN
@@ -56,9 +54,9 @@ C
       DUMMY (1:7) = 'REGION '
       LEN = LEN + 7
       CALL PLTXTH (XDIMD * .05, YDIMD * .95, DUMMY (1:LEN))
-C
+
 C  PLOT THE LINES IN NXL ARRAY,  SKIPPING DELETIONS
-C
+
       DO 100 I = 1, LLL
          IF (NXL (1, I) .GT. 0) THEN
             X (2) = XN (NXL (2, I))
@@ -68,9 +66,9 @@ C
             CALL MPD2VC (1, X (1), Y (1), X (2), Y (2))
          ENDIF
   100 CONTINUE
-C
+
       CALL PLTFLU
-C
+
       RETURN
-C
+
       END

@@ -24,7 +24,6 @@ C See packages/seacas/LICENSE for details
       RETURN
       END
 
-
       subroutine cent1(x, y, z, xcent, ycent, zcent,
      *  numelb, numlnk, link, ndim)
 

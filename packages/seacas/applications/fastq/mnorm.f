@@ -4,19 +4,16 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE MNORM (MXND, XN, YN, NXL, LLL, STDLEN)
 C***********************************************************************
-C
+
 C  SUBROUTINE MNORM = FINDS THE AVERAGE LENGTH OF THOSE LINES NOT MUCH
 C                     LONGER THAN THE AVERAGE
-C
+
 C***********************************************************************
-C
+
       DIMENSION NXL (2, 3 * MXND), XN (MXND), YN (MXND)
-C
+
       STDLEN = 0.
       NUML = 0
       S = 0.0
@@ -29,7 +26,7 @@ C
             NUML = NUML + 1
          ENDIF
   100 CONTINUE
-C
+
       IF (NUML .LE. 0) RETURN
       TOL = 1.25 * S / DBLE(NUML)
       NUML = 0
@@ -46,7 +43,7 @@ C
          ENDIF
   110 CONTINUE
       STDLEN = S / DBLE(NUML)
-C
+
       RETURN
-C
+
       END

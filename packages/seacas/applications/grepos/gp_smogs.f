@@ -10,28 +10,27 @@ C=======================================================================
      $     xscr, yscr, zscr, nscr, ndim)
 C=======================================================================
 C***********************************************************************
-C
+
 C  SUBROUTINE SMOGS  =  MESH SMOOTHING BY LAPLACE-S USING GAUSS-SEIDEL
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     NIT   =  THE MAX NUMBER OF ITERATIONS TO DO.
 C     EPS   =  MINIMUM DISTANCE NODES MUST MOVE TO CONTINUE ITERATIONS
 C     RO    =  AN UNDER- OR OVER-RELAXATION FACTOR (NORMALLY 1.0)
-C
+
 C***********************************************************************
-C
+
       real x(*), y(*), z(*)
       integer numelb(*), nlink(*), idelb(*), link(*)
       logical isbnd(*)
       real xscr(*), yscr(*), zscr(*)
       integer nscr(*)
       LOGICAL BIG
-C
+
       IF (R0 .LT. 0.01) R0 = 1.
       EPS2 = (EPS*R0)**2
-
 
 C  ITERATION LOOP
 
@@ -90,9 +89,8 @@ C  CHECK FOR CONVERGENCE
  130     continue
          IF (delmax .GT. EPS2) BIG = .TRUE.
 
-C
 C  IF NO SIGNIFICANT MOVEMENTS OCCURRED,  RETURN
-C
+
          write (*,*) 'Iteration = ', it, sqrt(delmax)/r0, idel
          IF (.NOT.BIG) RETURN
   120 CONTINUE

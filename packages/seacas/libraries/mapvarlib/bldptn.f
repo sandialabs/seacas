@@ -5,21 +5,21 @@ C
 C See packages/seacas/LICENSE for details
 
       SUBROUTINE BLDPTN(XB,YB,ZB,NDLSTB,XYZPTS)
-C
+
 C***********************************************************************
-C
+
 C BLDPTN CREATES ARRAYS XYZPTS FOR NODES
-C
+
 C Called by MAPVAR
-C
+
 C***********************************************************************
-C
+
       include 'ebbyeb.blk'
       include 'amesh.blk'
-C
+
       DIMENSION XB(*),YB(*),ZB(*),NDLSTB(*)
       DIMENSION XYZPTS(NUMNDB,3)
-C
+
       DO 20 I = 1, NUMNDB
         XYZPTS(I,1) = XB(NDLSTB(I))
         XYZPTS(I,2) = YB(NDLSTB(I))
@@ -29,6 +29,6 @@ C
           XYZPTS(I,3) = ZB(NDLSTB(I))
         END IF
    20 CONTINUE
-C
+
       RETURN
       END

@@ -7,7 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE ZXYZ (X, Y, Z, MAP, NUMNP, NDIM)
 C=======================================================================
-C
+
 C -- X,Y,Z -- REAL - IN/OUT - Coordinates of nodes
 C -- MAP   -- INT  - IN     - Map between new and old node numbers
 C                             MAP(I) for inactive nodes = NUMNP+1

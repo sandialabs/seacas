@@ -4,26 +4,23 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE DISCLM (NCOLS)
 C***********************************************************************
-C
+
 C  SUBROUTINE DISCLM = PRINTS THE SANDIA DISCLAIMER
-C
+
 C***********************************************************************
-C
+
       CHARACTER*29 BLANK
-C
+
       DATA BLANK/' '/
-C
+
       NSHIFT = MAX ( (NCOLS-76)/2, 1) + 1
       NSHIFT = MIN (NSHIFT, 29)
       WRITE (*, 10000) (BLANK (1:NSHIFT), I = 1, 9)
       WRITE (*, 10010) (BLANK (1:NSHIFT), I = 1, 5)
       RETURN
-C
+
 10000 FORMAT (' ', A,
      &   '**************************************',
      &   '**************************************'//, A,
@@ -54,5 +51,5 @@ C
      &   'WNED RIGHTS.'//, A,
      &   '**************************************',
      &   '**************************************'/)
-C
+
       END

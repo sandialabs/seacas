@@ -12,20 +12,20 @@
 C     DESCRIPTION:
 C     This routine returns the current date in a character string. The
 C     format is as follows:
-C
+
 C       YYYYMMDD
-C
+
 C     MM is a two digit month
 C     DD is a two digit day
 C     YYYY is a four digit year
-C
+
 C     This is known as the "Compact ISO 8601 format"
-C
+
 C     FORMAL PARAMETERS:
 C     STRING    CHARACTER       String to receive the date
-C
+
 ************************************************************************
-C
+
 */
 
 #define STRLEN 8

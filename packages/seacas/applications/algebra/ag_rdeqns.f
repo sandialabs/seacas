@@ -123,7 +123,6 @@ C     Initializes all logicals in a list to a specified value
 
       IDEFEV = 0
 
-
       CALL INILOG (NELBLK, .TRUE., SELELB)
 
 C   --TIME is always an input variable
@@ -397,7 +396,6 @@ C   --Scan lines after END
           CLOSE (NLOG, STATUS='DELETE', IOSTAT=IDUM)
         END IF
       END IF
-
 
 C   --Adjust the ISEVOK array length
 c      CALL MDGET (NELBLK * MAXEV)

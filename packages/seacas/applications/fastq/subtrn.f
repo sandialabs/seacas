@@ -4,29 +4,26 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE SUBTRN (NPER, NEWPER, IP, X, Y, NID, XSUB, YSUB,
      &   NIDSUB, I1, I2, I3, I4, I5, I6, I7, I8, XCEN1, YCEN1, XCEN2,
      &   YCEN2, XMID1, YMID1, XMID2, YMID2, CCW, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE SUBTRN = PUTS A TRANSITION'S SUBREGION'S PERIMETER INTO
 C                      THE NPERIM ARRAYS
-C
+
 C***********************************************************************
-C
+
       DIMENSION X (NPER), Y (NPER), NID (NPER)
       DIMENSION XSUB (NPER), YSUB (NPER), NIDSUB (NPER)
-C
+
 C  PUT THE CORRECT PORTION OF THE PERIMETER IN XSUB,  YSUB,  AND NIDSUB
 C  BASED ON THE VALUE OF IP (WHICH OF THE 6 SUBREGIONS ARE NEEDED)
-C
+
       KOUNT = 0
-C
+
 C  SUBREGION 1  -  SIDE 1
-C
+
       IF (IP .EQ. 1) THEN
          DO 100 I = I1, I2
             KOUNT = KOUNT + 1
@@ -34,9 +31,9 @@ C
             YSUB (KOUNT) = Y (I)
             NIDSUB (KOUNT) = NID (I)
   100    CONTINUE
-C
+
 C  SUBREGION 1  -  SIDE 2
-C
+
          XDIF = XCEN2 - X (I2)
          YDIF = YCEN2 - Y (I2)
          XINT = XDIF / DBLE(NPER - I8 + 1)
@@ -51,9 +48,9 @@ C
          XSUB (KOUNT) = XCEN2
          YSUB (KOUNT) = YCEN2
          NIDSUB (KOUNT) = 200000
-C
+
 C  SUBREGION 1  -  SIDE 3
-C
+
          XDIF = X (I8) - XCEN2
          YDIF = Y (I8) - YCEN2
          XINT = XDIF / DBLE(I2 - I1)
@@ -64,18 +61,18 @@ C
             YSUB (KOUNT) = YSUB (KOUNT - 1) + YINT
             NIDSUB (KOUNT) = 100000 + I + 1
   120    CONTINUE
-C
+
 C  SUBREGION 1  -  SIDE 4
-C
+
          DO 130 I = I8, NPER
             KOUNT = KOUNT + 1
             XSUB (KOUNT) = X (I)
             YSUB (KOUNT) = Y (I)
             NIDSUB (KOUNT) = NID (I)
   130    CONTINUE
-C
+
 C  SUBREGION 2  -  SIDE 1
-C
+
       ELSEIF (IP .EQ. 2) THEN
          DO 140 I = I7, I8
             KOUNT = KOUNT + 1
@@ -83,9 +80,9 @@ C
             YSUB (KOUNT) = Y (I)
             NIDSUB (KOUNT) = NID (I)
   140    CONTINUE
-C
+
 C  SUBREGION 2  -  SIDE 2
-C
+
          XDIF = XCEN2 - X (I8)
          YDIF = YCEN2 - Y (I8)
          XINT = XDIF / DBLE(I2 - I1)
@@ -100,9 +97,9 @@ C
          XSUB (KOUNT) = XCEN2
          YSUB (KOUNT) = YCEN2
          NIDSUB (KOUNT) = 200000
-C
+
 C  SUBREGION 2  -  SIDE 3
-C
+
          XDIF = XMID2 - XCEN2
          YDIF = YMID2 - YCEN2
          XINT = XDIF / DBLE(I3 - I2)
@@ -117,9 +114,9 @@ C
          XSUB (KOUNT) = XMID2
          YSUB (KOUNT) = YMID2
          NIDSUB (KOUNT) = 700000 + NPER - I8 + 2
-C
+
 C  SUBREGION 2  -  SIDE 4
-C
+
          XDIF = X (I7) - XMID2
          YDIF = Y (I7) - YMID2
          XINT = XDIF / DBLE(I2 - I1)
@@ -130,9 +127,9 @@ C
             YSUB (KOUNT) = YSUB (KOUNT - 1) + YINT
             NIDSUB (KOUNT) = NIDSUB (KOUNT - 1) + 1
   170    CONTINUE
-C
+
 C  SUBREGION 3  -  SIDE 1
-C
+
       ELSEIF (IP .EQ. 3) THEN
          KOUNT = KOUNT + 1
          XSUB (KOUNT) = X (I3)
@@ -152,9 +149,9 @@ C
          XSUB (KOUNT) = XMID2
          YSUB (KOUNT) = YMID2
          NIDSUB (KOUNT) = 700000 + NPER - I8 + 2
-C
+
 C  SUBREGION 3  -  SIDE 2
-C
+
          XDIF = XCEN2 - XMID2
          YDIF = YCEN2 - YMID2
          XINT = XDIF / DBLE(I3 - I2)
@@ -169,9 +166,9 @@ C
          XSUB (KOUNT) = XCEN2
          YSUB (KOUNT) = YCEN2
          NIDSUB (KOUNT) = 200000
-C
+
 C  SUBREGION 3  -  SIDE 3
-C
+
          XDIF = X (I2) - XCEN2
          YDIF = Y (I2) - YCEN2
          XINT = XDIF / DBLE(NPER - I8 + 1)
@@ -182,18 +179,18 @@ C
             YSUB (KOUNT) = YSUB (KOUNT - 1) + YINT
             NIDSUB (KOUNT) = 300000 + I + 1
   200    CONTINUE
-C
+
 C  SUBREGION 3  -  SIDE 4
-C
+
          DO 210 I = I2, I3 - 1
             KOUNT = KOUNT + 1
             XSUB (KOUNT) = X (I)
             YSUB (KOUNT) = Y (I)
             NIDSUB (KOUNT) = NID (I)
   210    CONTINUE
-C
+
 C  SUBREGION 4  -  SIDE 1 AND 2
-C
+
       ELSEIF (IP .EQ. 4) THEN
          DO 220 I = I4, I6
             KOUNT = KOUNT + 1
@@ -201,9 +198,9 @@ C
             YSUB (KOUNT) = Y (I)
             NIDSUB (KOUNT) = NID (I)
   220    CONTINUE
-C
+
 C  SUBREGION 4  -  SIDE 3
-C
+
          XDIF = XCEN1 - X (I6)
          YDIF = YCEN1 - Y (I6)
          XINT = XDIF / DBLE(I5 - I4)
@@ -218,9 +215,9 @@ C
          XSUB (KOUNT) = XCEN1
          YSUB (KOUNT) = YCEN1
          NIDSUB (KOUNT) = 100000
-C
+
 C  SUBREGION 4  -  SIDE 4
-C
+
          XDIF = X (I4) - XCEN1
          YDIF = Y (I4) - YCEN1
          XINT = XDIF / DBLE(I6 - I5)
@@ -231,9 +228,9 @@ C
             YSUB (KOUNT) = YSUB (KOUNT - 1) + YINT
             NIDSUB (KOUNT) = 600000 + I + 1
   240    CONTINUE
-C
+
 C  SUBREGION 5  -  SIDE 1
-C
+
       ELSEIF (IP .EQ. 5) THEN
          DO 250 I = I6, I7
             KOUNT = KOUNT + 1
@@ -241,9 +238,9 @@ C
             YSUB (KOUNT) = Y (I)
             NIDSUB (KOUNT) = NID (I)
   250    CONTINUE
-C
+
 C  SUBREGION 5  -  SIDE 2
-C
+
          XDIF = XMID1 - X (I7)
          YDIF = YMID1 - Y (I7)
          XINT = XDIF / DBLE(I5 - I4)
@@ -258,9 +255,9 @@ C
          XSUB (KOUNT) = XMID1
          YSUB (KOUNT) = YMID1
          NIDSUB (KOUNT) = 700000 + I6 - I5 + 1
-C
+
 C  SUBREGION 5  -  SIDE 3
-C
+
          XDIF = XCEN1 - XMID1
          YDIF = YCEN1 - YMID1
          XINT = XDIF / DBLE(I4 - I3)
@@ -275,9 +272,9 @@ C
          XSUB (KOUNT) = XCEN1
          YSUB (KOUNT) = YCEN1
          NIDSUB (KOUNT) = 100000
-C
+
 C  SUBREGION 5  -  SIDE 4
-C
+
          XDIF = X (I6) - XCEN1
          YDIF = Y (I6) - YCEN1
          XINT = XDIF / DBLE(I5 - I4)
@@ -288,9 +285,9 @@ C
             YSUB (KOUNT) = YSUB (KOUNT - 1) + YINT
             NIDSUB (KOUNT) = 400000 + I + 1
   280    CONTINUE
-C
+
 C  SUBREGION 6  -  SIDE 1
-C
+
       ELSEIF (IP .EQ. 6) THEN
          KOUNT = KOUNT + 1
          XSUB (KOUNT) = XMID1
@@ -306,18 +303,18 @@ C
             YSUB (KOUNT) = YSUB (KOUNT - 1) + YINT
             NIDSUB (KOUNT) = 700000 + I6 - I5 - I + 1
   290    CONTINUE
-C
+
 C  SUBREGION 6  -  SIDE 2
-C
+
          DO 300 I = I3, I4
             KOUNT = KOUNT + 1
             XSUB (KOUNT) = X (I)
             YSUB (KOUNT) = Y (I)
             NIDSUB (KOUNT) = NID (I)
   300    CONTINUE
-C
+
 C  SUBREGION 6  -  SIDE 3
-C
+
          XDIF = XCEN1 - X (I4)
          YDIF = YCEN1 - Y (I4)
          XINT = XDIF / DBLE(I6 - I5)
@@ -332,9 +329,9 @@ C
          XSUB (KOUNT) = XCEN1
          YSUB (KOUNT) = YCEN1
          NIDSUB (KOUNT) = 100000
-C
+
 C  SUBREGION 6  -  SIDE 4
-C
+
          XDIF = XMID1 - XCEN1
          YDIF = YMID1 - YCEN1
          XINT = XDIF / DBLE(I4 - I3)
@@ -346,8 +343,8 @@ C
             NIDSUB (KOUNT) = 500000 + I + 1
   320    CONTINUE
       ENDIF
-C
+
       NEWPER = KOUNT
       RETURN
-C
+
       END

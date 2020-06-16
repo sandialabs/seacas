@@ -6,7 +6,7 @@ C    See packages/seacas/LICENSE for details
 
       SUBROUTINE MASSPR (A, TIME, ITMSEL, DENS, MAT, DISP,
      *   NQUAD, LABEL)
-C
+
       DIMENSION A(*), TIME(*), DENS(*), MAT(6,*),
      *   DISP(NUMNP,*)
       LOGICAL ITMSEL(*), ISABRT
@@ -15,14 +15,14 @@ C
       include 'nu_numg.blk'
       include 'nu_mass.blk'
       include 'nu_logs.blk'
-C
+
       DIMENSION XI2(2,4), XI3(3,8)
       LOGICAL FIRST, HAVDEN
       DATA FIRST / .TRUE. /
       DATA XI2/ -1.,-1.,  1.,-1.,  1.,1.,  -1.,1./
       DATA XI3/ 1.,-1.,-1.,  -1.,-1.,-1.,  -1.,-1.,1.,  1.,-1.,1.,
      *   1.,1.,-1.,   -1.,1.,-1.,   -1.,1.,1.,   1.,1.,1./
-C
+
       save
 
       IF (FIRST) THEN
@@ -46,14 +46,14 @@ C ... 'JACOB' conflicts with jacob in command.f, renamed to jacob1
             STOP
          END IF
       END IF
-C
+
       HAVDEN = .FALSE.
       DO 20 I=1,NELBLK
          IF (DENS(I) .NE. 0.0) HAVDEN = .TRUE.
    20 CONTINUE
 
       IF (.NOT. HAVDEN) CALL GETDEN (MAT, DENS, NELBLK, LABEL)
-C
+
       IF (EXODUS .AND. ISDIS) THEN
          CALL GETDSP (A(IR), DISP, NDIM, NUMNP, TIME, ITMSEL,
      *      'R', ISTAT)
@@ -75,11 +75,11 @@ C
      *         A(IXINI),A(IAJ),NNODES,NDIM,NQUAD,
      *         A(IVM),A(IEM),NELBLK,NUMNP)
          END IF
-C
+
          CALL OUTPUT (A(IS), A(ID), A(IV), A(IC), A(IZ), MAT,
      *      NDIM,NELBLK, VOL, A(IVM), A(IEM),
      *      NQUAD, LABEL, AXI, TREAD)
-C
+
          GO TO 30
    40    CONTINUE
       ELSE
@@ -97,7 +97,7 @@ C
          CALL OUTPUT (A(IS), A(ID), A(IV), A(IC), A(IZ), MAT,
      *      NDIM,NELBLK, VOL, A(IVM), A(IEM), NQUAD, LABEL,
      *      AXI, TREAD)
-C
+
       END IF
       RETURN
       END

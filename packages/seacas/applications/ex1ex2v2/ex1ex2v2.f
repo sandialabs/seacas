@@ -60,9 +60,8 @@ C   --Open the input and output files
       NDB = 11
       NET = 20
 
-c
 c       make netCDF and exodus errors not show up
-c
+
       call exopts(0,ierr)
 
 C .. Get filename from command line.  If not specified, emit error message
@@ -119,7 +118,6 @@ c     write initial variables to netcdf file
         goto 150
       end if
 
-
       CALL DBPINI ('NTIS', NDB, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &   NUMNPS, LNPSNL, NUMESS, LESSEL, LESSNL,
      &   IDUM, IDUM, IDUM, IDUM)
@@ -138,9 +136,9 @@ C   --Read the coordinates from the exodusI database
       IF (NERR .GT. 0) GOTO 130
 
       CALL DBIXYZ (NDB, '*', NDIM, NUMNP, A(KXN), A(KYN), A(KZN), *150)
-c
+
 c     write the coordinates to the regular netcdf file
-c
+
       call expcor (idexo, a(kxn), a(kyn), a(kzn), ierr)
 
       if (ierr .lt. 0) then
@@ -157,9 +155,9 @@ C   --Read the element order map from the exodusI database
       IF (NERR .GT. 0) GOTO 130
 
       CALL DBIMAP (NDB, '*', NUMEL, IA(KMAPEL), *150)
-c
+
 c     write the element order map to the regular netcdf file
-c
+
       call expmap (idexo, ia(kmapel), ierr)
       if (ierr .lt. 0) then
         call exerr ('ex1ex2v2','Error from expmap', EXLMSG)
@@ -196,7 +194,6 @@ C   --Read the nodal points sets
       CALL DBINPS (NDB, '*', NUMNPS, LNPSNL,
      &   IA(KIDNS), IA(KNNNS), IA(KIXNNS), IA(KLSTNS), A(KFACNS), *150)
 
-
 C   --Read the element side sets
 
       CALL MDRSRV ('IDESS', KIDSS, NUMESS)
@@ -214,7 +211,6 @@ C   --Read the element side sets
       CALL DBIESS (NDB, '*', NUMESS, LESSEL, LESSNL,
      &  IA(KIDSS), IA(KNESS), IA(KNNSS), IA(KIXESS), IA(KIXNSS),
      &  IA(KLTESS), IA(KLTNSS), A(KFACSS), *150)
-
 
 C   --Read the QA and info records
 C ... Exodus set to .FALSE. if end of file during this read
@@ -282,18 +278,18 @@ C ... Try to infer the element block names also
 c*********
       ioff = 0
       DO 100 IELB = 1, NELBLK
-c
+
 c          write element block parameters to the netcdf file
-c
+
          call expelb (IDEXO, IA(KIDELB+IELB-1), namelb(IELB),
      1      IA(KNELB+IELB-1),
      2      IA(KNMLNK+IELB-1), IA(KNMATR+IELB-1), IERR)
          IF (IERR .lt. 0) THEN
                 CALL exerr('ex1ex2v2','Error from expelb',EXLMSG)
          ENDIF
-c
+
 c          write block attributes to the netcdf file
-c
+
          IF (IA(KNMATR+IELB-1) .GT. 0) THEN
            call expeat (IDEXO, IA(KIDELB+IELB-1), A(KATRIB+ioff), IERR)
            IF (IERR .lt. 0) THEN
@@ -309,10 +305,10 @@ c         CALL MDLONG ('ATRIB', KATRIB, 0)
 
       iptr = klink
       do 101 ielb = 1, nelblk
-c
+
 c          write the element block connectivity to the netcdf file
 c            skipping null element blocks
-c
+
         if (IA(KNELB+IELB-1) .eq. 0) then
           write(*,*)'Null element block: ',ielb
         else
@@ -340,7 +336,7 @@ c       Note: For exodus I data, dist factors always exist.
       endif
 
 c     write element side sets
-c
+
 c       Note: Exodus II V2.0 represents a major change for side sets:
 c               They are represented as side IDs - not node IDs and
 c               must be translated.
@@ -351,7 +347,7 @@ c               must be translated.
           call exerr ('ex1ex2v2','Error from excn2s', exlmsg)
           goto 150
         end if
-c
+
         call expcss (idexo, ia(kidss), ia(kness), ia(knnss), ia(kixess),
      &      ia(kixnss), ia(kltess), ia(kltsss), a(kfacss), ierr)
         if (ierr .lt. 0) then
@@ -382,9 +378,9 @@ c
       CALL MDDEL ('SACESS')
       CALL MDSTAT (NERR, MEM)
       IF (NERR .GT. 0) GOTO 130
-c
+
 c      write the QA records
-c
+
       IF (NQAREC .GT. 0) then
         call expqa (idexo, NQAREC, QAREC, ierr)
         if (ierr .lt. 0) then
@@ -392,9 +388,9 @@ c
           goto 150
         end if
       end if
-c
+
 c       write the info records
-c
+
       if (NINFO .gt. 0) then
         call expinf (idexo, ninfo, info, ierr)
         if (ierr .lt. 0) then
@@ -404,73 +400,73 @@ c
       end if
 
 c**********************************************************************
-c
+
 c        write coordinate names
-c
+
       call expcon (idexo, nameco, ierr)
         if (ierr .lt. 0) then
           call exerr ('ex1ex2v2','Error from expcon', exlmsg)
           goto 150
         end if
-c
+
       if (.not. EXODUS) goto 150
-c
+
 c       write the number of global variables
-c
+
       if (nvargl .gt. 0) then
         call expvp (idexo, 'G', nvargl, ierr)
         if (ierr .lt. 0) then
           call exerr ('ex1ex2v2','Error from expvp', exlmsg)
           goto 140
         end if
-c
+
 c       write the global variable names
-c
+
         call expvan (idexo, 'G', nvargl, names(ixgv), ierr)
         if (ierr .lt. 0) then
           call exerr ('ex1ex2v2','Error from expvan', exlmsg)
           goto 140
         end if
       end if
-c
+
 c       write the number of nodal variables
-c
+
       if (nvarnp .gt. 0) then
         call expvp (idexo, 'N', nvarnp, ierr)
         if (ierr .lt. 0) then
           call exerr ('ex1ex2v2','Error from expvp', exlmsg)
           goto 140
         end if
-c
+
 c       write the nodal variable names
-c
+
         call expvan (idexo, 'N', nvarnp, names(ixnv), ierr)
         if (ierr .lt. 0) then
           call exerr ('ex1ex2v2','Error from expvan', exlmsg)
           goto 140
         end if
       end if
-c
+
 c       write the number of element variables
-c
+
       if (nvarel .gt. 0) then
         call expvp (idexo, 'E', nvarel, ierr)
         if (ierr .lt. 0) then
           call exerr ('ex1ex2v2','Error from expvp', exlmsg)
           goto 140
         end if
-c
+
 c       write the element variable names
-c
+
         call expvan (idexo, 'E', nvarel, names(ixev), ierr)
         if (ierr .lt. 0) then
           call exerr ('ex1ex2v2','Error from exvan', exlmsg)
           goto 140
         end if
       end if
-c
+
 c       write the element variable truth table
-c
+
       call mdrsrv ('ebids', kebids, nelblk)
       call exgebi (idexo, ia(kebids), ierr)
       if (ierr .lt. 0) then
@@ -499,7 +495,6 @@ C   --Read the database time steps
       CALL MDSTAT (NERR, MEM)
       IF (NERR .GT. 0) GOTO 130
 
-
       nwstep = 0
       nhstep = 0
 
@@ -515,9 +510,9 @@ C   --Read the database time steps
          if (whotim) then
            nwstep = nwstep+1
            write (*,'(4x, "processing whole time step ", i4)') nwstep
-c
+
 c            write global variables
-c
+
            if (nvargl .gt. 0) then
              call expgv (idexo, nwstep, nvargl, a(kvargl), ierr)
              if (ierr .lt. 0) then
@@ -525,9 +520,9 @@ c
                goto 140
              end if
            end if
-c
+
 c            write nodal variable values
-c
+
            if (nvarnp .gt. 0) then
              do 111 i= 1,nvarnp
                call expnv (idexo, nwstep, i, numnp,
@@ -538,9 +533,9 @@ c
                end if
 111          continue
            end if
-c
+
 c            write element variable values
-c
+
            if (nvarel .gt. 0) then
              call putev (idexo, nwstep, nelblk, nvarel,
      &         ia(knelb), a(kvarel), ia(kidelb), ia(kievok), ierr)
@@ -549,15 +544,14 @@ c
                  goto 140
                end if
            end if
-c
+
 c            write whole time step
-c
+
            call exptim (idexo, nwstep, time, ierr)
            if (ierr .lt. 0) then
              call exerr ('ex1ex2v2','Error from exptim', exlmsg)
              goto 140
            end if
-
 
          end if
          GOTO 110

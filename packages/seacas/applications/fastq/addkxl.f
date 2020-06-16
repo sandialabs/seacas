@@ -4,23 +4,20 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE ADDKXL (MXND, KXL, K, L)
 C***********************************************************************
-C
+
 C  SUBROUTINE ADDKXL = ADDS TO THE LIST OF ELEMENTS FOR THIS LINE
-C
+
 C***********************************************************************
-C
+
       DIMENSION KXL (2, 3*MXND)
-C
+
       IF ( KXL(1, L) .EQ. 0) THEN
          KXL(1, L) = K
       ELSE
          KXL(2, L) = K
       ENDIF
       RETURN
-C
+
       END

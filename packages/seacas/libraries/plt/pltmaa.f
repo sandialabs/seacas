@@ -4,7 +4,7 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C
+
 C=======================================================================
       SUBROUTINE PLTMAA(ALT,AZI,UMAP)
       COMMON /CENBOD/XC,YC,ZC

@@ -4,22 +4,19 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE FQ_ROTATE (N, X, Y, NID, NEWF)
 C***********************************************************************
-C
+
 C  SUBROUTINE ROTATE = CIRCULARLY SHIFTS THE DATA IN X,  Y,  AND NID
-C
+
 C***********************************************************************
-C
+
       DIMENSION X (N), Y (N), NID (N)
-C
+
       IF ((NEWF .LE. 1) .OR. (NEWF .GT. N)) RETURN
-C
+
 C  BUBBLE UP THROUGH THE ARRAYS AS MANY TIMES AS NEEDED
-C
+
       DO 110 I = 1, NEWF - 1
          XLAST = X (1)
          YLAST = Y (1)
@@ -33,7 +30,7 @@ C
          Y(N)   = YLAST
          NID(N) = NLAST
   110 CONTINUE
-C
+
       RETURN
-C
+
       END

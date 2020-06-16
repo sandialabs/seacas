@@ -4,43 +4,41 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE CCLOCK (X, Y, N, CCW, ERR, INDETR)
 C***********************************************************************
-C
+
 C  SUBROUTINE CCLOCK = DETERMINES IF THE PERIMETER OF A REGION IS STATED
 C                      IN COUNTER-CLOCKWISE FASHION
-C
+
 C***********************************************************************
-C
+
 C  SUBROUTINE CALLED BY:
 C     PERIM = GENERATES THE PERIMETER OF A REGION
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     CCW    = .TRUE. IF THE PERIMETER IS IN COUNTER-CLOCKWISE ORDER
 C     ERR    = .TRUE. IF THE ORDER COULD NOT BE DETERMINED, OR IF AN
 C              ERROR OCCURS CHECKING THE ORDER
 C     N      = THE NUMBER OF NODES IN THE PERIMETER (MUST BE AT LEAST 3)
-C
+
 C***********************************************************************
-C
+
       DIMENSION X (N), Y (N)
-C
+
       LOGICAL CCW, ERR, INDETR
-C
+
       ERR = .TRUE.
       INDETR = .FALSE.
       PI = ATAN2(0.0, -1.0)
       TWOPI = PI+PI
-C
+
       IF (N .LT. 3) THEN
          CALL MESAGE ('PERIMETER MUST CONTAIN MORE THAN 3 NODES')
          GOTO 110
       ENDIF
-C
+
       SPIRO = 0.0
       IF ( (X (1) .EQ. X (N)) .AND. (Y (1) .EQ. Y (N)) ) THEN
          CALL MESAGE ('PERIMETER CONTAINS DUPLICATE NODE LOCATIONS')
@@ -73,10 +71,10 @@ C
       ENDIF
       ERR = .FALSE.
       RETURN
-C
+
 C  ERROR IN THE ROUTINE
-C
+
   110 CONTINUE
       RETURN
-C
+
       END

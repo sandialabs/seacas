@@ -21,15 +21,15 @@ FTNINT ixlnum(long *numvar)
 
 /*
       INTEGER FUNCTION IXLNUM( NUMVAR )
-C
+
 ************************************************************************
-C
+
 C     DESCRIPTION:
 C     This function returns the absolute location of a numeric variable.
 C     This location must be measured in numeric storage units.
-C
+
 C     FORMAL PARAMETERS:
 C     NUMVAR    INTEGER         Numeric Variable
-C
+
 ************************************************************************
 */

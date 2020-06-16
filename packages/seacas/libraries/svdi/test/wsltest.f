@@ -7,9 +7,9 @@ C See packages/seacas/LICENSE for details
       PROGRAM WTEST05
       REAL X(102), Y(102)
       CHARACTER COLOR(7)*4
-C
+
       DATA COLOR/'RED','GREE','YELL','BLUE','MAGE','CYAN','WHIT'/
-C
+
       CALL WSTART(0.,0)
       CALL WTTYPE('SOFT')
       DO 10 I=1,102
