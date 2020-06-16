@@ -57,7 +57,9 @@ $ ========================================================================
 $ Test string if lines
  This line should be echoed ("greg")
 
+
  This line should be echoed (empty)
+
 
 $ ========================================================================
 $ Test if lines
@@ -79,6 +81,7 @@ $ ========================================================================
 $ Test switch
 This should echo
 3.141592654
+
 
 This should be equal to PI --  3.141592654
 $ Test int and [] (shortcut for int)
@@ -161,6 +164,7 @@ delimiter " ,(*-"
 word count = 5
 second word = "two"
 
+
 string =  one two, three
 delimiter " ,"
 word count = 3
@@ -182,5 +186,6 @@ $ Test variable deletion
 
 $ Test extract
 test string is found
+
 
 $End of test file

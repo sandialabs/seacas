@@ -94,6 +94,7 @@ $ Test string if lines
  This line should be echoed (empty)
 {endif}
 
+
 $ ========================================================================
 $ Test if lines
 {if(sqrt(4) == 2)}
@@ -220,6 +221,7 @@ string = {_string = " (one two, three * four - five"}
 delimiter "{_delm = " ,(*-"}"
 word count = {word_count(_string,_delm)}
 second word = "{get_word(2,_string,_delm)}"
+
 
 string = {_string = " one two, three"}
 delimiter "{_delm = " ,"}"
