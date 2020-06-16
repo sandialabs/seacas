@@ -275,7 +275,6 @@ C      --Assign each node to a block in the mesh
 
          CALL MDDEL ('NPX')
          CALL MDDEL ('NPY')
-C#????         CALL MDLONG ('NPCR', KNPCR, LNPCR)
          CALL MDSTAT (NERR, MEM)
          IF (NERR .GT. 0) GOTO 360
 
