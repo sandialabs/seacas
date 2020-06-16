@@ -5,53 +5,6 @@ C
 C See packages/seacas/LICENSE for details
 
 C---5---10---15---20---25---30---35---40---45---50---55---60---65---70--
-C $Log: grcolt.f,v $
-C Revision 1.4  2009/03/25 12:36:44  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.3  1998/07/07 14:07:30  gdsjaar
-C Added variable to SAVE
-C
-C Modified to pass in a variable instead of a computed value since the
-C argument is changed in the routine.
-C
-C Initialize variable
-C
-C Revision 1.2  1998/06/12 15:53:12  gdsjaar
-C 1. Problem with TIMES array. Blot accesses a dummy timestep even if
-C there were no timesteps on the database. Array wasn't allocated, so
-C writing off into never-never land.
-C
-C 2. Inconsistency among some common blocks. Some places weren't using
-C the include but had the definition hardwired in. Removed those.
-C
-C 3. Added 'EXTERNAL BLKDAT' to all routines that used data values set
-C in BLKDAT
-C
-C 4. Cleanup of some A vs. IA argument passing.
-C
-C Revision 1.1  1994/04/07 20:02:13  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.6  1993/08/24  16:45:35  gdsjaar
-c Added entries to common block for additional user-specified colormap
-c selection
-c
-c Revision 1.5  1993/08/16  21:23:05  gdsjaar
-c Added inverse color map to default map, added other color map files to
-c Imakefile, upped version number.
-c
-c Revision 1.4  1993/08/16  19:42:41  gdsjaar
-c Added new spectrum options: gray, rainbow, hot, terrain, zebra
-c
-c Revision 1.3  1993/03/01  16:57:21  gdsjaar
-c jwswegl - added rainbow spectrum (closer to visible spectrum) specify
-c with RAINBOW ncol.  Added CGLOBAL to toggle between global and local
-c contour labelling.
-c
-c Revision 1.2  1990/12/14  08:51:31  gdsjaar
-c Added RCS Id and Log to all files
 c
 C=======================================================================
       SUBROUTINE GRCOLT

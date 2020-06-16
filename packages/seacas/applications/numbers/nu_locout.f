@@ -4,10 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: locout.f,v 1.1 1991/02/21 15:43:58 gdsjaar Exp $
-C $Log: locout.f,v $
-C Revision 1.1  1991/02/21 15:43:58  gdsjaar
-C Initial revision
 C
       SUBROUTINE LOCOUT (TYPE, NDIM, NODEL, TOLER, SORT, P1, P2, BOUND)
       DIMENSION P1(NDIM), P2(NDIM), TOLER(2)

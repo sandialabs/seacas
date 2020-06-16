@@ -91,6 +91,9 @@ namespace {
     // Verify that the nop (NodeOwningProcessor) vector is not empty and is of the correct size.
     // This vector specifies which rank owns each node on this rank
     // Throws error if problem, otherwise returns quietly.
+    if (file_node_count == 0) {
+      return;
+    }
     if (nop.empty()) {
       std::ostringstream errmsg;
       fmt::print(errmsg, "ERROR: The use of the 'compose' output option requires the definition of the 'owning_processor'"

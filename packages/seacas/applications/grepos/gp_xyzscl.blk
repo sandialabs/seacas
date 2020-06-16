@@ -5,7 +5,6 @@ C
 C See packages/seacas/LICENSE for details
 
 C     -*- Mode: fortran -*-
-C $Id: xyzscl.blk,v 1.1 1999/01/18 19:18:40 gdsjaar Exp $
 
       COMMON /XYZSCL/ XSCAL, YSCAL, ZSCAL, XRAND, YRAND, ZRAND
 C      --XSCAL, YSCAL, ZSCAL - Scale factors for X, Y, and Z

@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: vdx11cps.F,v 1.3 2007/01/26 16:58:24 gdsjaar Exp $
 
 C   cps driver is the file device
 C   x11 driver is the terminal device

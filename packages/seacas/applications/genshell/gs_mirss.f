@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C     $Id: mirss.f,v 1.4 1999/02/17 15:26:56 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE MIRSS (IDFRO, IDBCK, NLINK,
      &   NSSUR, NSSFRO, NSSBCK, LTSES3)

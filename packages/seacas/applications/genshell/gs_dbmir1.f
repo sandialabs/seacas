@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C   $Id: dbmir1.f,v 1.5 1999/02/17 15:26:52 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE DBMIR1 (IELB, NUMELB, NUMLNK, LINK)
 C=======================================================================

@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: dbmirr.f,v 1.3 2006/02/14 16:01:34 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE DBMIRR (NELBS, NELBE, IDELB, NUMELB, NUMLNK, LINK,
      *  NAMELB, NDIM, NONQUD)

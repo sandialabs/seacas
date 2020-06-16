@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C     $Id: prnvol.f,v 1.4 2005/07/14 21:18:17 gdsjaar Exp $
 C ... Calculate nodal volume...
 
       SUBROUTINE PRNVOL (NDIM, CRD, IX, NUMNP, NUMEL, NNODE,

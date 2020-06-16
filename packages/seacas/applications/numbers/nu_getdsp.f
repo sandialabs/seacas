@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: getdsp.f,v 1.4 2004/06/29 18:05:32 gdsjaar Exp $
       SUBROUTINE GETDSP (CRD, CRDSP, NDIM, NUMNP, TIMES, ITMSEL,
      *   ACTION, ISTAT)
 C

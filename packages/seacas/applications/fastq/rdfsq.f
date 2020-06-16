@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: rdfsq.f,v 1.4 1999/01/25 16:28:46 gdsjaar Exp $
       SUBROUTINE RDFSQ (MP, ML, MS, MR, MSNAP, MSC, MA, IUNIT, IDUMP, N,
      &   IPOINT, COOR, IPBOUN, ILINE, LTYPE, NINT, FACTOR, LCON, ILBOUN,
      &   ISBOUN, ISIDE, NLPS, IFLINE, ILLIST, IBARST, JMAT, JCENT, NLPB,

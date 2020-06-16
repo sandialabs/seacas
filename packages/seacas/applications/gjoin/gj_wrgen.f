@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: wrgen.f,v 1.12 2006/03/20 18:38:37 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE WRGEN (A,IA, FILNAM, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &   NUMNPS, LNPSNL, NUMESS, LESSEL, LESSDL,

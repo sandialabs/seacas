@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: fastq.f,v 1.38 2007/07/24 13:10:18 gdsjaar Exp $
       PROGRAM FASTQ
 C***********************************************************************
 C
@@ -128,9 +127,6 @@ C  GET THE CURRENT SYSTEM PARAMETERS AND SET MODE FOR RUNNING
 C
       CALL EXPARM (HARD, SOFT, MODE, KCSU, KNSU, IDAU)
 C
-CC* MODIFIED BY: TED BLACKER
-CC* MODIFICATION DATE: 7/18/90
-CC* MODIFICATION: COMMENTED OUT THE BATCH MODE STUFF TO RUN IN A COMMAND
 C**               FILE MODE
 C
       call exname (-3, dev2, klen)

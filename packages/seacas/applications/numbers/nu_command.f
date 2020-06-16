@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: command.f,v 1.18 2007/03/21 20:12:37 gdsjaar Exp $
       SUBROUTINE COMMAND (A, IA, TITLE, TIME, ITMSEL, MAT, DISP,
      *   CRD, LINK, DENSTY, WAVE, ISEVOK,
      *   NAMEGL, NAMENV, NAMEEL,

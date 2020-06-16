@@ -5,7 +5,6 @@ C
 C See packages/seacas/LICENSE for details
 
 C     -*- Mode: fortran -*-
-C $Id: dbtitl.blk,v 1.1 1999/01/18 19:18:26 gdsjaar Exp $
 
       COMMON /DBTITL/ TITLE
       CHARACTER*(80) TITLE

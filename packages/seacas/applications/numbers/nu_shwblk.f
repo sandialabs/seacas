@@ -4,10 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: shwblk.f,v 1.1 1991/02/21 15:45:39 gdsjaar Exp $
-C $Log: shwblk.f,v $
-C Revision 1.1  1991/02/21 15:45:39  gdsjaar
-C Initial revision
 C
       SUBROUTINE SHWBLK (NELBLK, MAT, NSELND, NSELEL)
       DIMENSION MAT(6, NELBLK)

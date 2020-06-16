@@ -5,7 +5,6 @@ C
 C See packages/seacas/LICENSE for details
 
 C     -*- Mode: fortran -*-
-C $Id: xyzoff.blk,v 1.1 1999/01/18 19:18:39 gdsjaar Exp $
 
       COMMON /XYZOFF/ XOFFS, YOFFS, ZOFFS, SPLOFF
       LOGICAL SPLOFF

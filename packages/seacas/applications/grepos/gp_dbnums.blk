@@ -5,7 +5,6 @@ C
 C See packages/seacas/LICENSE for details
 
 C     -*- Mode: fortran -*-
-C $Id: dbnums.blk,v 1.1 1999/01/18 19:18:24 gdsjaar Exp $
 
       COMMON /DBNUMS/ NDIM, NUMNP, NUMEL, NELBLK,
      &   NUMNPS, LNPSNL, NUMESS, LESSEL, LESSNL, LESSDF

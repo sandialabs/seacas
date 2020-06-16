@@ -7,7 +7,6 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE OPNFIL (IUNIT, INOUT, FFORM, IDAPAR, IERR)
 C=======================================================================
-C$Id: opnfil.f,v 1.4 2009/03/25 12:46:02 gdsjaar Exp $
 C   --*** OPNFIL *** (ETCLIB) Open a file
 C   --   Written by Amy Gilkey - revised 04/20/88
 C   --

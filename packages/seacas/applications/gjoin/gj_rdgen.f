@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: rdgen.f,v 1.14 2004/08/12 20:46:08 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE RDGEN (A, IA, C, FIRST, FILNAM,
      &   TITLE, NDIM, NUMNP, NUMEL, NELBLK,

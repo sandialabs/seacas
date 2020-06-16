@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C$Id: dboqa.f,v 1.1 1999/02/17 15:26:53 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE DBOQA (NDB, QAINFO, NQAREC, QAREC, NINFO, INFO,
      &     PREFIX, POSTFIX)

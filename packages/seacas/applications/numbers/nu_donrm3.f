@@ -4,10 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: donrm3.f,v 1.1 1991/02/21 15:42:57 gdsjaar Exp $
-C $Log: donrm3.f,v $
-C Revision 1.1  1991/02/21 15:42:57  gdsjaar
-C Initial revision
 C
       SUBROUTINE DONRM3 (COORD, LTNESS, MAP, DIRCOS, TEMP,
      *    NSEG, NUMNIQ, NUMNP)

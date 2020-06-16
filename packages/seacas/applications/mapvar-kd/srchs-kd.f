@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C $Id: srchs.f,v 1.3 2007/10/17 18:43:50 gdsjaar Exp $
       SUBROUTINE SRCHS (
      *  NPSRF,   NFSRF,   LINKSRF, XYZSRF,
      *  NPTS,    XYZPTS,  TOLSRCH,

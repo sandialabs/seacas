@@ -5,7 +5,6 @@ C
 C See packages/seacas/LICENSE for details
 
 C     -*- Mode: fortran -*-
-C $Id: splxyz.blk,v 1.1 1999/01/18 19:18:37 gdsjaar Exp $
 
       COMMON /SPLCOM/ NSPL, SLTOP, SLBOT,
      $     KZSPL, KXSPL, KXSPL2, KYSPL, KYSPL2

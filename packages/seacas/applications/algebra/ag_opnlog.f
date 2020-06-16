@@ -7,7 +7,6 @@ C    See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE OPNLOG (LOGU)
 C=======================================================================
-C $Id: opnlog.f,v 1.8 2008/03/14 13:45:28 gdsjaar Exp $
 C   --*** OPNLOG *** (BLOT) Open log file and write header
 C   --   Written by Amy Gilkey - revised 12/21/87
 C   --

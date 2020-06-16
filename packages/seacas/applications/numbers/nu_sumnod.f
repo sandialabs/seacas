@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C $Id: sumnod.f,v 1.4 1999/02/16 21:38:01 gdsjaar Exp $
       SUBROUTINE SUMNOD (CRD, DISP, SVAR, NDIM, NUMNP, INDX,
      *   NODSEL, NAME, TIME, ITMSEL, AXI, AVER, DOABS)
 
