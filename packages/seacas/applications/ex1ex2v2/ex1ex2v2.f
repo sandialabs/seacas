@@ -104,18 +104,14 @@ C   --Read the initial variables from exodusI database
       CALL DBIINI (NDB, '*', NVERS, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &   NUMNPS, LNPSNL, NUMESS, LESSEL, LESSNL, *150)
 
-c
 c     create the a netcdf file
-c
       idexo = excre (netfil(1:lnam), EXCLOB, cpuws, wsout, ierr)
       if (ierr .lt. 0) then
         call exerr('ex1ex2v2','Error from excre', EXLMSG)
         go to 140
       end if
 
-c
 c     write initial variables to netcdf file
-c
       call expini (idexo, title, ndim, numnp, numel, nelblk, numnps,
      &    numess, ierr)
       if (ierr .lt. 0) then
@@ -331,9 +327,7 @@ c
 
 101   continue
 
-c
 c     write out the nodal point sets to the regular netcdf file
-c
 c       Note: For exodus I data, dist factors always exist.
 
       if (numnps .gt. 0) then
