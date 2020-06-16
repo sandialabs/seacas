@@ -494,7 +494,6 @@ C store default values of search box tolerances per element type
       TOLHEC = TOLHEX
       TOLTEC = TOLTET
 
-c
 C     A(NAGV)    =    GVAR(1:NVARGP) Global variables
 C
       CALL MDRSRV ('GVAR',   NAGV, NVARGP)
@@ -1443,7 +1442,6 @@ C     *****************************************************************
 C
 C     CLOSE FILES AND STOP
 C
-c
       CALL BANNR2(84,'NORMAL',NTPOUT)
       CALL BANNR2(84,'EXIT',NTPOUT)
       call debug('CLSFIL')

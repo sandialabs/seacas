@@ -647,9 +647,7 @@ c
       endif
       numstp = ntime
 
-c
 c       read the time step information
-c
 
       istep = 0
       call exgtim(netid, istep+1, wtime, nerr)

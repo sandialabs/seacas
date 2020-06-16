@@ -207,7 +207,7 @@ C     ******************************************************************
 C
 C     COMPUTER CODE MANAGEMENT SYSTEM INFORMATION --
 C
-C     CURRENT VERSION DESIGNATOR- $Revision: 1.12 $
+C     CURRENT VERSION DESIGNATOR- 1.12
 C
 C     ******************************************************************
 C
@@ -615,7 +615,6 @@ C store default values of search box tolerances per element type
       TOLHEC = TOLHEX
       TOLTEC = TOLTET
 
-c
 C     A(NAGV)    =    GVAR(1:NVARGP) Global variables
 C
       CALL MDRSRV ('GVAR',   NAGV, NVARGP)
@@ -1603,7 +1602,6 @@ C
            CALL MDEROR(NOUT)
         END IF
 C
-c
  50   CONTINUE
 C
 C     *****************************************************************
@@ -1612,7 +1610,6 @@ C     *****************************************************************
 C
 C     CLOSE FILES AND STOP
 C
-c
       CALL BANNR2(84,'NORMAL',NTPOUT)
       CALL BANNR2(84,'EXIT',NTPOUT)
       call debug('CLSFIL')
