@@ -4,20 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE REVERS (X, N)
 C***********************************************************************
-C
+
 C  SUBROUTINE REVERS = REVERS THE REAL ARRAY OF X (I), I=1, N
-C
+
 C***********************************************************************
-C
+
       DIMENSION X (N)
-C
+
       IF (N .LE. 1) RETURN
-C
+
       NUP = N + 1
       M = N / 2
       DO 100 I = 1, M
@@ -26,7 +23,7 @@ C
          X (I) = X (NUP)
          X (NUP) = XK
   100 CONTINUE
-C
+
       RETURN
-C
+
       END

@@ -69,7 +69,6 @@ c ... Check that all ids are unique
          end if
    80 continue
 
-
       ies = 1
       ifs = 1
       do 90 i = 1, numess

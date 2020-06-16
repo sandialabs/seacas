@@ -371,7 +371,6 @@ C   --Plot time
 C           Determine the number of variables whose value will be
 C           displayed in the plot legend.
 
-
          NUMDSP = LIDSP(0)
          IF (NVWTIM .EQ. 4) THEN
             NUMDSP = MIN (NUMDSP, 1)

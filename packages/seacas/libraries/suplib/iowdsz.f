@@ -9,7 +9,7 @@ C=======================================================================
 C=======================================================================
 C convenience function for setting desired exodusII output word size
 C via the EXT05 environment variable.
-C
+
       character*80 ws
       character*8 cdum
 

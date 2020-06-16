@@ -4,21 +4,19 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE EXDSCT (MXND, XN, YN, LNODES, ANGLE, N1, XNEW, YNEW)
 C***********************************************************************
-C
+
 C  SUBROUTINE EXCORN = CALCULATES A POSITION AN AVERAGE LENGTH AWAY
 C                      FROM A DISSECTION NODE
-C
+
 C***********************************************************************
-C
+
       DIMENSION XN (MXND), YN (MXND), LNODES (7, MXND), ANGLE (MXND)
-C
+
       N0 = LNODES (2, N1)
       N2 = LNODES (3, N1)
-C
+
 C      XNEW = XN (N0) + XN (N2) - XN (N1)
 C      YNEW = YN (N0) + YN (N2) - YN (N1)
 
@@ -32,7 +30,7 @@ C     &   (2. * ANGLE(N1) / 3.)
       DIST = (DIST1 + DIST2) * .5
       XNEW = DIST * COS (ANG) + XN (N1)
       YNEW = DIST * SIN (ANG) + YN (N1)
-C
+
       RETURN
-C
+
       END

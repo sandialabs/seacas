@@ -85,7 +85,7 @@ C              field.
      &               'Rest of command not processed.')
                   GO TO 120
                ELSE
-C
+
 C                 Check for existence of another field
                   IF (FFEXST (IFLD, INTYP)) THEN
                      IF (INTYP(IFLD) .GE. 1) THEN

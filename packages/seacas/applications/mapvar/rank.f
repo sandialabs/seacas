@@ -8,11 +8,11 @@ C See packages/seacas/LICENSE for details
 
 C...  create a rank array from an index array
       DIMENSION INDX(NDIM),IRANK(NDIM)
-C
+
       DO J=1,N
         IRANK(INDX(J))=J
       end do
-C
+
       RETURN
       END
-C
+

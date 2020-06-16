@@ -4,19 +4,16 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-
-C
       SUBROUTINE MOVEP (MP, ML, MS, MR, N, COOR, LTYPE, LCON, NLPS,
      &   IFLINE, ILLIST, NSPR, IFSIDE, ISLIST, LINKP, LINKL, LINKS,
      &   LINKR, IMOVE, ALPHA, X, Y)
 C***********************************************************************
-C
+
 C  SUBROUTINE MOVEP = MOVES A POINT, AND REDRAWS ALL LINES DEPENDENT ON
 C                     THAT POINT
-C
+
 C***********************************************************************
-C
+
       DIMENSION COOR (2, MP), LTYPE (ML), LCON (3, ML)
       DIMENSION NLPS (MS), IFLINE (MS)
       DIMENSION ILLIST (MS * 3)
@@ -24,17 +21,17 @@ C
       DIMENSION LINKP (2, MP), LINKL (2, ML), LINKS (2, MS)
       DIMENSION LINKR (2, MR)
       DIMENSION N (29)
-C
+
       LOGICAL NUMPLT, ALPHA, ADDLNK, TEST, GETMAX
-C
+
       KNUM = 0
       ADDLNK = .FALSE.
       TEST = .FALSE.
       GETMAX = .FALSE.
       IF (.NOT.ALPHA)CALL PLTSTD (1, 0.)
-C
+
 C  ERASE ANY LINES USING THAT POINT
-C
+
       DO 120 I = 1, N (19)
          CALL LTSORT (ML, LINKL, I, II, ADDLNK)
          IF (II .GT. 0) THEN
@@ -66,9 +63,9 @@ C
   110       CONTINUE
          ENDIF
   120 CONTINUE
-C
+
 C  ERASE THE POINT
-C
+
       ADDLNK = .FALSE.
       CALL LTSORT (MP, LINKP, IMOVE, II, ADDLNK)
       IF (.NOT.ALPHA) THEN
@@ -80,16 +77,16 @@ C
          CALL MPD2SY (1, COOR (1, II), COOR (2, II), '\CSQ')
 #endif
       ENDIF
-C
+
 C  REDEFINE THE POINT
-C
+
       COOR (1, II) = X
       COOR (2, II) = Y
-C
+
       IF (.NOT.ALPHA)CALL PLTSTD (1, 7.)
-C
+
 C  REDRAW ANY LINES USING THAT POINT
-C
+
       DO 150 I = 1, N (19)
          CALL LTSORT (ML, LINKL, I, II, ADDLNK)
          IF (II .GT. 0) THEN
@@ -121,11 +118,11 @@ C
   140       CONTINUE
          ENDIF
   150 CONTINUE
-C
+
 C  REDRAW THE POINT
-C
+
       IF (.NOT.ALPHA)CALL PLTSTD (1, 3.)
-C
+
       ADDLNK = .FALSE.
       CALL LTSORT (MP, LINKP, IMOVE, II, ADDLNK)
       IF (.NOT.ALPHA) THEN
@@ -137,7 +134,6 @@ C
          CALL PLTSTD (1, 7.)
          CALL PLTFLU
       ENDIF
-C
-C
+
       RETURN
       END

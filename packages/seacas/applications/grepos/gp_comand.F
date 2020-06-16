@@ -349,14 +349,14 @@ C=======================================================================
       ELSE IF (VERB .EQ. 'ADJUST') THEN
 C...  ADJUST {CENTER|MINIMUM|MAXIMUM} {X|Y|Z} adjustment
 C...  ADJUST {MINIMUM|MAXIMUM} {X|Y|Z} adjustment
-C
+
 C...  Calculate offset such that the value in the generated mesh
 C     (ignoring any other offsets, scales, or rotations)
 C     will equal the input value.
-C
+
 C...EXAMPLE:adjust maximum x 10
 C     will set the maximum x in the generated mesh equal to 10.
-C
+
  140    CONTINUE
         IF (FFEXST (IFLD, INTYP)) THEN
           CALL FFCHAR (IFLD, INTYP, CFIELD, ' ', WORD)
@@ -600,7 +600,7 @@ C ... Field is Attribute number
 C ... Setup the scale and echo to the user
             CALL SCLATR(NELBLK, IDELB, NUMATR, IDATR, DOALLA,
      *        IDBLK, DOALLB, ASCALE, ATRSCL, .TRUE., .TRUE.)
-C
+
           ELSE IF (MATSTR(WORD, 'BLOCK', 1)) THEN
             DO 220 IBLK = 1, NELBLK
               CALL INTSTR (1, 0, IDELB(IBLK), WORD, LW)

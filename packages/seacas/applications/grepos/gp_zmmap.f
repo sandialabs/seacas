@@ -7,7 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE ZMMAP (NUMEL, MAPEL)
 C=======================================================================
-C
+
 C   --*** ZMMAP *** (GJOIN) Compress element and node order maps
 C   --   Written by Amy Gilkey - revised 01/20/88
 C   --

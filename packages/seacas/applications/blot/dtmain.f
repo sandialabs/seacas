@@ -484,9 +484,9 @@ C -- IF PLOTTING AXIS ONLY, SKIP TO END
                   KTYF = KYF
                   KTZF = KZF
                END IF
-C
+
 C FOR "ZOOM NODE" MODE, RECALCULATE THE ZOOM WINDOW
-C
+
                IF(NZMON) THEN
                   CALL ZOOMND(A(KTXN), A(KTYN), A(KTZN), RDMESH)
                   CALL EXPLIM(2, RDMESH, RDMESH)

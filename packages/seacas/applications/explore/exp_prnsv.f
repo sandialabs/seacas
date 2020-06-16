@@ -93,7 +93,6 @@ C ... See if need to read the data
         END IF
  90   continue
 
-
       WRITE (STRA, 10001, IOSTAT=IDUM) NUMNPS
 10001 FORMAT ('(#', I4, ')')
       CALL PCKSTR (1, STRA)

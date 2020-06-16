@@ -36,9 +36,9 @@ C=======================================================================
       include 'nodzom.blk'
       include 'rotopt.blk'
       include 'd3nums.blk'
-C
+
 C FOR NODE TRACKING MODE, GET THE WINDOW CENTER COORDS FOR THE NODE
-C
+
       IF( NODEZM .NE. 0) THEN
          XCEN = XN(NODEZM)
          YCEN = YN(NODEZM)

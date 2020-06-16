@@ -4,10 +4,9 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       SUBROUTINE CULL2 (DIRCOS, MASSLV, NIQM)
       DIMENSION DIRCOS(4,*), MASSLV(2,*)
-C
+
       J = 0
       DO 10 I=1, NIQM
           IF (MASSLV(2,I) .NE. 0) THEN
@@ -20,7 +19,7 @@ C
               DIRCOS(4, J) = DIRCOS(4, I)
           END IF
    10 CONTINUE
-C
+
       NIQM = J
       RETURN
       END

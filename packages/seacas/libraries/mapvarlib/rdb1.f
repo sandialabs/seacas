@@ -7,27 +7,27 @@ C See packages/seacas/LICENSE for details
 C======================================================================
 *DECK,RDB1
       SUBROUTINE RDB1(XB,YB,ZB)
-C
+
 C     *****************************************************************
-C
+
 C     READS MESH-B
-C
+
 C     Called by MAPVAR
-C
+
 C     *****************************************************************
-C
+
 C     XB,etc  Original coordinates read from Mesh-B
-C
+
 C     *****************************************************************
-C
+
       include 'ex2tp.blk'
-C
+
       DIMENSION XB(*),YB(*),ZB(*)
 C     *****************************************************************
-C
+
 C read coordinates
-C
+
       CALL EXGCOR (NTP3EX,XB,YB,ZB,IERR)
-C
+
       RETURN
       END

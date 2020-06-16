@@ -4,8 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE CHKHOL (IA, L, MP, ML, MS, MR, MSC, IPOINT, COOR,
      &   IPBOUN, ILINE, LTYPE, NINT, FACTOR, LCON, ILBOUN, ISBOUN,
      &   ISIDE, NLPS, IFLINE, ILLIST, IREGN, NSPR, IFSIDE, ISLIST,
@@ -18,11 +16,11 @@ C
      &   REXMIN, REXMAX, REYMIN, REYMAX, IDIVIS, SIZMIN, EMAX, EMIN,
      &   NOROOM, ERRCHK, ERR)
 C***********************************************************************
-C
+
 C  CHKRGN - CHECK THAT A REGION MAY BE MESHED
-C
+
 C***********************************************************************
-C
+
       DIMENSION IA(1)
       DIMENSION IPOINT(MP), COOR(2, MP), IPBOUN(MP)
       DIMENSION ILINE(ML), LTYPE(ML), NINT(ML), FACTOR(ML), LCON(3, ML)
@@ -39,25 +37,25 @@ C
       DIMENSION X(MAXNP), Y(MAXNP), NID(MAXNP)
       DIMENSION LISTL(MAXNL), MARKED(3, MAXNL)
       DIMENSION IFHOLE(MR), NHPR(MR), IHLIST(MR*2)
-C
+
       DIMENSION IDUMMY(1)
-C
+
       DIMENSION AMESUR(NPEOLD), XNOLD(NPNOLD), YNOLD(NPNOLD)
       DIMENSION NXKOLD(NNXK, NPEOLD), MMPOLD(3, NPROLD)
       DIMENSION LINKEG(2, MLINK), LISTEG(4 * NPEOLD), BMESUR(NPNOLD)
-C
+
       LOGICAL NOROOM, EVEN, ERR, CCW, REAL, ADDLNK, REMESH
       LOGICAL COUNT, ERRCHK
-C
+
       addlnk = .false.
       COUNT = .TRUE.
       EVEN = .FALSE.
       REAL = .FALSE.
-C
+
 C  CHECK TO MAKE SURE CONNECTING DATA FOR THE REGION EXISTS
 C  AND FILL IN ANY BLANK INTERVALS ACCORDING TO THE GIVEN SIZE
 C  FOR THE REGION AND THE LINE'S LENGTH
-C
+
       IF (NHPR(L) .GT. 0) THEN
          DO 100 I = IFHOLE(L), IFHOLE(L) + NHPR(L) - 1
             IPNTR1 = 0
@@ -73,13 +71,13 @@ C
                   IMINUS = -LL
                   CALL LTSORT (MR, LINKR, IREGN(LL), IMINUS, ADDLNK)
                   ADDLNK = .FALSE.
-C
+
 C  CALCULATE THE PERIMETER OF THE REGION
-C
+
                ELSE
                   KNBC = 0
                   KSBC = 0
-C
+
                   CALL PERIM (MP, ML, MS, NSPR(LL), MAXNL, MAXNP, 1, 1,
      &               KNBC, KSBC, IREGN(LL), IPOINT, COOR, IPBOUN, ILINE,
      &               LTYPE, NINT, FACTOR, LCON, ILBOUN, ISBOUN, ISIDE,
@@ -95,24 +93,23 @@ C
                   IF ((NPER .LE. 0) .OR. (ERR)) THEN
                      WRITE (*, 10010) IREGN(LL)
                      ADDLNK = .TRUE.
-C
-C
+
                      IMINUS = -LL
                      CALL LTSORT (MR, LINKR, IREGN(LL), IMINUS, ADDLNK)
                      ADDLNK = .FALSE.
                   ELSE
-C
+
 C  WHEN CHECKING THE MAXIMUMS - ADD ENOUGH FOR ONE MORE INTERVAL
 C  ON THE LINE AS THIS LINE MAY BE INCREMENTED BY ONE IF THE
 C  PERIMETER IS ODD
-C
+
                      MAXNBC = MAX(MAXNBC, KNBC + 3 + MXRNBC)
                      MAXSBC = MAX(MAXSBC, KSBC + 3 + MXRSBC)
                      MXNL   = MAX(MXNL, NL)
                      MXNPER = MAX(MXNPER, NPER + 2)
-C
+
 C  MARK THE LINES AND POINTS IN THE REGION AS BEING USED
-C
+
                      CALL MKUSED (MAXNL, MP, ML, LISTL, IPOINT, NINT,
      &                  LINKP, LINKL, LCON, NL)
                   ENDIF
@@ -123,9 +120,9 @@ C
             ENDIF
   100    CONTINUE
       END IF
-C
+
       RETURN
-C
+
 10000 FORMAT (' ** ERROR - DATA PROBLEMS FOR HOLE REGION:', I5, ' **')
 10010 FORMAT (' ** ERROR - PERIMETER GENERATION ERRORS FOR HOLE REGION:'
      &   , I5, ' **')

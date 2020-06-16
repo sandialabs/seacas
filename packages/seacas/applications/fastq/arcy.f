@@ -4,21 +4,19 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE ARCY (XCEN, YCEN, THETA1, THETA2, XK, XA, X, YTRY, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE ARCY = ITERATIVELY SOLVES THE LOGARITHMIC SPIRAL PROBLEM
 C                    TO DETERMINE A Y VALUE GIVEN AN X THAT INTERSECTS
 C                    THE ARC
-C
+
 C***********************************************************************
-C
+
       LOGICAL ERR
-C
+
 C  START WITH 10 INCREMENTS, EACH PASS INCREMENTS DECREASE TEN FOLD
-C
+
       ANGINC = (THETA2 - THETA1) * .05
       ANG = THETA1
       F1 = SPIRAL (XA, XK, X, XCEN, YCEN, ANG)
@@ -40,14 +38,14 @@ C
          ERR = .TRUE.
          GO TO 120
       END IF
-C
+
   110 CONTINUE
       YTRY = (XA * EXP(XK * THETA)) * SIN(THETA) + YCEN
-C
+
   120 CONTINUE
-C
+
 C  FIND THE SECOND ROOT IF THE FIRST ONE HAS BEEN LOCATED
-C
+
       IF(.NOT.ERR)THEN
          ANG=THETA+ANGINC
          F1 = SPIRAL (XA, XK, X, XCEN, YCEN, ANG)
@@ -62,10 +60,10 @@ C
             GO TO 130
          END IF
       END IF
-C
+
       YTRY2 = (XA * EXP(XK * THETA)) * SIN(THETA) + YCEN
       YTRY = MAX(YTRY,YTRY2)
   130 CONTINUE
       RETURN
-C
+
       END

@@ -4,19 +4,16 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE TABINT (X1, X2, Y1, Y2, CT, ST, SCALE, XX1, YY1, XX2,
      &   YY2, DRWTAB)
 C***********************************************************************
-C
+
 C     SUBROUTINE TABINT = INITIALIZES THE TABLET TO THE PLOT LIMITS
-C
+
 C***********************************************************************
-C
+
       LOGICAL DRWTAB
-C
+
       IF (DRWTAB) THEN
          THETA = ATAN2 (YY2 - YY1, XX2 - XX1) -
      &      ATAN2 (Y2 - Y1, X2 - X1)
@@ -41,7 +38,7 @@ C
             XX1 =  (XX2 - XX1) -  ( (X2 - X1) / SCALE)
          ENDIF
       ENDIF
-C
+
       RETURN
-C
+
       END

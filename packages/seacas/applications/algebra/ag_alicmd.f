@@ -26,7 +26,6 @@ C   --Common Variables:
 C   --   Sets NUMALI, NAMALI, NIXALI, IXALI of /ALIAS../
 C   --   Uses NVARHI, NVARGL, NVARNP, NVAREL of /DBNUMS/
 
-
       include 'exodusII.inc'
       include 'ag_namlen.blk'
 

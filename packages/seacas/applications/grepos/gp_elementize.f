@@ -23,7 +23,6 @@ C See packages/seacas/LICENSE for details
       RETURN
       END
 
-
       subroutine elemtz1(var_nod,  var_el, numelb, numlnk, link)
 
       real var_nod(*)

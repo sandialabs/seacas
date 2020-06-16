@@ -4,9 +4,8 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       SUBROUTINE LOCTOL (TYPE, NDIM, RV, KV)
-C
+
 C     This routine is used to set the tolerances and distances
 C        used in the LOCATE routines.
 C     If a tolerance is not entered (blank field), then
@@ -14,7 +13,7 @@ C        the tolerance is set to the entered distance value, and
 C        the distance is set to 0.0
 C     If a tolerance is entered, the values are returned with no
 C        changes
-C
+
       DIMENSION RV(*), KV(*)
       CHARACTER*(*) TYPE
       LOGICAL MATSTR

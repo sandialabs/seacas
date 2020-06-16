@@ -4,15 +4,13 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE STRLNG (STRING, LEN)
 C***********************************************************************
-C
+
 C  SUBROUTINE STRLNG = FINDS THE NO. OF NONBLANK STRING CHARACTERS
-C
+
 C***********************************************************************
-C
+
       CHARACTER * ( * ) STRING
       CALL STRIPB (STRING, ILEFT, LEN)
       IF (LEN .EQ. 0)LEN = 1

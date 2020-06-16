@@ -11,7 +11,7 @@ C=======================================================================
 C     INIGRD: Initialize array ARRAY with NPTS values.
 C             values are calculated to have a gradient of GRAD
 C             ranging from FROM to TO with NINT segments.
-C
+
 C --- FROM - IN - Minimum value of range
 C --- TO   - IN - Maximum value of range
 C --- GRAD - IN - Gradient
@@ -20,10 +20,10 @@ C --- NPTS - IN - Number of points in range.  Can be less than NINT if
 C                 do not need full range, but want gradient spacing
 C                 based on full range.  Normally NPTS = NINT + 1
 C --- ARRAY- OUT- Range of values
-C
+
       REAL    ARRAY(NPTS)
       LOGICAL NOGRAD
-C
+
       IF (FROM .EQ. TO  .OR. NINT .LE. 0) THEN
          CALL PRTERR ('PROGRAM',
      *      'invalid values passed to INIGRD')
@@ -31,7 +31,7 @@ C
       END IF
 
       NOGRAD = (ABS(GRAD - 1.0)/NINT .LE. 1.0e-7)
-C
+
       IF (NOGRAD) THEN
          D3 = 1.0 / NINT
          DO 10 I=1, NPTS
@@ -48,6 +48,6 @@ C
       DO 30 I=1, NPTS
          ARRAY(I) = FROM + ARRAY(I) * (TO - FROM)
    30 CONTINUE
-C
+
       RETURN
       END

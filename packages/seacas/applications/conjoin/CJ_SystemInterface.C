@@ -4,7 +4,6 @@
 // 
 // See packages/seacas/LICENSE for details
 
-
 #include "CJ_SystemInterface.h"
 #include "CJ_Version.h"  // for qainfo
 #include "SL_tokenize.h" // for tokenize

@@ -4,32 +4,30 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE GETSBC (MXND, MXNPER, NPER, NL, ML, MAXSBC, MAXPRM,
      &   NPRM, NID, LISTL, XN, YN, NUID, LXK, KXL, NXL, LSTSBC, NPERIM,
      &   KSBC, LCON, ISBOUN, LINKL, NSPF, IFSB, LISTSB, LINKSB, LLL,
      &   BAR, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE GETSBC = GETS THE SIDE BOUNDARY LIST
-C
+
 C***********************************************************************
-C
+
       DIMENSION NID (MXNPER, MAXPRM), NPERIM (MAXPRM)
       DIMENSION LISTL (NL), XN (MXND), YN (MXND), NUID (MXND)
       DIMENSION LXK (4, MXND), KXL (2, MXND*3), NXL (2, MXND*3)
       DIMENSION LCON (3, ML), ISBOUN (ML), LINKL (2, ML)
       DIMENSION NSPF (ML), IFSB (ML), LISTSB (2, ML), LINKSB (2, ML)
       DIMENSION LSTSBC (MAXSBC), NODES (4)
-C
+
       LOGICAL EXTER, ERR, CCW, BAR, ADDLNK
-C
+
       ERR = .TRUE.
       CCW = .TRUE.
       ADDLNK = .FALSE.
       NPERIM (1) = NPER
-C
+
       DO 110 II = 1, NPRM
          DO 100 I = 1, NPERIM(II)
             IF (BAR) THEN
@@ -39,9 +37,9 @@ C
             ENDIF
   100    CONTINUE
   110 CONTINUE
-C
+
 C  SORT THROUGH AND PICK OFF ELEMENTS WITH SIDE BOUNDARY CONDITIONS
-C
+
       DO 240 I = 1, LLL
          IF (BAR) THEN
             I1 = LXK (1, I)
@@ -50,16 +48,16 @@ C
             I1 = NXL (1, I)
             I2 = NXL (2, I)
          ENDIF
-C
+
 C  SEE IF THE LINE IS CLEARLY INTERIOR
-C
+
          IF (I1 .GT. 0 .AND. I2 .GT. 0) THEN
            if ((NUID (I1) .NE. 0) .AND. (NUID (I2) .NE. 0)) THEN
             LTEST = 0
             EXTER = .FALSE.
-C
+
 C  CHECK AGAINST THE PERIMETER LIST TO SEE IF IT IS TRULY EXTERIOR
-C
+
             DO 130 JJ  =  1, NPRM
                DO 120 J = 1, NPERIM (JJ)
                   IF (ABS (NUID (I1)) .EQ. NID (J, JJ)) THEN
@@ -82,9 +80,9 @@ C
   130       CONTINUE
   140       CONTINUE
             IF (EXTER) THEN
-C
+
 C  FIND THE LINE NUMBER IT BELONGS TO
-C
+
                IF (ABS (NUID (I1)) .GT. 1000000000) THEN
                   LTEST =  (ABS (NUID (I1)) - 1000000000) / 100000
                ELSEIF (ABS (NUID (I2)) .GT. 1000000000) THEN
@@ -105,9 +103,9 @@ C
   150             CONTINUE
   160             CONTINUE
                ENDIF
-C
+
 C  FIND THE ELEMENT BOUNDARY FLAG IF THERE IS ONE
-C
+
                IF (LTEST.LE.0) THEN
                   CALL MESAGE (' ERROR IN SEARCHING NXL FOR '//
      &               'ELEMENT BCC')
@@ -116,10 +114,10 @@ C
                   CALL LTSORT (ML, LINKL, LTEST, J, ADDLNK)
                   IF (ISBOUN (J) .GT. 0) THEN
                      IFLAG = ISBOUN (J)
-C
+
 C  CHECK TO MAKE SURE LINE IS LINKED TO FLAG
 C  AND GET THE NEXT LINK  (NFLAG)
-C
+
                      CALL LTSORT (ML, LINKSB, IFLAG, L, ADDLNK)
                      DO 170 JJ = IFSB (L), IFSB (L) + NSPF (L) - 1
                         IF (LISTSB (1, JJ) .LT. 0) THEN
@@ -146,9 +144,9 @@ C
                      KSBC = KSBC + 1
                      if (ksbc .gt. maxsbc) stop 'maxsbc error'
                      LSTSBC (KSBC) = NELEM
-C
+
 C  GET THE CORRECT ELEMENT SIDE
-C
+
                      IF (BAR) THEN
                         JSIDE = 1
                      ELSE
@@ -175,15 +173,15 @@ C
                      ENDIF
                      KSBC = KSBC + 1
                      LSTSBC (KSBC) = JSIDE
-C
+
 C  SEE IF ANY MORE FLAGS ARE ATTACHED TO THIS SIDE
-C
+
   210                CONTINUE
                      IF (NFLAG .GT. 0) THEN
-C
+
 C  CHECK TO MAKE SURE LINE IS LINKED TO FLAG
 C  AND GET THE NEXT LINK  (NFLAG)
-C
+
                         IFLAG = NFLAG
                         CALL LTSORT (ML, LINKSB, IFLAG, L, ADDLNK)
                         DO 220 JJ = IFSB (L), IFSB (L) + NSPF (L)
@@ -209,10 +207,10 @@ C
          ENDIF
        END IF
   240 CONTINUE
-C
+
       ERR = .FALSE.
       RETURN
-C
+
 10000 FORMAT (' SIDE BOUNDARY FLAG', I5, ' IS NOT PROPERLY LINKED')
 10010 FORMAT (' ERROR FINDING CORRECT BOUNDARY SIDE ON ELEMENT', I5)
       END

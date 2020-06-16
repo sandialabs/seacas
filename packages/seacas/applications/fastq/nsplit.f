@@ -4,25 +4,23 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE NSPLIT (MXND, MLN, LNODES, ANGLE, NSTART, KANG,
      &   INODE, NNODE, NWANT, MAXSIZ)
 C***********************************************************************
-C
+
 C  SUBROUTINE NSPLIT = SPLITS UP THE KANG CONSECUTIVE NODES STARTING
 C                      AT NSTART INTO NWANT INTERVALS (OR AS CLOSE
 C                      AS AN BE EXPECTED).  THE MAXIMUM NWANT SHOULD
 C                      BE IS 4.
-C
+
 C***********************************************************************
-C
+
       DIMENSION LNODES (MLN, MXND), ANGLE (MXND), INODE (4)
-C
+
       LOGICAL MAXSIZ
-C
+
       NNODE = 0
-C
+
       IF (KANG .LE. NWANT) THEN
          NNOW = NSTART
          DO 100 I = 1, KANG
@@ -30,7 +28,7 @@ C
             NNOW = LNODES (3, NNOW)
   100    CONTINUE
          NNODE = KANG
-C
+
       ELSEIF (NWANT .EQ. 1) THEN
          NNODE = 1
          IF (KANG .EQ. 2) THEN
@@ -50,7 +48,7 @@ C
          ELSE
             INODE (1) = JUMPLP (MXND, MLN, LNODES, NSTART, KANG / 2)
          ENDIF
-C
+
       ELSEIF (NWANT .EQ. 2) THEN
          NNODE = 2
          NJUMP = NINT (DBLE(KANG + 1) / 4.)
@@ -58,7 +56,7 @@ C
      &      NJUMP - 1)
          INODE (2) = JUMPLP (MXND, MLN, LNODES, NSTART,
      &      KANG - NJUMP)
-C
+
       ELSEIF (NWANT .EQ. 3) THEN
          NNODE = 3
          NJUMP1 = NINT (DBLE(KANG + 1) / 6.)
@@ -69,7 +67,7 @@ C
      &      NJUMP2 - 1)
          INODE (3) = JUMPLP (MXND, MLN, LNODES, NSTART,
      &      KANG - NJUMP1)
-C
+
       ELSEIF (NWANT .EQ. 4) THEN
          NNODE = 4
          XKANG = KANG + 1
@@ -85,7 +83,7 @@ C
          INODE (4) = JUMPLP (MXND, MLN, LNODES, NSTART,
      &      KANG - NJUMP1 - 1)
       ENDIF
-C
+
       RETURN
-C
+
       END

@@ -8,8 +8,6 @@ C=======================================================================
       SUBROUTINE ROTXYZ (XYZ, ANG, ROTMAT)
 C=======================================================================
 
-C
-
 C   --*** ROTXYZ *** (GEN3D) Multiply rotation matrix by XYZ rotation
 C   --   Written by Amy Gilkey - revised 05/23/86
 C   --

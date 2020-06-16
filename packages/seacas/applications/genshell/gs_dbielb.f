@@ -87,7 +87,6 @@ C ... Get element block ids
        IF (NERR .GT. 0) GOTO 110
       END IF
 
-
       IELNK = IESAV
       IEATR = IASAV
       ISATR = 0
@@ -138,4 +137,3 @@ C     Store the first pointers for each element block link array
       RETURN 1
 
       END
-

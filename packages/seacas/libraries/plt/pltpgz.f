@@ -4,7 +4,7 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C
+
 C=======================================================================
       FUNCTION PLTPGZ(N,X,Y,Z,XQ,YQ)
       DIMENSION X(3),Y(3),Z(3),D(2)

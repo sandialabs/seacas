@@ -5,10 +5,10 @@ C
 C    See packages/seacas/LICENSE for details
 
       program testwt2
-c
+
 c This is a test program for the Fortran binding of the EXODUS II
 c database write routines. It tests multiple simultaneous output files.
-c
+
 c     09/07/93  V.R. Yarberry - Revised for 2.00 API
 
       include 'exodusII.inc'
@@ -61,15 +61,15 @@ c     09/07/93  V.R. Yarberry - Revised for 2.00 API
 
       data iin /5/, iout /6/
 
-c
+
 c  create EXODUS II files
-c
+
       cpu_word_size = 0
       io_word_size = 4
-c
+
 c     first create a "regular" file that contains everything except
 c     history variable info
-c
+
       exoid = excre ("test.exo",
      1               EXCLOB, cpu_word_size, io_word_size, ierr)
       write (iout,'("after excre for test.exo,id: ",i4,", err=",i3)')
@@ -84,9 +84,9 @@ c
      1           exoid2, ierr
       write (iout, '("after excre (2), error = ", i4)' ) ierr
 
-c
+
 c  initialize file with parameters
-c
+
 
       title = "This is test 2"
       num_dim = 3
@@ -117,9 +117,9 @@ c
       write (iout, '("after expini (2), error = ", i4)' ) ierr
 
 
-c
+
 c  write nodal coordinates values and names to database
-c
+
 c  Quad #1
       x(1) = 0.0
       x(2) = 1.0
@@ -338,9 +338,9 @@ c  Wedge #1
       write (iout, '("after expcon (2), error = ", i4)' ) ierr
 
 
-c
+
 c write element order map
-c
+
 
       do 10 i = 1, num_elem
          elem_map(i) = i
@@ -356,9 +356,9 @@ c
       call expmap (exoid2, elem_map2, ierr)
       write (iout, '("after expmap (2), error = ", i4)' ) ierr
 
-c
+
 c write element block parameters
-c
+
 
       num_elem_in_block(1) = 1
       num_elem_in_block(2) = 1
@@ -492,9 +492,9 @@ c  write element block properties
       write (iout, '("after expp (2), error = ", i4)' ) ierr
 
 
-c
+
 c write element connectivity
-c
+
 
       connect(1) = 1
       connect(2) = 2
@@ -588,9 +588,9 @@ c
       call expelc (exoid2, ebids2(5), connect2, ierr)
       write (iout, '("after expelc (2), error = ", i4)' ) ierr
 
-c
+
 c write element block attributes
-c
+
 
       attrib(1) = 3.14159
       call expeat (exoid, ebids(1), attrib, ierr)
@@ -628,9 +628,9 @@ c
       write (iout, '("after expeat (2), error = ", i4)' ) ierr
 
 
-c
+
 c write individual node sets
-c
+
 
       call expnp (exoid, 20, 5, 5, ierr)
       write (iout, '("after expnp, error = ", i4)' ) ierr
@@ -720,10 +720,10 @@ C**** file 2
       call expnsd (exoid2, 21, dist_fact2, ierr)
       write (iout, '("after expnsd (2), error = ", i4)' ) ierr
 
-c
+
 c write concatenated node sets; this produces the same information as
 c the above code which writes individual node sets
-c
+
 
       ids(1) = 20
       ids(2) = 21
@@ -755,7 +755,7 @@ c
 c     call expcns (exoid, ids, num_nodes_per_set, node_ind, node_list,
 c    1        dist_fact, ierr)
 c     write (iout, '("after expcns, error = ", i4)' ) ierr
-c
+
 
       prop_names(1) = "FACE"
       call expp(exoid2, EXNSET, 20, prop_names(1), 4, ierr)
@@ -773,7 +773,7 @@ c
       write (iout, '("after exppa (2), error = ", i4)' ) ierr
 
 c write individual side sets
-c
+
 
 c     side set #1 - quad
 
@@ -988,10 +988,10 @@ c     side set #5 - wedges
       call expss (exoid2, 34, elem_list2, side_list2, ierr)
       write (iout, '("after expss (2), error = ", i4)' ) ierr
 
-c
+
 c write concatenated side sets; this produces the same information as
 c the above code which writes individual side sets
-c
+
       ids(1) = 30
       ids(2) = 31
       ids(3) = 32
@@ -1187,9 +1187,9 @@ c     write (iout, '("after expcss (2), error = ", i4)' ) ierr
       write (iout, '("after expp (2), error = ", i4)' ) ierr
 
 
-c
+
 c write QA records
-c
+
 
       num_qa_rec = 2
 
@@ -1220,9 +1220,9 @@ c
       write (iout, '("after expqa (2), error = ", i4)' ) ierr
 
 
-c
+
 c write information records
-c
+
 
       num_info = 3
 
@@ -1307,9 +1307,9 @@ c write results variables parameters and names
       call expvan (exoid2, "e", num_ele_vars2, var_names2, ierr)
       write (iout, '("after expvan, error = ", i4)' ) ierr
 
-c
+
 c write element variable truth table
-c
+
 
       k = 0
 
@@ -1328,12 +1328,12 @@ c
       call expvtt (exoid2, num_elem_blk, num_ele_vars, truth_tab, ierr)
       write (iout, '("after expvtt, error = ", i4)' ) ierr
 
-c
+
 c for each time step, write the analysis results;
 c the code below fills the arrays glob_var_vals,
 c nodal_var_vals, and elem_var_vals with values for debugging purposes;
 c obviously the analysis code will populate these arrays
-c
+
 
       whole_time_step = 1
       num_time_steps = 10
@@ -1341,9 +1341,9 @@ c
       do 110 i = 1, num_time_steps
         time_value = real(i)/100
         time_value2 = real(i)/100
-c
+
 c write time value to regular file
-c
+
 
         call exptim (exoid, whole_time_step, time_value, ierr)
         write (iout, '("after exptim, error = ", i4)' ) ierr
@@ -1351,9 +1351,9 @@ c
         call exptim (exoid2, whole_time_step, time_value2, ierr)
         write (iout, '("after exptim (2), error = ", i4)' ) ierr
 
-c
+
 c write global variables
-c
+
 
         do 50 j = 1, num_glo_vars
           glob_var_vals(j) = real(j+1) * time_value
@@ -1367,9 +1367,9 @@ c
      1              glob_var_vals, ierr)
         write (iout, '("after expgv (2), error = ", i4)' ) ierr
 
-c
+
 c write nodal variables
-c
+
 
         do 70 k = 1, num_nod_vars
           do 60 j = 1, num_nodes
@@ -1388,9 +1388,9 @@ c
 
 70      continue
 
-c
+
 c write element variables
-c
+
 
         do 100 k = 1, num_ele_vars
           do 90 j = 1, num_elem_blk
@@ -1413,10 +1413,10 @@ c
 
         whole_time_step = whole_time_step + 1
 
-c
+
 c update the data file; this should be done at the end of every time
 c step to ensure that no data is lost if the analysis dies
-c
+
         call exupda (exoid, ierr)
         write (iout, '("after exupda, error = ", i4)' ) ierr
         call exupda (exoid2, ierr)
@@ -1424,9 +1424,9 @@ c
 
 110   continue
 
-c
+
 c close the EXODUS files
-c
+
       call exclos (exoid, ierr)
       write (iout, '("after exclos, error = ", i4)' ) ierr
 

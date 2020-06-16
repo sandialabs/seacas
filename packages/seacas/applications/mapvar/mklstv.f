@@ -6,20 +6,20 @@ C See packages/seacas/LICENSE for details
 
       SUBROUTINE MKLSTV( NUMPTS,IND,IRNK2,IUP,ILO,INDX,
      *                   IE,LIST,NLIST,NBLKSZ,NSPC)
-C
+
 C-----------------------------------------------------------------------
-C
+
 C DESCRIPTION:
-C
+
 C VECTOR MAKE LIST (3D)
 C GIVEN A LIST OF PARTICLES (IE  THEIR INDEX AND RANK) FIND
 C THE LIST OF PARTICLES WITHIN THE BOUNDS SET BY XMIN AND XMAX
 C FOR THE IE'TH PARTICLE IN THE VECTOR BLOCK
-C
+
 C-----------------------------------------------------------------------
-C
+
 C  CALLING ARGUMENTS:
-C
+
 C     NUMPTS INTEGER   NUMBER OF POINTS TO BE SEARCHED
 C     IND    INTEGER   ORDER INDEX
 C     IRNK2  INTEGER   RANK
@@ -31,14 +31,14 @@ C     LIST   INTEGER   LIST OF FOUND PARTICLES
 C     NLIST  INTEGER   NUMBER OF PARTICLES FOUND
 C     NBLKSZ INTEGER   BLOCK SIZE OF IUP AND ILO BLOCKS
 C     NSPC   INTEGER   NUMBER OF SPACIAL COORD. (NUMBER OF DIMENSIONS)
-C
+
 C-----------------------------------------------------------------------
-C
+
       DIMENSION
      *  IND(NUMPTS,NSPC),IRNK2(NUMPTS,NSPC,*),
      *  IUP(NBLKSZ,NSPC),INDX(NUMPTS),
      *  ILO(NBLKSZ,NSPC), LIST(NUMPTS)
-C
+
 C BUILD A LIST OF POINTS THAT ARE CLOSE TO SURFACE IE
       J = IE
       NLIST = 0
@@ -51,7 +51,7 @@ C============================== o n e   -  d ======================
           NLIST = NLIST +1
           LIST(NLIST) = IND(I1,1)
  101    CONTINUE
-C
+
       ELSE IF( NSPC .EQ. 2 )THEN
 C============================== t w o   -  d ======================
         NUM1 = IUP(J,1) - ILO(J,1) + 1
@@ -68,7 +68,7 @@ C SELECT WHICH LIST IS THE SMALLEST
           IY = 1
           NUM = NUM2
         ENDIF
-C
+
         ILOW = ILO(J,IXYZ)
         IUPR = IUP(J,IXYZ)
 C FIRST TEST
@@ -89,7 +89,7 @@ C FIRST TEST
             ENDIF
  202      CONTINUE
         ENDIF
-C
+
       ELSE IF( NSPC .EQ. 3 )THEN
 C============================== t h r e e   -  d ======================
         NUM1 = IUP(J,1) - ILO(J,1) + 1
@@ -114,7 +114,7 @@ C SELECT WHICH LIST IS THE SMALLEST
           IZ = 2
           NUM = NUM3
         ENDIF
-C
+
         ILOW = ILO(J,IXYZ)
         IUPR = IUP(J,IXYZ)
         IF (ILOW.EQ.0) THEN
@@ -159,7 +159,7 @@ C SECOND TEST
  313      CONTINUE
         ENDIF
       ENDIF
-C
+
       RETURN
       END
-C
+

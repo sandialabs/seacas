@@ -31,7 +31,6 @@ C   --   CRDSCR - SCRATCH - coordinate I/O
       REAL    CORD(NUMNP,NDIM)
       REAL    CRDSCR(NUMNPO,NDIM)
 
-
       if (ndim .eq. 2) then
          CALL EXGCOR(ndbin, cord(1,1), cord(1,2), rdum, ierr)
       else if (ndim .eq. 3) then

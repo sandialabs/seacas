@@ -4,13 +4,11 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-
       SUBROUTINE ELVOL (NDIM, CRD, DISP, IX, NUMNP, NUMEL, NNODE,
      &     VOLUME)
-C
+
 C     ... ESTIMATE TIMESTEP FOR MESH --- BRICKS ONLY
-C
+
       DIMENSION CRD(NUMNP, *), DISP(numnp, *), IX(NNODE,*)
       DIMENSION GRADOP(8,8)
       REAL volume(*)

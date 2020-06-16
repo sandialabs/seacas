@@ -4,30 +4,27 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE GETNXN (NPNODE, NPELEM, MAXKXN, NNXK, KXN, NXK, NUID,
      &   NODE, NLIST, NUMN, ALL, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE GETNXN = GETS THE LIST OF NODES CONNECTED TO NODE
-C
+
 C***********************************************************************
-C
+
 C  NOTE:
 C     NODES FOR WHICH NUID (NODE) IS NEGATIVE WILL NOT BE INCLUDED.
 C     IF ALL=.FALSE.,  ONLY DIRECTLY CONNECTED NODES WILL BE LISTED.
 C     IF ALL=.TRUE.,  INDIRECTLY CONNECTED NODES WILL ALSO BE LISTED.
-C
+
 C***********************************************************************
-C
+
       DIMENSION NLIST (20), KLIST (20), M (3)
       DIMENSION KXN (NNXK, MAXKXN), NUID (NPNODE)
       DIMENSION NXK (NNXK, NPELEM)
-C
+
       LOGICAL ALL, ERR
-C
+
       ERR = .FALSE.
       CALL GETKXN (NPNODE, MAXKXN, NNXK, KXN, NUID, NODE, KLIST, NUMK,
      &   ERR)
@@ -39,7 +36,7 @@ C
       ENDIF
       NUM = 0
       NOD = NODE
-C
+
       DO 130 IK = 1, NUMK
          K = KLIST (IK)
          IF (NXK (1, K) .EQ. NOD) THEN
@@ -63,7 +60,7 @@ C
             ERR = .TRUE.
             RETURN
          ENDIF
-C
+
          NLK = NUM
          DO 120 IDO = 1, NDO
             MIDO = M (IDO)
@@ -83,16 +80,16 @@ C
   110       CONTINUE
   120    CONTINUE
   130 CONTINUE
-C
+
       NUMN = NUM
       IF (NUMN .GT. 20) THEN
          WRITE (*, 10000)NODE, NUID (NODE)
          ERR = .TRUE.
       ENDIF
-C
+
       RETURN
-C
+
 10000 FORMAT  (' TOO MANY NODES CONNECTED TO NODE', I5,
      &   ', NUID  = ', I10)
-C
+
       END

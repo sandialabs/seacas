@@ -4,38 +4,35 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE NPS (ML, MS, MNNPS, NS, ISLIST, NINT, IFLINE, NLPS,
      &   ILLIST, LINKL, LINKS, NNPS, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE NPS = GIVES A LIST OF THE NUMBER OF PERIMETER NODES
 C                   ON EACH OF A REGION'S SIDES
-C
+
 C***********************************************************************
-C
+
 C  SUBROUTINE CALLED BY:
 C     QMESH = GENERATES QUAD ELEMENTS
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     NNPS  = ARRAY OF NUMBER OF NODES PER SIDE
 C     CCW   = .TRUE. IF THE SIDE IS ORIENTED CCW
 C     KS    = COUNTER OF THE NUMBER OF SIDES
-C
+
 C***********************************************************************
-C
+
       DIMENSION NNPS (MNNPS), ISLIST (NS), LINKL (2, ML), LINKS (2, MS)
       DIMENSION NLPS (MS), IFLINE (MS), ILLIST (MS * 3), NINT (ML)
-C
+
       LOGICAL ERR, ADDLNK
-C
+
       ERR = .TRUE.
       ADDLNK = .FALSE.
-C
+
       KS = 0
       DO 110 I = 1, NS
          IF (ISLIST (I) .LT. 0) THEN
@@ -60,7 +57,7 @@ C
          ENDIF
   110 CONTINUE
       ERR = .FALSE.
-C
+
       RETURN
-C
+
       END

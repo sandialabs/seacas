@@ -4,15 +4,13 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE STRCUT (STRING)
 C***********************************************************************
-C
+
 C  SUBROUTINE STRCUT = DELETES ALL PRECEDING BLANKS FROM A STRING
-C
+
 C***********************************************************************
-C
+
       CHARACTER * (*) STRING, HOLD*80
       CALL STRIPB (STRING, ILEFT, IRIGHT)
       IF (IRIGHT .GT. ILEFT) THEN

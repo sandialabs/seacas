@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE NEWINI (IDNSUR, IDESUR, NSSUR, NUMATR)
 C=======================================================================
 
-
 C   --*** NEWINI *** (GEN3D) Calculate 3D initial variables
 C   --   Written by Amy Gilkey - revised 09/02/87
 C   --

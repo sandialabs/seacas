@@ -4,39 +4,36 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE INBRST (MS, MR, N5, N6, N21, N23, JJ, IMTRL, JC, IIN,
      &   IFOUND, IBARST, JMAT, JCENT, NLPB, JFLINE, JLLIST, LINKB,
      &   LINKM, NHOLDM, IHOLDM, NHOLDB, IHOLDB, MERGE, NOROOM)
 C***********************************************************************
-C
+
 C  SUBROUTINE INBRST = INPUTS A BAR SET INTO THE DATABASE
-C
+
 C***********************************************************************
-C
+
       DIMENSION IBARST (MS), JMAT (MS), JCENT (MS), NLPB (MS)
       DIMENSION JFLINE (MS)
       DIMENSION JLLIST (3 * MS), LINKB (2, MS), LINKM (2, MS + MR)
       DIMENSION IHOLDM (2,  (MS + MR)), IHOLDB (2, MS)
       DIMENSION IIN (IFOUND)
-C
+
       LOGICAL MERGE, NOROOM, ADDLNK
-C
+
       IZ = 0
       NOROOM = .TRUE.
       N22 = 0
-C
+
 C  ZERO OUT THE LINK ARRAY IF NEEDED
-C
+
       IF (JJ .GT. N21) THEN
          N21 = JJ
-C
+
 C  FIND THE CORRECT BAR SET NUMBER IF MERGING
-C
-C
+
 C  SET UP POINTERS FOR MERGING DATA
-C
+
       ELSEIF (MERGE) THEN
          JHOLD = JJ
          CALL LTSORT (MS, LINKB, JJ, IPNTR, ADDLNK)
@@ -54,9 +51,9 @@ C
             ENDIF
          ENDIF
       ENDIF
-C
+
 C  INPUT THE BAR SET DATA INTO THE DATABASE
-C
+
       N5 = N5 + 1
       J = N5
       IF (J .GT. MS)RETURN
@@ -79,18 +76,16 @@ C
          CALL LTSORT (MS, LINKB, JJ, IZ, ADDLNK)
       ENDIF
       ADDLNK = .FALSE.
-C
-C
+
 C  LINK UP THE MATERIAL
-C
-C
+
 C  ZERO THE LINK ARRAY IF NEEDED
-C
+
       IF (IMTRL .GT. N23) THEN
          N23 = IMTRL
-C
+
 C  SET UP POINTERS FOR MERGING DATA
-C
+
       ELSEIF (MERGE) THEN
          JHOLD = IMTRL
          CALL LTSORT (MS + MR, LINKM, IMTRL, IPNTR, ADDLNK)
@@ -109,9 +104,9 @@ C
             ENDIF
          ENDIF
       ENDIF
-C
+
 C  ADD THE MATERIAL INTO THE DATABASE
-C
+
       NOROOM = .FALSE.
       ADDLNK = .FALSE.
       CALL LTSORT (MS + MR, LINKM, IMTRL, IPNTR, ADDLNK)
@@ -126,9 +121,9 @@ C
          CALL LTSORT (MS + MR, LINKM, IMTRL, IMINUS, ADDLNK)
       ENDIF
       JMAT (J) = IMTRL
-C
+
       RETURN
-C
+
 10000 FORMAT ('   OLD BAR SET NO:', I5, '   TO NEW BAR SET NO:', I5)
 10010 FORMAT (' BAR SET:', I5, ' HAS LESS THAN ONE LINE',  / ,
      &   ' THIS BAR SET WILL NOT BE INPUT INTO DATABASE')

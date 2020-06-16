@@ -4,31 +4,28 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE MNMXK (NPELEM, NPNODE, NNXK, NXK, XN, YN, CENTK, KKK,
      &   XMIN, XMAX, YMIN, YMAX)
 C***********************************************************************
-C
+
 C  SUBROUTINE MNMXK = FINDS MIN AND MAX DIMENSIONS FOR FLAGGED ELEMENTS
-C
+
 C**********************************************************************
-C
+
       DIMENSION NXK (NNXK, NPELEM), CENTK (2, NPELEM)
       DIMENSION XN (NPNODE), YN (NPNODE)
-C
+
 C  FIND THE FIRST ELEMENT TO BE PLOTTED
-C
+
       DO 150 I = 1, KKK
          IF (NXK (1, I) .GT. 0) THEN
             JX1 = I
             JX2 = I
             JY1 = I
             JY2 = I
-C
+
 C  COMPARE CENTERS TO GET MIN AND MAX ELEMENTS
-C
+
             DO 100 J = I + 1, KKK
                IF (NXK (1, J) .GT. 0) THEN
                   IF (CENTK (1, J) .LT. CENTK (1, JX1))JX1 = J
@@ -37,9 +34,9 @@ C
                   IF (CENTK (2, J) .GT. CENTK (2, JY2))JY2 = J
                ENDIF
   100       CONTINUE
-C
+
 C  FIND CORRECT MIN AND MAX FROM NODES OF MIN AND MAX ELEMENTS
-C
+
             XMIN = XN (NXK (1, JX1))
             DO 110 K = 2, NNXK
                IF (NXK (K, JX1) .GT. 0)
@@ -63,13 +60,13 @@ C
             RETURN
          ENDIF
   150 CONTINUE
-C
+
 C  RETURN WITH DEFAULT MINS AND MAXS
-C
+
       XMIN = 0.
       XMAX = 1.
       YMIN = 0.
       YMAX = 1.
       RETURN
-C
+
       END

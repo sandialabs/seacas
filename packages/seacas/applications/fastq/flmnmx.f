@@ -4,41 +4,38 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE FLMNMX (MXND, MLN, MAXPRM, LINKPR, KPERIM, LNODES,
      &   XN, YN, NLOOP, NODE, XMIN, XMAX, YMIN, YMAX, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE FLMNMX = SET MIN AND MAX FOR CURRENT FILL BOUNDARY
-C
+
 C***********************************************************************
-C
+
       DIMENSION LNODES (MLN, MXND), XN (MXND), YN (MXND)
       DIMENSION LINKPR (3, MAXPRM)
-C
+
       LOGICAL ERR
-C
+
       KOUNT = 0
       INOW = NODE
       XMIN = XN (NODE)
       XMAX = XN (NODE)
       YMIN = YN (NODE)
       YMAX = YN (NODE)
-C
+
   100 CONTINUE
-C
+
       INOW = LNODES (3, INOW)
       IF (INOW .NE. NODE) THEN
-C
+
          XMIN = MIN (XMIN, XN (INOW))
          YMIN = MIN (YMIN, YN (INOW))
          XMAX = MAX (XMAX, XN (INOW))
          YMAX = MAX (YMAX, YN (INOW))
-C
+
          KOUNT = KOUNT + 1
-C
+
          IF (KOUNT .GT. NLOOP) THEN
             CALL MESAGE('PROBLEMS IN FLMNMX WITH LOOP NOT CLOSING')
             ERR = .TRUE.
@@ -46,18 +43,18 @@ C
          ENDIF
          GOTO 100
       ENDIF
-C
+
 C  LOOP THROUGH ALL THE REMAINING PERIMETERS CHECKING FOR CROSSINGS
-C
+
       IPERIM = KPERIM
   110 CONTINUE
       IPERIM = LINKPR (2, IPERIM)
       IF ((IPERIM .EQ. 0) .OR. (IPERIM .EQ. KPERIM)) GOTO 130
-C
+
       KMAX = LINKPR (3, IPERIM)
       INOW = LINKPR (1, IPERIM)
       KOUNT = 0
-C
+
   120 CONTINUE
       XMIN = MIN (XMIN, XN (INOW))
       YMIN = MIN (YMIN, YN (INOW))
@@ -66,15 +63,15 @@ C
       KOUNT = KOUNT + 1
       INOW = LNODES (3, INOW)
       IF (INOW .EQ. LINKPR (1, IPERIM)) GOTO 110
-C
+
       IF (KOUNT. GT. KMAX + 1) THEN
          CALL MESAGE('PROBLEMS IN FLMNMX WITH LOOP NOT CLOSING')
          ERR = .TRUE.
          GOTO 130
       ENDIF
       GOTO 120
-C
+
   130 CONTINUE
       RETURN
-C
+
       END

@@ -40,7 +40,6 @@ C contact ehg@research.att.com.
 C computed from the FMC-1 color difference formula
 C Barco monitor, max(r,g,b)=1, n=61 magenta,  2 Jan 1986
 
-
       H = 60.0 * MOD(H / 1.5, 1.)
       I = INT(H)
       H = huettab(i) + (huettab(i+1) - huettab(i)) * (h - i)

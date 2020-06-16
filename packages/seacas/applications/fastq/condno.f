@@ -4,29 +4,27 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE CONDNO (MXND, NODES, QRAT, SRAT, COND, SIDES, XN, YN,
      &   LSIDE)
 C***********************************************************************
-C
+
 C  SUBROUTINE CONDNO = COMPUTES EVALUATOR FUNCTIONS FOR RESTRUCTURING
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     LSIDE = .TRUE. IF SIDES ARRAY IS TO BE FILLED
 C     NODES = THE FOUR NODES OF THE ELEMENT
 C     QRAT  = THE RATIO OF SMALLEST TO LARGEST ANGLE
 C     SRAT  = THE RATIO OF SMALLEST TO LARGEST SIDE
 C     COND  = SRAT*QRAT
-C
+
 C***********************************************************************
-C
+
       DIMENSION NODES (4), SIDES (4), XN (MXND), YN (MXND)
-C
+
       LOGICAL LSIDE
-C
+
       N1 = NODES (1)
       N2 = NODES (2)
       N3 = NODES (3)
@@ -51,7 +49,7 @@ C
          SIDES (3) = SQRT (SS3)
          SIDES (4) = SQRT (SS4)
       ENDIF
-C
+
       RETURN
-C
+
       END

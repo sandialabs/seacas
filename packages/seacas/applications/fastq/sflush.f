@@ -4,16 +4,14 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE SFLUSH
 C***********************************************************************
-C
+
 C  SUBROUTINE SFLUSH = SCREEN FLUSH (DUMPS GRAPHICS BUFFER TO THE SCREEN)
-C
+
 C***********************************************************************
-C
+
       CALL PLTFLU
       RETURN
-C
+
       END

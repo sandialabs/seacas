@@ -4,25 +4,23 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       LOGICAL FUNCTION CORNP (ANGLE)
 C***********************************************************************
-C
+
 C  FUNCTION CORNP = LOGICAL FUNCTION THAT RETURNS TRUE IF THE ANGLE IS
 C                   WITHIN THE CURRENT DEFINITION OF A CORNER
-C
+
 C***********************************************************************
-C
+
       DATA EPS /.62/
-C
+
       PI = ATAN2(0.0, -1.0)
       IF (ANGLE .LT. ( PI - EPS)) THEN
          CORNP=.TRUE.
       ELSE
          CORNP=.FALSE.
       ENDIF
-C
+
       RETURN
-C
+
       END

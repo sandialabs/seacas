@@ -8,7 +8,7 @@ C ... Calculate nodal volume...
 
       SUBROUTINE PRNVOL (NDIM, CRD, IX, NUMNP, NUMEL, NNODE,
      &  VOLUME, IUNIT)
-C
+
       DIMENSION CRD(NUMNP, *), IX(NNODE,*)
       DIMENSION GRADOP(8)
       REAL volume(*)

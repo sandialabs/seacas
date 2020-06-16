@@ -19,12 +19,12 @@ C=======================================================================
       DATA MATRIX(1:36)  /'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'/
       DATA MATRIX(37:48) /'$()*+,/.: -='/
       DATA MATRIX(49:49) /''''/
-C
+
 C     THE FOLLOWING CHARACTER SET IS NOT ANSI STANDARD
-C
+
 C      DATA MATRIX(37:68) /'!"#$%&()*+,/.:;<>?@[\]^_`{|}~ -='/
 C      DATA MATRIX(69:69) /''''/
-C
+
       DATA (LETTER(I, 1),I=1,7) /
      *   ' AAAAA  ',
      *   'AA   AA ',
@@ -577,11 +577,11 @@ C     * '        '/
      *   '        ',
      *   '        ',
      *   '        '/
-C
+
       MAXCOL = MIN(NCOLS/9, MAXCHR)
-C
+
 C     DELIMIT NONBLANK STRING.
-C
+
       CALL STRIPB (LINEIN, ILEFT, IRIGHT)
       IF (ILEFT .LE. IRIGHT) THEN
          LINE = LINEIN (ILEFT:IRIGHT)
@@ -594,67 +594,67 @@ C
          LINE = ' '
          LENIN = 0
       END IF
-C
+
 C     LENIN IS LAST PRINTABLE NONBLANK
-C
+
 C     CONVERT ALPHABET TO UPPER CASE
-C
+
       DO 100 J=1,LENIN
          IF (LGE(LINE(J:J),'a') .AND. LLE(LINE(J:J),'z')) THEN
             ITEMP = ICHAR(LINE(J:J))
             LINE(J:J)=CHAR(ITEMP-(ICHAR('a')-ICHAR('A')))
          END IF
   100 CONTINUE
-C
+
 C     CALCULATE BLANK FILL.
-C
+
       NBLANK = (NCOLS - LENIN * 9) / 2
       NBLANK = MIN (NBLANK, 66)
-C
+
 C     LOAD UP CHARACTERS
-C
+
       DO 130 ICOL = 1, LENIN
          IPT = INDEX(MATRIX,LINE(ICOL:ICOL))
          IF (IPT .EQ. 0) THEN
-C
+
 C           CHARACTER NOT FOUND - REPLACE WITH A BLANK
-C
+
             DO 110 IROW = 1, 7
                SECT(IROW,ICOL) = ' '
   110       CONTINUE
-C
+
          ELSE
-C
+
 C           CHARACTER FOUND - INSERT BANNER LETTER
-C
+
             DO 120 IROW = 1, 7
                SECT(IROW,ICOL) = LETTER(IROW,IPT)
   120       CONTINUE
-C
+
          END IF
   130 CONTINUE
-C
+
       IF ((IRIGHT - ILEFT + 1) .NE. LENIN .AND. LENIN .NE. 0) THEN
-C
+
 C        STRING IS TRUNCATED.
-C
+
         if (iout .eq. 0) then
           WRITE (*, 5010) LINEIN(ILEFT:IRIGHT)
         else
           WRITE (IOUT, 5010) LINEIN(ILEFT:IRIGHT)
         end if
 
-C
+
       ELSE
-C
+
 C        STRING IS NOT TRUNCATED OR IS NULL.
-C
+
         if (iout .eq. 0) then
           WRITE (*,5000)
         else
           WRITE (IOUT,5000)
         end if
-C
+
       END IF
       if (iout .eq. 0) then
         DO 140 IROW = 1, 7

@@ -4,20 +4,18 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE DREAD (X, Y, BUTTON, X1, Y1, XX1, YY1, SCALE, CT, ST)
 C***********************************************************************
-C
+
 C  SUBROUTINE DREAD = SETS ALL PARAMETERS UP FOR READING FROM A DIGI-PAD
-C
+
 C***********************************************************************
-C
+
 C  SUBROUTINES CALLED:
 C     DPREAD   = READS INPUT FROM A DIGI-PAD DIGITIZER
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     X      = THE X LOCATION IN USER COORDINATES
 C     Y      = THE Y LOCATION IN USER COORDINATES
@@ -33,11 +31,11 @@ C     XNEW   = THE NEW DIGITIZED X VALUE BEFORE TRANSFORMATIONS
 C     YNEW   = THE NEW DIGITIZED Y VALUE BEFORE TRANSFORMATIONS
 C     NCB    = THE NUMBER OF BUTTONS ON THE MOUSE  (BIT-PAD-ONE)
 C     DEL    = THE DELTA DISTANCE BETWEEN ACCEPTABLE POINTS  (TALOS)
-C
+
 C***********************************************************************
-C
+
       CHARACTER*1 BUTTON
-C
+
       CALL DPREAD (XNEW, YNEW, BUTTON)
       XNEW = XNEW - XX1
       YNEW = YNEW - YY1

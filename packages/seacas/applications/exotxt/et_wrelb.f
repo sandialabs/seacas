@@ -76,7 +76,7 @@ C        Write connectivity and attributes for this element block
 
 C     WRCONAT - Write the connectivity and attributes to a text file
 C     Written for ExodusIIv2 database format 10/12/95
-C
+
 C     NTXT   - IN - file id
 C     NUMELB - IN - number of element in element block
 C     NUMLNK - IN - number of nodes per element in element block

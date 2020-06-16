@@ -104,7 +104,6 @@ C   --   KFACSS - OUT - index of FACESS; the distribution factors for all sets
          call mdlong ('CFACNP', kcfacn, 0) ! Exo II df list array
       END IF
 
-
       IF (FIRST) THEN
          CALL MDRSRV ('IDESS', KIDSS, 0)
          CALL MDRSRV ('NEESS', KNESS, 0)

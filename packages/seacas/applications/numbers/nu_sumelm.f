@@ -89,7 +89,6 @@ C ... Determine number of selected elements in each block
          GO TO 120
       ELSE IF (ITMSEL(NLAST)) THEN
 
-
 C     ... If by density, then calculate volume of elements
          IF (DODENS) THEN
 C     ... READ THE STEP AND STORE DISPLACEMENTS
@@ -117,7 +116,6 @@ C     ... Read and store the element variable
            end if
  56      continue
          TREAD = TIME(NLAST)
-
 
          DO 60 I = 1, NELBLK+1
             SUM(I) = 0.0
@@ -155,7 +153,7 @@ C ... Note that volume is set to zero for all non-selected elements
 
       END IF
       GO TO 50
-C
+
  120  CONTINUE
       RETURN
 

@@ -4,20 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE GETLXN (MXND, LXN, NODE, LINES, NL, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE GETLXN = GET THE FULL LIST OF LINES CONNECTED TO NODE
-C
+
 C***********************************************************************
-C
+
       DIMENSION LINES (20), LXN (4, MXND)
-C
+
       LOGICAL ERR
-C
+
       ERR = .FALSE.
       NN = NODE
       NUM = 0
@@ -55,7 +52,7 @@ C
          NL = NUM
          RETURN
       ENDIF
-C
+
 10000 FORMAT (' IN GETLXN, TOO MANY NODES CONNECTED TO NODE', I5)
-C
+
       END

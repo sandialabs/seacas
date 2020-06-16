@@ -4,7 +4,6 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-
 C=======================================================================
       SUBROUTINE WRNPS (NTXT, NUMNPS, LNPSNL, LNPSDF, IDNPS, NNNPS,
      &                  NDNPS, IXNNPS, IXDNPS, LTNNPS, FACNPS)

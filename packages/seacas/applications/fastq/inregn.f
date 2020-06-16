@@ -4,37 +4,35 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE INREGN (MS, MR, N7, N8, N22, N23, JJ, JMTRL, IIN,
      &   IFOUND, IREGN, IMAT, NSPR, IFSIDE, ISLIST, LINKR, LINKM,
      &   NHOLDR, IHOLDR, NHOLDM, IHOLDM, IRGFLG, MERGE, NOROOM)
 C***********************************************************************
-C
+
 C  SUBROUTINE INREGN = INPUTS A REGION INTO THE DATABASE
-C
+
 C***********************************************************************
-C
+
       DIMENSION IREGN(MR), IMAT(MR), NSPR(MR), IFSIDE(MR), ISLIST(MR*4)
       DIMENSION LINKR(2, MR), LINKM(2, (MS + MR))
       DIMENSION IHOLDR(2, MR), IHOLDM(2, (MS + MR)), IRGFLG(MR)
       DIMENSION IIN(IFOUND)
-C
+
       LOGICAL NOROOM, MERGE, ADDLNK
-C
+
       IPNTR = 0
       IZ = 0
       NOROOM = .TRUE.
       ADDLNK = .FALSE.
       IMTRL = ABS(JMTRL)
-C
+
 C  ZERO THE LINK ARRAY IF NEEDED
-C
+
       IF (JJ .GT. N22) THEN
          N22 = JJ
-C
+
 C  SET UP POINTERS FOR MERGING DATA
-C
+
       ELSE IF (MERGE) THEN
          JHOLD = JJ
          CALL LTSORT (MR, LINKR, JJ, IPNTR, ADDLNK)
@@ -52,9 +50,9 @@ C
             END IF
          END IF
       END IF
-C
+
 C  ADD THE REGION INTO THE DATABASE
-C
+
       N7 = N7 + 1
       J = N7
       IF (J .GT. MR) RETURN
@@ -76,16 +74,16 @@ C
          WRITE(*, 10010) J
          CALL LTSORT (MR, LINKR, IREGN(J), IZ, ADDLNK)
       END IF
-C
+
 C  LINK UP THE MATERIAL
-C
+
 C  ZERO THE LINK ARRAY IF NEEDED
-C
+
       IF (IMTRL .GT. N23) THEN
          N23 = IMTRL
-C
+
 C  SET UP POINTERS FOR MERGING DATA
-C
+
       ELSE IF (MERGE) THEN
          JHOLD = IMTRL
          ADDLNK = .FALSE.
@@ -104,9 +102,9 @@ C
             END IF
          END IF
       END IF
-C
+
 C  ADD THE MATERIAL INTO THE DATABASE
-C
+
       NOROOM = .FALSE.
       ADDLNK = .FALSE.
       CALL LTSORT (MS + MR, LINKM, IMTRL, IPNTR, ADDLNK)
@@ -122,9 +120,9 @@ C
          CALL LTSORT (MS + MR, LINKM, IMTRL, IONE, ADDLNK)
       END IF
       IMAT(J) = JMTRL
-C
+
       RETURN
-C
+
 10000 FORMAT(' OLD REGION NO:', I5, ' TO NEW REGION NO:', I5)
 10010 FORMAT(' REGION:', I5, ' HAS LESS THAN ONE SIDE', /,
      &   ' THIS REGION WILL NOT BE INPUT INTO DATABASE')

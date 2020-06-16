@@ -4,31 +4,29 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE LUPANG (MXND, MLN, XN, YN, ZN, LXK, KXL, NXL, LXN,
      &   NLOOP, ANGLE, LNODES, NSTART, LLL, XMIN, XMAX, YMIN, YMAX,
      &   ZMIN, ZMAX, DEV1, KREG, ERR)
 C***********************************************************************
-C
+
 C  SUROUTINE LUPANG = CALCULATES THE NEW ANGLES FOR ALL NODES IN A LOOP
-C
+
 C***********************************************************************
-C
+
       DIMENSION XN (MXND), YN (MXND), ZN(MXND)
       DIMENSION LXN(4, MXND), NXL(2, 3*MXND)
       DIMENSION LXK(4, MXND), KXL(2, 3*MXND)
       DIMENSION ANGLE (MXND), LNODES (MLN, MXND)
-C
+
       LOGICAL ERR
-C
+
       CHARACTER*3 DEV1
-C
+
       ERR = .FALSE.
-C
+
 C  LOOP AROUND THE INTERIOR PERIMETER CALCULATING THE NEW
 C  ANGLES
-C
+
       N1 = NSTART
       KOUNT = 0
   100 CONTINUE
@@ -49,8 +47,8 @@ C
          GOTO 110
       ENDIF
       GOTO 100
-C
+
   110 CONTINUE
       RETURN
-C
+
       END

@@ -156,51 +156,51 @@ C  Color table has not been created. Generate it
 C     Define colors 32-56 to be a linear variation from red to orange
 C     Red    = 255,0,0    (R,G,B)
 C     Orange = 255,168,0  (R,G,B)
-C
+
              XIPCOL=168.0/24.0
              DO 50 I=32,56
               RRED(I)=1.
               RGREEN(I)=(I-32)*XIPCOL/255.
               RBLUE(I)=0.
    50        CONTINUE
-C
+
 C     Define colors 57-106 to be a linear variation from orange to yello
 C     Orange = 255,168,0  (R,G,B)
 C     Yellow = 255,255,0  (R,G,B)
-C
+
              XIPCOL=87.0/50.0
              DO 60 I=57,106
               RRED(I)=1.
               RGREEN(I)=(168.0+(I-56)*XIPCOL)/255.
               RBLUE(I)=0.
    60        CONTINUE
-C
+
 C     Define colors 107-166 to be a linear variation from yellow to gree
 C     Yellow = 255,255,0  (R,G,B)
 C     Green  = 0,255,0    (R,G,B)
-C
+
              XIPCOL=255.0/60.0
              DO 70 I=107,166
               RRED(I)=(255.0-(I-106)*XIPCOL)/255.
               RGREEN(I)=1.
               RBLUE(I)=0.
    70        CONTINUE
-C
+
 C     Define colors 167-210 to be a linear variation from green to blue
 C     Green = 0,255,0  (R,G,B)
 C     Blue  = 0,0,255  (R,G,B)
-C
+
              XIPCOL=255.0/44.0
              DO 80 I=167,210
               RRED(I)=0.
               RGREEN(I)=(255.0-(I-166)*XIPCOL)/255.
               RBLUE(I)=(I-166)*XIPCOL/255.
    80        CONTINUE
-C
+
 C    Define colors 211-255 to be a linear variation from blue to violet
 C    Blue   = 0,0,255    (R,G,B)
 C    Purple = 180,0,180  (R,G,B)
-C
+
              XICOLB = 75.0/45.0
              XICOLR = 180.0/45.0
              DO 90 I=211,255
@@ -210,7 +210,6 @@ C
    90        CONTINUE
 
             ENDIF
-
 
             IF (NUMCOL(1,ICURDV) .EQ. 1) THEN
                CALL PLTCOL (8+0, 0.7059, 0.0, 0.7059)

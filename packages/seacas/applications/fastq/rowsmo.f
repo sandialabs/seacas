@@ -4,39 +4,37 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE ROWSMO (MXND, MLN, XN, YN, ZN, LXK, KXL, NXL, LXN, NNN,
      &   WFAC, WFAC2, NIT, EPS, RO, NNN2, LNODES, BNSIZE, LLL, GRAPH,
      &   XMIN, XMAX, YMIN, YMAX, ZMIN, ZMAX, DEV1, KREG)
 C***********************************************************************
-C
+
 C  SUBROUTINE ROWSMO = SMOOTHS AN ADDED ROW DURING FILLING USING THE
 C                      ISOPARAMETRIC SMOOTHER WITH SPECIAL CONSIDERATION
 C                      GIVEN TO THE 2-LINE NODES (ROW CORNERS)
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     WFAC = WEIGHT (0. = LAPLACIAN, 1. = ISOPARAMETRIC)
 C     NIT  = THE MAX NUMBER OF ITERATIONS TO DO.
 C     EPS  = MINIMUM DISTANCE NODES MUST MOVE TO CONTINUE ITERATIONS
 C     RO   = AN UNDER- OR OVER-RELAXATION FACTOR (NORMALLY 1.0)
-C
+
 C***********************************************************************
-C
+
       DIMENSION AREA(20)
-C
+
       DIMENSION KLIST(20), NODES(4)
       DIMENSION XN(MXND), YN(MXND), ZN(MXND)
       DIMENSION LXN(4, MXND), NXL(2, 3*MXND)
       DIMENSION LXK(4, MXND), KXL(2, 3*MXND)
       DIMENSION LINES(20), LNODES (MLN, MXND), BNSIZE (2, MXND)
-C
+
       LOGICAL BIG, CCW, ERR, GRAPH, NEAR2L, TEST, AVER
-C
+
       CHARACTER*3 DEV1
-C
+
       PI = ATAN2(0.0, -1.0)
 
       nodes(1) = -1
@@ -50,17 +48,17 @@ C
       EPS2 = EPS * RO
       TEST = .FALSE.
       AVER = .TRUE.
-C
+
 C  ITERATION LOOP
-C
+
       DO 160 IT = 1, NIT
          IF (IT .EQ. NIT) THEN
             CALL MESAGE ('THE ROWSMO ROUTINE IS NOT CONVERGING')
          ENDIF
          BIG = .FALSE.
-C
+
 C  NODE LOOP
-C
+
          NBEGIN = MAX0 (NNN2 - 1, 1)
          NEND = NNN + 1
          DO 150 J = NBEGIN, NEND
@@ -71,25 +69,25 @@ C
             ELSE
                NODE = J
             ENDIF
-C
+
 C  SKIP CONTINUATION LINES, EXTERIOR BOUNDARY LINES, AND NODES
 C  THAT ARE ON THE INTERIOR
-C
+
             IF (NODE .gt. 0) THEN
             IF ((LXN(1, NODE) .GT. 0) .AND. (LXN(2, NODE) .GT. 0) .AND.
      &              (LNODES (4, NODE) .EQ. - 1))  THEN
-C
+
 C  FIND ELEMENTS AND LINES ATTACHED TO NODE
-C
+
                CALL GKXN (MXND, KXL, LXN, NODE, KS, KLIST, ERR)
                CALL GETLXN (MXND, LXN, NODE, LINES, NL, ERR)
-C
+
                SUMX = 0.0
                SUMY = 0.0
-C
+
 C  PERFORM AN AREA PULL AND LAPLACIAN
 C  ON ANY NODE ATTACHED TO A 2-LINE NODE
-C
+
 C               TWOL = .FALSE.
 C               NEAR2L = .FALSE.
 C               IF (LXN (3, NODE) . EQ. 0) THEN
@@ -109,9 +107,9 @@ C                           GOTO 110
 C                        ENDIF
 C                        NODES(IL) = NTEST
 C                        IF (LXN (3, NTEST) .EQ. 0) THEN
-C
+
 C  MAKE SURE THAT THE OTHER END OF THE 2-LINE NODE HAS ONLY 3 LINES
-C
+
 C                           IF (LXN (1, NTEST) .EQ. ILL) THEN
 C                              LTEST = LXN (2, NTEST)
 C                           ELSEIF (LXN (2, NTEST) .EQ. ILL) THEN
@@ -140,7 +138,7 @@ C                  ELSE
 C                     NFROM = 0
 C                  ENDIF
 C               ENDIF
-C
+
                NEAR2L = .FALSE.
                IF ((NEAR2L) .OR. (TEST)) THEN
                   THETA1 = ATAN2 (YN (NODES (3)) - YN (NODES (1)),
@@ -159,16 +157,16 @@ C
                   YNEW = Y11 + R * SIN (THETA1)
                   XDEL = XNEW - XN (NODE)
                   YDEL = YNEW - YN (NODE)
-C
+
 C  PERFORM AN ISOPARAMETRIC SMOOTH ON OTHER NODES
-C
+
                ELSE
                   DO 120 KL = 1, KS
                      CCW = .FALSE.
                      KK = KLIST(KL)
                      CALL GNXKA (MXND, XN, YN, KK, NODES, AREA(KL), LXK,
      &                  NXL, CCW)
-C
+
                      DO 100 IN = 1, 4
                         IF (NODES(IN) .EQ. NODE) THEN
                            J1 = IN + 1
@@ -181,7 +179,7 @@ C
                      IF (J2 .GT. 4) J2 = 1
                      J3 = J2 + 1
                      IF (J3 .GT. 4) J3 = 1
-C
+
                      SUMX = SUMX + XN(NODES(J1)) + XN(NODES(J3))
      &                  - WFAC * XN(NODES(J2))
                      SUMY = SUMY + YN(NODES(J1)) + YN(NODES(J3))
@@ -191,14 +189,14 @@ C
                   SUMY = SUMY/(DBLE(KS) * (2.0 - WFAC))
                   XDEL = (RO * ( SUMX - XN (NODE) ))
                   YDEL = (RO * ( SUMY - YN (NODE) ))
-C
+
                   CALL GETFRM (MXND, LINES, NL, NXL, NODE,
      &               LNODES (2, NODE), LNODES (3, NODE), NFROM)
                   IF (NFROM .GT. 0)
      &               THEN
-C
+
 C  FACTOR IN THE LENGTH CONSTANT (GENERATED LENGTH) OF THE NODE
-C
+
                      DIST0 = BNSIZE (1,NODE) * BNSIZE (2,NODE)
                      XDIST = XDEL + XN (NODE) - XN (NFROM)
                      YDIST = YDEL + YN (NODE) - YN (NFROM)
@@ -208,9 +206,9 @@ C
                      SUMY = YN (NFROM) + YDIST * DFACT
                      XDEL = SUMX - XN (NODE)
                      YDEL = SUMY - YN (NODE)
-C
+
 C  FACTOR IN THE EQUAL ANGLE VECTORS
-C
+
                      IF (LNODES (2, NODE) .NE. LNODES (3, NODE)) THEN
                         CALL EQLANG (MXND, XN, YN, LXN, NODE,
      &                     LNODES (2, NODE), LNODES (3, NODE), NFROM,
@@ -223,20 +221,20 @@ C
                            YDEL = VY
                         ENDIF
                      ENDIF
-C
+
                   ENDIF
-C
+
                ENDIF
-C
+
 C  NOW CHECK THAT THE ROW IS NOT BENDING OVER ON ITSELF WITH THIS SMOOTH
-C
+
                IF (LXN (4, NODE) .EQ. 0) CALL INVERT_FQ (MXND, MLN, XN,
      &            YN, ZN, LXK, KXL, NXL, LXN, LLL, LNODES, XMIN, XMAX,
      &            YMIN, YMAX, ZMIN, ZMAX, DEV1, KREG, NODE, XDEL, YDEL)
-C
+
 C  REDEFINE THIS NODE'S COORDINATES
 C  AND PLOT THE NEW NODE AND LINES
-C
+
                IF ((XDEL * XDEL + YDEL * YDEL) .GT. EPS2) BIG = .TRUE.
                IF (GRAPH) THEN
                   CALL LCOLOR ('BLACK')
@@ -249,10 +247,10 @@ C
                   CALL LCOLOR ('WHITE')
                   CALL SFLUSH
                ENDIF
-C
+
                XN(NODE) = XN(NODE) + XDEL
                YN(NODE) = YN(NODE) + YDEL
-C
+
                IF (GRAPH) THEN
                   DO 140 II = 1, NL
                      IDRAW = LINES(II)
@@ -262,19 +260,19 @@ C
   140             CONTINUE
                   CALL SFLUSH
                ENDIF
-C
+
 C  CHECK FOR CONVERGENCE
-C
+
             ENDIF
             ENDIF
   150    CONTINUE
-C
+
 C  IF NO SIGNIFICANT MOVEMENTS OCCURRED,  RETURN
-C
+
          IF (.NOT.BIG) RETURN
   160 CONTINUE
-C
+
 C  NOW SMOOTH THE INTERIOR
-C
+
       RETURN
       END

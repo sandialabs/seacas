@@ -4,32 +4,30 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE ZOOMLT (MCOM, ICOM, JCOM, CIN, RIN, IIN, KIN, IDUMP,
      &   DRAWN, ALPHA, DEV1, X1, X2, Y1, Y2, XX1, XX2, YY1, YY2, XMIN1,
      &   XMAX1, YMIN1, YMAX1, XMIN, XMAX, YMIN, YMAX)
 C***********************************************************************
-C
+
 C  ZOOMPL = SUBROUTINE TO INPUT NEW ZOOM LIMITS
-C
+
 C***********************************************************************
-C
+
       DIMENSION KIN(MCOM), IIN(MCOM), RIN(MCOM)
-C
+
       CHARACTER*72 CIN(MCOM)
       CHARACTER*3 DEV1, ANS
-C
+
       LOGICAL DRAWN, ALPHA
-C
+
       IF ((ICOM .LE. JCOM) .AND. (DRAWN) .AND.
      &   ((CIN(ICOM)(1:1) .EQ. 'C') .OR.
      &   (CIN(ICOM)(1:1) .EQ. 'c')) .AND.
      &   (.NOT.ALPHA)) THEN
          CIN(ICOM) = 'PLOT'
-C
+
 C  USE CURSOR INPUT FROM THE SCREEN
-C
+
          CALL MESAGE (' ')
          CALL MESAGE (' ')
          CALL MESAGE ('LOCATE ONE CORNER WITH CURSOR')
@@ -62,9 +60,9 @@ C         Y2 = MAX( Y1+.05, .425)
          XMAX = ABS ( (X2 * (XX2 - XX1))) + XX1
          YMIN = ABS ( ((Y1 / .75) * (YY2 - YY1)) ) + YY1
          YMAX = ABS ( ((Y2 / .75) * (YY2 - YY1)) ) + YY1
-C
+
 C  USE USER INPUT FROM THE KEYPAD
-C
+
       ELSE
          IF ((CIN(ICOM)(1:1) .EQ. 'C') .OR.
      &      (CIN(ICOM)(1:1) .EQ. 'c')) THEN
@@ -74,9 +72,9 @@ C
             CALL MESAGE ('CURRENT PLOT LIMITS UNCHANGED')
             CALL MESAGE ('* IN OTHER WORDS ... PLOT FIRST (P) '//
      &         'AND THEN ZOOM (Z,C) *')
-C
+
 C  SEE IF ANY OF THE VALUES ARE REDEFINED
-C
+
          ELSE IF ( (ICOM .LE. JCOM)  .AND.
      &      ( (KIN(ICOM) .GT. 0)    .OR.  (KIN(ICOM+1) .GT. 0)  .OR.
      &      (KIN(ICOM+2) .GT. 0)  .OR.  (KIN(ICOM+3) .GT. 0) ) ) THEN
@@ -103,7 +101,7 @@ C
             CALL MESAGE ('ZOOM LIMITS RESET TO PLOT EXTREMES')
          END IF
       END IF
-C
+
       RETURN
-C
+
       END

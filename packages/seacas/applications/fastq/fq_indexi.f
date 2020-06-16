@@ -4,20 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE INDEXI_FQ (NMAX, IARRAY, N, INDX)
 C***********************************************************************
-C
+
 C     INDEXI - SORT THE N ELEMENTS OF IARRAY WHOSE POSITION IS STORED
 C              IN INDX.  ONLY THE ORDER OF THE INDEX ARRAY, INDX, IS
 C              MODIFIED
-C
+
 C***********************************************************************
-C
+
       DIMENSION IARRAY(NMAX), INDX(N)
-C
+
       L = N/2 + 1
       IR = N
   100 CONTINUE
@@ -35,7 +32,7 @@ C
             RETURN
          END IF
       END IF
-C
+
       I = L
       J = L + L
   110 CONTINUE
@@ -54,5 +51,5 @@ C
       END IF
       INDX(I) = INDXT
       GO TO 100
-C
+
       END

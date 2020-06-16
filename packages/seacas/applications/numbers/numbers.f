@@ -1,15 +1,15 @@
 C Copyright(C) 1999-2020 National Technology & Engineering Solutions
 C of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C NTESS, the U.S. Government retains certain rights in this software.
-C
+
 C See packages/seacas/LICENSE for details
 
       PROGRAM NUMBER
-C
+
 C ... Program to calculate the centroid location and the
 C     mass moment of inertia for a axisymmetric and plane 2-D mesh
 C     and a 3-D mesh defined in the genesis format.
-C
+
 C     LINK WITH SUPES LIBRARY
       include 'exodusII.inc'
 
@@ -24,7 +24,7 @@ C     LINK WITH SUPES LIBRARY
       include 'nu_io.blk'
       include 'nu_ndisp.blk'
       include 'argparse.inc'
-C
+
       CHARACTER*2048 DBNAME, SCRATCH
 
       CHARACTER*(MXLNLN)  TITLE
@@ -42,7 +42,7 @@ C
 C        UNIT 6 = STANDARD OUTPUT
 C             7 = ASCII OUTPUT
 C             9 = BINARY MESH INPUT (GENESIS)
-C
+
       ITERM = 6
       IHARD = 7
       NDB   = 0
@@ -57,9 +57,8 @@ C
       call cpyrgt (ITERM, '1988')
       call cpyrgt (IHARD, '1988')
 
-C
 C ... GET FILENAMES:
-C
+
 C .. Get filename from command line.  If not specified, emit error message
       NARG = argument_count()
 
@@ -99,7 +98,6 @@ C .. Get filename from command line.  If not specified, emit error message
         CALL PRTERR ('FATAL', SCRATCH(:LENSTR(SCRATCH)))
         GOTO 60
       END IF
-C
 
       CALL MDINIT (A)
       CALL MCINIT (C)
@@ -130,7 +128,7 @@ C
       AXI    = .TRUE.
       EXODUS = .FALSE.
       NNODES = 2**NDIM
-C
+
       CALL MDRSRV ('CRD', IR, NUMNP*NDIM)
       IRX = IR
       IRY = IR + NUMNP
@@ -174,16 +172,16 @@ C ... Scratch space for block info
       CALL MDDEL ('NUMLNK')
       CALL MDDEL ('NUMELB')
       CALL MDDEL ('NUMATR')
-C
+
 C ... BOUNDARY CONDITION FLAGS
-C
+
 C -- Node Sets:
 C    INS1 = IDNPS  (NUMNPS) NODAL POINT SET IDS
 C    INS2 = NNNPS  (NUMNPS) NODAL POINT SET COUNTS
 C    INS3 = IPTNPS (NUMNPS) NODAL POINT SET POINTER
 C    INS4 = LSTNPS (LNPSNL) NODAL POINT SET NODE LIST
 C    INS5 = FACNPS (LNPSNL) NODAL POINT DISTRIBUTION FACTORS
-C
+
 C -- Element Side Sets:
 C    IBC1 = IDESS  (NUMESS) ELEMENT SIDE SET IDS
 C    IBC2 = NEESS  (NUMESS) ELEMENT SIDE SET ELEMENT COUNTS
@@ -193,7 +191,7 @@ C    IBC5 = IPNESS (NUMESS) ELEMENT SIDE SET NODE    POINTERS
 C    IBC6 = LTEESS (LESSEL) ELEMENT SIDE SET ELEMENT LIST
 C    IBC7 = LTNESS (LESSNL) ELEMENT SIDE SET NODE    LIST
 C    IBC8 = FACESS (LESSNL) ELEMENT SIDE SET DISTRIBUTION FACTORS
-C
+
       CALL MDRSRV ('IDNPS',  INS1, NUMNPS)
       CALL MDRSRV ('NNNPS',  INS2, NUMNPS)
       CALL MDRSRV ('NDNPS',  INS6, NUMNPS)
@@ -258,9 +256,8 @@ C     sum node counts to calculate next index
         if (ierr .ne. 0) go to 60
       end if
 
-C
 C ... TRY TO READ QA RECORDS.  IF EOF THEN NOT EXODUS FORMAT
-C
+
       call exinq(ndb, EXQA,   nqarec, rdum, cdum, ierr)
       call exinq(ndb, EXINFO, ninfo,  rdum, cdum, ierr)
       call mcrsrv('QAREC', kqarec, nqarec * 4 * MXSTLN)

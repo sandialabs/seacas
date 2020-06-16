@@ -4,8 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE ADJMSH (MS, MR, NPNODE, NPELEM, MXNFLG, MXSFLG, NPREGN,
      &   NPNBC, NPSBC, MCOM, ICOM, JCOM, CIN, RIN, IIN, KIN,
      &   NNN, KKK, NNXK, NODES, NELEMS, NNFLG, NNPTR, NNLEN, NSFLG,
@@ -13,11 +11,11 @@ C
      &   MAPGXD, MATMAP, WTNODE, WTSIDE, NBCNOD, NNLIST, NBCSID, NSLIST,
      &   NVLIST, NUMMAT, LINKM, TITLE, ERR, EIGHT, NINE, VERSN)
 C***********************************************************************
-C
+
 C  SUBROUTINE ADJMSH = ADJUSTS A GENESIS DATABASE OUTPUT
-C
+
 C***********************************************************************
-C
+
       DIMENSION XN (NPNODE), YN (NPNODE), NXK (NNXK, NPELEM)
       DIMENSION MAT (NPELEM)
       DIMENSION NODES (NPNBC), NELEMS (NPSBC), NSIDEN (NPSBC)
@@ -28,12 +26,12 @@ C
       DIMENSION NVLEN (MXSFLG), NVPTR (MXSFLG), LINKM (2,  (MS+MR))
       DIMENSION MAPDXG (NPNODE), MAPGXD (NPNODE), MATMAP (3, NPREGN)
       DIMENSION KIN (MCOM), IIN (MCOM), RIN (MCOM)
-C
+
       LOGICAL FOUND, ERR
-C
+
       CHARACTER*72 TITLE, CIN (MCOM)
       CHARACTER*10 VERSN
-C
+
       CALL MESAGE (' ')
       CALL MESAGE
      &   ('*********************************************************')
@@ -44,9 +42,9 @@ C
       CALL MESAGE
      &   ('*********************************************************')
       CALL MESAGE (' ')
-C
+
 C  ADJUST SIDE BOUNDARY FLAGS BY MATERIALS
-C
+
       CALL MESAGE ('ENTER DATA IN THE FOLLOWING FORMAT:')
       CALL MESAGE ('[ MATERIAL NUMBER, FLAG ID ]')
       CALL MESAGE ('HIT RETURN TO END INPUT')
@@ -71,10 +69,10 @@ C
             GOTO 100
          ENDIF
       ENDIF
-C
+
 C  NOW THAT THE MATERIAL (I1) AND THE FLAG ID (I2) ARE ENTERED
 C  FIRST CHECK TO MAKE SURE THAT THAT MATERIAL IS PRESENT
-C
+
       DO 110 I = 1, NUMMAT
          IF (MATMAP (1, I) .EQ. I1) THEN
             J1 = MATMAP (2, I)
@@ -84,11 +82,11 @@ C
   110 CONTINUE
       CALL MESAGE('** THAT MATERIAL IS NOT PRESENT IN THE MESH **')
       GOTO 100
-C
+
   120 CONTINUE
-C
+
 C  NOW FIND THE ELEMENT SIDE FLAG
-C
+
       DO 130 I = 1, NBCSID
          IF (NSFLG (I) .EQ. I2) THEN
             II = I
@@ -98,44 +96,44 @@ C
       CALL MESAGE ('** THAT ELEMENT BOUNDARY FLAG IS NOT IN THE '//
      &   'MESH **')
       GOTO 100
-C
+
   140 CONTINUE
-C
+
 C  NOW SEARCH THE LOOP FOR ELEMENTS ATTACHED TO THAT BOUNDARY FLAG
 C  OF THE SPECIFIED MATERIAL
-C
+
       IBEGIN = NSPTR (II)
       IEND = NSPTR (II) + NSLEN (I) - 1
-C
+
       FOUND = .FALSE.
       KOUNT = 0
-C
+
       DO 180 I = IBEGIN, IEND
          IF ((NELEMS (I - KOUNT) .GE. J1) .AND.
      &      (NELEMS (I - KOUNT) .LE. J2)) THEN
-C
+
 C  AN ELEMENT SIDE FLAG HAS BEEN FOUND - NOW DELETE IT
-C
+
             FOUND = .TRUE.
-C
+
             DO 150 J = I - KOUNT, NSLIST - 1
                NELEMS (J) = NELEMS (J + 1)
   150       CONTINUE
             NSLIST = NSLIST - 1
-C
+
             DO 160 J = (((I - KOUNT) * 2) -1), NVLIST - 2
                NSIDEN (J) = NSIDEN (J + 2)
                WTSIDE (J) = WTSIDE (J + 2)
   160       CONTINUE
             NVLIST = NVLIST - 2
-C
+
             NSLEN (II) = NSLEN (II) - 1
             NVLEN (II) = NVLEN (II) - 2
             DO 170 J = II + 1, NBCSID
                NSPTR (J) = NSPTR (J) - 1
                NVPTR (J) = NVPTR (J) - 2
   170       CONTINUE
-C
+
             KOUNT = KOUNT + 1
          ENDIF
   180 CONTINUE
@@ -144,8 +142,8 @@ C
      &      'FLAG AND MATERIAL **')
       ENDIF
       GOTO 100
-C
+
   190 CONTINUE
       RETURN
-C
+
       END

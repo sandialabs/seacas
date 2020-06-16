@@ -5,7 +5,7 @@ C
 C See packages/seacas/LICENSE for details
 
       SUBROUTINE NEWID (TYPE, IDLST, NUMID, IDNEW, IDOLD)
-C
+
       CHARACTER*(*) TYPE
       DIMENSION IDLST(*)
       CHARACTER*80 STRING

@@ -4,17 +4,15 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE SRTSBC (MXSFLG, NPSBC, NPELEM, NNXK, NXK, NSFLG, NSLEN,
      &   NSPTR, NVLEN, NVPTR, LSTSBC, NELEMS, NSIDEN, NSIDES, NNSBC,
      &   NSLIST, NVLIST, NBCSID)
 C***********************************************************************
-C
+
 C  SUBROUTINE SRTSBC = SORTS THE LIST OF SIDE BOUNDARY CARDS
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     NSFLG  = THE ARRAY OF FLAG VALUES
 C     NSLEN  = NUMBER OF ELEMENTS IN ILIST ASSOCIATED WITH EACH FLAG
@@ -23,25 +21,25 @@ C     ILIST  = THE ELEMENT LIST
 C     KKK    = THE NUMBER OF ELEMENTS IN THE MESH
 C     MXSFLG = THE NUMBER OF ENTRIES IN THE BOUNDARY LIST
 C     FOUND  = .TRUE. IF A NEW UNIQUE FLAG HAS BEEN FOUND
-C
+
 C***********************************************************************
-C
+
       DIMENSION NXK (NNXK, NPELEM)
       DIMENSION NSFLG (MXSFLG), NSLEN (MXSFLG), NSPTR (MXSFLG)
       DIMENSION NVLEN (MXSFLG), NVPTR (MXSFLG)
       DIMENSION LSTSBC (NPSBC), NELEMS (NPSBC)
       DIMENSION NSIDES (NPSBC), NSIDEN (NPSBC)
-C
+
       LOGICAL FOUND
-C
+
       IFLAG  = -1
       NSLIST = 0
       NBCSID = 0
       IBEGIN = 1
-C
+
   100 CONTINUE
       FOUND = .FALSE.
-C
+
       DO 110 I = IBEGIN, NNSBC, 3
          IF (LSTSBC (I) .LT. 0) THEN
             IF (FOUND) THEN
@@ -67,14 +65,14 @@ C
             ENDIF
          ENDIF
   110 CONTINUE
-C
+
       IF (FOUND) THEN
          GOTO 100
       ELSE
-C
+
 C  PUT ALL THE NODES ATTACHED TO THE ELEMENT BCC INTO THE
 C  NSIDEN LIST
-C
+
          NVLIST = 0
          DO 130 I = 1, NBCSID
             ISTART = NSPTR (I)
@@ -93,5 +91,5 @@ C
   130    CONTINUE
          RETURN
       ENDIF
-C
+
       END

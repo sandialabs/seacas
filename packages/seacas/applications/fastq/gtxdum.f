@@ -4,18 +4,15 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE GTXDUM (X, DUMMY, LEN)
 C***********************************************************************
-C
+
 C  SUBROUTINE GTXDUM = GETS A REAL INTO A DUMMY CHARACTER STRING
-C
+
 C***********************************************************************
-C
+
       CHARACTER*72 DUMMY
-C
+
       DUMMY = ' '
       IF(X .LE. -10000.) THEN
          WRITE (DUMMY(1:10), 10000) X
@@ -55,7 +52,7 @@ C
          LEN = 5
       ENDIF
       RETURN
-C
+
 10000 FORMAT (1PE10.3)
 10010 FORMAT (F6.0)
 10020 FORMAT (F6.1)
@@ -68,5 +65,5 @@ C
 10090 FORMAT (F5.2)
 10100 FORMAT (F5.3)
 10110 FORMAT (F5.4)
-C
+
       END

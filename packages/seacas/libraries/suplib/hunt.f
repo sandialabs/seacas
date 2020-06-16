@@ -8,9 +8,9 @@ C    See packages/seacas/LICENSE for details
 
 C ... find jlo such that a(jlo) .le. x .and. a(jlo+1) .gt. x
 C     (if jlo .ne. n)
-C
+
 C     Start search at passed in 'jlo' position
-C
+
       DIMENSION a(n)
 
       integer jlo, low, high

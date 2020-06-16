@@ -9,7 +9,6 @@ C=======================================================================
      &   IDELB, NAMELB, NUMELB, NUMLNK, ELATTR)
 C=======================================================================
 
-
 C   --*** SHOW *** (GEN3D) Display information
 C   --   Written by Amy Gilkey - revised 03/07/88
 C   --

@@ -116,7 +116,6 @@ C ... Open the output file.
 
   100 CONTINUE
 
-
       write (*,*) 'RAYSHADE polygon file written to ',filnam(:lnam)
       write (*,*)
       write (*,920) 'X', xmin, xmax, xmax-xmin, (xmin+xmax)/2

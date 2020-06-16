@@ -66,7 +66,6 @@ C     already been printed, so we don't print anything here.
          CALL PRTERR ('CMDSPEC', STRA(:lstra))
       end if
 
-
   110 CONTINUE
       RETURN
 

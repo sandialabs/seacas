@@ -37,7 +37,7 @@ C   --   *  --- Return statement for quit
       REAL      RFIELD(*), D3TRAN(*), ZGRAD(*), DIM3
       INTEGER   NBLK, NRTRAN(*), NEREPL, NNREPL
       LOGICAL   FFEXST
-C
+
       PRMPTA = 'Expected number of ' // TYPE // 's'
       LA = LENSTR(PRMPTA)
       PRMPTB = 'total ' // TYPE

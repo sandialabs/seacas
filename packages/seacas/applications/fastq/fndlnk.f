@@ -4,20 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE FNDLNK (MXND, LXK, NXL, K, N1, N2, L, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE FNDLNK = FIND THE LINE IN ELEMENT K WITH NODES N1 AND N2
-C
+
 C***********************************************************************
-C
+
       DIMENSION LXK (4, MXND), NXL (2, 3 * MXND)
-C
+
       LOGICAL ERR
-C
+
       ERR = .FALSE.
       DO 100 I = 1, 4
          LL = LXK (I, K)

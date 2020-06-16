@@ -4,24 +4,22 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE HELP_FQ (I)
 C************************************************************************
-C
+
 C  SUBROUTINE HELP = WRITES HELP MESSAGES ONTO THE SCREEN
-C
+
 C************************************************************************
-C
+
 C  SUBROUTINE CALLED BY ANY ROUTINE NEEDED HELP MESSAGES
-C
+
 C************************************************************************
-C
+
 C  VARIABLES USED:
 C     I = THE POINTER TO DESIGNATE WHICH MESSAGE IS NEEDED
-C
+
 C***********************************************************************
-C
+
       IF (I .EQ. 1) THEN
          CALL MESAGE ('        ')
          CALL MESAGE ('THE FOLLOWING MAIN OPTIONS ARE AVAILABLE:')
@@ -45,7 +43,7 @@ C
          CALL MESAGE ('     F*LUSH      = CLEARS ALL FASTQ DATA')
          CALL MESAGE ('     EX*IT       = EXITS FASTQ')
          CALL MESAGE ('     SP*AWN      = SPAWNS A SUBPROCESS')
-C
+
       ELSE IF (I .EQ. 2) THEN
          CALL MESAGE (' ')
          CALL MESAGE ( '|-----------------+-----------------+'//
@@ -90,7 +88,7 @@ C
      &      '                 |                 |')
          CALL MESAGE ( '+-----------------+-----------------+'//
      &      '-----------------+-----------------+')
-C
+
       ELSE IF (I .EQ. 3) THEN
          CALL MESAGE (' ')
          CALL MESAGE ('THE FOLLOWING SCHEME AND STEP PROCESSING '//
@@ -172,7 +170,7 @@ C
      &      'HAS OCCURRED')
          CALL MESAGE ('              SUCH AS A SMOOTH, DELETION, '//
      &      'RESTRUCTURE, ETC.)')
-C
+
       ELSE IF (I .EQ. 4) THEN
          CALL MESAGE (' ')
          CALL MESAGE ('THE FOLLOWING LIST OPTIONS ARE AVAILABLE:')
@@ -196,7 +194,7 @@ C
          CALL MESAGE ('    EX*IT       = EXITS FASTQ')
          CALL MESAGE ('                  (CARRIAGE RETURN TO EXIT '//
      &      'LISTING)')
-C
+
       ELSE IF (I .EQ. 5) THEN
          CALL MESAGE (' ')
          CALL MESAGE ('THE FOLLOWING GRAPHICS OPTIONS ARE AVAILABLE:')
@@ -235,7 +233,7 @@ C
          CALL MESAGE ('    EX*IT       = EXITS FASTQ')
          CALL MESAGE ('                  (CARRIAGE RETURN TO EXIT '//
      &      'GRAPHICS)')
-C
+
       ELSE IF (I .EQ. 6) THEN
          CALL MESAGE (' ')
          CALL MESAGE ('THE FOLLOWING DELETE OPTIONS ARE AVAILABLE:')
@@ -251,7 +249,7 @@ C
          CALL MESAGE ('    EX*IT     = EXITS FASTQ')
          CALL MESAGE ('                (CARRIAGE RETURN TO EXIT '//
      &      'DELETE)')
-C
+
       ELSE IF (I .EQ. 7) THEN
          CALL MESAGE (' ')
          CALL MESAGE ('THE FOLLOWING DEVICES ARE AVAILABLE:')
@@ -269,14 +267,14 @@ C
          CALL MESAGE ('    V40 = VT 240')
          CALL MESAGE ('    R25 = RASTER TECH ONE-25')
          CALL MESAGE ('    RET = RETROGRAPHICS')
-C
+
       ELSE IF (I .EQ. 8) THEN
          CALL MESAGE (' ')
          CALL MESAGE ('THE FOLLOWING CORRECTION OPTIONS ARE AVAILABLE')
          CALL MESAGE ('    X     = CONSTANT X VALUES ALONG LINE(S)')
          CALL MESAGE ('    Y     = CONSTANT Y VALUES ALONG LINE(S)')
          CALL MESAGE ('    Z*ERO = ZERO X VALUES (CENTERLINES)')
-C
+
       ELSE IF (I .EQ. 9) THEN
          CALL MESAGE (' ')
          CALL MESAGE ('THE FOLLOWING KEYIN OPTIONS ARE AVAILABLE:')
@@ -303,7 +301,7 @@ C
          CALL MESAGE ('    SP*AWN    = SPAWNS A SUBPROCESS')
          CALL MESAGE ('    EX*IT     = EXITS FASTQ')
          CALL MESAGE ('                (CARRIAGE RETURN TO EXIT KEYIN)')
-C
+
       ELSE IF (I .EQ. 10) THEN
          CALL MESAGE (' ')
          CALL MESAGE ('THE FOLLOWING NUMBERING OPTIONS ARE AVAILABLE:')
@@ -313,7 +311,7 @@ C
      &      'START FROM')
          CALL MESAGE ('    N*ODE       = ENTERS NODE NUID''S '//
      &      'LOCATION TO START FROM')
-C
+
       ELSE IF (I .EQ. 11) THEN
          CALL MESAGE (' ')
          CALL MESAGE ('THE FOLLOWING MESH GRAPHICS OPTIONS ARE '//
@@ -351,7 +349,7 @@ C
          CALL MESAGE ('    EX*IT       = EXITS FASTQ')
          CALL MESAGE ('                  (CARRIAGE RETURN TO EXIT '//
      &      'MESH GRAPHICS)')
-C
+
       ELSE IF (I .EQ. 12) THEN
          CALL MESAGE (' ')
          CALL MESAGE ('THE FOLLOWING MESH OPTIONS ARE AVAILABLE:')
@@ -383,7 +381,7 @@ C
      &      'INDEX')
          CALL MESAGE ('                  (CARRIAGE RETURN TO EXIT '//
      &      'MESH)')
-C
+
       ELSE IF (I .EQ. 13) THEN
          CALL MESAGE ('THE FOLLOWING INITIAL MESH GENERATION SCHEMES '//
      &      'ARE AVAILABLE:')
@@ -398,7 +396,7 @@ C
          CALL MESAGE ('             NO SCHEME (CARRIAGE RETURN) '//
      &      'DEFAULTS TO A')
          CALL MESAGE ('             FORCED RECTANGULAR SCHEME')
-C
+
       ELSE IF (I .EQ. 14) THEN
          CALL MESAGE ('THE FOLLOWING TABLET OPTIONS ARE '//
      &      'AVAILABLE: ')
@@ -433,7 +431,7 @@ C
          CALL MESAGE ('                  (CARRIAGE RETURN TO EXIT '//
      &      'TABLET)')
       END IF
-C
+
       RETURN
-C
+
       END

@@ -4,18 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
 C=======================================================================
       SUBROUTINE LISSEL (OPT, TYPE, IOMIN, IOMAX, LIST, SELECT, NUMLST)
 C=======================================================================
-C
+
 C ... Output selected entities to Terminal and/or List file
-C
+
 C     OPT = IN = Option:
 C                 'L' = Selected by logical list
 C                 'A' = All selected are in list
 C                 'R' = List in Range form
-C
+
       LOGICAL SELECT(*)
       CHARACTER*(*) OPT, TYPE
       INTEGER LIST(*), ISCR(12)

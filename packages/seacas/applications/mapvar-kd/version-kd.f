@@ -25,7 +25,6 @@ C      --   (4) = program name with version appended
 C      --   (5) = date of current run
 C      --   (6) = time of current run
 
-
       qainfo(1) = 'mapvar-kd                       '
       qainfo(2) = '2019/05/15                      '
       qainfo(3) = ' 2.01                           '

@@ -6,7 +6,7 @@ C    See packages/seacas/LICENSE for details
 
       SUBROUTINE TRBLK (IDELB, NUMELB, NUMLNK, MAT, NELBLK, NNODES)
       DIMENSION IDELB(*), NUMELB(*), NUMLNK(*), MAT(6,*)
-C
+
       IBEG = 0
       IEND = 0
       DO 10 I=1, NELBLK

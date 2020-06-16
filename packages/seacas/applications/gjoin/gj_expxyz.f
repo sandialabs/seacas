@@ -175,7 +175,6 @@ C     --Find the limits of the overlapping area of the two databases
             GOTO 180
          END IF
 
-
          IF (TOLER .GE. 0.0) THEN
             EPS = TOLER
          ELSE

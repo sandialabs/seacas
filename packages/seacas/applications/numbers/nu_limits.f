@@ -16,9 +16,9 @@ C    See packages/seacas/LICENSE for details
       LOGICAL EXODUS
       include 'nu_io.blk'
       include 'nu_ptim.blk'
-C
+
 C ... IF NOT EXODUS, THEN CORDSP CONTAINS COORDINATES
-C
+
       IF (EXODUS) THEN
          CALL GETDSP (CRD, CORDSP, NDIM, NUMNP, TIME, ITMSEL,
      *      'R', ISTAT)
@@ -38,12 +38,12 @@ C
             IF (MAT(5,IBLK) .NE. 1) GOTO 40
             IELBEG = MAT(3,IBLK)
             IELEND = MAT(4,IBLK)
-C
+
             XYZMIN(1,IBLK) = CORDSP(IX(1,IELBEG),1)
             XYZMIN(2,IBLK) = CORDSP(IX(1,IELBEG),2)
             XYZMAX(1,IBLK) = CORDSP(IX(1,IELBEG),1)
             XYZMAX(2,IBLK) = CORDSP(IX(1,IELBEG),2)
-C
+
             DO 30 IEL = IELBEG, IELEND
                DO 20 I = 1, NNODES
                   XYZMIN(1,IBLK) = MIN(XYZMIN(1,IBLK),
@@ -57,20 +57,20 @@ C
    20          CONTINUE
    30       CONTINUE
    40    CONTINUE
-C
+
       ELSE
          DO 70 IBLK = 1, NEBLK
             IF (MAT(5,IBLK) .NE. 1) GOTO 70
             IELBEG = MAT(3,IBLK)
             IELEND = MAT(4,IBLK)
-C
+
             XYZMIN(1,IBLK) = CORDSP(IX(1,IELBEG),1)
             XYZMIN(2,IBLK) = CORDSP(IX(1,IELBEG),2)
             XYZMIN(3,IBLK) = CORDSP(IX(1,IELBEG),3)
             XYZMAX(1,IBLK) = CORDSP(IX(1,IELBEG),1)
             XYZMAX(2,IBLK) = CORDSP(IX(1,IELBEG),2)
             XYZMAX(3,IBLK) = CORDSP(IX(1,IELBEG),3)
-C
+
             DO 60 IEL = IELBEG, IELEND
                DO 50 I = 1, NNODES
                   XYZMIN(1,IBLK) = MIN(XYZMIN(1,IBLK),
@@ -97,7 +97,7 @@ C
             OVMAX(I) = MAX(OVMAX(I), XYZMAX(I,J))
    80    CONTINUE
    90 CONTINUE
-C
+
       ENG1 = ENGNOT(TREAD,2)
       DO 120 IO=IOMIN, IOMAX
          IF (EXODUS) WRITE (IO, 140) ENG1

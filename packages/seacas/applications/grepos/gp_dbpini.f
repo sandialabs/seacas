@@ -51,7 +51,6 @@ C   --   NVAREL - IN - the number of element variables (if OPTION)
       LOGICAL ALL
       ALL = (OPTION .EQ. '*')
 
-
       IF (ALL .OR. (INDEX (OPTION, 'I') .GT. 0)) THEN
          WRITE(*, 10000)
       ENDIF

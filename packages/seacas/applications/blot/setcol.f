@@ -32,7 +32,6 @@ C     ISHDCL(3, *) = Starting location in color map (SET)
       save    first
       data    first /.TRUE./
 
-
       if (FIRST) THEN
         FIRST = .FALSE.
         call grcolu('ALTERNATE')

@@ -4,19 +4,16 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE NXKORD (NODES, N1)
 C***********************************************************************
-C
+
 C  SUBROUTINE NXKORD = ROTATES THE LIST OF FOUR NODES SO N1 APPEARS
 C                      FIRST IF IT IS IN THE LIST
-C
+
 C***********************************************************************
-C
+
       DIMENSION NODES (4)
-C
+
       DO 100 I = 1, 4
          IF (NODES (I) .EQ. N1) THEN
             IF (I .EQ. 1) THEN
@@ -44,7 +41,7 @@ C
             RETURN
          ENDIF
   100 CONTINUE
-C
+
       RETURN
-C
+
       END

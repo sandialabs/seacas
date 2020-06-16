@@ -47,7 +47,6 @@ C   --   Uses NDBIN of /DBASE/
       INTEGER MERR
       MERR = 0
 
-
 C     Read and store all global variables (if needed for the current step)
       IF (TYP .EQ. 'G') THEN
          IF (ISTVAR(ICURTM,IBEGIN) .NE. 0) THEN

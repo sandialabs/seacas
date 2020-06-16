@@ -208,8 +208,6 @@ C         --Plot variable against time or variable against variable
               IF (GRABRT()) GOTO 130
               CALL GRNCRV (LABSID, NP, NPTS(N),
 
-
-
      &          PLTVAL(1,NX), PLTVAL(1,NY), (LINTYP .EQ. 0))
             END IF
 

@@ -5,17 +5,17 @@ C
 C See packages/seacas/LICENSE for details
 
       SUBROUTINE PACKT (TITLE,LENGTH)
-C
+
 C ... REMOVE MULTIPLE BLANKS FROM A TITLE OR LABEL
-C
+
       CHARACTER*(*) TITLE
       CHARACTER*1 BLANK
       DATA BLANK/' '/
       I=1
       L=1
-C
+
 C ... SKIP LEADING BLANKS
-C
+
    10 CONTINUE
       IF (TITLE(I:I) .NE. BLANK) GO TO 20
       I=I+1

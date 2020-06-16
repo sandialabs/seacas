@@ -4,29 +4,28 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-c
 c ======================================================================
 c ======================================================================
 c ======================================================================
 c ======================================================================
-c
+
 c ROUTINE:              filhnd
-c
+
 c DESCRIPTION:          Opens and closes files.
-c
+
 c AUTHOR:               John H. Glick
 c                       Sandia National Laboratories
 c                       Division 1511
-c
+
 c DATE:                 December 20, 1988
-c
+
 c TYPE OF SUBPROGRAM:   subroutine
-c
+
 c USAGE:               call filhnd (unit , fil1, ecodei, ecodeo,
 c                                    type, fform, facces, frecl, *)
-c
+
 c PARAMETERS:
-c
+
 c        integer unit   -- (INPUT)
 c                       If > 0, specifies the logical unit to be
 c                          opened.
@@ -34,41 +33,40 @@ c                       If < 0, -unit specifies the logical unit to
 c                          close.
 c                       If = 0, all open logical units are to be
 c                          closed.
-c
+
 c        character type -- (INPUT)
 c                       'I' if input file (status = 'old')
 c                       'O' if output file (status = 'new')
 c                       'U' if unknown file type (status = 'unknown')
 c                       'S' if scratch file (status = 'scratch')
-c
+
 c        character fform -- (INPUT)
 c                       'F' if formatted file
 c                       'U' if unformatted file
-c
+
 c CALLS:
-c
+
 c        prterr (BLOT) --     Prints an error message if one occurred
 c                             during the execution of filhnd.
 c        exname (SUPES)    -- Gets the filename associated with a unit
 c                             number.
 c        lenstr (strlib) --   Gets the length of a string (excluding
 c                             trailing blanks).
-c
+
 c GLOBAL VARIABLES REFERENCED:
-c
+
 c CALLING ROUTINE(S):         getins (BLOT)
-c
+
 c SYSTEM DEPENDENCIES:        none
-c
+
 c ======================================================================
 c ======================================================================
-c
+
       subroutine filhnd (unit, filn, ecodei, ecodeo, type, fform,
      &   facces, frecl, *)
-c
-c
+
 c        parameters
-c
+
       integer unit
 c          if > 0, the logical unit of the file to open.
 c          if < 0, the logical unit of the file to close.
@@ -102,12 +100,11 @@ c           s' if sequential
 c           Name of the file to open.  If ! = ' ', then filhnd calls
 c           the SUPES routine EXNAME to get the filename associated
 c           with the specified unit number.
-c
+
 c           if unit <= 0, then all other parameters are ignored.
-c
-c
+
 c        declarations
-c
+
       character*2048 filnam
 c           filename associated with unit
       integer lname
@@ -131,13 +128,12 @@ c           dummy argument for call to exparm
       character tform, ttype, tacces
 c           Temporary variables for storing modified values of fform,
 c           type, and facces
-c
+
 c *****************************************************************
 c *****************************************************************
 
-c
 c        static declarations
-c
+
       logical first
       save first
 
@@ -167,12 +163,11 @@ c      if ( numopn .gt. 0 )
 c     &    print *, 'list is ',(opnlst(i),i=1,numopn)
 
       if ( unit .gt. 0 ) then
-c
+
 c           open file associated with unit
-c
 
 c                    set open keywords
-c
+
          cparm = fform
          call upcase_bl ( cparm )
          tform = cparm(1:1)
@@ -204,8 +199,7 @@ c
             return 1
          endif
          lstat = lenstr ( status )
-c
-c
+
          cparm = facces
          call upcase_bl ( cparm )
          tacces = cparm(1:1)
@@ -219,20 +213,19 @@ c
             return 1
          endif
          lacces = lenstr ( access )
-c
-c
+
 c                 open file
-c
+
          if ( status .ne. 'scratch' ) then
-c
+
 c                    get file associated with unit
-c
+
             filnam = filn
             call pack ( filnam, lname )
             if ( lname .eq. 0 ) then
                call exname ( unit, filnam, lname )
             endif
-c
+
             if ( access .eq. 'direct' ) then
                open ( unit=unit, file=filnam(:lname),
      &            form=form(:lform),
@@ -272,7 +265,6 @@ c               print *,'status=',status(:lstat),'='
      &            status=status(:lstat), iostat=ios)
             endif
 
-
             if ( ios .ne. 0 ) then
                if ( ecodei ) then
                   call prterr ('FATAL',
@@ -289,20 +281,15 @@ c               print *,'status=',status(:lstat),'='
 
          endif
 
-c
-c
 c                 update list of open files
-c
+
          if ( ecodeo ) then
             numopn = numopn + 1
             opnlst(numopn) = unit
          endif
-c
-c
 
       else if ( unit .lt. 0 ) then
-c
-c
+
 c           close file
 
          unit = -unit
@@ -325,9 +312,9 @@ c           close file
          else
             ecodeo = .TRUE.
          endif
-c
+
 c           update list of open files
-c
+
          if ( ecodeo ) then
             i = 1
   100       continue
@@ -351,7 +338,7 @@ c
       else
 
 c           close all open files
-c
+
          ecodeo = .TRUE.
          do 120 i = 1, numopn
 
@@ -372,12 +359,10 @@ c
 
       endif
 
-
 c      print *, 'about to exit filhnd'
 c      print *, 'numopen = ',numopn
 c      if ( numopn .gt. 0 )
 c     &    print *, 'list is ',(opnlst(i),i=1,numopn)
-
 
       return
       end

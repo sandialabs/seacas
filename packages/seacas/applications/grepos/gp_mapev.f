@@ -22,7 +22,6 @@ C   --   VARS - IN/OUT - the values. On input in old order,
 C                        on output in new order
 C   --   SCR  - TMP - temporary storage area
 
-
       integer map(*)
       real vars(*)
 c      real vars(nold, nvar)

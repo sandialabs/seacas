@@ -4,37 +4,34 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE KXNADD (MAXKXN, NNXK, KXN, NUMKXN, K, NODE, ERR)
 C************************************************************************
-C
+
 C  SUBROUTINE KXNADD = ADDS K AS AN ELEMENT OF NODE
-C
+
 C***********************************************************************
-C
+
 C  NOTE:
 C     IT IS ASSUMED K IS NOT ALREADY AN ELEMENT OF NODE
-C
+
 C***********************************************************************
-C
+
       DIMENSION KXN (NNXK, MAXKXN)
-C
+
       LOGICAL ERR
-C
+
       ERR = .FALSE.
       NN = NODE
   100 CONTINUE
-C
+
 C  LINE CONTINUES  -  FIND NEW CONTINUATION LINE
-C
+
       IF (KXN (4, NN) .LT. 0) THEN
          NN = IABS (KXN (4, NN))
          GOTO 100
-C
+
 C  ADD THE ELEMENT TO NODE
-C
+
       ELSEIF (KXN (4, NN) .EQ. 0) THEN
          DO 110 I = 1, 4
             IF (KXN (I, NN) .EQ. 0) THEN
@@ -46,9 +43,9 @@ C
          WRITE ( * , 10000)K, NODE
          ERR = .TRUE.
          RETURN
-C
+
 C  ADD A CONTINUATION LINE,  AND ADD THE ELEMENT TO NODE
-C
+
       ELSE
          IF (NUMKXN .GE. MAXKXN) THEN
             CALL MESAGE ('NO ROOM FOR KXN TABLE IN KXNADD')
@@ -63,7 +60,7 @@ C
          KXN (4, NN) =  - NUMKXN
          RETURN
       ENDIF
-C
+
 10000 FORMAT ('FOR ELEMENT', I5, ',  AND NODE', I5)
-C
+
       END

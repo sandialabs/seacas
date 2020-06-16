@@ -7,7 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE COMID (TYPE, IDLST, ISTAT, NUMID, IDFINAL, ID)
 C=======================================================================
-C
+
 C   --   ISTAT - IN/OUT - the status of each item
 C   --      0 = same
 C   --      - = delete

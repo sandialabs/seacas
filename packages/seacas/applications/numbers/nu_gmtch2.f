@@ -4,30 +4,29 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       SUBROUTINE GMTCH2 (COORD, DIRCOS, MASSLV, NIQSLV, TDIS,
      *    NIQM, NIQS, DMAX, NUMNP)
       DIMENSION COORD (NUMNP,*), DIRCOS(4,*), MASSLV(2,*), NIQSLV(*),
      *    TDIS(3,*)
-C
+
       DO 30 IMAS = 1, NIQM
           X1 = COORD (MASSLV(1, IMAS),1)
           Y1 = COORD (MASSLV(1, IMAS),2)
-C
+
           DCS1 = DIRCOS (1, IMAS)
           DCS2 = DIRCOS (2, IMAS)
-C
+
           DO 10 ISLV = 1, NIQS
               X0 = COORD (NIQSLV(ISLV),1)
               Y0 = COORD (NIQSLV(ISLV),2)
-C
+
               T = -( DCS1 * (X1-X0) + DCS2 * (Y1-Y0) )
               TDIS(1,ISLV) = T
               TDIS(2,ISLV) = (X1 + DCS1 * T - X0)**2  +
      *            (Y1 + DCS2 * T - Y0)**2
               TDIS(3,ISLV) = T**2 + TDIS(2,ISLV)
    10     CONTINUE
-C
+
           TMIN = 1.0E38
           NMIN = 0
           DO 20 ISLV = 1, NIQS
@@ -37,7 +36,7 @@ C
                   NMIN = ISLV
               END IF
    20     CONTINUE
-C
+
           IF (NMIN .NE. 0) THEN
               DIRCOS(3,IMAS) = TDIS(1,NMIN)
               DIRCOS(4,IMAS) = SQRT(TDIS(2,NMIN))

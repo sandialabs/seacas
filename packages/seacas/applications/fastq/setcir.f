@@ -4,27 +4,24 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE SETCIR (MXND, MLN, NLOOP, LNODES, NODE, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE SETCIR = MARKS ALL THE NODES IN THE CIRCULAR LOOP
 C  AS SIDES EXCEPT FOR ROW CORNERS
-C
+
 C***********************************************************************
-C
+
       DIMENSION LNODES (MLN, MXND)
-C
+
       LOGICAL ERR
-C
+
       ERR = .FALSE.
-C
+
       KOUNT = 0
       INOW = NODE
       NEWNOD = NODE
-C
+
   100 CONTINUE
       INOW = LNODES (3, INOW)
       IF (LNODES (1, INOW) .LE. 4) THEN
@@ -37,12 +34,12 @@ C
      &   THEN
          NEWNOD = INOW
       ENDIF
-C
+
       IF (INOW .EQ. NODE) THEN
          NODE = NEWNOD
          RETURN
       ENDIF
-C
+
       KOUNT = KOUNT + 1
       IF (KOUNT .GT. NLOOP) THEN
          CALL MESAGE('PROBLEMS IN SETCIR WITH LOOP NOT CLOSING')
@@ -50,9 +47,9 @@ C
          GOTO 110
       ENDIF
       GOTO 100
-C
+
   110 CONTINUE
-C
+
       RETURN
-C
+
       END

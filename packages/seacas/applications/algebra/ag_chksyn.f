@@ -596,7 +596,6 @@ C      --Set up a special type for ")" to prevent special checks
       RETURN
       END
 
-
       subroutine infunc(nparm, fncold, fncnew)
 
 C     This subroutine was created in order to initialize parameters

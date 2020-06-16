@@ -4,7 +4,6 @@
 // 
 // See packages/seacas/LICENSE for details
 
-
 #include "EJ_SystemInterface.h"
 #include "EJ_Version.h"  // for qainfo
 #include "EJ_vector3d.h" // for vector3d

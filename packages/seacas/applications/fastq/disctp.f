@@ -4,18 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       LOGICAL FUNCTION DISCTP (ANGLE)
 C***********************************************************************
-C
+
 C  FUNCTION DISCTP = LOGICAL FUNCTION THAT RETURNS TRUE IF THE ANGLE IS
 C                    WITHIN THE CURRENT DEFINITION OF A
 C                    DISSECTION VERTEX
-C
+
 C***********************************************************************
-C
+
       DATA EPS /.31/
-C
+
       PI = ATAN2(0.0, -1.0)
       IF (ANGLE .GT. (PI + EPS)) THEN
          DISCTP=.TRUE.

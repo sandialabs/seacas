@@ -10,7 +10,6 @@ C=======================================================================
      *   BLKTYP, IDELB, NEWNOD, NODIX, LNSCR, ATRSCR)
 C=======================================================================
 
-C
 C   --*** WCONAT *** Write the element block connectivity and
 C   --               attribute information to the output database file
 C   --   WCONAT modified for EXODUSIIV2 8/29/95

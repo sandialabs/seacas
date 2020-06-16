@@ -4,18 +4,15 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE GETDUM (I, DUMMY, LEN)
 C***********************************************************************
-C
+
 C  SUBROUTINE GETDUM = GETS AN INTEGER INTO A DUMMY CHARACTER STRING
-C
+
 C***********************************************************************
-C
+
       CHARACTER*72 DUMMY
-C
+
       DUMMY = ' '
       IF (I .LT. -9999) THEN
          WRITE(DUMMY(1:6),10050)I
@@ -49,12 +46,12 @@ C
          LEN = 5
       ENDIF
       RETURN
-C
+
 10000 FORMAT (I1)
 10010 FORMAT (I2)
 10020 FORMAT (I3)
 10030 FORMAT (I4)
 10040 FORMAT (I5)
 10050 FORMAT (I6)
-C
+
       END

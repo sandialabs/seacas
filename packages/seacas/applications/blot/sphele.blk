@@ -9,7 +9,6 @@ C ... NPTSPX is maximum number of segments allowed for sphere approx.
       COMMON /SPHELE/ SPHPLT, DEFRAD,
      *        CS(0:NPTSPX),SN(0:NPTSPX),XS(0:NPTSPX),YS(0:NPTSPX)
 
-
       INTEGER SPHPLT
 C                     > 0 if elements are to be plotted as spheres.
 C                     < 0 if elements are to be plotted as filled spheres.

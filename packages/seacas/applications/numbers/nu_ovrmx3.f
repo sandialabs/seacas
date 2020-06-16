@@ -7,7 +7,7 @@ C    See packages/seacas/LICENSE for details
       SUBROUTINE OVRMX3 (LSTEL, CORD, IX, NSEG, MINMAX, NIQSLV,
      *   NIQS, TEMP, LTNESS, NUMIN, NUMFAC, NUMON,
      *   NUMEL, LFACE, NUMNP)
-C
+
       INTEGER   LSTEL(*), IX(8,*), NIQSLV(*), LTNESS(4,*)
       INTEGER   LFACE(6,*)
       REAL      MINMAX(6,*), CORD(NUMNP,*), TEMP(*)
@@ -17,7 +17,7 @@ C
       LOGICAL   INSIDE, ONFACE, INIT
       PARAMETER (MAXFAC = 6)
       include 'nu_io.blk'
-C
+
       DATA MAP /1, 2, 3, 4,   6, 7, 3, 2,  6, 5, 8, 7,
      *   5, 1, 4, 8,   4, 3, 7, 8,  1, 5, 6, 2/
 
@@ -25,10 +25,10 @@ C
       NUMIN = 0
       NUMON = 0
       NUMFAC = 0
-C
+
       DO 10 I=1,NSEG
          IEL = LSTEL(I)
-C
+
          MINMAX(1, I) =     MIN(CORD(IX(1,IEL),1),  CORD(IX(2,IEL),1),
      *      CORD(IX(3,IEL),1),  CORD(IX(4,IEL),1),  CORD(IX(5,IEL),1),
      *      CORD(IX(6,IEL),1),  CORD(IX(7,IEL),1),  CORD(IX(8,IEL),1))
@@ -49,11 +49,11 @@ C
          MINMAX(6, I) =     MAX(CORD(IX(1,IEL),3),  CORD(IX(2,IEL),3),
      *      CORD(IX(3,IEL),3),  CORD(IX(4,IEL),3),  CORD(IX(5,IEL),3),
      *      CORD(IX(6,IEL),3),  CORD(IX(7,IEL),3),  CORD(IX(8,IEL),3))
-C
+
    10 CONTINUE
-C
+
 C  ... DETERMINE WHICH FACES HAVE SSET FLAG
-C
+
       CALL INIINT (MAXFAC * NUMEL, 0, LFACE)
 
       DO 30 ISEG = 1, NSEG
@@ -88,21 +88,21 @@ C
      *         ISIGN(1,(INOD2-IFAC4)) + ISIGN(1,(IFAC4-INOD2)) +
      *         ISIGN(1,(INOD3-IFAC4)) + ISIGN(1,(IFAC4-INOD3)) +
      *         ISIGN(1,(INOD4-IFAC4)) + ISIGN(1,(IFAC4-INOD4))
-C
+
 C ... LFACE(IFAC,IEL) = 0 IF FACE NOT ON CONTACT SURFACE
 C                     > 0 IF FACE ON CONTACT SURFACE
-C
+
             LFACE(IFAC,IEL) = LFACE(IFAC,IEL) +
      *         ITST1 * ITST2 * ITST3 * ITST4
    20    CONTINUE
    30 CONTINUE
-C
+
 C ... DETERMINE IF NODE IS CLOSE TO ELEMENT
 C     TEMP = 1.0 IF INSIDE MIN/MAX BOX
-C
+
       DO 150 I=1, NSEG
          IEL = LSTEL(I)
-C
+
          DO 40 ISLV = 1, NIQS
             ISN = NIQSLV(ISLV)
             TEMP(ISLV) =
@@ -113,11 +113,11 @@ C
      *         (0.5 + SIGN( 0.5,  CORD (ISN,3) - MINMAX(5,I) )) *
      *         (0.5 + SIGN( 0.5, -CORD (ISN,3) + MINMAX(6,I) ))
    40    CONTINUE
-C
+
 C ... DETERMINE IF ANY INSIDE BOX ( TEMP = 1.0 )
-C
+
 C ... FOR EACH NODE INSIDE BOX, DETERMINE IF ACTUALLY INSIDE ELEMENT
-C
+
          DO 140 ISLV = 1, NIQS
             IF (TEMP(ISLV) .EQ. 1.0) THEN
                INOD = NIQSLV(ISLV)
@@ -150,9 +150,9 @@ C
                   Z52 = Z5 - Z2
                   Z53 = Z5 - Z3
                   Z54 = Z5 - Z4
-C
+
 C ... CALCULATE PYRAMIDAL VOLUMES (SHOULD BE DIVIDED BY 12 FOR VOLUME)
-C
+
                   V(IPYR) = ((2.*Y5 - Y3) * Z42 + Y2 * (Z53 + Z54) -
      *               Y4 * (Z53 + Z52) ) * X1 +
      *               ( (Y4 - 2.*Y5) * Z31 + Y3 * (Z54 + Z51) -
@@ -171,9 +171,8 @@ C
                   IF (V(IPYR) .EQ. 0.0) ONFACE = .TRUE.
    60          CONTINUE
 
-C
 C ... FLAG NODE AND ELEMENT IF INSIDE
-C
+
                IF (ONFACE .AND. INSIDE) THEN
                   INSIDE = .TRUE.
                   ONFACE = .FALSE.

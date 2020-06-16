@@ -66,13 +66,11 @@ C         ZC(INP) = X(INP)*CUTMAT(1,3) + Y(INP)*CUTMAT(2,3)
 C     &      + Z(INP)*CUTMAT(3,3)
 C  100 CONTINUE
 
-C
 C CLASSIFY EACH POINT AS BEING ISIN, ISOUT, OR ISON
-C
+
       DO 100 I = 1, NUMNP
          CALL CLASPT( X(I), Y(I), Z(I), CUTPT, CUTNRM, CLASS(I))
 100   CONTINUE
-
 
 C   --Initialize the element flags
 
@@ -112,8 +110,6 @@ C         --Find out if the surface is in, out, on or cut
             ELSE
                IFACUT(IFAC) = ISON
             END IF
-
-
 
 C            ZMIN = ZC(LINKF(IXL0+1))
 C            ZMAX = ZC(LINKF(IXL0+1))

@@ -50,7 +50,6 @@ C   --   Uses NUMNPF, LLNSET of /D3NUMS/
       INTEGER LINDEF(0:5,*)
       INTEGER LREF(*)
 
-
       CALL INIINT (NUMNPF, 0, LREF)
 
 C   --Define line set for surface faces only
@@ -210,7 +209,6 @@ C...         CALL CPYINT (2, LINDEF(1,IL), LINSET(1,IX))
          linset(1,ix) = lindef(1,il)
          linset(2,ix) = lindef(2,il)
   210 CONTINUE
-
 
       RETURN
       END

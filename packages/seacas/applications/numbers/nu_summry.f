@@ -9,16 +9,16 @@ C    See packages/seacas/LICENSE for details
       LOGICAL SELECT(*)
       REAL VALUE(*), SUMR(*)
       INTEGER ISUMR(*)
-C
+
 C ... TYPE = 'A' - calculate stats based on absolute values
 C              NOTE: VALUE will be modified if this option used
 C          = ' ' - calculate stats based on true value
-C
+
 C ... SUMR(1) = MINIMUM   ISUMR(1) = ELEMENT NUMBER
 C ... SUMR(2) = MAXIMUM   ISUMR(2) = ELEMENT NUMBER
 C ... SUMR(3) = AVERAGE
 C ... SUMR(4) = STD. DEV.
-C
+
       SUMR(1) =  1.0E30
       SUMR(2) = -1.0E30
       NUMSEL = 0

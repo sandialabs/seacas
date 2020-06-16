@@ -29,7 +29,6 @@ C   --   LPTR   - IN  - array: link pointer array
 C   --   ISHEX  - IN  - number of element blocks with hex shells
 C   --   KHEXID - IN  - array storing HEXSHELL element block ids
 
-
       DIMENSION A(*),IA(*)
       INTEGER NELBLK
       CHARACTER*(*) NAMELB(*)

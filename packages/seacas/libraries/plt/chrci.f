@@ -4,7 +4,7 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C
+
 C=======================================================================
       LOGICAL FUNCTION CHRCI(LINE,INTE)
       CHARACTER LINE* (*),FORM*10,CL*2

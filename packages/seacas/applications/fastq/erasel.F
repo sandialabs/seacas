@@ -4,33 +4,31 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE ERASEL (MP, ML, MS, MR, N, COOR, ILINE, LTYPE, LCON,
      &   NLPS, IFLINE, ILLIST, NSPR, IFSIDE, ISLIST, LINKP, LINKL,
      &   LINKS, LINKR, IBAD, ALPHA)
 C***********************************************************************
-C
+
 C  SUBROUTINE ERASEL = ERASES A LINE, AND ALL DATA DEPENDENT ON THAT
 C                      LINE (I.E. SIDES OR REGIONS)
-C
+
 C***********************************************************************
-C
+
       DIMENSION COOR(2, MP), ILINE(ML), LTYPE(ML), LCON(3, ML), NLPS(MS)
       DIMENSION NSPR(MR), IFLINE(MS), ILLIST(MS*3), IFSIDE(MR)
       DIMENSION ISLIST(MR*4), LINKP(2, MP), LINKL(2, ML), LINKS(2, MS)
       DIMENSION LINKR(2, MR), N(29)
-C
+
       LOGICAL NUMPLT, ALPHA, ADDLNK, TEST, GETMAX
-C
+
       IZ = 0
       KNUM = 0
       ADDLNK = .FALSE.
       TEST = .FALSE.
       GETMAX = .FALSE.
-C
+
 C  ERASE ANY REGIONS USING THAT LINE
-C
+
       DO 120 I = 1, N(22)
          CALL LTSORT(MR, LINKR, I, II, ADDLNK)
          IF (II .GT. 0) THEN
@@ -55,7 +53,7 @@ C
                   END IF
                END IF
   110       CONTINUE
-C
+
             CALL LTSORT(MR, LINKR, I, IPNTR, ADDLNK)
             IF ((.NOT.ALPHA) .AND. (IPNTR .LE. 0)) THEN
                CALL REGEXT (MP, ML, MS, MR, N, II, COOR, ILINE,
@@ -73,9 +71,9 @@ C
             END IF
          END IF
   120 CONTINUE
-C
+
 C  ERASE ANY SIDES USING THAT LINE
-C
+
       DO 150 I = 1, N(20)
          CALL LTSORT(MS, LINKS, I, II, ADDLNK)
          IF (II .GT. 0) THEN
@@ -91,9 +89,9 @@ C
   140       CONTINUE
          END IF
   150 CONTINUE
-C
+
 C  DELETE THE LINE
-C
+
       CALL LTSORT(ML, LINKL, IBAD, II, ADDLNK)
       IF (II .GT. 0) THEN
          LT = LTYPE(II)
@@ -120,7 +118,7 @@ C
          CALL LTSORT(ML, LINKL, IBAD, IZ, ADDLNK)
          ADDLNK = .FALSE.
       END IF
-C
+
       RETURN
-C
+
       END

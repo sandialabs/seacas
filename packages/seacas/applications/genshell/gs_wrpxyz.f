@@ -8,7 +8,6 @@ C=======================================================================
       SUBROUTINE WRPXYZ (XN, YN, XN3, YN3, ZN3, ATRIB)
 C=======================================================================
 
-
 C   --*** WRPXYZ *** (GEN3D) Calculate 3D coordinates
 C   --   Written by Amy Gilkey - revised 05/09/88
 C   --   Modified by Greg Sjaardema - 02/06/89
@@ -36,9 +35,9 @@ C   --      CENTER, NUMCOL, NUMROW of /PARAMS/
       REAL ATRIB(NUMEL)
 
       IF (IWARP .EQ. 1) THEN
-C
+
 C ... Warp type 1: Point Centered
-C
+
          DO 100 INP = 1, NUMNP
             XN3(INP) = XN(INP)
             YN3(INP) = YN(INP)
@@ -47,9 +46,9 @@ C
 
          CONTINUE
       ELSE IF (IWARP .EQ. -1) THEN
-C
+
 C ... Warp type -1: X Axis Centered
-C
+
          DO 110 INP = 1, NUMNP
             THET = YN(INP) / DWARP
             XN3(INP) = XN(INP)
@@ -58,9 +57,9 @@ C
   110    CONTINUE
 
       ELSE IF (IWARP .EQ. -2) THEN
-C
+
 C ... Warp type -2: Y Axis Centered
-C
+
          DO 120 INP = 1, NUMNP
             THET = XN(INP) / DWARP
             XN3(INP) = SIN(THET) * DWARP
@@ -69,9 +68,9 @@ C
   120    CONTINUE
 
       ELSE IF (IWARP .EQ. -3) THEN
-C
+
 C ... Warp type -3: X Axis Centered, Project straight up
-C
+
          DO 130 INP = 1, NUMNP
             XN3(INP) = XN(INP)
             YN3(INP) = YN(INP)
@@ -79,9 +78,9 @@ C
   130    CONTINUE
 
       ELSE IF (IWARP .EQ. -4) THEN
-C
+
 C ... Warp type -4: Y Axis Centered, Project straight up
-C
+
          DO 140 INP = 1, NUMNP
             XN3(INP) = XN(INP)
             YN3(INP) = YN(INP)
@@ -89,9 +88,9 @@ C
   140    CONTINUE
 
       ELSE IF (IWARP .EQ. 2) THEN
-C
+
 C ... Warp type 2: Point-Centered Ellipse
-C
+
          DO 150 INP = 1, NUMNP
             DX = XN(INP)
             DY = YN(INP)

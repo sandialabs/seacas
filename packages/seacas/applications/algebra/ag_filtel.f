@@ -167,7 +167,6 @@ C         Loop 1 to number of nodes per element - element block IELB
       RETURN
       END
 
-
       subroutine dolt(ibeg, iend, ixelem, values, valflt, numelo)
       integer ixelem(*)
       real values(*)

@@ -4,7 +4,7 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C
+
 C=======================================================================
       LOGICAL FUNCTION MPORT3(LEFT,RIGHT,BOTTOM,TOP,NEAR,FAR)
       REAL LEFT,NEAR

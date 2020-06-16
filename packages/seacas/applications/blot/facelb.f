@@ -32,8 +32,6 @@ C   --
 C   --Common Variables:
 C   --   Uses NUMNP of /DBNUMS/
 
-
-
       include 'params.blk'
       include 'dbnums.blk'
       include 'minmax.blk'

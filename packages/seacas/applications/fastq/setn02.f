@@ -4,28 +4,25 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE SETN02 (MXND, NXL, LXK, KXL, LINE, NEND, NODE, N0, N2)
 C***********************************************************************
-C
+
 C  SUBROUTINE SETN02 = PICKS THE NEXT LINE AROUND THE ELEMENTS ATTACHED
 C                      TO LINE WITH ONE END AT NEND, AND THE OTHER END
 C                      NOT AT NODE, AND FROM THE CONNECTIVITY OF THE
 C                      ELEMENTS DETERMINES THE BOUNDING ANGULAR LINES
 C                      AND NODES.
-C
+
 C***********************************************************************
-C
+
       DIMENSION NXL(2, 3*MXND)
       DIMENSION LXK(4, MXND), KXL(2, 3*MXND)
-C
+
       K1 = KXL (1, LINE)
       K2 = KXL (2, LINE)
-C
+
 C  FIND THE NEXT LINE IN K1
-C
+
       DO 100 I = 1, 4
          IL = LXK (I, K1)
          IF ((NXL (1, IL) .EQ. NEND) .AND.
@@ -42,11 +39,11 @@ C
   100 CONTINUE
       CALL MESAGE ('** PROBLEMS IN SETN02 FINDING NNEW1 **')
       RETURN
-C
+
   110 CONTINUE
-C
+
 C  FIND THE NEXT LINE IN K2
-C
+
       DO 120 I = 1, 4
          IL = LXK (I, K2)
          IF ((NXL (1, IL) .EQ. NEND) .AND.
@@ -61,13 +58,13 @@ C
   120 CONTINUE
       CALL MESAGE ('** PROBLEMS IN SETN02 FINDING NNEW2 **')
       RETURN
-C
+
   130 CONTINUE
-C
+
 C  NOW DETERMINE WHICH OF THESE NODES IS N0 AND WHICH IS N2 BASED
 C  ON THE FACT THAT THE CONNECTIVITY OF THE ELEMENTS LINES IS ALWAYS IN
 C  COUNTER-CLOCKWISE ORDER
-C
+
       DO 140 I = 1, 4
          IF (LXK (I, K1) .EQ. LINE) THEN
             I0 = I - 1
@@ -93,9 +90,9 @@ C
          ENDIF
   140 CONTINUE
       CALL MESAGE ('** PROBLEMS IN SETN02 FINDING LINE AGAIN **')
-C
+
   150 CONTINUE
-C
+
       RETURN
-C
+
       END

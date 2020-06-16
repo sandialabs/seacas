@@ -4,7 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
 C=======================================================================
       SUBROUTINE POINT2 (COORD, NUMNP, DIST, NDIM, P1, TOLER,
      *   NODEL, SORTYP, MAP, ANGLE, SORUP, INUM, OPT, SELECT)
@@ -15,23 +14,23 @@ C=======================================================================
       LOGICAL SORUP, SELECT(*), ISABRT
       include 'nu_io.blk'
       PI = ATAN2(0.0, -1.0)
-C
+
       CALL LOCOUT ('POINT', NDIM, NODEL, TOLER, SORTYP, P1, P1, ' ')
-C
+
       TEMP = TOLER(1)
       TOLER(1) = MAX(0.0, TEMP - TOLER(2))
       TOLER(2) = MAX(0.0, TEMP + TOLER(2))
-C
+
       X1 = P1(1)
       Y1 = P1(2)
-C
+
       DO 10 I=1, NUMNP
          IF (SELECT(I)) THEN
             X0 = COORD(I,1)
             Y0 = COORD(I,2)
-C
+
             DIST(I) = (X1 - X0)**2 + (Y1 - Y0)**2
-C
+
          END IF
    10 CONTINUE
       INUM = 0
@@ -88,7 +87,7 @@ C
      *            ANGLE(I)
    50       CONTINUE
    60    CONTINUE
-C
+
          IF (INUM .EQ. 0) THEN
             DO 70 IO=IOMIN, IOMAX
                WRITE (IO, 80) SQRT(DISMIN)

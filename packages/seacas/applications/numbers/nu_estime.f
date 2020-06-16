@@ -6,9 +6,9 @@ C    See packages/seacas/LICENSE for details
 
       SUBROUTINE ESTIME (CRD, WAVE, IX, MAT, LABEL, NDIM, NNODE,
      *     NELBLK, SSQ, CCC, CDAMP, NUMNP)
-C
+
 C     ... ESTIMATE TIMESTEP FOR MESH --- BRICKS ONLY
-C
+
       DIMENSION CRD(NUMNP, *), IX(NNODE,*), MAT(6,*),
      *     WAVE(*), SSQ(3,NELBLK), CCC(NDIM,NNODE)
       DIMENSION GRADOP(8,3)
@@ -18,7 +18,7 @@ C
       CHARACTER*16 ENGNOT, ENG1
 
       include 'nu_io.blk'
-C
+
       IF (NDIM .EQ. 3) THEN
          DO 30 IBLK = 1, NELBLK
             IF (MAT(5,IBLK) .NE. 1) GOTO 30
@@ -216,20 +216,20 @@ C ... for quads we calculate
             IELEND = MAT(4,IBLK)
             MIEL   = IBLK
             DO 50 IEL = IELBEG, IELEND
-C
+
                DO 40 I=1,4
                   CCC(1,I) = CRD(IX(I,IEL),1)
                   CCC(2,I) = CRD(IX(I,IEL),2)
  40            CONTINUE
-C
+
 C     ... CALCULATE SUM OF SQUARES OF INVERSE LENGTHS, ASSUME RECTANGULAR
 C     USE SIDES 1-2 1-4
-C
+
                S12 = (CCC(1,1)-CCC(1,2))**2 +
      *              (CCC(2,1)-CCC(2,2))**2
                S14 = (CCC(1,1)-CCC(1,4))**2 +
      *              (CCC(2,1)-CCC(2,4))**2
-C
+
                IF (S12 .EQ. 0.0 .OR. S14 .EQ. 0.0)
      *              THEN
                   PRINT *,'*** WARNING *** Coincident nodes in element',
@@ -241,7 +241,7 @@ C
                      SSQ(2,MIEL)  = IEL
                   END IF
                END IF
-C
+
  50         CONTINUE
  60      CONTINUE
       END IF

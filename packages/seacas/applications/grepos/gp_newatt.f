@@ -7,7 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE NEWATT (IDLST, ID, NUM, IDATT, NUMATR, ATTNAM, NEWNAM)
 C=======================================================================
-C
+
       include 'gp_namlen.blk'
       INTEGER IDLST(*)
       INTEGER NUMATR(*)

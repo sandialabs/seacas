@@ -4,11 +4,10 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
       SUBROUTINE SHOWFL (TYPE, NUMESS, IDESS, NEESS, IPEESS)
       DIMENSION IDESS(*), NEESS(*), IPEESS(*)
       CHARACTER*1 TYPE
-C
+
       IF (TYPE .EQ. 'S') THEN
       WRITE (*, 20)
       DO 10 I=1, NUMESS
@@ -20,7 +19,7 @@ C
           WRITE (*, 30) I, IDESS(I), NEESS(I)
    15 CONTINUE
       END IF
-C
+
    20 FORMAT (/' Side Set Flags:'/
      *    '           ID     Elements    Nodes')
    40 FORMAT (/' Node Set Flags:'/

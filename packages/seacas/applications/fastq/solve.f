@@ -4,19 +4,16 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       REAL FUNCTION SOLVE (XA, XK, X, XCEN, YCEN, R1, R2)
 C***********************************************************************
-C
+
 C  FUNCTION SOLVE = FINDS A SOLUTION TO THE SPIRAL EQUATION
 C                   GIVEN AN INTERVAL THAT CONTAINS THE SOLUTION
-C
+
 C***********************************************************************
-C
+
       EPS = 1.E-6
-C
+
       F1 = SPIRAL (XA, XK, X, XCEN, YCEN, R1)
       IF (ABS(F1) .LT. EPS) THEN
          SOLVE = R1
@@ -27,14 +24,14 @@ C
          SOLVE = R2
          GO TO 110
       END IF
-C
+
   100 CONTINUE
       IF (ABS(R1 - R2) .LT. EPS) THEN
          SOLVE = (R1 + R2)/2.0
       ELSE
          R3 = (R1 + R2)/2.0
          F3 = SPIRAL (XA, XK, X, XCEN, YCEN, R3)
-C
+
          IF (ABS(F3) .LT. EPS) THEN
             SOLVE = R3
             GO TO 110
@@ -47,6 +44,6 @@ C
          END IF
          GO TO 100
       END IF
-C
+
   110 CONTINUE
       END

@@ -6,7 +6,7 @@ C    See packages/seacas/LICENSE for details
 
       SUBROUTINE GETDSP (CRD, CRDSP, NDIM, NUMNP, TIMES, ITMSEL,
      *   ACTION, ISTAT)
-C
+
 C     ISTAT  -  0 IF OK
 C            - -1 IF END OF FILE
 C     ACTION -  'R' - REWIND AND POSITION AT BEGINNING OF TIME RECORD
@@ -16,17 +16,17 @@ C CALLS:
 C     REPOS  - REPOSITION AT BEGINNING OF TIME RECORDS
 C     ADDDSP - ADD DISPLACEMENTS TO COORDINATES
 C     SKIP   - SKIP A TIMESTEP
-C
+
       REAL    CRD(NUMNP,*), CRDSP(NUMNP,*), TIMES(*)
       LOGICAL ITMSEL(*)
       CHARACTER*(*) ACTION
-C
+
       include 'exodusII.inc'
       include 'nu_ptim.blk'
       include 'nu_logs.blk'
       include 'nu_io.blk'
       include 'nu_ndisp.blk'
-C
+
       IF (NDISP(1) .LE. 0) THEN
          CALL DBVIX ('N', 1, NDISP(1))
          CALL DBVIX ('N', 2, NDISP(2))
@@ -35,7 +35,7 @@ C
 
       ISTAT = 0
       IF (.NOT. EXODUS) RETURN
-C
+
       IF (ACTION(:1) .EQ. 'R') THEN
          NLAST = 0
          RETURN
@@ -63,7 +63,7 @@ C ... READ THE STEP AND STORE DISPLACEMENTS
          END IF
          GO TO 10
       END IF
-C
+
       CALL PRTERR ('PROGRAM',
      *   'Internal code error, contact sponsor')
       STOP 'GETDSP'

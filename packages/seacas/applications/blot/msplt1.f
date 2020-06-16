@@ -196,9 +196,9 @@ C   --Mark side sets, if selected
      &      NESSET, ISSESS, A(KIDSS), A(KNESS), A(KNNSS),
      &      A(KIXESS), A(KIXNSS), A(KLTESS), A(KLTNSS), *100)
       END IF
-C
+
 C        Draw elements as spheres, if requested
-C
+
       IF (SPHPLT .NE. 0) THEN
          CALL MDFIND( 'LENE',   KLENE,  LDUM)
          CALL MDFIND( 'LINK',   KLINK,  LDUM)

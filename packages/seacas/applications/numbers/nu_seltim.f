@@ -10,23 +10,23 @@ C    See packages/seacas/LICENSE for details
       CHARACTER*16 ENGNOT, STRA, STRB
       CHARACTER*80 STRTMP
       EXTERNAL ENGNOT
-C
+
       include 'nu_ptim.blk'
-C
+
 C ... TOLER is the tolerance for matching a timestep.  If the difference
 C     is less than TOLER, then a match occurs.  TOLER1 = TOLER + 1
-C
+
       PARAMETER (TOLER = 1.0E-3)
       TOLERP1 = 1.0 + TOLER
       TOLERM1 = 1.0 - TOLER
-C
+
       CALL INILOG (NSTEP, .FALSE., ITMSEL)
 
       NLAST  = 0
       LSTSEL = NSTEP
       TIMGET = STMIN
       NUMSEL = 0
-C
+
       IF (STDEL .EQ. 0.0) THEN
    10    CONTINUE
          NLAST = NLAST + 1

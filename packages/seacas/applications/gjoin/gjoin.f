@@ -23,7 +23,7 @@ C   --
 C   --Output:
 C   --   o Prompts on the standard output device.
 C   --   o The output database (name requested)
-C
+
 C   --Developed at Sandia National Laboratories.
 C   --
 C   --Current author and code sponsor: Greg Sjaardema
@@ -182,7 +182,6 @@ C   --Open and read the second database
       CALL OUTLOG (KLOG, 1, 0, FILNAM, IDUM, RDUM)
       TWODB = (FILNAM .NE. ' ')
 
-
       IF (TWODB) THEN
         CALL RDGEN (A, IA, C, .TRUE., FILNAM,
      &    TITLE2, NDIM2, NUMNP2, NUMEL2, NELBL2,
@@ -271,7 +270,6 @@ C   --Combine the nodes
             zoff = 0.0
             zscl = 1.0
          end if
-
 
          IF (XSCL * YSCL * ZSCL .LT. 0.0) THEN
             kidel2 = kidelb + nelbl1
@@ -691,7 +689,6 @@ C   --Write the QA records
       ELSE
          FILNAM = '%gjoin'
       END IF
-
 
       CALL WRGEN (A, A, FILNAM, TITLE, NDIM, NEWNP, NEWEL, NEWELB,
      &   NEWNPS, NEWNNL, NEWESS, NEWSEL, NEWSDL,

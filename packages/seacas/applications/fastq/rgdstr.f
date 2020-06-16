@@ -4,19 +4,17 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE RGDSTR (NPNODE, NPELEM, KKK, NNXK, XN, YN, NXK)
 C************************************************************************
-C
+
 C  SUBROUTINE RGDSTR = CALCULATES A REGION DISTORTION MEASURE
-C
+
 C***********************************************************************
-C
+
       DIMENSION XN (NPNODE), YN (NPNODE), NXK (NNXK, NPELEM)
-C
+
 C  CALCULATE THE ELEMENT DISTORTION
-C
+
       N1 = NXK (1,1)
       N2 = NXK (2,1)
       N3 = NXK (3,1)
@@ -44,17 +42,17 @@ C
          ENDIF
          SUM = SUM + VALUE
   100 CONTINUE
-C
+
 C  PRINT OUT THE RESULTS
-C
+
       SUM = SUM / DBLE(KKK)
       WRITE (*, 10000) VMIN, KMIN, VMAX, KMAX, SUM
-C
+
       RETURN
-C
+
 10000 FORMAT ('  THE MINIMUM DISTORTION IS: ',G14.7,' IN ELEMENT: ',I10,
      &   /,
      &   '  THE MAXIMUM DISTORTION IS: ',G14.7,' IN ELEMENT: ',I10, /,
      &   '  THE AVERAGE DISTORTION IS: ',G14.7)
-C
+
       END

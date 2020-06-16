@@ -54,7 +54,6 @@ C     write time step
       call exptim(ndbout, istep, VARVAL(IDVAR(ITIME),
      &            ISTVAR(ICURTM,ITIME)), ierr)
 
-
 C      --Write global variables
 
       IF (JGVBEG .LE. JGVEND) THEN

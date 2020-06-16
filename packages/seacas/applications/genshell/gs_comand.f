@@ -11,7 +11,6 @@ C=======================================================================
      &  XN, YN, A, *)
 C=======================================================================
 
-
 C   --*** COMAND *** (GENSHELL) Input and process commands
 C   --
 C   --COMAND inputs and executes an user command.

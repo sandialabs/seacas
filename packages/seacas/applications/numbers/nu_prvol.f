@@ -6,9 +6,9 @@ C    See packages/seacas/LICENSE for details
 
       SUBROUTINE PRVOL (NDIM, CRD, IX, NUMNP, NUMEL, NNODE,
      &  VOLUME, IUNIT)
-C
+
 C     ... ESTIMATE TIMESTEP FOR MESH --- BRICKS ONLY
-C
+
       DIMENSION CRD(NUMNP, *), IX(NNODE,*)
       DIMENSION GRADOP(8)
       REAL volume(*)

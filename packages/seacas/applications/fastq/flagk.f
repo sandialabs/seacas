@@ -4,16 +4,13 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE FLAGK (NPELEM, NNXK, NXK, MAPDXG, I1, I2, SETFLG, OLD)
 C************************************************************************
-C
+
 C  SUBROUTINE FLAGK = FLAGS ELEMENTS FOR PLOTTING OR NOT PLOTTING
-C
+
 C***********************************************************************
-C
+
 C  VARIABLES USED:
 C     NPELEMS = NUMBER OF PROCESSED ELEMENTS
 C     NXK     = NODES PER ELEMENT ARRAY (CONNECTIVITY)
@@ -21,19 +18,19 @@ C     I1      = BEGINNING ELEMENT TO BE FLAGGED
 C     I2      = ENDING ELEMENT TO BE FLAGGED
 C     SETFLG  = .TRUE. IF THE ELEMENT IS TO BE FLAGGED FOR PLOTTING
 C     OLD     = .TRUE. IF THE OLD ELEMENT NUMBERS ARE TO BE USED
-C
+
 C***********************************************************************
-C
+
 C  NOTE:
 C     THE ELEMENT IS FLAGGED FOR PLOTTING BY FORCING THE FIRST NODE TO
 C     BE POSITIVE AND VICE VERSUS
-C
+
 C***********************************************************************
-C
+
       DIMENSION NXK(NNXK,NPELEM), MAPDXG(NPELEM)
-C
+
       LOGICAL SETFLG, OLD
-C
+
       IF (OLD) THEN
          IF (SETFLG) THEN
             DO 100 I = I1, I2
@@ -58,5 +55,5 @@ C
          ENDIF
       ENDIF
       RETURN
-C
+
       END

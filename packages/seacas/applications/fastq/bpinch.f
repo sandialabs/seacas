@@ -4,42 +4,40 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE BPINCH (MXND, MLN, LNODES, XN, YN, LXN, NXL, ANGLE,
      &   N0, N1, N2, NLOOP, TOLER1, TOLER2, BOK, ERR)
 C***********************************************************************
-C
+
 C  SUBROUTINE BPINCH = CHECKS THAT A PINCH IS ALLOWABLE AND THAT IT
 C                      DOESN'T FORCE A  DEGENERATE BOUNDARY ELEMENT
-C
+
 C***********************************************************************
-C
+
       DIMENSION XN (MXND), YN (MXND)
       DIMENSION NXL (2, 3*MXND), LXN (4, MXND)
       DIMENSION ANGLE (MXND), LNODES (MLN, MXND)
       DIMENSION L1LIST(20)
-C
+
       LOGICAL BOK, CORNP, PANGLE, ERR
-C
+
       TWOPI = 2.0 * ATAN2(0.0, -1.0)
-C
+
 C  SEE IF THE ANGLE IS ELIGIBLE FOR PINCHING
 C  FIRST CHECK A NONBOUNDARY NODE
-C
+
       IF (LXN (2, N1) .GT. 0) THEN
-C
+
 C  CHECK A FOUR (OR LESS) LINE NODE
-C
+
          IF (LXN (4, N1) .GE. 0) THEN
             IF (ANGLE (N1) .LT. TOLER1) THEN
                PANGLE = .TRUE.
             ELSE
                PANGLE = .FALSE.
             ENDIF
-C
+
 C  CHECK A FIVE (OR MORE) LINE NODE
-C
+
          ELSE
             IF (ANGLE (N1) .LT. TOLER2) THEN
                PANGLE = .TRUE.
@@ -47,9 +45,9 @@ C
                PANGLE = .FALSE.
             ENDIF
          ENDIF
-C
+
 C  CHECK A BOUNDARY NODE
-C
+
       ELSE
          IF ( (ANGLE (N1) .LT. TOLER1) .AND.
      &      (LXN (2, N0) * LXN (2, N2) .LT. 0) ) THEN
@@ -63,23 +61,23 @@ C
          ENDIF
       ENDIF
       IF (PANGLE) THEN
-C
+
 C  ALL THREE ARE NOT ON THE BOUNDARY
-C
+
          IF ( (LXN (2, N1) .GT. 0) .AND.
      &      (LXN (2, N0) .GT. 0) .AND.
      &      (LXN (2, N2) .GT. 0) ) THEN
             BOK = .TRUE.
-C
+
 C  N0 AND N2 ARE ON THE BOUNDARY
-C
+
          ELSEIF ( (LXN (2, N0) .LT. 0) .AND.
      &      (LXN (2, N2) .LT. 0) ) THEN
             BOK = .FALSE.
-C
+
 C  N1 AND N0 ARE ON THE BOUNDARY - FIND THE ANGLE THAT
 C  THE BOUNDARY AT N1 MAKES
-C
+
          ELSEIF ( (LXN (2, N0) .LT. 0) .AND.
      &      (LXN (2, N1) .LT. 0) ) THEN
             CALL GETLXN (MXND, LXN, N1, L1LIST, NL, ERR)
@@ -113,9 +111,9 @@ C
             IF (ANG2 .LT. 0.) ANG2 = ANG2 + TWOPI
             ANG = ANG1 - ANG2
             IF (ANG .LT. 0.) ANG = ANG + TWOPI
-C
+
 C  NOW CHECK TO MAKE SURE THAT ANGLE IS NOT TOO LARGE
-C
+
             IF (ANG .LT. 2.3561945) THEN
                IF (LXN (3, N1) .EQ. 0) THEN
                   BOK = .FALSE.
@@ -129,9 +127,9 @@ C
                   BOK = .TRUE.
                ENDIF
             ENDIF
-C
+
 C  N1 AND N2 ARE ON THE BOUNDARY
-C
+
          ELSEIF ( (LXN (2, N1) .LT. 0) .AND.
      &      (LXN (2, N2) .LT. 0) ) THEN
             CALL GETLXN (MXND, LXN, N1, L1LIST, NL, ERR)
@@ -165,9 +163,9 @@ C
             IF (ANG2 .LT. 0.) ANG2 = ANG2 + TWOPI
             ANG = ANG2 - ANG1
             IF (ANG .LT. 0.) ANG = ANG + TWOPI
-C
+
 C  NOW CHECK THE ANGLE SIZE
-C
+
             IF (ANG .LT. 2.3561945) THEN
                IF (LXN (3, N1) .EQ. 0) THEN
                   BOK = .FALSE.
@@ -181,9 +179,9 @@ C
                   BOK = .TRUE.
                ENDIF
             ENDIF
-C
+
 C  ONLY N0 IS ON THE BOUNDARY
-C
+
          ELSEIF (LXN (2, N0) .LT. 0) THEN
             N0A = LNODES (2, N0)
             N0B = LNODES (2, N0A)
@@ -195,14 +193,14 @@ C
             ELSE
                BOK = .TRUE.
             ENDIF
-C
+
 C  ONLY N1 IS ON THE BOUNDARY
-C
+
          ELSEIF (LXN (2, N1) .LT. 0) THEN
             BOK = .TRUE.
-C
+
 C  ONLY N2 IS ON THE BOUNDARY
-C
+
          ELSEIF (LXN (2, N2) .LT. 0) THEN
             N2A = LNODES (3, N2)
             N2B = LNODES (3, N2A)
@@ -214,14 +212,14 @@ C
             ELSE
                BOK = .TRUE.
             ENDIF
-C
+
          ENDIF
-C
+
       ELSE
          BOK = .FALSE.
       ENDIF
-C
+
   140 CONTINUE
       RETURN
-C
+
       END

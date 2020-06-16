@@ -4,8 +4,6 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
       SUBROUTINE GDATA (MP, ML, MS, MR, MSC, MCOM, ICOM, JCOM, CIN,
      &   RIN, IIN, KIN, IDUMP, N, IPOINT, COOR, IPBOUN, ILINE, LTYPE,
      &   NINT, FACTOR, LCON, ILBOUN, ISBOUN, ISIDE, NLPS, IFLINE,
@@ -16,16 +14,16 @@ C
      &   LABSC, LABSZ, FULL, IDEV, ALPHA, DEV1, VAXVMS, VERSN, WROTE,
      &   TIME1, HARDPL, BATCH)
 C***********************************************************************
-C
+
 C  GDATA = SUBROUTINE TO INPUT LIGHT TABLE POINTS
-C
+
 C***********************************************************************
-C
+
 C  SUBROUTINE CALLED BY:
 C     FASTQ = A PROGRAM TO QUICKLY PREPARE QMESH INPUT
-C
+
 C***********************************************************************
-C
+
       DIMENSION IPOINT (MP), COOR (2, MP), IPBOUN (MP)
       DIMENSION ILINE (ML), LTYPE (ML), NINT (ML)
       DIMENSION FACTOR (ML), LCON (3, ML)
@@ -41,37 +39,37 @@ C
       DIMENSION REXTRM (4, MR), N (29)
       DIMENSION KIN (MCOM), IIN (MCOM), RIN (MCOM)
       DIMENSION IDEV (2), III (1)
-C
+
       CHARACTER*72 SCHEME, DEFSCH, TITLE, CIN (MCOM)
       CHARACTER*3 DEV1, VERSN*9
-C
+
       LOGICAL DRAWN, FLAG, GOPLOT, ALPHA
       LOGICAL ADDLNK, VAXVMS, WROTE
       LOGICAL LABP, LABL, LABR, AXISD, LABMD
       LOGICAL LABI, LABF, LABPB, LABLB, LABSBD
       LOGICAL FULL, LABSC, LABSZ, GETMAX, TEST
       LOGICAL NUMPLT, HARDPL, BATCH, FOUND
-C
+
       IZ = 0
       DRAWN = .FALSE.
       ADDLNK = .FALSE.
       GETMAX = .FALSE.
       TEST = .FALSE.
       NUMPLT = .FALSE.
-C
+
 C  FLAG ALL THE DATA TO BE PLOTTED
-C
+
       FLAG = .TRUE.
       CALL FLAGD (MP, N (18), LINKP, IPOINT, FLAG)
       CALL FLAGD (ML, N (19), LINKL, ILINE, FLAG)
       CALL FLAGD (MR, N (22), LINKR, IREGN, FLAG)
-C
+
 C  GET THE REGION AND BODY EXTREMES
-C
+
       CALL GETEXT (MP, ML, MS, MR, N, IPOINT, COOR, ILINE, LTYPE,
      &   LCON, NLPS, IFLINE, ILLIST, NSPR, IFSIDE, ISLIST, LINKP,
      &   LINKL, LINKS, LINKR, REXTRM, XMIN, XMAX, YMIN, YMAX)
-C
+
       XMIN1 = XMIN
       XMAX1 = XMAX
       YMIN1 = YMIN
@@ -80,9 +78,9 @@ C
       HYMIN = YMIN
       HXMAX = XMAX
       HYMAX = YMAX
-C
+
 C  ENTER GRAPHICS OPTION
-C
+
   100 CONTINUE
       IF (ICOM .GT. JCOM) THEN
          CALL MESAGE (' ')
@@ -90,9 +88,9 @@ C
      &      IOSTAT, JCOM, KIN, CIN, IIN, RIN)
          ICOM = 1
       ENDIF
-C
+
 C  TOGGLE DRAWING OF THE AXIS
-C
+
       IF ( (CIN (ICOM) (1:1) .EQ. 'A') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'a')) THEN
          ICOM = ICOM + 1
@@ -103,9 +101,9 @@ C
             AXISD = .TRUE.
             CALL MESAGE ('AXIS DRAWING - ON')
          ENDIF
-C
+
 C  TOGGLE THE FACTOR NUMBERS
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'FA') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'fa')) THEN
          ICOM = ICOM + 1
@@ -116,9 +114,9 @@ C
             LABF = .TRUE.
             CALL MESAGE ('FACTOR LABELS - ON')
          ENDIF
-C
+
 C  TOGGLE THE FULL DISPLAY OF PROPERTIES
-C
+
       ELSEIF ( (CIN (ICOM) (1:1) .EQ. 'F') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'f')) THEN
          ICOM = ICOM + 1
@@ -129,9 +127,9 @@ C
             FULL = .TRUE.
             CALL MESAGE ('FULL DISPLAY OF PROPERTIES - ON')
          ENDIF
-C
+
 C  TOGGLE THE SCHEME DISPLAY
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'SC') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'sc')) THEN
          ICOM = ICOM + 1
@@ -142,9 +140,9 @@ C
             LABSC = .TRUE.
             CALL MESAGE ('SCHEME LABELS - ON')
          ENDIF
-C
+
 C  TOGGLE THE SCHEME DISPLAY
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'SI') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'si')) THEN
          ICOM = ICOM + 1
@@ -155,9 +153,9 @@ C
             LABSZ = .TRUE.
             CALL MESAGE ('ELEMENT SIZE LABELS - ON')
          ENDIF
-C
+
 C  TOGGLE THE MATERIAL NUMBERS
-C
+
       ELSEIF ( (CIN (ICOM) (1:1) .EQ. 'M') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'm')) THEN
          ICOM = ICOM + 1
@@ -168,9 +166,9 @@ C
             LABMD = .TRUE.
             CALL MESAGE ('MATERIAL LABELS - ON')
          ENDIF
-C
+
 C  ENTER LINE INTERVALS
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'II') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'ii')) THEN
          ICOM = ICOM + 1
@@ -193,9 +191,9 @@ C
      &         NLPS, IFLINE, ILLIST, LINKL, LINKS, ADDLNK)
             GOTO 110
          ENDIF
-C
+
 C  ENTER LINE FACTORS
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'IF') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'if')) THEN
          ICOM = ICOM + 1
@@ -218,9 +216,9 @@ C
      &         NLPS, IFLINE, ILLIST, LINKL, LINKS, ADDLNK)
             GOTO 120
          ENDIF
-C
+
 C  TOGGLE THE INTERVAL NUMBERS
-C
+
       ELSEIF ( (CIN (ICOM) (1:1) .EQ. 'I') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'i')) THEN
          ICOM = ICOM + 1
@@ -231,9 +229,9 @@ C
             LABI = .TRUE.
             CALL MESAGE ('INTERVAL LABELS - ON')
          ENDIF
-C
+
 C  TOGGLE THE NODE BOUNDARY NUMBERS
-C
+
       ELSEIF ( (CIN (ICOM) (1:1) .EQ. 'N') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'n')) THEN
          ICOM = ICOM + 1
@@ -244,9 +242,9 @@ C
             LABLB = .TRUE.
             CALL MESAGE ('LINE BOUNDARY LABELS - ON')
          ENDIF
-C
+
 C  FLAG LINES TO BE PROCESSED
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'LP') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'lp')) THEN
          ICOM = ICOM + 1
@@ -273,14 +271,14 @@ C
          IF (IFOUND .GT. 0) THEN
             IF (I1 .GT. 0) THEN
                CALL CHECK (I1, I2, N (19))
-C
+
 C  FLAG ALL DATA ASSOCIATED WITH THE LINES
-C
+
                DO 150 I = I1, I2
                   CALL LTSORT (ML, LINKL, I, KK, ADDLNK)
                   IF (KK .GT. 0) THEN
                      GOPLOT = .TRUE.
-C
+
                      DO 140 L = 1, 3
                         IF (LCON (L, KK) .GT. 0) THEN
                            CALL LTSORT (MP, LINKP, LCON (L, KK),
@@ -297,7 +295,7 @@ C
                            ENDIF
                         ENDIF
   140                CONTINUE
-C
+
                      CALL DLINE (MP, ML, COOR, LINKP, ILINE (KK),
      &                  LTYPE (KK), LCON (1, KK), LCON (2, KK),
      &                  LCON (3, KK), NUMPLT, X1, Y1, TEST, GETMAX,
@@ -310,9 +308,9 @@ C
          ENDIF
          GETMAX = .FALSE.
          IF (GOPLOT) THEN
-C
+
 C  PLOT THE LINE DATA THAT HAS BEEN FLAGGED
-C
+
             IF (ALPHA) THEN
                CALL MESAGE ('NO PLOTTING POSSIBLE ON ALPHANUMERIC '//
      &            'TERMINAL')
@@ -336,9 +334,9 @@ C
          YMIN1 = YMIN
          XMAX1 = XMAX
          YMAX1 = YMAX
-C
+
 C  TOGGLE THE LINE NUMBERS
-C
+
       ELSEIF ( (CIN (ICOM) (1:1) .EQ. 'L') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'l')) THEN
          ICOM = ICOM + 1
@@ -349,9 +347,9 @@ C
             LABL = .TRUE.
             CALL MESAGE ('LINE LABELS - ON')
          ENDIF
-C
+
 C  TOGGLE THE POINT BOUNDARY NUMBERS
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'PB') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'pb')) THEN
          ICOM = ICOM + 1
@@ -362,9 +360,9 @@ C
             LABPB = .TRUE.
             CALL MESAGE ('POINT BOUNDARY LABELS - ON')
          ENDIF
-C
+
 C  TOGGLE THE SIDE BOUNDARY NUMBERS
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'EB') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'eb')) THEN
          ICOM = ICOM + 1
@@ -375,9 +373,9 @@ C
             LABSBD = .TRUE.
             CALL MESAGE ('ELEMENT BOUNDARY LABELS - ON')
          ENDIF
-C
+
 C  TOGGLE THE POINT NUMBERS
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'PO') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'po')) THEN
          ICOM = ICOM + 1
@@ -388,9 +386,9 @@ C
             LABP = .TRUE.
             CALL MESAGE ('POINT LABELS - ON')
          ENDIF
-C
+
 C  TOGGLE THE REGION NUMBERS
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'RE') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 're')) THEN
          ICOM = ICOM + 1
@@ -401,16 +399,16 @@ C
             LABR = .TRUE.
             CALL MESAGE ('REGION LABELS - ON')
          ENDIF
-C
+
 C  SPAWN A PROCESS
-C
+
       ELSEIF ( (CIN (ICOM) (1:3) .EQ. 'SPA') .OR.
      &   (CIN (ICOM) (1:3) .EQ. 'spa')) THEN
          ICOM = ICOM + 1
          CALL SPAWN (VAXVMS)
-C
+
 C  FLAG SIDES TO BE PROCESSED
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'SP') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'sp')) THEN
          ICOM = ICOM + 1
@@ -441,9 +439,9 @@ C
          IF (IFOUND .GT. 0) THEN
             IF (I1 .GT. 0) THEN
                CALL CHECK (I1, I2, N (20))
-C
+
 C  FLAG ALL DATA ASSOCIATED WITH THE SIDES
-C
+
                DO 190 I = I1, I2
                   CALL LTSORT (MS, LINKS, I, JJ, ADDLNK)
                   IF (JJ .GT. 0) THEN
@@ -481,9 +479,9 @@ C
          ENDIF
          GETMAX = .FALSE.
          IF (GOPLOT) THEN
-C
+
 C  PLOT THE SIDE DATA THAT HAS BEEN FLAGGED
-C
+
             IF (ALPHA) THEN
                CALL MESAGE ('NO PLOTTING POSSIBLE ON ALPHANUMERIC ' //
      &            'TERMINAL')
@@ -507,9 +505,9 @@ C
          YMIN1 = YMIN
          XMAX1 = XMAX
          YMAX1 = YMAX
-C
+
 C  SHOW STATUS OF ALL TOGGLES
-C
+
       ELSEIF ( (CIN (ICOM) (1:1) .EQ. 'S') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 's')) THEN
          ICOM = ICOM + 1
@@ -588,9 +586,9 @@ C
          CALL MESAGE ('    PLOTTING ORDER AT REGION CENTERS IS:       ')
          CALL MESAGE ('        REGION NO./BLOCK ID NO./SCHEME         ')
          CALL MESAGE ('*-------------------- NOTE -------------------*')
-C
+
 C  FLAG REGIONS TO BE PROCESSED
-C
+
       ELSEIF ( (CIN (ICOM) (1:1) .EQ. 'R') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'r')) THEN
          ICOM = ICOM + 1
@@ -621,15 +619,15 @@ C
          IF (IFOUND .GT. 0) THEN
             IF (I1 .GT. 0) THEN
                CALL CHECK (I1, I2, N (22))
-C
+
 C  FLAG ALL DATA ASSOCIATED WITH THE REGIONS
-C
+
                DO 250 I = I1, I2
                   CALL LTSORT (MR, LINKR, I, II, ADDLNK)
                   IF (II .GT. 0) THEN
-C
+
 C  FIND THE MAXIMUM AND MINIMUM
-C
+
                      XMIN = AMIN1 (XMIN, REXTRM (1, II))
                      XMAX = AMAX1 (XMAX, REXTRM (2, II))
                      YMIN = AMIN1 (YMIN, REXTRM (3, II))
@@ -637,9 +635,9 @@ C
                      GOPLOT = .TRUE.
                      IREGN (II) = -IABS (IREGN (II))
                      DO 240 J = IFSIDE (II), IFSIDE (II) + NSPR (II)-1
-C
+
 C  FLAG SIDE DATA
-C
+
                         IF ( ISLIST (J) .GT. 0) then
                           CALL LTSORT (MS, LINKS, ISLIST(J), JJ, ADDLNK)
                           if (JJ .GT. 0) THEN
@@ -662,9 +660,9 @@ C
                               ENDIF
   220                      CONTINUE
                          end if
-C
+
 C  FLAG LINE DATA
-C
+
                         ELSE
                            JJ = IABS (ISLIST (J))
                            CALL LTSORT (ML, LINKL, JJ, KK, ADDLNK)
@@ -688,9 +686,9 @@ C
             ENDIF
          ENDIF
          IF (GOPLOT) THEN
-C
+
 C  PLOT THE REGION DATA THAT HAS BEEN FLAGGED
-C
+
             IF (ALPHA) THEN
                CALL MESAGE ('NO PLOTTING POSSIBLE ON ALPHA-NUMERIC'//
      &            ' TERMINAL')
@@ -714,9 +712,9 @@ C
          YMIN1 = YMIN
          XMAX1 = XMAX
          YMAX1 = YMAX
-C
+
 C  FLAG BARSETS TO BE PLOTTED
-C
+
       ELSEIF ( (CIN (ICOM) (1:1) .EQ. 'B') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'b')) THEN
          ICOM = ICOM + 1
@@ -746,9 +744,9 @@ C
          IF (IFOUND .GT. 0) THEN
             IF (I1 .GT. 0) THEN
                CALL CHECK (I1, I2, N (21))
-C
+
 C  FLAG ALL LINES ASSOCIATED WITH THE BARSETS
-C
+
                DO 290 I = I1, I2
                   CALL LTSORT (MS, LINKB, I, II, ADDLNK)
                   IF (II .GT. 0) THEN
@@ -780,9 +778,9 @@ C
             ENDIF
          ENDIF
          IF (GOPLOT) THEN
-C
+
 C  PLOT THE BARSET DATA THAT HAS BEEN FLAGGED
-C
+
             IF (ALPHA) THEN
                CALL MESAGE ('NO PLOTTING POSSIBLE ON ALPHANUMERIC '//
      &            'TERMINAL')
@@ -806,9 +804,9 @@ C
          YMIN1 = YMIN
          XMAX1 = XMAX
          YMAX1 = YMAX
-C
+
 C  ENTER ZOOM LOCATION
-C
+
       ELSEIF ( (CIN (ICOM) (1:1) .EQ. 'Z') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'z')) THEN
          ICOM = ICOM + 1
@@ -816,9 +814,9 @@ C
      &      DRAWN, ALPHA, DEV1, X1, X2, Y1, Y2, XX1, XX2, YY1, YY2,
      &      XMIN1, XMAX1, YMIN1, YMAX1, XMIN, XMAX, YMIN, YMAX)
          DRAWN = .FALSE.
-C
+
 C  RETURN FROM DATA PLOTTING
-C
+
       ELSEIF (CIN (ICOM) (1:1) .EQ. ' ') THEN
          ICOM = ICOM + 1
          FLAG = .FALSE.
@@ -827,9 +825,9 @@ C
          CALL FLAGD (MS, N (21), LINKB, IBARST, FLAG)
          CALL FLAGD (MR, N (22), LINKR, IREGN, FLAG)
          RETURN
-C
+
 C GENERATE A HARDCOPY QMS PLOT
-C
+
       ELSEIF ( ( (CIN (ICOM) (1:1) .EQ. 'H') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'h')) .AND.
      &   (CIN (ICOM) (2:2).NE.'E') .AND.
@@ -850,9 +848,9 @@ C
          ELSE
             CALL MESAGE ('HARDCOPY DEVICE NOT AVAILABLE')
          ENDIF
-C
+
 C  PLOT THE CURRENT ACTIVE ITEMS
-C
+
       ELSEIF ( (CIN (ICOM) (1:1) .EQ. 'P') .OR.
      &   (CIN (ICOM) (1:1) .EQ. 'p')) THEN
          ICOM = ICOM + 1
@@ -868,9 +866,9 @@ C
      &         XMIN, XMAX, YMIN, YMAX, XX1, YY1, XX2, YY2, DEV1, VERSN)
             DRAWN = .TRUE.
          ENDIF
-C
+
 C  EXIT OPTION - EXITS FASTQ
-C
+
       ELSEIF ( (CIN (ICOM) (1:2) .EQ. 'EX') .OR.
      &   (CIN (ICOM) (1:2) .EQ. 'ex')) THEN
          ICOM = ICOM + 1
@@ -883,13 +881,13 @@ C
      &         TIME1, BATCH, VERSN)
          ENDIF
          GOTO 100
-C
+
 C  WRITE OUT THE HELP MESSAGE
-C
+
       ELSE
          ICOM = ICOM + 1
          CALL HELP_FQ (5)
       ENDIF
       GOTO 100
-C
+
       END

@@ -28,5 +28,4 @@ C     and 'Date' strings from the CVS variables.  Kludgey but it might work.
          QAINFO(3)(MAX(1,9-LREV):8) = CVSREV(1:LREV)
       end if
 
-
 C--------

@@ -7,7 +7,7 @@ C See packages/seacas/LICENSE for details
 C=======================================================================
       SUBROUTINE RENAM (TYPE, NAMLST, NUMNM, OLD, NEW)
 C=======================================================================
-C
+
       CHARACTER*(*) TYPE
       CHARACTER*(*) NAMLST(NUMNM), OLD, NEW
       CHARACTER*1024 STRING

@@ -4,18 +4,15 @@ C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    See packages/seacas/LICENSE for details
 
-C
-C
-C
       SUBROUTINE IREVER (L, N)
 C***********************************************************************
-C
+
 C  SUBROUTINE IREVER = REVERS THE INTEGER ARRAY L (I), I=1, N
-C
+
 C***********************************************************************
-C
+
       DIMENSION L (N)
-C
+
       IF (N .LE. 1) RETURN
       NUP = N + 1
       M = N / 2
@@ -25,7 +22,7 @@ C
          L (I) = L (NUP)
          L (NUP) = ITEMP
   100 CONTINUE
-C
+
       RETURN
-C
+
       END

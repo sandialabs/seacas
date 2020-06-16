@@ -75,7 +75,6 @@ C               --Swap nodes to simulate surface being defined by facing element
                   NEWELB(IFAC) = - IE2ELB(IF2EL2(IFAC))
                END IF
 
-
             ELSE IF (NALIVE .EQ. 2) THEN
 
 C            --If both elements are alive, change to an INTERIOR face

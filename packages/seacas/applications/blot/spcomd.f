@@ -212,7 +212,6 @@ C           --reset display variable list
      &            CFIELD, NAMES, LIDSP, NAMLEN)
             ENDIF
 
-
             SELOK = .FALSE.
             NODVAR = .TRUE.
             NNENUM = 0

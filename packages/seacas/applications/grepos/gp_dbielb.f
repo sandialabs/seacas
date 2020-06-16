@@ -84,7 +84,6 @@ C ... Get element block ids
        IF (NERR .GT. 0) GOTO 110
       END IF
 
-
       IELNK = IESAV
       IEATR = IASAV
       ISATR = 0

@@ -4,7 +4,7 @@ C NTESS, the U.S. Government retains certain rights in this software.
 C 
 C See packages/seacas/LICENSE for details
 
-C
+
 C=======================================================================
       SUBROUTINE PLTVWG(PLL,PUR,N,XV,YV,ZV,NO,XVO,YVO,ZVO)
       DIMENSION XV(*),YV(*),ZV(*),XVO(*),YVO(*),ZVO(*),PLL(*),PUR(*)
