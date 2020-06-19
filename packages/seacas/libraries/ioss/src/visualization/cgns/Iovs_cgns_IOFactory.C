@@ -42,29 +42,28 @@
 #include "Ioss_IOFactory.h"                // for IOFactory
 #include <cstddef>                         // for nullptr
 #include <string>                          // for string
-#include <visualization/Iovs_DatabaseIO_CGNS.h> // for DatabaseIO_CGNS
-#include <visualization/Iovs_IOFactoryCGNS.h>
+#include <visualization/cgns/Iovs_cgns_DatabaseIO.h>
+#include <visualization/cgns/Iovs_cgns_IOFactory.h>
 namespace Ioss {
   class PropertyManager;
 } // namespace Ioss
 
-namespace Iovs {
+namespace Iovs_cgns {
 
-  const IOFactoryCGNS *IOFactoryCGNS::factory()
+  const IOFactory *IOFactory::factory()
   {
-    static IOFactoryCGNS registerThis;
+    static IOFactory registerThis;
     return &registerThis;
   }
 
-  IOFactoryCGNS::IOFactoryCGNS() : Ioss::IOFactory("catalyst_cgns")
-  {
+  IOFactory::IOFactory() : Ioss::IOFactory("catalyst_cgns") {
   }
 
-  Ioss::DatabaseIO *IOFactoryCGNS::make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
-                                           MPI_Comm                     communicator,
-                                           const Ioss::PropertyManager &properties) const
-  {
-    return new DatabaseIO_CGNS(nullptr, filename, db_usage, communicator, properties);
+  Ioss::DatabaseIO *IOFactory::make_IO(const std::string &filename,
+      Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+          const Ioss::PropertyManager &properties) const {
+      return new DatabaseIO(nullptr, filename, db_usage,
+          communicator, properties);
   }
 
-} // namespace Iovs
+} // namespace Iovs_cgns

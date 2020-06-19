@@ -15,8 +15,8 @@
 #include <Ioss_CodeTypes.h>
 #include <ParaViewCatalystIossAdapter.h>
 #include <tokenize.h>
-#include <visualization/Iovs_DatabaseIO.h>
-#include <visualization/Iovs_Utils.h>
+#include <visualization/exodus/Iovs_exodus_DatabaseIO.h>
+#include <visualization/utils/Iovs_Utils.h>
 
 #include <cctype>
 #include <cstdlib>
@@ -31,24 +31,26 @@
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 
-const char *CATALYST_OUTPUT_DIRECTORY     = "CatalystOutput";
+const char *CATALYST_OUTPUT_DIRECTORY = "CatalystOutput";
 
 namespace { // Internal helper functions
   enum class entity_type { NODAL, ELEM_BLOCK, NODE_SET, SIDE_SET };
-  int64_t get_id(const Ioss::GroupingEntity *entity, Iovs::EntityIdSet *idset);
-  bool    set_id(const Ioss::GroupingEntity *entity, Iovs::EntityIdSet *idset);
+  int64_t get_id(const Ioss::GroupingEntity *entity,
+      Iovs_exodus::EntityIdSet *idset);
+  bool    set_id(const Ioss::GroupingEntity *entity,
+      Iovs_exodus::EntityIdSet *idset);
   int64_t extract_id(const std::string &name_id);
 } // End anonymous namespace
 
-namespace Iovs {
-  int         field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
-                            const std::string &inout);
+namespace Iovs_exodus {
+  int field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
+      const std::string &inout);
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
-                         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-                         const Ioss::PropertyManager &props)
+      Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(
-            region, Utils::getInstance().getExodusDatabaseOutputFilePath(\
+            region, Iovs::Utils::getInstance().getExodusDatabaseOutputFilePath(\
                 filename, props),
                     db_usage, communicator, props),
         isInput(false), singleProcOnly(false), doLogging(false), enableLogging(0), debugLevel(0),
@@ -56,10 +58,10 @@ namespace Iovs {
         nodeBlockCount(0), elementBlockCount(0)
   {
 
-    Utils::getInstance().checkDbUsage(db_usage);
-    Utils::getInstance().createDatabaseOutputFile(\
+    Iovs::Utils::getInstance().checkDbUsage(db_usage);
+    Iovs::Utils::getInstance().createDatabaseOutputFile(\
         this->DBFilename, communicator);
-    Utils::getInstance().incrementNumExodusCatalystOutputs();
+    Iovs::Utils::getInstance().incrementNumExodusCatalystOutputs();
 
     dbState                              = Ioss::STATE_UNKNOWN;
     this->pvcsa                          = nullptr;
@@ -73,7 +75,7 @@ namespace Iovs {
       this->paraview_script_filename = props.get("CATALYST_SCRIPT").get_string();
     }
     else {
-      this->paraview_script_filename = Utils::getInstance()\
+      this->paraview_script_filename = Iovs::Utils::getInstance()\
           .getCatalystPythonDriverPath();
     }
 
@@ -135,7 +137,7 @@ namespace Iovs {
     Ioss::Region *region = this->get_region();
     if (region->model_defined() && (this->pvcsa == nullptr)) {
 
-      this->pvcsa = Utils::getInstance()\
+      this->pvcsa = Iovs::Utils::getInstance()\
           .createParaViewCatalystIossAdapterInstance();
 
       std::string separator(1, this->get_field_separator());
@@ -979,12 +981,12 @@ namespace Iovs {
     }
     return num_to_get;
   }
-} // namespace Iovs
+} // namespace Iovs_exodus
 
 namespace {
 
-  int64_t get_id(const Ioss::GroupingEntity *entity, Iovs::EntityIdSet *idset)
-  {
+  int64_t get_id(const Ioss::GroupingEntity *entity,
+      Iovs_exodus::EntityIdSet *idset) {
     // Sierra uses names to refer to grouping entities; however,
     // exodusII requires integer ids.  When reading an exodusII file,
     // the DatabaseIO creates a name by concatenating the entity
@@ -1043,8 +1045,8 @@ namespace {
     return id;
   }
 
-  bool set_id(const Ioss::GroupingEntity *entity, Iovs::EntityIdSet *idset)
-  {
+  bool set_id(const Ioss::GroupingEntity *entity,
+      Iovs_exodus::EntityIdSet *idset) {
     // See description of 'get_id' function.  This function just primes
     // the idset with existing ids so that when we start generating ids,
     // we don't overwrite an existing one.
@@ -1096,4 +1098,4 @@ namespace {
     return 0;
   }
 
-} // namespace
+} // end anonymous namespace

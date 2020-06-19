@@ -39,8 +39,8 @@
 /*    a license from the United States Government.                    */
 /*--------------------------------------------------------------------*/
 
-#ifndef Iovs_IOFactoryCGNS_h
-#define Iovs_IOFactoryCGNS_h
+#ifndef Iovs_cgns_IOFactory_h
+#define Iovs_cgns_IOFactory_h
 
 #include "Ioss_DatabaseIO.h" // for DatabaseIO
 #include <Ioss_CodeTypes.h>
@@ -51,18 +51,18 @@ namespace Ioss {
   class PropertyManager;
 } // namespace Ioss
 
-namespace Iovs {
+namespace Iovs_cgns {
 
-  class IOFactoryCGNS : public Ioss::IOFactory
+  class IOFactory : public Ioss::IOFactory
   {
   public:
-    static const IOFactoryCGNS *factory();
+    static const IOFactory *factory();
 
   private:
-    IOFactoryCGNS();
-    Ioss::DatabaseIO *make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
-                              MPI_Comm                     communicator,
-                              const Ioss::PropertyManager &properties) const override;
+    IOFactory();
+    Ioss::DatabaseIO *make_IO(const std::string &filename,
+        Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+            const Ioss::PropertyManager &properties) const override;
   };
-} // namespace Iovs
-#endif // Iovs_IOFactoryCGNS_h
+} // namespace Iovs_cgns
+#endif // Iovs_cgns_IOFactory_h

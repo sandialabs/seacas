@@ -511,7 +511,7 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
     outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME",
         this->applicationName));
 
-    std::string catalystDatabaseType = "catalyst";
+    std::string catalystDatabaseType = "catalyst_exodus";
     if (this->iossDatabaseType == "cgns") {
         catalystDatabaseType = "catalyst_cgns";
     }

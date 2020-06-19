@@ -39,22 +39,23 @@
 /*    a license from the United States Government.                    */
 /*--------------------------------------------------------------------*/
 
-#ifndef Iovs_DatabaseIO_CGNS_h
-#define Iovs_DatabaseIO_CGNS_h
+#ifndef Iovs_cgns_DatabaseIO_h
+#define Iovs_cgns_DatabaseIO_h
 
 #include <Ioss_DatabaseIO.h>
 
 class ParaViewCatalystCGNSAdapterBase;
 
-namespace Iovs {
+namespace Iovs_cgns {
 
-    class DatabaseIO_CGNS : public Ioss::DatabaseIO
+    class DatabaseIO : public Ioss::DatabaseIO
     {
     public:
-      DatabaseIO_CGNS(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
-                      MPI_Comm communicator, const Ioss::PropertyManager &props);
+      DatabaseIO(Ioss::Region *region, const std::string &filename,
+          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+              const Ioss::PropertyManager &props);
 
-    ~DatabaseIO_CGNS() override;
+    ~DatabaseIO() override;
 
     const std::string get_format() const override { return "Embedded CGNS Visualization"; }
 
@@ -224,7 +225,7 @@ namespace Iovs {
     ParaViewCatalystCGNSAdapterBase *pvcca;
 
   };
-} // namespace Iovs
+} // namespace Iovs_cgns
 
 #endif
 

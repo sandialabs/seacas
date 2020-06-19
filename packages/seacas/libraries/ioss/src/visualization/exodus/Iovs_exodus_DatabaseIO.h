@@ -14,8 +14,8 @@
 /*--------------------------------------------------------------------*/
 
 // -*- Mode: c++ -*-
-#ifndef IOSS_Iovs_DatabaseIO_h
-#define IOSS_Iovs_DatabaseIO_h
+#ifndef IOSS_Iovs_exodus_DatabaseIO_h
+#define IOSS_Iovs_exodus_DatabaseIO_h
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>
@@ -37,15 +37,17 @@ class ParaViewCatalystIossAdapterBase;
 
 /** \brief A namespace for the visualization database format.
  */
-namespace Iovs {
+namespace Iovs_exodus {
 
   typedef std::set<std::pair<int64_t, int64_t>> EntityIdSet;
 
   class DatabaseIO : public Ioss::DatabaseIO
   {
   public:
-    DatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
-               MPI_Comm communicator, const Ioss::PropertyManager &props);
+    DatabaseIO(Ioss::Region *region, const std::string &filename,
+        Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+            const Ioss::PropertyManager &props);
+
     ~DatabaseIO() override;
 
     const std::string get_format() const override { return "Embedded Visualization"; }
@@ -215,15 +217,6 @@ namespace Iovs {
 
     void write_meta_data();
 
-/*
-    static ParaViewCatalystIossAdapterBase *
-    load_plugin_library(const std::string &plugin_name, const std::string &plugin_library_name);
-
-*/
-   // static std::string create_output_file_path(const std::string &          input_deck_name,
-   //                                            const Ioss::PropertyManager &properties);
-    // static bool plugin_library_exists(const std::string &plugin_name);
-
     int64_t handle_node_ids(void *ids, int64_t num_to_get);
     int64_t handle_element_ids(const Ioss::ElementBlock *eb, void *ids, size_t num_to_get);
 
@@ -247,8 +240,6 @@ namespace Iovs {
     int                applyDisplacements;
     int                createSideSets;
     int                createNodeSets;
-    static int         useCount;
-    //static int         uniqueID;
 
     int nodeBlockCount;
     int elementBlockCount;
@@ -260,6 +251,6 @@ namespace Iovs {
     void                             create_global_node_and_element_ids() const;
     mutable EntityIdSet              ids_{};
   };
-} // namespace Iovs
+} // namespace Iovs_exodus
 
 #endif

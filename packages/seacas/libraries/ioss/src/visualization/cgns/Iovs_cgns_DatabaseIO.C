@@ -38,8 +38,8 @@
 /*    a license from the United States Government.                    */
 /*--------------------------------------------------------------------*/
 
-#include <visualization/Iovs_DatabaseIO_CGNS.h>
-#include <visualization/Iovs_Utils.h>
+#include <visualization/cgns/Iovs_cgns_DatabaseIO.h>
+#include <visualization/utils/Iovs_Utils.h>
 #include <ParaViewCatalystCGNSAdapter.h>
 
 #include "Ioss_Property.h"
@@ -48,11 +48,11 @@
 #include "Ioss_StructuredBlock.h"
 #include "Ioss_Utils.h"
 
-namespace Iovs {
+namespace Iovs_cgns {
 
-    DatabaseIO_CGNS::DatabaseIO_CGNS(Ioss::Region *region, const std::string &filename,
-                                     Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-                                     const Ioss::PropertyManager &props)
+    DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
+        Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+            const Ioss::PropertyManager &props)
         : Ioss::DatabaseIO(region, filename, db_usage,
                            communicator, props)
     {
@@ -60,16 +60,16 @@ namespace Iovs {
       this->pvcca = nullptr;
     }
 
-    DatabaseIO_CGNS::~DatabaseIO_CGNS()
+    DatabaseIO::~DatabaseIO()
     {
     }
 
-    bool DatabaseIO_CGNS::begin__(Ioss::State state)
+    bool DatabaseIO::begin__(Ioss::State state)
     {
       return true;
     }
 
-    bool DatabaseIO_CGNS::end__(Ioss::State state)
+    bool DatabaseIO::end__(Ioss::State state)
     {
       switch (state) {
       case Ioss::STATE_DEFINE_MODEL:
@@ -83,7 +83,7 @@ namespace Iovs {
       return true;
     }
     
-    bool DatabaseIO_CGNS::begin_state__(int state, double time)
+    bool DatabaseIO::begin_state__(int state, double time)
     {
       if (this->pvcca != nullptr) {
         this->pvcca->SetTimeData(time, state - 1);
@@ -91,7 +91,7 @@ namespace Iovs {
       return true;
     }
 
-    bool DatabaseIO_CGNS::end_state__(int state, double time)
+    bool DatabaseIO::end_state__(int state, double time)
     {
       if (this->pvcca != nullptr) {
         this->pvcca->PerformCoProcessing();;
@@ -99,15 +99,15 @@ namespace Iovs {
       return true;
     }
 
-    void DatabaseIO_CGNS::read_meta_data__() {}
+    void DatabaseIO::read_meta_data__() {}
 
-    void DatabaseIO_CGNS::write_meta_data()
+    void DatabaseIO::write_meta_data()
     {
       if (this->pvcca == nullptr) {
-        this->pvcca = Utils::getInstance()\
+        this->pvcca = Iovs::Utils::getInstance()\
             .createParaViewCatalystCGNSAdapterInstance();
 
-        std::string ps = Utils::getInstance()\
+        std::string ps = Iovs::Utils::getInstance()\
             .getCatalystPythonDriverPath();
 
         this->pvcca->CreateNewPipeline(ps.c_str(), ps.c_str());
@@ -127,11 +127,9 @@ namespace Iovs {
       }
     }
 
-    int64_t DatabaseIO_CGNS::put_field_internal(const Ioss::StructuredBlock *sb,
-                                                const Ioss::Field &field,
-                                                void *data,
-                                                size_t data_size) const
-    {
+    int64_t DatabaseIO::put_field_internal(const Ioss::StructuredBlock *sb,
+        const Ioss::Field &field, void *data, size_t data_size) const {
+
       Ioss::Field::RoleType role = field.get_role();
       size_t base = sb->get_property("base").get_int();
       size_t zone = sb->get_property("zone").get_int();
@@ -265,15 +263,11 @@ namespace Iovs {
       return num_to_get;
     }
 
-    int64_t DatabaseIO_CGNS::put_field_internal(const Ioss::ElementBlock *eb,
-                                                const Ioss::Field &field,
-                                                void *data,
-                                                size_t data_size) const
-    {
-      size_t num_to_get = field.verify(data_size);
-      return num_to_get;
+    int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
+        const Ioss::Field &field, void *data, size_t data_size) const {
+
+        size_t num_to_get = field.verify(data_size);
+        return num_to_get;
     }
 
-} // namespace Iovs
-
-
+} // namespace Iovs_catalyst
