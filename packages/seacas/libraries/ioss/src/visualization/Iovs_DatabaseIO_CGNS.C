@@ -104,9 +104,13 @@ namespace Iovs {
     void DatabaseIO_CGNS::write_meta_data()
     {
       if (this->pvcca == nullptr) {
-        std::string s;
-        this->pvcca = Utils::load_cgns_adapter_library(s);
-        this->pvcca->CreateNewPipeline(s.c_str(), s.c_str());
+        this->pvcca = Utils::getInstance()\
+            .createParaViewCatalystCGNSAdapterInstance();
+
+        std::string ps = Utils::getInstance()\
+            .getCatalystPythonDriverPath();
+
+        this->pvcca->CreateNewPipeline(ps.c_str(), ps.c_str());
       }
 
       if(this->pvcca != nullptr) {

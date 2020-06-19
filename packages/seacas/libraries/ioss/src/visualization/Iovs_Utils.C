@@ -2,6 +2,8 @@
 #include <Iovs_Utils.h>
 #include <cstring>
 #include <Ioss_Utils.h>
+#include <ParaViewCatalystIossAdapter.h>
+#include <fstream>
 
 #ifdef IOSS_DLOPEN_ENABLED
 #include <dlfcn.h>
@@ -10,208 +12,307 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
-namespace {
-
-#if defined(__APPLE__)
-  const char *CATALYST_PLUGIN_DYNAMIC_LIBRARY = "libParaViewCatalystIossAdapter.dylib";
-#else
-  const char *CATALYST_PLUGIN_DYNAMIC_LIBRARY = "libParaViewCatalystIossAdapter.so";
-#endif
-
-  const char *CATALYST_PLUGIN_PYTHON_MODULE = "PhactoriDriver.py";
-  const char *CATALYST_PLUGIN_PATH          = "viz/catalyst/install";
-
-} // end anonymous namespace
-
 namespace Iovs {
 
-  bool Utils::file_exists(const std::string &filepath)
-  {
-    struct stat buffer
-    {
-    };
-    return (stat(filepath.c_str(), &buffer) == 0);
-  }
-
-  ParaViewCatalystIossAdapterBase *
-  Utils::load_exodus_adapter_library(std::string &paraview_script_filename)
-  {
-    void* dlHandle = load_plugin_library(paraview_script_filename);
-
-    if(!dlHandle) {
-      return nullptr;
+    Utils::Utils() {
+        this->dlHandle = nullptr;
+        this->numCGNSCatalystOutputs = 0;
+        this->numExodusCatalystOutputs = 0;
     }
 
-    typedef ParaViewCatalystIossAdapterBase *(*PvCatSrrAdapterMakerFuncType)();
+    Utils::~Utils() {
+#ifdef IOSS_DLOPEN_ENABLED
+        if (this->dlHandle != nullptr) {
+            dlclose(this->dlHandle);
+        }
+#endif
+    }
+
+    ParaViewCatalystIossAdapterBase *
+    Utils::createParaViewCatalystIossAdapterInstance() {
+        void* dlh = this->getDlHandle();
+
+        if(!dlh) {
+            return nullptr;
+        }
+
+        typedef ParaViewCatalystIossAdapterBase
+            *(*PvCatSrrAdapterMakerFuncType)();
 
 #ifdef __GNUC__
-    __extension__
+        __extension__
 #endif
-    PvCatSrrAdapterMakerFuncType mkr = reinterpret_cast<PvCatSrrAdapterMakerFuncType>(
-        dlsym(dlHandle, "ParaViewCatalystIossAdapterCreateInstance"));
-    if (mkr == nullptr) {
-      throw std::runtime_error("dlsym call failed to load function "
-                               "'ParaViewCatalystIossAdapterCreateInstance'");
+        PvCatSrrAdapterMakerFuncType mkr = \
+            reinterpret_cast<PvCatSrrAdapterMakerFuncType>(\
+                dlsym(dlh, "ParaViewCatalystIossAdapterCreateInstance"));
+        if (mkr == nullptr) {
+            throw std::runtime_error("dlsym call failed to load function "
+                "'ParaViewCatalystIossAdapterCreateInstance'");
+        }
+        return (*mkr)();
     }
 
-    return (*mkr)();
-  }
+    ParaViewCatalystCGNSAdapterBase *
+    Utils::createParaViewCatalystCGNSAdapterInstance() {
+        void* dlh = this->getDlHandle();
 
-  ParaViewCatalystCGNSAdapterBase *
-  Utils::load_cgns_adapter_library(std::string &paraview_script_filename)
-  {
-    void* dlHandle = load_plugin_library(paraview_script_filename);
+        if(!dlh) {
+            return nullptr;
+        }
 
-    if(!dlHandle) {
-      return nullptr;
-    }
-
-    typedef ParaViewCatalystCGNSAdapterBase *(*PvCatSrrAdapterMakerFuncType)();
+        typedef ParaViewCatalystCGNSAdapterBase
+            *(*PvCatSrrAdapterMakerFuncType)();
 
 #ifdef __GNUC__
-    __extension__
+        __extension__
 #endif
-    PvCatSrrAdapterMakerFuncType mkr = reinterpret_cast<PvCatSrrAdapterMakerFuncType>(
-        dlsym(dlHandle, "ParaViewCatalystCGNSAdapterCreateInstance"));
-    if (mkr == nullptr) {
-      throw std::runtime_error("dlsym call failed to load function "
-                               "'ParaViewCatalystCGNSAdapterCreateInstance'");
+        PvCatSrrAdapterMakerFuncType mkr =\
+            reinterpret_cast<PvCatSrrAdapterMakerFuncType>(\
+                dlsym(dlh, "ParaViewCatalystCGNSAdapterCreateInstance"));
+        if (mkr == nullptr) {
+            throw std::runtime_error("dlsym call failed to load function "
+                "'ParaViewCatalystCGNSAdapterCreateInstance'");
+        }
+        return (*mkr)();
     }
 
-    return (*mkr)();
-  }
-
-  void *
-  Utils::load_plugin_library(std::string &paraview_script_filename)
-  {
-    std::string plugin_library_path;
-    std::string plugin_python_module_path;
-
-    build_catalyst_plugin_paths(plugin_library_path, plugin_python_module_path,
-                                CATALYST_PLUGIN_DYNAMIC_LIBRARY);
-
-    if (getenv("CATALYST_PLUGIN") != nullptr) {
-      plugin_library_path = getenv("CATALYST_PLUGIN");
+    bool Utils::fileExists(const std::string &filepath) {
+        struct stat buffer {};
+        return (stat(filepath.c_str(), &buffer) == 0);
     }
 
-    if (paraview_script_filename.empty()) {
-      paraview_script_filename = plugin_python_module_path;
+    std::string Utils::getExodusDatabaseOutputFilePath(
+        const std::string & inputDeckName,
+            const Ioss::PropertyManager &properties) {
+        return this->getDatabaseOutputFilePath(inputDeckName,
+            this->numExodusCatalystOutputs, properties);
     }
 
-    if (!file_exists(paraview_script_filename)) {
-      std::ostringstream errmsg;
-      errmsg << "Catalyst Python module path does not exist.\n"
-             << "Python module path: " << paraview_script_filename << "\n";
-      IOSS_ERROR(errmsg);
+    std::string Utils::getCGNSDatabaseOutputFilePath(
+        const std::string & inputDeckName,
+            const Ioss::PropertyManager &properties) {
+        return this->getDatabaseOutputFilePath(inputDeckName,
+            this->numCGNSCatalystOutputs, properties);
     }
+
+    std::string Utils::getDatabaseOutputFilePath(
+        const std::string & inputDeckName,
+            int numberOfCatalystBlocks,
+                const Ioss::PropertyManager &properties) {
+        if (!properties.exists("CATALYST_OUTPUT_DIRECTORY")) {
+            std::ostringstream s;
+            s << inputDeckName << "." << numberOfCatalystBlocks
+                << CATALYST_FILE_SUFFIX;
+            return std::string(CATALYST_OUTPUT_DIRECTORY) + "/" + s.str();
+        }
+        else {
+            return inputDeckName;
+        }
+    }
+
+    int Utils::parseCatalystFile(const std::string &filepath,
+        std::string &json_result) {
+
+        ParaViewCatalystIossAdapterBase *pvc = nullptr;
+        pvc = this->createParaViewCatalystIossAdapterInstance();
+        CatalystParserInterface::parse_info pinfo;
+
+        int ret = pvc->parseFile(filepath, pinfo);
+        json_result = pinfo.json_result;
+
+        delete pvc;
+        return ret;
+    }
+
+    void* Utils::getDlHandle() {
+        if(this->dlHandle == nullptr) {
+            loadPluginLibrary();
+        }
+        return this->dlHandle;
+    }
+
+    void Utils::loadPluginLibrary() {
+
+        std::string pluginLibraryPath = this->getCatalystPluginPath();
 
 #ifdef IOSS_DLOPEN_ENABLED
-    void* dlHandle = dlopen(plugin_library_path.c_str(), RTLD_NOW | RTLD_GLOBAL);
-    if (dlHandle == nullptr) {
-      throw std::runtime_error(dlerror());
-    }
-
-    return dlHandle;
+        this->dlHandle = dlopen(pluginLibraryPath.c_str(),
+            RTLD_NOW | RTLD_GLOBAL);
+        if (this->dlHandle == nullptr) {
+            throw std::runtime_error(dlerror());
+        }
 #else
-    return NULL;
+        this->dlHandle = nullptr;
 #endif
-  }
+    }
 
-  void Utils::build_catalyst_plugin_paths(std::string &      plugin_library_path,
-                                          std::string &      plugin_python_path,
-                                          const std::string &plugin_library_name)
-  {
+    std::string Utils::getCatalystPluginPath() {
 
-    if (getenv("CATALYST_ADAPTER_INSTALL_DIR") != nullptr) {
-      std::string catalyst_ins_dir = getenv("CATALYST_ADAPTER_INSTALL_DIR");
+        if (getenv("CATALYST_PLUGIN") != nullptr) {
+            return getenv("CATALYST_PLUGIN");
+        }
 
-      if (!file_exists(catalyst_ins_dir)) {
+        std::string catalystInsDir =\
+            this->getCatalystAdapterInstallDirectory();
+
+        if(!catalystInsDir.empty()) {
+            return catalystInsDir + "/lib/" +\
+                std::string(CATALYST_PLUGIN_DYNAMIC_LIBRARY);
+        }
+
+        return this->getSierraInstallDirectory() + "/" +\
+            std::string(CATALYST_PLUGIN_DYNAMIC_LIBRARY);
+    }
+
+    std::string Utils::getCatalystPythonDriverPath() {
+
+        std::string catalystInsDir =\
+            this->getCatalystAdapterInstallDirectory();
+
+        if(!catalystInsDir.empty()) {
+            return catalystInsDir + "/python/" +\
+                std::string(CATALYST_PLUGIN_PYTHON_MODULE);
+        }
+
+        return this->getSierraInstallDirectory() + "/" +\
+            std::string(CATALYST_PLUGIN_PYTHON_MODULE);
+    }
+
+    std::string Utils::getSierraInstallDirectory() {
+
+        std::string sierraInsDir;
+        if (getenv("SIERRA_INSTALL_DIR") != nullptr) {
+            sierraInsDir = getenv("SIERRA_INSTALL_DIR");
+        }
+        else {
+            std::ostringstream errmsg;
+            errmsg << "Environment variable SIERRA_INSTALL_DIR not set.\n"
+                << " Unable to find ParaView catalyst dynamic library.\n";
+            IOSS_ERROR(errmsg);
+        }
+
+        std::string sierraSystem;
+        if (getenv("SIERRA_SYSTEM") != nullptr) {
+            sierraSystem = getenv("SIERRA_SYSTEM");
+        }
+        else {
+            std::ostringstream errmsg;
+            errmsg << "Environment variable SIERRA_SYSTEM not set.\n"
+                << " Unable to find ParaView catalyst dynamic library.\n";
+            IOSS_ERROR(errmsg);
+        }
+
+        std::string sierraVersion;
+        if (getenv("SIERRA_VERSION") != nullptr) {
+            sierraVersion = getenv("SIERRA_VERSION");
+        }
+        else {
+            std::ostringstream errmsg;
+            errmsg << "Environment variable SIERRA_VERSION not set.\n"
+                << " Unable to find ParaView catalyst dynamic library.\n";
+            IOSS_ERROR(errmsg);
+        }
+
+        char* cbuf = realpath(sierraInsDir.c_str(), nullptr);
+        std::string sierraInsPath = cbuf;
+        free(cbuf);
+
+        if (!fileExists(sierraInsPath)) {
+            std::ostringstream errmsg;
+            errmsg << "SIERRA_INSTALL_DIR directory does not exist.\n"
+                << "Directory path: " << sierraInsPath << "\n"
+                    << " Unable to find ParaView catalyst dynamic library.\n";
+            IOSS_ERROR(errmsg);
+        }
+
+        char *cbase = strdup(sierraInsPath.c_str());
+        char *cdir  = strdup(sierraInsPath.c_str());
+        char *bname = basename(cbase);
+        char *dname = dirname(cdir);
+
+        while (strcmp(dname, "/") != 0 &&\
+            strcmp(dname, ".") != 0 &&\
+                strcmp(bname, "sierra") != 0) {
+            bname = basename(dname);
+            dname = dirname(dname);
+        }
+
+        if (strcmp(bname, "sierra") == 0) {
+            sierraInsPath = dname;
+        }
+
+        free(cbase);
+        free(cdir);
+
+        return sierraInsPath + "/" + CATALYST_PLUGIN_PATH + "/" +\
+            sierraSystem + "/" + sierraVersion;
+    }
+
+    std::string Utils::getCatalystAdapterInstallDirectory() {
+        std::string catalystInsDir = "";
+        if (getenv("CATALYST_ADAPTER_INSTALL_DIR") != nullptr) {
+            std::string catalystInsDir = getenv("CATALYST_ADAPTER_INSTALL_DIR");
+
+            if (!fileExists(catalystInsDir)) {
+                std::ostringstream errmsg;
+                errmsg << "CATALYST_ADAPTER_INSTALL_DIR directory does\n"
+                    << "not exist. Directory path: " << catalystInsDir << "\n"
+                       << "Unable to find ParaView catalyst dynamic library.\n";
+                IOSS_ERROR(errmsg);
+            }
+            return catalystInsDir;
+        }
+    }
+
+    void Utils::checkDbUsage(Ioss::DatabaseUsage db_usage) {
         std::ostringstream errmsg;
-        errmsg << "CATALYST_ADAPTER_INSTALL_DIR directory does not exist.\n"
-               << "Directory path: " << catalyst_ins_dir << "\n"
-               << "Unable to find ParaView catalyst dynamic library.\n";
-        IOSS_ERROR(errmsg);
-        return;
-      }
+        if (db_usage == Ioss::WRITE_HEARTBEAT) {
+            errmsg << "ParaView catalyst database type cannot be"
+                << " used in a HEARTBEAT block.\n";
+            IOSS_ERROR(errmsg);
+        }
+        else if (db_usage == Ioss::WRITE_HISTORY) {
+            errmsg << "ParaView catalyst database type cannot be"
+                << " used in a HISTORY block.\n";
+            IOSS_ERROR(errmsg);
+        }
+        else if (db_usage == Ioss::READ_MODEL || \
+            db_usage == Ioss::READ_RESTART) {
 
-      plugin_library_path = catalyst_ins_dir + "/lib/" + plugin_library_name;
-
-      plugin_python_path = catalyst_ins_dir + "/python/" + CATALYST_PLUGIN_PYTHON_MODULE;
-      return;
+            errmsg << "ParaView catalyst database type cannot be"
+                << " used to read a model.\n";
+            IOSS_ERROR(errmsg);
+        }
     }
 
-    std::string sierra_ins_dir;
-    if (getenv("SIERRA_INSTALL_DIR") != nullptr) {
-      sierra_ins_dir = getenv("SIERRA_INSTALL_DIR");
-    }
-    else {
-      std::ostringstream errmsg;
-      errmsg << "Environment variable SIERRA_INSTALL_DIR not set.\n"
-             << " Unable to find ParaView catalyst dynamic library.\n";
-      IOSS_ERROR(errmsg);
-      return;
-    }
+    void Utils::createDatabaseOutputFile(const std::string &filename,
+        MPI_Comm communicator) {
 
-    std::string sierra_system;
-    if (getenv("SIERRA_SYSTEM") != nullptr) {
-      sierra_system = getenv("SIERRA_SYSTEM");
-    }
-    else {
-      std::ostringstream errmsg;
-      errmsg << "Environment variable SIERRA_SYSTEM not set.\n"
-             << " Unable to find ParaView catalyst dynamic library.\n";
-      IOSS_ERROR(errmsg);
-      return;
+        std::ostringstream errmsg;
+        int rank;
+        MPI_Comm_rank(communicator, &rank);
+        if (rank == 0) {
+            if (!Utils::fileExists(filename)) {
+                std::ofstream output_file;
+                output_file.open(filename.c_str(),
+                    std::ios::out | std::ios::trunc);
+
+                if (!output_file) {
+                    errmsg << "Unable to create output file: "
+                        << filename << ".\n";
+                    IOSS_ERROR(errmsg);
+                }
+                output_file.close();
+            }
+        }
     }
 
-    std::string sierra_version;
-    if (getenv("SIERRA_VERSION") != nullptr) {
-      sierra_version = getenv("SIERRA_VERSION");
-    }
-    else {
-      std::ostringstream errmsg;
-      errmsg << "Environment variable SIERRA_VERSION not set.\n"
-             << " Unable to find ParaView catalyst dynamic library.\n";
-      IOSS_ERROR(errmsg);
-      return;
+    void Utils::incrementNumCGNSCatalystOutputs() {
+        this->numCGNSCatalystOutputs++;
     }
 
-
-    char *      cbuf            = realpath(sierra_ins_dir.c_str(), nullptr);
-    std::string sierra_ins_path = cbuf;
-    free(cbuf);
-
-    if (!file_exists(sierra_ins_path)) {
-      std::ostringstream errmsg;
-      errmsg << "SIERRA_INSTALL_DIR directory does not exist.\n"
-             << "Directory path: " << sierra_ins_path << "\n"
-             << " Unable to find ParaView catalyst dynamic library.\n";
-      IOSS_ERROR(errmsg);
-      return;
+    void Utils::incrementNumExodusCatalystOutputs() {
+        this->numExodusCatalystOutputs++;
     }
-
-    char *cbase = strdup(sierra_ins_path.c_str());
-    char *cdir  = strdup(sierra_ins_path.c_str());
-    char *bname = basename(cbase);
-    char *dname = dirname(cdir);
-
-    while (strcmp(dname, "/") != 0 && strcmp(dname, ".") != 0 && strcmp(bname, "sierra") != 0) {
-      bname = basename(dname);
-      dname = dirname(dname);
-    }
-
-    if (strcmp(bname, "sierra") == 0) {
-      sierra_ins_path = dname;
-    }
-
-    free(cbase);
-    free(cdir);
-
-    plugin_library_path = sierra_ins_path + "/" + CATALYST_PLUGIN_PATH + "/" + sierra_system + "/" +
-                          sierra_version + "/" + plugin_library_name;
-
-    plugin_python_path = sierra_ins_path + "/" + CATALYST_PLUGIN_PATH + "/" + sierra_system + "/" +
-                         sierra_version + "/" + CATALYST_PLUGIN_PYTHON_MODULE;
-  }
 
 } // namespace Iovs

@@ -34,34 +34,88 @@
 #define IOSS_IOVS_UTILS_H
 
 #include <string>
+#include <Ioss_PropertyManager.h>
+#include <Ioss_DBUsage.h>
 
 class ParaViewCatalystIossAdapterBase;
 class ParaViewCatalystCGNSAdapterBase;
 
 namespace Iovs {
 
-  class Utils
-  {
+  class Utils {
+
   public:
-    Utils()  = default;
-    ~Utils() = default;
 
-    static bool file_exists(const std::string &filepath);
+    static Utils &getInstance() {
+        static Utils instance;
+        return instance;
+    }
 
-    static ParaViewCatalystIossAdapterBase *
-    load_exodus_adapter_library(std::string &paraview_script_filename);
+    static bool fileExists(const std::string &filepath);
 
-    static ParaViewCatalystCGNSAdapterBase *
-    load_cgns_adapter_library(std::string &paraview_script_filename);
+    std::string getCatalystPythonDriverPath();
+
+    int parseCatalystFile(const std::string &filepath,
+        std::string &json_result);
+
+    ParaViewCatalystIossAdapterBase *
+        createParaViewCatalystIossAdapterInstance();
+
+    ParaViewCatalystCGNSAdapterBase *
+        createParaViewCatalystCGNSAdapterInstance();
+
+    void checkDbUsage(Ioss::DatabaseUsage db_usage);
+
+    void createDatabaseOutputFile(const std::string &filename,
+        MPI_Comm communicator);
+
+    std::string getExodusDatabaseOutputFilePath(
+        const std::string & inputDeckName,
+            const Ioss::PropertyManager &properties);
+
+    std::string getCGNSDatabaseOutputFilePath(
+        const std::string & inputDeckName,
+            const Ioss::PropertyManager &properties);
+
+    void incrementNumCGNSCatalystOutputs();
+    void incrementNumExodusCatalystOutputs();
 
   private:
+    Utils();
+    ~Utils();
+    Utils(const Utils &) = delete;
+    Utils &operator=(const Utils &) = delete;
 
-    static void *
-    load_plugin_library(std::string &paraview_script_filename);
+    void loadPluginLibrary();
 
-    static void build_catalyst_plugin_paths(std::string &      plugin_library_path,
-                                            std::string &      plugin_python_path,
-                                            const std::string &plugin_library_name);
+    std::string getCatalystPluginPath();
+
+    std::string getSierraInstallDirectory();
+
+    std::string getCatalystAdapterInstallDirectory();
+
+    std::string getDatabaseOutputFilePath(
+        const std::string & inputDeckName,
+            int numberOfCatalystOutputs,
+                const Ioss::PropertyManager &properties);
+
+    void* getDlHandle();
+
+    void* dlHandle = nullptr;
+    int numCGNSCatalystOutputs = 0;
+    int numExodusCatalystOutputs = 0;
+
+#if defined(__APPLE__)
+    const char* CATALYST_PLUGIN_DYNAMIC_LIBRARY =\
+        "libParaViewCatalystIossAdapter.dylib";
+#else
+    const char* CATALYST_PLUGIN_DYNAMIC_LIBRARY =\
+        "libParaViewCatalystIossAdapter.so";
+#endif
+    const char* CATALYST_PLUGIN_PYTHON_MODULE = "PhactoriDriver.py";
+    const char* CATALYST_PLUGIN_PATH = "viz/catalyst/install";
+    const char* CATALYST_FILE_SUFFIX = ".dummy.pv.catalyst.e";
+    const char* CATALYST_OUTPUT_DIRECTORY = "CatalystOutput";
   };
 
 } // namespace Iovs

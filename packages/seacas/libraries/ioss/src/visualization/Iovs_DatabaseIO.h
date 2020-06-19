@@ -59,7 +59,7 @@ namespace Iovs {
       return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::NODESET | Ioss::SIDESET | Ioss::SIDEBLOCK;
     }
 
-    static int parseCatalystFile(const std::string &filepath, std::string &json_result);
+    //static int parseCatalystFile(const std::string &filepath, std::string &json_result);
 
     int int_byte_size_db() const override { return int_byte_size_api(); }
 
@@ -215,11 +215,13 @@ namespace Iovs {
 
     void write_meta_data();
 
+/*
     static ParaViewCatalystIossAdapterBase *
     load_plugin_library(const std::string &plugin_name, const std::string &plugin_library_name);
 
-    static std::string create_output_file_path(const std::string &          input_deck_name,
-                                               const Ioss::PropertyManager &properties);
+*/
+   // static std::string create_output_file_path(const std::string &          input_deck_name,
+   //                                            const Ioss::PropertyManager &properties);
     // static bool plugin_library_exists(const std::string &plugin_name);
 
     int64_t handle_node_ids(void *ids, int64_t num_to_get);
@@ -233,7 +235,7 @@ namespace Iovs {
     DatabaseIO &operator=(const DatabaseIO &); // Do not implement
 
     std::string        databaseTitle{};
-    static std::string paraview_script_filename;
+    std::string        paraview_script_filename;
     std::string        catalyst_block_file_name{};
     std::string        paraview_json_parse{};
     std::string        sierra_input_deck_name{};
@@ -246,7 +248,7 @@ namespace Iovs {
     int                createSideSets;
     int                createNodeSets;
     static int         useCount;
-    static int         uniqueID;
+    //static int         uniqueID;
 
     int nodeBlockCount;
     int elementBlockCount;
