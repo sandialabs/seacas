@@ -431,7 +431,7 @@ namespace Ioex {
         if (remain == 0 || total_read == entitylist_size) {
           // entitylist is full at this point...
           // * Broadcast data to other processors
-          // * Each procesor extracts the entities it manages.
+          // * Each processor extracts the entities it manages.
           m_decomposition.show_progress("\tBroadcast entitylist begin");
           MPI_Bcast(entitylist.data(), entitylist.size(), Ioss::mpi_type(INT(0)), root, comm_);
           m_decomposition.show_progress("\tBroadcast entitylist end");

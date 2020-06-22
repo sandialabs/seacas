@@ -244,7 +244,7 @@ namespace {
       if (!sb->m_boundaryConditions.empty()) {
         fmt::print("\tBoundary Conditions:\n");
         // NOTE: The sort here is just to make io_info more useful for regression testing.
-        //       With the sort, we get more reproducable output.  For now, only needed for BC...
+        //       With the sort, we get more reproducible output.  For now, only needed for BC...
         auto sb_bc = sb->m_boundaryConditions;
         std::sort(sb_bc.begin(), sb_bc.end(),
                   [](const Ioss::BoundaryCondition &a, const Ioss::BoundaryCondition &b) {

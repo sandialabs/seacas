@@ -1221,7 +1221,7 @@ namespace Ioss {
     //
     // * iterate all local nodes (those that are in both file and ioss
     // decomposition)
-    //   on this procesor and all exported nodes,
+    //   on this processor and all exported nodes,
     // * put in a vector and sort on (id,proc).
     // * iterate and create a vector of all shared nodes and the
     //   processor they are on..

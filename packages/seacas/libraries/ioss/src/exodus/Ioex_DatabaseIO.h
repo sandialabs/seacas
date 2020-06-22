@@ -62,7 +62,7 @@ namespace Ioex {
     DatabaseIO &operator=(const DatabaseIO &from) = delete;
     ~DatabaseIO() override                        = default;
 
-    // Kluge -- a few applications need access so can diretly access exodus API
+    // Kluge -- a few applications need access so can directly access exodus API
     int get_file_pointer() const override; // Open file and set exodusFilePtr.
 
   private:

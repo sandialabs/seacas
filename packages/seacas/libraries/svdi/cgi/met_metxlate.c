@@ -1525,7 +1525,7 @@ static void xcpl(anything **params, int num_surfaces, anything **surf_list)
 
       /* This clipping algorithm is loosely based on the Cohen-
        * Sutherland algorithm.  This algorithm takes into account
-       * the fact that points are consective, ie., it tries to
+       * the fact that points are consecutive, ie., it tries to
        * encode each point only once. Everything is done
        * inline for efficiency
        */
@@ -3991,7 +3991,7 @@ static void xcqfl(anything **params, anything **surf_list)
   *(int *)params[12] = 0;
   *(int *)params[13] = 0;
 
-  /* pattern transfomation support - patterns not supported */
+  /* pattern transformation support - patterns not supported */
   *(int *)params[14] = CPTNO;
 
 } /* end xcqfl */
