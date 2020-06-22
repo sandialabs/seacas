@@ -106,7 +106,7 @@ void write_blob()
   Ioss::Blob *blob1        = new Ioss::Blob(dbo, "Tempus", count_offset.first);
   region.add(blob1);
 
-  // NOTE: These properties are not neede for serial case, but don't cause problems
+  // NOTE: These properties are not needed for serial case, but don't cause problems
   blob1->property_add(Ioss::Property("processor_offset", (int64_t)count_offset.second));
   blob1->property_add(Ioss::Property("global_size", (int64_t)b1_size));
 

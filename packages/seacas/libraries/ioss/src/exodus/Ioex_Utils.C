@@ -200,7 +200,7 @@ namespace Ioex {
     int     status   = nc_inq_att(exodusFilePtr, NC_GLOBAL, "processor_info", &att_type, &att_len);
     if (status == NC_NOERR && att_type == NC_INT) {
       // Attribute exists on this database, read it and check that the information
-      // matches the current processor count and procesor id.
+      // matches the current processor count and processor id.
       int proc_info[2];
       status = nc_get_att_int(exodusFilePtr, NC_GLOBAL, "processor_info", proc_info);
       if (status == NC_NOERR) {
