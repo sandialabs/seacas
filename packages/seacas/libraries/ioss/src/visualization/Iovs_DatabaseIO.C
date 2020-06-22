@@ -84,7 +84,7 @@ namespace Iovs {
                          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region, DatabaseIO::create_output_file_path(filename, props), db_usage,
                          communicator, props),
-        isInput(false), singleProcOnly(false), doLogging(false), enableLogging(0), debugLevel(0),
+        enableLogging(0), debugLevel(0),
         underscoreVectors(0), applyDisplacements(0), createSideSets(0), createNodeSets(0),
         nodeBlockCount(0), elementBlockCount(0)
   {
