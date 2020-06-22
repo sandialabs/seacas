@@ -1,7 +1,7 @@
 // Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
-// 
+//
 // See packages/seacas/LICENSE for details
 
 #include <Ioss_CodeTypes.h>
@@ -2279,9 +2279,9 @@ namespace Ioex {
     if (region->mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
-		 "ERROR: The mesh type is '{}' which Exodus does not support.\n"
-		 "       Only 'Unstructured' is supported at this time.\n",
-		 region->mesh_type_string());
+                 "ERROR: The mesh type is '{}' which Exodus does not support.\n"
+                 "       Only 'Unstructured' is supported at this time.\n",
+                 region->mesh_type_string());
       IOSS_ERROR(errmsg);
     }
 
