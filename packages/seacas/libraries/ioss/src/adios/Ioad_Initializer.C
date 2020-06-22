@@ -4,7 +4,6 @@
 //
 // See packages/seacas/LICENSE for details
 
-#if !defined(__PUMAGON__) || (defined(__PUMAGON__) && defined(JANUS2))
 #include <adios/Ioad_IOFactory.h>
 #include <adios/Ioad_Initializer.h>
 
@@ -35,4 +34,3 @@ namespace Ioad {
   }
 } // namespace Ioad
 
-#endif

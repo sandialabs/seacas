@@ -334,9 +334,6 @@ namespace {
 unsigned int debug_level = 0;
 int          main(int argc, char *argv[])
 {
-#if defined(__LIBCATAMOUNT__)
-  setlinebuf(stderr);
-#endif
   try {
     time_t begin_time = time(nullptr);
     Excn::SystemInterface::show_version();

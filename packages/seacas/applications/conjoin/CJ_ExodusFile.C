@@ -205,11 +205,7 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si)
   return true;
 }
 
-#if defined(__PUMAGON__)
-#include <stdio.h>
-#else
 #include <unistd.h>
-#endif
 
 namespace {
   int get_free_descriptor_count()
