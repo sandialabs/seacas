@@ -1,37 +1,10 @@
 /*
 
- * Copyright (c) 2005-2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *
- *     * Redistributions in binary form must reproduce the above
- *       copyright notice, this list of conditions and the following
- *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.
- *
- *     * Neither the name of NTESS nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * See packages/seacas/LICENSE for details
  */
 /*****************************************************************************
  *
@@ -138,7 +111,7 @@ typedef struct EX_mutex_struct
 
 extern EX_mutex_t   EX_g;
 extern int          ex__mutex_lock(EX_mutex_t *mutex);
-extern int          ex__mutex_unlock(EX_mutex_t *mutex);
+extern int          ex__mutex_unlock(EX_mutex_t *mutex, const char *func, int line);
 extern void         ex__pthread_first_thread_init(void);
 extern EX_errval_t *exerrval_get();
 
@@ -166,19 +139,19 @@ extern EX_errval_t *exerrval_get();
 
 #define EX_FUNC_LEAVE(error)                                                                       \
   do {                                                                                             \
-    ex__mutex_unlock(&EX_g);                                                                       \
+    ex__mutex_unlock(&EX_g, __func__, __LINE__);                                                   \
     return error;                                                                                  \
   } while (0)
 
 #define EX_FUNC_VOID()                                                                             \
   do {                                                                                             \
-    ex__mutex_unlock(&EX_g);                                                                       \
+    ex__mutex_unlock(&EX_g, __func__, __LINE__);                                                   \
     return;                                                                                        \
   } while (0)
 
 #define EX_FUNC_UNLOCK()                                                                           \
   do {                                                                                             \
-    ex__mutex_unlock(&EX_g);                                                                       \
+    ex__mutex_unlock(&EX_g, __func__, __LINE__);                                                   \
   } while (0)
 
 #else
@@ -259,6 +232,10 @@ EXODUS_EXPORT int indent;
 #define ATT_FLT_WORDSIZE_BLANK "floating point word size"
 #define ATT_MAX_NAME_LENGTH "maximum_name_length"
 #define ATT_INT64_STATUS "int64_status"
+#define ATT_NEM_API_VERSION "nemesis_api_version"
+#define ATT_NEM_FILE_VERSION "nemesis_file_version"
+#define ATT_PROCESSOR_INFO "processor_info"
+#define ATT_LAST_WRITTEN_TIME "last_written_time"
 
 #define DIM_NUM_ASSEMBLY "num_assembly" /**< number of assemblies       */
 #define DIM_NUM_BLOB "num_blob"         /**< number of blobs       */
@@ -716,6 +693,7 @@ struct ex__file_item
   unsigned int shuffle : 1;               /**< 1 true, 0 false */
   unsigned int
                         file_type : 2; /**< 0 - classic, 1 -- 64 bit classic, 2 --NetCDF4,  3 --NetCDF4 classic */
+  unsigned int          is_write : 1;    /**< for output or append */
   unsigned int          is_parallel : 1; /**< 1 true, 0 false */
   unsigned int          is_hdf5 : 1;     /**< 1 true, 0 false */
   unsigned int          is_pnetcdf : 1;  /**< 1 true, 0 false */
@@ -777,8 +755,9 @@ char *ex__name_var_of_object(ex_entity_type /*obj_type*/, int /*i*/, int /*j*/);
 char *ex__name_red_var_of_object(ex_entity_type /*obj_type*/, int /*indx*/);
 char *ex__name_of_map(ex_entity_type /*map_type*/, int /*map_index*/);
 
-int  ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
-                   int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf);
+int ex__conv_init(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
+                  int int64_status, int is_parallel, int is_hdf5, int is_pnetcdf, int is_write);
+
 void ex__conv_exit(int exoid);
 
 nc_type nc_flt_code(int exoid);
@@ -815,6 +794,7 @@ void ex__compress_variable(int exoid, int varid, int type);
 int  ex__id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num);
 void ex__check_valid_file_id(int         exoid,
                              const char *func); /** Abort if exoid does not refer to valid file */
+int  ex__check_multiple_open(const char *path, int mode, const char *func);
 int  ex__check_file_type(const char *path, int *type);
 int  ex__get_dimension(int exoid, const char *DIMENSION, const char *label, size_t *count,
                        int *dimid, const char *routine);

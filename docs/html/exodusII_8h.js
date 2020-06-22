@@ -15,6 +15,7 @@ var exodusII_8h =
     [ "ex_create", "group__Utilities.html#ga37c928f7e30c333ee7c704d04f7e3a87", null ],
     [ "EX_DISKLESS", "group__FileVars.html#ga15e6a8dfb22d20d380bbefad215c57bc", null ],
     [ "EX_DUPLICATEID", "group__ErrorReturnCodes.html#ga57a66c1583e9cc3c166cbf0e615a6feb", null ],
+    [ "EX_DUPLICATEOPEN", "group__ErrorReturnCodes.html#ga22ccc4d61b8498c0c3c1e5f374dbe4a6", null ],
     [ "EX_FALSE", "exodusII_8h.html#a1c43ac839d9171680f8fbeccec482e08", null ],
     [ "EX_FATAL", "group__ErrorReturnCodes.html#ga9188682d7a4c71e360f4f11f81fca38b", null ],
     [ "EX_IDS_INT64_API", "group__FileVars.html#ga8163fd2a9d4320d3a452bbd54ee6a512", null ],

@@ -120,17 +120,14 @@ endif
 
 endif
 
-
 OPTIMIZE_FLAG = -O2
 STD_DEFINES = -DVERBOSE
-
 
 CFLAGS = $(OPTIMIZE_FLAG) $(CCOPTIONS) $(STD_DEFINES) $(LOC_EXOII_INC) $(NETCDF_INC) $(NETCDF_YES_NO)
 FFLAGS = $(OPTIMIZE_FLAG) $(F77OPTIONS) $(LOC_EXOII_INC)
 
 # Use include files locates in exodus/include
 LOC_EXOII_INC = -I../include  -I../sierra
-
 
 SUBDIRS = src test
 

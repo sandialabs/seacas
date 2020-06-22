@@ -135,8 +135,6 @@ $(document).ready(function(){initNavTree('io__modify_8C.html',''); initResizable
 <code>#include &lt;<a class="el" href="Ioss__StructuredBlock_8h_source.html">Ioss_StructuredBlock.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__Utils_8h_source.html">Ioss_Utils.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__VariableType_8h_source.html">Ioss_VariableType.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioex__Utils_8h_source.html">exodus/Ioex_Utils.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioex__Internals_8h_source.html">exodus/Ioex_Internals.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="tokenize_8h_source.html">tokenize.h</a>&gt;</code><br />
 <code>#include &lt;fmt/color.h&gt;</code><br />
 <code>#include &lt;fmt/format.h&gt;</code><br />
@@ -144,8 +142,7 @@ $(document).ready(function(){initNavTree('io__modify_8C.html',''); initResizable
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for io_modify.C:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="io__modify_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="io__modify_8C__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -199,8 +196,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a5985569f0f8310bae96ebc52e96c1371"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5985569f0f8310bae96ebc52e96c1371"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__modify_8C_03.html#a5985569f0f8310bae96ebc52e96c1371">anonymous_namespace{io_modify.C}::info_entities</a> (const std::vector&lt; T * &gt; &amp;entities, const std::vector&lt; std::string &gt; &amp;tokens, const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, const std::string &amp;type, bool show_property=false)</td></tr>
 <tr class="separator:a5985569f0f8310bae96ebc52e96c1371"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09db04cf2162141ffdfaed41ad840d24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__modify_8C_03.html#a09db04cf2162141ffdfaed41ad840d24">anonymous_namespace{io_modify.C}::info_property</a> (const <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *ige, <a class="el" href="classIoss_1_1Property.html#a16338f2d9b5be973401bd8183c8fa0d3">Ioss::Property::Origin</a> origin, const std::string &amp;header, const std::string &amp;suffix=&quot;\n\t&quot;)</td></tr>
-<tr class="separator:a09db04cf2162141ffdfaed41ad840d24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af258e6326503d99ab2814754873abfc5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__modify_8C_03.html#af258e6326503d99ab2814754873abfc5">anonymous_namespace{io_modify.C}::name</a> (const <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *entity)</td></tr>
 <tr class="separator:af258e6326503d99ab2814754873abfc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab22ffb923eada17fe68730a61741da80"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__modify_8C_03.html#ab22ffb923eada17fe68730a61741da80">anonymous_namespace{io_modify.C}::id</a> (const <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *entity)</td></tr>
@@ -214,12 +209,14 @@ Functions</h2></td></tr>
 <tr class="memitem:a2353631e6cb4a061774f78d6681719dd"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a2353631e6cb4a061774f78d6681719dd"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceIoss.html#a23cc4564a1b431d96e72616d42b6ddee">Ioss::NameList</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__modify_8C_03.html#a2353631e6cb4a061774f78d6681719dd">anonymous_namespace{io_modify.C}::get_entity_names</a> (const std::vector&lt; T * &gt; &amp;entity_list)</td></tr>
 <tr class="separator:a2353631e6cb4a061774f78d6681719dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4866e5eb91b5040adbef724217be141c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__modify_8C_03.html#a4866e5eb91b5040adbef724217be141c">anonymous_namespace{io_modify.C}::update_exodus_assembly_info</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, const <a class="el" href="classModify_1_1Interface.html">Modify::Interface</a> &amp;interFace)</td></tr>
+<tr class="separator:a4866e5eb91b5040adbef724217be141c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a097b51a278793fa66f99a6a4420ac9b7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__modify_8C_03.html#a097b51a278793fa66f99a6a4420ac9b7">anonymous_namespace{io_modify.C}::codename</a></td></tr>
 <tr class="separator:a097b51a278793fa66f99a6a4420ac9b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0bdb85d23dc21a6c5389324035557ec"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__modify_8C_03.html#ac0bdb85d23dc21a6c5389324035557ec">anonymous_namespace{io_modify.C}::version</a> = &quot;0.9 (2020-04-20)&quot;</td></tr>
+<tr class="memitem:ac0bdb85d23dc21a6c5389324035557ec"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__modify_8C_03.html#ac0bdb85d23dc21a6c5389324035557ec">anonymous_namespace{io_modify.C}::version</a> = &quot;0.92 (2020-05-20)&quot;</td></tr>
 <tr class="separator:ac0bdb85d23dc21a6c5389324035557ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1d463b5adbd98fd632061ae9435fc8a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02io__modify_8C_03.html#aa1d463b5adbd98fd632061ae9435fc8a">anonymous_namespace{io_modify.C}::attributes_modified</a></td></tr>
 <tr class="separator:aa1d463b5adbd98fd632061ae9435fc8a"><td class="memSeparator" colspan="2">&#160;</td></tr>

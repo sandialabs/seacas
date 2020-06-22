@@ -28,14 +28,16 @@ ZOLTAN=${ZOLTAN:-ON}
 PYTHON_VER=${PYTHON_VER:-"3.0"}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
-if [ "${netcdf_parallel}" == "yes" ]
+if [ "${MPI}" = "" ]
 then
-    MPI=ON
-else
-    MPI=OFF
+  netcdf_parallel=$($INSTALL_PATH/bin/nc-config --has-parallel)
+  if [ "${netcdf_parallel}" == "yes" ]
+  then
+      MPI=ON
+  else
+      MPI=OFF
+  fi
 fi
-
 echo "MPI set to ${MPI}"
 
 if [ "${MPI}" == "OFF" ]
@@ -50,6 +52,16 @@ then
       CXX=g++
       CC=gcc
       FC=gfortran
+      CFLAGS="-Wall -Wunused -pedantic -std=c11"
+      CXXFLAGS="-Wall -Wunused -pedantic"
+  fi
+
+  if [ "$COMPILER" == "gnumacport" ]
+  then
+      VER=${VER:-5}
+      CXX=g++-mp-${VER}
+      CC=gcc-mp-${VER}
+      FC=gfortran-mp-${VER}
       CFLAGS="-Wall -Wunused -pedantic -std=c11"
       CXXFLAGS="-Wall -Wunused -pedantic"
   fi
@@ -371,7 +383,7 @@ cmake -G "${GENERATOR}" \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D CMAKE_CXX_FLAGS="${CXXFLAGS} ${CXX_WARNING_FLAGS} ${SANITIZE}" \
 -D CMAKE_C_FLAGS="${CFLAGS} ${C_WARNING_FLAGS} ${SANITIZE}" \
--D CMAKE_FORTRAN_FLAGS="${FFLAGS} ${F77_WARNING_FLAGS} ${SANITIZE}" \
+-D CMAKE_Fortran_FLAGS="${FFLAGS} ${F77_WARNING_FLAGS} ${SANITIZE}" \
 -D SEACASProj_ENABLE_STRONG_C_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
 -D SEACASProj_ENABLE_STRONG_CXX_COMPILE_WARNINGS=${EXTRA_WARNINGS} \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \

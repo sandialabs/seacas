@@ -5,6 +5,7 @@ if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
+INSTALL_PATH=${INSTALL_PATH:-${ACCESS}}
 
 SHARED="${SHARED:-ON}"
 if [[ "$SHARED" == "ON" || "$SHARED" == "YES" ]]
@@ -43,10 +44,11 @@ else
   fi
 fi
 
-make config cc=${CC} prefix=${ACCESS} shared=${USE_SHARED}
+make config cc=${CC} prefix=${INSTALL_PATH} shared=${USE_SHARED}
 
 echo ""
-echo "     MPI: ${MPI}"
-echo "COMPILER: ${CC}"
-echo "  ACCESS: ${ACCESS}"
+echo "         MPI: ${MPI}"
+echo "    COMPILER: ${CC}"
+echo "      ACCESS: ${ACCESS}"
+echo "INSTALL_PATH: ${INSTALL_PATH}"
 echo ""

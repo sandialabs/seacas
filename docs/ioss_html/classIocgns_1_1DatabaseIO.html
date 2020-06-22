@@ -97,14 +97,12 @@ $(document).ready(function(){initNavTree('classIocgns_1_1DatabaseIO.html',''); i
 <div class="dynheader">
 Inheritance diagram for Iocgns::DatabaseIO:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classIocgns_1_1DatabaseIO__inherit__graph.svg" width="150" height="110"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classIocgns_1_1DatabaseIO__inherit__graph.svg" width="150" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for Iocgns::DatabaseIO:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIocgns_1_1DatabaseIO__coll__graph.svg" width="100%" height="525"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classIocgns_1_1DatabaseIO__coll__graph.svg" width="100%" height="534"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -332,6 +330,10 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
+<tr class="memitem:a061eea99b1506cdc852fd0e0674ef793"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a061eea99b1506cdc852fd0e0674ef793">open_state_file</a> (int state)</td></tr>
+<tr class="separator:a061eea99b1506cdc852fd0e0674ef793"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfcf776ba5c2abb6b0e03a1330bbef88"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#acfcf776ba5c2abb6b0e03a1330bbef88">free_state_pointer</a> ()</td></tr>
+<tr class="separator:acfcf776ba5c2abb6b0e03a1330bbef88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ec7460e9012476c2ce023b4be3bb34c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a7ec7460e9012476c2ce023b4be3bb34c">openDatabase__</a> () const override</td></tr>
 <tr class="separator:a7ec7460e9012476c2ce023b4be3bb34c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a471eeae9ef27a32dafadbe1a73203f05"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a471eeae9ef27a32dafadbe1a73203f05">closeDatabase__</a> () const override</td></tr>
@@ -435,6 +437,8 @@ Private Member Functions</h2></td></tr>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a369800173d5ee71f6c609a69c93b1dc6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a369800173d5ee71f6c609a69c93b1dc6">m_cgnsFilePtr</a> {-1}</td></tr>
 <tr class="separator:a369800173d5ee71f6c609a69c93b1dc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af12f78d2cab5d986f125d92c9d8686fc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#af12f78d2cab5d986f125d92c9d8686fc">m_cgnsBasePtr</a></td></tr>
+<tr class="separator:af12f78d2cab5d986f125d92c9d8686fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59a4fefbdbfbbb8d275f3fe02b7feae7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a59a4fefbdbfbbb8d275f3fe02b7feae7">m_flushInterval</a> {0}</td></tr>
 <tr class="separator:a59a4fefbdbfbbb8d275f3fe02b7feae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79c07a8eda4925bdaaa167da0aef35ce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1DatabaseIO.html#a79c07a8eda4925bdaaa167da0aef35ce">m_currentVertexSolutionIndex</a> = 0</td></tr>
@@ -1090,6 +1094,31 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classIoss_1_1DatabaseIO.html#afe9f123be89f09b3fb6ee22abefa47a3">Ioss::DatabaseIO</a>.</p>
+
+</div>
+</div>
+<a id="acfcf776ba5c2abb6b0e03a1330bbef88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfcf776ba5c2abb6b0e03a1330bbef88">&#9670;&nbsp;</a></span>free_state_pointer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::DatabaseIO::free_state_pointer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -2147,6 +2176,32 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a061eea99b1506cdc852fd0e0674ef793"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a061eea99b1506cdc852fd0e0674ef793">&#9670;&nbsp;</a></span>open_state_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::DatabaseIO::open_state_file </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a7ec7460e9012476c2ce023b4be3bb34c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7ec7460e9012476c2ce023b4be3bb34c">&#9670;&nbsp;</a></span>openDatabase__()</h2>
 
@@ -3123,6 +3178,30 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+</div>
+</div>
+<a id="af12f78d2cab5d986f125d92c9d8686fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af12f78d2cab5d986f125d92c9d8686fc">&#9670;&nbsp;</a></span>m_cgnsBasePtr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Iocgns::DatabaseIO::m_cgnsBasePtr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        -1}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a369800173d5ee71f6c609a69c93b1dc6"></a>

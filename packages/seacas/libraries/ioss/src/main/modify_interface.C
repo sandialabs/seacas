@@ -1,9 +1,9 @@
 /*
- * Copyright(C) 2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
- *
- * See packages/seacas/LICENSE file for details.
+ * 
+ * See packages/seacas/LICENSE for details
  */
 
 #include "Ioss_CodeTypes.h"
@@ -110,7 +110,7 @@ bool Modify::Interface::parse_options(int argc, char **argv)
   }
 
   {
-    const char *temp = options_.retrieve("in_type");
+    const char *temp = options_.retrieve("db_type");
     if (temp != nullptr) {
       filetype_ = temp;
     }

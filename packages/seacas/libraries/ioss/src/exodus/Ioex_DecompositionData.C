@@ -1,9 +1,11 @@
-// Copyright(C) 1999-2017, 2020 National Technology & Engineering Solutions
+// Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
-//
-// See packages/seacas/LICENSE for details.
+// 
+// See packages/seacas/LICENSE for details
 
+#include <exodus/Ioex_DecompositionData.h>
+#if defined PARALLEL_AWARE_EXODUS
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h> // for ElementTopology
 #include <Ioss_Field.h>           // for Field, etc
@@ -12,7 +14,6 @@
 #include <Ioss_PropertyManager.h> // for PropertyManager
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
-#include <exodus/Ioex_DecompositionData.h>
 #include <exodus/Ioex_Utils.h>
 
 #include <algorithm> // for lower_bound, copy, etc
@@ -1766,3 +1767,4 @@ namespace Ioex {
     }
   }
 } // namespace Ioex
+#endif

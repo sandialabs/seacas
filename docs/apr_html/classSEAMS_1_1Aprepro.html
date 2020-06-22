@@ -100,12 +100,12 @@ Collaboration diagram for SEAMS::Aprepro:</div>
 <div class="dyncontent">
 <div class="center"><img src="classSEAMS_1_1Aprepro__coll__graph.gif" border="0" usemap="#SEAMS_1_1Aprepro_coll__map" alt="Collaboration graph"/></div>
 <map name="SEAMS_1_1Aprepro_coll__map" id="SEAMS_1_1Aprepro_coll__map">
-<area shape="rect" title=" " alt="" coords="261,92,384,117"/>
-<area shape="rect" href="classSEAMS_1_1Scanner.html" title=" " alt="" coords="180,192,305,217"/>
-<area shape="rect" href="structSEAMS_1_1aprepro__options.html" title=" " alt="" coords="246,5,418,31"/>
-<area shape="rect" href="classSEAMSFlexLexer.html" title=" " alt="" coords="102,92,229,117"/>
-<area shape="rect" href="classFlexLexer.html" title=" " alt="" coords="5,5,85,31"/>
-<area shape="rect" href="structyy__buffer__state.html" title=" " alt="" coords="109,5,221,31"/>
+<area shape="rect" title=" " alt="" coords="261,95,383,121"/>
+<area shape="rect" href="classSEAMS_1_1Scanner.html" title=" " alt="" coords="181,199,306,225"/>
+<area shape="rect" href="structSEAMS_1_1aprepro__options.html" title=" " alt="" coords="245,5,415,32"/>
+<area shape="rect" href="classSEAMSFlexLexer.html" title=" " alt="" coords="101,95,228,121"/>
+<area shape="rect" href="classFlexLexer.html" title=" " alt="" coords="5,5,84,32"/>
+<area shape="rect" href="structyy__buffer__state.html" title=" " alt="" coords="109,5,221,32"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -180,6 +180,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac3ab64215b8157b8f575ab4eb415ea3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8872d4cfad3b4b402b54f331939b2393"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSEAMS_1_1Aprepro.html#a8872d4cfad3b4b402b54f331939b2393">get_error_count</a> () const</td></tr>
 <tr class="separator:a8872d4cfad3b4b402b54f331939b2393"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9f57482e3e553824e3c7f07f37e1035"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSEAMS_1_1Aprepro.html#af9f57482e3e553824e3c7f07f37e1035">get_warning_count</a> () const</td></tr>
+<tr class="separator:af9f57482e3e553824e3c7f07f37e1035"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08aa25c29a04360531e27b84cd488b3a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSEAMS_1_1Aprepro.html#a08aa25c29a04360531e27b84cd488b3a">error</a> (const std::string &amp;msg, bool line_info=true, bool prefix=true) const</td></tr>
 <tr class="separator:a08aa25c29a04360531e27b84cd488b3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b83e64769dd8f9f5785c79097071e83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSEAMS_1_1Aprepro.html#a3b83e64769dd8f9f5785c79097071e83">warning</a> (const std::string &amp;msg, bool line_info=true, bool prefix=true) const</td></tr>
@@ -249,6 +251,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a337c8c2410d7ad5ddef1eb6593a19132"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e9a9f2debef2a47851980ba4b4d529b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSEAMS_1_1Aprepro.html#a3e9a9f2debef2a47851980ba4b4d529b">parseErrorCount</a> {0}</td></tr>
 <tr class="separator:a3e9a9f2debef2a47851980ba4b4d529b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bf25ea95f57d9cb3a257fd3724a79f4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSEAMS_1_1Aprepro.html#a9bf25ea95f57d9cb3a257fd3724a79f4">parseWarningCount</a> {0}</td></tr>
+<tr class="separator:a9bf25ea95f57d9cb3a257fd3724a79f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classSEAMS_1_1Aprepro.html">Aprepro</a> class brings together all components. It creates an instance of the <a class="el" href="classSEAMS_1_1Parser.html" title="A Bison parser.">Parser</a> and <a class="el" href="classSEAMS_1_1Scanner.html">Scanner</a> classes and connects them. Then the input stream is fed into the scanner object and the parser gets it's token sequence. Furthermore the aprepro object is available in the grammar rules as a parameter. Therefore the aprepro class contains a reference to the structure into which the parsed data is saved. </p>
@@ -643,7 +647,7 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return number of errors reported during parse </p>
+<p>Return number of warnings reported during parse </p>
 
 </div>
 </div>
@@ -705,6 +709,32 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="af9f57482e3e553824e3c7f07f37e1035"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9f57482e3e553824e3c7f07f37e1035">&#9670;&nbsp;</a></span>get_warning_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SEAMS::Aprepro::get_warning_count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return number of errors reported during parse </p>
 
 </div>
 </div>
@@ -1443,6 +1473,28 @@ Private Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">int SEAMS::Aprepro::parseErrorCount {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9bf25ea95f57d9cb3a257fd3724a79f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bf25ea95f57d9cb3a257fd3724a79f4">&#9670;&nbsp;</a></span>parseWarningCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SEAMS::Aprepro::parseWarningCount {0}</td>
         </tr>
       </table>
   </td>

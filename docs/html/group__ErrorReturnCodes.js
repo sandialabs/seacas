@@ -4,6 +4,7 @@ var group__ErrorReturnCodes =
     [ "EX_BADFILEMODE", "group__ErrorReturnCodes.html#ga0b6d7cb981a483315e52da3f27120104", null ],
     [ "EX_BADPARAM", "group__ErrorReturnCodes.html#gae05a7d5244d793919820910c63200669", null ],
     [ "EX_DUPLICATEID", "group__ErrorReturnCodes.html#ga57a66c1583e9cc3c166cbf0e615a6feb", null ],
+    [ "EX_DUPLICATEOPEN", "group__ErrorReturnCodes.html#ga22ccc4d61b8498c0c3c1e5f374dbe4a6", null ],
     [ "EX_FATAL", "group__ErrorReturnCodes.html#ga9188682d7a4c71e360f4f11f81fca38b", null ],
     [ "EX_INTERNAL", "group__ErrorReturnCodes.html#gafe8240aedf90aa7fd776027351a60afd", null ],
     [ "EX_LASTERR", "group__ErrorReturnCodes.html#ga6bb9cc168a8e1f71e87f991284ab26a4", null ],

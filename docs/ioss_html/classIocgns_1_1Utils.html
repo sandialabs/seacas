@@ -134,12 +134,18 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a8cac60130d95a1c1e6df52aebffb8ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e003b21d58839551d71d8af57f22de3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a0e003b21d58839551d71d8af57f22de3">generate_boundary_faces</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, std::map&lt; std::string, <a class="el" href="namespaceIoss.html#a098070d2a8062645c46f150cfb467b74">Ioss::FaceUnorderedSet</a> &gt; &amp;boundary_faces, <a class="el" href="classIoss_1_1Field.html#a43f29f9ba05cb45ed893455c76526c3e">Ioss::Field::BasicType</a> field_type)</td></tr>
 <tr class="separator:a0e003b21d58839551d71d8af57f22de3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88dbbf0ca2139ce9fc69747f61d76d8e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a88dbbf0ca2139ce9fc69747f61d76d8e">write_flow_solution_metadata</a> (int file_ptr, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, int state, const int *vertex_solution_index, const int *cell_center_solution_index, bool is_parallel_io)</td></tr>
-<tr class="separator:a88dbbf0ca2139ce9fc69747f61d76d8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6af3908a6a3311cf5e81424222c2ed7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ab6af3908a6a3311cf5e81424222c2ed7">write_flow_solution_metadata</a> (int file_ptr, int base_ptr, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, int state, const int *vertex_solution_index, const int *cell_center_solution_index, bool is_parallel_io)</td></tr>
+<tr class="separator:ab6af3908a6a3311cf5e81424222c2ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a023f147650f0a22fda854f67fcc2e05c"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a023f147650f0a22fda854f67fcc2e05c">find_solution_index</a> (int cgns_file_ptr, int base, int zone, int step, CG_GridLocation_t location)</td></tr>
 <tr class="separator:a023f147650f0a22fda854f67fcc2e05c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a303eced538cfd6bc29e7195e492b74c2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceIoss.html#aa4d4cdd26c26124cb15aad084f4de822">Ioss::MeshType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a303eced538cfd6bc29e7195e492b74c2">check_mesh_type</a> (int cgns_file_ptr)</td></tr>
 <tr class="separator:a303eced538cfd6bc29e7195e492b74c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af65cb2cd0dfeed43c8e7a49c41a4f9e0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#af65cb2cd0dfeed43c8e7a49c41a4f9e0">output_assembly</a> (int file_ptr, const <a class="el" href="classIoss_1_1Assembly.html">Ioss::Assembly</a> *assembly, bool is_parallel_io, bool appending=false)</td></tr>
+<tr class="separator:af65cb2cd0dfeed43c8e7a49c41a4f9e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ee6e637eb9a53d261fc7336c9669f1e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a2ee6e637eb9a53d261fc7336c9669f1e">output_assemblies</a> (int file_ptr, const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, bool is_parallel_io)</td></tr>
+<tr class="separator:a2ee6e637eb9a53d261fc7336c9669f1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7df4d0ef8d7dba2456405b888ae79a3c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a7df4d0ef8d7dba2456405b888ae79a3c">write_state_meta_data</a> (int file_ptr, const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, bool is_parallel_io)</td></tr>
+<tr class="separator:a7df4d0ef8d7dba2456405b888ae79a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4436c119a691be04b8407f0f69185161"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a4436c119a691be04b8407f0f69185161">common_write_meta_data</a> (int file_ptr, const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, std::vector&lt; size_t &gt; &amp;zone_offset, bool is_parallel)</td></tr>
 <tr class="separator:a4436c119a691be04b8407f0f69185161"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1e99c795265c92bbbb4a240591623d1"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ac1e99c795265c92bbbb4a240591623d1">resolve_nodes</a> (<a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region, int my_processor, bool is_parallel)</td></tr>
@@ -152,6 +158,10 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a38aad5f42ea2883fd7e420bf426776cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab140e29cf0cbe506a4d67cc4d62671d1"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#ab140e29cf0cbe506a4d67cc4d62671d1">add_sidesets</a> (int cgns_file_ptr, <a class="el" href="classIoss_1_1DatabaseIO.html">Ioss::DatabaseIO</a> *db)</td></tr>
 <tr class="separator:ab140e29cf0cbe506a4d67cc4d62671d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f9a576f7722ff0c8475fdc8871a37d0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a7f9a576f7722ff0c8475fdc8871a37d0">add_assemblies</a> (int cgns_file_ptr, <a class="el" href="classIoss_1_1DatabaseIO.html">Ioss::DatabaseIO</a> *db)</td></tr>
+<tr class="separator:a7f9a576f7722ff0c8475fdc8871a37d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa32bfb8fe7cafebefed7f71618f676ed"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#aa32bfb8fe7cafebefed7f71618f676ed">add_to_assembly</a> (int cgns_file_ptr, <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, <a class="el" href="classIoss_1_1EntityBlock.html">Ioss::EntityBlock</a> *block, int base, int zone)</td></tr>
+<tr class="separator:aa32bfb8fe7cafebefed7f71618f676ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cdf08e72ca0dfe7caf224ebb4de0aab"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a7cdf08e72ca0dfe7caf224ebb4de0aab">add_structured_boundary_conditions</a> (int cgns_file_ptr, <a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *block, bool is_parallel_io)</td></tr>
 <tr class="separator:a7cdf08e72ca0dfe7caf224ebb4de0aab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0625e8666a30f23549993cba7b2ba9a9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIocgns_1_1Utils.html#a0625e8666a30f23549993cba7b2ba9a9">add_structured_boundary_conditions_fpp</a> (int cgns_file_ptr, <a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *block)</td></tr>
@@ -237,6 +247,42 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a7f9a576f7722ff0c8475fdc8871a37d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f9a576f7722ff0c8475fdc8871a37d0">&#9670;&nbsp;</a></span>add_assemblies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::Utils::add_assemblies </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cgns_file_ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1DatabaseIO.html">Ioss::DatabaseIO</a> *&#160;</td>
+          <td class="paramname"><em>db</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ab140e29cf0cbe506a4d67cc4d62671d1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab140e29cf0cbe506a4d67cc4d62671d1">&#9670;&nbsp;</a></span>add_sidesets()</h2>
 
@@ -371,6 +417,60 @@ Static Public Attributes</h2></td></tr>
           <td></td>
           <td class="paramtype"><a class="el" href="classIoss_1_1StructuredBlock.html">Ioss::StructuredBlock</a> *&#160;</td>
           <td class="paramname"><em>block</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa32bfb8fe7cafebefed7f71618f676ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa32bfb8fe7cafebefed7f71618f676ed">&#9670;&nbsp;</a></span>add_to_assembly()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::Utils::add_to_assembly </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cgns_file_ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *&#160;</td>
+          <td class="paramname"><em>region</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classIoss_1_1EntityBlock.html">Ioss::EntityBlock</a> *&#160;</td>
+          <td class="paramname"><em>block</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zone</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1259,6 +1359,96 @@ template&lt;typename INT &gt; </div>
 
 </div>
 </div>
+<a id="a2ee6e637eb9a53d261fc7336c9669f1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ee6e637eb9a53d261fc7336c9669f1e">&#9670;&nbsp;</a></span>output_assemblies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::Utils::output_assemblies </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>file_ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;&#160;</td>
+          <td class="paramname"><em>region</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_parallel_io</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af65cb2cd0dfeed43c8e7a49c41a4f9e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af65cb2cd0dfeed43c8e7a49c41a4f9e0">&#9670;&nbsp;</a></span>output_assembly()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::Utils::output_assembly </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>file_ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classIoss_1_1Assembly.html">Ioss::Assembly</a> *&#160;</td>
+          <td class="paramname"><em>assembly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_parallel_io</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>appending</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a8cac60130d95a1c1e6df52aebffb8ab3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8cac60130d95a1c1e6df52aebffb8ab3">&#9670;&nbsp;</a></span>parse_zonebc_sideblocks()</h2>
 
@@ -1664,8 +1854,8 @@ template&lt;typename INT &gt; </div>
 
 </div>
 </div>
-<a id="a88dbbf0ca2139ce9fc69747f61d76d8e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88dbbf0ca2139ce9fc69747f61d76d8e">&#9670;&nbsp;</a></span>write_flow_solution_metadata()</h2>
+<a id="ab6af3908a6a3311cf5e81424222c2ed7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6af3908a6a3311cf5e81424222c2ed7">&#9670;&nbsp;</a></span>write_flow_solution_metadata()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1678,6 +1868,12 @@ template&lt;typename INT &gt; </div>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>file_ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base_ptr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1702,6 +1898,48 @@ template&lt;typename INT &gt; </div>
           <td></td>
           <td class="paramtype">const int *&#160;</td>
           <td class="paramname"><em>cell_center_solution_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_parallel_io</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7df4d0ef8d7dba2456405b888ae79a3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7df4d0ef8d7dba2456405b888ae79a3c">&#9670;&nbsp;</a></span>write_state_meta_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Iocgns::Utils::write_state_meta_data </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>file_ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;&#160;</td>
+          <td class="paramname"><em>region</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

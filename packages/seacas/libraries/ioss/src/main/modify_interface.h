@@ -1,9 +1,9 @@
 /*
- * Copyright(C) 2020 National Technology & Engineering Solutions
+ * Copyright(C) 1999-2020 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
- *
- * See packages/seacas/LICENSE file for details.
+ * 
+ * See packages/seacas/LICENSE for details
  */
 
 #ifndef modify_SystemInterface_h
@@ -12,7 +12,7 @@
 #include "Ioss_GetLongOpt.h" // for GetLongOption
 #include <string>            // for string
 
-/** \brief A special namespace for the io_info demonstration program interFace.
+/** \brief A special namespace for the io_modify demonstration program interFace.
  */
 namespace Modify {
   class Interface
@@ -31,7 +31,7 @@ namespace Modify {
     void enroll_options();
 
     Ioss::GetLongOption options_;
-    std::string         filetype_{"exodus"};
+    std::string         filetype_{"unknown"};
     std::string         filename_{};
     bool                allowModification_{false};
   };
