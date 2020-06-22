@@ -400,12 +400,6 @@ namespace {
 
   bool do_stat(const std::string &filename, struct stat *s)
   {
-#if defined(__PUMAGON__)
-    // Portland pgCC compiler on janus has 'char*' instead of 'const char*' for
-    // first argument to stat function.
-    return (stat((char *)filename.c_str(), s) == 0);
-#else
     return (stat(filename.c_str(), s) == 0);
-#endif
   }
 } // namespace

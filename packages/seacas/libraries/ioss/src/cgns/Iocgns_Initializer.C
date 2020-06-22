@@ -3,7 +3,6 @@
 // NTESS, the U.S. Government retains certain rights in this software.
 //
 // See packages/seacas/LICENSE for details
-#if !defined(__PUMAGON__) || (defined(__PUMAGON__) && defined(JANUS2))
 #include <cgns/Iocgns_IOFactory.h>
 #include <cgns/Iocgns_Initializer.h>
 
@@ -20,4 +19,3 @@ namespace Iocgns {
   }
 } // namespace Iocgns
 
-#endif
