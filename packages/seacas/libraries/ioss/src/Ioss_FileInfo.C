@@ -13,7 +13,7 @@
 #include <string>
 #include <tokenize.h>
 
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <sys/unistd.h>
 #else
 #include <direct.h>
@@ -156,7 +156,7 @@ namespace Ioss {
   //: Returns TRUE if we are pointing to a symbolic link
   bool FileInfo::is_symlink() const
   {
-#ifndef _MSC_VER
+#ifndef _WIN32
     struct stat s
     {
     };
@@ -289,7 +289,7 @@ namespace Ioss {
 
   std::string FileInfo::realpath() const
   {
-#ifdef _MSC_VER
+#ifdef _WIN32
     char *path = _fullpath(nullptr, filename_.c_str(), _MAX_PATH);
 #else
     char *path = ::realpath(filename_.c_str(), nullptr);
@@ -326,7 +326,7 @@ namespace Ioss {
       struct stat st;
       if (stat(path_root.c_str(), &st) != 0) {
         const int mode = 0777; // Users umask will be applied to this.
-#ifdef _MSC_VER
+#ifdef _WIN32
         if (mkdir(path_root.c_str()) != 0 && errno != EEXIST) {
 #else
         if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
