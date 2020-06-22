@@ -119,7 +119,7 @@ var searchData=
   ['do_5ftiming_569',['DO_TIMING',['../Ioss__FaceGenerator_8C.html#a55968a72af09a67a7420f59ee7435ea3',1,'Ioss_FaceGenerator.C']]],
   ['do_5ftransform_5ffields_570',['do_transform_fields',['../classIOShell_1_1Interface.html#a9cf155c21c5f3c3edeca035474b5ad1f',1,'IOShell::Interface']]],
   ['doabs_571',['doAbs',['../classIotr_1_1MinMax.html#a27b45beac9b238ef5c70445a2f6e3b11',1,'Iotr::MinMax']]],
-  ['dologging_572',['doLogging',['../classIoss_1_1DatabaseIO.html#a364e1592a80c9227429bb0be6866b98e',1,'Ioss::DatabaseIO::doLogging()'],['../classIovs_1_1DatabaseIO.html#ac9903dee16063fbe2d78ba3776787a5d',1,'Iovs::DatabaseIO::doLogging()']]],
+  ['dologging_572',['doLogging',['../classIoss_1_1DatabaseIO.html#a364e1592a80c9227429bb0be6866b98e',1,'Ioss::DatabaseIO']]],
   ['domin_573',['doMin',['../classIotr_1_1MinMax.html#a6aafc8fbbbe342ce903be024c811af62',1,'Iotr::MinMax']]],
   ['dorotation_574',['doRotation',['../classIogs_1_1GeneratedMesh.html#a783a827ad0771e697dcff857a1667e1f',1,'Iogs::GeneratedMesh::doRotation()'],['../classIogn_1_1GeneratedMesh.html#a0da6689bb52014b75b29bc2422f93931',1,'Iogn::GeneratedMesh::doRotation()']]],
   ['dot8_575',['dot8',['../namespaceanonymous__namespace_02sphgen_8C_03.html#ac1ded7dfd74ef6054a197eb2a79e9be9',1,'anonymous_namespace{sphgen.C}::dot8()'],['../namespaceanonymous__namespace_02volume_8C_03.html#af719cf311d0d67e67fdf3884b50d0795',1,'anonymous_namespace{volume.C}::dot8()']]],

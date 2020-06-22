@@ -1,7 +1,7 @@
 // Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
-// 
+//
 // See packages/seacas/LICENSE for details
 
 #include "modify_interface.h"
@@ -57,9 +57,9 @@
 #include <fmt/ostream.h>
 
 #if defined(SEACAS_HAVE_EXODUS)
-#include <exodusII.h>
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
+#include <exodusII.h>
 #endif
 
 #if defined(SEACAS_HAVE_CGNS)
@@ -1158,7 +1158,7 @@ namespace {
   }
 
 #if defined(SEACAS_HAVE_CGNS)
-  void           update_cgns_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
+  void update_cgns_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
   {
     region.end_mode(Ioss::STATE_DEFINE_MODEL);
     int file_ptr = region.get_database()->get_file_pointer();
@@ -1169,18 +1169,18 @@ namespace {
       if (assembly->property_exists("modified")) {
         if (assembly->property_exists("created")) {
           fmt::print(fg(fmt::color::cyan), "\t*** Creating assembly '{}'\n", assembly->name());
-	  Iocgns::Utils::output_assembly(file_ptr, assembly, false, true);
+          Iocgns::Utils::output_assembly(file_ptr, assembly, false, true);
         }
         else {
-	  fmt::print(stderr, fg(fmt::color::yellow), "WARNING: Can not modify existing assembly '{}'  yet.\n",
-		     assembly->name());
+          fmt::print(stderr, fg(fmt::color::yellow),
+                     "WARNING: Can not modify existing assembly '{}'  yet.\n", assembly->name());
         }
       }
     }
   }
 #endif
 
-  void           update_exodus_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
+  void update_exodus_assembly_info(Ioss::Region &region, const Modify::Interface &interFace)
   {
     std::vector<Ioex::Assembly> ex_assemblies;
     bool                        modify_existing = false;
@@ -1254,10 +1254,11 @@ namespace {
     else if (type == "CGNS") {
       update_cgns_assembly_info(region, interFace);
     }
-#endif    
+#endif
     else {
-      fmt::print(stderr, fg(fmt::color::red), "ERROR: Can not modify the database '{}' of type '{}'.\n",
-		 interFace.filename(), type);
+      fmt::print(stderr, fg(fmt::color::red),
+                 "ERROR: Can not modify the database '{}' of type '{}'.\n", interFace.filename(),
+                 type);
     }
   }
 

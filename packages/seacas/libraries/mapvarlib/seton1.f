@@ -1,7 +1,7 @@
 C Copyright(C) 1999-2020 National Technology & Engineering Solutions
 C of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C NTESS, the U.S. Government retains certain rights in this software.
-C 
+C
 C See packages/seacas/LICENSE for details
 
 C=======================================================================
@@ -156,7 +156,7 @@ c  node on the other end of the shared element side.
      &         NXGLND = ICONA(I,INVCN(1,IGLND))
          end do
       end do
-c     
+c
 c  If this second node has more than 3 elements, extrapolate. Otherwise
 c  average. (at original node)
 

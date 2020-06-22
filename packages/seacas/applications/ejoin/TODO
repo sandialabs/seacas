@@ -22,7 +22,7 @@ DONE:
 
 * implement variable subsetting (all, none, variable list).
 
-* Handle duplicate grouping entity ids.  
+* Handle duplicate grouping entity ids.
   -- This is working for non-merging of grouping entities.
      - Each entities name is prefixed with p#_ where # is the part number 1..num_parts.
      - Duplicate ids are renumbered.
