@@ -5,18 +5,6 @@
  *
  * See packages/seacas/LICENSE for details
  */
-/*****************************************************************************
- *
- * exutils - exodus utilities
- *
- * entry conditions -
- *
- * exit conditions -
- *
- * revision history -
- *
- *
- *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex__file_item, EX_FATAL, etc
@@ -77,7 +65,11 @@ int ex__check_multiple_open(const char *path, int mode, const char *func)
     }
     ptr = ptr->next;
   }
+#if defined BUILT_IN_SIERRA
   EX_FUNC_LEAVE(EX_NOERR);
+#else
+  EX_FUNC_LEAVE(EX_FATAL);
+#endif
 }
 
 void ex__check_valid_file_id(int exoid, const char *func)
