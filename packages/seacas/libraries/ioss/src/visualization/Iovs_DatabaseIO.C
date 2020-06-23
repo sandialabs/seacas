@@ -1301,7 +1301,11 @@ namespace {
       return;
     }
 
-    char *      cbuf            = realpath(sierra_ins_dir.c_str(), nullptr);
+#ifdef _WIN32
+    char *cbuf = _fullpath(nullptr, sierra_ins_dir.c_str(), _MAX_PATH);
+#else
+    char *cbuf = realpath(sierra_ins_dir.c_str(), nullptr);
+#endif
     std::string sierra_ins_path = cbuf;
     free(cbuf);
 
