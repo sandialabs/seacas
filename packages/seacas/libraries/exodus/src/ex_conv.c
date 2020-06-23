@@ -60,16 +60,16 @@ int ex__check_multiple_open(const char *path, int mode, const char *func)
                  " File corruption or incorrect behavior can occur.\n",
                  path);
         ex_err(func, errmsg, EX_BADFILEID);
+#if defined BUILT_IN_SIERRA
+        EX_FUNC_LEAVE(EX_NOERR);
+#else
         EX_FUNC_LEAVE(EX_FATAL);
+#endif
       }
     }
     ptr = ptr->next;
   }
-#if defined BUILT_IN_SIERRA
   EX_FUNC_LEAVE(EX_NOERR);
-#else
-  EX_FUNC_LEAVE(EX_FATAL);
-#endif
 }
 
 void ex__check_valid_file_id(int exoid, const char *func)
