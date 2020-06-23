@@ -1,24 +1,21 @@
-<<<<<<< HEAD
 # Copyright(C) 1999-2020 National Technology & Engineering Solutions
 # of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 # NTESS, the U.S. Government retains certain rights in this software.
 #
 # See packages/seacas/LICENSE for details
 
-cmake_minimum_required (VERSION 2.8.1)
-=======
 cmake_minimum_required (VERSION 3.8.0)
->>>>>>> Modified Catalyst visualization directory
-project(ParaViewCatalystIossAdapter)
+
+project(CatalystIoss)
 
 set (CMAKE_CXX_STANDARD 11)
 
 set(PVCSA_VERSION CACHE STRING "Version string to append to catalyst adapter library.")
 
 if(PVCSA_VERSION)
- SET(PVCSA_LIBRARY_NAME ParaViewCatalystIossAdapter_${PVCSA_VERSION})
+ SET(PVCSA_LIBRARY_NAME catalystioss_${PVCSA_VERSION})
 else()
- SET(PVCSA_LIBRARY_NAME ParaViewCatalystIossAdapter)
+ SET(PVCSA_LIBRARY_NAME catalystioss)
 endif()
 
 find_package(ParaView REQUIRED)
@@ -41,12 +38,18 @@ IF("${isSystemDir}" STREQUAL "-1")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
 include_directories("include")
+include_directories("manager")
+include_directories("../utils/")
+include_directories("../exodus/")
 
 add_subdirectory(parser)
 add_library(${PVCSA_LIBRARY_NAME} SHARED ParaViewCatalystIossAdapter.cxx
                                          ParaViewCatalystCGNSAdapter.cxx
                                          vtkCGNSMultiBlockDataSet.cxx
-                                         vtkExodusIIMultiBlockDataSet.cxx)
+                                         vtkExodusIIMultiBlockDataSet.cxx
+                                         manager/CatalystManager.cxx
+                                         exodus/CatalystExodusMesh.cxx)
+
 target_link_libraries(${PVCSA_LIBRARY_NAME}
     INTERFACE
       VTK::PythonUsed
@@ -63,9 +66,9 @@ target_link_libraries(${PVCSA_LIBRARY_NAME}
 OPTION(BUILD_CATALYST_ADAPTER_APPLICATIONS
     "Build exo2catalyst and cgns2catalyst applications" OFF)
 IF(BUILD_CATALYST_ADAPTER_APPLICATIONS)
-    FILE(COPY python DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    FILE(COPY phactori DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     ADD_SUBDIRECTORY(applications)
 ENDIF()
 
 INSTALL(TARGETS ${PVCSA_LIBRARY_NAME} LIBRARY DESTINATION lib)
-INSTALL(DIRECTORY python DESTINATION .)
+INSTALL(DIRECTORY phactori DESTINATION .)

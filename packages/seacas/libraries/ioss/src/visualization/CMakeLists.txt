@@ -3,7 +3,7 @@ SET(HEADERS "")
 SET(SOURCES "")
 
 SET_AND_INC_DIRS(DIR ${CMAKE_CURRENT_SOURCE_DIR})
-APPEND_GLOB(HEADERS ${DIR}/ParaViewCatalystIossAdapter/include/*.h)
+APPEND_GLOB(HEADERS ${DIR}/catalyst/include/*.h)
 APPEND_GLOB(HEADERS ${DIR}/cgns/*.h)
 APPEND_GLOB(SOURCES ${DIR}/cgns/*.C)
 APPEND_GLOB(HEADERS ${DIR}/exodus/*.h)
@@ -12,8 +12,7 @@ APPEND_GLOB(HEADERS ${DIR}/utils/*.h)
 APPEND_GLOB(SOURCES ${DIR}/utils/*.C)
 
 INCLUDE_DIRECTORIES(
-  "${CMAKE_CURRENT_SOURCE_DIR}/ParaViewCatalystIossAdapter/"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ParaViewCatalystIossAdapter/include/"
+  "${CMAKE_CURRENT_SOURCE_DIR}/catalyst/include/"
   "${CMAKE_CURRENT_SOURCE_DIR}/cgns/"
   "${CMAKE_CURRENT_SOURCE_DIR}/exodus/"
   "${CMAKE_CURRENT_SOURCE_DIR}/utils/"

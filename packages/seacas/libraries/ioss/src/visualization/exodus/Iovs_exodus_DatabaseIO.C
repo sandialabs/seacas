@@ -63,8 +63,9 @@ namespace Iovs_exodus {
         this->DBFilename, communicator);
     Iovs::Utils::getInstance().incrementNumExodusCatalystOutputs();
 
-    dbState                              = Ioss::STATE_UNKNOWN;
-    this->pvcsa                          = nullptr;
+    dbState = Ioss::STATE_UNKNOWN;
+
+    this->catExoMesh = nullptr;
     this->globalNodeAndElementIDsCreated = false;
 
     if (props.exists("CATALYST_BLOCK_PARSE_JSON_STRING")) {
@@ -124,10 +125,9 @@ namespace Iovs_exodus {
   }
 
   DatabaseIO::~DatabaseIO() {
-      if (this->pvcsa != nullptr) {
-          this->pvcsa->DeletePipeline(this->DBFilename.c_str());
-          delete this->pvcsa;
-          this->pvcsa = nullptr;
+      if(this->catExoMesh) {
+          this->catExoMesh->Delete();
+          delete this->catExoMesh;
       }
   }
 
@@ -135,11 +135,7 @@ namespace Iovs_exodus {
   {
     dbState              = state;
     Ioss::Region *region = this->get_region();
-    if (region->model_defined() && (this->pvcsa == nullptr)) {
-
-      this->pvcsa = Iovs::Utils::getInstance()\
-          .createParaViewCatalystIossAdapterInstance();
-
+    if (region->model_defined() && this->catExoMesh == nullptr) {
       std::string separator(1, this->get_field_separator());
 
       // See if we are in a restart by looking for '.e-s' in the output filename
@@ -154,22 +150,18 @@ namespace Iovs_exodus {
       std::vector<std::string> catalyst_sierra_data;
       catalyst_sierra_data.push_back(this->paraview_script_extra_filename);
 
-      if (this->pvcsa != nullptr) {
-        this->pvcsa->CreateNewPipeline(
-            this->paraview_script_filename.c_str(), this->paraview_json_parse.c_str(),
-            separator.c_str(), this->sierra_input_deck_name.c_str(), this->underscoreVectors,
-            this->applyDisplacements, restart_tag.c_str(), this->enableLogging, this->debugLevel,
-            this->DBFilename.c_str(), this->catalyst_output_directory.c_str(),
-            catalyst_sierra_data);
-      }
+      this->catExoMesh = Iovs::Utils::getInstance().getCatalystManager().CreateNewPipeline(
+          this->paraview_script_filename.c_str(), this->paraview_json_parse.c_str(),
+          separator.c_str(), this->sierra_input_deck_name.c_str(), this->underscoreVectors,
+          this->applyDisplacements, restart_tag.c_str(), this->enableLogging, this->debugLevel,
+          this->DBFilename.c_str(), this->catalyst_output_directory.c_str(), catalyst_sierra_data);
+
       std::vector<int>                   element_block_id_list;
       Ioss::ElementBlockContainer const &ebc = region->get_element_blocks();
       for (auto i : ebc) {
         element_block_id_list.push_back(get_id(i, &ids_));
       }
-      if (this->pvcsa != nullptr) {
-        this->pvcsa->InitializeElementBlocks(element_block_id_list, this->DBFilename.c_str());
-      }
+      this->catExoMesh->InitializeElementBlocks(element_block_id_list);
     }
     return true;
   }
@@ -205,9 +197,7 @@ namespace Iovs_exodus {
       this->create_global_node_and_element_ids();
     }
 
-    if (this->pvcsa != nullptr) {
-      this->pvcsa->SetTimeData(time, state - 1, this->DBFilename.c_str());
-    }
+    this->catExoMesh->SetTimeData(time, state - 1);
 
     return true;
   }
@@ -216,13 +206,14 @@ namespace Iovs_exodus {
   {
     Ioss::SerializeIO serializeIO__(this);
 
-    if (this->pvcsa != nullptr) {
       std::vector<int>         error_codes;
       std::vector<std::string> error_messages;
-      this->pvcsa->logMemoryUsageAndTakeTimerReading(this->DBFilename.c_str());
-      this->pvcsa->PerformCoProcessing(this->DBFilename.c_str(), error_codes, error_messages);
-      this->pvcsa->logMemoryUsageAndTakeTimerReading(this->DBFilename.c_str());
-      this->pvcsa->ReleaseMemory(this->DBFilename.c_str());
+
+      this->catExoMesh->logMemoryUsageAndTakeTimerReading();
+      this->catExoMesh->PerformCoProcessing(error_codes, error_messages);
+      this->catExoMesh->logMemoryUsageAndTakeTimerReading();
+      this->catExoMesh->ReleaseMemory();
+
       if (!error_codes.empty() && !error_messages.empty() &&
           error_codes.size() == error_messages.size()) {
         for (unsigned int i = 0; i < error_codes.size(); i++) {
@@ -241,7 +232,6 @@ namespace Iovs_exodus {
           }
         }
       }
-    }
     return true;
   }
 
@@ -256,18 +246,13 @@ namespace Iovs_exodus {
     for (I = element_blocks.begin(); I != element_blocks.end(); ++I) {
       int     bid       = get_id((*I), &ids_);
       int64_t eb_offset = (*I)->get_offset();
-      if (this->pvcsa != nullptr) {
-        this->pvcsa->CreateElementVariable(
-            component_names, bid, &this->elemMap.map()[eb_offset + 1], this->DBFilename.c_str());
-      }
+      this->catExoMesh->CreateElementVariable(
+            component_names, bid, &this->elemMap.map()[eb_offset + 1]);
     }
 
     component_names.clear();
     component_names.emplace_back("GlobalNodeId");
-    if (this->pvcsa != nullptr) {
-      this->pvcsa->CreateNodalVariable(component_names, &this->nodeMap.map()[1],
-                                       this->DBFilename.c_str());
-    }
+    this->catExoMesh->CreateNodalVariable(component_names, &this->nodeMap.map()[1]);
 
     this->globalNodeAndElementIDsCreated = true;
   }
@@ -323,10 +308,7 @@ namespace Iovs_exodus {
             globalValues.push_back(ivar64[i]);
           }
         }
-        if (this->pvcsa != nullptr) {
-          this->pvcsa->CreateGlobalVariable(component_names, globalValues.data(),
-                                            this->DBFilename.c_str());
-        }
+        this->catExoMesh->CreateGlobalVariable(component_names, globalValues.data());
       }
     }
     else if (num_to_get != 1) {
@@ -357,11 +339,9 @@ namespace Iovs_exodus {
 
       if (role == Ioss::Field::MESH) {
         if (field.get_name() == "mesh_model_coordinates") {
-          if (this->pvcsa != nullptr) {
-            this->pvcsa->InitializeGlobalPoints(
+          this->catExoMesh->InitializeGlobalPoints(
                 num_to_get, nb->get_property("component_degree").get_int(),
-                static_cast<double *>(data), this->DBFilename.c_str());
-          }
+                static_cast<double *>(data));
         }
         else if (field.get_name() == "ids") {
           // The ids coming in are the global ids; their position is the
@@ -424,11 +404,7 @@ namespace Iovs_exodus {
               interleaved_data[j * comp_count + i] = temp[j];
             }
           }
-
-          if (this->pvcsa != nullptr) {
-            this->pvcsa->CreateNodalVariable(component_names, interleaved_data.data(),
-                                             this->DBFilename.c_str());
-          }
+          this->catExoMesh->CreateNodalVariable(component_names, interleaved_data.data());
         }
       }
       else if (role == Ioss::Field::REDUCTION) {
@@ -467,20 +443,16 @@ namespace Iovs_exodus {
             int                    id        = get_id(eb, &ids_);
 
             if (ioss_type == Ioss::Field::INTEGER) {
-              if (this->pvcsa != nullptr) {
-                this->pvcsa->CreateElementBlock(
-                    eb->name().c_str(), id, eb->topology()->name(),
+              this->catExoMesh->CreateElementBlock(
+                    eb->name().c_str(), id, eb->get_property("topology_type").get_string(),
                     element_nodes, num_to_get, &this->elemMap.map()[eb_offset + 1],
-                    static_cast<int *>(data), this->DBFilename.c_str());
-              }
+                    static_cast<int *>(data));
             }
             else if (ioss_type == Ioss::Field::INT64) {
-              if (this->pvcsa != nullptr) {
-                this->pvcsa->CreateElementBlock(
-                    eb->name().c_str(), id, eb->topology()->name(),
+              this->catExoMesh->CreateElementBlock(
+                    eb->name().c_str(), id, eb->get_property("topology_type").get_string(),
                     element_nodes, num_to_get, &this->elemMap.map()[eb_offset + 1],
-                    static_cast<int64_t *>(data), this->DBFilename.c_str());
-              }
+                    static_cast<int64_t *>(data));
             }
           }
         }
@@ -547,10 +519,7 @@ namespace Iovs_exodus {
               interleaved_data[j * comp_count + i] = temp[j];
             }
           }
-          if (this->pvcsa != nullptr) {
-            this->pvcsa->CreateElementVariable(component_names, bid, interleaved_data.data(),
-                                               this->DBFilename.c_str());
-          }
+          this->catExoMesh->CreateElementVariable(component_names, bid, interleaved_data.data());
         }
       }
       else if (role == Ioss::Field::REDUCTION) {
@@ -821,17 +790,11 @@ namespace Iovs_exodus {
 
       if (field.get_type() == Ioss::Field::INTEGER) {
         this->nodeMap.reverse_map_data(data, field, num_to_get);
-        if (this->pvcsa != nullptr) {
-          this->pvcsa->CreateNodeSet(ns->name().c_str(), id, num_to_get, static_cast<int *>(data),
-                                     this->DBFilename.c_str());
-        }
+        this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get, static_cast<int *>(data));
       }
       else if (field.get_type() == Ioss::Field::INT64) {
         this->nodeMap.reverse_map_data(data, field, num_to_get);
-        if (this->pvcsa != nullptr) {
-          this->pvcsa->CreateNodeSet(ns->name().c_str(), id, num_to_get,
-                                     static_cast<int64_t *>(data), this->DBFilename.c_str());
-        }
+        this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get, static_cast<int64_t *>(data));
       }
 
       if (this->createNodeSets == 0) {
@@ -884,7 +847,6 @@ namespace Iovs_exodus {
 
         // std::cerr << "Iovs_DatabaseIO::"
         //    "put_field_internal doing CreateSideSet (1)\n";
-        if (this->pvcsa != nullptr) {
           const Ioss::SideSet *ebowner = eb->owner();
           /*
           if(ebowner == NULL)
@@ -911,10 +873,9 @@ namespace Iovs_exodus {
            pass in both ebowner->name() AND eb->name(), but for now we
            are just passing in ebowner->name() to give us correct
            functionality while not changing the function interface*/
-          this->pvcsa->CreateSideSet(/*eb->name().c_str(),*/
-                                     ebowner->name().c_str(), id, num_to_get, &element[0], &side[0],
-                                     this->DBFilename.c_str());
-        }
+          this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id, num_to_get,
+              &element[0], &side[0]);
+
         // std::cerr << "Iovs_DatabaseIO::"
         //    "put_field_internal back from CreateSideSet (1) \n";
         //
@@ -940,7 +901,6 @@ namespace Iovs_exodus {
 
         // std::cerr << "Iovs_DatabaseIO::"
         //    "put_field_internal doing CreateSideSet (2)\n";
-        if (this->pvcsa != nullptr) {
           const Ioss::SideSet *ebowner = eb->owner();
           /*
           if(ebowner == NULL)
@@ -967,10 +927,9 @@ namespace Iovs_exodus {
            pass in both ebowner->name() AND eb->name(), but for now we
            are just passing in ebowner->name() to give us correct
            functionality while not changing the function interface*/
-          this->pvcsa->CreateSideSet(/*eb->name().c_str(),*/
-                                     ebowner->name().c_str(), id, num_to_get, &element[0], &side[0],
-                                     this->DBFilename.c_str());
-        }
+          this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id,
+              num_to_get, &element[0], &side[0]);
+
         // std::cerr << "Iovs_DatabaseIO::"
         //    "put_field_internal back from CreateSideSet (2) \n";
         //

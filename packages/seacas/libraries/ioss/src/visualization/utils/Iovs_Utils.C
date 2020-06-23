@@ -4,6 +4,7 @@
 #include <Ioss_Utils.h>
 #include <ParaViewCatalystIossAdapter.h>
 #include <fstream>
+#include <CatalystManagerBase.h>
 
 #ifdef IOSS_DLOPEN_ENABLED
 #include <dlfcn.h>
@@ -18,14 +19,48 @@ namespace Iovs {
         this->dlHandle = nullptr;
         this->numCGNSCatalystOutputs = 0;
         this->numExodusCatalystOutputs = 0;
+        this->catalystManager = nullptr;
     }
 
     Utils::~Utils() {
+        if(this->catalystManager) {
+            delete this->catalystManager;
+        }
 #ifdef IOSS_DLOPEN_ENABLED
         if (this->dlHandle != nullptr) {
             dlclose(this->dlHandle);
         }
 #endif
+    }
+
+    CatalystManagerBase& Utils::getCatalystManager() {
+        if(this->catalystManager == nullptr) {
+            this->catalystManager = this->createCatalystManagerInstance();
+        }
+        return *this->catalystManager;
+    }
+
+    CatalystManagerBase* Utils::createCatalystManagerInstance() {
+        void* dlh = this->getDlHandle();
+
+        if(!dlh) {
+            return nullptr;
+        }
+
+        typedef CatalystManagerBase
+            *(*CatalystManagerInstanceFuncType)();
+
+#ifdef __GNUC__
+        __extension__
+#endif
+        CatalystManagerInstanceFuncType mkr = \
+            reinterpret_cast<CatalystManagerInstanceFuncType>(\
+                dlsym(dlh, "CreateCatalystManagerInstance"));
+        if (mkr == nullptr) {
+            throw std::runtime_error("dlsym call failed to load function "
+                "'CreateCatalystManagerInstance'");
+        }
+        return (*mkr)();
     }
 
     ParaViewCatalystIossAdapterBase *
@@ -156,8 +191,9 @@ namespace Iovs {
             this->getCatalystAdapterInstallDirectory();
 
         if(!catalystInsDir.empty()) {
-            return catalystInsDir + "/lib/" +\
-                std::string(CATALYST_PLUGIN_DYNAMIC_LIBRARY);
+            return catalystInsDir +\
+                std::string(CATALYST_INSTALL_LIB_DIR) +\
+                    CATALYST_PLUGIN_DYNAMIC_LIBRARY;
         }
 
         return this->getSierraInstallDirectory() + "/" +\
@@ -170,8 +206,9 @@ namespace Iovs {
             this->getCatalystAdapterInstallDirectory();
 
         if(!catalystInsDir.empty()) {
-            return catalystInsDir + "/python/" +\
-                std::string(CATALYST_PLUGIN_PYTHON_MODULE);
+            return catalystInsDir +\
+                std::string(CATALYST_INSTALL_PHACTORI_DIR) +\
+                    CATALYST_PLUGIN_PYTHON_MODULE;
         }
 
         return this->getSierraInstallDirectory() + "/" +\

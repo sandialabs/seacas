@@ -33,6 +33,7 @@
 #ifndef IOSS_IOVS_UTILS_H
 #define IOSS_IOVS_UTILS_H
 
+#include "CatalystManagerBase.h"
 #include <string>
 #include <Ioss_PropertyManager.h>
 #include <Ioss_DBUsage.h>
@@ -50,6 +51,8 @@ namespace Iovs {
         static Utils instance;
         return instance;
     }
+
+    CatalystManagerBase& getCatalystManager();
 
     static bool fileExists(const std::string &filepath);
 
@@ -81,10 +84,16 @@ namespace Iovs {
     void incrementNumExodusCatalystOutputs();
 
   private:
+
     Utils();
     ~Utils();
     Utils(const Utils &) = delete;
     Utils &operator=(const Utils &) = delete;
+
+    CatalystManagerBase* catalystManager = nullptr;
+
+    CatalystManagerBase*
+        createCatalystManagerInstance();
 
     void loadPluginLibrary();
 
@@ -107,15 +116,17 @@ namespace Iovs {
 
 #if defined(__APPLE__)
     const char* CATALYST_PLUGIN_DYNAMIC_LIBRARY =\
-        "libParaViewCatalystIossAdapter.dylib";
+        "libcatalystioss.dylib";
 #else
     const char* CATALYST_PLUGIN_DYNAMIC_LIBRARY =\
-        "libParaViewCatalystIossAdapter.so";
+        "libcatalystioss.so";
 #endif
     const char* CATALYST_PLUGIN_PYTHON_MODULE = "PhactoriDriver.py";
     const char* CATALYST_PLUGIN_PATH = "viz/catalyst/install";
     const char* CATALYST_FILE_SUFFIX = ".dummy.pv.catalyst.e";
     const char* CATALYST_OUTPUT_DIRECTORY = "CatalystOutput";
+    const char* CATALYST_INSTALL_LIB_DIR = "/lib/";
+    const char* CATALYST_INSTALL_PHACTORI_DIR = "/phactori/";
   };
 
 } // namespace Iovs

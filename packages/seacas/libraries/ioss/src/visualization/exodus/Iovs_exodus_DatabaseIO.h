@@ -34,6 +34,7 @@
 #include <vector>
 
 class ParaViewCatalystIossAdapterBase;
+class CatalystExodusMeshBase;
 
 /** \brief A namespace for the visualization database format.
  */
@@ -244,9 +245,8 @@ namespace Iovs_exodus {
     int nodeBlockCount;
     int elementBlockCount;
 
-    // Handle to the ParaView Catalyst dynamic library
-    // that is loaded via Ioss user plugin at runtime.
-    ParaViewCatalystIossAdapterBase *pvcsa;
+    CatalystExodusMeshBase* catExoMesh;
+
     mutable bool                     globalNodeAndElementIDsCreated;
     void                             create_global_node_and_element_ids() const;
     mutable EntityIdSet              ids_{};
