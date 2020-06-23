@@ -1,7 +1,7 @@
 C Copyright(C) 1999-2020 National Technology & Engineering Solutions
 C of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C NTESS, the U.S. Government retains certain rights in this software.
-C 
+C
 C See packages/seacas/LICENSE for details
 
       SUBROUTINE VIINIT(ASPECT,JUSTIF)
@@ -3388,28 +3388,28 @@ C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
       end
       SUBROUTINE PSTI2C(INT,NDIGIT,ISTR)
 C     C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
-C     
+C
 C     PSTI2C           - convert positive integer to decimal character
 C     string equivalent
-C     
+C
 C     ENVIRONMENT      - COMPUTER-INdependent
-C     
+C
 C     ENTRY CONDITIONS - int = positive integer to be converted
 C     ndigit = number of digits to be produced in string
 C     form (pad left with zeros)
 C     istr = character string of at least ndigit characters
-C     
+C
 C     CALLS            -
-C     
+C
 C     EXIT CONDITIONS  - istr contains decimal-string equivalent of int
 C     (ndigits left-justified in istr)
-C     
+C
 C     C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
       INTEGER INT,NDIGIT
       CHARACTER ISTR*(*)
       CHARACTER*1 KA(10)
       DATA KA /'0','1','2','3','4','5','6','7','8','9'/
-C     
+C
 C     check input parameters
       INT1=MAX(INT,0)
       LENGTH=LEN(ISTR)

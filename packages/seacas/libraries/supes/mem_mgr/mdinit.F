@@ -1,7 +1,7 @@
 C    Copyright(C) 1999-2020 National Technology & Engineering Solutions
 C    of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C    NTESS, the U.S. Government retains certain rights in this software.
-C    
+C
 C    See packages/seacas/LICENSE for details
       SUBROUTINE MDINIT (USERV)
 
@@ -159,7 +159,7 @@ C     user the correct pointer to the users base vector.  They are
 C     equivalenced to allow printing as real or integer (see mdprnt).
 
 #if __GFORTRAN__ && __GNUC__ == 10
-C ... For some reason, gfortran-10 needs this SAVE in addition to later save...      
+C ... For some reason, gfortran-10 needs this SAVE in addition to later save...
       save myv
 #endif
       double precision dmyv(1)

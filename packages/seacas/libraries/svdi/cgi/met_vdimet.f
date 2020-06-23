@@ -1,7 +1,7 @@
 C Copyright(C) 1999-2020 National Technology & Engineering Solutions
 C of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C NTESS, the U.S. Government retains certain rights in this software.
-C 
+C
 C See packages/seacas/LICENSE for details
 
 C VDMOVA VDMONI VDGNAM VBIQDV VBIQPK VDLINA VDTEXT VDPNTA VDPOLY VDIQCP VDSTOS
@@ -1081,10 +1081,10 @@ C LOOP THROUGH EACH CHARACTER IN EACH WORD OF NSTR.
 
 C     CONVERT CHARACTER.
             CALL CDRCVT(ITEMP,ITEMP1)
-C     
+C
 C     CHECK FOR END-OF-STRING CHARACTER.
             IF (ITEMP1.EQ.KTERM) GO TO 20
-C     
+C
 C     SEND PAIRS OF CHARACTERS TO THE OUTPUT FILE.
             IF(MOD(J,2).EQ.1) THEN
                ITEMP2=ITEMP1
@@ -1094,7 +1094,7 @@ C     SEND PAIRS OF CHARACTERS TO THE OUTPUT FILE.
             ENDIF
          END DO
       END DO
-C     
+C
 C PAD WITH A BLANK IF NECESSARY TO MAKE NUMBER OF CHARS EVEN.
  20   CONTINUE
       IF(MOD(J,2).EQ.0) THEN

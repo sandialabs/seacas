@@ -2,6 +2,7 @@ var Ioss__CodeTypes_8h =
 [
     [ "IOSS_DEBUG_OUTPUT", "Ioss__CodeTypes_8h.html#a8ff3a52b4dc0d793a406b707ce67f5c1", null ],
     [ "IOSS_FUNC_ENTER", "Ioss__CodeTypes_8h.html#a5ba470fc516a5c4d3e2c1cf1572491b4", null ],
+    [ "MPI_COMM_SELF", "Ioss__CodeTypes_8h.html#a5dcc99c598f5bd6968077f68dea4376e", null ],
     [ "MPI_COMM_WORLD", "Ioss__CodeTypes_8h.html#a2df6a15627583d5e6f5a48550644cbef", null ],
     [ "PAR_UNUSED", "Ioss__CodeTypes_8h.html#ac213f34cfbd4ef8e10d9297df62506c1", null ],
     [ "Complex", "Ioss__CodeTypes_8h.html#a9633ed5e22e786aa99c269f2fb0c005c", null ],

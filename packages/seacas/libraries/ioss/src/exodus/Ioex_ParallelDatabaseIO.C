@@ -8,7 +8,7 @@
 // Copyright(C) 1999-2020 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
-// 
+//
 // See packages/seacas/LICENSE for details
 
 #include <exodus/Ioex_ParallelDatabaseIO.h>
@@ -96,16 +96,20 @@ namespace {
     }
     if (nop.empty()) {
       std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: The use of the 'compose' output option requires the definition of the 'owning_processor'"
-		 " field prior to the output of nodal data.  This field has not yet been defined so output is not possible."
-		 " For more information, contact gdsjaar@sandia.gov.\n");
+      fmt::print(errmsg, "ERROR: The use of the 'compose' output option requires the definition of "
+                         "the 'owning_processor'"
+                         " field prior to the output of nodal data.  This field has not yet been "
+                         "defined so output is not possible."
+                         " For more information, contact gdsjaar@sandia.gov.\n");
       IOSS_ERROR(errmsg);
     }
     else if (nop.size() < file_node_count) {
       std::ostringstream errmsg;
-      fmt::print(errmsg, "ERROR: The 'owning_processor' data was defined, but it is not the correct size."
-		 "  Its size is {}, but it must be at least this size {}."
-		 " For more information, contact gdsjaar@sandia.gov.\n", nop.size(), file_node_count);
+      fmt::print(errmsg,
+                 "ERROR: The 'owning_processor' data was defined, but it is not the correct size."
+                 "  Its size is {}, but it must be at least this size {}."
+                 " For more information, contact gdsjaar@sandia.gov.\n",
+                 nop.size(), file_node_count);
       IOSS_ERROR(errmsg);
     }
   }
@@ -4161,7 +4165,7 @@ int64_t ParallelDatabaseIO::put_Xset_field_internal(ex_entity_type type, const I
         nodesetOwnedNodes[ns].reserve(file_count);
         if (int_byte_size_api() == 4) {
           i32data.reserve(file_count);
-	  check_node_owning_processor_data(nodeOwningProcessor, file_count);
+          check_node_owning_processor_data(nodeOwningProcessor, file_count);
           map_nodeset_id_data(nodeOwningProcessor, nodesetOwnedNodes[ns], myProcessor,
                               reinterpret_cast<int *>(data), num_to_get, i32data);
           assert(i32data.size() == file_count);
@@ -4171,7 +4175,7 @@ int64_t ParallelDatabaseIO::put_Xset_field_internal(ex_entity_type type, const I
         }
         else {
           i64data.reserve(file_count);
-	  check_node_owning_processor_data(nodeOwningProcessor, file_count);
+          check_node_owning_processor_data(nodeOwningProcessor, file_count);
           map_nodeset_id_data(nodeOwningProcessor, nodesetOwnedNodes[ns], myProcessor,
                               reinterpret_cast<int64_t *>(data), num_to_get, i64data);
           assert(i64data.size() == file_count);
