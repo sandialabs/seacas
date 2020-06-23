@@ -2279,9 +2279,9 @@ namespace Ioex {
     if (region->mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
       std::ostringstream errmsg;
       fmt::print(errmsg,
-		 "ERROR: The mesh type is '{}' which Exodus does not support.\n"
-		 "       Only 'Unstructured' is supported at this time.\n",
-		 region->mesh_type_string());
+                 "ERROR: The mesh type is '{}' which Exodus does not support.\n"
+                 "       Only 'Unstructured' is supported at this time.\n",
+                 region->mesh_type_string());
       IOSS_ERROR(errmsg);
     }
 

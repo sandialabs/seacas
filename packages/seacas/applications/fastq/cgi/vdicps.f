@@ -1,7 +1,7 @@
 C Copyright(C) 1999-2020 National Technology & Engineering Solutions
 C of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C NTESS, the U.S. Government retains certain rights in this software.
-C 
+C
 C See packages/seacas/LICENSE for details
 
       SUBROUTINE VIINIT(ASPECT,JUSTIF)
@@ -1707,23 +1707,23 @@ C BATCH DEVICES IGNORE THIS COMMAND.
       END
       SUBROUTINE VDIQCO(NUM,INDEX,CLRARY,CLRMOD)
 C     C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
-C     
+C
 C     VDIQCO           -Inquire Color Table.
-C     
+C
 C     R.W.Simons       -08APR81
 C     H. S. LAUSON      29MAY86 - changed for current HLS interpretation
-C     
+C
 C     ENVIRONMENT      -COMPUTER-INDEPENDENT, SYSTEM-INDEPENDENT, FORTRAN 77
 C     All Black and White Devices. (LXY, HC1, ALP)
-C     
+C
 C     ENTRY CONDITIONS -NUM = integer number of color indexes to inquire.
 C     Range 1-256.
 C     INDEX = integer array of indexes to inquire.  Range
 C     0-255.
 C     CLRMOD = integer color model to be used.  Range 0,1.
-C     
+C
 C     CALLS            -VBERRH
-C     
+C
 C     EXIT CONDITIONS  -CLRARY = real array of 3 by NUM elements returning
 C     the values of the components of the indexes inquired.
 C     Range for RGB: red 0.0-1.0
@@ -1732,7 +1732,7 @@ C     blue 0.0-1.0
 C     Range for HLS: hue 0.0-360.0
 C     lightness 0.0-1.0
 C     saturation 0.0-1.0
-C     
+C
 C     NARRATIVE        -Inquire one or more color table entries.  NUM and
 C     INDEX specify how many and which indexes are being
 C     inquired.  CLRMOD specifies which color model
@@ -1741,28 +1741,28 @@ C     to return in CLRARY.  A device which does not
 C     support a color table index specified will
 C     return -1.0 in the first element of the CLRARY value
 C     for that index.
-C     
+C
 C     C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
-C     
+C
       INTEGER NUM,INDEX(NUM),CLRMOD
       REAL CLRARY(3,NUM)
-C     
+C
       COMMON /PCOLST/ PCOLS(3,256)
-C     
+C
 C     CHECK FOR VALID NUM.
       IF(NUM.LT.1.OR.NUM.GT.256) THEN
          CALL VBERRH(723,5)
          GOTO 999
       END IF
-C     
+C
 C     CHECK FOR VALID CLRMOD.
       IF(CLRMOD.NE.0.AND.CLRMOD.NE.1) THEN
          CALL VBERRH(725,5)
          GOTO 999
       END IF
-C     
+C
       IF(CLRMOD.NE.0) STOP 'HLS COLORS NOT SUPPORTED'
-C     
+C
 C     CHECK FOR VALID INDEXES.
       DO I=1,NUM
          INDEXN=INDEX(I)
@@ -1775,7 +1775,7 @@ C     CHECK FOR VALID INDEXES.
          CLRARY(3,I)=PCOLS(3,INDEXN)
  100     continue
       end do
-C     
+C
  999  RETURN
       END
       SUBROUTINE VDIQCP(X,Y)
@@ -3391,30 +3391,30 @@ C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
       end
       SUBROUTINE PSTI2C(INT,NDIGIT,ISTR)
 C     C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
-C     
+C
 C     PSTI2C           - convert positive integer to decimal character
 C     string equivalent
-C     
+C
 C     ENVIRONMENT      - COMPUTER-INdependent
-C     
+C
 C     ENTRY CONDITIONS - int = positive integer to be converted
 C     ndigit = number of digits to be produced in string
 C     form (pad left with zeros)
 C     istr = character string of at least ndigit characters
-C     
+C
 C     CALLS            -
-C     
+C
 C     EXIT CONDITIONS  - istr contains decimal-string equivalent of int
 C     (ndigits left-justified in istr)
-C     
+C
 C     NARRATIVE        - This routine modified 10/89  S.L.Thompson
-C     
+C
 C     C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
       INTEGER INT,NDIGIT
       CHARACTER ISTR*(*)
       CHARACTER*1 KA(10)
       DATA KA /'0','1','2','3','4','5','6','7','8','9'/
-C     
+C
 C     check input parameters
       INT1=MAX(INT,0)
       LENGTH=LEN(ISTR)
