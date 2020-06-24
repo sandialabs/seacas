@@ -104,7 +104,6 @@ public:
     vtkMultiProcessController* controller = vtkMultiProcessController::GetGlobalController();
     int myrank = controller->GetLocalProcessId();
 
-    if(myrank == 0 || myrank == 1) {
       vtkCGNSMultiBlockDataSet *cgnsmbds =
        vtkCGNSMultiBlockDataSet::SafeDownCast(dd->GetInputDescriptionByName("input")->GetGrid());
 
@@ -136,6 +135,7 @@ public:
 
       vtkPoints* pts = sg->GetPoints();
 
+/*
       vtkXMLStructuredGridWriter* writer = vtkXMLStructuredGridWriter::New();
       writer->SetInputData(sg);
       std::ostringstream convert;
@@ -146,11 +146,10 @@ public:
                                         + "_" + convert_rank.str() +".vts").c_str());
       writer->Write();
       writer->Delete();
-    }
+*/
 
-/*
-      vtkCGNSMultiBlockDataSet *cgnsmbds =
-       vtkCGNSMultiBlockDataSet::SafeDownCast(dd->GetInputDescriptionByName("input")->GetGrid());
+     // vtkCGNSMultiBlockDataSet *cgnsmbds =
+     //  vtkCGNSMultiBlockDataSet::SafeDownCast(dd->GetInputDescriptionByName("input")->GetGrid());
       vtkXMLPMultiBlockDataWriter* writer = vtkXMLPMultiBlockDataWriter::New();
       writer->SetInputData(cgnsmbds->GetBlock(0));
       std::ostringstream oss;
@@ -163,7 +162,6 @@ public:
       }
       writer->Update();
       writer->Delete();
-*/
     }
   }
 
