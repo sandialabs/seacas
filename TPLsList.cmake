@@ -59,7 +59,6 @@ SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
   Pnetcdf         "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   Netcdf          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   CGNS            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
-  Faodel          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   DataWarp        "cmake/TPLs/"    SS
   METIS           "cmake/TPLs/"    TS
   ParMETIS        "cmake/TPLs/"    SS
@@ -69,5 +68,7 @@ SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
   DLlib           "cmake/TPLs/"    ST
   CUDA            "cmake/TPLs/"    SS
   Kokkos          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
+  Faodel          "${SEACAS_SOURCE_DIR}/cmake/tpls/"    SS
+  Cereal          "${SEACAS_SOURCE_DIR}/cmake/tpls/"    SS
   ADIOS2          "${SEACAS_SOURCE_DIR}/cmake/tpls/FindTPLADIOS2.cmake"    EX
   )
