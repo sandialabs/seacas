@@ -150,7 +150,7 @@ public:
 
      // vtkCGNSMultiBlockDataSet *cgnsmbds =
      //  vtkCGNSMultiBlockDataSet::SafeDownCast(dd->GetInputDescriptionByName("input")->GetGrid());
-      vtkXMLPMultiBlockDataWriter* writer = vtkXMLPMultiBlockDataWriter::New();
+/*      vtkXMLPMultiBlockDataWriter* writer = vtkXMLPMultiBlockDataWriter::New();
       writer->SetInputData(cgnsmbds->GetBlock(0));
       std::ostringstream oss;
       oss << "." << writer->GetDefaultFileExtension();
@@ -162,6 +162,7 @@ public:
       }
       writer->Update();
       writer->Delete();
+*/
     }
   }
 
@@ -169,6 +170,22 @@ public:
   {
     vtkCGNSMultiBlockDataSet *cgnsmbds =
     vtkCGNSMultiBlockDataSet::SafeDownCast(dd->GetInputDescriptionByName("input")->GetGrid());
+
+    vtkMultiProcessController* controller = vtkMultiProcessController::GetGlobalController();
+    int myrank = controller->GetLocalProcessId();
+      vtkXMLPMultiBlockDataWriter* writer = vtkXMLPMultiBlockDataWriter::New();
+      writer->SetInputData(cgnsmbds->GetBlock(0));
+      std::ostringstream oss;
+      oss << "." << writer->GetDefaultFileExtension();
+      std::ostringstream convert;
+      convert << 0;
+      writer->SetFileName(std::string("test_" + convert.str() + oss.str()).c_str());
+      if(myrank == 0) {
+        writer->SetWriteMetaFile(1);
+      }
+      writer->Update();
+      writer->Delete();
+
   }
 
   void CreateBase(int base_id,
