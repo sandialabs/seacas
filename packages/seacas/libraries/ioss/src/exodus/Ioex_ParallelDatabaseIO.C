@@ -298,12 +298,12 @@ namespace Ioex {
   {
     // Check for valid exodus_file_ptr (valid >= 0; invalid < 0)
     assert(isParallel);
-    int global_file_ptr = util().global_minmax(exodusFilePtr, Ioss::ParallelUtils::DO_MIN);
+    int global_file_ptr = util().global_minmax(m_exodusFilePtr, Ioss::ParallelUtils::DO_MIN);
 
     if (global_file_ptr < 0) {
       if (write_message || error_msg != nullptr || bad_count != nullptr) {
         Ioss::IntVector status;
-        util().all_gather(exodusFilePtr, status);
+        util().all_gather(m_exodusFilePtr, status);
 
         std::string open_create = is_input() ? "open input" : "create output";
         if (write_message || error_msg != nullptr) {
@@ -384,7 +384,7 @@ namespace Ioex {
     double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
     int app_opt_val = ex_opts(EX_VERBOSE);
-    exodusFilePtr   = ex_open_par(filename.c_str(), EX_READ | mode, &cpu_word_size, &io_word_size,
+    m_exodusFilePtr   = ex_open_par(filename.c_str(), EX_READ | mode, &cpu_word_size, &io_word_size,
                                 &version, util().communicator(), info);
 
     if (do_timer) {
@@ -476,7 +476,7 @@ namespace Ioex {
     double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
     if (fileExists) {
-      exodusFilePtr = ex_open_par(filename.c_str(), EX_WRITE | mode, &cpu_word_size, &io_word_size,
+      m_exodusFilePtr = ex_open_par(filename.c_str(), EX_WRITE | mode, &cpu_word_size, &io_word_size,
                                   &version, util().communicator(), info);
     }
     else {
@@ -494,7 +494,7 @@ namespace Ioex {
           mode |= EX_ALL_INT64_DB;
         }
       }
-      exodusFilePtr = ex_create_par(filename.c_str(), mode, &cpu_word_size, &dbRealWordSize,
+      m_exodusFilePtr = ex_create_par(filename.c_str(), mode, &cpu_word_size, &dbRealWordSize,
                                     util().communicator(), info);
     }
 
@@ -513,16 +513,16 @@ namespace Ioex {
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
 
     if (is_ok) {
-      ex_set_max_name_length(exodusFilePtr, maximumNameLength);
+      ex_set_max_name_length(m_exodusFilePtr, maximumNameLength);
 
       // Check properties handled post-create/open...
       if (properties.exists("COMPRESSION_LEVEL")) {
         int comp_level = properties.get("COMPRESSION_LEVEL").get_int();
-        ex_set_option(exodusFilePtr, EX_OPT_COMPRESSION_LEVEL, comp_level);
+        ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_LEVEL, comp_level);
       }
       if (properties.exists("COMPRESSION_SHUFFLE")) {
         int shuffle = properties.get("COMPRESSION_SHUFFLE").get_int();
-        ex_set_option(exodusFilePtr, EX_OPT_COMPRESSION_SHUFFLE, shuffle);
+        ex_set_option(m_exodusFilePtr, EX_OPT_COMPRESSION_SHUFFLE, shuffle);
       }
     }
     ex_opts(app_opt_val); // Reset back to what it was.
@@ -545,8 +545,8 @@ namespace Ioex {
     }
 
     // Make sure all file pointers are valid...
-    int fp_min = util().global_minmax(exodusFilePtr, Ioss::ParallelUtils::DO_MIN);
-    int fp_max = util().global_minmax(exodusFilePtr, Ioss::ParallelUtils::DO_MAX);
+    int fp_min = util().global_minmax(m_exodusFilePtr, Ioss::ParallelUtils::DO_MIN);
+    int fp_max = util().global_minmax(m_exodusFilePtr, Ioss::ParallelUtils::DO_MAX);
     if (fp_min != fp_max && fp_min < 0) {
       std::ostringstream errmsg;
       fmt::print(errmsg, "ERROR: Inconsistent file pointer values.");
