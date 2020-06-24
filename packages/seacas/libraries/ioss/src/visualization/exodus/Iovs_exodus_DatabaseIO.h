@@ -228,20 +228,11 @@ namespace Iovs_exodus {
     DatabaseIO(const DatabaseIO &);            // Do not implement
     DatabaseIO &operator=(const DatabaseIO &); // Do not implement
 
-    std::string        databaseTitle{};
-    std::string        paraview_script_filename;
-    std::string        catalyst_block_file_name{};
-    std::string        paraview_json_parse{};
-    std::string        sierra_input_deck_name{};
-    std::string        catalyst_output_directory{};
-    std::string        paraview_script_extra_filename{};
-    int                enableLogging;
-    int                debugLevel;
-    int                underscoreVectors;
-    int                applyDisplacements;
-    int                createSideSets;
-    int                createNodeSets;
-
+    bool isInput;
+    bool singleProcOnly; // True if history or heartbeat which is only written from proc 0...
+    bool doLogging;      // True if logging field input/output
+    bool                createSideSets;
+    bool                createNodeSets;
     int nodeBlockCount;
     int elementBlockCount;
 

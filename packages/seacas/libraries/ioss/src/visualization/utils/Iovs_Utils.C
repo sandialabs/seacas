@@ -111,37 +111,116 @@ namespace Iovs {
         return (*mkr)();
     }
 
+    CatalystExodusMeshBase* Utils::createCatalystExodusMesh(
+        const std::string & databaseFilename,
+            const std::string & separatorCharacter,
+                const Ioss::PropertyManager & props) {
+
+        CatalystManagerBase::CatalystExodusMeshInit cmInit;
+
+        cmInit.resultsOutputFilename = databaseFilename;
+
+        if (props.exists("CATALYST_BLOCK_PARSE_JSON_STRING")) {
+            cmInit.catalystSierraBlockJSON = props\
+                .get("CATALYST_BLOCK_PARSE_JSON_STRING").get_string();
+        }
+
+        if (props.exists("CATALYST_SCRIPT")) {
+            cmInit.catalystPythonFilename = props\
+                .get("CATALYST_SCRIPT").get_string();
+        }
+        else {
+            cmInit.catalystPythonFilename = this->getCatalystPythonDriverPath();
+        }
+
+        if (props.exists("CATALYST_SCRIPT_EXTRA_FILE")) {
+            cmInit.catalystSierraData.push_back(props\
+                .get("CATALYST_SCRIPT_EXTRA_FILE").get_string());
+        }
+
+        cmInit.underScoreVectors = true;
+        if (props.exists("CATALYST_UNDERSCORE_VECTORS")) {
+            cmInit.underScoreVectors = props\
+                .get("CATALYST_UNDERSCORE_VECTORS").get_int();
+        }
+
+        cmInit.applyDisplacements = true;
+        if (props.exists("CATALYST_APPLY_DISPLACEMENTS")) {
+            cmInit.applyDisplacements = props\
+                .get("CATALYST_APPLY_DISPLACEMENTS").get_int();
+        }
+
+        if (props.exists("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME")) {
+            cmInit.catalystSierraInputDeckName = props\
+                .get("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME").get_string();
+        }
+
+        cmInit.enableLogging = false;
+        if (props.exists("CATALYST_ENABLE_LOGGING")) {
+           cmInit.enableLogging = props\
+               .get("CATALYST_ENABLE_LOGGING").get_int();
+        }
+
+        cmInit.debugLevel = 0;
+        if (props.exists("CATALYST_DEBUG_LEVEL")) {
+            cmInit.enableLogging = props.get("CATALYST_DEBUG_LEVEL").get_int();
+        }
+
+        cmInit.catalystOutputDirectory = CATALYST_OUTPUT_DIRECTORY;
+        if (props.exists("CATALYST_OUTPUT_DIRECTORY")) {
+            cmInit.catalystOutputDirectory = props\
+                .get("CATALYST_OUTPUT_DIRECTORY").get_string();
+        }
+
+        cmInit.catalystSierraSeparatorCharacter = separatorCharacter;
+        cmInit.restartTag = this->getRestartTag(databaseFilename);
+
+        this->numExodusCatalystOutputs++;
+        return this->getCatalystManager().createCatalystExodusMesh(cmInit);
+    }
+
+    std::string Utils::getRestartTag(const std::string & databaseFilename) {
+        std::string restartTag;
+        std::string::size_type pos = databaseFilename.rfind(".e-s");
+        if (pos != std::string::npos) {
+            if (pos + 3 <= databaseFilename.length()) {
+                restartTag = databaseFilename.substr(pos + 3, 5);
+            }
+        }
+        return restartTag;
+    }
+
     bool Utils::fileExists(const std::string &filepath) {
         struct stat buffer {};
         return (stat(filepath.c_str(), &buffer) == 0);
     }
 
     std::string Utils::getExodusDatabaseOutputFilePath(
-        const std::string & inputDeckName,
+        const std::string & databaseFilename,
             const Ioss::PropertyManager &properties) {
-        return this->getDatabaseOutputFilePath(inputDeckName,
+        return this->getDatabaseOutputFilePath(databaseFilename,
             this->numExodusCatalystOutputs, properties);
     }
 
     std::string Utils::getCGNSDatabaseOutputFilePath(
-        const std::string & inputDeckName,
+        const std::string & databaseFilename,
             const Ioss::PropertyManager &properties) {
-        return this->getDatabaseOutputFilePath(inputDeckName,
+        return this->getDatabaseOutputFilePath(databaseFilename,
             this->numCGNSCatalystOutputs, properties);
     }
 
     std::string Utils::getDatabaseOutputFilePath(
-        const std::string & inputDeckName,
+        const std::string & databaseFilename,
             int numberOfCatalystBlocks,
                 const Ioss::PropertyManager &properties) {
         if (!properties.exists("CATALYST_OUTPUT_DIRECTORY")) {
             std::ostringstream s;
-            s << inputDeckName << "." << numberOfCatalystBlocks
+            s << databaseFilename << "." << numberOfCatalystBlocks
                 << CATALYST_FILE_SUFFIX;
             return std::string(CATALYST_OUTPUT_DIRECTORY) + "/" + s.str();
         }
         else {
-            return inputDeckName;
+            return databaseFilename;
         }
     }
 
@@ -346,10 +425,6 @@ namespace Iovs {
 
     void Utils::incrementNumCGNSCatalystOutputs() {
         this->numCGNSCatalystOutputs++;
-    }
-
-    void Utils::incrementNumExodusCatalystOutputs() {
-        this->numExodusCatalystOutputs++;
     }
 
 } // namespace Iovs

@@ -72,16 +72,20 @@ namespace Iovs {
     void createDatabaseOutputFile(const std::string &filename,
         MPI_Comm communicator);
 
+    CatalystExodusMeshBase* createCatalystExodusMesh(
+        const std::string & databaseFilename,
+            const std::string & separatorCharacter,
+                const Ioss::PropertyManager & props);
+
     std::string getExodusDatabaseOutputFilePath(
-        const std::string & inputDeckName,
+        const std::string & databaseFilename,
             const Ioss::PropertyManager &properties);
 
     std::string getCGNSDatabaseOutputFilePath(
-        const std::string & inputDeckName,
+        const std::string & databaseFilename,
             const Ioss::PropertyManager &properties);
 
     void incrementNumCGNSCatalystOutputs();
-    void incrementNumExodusCatalystOutputs();
 
   private:
 
@@ -95,6 +99,8 @@ namespace Iovs {
     CatalystManagerBase*
         createCatalystManagerInstance();
 
+    std::string getRestartTag(const std::string & databaseFilename);
+
     void loadPluginLibrary();
 
     std::string getCatalystPluginPath();
@@ -104,7 +110,7 @@ namespace Iovs {
     std::string getCatalystAdapterInstallDirectory();
 
     std::string getDatabaseOutputFilePath(
-        const std::string & inputDeckName,
+        const std::string & databaseFilename,
             int numberOfCatalystOutputs,
                 const Ioss::PropertyManager &properties);
 

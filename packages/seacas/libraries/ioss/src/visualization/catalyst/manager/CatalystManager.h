@@ -51,18 +51,8 @@ public:
     CatalystManager();
     ~CatalystManager();
 
-    virtual CatalystExodusMeshBase* CreateNewPipeline(
-        const char *catalyst_python_filename,
-        const char *catalyst_sierra_block_json,
-            const char *catalyst_sierra_separator_character,
-                const char *catalyst_sierra_input_deck_name,
-                    int UnderscoreVectors, int ApplyDisplacements,
-                        const char *restart_tag, int enable_logging,
-                           int debug_level,
-                               const char *results_output_filename,
-                                   const char *catalyst_output_directory,
-                                       std::vector<std::string>
-                                           &catalyst_sierra_data);
+    CatalystExodusMeshBase* createCatalystExodusMesh(
+        CatalystExodusMeshInit& cmInit);
 
     // Description:
     // Deletes pipeline with name results_output_filename and any associated

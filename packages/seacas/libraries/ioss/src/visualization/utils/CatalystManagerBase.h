@@ -51,29 +51,33 @@ public:
     // If initialization fails, co-processing will not occur in any other
     // methods on this class.
     // Additional arguments:
-    //   UnderscoreVectors - joined vector variable names end in an underscore.
-    //   ApplyDisplacements - a nodal variable named DISPL or displ is applied to
+    //   underscoreVectors - joined vector variable names end in an underscore.
+    //   applyDisplacements - a nodal variable named DISPL or displ is applied to
     //                        the mesh node coordinates each time-step.
-    //   restart_tag - if not empty, contains the current restart iteration string, ie s0001
-    //   enable_logging - turn on logging in the adapter. Default is off.
-    //   debug_level - enable catalyst debug output 0, 1, 2. Default is 0.
-    //   results_output_filename - filename associated with the Ioss results output block.
-    //   catalyst_output_directory - name of the output directory for storing Catalyst output.
-    //                               Default is CatalystOutput.
-    //   catalyst_sierra_data - string data vector for development and debugging.
-    virtual CatalystExodusMeshBase* CreateNewPipeline(
-        const char *catalyst_python_filename,
-        const char *catalyst_sierra_block_json,
-            const char *catalyst_sierra_separator_character,
-                const char *catalyst_sierra_input_deck_name,
-                    int UnderscoreVectors, int ApplyDisplacements,
-                        const char *restart_tag, int enable_logging,
-                           int debug_level,
-                               const char *results_output_filename,
-                                   const char *catalyst_output_directory,
-                                       std::vector<std::string>
-                                           &catalyst_sierra_data) = 0;
+    //   restartTag - if not empty, contains the current restart iteration string, ie s0001
+    //   enableLogging - turn on logging in the adapter. Default is off.
+    //   debugLevel - enable catalyst debug output 0, 1, 2. Default is 0.
+    //   resultsOutputFilename - filename associated with the Ioss results output block.
+    //   catalystOutputDirectory - name of the output directory for storing Catalyst output.
+    //                              Default is CatalystOutput.
+    //   catalystSierraData - string data vector for development and debugging.
+    struct CatalystExodusMeshInit {
+        std::string catalystPythonFilename;
+        std::string catalystSierraBlockJSON;
+        std::string catalystSierraSeparatorCharacter;
+        std::string catalystSierraInputDeckName;
+        bool underScoreVectors;
+        bool applyDisplacements;
+        std::string restartTag;
+        bool enableLogging;
+        int debugLevel;
+        std::string resultsOutputFilename;
+        std::string catalystOutputDirectory;
+        std::vector<std::string> catalystSierraData;
+    };
 
+    virtual CatalystExodusMeshBase* createCatalystExodusMesh(
+        CatalystExodusMeshInit& cmInit) = 0;
 };
 
 #endif // __CATALYST_MANAGER_BASE_H

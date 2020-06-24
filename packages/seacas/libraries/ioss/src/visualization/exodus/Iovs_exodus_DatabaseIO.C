@@ -31,8 +31,6 @@
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 
-const char *CATALYST_OUTPUT_DIRECTORY = "CatalystOutput";
-
 namespace { // Internal helper functions
   enum class entity_type { NODAL, ELEM_BLOCK, NODE_SET, SIDE_SET };
   int64_t get_id(const Ioss::GroupingEntity *entity,
@@ -53,74 +51,27 @@ namespace Iovs_exodus {
             region, Iovs::Utils::getInstance().getExodusDatabaseOutputFilePath(\
                 filename, props),
                     db_usage, communicator, props),
-        isInput(false), singleProcOnly(false), doLogging(false), enableLogging(0), debugLevel(0),
-        underscoreVectors(0), applyDisplacements(0), createSideSets(0), createNodeSets(0),
+        isInput(false), singleProcOnly(false), doLogging(false),
+        createSideSets(false), createNodeSets(false),
         nodeBlockCount(0), elementBlockCount(0)
   {
 
     Iovs::Utils::getInstance().checkDbUsage(db_usage);
     Iovs::Utils::getInstance().createDatabaseOutputFile(\
         this->DBFilename, communicator);
-    Iovs::Utils::getInstance().incrementNumExodusCatalystOutputs();
-
     dbState = Ioss::STATE_UNKNOWN;
-
-    this->catExoMesh = nullptr;
     this->globalNodeAndElementIDsCreated = false;
 
-    if (props.exists("CATALYST_BLOCK_PARSE_JSON_STRING")) {
-      this->paraview_json_parse = props.get("CATALYST_BLOCK_PARSE_JSON_STRING").get_string();
-    }
+    std::string separator(1, this->get_field_separator());
+    this->catExoMesh = Iovs::Utils::getInstance()\
+        .createCatalystExodusMesh(this->DBFilename, separator, props);
 
-    if (props.exists("CATALYST_SCRIPT")) {
-      this->paraview_script_filename = props.get("CATALYST_SCRIPT").get_string();
-    }
-    else {
-      this->paraview_script_filename = Iovs::Utils::getInstance()\
-          .getCatalystPythonDriverPath();
-    }
-
-    if (props.exists("CATALYST_SCRIPT_EXTRA_FILE")) {
-      this->paraview_script_extra_filename = props.get("CATALYST_SCRIPT_EXTRA_FILE").get_string();
-    }
-
-    this->underscoreVectors = 1;
-    if (props.exists("CATALYST_UNDERSCORE_VECTORS")) {
-      this->underscoreVectors = props.get("CATALYST_UNDERSCORE_VECTORS").get_int();
-    }
-
-    this->applyDisplacements = 1;
-    if (props.exists("CATALYST_APPLY_DISPLACEMENTS")) {
-      this->applyDisplacements = props.get("CATALYST_APPLY_DISPLACEMENTS").get_int();
-    }
-
-    this->createNodeSets = 0;
     if (props.exists("CATALYST_CREATE_NODE_SETS")) {
       this->createNodeSets = props.get("CATALYST_CREATE_NODE_SETS").get_int();
     }
 
-    this->createSideSets = 0;
     if (props.exists("CATALYST_CREATE_SIDE_SETS")) {
       this->createSideSets = props.get("CATALYST_CREATE_SIDE_SETS").get_int();
-    }
-
-    if (props.exists("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME")) {
-      this->sierra_input_deck_name = props.get("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME").get_string();
-    }
-
-    this->enableLogging = 0;
-    if (props.exists("CATALYST_ENABLE_LOGGING")) {
-      this->enableLogging = props.get("CATALYST_ENABLE_LOGGING").get_int();
-    }
-
-    this->debugLevel = 0;
-    if (props.exists("CATALYST_DEBUG_LEVEL")) {
-      this->enableLogging = props.get("CATALYST_DEBUG_LEVEL").get_int();
-    }
-
-    this->catalyst_output_directory = CATALYST_OUTPUT_DIRECTORY;
-    if (props.exists("CATALYST_OUTPUT_DIRECTORY")) {
-      this->catalyst_output_directory = props.get("CATALYST_OUTPUT_DIRECTORY").get_string();
     }
   }
 
@@ -135,27 +86,8 @@ namespace Iovs_exodus {
   {
     dbState              = state;
     Ioss::Region *region = this->get_region();
-    if (region->model_defined() && this->catExoMesh == nullptr) {
-      std::string separator(1, this->get_field_separator());
 
-      // See if we are in a restart by looking for '.e-s' in the output filename
-      std::string            restart_tag;
-      std::string::size_type pos = this->DBFilename.rfind(".e-s");
-      if (pos != std::string::npos) {
-        if (pos + 3 <= this->DBFilename.length()) {
-          restart_tag = this->DBFilename.substr(pos + 3, 5);
-        }
-      }
-
-      std::vector<std::string> catalyst_sierra_data;
-      catalyst_sierra_data.push_back(this->paraview_script_extra_filename);
-
-      this->catExoMesh = Iovs::Utils::getInstance().getCatalystManager().CreateNewPipeline(
-          this->paraview_script_filename.c_str(), this->paraview_json_parse.c_str(),
-          separator.c_str(), this->sierra_input_deck_name.c_str(), this->underscoreVectors,
-          this->applyDisplacements, restart_tag.c_str(), this->enableLogging, this->debugLevel,
-          this->DBFilename.c_str(), this->catalyst_output_directory.c_str(), catalyst_sierra_data);
-
+    if (state == Ioss::STATE_MODEL) {
       std::vector<int>                   element_block_id_list;
       Ioss::ElementBlockContainer const &ebc = region->get_element_blocks();
       for (auto i : ebc) {
@@ -783,7 +715,7 @@ namespace Iovs_exodus {
 
       int id = get_id(ns, &this->ids_);
 
-      if (this->createNodeSets == 0) {
+      if (!this->createNodeSets) {
         cns_save_num_to_get = num_to_get;
         num_to_get          = 0;
       }
@@ -797,7 +729,7 @@ namespace Iovs_exodus {
         this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get, static_cast<int64_t *>(data));
       }
 
-      if (this->createNodeSets == 0) {
+      if (!this->createNodeSets) {
         num_to_get = cns_save_num_to_get;
       }
     }
@@ -840,7 +772,7 @@ namespace Iovs_exodus {
           side[i]    = el_side[index++] + side_offset;
         }
 
-        if (this->createSideSets == 0) {
+        if (!this->createSideSets) {
           css_save_num_to_get = num_to_get;
           num_to_get          = 0;
         }
@@ -880,7 +812,7 @@ namespace Iovs_exodus {
         //    "put_field_internal back from CreateSideSet (1) \n";
         //
         //
-        if (this->createSideSets == 0) {
+        if (!this->createSideSets) {
           num_to_get = css_save_num_to_get;
         }
       }
@@ -894,7 +826,7 @@ namespace Iovs_exodus {
           side[i]    = el_side[index++] + side_offset;
         }
 
-        if (this->createSideSets == 0) {
+        if (!this->createSideSets) {
           css_save_num_to_get = num_to_get;
           num_to_get          = 0;
         }
@@ -933,7 +865,7 @@ namespace Iovs_exodus {
         // std::cerr << "Iovs_DatabaseIO::"
         //    "put_field_internal back from CreateSideSet (2) \n";
         //
-        if (this->createSideSets == 0) {
+        if (!this->createSideSets) {
           num_to_get = css_save_num_to_get;
         }
       }
