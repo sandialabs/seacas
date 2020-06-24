@@ -3,7 +3,7 @@ SET(CATALYST_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
 SET(CATALYST_PLUGIN_BUILD_DIR ${PROJECT_BINARY_DIR})
 CONFIGURE_FILE(CatalystPluginPaths.h.in CatalystPluginPaths.h @ONLY)
 
-ADD_LIBRARY(ioss2catalyst
+ADD_LIBRARY(ioss2catalyst SHARED
     IossRegionReport.cxx
     IossApplication.cxx)
 
