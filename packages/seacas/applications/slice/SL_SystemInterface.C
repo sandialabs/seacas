@@ -19,12 +19,6 @@
 #include <copyright.h>
 #include <fmt/format.h>
 
-#if defined(__PUMAGON__)
-#define NPOS (size_t) - 1
-#else
-#define NPOS std::string::npos
-#endif
-
 namespace {
   int  get_free_descriptor_count();
   bool str_equal(const std::string &s1, const std::string &s2)

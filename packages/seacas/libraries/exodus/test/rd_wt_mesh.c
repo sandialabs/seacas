@@ -134,10 +134,6 @@ int main(int argc, char **argv)
 
   ex_opts(EX_VERBOSE | EX_ABORT);
 
-#if defined(__LIBCATAMOUNT__)
-  setlinebuf(stderr);
-#endif
-
 #ifdef PARALLEL_AWARE_EXODUS
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
