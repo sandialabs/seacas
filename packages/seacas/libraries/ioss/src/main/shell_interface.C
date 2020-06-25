@@ -19,8 +19,6 @@
 #include <string>   // for string, char_traits
 #include <vector>   // for vector
 
-#define NPOS std::string::npos
-
 namespace {
   std::string get_type_from_file(const std::string &filename)
   {

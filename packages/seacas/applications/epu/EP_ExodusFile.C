@@ -338,9 +338,7 @@ size_t Excn::ExodusFile::get_free_descriptor_count()
 {
 // Returns maximum number of files that one process can have open
 // at one time. (POSIX)
-#if defined(__PUMAGON__)
-  int fdmax = FOPEN_MAX;
-#elif defined(_WIN32)
+#if defined(_WIN32)
   int fdmax = _getmaxstdio();
 #else
   int fdmax = sysconf(_SC_OPEN_MAX);
