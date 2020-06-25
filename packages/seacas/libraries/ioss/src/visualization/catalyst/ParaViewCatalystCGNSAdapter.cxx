@@ -132,10 +132,14 @@ public:
 
       if(!sg)
         std::cout << "sg is NULL\n";
-
-      vtkPoints* pts = sg->GetPoints();
+        //it's okay for sg to be NULL. It means there was no data on
+        //this process on this block
 
 /*
+      //pts is not used anywhere below, not sure why there was code getting it
+      //(which caused core dump when sg was NULL)
+      //vtkPoints* pts = sg->GetPoints();
+
       vtkXMLStructuredGridWriter* writer = vtkXMLStructuredGridWriter::New();
       writer->SetInputData(sg);
       std::ostringstream convert;

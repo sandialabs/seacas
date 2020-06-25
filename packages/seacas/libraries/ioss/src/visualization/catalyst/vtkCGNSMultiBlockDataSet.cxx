@@ -113,6 +113,22 @@ void vtkCGNSMultiBlockDataSet::AddStructuredZoneData(int base_id,
   vtkMultiBlockDataSet *base = vtkMultiBlockDataSet::SafeDownCast(bases->GetBlock(bs.base_location));
   vtkMultiBlockDataSet *zones = vtkMultiBlockDataSet::SafeDownCast(base->GetBlock(ZONES_BLOCK_ID));
 
+  //if this is an empty block, we just need to make a NULL grid with the
+  //proper name, and we don't need to add any data variables
+  //alternative is to make block with dims of (I think) -1,-1,-1
+  //or extents of [0,-1,0,-1,0,-1] (I think)
+  if((ni == 0) or (nj == 0) or (nk == 0)) {
+    if(bs.zone_id_to_zone_location_map.find(zone_id) ==
+      bs.zone_id_to_zone_location_map.end()) {
+      int location = zones->GetNumberOfBlocks();
+      vtkStructuredGrid* sg = NULL;
+      zones->SetBlock(location, sg);
+      zones->GetMetaData(location)->Set(vtkCompositeDataSet::NAME(), zone_name);
+      bs.zone_id_to_zone_location_map[zone_id] = location;
+    }
+    return;
+  }
+
   if(bs.zone_id_to_zone_location_map.find(zone_id) ==
      bs.zone_id_to_zone_location_map.end()) {
     int location = zones->GetNumberOfBlocks();
