@@ -37,6 +37,7 @@
 #include "vtkCPProcessor.h"
 #include "vtkCPPythonScriptPipeline.h"
 #include "../exodus/CatalystExodusMesh.h"
+#include "../cgns/CatalystCGNSMesh.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkMPIController.h"
 #include "vtkProcessModule.h"
@@ -47,29 +48,100 @@
 #include <vtksys/SystemInformation.hxx>
 
 CatalystManager::CatalystManager() {
-    this->coProcessor = vtkCPProcessor::New();
-    this->coProcessor->Initialize();
+    this->coProcessor = nullptr;
+    this->catalystOutputIDNumber = 0;
+    this->catalystOutputReferenceCount = 0;
 }
 
 CatalystManager::~CatalystManager() {
+}
 
+int CatalystManager::getCatalystOutputIDNumber() {
+    return this->catalystOutputIDNumber;
+}
+
+void CatalystManager::initializeIfNeeded() {
+    if (!this->canCoProcess()) {
+        this->coProcessor = vtkCPProcessor::New();
+        this->coProcessor->Initialize();
+        this->catalystOutputReferenceCount = 0;
+    }
+}
+
+void CatalystManager::finalizeIfNeeded() {
+    if (this->canCoProcess()) {
+        this->coProcessor->Delete();
+        this->coProcessor = nullptr;
+    }
+}
+
+bool CatalystManager::canCoProcess() {
+    return this->coProcessor != nullptr;
+}
+
+void CatalystManager::incrementOutputCounts() {
+    this->catalystOutputIDNumber++;
+    this->catalystOutputReferenceCount++;
 }
 
 CatalystExodusMeshBase* CatalystManager::createCatalystExodusMesh(
     CatalystExodusMeshInit& cmInit) {
 
+    this->initializeIfNeeded();
     CatalystExodusMesh* cem = nullptr;
 
-    if (cmInit.enableLogging) {
+    if (this->pipelines.find(cmInit.resultsOutputFilename) ==
+        this->pipelines.end()) {
+
+        if (cmInit.enableLogging) {
+            this->initCatalystLogging(cmInit);
+        }
+
+        cem = new CatalystExodusMesh(this);
+        cem->SetCatalystPipelineName(cmInit.resultsOutputFilename);
+        cem->SetUnderscoreVectors(cmInit.underScoreVectors);
+        cem->SetApplyDisplacements(cmInit.applyDisplacements);
+        this->initCatalystPipeline(cmInit, cem->getMultiBlockDataSet());
+    }
+
+    this->incrementOutputCounts();
+    return (CatalystExodusMeshBase*) cem;
+}
+
+CatalystCGNSMeshBase* CatalystManager::createCatalystCGNSMesh(
+    CatalystMeshInit& cmInit) {
+
+    this->initializeIfNeeded();
+    CatalystCGNSMesh* cgm = nullptr;
+
+    if (this->pipelines.find(cmInit.resultsOutputFilename) ==\
+        this->pipelines.end()) {
+
+        if (cmInit.enableLogging) {
+            this->initCatalystLogging(cmInit);
+        }
+
+        cgm = new CatalystCGNSMesh(this);
+        cgm->SetCatalystPipelineName(cmInit.resultsOutputFilename);
+        this->initCatalystPipeline(cmInit, cgm->getMultiBlockDataSet());
+    }
+
+    this->incrementOutputCounts();
+    return (CatalystCGNSMeshBase*) cgm;
+}
+
+void CatalystManager::initCatalystLogging(CatalystMeshInit& cmInit) {
+
       TimerPair       tp = std::make_pair(clock(), clock());
       vtkDoubleArray *da = vtkDoubleArray::New();
       da->SetNumberOfComponents(3);
-      LoggingPair lp                         = std::make_pair(tp, da);
+      LoggingPair lp = std::make_pair(tp, da);
       this->logging[cmInit.resultsOutputFilename] = lp;
 
-      vtkProcessModule *pm   = vtkProcessModule::GetProcessModule();
-      vtkMPIController *mpic = vtkMPIController::SafeDownCast(pm->GetGlobalController());
-      std::string       s(cmInit.resultsOutputFilename);
+      vtkProcessModule *pm = vtkProcessModule::GetProcessModule();
+      vtkMPIController *mpic = vtkMPIController::SafeDownCast(
+          pm->GetGlobalController());
+      std::string s(cmInit.resultsOutputFilename);
       if (mpic && mpic->GetNumberOfProcesses() > 1) {
         if (mpic->GetLocalProcessId() == 0) {
           ofstream logfile;
@@ -98,25 +170,17 @@ CatalystExodusMeshBase* CatalystManager::createCatalystExodusMesh(
                 << "\n";
         logfile.close();
       }
-    }
+}
 
-    if (this->pipelines.find(cmInit.resultsOutputFilename) ==\
-        this->pipelines.end()) {
-      vtkCPDataDescription *     dd = vtkCPDataDescription::New();
-      vtkCPPythonScriptPipeline *pl = vtkCPPythonScriptPipeline::New();
+void CatalystManager::initCatalystPipeline(CatalystMeshInit& cmInit,
+    vtkMultiBlockDataSet* mbds) {
 
-      cem = new CatalystExodusMesh(this);
-      cem->SetCatalystPipelineName(cmInit.resultsOutputFilename);
-      cem->SetUnderscoreVectors(cmInit.underScoreVectors);
-      cem->SetApplyDisplacements(cmInit.applyDisplacements);
-
-      dd->AddInput("input");
-      dd->GetInputDescriptionByName("input")->SetGrid(
-          cem->getMultiBlockDataSet());
-
-      PipelineDataDescPair pddp                = std::make_pair(pl, dd);
-      this->pipelines[cmInit.resultsOutputFilename] = pddp;
-    }
+    vtkCPDataDescription * dd = vtkCPDataDescription::New();
+    vtkCPPythonScriptPipeline * pl = vtkCPPythonScriptPipeline::New();
+    dd->AddInput("input");
+    dd->GetInputDescriptionByName("input")->SetGrid(mbds);
+    PipelineDataDescPair pddp = std::make_pair(pl, dd);
+    this->pipelines[cmInit.resultsOutputFilename] = pddp;
 
     vtkFieldData *  fd = vtkFieldData::New();
     vtkStringArray *sa = vtkStringArray::New();
@@ -125,9 +189,9 @@ CatalystExodusMeshBase* CatalystManager::createCatalystExodusMesh(
     ec->SetName("catalyst_sierra_error_codes");
     vtkStringArray *em = vtkStringArray::New();
     em->SetName("catalyst_sierra_error_messages");
-    sa->InsertNextValue(cmInit.catalystSierraBlockJSON);
-    sa->InsertNextValue(cmInit.catalystSierraSeparatorCharacter);
-    sa->InsertNextValue(cmInit.catalystSierraInputDeckName);
+    sa->InsertNextValue(cmInit.catalystBlockJSON);
+    sa->InsertNextValue(cmInit.catalystSeparatorCharacter);
+    sa->InsertNextValue(cmInit.catalystInputDeckName);
     sa->InsertNextValue(cmInit.restartTag);
     if (cmInit.enableLogging) {
       sa->InsertNextValue("True");
@@ -142,8 +206,8 @@ CatalystExodusMeshBase* CatalystManager::createCatalystExodusMesh(
     sa->InsertNextValue(cmInit.resultsOutputFilename);
     sa->InsertNextValue(cmInit.catalystOutputDirectory);
 
-    for (int i = 0; i < cmInit.catalystSierraData.size(); i++) {
-      sa->InsertNextValue(cmInit.catalystSierraData[i]);
+    for (int i = 0; i < cmInit.catalystData.size(); i++) {
+      sa->InsertNextValue(cmInit.catalystData[i]);
     }
 
     fd->AddArray(sa);
@@ -159,11 +223,8 @@ CatalystExodusMeshBase* CatalystManager::createCatalystExodusMesh(
         .first->Initialize(cmInit.catalystPythonFilename.c_str()) == 0) {
       std::cerr << "Unable to initialize ParaView Catalyst with python script "
                 << cmInit.catalystPythonFilename << std::endl;
-      std::cerr << "ParaView Catalyst CoProcessing will not be available." << std::endl;
-      this->coProcessor->Delete();
-      this->coProcessor = 0;
+      this->DeletePipeline(cmInit.resultsOutputFilename.c_str());
     }
-    return (CatalystExodusMeshBase*) cem;
 }
 
 void CatalystManager::DeletePipeline(const char *results_output_filename) {
@@ -177,13 +238,16 @@ void CatalystManager::DeletePipeline(const char *results_output_filename) {
       this->logging[results_output_filename].second->Delete();
       this->logging.erase(results_output_filename);
     }
+    this->catalystOutputReferenceCount--;
+    this->finalizeIfNeeded();
 }
 
 void CatalystManager::PerformCoProcessing(const char *results_output_filename,
                                           std::vector<int> & error_and_warning_codes,
                                           std::vector<std::string> & error_and_warning_messages) {
-    if (!this->coProcessor)
-      return;
+    if (!this->canCoProcess()) {
+        return;
+    }
 
     if (this->pipelines.find(results_output_filename) != this->pipelines.end()) {
       error_and_warning_codes.clear();
@@ -226,9 +290,6 @@ void CatalystManager::PerformCoProcessing(const char *results_output_filename,
 
 void CatalystManager::SetTimeData(double currentTime, int timeStep,
                                   const char *results_output_filename) {
-    if (!this->coProcessor)
-      return;
-
     if (this->pipelines.find(results_output_filename) != this->pipelines.end()) {
       this->pipelines[results_output_filename].second->SetTimeData(currentTime, timeStep);
     }

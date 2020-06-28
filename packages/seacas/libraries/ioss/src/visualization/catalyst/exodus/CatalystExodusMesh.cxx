@@ -953,7 +953,7 @@ void CatalystExodusMesh::CreateNodalVariableInternal(
     if (prefix_name.size() == 1) {
         number_data_components = component_names.size();
         component_names_buffer = prefix_name;
-        if (this->ApplyDisplacements && (number_data_components <= 3) &&
+        if (this->ApplyDisplacementsON() && (number_data_components <= 3) &&
             (prefix_name[0].length() >= 3)) {
             if ((prefix_name[0].substr(0, 3) == "DIS") ||\
                 (prefix_name[0].substr(0, 3) == "dis")) {
@@ -1006,7 +1006,7 @@ void CatalystExodusMesh::CreateNodalVariableInternal(
                         index++;
                     }
                 }
-  
+
                 if (displace_nodes) {
                     if (mit != point_map[iter->first].end()) {
                         vtkPoints *points = ug->GetPoints();
@@ -1110,6 +1110,7 @@ void CatalystExodusMesh::Delete() {
 
 void CatalystExodusMesh::ContainsVector(std::vector<std::string> &component_names,
                                         std::vector<std::string> &prefix_name) {
+
   if (component_names.size() == 3) {
     if ((*component_names[0].rbegin() == 'X' || *component_names[0].rbegin() == 'x') &&
         (*component_names[1].rbegin() == 'Y' || *component_names[1].rbegin() == 'y') &&
@@ -1123,7 +1124,7 @@ void CatalystExodusMesh::ContainsVector(std::vector<std::string> &component_name
       prefix_name.push_back(component_names[0].substr(0, component_names[0].size() - 1));
     }
   }
-  if (!this->UnderscoreVectors && prefix_name.size() == 1) {
+  if (!this->UnderscoreVectorsON() && prefix_name.size() == 1) {
     if (*prefix_name[0].rbegin() == '_') {
       prefix_name[0] = prefix_name[0].substr(0, prefix_name[0].size() - 1);
     }

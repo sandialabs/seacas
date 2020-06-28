@@ -44,15 +44,31 @@ public:
     virtual ~CatalystExodusMeshBase() {};
 
     // Description:
-    // Calls the ParaView Catalyst pipeline to run co-processing for this time iteration.
-    virtual void PerformCoProcessing(std::vector<int> &error_and_warning_codes,
-                                     std::vector<std::string> &error_and_warning_messages) = 0;
+    // Calls the ParaView Catalyst pipeline to run co-processing
+    // for this time iteration.
+    virtual void PerformCoProcessing(
+        std::vector<int> &error_and_warning_codes,
+            std::vector<std::string> &error_and_warning_messages) = 0;
 
     // Description:
     // Sets time data for this ParaView Catalyst co-processing iteration.
     // currentTime is the current Ioss simulation time and timeStep is
     // the current time iteration count.
     virtual void SetTimeData(double currentTime, int timeStep) = 0;
+
+    // Description:
+    // Clears all nodal and element variables from the vtkMultiBlockDataSet.
+    // Clears the global vtkPoints.
+    virtual void ReleaseMemory() = 0;
+
+    // Description:
+    // Collects memory usage information from all processors and
+    // writes the min, max, and mean to the log file.  Also writes the
+    // min, max, and mean of the elapsed time since this method was
+    // last called.
+    virtual void logMemoryUsageAndTakeTimerReading() = 0;
+
+    virtual void Delete() = 0;
 
     // Description:
     // Creates a global variable on the vtkExodusIIMultiBlockDataSet.
@@ -146,20 +162,6 @@ public:
     // Creates a nodal variable the vtkExodusIIMultiBlockDataSet.
     virtual void CreateNodalVariable(std::vector<std::string> &component_names,
                                      const int64_t *data) = 0;
-
-    // Description:
-    // Clears all nodal and element variables from the vtkMultiBlockDataSet.
-    // Clears the global vtkPoints.
-    virtual void ReleaseMemory() = 0;
-
-    // Description:
-    // Collects memory usage information from all processors and
-    // writes the min, max, and mean to the log file.  Also writes the
-    // min, max, and mean of the elapsed time since this method was
-    // last called.
-    virtual void logMemoryUsageAndTakeTimerReading() = 0;
-
-    virtual void Delete() = 0;
 };
 
 #endif // __CATALYST_EXODUS_MESH_BASE_H

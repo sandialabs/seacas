@@ -33,7 +33,6 @@
 #include <string>
 #include <vector>
 
-class ParaViewCatalystIossAdapterBase;
 class CatalystExodusMeshBase;
 
 /** \brief A namespace for the visualization database format.
@@ -231,16 +230,16 @@ namespace Iovs_exodus {
     bool isInput;
     bool singleProcOnly; // True if history or heartbeat which is only written from proc 0...
     bool doLogging;      // True if logging field input/output
-    bool                createSideSets;
-    bool                createNodeSets;
+    bool createSideSets;
+    bool createNodeSets;
     int nodeBlockCount;
     int elementBlockCount;
 
     CatalystExodusMeshBase* catExoMesh;
 
-    mutable bool                     globalNodeAndElementIDsCreated;
-    void                             create_global_node_and_element_ids() const;
-    mutable EntityIdSet              ids_{};
+    mutable bool globalNodeAndElementIDsCreated;
+    void create_global_node_and_element_ids() const;
+    mutable EntityIdSet ids_{};
   };
 } // namespace Iovs_exodus
 

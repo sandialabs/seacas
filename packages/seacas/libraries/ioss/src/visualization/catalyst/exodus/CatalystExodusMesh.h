@@ -56,6 +56,12 @@ public:
 
     void SetTimeData(double currentTime, int timeStep);
 
+    void ReleaseMemory();
+
+    void logMemoryUsageAndTakeTimerReading();
+
+    void Delete();
+
     void CreateGlobalVariable(std::vector<std::string> &component_names,
                               const double *data);
 
@@ -103,12 +109,6 @@ public:
 
     void CreateNodalVariable(std::vector<std::string> &component_names,
                              const int64_t *data);
-
-    void ReleaseMemory();
-
-    void logMemoryUsageAndTakeTimerReading();
-
-    void Delete();
 
     // Description:
     // If true (the default), vector variables will contain a

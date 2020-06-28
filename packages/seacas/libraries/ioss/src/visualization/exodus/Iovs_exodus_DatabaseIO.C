@@ -13,7 +13,6 @@
 /*--------------------------------------------------------------------*/
 
 #include <Ioss_CodeTypes.h>
-#include <ParaViewCatalystIossAdapter.h>
 #include <tokenize.h>
 #include <visualization/exodus/Iovs_exodus_DatabaseIO.h>
 #include <visualization/utils/Iovs_Utils.h>
@@ -48,7 +47,7 @@ namespace Iovs_exodus {
       Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
           const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(
-            region, Iovs::Utils::getInstance().getExodusDatabaseOutputFilePath(\
+            region, Iovs::Utils::getInstance().getDatabaseOutputFilePath(\
                 filename, props),
                     db_usage, communicator, props),
         isInput(false), singleProcOnly(false), doLogging(false),
@@ -58,7 +57,7 @@ namespace Iovs_exodus {
 
     Iovs::Utils::getInstance().checkDbUsage(db_usage);
     Iovs::Utils::getInstance().createDatabaseOutputFile(\
-        this->DBFilename, communicator);
+        this->DBFilename, this->parallel_rank());
     dbState = Ioss::STATE_UNKNOWN;
     this->globalNodeAndElementIDsCreated = false;
 
@@ -76,10 +75,8 @@ namespace Iovs_exodus {
   }
 
   DatabaseIO::~DatabaseIO() {
-      if(this->catExoMesh) {
-          this->catExoMesh->Delete();
-          delete this->catExoMesh;
-      }
+      this->catExoMesh->Delete();
+      delete this->catExoMesh;
   }
 
   bool DatabaseIO::begin__(Ioss::State state)
@@ -145,7 +142,10 @@ namespace Iovs_exodus {
       this->catExoMesh->PerformCoProcessing(error_codes, error_messages);
       this->catExoMesh->logMemoryUsageAndTakeTimerReading();
       this->catExoMesh->ReleaseMemory();
+      Iovs::Utils::getInstance().reportCatalystErrorMessages(
+          error_codes, error_messages, this->parallel_rank());
 
+/*
       if (!error_codes.empty() && !error_messages.empty() &&
           error_codes.size() == error_messages.size()) {
         for (unsigned int i = 0; i < error_codes.size(); i++) {
@@ -163,7 +163,7 @@ namespace Iovs_exodus {
             IOSS_ERROR(errmsg);
           }
         }
-      }
+      } */
     return true;
   }
 

@@ -38,9 +38,6 @@
 #include <Ioss_PropertyManager.h>
 #include <Ioss_DBUsage.h>
 
-class ParaViewCatalystIossAdapterBase;
-class ParaViewCatalystCGNSAdapterBase;
-
 namespace Iovs {
 
   class Utils {
@@ -52,8 +49,6 @@ namespace Iovs {
         return instance;
     }
 
-    CatalystManagerBase& getCatalystManager();
-
     static bool fileExists(const std::string &filepath);
 
     std::string getCatalystPythonDriverPath();
@@ -61,31 +56,27 @@ namespace Iovs {
     int parseCatalystFile(const std::string &filepath,
         std::string &json_result);
 
-    ParaViewCatalystIossAdapterBase *
-        createParaViewCatalystIossAdapterInstance();
-
-    ParaViewCatalystCGNSAdapterBase *
-        createParaViewCatalystCGNSAdapterInstance();
-
     void checkDbUsage(Ioss::DatabaseUsage db_usage);
 
     void createDatabaseOutputFile(const std::string &filename,
-        MPI_Comm communicator);
+        int myRank);
 
     CatalystExodusMeshBase* createCatalystExodusMesh(
         const std::string & databaseFilename,
             const std::string & separatorCharacter,
                 const Ioss::PropertyManager & props);
 
-    std::string getExodusDatabaseOutputFilePath(
+    CatalystCGNSMeshBase* createCatalystCGNSMesh(
         const std::string & databaseFilename,
-            const Ioss::PropertyManager &properties);
+            const std::string & separatorCharacter,
+                const Ioss::PropertyManager & props);
 
-    std::string getCGNSDatabaseOutputFilePath(
+    std::string getDatabaseOutputFilePath(
         const std::string & databaseFilename,
-            const Ioss::PropertyManager &properties);
+                const Ioss::PropertyManager &properties);
 
-    void incrementNumCGNSCatalystOutputs();
+    void reportCatalystErrorMessages(const std::vector<int> & error_codes,
+        const std::vector<std::string> & error_messages, int myRank);
 
   private:
 
@@ -94,10 +85,15 @@ namespace Iovs {
     Utils(const Utils &) = delete;
     Utils &operator=(const Utils &) = delete;
 
+    CatalystManagerBase& getCatalystManager();
+
     CatalystManagerBase* catalystManager = nullptr;
 
     CatalystManagerBase*
         createCatalystManagerInstance();
+
+    void initMeshFromIOSSProps(CatalystManagerBase::CatalystMeshInit & cmInit,
+        const Ioss::PropertyManager & props);
 
     std::string getRestartTag(const std::string & databaseFilename);
 
@@ -109,16 +105,9 @@ namespace Iovs {
 
     std::string getCatalystAdapterInstallDirectory();
 
-    std::string getDatabaseOutputFilePath(
-        const std::string & databaseFilename,
-            int numberOfCatalystOutputs,
-                const Ioss::PropertyManager &properties);
-
     void* getDlHandle();
 
     void* dlHandle = nullptr;
-    int numCGNSCatalystOutputs = 0;
-    int numExodusCatalystOutputs = 0;
 
 #if defined(__APPLE__)
     const char* CATALYST_PLUGIN_DYNAMIC_LIBRARY =\

@@ -41,14 +41,12 @@ include_directories("include")
 include_directories("manager")
 include_directories("../utils/")
 include_directories("../exodus/")
+include_directories("../cgns/")
 
 add_subdirectory(parser)
-add_library(${PVCSA_LIBRARY_NAME} SHARED ParaViewCatalystIossAdapter.cxx
-                                         ParaViewCatalystCGNSAdapter.cxx
-                                         vtkCGNSMultiBlockDataSet.cxx
-                                         vtkExodusIIMultiBlockDataSet.cxx
-                                         manager/CatalystManager.cxx
-                                         exodus/CatalystExodusMesh.cxx)
+add_library(${PVCSA_LIBRARY_NAME} SHARED manager/CatalystManager.cxx
+                                         exodus/CatalystExodusMesh.cxx
+                                         cgns/CatalystCGNSMesh.cxx)
 
 target_link_libraries(${PVCSA_LIBRARY_NAME}
     INTERFACE

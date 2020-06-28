@@ -2,7 +2,6 @@
 #include <Iovs_Utils.h>
 #include <cstring>
 #include <Ioss_Utils.h>
-#include <ParaViewCatalystIossAdapter.h>
 #include <fstream>
 #include <CatalystManagerBase.h>
 
@@ -17,8 +16,6 @@ namespace Iovs {
 
     Utils::Utils() {
         this->dlHandle = nullptr;
-        this->numCGNSCatalystOutputs = 0;
-        this->numExodusCatalystOutputs = 0;
         this->catalystManager = nullptr;
     }
 
@@ -63,80 +60,14 @@ namespace Iovs {
         return (*mkr)();
     }
 
-    ParaViewCatalystIossAdapterBase *
-    Utils::createParaViewCatalystIossAdapterInstance() {
-        void* dlh = this->getDlHandle();
-
-        if(!dlh) {
-            return nullptr;
-        }
-
-        typedef ParaViewCatalystIossAdapterBase
-            *(*PvCatSrrAdapterMakerFuncType)();
-
-#ifdef __GNUC__
-        __extension__
-#endif
-        PvCatSrrAdapterMakerFuncType mkr = \
-            reinterpret_cast<PvCatSrrAdapterMakerFuncType>(\
-                dlsym(dlh, "ParaViewCatalystIossAdapterCreateInstance"));
-        if (mkr == nullptr) {
-            throw std::runtime_error("dlsym call failed to load function "
-                "'ParaViewCatalystIossAdapterCreateInstance'");
-        }
-        return (*mkr)();
-    }
-
-    ParaViewCatalystCGNSAdapterBase *
-    Utils::createParaViewCatalystCGNSAdapterInstance() {
-        void* dlh = this->getDlHandle();
-
-        if(!dlh) {
-            return nullptr;
-        }
-
-        typedef ParaViewCatalystCGNSAdapterBase
-            *(*PvCatSrrAdapterMakerFuncType)();
-
-#ifdef __GNUC__
-        __extension__
-#endif
-        PvCatSrrAdapterMakerFuncType mkr =\
-            reinterpret_cast<PvCatSrrAdapterMakerFuncType>(\
-                dlsym(dlh, "ParaViewCatalystCGNSAdapterCreateInstance"));
-        if (mkr == nullptr) {
-            throw std::runtime_error("dlsym call failed to load function "
-                "'ParaViewCatalystCGNSAdapterCreateInstance'");
-        }
-        return (*mkr)();
-    }
-
     CatalystExodusMeshBase* Utils::createCatalystExodusMesh(
         const std::string & databaseFilename,
             const std::string & separatorCharacter,
                 const Ioss::PropertyManager & props) {
 
         CatalystManagerBase::CatalystExodusMeshInit cmInit;
-
         cmInit.resultsOutputFilename = databaseFilename;
-
-        if (props.exists("CATALYST_BLOCK_PARSE_JSON_STRING")) {
-            cmInit.catalystSierraBlockJSON = props\
-                .get("CATALYST_BLOCK_PARSE_JSON_STRING").get_string();
-        }
-
-        if (props.exists("CATALYST_SCRIPT")) {
-            cmInit.catalystPythonFilename = props\
-                .get("CATALYST_SCRIPT").get_string();
-        }
-        else {
-            cmInit.catalystPythonFilename = this->getCatalystPythonDriverPath();
-        }
-
-        if (props.exists("CATALYST_SCRIPT_EXTRA_FILE")) {
-            cmInit.catalystSierraData.push_back(props\
-                .get("CATALYST_SCRIPT_EXTRA_FILE").get_string());
-        }
+        this->initMeshFromIOSSProps(cmInit, props);
 
         cmInit.underScoreVectors = true;
         if (props.exists("CATALYST_UNDERSCORE_VECTORS")) {
@@ -150,8 +81,49 @@ namespace Iovs {
                 .get("CATALYST_APPLY_DISPLACEMENTS").get_int();
         }
 
+        cmInit.catalystSeparatorCharacter = separatorCharacter;
+        cmInit.restartTag = this->getRestartTag(databaseFilename);
+
+        return this->getCatalystManager().createCatalystExodusMesh(cmInit);
+    }
+
+    CatalystCGNSMeshBase* Utils::createCatalystCGNSMesh(
+        const std::string & databaseFilename,
+            const std::string & separatorCharacter,
+                const Ioss::PropertyManager & props) {
+
+        CatalystManagerBase::CatalystMeshInit cmInit;
+        cmInit.resultsOutputFilename = databaseFilename;
+        this->initMeshFromIOSSProps(cmInit, props);
+        cmInit.catalystSeparatorCharacter = separatorCharacter;
+        cmInit.restartTag = this->getRestartTag(databaseFilename);
+
+        return this->getCatalystManager().createCatalystCGNSMesh(cmInit);
+    }
+
+    void Utils::initMeshFromIOSSProps(CatalystManagerBase::CatalystMeshInit & cmInit,
+        const Ioss::PropertyManager & props) {
+
+        if (props.exists("CATALYST_BLOCK_PARSE_JSON_STRING")) {
+            cmInit.catalystBlockJSON = props\
+                .get("CATALYST_BLOCK_PARSE_JSON_STRING").get_string();
+        }
+
+        if (props.exists("CATALYST_SCRIPT")) {
+            cmInit.catalystPythonFilename = props\
+                .get("CATALYST_SCRIPT").get_string();
+        }
+        else {
+            cmInit.catalystPythonFilename = this->getCatalystPythonDriverPath();
+        }
+
+        if (props.exists("CATALYST_SCRIPT_EXTRA_FILE")) {
+            cmInit.catalystData.push_back(props\
+                .get("CATALYST_SCRIPT_EXTRA_FILE").get_string());
+        }
+
         if (props.exists("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME")) {
-            cmInit.catalystSierraInputDeckName = props\
+            cmInit.catalystInputDeckName = props\
                 .get("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME").get_string();
         }
 
@@ -171,12 +143,6 @@ namespace Iovs {
             cmInit.catalystOutputDirectory = props\
                 .get("CATALYST_OUTPUT_DIRECTORY").get_string();
         }
-
-        cmInit.catalystSierraSeparatorCharacter = separatorCharacter;
-        cmInit.restartTag = this->getRestartTag(databaseFilename);
-
-        this->numExodusCatalystOutputs++;
-        return this->getCatalystManager().createCatalystExodusMesh(cmInit);
     }
 
     std::string Utils::getRestartTag(const std::string & databaseFilename) {
@@ -195,24 +161,12 @@ namespace Iovs {
         return (stat(filepath.c_str(), &buffer) == 0);
     }
 
-    std::string Utils::getExodusDatabaseOutputFilePath(
-        const std::string & databaseFilename,
-            const Ioss::PropertyManager &properties) {
-        return this->getDatabaseOutputFilePath(databaseFilename,
-            this->numExodusCatalystOutputs, properties);
-    }
-
-    std::string Utils::getCGNSDatabaseOutputFilePath(
-        const std::string & databaseFilename,
-            const Ioss::PropertyManager &properties) {
-        return this->getDatabaseOutputFilePath(databaseFilename,
-            this->numCGNSCatalystOutputs, properties);
-    }
-
     std::string Utils::getDatabaseOutputFilePath(
         const std::string & databaseFilename,
-            int numberOfCatalystBlocks,
                 const Ioss::PropertyManager &properties) {
+
+        int numberOfCatalystBlocks = this->getCatalystManager()\
+            .getCatalystOutputIDNumber();
         if (!properties.exists("CATALYST_OUTPUT_DIRECTORY")) {
             std::ostringstream s;
             s << databaseFilename << "." << numberOfCatalystBlocks
@@ -227,6 +181,7 @@ namespace Iovs {
     int Utils::parseCatalystFile(const std::string &filepath,
         std::string &json_result) {
 
+/*
         ParaViewCatalystIossAdapterBase *pvc = nullptr;
         pvc = this->createParaViewCatalystIossAdapterInstance();
         CatalystParserInterface::parse_info pinfo;
@@ -236,6 +191,7 @@ namespace Iovs {
 
         delete pvc;
         return ret;
+*/
     }
 
     void* Utils::getDlHandle() {
@@ -402,12 +358,10 @@ namespace Iovs {
     }
 
     void Utils::createDatabaseOutputFile(const std::string &filename,
-        MPI_Comm communicator) {
+        int myRank) {
 
         std::ostringstream errmsg;
-        int rank;
-        MPI_Comm_rank(communicator, &rank);
-        if (rank == 0) {
+        if (myRank == 0) {
             if (!Utils::fileExists(filename)) {
                 std::ofstream output_file;
                 output_file.open(filename.c_str(),
@@ -423,8 +377,26 @@ namespace Iovs {
         }
     }
 
-    void Utils::incrementNumCGNSCatalystOutputs() {
-        this->numCGNSCatalystOutputs++;
-    }
+    void Utils::reportCatalystErrorMessages(const std::vector<int> & error_codes,
+        const std::vector<std::string> & error_messages, int myRank) {
 
+      if (!error_codes.empty() && !error_messages.empty() &&
+          error_codes.size() == error_messages.size()) {
+        for (unsigned int i = 0; i < error_codes.size(); i++) {
+          if (error_codes[i] > 0) {
+            IOSS_WARNING << "\n\n** ParaView Catalyst Plugin Warning Message Severity Level "
+                         << error_codes[i] << ", On Processor " << myRank
+                         << " **\n\n";
+            IOSS_WARNING << error_messages[i];
+          }
+          else {
+            std::ostringstream errmsg;
+            errmsg << "\n\n** ParaView Catalyst Plugin Error Message Severity Level "
+                   << error_codes[i] << ", On Processor " << myRank << " **\n\n"
+                   << error_messages[i];
+            IOSS_ERROR(errmsg);
+          }
+        }
+      }
+    }
 } // namespace Iovs

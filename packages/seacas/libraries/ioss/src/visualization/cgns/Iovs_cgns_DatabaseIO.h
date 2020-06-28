@@ -44,7 +44,7 @@
 
 #include <Ioss_DatabaseIO.h>
 
-class ParaViewCatalystCGNSAdapterBase;
+class CatalystCGNSMeshBase;
 
 namespace Iovs_cgns {
 
@@ -222,8 +222,7 @@ namespace Iovs_cgns {
       return 0;
     }
 
-    ParaViewCatalystCGNSAdapterBase *pvcca;
-
+    CatalystCGNSMeshBase* catCGNSMesh;
   };
 } // namespace Iovs_cgns
 

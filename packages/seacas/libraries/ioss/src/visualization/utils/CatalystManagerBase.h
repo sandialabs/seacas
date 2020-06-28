@@ -37,6 +37,7 @@
 #include <string>
 #include <vector>
 #include "CatalystExodusMeshBase.h"
+#include "CatalystCGNSMeshBase.h"
 
 class CatalystManagerBase {
 
@@ -44,36 +45,40 @@ public:
     CatalystManagerBase() {};
     virtual ~CatalystManagerBase() {};
 
-    // Description:
-    // Initializes ParaView Catalyst to perform in-situ co-processing
-    // with the Python file catalyst_python_filename.  This method can
-    // be called multiple times with different co-processing Python scripts.
-    // If initialization fails, co-processing will not occur in any other
-    // methods on this class.
-    // Additional arguments:
-    //   underscoreVectors - joined vector variable names end in an underscore.
-    //   applyDisplacements - a nodal variable named DISPL or displ is applied to
-    //                        the mesh node coordinates each time-step.
+    virtual int getCatalystOutputIDNumber() = 0;
+
+    // Parameters:
+    //   cataystPythonFilename - Python file with instructions for Catalyst.
     //   restartTag - if not empty, contains the current restart iteration string, ie s0001
     //   enableLogging - turn on logging in the adapter. Default is off.
     //   debugLevel - enable catalyst debug output 0, 1, 2. Default is 0.
     //   resultsOutputFilename - filename associated with the Ioss results output block.
     //   catalystOutputDirectory - name of the output directory for storing Catalyst output.
     //                              Default is CatalystOutput.
-    //   catalystSierraData - string data vector for development and debugging.
-    struct CatalystExodusMeshInit {
+    //   catalystData - string data vector for development and debugging.
+    struct CatalystMeshInit {
         std::string catalystPythonFilename;
-        std::string catalystSierraBlockJSON;
-        std::string catalystSierraSeparatorCharacter;
-        std::string catalystSierraInputDeckName;
-        bool underScoreVectors;
-        bool applyDisplacements;
+        std::string catalystBlockJSON;
+        std::string catalystSeparatorCharacter;
+        std::string catalystInputDeckName;
         std::string restartTag;
         bool enableLogging;
         int debugLevel;
         std::string resultsOutputFilename;
         std::string catalystOutputDirectory;
-        std::vector<std::string> catalystSierraData;
+        std::vector<std::string> catalystData;
+    };
+
+    virtual CatalystCGNSMeshBase* createCatalystCGNSMesh(
+        CatalystMeshInit& cmInit) = 0;
+
+    // Parameters:
+    //   underscoreVectors - joined vector variable names end in an underscore.
+    //   applyDisplacements - a nodal variable named DISPL or displ is applied to
+    //                        the mesh node coordinates each time-step.
+    struct CatalystExodusMeshInit : CatalystMeshInit {
+        bool underScoreVectors;
+        bool applyDisplacements;
     };
 
     virtual CatalystExodusMeshBase* createCatalystExodusMesh(

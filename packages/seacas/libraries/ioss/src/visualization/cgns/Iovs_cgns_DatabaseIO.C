@@ -40,7 +40,6 @@
 
 #include <visualization/cgns/Iovs_cgns_DatabaseIO.h>
 #include <visualization/utils/Iovs_Utils.h>
-#include <ParaViewCatalystCGNSAdapter.h>
 
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
@@ -53,24 +52,29 @@ namespace Iovs_cgns {
     DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
         Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
             const Ioss::PropertyManager &props)
-        : Ioss::DatabaseIO(region, filename, db_usage,
-                           communicator, props)
-    {
+        : Ioss::DatabaseIO(region, Iovs::Utils::getInstance()\
+              .getDatabaseOutputFilePath(filename, props), db_usage,
+                  communicator, props) {
+
+      Iovs::Utils::getInstance().checkDbUsage(db_usage);
+      Iovs::Utils::getInstance().createDatabaseOutputFile(\
+          this->DBFilename, this->parallel_rank());
       dbState = Ioss::STATE_UNKNOWN;
-      this->pvcca = nullptr;
+      std::string separator(1, this->get_field_separator());
+      this->catCGNSMesh = Iovs::Utils::getInstance()\
+          .createCatalystCGNSMesh(this->DBFilename, separator, props);
     }
 
-    DatabaseIO::~DatabaseIO()
-    {
+    DatabaseIO::~DatabaseIO() {
+      this->catCGNSMesh->Delete();
+      delete this->catCGNSMesh;
     }
 
-    bool DatabaseIO::begin__(Ioss::State state)
-    {
+    bool DatabaseIO::begin__(Ioss::State state) {
       return true;
     }
 
-    bool DatabaseIO::end__(Ioss::State state)
-    {
+    bool DatabaseIO::end__(Ioss::State state) {
       switch (state) {
       case Ioss::STATE_DEFINE_MODEL:
       {
@@ -85,17 +89,21 @@ namespace Iovs_cgns {
     
     bool DatabaseIO::begin_state__(int state, double time)
     {
-      if (this->pvcca != nullptr) {
-        this->pvcca->SetTimeData(time, state - 1);
-      }
+      this->catCGNSMesh->SetTimeData(time, state - 1);
       return true;
     }
 
     bool DatabaseIO::end_state__(int state, double time)
     {
-      if (this->pvcca != nullptr) {
-        this->pvcca->PerformCoProcessing();;
-      }
+      std::vector<int>         error_codes;
+      std::vector<std::string> error_messages;
+
+      this->catCGNSMesh->logMemoryUsageAndTakeTimerReading();
+      this->catCGNSMesh->PerformCoProcessing(error_codes, error_messages);
+      this->catCGNSMesh->logMemoryUsageAndTakeTimerReading();
+      this->catCGNSMesh->ReleaseMemory();
+      Iovs::Utils::getInstance().reportCatalystErrorMessages(
+          error_codes, error_messages, this->parallel_rank());
       return true;
     }
 
@@ -103,6 +111,7 @@ namespace Iovs_cgns {
 
     void DatabaseIO::write_meta_data()
     {
+/*
       if (this->pvcca == nullptr) {
         this->pvcca = Iovs::Utils::getInstance()\
             .createParaViewCatalystCGNSAdapterInstance();
@@ -112,11 +121,9 @@ namespace Iovs_cgns {
 
         this->pvcca->CreateNewPipeline(ps.c_str(), ps.c_str());
       }
+*/
 
-      if(this->pvcca != nullptr) {
-        this->pvcca->CreateBase(0, "Base");
-      }
-
+      this->catCGNSMesh->CreateBase(0, "Base");
       const auto &structured_blocks = this->get_region()->get_structured_blocks();
       int base = 0;
       int zone = 0;
@@ -183,20 +190,19 @@ namespace Iovs_cgns {
         if (field.get_name() == "mesh_model_coordinates_x" ||
             field.get_name() == "mesh_model_coordinates_y" ||
             field.get_name() == "mesh_model_coordinates_z") {
-          if(this->pvcca != nullptr) {
-            this->pvcca->AddStructuredZoneData(base,
-                                               zone,
-                                               sb->name(),
-                                               field.get_name(),
-                                               sb->get_property("ni").get_int(),
-                                               sb->get_property("nj").get_int(),
-                                               sb->get_property("nk").get_int(),
-                                               comp_count,
-                                               is_cell_field,
-                                               field_suffix_separator,
-                                               rdata,
-                                               num_to_get);
-          }
+
+            this->catCGNSMesh->AddStructuredZoneData(base,
+                                                     zone,
+                                                     sb->name(),
+                                                     field.get_name(),
+                                                     sb->get_property("ni").get_int(),
+                                                     sb->get_property("nj").get_int(),
+                                                     sb->get_property("nk").get_int(),
+                                                     comp_count,
+                                                     is_cell_field,
+                                                     field_suffix_separator,
+                                                     rdata,
+                                                     num_to_get);
         }
         else if(field.get_name() == "mesh_model_coordinates") {
           int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
@@ -216,20 +222,18 @@ namespace Iovs_cgns {
               coord[i] = rdata[phys_dimension * i + ordinal];
             }
 
-            if(this->pvcca != nullptr) {
-              this->pvcca->AddStructuredZoneData(base,
-                                                 zone,
-                                                 sb->name(),
-                                                 ordinate,
-                                                 sb->get_property("ni").get_int(),
-                                                 sb->get_property("nj").get_int(),
-                                                 sb->get_property("nk").get_int(),
-                                                 comp_count,
-                                                 is_cell_field,
-                                                 field_suffix_separator,
-                                                 coord.data(),
-                                                 num_to_get);
-            }
+            this->catCGNSMesh->AddStructuredZoneData(base,
+                                                     zone,
+                                                     sb->name(),
+                                                     ordinate,
+                                                     sb->get_property("ni").get_int(),
+                                                     sb->get_property("nj").get_int(),
+                                                     sb->get_property("nk").get_int(),
+                                                     comp_count,
+                                                     is_cell_field,
+                                                     field_suffix_separator,
+                                                     coord.data(),
+                                                     num_to_get);
           };
           // ========================================================================
 
@@ -245,20 +249,18 @@ namespace Iovs_cgns {
         }
       }
       else if (role == Ioss::Field::TRANSIENT) {
-        if(this->pvcca != nullptr) {
-          this->pvcca->AddStructuredZoneData(base,
-                                             zone,
-                                             sb->name(),
-                                             field.get_name(),
-                                             sb->get_property("ni").get_int(),
-                                             sb->get_property("nj").get_int(),
-                                             sb->get_property("nk").get_int(),
-                                             comp_count,
-                                             is_cell_field,
-                                             field_suffix_separator,
-                                             rdata,
-                                             num_to_get);
-        }
+          this->catCGNSMesh->AddStructuredZoneData(base,
+                                                   zone,
+                                                   sb->name(),
+                                                   field.get_name(),
+                                                   sb->get_property("ni").get_int(),
+                                                   sb->get_property("nj").get_int(),
+                                                   sb->get_property("nk").get_int(),
+                                                   comp_count,
+                                                   is_cell_field,
+                                                   field_suffix_separator,
+                                                   rdata,
+                                                   num_to_get);
       }
       return num_to_get;
     }
