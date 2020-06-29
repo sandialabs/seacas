@@ -39,7 +39,6 @@
 /*--------------------------------------------------------------------*/
 
 #include <visualization/cgns/Iovs_cgns_DatabaseIO.h>
-#include <visualization/utils/Iovs_Utils.h>
 
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
@@ -67,7 +66,6 @@ namespace Iovs_cgns {
 
     DatabaseIO::~DatabaseIO() {
       this->catCGNSMesh->Delete();
-      delete this->catCGNSMesh;
     }
 
     bool DatabaseIO::begin__(Ioss::State state) {

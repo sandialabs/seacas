@@ -43,8 +43,7 @@
 #define Iovs_cgns_DatabaseIO_h
 
 #include <Ioss_DatabaseIO.h>
-
-class CatalystCGNSMeshBase;
+#include <visualization/utils/Iovs_Utils.h>
 
 namespace Iovs_cgns {
 
@@ -222,7 +221,7 @@ namespace Iovs_cgns {
       return 0;
     }
 
-    CatalystCGNSMeshBase* catCGNSMesh;
+    std::unique_ptr<CatalystCGNSMeshBase> catCGNSMesh;
   };
 } // namespace Iovs_cgns
 

@@ -84,11 +84,11 @@ void CatalystManager::incrementOutputCounts() {
     this->catalystOutputReferenceCount++;
 }
 
-CatalystExodusMeshBase* CatalystManager::createCatalystExodusMesh(
-    CatalystExodusMeshInit& cmInit) {
+std::unique_ptr<CatalystExodusMeshBase>
+    CatalystManager::createCatalystExodusMesh(CatalystExodusMeshInit& cmInit) {
 
     this->initializeIfNeeded();
-    CatalystExodusMesh* cem = nullptr;
+    CatalystExodusMesh * cem = nullptr;
 
     if (this->pipelines.find(cmInit.resultsOutputFilename) ==
         this->pipelines.end()) {
@@ -105,14 +105,15 @@ CatalystExodusMeshBase* CatalystManager::createCatalystExodusMesh(
     }
 
     this->incrementOutputCounts();
-    return (CatalystExodusMeshBase*) cem;
+    return std::unique_ptr<CatalystExodusMeshBase>(
+        dynamic_cast<CatalystExodusMeshBase*>(cem));
 }
 
-CatalystCGNSMeshBase* CatalystManager::createCatalystCGNSMesh(
+std::unique_ptr<CatalystCGNSMeshBase> CatalystManager::createCatalystCGNSMesh(
     CatalystMeshInit& cmInit) {
 
     this->initializeIfNeeded();
-    CatalystCGNSMesh* cgm = nullptr;
+    CatalystCGNSMesh * cgm = nullptr;
 
     if (this->pipelines.find(cmInit.resultsOutputFilename) ==\
         this->pipelines.end()) {
@@ -127,7 +128,8 @@ CatalystCGNSMeshBase* CatalystManager::createCatalystCGNSMesh(
     }
 
     this->incrementOutputCounts();
-    return (CatalystCGNSMeshBase*) cgm;
+    return std::unique_ptr<CatalystCGNSMeshBase>(
+        dynamic_cast<CatalystCGNSMeshBase*>(cgm));
 }
 
 void CatalystManager::initCatalystLogging(CatalystMeshInit& cmInit) {

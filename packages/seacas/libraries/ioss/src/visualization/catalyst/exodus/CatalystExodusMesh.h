@@ -43,7 +43,7 @@ class CatalystManager;
 class vtkVariant;
 class vtkPoints;
 
-class CatalystExodusMesh : CatalystExodusMeshBase {
+class CatalystExodusMesh : public CatalystExodusMeshBase {
 
 public:
 

@@ -17,6 +17,7 @@
 #ifndef IOSS_Iovs_exodus_DatabaseIO_h
 #define IOSS_Iovs_exodus_DatabaseIO_h
 
+#include <visualization/utils/Iovs_Utils.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
@@ -32,8 +33,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
-class CatalystExodusMeshBase;
 
 /** \brief A namespace for the visualization database format.
  */
@@ -235,7 +234,7 @@ namespace Iovs_exodus {
     int nodeBlockCount;
     int elementBlockCount;
 
-    CatalystExodusMeshBase* catExoMesh;
+    std::unique_ptr<CatalystExodusMeshBase> catExoMesh;
 
     mutable bool globalNodeAndElementIDsCreated;
     void create_global_node_and_element_ids() const;

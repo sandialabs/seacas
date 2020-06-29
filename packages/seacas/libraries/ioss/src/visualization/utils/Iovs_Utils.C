@@ -60,7 +60,7 @@ namespace Iovs {
         return (*mkr)();
     }
 
-    CatalystExodusMeshBase* Utils::createCatalystExodusMesh(
+    std::unique_ptr<CatalystExodusMeshBase> Utils::createCatalystExodusMesh(
         const std::string & databaseFilename,
             const std::string & separatorCharacter,
                 const Ioss::PropertyManager & props) {
@@ -87,7 +87,7 @@ namespace Iovs {
         return this->getCatalystManager().createCatalystExodusMesh(cmInit);
     }
 
-    CatalystCGNSMeshBase* Utils::createCatalystCGNSMesh(
+    std::unique_ptr<CatalystCGNSMeshBase> Utils::createCatalystCGNSMesh(
         const std::string & databaseFilename,
             const std::string & separatorCharacter,
                 const Ioss::PropertyManager & props) {

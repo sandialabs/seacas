@@ -61,12 +61,12 @@ namespace Iovs {
     void createDatabaseOutputFile(const std::string &filename,
         int myRank);
 
-    CatalystExodusMeshBase* createCatalystExodusMesh(
+    std::unique_ptr<CatalystExodusMeshBase> createCatalystExodusMesh(
         const std::string & databaseFilename,
             const std::string & separatorCharacter,
                 const Ioss::PropertyManager & props);
 
-    CatalystCGNSMeshBase* createCatalystCGNSMesh(
+    std::unique_ptr<CatalystCGNSMeshBase> createCatalystCGNSMesh(
         const std::string & databaseFilename,
             const std::string & separatorCharacter,
                 const Ioss::PropertyManager & props);

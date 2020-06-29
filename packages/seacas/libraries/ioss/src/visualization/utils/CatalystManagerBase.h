@@ -36,6 +36,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "CatalystExodusMeshBase.h"
 #include "CatalystCGNSMeshBase.h"
 
@@ -69,7 +70,7 @@ public:
         std::vector<std::string> catalystData;
     };
 
-    virtual CatalystCGNSMeshBase* createCatalystCGNSMesh(
+    virtual std::unique_ptr<CatalystCGNSMeshBase> createCatalystCGNSMesh(
         CatalystMeshInit& cmInit) = 0;
 
     // Parameters:
@@ -81,7 +82,7 @@ public:
         bool applyDisplacements;
     };
 
-    virtual CatalystExodusMeshBase* createCatalystExodusMesh(
+    virtual std::unique_ptr<CatalystExodusMeshBase> createCatalystExodusMesh(
         CatalystExodusMeshInit& cmInit) = 0;
 };
 

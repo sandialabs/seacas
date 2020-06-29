@@ -45,17 +45,17 @@ class vtkCPDataDescription;
 class vtkCPProcessor;
 class vtkMultiBlockDataSet;
 
-class CatalystManager : CatalystManagerBase {
+class CatalystManager : public CatalystManagerBase {
 
 public:
 
     CatalystManager();
     ~CatalystManager();
 
-    CatalystExodusMeshBase* createCatalystExodusMesh(
+    std::unique_ptr<CatalystExodusMeshBase> createCatalystExodusMesh(
         CatalystExodusMeshInit& cmInit);
 
-    CatalystCGNSMeshBase* createCatalystCGNSMesh(
+    std::unique_ptr<CatalystCGNSMeshBase> createCatalystCGNSMesh(
         CatalystMeshInit& cmInit);
 
     int getCatalystOutputIDNumber();

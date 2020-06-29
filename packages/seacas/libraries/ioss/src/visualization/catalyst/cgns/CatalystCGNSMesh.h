@@ -41,7 +41,7 @@
 class vtkMultiBlockDataSet;
 class CatalystManager;
 
-class CatalystCGNSMesh : CatalystCGNSMeshBase {
+class CatalystCGNSMesh : public CatalystCGNSMeshBase {
 
 public:
 
