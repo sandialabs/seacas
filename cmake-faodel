@@ -253,6 +253,7 @@ then
    FC=ftn
    MPI_BIN=$(dirname $(which ${CC}))
    SHARED=OFF
+   unset CRAYPE_LINK_TYPE
 elif [ "${MPI}" == "ON" ]
 then
    if [ "${USE_SRUN}" == "ON" ]
@@ -381,6 +382,14 @@ ${FAODEL_SYMBOLS} \
 \
 $EXTRA_ARGS \
 ${ACCESS}
+
+if [[ "$HAVE_FAODEL" == "ON" && "$HAVE_CEREAL" == "OFF" ]] ; then
+  echo "========================================================="
+  echo "WARNING: Faodel is enabled, but Cereal is not."
+  echo "WARNING: The Faodel components will fail to compile"
+  echo "WARNING: unless Cereal is found implicitly."
+  echo "========================================================="
+fi
 
 echo ""
 echo "          OS: ${OS}"
