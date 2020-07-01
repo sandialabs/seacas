@@ -74,8 +74,8 @@ namespace {
     if (max_hash != min_hash) {
       const std::string &ge_name = ge->name();
       fmt::print(Ioss::WARNING(),
-                 "Parallel inconsistency detected for {} field '{}' on entity '{}'\n",
-                 in_out == 0 ? "writing" : "reading", field_name, ge_name);
+                 "[{}] Parallel inconsistency detected for {} field '{}' on entity '{}'. (Hash: {} {} {})\n",
+                 in_out == 0 ? "writing" : "reading", util.parallel_rank(), field_name, ge_name, hash_code, min_hash, max_hash);
       return false;
     }
     return true;
