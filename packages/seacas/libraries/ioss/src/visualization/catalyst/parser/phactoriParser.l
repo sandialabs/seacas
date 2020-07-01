@@ -38,7 +38,7 @@
 
 #define YYPARSE_PARAM
 
-#include "catalystParser.tab.hpp"
+#include "phactoriParser.tab.hpp"
 
 void track_location(YYLTYPE *loc, char *txt)
 {

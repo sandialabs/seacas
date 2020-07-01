@@ -52,7 +52,7 @@ target_link_libraries(${PVCSA_LIBRARY_NAME}
     INTERFACE
       VTK::PythonUsed
     PUBLIC
-      catalystparser
+      phactori_parser
     PRIVATE
       ParaView::PythonCatalyst
       VTK::CommonDataModel

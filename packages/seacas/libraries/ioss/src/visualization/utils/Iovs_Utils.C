@@ -3,7 +3,6 @@
 #include <cstring>
 #include <Ioss_Utils.h>
 #include <fstream>
-#include <CatalystManagerBase.h>
 
 #ifdef IOSS_DLOPEN_ENABLED
 #include <dlfcn.h>

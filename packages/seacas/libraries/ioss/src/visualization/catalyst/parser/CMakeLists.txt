@@ -5,16 +5,16 @@
 # See packages/seacas/LICENSE for details
 
 FIND_PACKAGE(BISON REQUIRED)
-SET(BisonOutput ${CMAKE_CURRENT_BINARY_DIR}/catalystParser.tab.cpp
-                ${CMAKE_CURRENT_BINARY_DIR}/catalystParser.tab.hpp)
+SET(BisonOutput ${CMAKE_CURRENT_BINARY_DIR}/phactoriParser.tab.cpp
+                ${CMAKE_CURRENT_BINARY_DIR}/phactoriParser.tab.hpp)
 IF(BISON_FOUND)
     ADD_CUSTOM_COMMAND(
       OUTPUT ${BisonOutput}
       COMMAND ${BISON_EXECUTABLE}
-              -d ${CMAKE_CURRENT_SOURCE_DIR}/catalystParser.ypp
+              -d ${CMAKE_CURRENT_SOURCE_DIR}/phactoriParser.ypp
               -p catalyst
-      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/catalystParser.ypp
-      COMMENT "Generating catalystParser.tab.cpp and catalystParser.tab.hpp"
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/phactoriParser.ypp
+      COMMENT "Generating phactoriParser.tab.cpp and phactoriParser.tab.hpp"
     )
 ENDIF()
 
@@ -25,8 +25,8 @@ IF(FLEX_FOUND)
       OUTPUT ${FlexOutput}
       COMMAND ${FLEX_EXECUTABLE}
               --outfile=${FlexOutput}
-              ${CMAKE_CURRENT_SOURCE_DIR}/catalystParser.l
-      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/catalystParser.l
+              ${CMAKE_CURRENT_SOURCE_DIR}/phactoriParser.l
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/phactoriParser.l
       COMMENT "Generating lex.yy.c"
     )
 ENDIF()
@@ -39,32 +39,25 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 FIND_PACKAGE(ParaView QUIET)
 
-ADD_LIBRARY(lexer SHARED ${FlexOutput} ${BisonOutput})
-TARGET_LINK_LIBRARIES(lexer
+ADD_LIBRARY(phactori_lexer SHARED ${FlexOutput} ${BisonOutput})
+TARGET_LINK_LIBRARIES(phactori_lexer
     PRIVATE
       VTK::jsoncpp)
 
-ADD_LIBRARY(catalystparser SHARED ${BisonOutput}
-              ${CMAKE_CURRENT_SOURCE_DIR}/CatalystParserInterface.cpp)
+ADD_LIBRARY(phactori_parser SHARED ${BisonOutput}
+              ${CMAKE_CURRENT_SOURCE_DIR}/PhactoriParserInterface.cxx)
 
-TARGET_LINK_LIBRARIES(catalystparser
+TARGET_LINK_LIBRARIES(phactori_parser
     PRIVATE
-      lexer
+      phactori_lexer
       VTK::jsoncpp)
 
-ADD_EXECUTABLE(catalyst_parser_driver ${CMAKE_CURRENT_SOURCE_DIR}/driver.cpp)
-TARGET_LINK_LIBRARIES(catalyst_parser_driver 
+ADD_EXECUTABLE(parse_phactori ${CMAKE_CURRENT_SOURCE_DIR}/parse_phactori.cxx)
+TARGET_LINK_LIBRARIES(parse_phactori
     PRIVATE
-      catalystparser
+      phactori_parser
       VTK::jsoncpp)
 
-ADD_EXECUTABLE(catalyst_parser_tester ${CMAKE_CURRENT_SOURCE_DIR}/driver_test.cpp)
-TARGET_LINK_LIBRARIES(catalyst_parser_tester
-    PRIVATE
-      catalystparser
-      VTK::jsoncpp)
-
-INSTALL(TARGETS lexer LIBRARY DESTINATION lib)
-INSTALL(TARGETS catalystparser LIBRARY DESTINATION lib)
-INSTALL(TARGETS catalyst_parser_driver RUNTIME DESTINATION bin)
-INSTALL(TARGETS catalyst_parser_tester RUNTIME DESTINATION bin)
+INSTALL(TARGETS phactori_lexer LIBRARY DESTINATION lib)
+INSTALL(TARGETS phactori_parser LIBRARY DESTINATION lib)
+INSTALL(TARGETS parse_phactori RUNTIME DESTINATION bin)
