@@ -1,8 +1,10 @@
 
 #include <Iovs_Utils.h>
-#include <cstring>
 #include <Ioss_Utils.h>
+#include <cstring>
+#include <iostream>
 #include <fstream>
+#include <sstream>
 
 #ifdef IOSS_DLOPEN_ENABLED
 #include <dlfcn.h>
@@ -60,13 +62,11 @@ namespace Iovs {
     }
 
     std::unique_ptr<CatalystExodusMeshBase> Utils::createCatalystExodusMesh(
-        const std::string & databaseFilename,
-            const std::string & separatorCharacter,
-                const Ioss::PropertyManager & props) {
+        const DatabaseInfo & dbinfo, const Ioss::PropertyManager & props) {
 
         CatalystManagerBase::CatalystExodusMeshInit cmInit;
-        cmInit.resultsOutputFilename = databaseFilename;
-        this->initMeshFromIOSSProps(cmInit, props);
+        cmInit.resultsOutputFilename = dbinfo.databaseFilename;
+        this->initMeshFromIOSSProps(cmInit, dbinfo, props);
 
         cmInit.underScoreVectors = true;
         if (props.exists("CATALYST_UNDERSCORE_VECTORS")) {
@@ -80,32 +80,89 @@ namespace Iovs {
                 .get("CATALYST_APPLY_DISPLACEMENTS").get_int();
         }
 
-        cmInit.catalystSeparatorCharacter = separatorCharacter;
-        cmInit.restartTag = this->getRestartTag(databaseFilename);
+        cmInit.catalystSeparatorCharacter = dbinfo.separatorCharacter;
+        cmInit.restartTag = this->getRestartTag(dbinfo.databaseFilename);
 
         return this->getCatalystManager().createCatalystExodusMesh(cmInit);
     }
 
     std::unique_ptr<CatalystCGNSMeshBase> Utils::createCatalystCGNSMesh(
-        const std::string & databaseFilename,
-            const std::string & separatorCharacter,
-                const Ioss::PropertyManager & props) {
+        const DatabaseInfo & dbinfo, const Ioss::PropertyManager & props) {
 
         CatalystManagerBase::CatalystMeshInit cmInit;
-        cmInit.resultsOutputFilename = databaseFilename;
-        this->initMeshFromIOSSProps(cmInit, props);
-        cmInit.catalystSeparatorCharacter = separatorCharacter;
-        cmInit.restartTag = this->getRestartTag(databaseFilename);
+        cmInit.resultsOutputFilename = dbinfo.databaseFilename;
+        this->initMeshFromIOSSProps(cmInit, dbinfo, props);
+        cmInit.catalystSeparatorCharacter = dbinfo.separatorCharacter;
+        cmInit.restartTag = this->getRestartTag(dbinfo.databaseFilename);
 
         return this->getCatalystManager().createCatalystCGNSMesh(cmInit);
     }
 
     void Utils::initMeshFromIOSSProps(CatalystManagerBase::CatalystMeshInit & cmInit,
-        const Ioss::PropertyManager & props) {
+        const DatabaseInfo & dbinfo, const Ioss::PropertyManager & props) {
 
         if (props.exists("CATALYST_BLOCK_PARSE_JSON_STRING")) {
             cmInit.catalystBlockJSON = props\
                 .get("CATALYST_BLOCK_PARSE_JSON_STRING").get_string();
+        }
+        else if (props.exists("PHACTORI_JSON_SCRIPT")) {
+            bool readOkay = false;
+            std::string phactoriJSONFilePath = props\
+                .get("PHACTORI_JSON_SCRIPT").get_string();
+            if (dbinfo.myRank == 0) {
+                std::ifstream f(phactoriJSONFilePath);
+                if (f) {
+                    std::ostringstream ss;
+                    ss << f.rdbuf();
+                    cmInit.catalystBlockJSON = ss.str();
+                    readOkay = true;
+                }
+            }
+            this->broadCastStatusCode(readOkay, dbinfo);
+            if(!readOkay) {
+                std::ostringstream errmsg;
+                errmsg << "Unable to read input file: "
+                    << phactoriJSONFilePath << "\n";
+                IOSS_ERROR(errmsg);
+            }
+            else {
+                this->broadCastString(cmInit.catalystBlockJSON, dbinfo);
+            }
+        }
+        else if (props.exists("PHACTORI_INPUT_SYNTAX_SCRIPT")) {
+            std::string phactoriFilePath = props\
+                .get("PHACTORI_INPUT_SYNTAX_SCRIPT").get_string();
+            CatalystManagerBase::ParseResult pres;
+            if (dbinfo.myRank == 0) {
+                this->getCatalystManager().parsePhactoriFile(
+                    phactoriFilePath, pres);
+            }
+            this->broadCastStatusCode(pres.parseFailed, dbinfo);
+            if(pres.parseFailed) {
+                std::ostringstream errmsg;
+                errmsg << "Unable to parse input file: "
+                    << phactoriFilePath << "\n";
+                IOSS_ERROR(errmsg);
+            }
+            else {
+                this->broadCastString(pres.jsonParseResult, dbinfo);
+                cmInit.catalystBlockJSON = pres.jsonParseResult;
+            }
+        }
+
+        cmInit.writeCatalystMeshOneFile = false;
+        if (props.exists("WRITE_CATALYST_MESH_ONE_FILE_WITH_PREFIX")) {
+            cmInit.writeCatalystMeshOneFile = true;
+            cmInit.catalystMeshOneFilePrefix = props\
+                .get("WRITE_CATALYST_MESH_ONE_FILE_WITH_PREFIX").get_string();
+        }
+
+        cmInit.writeCatalystMeshFilePerProc = false;
+        if (props.exists("WRITE_CATALYST_MESH_FILE_PER_PROC_WITH_PREFIX")) {
+            cmInit.writeCatalystMeshFilePerProc = true;
+            cmInit.catalystMeshFilePerProcPrefix = props\
+                .get("WRITE_CATALYST_MESH_FILE_PER_PROC_WITH_PREFIX")\
+                    .get_string();
         }
 
         if (props.exists("CATALYST_SCRIPT")) {
@@ -175,22 +232,6 @@ namespace Iovs {
         else {
             return databaseFilename;
         }
-    }
-
-    int Utils::parseCatalystFile(const std::string &filepath,
-        std::string &json_result) {
-
-/*
-        ParaViewCatalystIossAdapterBase *pvc = nullptr;
-        pvc = this->createParaViewCatalystIossAdapterInstance();
-        CatalystParserInterface::parse_info pinfo;
-
-        int ret = pvc->parseFile(filepath, pinfo);
-        json_result = pinfo.json_result;
-
-        delete pvc;
-        return ret;
-*/
     }
 
     void* Utils::getDlHandle() {
@@ -356,19 +397,17 @@ namespace Iovs {
         }
     }
 
-    void Utils::createDatabaseOutputFile(const std::string &filename,
-        int myRank) {
-
+    void Utils::createDatabaseOutputFile(const DatabaseInfo & dbinfo) {
         std::ostringstream errmsg;
-        if (myRank == 0) {
-            if (!Utils::fileExists(filename)) {
+        if (dbinfo.myRank == 0) {
+            if (!Utils::fileExists(dbinfo.databaseFilename)) {
                 std::ofstream output_file;
-                output_file.open(filename.c_str(),
+                output_file.open(dbinfo.databaseFilename.c_str(),
                     std::ios::out | std::ios::trunc);
 
                 if (!output_file) {
                     errmsg << "Unable to create output file: "
-                        << filename << ".\n";
+                        << dbinfo.databaseFilename << ".\n";
                     IOSS_ERROR(errmsg);
                 }
                 output_file.close();
@@ -397,5 +436,23 @@ namespace Iovs {
           }
         }
       }
+    }
+
+    void Utils::broadCastString(std::string & s, const DatabaseInfo & dbinfo) {
+        int size = s.size();
+        MPI_Bcast(&size, 1, MPI_INT, 0, dbinfo.communicator);
+        if (dbinfo.myRank != 0) {
+            s.resize(size);
+        }
+        MPI_Bcast(const_cast<char*>(s.data()), size, MPI_CHAR, 0,
+            dbinfo.communicator);
+    }
+
+    void Utils::broadCastStatusCode(bool & statusCode,
+        const DatabaseInfo & dbinfo) {
+
+        int code = statusCode;
+        MPI_Bcast(&code, 1, MPI_INT, 0, dbinfo.communicator);
+        statusCode = code;
     }
 } // namespace Iovs

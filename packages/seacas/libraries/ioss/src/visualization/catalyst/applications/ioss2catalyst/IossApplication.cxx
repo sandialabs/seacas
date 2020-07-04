@@ -42,7 +42,8 @@ void IossApplication::initialize(const std::string& appName,
     this->numRanks = 1;
     this->printIOSSReport = false;
     this->copyDatabase = false;
-    this->writeCatalystMesh = false;
+    this->writeCatalystMeshOneFile = false;
+    this->writeCatalystMeshFilePerProc = false;
     this->fileName = "";
     this->applicationName = appName;
     this->fileTypeName = fileTypeName;
@@ -55,6 +56,10 @@ void IossApplication::initialize(const std::string& appName,
     this->phactoriInputScriptFilePath = "";
     this->phactoriInputJSONFilePath = "";
     this->paraViewExportedScriptFilePath = "";
+    this->catalystStartTimeStep = 0;
+    this->useCatalystStartTimeStep = false;
+    this->catalystStopTimeStep = 0;
+    this->useCatalystStopTimeStep = false;
 }
 
 IossApplication::~IossApplication() {
@@ -119,9 +124,17 @@ void IossApplication::finalizeMPI() {
 void IossApplication::processCommandLine(int argc, char **argv) {
     int c;
     char *cvalue = NULL;
-    while ((c = getopt (argc, argv, "chi:mp:rs:")) != -1) {
+    while ((c = getopt (argc, argv, "a:b:chi:mnp:rs:")) != -1) {
         char *cvalue = nullptr;
         switch(c) {
+            case 'a':
+                cvalue = optarg;
+                this->setCatalystStartTimeStep(atoi(cvalue));
+                break;
+            case 'b':
+                cvalue = optarg;
+                this->setCatalystStopTimeStep(atoi(cvalue));
+                break;
             case 'c':
                 this->copyDatabase = true;
                 break;
@@ -130,22 +143,25 @@ void IossApplication::processCommandLine(int argc, char **argv) {
                 this->exitApplicationSuccess();
                 break;
             case 'i':
-                this->usePhactoriInputJSON = true;
-                this->phactoriInputJSONFilePath = cvalue;
+                cvalue = optarg;
+                this->setPhactoriInputJSON(cvalue);
                 break;
             case 'm':
-                this->writeCatalystMesh = true;
+                this->setOutputCatalystMeshOneFile(true);
+                break;
+            case 'n':
+                this->setOutputCatalystMeshFilePerProc(true);
                 break;
             case 'p':
-                this->usePhactoriInputScript = true;
-                this->phactoriInputScriptFilePath = cvalue;
+                cvalue = optarg;
+                this->setPhactoriInputScript(cvalue);
                 break;
             case 'r':
                 this->printIOSSReport = true;
                 break;
             case 's':
-                this->useParaViewExportedScript = true;
-                this->paraViewExportedScriptFilePath = cvalue;
+                cvalue = optarg;
+                this->setParaViewExportedScript(cvalue);
                 break;
             case '?':
                 this->printErrorMessage("Unknown command line option -"\
@@ -176,6 +192,39 @@ void IossApplication::processCommandLine(int argc, char **argv) {
     }
 }
 
+void IossApplication::getStartStopTimeSteps(int numTimeSteps,
+    int & startTimeStep, int & stopTimeStep) {
+
+    if (this->useCatalystStartTimeStepON()) {
+        startTimeStep = this->getCatalystStartTimeStep();
+        if (startTimeStep < 1 ||
+            startTimeStep > numTimeSteps) {
+            this->printErrorMessage("Start time-step out of range");
+            this->exitApplicationFailure();
+        }
+    }
+    else {
+        startTimeStep = 1;
+    }
+
+    if (this->useCatalystStopTimeStepON()) {
+        stopTimeStep = this->getCatalystStopTimeStep();
+        if (stopTimeStep < 1 ||
+            stopTimeStep > numTimeSteps) {
+            this->printErrorMessage("Stop time-step out of range");
+            this->exitApplicationFailure();
+        }
+    }
+    else {
+        stopTimeStep = numTimeSteps;
+    }
+
+    if (startTimeStep > stopTimeStep) {
+        this->printErrorMessage("Start time-step > stop time-step.");
+        this->exitApplicationFailure();
+    }
+}
+
 void IossApplication::checkForOnlyOneCatalystOutputPath() {
 
     int numTimesCatalystCalled = 0;
@@ -185,7 +234,10 @@ void IossApplication::checkForOnlyOneCatalystOutputPath() {
     if(this->usePhactoriInputJSONON()) {
         numTimesCatalystCalled++;
     }
-    if(this->outputCatalystMeshON()) {
+    if(this->outputCatalystMeshOneFileON()) {
+        numTimesCatalystCalled++;
+    }
+    if(this->outputCatalystMeshFilePerProcON()) {
         numTimesCatalystCalled++;
     }
     if(this->useParaViewExportedScriptON()) {
@@ -231,12 +283,20 @@ void IossApplication::setOutputCopyOfInputDatabase(bool status) {
     this->copyDatabase = status;
 }
 
-bool IossApplication::outputCatalystMeshON() {
-    return this->writeCatalystMesh;
+bool IossApplication::outputCatalystMeshOneFileON() {
+    return this->writeCatalystMeshOneFile;
 }
 
-bool IossApplication::setOutputCatalystMesh(bool status) {
-    this->writeCatalystMesh = status;
+bool IossApplication::setOutputCatalystMeshOneFile(bool status) {
+    this->writeCatalystMeshOneFile = status;
+}
+
+bool IossApplication::outputCatalystMeshFilePerProcON() {
+    return this->writeCatalystMeshFilePerProc;
+}
+
+bool IossApplication::setOutputCatalystMeshFilePerProc(bool status) {
+    this->writeCatalystMeshFilePerProc = status;
 }
 
 bool IossApplication::usePhactoriInputScriptON() {
@@ -281,11 +341,38 @@ void IossApplication::setParaViewExportedScript(
     this->useParaViewExportedScript = true;
 }
 
+bool IossApplication::useCatalystStartTimeStepON() {
+    return this->useCatalystStartTimeStep;
+}
+
+int IossApplication::getCatalystStartTimeStep() {
+    return this->catalystStartTimeStep;
+}
+
+void IossApplication::setCatalystStartTimeStep(int timeStep) {
+    this->catalystStartTimeStep = timeStep;
+    this->useCatalystStartTimeStep = true;
+}
+
+bool IossApplication::useCatalystStopTimeStepON() {
+    return this->useCatalystStopTimeStep;
+}
+
+int IossApplication::getCatalystStopTimeStep() {
+    return this->catalystStopTimeStep;
+}
+
+void IossApplication::setCatalystStopTimeStep(int timeStep) {
+    this->catalystStopTimeStep = timeStep;
+    this->useCatalystStopTimeStep = true;
+}
+
 void IossApplication::printUsageMessage() {
     std::string fn = this->copyOutputDatabaseName + "." + this->fileTypeSuffix;
 
-    std::string um = "\nUsage: " + this->applicationName;
-    um += " [-h] [-cr | -m | -i file | -p file | -s file] FILE\n\n";
+    std::string um = "\nUSAGE\n\n" + this->applicationName;
+    um += " [-h] [-a n] [-b n]";
+    um += " [-cr | -m | -n | -i file | -p file | -s file] FILE\n\n";
 
     um += "DESCRIPTION\n\n";
     um += "Read input " + this->fileTypeName;
@@ -327,6 +414,10 @@ void IossApplication::printUsageMessage() {
  
     um += "\n\nOPTIONS\n\n";
 
+    um += "-a <n> call Catalyst starting at time-step n (starts at 1).\n\n";
+
+    um += "-b <n> call Catalyst stopping at time-step n.\n\n";
+
     um += "-c copy input file(s) to one file per processor with output \n";
     um += "   filename(s) prefix " + this->copyOutputDatabaseName + "\n\n";
 
@@ -336,9 +427,14 @@ void IossApplication::printUsageMessage() {
     um += "\n\n";
 
     um += "-m output Catalyst mesh representation of input file(s)\n";
-    um += "   with output filename " + this->outputCatalystMeshFileName;
-    um += ".pvd";
+    um += "   each time-step to a single file for all processors with output\n";
+    um += "   filename " + this->outputCatalystMeshFileName + "_time_<n>.vtm";
     um += "\n\n";
+
+    um += "-n output Catalyst mesh representation of input file(s)\n";
+    um += "   each time-step to a file for each processor with output\n";
+    um += "   filename " + this->outputCatalystMeshFileName;
+    um += "_proc_<p>_time_<n>.vtm\n\n";
 
     um += "-p <file> run Catalyst with Phactori input command syntax given\n";
     um += "   in <file>\n\n";
@@ -436,11 +532,6 @@ Ioss::Region * IossApplication::getInputIOSSRegion() {
     return this->inputIOSSRegion;
 }
 
-int IossApplication::parsePhactoriScriptFile(const std::string &filepath,
-        std::string &json_result) {
-
-}
-
 void IossApplication::openInputIOSSDatabase() {
     Ioss::PropertyManager inputProperties;
     if (this->decomposedMeshExists()) {
@@ -505,8 +596,32 @@ void IossApplication::copyInputIOSSDatabaseOnRank() {
 void IossApplication::callCatalystIOSSDatabaseOnRank() {
     Ioss::PropertyManager outputProperties;
 
-    outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_JSON_STRING",
-        this->getPhactoriDefaultJSON()));
+    if (this->usePhactoriInputScriptON()) {
+        outputProperties.add(Ioss::Property("PHACTORI_INPUT_SYNTAX_SCRIPT",
+            this->getPhactoriInputScript()));
+    }
+    else if (this->usePhactoriInputJSONON()) {
+        outputProperties.add(Ioss::Property("PHACTORI_JSON_SCRIPT",
+            this->getPhactoriInputJSON()));
+    }
+    else if (this->useParaViewExportedScriptON()) {
+        outputProperties.add(Ioss::Property("CATALYST_SCRIPT",
+            this->getParaViewExportedScript()));
+    }
+    else if (this->outputCatalystMeshOneFileON()) {
+        outputProperties.add(Ioss::Property(
+            "WRITE_CATALYST_MESH_ONE_FILE_WITH_PREFIX",
+                this->outputCatalystMeshFileName));
+    }
+    else if (this->outputCatalystMeshFilePerProcON()) {
+        outputProperties.add(Ioss::Property(
+            "WRITE_CATALYST_MESH_FILE_PER_PROC_WITH_PREFIX",
+                this->outputCatalystMeshFileName));
+    }
+    else {
+        outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_JSON_STRING",
+            this->getPhactoriDefaultJSON()));
+    }
 
     outputProperties.add(Ioss::Property("CATALYST_BLOCK_PARSE_INPUT_DECK_NAME",
         this->applicationName));
@@ -528,8 +643,14 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
     Ioss::Region * outputRegion = new Ioss::Region(dbo, inputRegion->name());
 
     auto state_count = inputRegion->get_property("state_count").get_int();
-    double min_time = inputRegion->get_state_time(1);
-    double max_time = inputRegion->get_state_time(state_count);
+
+    int startTimeStep;
+    int stopTimeStep;
+    this->getStartStopTimeSteps(state_count, startTimeStep, stopTimeStep);
+
+    double min_time = inputRegion->get_state_time(startTimeStep);
+    double max_time = inputRegion->get_state_time(stopTimeStep);
+
     Ioss::MeshCopyOptions copyOptions;
     copyOptions.data_storage_type = 1;
     copyOptions.minimum_time = min_time;

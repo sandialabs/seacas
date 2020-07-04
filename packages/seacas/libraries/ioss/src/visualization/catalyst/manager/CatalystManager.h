@@ -44,6 +44,7 @@ class vtkCPPythonScriptPipeline;
 class vtkCPDataDescription;
 class vtkCPProcessor;
 class vtkMultiBlockDataSet;
+class CatalystMeshWriter;
 
 class CatalystManager : public CatalystManagerBase {
 
@@ -51,6 +52,9 @@ public:
 
     CatalystManager();
     ~CatalystManager();
+
+    void parsePhactoriFile(const std::string &filepath,
+        ParseResult & pres);
 
     std::unique_ptr<CatalystExodusMeshBase> createCatalystExodusMesh(
         CatalystExodusMeshInit& cmInit);
@@ -89,8 +93,12 @@ public:
 
 private:
 
-    typedef std::pair<vtkCPPythonScriptPipeline *, vtkCPDataDescription *>
-        PipelineDataDescPair;
+    struct CatalystPipelineState {
+        vtkCPPythonScriptPipeline * pipeline;
+        vtkCPDataDescription * dataDescription;
+        CatalystMeshWriter * meshWriter;
+    };
+
     typedef std::pair<clock_t, clock_t> TimerPair;
     typedef std::pair<TimerPair, vtkDoubleArray *> LoggingPair;
 
@@ -101,6 +109,8 @@ private:
     void finalizeIfNeeded();
     bool canCoProcess();
     void incrementOutputCounts();
+    bool writeMeshON(const char *results_output_filename);
+    void writeMesh(const char *results_output_filename);
 
     void initCatalystLogging(CatalystMeshInit& cmInit);
     void initCatalystPipeline(CatalystMeshInit& cmInit,
@@ -109,7 +119,7 @@ private:
     int catalystOutputIDNumber;
     int catalystOutputReferenceCount;
     vtkCPProcessor * coProcessor;
-    std::map<std::string, PipelineDataDescPair> pipelines;
+    std::map<std::string, CatalystPipelineState> pipelines;
     std::map<std::string, LoggingPair> logging;
 };
 

@@ -103,6 +103,8 @@ private:
     vtkMultiBlockDataSet* multiBlock = nullptr;
     CatalystManager* catManager = nullptr;
     std::string catalystPipelineName;
+    bool writeCatalystMesh;
+    std::string catalystMeshFilePrefix;
 };
 
 #endif // __CATALYST_CGNS_MESH_H

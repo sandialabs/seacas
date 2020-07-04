@@ -37,14 +37,15 @@ IF("${isSystemDir}" STREQUAL "-1")
    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
-include_directories("include")
 include_directories("manager")
+include_directories("parser")
 include_directories("../utils/")
 include_directories("../exodus/")
 include_directories("../cgns/")
 
 add_subdirectory(parser)
 add_library(${PVCSA_LIBRARY_NAME} SHARED manager/CatalystManager.cxx
+                                         manager/CatalystMeshWriter.cxx
                                          exodus/CatalystExodusMesh.cxx
                                          cgns/CatalystCGNSMesh.cxx)
 

@@ -46,6 +46,7 @@ namespace
     int cb;
     std::string cbn;
     std::vector<double> d;
+    std::vector<int> intValues;
     std::vector<std::string> s;
     int count;
     PhactoriParserInterface::varMap nodeVars;
@@ -1524,9 +1525,10 @@ void no_argument_command(ParseData& pd,
     pd.root["plot over time blocks"][pd.cbn][command] = true;
 }
 
-void float_vector_command(ParseData& pd,
-                          const std::string& command, 
-                          std::vector<double>& values)
+template<class T>
+void vector_command(ParseData& pd,
+                    const std::string& command, 
+                    std::vector<T>& values)
 {
   Json::Value a(Json::arrayValue);
   for(int i=0;i<values.size();i++)
@@ -2387,8 +2389,8 @@ color_by_solid_color
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "color by solid color", c(pd).d);
-      }
+      vector_command(c(pd), "color by solid color", c(pd).d); 
+      } 
       ;
 
 color_by_blockid
@@ -2410,7 +2412,7 @@ color_legend_range
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "color legend range", c(pd).d);
+      vector_command(c(pd), "color legend range", c(pd).d);
       }
       ;
 
@@ -2433,7 +2435,7 @@ color_legend_minimum_range
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "color legend minimum range", c(pd).d);
+      vector_command(c(pd), "color legend minimum range", c(pd).d);
       }
       ;
 
@@ -2448,7 +2450,7 @@ color_legend_maximum_range
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "color legend maximum range", c(pd).d);
+      vector_command(c(pd), "color legend maximum range", c(pd).d);
       }
       ;
 
@@ -2594,7 +2596,7 @@ color_legend_subrange
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "color legend subrange", c(pd).d);
+      vector_command(c(pd), "color legend subrange", c(pd).d);
       }
 
 highlight_subrange
@@ -2620,7 +2622,7 @@ highlight_subrange
       c(pd).d.push_back($7);
       std::ostringstream convert;
       convert << c(pd).count;
-      float_vector_command(c(pd), "highlight subrange " + convert.str(), c(pd).d);
+      vector_command(c(pd), "highlight subrange " + convert.str(), c(pd).d);
       c(pd).count++;
       }
       ;
@@ -2677,7 +2679,7 @@ look_at_absolute_point
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "look at absolute point", c(pd).d);
+      vector_command(c(pd), "look at absolute point", c(pd).d);
       }
       ;
 
@@ -2688,7 +2690,7 @@ look_at_relative_point
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "look at relative point", c(pd).d);
+      vector_command(c(pd), "look at relative point", c(pd).d);
       }
       ;
 
@@ -2756,7 +2758,7 @@ up_vector
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "up vector", c(pd).d);
+      vector_command(c(pd), "up vector", c(pd).d);
       }
       ;
 
@@ -2838,7 +2840,7 @@ look_direction
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "look direction", c(pd).d);
+      vector_command(c(pd), "look direction", c(pd).d);
       }
       ;
 
@@ -2849,7 +2851,7 @@ camera_at_absolute_point
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "camera at absolute point", c(pd).d);
+      vector_command(c(pd), "camera at absolute point", c(pd).d);
       }
       ;
 
@@ -2860,7 +2862,7 @@ camera_at_relative_point
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "camera at relative point", c(pd).d);
+      vector_command(c(pd), "camera at relative point", c(pd).d);
       }
       ;
 
@@ -3147,10 +3149,10 @@ image_size
         yyerror(&yylloc, scanner, pd, "Error: image size <width> <height> must be integers greater than or equal to 1, and less than or equal to 4096");
         YYABORT;
         }
-      c(pd).d.clear();
-      c(pd).d.push_back($3);
-      c(pd).d.push_back($4);
-      float_vector_command(c(pd), "image size", c(pd).d);
+      c(pd).intValues.clear();
+      c(pd).intValues.push_back($3);
+      c(pd).intValues.push_back($4);
+      vector_command(c(pd), "image size", c(pd).intValues);
       }
       ;
 
@@ -3168,8 +3170,8 @@ background_color
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "background color", c(pd).d);
-      }
+      vector_command(c(pd), "background color", c(pd).d); 
+      } 
       ;
 
 surface_color
@@ -3186,8 +3188,8 @@ surface_color
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "surface color", c(pd).d);
-      }
+      vector_command(c(pd), "surface color", c(pd).d); 
+      } 
       ;
 
 edge_color
@@ -3204,8 +3206,8 @@ edge_color
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "edge color", c(pd).d);
-      }
+      vector_command(c(pd), "edge color", c(pd).d); 
+      } 
       ;
 
 text_color
@@ -3222,8 +3224,8 @@ text_color
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "text color", c(pd).d);
-      }
+      vector_command(c(pd), "text color", c(pd).d); 
+      } 
       ;
 
 axes_color
@@ -3240,8 +3242,8 @@ axes_color
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "axes color", c(pd).d);
-      }
+      vector_command(c(pd), "axes color", c(pd).d); 
+      } 
       ;
 
 threshold_shortcut
@@ -3464,7 +3466,7 @@ absolute_point_on_plane
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "absolute point on plane", c(pd).d);
+      vector_command(c(pd), "absolute point on plane", c(pd).d); 
       }
       | TOKABSOLUTEPOINTONPLANE point_location TOKEQUAL TOKVALUE TOKVALUE TOKVALUE
       {
@@ -3474,7 +3476,7 @@ absolute_point_on_plane
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
       c(pd).d.push_back($6);
-      float_vector_command(c(pd), "absolute point on plane " + ct, c(pd).d);
+      vector_command(c(pd), "absolute point on plane " + ct, c(pd).d); 
       }
       ;
 
@@ -3485,7 +3487,7 @@ relative_point_on_plane
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "relative point on plane", c(pd).d);
+      vector_command(c(pd), "relative point on plane", c(pd).d);
       }
       | TOKRELATIVEPOINTONPLANE point_location TOKEQUAL TOKVALUE TOKVALUE TOKVALUE
       {
@@ -3495,7 +3497,7 @@ relative_point_on_plane
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
       c(pd).d.push_back($6);
-      float_vector_command(c(pd), "relative point on plane " + ct, c(pd).d);
+      vector_command(c(pd), "relative point on plane " + ct, c(pd).d); 
       }
       ;
 
@@ -3565,7 +3567,7 @@ plane_normal
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "plane normal", c(pd).d);
+      vector_command(c(pd), "plane normal", c(pd).d);
       }
 
 cut_type
@@ -3714,7 +3716,7 @@ center_at_absolute_point
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "center at absolute point", c(pd).d);
+      vector_command(c(pd), "center at absolute point", c(pd).d); 
       }
       ;
 
@@ -3725,7 +3727,7 @@ center_at_relative_point
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "center at relative point", c(pd).d);
+      vector_command(c(pd), "center at relative point", c(pd).d); 
       }
       ;
 
@@ -3769,7 +3771,7 @@ absolute_extents
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "absolute extents", c(pd).d);
+      vector_command(c(pd), "absolute extents", c(pd).d);
       }
 
 relative_extents
@@ -3784,7 +3786,7 @@ relative_extents
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "relative extents", c(pd).d);
+      vector_command(c(pd), "relative extents", c(pd).d);
       }
 
 rotations
@@ -3794,7 +3796,7 @@ rotations
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "rotations", c(pd).d);
+      vector_command(c(pd), "rotations", c(pd).d);
       }
 
 keep_inside_box
@@ -3899,7 +3901,7 @@ keep_between
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "keep between", c(pd).d);
+      vector_command(c(pd), "keep between", c(pd).d);
       }
       ;
 
@@ -3964,7 +3966,7 @@ contour_statement
 contour_value
       : TOKCONTOURVALUE TOKEQUAL { c(pd).d.clear(); } contour_value_list
       {
-      float_vector_command(c(pd), "contour value", c(pd).d);
+      vector_command(c(pd), "contour value", c(pd).d);
       }
       ;
 
@@ -3985,7 +3987,7 @@ contour_value_sequence
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "contour value sequence", c(pd).d);
+      vector_command(c(pd), "contour value sequence", c(pd).d);
       }
       ;
 
@@ -4137,7 +4139,7 @@ x_axis_range
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "x axis range", c(pd).d);
+      vector_command(c(pd), "x axis range", c(pd).d);
       }
       ;
 
@@ -4152,7 +4154,7 @@ y_axis_range
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "y axis range", c(pd).d);
+      vector_command(c(pd), "y axis range", c(pd).d);
       }
       ;
 
@@ -4184,7 +4186,7 @@ x_axis_minimum_range
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "x axis minimum range", c(pd).d);
+      vector_command(c(pd), "x axis minimum range", c(pd).d);
       }
       ;
 
@@ -4199,7 +4201,7 @@ y_axis_minimum_range
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "y axis minimum range", c(pd).d);
+      vector_command(c(pd), "y axis minimum range", c(pd).d);
       }
       ;
 
@@ -4214,7 +4216,7 @@ x_axis_maximum_range
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "x axis maximum range", c(pd).d);
+      vector_command(c(pd), "x axis maximum range", c(pd).d);
       }
       ;
 
@@ -4229,7 +4231,7 @@ y_axis_maximum_range
       c(pd).d.clear();
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
-      float_vector_command(c(pd), "y axis maximum range", c(pd).d);
+      vector_command(c(pd), "y axis maximum range", c(pd).d);
       }
       ;
 
@@ -4323,7 +4325,7 @@ plot_mean
 plot_id
       : TOKPLOTID TOKEQUAL { c(pd).d.clear(); } plot_value_list
       {
-      float_vector_command(c(pd), "plot id", c(pd).d);
+      vector_command(c(pd), "plot id", c(pd).d);
       }
       ;
 
@@ -4483,7 +4485,7 @@ rotate
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "rotate", c(pd).d);
+      vector_command(c(pd), "rotate", c(pd).d);
       }
       ;
 
@@ -4494,7 +4496,7 @@ scale
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "scale", c(pd).d);
+      vector_command(c(pd), "scale", c(pd).d);
       }
       ;
 
@@ -4505,7 +4507,7 @@ translate
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "translate", c(pd).d);
+      vector_command(c(pd), "translate", c(pd).d);
       }
       ;
 
@@ -4700,7 +4702,7 @@ vector_opparam
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
       c(pd).d.push_back($6);
-      float_vector_command(c(pd), $3, c(pd).d);
+      vector_command(c(pd), $3, c(pd).d);
       }
       ;
 
@@ -4799,7 +4801,7 @@ color
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "color", c(pd).d);
+      vector_command(c(pd), "color", c(pd).d);
       }
       ;
 
@@ -4810,7 +4812,7 @@ absolute_size
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "absolute size", c(pd).d);
+      vector_command(c(pd), "absolute size", c(pd).d);
       }
       ;
 
@@ -4821,7 +4823,7 @@ relative_size
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "relative size", c(pd).d);
+      vector_command(c(pd), "relative size", c(pd).d);
       }
       ;
 
@@ -4832,7 +4834,7 @@ orientation
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "orientation", c(pd).d);
+      vector_command(c(pd), "orientation", c(pd).d);
       }
       ;
 
@@ -4856,7 +4858,7 @@ marker_at_relative_point
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "marker at relative point", c(pd).d);
+      vector_command(c(pd), "marker at relative point", c(pd).d);
       }
       ;
 
@@ -4867,7 +4869,7 @@ marker_at_absolute_point
       c(pd).d.push_back($3);
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
-      float_vector_command(c(pd), "marker at absolute point", c(pd).d);
+      vector_command(c(pd), "marker at absolute point", c(pd).d);
       }
       ;
 
@@ -4927,7 +4929,7 @@ vector_parameter
       c(pd).d.push_back($4);
       c(pd).d.push_back($5);
       c(pd).d.push_back($6);
-      float_vector_command(c(pd), $3, c(pd).d);
+      vector_command(c(pd), $3, c(pd).d);
       }
       ;
 
@@ -5085,7 +5087,7 @@ threshold_variable_function
 threshold_values
       : TOKTHRESHOLDVALUES TOKEQUAL { c(pd).d.clear(); } threshold_value_list
       {
-      float_vector_command(c(pd), "threshold values", c(pd).d);
+      vector_command(c(pd), "threshold values", c(pd).d);
       }
       ;
 

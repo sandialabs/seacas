@@ -22,6 +22,7 @@ CatalystExodusMesh::CatalystExodusMesh(CatalystManager *cm) {
     this->num_global_points = 0;
     this->UnderscoreVectors = true;
     this->ApplyDisplacements = true;
+    this->writeCatalystMesh = false;
 }
 
 CatalystExodusMesh::~CatalystExodusMesh() {
@@ -86,8 +87,9 @@ void CatalystExodusMesh::PerformCoProcessing(
     std::vector<int> &error_and_warning_codes,
         std::vector<std::string> &error_and_warning_messages) {
 
-    this->catManager->PerformCoProcessing(this->catalystPipelineName.c_str(),
-        error_and_warning_codes, error_and_warning_messages);
+    this->catManager->PerformCoProcessing(
+       this->catalystPipelineName.c_str(),
+           error_and_warning_codes, error_and_warning_messages);
 }
 
 void CatalystExodusMesh::SetTimeData(double currentTime, int timeStep) {

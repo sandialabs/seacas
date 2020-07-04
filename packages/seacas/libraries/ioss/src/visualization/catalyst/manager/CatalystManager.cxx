@@ -31,6 +31,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CatalystManager.h"
+#include "CatalystMeshWriter.h"
+#include "PhactoriParserInterface.h"
 #include "vtkDoubleArray.h"
 #include "vtkCPDataDescription.h"
 #include "vtkCPInputDataDescription.h"
@@ -46,6 +48,9 @@
 #include "vtkIntArray.h"
 #include <sstream>
 #include <vtksys/SystemInformation.hxx>
+#include "vtkXMLPMultiBlockDataWriter.h"
+#include "vtkTrivialProducer.h"
+#include "vtkMultiProcessController.h"
 
 CatalystManager::CatalystManager() {
     this->coProcessor = nullptr;
@@ -177,12 +182,25 @@ void CatalystManager::initCatalystLogging(CatalystMeshInit& cmInit) {
 void CatalystManager::initCatalystPipeline(CatalystMeshInit& cmInit,
     vtkMultiBlockDataSet* mbds) {
 
-    vtkCPDataDescription * dd = vtkCPDataDescription::New();
-    vtkCPPythonScriptPipeline * pl = vtkCPPythonScriptPipeline::New();
-    dd->AddInput("input");
-    dd->GetInputDescriptionByName("input")->SetGrid(mbds);
-    PipelineDataDescPair pddp = std::make_pair(pl, dd);
-    this->pipelines[cmInit.resultsOutputFilename] = pddp;
+    CatalystPipelineState catPipeState;
+    catPipeState.pipeline = vtkCPPythonScriptPipeline::New();
+
+    catPipeState.dataDescription = vtkCPDataDescription::New();
+    catPipeState.dataDescription->AddInput("input");
+    catPipeState.dataDescription->\
+        GetInputDescriptionByName("input")->SetGrid(mbds);
+
+    catPipeState.meshWriter = new CatalystMeshWriter();
+    if (cmInit.writeCatalystMeshOneFile) {
+        catPipeState.meshWriter->setOutputCatalystMeshOneFilePrefix(\
+            cmInit.catalystMeshOneFilePrefix);
+    }
+    if (cmInit.writeCatalystMeshFilePerProc) {
+        catPipeState.meshWriter->setOutputCatalystMeshFilePerProcPrefix(\
+            cmInit.catalystMeshFilePerProcPrefix);
+    }
+
+    this->pipelines[cmInit.resultsOutputFilename] = catPipeState;
 
     vtkFieldData *  fd = vtkFieldData::New();
     vtkStringArray *sa = vtkStringArray::New();
@@ -215,14 +233,15 @@ void CatalystManager::initCatalystPipeline(CatalystMeshInit& cmInit,
     fd->AddArray(sa);
     fd->AddArray(ec);
     fd->AddArray(em);
-    this->pipelines[cmInit.resultsOutputFilename].second->SetUserData(fd);
+    this->pipelines[cmInit.resultsOutputFilename]\
+        .dataDescription->SetUserData(fd);
     fd->Delete();
     sa->Delete();
     ec->Delete();
     em->Delete();
 
     if (this->pipelines[cmInit.resultsOutputFilename]\
-        .first->Initialize(cmInit.catalystPythonFilename.c_str()) == 0) {
+        .pipeline->Initialize(cmInit.catalystPythonFilename.c_str()) == 0) {
       std::cerr << "Unable to initialize ParaView Catalyst with python script "
                 << cmInit.catalystPythonFilename << std::endl;
       this->DeletePipeline(cmInit.resultsOutputFilename.c_str());
@@ -231,8 +250,9 @@ void CatalystManager::initCatalystPipeline(CatalystMeshInit& cmInit,
 
 void CatalystManager::DeletePipeline(const char *results_output_filename) {
     if (this->pipelines.find(results_output_filename) != this->pipelines.end()) {
-      this->pipelines[results_output_filename].first->Delete();
-      this->pipelines[results_output_filename].second->Delete();
+      this->pipelines[results_output_filename].pipeline->Delete();
+      this->pipelines[results_output_filename].dataDescription->Delete();
+      delete this->pipelines[results_output_filename].meshWriter;
       this->pipelines.erase(results_output_filename);
     }
 
@@ -247,21 +267,31 @@ void CatalystManager::DeletePipeline(const char *results_output_filename) {
 void CatalystManager::PerformCoProcessing(const char *results_output_filename,
                                           std::vector<int> & error_and_warning_codes,
                                           std::vector<std::string> & error_and_warning_messages) {
-    if (!this->canCoProcess()) {
-        return;
-    }
 
     if (this->pipelines.find(results_output_filename) != this->pipelines.end()) {
+  
+      if (this->writeMeshON(results_output_filename)) {
+          this->writeMesh(results_output_filename);
+          return;
+      }
+
+      if (!this->canCoProcess()) {
+        return;
+      }
+
       error_and_warning_codes.clear();
       error_and_warning_messages.clear();
 
-      vtkCPPythonScriptPipeline *pl = this->pipelines[results_output_filename].first;
-      vtkCPDataDescription *dd = this->pipelines[results_output_filename].second;
+      vtkCPPythonScriptPipeline *pl = this->\
+          pipelines[results_output_filename].pipeline;
+      vtkCPDataDescription * dataDescription = this->\
+          pipelines[results_output_filename].dataDescription;
       pl->Register(0);
       this->coProcessor->AddPipeline(pl);
-      this->coProcessor->CoProcess(dd);
+      this->coProcessor->CoProcess(dataDescription);
 
-      vtkFieldData *fd = this->pipelines[results_output_filename].second->GetUserData();
+      vtkFieldData *fd = this->pipelines[results_output_filename]\
+          .dataDescription->GetUserData();
       vtkIntArray * ec =
           vtkIntArray::SafeDownCast(fd->GetAbstractArray("catalyst_sierra_error_codes"));
       vtkStringArray *em =
@@ -293,7 +323,8 @@ void CatalystManager::PerformCoProcessing(const char *results_output_filename,
 void CatalystManager::SetTimeData(double currentTime, int timeStep,
                                   const char *results_output_filename) {
     if (this->pipelines.find(results_output_filename) != this->pipelines.end()) {
-      this->pipelines[results_output_filename].second->SetTimeData(currentTime, timeStep);
+      this->pipelines[results_output_filename].dataDescription->\
+          SetTimeData(currentTime, timeStep);
     }
 }
 
@@ -374,6 +405,48 @@ void CatalystManager::WriteToLogFile(const char *results_output_filename) {
       }
       logData->SetNumberOfTuples(0);
     }
+}
+
+bool CatalystManager::writeMeshON(const char *results_output_filename) {
+
+    if (this->pipelines.find(results_output_filename)
+        != this->pipelines.end()) {
+
+        CatalystMeshWriter * mw = this->pipelines[results_output_filename]\
+            .meshWriter;
+        return mw->outputCatalystMeshOneFileON() ||
+            mw->outputCatalystMeshFilePerProcON();
+    }
+}
+
+void CatalystManager::writeMesh(const char *results_output_filename) {
+
+    if (this->pipelines.find(results_output_filename)
+        != this->pipelines.end()) {
+
+        vtkCPDataDescription * dataDescription = this->\
+            pipelines[results_output_filename].dataDescription;
+        CatalystMeshWriter * mw = this->pipelines[results_output_filename]\
+            .meshWriter;
+        vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(\
+            dataDescription->GetInputDescriptionByName("input")->GetGrid());
+        int timeStep = dataDescription->GetTimeStep();
+        if (mw->outputCatalystMeshOneFileON()) {
+            mw->writeCatalystMeshOneFile(mbds, timeStep);
+        }
+        if (mw->outputCatalystMeshFilePerProcON()) {
+            mw->writeCatalystMeshFilePerProc(mbds, timeStep);
+        }
+    }
+}
+
+void CatalystManager::parsePhactoriFile(const std::string &filepath,
+    ParseResult & pres) {
+
+    PhactoriParserInterface::ParseInfo pinfo;
+    PhactoriParserInterface::parseFile(filepath, pinfo);
+    pres.jsonParseResult = pinfo.jsonParseResult;
+    pres.parseFailed = pinfo.parseFailed;
 }
 
 extern "C" {

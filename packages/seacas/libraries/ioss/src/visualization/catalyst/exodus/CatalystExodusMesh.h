@@ -197,6 +197,8 @@ private:
     void       ReleaseGlobalPoints();
     vtkPoints* global_points;
     int        num_global_points;
+    bool writeCatalystMesh;
+    std::string catalystMeshFilePrefix;
 
     void CreateElementBlockInternal(const char * elem_block_name,
         int elem_block_id, const std::string &elem_type, int nodes_per_elem,

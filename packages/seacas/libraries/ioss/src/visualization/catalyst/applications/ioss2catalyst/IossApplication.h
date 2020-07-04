@@ -29,8 +29,11 @@ public:
     bool outputCopyOfInputDatabaseON();
     void setOutputCopyOfInputDatabase(bool status);
 
-    bool outputCatalystMeshON();
-    bool setOutputCatalystMesh(bool status);
+    bool outputCatalystMeshOneFileON();
+    bool setOutputCatalystMeshOneFile(bool status);
+
+    bool outputCatalystMeshFilePerProcON();
+    bool setOutputCatalystMeshFilePerProc(bool status);
 
     bool usePhactoriInputScriptON();
     std::string getPhactoriInputScript();
@@ -44,8 +47,13 @@ public:
     std::string getParaViewExportedScript();
     void setParaViewExportedScript(const std::string& exportedScriptFilePath);
 
-    static int parsePhactoriScriptFile(const std::string &filepath,
-        std::string &json_result);
+    bool useCatalystStartTimeStepON();
+    int getCatalystStartTimeStep();
+    void setCatalystStartTimeStep(int timeStep);
+
+    bool useCatalystStopTimeStepON();
+    int getCatalystStopTimeStep();
+    void setCatalystStopTimeStep(int timeStep);
 
     int getMyRank();
     int getNumRanks();
@@ -77,13 +85,20 @@ private:
     void finalizeMPI();
     void printUsageMessage();
     void checkForOnlyOneCatalystOutputPath();
+    void getStartStopTimeSteps(int numTimeSteps, int & startTimeStep,
+        int & stopTimeStep);
     std::string getParallelFileName();
     std::string getPhactoriDefaultJSON();
     int myRank;
     int numRanks;
+    bool useCatalystStartTimeStep;
+    int catalystStartTimeStep;
+    bool useCatalystStopTimeStep;
+    int catalystStopTimeStep;
     bool printIOSSReport;
     bool copyDatabase;
-    bool writeCatalystMesh;
+    bool writeCatalystMeshOneFile;
+    bool writeCatalystMeshFilePerProc;
     bool usePhactoriInputScript;
     bool usePhactoriInputJSON;
     bool useParaViewExportedScript;

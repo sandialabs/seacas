@@ -55,13 +55,17 @@ namespace Iovs_cgns {
               .getDatabaseOutputFilePath(filename, props), db_usage,
                   communicator, props) {
 
+      Iovs::Utils::DatabaseInfo dbinfo;
+      dbinfo.databaseFilename = this->DBFilename;
+      dbinfo.separatorCharacter = std::string(1, this->get_field_separator());
+      dbinfo.myRank = this->parallel_rank();
+      dbinfo.communicator = communicator;
+
       Iovs::Utils::getInstance().checkDbUsage(db_usage);
-      Iovs::Utils::getInstance().createDatabaseOutputFile(\
-          this->DBFilename, this->parallel_rank());
+      Iovs::Utils::getInstance().createDatabaseOutputFile(dbinfo);
       dbState = Ioss::STATE_UNKNOWN;
-      std::string separator(1, this->get_field_separator());
       this->catCGNSMesh = Iovs::Utils::getInstance()\
-          .createCatalystCGNSMesh(this->DBFilename, separator, props);
+          .createCatalystCGNSMesh(dbinfo, props);
     }
 
     DatabaseIO::~DatabaseIO() {

@@ -53,23 +53,24 @@ namespace Iovs {
 
     std::string getCatalystPythonDriverPath();
 
-    int parseCatalystFile(const std::string &filepath,
-        std::string &json_result);
-
     void checkDbUsage(Ioss::DatabaseUsage db_usage);
 
-    void createDatabaseOutputFile(const std::string &filename,
-        int myRank);
+    struct DatabaseInfo {
+        std::string databaseFilename;
+        std::string separatorCharacter;
+        int myRank;
+        MPI_Comm communicator;
+    };
+
+    void createDatabaseOutputFile(const DatabaseInfo & dbinfo);
 
     std::unique_ptr<CatalystExodusMeshBase> createCatalystExodusMesh(
-        const std::string & databaseFilename,
-            const std::string & separatorCharacter,
-                const Ioss::PropertyManager & props);
+        const DatabaseInfo & dbinfo,
+            const Ioss::PropertyManager & props);
 
     std::unique_ptr<CatalystCGNSMeshBase> createCatalystCGNSMesh(
-        const std::string & databaseFilename,
-            const std::string & separatorCharacter,
-                const Ioss::PropertyManager & props);
+        const DatabaseInfo & dbinfo,
+            const Ioss::PropertyManager & props);
 
     std::string getDatabaseOutputFilePath(
         const std::string & databaseFilename,
@@ -93,9 +94,13 @@ namespace Iovs {
         createCatalystManagerInstance();
 
     void initMeshFromIOSSProps(CatalystManagerBase::CatalystMeshInit & cmInit,
-        const Ioss::PropertyManager & props);
+        const DatabaseInfo & dbinfo, const Ioss::PropertyManager & props);
 
     std::string getRestartTag(const std::string & databaseFilename);
+
+    void broadCastString(std::string & s, const DatabaseInfo & dbinfo);
+
+    void broadCastStatusCode(bool & statusCode, const DatabaseInfo & dbinfo);
 
     void loadPluginLibrary();
 

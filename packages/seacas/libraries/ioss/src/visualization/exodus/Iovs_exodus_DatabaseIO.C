@@ -54,15 +54,19 @@ namespace Iovs_exodus {
         nodeBlockCount(0), elementBlockCount(0)
   {
 
+    Iovs::Utils::DatabaseInfo dbinfo;
+    dbinfo.databaseFilename = this->DBFilename;
+    dbinfo.separatorCharacter = std::string(1, this->get_field_separator());
+    dbinfo.myRank = this->parallel_rank();
+    dbinfo.communicator = communicator;
+
     Iovs::Utils::getInstance().checkDbUsage(db_usage);
-    Iovs::Utils::getInstance().createDatabaseOutputFile(\
-        this->DBFilename, this->parallel_rank());
+    Iovs::Utils::getInstance().createDatabaseOutputFile(dbinfo);
     dbState = Ioss::STATE_UNKNOWN;
     this->globalNodeAndElementIDsCreated = false;
 
-    std::string separator(1, this->get_field_separator());
     this->catExoMesh = Iovs::Utils::getInstance()\
-        .createCatalystExodusMesh(this->DBFilename, separator, props);
+        .createCatalystExodusMesh(dbinfo, props);
 
     if (props.exists("CATALYST_CREATE_NODE_SETS")) {
       this->createNodeSets = props.get("CATALYST_CREATE_NODE_SETS").get_int();
@@ -100,8 +104,6 @@ namespace Iovs_exodus {
     switch (state) {
     case Ioss::STATE_DEFINE_MODEL: write_meta_data(); break;
     case Ioss::STATE_DEFINE_TRANSIENT:
-      // TODO, is there metadata we can prep through ITAPS?
-      // write_results_metadata();
       break;
     default: // ignore everything else...
       break;
@@ -132,36 +134,15 @@ namespace Iovs_exodus {
   bool DatabaseIO::end_state__(int /*state*/, double /*time*/)
   {
     Ioss::SerializeIO serializeIO__(this);
+    std::vector<int> error_codes;
+    std::vector<std::string> error_messages;
+    this->catExoMesh->logMemoryUsageAndTakeTimerReading();
+    this->catExoMesh->PerformCoProcessing(error_codes, error_messages);
+    this->catExoMesh->logMemoryUsageAndTakeTimerReading();
+    this->catExoMesh->ReleaseMemory();
+    Iovs::Utils::getInstance().reportCatalystErrorMessages(
+        error_codes, error_messages, this->parallel_rank());
 
-      std::vector<int>         error_codes;
-      std::vector<std::string> error_messages;
-
-      this->catExoMesh->logMemoryUsageAndTakeTimerReading();
-      this->catExoMesh->PerformCoProcessing(error_codes, error_messages);
-      this->catExoMesh->logMemoryUsageAndTakeTimerReading();
-      this->catExoMesh->ReleaseMemory();
-      Iovs::Utils::getInstance().reportCatalystErrorMessages(
-          error_codes, error_messages, this->parallel_rank());
-
-/*
-      if (!error_codes.empty() && !error_messages.empty() &&
-          error_codes.size() == error_messages.size()) {
-        for (unsigned int i = 0; i < error_codes.size(); i++) {
-          if (error_codes[i] > 0) {
-            Ioss::WARNING() << "\n\n** ParaView Catalyst Plugin Warning Message Severity Level "
-                            << error_codes[i] << ", On Processor " << this->myProcessor
-                            << " **\n\n";
-            Ioss::WARNING() << error_messages[i];
-          }
-          else {
-            std::ostringstream errmsg;
-            errmsg << "\n\n** ParaView Catalyst Plugin Error Message Severity Level "
-                   << error_codes[i] << ", On Processor " << this->myProcessor << " **\n\n"
-                   << error_messages[i];
-            IOSS_ERROR(errmsg);
-          }
-        }
-      } */
     return true;
   }
 
@@ -338,8 +319,6 @@ namespace Iovs_exodus {
         }
       }
       else if (role == Ioss::Field::REDUCTION) {
-        // TODO imesh version
-        // write_global_field(entity_type::NODAL, field, nb, data);
       }
     }
     return num_to_get;
@@ -453,8 +432,6 @@ namespace Iovs_exodus {
         }
       }
       else if (role == Ioss::Field::REDUCTION) {
-        // TODO replace with ITAPS
-        // write_global_field(entity_type::ELEM_BLOCK, field, eb, data);
       }
     }
     return num_to_get;
@@ -466,11 +443,9 @@ namespace Iovs_exodus {
 
     // Node Blocks --
     {
-      // std::cerr << "DatabaseIO::write_meta_data node blocks\n";
       const Ioss::NodeBlockContainer &node_blocks = region->get_node_blocks();
       assert(node_blocks.size() == 1);
       nodeCount = node_blocks[0]->entity_count();
-      // std::cerr << "DatabaseIO::write_meta_data nodeCount:" << nodeCount << "\n";
     }
 
     // NodeSets ...
@@ -503,17 +478,11 @@ namespace Iovs_exodus {
 
       elementBlockCount = 0;
       elementCount      = 0;
-      // std::cerr << "DatabaseIO::write_meta_data element num blocks:" << element_blocks.size() <<
-      // "\n";
       for (I = element_blocks.begin(); I != element_blocks.end(); ++I) {
         elementBlockCount++;
         elementCount += (*I)->entity_count();
-        // std::cerr << "DatabaseIO::write_meta_data element num in block " << elementBlockCount <<
-        // ": " << (*I)->entity_count() << "\n";
       }
-      // std::cerr << "DatabaseIO::write_meta_data elementCount:" << elementCount << "\n";
     }
-    // std::cerr << "DatabaseIO::write_meta_data returning\n";
   }
 
   int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get)
@@ -560,7 +529,6 @@ namespace Iovs_exodus {
 
     nodeMap.set_size(nodeCount);
 
-    // std::cerr << "DatabaseIO::handle_node_ids nodeMap tagged serial, doing mapping\n";
     bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
     if (int_byte_size_api() == 4) {
       nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0, in_define);
@@ -580,7 +548,6 @@ namespace Iovs_exodus {
                           void *ids, size_t int_byte_size, size_t num_to_get,
                           /*int file_pointer,*/ int /*my_processor*/)
   {
-    // std::cerr << "DatabaseIO::handle_block_ids executing\n";
     /*!
      * NOTE: "element" is generic for "element", "face", or "edge"
      *
@@ -653,21 +620,16 @@ namespace Iovs_exodus {
 
   int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids, size_t num_to_get)
   {
-    // std::cerr << "DatabaseIO::handle_element_ids executing num_to_get: " << num_to_get << "\n";
     elemMap.set_size(elementCount);
-    // std::cerr << "DatabaseIO::handle_element_ids elementMap size: " << elementMap.size() << "\n";
     return handle_block_ids(eb, dbState, elemMap, ids, int_byte_size_api(), num_to_get,
                             /*get_file_pointer(),*/ myProcessor);
   }
 
   const Ioss::Map &DatabaseIO::get_node_map() const
   {
-    // std::cerr << "in new nathan Iovs DatabaseIO::get_node_reorder_map\n";
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (nodeMap.map().empty()) {
-      // std::cerr << "DatabaseIO::get_node_map  nodeMap was empty, resizing and tagging
-      // sequential\n";
       nodeMap.set_size(nodeCount);
 
       // Output database; nodeMap not set yet... Build a default map.
@@ -775,20 +737,7 @@ namespace Iovs_exodus {
           num_to_get          = 0;
         }
 
-        // std::cerr << "Iovs_DatabaseIO::"
-        //    "put_field_internal doing CreateSideSet (1)\n";
           const Ioss::SideSet *ebowner = eb->owner();
-          /*
-          if(ebowner == NULL)
-            {
-            std::cerr << "eb->owner() returned null\n";
-            }
-          else
-            {
-            std::cerr << "eb->owner() not null\n";
-            std::cerr << "ebowner->name(): " << ebowner->name() << "\n";
-            }
-          */
           /*NOTE: Jeff Mauldin JAM 2015Oct8
            CreateSideSet is called once for each block which the sideset
            spans, and the eb->name() for the side set is the ebowner->name()
@@ -806,10 +755,6 @@ namespace Iovs_exodus {
           this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id, num_to_get,
               &element[0], &side[0]);
 
-        // std::cerr << "Iovs_DatabaseIO::"
-        //    "put_field_internal back from CreateSideSet (1) \n";
-        //
-        //
         if (!this->createSideSets) {
           num_to_get = css_save_num_to_get;
         }
@@ -829,20 +774,7 @@ namespace Iovs_exodus {
           num_to_get          = 0;
         }
 
-        // std::cerr << "Iovs_DatabaseIO::"
-        //    "put_field_internal doing CreateSideSet (2)\n";
           const Ioss::SideSet *ebowner = eb->owner();
-          /*
-          if(ebowner == NULL)
-            {
-            std::cerr << "eb->owner() returned null\n";
-            }
-          else
-            {
-            std::cerr << "eb->owner() not null\n";
-            std::cerr << "ebowner->name(): " << ebowner->name() << "\n";
-            }
-          */
           /*NOTE: Jeff Mauldin JAM 2015Oct8
            CreateSideSet is called once for each block which the sideset
            spans, and the eb->name() for the side set is the ebowner->name()
@@ -860,9 +792,6 @@ namespace Iovs_exodus {
           this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id,
               num_to_get, &element[0], &side[0]);
 
-        // std::cerr << "Iovs_DatabaseIO::"
-        //    "put_field_internal back from CreateSideSet (2) \n";
-        //
         if (!this->createSideSets) {
           num_to_get = css_save_num_to_get;
         }

@@ -46,6 +46,14 @@ public:
     CatalystManagerBase() {};
     virtual ~CatalystManagerBase() {};
 
+    struct ParseResult {
+        std::string jsonParseResult = "";
+        bool parseFailed = true;
+    };
+
+    virtual void parsePhactoriFile(const std::string &filepath,
+        ParseResult & pres) = 0;
+
     virtual int getCatalystOutputIDNumber() = 0;
 
     // Parameters:
@@ -65,6 +73,10 @@ public:
         std::string restartTag;
         bool enableLogging;
         int debugLevel;
+        bool writeCatalystMeshOneFile;
+        std::string catalystMeshOneFilePrefix;
+        bool writeCatalystMeshFilePerProc;
+        std::string catalystMeshFilePerProcPrefix;
         std::string resultsOutputFilename;
         std::string catalystOutputDirectory;
         std::vector<std::string> catalystData;
