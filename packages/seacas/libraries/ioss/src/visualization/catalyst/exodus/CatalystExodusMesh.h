@@ -133,28 +133,13 @@ public:
 
 private:
 
-    const unsigned int ELEMENT_BLOCK_MBDS_ID   = 0;
+    const unsigned int ELEMENT_BLOCK_MBDS_ID = 0;
     const char * ELEMENT_BLOCK_MBDS_NAME = "Element Blocks";
 
-    const unsigned int FACE_BLOCKS_MBDS_ID   = 1;
-    const char * FACE_BLOCKS_MBDS_NAME = "Face Blocks";
-
-    const unsigned int EDGE_BLOCKS_MBDS_ID   = 2;
-    const char * EDGE_BLOCKS_MBDS_NAME = "Edge Blocks";
-
-    const unsigned int ELEMENT_SETS_MBDS_ID   = 3;
-    const char * ELEMENT_SETS_MBDS_NAME = "Element Sets";
-
-    const unsigned int SIDE_SETS_MBDS_ID   = 4;
+    const unsigned int SIDE_SETS_MBDS_ID = 1;
     const char * SIDE_SETS_MBDS_NAME = "Side Sets";
 
-    const unsigned int FACE_SETS_MBDS_ID   = 5;
-    const char * FACE_SETS_MBDS_NAME = "Face Sets";
-
-    const unsigned int EDGE_SETS_MBDS_ID   = 6;
-    const char * EDGE_SETS_MBDS_NAME = "Edge Sets";
-
-    const unsigned int NODE_SETS_MBDS_ID   = 7;
+    const unsigned int NODE_SETS_MBDS_ID = 2;
     const char * NODE_SETS_MBDS_NAME = "Node Sets";
 
     const int HEXAHEDRON_FACE_MAP[6] = {2, 1, 3, 0, 4, 5};

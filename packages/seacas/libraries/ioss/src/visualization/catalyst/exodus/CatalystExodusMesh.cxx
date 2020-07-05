@@ -125,6 +125,7 @@ void CatalystExodusMesh::CreateGlobalVariableVariant(
             iter->second, v, data);
     }
 
+/*
     eb = vtkMultiBlockDataSet::SafeDownCast(\
         this->multiBlock->GetBlock(NODE_SETS_MBDS_ID));
 
@@ -142,6 +143,7 @@ void CatalystExodusMesh::CreateGlobalVariableVariant(
         this->CreateGlobalVariableInternal(component_names, eb,
             iter->second, v, data);
     }
+*/
 }
 
 void CatalystExodusMesh::CreateGlobalVariableInternal(
@@ -235,27 +237,9 @@ void CatalystExodusMesh::InitializeElementBlocks(
         eb->SetBlock(i, ug);
         ug->Delete();
     }
-
     eb->Delete();
 
-    eb = vtkMultiBlockDataSet::New();
-    this->multiBlock->SetBlock(FACE_BLOCKS_MBDS_ID, eb);
-    this->multiBlock->GetMetaData(FACE_BLOCKS_MBDS_ID)->\
-        Set(vtkCompositeDataSet::NAME(), FACE_BLOCKS_MBDS_NAME);
-    eb->Delete();
-
-    eb = vtkMultiBlockDataSet::New();
-    this->multiBlock->SetBlock(EDGE_BLOCKS_MBDS_ID, eb);
-    this->multiBlock->GetMetaData(EDGE_BLOCKS_MBDS_ID)->\
-        Set(vtkCompositeDataSet::NAME(), EDGE_BLOCKS_MBDS_NAME);
-    eb->Delete();
-
-    eb = vtkMultiBlockDataSet::New();
-    this->multiBlock->SetBlock(ELEMENT_SETS_MBDS_ID, eb);
-    this->multiBlock->GetMetaData(ELEMENT_SETS_MBDS_ID)->\
-        Set(vtkCompositeDataSet::NAME(), ELEMENT_SETS_MBDS_NAME);
-    eb->Delete();
-
+/*
     eb = vtkMultiBlockDataSet::New();
     this->multiBlock->SetBlock(SIDE_SETS_MBDS_ID, eb);
     this->multiBlock->GetMetaData(SIDE_SETS_MBDS_ID)->\
@@ -263,22 +247,11 @@ void CatalystExodusMesh::InitializeElementBlocks(
     eb->Delete();
 
     eb = vtkMultiBlockDataSet::New();
-    this->multiBlock->SetBlock(FACE_SETS_MBDS_ID, eb);
-    this->multiBlock->GetMetaData(FACE_SETS_MBDS_ID)->\
-        Set(vtkCompositeDataSet::NAME(), FACE_SETS_MBDS_NAME);
-    eb->Delete();
-
-    eb = vtkMultiBlockDataSet::New();
-    this->multiBlock->SetBlock(EDGE_SETS_MBDS_ID, eb);
-    this->multiBlock->GetMetaData(EDGE_SETS_MBDS_ID)->\
-        Set(vtkCompositeDataSet::NAME(), EDGE_SETS_MBDS_NAME);
-    eb->Delete();
-
-    eb = vtkMultiBlockDataSet::New();
     this->multiBlock->SetBlock(NODE_SETS_MBDS_ID, eb);
     this->multiBlock->GetMetaData(NODE_SETS_MBDS_ID)->\
         Set(vtkCompositeDataSet::NAME(), NODE_SETS_MBDS_NAME);
     eb->Delete();
+*/
 }
 
 void CatalystExodusMesh::CreateElementBlock(const char *elem_block_name,
@@ -929,6 +902,7 @@ void CatalystExodusMesh::CreateNodalVariableVariant(
     this->CreateNodalVariableInternal(component_names, eb, this->ebidmap,
         this->ebmap, v, data);
 
+/*
     eb = vtkMultiBlockDataSet::SafeDownCast(\
         this->multiBlock->GetBlock(NODE_SETS_MBDS_ID));
 
@@ -940,6 +914,7 @@ void CatalystExodusMesh::CreateNodalVariableVariant(
 
     this->CreateNodalVariableInternal(component_names, eb, this->ssidmap,
         this->ssmap, v, data);
+*/
 }
 
 void CatalystExodusMesh::CreateNodalVariableInternal(
@@ -1033,6 +1008,7 @@ void CatalystExodusMesh::ReleaseMemory() {
             this->multiBlock->GetBlock(ELEMENT_BLOCK_MBDS_ID));
     this->ReleaseMemoryInternal(eb);
 
+/*
     eb = vtkMultiBlockDataSet::SafeDownCast(\
         this->multiBlock->GetBlock(NODE_SETS_MBDS_ID));
     this->ReleaseMemoryInternal(eb);
@@ -1040,6 +1016,7 @@ void CatalystExodusMesh::ReleaseMemory() {
     eb = vtkMultiBlockDataSet::SafeDownCast(\
         this->multiBlock->GetBlock(SIDE_SETS_MBDS_ID));
     this->ReleaseMemoryInternal(eb);
+*/
 
     this->ebmap_reverse.clear();
     this->global_elem_id_map.clear();

@@ -682,11 +682,13 @@ namespace Iovs_exodus {
 
       if (field.get_type() == Ioss::Field::INTEGER) {
         this->nodeMap.reverse_map_data(data, field, num_to_get);
-        this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get, static_cast<int *>(data));
+        //this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get,
+        //    static_cast<int *>(data));
       }
       else if (field.get_type() == Ioss::Field::INT64) {
         this->nodeMap.reverse_map_data(data, field, num_to_get);
-        this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get, static_cast<int64_t *>(data));
+        //this->catExoMesh->CreateNodeSet(ns->name().c_str(), id, num_to_get,
+        //    static_cast<int64_t *>(data));
       }
 
       if (!this->createNodeSets) {
@@ -752,8 +754,8 @@ namespace Iovs_exodus {
            pass in both ebowner->name() AND eb->name(), but for now we
            are just passing in ebowner->name() to give us correct
            functionality while not changing the function interface*/
-          this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id, num_to_get,
-              &element[0], &side[0]);
+          //this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id, num_to_get,
+          //    &element[0], &side[0]);
 
         if (!this->createSideSets) {
           num_to_get = css_save_num_to_get;
@@ -789,8 +791,8 @@ namespace Iovs_exodus {
            pass in both ebowner->name() AND eb->name(), but for now we
            are just passing in ebowner->name() to give us correct
            functionality while not changing the function interface*/
-          this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id,
-              num_to_get, &element[0], &side[0]);
+           //this->catExoMesh->CreateSideSet(ebowner->name().c_str(), id,
+           //    num_to_get, &element[0], &side[0]);
 
         if (!this->createSideSets) {
           num_to_get = css_save_num_to_get;
