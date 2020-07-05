@@ -38,6 +38,8 @@
 
 class vtkMultiBlockDataSet;
 
+namespace Iovs {
+
 class CatalystMeshWriter {
 
 public:
@@ -61,5 +63,7 @@ private:
     std::string catalystMeshOneFilePrefix;
     std::string catalystMeshFilePerProcPrefix;
 };
+
+} // namespace Iovs
 
 #endif /* __CATALYST_MESH_WRITER_H */

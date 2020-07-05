@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+namespace Iovs {
+
 class PhactoriParserInterface {
 
 public:
@@ -49,5 +51,7 @@ public:
 
   static void parseString(const std::string &s, ParseInfo &pinfo);
 };
+
+} // namespace Iovs
 
 #endif

@@ -21,8 +21,8 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  PhactoriParserInterface::ParseInfo pinfo;
-  PhactoriParserInterface::parseFile(argv[1], pinfo);
+  Iovs::PhactoriParserInterface::ParseInfo pinfo;
+  Iovs::PhactoriParserInterface::parseFile(argv[1], pinfo);
   if (pinfo.parseFailed) {
       std::cerr << "Parse of input file failed.\n";
   }

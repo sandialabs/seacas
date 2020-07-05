@@ -38,16 +38,20 @@
 #include <map>
 #include <vector>
 
+namespace Iovs {
+    class CatalystManager;
+}
 class vtkMultiBlockDataSet;
-class CatalystManager;
 class vtkVariant;
 class vtkPoints;
+
+namespace Iovs_exodus {
 
 class CatalystExodusMesh : public CatalystExodusMeshBase {
 
 public:
 
-    CatalystExodusMesh(CatalystManager *cm);
+    CatalystExodusMesh(Iovs::CatalystManager *cm);
 
     ~CatalystExodusMesh();
 
@@ -224,10 +228,12 @@ private:
     CatalystExodusMesh &operator=(const CatalystExodusMesh &) = delete;
 
     vtkMultiBlockDataSet* multiBlock = nullptr;
-    CatalystManager* catManager = nullptr;
+    Iovs::CatalystManager* catManager = nullptr;
     std::string catalystPipelineName;
     bool UnderscoreVectors;
     bool ApplyDisplacements;
 };
+
+} // namespace Iovs_exodus
 
 #endif // __CATALYST_EXODUS_MESH_H

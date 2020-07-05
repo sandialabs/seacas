@@ -64,12 +64,12 @@ namespace Iovs {
 
     void createDatabaseOutputFile(const DatabaseInfo & dbinfo);
 
-    std::unique_ptr<CatalystExodusMeshBase> createCatalystExodusMesh(
-        const DatabaseInfo & dbinfo,
+    std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
+        createCatalystExodusMesh(const DatabaseInfo & dbinfo,
             const Ioss::PropertyManager & props);
 
-    std::unique_ptr<CatalystCGNSMeshBase> createCatalystCGNSMesh(
-        const DatabaseInfo & dbinfo,
+    std::unique_ptr<Iovs_cgns::CatalystCGNSMeshBase>
+        createCatalystCGNSMesh(const DatabaseInfo & dbinfo,
             const Ioss::PropertyManager & props);
 
     std::string getDatabaseOutputFilePath(

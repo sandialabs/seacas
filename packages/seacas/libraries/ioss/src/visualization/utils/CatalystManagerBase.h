@@ -40,6 +40,8 @@
 #include "CatalystExodusMeshBase.h"
 #include "CatalystCGNSMeshBase.h"
 
+namespace Iovs {
+
 class CatalystManagerBase {
 
 public:
@@ -82,8 +84,8 @@ public:
         std::vector<std::string> catalystData;
     };
 
-    virtual std::unique_ptr<CatalystCGNSMeshBase> createCatalystCGNSMesh(
-        CatalystMeshInit& cmInit) = 0;
+    virtual std::unique_ptr<Iovs_cgns::CatalystCGNSMeshBase>
+        createCatalystCGNSMesh(CatalystMeshInit& cmInit) = 0;
 
     // Parameters:
     //   underscoreVectors - joined vector variable names end in an underscore.
@@ -94,8 +96,10 @@ public:
         bool applyDisplacements;
     };
 
-    virtual std::unique_ptr<CatalystExodusMeshBase> createCatalystExodusMesh(
-        CatalystExodusMeshInit& cmInit) = 0;
+    virtual std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
+        createCatalystExodusMesh(CatalystExodusMeshInit& cmInit) = 0;
 };
+
+} // namespace Iovs
 
 #endif // __CATALYST_MANAGER_BASE_H

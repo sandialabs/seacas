@@ -37,6 +37,8 @@
 #include "vtkTrivialProducer.h"
 #include "vtkMultiProcessController.h"
 
+namespace Iovs {
+
 CatalystMeshWriter::CatalystMeshWriter() {
     this->catalystMeshOneFile = false;
     this->catalystMeshFilePerProc = false;
@@ -119,3 +121,5 @@ void CatalystMeshWriter::writeCatalystMeshFilePerProc(
     writer->Delete();
     producer->Delete();
 }
+
+} // namespace Iovs

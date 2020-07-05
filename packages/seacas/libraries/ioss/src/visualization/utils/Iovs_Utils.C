@@ -61,8 +61,9 @@ namespace Iovs {
         return (*mkr)();
     }
 
-    std::unique_ptr<CatalystExodusMeshBase> Utils::createCatalystExodusMesh(
-        const DatabaseInfo & dbinfo, const Ioss::PropertyManager & props) {
+    std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
+        Utils::createCatalystExodusMesh(const DatabaseInfo & dbinfo,
+            const Ioss::PropertyManager & props) {
 
         CatalystManagerBase::CatalystExodusMeshInit cmInit;
         cmInit.resultsOutputFilename = dbinfo.databaseFilename;
@@ -86,8 +87,9 @@ namespace Iovs {
         return this->getCatalystManager().createCatalystExodusMesh(cmInit);
     }
 
-    std::unique_ptr<CatalystCGNSMeshBase> Utils::createCatalystCGNSMesh(
-        const DatabaseInfo & dbinfo, const Ioss::PropertyManager & props) {
+    std::unique_ptr<Iovs_cgns::CatalystCGNSMeshBase>
+        Utils::createCatalystCGNSMesh(const DatabaseInfo & dbinfo,
+            const Ioss::PropertyManager & props) {
 
         CatalystManagerBase::CatalystMeshInit cmInit;
         cmInit.resultsOutputFilename = dbinfo.databaseFilename;

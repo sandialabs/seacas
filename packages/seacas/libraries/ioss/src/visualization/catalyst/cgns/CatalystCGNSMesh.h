@@ -38,14 +38,18 @@
 #include <vector>
 #include <map>
 
+namespace Iovs {
+    class CatalystManager;
+}
 class vtkMultiBlockDataSet;
-class CatalystManager;
+
+namespace Iovs_cgns {
 
 class CatalystCGNSMesh : public CatalystCGNSMeshBase {
 
 public:
 
-    CatalystCGNSMesh(CatalystManager *cm);
+    CatalystCGNSMesh(Iovs::CatalystManager *cm);
 
     ~CatalystCGNSMesh();
 
@@ -101,10 +105,12 @@ private:
     std::map<int, base> base_id_to_base_map;
 
     vtkMultiBlockDataSet* multiBlock = nullptr;
-    CatalystManager* catManager = nullptr;
+    Iovs::CatalystManager* catManager = nullptr;
     std::string catalystPipelineName;
     bool writeCatalystMesh;
     std::string catalystMeshFilePrefix;
 };
+
+} // namespace Iovs_cgns
 
 #endif // __CATALYST_CGNS_MESH_H

@@ -37,6 +37,8 @@
 #include <vector>
 #include <string>
 
+namespace Iovs_cgns {
+
 class CatalystCGNSMeshBase {
 
 public:
@@ -84,5 +86,7 @@ public:
                                        double* data,
                                        int size) = 0;
 };
+
+} // namespace Iovs_cgns
 
 #endif // __CATALYST_CGNS_MESH_BASE_H

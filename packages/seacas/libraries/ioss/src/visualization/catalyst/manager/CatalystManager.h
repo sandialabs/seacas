@@ -44,6 +44,9 @@ class vtkCPPythonScriptPipeline;
 class vtkCPDataDescription;
 class vtkCPProcessor;
 class vtkMultiBlockDataSet;
+
+namespace Iovs {
+
 class CatalystMeshWriter;
 
 class CatalystManager : public CatalystManagerBase {
@@ -56,11 +59,11 @@ public:
     void parsePhactoriFile(const std::string &filepath,
         ParseResult & pres);
 
-    std::unique_ptr<CatalystExodusMeshBase> createCatalystExodusMesh(
-        CatalystExodusMeshInit& cmInit);
+    std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
+        createCatalystExodusMesh(CatalystExodusMeshInit& cmInit);
 
-    std::unique_ptr<CatalystCGNSMeshBase> createCatalystCGNSMesh(
-        CatalystMeshInit& cmInit);
+    std::unique_ptr<Iovs_cgns::CatalystCGNSMeshBase>
+        createCatalystCGNSMesh(CatalystMeshInit& cmInit);
 
     int getCatalystOutputIDNumber();
 
@@ -126,5 +129,7 @@ private:
 extern "C" {
     CatalystManagerBase* CreateCatalystManagerInstance();
 }
+
+} // namespace Iovs
 
 #endif /* __CATALYST_MANAGER_H */

@@ -52,6 +52,8 @@
 #include "vtkTrivialProducer.h"
 #include "vtkMultiProcessController.h"
 
+namespace Iovs {
+
 CatalystManager::CatalystManager() {
     this->coProcessor = nullptr;
     this->catalystOutputIDNumber = 0;
@@ -89,11 +91,11 @@ void CatalystManager::incrementOutputCounts() {
     this->catalystOutputReferenceCount++;
 }
 
-std::unique_ptr<CatalystExodusMeshBase>
+std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>
     CatalystManager::createCatalystExodusMesh(CatalystExodusMeshInit& cmInit) {
 
     this->initializeIfNeeded();
-    CatalystExodusMesh * cem = nullptr;
+    Iovs_exodus::CatalystExodusMesh * cem = nullptr;
 
     if (this->pipelines.find(cmInit.resultsOutputFilename) ==
         this->pipelines.end()) {
@@ -102,7 +104,7 @@ std::unique_ptr<CatalystExodusMeshBase>
             this->initCatalystLogging(cmInit);
         }
 
-        cem = new CatalystExodusMesh(this);
+        cem = new Iovs_exodus::CatalystExodusMesh(this);
         cem->SetCatalystPipelineName(cmInit.resultsOutputFilename);
         cem->SetUnderscoreVectors(cmInit.underScoreVectors);
         cem->SetApplyDisplacements(cmInit.applyDisplacements);
@@ -110,15 +112,15 @@ std::unique_ptr<CatalystExodusMeshBase>
     }
 
     this->incrementOutputCounts();
-    return std::unique_ptr<CatalystExodusMeshBase>(
-        dynamic_cast<CatalystExodusMeshBase*>(cem));
+    return std::unique_ptr<Iovs_exodus::CatalystExodusMeshBase>(
+        dynamic_cast<Iovs_exodus::CatalystExodusMeshBase*>(cem));
 }
 
-std::unique_ptr<CatalystCGNSMeshBase> CatalystManager::createCatalystCGNSMesh(
-    CatalystMeshInit& cmInit) {
+std::unique_ptr<Iovs_cgns::CatalystCGNSMeshBase>
+    CatalystManager::createCatalystCGNSMesh(CatalystMeshInit& cmInit) {
 
     this->initializeIfNeeded();
-    CatalystCGNSMesh * cgm = nullptr;
+    Iovs_cgns::CatalystCGNSMesh * cgm = nullptr;
 
     if (this->pipelines.find(cmInit.resultsOutputFilename) ==\
         this->pipelines.end()) {
@@ -127,14 +129,14 @@ std::unique_ptr<CatalystCGNSMeshBase> CatalystManager::createCatalystCGNSMesh(
             this->initCatalystLogging(cmInit);
         }
 
-        cgm = new CatalystCGNSMesh(this);
+        cgm = new Iovs_cgns::CatalystCGNSMesh(this);
         cgm->SetCatalystPipelineName(cmInit.resultsOutputFilename);
         this->initCatalystPipeline(cmInit, cgm->getMultiBlockDataSet());
     }
 
     this->incrementOutputCounts();
-    return std::unique_ptr<CatalystCGNSMeshBase>(
-        dynamic_cast<CatalystCGNSMeshBase*>(cgm));
+    return std::unique_ptr<Iovs_cgns::CatalystCGNSMeshBase>(
+        dynamic_cast<Iovs_cgns::CatalystCGNSMeshBase*>(cgm));
 }
 
 void CatalystManager::initCatalystLogging(CatalystMeshInit& cmInit) {
@@ -455,3 +457,5 @@ extern "C" {
         return (CatalystManagerBase*) p;
     }
 }
+
+} // namespace Iovs

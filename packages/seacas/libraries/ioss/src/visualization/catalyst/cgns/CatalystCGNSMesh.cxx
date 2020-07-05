@@ -11,7 +11,9 @@
 #include "vtkCellData.h"
 #include <sstream>
 
-CatalystCGNSMesh::CatalystCGNSMesh(CatalystManager *cm) {
+namespace Iovs_cgns {
+
+CatalystCGNSMesh::CatalystCGNSMesh(Iovs::CatalystManager *cm) {
     this->multiBlock = vtkMultiBlockDataSet::New();
     this->catManager = cm;
     vtkMultiBlockDataSet* b = vtkMultiBlockDataSet::New();
@@ -196,3 +198,5 @@ void CatalystCGNSMesh::AddStructuredZoneData(int base_id,
         }
     }
 }
+
+} // namespace Iovs_cgns

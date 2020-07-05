@@ -37,6 +37,8 @@
 #include <vector>
 #include <string>
 
+namespace Iovs_exodus {
+
 class CatalystExodusMeshBase {
 
 public:
@@ -163,5 +165,7 @@ public:
     virtual void CreateNodalVariable(std::vector<std::string> &component_names,
                                      const int64_t *data) = 0;
 };
+
+} // namespace Iovs_exodus
 
 #endif // __CATALYST_EXODUS_MESH_BASE_H

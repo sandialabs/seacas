@@ -18,8 +18,8 @@
 #include "PhactoriParserInterface.h"
 #include "vtk_jsoncpp.h"
 
-namespace
-{
+namespace {
+
   class ParseData
   {
   public:
@@ -49,13 +49,13 @@ namespace
     std::vector<int> intValues;
     std::vector<std::string> s;
     int count;
-    PhactoriParserInterface::varMap nodeVars;
-    PhactoriParserInterface::varMap elementVars;
-    PhactoriParserInterface::varMap globalVars;
+    Iovs::PhactoriParserInterface::varMap nodeVars;
+    Iovs::PhactoriParserInterface::varMap elementVars;
+    Iovs::PhactoriParserInterface::varMap globalVars;
     bool checkNodeIDRange;
-    PhactoriParserInterface::idRange nodeIDRange;
+    Iovs::PhactoriParserInterface::idRange nodeIDRange;
     bool checkElementIDRange;
-    PhactoriParserInterface::idRange elementIDRange;
+    Iovs::PhactoriParserInterface::idRange elementIDRange;
     std::string separator;
   };
 
@@ -190,13 +190,14 @@ extern "C"
     }
 }
 
+namespace {
 
 void yyerror (YYLTYPE * llocp, yyscan_t yyscanner, void* pd, char const *msg);
 bool check_variable_name(YYLTYPE * llocp,
                          yyscan_t yyscanner,
                          ParseData& pd,
                          const std::string& name,
-                         PhactoriParserInterface::VarType vt);
+                         Iovs::PhactoriParserInterface::VarType vt);
 
 
 bool follow_chain(ParseData& pd,
@@ -508,10 +509,10 @@ bool check_calculator_function_variable_names(YYLTYPE * llocp,
                                               yyscan_t yyscanner,
                                               ParseData& pd,
                                               const Json::Value& c,
-                                              PhactoriParserInterface::varMap& vm)
+                                              Iovs::PhactoriParserInterface::varMap& vm)
 {
 
-  for(PhactoriParserInterface::varMap::iterator it=vm.begin();
+  for(Iovs::PhactoriParserInterface::varMap::iterator it=vm.begin();
       it != vm.end();
       ++it)
     {
@@ -549,7 +550,7 @@ bool check_calculator_block(YYLTYPE * llocp,
 
   if(c["element or node data"].asString() == "node" && !pd.nodeVars.empty())
     {
-    pd.nodeVars[c["output variable name"].asString()] = PhactoriParserInterface::ALLTYPE;
+    pd.nodeVars[c["output variable name"].asString()] = Iovs::PhactoriParserInterface::ALLTYPE;
     if(!check_calculator_function_variable_names(llocp, yyscanner, pd, c, pd.nodeVars))
       {
       yyerror(llocp, yyscanner, &pd, "Error: calculator function contains unknown variable name.");
@@ -558,7 +559,7 @@ bool check_calculator_block(YYLTYPE * llocp,
     }
   else if(c["element or node data"].asString() == "element" && !pd.elementVars.empty())
     {
-    pd.elementVars[c["output variable name"].asString()] =  PhactoriParserInterface::ALLTYPE;
+    pd.elementVars[c["output variable name"].asString()] =  Iovs::PhactoriParserInterface::ALLTYPE;
     if(!check_calculator_function_variable_names(llocp, yyscanner, pd, c, pd.elementVars))
       {
       yyerror(llocp, yyscanner, &pd, "Error: calculator function contains unknown variable name.");
@@ -1034,39 +1035,39 @@ bool check_elementID(YYLTYPE * llocp,
 }
 
 void switch_variable_to_used(const std::string& name,
-                             PhactoriParserInterface::varMap& v)
+                             Iovs::PhactoriParserInterface::varMap& v)
 {
   if(v.find(name) != v.end())
    {
-   if( v[name] == PhactoriParserInterface::ALLTYPE )
-     v[name] = PhactoriParserInterface::ALLTYPE_USED;
-   else if( v[name] == PhactoriParserInterface::TENSOR )
-     v[name] = PhactoriParserInterface::TENSOR_USED;
-   else if( v[name] == PhactoriParserInterface::SCALAR )
-     v[name] = PhactoriParserInterface::SCALAR_USED;
-   else if( v[name] == PhactoriParserInterface::VECTOR )
-     v[name] = PhactoriParserInterface::VECTOR_USED;
+   if( v[name] == Iovs::PhactoriParserInterface::ALLTYPE )
+     v[name] = Iovs::PhactoriParserInterface::ALLTYPE_USED;
+   else if( v[name] == Iovs::PhactoriParserInterface::TENSOR )
+     v[name] = Iovs::PhactoriParserInterface::TENSOR_USED;
+   else if( v[name] == Iovs::PhactoriParserInterface::SCALAR )
+     v[name] = Iovs::PhactoriParserInterface::SCALAR_USED;
+   else if( v[name] == Iovs::PhactoriParserInterface::VECTOR )
+     v[name] = Iovs::PhactoriParserInterface::VECTOR_USED;
    }
 }
 
 bool compare_variable_type(const std::string& name, 
-                           PhactoriParserInterface::varMap& v,
-                           PhactoriParserInterface::VarType vt)
+                           Iovs::PhactoriParserInterface::varMap& v,
+                           Iovs::PhactoriParserInterface::VarType vt)
 {
   if(v.find(name) != v.end())
    {
    if( v[name] == vt || 
-       v[name] == PhactoriParserInterface::ALLTYPE || 
-       v[name] == PhactoriParserInterface::ALLTYPE_USED )
+       v[name] == Iovs::PhactoriParserInterface::ALLTYPE || 
+       v[name] == Iovs::PhactoriParserInterface::ALLTYPE_USED )
      return true;
-   else if( v[name] == PhactoriParserInterface::SCALAR_USED &&
-             vt == PhactoriParserInterface::SCALAR )
+   else if( v[name] == Iovs::PhactoriParserInterface::SCALAR_USED &&
+             vt == Iovs::PhactoriParserInterface::SCALAR )
      return true;
-   else if( v[name] == PhactoriParserInterface::VECTOR_USED &&
-             vt == PhactoriParserInterface::VECTOR )
+   else if( v[name] == Iovs::PhactoriParserInterface::VECTOR_USED &&
+             vt == Iovs::PhactoriParserInterface::VECTOR )
      return true;
-   else if( v[name] == PhactoriParserInterface::TENSOR_USED && 
-             vt == PhactoriParserInterface::TENSOR )
+   else if( v[name] == Iovs::PhactoriParserInterface::TENSOR_USED && 
+             vt == Iovs::PhactoriParserInterface::TENSOR )
      return true;
    }
   return false;
@@ -1076,7 +1077,7 @@ bool check_variable_name(YYLTYPE * llocp,
                          yyscan_t yyscanner,
                          ParseData& pd,
                          const std::string& name, 
-                         PhactoriParserInterface::VarType vt)
+                         Iovs::PhactoriParserInterface::VarType vt)
 {
   if (!pd.nodeVars.empty() && !pd.elementVars.empty() && !pd.globalVars.empty())
     {
@@ -1124,9 +1125,9 @@ bool check_variable_name(YYLTYPE * llocp,
     if(!found_match)
       {
       std::string t = "scalar";
-      if(vt == PhactoriParserInterface::VECTOR)
+      if(vt == Iovs::PhactoriParserInterface::VECTOR)
         t = "vector";
-      else if(vt == PhactoriParserInterface::TENSOR)
+      else if(vt == Iovs::PhactoriParserInterface::TENSOR)
         t = "tensor";
       yyerror(llocp, yyscanner, &pd, ("Error: variable is not " + t + " type: " + name).c_str());
       return false;
@@ -1149,7 +1150,8 @@ bool check_vector_component(YYLTYPE * llocp,
     std::string term  = name.substr(name.size() - offset);
     if(term == sep + "X" || term == sep + "Y" || term == sep + "Z" ||
        term == sep + "x" || term == sep + "y" || term == sep + "z")
-      return check_variable_name(llocp, yyscanner, pd, name.substr(0,name.size() - offset), PhactoriParserInterface::VECTOR);
+      return check_variable_name(llocp, yyscanner, pd, name.substr(0,name.size() - offset),
+          Iovs::PhactoriParserInterface::VECTOR);
     }
 
   yyerror(llocp, yyscanner, &pd, ("Error: invalid vector name component (must be x, y, or z) " + name).c_str());
@@ -1172,7 +1174,8 @@ bool check_tensor_component(YYLTYPE * llocp,
        term == sep + "xx" || term == sep + "xy" || term == sep + "xz" ||
        term == sep + "yx" || term == sep + "yy" || term == sep + "yz" ||
        term == sep + "zx" || term == sep + "zy" || term == sep + "zz")
-      return check_variable_name(llocp, yyscanner, pd, name.substr(0,name.size() - offset), PhactoriParserInterface::TENSOR);
+      return check_variable_name(llocp, yyscanner, pd, name.substr(0,name.size() - offset),
+          Iovs::PhactoriParserInterface::TENSOR);
     }
 
   yyerror(llocp, yyscanner, &pd, ("Error: invalid tensor name component (must be xx, yy, zz, zx, zy, xy, or yz) " + name).c_str());
@@ -1722,8 +1725,12 @@ void yyerror (YYLTYPE * llocp, yyscan_t yyscanner, void* pd, char const *msg)
   printf("%s, line = %d, column = %d\n", msg, llocp->first_line, llocp->first_column);
 }
 
+} // End anonymous namespace
+
+namespace Iovs {
+
 void parsePhactoriString(const std::string & s,
-                         PhactoriParserInterface::ParseInfo & pinfo)
+                         Iovs::PhactoriParserInterface::ParseInfo & pinfo)
 {
   ParseData pd;
   pd.nodeVars = pinfo.nodeVars;
@@ -1748,6 +1755,8 @@ void parsePhactoriString(const std::string & s,
   pinfo.jsonParseResult = Json::writeString(builder, pd.root);
   pinfo.parseFailed = ret;
 }
+
+} // end namespace Iovs
 
 %}
 
@@ -2342,7 +2351,7 @@ show_bouding_box
 color_by_scalar
       : TOKCOLORBYSCALAR TOKEQUAL TOKIDENTIFIER 
       { 
-      if(!check_variable_name(&yylloc, scanner, c(pd), $3, PhactoriParserInterface::SCALAR)) 
+      if(!check_variable_name(&yylloc, scanner, c(pd), $3, Iovs::PhactoriParserInterface::SCALAR)) 
         YYABORT;
       identifier_command(c(pd), "color by scalar", $3);
       }
@@ -2351,7 +2360,7 @@ color_by_scalar
 color_by_vector_magnitude
       : TOKCOLORBYVECTORMAGNITUDE TOKEQUAL TOKIDENTIFIER
       {
-      if(!check_variable_name(&yylloc, scanner, c(pd), $3, PhactoriParserInterface::VECTOR)) 
+      if(!check_variable_name(&yylloc, scanner, c(pd), $3, Iovs::PhactoriParserInterface::VECTOR)) 
         YYABORT;
       identifier_command(c(pd), "color by vector magnitude", $3);
       }
@@ -3857,7 +3866,7 @@ threshold_statement
 variable_scalar
       : TOKVARIABLESCALAR TOKEQUAL TOKIDENTIFIER 
       { 
-      if(!check_variable_name(&yylloc, scanner, c(pd), $3, PhactoriParserInterface::SCALAR)) 
+      if(!check_variable_name(&yylloc, scanner, c(pd), $3, Iovs::PhactoriParserInterface::SCALAR)) 
         YYABORT;
       identifier_command(c(pd), "variable scalar", $3);
       }
@@ -3866,7 +3875,7 @@ variable_scalar
 variable_vector_magnitude
       : TOKVARIABLEVECTORMAGNITUDE TOKEQUAL TOKIDENTIFIER 
       { 
-      if(!check_variable_name(&yylloc, scanner, c(pd), $3, PhactoriParserInterface::VECTOR)) 
+      if(!check_variable_name(&yylloc, scanner, c(pd), $3, Iovs::PhactoriParserInterface::VECTOR)) 
         YYABORT;
       identifier_command(c(pd), "variable vector magnitude", $3);
       }
@@ -4059,7 +4068,7 @@ all_variables
 x_axis_variable_scalar
       : TOKXAXISVARIABLESCALAR TOKEQUAL TOKIDENTIFIER 
       { 
-      if(!check_variable_name(&yylloc, scanner, c(pd), $3, PhactoriParserInterface::SCALAR)) 
+      if(!check_variable_name(&yylloc, scanner, c(pd), $3, Iovs::PhactoriParserInterface::SCALAR)) 
         YYABORT;
       identifier_command(c(pd), "x axis variable scalar", $3);
       }
@@ -4068,7 +4077,7 @@ x_axis_variable_scalar
 y_axis_variable_scalar
       : TOKYAXISVARIABLESCALAR TOKEQUAL TOKIDENTIFIER 
       { 
-      if(!check_variable_name(&yylloc, scanner, c(pd), $3, PhactoriParserInterface::SCALAR))
+      if(!check_variable_name(&yylloc, scanner, c(pd), $3, Iovs::PhactoriParserInterface::SCALAR))
         YYABORT;
       identifier_command(c(pd), "y axis variable scalar", $3);
       }
@@ -4077,7 +4086,7 @@ y_axis_variable_scalar
 x_axis_variable_vector_magnitude
       : TOKXAXISVARIABLEVECTORMAGNITUDE TOKEQUAL TOKIDENTIFIER 
       { 
-      if(!check_variable_name(&yylloc, scanner, c(pd), $3, PhactoriParserInterface::VECTOR))
+      if(!check_variable_name(&yylloc, scanner, c(pd), $3, Iovs::PhactoriParserInterface::VECTOR))
         YYABORT;
       identifier_command(c(pd), "x axis variable vector magnitude", $3);
       }
@@ -4086,7 +4095,7 @@ x_axis_variable_vector_magnitude
 y_axis_variable_vector_magnitude
       : TOKYAXISVARIABLEVECTORMAGNITUDE TOKEQUAL TOKIDENTIFIER 
       { 
-      if(!check_variable_name(&yylloc, scanner, c(pd), $3, PhactoriParserInterface::VECTOR))
+      if(!check_variable_name(&yylloc, scanner, c(pd), $3, Iovs::PhactoriParserInterface::VECTOR))
         YYABORT;
       identifier_command(c(pd), "y axis variable vector magnitude", $3);
       }
@@ -4558,7 +4567,7 @@ warp_scale
 warp_variable_vector
       : TOKVARIABLEVECTOR TOKEQUAL TOKIDENTIFIER
       {
-      if(!check_variable_name(&yylloc, scanner, c(pd), $3, PhactoriParserInterface::VECTOR))
+      if(!check_variable_name(&yylloc, scanner, c(pd), $3, Iovs::PhactoriParserInterface::VECTOR))
         YYABORT;
       identifier_command(c(pd), "variable vector", $3);
       }

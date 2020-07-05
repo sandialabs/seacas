@@ -15,7 +15,9 @@
 #include "vtksys/SystemTools.hxx"
 #include <unistd.h>
 
-CatalystExodusMesh::CatalystExodusMesh(CatalystManager *cm) {
+namespace Iovs_exodus {
+
+CatalystExodusMesh::CatalystExodusMesh(Iovs::CatalystManager *cm) {
     this->multiBlock = vtkMultiBlockDataSet::New();
     this->catManager = cm;
     this->global_points = nullptr;
@@ -1131,3 +1133,5 @@ double CatalystExodusMesh::GetArrayValue(vtkVariant &v, const void *data, int in
     return 0.0;
   }
 }
+
+} // namespace Iovs_exodus

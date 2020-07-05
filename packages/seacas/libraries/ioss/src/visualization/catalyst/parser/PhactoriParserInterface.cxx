@@ -9,6 +9,8 @@
 #include <fstream>
 #include <sstream>
 
+namespace Iovs {
+
 void parsePhactoriString(const std::string & s,
     PhactoriParserInterface::ParseInfo & pinfo);
 
@@ -30,3 +32,5 @@ void PhactoriParserInterface::parseString(const std::string & s,
     ParseInfo & pinfo) {
     parsePhactoriString(s, pinfo);
 }
+
+} // namespace Iovs
