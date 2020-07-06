@@ -133,7 +133,7 @@ namespace {
         }
         fmt::print(errmsg,
                    "ERROR: There are multiple blocks or sets with the same name defined in the "
-                   "exodus file '{}'.\n"
+                   "database file '{}'.\n"
                    "\tBoth {} {} and {} {} are named '{}'.  All names must be unique.",
                    filename, entity->type_string(), id1, old_ge->type_string(), id2, name);
         IOSS_ERROR(errmsg);
