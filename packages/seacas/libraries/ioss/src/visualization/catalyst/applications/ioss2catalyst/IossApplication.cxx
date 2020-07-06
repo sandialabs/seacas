@@ -627,7 +627,8 @@ void IossApplication::callCatalystIOSSDatabaseOnRank() {
         this->applicationName));
 
     std::string catalystDatabaseType = "catalyst_exodus";
-    if (this->iossDatabaseType == "cgns") {
+    if (this->iossDatabaseType == "cgns" ||
+        this->applicationName == "faodel2catalyst_cgns") {
         catalystDatabaseType = "catalyst_cgns";
     }
 
