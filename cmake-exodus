@@ -89,10 +89,34 @@ PYTHON_VER=${PYTHON_VER:-"3.0"}
 
 SHARED="${SHARED:-ON}"
 ### Switch for Debug or Release build:
+### Check that both `DEBUG` and `BUILD_TYPE` are not set
+if [ ! -z ${DEBUG+x} ] && [ ! -z ${BUILD_TYPE+x} ]
+then
+    echo "ERROR: Both DEBUG and BUILD_TYPE are set. Only one is allowed."
+    exit
+fi
+
 BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
+
+if [ ! -z ${DEBUG+x} ]
+then
+    if [ "${DEBUG}" == "ON" ] || [ "${DEBUG}" == "YES" ]
+    then
+	BUILD_TYPE="DEBUG"
+    elif [ "${DEBUG}" == "OFF" ] || [ "${DEBUG}" == "NO" ]
+    then
+	BUILD_TYPE="RELEASE"
+    else
+	echo "ERROR: Invalid value for DEBUG ('$DEBUG'). Must be 'ON', 'OFF', 'YES', 'NO'."
+	exit
+    fi
+fi
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-OFF}
+if [ "$THREADSAFE" == "ON" ] ; then
+  THREAD_SAFE_OPT="-DSEACASProj_EXTRA_LINK_FLAGS=-lpthread"
+fi
 
 FORTRAN=${FORTRAN:-ON}
 
@@ -147,9 +171,20 @@ then
    FC=mpif77
 fi
 
-OS=`uname -s`
+OS=$(uname -s)
+if [ "$SHARED" == "ON" ]
+then
+    if [ "$OS" == "Darwin" ] ; then
+	LD_EXT="dylib"
+    else
+	LD_EXT="so"
+    fi
+else
+    LD_EXT="a"
+fi
+
 if [ "$OS" == "Darwin" ] ; then
-  DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON"
+  DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/X11/include"
 else
   DARWIN_OPT=""
 fi
@@ -182,6 +217,7 @@ cmake -G "${GENERATOR}" \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
+${THREAD_SAFE_OPT} \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 \
 ${MPI_SYMBOLS} \
@@ -205,6 +241,7 @@ echo "         CXX: ${CXX}"
 echo "          FC: ${FC}"
 echo "         MPI: ${MPI}"
 echo "      SHARED: ${SHARED}"
+echo "  BUILD_TYPE: ${BUILD_TYPE}"
 echo "  THREADSAFE: ${THREADSAFE}"
 echo "  PYTHON_VER: ${PYTHON_VER}"
 echo "  "
