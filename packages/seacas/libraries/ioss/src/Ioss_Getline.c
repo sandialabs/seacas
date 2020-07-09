@@ -1032,8 +1032,9 @@ static void gl_killword(int direction)
   }
   memcpy(gl_killbuf, gl_buf + startpos, (size_t)(pos - startpos));
   gl_killbuf[pos - startpos] = '\0';
-  if (isspace(gl_killbuf[pos - startpos - 1]))
+  if (pos - startpos - 1 >= 0 && isspace(gl_killbuf[pos - startpos - 1])) {
     gl_killbuf[pos - startpos - 1] = '\0';
+  }
   gl_fixup(gl_prompt, -1, startpos);
   for (i = 0, tmp = pos - startpos; i < tmp; i++)
     gl_del(0, 0);

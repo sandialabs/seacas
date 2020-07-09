@@ -87,8 +87,8 @@ then
   # When building:  "scan-build make -j8"
   if [ "$COMPILER" == "analyzer" ]
   then
-      CXX=/opt/local/libexec/llvm-8.0/libexec/c++-analyzer
-      CC=/opt/local/libexec/llvm-8.0/libexec/ccc-analyzer
+      CXX=/opt/local/libexec/llvm-9.0/libexec/c++-analyzer
+      CC=/opt/local/libexec/llvm-9.0/libexec/ccc-analyzer
       FC=gfortran
       CFLAGS="-Wall -Wunused"
       CXXFLAGS="-Wall -Wunused"
