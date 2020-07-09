@@ -168,7 +168,6 @@ int ex_put_assemblies(int exoid, size_t count, const struct ex_assembly *assembl
 
   /* Assembly are now all defined; see if any set data needs to be output... */
   for (size_t i = 0; i < count; i++) {
-    status = EX_NOERR;
     if (assemblies[i].entity_list != NULL) {
       if ((status = nc_put_var_longlong(exoid, entlst_id[i],
                                         (long long *)assemblies[i].entity_list)) != EX_NOERR) {

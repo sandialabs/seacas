@@ -244,15 +244,14 @@ namespace {
 
 void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t length)
 {
-  time_t      calendar_time = time(nullptr);
-  auto *      lt            = std::localtime(&calendar_time);
-  std::string time          = fmt::format("{:%H:%M:%S}", *lt);
+  std::time_t t    = std::time(nullptr);
+  std::string time = fmt::format("{:%H:%M:%S}", fmt::localtime(t));
   std::string date;
   if (length >= 10) {
-    date = fmt::format("{:%Y/%m/%d}", *lt);
+    date = fmt::format("{:%Y/%m/%d}", fmt::localtime(t));
   }
   else {
-    date = fmt::format("{:%y/%m/%d}", *lt);
+    date = fmt::format("{:%y/%m/%d}", fmt::localtime(t));
   }
   copy_string(time_string, time, 9);
   copy_string(date_string, date, length + 1);
