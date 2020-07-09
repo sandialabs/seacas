@@ -501,20 +501,13 @@ namespace {
                  "\t\tThis will cause the database to be rewritten. Without this option, it is "
                  "updated in place.\n");
     }
-    if (all || Ioss::Utils::substr_equal(topic, "regex")) {
-      fmt::print("\n\tRegular Expression help (used in ASSEMBLY MATCHES and LIST MATCHES and "
-                 "ATTRIBUTE LIST MATCHES options)\n"
-                 "\tSupports \"POSIX Extended Regular Expressions\" syntax\n"
-                 "\tSee https://www.regular-expressions.info/posix.html\n"
-                 "\tQuickStart: https://www.regular-expressions.info/quickstart.html\n");
-    }
     if (all || Ioss::Utils::substr_equal(topic, "list")) {
       fmt::print(
-          "\n\tLIST summary|elementblock|block|structuredblock|assembly|nodeset|sideset|blob\n");
-      fmt::print("\n\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
-                 "{{names...}}\n\n");
-      fmt::print("\n\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
-                 "MATCHES {{regex}}\n\n");
+          "\n\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob|summary\n");
+      fmt::print("\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
+                 "{{names...}}\n");
+      fmt::print("\tLIST elementblock|block|structuredblock|assembly|nodeset|sideset|blob "
+                 "MATCHES {{regex}}\n");
     }
     if (all || Ioss::Utils::substr_equal(topic, "assembly")) {
       fmt::print("\n\tFor all commands, if an assembly named `name` does not exist, it will be "
@@ -576,6 +569,13 @@ namespace {
       fmt::print("\tATTRIBUTE {{ent_type}} MATCH {{regex}}\n"
                  "\t\tList attributes for all entities in the specified entity type whose name "
                  "matches the regex.\n");
+    }
+    if (all || Ioss::Utils::substr_equal(topic, "regex")) {
+      fmt::print("\n\tRegular Expression help (used in ASSEMBLY MATCHES and LIST MATCHES and "
+                 "ATTRIBUTE LIST MATCHES options)\n"
+                 "\t\tSupports \"POSIX Extended Regular Expressions\" syntax\n"
+                 "\t\tSee https://www.regular-expressions.info/posix.html\n"
+                 "\t\tQuickStart: https://www.regular-expressions.info/quickstart.html\n");
     }
   }
 
