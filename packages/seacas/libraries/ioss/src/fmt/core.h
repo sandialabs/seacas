@@ -24,7 +24,7 @@
 #define FMT_DEPRECATED_N_SPECIFIER
 
 // The fmt library version in the form major * 10000 + minor * 100 + patch.
-#define FMT_VERSION 70000
+#define FMT_VERSION 70001
 
 #ifdef __clang__
 #  define FMT_CLANG_VERSION (__clang_major__ * 100 + __clang_minor__)
@@ -194,12 +194,12 @@
 #    define FMT_INLINE_NAMESPACE namespace
 #    define FMT_END_NAMESPACE \
       }                       \
-      using namespace v6;     \
+      using namespace v7;     \
       }
 #  endif
 #  define FMT_BEGIN_NAMESPACE \
     namespace fmt {           \
-    FMT_INLINE_NAMESPACE v6 {
+    FMT_INLINE_NAMESPACE v7 {
 #endif
 
 #if !defined(FMT_HEADER_ONLY) && defined(_WIN32)
@@ -497,7 +497,7 @@ constexpr basic_string_view<typename S::char_type> to_string_view(const S& s) {
 
 namespace detail {
 void to_string_view(...);
-using fmt::v6::to_string_view;
+using fmt::v7::to_string_view;
 
 // Specifies whether S is a string type convertible to fmt::basic_string_view.
 // It should be a constexpr function but MSVC 2017 fails to compile it in
@@ -1366,6 +1366,10 @@ using buffer_context =
 using format_context = buffer_context<char>;
 using wformat_context = buffer_context<wchar_t>;
 
+// Workaround a bug in gcc: https://stackoverflow.com/q/62767544/471164.
+#define FMT_BUFFER_CONTEXT(Char) \
+  basic_format_context<std::back_insert_iterator<detail::buffer<Char>>, Char>
+
 /**
   \rst
   An array of references to arguments. It can be implicitly converted into
@@ -1771,12 +1775,12 @@ std::basic_string<Char> vformat(
     basic_string_view<Char> format_str,
     basic_format_args<buffer_context<type_identity_t<Char>>> args);
 
-std::string vformat(string_view format_str, format_args args);
+FMT_API std::string vformat(string_view format_str, format_args args);
 
 template <typename Char>
-typename buffer_context<Char>::iterator vformat_to(
+typename FMT_BUFFER_CONTEXT(Char)::iterator vformat_to(
     buffer<Char>& buf, basic_string_view<Char> format_str,
-    basic_format_args<buffer_context<type_identity_t<Char>>> args);
+    basic_format_args<FMT_BUFFER_CONTEXT(type_identity_t<Char>)> args);
 
 template <typename Char, typename Args,
           FMT_ENABLE_IF(!std::is_same<Char, char>::value)>
