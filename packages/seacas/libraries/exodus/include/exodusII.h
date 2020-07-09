@@ -352,12 +352,12 @@ typedef enum ex_type ex_type;
 
 typedef struct ex_attribute
 {
+  ex_entity_type entity_type;
   int64_t        entity_id;
+  char           name[NC_MAX_NAME];
+  ex_type        type; /* int, double, text */
   size_t         value_count;
   void *         values; /* not accessed if NULL */
-  ex_entity_type entity_type;
-  ex_type        type; /* int, double, text */
-  char           name[NC_MAX_NAME];
 } ex_attribute;
 
 typedef struct ex_blob
