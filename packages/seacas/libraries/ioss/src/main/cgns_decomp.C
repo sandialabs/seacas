@@ -170,7 +170,7 @@ namespace {
 } // namespace
 namespace {
   std::string codename;
-  std::string version = "0.96";
+  std::string version = "0.97";
 
   int term_width();
 
