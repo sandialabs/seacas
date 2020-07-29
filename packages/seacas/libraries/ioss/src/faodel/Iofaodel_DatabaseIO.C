@@ -58,6 +58,7 @@
 #include <iterator>
 #include <map>
 #include <list>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
@@ -69,7 +70,8 @@
 #define PRINT_KEYS
 #endif
 
-namespace {
+namespace Iofaodel {
+//namespace {
   // Output a message that the operation is unsupported and die...
   void unsupported(const char *operation)
   {
@@ -90,32 +92,9 @@ namespace {
 
     IOSS_ERROR(errmsg);
   }
-} // namespace
+//} // namespace
 
-namespace Iofaodel {
 
-  std::atomic<int> DatabaseIO::instanceCount{0};
-
-  std::string kelpie_config_string = R"EOS(
-dirman.type centralized
-
-# MPI tests will need to have a standard networking base
-kelpie.type standard
-
-lunasa.lazy_memory_manager malloc
-lunasa.eager_memory_manager malloc
-
-#config.additional_files.env_name.if_defined FAODEL_CONFIG
-
-mpisyncstart.enable true
-dirman.root_node_mpi 0
-
-#bootstrap.debug true
-#whookie.debug true
-#opbox.debug true
-#dirman.debug true
-#kelpie.debug true
-)EOS";
 
   // ========================================================================
   const IOFactory *IOFactory::factory()
@@ -134,64 +113,179 @@ dirman.root_node_mpi 0
   }
 
 
-  // ========================================================================
-  DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
-      Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-      const Ioss::PropertyManager &props)
-    : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), spatialDimension(3),
-    nodeBlockCount(0), elementBlockCount(0), nodesetCount(0), sidesetCount(0),
+  /*
+   * There are three basic cases to address, manifested in whether any bootstrapping is done and
+   * what gets provided to kelpie::Connect() 
+   *
+   *  - Each process wants a local store, potentially backed by an IOM, but isn't interested
+   *    in sharing data with any other nodes. This will be satisfied by a localkv: URI. Dirman 
+   *    isn't strictly necessary.
+   *   
+   *  - Some subset (an improper subset; all nodes might join) of the processes in the IOSS job will 
+   *    participate in keyspace partitioning (and therefore data sharing). 
+   *    This will be indicated by dht: or rft: URIs (distributed hash
+   *    table or rank-folding table, respectively), and the configuration should specify 
+   *    which processes in the job are participants. URIs may be annotated to configure IOMs on 
+   *    each kelpie instance and to configure the pools themselves. Dirman must be started among
+   *    the pool processes.
+   *
+   *  - No Kelpie pool will be hosted by this job. We need the node ID of a remote Dirman so that 
+   *    this job's calls to Connect() can have their URIs translated appropriately to the node IDs 
+   *    of the processes comprising the remote Kelpie service. We don't have any input into the 
+   *    configuration of that service.
+   */
+  
+  DatabaseIO::DatabaseIO( Ioss::Region *region,
+			  const std::string &filename,
+			  Ioss::DatabaseUsage db_usage,
+			  MPI_Comm communicator,
+			  const Ioss::PropertyManager &props ) :
+  Ioss::DatabaseIO(region, filename, db_usage, communicator, props),
+    spatialDimension(3), nodeBlockCount(0), elementBlockCount(0), nodesetCount(0), sidesetCount(0),
     commsetNodeCount(0), commsetElemCount(0)
   {
-    faodel_config.AppendFromReferences();
+    std::string resource( "local:/ioss" );
+    
+    // Allow an override of the faodel configuration.
+    // Two methods: supply the faodel-config-replace property, or set the FAODEL_CONFIG
+    // environment variable. FAODEL_CONFIG takes precedence.
+    // if FAODEL_CONFIG is set, we will also use (if set) FAODEL_RESOURCE_URI and not attempt
+    // to do anything smart to it
+    char *faodel_config_env = std::getenv( "FAODEL_CONFIG" );
+    if( faodel_config_env not_eq nullptr ) {
 
-    /* CREATE a DHT that is distributed across all of the ranks of the communicator. */
-    if( instanceCount++ == 0 ) {
+      faodel_config.Append( faodel_config_env );
+      char* resource_override = std::getenv( "FAODEL_RESOURCE_URI" );
 
-      std::string resource;
-      faodel_config.GetString(&resource, "dirman.resources.0", "dht:/ioss/dht");
-      std::string mpi_resource = "dirman.resources_mpi[] " + resource;
+      if( resource_override not_eq nullptr )
+	resource = resource_override;
+      
+    } else {
 
-      int size;
-      MPI_Comm_size(communicator, &size);
-      if( size == 1 ) {
-        faodel_config.Append(mpi_resource + " 0");
+      if( props.exists( "faodel-resource-uri" ) ) 
+	resource = props.get( "faodel-resource-uri" ).get_string();
+
+      if( props.exists( "faodel-config-replace" ) ) {
+
+	faodel_config.Append( props.get( "faodel-config-replace" ).get_string() );
+      
       } else {
-        faodel_config.Append(mpi_resource + " 0-" + std::to_string(size-1));
-      }
+	
+	// Use the filename to create a bucket in the resource URI
+	// This will help to isolate multiple datasets being used at the same URI
+	resource.append( "&bucket=" + filename );
 
-      faodel_config.Append( kelpie_config_string );
-      faodel::mpisyncstart::bootstrap();
-      faodel::bootstrap::Start( faodel_config, kelpie::bootstrap );
+    
+	// Do some things in common for all setups
+	faodel_config.Append( R"(
+lunasa.lazy_memory_manager malloc
+lunasa.eager_memory_manager malloc
+kelpie.ioms iom-posix
+kelpie.iom.iom-posix.type posixindividualobjects
+x)"
+			      );
+
+	// if there are other fragments the caller wants to add to the Faodel 
+	//   config, get it before we potentially stand up dirman
+	faodel_config.AppendFromReferences();
+	if( props.exists( "faodel-config-append" ) ) {
+	  faodel_config.Append( props.get( "faodel-config-append" ).get_string() );
+	}
+
+	// Set up IOM if the caller provided a path
+	faodel_config.Append( "kelpie.iom.iom-posix.path " +
+			      [props]() -> std::string {
+				if( props.exists( "faodel-iom-path" ) ) {
+				  return props.get( "faodel-iom-path" ).get_string();
+				} else {
+				  return "/tmp";
+				}
+			      }() );
+	resource.append( "&iom=iom-posix&behavior=writetoiom" );
+
+	//
+	// Figure out the setup based on the resource URI
+	//
+	if( resource.rfind( "local:", 0 ) == 0 ) {
+
+	  // Asking for local kv, no syncstart, no dirman
+	  faodel_config.Append( R"(
+kelpie.type nonet
+mpisyncstart.enable false
+)"
+				);
+      
+	} else {
+
+	  // We aren't local, so we can call syncstart
+	  //  If we were supplied a kelpie-dirman-nodeid property, we assume we're
+	  //  being pointed at a dirman that has already been set up. This should be
+	  //  the job-to-job case, where the dirman root runs in a separate application,
+	  //  but it's possible for the app to have set up kelpie/dirman itself and wants
+	  //  to use that.
+	  //
+	  //  If that property isn't present, we assume that we need to configure a dirman
+	  //  for our own use. Right now we assume any such dirman will be rooted at rank 0
+	  //  and set up a pool that spans all ranks.
+
+	  faodel_config.Append( R"(
+kelpie.type standard
+mpisyncstart.enable true
+)" );
+	  if( props.exists( "faodel-dirman-nodeid" ) ) {
+	    faodel_config.Append( "dirman.root_node " +
+				  props.get( "faodel-dirman-nodeid" ).get_string() );
+	  } else {
+	    faodel_config.Append( "dirman.root_node_mpi 0" );
+	    faodel_config.Append( "dirman.type centralized" );
+	    faodel_config.Append( "dirman.resources_mpi[] " + resource + " all" );
+	  }
+
+	  if( resource.rfind( "rft:", 0 ) == 0 ) {
+	    // any necessary RFTn URI decorations
+	    // Use the rank target if given, else use our rank as a target
+	    resource.append( "&rank=" );
+	    if( props.exists( "faodel-rft-target-rank" ) ) {
+	      resource.append( std::to_string( props.get( "faodel-rft-target-rank" ).get_int() ) );
+	    } else {
+	      resource.append( std::to_string( parallel_rank() ) );
+	    }
+	  }
+	}
+      }
     }
 
-#ifdef JOB_TO_JOB_KELPIE
-    /*
-       We will worry about job-to-job later
-       */
-    char *kelpie_url = std::getenv( "IOSS_KELPIE_URL" );
-    pool = kelpie::Connect( kelpie_url );
-#endif
+    std::cerr << faodel_config.str();
+    
+    std::once_flag faodel_bootstrap_flag;
+    std::call_once( faodel_bootstrap_flag,
+		    [this]() {
+		      faodel::mpisyncstart::bootstrap();
+		      try {
+			faodel::bootstrap::Start( faodel_config, kelpie::bootstrap );
+		      }
+		      catch( const std::exception& xc ) {
+			std::cerr << "bootstrap exception" << xc.what();
+			std::rethrow_exception( std::current_exception() );
+		      }
+		    } );
 
-    std::string s;
-    faodel_config.GetString(&s, "dirman.resources.0");
-    if( s.empty() ) {
-      std::ostringstream errmsg;
-      fmt::print(
-          errmsg,
-          "ERROR: Unable to locate Faodel resource to connect to\n");
-      IOSS_ERROR(errmsg);
-    } else {
-      pool = kelpie::Connect( s );
+    try {
+      pool = kelpie::Connect( resource );
+    }
+    catch( const std::exception& xc ) {
+      std::cerr << "kelpie::Connect exception: " << xc.what();
+      std::rethrow_exception( std::current_exception() );
     }
     dbState = Ioss::STATE_UNKNOWN;
+    std::cerr << "exiting Iofaodel ctor" << std::endl;
+
   }
 
   DatabaseIO::~DatabaseIO()
   {
     // Shut down Faodel gracefully
-    if( --instanceCount == 0 ) {
-      faodel::bootstrap::Finish();
-    }
+    faodel::bootstrap::Finish();
   }
 
 

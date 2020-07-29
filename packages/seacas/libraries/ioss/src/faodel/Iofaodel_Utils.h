@@ -33,7 +33,6 @@
 #ifndef Iofaodel_Utils_h
 #define Iofaodel_Utils_h
 
-#warning "**** INCLUDE Iofaodel_Utils ****"
 #include <Ioss_Region.h>
 #include <Ioss_GroupingEntity.h>
 #include <Ioss_Property.h>
