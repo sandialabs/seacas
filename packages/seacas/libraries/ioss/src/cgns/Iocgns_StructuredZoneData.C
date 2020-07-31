@@ -252,11 +252,12 @@ namespace Iocgns {
     size_t work1 = ord1 * m_ordinal[0] * m_ordinal[2];
     size_t work2 = ord2 * m_ordinal[0] * m_ordinal[1];
 
-    if (m_lineOrdinal == 0 || m_ordinal[0] == 1)
+    // Don't decompose along m_lineOrdinal direction and Avoid decompositions 1-cell thick.
+    if (m_lineOrdinal == 0 || m_ordinal[0] == 1 || ord0 == 1 || m_ordinal[0] - ord0 == 1)
       work0 = 0;
-    if (m_lineOrdinal == 1 || m_ordinal[1] == 1)
+    if (m_lineOrdinal == 1 || m_ordinal[1] == 1 || ord1 == 1 || m_ordinal[1] - ord1 == 1)
       work1 = 0;
-    if (m_lineOrdinal == 2 || m_ordinal[2] == 1)
+    if (m_lineOrdinal == 2 || m_ordinal[2] == 1 || ord2 == 1 || m_ordinal[2] - ord2 == 1)
       work2 = 0;
 
     auto delta0 = std::make_pair(std::abs((double)work0 - avg_work), -m_ordinal[0]);
@@ -277,17 +278,17 @@ namespace Iocgns {
     int ordinal = min_ordinal;
 
     // One more check to try to produce more "squarish" decompositions.
-    // Check the ratio of max ordinal to selected min_ordinal and if > 3 (hueristic), choose the max ordinal instead.
+    // Check the ratio of max ordinal to selected min_ordinal and if > 2.5 (hueristic), choose the max ordinal instead.
     int max_ordinal = -1;
     int max_ordinal_sz = 0;
     for (int i=0; i < 3; i++) {
       if (m_lineOrdinal != i && m_ordinal[i] > max_ordinal_sz) {
-	max_ordinal = i;
-	max_ordinal_sz = m_ordinal[i];
+       max_ordinal = i;
+       max_ordinal_sz = m_ordinal[i];
       }
     }
 
-    if (max_ordinal != -1 && max_ordinal_sz / m_ordinal[ordinal] > 3) {
+    if (max_ordinal != -1 && (double)max_ordinal_sz / m_ordinal[ordinal] > 2.5) {
       ordinal = max_ordinal;
     }
 
@@ -306,6 +307,8 @@ namespace Iocgns {
     if (m_child1->m_ordinal[ordinal] == 0) {
       m_child1->m_ordinal[ordinal] = 1;
     }
+    assert(m_child1->m_ordinal[ordinal] != 1);
+
     m_child1->m_offset = m_offset; // Child1 offsets the same as parent;
 
     m_child1->m_lineOrdinal  = m_lineOrdinal;
@@ -319,6 +322,7 @@ namespace Iocgns {
     m_child2->m_ordinal          = m_ordinal;
     m_child2->m_ordinal[ordinal] = m_ordinal[ordinal] - m_child1->m_ordinal[ordinal];
     assert(m_child2->m_ordinal[ordinal] > 0);
+    assert(m_child1->m_ordinal[ordinal] != 1);
     m_child2->m_offset = m_offset;
     m_child2->m_offset[ordinal] += m_child1->m_ordinal[ordinal];
 
