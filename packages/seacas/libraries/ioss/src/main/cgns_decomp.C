@@ -78,6 +78,7 @@ namespace {
         }
         else {
           fmt::print(
+              stderr,
               "\nERROR: Processor count must be specified with '-processors $<val>' option.\n");
           options_.usage(std::cerr);
           exit(EXIT_FAILURE);
@@ -89,7 +90,8 @@ namespace {
         if (temp != nullptr) {
           ordinal = std::stoi(temp);
           if (ordinal < 0 || ordinal > 2) {
-            fmt::print("\nERROR: Invalid ordinal specified ({}). Must be 0, 1, or 2.\n", ordinal);
+            fmt::print(stderr, "\nERROR: Invalid ordinal specified ({}). Must be 0, 1, or 2.\n",
+                       ordinal);
             exit(EXIT_FAILURE);
           }
         }
@@ -516,9 +518,9 @@ namespace {
       auto pw_copy(proc_work);
       std::nth_element(pw_copy.begin(), pw_copy.begin() + pw_copy.size() / 2, pw_copy.end());
       median = pw_copy[pw_copy.size() / 2];
-      fmt::print(
-          "\nWork per processor:\n\tMinimum = {:n}, Maximum = {:n}, Median = {:n}, Ratio = {:.3}\n\n",
-          min_work, max_work, median, (double)(max_work) / min_work);
+      fmt::print("\nWork per processor:\n\tMinimum = {:n}, Maximum = {:n}, Median = {:n}, Ratio = "
+                 "{:.3}\n\n",
+                 min_work, max_work, median, (double)(max_work) / min_work);
     }
     if (interFace.work_per_processor) {
       if (min_work == max_work) {
@@ -606,6 +608,8 @@ int main(int argc, char *argv[])
   ON_BLOCK_EXIT(MPI_Finalize);
 #endif
 
+  Ioss::Utils::set_all_streams(std::cout);
+
   Interface interFace;
   bool      success = interFace.parse_options(argc, argv);
   if (!success) {
@@ -626,7 +630,8 @@ int main(int argc, char *argv[])
   Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(in_type, interFace.filename, Ioss::READ_RESTART,
                                                   (MPI_Comm)MPI_COMM_WORLD, properties);
   if (dbi == nullptr || !dbi->ok()) {
-    fmt::print("\nERROR: Could not open database '{}' of type '{}'\n", interFace.filename, in_type);
+    fmt::print(stderr, "\nERROR: Could not open database '{}' of type '{}'\n", interFace.filename,
+               in_type);
     std::exit(EXIT_FAILURE);
   }
 
@@ -636,7 +641,7 @@ int main(int argc, char *argv[])
   // Get the structured blocks...
   const auto &blocks = region.get_structured_blocks();
   if (blocks.empty()) {
-    fmt::print("\nERROR: There are no structured blocks on the mesh.\n");
+    fmt::print(stderr, "\nERROR: There are no structured blocks on the mesh.\n");
     return EXIT_FAILURE;
   }
 
@@ -659,7 +664,7 @@ int main(int argc, char *argv[])
                                           zones, 0, interFace.verbose);
   }
 
-  region.output_summary(std::cerr, false);
+  region.output_summary(std::cout, false);
 
   size_t orig_zone_count = zones.size();
   Iocgns::Utils::decompose_model(zones, interFace.proc_count, 0, interFace.load_balance,
