@@ -145,7 +145,7 @@ FMT_FUNC void format_error_code(detail::buffer<char>& out, int error_code,
   // Report error code making sure that the output fits into
   // inline_buffer_size to avoid dynamic memory allocation and potential
   // bad_alloc.
-  out.resize(0);
+  out.try_resize(0);
   static const char SEP[] = ": ";
   static const char ERROR_STR[] = "error ";
   // Subtract 2 to account for terminating null characters in SEP and ERROR_STR.
@@ -156,7 +156,7 @@ FMT_FUNC void format_error_code(detail::buffer<char>& out, int error_code,
     ++error_code_size;
   }
   error_code_size += detail::to_unsigned(detail::count_digits(abs_value));
-  auto it = std::back_inserter(out);
+  auto it = buffer_appender<char>(out);
   if (message.size() <= inline_buffer_size - error_code_size)
     format_to(it, "{}{}", message, SEP);
   format_to(it, "{}{}", ERROR_STR, error_code);
@@ -242,29 +242,33 @@ template <> FMT_FUNC int count_digits<4>(detail::fallback_uintptr n) {
 
 template <typename T>
 const typename basic_data<T>::digit_pair basic_data<T>::digits[] = {
-    {'0', '0'},  {'0', '1'},  {'0', '2'},  {'0', '3'},  {'0', '4'},
-    {'0', '5'},  {'0', '6'},  {'0', '7'},  {'0', '8'},  {'0', '9'},
-    {'1', '0'},  {'1', '1'},  {'1', '2'},  {'1', '3'},  {'1', '4'},
-    {'1', '5'},  {'1', '6'},  {'1', '7'},  {'1', '8'},  {'1', '9'},
-    {'2', '0'},  {'2', '1'},  {'2', '2'},  {'2', '3'},  {'2', '4'},
-    {'2', '5'},  {'2', '6'},  {'2', '7'},  {'2', '8'},  {'2', '9'},
-    {'3', '0'},  {'3', '1'},  {'3', '2'},  {'3', '3'},  {'3', '4'},
-    {'3', '5'},  {'3', '6'},  {'3', '7'},  {'3', '8'},  {'3', '9'},
-    {'4', '0'},  {'4', '1'},  {'4', '2'},  {'4', '3'},  {'4', '4'},
-    {'4', '5'},  {'4', '6'},  {'4', '7'},  {'4', '8'},  {'4', '9'},
-    {'5', '0'},  {'5', '1'},  {'5', '2'},  {'5', '3'},  {'5', '4'},
-    {'5', '5'},  {'5', '6'},  {'5', '7'},  {'5', '8'},  {'5', '9'},
-    {'6', '0'},  {'6', '1'},  {'6', '2'},  {'6', '3'},  {'6', '4'},
-    {'6', '5'},  {'6', '6'},  {'6', '7'},  {'6', '8'},  {'6', '9'},
-    {'7', '0'},  {'7', '1'},  {'7', '2'},  {'7', '3'},  {'7', '4'},
-    {'7', '5'},  {'7', '6'},  {'7', '7'},  {'7', '8'},  {'7', '9'},
-    {'8', '0'},  {'8', '1'},  {'8', '2'},  {'8', '3'},  {'8', '4'},
-    {'8', '5'},  {'8', '6'},  {'8', '7'},  {'8', '8'},  {'8', '9'},
-    {'9', '0'},  {'9', '1'},  {'9', '2'},  {'9', '3'},  {'9', '4'},
-    {'9', '5'},  {'9', '6'},  {'9', '7'},  {'9', '8'},  {'9', '9'}};
+    {'0', '0'}, {'0', '1'}, {'0', '2'}, {'0', '3'}, {'0', '4'}, {'0', '5'},
+    {'0', '6'}, {'0', '7'}, {'0', '8'}, {'0', '9'}, {'1', '0'}, {'1', '1'},
+    {'1', '2'}, {'1', '3'}, {'1', '4'}, {'1', '5'}, {'1', '6'}, {'1', '7'},
+    {'1', '8'}, {'1', '9'}, {'2', '0'}, {'2', '1'}, {'2', '2'}, {'2', '3'},
+    {'2', '4'}, {'2', '5'}, {'2', '6'}, {'2', '7'}, {'2', '8'}, {'2', '9'},
+    {'3', '0'}, {'3', '1'}, {'3', '2'}, {'3', '3'}, {'3', '4'}, {'3', '5'},
+    {'3', '6'}, {'3', '7'}, {'3', '8'}, {'3', '9'}, {'4', '0'}, {'4', '1'},
+    {'4', '2'}, {'4', '3'}, {'4', '4'}, {'4', '5'}, {'4', '6'}, {'4', '7'},
+    {'4', '8'}, {'4', '9'}, {'5', '0'}, {'5', '1'}, {'5', '2'}, {'5', '3'},
+    {'5', '4'}, {'5', '5'}, {'5', '6'}, {'5', '7'}, {'5', '8'}, {'5', '9'},
+    {'6', '0'}, {'6', '1'}, {'6', '2'}, {'6', '3'}, {'6', '4'}, {'6', '5'},
+    {'6', '6'}, {'6', '7'}, {'6', '8'}, {'6', '9'}, {'7', '0'}, {'7', '1'},
+    {'7', '2'}, {'7', '3'}, {'7', '4'}, {'7', '5'}, {'7', '6'}, {'7', '7'},
+    {'7', '8'}, {'7', '9'}, {'8', '0'}, {'8', '1'}, {'8', '2'}, {'8', '3'},
+    {'8', '4'}, {'8', '5'}, {'8', '6'}, {'8', '7'}, {'8', '8'}, {'8', '9'},
+    {'9', '0'}, {'9', '1'}, {'9', '2'}, {'9', '3'}, {'9', '4'}, {'9', '5'},
+    {'9', '6'}, {'9', '7'}, {'9', '8'}, {'9', '9'}};
 
 template <typename T>
 const char basic_data<T>::hex_digits[] = "0123456789abcdef";
+
+template <typename T>
+const uint16_t basic_data<T>::bsr2log10[] = {
+    1,  1,  1,  2,  2,  2,  3,  3,  3,  4,  4,  4,  4,  5,  5,  5,
+    6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  9,  9,  9,  10, 10, 10,
+    10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 15, 15,
+    15, 16, 16, 16, 16, 17, 17, 17, 18, 18, 18, 19, 19, 19, 19, 20};
 
 #define FMT_POWERS_OF_10(factor)                                             \
   factor * 10, (factor)*100, (factor)*1000, (factor)*10000, (factor)*100000, \
@@ -1054,7 +1058,7 @@ void fallback_format(Double d, buffer<char>& buf, int& exp10) {
         if (result > 0 || (result == 0 && (digit % 2) != 0))
           ++data[num_digits - 1];
       }
-      buf.resize(to_unsigned(num_digits));
+      buf.try_resize(to_unsigned(num_digits));
       exp10 -= num_digits - 1;
       return;
     }
@@ -1078,7 +1082,7 @@ int format_float(T value, int precision, float_specs specs, buffer<char>& buf) {
       buf.push_back('0');
       return 0;
     }
-    buf.resize(to_unsigned(precision));
+    buf.try_resize(to_unsigned(precision));
     std::uninitialized_fill_n(buf.data(), precision, '0');
     return -precision;
   }
@@ -1116,7 +1120,7 @@ int format_float(T value, int precision, float_specs specs, buffer<char>& buf) {
       fallback_format(value, buf, exp);
       return exp;
     }
-    buf.resize(to_unsigned(handler.size));
+    buf.try_resize(to_unsigned(handler.size));
   } else {
     if (precision > 17) return snprintf_float(value, precision, specs, buf);
     fp normalized = normalize(fp(value));
@@ -1134,7 +1138,7 @@ int format_float(T value, int precision, float_specs specs, buffer<char>& buf) {
         ++exp;
       }
     }
-    buf.resize(to_unsigned(num_digits));
+    buf.try_resize(to_unsigned(num_digits));
   }
   return exp - cached_exp10;
 }
@@ -1185,19 +1189,20 @@ int snprintf_float(T value, int precision, float_specs specs,
                      ? snprintf_ptr(begin, capacity, format, precision, value)
                      : snprintf_ptr(begin, capacity, format, value);
     if (result < 0) {
-      buf.reserve(buf.capacity() + 1);  // The buffer will grow exponentially.
+      // The buffer will grow exponentially.
+      buf.try_reserve(buf.capacity() + 1);
       continue;
     }
     auto size = to_unsigned(result);
     // Size equal to capacity means that the last character was truncated.
     if (size >= capacity) {
-      buf.reserve(size + offset + 1);  // Add 1 for the terminating '\0'.
+      buf.try_reserve(size + offset + 1);  // Add 1 for the terminating '\0'.
       continue;
     }
     auto is_digit = [](char c) { return c >= '0' && c <= '9'; };
     if (specs.format == float_format::fixed) {
       if (precision == 0) {
-        buf.resize(size);
+        buf.try_resize(size);
         return 0;
       }
       // Find and remove the decimal point.
@@ -1207,11 +1212,11 @@ int snprintf_float(T value, int precision, float_specs specs,
       } while (is_digit(*p));
       int fraction_size = static_cast<int>(end - p - 1);
       std::memmove(p, p + 1, to_unsigned(fraction_size));
-      buf.resize(size - 1);
+      buf.try_resize(size - 1);
       return -fraction_size;
     }
     if (specs.format == float_format::hex) {
-      buf.resize(size + offset);
+      buf.try_resize(size + offset);
       return 0;
     }
     // Find and parse the exponent.
@@ -1237,7 +1242,7 @@ int snprintf_float(T value, int precision, float_specs specs,
       fraction_size = static_cast<int>(fraction_end - begin - 1);
       std::memmove(begin + 1, begin + 2, to_unsigned(fraction_size));
     }
-    buf.resize(to_unsigned(fraction_size) + offset + 1);
+    buf.try_resize(to_unsigned(fraction_size) + offset + 1);
     return exp - fraction_size;
   }
 }
@@ -1296,6 +1301,19 @@ FMT_FUNC const char* utf8_decode(const char* buf, uint32_t* c, int* e) {
 
   return next;
 }
+
+struct stringifier {
+  template <typename T> FMT_INLINE std::string operator()(T value) const {
+    return to_string(value);
+  }
+  std::string operator()(basic_format_arg<format_context>::handle h) const {
+    memory_buffer buf;
+    format_parse_context parse_ctx({});
+    format_context format_ctx(buffer_appender<char>(buf), {}, {});
+    h.format(parse_ctx, format_ctx);
+    return to_string(buf);
+  }
+};
 }  // namespace detail
 
 template <> struct formatter<detail::bigint> {
@@ -1363,7 +1381,8 @@ FMT_FUNC void format_system_error(detail::buffer<char>& out, int error_code,
       int result =
           detail::safe_strerror(error_code, system_message, buf.size());
       if (result == 0) {
-        format_to(std::back_inserter(out), "{}: {}", message, system_message);
+        format_to(detail::buffer_appender<char>(out), "{}: {}", message,
+                  system_message);
         return;
       }
       if (result != ERANGE)
@@ -1383,20 +1402,6 @@ FMT_FUNC void report_system_error(int error_code,
                                   fmt::string_view message) FMT_NOEXCEPT {
   report_error(format_system_error, error_code, message);
 }
-
-struct stringifier {
-  template <typename T> FMT_INLINE std::string operator()(T value) const {
-    return to_string(value);
-  }
-  std::string operator()(basic_format_arg<format_context>::handle h) const {
-    memory_buffer buf;
-    detail::buffer<char>& base = buf;
-    format_parse_context parse_ctx({});
-    format_context format_ctx(std::back_inserter(base), {}, {});
-    h.format(parse_ctx, format_ctx);
-    return to_string(buf);
-  }
-};
 
 FMT_FUNC std::string detail::vformat(string_view format_str, format_args args) {
   if (format_str.size() == 2 && equal2(format_str.data(), "{}")) {
