@@ -1703,11 +1703,11 @@ namespace {
         "\t \n"
         "\t By default:\n"
         "\t * All results variables and attributes are compared using a relative difference\n"
-        "\t   of 10^{-6} (about 6 significant digits) and a floor of 0.0.\n"
-        "\t * Nodal locations are compared using {absolute difference} with\n"
-        "\t   a tolerance of 10^{-6} and a floor of 0.0.\n"
-        "\t * Time step values are compared using relative difference tolerance of 10^{-6}\n"
-        "\t   and a floor of 10^{-15}.\n"
+        "\t   of 10^{{-6}} (about 6 significant digits) and a floor of 0.0.\n"
+        "\t * Nodal locations are compared using {{absolute difference}} with\n"
+        "\t   a tolerance of 10^{{-6}} and a floor of 0.0.\n"
+        "\t * Time step values are compared using relative difference tolerance of 10^{{-6}}\n"
+        "\t   and a floor of 10^{{-15}}.\n"
         "\n\n");
   }
 
