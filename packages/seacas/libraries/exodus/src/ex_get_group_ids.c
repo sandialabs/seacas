@@ -10,11 +10,10 @@
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR
 
 /**
- * \ingroup Utilities
- * Given a file or group 'parent' id, return the number of child groups and the
- * ids
- * of the child groups below the parent.  If num_groups is NULL, do not return
- * count; if group_ids is NULL, do not return ids.
+ * \ingroup Utilities Given a file or group 'parent' id, return the
+ * number of child groups and the ids of the child groups below the
+ * parent.  If num_groups is NULL, do not return count; if group_ids
+ * is NULL, do not return ids.
  */
 int ex_get_group_ids(int parent_id, int *num_groups, int *group_ids)
 {
