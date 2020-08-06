@@ -681,9 +681,10 @@ int main(int argc, char *argv[])
   validate_decomposition(zones, interFace.proc_count);
 
   cleanup(zones);
-  fmt::print(stderr, "\nTotal Execution time = {:.5} seconds to decompose for {:n} processors. (decomp: {:.5}, resolve_zgc: {:.5})\n",
-	     end2 - begin, interFace.proc_count, end1-begin, end2-end1);
-
+  fmt::print(stderr,
+             "\nTotal Execution time = {:.5} seconds to decompose for {:n} processors. (decomp: "
+             "{:.5}, resolve_zgc: {:.5})\n",
+             end2 - begin, interFace.proc_count, end1 - begin, end2 - end1);
 }
 
 #if defined(_MSC_VER)

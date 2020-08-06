@@ -683,22 +683,22 @@ namespace {
 
       // Recur for all the m_vertices adjacent to this vertex
       if (v < (int)m_adj.size()) {
-	for (auto i = m_adj[v].begin(); i != m_adj[v].end(); ++i) {
-	  if (!visited[*i] && is_cyclic_internal(*i, visited, recStack)) {
-	    if (*i != 0 && v != 0) {
-	      fmt::print(fg(fmt::color::yellow), "\t*** Cycle contains {} -> {}\n", m_vertex[v],
-			 m_vertex[*i]);
-	    }
-	    return true;
-	  }
-	  else if (recStack[*i]) {
-	    if (*i != 0 && v != 0) {
-	      fmt::print(fg(fmt::color::yellow), "\t*** Cycle contains {} -> {}\n", m_vertex[v],
-			 m_vertex[*i]);
-	    }
-	    return true;
-	  }
-	}
+        for (auto i = m_adj[v].begin(); i != m_adj[v].end(); ++i) {
+          if (!visited[*i] && is_cyclic_internal(*i, visited, recStack)) {
+            if (*i != 0 && v != 0) {
+              fmt::print(fg(fmt::color::yellow), "\t*** Cycle contains {} -> {}\n", m_vertex[v],
+                         m_vertex[*i]);
+            }
+            return true;
+          }
+          else if (recStack[*i]) {
+            if (*i != 0 && v != 0) {
+              fmt::print(fg(fmt::color::yellow), "\t*** Cycle contains {} -> {}\n", m_vertex[v],
+                         m_vertex[*i]);
+            }
+            return true;
+          }
+        }
       }
     }
     recStack[v] = false; // remove the vertex from recursion stack
