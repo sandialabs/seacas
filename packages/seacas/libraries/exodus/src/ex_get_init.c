@@ -79,7 +79,9 @@ int ex_get_init(int exoid, char *title, void_int *num_dim, void_int *num_nodes, 
   int            errval;
 
   EX_FUNC_ENTER();
-  ex__check_valid_file_id(exoid, __func__);
+  if (ex__check_valid_file_id(exoid, __func__) == EX_FATAL) {
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
 
   info.title[0] = '\0';
   errval        = ex_get_init_ext(exoid, &info);
