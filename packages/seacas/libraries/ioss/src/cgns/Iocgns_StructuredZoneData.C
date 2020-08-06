@@ -372,13 +372,14 @@ namespace Iocgns {
   }
 
   namespace {
-    void update_zgc(Ioss::ZoneConnectivity &zgc, Iocgns::StructuredZoneData *child, std::vector<Ioss::ZoneConnectivity> &new_zgc,
+    void update_zgc(Ioss::ZoneConnectivity &zgc, Iocgns::StructuredZoneData *child, std::vector<Ioss::ZoneConnectivity> &zgc_vec,
 		    bool new_zgc)
     {
       zgc.m_donorZone = child->m_zone;
       zgc_subset_donor_ranges(child, zgc);
-      if (zgc.get_shared_node_count() > 2) {
-	new_zgc.push_back(zgc);
+      // If `!new_zgc`, then the zgc is already in `zgc_vec`
+      if (new_zgc) {
+	zgc_vec.push_back(zgc);
       }
     }
   }
@@ -386,13 +387,16 @@ namespace Iocgns {
   // then create two zgc that point to each child.  Update range and donor_range
   void StructuredZoneData::resolve_zgc_split_donor(const std::vector<Iocgns::StructuredZoneData *> &zones)
   {
+    // Updates m_zoneConnectivity in place, but in case a new zgc is created,
+    // need a place to store it to avoid invalidating any iterators...
+    // Guess at size to avoid as many reallocations as possible.
+    // At most 1 new zgc per split...
+    std::vector<Ioss::ZoneConnectivity> new_zgc;
+    new_zgc.reserve(m_zoneConnectivity.size());
+
     bool did_split = false;
     do {
       did_split = false;
-      std::vector<Ioss::ZoneConnectivity> new_zgc;
-      // Guess at size to avoid as many reallocations as possible.
-      // Each original zgc will either result 1 or 2 new zgc...
-      new_zgc.reserve(m_zoneConnectivity.size() * 2);
 
       for (auto &zgc : m_zoneConnectivity) {
         auto &donor_zone = zones[zgc.m_donorZone - 1];
@@ -428,16 +432,19 @@ namespace Iocgns {
 	    zgc.m_donorZone = donor_zone->m_child1->m_zone;
             zgc.m_ownerRangeBeg = zgc.m_ownerRangeEnd = {{0, 0, 0}};
             zgc.m_donorRangeBeg = zgc.m_donorRangeEnd = {{0, 0, 0}};
-            new_zgc.push_back(zgc);
           }
-        }
-        else {
-          new_zgc.push_back(zgc);
         }
       }
       if (did_split) {
-	new_zgc.shrink_to_fit();
-        std::swap(m_zoneConnectivity, new_zgc);
+	if (!new_zgc.empty()) {
+	  m_zoneConnectivity.insert(m_zoneConnectivity.end(), new_zgc.begin(), new_zgc.end());
+	  new_zgc.clear();
+	}
+	// Filter out all zgc that do not contain any faces unless needed fo maintain original zgc reconstruction...
+	m_zoneConnectivity.erase(std::remove_if(m_zoneConnectivity.begin(),
+						m_zoneConnectivity.end(),
+						[](Ioss::ZoneConnectivity &zgc){return zgc.get_shared_node_count() <= 2 && !zgc.retain_original();}),
+				 m_zoneConnectivity.end());
       }
     } while (did_split);
   }

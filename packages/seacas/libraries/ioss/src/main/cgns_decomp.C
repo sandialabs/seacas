@@ -667,15 +667,23 @@ int main(int argc, char *argv[])
   region.output_summary(std::cout, false);
 
   size_t orig_zone_count = zones.size();
+
+  double begin = Ioss::Utils::timer();
   Iocgns::Utils::decompose_model(zones, interFace.proc_count, 0, interFace.load_balance,
                                  interFace.verbose);
+  double end1 = Ioss::Utils::timer();
+
   update_zgc_data(zones, interFace.proc_count);
+  double end2 = Ioss::Utils::timer();
 
   describe_decomposition(zones, orig_zone_count, interFace);
 
   validate_decomposition(zones, interFace.proc_count);
 
   cleanup(zones);
+  fmt::print(stderr, "\nTotal Execution time = {:.5} seconds to decompose for {:n} processors. (decomp: {:.5}, resolve_zgc: {:.5})\n",
+	     end2 - begin, interFace.proc_count, end1-begin, end2-end1);
+
 }
 
 #if defined(_MSC_VER)
