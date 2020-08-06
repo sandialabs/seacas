@@ -23,7 +23,7 @@ namespace {
     bool m_reversed;
   };
 
-  bool overlaps(const Range &a, const Range &b) { return a.m_beg <= b.m_end && b.m_beg <= a.m_end; }
+  bool overlaps(const Range &a, const Range &b) { return a.begin() <= b.end() && b.begin() <= a.end(); }
 
   bool zgc_overlaps(const Iocgns::StructuredZoneData *zone, const Ioss::ZoneConnectivity &zgc)
   {
@@ -371,44 +371,64 @@ namespace Iocgns {
     return std::make_pair(m_child1, m_child2);
   }
 
+  namespace {
+    void update_zgc(Ioss::ZoneConnectivity &zgc, Iocgns::StructuredZoneData *child, std::vector<Ioss::ZoneConnectivity> &new_zgc,
+		    bool new_zgc)
+    {
+      zgc.m_donorZone = child->m_zone;
+      zgc_subset_donor_ranges(child, zgc);
+      if (zgc.get_shared_node_count() > 2) {
+	new_zgc.push_back(zgc);
+      }
+    }
+  }
   // If a zgc points to a donor zone which was split (has non-null children),
   // then create two zgc that point to each child.  Update range and donor_range
-  void StructuredZoneData::resolve_zgc_split_donor(std::vector<Iocgns::StructuredZoneData *> &zones)
+  void StructuredZoneData::resolve_zgc_split_donor(const std::vector<Iocgns::StructuredZoneData *> &zones)
   {
     bool did_split = false;
     do {
       did_split = false;
       std::vector<Ioss::ZoneConnectivity> new_zgc;
-      for (auto zgc : m_zoneConnectivity) {
+      // Guess at size to avoid as many reallocations as possible.
+      // Each original zgc will either result 1 or 2 new zgc...
+      new_zgc.reserve(m_zoneConnectivity.size() * 2);
+
+      for (auto &zgc : m_zoneConnectivity) {
         auto &donor_zone = zones[zgc.m_donorZone - 1];
         if (!donor_zone->is_active()) {
           did_split    = true;
-          bool overlap = false;
-          auto c1_zgc(zgc);
-          c1_zgc.m_donorZone = donor_zone->m_child1->m_zone;
-          if (zgc_donor_overlaps(donor_zone->m_child1, c1_zgc)) {
-            overlap = true;
-            zgc_subset_donor_ranges(donor_zone->m_child1, c1_zgc);
-            if (c1_zgc.get_shared_node_count() > 2) {
-              new_zgc.push_back(c1_zgc);
-            }
+
+	  bool overlap_1 = zgc_donor_overlaps(donor_zone->m_child1, zgc);
+	  bool overlap_2 = zgc_donor_overlaps(donor_zone->m_child2, zgc);
+          bool overlap = overlap_1 || overlap_2;
+
+	  // Child 1
+          if (overlap_1) {
+	    if (!overlap_2) {
+	      // Use `zgc` since don't need it anymore...
+	      update_zgc(zgc, donor_zone->m_child1, new_zgc, false);
+	    }
+	    else {
+	      auto c1_zgc(zgc);
+	      update_zgc(c1_zgc, donor_zone->m_child1, new_zgc, true);
+	    }
           }
-          auto c2_zgc(zgc);
-          c2_zgc.m_donorZone = donor_zone->m_child2->m_zone;
-          if (zgc_donor_overlaps(donor_zone->m_child2, c2_zgc)) {
-            overlap = true;
-            zgc_subset_donor_ranges(donor_zone->m_child2, c2_zgc);
-            if (c2_zgc.get_shared_node_count() > 2) {
-              new_zgc.push_back(c2_zgc);
-            }
+
+	  // Child 2
+          if (overlap_2) {
+	    // Use `zgc` since don't need it anymore...
+	    update_zgc(zgc, donor_zone->m_child2, new_zgc, false);
           }
+
           if (!overlap) {
             // Need to add at least one copy of this zgc even if no overlap
             // so can maintain the original (un parallel decomposed) ranges
             // for use in output...
-            c1_zgc.m_ownerRangeBeg = c1_zgc.m_ownerRangeEnd = {{0, 0, 0}};
-            c1_zgc.m_donorRangeBeg = c1_zgc.m_donorRangeEnd = {{0, 0, 0}};
-            new_zgc.push_back(c1_zgc);
+	    zgc.m_donorZone = donor_zone->m_child1->m_zone;
+            zgc.m_ownerRangeBeg = zgc.m_ownerRangeEnd = {{0, 0, 0}};
+            zgc.m_donorRangeBeg = zgc.m_donorRangeEnd = {{0, 0, 0}};
+            new_zgc.push_back(zgc);
           }
         }
         else {
@@ -416,12 +436,13 @@ namespace Iocgns {
         }
       }
       if (did_split) {
+	new_zgc.shrink_to_fit();
         std::swap(m_zoneConnectivity, new_zgc);
       }
     } while (did_split);
   }
 
-  void StructuredZoneData::update_zgc_processor(std::vector<Iocgns::StructuredZoneData *> &zones)
+  void StructuredZoneData::update_zgc_processor(const std::vector<Iocgns::StructuredZoneData *> &zones)
   {
     for (auto &zgc : m_zoneConnectivity) {
       auto &donor_zone = zones[zgc.m_donorZone - 1];
