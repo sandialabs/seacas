@@ -3,7 +3,7 @@ from ctypes import *
 import os
 
 """
-exodus.py v 1.14 (seacas-beta) is a python wrapper of some of the exodus library
+exodus.py v 1.15 (seacas-beta) is a python wrapper of some of the exodus library
 (Python 2 Version)
 
 Copyright(C) 1999-2020 National Technology & Engineering Solutions
@@ -15,10 +15,10 @@ See packages/seacas/LICENSE for details
 
 EXODUS_PY_COPYRIGHT_AND_LICENSE = __doc__
 
-EXODUS_PY_VERSION = "1.14 (seacas-py2)"
+EXODUS_PY_VERSION = "1.15 (seacas-py2)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.14 (seacas-py2), a python wrapper of some of the exodus library.
+You are using exodus.py v 1.15 (seacas-py2), a python wrapper of some of the exodus library.
 
 Copyright (c) 2013, 2014, 2015, 2016, 2017, 2018, 2019 National Technology &
 Engineering Solutions of Sandia, LLC (NTESS).  Under the terms of
@@ -368,6 +368,17 @@ class exodus:
                     self.init_params.title = title
                 self.put_info_ext(self.init_params)
             else:
+                if numNodeSets is None:
+                    numNodeSets = 0
+                if numSideSets is None:
+                    numSideSets = 0
+                if numNodes is None:
+                    numNodes = 0
+                if numElems is None:
+                    numElems = 0
+                if numBlocks is None:
+                    numBlocks = 0
+
                 info = [title, numDims, numNodes, numElems, numBlocks,
                         numNodeSets, numSideSets]
                 assert None not in info
