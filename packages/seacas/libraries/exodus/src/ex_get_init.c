@@ -45,7 +45,7 @@ include:
 \param exoid              exodus file ID returned from a previous call to
 ex_create() or ex_open().
 \param[out] title         Returned database title. String length may be up to \c
-MAX_LINE_LENGTH bytes.
+MAX_LINE_LENGTH+1 bytes.
 \param[out] num_dim       Returned dimensionality of the database. This is the
 number of coordinates per node.
 \param[out] num_nodes     Returned number of nodal points.
