@@ -799,8 +799,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga87ef88cfa27b66d5d64aee24bb289a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga70aa2d8fa483a41b3fdbaef475526e8d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga70aa2d8fa483a41b3fdbaef475526e8d">ex__id_lkup</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> id_type, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> num)</td></tr>
 <tr class="separator:ga70aa2d8fa483a41b3fdbaef475526e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga330d19673d0a06e92914646ec0e57155"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga330d19673d0a06e92914646ec0e57155">ex__check_valid_file_id</a> (int exoid, const char *func)</td></tr>
-<tr class="separator:ga330d19673d0a06e92914646ec0e57155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaabfb3fb7bba8d5ee9c0eb07fbabf9b93"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#gaabfb3fb7bba8d5ee9c0eb07fbabf9b93">ex__check_valid_file_id</a> (int exoid, const char *func)</td></tr>
+<tr class="separator:gaabfb3fb7bba8d5ee9c0eb07fbabf9b93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaff6ac3322edae6dab77d7fb5acede842"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#gaff6ac3322edae6dab77d7fb5acede842">ex__check_multiple_open</a> (const char *path, int mode, const char *func)</td></tr>
 <tr class="separator:gaff6ac3322edae6dab77d7fb5acede842"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga59bdd5d8964c479f6029c276d6a6d097"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Internal.html#ga59bdd5d8964c479f6029c276d6a6d097">ex__check_file_type</a> (const char *path, int *type)</td></tr>
@@ -6048,18 +6048,18 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Abort if exoid does not refer to valid file </p>
+<p>Return fatal error if exoid does not refer to valid file </p>
 
 </div>
 </div>
-<a id="ga330d19673d0a06e92914646ec0e57155"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga330d19673d0a06e92914646ec0e57155">&#9670;&nbsp;</a></span>ex__check_valid_file_id()</h2>
+<a id="gaabfb3fb7bba8d5ee9c0eb07fbabf9b93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaabfb3fb7bba8d5ee9c0eb07fbabf9b93">&#9670;&nbsp;</a></span>ex__check_valid_file_id()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void ex__check_valid_file_id </td>
+          <td class="memname">int ex__check_valid_file_id </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>exoid</em>, </td>
@@ -8114,7 +8114,7 @@ ptr --------—&gt; list item structure</h2>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="agroup__Utilities_html_ga1b8122836266615fd2795736dc21e2ae"><div class="ttname"><a href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a></div><div class="ttdeci">int64_t ex_inquire_int(int exoid, ex_inquiry req_info)</div><div class="ttdef"><b>Definition:</b> ex_inquire.c:949</div></div>
+<div class="ttc" id="agroup__Utilities_html_ga1b8122836266615fd2795736dc21e2ae"><div class="ttname"><a href="group__Utilities.html#ga1b8122836266615fd2795736dc21e2ae">ex_inquire_int</a></div><div class="ttdeci">int64_t ex_inquire_int(int exoid, ex_inquiry req_info)</div><div class="ttdef"><b>Definition:</b> ex_inquire.c:951</div></div>
 <div class="ttc" id="aex__put__elem__var__tab_8c_html_af10dacfa214e2575bb2e0ee407c242e0"><div class="ttname"><a href="ex__put__elem__var__tab_8c.html#af10dacfa214e2575bb2e0ee407c242e0">error</a></div><div class="ttdeci">error</div><div class="ttdef"><b>Definition:</b> ex_put_elem_var_tab.c:71</div></div>
 <div class="ttc" id="aexodusII_8h_html_a4d51e0740116cc60e2daa4aef1757ad2"><div class="ttname"><a href="exodusII_8h.html#a4d51e0740116cc60e2daa4aef1757ad2">ex_get_glob_var_time</a></div><div class="ttdeci">SEACAS_DEPRECATED int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step, int end_time_step, void *glob_var_vals)</div><div class="ttdef"><b>Definition:</b> ex_get_glob_var_time.c:76</div></div>
 <div class="ttc" id="astructex____obj__stats_html_a78efc24efc9edf45482f9dd9d0a486ae"><div class="ttname"><a href="structex____obj__stats.html#a78efc24efc9edf45482f9dd9d0a486ae">ex__obj_stats::exoid</a></div><div class="ttdeci">int exoid</div><div class="ttdef"><b>Definition:</b> exodusII_int.h:740</div></div>

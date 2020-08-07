@@ -487,8 +487,10 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a0894377348c38a2433ec0bf66467f269"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1BaseDatabaseIO.html#a0894377348c38a2433ec0bf66467f269">exodusFilePtr</a> {-1}</td></tr>
-<tr class="separator:a0894377348c38a2433ec0bf66467f269"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56c2e2ff2ad99e2d87e9155ea16b103a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1BaseDatabaseIO.html#a56c2e2ff2ad99e2d87e9155ea16b103a">m_exodusFilePtr</a> {-1}</td></tr>
+<tr class="separator:a56c2e2ff2ad99e2d87e9155ea16b103a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89db1a69366db8344f445bf3f67149d6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1BaseDatabaseIO.html#a89db1a69366db8344f445bf3f67149d6">m_exodusBasePtr</a> {-1}</td></tr>
+<tr class="separator:a89db1a69366db8344f445bf3f67149d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d6cdd05a9b0d006c758f337694ecdfd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1BaseDatabaseIO.html#a9d6cdd05a9b0d006c758f337694ecdfd">m_groupName</a></td></tr>
 <tr class="separator:a9d6cdd05a9b0d006c758f337694ecdfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb668fc89723143f53fb479582ef5918"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceIoex.html#a3b04d836f84e74a9c3988d2ef19200bd">EntityIdSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoex_1_1BaseDatabaseIO.html#aeb668fc89723143f53fb479582ef5918">ids_</a></td></tr>
@@ -4197,28 +4199,6 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a0894377348c38a2433ec0bf66467f269"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0894377348c38a2433ec0bf66467f269">&#9670;&nbsp;</a></span>exodusFilePtr</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Ioex::BaseDatabaseIO::exodusFilePtr {-1}</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a3a08f9c4bd7ce42a91be955d990896eb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3a08f9c4bd7ce42a91be955d990896eb">&#9670;&nbsp;</a></span>exodusMode</h2>
 
@@ -4318,6 +4298,50 @@ template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="namespaceIoex.html#a3b04d836f84e74a9c3988d2ef19200bd">EntityIdSet</a> Ioex::BaseDatabaseIO::ids_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a89db1a69366db8344f445bf3f67149d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89db1a69366db8344f445bf3f67149d6">&#9670;&nbsp;</a></span>m_exodusBasePtr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Ioex::BaseDatabaseIO::m_exodusBasePtr {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a56c2e2ff2ad99e2d87e9155ea16b103a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56c2e2ff2ad99e2d87e9155ea16b103a">&#9670;&nbsp;</a></span>m_exodusFilePtr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Ioex::BaseDatabaseIO::m_exodusFilePtr {-1}</td>
         </tr>
       </table>
   </td>

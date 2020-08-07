@@ -123,7 +123,7 @@ var namespaces_dup =
     [ "anonymous_namespace{volume.C}", "namespaceanonymous__namespace_02volume_8C_03.html", null ],
     [ "Info", "namespaceInfo.html", null ],
     [ "Ioad", "namespaceIoad.html", null ],
-    [ "Iocgns", "namespaceIocgns.html", null ],
+    [ "Iocgns", "namespaceIocgns.html", "namespaceIocgns" ],
     [ "Iodw", "namespaceIodw.html", "namespaceIodw" ],
     [ "Ioex", "namespaceIoex.html", "namespaceIoex" ],
     [ "Iogn", "namespaceIogn.html", null ],

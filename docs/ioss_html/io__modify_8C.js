@@ -26,7 +26,6 @@ var io__modify_8C =
     [ "set_db_properties", "io__modify_8C.html#abbaa7f57eb4b40d886862690a9c758d8", null ],
     [ "set_properties", "io__modify_8C.html#a3bfcb67a7941a2843c3bfc481d3ba792", null ],
     [ "update_assembly_info", "io__modify_8C.html#a5f27efffeffe710f293ad2a61f71449f", null ],
-    [ "update_exodus_assembly_info", "io__modify_8C.html#a4866e5eb91b5040adbef724217be141c", null ],
     [ "attributes_modified", "io__modify_8C.html#aa1d463b5adbd98fd632061ae9435fc8a", null ],
     [ "codename", "io__modify_8C.html#a097b51a278793fa66f99a6a4420ac9b7", null ],
     [ "version", "io__modify_8C.html#ac0bdb85d23dc21a6c5389324035557ec", null ]
