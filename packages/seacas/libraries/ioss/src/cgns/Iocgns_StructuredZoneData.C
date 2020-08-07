@@ -281,7 +281,7 @@ namespace Iocgns {
     int ordinal = min_ordinal;
 
     // One more check to try to produce more "squarish" decompositions.
-    // Check the ratio of max ordinal to selected min_ordinal and if > 2.5 (hueristic), choose the
+    // Check the ratio of max ordinal to selected min_ordinal and if > 1.5 (hueristic), choose the
     // max ordinal instead.
     int max_ordinal    = -1;
     int max_ordinal_sz = 0;
@@ -292,7 +292,7 @@ namespace Iocgns {
       }
     }
 
-    if (max_ordinal != -1 && (double)max_ordinal_sz / m_ordinal[ordinal] > 2.5) {
+    if (max_ordinal != -1 && (double)max_ordinal_sz / m_ordinal[ordinal] > 1.5) {
       ordinal = max_ordinal;
     }
 
