@@ -97,6 +97,9 @@ private:
     CatalystCGNSMesh(const CatalystCGNSMesh &) = delete;
     CatalystCGNSMesh &operator=(const CatalystCGNSMesh &) = delete;
 
+    std::string createFieldVariableName(std::string fieldNamePrefix,
+        char fieldSuffixSeparator, int componentIndex, int componentCount);  
+
     struct base {
         int base_location;
         std::map<int, int> zone_id_to_zone_location_map;

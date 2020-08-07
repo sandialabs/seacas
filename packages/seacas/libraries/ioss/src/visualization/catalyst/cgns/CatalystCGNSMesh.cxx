@@ -178,10 +178,9 @@ void CatalystCGNSMesh::AddStructuredZoneData(int base_id,
     else {
         for(int i=0; i<comp_count; i++) {
             vtkDoubleArray* da = vtkDoubleArray::New();
-            std::ostringstream oss;
-            oss << i + 1;
-            da->SetName(
-                (data_name + field_suffix_separator + oss.str()).c_str());
+            std::string fn = this->createFieldVariableName(data_name,
+                field_suffix_separator, i, comp_count);
+            da->SetName(fn.c_str());
             da->SetNumberOfComponents(1);
             da->SetNumberOfTuples(size);
             for(int j=0; j<size;j++) {
@@ -197,6 +196,22 @@ void CatalystCGNSMesh::AddStructuredZoneData(int base_id,
             da->Delete();
         }
     }
+}
+
+std::string CatalystCGNSMesh::createFieldVariableName(
+    std::string fieldNamePrefix, char fieldSuffixSeparator,
+        int componentIndex, int componentCount) {
+    std::string name;
+    if(componentCount == 1) {
+        name = fieldNamePrefix;
+    }
+    else {
+        std::ostringstream oss;
+        oss << componentIndex + 1;
+        name = fieldNamePrefix + fieldSuffixSeparator + oss.str();
+    }
+
+    return name;
 }
 
 } // namespace Iovs_cgns
