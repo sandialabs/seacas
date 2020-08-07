@@ -284,7 +284,10 @@ TEST_CASE("bump_loose", "[bump_loose_zgc]")
       Ioss::IJK_t{{1, 3, 2}}, Ioss::IJK_t{{3, 1, 1}}, Ioss::IJK_t{{3, 3, 2}});
   double load_balance_tolerance = 1.4;
 
-  SECTION("bump_loose_ProcCount_2") { check_split_assign(zones, load_balance_tolerance, 2, 0.8, 1.2); }
+  SECTION("bump_loose_ProcCount_2")
+  {
+    check_split_assign(zones, load_balance_tolerance, 2, 0.8, 1.2);
+  }
   cleanup(zones);
 }
 
@@ -985,7 +988,7 @@ TEST_CASE("farmer_h1_mk21", "[h1_mk21]")
 
   for (size_t proc_count = 3; proc_count <= 384; proc_count *= 2) {
     std::string name = "H1_MK21_ProcCount_" + std::to_string(proc_count);
-    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.75); }
+    SECTION(name) { check_split_assign(zones, load_balance_tolerance, proc_count, 0.75, 1.1); }
   }
   cleanup(zones);
 }
@@ -1079,7 +1082,7 @@ TEST_CASE("LotsOfZones", "[LotsOfZones]")
 
 TEST_CASE("half_sphere", "[half_sphere]")
 {
-  int zone = 1;
+  int                                       zone = 1;
   std::vector<Iocgns::StructuredZoneData *> zones;
   zones.push_back(new Iocgns::StructuredZoneData(zone++, "80x50x24"));
   zones.push_back(new Iocgns::StructuredZoneData(zone++, "80x50x24"));
