@@ -285,6 +285,9 @@ void SystemInterface::enroll_options()
   options_.enroll("Floor", GetLongOption::MandatoryValue,
                   "Overrides the default floor tolerance of 0.0.", "0.0");
 
+  options_.enroll("coordinate_tolerance", GetLongOption::MandatoryValue,
+                  "Overrides the default coordinate comparison tolerance of 1.0E-6.", "1.0E-6");
+
   options_.enroll("TimeStepOffset", GetLongOption::MandatoryValue,
                   "Timestep 'x+offset' in first file matches timestep 'x' in second file.",
                   nullptr);
@@ -610,6 +613,13 @@ bool SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("tolerance");
     if (temp != nullptr) {
       default_tol.value = To_Double(temp);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("coordinate_tolerance");
+    if (temp != nullptr) {
+      coord_tol.value = To_Double(temp);
     }
   }
 
