@@ -1,8 +1,10 @@
+#!/usr/bin/env python
+
 # @HEADER
 # ************************************************************************
 #
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016 Sandia Corporation
+#                    Copyright 2013 Sandia Corporation
 #
 # Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 # the U.S. Government retains certain rights in this software.
@@ -37,49 +39,48 @@
 # ************************************************************************
 # @HEADER
 
-#
-# First, set up the variables for the (backward-compatible) TriBITS way of
-# finding Netcdf.  These are used in case FIND_PACKAGE(NetCDF ...) is not
-# called or does not find NetCDF.  Also, these variables need to be non-null
-# in order to trigger the right behavior in the function
-# TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES().
-#
-if (${CMAKE_VERSION} GREATER "3.13")
-     cmake_policy(SET CMP0074 NEW)
-endif()
+from FindGeneralScriptSupport import *
+from TribitsPackageFilePathUtils import *
+from gitdist import addOptionParserChoiceOption
 
-SET(REQUIRED_HEADERS cgnslib.h)
-SET(REQUIRED_LIBS_NAMES cgns)
 
 #
-# Second, search for Netcdf components (if allowed) using the standard
-# FIND_PACKAGE(CGNS ...).
+# Read in the commandline arguments
 #
-TRIBITS_TPL_ALLOW_PRE_FIND_PACKAGE(CGNS  CGNS_ALLOW_PREFIND)
-IF (CGNS_ALLOW_PREFIND)
 
-  MESSAGE("-- Using FIND_PACKAGE(CGNS ...) ...")
+usageHelp = \
+r"""get-tribits-packages.py --deps-xml-file=<DEPS_XML_FILE> \
+  --only-top-level-packages=[on|off]
 
-  SET(CMAKE_MODULE_PATH
-    "${CMAKE_MODULE_PATH}"
-    "${CMAKE_CURRENT_LIST_DIR}/find_modules"
-    "${CMAKE_CURRENT_LIST_DIR}/utils"
-     )
-  
-  find_package(CGNS)
+This script returns a comma-separated list of all of the project's top-level
+or packages or the full set of SE packages (i.e. parent and subpackages).
+"""
 
-  IF (CGNS_FOUND)
-    set(TPL_CGNS_LIBRARIES ${CGNS_LIBRARIES} CACHE PATH
-      "List of semi-colon seprated (full) paths to the CGNS libraries")
-    set(TPL_CGNS_INCLUDE_DIRS ${CGNS_INCLUDE_DIRS} CACHE PATH
-      "List of semi-colon seprated list of directories containing CGNS header files")
-  ENDIF()
+from optparse import OptionParser
 
-ENDIF()
+clp = OptionParser(usage=usageHelp)
 
-#
-# Third, call TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES()
-#
-TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES( CGNS
-  REQUIRED_HEADERS ${REQUIRED_HEADERS}
-  REQUIRED_LIBS_NAMES ${REQUIRED_LIBS_NAMES})
+clp.add_option(
+  "--deps-xml-file", dest="depsXmlFile", type="string",
+  help="File containing TriBITS-generated XML data-structure the listing"+\
+    " of packages, dir names, dependencies, etc.")
+
+addOptionParserChoiceOption(
+  "--only-top-level-packages", "onlyTopLevelPackagesStr",
+  ("on", "off"), 0,
+  "If 'on', then only top-level packages will be included.  If 'off', then"+\
+  " top-level and subpackages will be included in the list (in order).",
+  clp )
+
+(options, args) = clp.parse_args()
+
+if options.onlyTopLevelPackagesStr == "on":
+  onlyTopLevelPackages = True
+else:
+  onlyTopLevelPackages = False
+
+trilinosDependencies = getProjectDependenciesFromXmlFile(options.depsXmlFile)
+
+packagesNamesList = trilinosDependencies.getPackagesNamesList(onlyTopLevelPackages)
+
+print(','.join(packagesNamesList))
