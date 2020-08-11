@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['magenta_426',['MAGENTA',['../structtrmclr_1_1Foreground.html#add2640fff4af2ff8c047db518188fb58a049660122c8dee840d38afb2b5e0c2e9',1,'trmclr::Foreground::MAGENTA()'],['../structtrmclr_1_1Background.html#aa96259e93f51806dbf9b4016f45dbfaaa608238101aa2dc7020999b9aad773158',1,'trmclr::Background::MAGENTA()'],['../namespacetrmclr.html#a87195018207ae60756c9e7f9d716f540',1,'trmclr::magenta()']]],
+  ['magenta_426',['MAGENTA',['../structtrmclr_1_1Foreground.html#adff60c1193e1c3cfbf1b9ed44fee0697a049660122c8dee840d38afb2b5e0c2e9',1,'trmclr::Foreground::MAGENTA()'],['../structtrmclr_1_1Background.html#a284dd0e41b212c19068f67f50ab4d139a608238101aa2dc7020999b9aad773158',1,'trmclr::Background::MAGENTA()'],['../namespacetrmclr.html#a87195018207ae60756c9e7f9d716f540',1,'trmclr::magenta()']]],
   ['main_427',['main',['../apr__test_8cc.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;apr_test.cc'],['../strings_8cc.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;strings.cc']]],
   ['math_5ferrhandling_428',['math_errhandling',['../aprepro_8h.html#aa8618aec27dedcd32f494ccf22f3ed42',1,'aprepro.h']]],
   ['math_5ferror_429',['math_error',['../namespaceSEAMS.html#af028977ba40c76ef326936906fe9b0e0',1,'SEAMS::math_error(const SEAMS::Aprepro &amp;apr, const char *function)'],['../namespaceSEAMS.html#a15b05eb7930a143bdb17dfeb860ec129',1,'SEAMS::math_error(const char *function)']]],

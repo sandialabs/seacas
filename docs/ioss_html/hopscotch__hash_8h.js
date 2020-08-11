@@ -17,7 +17,6 @@ var hopscotch__hash_8h =
     [ "hopscotch_bucket", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket.html", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__bucket" ],
     [ "hopscotch_hash", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash.html", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash" ],
     [ "hopscotch_iterator", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator" ],
-    [ "hopscotch_iterator", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator.html", "classtsl_1_1detail__hopscotch__hash_1_1hopscotch__hash_1_1hopscotch__iterator" ],
     [ "tsl_hh_assert", "hopscotch__hash_8h.html#ae97f95de0bb7d3a5968e6c1b05eda4a9", null ],
     [ "truncated_hash_type", "hopscotch__hash_8h.html#a5019c00d3c234ae72fa0d1d564c8d876", null ],
     [ "NB_RESERVED_BITS_IN_NEIGHBORHOOD", "hopscotch__hash_8h.html#ab15ef36b694d0f89612f5ba9409d40a8", null ],

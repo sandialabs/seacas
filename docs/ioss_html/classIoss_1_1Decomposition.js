@@ -52,6 +52,7 @@ var classIoss_1_1Decomposition =
     [ "m_adjacency", "classIoss_1_1Decomposition.html#aa18488bbc07722457bb2823ca5944265", null ],
     [ "m_centroids", "classIoss_1_1Decomposition.html#a25f181b211f0f83b4c77c140b463b9d2", null ],
     [ "m_comm", "classIoss_1_1Decomposition.html#aa2200eb229f5490d85b529d1a3178057", null ],
+    [ "m_commonNodeCount", "classIoss_1_1Decomposition.html#a7167d92b546a8a73b7b40f22c2836823", null ],
     [ "m_elementCount", "classIoss_1_1Decomposition.html#afaeab35bf97ff2e0576a8db229beaadf", null ],
     [ "m_elementDist", "classIoss_1_1Decomposition.html#a31ff8b6b57124a0518455df24922c4c9", null ],
     [ "m_elementOffset", "classIoss_1_1Decomposition.html#a594ed8b318b228a0731a3816f9f6cd8e", null ],
