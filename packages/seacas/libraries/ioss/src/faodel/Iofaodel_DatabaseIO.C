@@ -170,11 +170,6 @@ namespace Iofaodel {
 	faodel_config.Append( props.get( "faodel-config-replace" ).get_string() );
       
       } else {
-	
-	// Use the filename to create a bucket in the resource URI
-	// This will help to isolate multiple datasets being used at the same URI
-	resource.append( "&bucket=" + filename );
-
     
 	// Do some things in common for all setups
 	faodel_config.Append( R"(
@@ -255,8 +250,6 @@ mpisyncstart.enable true
       }
     }
 
-    std::cerr << faodel_config.str();
-    
     std::once_flag faodel_bootstrap_flag;
     std::call_once( faodel_bootstrap_flag,
 		    [this]() {
@@ -270,6 +263,10 @@ mpisyncstart.enable true
 		      }
 		    } );
 
+    // Use the filename to create a bucket in the resource URI
+    // This will help to isolate multiple datasets being used at the same URI
+    resource.append( "&bucket=" ) += filename;
+    
     try {
       pool = kelpie::Connect( resource );
     }
