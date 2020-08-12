@@ -172,7 +172,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/TimeSteps*"
         );
   }
@@ -187,7 +186,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/TimeSteps"
         );
   }
@@ -204,7 +202,6 @@ namespace Iofaodel {
 
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/SideSet/" + sideset.name() +
         "/SideBlock/*"
         );  
@@ -223,7 +220,6 @@ namespace Iofaodel {
 
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/SideSet/" + sideset.name() +
         "/SideBlock/" + sideblock.name()
         );  
@@ -239,7 +235,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/StructuredBlock/" + structuredblock.name() +
         "/Attributes*"
         );
@@ -255,7 +250,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/StructuredBlock/" + structuredblock.name() +
         "/Attributes"
         );
@@ -276,7 +270,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/State/" + std::to_string(region.get_current_state()) +
         "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
         "/Field/RoleType/" + to_string(field.get_role()) +
@@ -300,7 +293,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/State/" + std::to_string(region.get_current_state()) +
         "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
         "/Property/BasicType/" + to_string(property.get_type()) + "/Name/" + property.get_name()
@@ -321,7 +313,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/State/" + std::to_string(region.get_current_state()) +
         "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name
         );
@@ -338,7 +329,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/State/" + std::to_string(region.get_current_state()) +
         "/Entity/" + entity + "/*"
         );
@@ -358,7 +348,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/State/" + std::to_string(region.get_current_state()) +
         "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name
         + "*"
@@ -382,7 +371,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/State/" + std::to_string(region.get_current_state()) +
         "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
         "/Property/*"
@@ -404,7 +392,6 @@ namespace Iofaodel {
 
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/State/" + std::to_string(region.get_current_state()) +
         "/Entity/" + entity_type + "/Name/" + entity_name +
         "/Property/BasicType/" + property_type + "/Name/" + property_name
@@ -426,7 +413,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/State/" + std::to_string(region.get_current_state()) +
         "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
         "/Field/*"
@@ -452,7 +438,6 @@ namespace Iofaodel {
     }
     return kelpie::Key(
         std::to_string(rank),
-        "/Region/" + region_name +
         "/State/" + std::to_string(state) + 
         "/Entity/" + grouping_entity.type_string() + "/Name/" + grouping_entity_name +
         "/Field/*"
