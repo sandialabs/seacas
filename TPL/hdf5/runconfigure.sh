@@ -30,9 +30,9 @@ then
     export CC=cc
   else
     export CC=mpicc
+    echo "Checking MPI Version -- "
+    mpiexec --version
   fi
-  echo "Checking MPI Version -- "
-  mpiexec --version
 else
   PARALLEL_ON_OFF="--disable-parallel"
   COMPILER="${COMPILER:-gnu}"
