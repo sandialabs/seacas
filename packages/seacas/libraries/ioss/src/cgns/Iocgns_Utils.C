@@ -2553,6 +2553,11 @@ void Iocgns::Utils::assign_zones_to_procs(std::vector<Iocgns::StructuredZoneData
   // On first entry, work_vector will be all zeros.  To avoid any
   // searching, assign the first `nproc` zones to the `nproc` entries
   // in `work_vector`.  Avoids searching...
+  if (zones.size() < work_vector.size()) {
+    std::ostringstream errmsg;
+    fmt::print(errmsg, "IOCGNS error: Could not decompose mesh across {} processors based on constraints.", work_vector.size());
+    IOSS_ERROR(errmsg);
+  }
   assert(zones.size() >= work_vector.size());
   size_t i = 0;
   for (; i < work_vector.size(); i++) {

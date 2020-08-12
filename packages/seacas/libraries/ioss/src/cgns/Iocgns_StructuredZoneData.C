@@ -263,6 +263,21 @@ namespace Iocgns {
     if (m_lineOrdinal == 2 || m_ordinal[2] == 1 || ord2 == 1 || m_ordinal[2] - ord2 == 1)
       work2 = 0;
 
+    bool enforce_1cell_constraint = true;
+    if (work0 == 0 && work1 == 0 && work2 == 0) {
+      // Need to relax the "cells > 1" constraint...
+      work0 = ord0 * m_ordinal[1] * m_ordinal[2];
+      work1 = ord1 * m_ordinal[0] * m_ordinal[2];
+      work2 = ord2 * m_ordinal[0] * m_ordinal[1];
+      if (m_lineOrdinal == 0 || m_ordinal[0] == 1)
+	work0 = 0;
+      if (m_lineOrdinal == 1 || m_ordinal[1] == 1)
+	work1 = 0;
+      if (m_lineOrdinal == 2 || m_ordinal[2] == 1)
+	work2 = 0;
+      enforce_1cell_constraint = false;
+    }
+
     auto delta0 = std::make_pair(std::abs((double)work0 - avg_work), -m_ordinal[0]);
     auto delta1 = std::make_pair(std::abs((double)work1 - avg_work), -m_ordinal[1]);
     auto delta2 = std::make_pair(std::abs((double)work2 - avg_work), -m_ordinal[2]);
@@ -296,7 +311,7 @@ namespace Iocgns {
       ordinal = max_ordinal;
     }
 
-    if (m_ordinal[ordinal] <= 1 || (work0 == 0 && work1 == 0 && work2 == 0)) {
+    if ((m_ordinal[ordinal] <= enforce_1cell_constraint ? 1 : 0) || (work0 == 0 && work1 == 0 && work2 == 0)) {
       return std::make_pair(nullptr, nullptr);
     }
 
@@ -311,7 +326,7 @@ namespace Iocgns {
     if (m_child1->m_ordinal[ordinal] == 0) {
       m_child1->m_ordinal[ordinal] = 1;
     }
-    assert(m_child1->m_ordinal[ordinal] != 1);
+    assert(!enforce_1cell_constraint || m_child1->m_ordinal[ordinal] != 1);
 
     m_child1->m_offset = m_offset; // Child1 offsets the same as parent;
 
@@ -326,7 +341,7 @@ namespace Iocgns {
     m_child2->m_ordinal          = m_ordinal;
     m_child2->m_ordinal[ordinal] = m_ordinal[ordinal] - m_child1->m_ordinal[ordinal];
     assert(m_child2->m_ordinal[ordinal] > 0);
-    assert(m_child1->m_ordinal[ordinal] != 1);
+    assert(!enforce_1cell_constraint || m_child2->m_ordinal[ordinal] != 1);
     m_child2->m_offset = m_offset;
     m_child2->m_offset[ordinal] += m_child1->m_ordinal[ordinal];
 
