@@ -130,7 +130,7 @@ FMT_END_NAMESPACE
 #ifndef FMT_USE_USER_DEFINED_LITERALS
 // EDG based compilers (Intel, NVIDIA, Elbrus, etc), GCC and MSVC support UDLs.
 #  if (FMT_HAS_FEATURE(cxx_user_literals) || FMT_GCC_VERSION >= 407 || \
-       FMT_MSC_VER >= 1900) &&                                         \
+       FMT_MSC_VER >= 1900) && !defined(__NVCC__) &&			\
       (!defined(__EDG_VERSION__) || __EDG_VERSION__ >= /* UDL feature */ 480)
 #    define FMT_USE_USER_DEFINED_LITERALS 1
 #  else
