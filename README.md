@@ -137,10 +137,7 @@ This will run through several of the SEACAS applications creating a mesh (exodus
 ## Exodus
 If you only want the exodus library, then follow most of the above instructions with the following exceptions:
 
-* You can either clone entire source tree as above, or you can
-	download a zip file containing only the exodus source (and
-	build-related files).  The url for the zip file is
-	<https://github.com/gsjaardema/seacas/archive/exodus.zip> NOTE: Probably out-of-date and better to just clone entire repository.
+* Clone entire source tree as above. (There used to be a zip file, but difficult to keep up-to-date)
 * You only need the netcdf and optionally hdf5 libraries
 * Use the `cmake-exodus` file instead of `cmake-config`.
 * This will build, by default, a shared exodus library and also install the exodus.py and exomerge.py Python interfaces.
