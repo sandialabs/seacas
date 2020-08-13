@@ -438,7 +438,7 @@ mpisyncstart.enable true
     // TODO do we need to update default properties upon construction?
     // Properties
     for(size_t i=0; i<oc.keys.size(); i++) {
-      lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+      lunasa::DataObject ldo;
       pool.Need(oc.keys[i], oc.capacities[i], &ldo);
 
       auto meta(static_cast<meta_entry_t*>(ldo.GetMetaPtr()));
@@ -492,7 +492,7 @@ mpisyncstart.enable true
   {
     // Fields
     for(size_t i=0; i<oc.keys.size(); i++) {
-      lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+      lunasa::DataObject ldo;
       pool.Need(oc.keys[i], oc.capacities[i], &ldo);
 
       auto meta(static_cast<meta_entry_t*>(ldo.GetMetaPtr()));
@@ -541,15 +541,15 @@ mpisyncstart.enable true
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
 
           if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             entity_count = property_get_int(ldo);
             have_entity_count = true;
           }
 
           if(oc.keys[i].K2().find("original_edge_type") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             original_edge_type = property_get_int(ldo);
             have_original_edge_type = true;
           }
@@ -602,15 +602,15 @@ mpisyncstart.enable true
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
 
           if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             entity_count = property_get_int(ldo);
             have_entity_count = true;
           }
 
           if(oc.keys[i].K2().find("original_topology_type") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             original_topology_type = property_get_string(ldo);
             have_original_topology_type = true;
           }
@@ -668,15 +668,15 @@ mpisyncstart.enable true
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
 
           if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             entity_count = property_get_int(ldo);
             have_entity_count = true;
           }
 
           if(oc.keys[i].K2().find("original_topology_type") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             original_topology_type = property_get_string(ldo);
             have_original_topology_type = true;
           }
@@ -727,15 +727,15 @@ mpisyncstart.enable true
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
 
           if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             entity_count = property_get_int(ldo);
             have_entity_count = true;
           }
 
           if(oc.keys[i].K2().find("component_degree") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             component_degree = property_get_int(ldo);
             have_component_degree = true;
           }
@@ -796,8 +796,8 @@ mpisyncstart.enable true
           {
             size_t position = oc.keys[i].K2().rfind(property_name);
             if(position != std::string::npos && (position+property_name.size()) == oc.keys[i].K2().size()) {
-              lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-              pool.Need(oc.keys[i], &ldo);
+              lunasa::DataObject ldo;
+              pool.Need(oc.keys[i], oc.capacities[i], &ldo);
               ctor_properties[property_name] = property_get_int(ldo);
             }
           }
@@ -864,8 +864,8 @@ mpisyncstart.enable true
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
 
           if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             entity_count = property_get_int(ldo);
             have_entity_count = true;
           }
@@ -914,8 +914,8 @@ mpisyncstart.enable true
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
 
           if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             entity_count = property_get_int(ldo);
             have_entity_count = true;
           }
@@ -964,8 +964,8 @@ mpisyncstart.enable true
         if(oc.keys[i].K2().find(entity_name) != std::string::npos) {
 
           if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             entity_count = property_get_int(ldo);
             have_entity_count = true;
           }
@@ -1013,8 +1013,8 @@ mpisyncstart.enable true
         if(oc.keys[i].K2().find(entity_name_search) != std::string::npos) {
 
           if(oc.keys[i].K2().find("entity_count") != std::string::npos) {
-            lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-            pool.Need(oc.keys[i], &ldo);
+            lunasa::DataObject ldo;
+            pool.Need(oc.keys[i], oc.capacities[i], &ldo);
             entity_count = property_get_int(ldo);
             have_entity_count = true;
           }
@@ -1073,7 +1073,7 @@ mpisyncstart.enable true
       pool.List(sideblocks_key, &sideblocks_search_oc);
 
       for( size_t i = 0; i < sideblocks_search_oc.Size(); i++ ) {
-        lunasa::DataObject ldo(0, sideblocks_search_oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
+        lunasa::DataObject ldo;
         pool.Need(sideblocks_search_oc.keys[i], sideblocks_search_oc.capacities[i], &ldo);
         int64_t entity_count = unpack_sideblocks(ldo);
 
@@ -1137,8 +1137,8 @@ mpisyncstart.enable true
           if( !have_entity_count ) {
             size_t position = oc.keys[i].K2().rfind("entity_count");
             if( position != std::string::npos ) {
-              lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-              pool.Need(oc.keys[i], &ldo);
+              lunasa::DataObject ldo;
+              pool.Need(oc.keys[i], oc.capacities[i], &ldo);
               entity_count = property_get_int(ldo);
               have_entity_count = true;
             }
@@ -1147,8 +1147,8 @@ mpisyncstart.enable true
           if( !have_entity_type ) {
             size_t position = oc.keys[i].K2().rfind("entity_type");
             if( position != std::string::npos ) {
-              lunasa::DataObject ldo(0, oc.capacities[i], lunasa::DataObject::AllocatorType::eager);
-              pool.Need(oc.keys[i], &ldo);
+              lunasa::DataObject ldo;
+              pool.Need(oc.keys[i], oc.capacities[i], &ldo);
               entity_type = property_get_string(ldo);
               have_entity_type = true;
             }
