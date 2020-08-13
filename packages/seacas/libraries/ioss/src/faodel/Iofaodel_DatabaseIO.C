@@ -383,8 +383,7 @@ mpisyncstart.enable true
     pool.List(search_key, &oc);
     if(oc.keys.size() == 1)
     {
-      lunasa::DataObject ldo(0, oc.capacities[0],
-          lunasa::DataObject::AllocatorType::eager);
+      lunasa::DataObject ldo;
       pool.Need(oc.keys[0], oc.capacities[0], &ldo);
 
       auto meta = static_cast<Iofaodel::meta_entry_t*>(ldo.GetMetaPtr());
@@ -1084,14 +1083,15 @@ mpisyncstart.enable true
         pool.Need( property_key, &property_ldo );
         Ioss::Property topo_property = this->read_property(property_ldo);
         
-        property_key = make_property_key(parallel_rank(), *(get_region()),
-                                         "SideBlock", sideblock_name, "STRING", "parent_topology_type");
-        pool.Need( property_key, &property_ldo );
-        Ioss::Property parent_topo_property = this->read_property(property_ldo);
+        auto parent_property_key = make_property_key(parallel_rank(), *(get_region()),
+                                                     "SideBlock", sideblock_name, "STRING", "parent_topology_type");
+        lunasa::DataObject parent_property_ldo;
+        pool.Need( parent_property_key, &parent_property_ldo );
+        Ioss::Property parent_topo_property = this->read_property(parent_property_ldo);
         
         
         auto sideblock = new Ioss::SideBlock(this, sideblock_name, topo_property.get_string(),
-        parent_topo_property.get_string(), entity_count);
+                                             parent_topo_property.get_string(), entity_count);
         
         // Add Properties that aren't created in the CTor
         auto sideblock_property_search = property_search_key(parallel_rank(), *(get_region()), *sideblock);
